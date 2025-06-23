@@ -111,7 +111,7 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
-    if( !CreatePipe( pipe_input, &pipe_output, &sa, 0 ) ) {
+    if( CreatePipe( pipe_input, &pipe_output, &sa, 0 ) == 0 ) {
         return( GetLastError() );
     }
     cp = GetCurrentProcess();

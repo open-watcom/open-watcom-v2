@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ struct wndprocs {
 extern void         *UserProcs[];
 
 extern void         *SetProc( FARPROC fp, int type );
-extern BOOL         TryAlias( HWND hwnd, WORD msg, LONG *lparam );
+extern bool         TryAlias( HWND hwnd, WORD msg, LONG *lparam );
 extern void         *RealProcAddr( FARPROC fp );
 extern DWORD _WCFAR *_DataSelectorSizeAddr;
 extern CALLBACKPTR  vGetCallbackRoutine( PROCPTR fn, va_list args );

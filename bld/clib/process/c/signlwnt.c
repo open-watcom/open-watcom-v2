@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static sigtab  _SignalTable[] = {
     { SIG_DFL, STATUS_INTEGER_OVERFLOW }            /* SIGIOVFL */
 };
 
-static char CtrlHandlerRunning = FALSE;
+static bool CtrlHandlerRunning = false;
 
 
 static __sig_func __SetSignalFunc( int sig, __sig_func new_func )
@@ -138,7 +138,7 @@ static BOOL WINAPI CtrlSignalHandler( IN ULONG Event )
 }
 
 
-static BOOL CtrlHandlerIsNeeded( void )
+static bool CtrlHandlerIsNeeded( void )
 {
     __sig_func  int_func = __GetSignalFunc( SIGINT );
     __sig_func  brk_func = __GetSignalFunc( SIGBREAK );
@@ -148,21 +148,21 @@ static BOOL CtrlHandlerIsNeeded( void )
 }
 
 
-static BOOL StartCtrlHandler( void )
+static bool StartCtrlHandler( void )
 {
     if( !CtrlHandlerRunning && SetConsoleCtrlHandler( CtrlSignalHandler, TRUE ) )
-        CtrlHandlerRunning = TRUE;
+        CtrlHandlerRunning = true;
 
-    return( (BOOL)CtrlHandlerRunning );
+    return( CtrlHandlerRunning );
 }
 
 
-static BOOL KillCtrlHandler( void )
+static bool KillCtrlHandler( void )
 {
     if( CtrlHandlerRunning && SetConsoleCtrlHandler( CtrlSignalHandler, FALSE ) )
-        CtrlHandlerRunning = FALSE;
+        CtrlHandlerRunning = false;
 
-    return( !(BOOL)CtrlHandlerRunning );
+    return( !CtrlHandlerRunning );
 }
 
 
@@ -200,11 +200,11 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
 
     prev_func = __GetSignalFunc( sig );
     __SetSignalFunc( sig, func );
-    if( CtrlHandlerIsNeeded() )
+    if( CtrlHandlerIsNeeded() ) {
         StartCtrlHandler();
-    else
+    } else {
         KillCtrlHandler();
-
+    }
     return( prev_func );
 }
 

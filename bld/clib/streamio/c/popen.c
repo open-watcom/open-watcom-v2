@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +174,6 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 /************************************************************************/
 {
 #if defined( __NT__ )
-    BOOL                rc;
     HANDLE              osHandle;
     HANDLE              oldHandle;
 #elif defined( __OS2__ )
@@ -193,9 +192,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
         oldHandle = osHandle;
-        rc = SetStdHandle( STD_INPUT_HANDLE,                /* set new */
-                           (HANDLE)_os_handle(handles[0]) );
-        if( rc == FALSE ) {
+        if( SetStdHandle( STD_INPUT_HANDLE, (HANDLE)_os_handle( handles[0] ) ) == 0 ) {   /* set new */
             SetStdHandle( STD_INPUT_HANDLE, oldHandle );
             return( 0 );
         }
@@ -205,7 +202,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
         if( rc != NO_ERROR )
             return( 0 );
         osHandle = STDIN_FILENO;            /* use new standard input */
-        rc = DosDupHandle( (HFILE)_os_handle(handles[0]), &osHandle );
+        rc = DosDupHandle( (HFILE)_os_handle( handles[0] ), &osHandle );
         if( rc != NO_ERROR ) {
             DosClose( oldHandle );
             return( 0 );
@@ -231,9 +228,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
         oldHandle = osHandle;
-        rc = SetStdHandle( STD_OUTPUT_HANDLE,               /* set new */
-                           (HANDLE)_os_handle(handles[1]) );
-        if( rc == FALSE ) {
+        if( SetStdHandle( STD_OUTPUT_HANDLE, (HANDLE)_os_handle( handles[1] ) ) == 0 ) { /* set new */
             SetStdHandle( STD_OUTPUT_HANDLE, oldHandle );
             return( 0 );
         }
@@ -244,7 +239,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
         osHandle = STDOUT_FILENO;           /* use new standard input */
-        rc = DosDupHandle( (HFILE)_os_handle(handles[1]), &osHandle );
+        rc = DosDupHandle( (HFILE)_os_handle( handles[1] ), &osHandle );
         if( rc != NO_ERROR ) {
             DosClose( oldHandle );
             return( 0 );
@@ -273,7 +268,6 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
 {
 #if defined(__NT__)
     HANDLE              osHandle;
-    BOOL                rc;
     int                 handleMode;
 #elif defined( __OS2__ )
     APIRET              rc;
@@ -315,11 +309,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     /*** Make read handle non-inheritable if reading ***/
     if( readOrWrite ) {
 #if defined( __NT__ )
-        rc = DuplicateHandle( GetCurrentProcess(),
-                              (HANDLE)_os_handle(handles[0]),
-                              GetCurrentProcess(), &osHandle, 0,
-                              FALSE, DUPLICATE_SAME_ACCESS );
-        if( rc == FALSE ) {
+        if( DuplicateHandle( GetCurrentProcess(), (HANDLE)_os_handle( handles[0] ),
+            GetCurrentProcess(), &osHandle, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
             return( 0 );
         }
         close( handles[0] );        /* don't need this any more */
@@ -331,13 +322,13 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
 #elif defined( __OS2__ )
-        rc = DosQFHandState( (HFILE)_os_handle(handles[0]), &handleState );
+        rc = DosQFHandState( (HFILE)_os_handle( handles[0] ), &handleState );
         if( rc != NO_ERROR ) {
             return( 0 );
         }
         handleState |= OPEN_FLAGS_NOINHERIT;
         handleState &= 0x00007F88;  /* some bits must be zero */
-        rc = DosSetFHandState( (HFILE)_os_handle(handles[0]), handleState );
+        rc = DosSetFHandState( (HFILE)_os_handle( handles[0] ), handleState );
         if( rc != NO_ERROR ) {
             return( 0 );
         }
@@ -345,11 +336,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     } else {
         /*** Make write handle non-inheritable if writing ***/
 #if defined (__NT__ )
-        rc = DuplicateHandle( GetCurrentProcess(),
-                              (HANDLE)_os_handle(handles[1]),
-                              GetCurrentProcess(), &osHandle, 0,
-                              FALSE, DUPLICATE_SAME_ACCESS );
-        if( rc == FALSE ) {
+        if( DuplicateHandle( GetCurrentProcess(), (HANDLE)_os_handle( handles[1] ),
+            GetCurrentProcess(), &osHandle, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
             return( 0 );
         }
         close( handles[1] );        /* don't need this any more */
@@ -361,13 +349,13 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
 #elif defined( __OS2__ )
-        rc = DosQFHandState( (HFILE)_os_handle(handles[1]), &handleState );
+        rc = DosQFHandState( (HFILE)_os_handle( handles[1] ), &handleState );
         if( rc != NO_ERROR ) {
             return( 0 );
         }
         handleState |= OPEN_FLAGS_NOINHERIT;
         handleState &= 0x00007F88;  /* some bits must be zero */
-        rc = DosSetFHandState( (HFILE)_os_handle(handles[1]), handleState );
+        rc = DosSetFHandState( (HFILE)_os_handle( handles[1] ), handleState );
         if( rc != NO_ERROR ) {
             return( 0 );
         }

@@ -141,32 +141,33 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
     scan = (char) data;
 
     switch( vk ) {
-        case VK_HOME:
-        case VK_END:
-        case VK_RETURN:
-        case VK_LEFT:
-        case VK_RIGHT:
-        case VK_DELETE:
-        case VK_BACK:
-        case VK_INSERT:
-            ch = 0x80 + vk;
-            scan = (char)0xFF; /* set as a special editing key to _GetString below */
-            break;
+    case VK_HOME:
+    case VK_END:
+    case VK_RETURN:
+    case VK_LEFT:
+    case VK_RIGHT:
+    case VK_DELETE:
+    case VK_BACK:
+    case VK_INSERT:
+        ch = 0x80 + vk;
+        scan = (char)0xFF; /* set as a special editing key to _GetString below */
+        break;
 #ifdef __OS2__
-        case VK_SHIFT:
-        case VK_CTRL:
-        case VK_ALT:
-        case VK_ALTGRAF:
-        case VK_PAUSE:
-        case VK_CAPSLOCK:
-        case VK_PRINTSCRN:
-        case VK_SCRLLOCK:
-        case VK_NUMLOCK:
-        case VK_SYSRQ:
-            havekey = false;
+    case VK_SHIFT:
+    case VK_CTRL:
+    case VK_ALT:
+    case VK_ALTGRAF:
+    case VK_PAUSE:
+    case VK_CAPSLOCK:
+    case VK_PRINTSCRN:
+    case VK_SCRLLOCK:
+    case VK_NUMLOCK:
+    case VK_SYSRQ:
+        havekey = false;
+        break;
 #endif
-        default:
-            break;
+    default:
+        break;
     }
 
     if( havekey ) {

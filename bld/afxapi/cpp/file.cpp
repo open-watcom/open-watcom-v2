@@ -223,8 +223,7 @@ BOOL CFile::GetStatus( CFileStatus &rStatus ) const
 void CFile::LockRange( ULONGLONG dwPos, ULONGLONG dwCount )
 /*********************************************************/
 {
-    if( !::LockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount,
-                     (DWORD)(dwCount >> 32) ) ) {
+    if( ::LockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount, (DWORD)(dwCount >> 32) ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }
@@ -373,8 +372,7 @@ void CFile::SetLength( ULONGLONG dwNewLen )
 void CFile::UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount )
 /***********************************************************/
 {
-    if( !::UnlockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount,
-                       (DWORD)(dwCount >> 32) ) ) {
+    if( ::UnlockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount, (DWORD)(dwCount >> 32) ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }

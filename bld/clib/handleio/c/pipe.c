@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,6 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 #if defined(__NT__)
     HANDLE              hRead, hWrite;
 //  HANDLE              osHandle;               // removed by JBS
-    BOOL                rc;
     SECURITY_ATTRIBUTES sa;
 #elif defined(__OS2__)
     HFILE               hRead, hWrite;
@@ -73,8 +72,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
     sa.nLength = sizeof( SECURITY_ATTRIBUTES );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
-    rc = CreatePipe( &hRead, &hWrite, &sa, psize );
-    if( rc == FALSE ) {
+    if( CreatePipe( &hRead, &hWrite, &sa, psize ) == 0 ) {
         return( __set_errno_nt() );
     }
 #elif defined(__OS2__)
@@ -125,7 +123,8 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
     /*** Initialize the POSIX-level handles ***/
     hReadPosix = _hdopen( (int)hRead, textmode|_O_RDONLY );
     hWritePosix = _hdopen( (int)hWrite, textmode|_O_WRONLY );
-    if( hReadPosix == -1  ||  hWritePosix == -1 ) {
+    if( hReadPosix == -1
+      || hWritePosix == -1 ) {
         if( hReadPosix != -1 ) {
             close( hReadPosix );
         } else {

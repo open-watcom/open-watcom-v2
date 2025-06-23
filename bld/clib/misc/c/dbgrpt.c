@@ -51,6 +51,9 @@
 #include "enterdb.h"
 #include "liballoc.h"
 
+#include "clibint.h"
+
+
 #define MAX_MSG_LEN             512
 #define TOO_LONG_MSG            "_CrtDbgReport: Message too long"
 #define ASSERT_PREFIX1          "Assertion failed!"
@@ -92,7 +95,7 @@ static int window_report( int reporttype, const char *filename,
 
     /*** Initialize some stuff ***/
     #ifdef __NT__
-        if( GetModuleFileNameA( NULL, progname, _MAX_PATH )  ==  0 ) {
+        if( GetModuleFileNameA( NULL, progname, _MAX_PATH ) == 0 ) {
             strcpy( progname, "<unknown program>" );
         }
     #else
@@ -137,18 +140,19 @@ static int window_report( int reporttype, const char *filename,
         #endif
         osrc = MessageBox( (HWND)NULL, outmsg, WINTITLE, flags );
         switch( osrc ) {
-            case 0:
-                retval = -1;
-                break;
-            case IDABORT:
-                raise( SIGABRT );
-                _exit( 3 );
-                // never return
-            case IDRETRY:
-                retval = 1;
-                break;
-            default:
-                retval = 0;
+        case 0:
+            retval = -1;
+            break;
+        case IDABORT:
+            raise( SIGABRT );
+            _exit( 3 );
+            // never return
+        case IDRETRY:
+            retval = 1;
+            break;
+        default:
+            retval = 0;
+            break;
         }
     #elif defined(__OS2__)
         AnchorBlock = WinInitialize( 0 );
@@ -168,18 +172,19 @@ static int window_report( int reporttype, const char *filename,
             osrc = WinMessageBox( HWND_DESKTOP, 0, outmsg, WINTITLE, 0,
                                   MB_ICONHAND | MB_ABORTRETRYIGNORE );
             switch( osrc ) {
-                case MBID_ERROR:
-                    retval = -1;
-                    break;
-                case MBID_ABORT:
-                    raise( SIGABRT );
-                    _exit( 3 );
-                    // never return
-                case MBID_RETRY:
-                    retval = 1;
-                    break;
-                default:
-                    retval = 0;
+            case MBID_ERROR:
+                retval = -1;
+                break;
+            case MBID_ABORT:
+                raise( SIGABRT );
+                _exit( 3 );
+                // never return
+            case MBID_RETRY:
+                retval = 1;
+                break;
+            default:
+                retval = 0;
+                break;
             }
         } else {
             retval = -1;
@@ -221,7 +226,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     /* unused parameters */ (void)modulename;
 
     /*** Ensure reporttype is valid ***/
-    if( reporttype < _CRT_WARN  ||  reporttype > _CRT_ASSERT ) {
+    if( reporttype < _CRT_WARN || reporttype > _CRT_ASSERT ) {
         return( -1 );
     }
 
@@ -229,7 +234,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     va_start( args, format );
     if( format != NULL ) {
         len = max( strlen( ASSERT_PREFIX1 ), strlen( ASSERT_PREFIX2 ) );
-        if( _vbprintf( usermsg, MAX_MSG_LEN-len, format, args )  <  0 ) {
+        if( _vbprintf( usermsg, MAX_MSG_LEN - len, format, args ) < 0 ) {
             strcpy( usermsg, TOO_LONG_MSG );
         }
     }
@@ -251,7 +256,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     /*** Add file information if it's available ***/
     if( filename != NULL ) {
         if( _bprintf( outmsg, MAX_MSG_LEN, "%s(%d): %s", filename,
-                      linenumber, linemsg )  <  0 ) {
+                      linenumber, linemsg ) < 0 ) {
             strcpy( outmsg, TOO_LONG_MSG );
         }
     } else {
@@ -261,7 +266,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     /*** If there's a user-installed report hook function, call it ***/
     if( __DbgReportHook != NULL ) {
         /* MS documents this as ...==0 but really ...!=0 is what they do */
-        if( (*__DbgReportHook)( reporttype, usermsg, &retval )  !=  0 ) {
+        if( (*__DbgReportHook)( reporttype, usermsg, &retval ) != 0 ) {
             return( retval );
         }
     }

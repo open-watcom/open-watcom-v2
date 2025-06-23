@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 
 #define MAX_CNAME       10
 
-BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
+bool TryAlias( HWND hwnd, WORD msg, LONG *lparam )
 {
     DWORD               alias;
     MDICREATESTRUCT     *mcs;
@@ -44,7 +44,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     int                 len;
 
     if( hwnd == (HWND)~0 )
-        return( FALSE );
+        return( false );
 
     /*
      * misc. messages
@@ -53,21 +53,21 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     case WM_NCCALCSIZE:
         alias = AllocAlias16( (LPSTR)*lparam );
         *lparam = alias;
-        return( TRUE );
+        return( true );
     case WM_MDICREATE:
         mcs = (MDICREATESTRUCT *)*lparam;
         mcs->szClass = (LPSTR)AllocAlias16( (LPSTR)mcs->szClass );
         mcs->szTitle = (LPSTR)AllocAlias16( (LPSTR)mcs->szTitle );
         alias = AllocAlias16( (LPSTR)*lparam );
         *lparam = alias;
-        return( TRUE );
+        return( true );
     }
 
     /*
      * try class specific messages
      */
     if( hwnd == 0 )
-        return( FALSE );
+        return( false );
     len = GetClassName( hwnd, class, sizeof( class ) );
     class[len] = '\0';
 
@@ -85,7 +85,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case CB_SELECTSTRING:
             alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -102,7 +102,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case EM_SETTABSTOPS:
             alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -123,9 +123,9 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case LB_SETTABSTOPS:
             alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }

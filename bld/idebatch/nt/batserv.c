@@ -67,7 +67,7 @@ static void RunCmd( const char *cmd_name )
     STARTUPINFO         start;
     HANDLE              redir_write;
 
-    if( !CreatePipe( &RedirRead, &redir_write, NULL, 0 ) ) {
+    if( CreatePipe( &RedirRead, &redir_write, NULL, 0 ) == 0 ) {
         RedirRead = 0;
         ProcHdl = 0;
         ProcId = 0;
