@@ -56,7 +56,8 @@ void static __padfile( int hid, long offset, long diff ) {
     memset( buff, 0, 512 );
     do {
         amount = 512;
-        if( diff < 512 ) amount = diff;
+        if( diff < 512 )
+            amount = diff;
         rc = write( hid, buff, amount );
         if( rc != amount ) {
             // run away
@@ -70,7 +71,6 @@ _WCRTLINK int _chsize( int hid, long size )
 {
     long        curOffset;
     long        oldSize;
-    long        rc;
     HANDLE      h;
     DWORD       error;
 
@@ -93,6 +93,7 @@ _WCRTLINK int _chsize( int hid, long size )
         bytes uninitialized.
     */
     if( SetFilePointer( h, size, 0, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        // this might be OK so need to check error
         error = GetLastError();
         if( error != NO_ERROR ) {
             _ReleaseFileH( hid );
@@ -112,7 +113,8 @@ _WCRTLINK int _chsize( int hid, long size )
         }
     }
 
-    if( curOffset > size ) curOffset = size;
+    if( curOffset > size )
+        curOffset = size;
     curOffset = __lseek( hid, curOffset, SEEK_SET );
     _ReleaseFileH( hid );
     if( curOffset == -1L ) {
