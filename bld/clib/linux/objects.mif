@@ -6,7 +6,6 @@
 !inject _llseek.obj                                                                         l32 lpc lmp
 !inject access.obj                                                                          l32 lpc lmp
 !inject alarm.obj                                                                           l32 lpc lmp
-!inject cfspeed.obj                                                                         l32 lpc lmp
 !inject chdir.obj                                                                           l32 lpc lmp
 !inject chmod.obj                                                                           l32 lpc lmp
 !inject chown.obj                                                                           l32 lpc lmp
