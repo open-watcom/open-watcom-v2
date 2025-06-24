@@ -97,6 +97,18 @@
 
 #endif
 
+static INTCHAR_TYPE cget( PTR_SCNF_SPECS specs )
+{
+    return( (*((specs)->cget_rtn))( specs ) );
+}
+
+
+static void uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+{
+    ((*((specs)->uncget_rtn))( c, specs ));
+}
+
+
 /*
  * cgetw -- cget which keeps track of field width.
  *          returns INTCHAR_EOF on end of field or end of file.
@@ -109,18 +121,6 @@ static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
         return( INTCHAR_EOF );
     c = cget( specs );
     return( !( specs->eoinp ) ? c : INTCHAR_EOF );
-}
-
-
-static INTCHAR_TYPE cget( PTR_SCNF_SPECS specs )
-{
-    return( (*((specs)->cget_rtn))( specs ) );
-}
-
-
-static void uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
-{
-    ((*((specs)->uncget_rtn))( c, specs ));
 }
 
 
