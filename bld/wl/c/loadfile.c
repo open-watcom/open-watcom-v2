@@ -33,11 +33,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "walloca.h"
-#include "linkstd.h"
 #if !defined( __UNIX__ ) || defined(__WATCOMC__)
     #include <process.h>
 #endif
+#include "walloca.h"
+#include "linkstd.h"
 #include "ring.h"
 #include "pcobj.h"
 #include "newmem.h"

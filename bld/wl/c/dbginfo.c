@@ -47,7 +47,6 @@
 #include "ring.h"
 #include "dbgcomm.h"
 #include "dbgwat.h"
-#include "machtype.h"
 #include "wdbginfo.h"
 #include "felang.h"
 

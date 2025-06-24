@@ -42,7 +42,6 @@
 #include "impexp.h"
 #include "loadfile.h"
 #include "loadnov.h"
-#include "machtype.h"
 #include "wdbginfo.h"
 
 #include "clibext.h"
