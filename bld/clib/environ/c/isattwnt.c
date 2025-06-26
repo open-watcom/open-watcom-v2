@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ _WCRTLINK int isatty( int hid )
 {
 #ifdef DEFAULT_WINDOWING
     if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( hid ) ) {
+        if( _WindowsIsWindowedHandle( hid ) != NULL ) {
             return( 1 );
         }
     }
