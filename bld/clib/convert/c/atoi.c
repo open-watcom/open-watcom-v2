@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,12 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
 #endif
-#include "bool.h"
 
 
 _WCRTLINK int __F_NAME(atoi,_wtoi)( const CHAR_TYPE *p )  /* convert ASCII string to integer */

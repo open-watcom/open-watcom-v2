@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
+#include <stdbool.h>
 #include <malloc.h>
-#include "bool.h"
 
 
 #ifdef __WIDECHAR__

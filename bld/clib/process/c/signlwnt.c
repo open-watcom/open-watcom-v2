@@ -32,11 +32,11 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <signal.h>
 #include <float.h>
-#include <windows.h>
 #include <excpt.h>
-#include "bool.h"
+#include <windows.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 /*
  * _DisplayAllLines - show all visible lines...
  */
-void _DisplayAllLines( LPWDATA w, int clearFlag )
+void _DisplayAllLines( LPWDATA w, bool clear )
 {
     LPLDATA     ld;
     int         i,end;
@@ -59,7 +59,7 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 #endif
 
     /*** If needed, clear the window to avoid residue ***/
-    if( clearFlag ) {
+    if( clear ) {
 #ifdef __OS2__
         /* Clearing done for OS/2 in _DisplayLineInWindowWithColor */
 #else

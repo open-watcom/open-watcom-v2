@@ -622,8 +622,8 @@ void _CopyAllLines( LPWDATA w )
 #else
         _fmemcpy( &ptr[total], ld->data, slen - 2 );
 #endif
-        ptr[total + slen - 2] = 0x0d;
-        ptr[total + slen - 1] = 0x0a;
+        ptr[total + slen - 2] = '\r';
+        ptr[total + slen - 1] = '\n';
         total += slen;
     }
     ptr[total] = 0;

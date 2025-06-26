@@ -81,33 +81,33 @@ int _BlockingMessageLoop( bool doexit )
     return( _MessageLoop( doexit ) );
 }
 
-int     _SetConTitle( LPWDATA w, const char *title )
+bool    _SetConTitle( LPWDATA w, const char *title )
 //==================================================
 {
-    return( WinSetWindowText( w->frame, title ) );
+    return( WinSetWindowText( w->frame, title ) != 0 );
 }
 
-int     _SetAppTitle( const char *title )
+bool    _SetAppTitle( const char *title )
 //=======================================
 {
-    return( WinSetWindowText( _MainFrameWindow, title ) );
+    return( WinSetWindowText( _MainFrameWindow, title ) != 0 );
 }
 
-int     _ShutDown( void )
+bool    _ShutDown( void )
 //=======================
 {
     WinSetWindowPos( _MainFrameWindow, 0, 0, 0, 0, 0, SWP_MINIMIZE );
     WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
-    return( 0 );
+    return( false );
 }
 
-int     _CloseWindow( LPWDATA w )
+bool    _CloseWindow( LPWDATA w )
 //===============================
 {
     if( w->destroy ) {
         WinSendMsg( w->hwnd, WM_CLOSE, 0, 0 );
     }
-    return( 0 );
+    return( false );
 }
 
 void    _NewCursor( LPWDATA w, cursors type )
@@ -163,11 +163,11 @@ void    _DisplayCursor( LPWDATA w )
 }
 
 
-void    _SetInputMode( LPWDATA w, int val )
-//=========================================
+void    _SetInputMode( LPWDATA w, bool inpmode )
+//==============================================
 // set whether or not we are in input mode
 {
-    w->InputMode = val;
+    w->InputMode = inpmode;
 }
 
 
@@ -254,9 +254,10 @@ void _ResizeWindows( void )
     LPWDATA     w;
     SWP         swps;
     SWP         mwps;
-    int         resize = FALSE;
+    bool        resize;
 
     WinQueryWindowPos( _MainFrameWindow, &mwps );
+    resize = false;
     for( i = 0; i < _MainWindowData->window_count; i++ ) {
         w = _MainWindowData->windows[i];
         WinQueryWindowPos( w->frame, &swps );
@@ -269,12 +270,12 @@ void _ResizeWindows( void )
             if( ( swps.x + swps.cx ) > mwps.cx ) {
                 swps.cx = mwps.cx - ( place * w->xchar ) + 4;
                 swps.x = ( place * w->xchar ) - 4;
-                resize = TRUE;
+                resize = true;
             }
             if( ( swps.y + swps.cy ) > mwps.cy ) {
                 swps.cy = mwps.cy - ( ( place + 3 ) * w->ychar );
                 swps.y = 0;
-                resize = TRUE;
+                resize = true;
             }
             if( resize ) {
                 place += 4;

@@ -36,7 +36,6 @@
 #ifdef _M_I86
     #include <malloc.h>
 #endif
-#include "bool.h"
 #include "_defwin.h"
 /*
  * Define the _MBCS macro to compile defwin stuff with multibyte support.
@@ -194,7 +193,7 @@ typedef struct window_data {
 #if defined( __OS2__ )
     int             base_offset;
 #endif
-    int             InputMode;
+    bool            InputMode;
 #if defined( __OS2__ )
     HWND            frame;
 #endif
@@ -255,7 +254,7 @@ extern DWORD    _ColorMap[16];
  */
 
 /* windrvr.c/pmdrvr.c */
-extern int      _SetAboutDlg( const char *, const char * );
+extern bool     _SetAboutDlg( const char *, const char * );
 
 #if defined( __OS2__ )
 /* pmdrvr.c */
@@ -266,7 +265,7 @@ extern WINEXPORT LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM w
 #endif
 
 /* windisp.c */
-extern void     _DisplayAllLines( LPWDATA, int );
+extern void     _DisplayAllLines( LPWDATA, bool );
 extern void     _ResizeWin( LPWDATA, int, int, int, int );
 extern void     _ShiftWindow( LPWDATA, int );
 extern void     _DisplayLineInWindowWithColor( LPWDATA, int, LPSTR, int, int, int, int );
@@ -289,14 +288,14 @@ extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list args );
 extern void     _FreeWindowData( LPWDATA );
 extern void     _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
 extern void     _WindowsExit( void );
-extern int      _DestroyOnClose( LPWDATA );
-extern int      _YieldControl( void );
+extern bool     _DestroyOnClose( LPWDATA );
+extern bool     _YieldControl( void );
 extern void     _RemoveWindowedHandle( int handle );
 
 /* winio.c */
 extern unsigned _DoStdin( LPWDATA, void *, unsigned );
 extern unsigned _DoStdout( LPWDATA, const void *, unsigned );
-extern unsigned _DoKbhit( LPWDATA );
+extern bool     _DoKbhit( LPWDATA );
 extern unsigned _DoGetch( LPWDATA );
 extern unsigned _DoGetche( LPWDATA );
 extern void     _DoPutch( LPWDATA, unsigned );
@@ -305,7 +304,7 @@ extern void     _DoPutch( LPWDATA, unsigned );
 extern void     _WindowsKeyUp( WORD, WORD );
 extern void     _WindowsKeyPush( WORD, WORD );
 extern void     _WindowsVirtualKeyPush( WORD, WORD );
-extern int      _KeyboardHit( bool );
+extern bool     _KeyboardHit( bool );
 extern int      _GetKeyboard( int * );
 extern int      _GetString( LPWDATA, char *, int );
 
@@ -331,14 +330,14 @@ extern int      _MessageLoop( bool );
 extern int      _BlockingMessageLoop( bool );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );
-extern void     _SetInputMode( LPWDATA, int );
+extern void     _SetInputMode( LPWDATA, bool );
 extern void     _ShowWindowActive( LPWDATA w, LPWDATA last );
 extern void     _OutOfMemory( void );
 extern _WCNORETURN void _OutOfMemoryExit( void );
 extern void     _ExecutionComplete( void );
-extern int      _SetAppTitle( const char * );
-extern int      _SetConTitle( LPWDATA, const char *);
-extern int      _ShutDown( void );
+extern bool     _SetAppTitle( const char * );
+extern bool     _SetConTitle( LPWDATA, const char *);
+extern bool     _ShutDown( void );
 
 /* winmove.c */
 extern void     _MovePageUp( LPWDATA );
@@ -348,8 +347,8 @@ extern void     _MoveLineDown( LPWDATA );
 extern void     _MoveToLine( LPWDATA, DWORD, bool );
 
 /* winnew.c/pmmnew.c */
-extern unsigned _NewWindow( const char *name, ... );
-extern int      _CloseWindow( LPWDATA );
+extern bool     _NewWindow( const char *name, ... );
+extern bool     _CloseWindow( LPWDATA );
 extern void     _ReleaseWindowResources( LPWDATA w );
 #if defined( __OS2__ )
 extern void     _SetWinMenuHandle( HWND hmenu );

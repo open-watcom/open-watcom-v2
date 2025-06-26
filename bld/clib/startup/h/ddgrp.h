@@ -30,7 +30,7 @@
 
 
 #if defined( __OS2__ ) || defined( __NT__ )
-    #include "bool.h"
+#include <stdbool.h>
 #endif
 
 #if defined( __OS2__ )

@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
@@ -51,7 +52,6 @@
 #include "fixpoint.h"
 #include "fltsupp.h"
 #include "printf.h"
-#include "bool.h"
 
 
 #define BUF_SIZE    72  /* 64-bit ints formatted as binary can get big */

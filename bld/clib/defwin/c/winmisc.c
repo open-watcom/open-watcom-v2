@@ -123,37 +123,37 @@ void _ExecutionComplete( void )
 
 } /* _ExecutionComplete */
 
-int     _SetConTitle( LPWDATA w, const char *title )
+bool    _SetConTitle( LPWDATA w, const char *title )
 //==================================================
 {
     SetWindowText( w->hwnd, title );
-    return( 1 );
+    return( true );
 }
 
-int     _SetAppTitle( const char *title )
+bool    _SetAppTitle( const char *title )
 //=======================================
 {
     SetWindowText( _MainWindow, title );
-    return( 1 );
+    return( true );
 }
 
-int     _ShutDown( void )
+bool    _ShutDown( void )
 //=======================
 {
     flushall();
     DestroyWindow( _MainWindow );
     _MainWindowDestroyed = 1;
-    return( 0 );
+    return( false );
 }
 
 
-int     _CloseWindow( LPWDATA w )
+bool    _CloseWindow( LPWDATA w )
 //===============================
 {
     if( w->destroy ) {
         DestroyWindow( w->hwnd );
     }
-    return( 0 );
+    return( false );
 }
 
 
@@ -218,11 +218,11 @@ void _DisplayCursor( LPWDATA w )
 /*
  * _SetInputMode - set whether or not we are in input mode
  */
-void _SetInputMode( LPWDATA w, int val  )
+void _SetInputMode( LPWDATA w, bool inpmode  )
 {
     WORD cmd;
 
-    w->InputMode = val;
+    w->InputMode = inpmode;
     if( w->InputMode ) {
         cmd = MF_GRAYED;
     } else {

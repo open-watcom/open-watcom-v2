@@ -56,7 +56,7 @@ static char  *AboutMsg = DefaultAboutMsg;
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-int     _SetAboutDlg( const char *title, const char *text )
+bool    _SetAboutDlg( const char *title, const char *text )
 //=========================================================
 {
     if( title != NULL ) {
@@ -77,7 +77,7 @@ int     _SetAboutDlg( const char *title, const char *text )
             _OutOfMemoryExit();
         strcpy( AboutMsg, text );
     }
-    return( 1 );
+    return( true );
 }
 
 static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
@@ -98,14 +98,17 @@ static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
         } else {                                /* single-byte char */
             vk = CHAR1FROMMP( mp2 );
             /* Check for control characters and map them appropriately */
-            if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+            if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+              && iscntrl( toupper( vk ) - CTRL_CONST ) ) {
                 vk = toupper( vk ) - CTRL_CONST;
+            }
         }
         return( vk );
 #else
         vk = CHAR1FROMMP( mp2 );
         /* Check for control characters and map them appropriately */
-        if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+        if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+          && iscntrl( toupper( vk ) - CTRL_CONST ) )
             vk = toupper( vk ) - CTRL_CONST;
         return( vk );
 #endif
@@ -167,16 +170,17 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             break;
         case DID_EDIT_CLEAR:
             w = _GetActiveWindowData();
-            if( w != NULL && w->InputMode == 0 ) {
-                if( w != NULL && !w->gphwin ) {
-                    _FreeAllLines( w );
-                    _ClearWindow( w );
-                }
+            if( w != NULL
+              && !w->InputMode
+              && !w->gphwin ) {
+                _FreeAllLines( w );
+                _ClearWindow( w );
             }
             break;
         case DID_EDIT_COPY:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->gphwin ) {
+            if( w != NULL
+              && !w->gphwin ) {
                 _CopyAllLines( w );
             }
             break;
@@ -193,7 +197,8 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         if( SHORT1FROMMP( mp1 ) & KC_KEYUP ) {
             _WindowsKeyUp( vk, 0 );
         } else {
-            if( (SHORT1FROMMP(mp1) & KC_VIRTUALKEY) && (SHORT2FROMMP(mp2) != VK_SPACE) ) {
+            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY)
+              && (SHORT2FROMMP( mp2 ) != VK_SPACE) ) {
                 scan = '\xff';
                 if( SHORT2FROMMP( mp2 ) == VK_BREAK ) {
                     raise( SIGBREAK );
@@ -201,13 +206,16 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                 }
             } else {
                 scan = CHAR4FROMMP( mp1 );
-                if( (SHORT1FROMMP( mp1 ) & KC_CTRL) && ( vk == CTRL_C ) ) {
+                if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+                  && ( vk == CTRL_C ) ) {
                     raise( SIGINT );
                     break;
                 }
             }
 
-            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY) == 0 && (w == NULL || w->InputMode) ) {
+            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY) == 0
+              && (w == NULL
+              || w->InputMode) ) {
 #ifdef _MBCS
                 if( vk & 0xFF00 ) {             /* double-byte char */
                     _WindowsKeyPush( vk & 0x00FF, scan );
@@ -322,7 +330,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         width = SHORT1FROMMP( mp2 );
         height = SHORT2FROMMP( mp2 );
         _ResizeWin( w, rcl.xLeft, rcl.yTop, rcl.xLeft + width, rcl.yTop + height );
-        _DisplayAllLines( w, FALSE );
+        _DisplayAllLines( w, false );
         break;
 
     case WM_VSCROLL:

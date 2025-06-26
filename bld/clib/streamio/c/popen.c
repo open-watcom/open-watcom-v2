@@ -34,6 +34,8 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
@@ -42,13 +44,11 @@
 #include <fcntl.h>
 #include <io.h>
 #include <process.h>
-#include <string.h>
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "bool.h"
 #include "rtdata.h"
 #include "liballoc.h"
 #include "osver.h"

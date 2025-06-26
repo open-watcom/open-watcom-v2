@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#include <stdarg.h>
+#include <stdbool.h>
 #define NOAUTOPROCS
 #define NOCOVERSENDS
 #define NOCOVERRC
@@ -39,9 +41,7 @@
 #define INCLUDE_MMSYSTEM_H
 #define INCLUDE_TOOLHELP_H
 #define INCLUDE_PENWIN_H
-#include <stdarg.h>
 #include <windows.h>
-#include "bool.h"
 
 
 #define MAGICCOOKIE 0xdeadbeefL

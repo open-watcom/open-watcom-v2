@@ -30,10 +30,10 @@
 
 
 #include "variety.h"
-#include <fnmatch.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include "bool.h"
+#include <fnmatch.h>
 #include "pathmac.h"
 #include "intwctyp.h"
 #include "xstring.h"

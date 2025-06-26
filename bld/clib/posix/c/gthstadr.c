@@ -33,12 +33,12 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
 #include "rtdata.h"
 #include "rterrno.h"
 #include "thread.h"
-#include "bool.h"
 
 
 _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)

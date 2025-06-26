@@ -183,18 +183,18 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
 /*
  * _KeyboardHit - test for a waiting key
  */
-int _KeyboardHit( bool block )
+bool _KeyboardHit( bool block )
 {
     if( keyTop != keyBottom )
-        return( TRUE );
+        return( true );
     if( block ) {
         _BlockingMessageLoop( true );
     } else {
         _MessageLoop( true );
     }
     if( keyTop != keyBottom )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 
 } /* _KeyboardHit */
 
@@ -255,7 +255,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 
     _MoveToLine( w, _GetLastLineNumber( w ), false );
     _NewCursor( w, SMALL_CURSOR );
-    _SetInputMode( w, TRUE );
+    _SetInputMode( w, true );
     _GotEOF = false;
     str[0] = 0;
 
@@ -409,7 +409,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #else
                 _UpdateInputLine( w, str, strlen( str ), true );
 #endif
-                _SetInputMode( w, FALSE );
+                _SetInputMode( w, false );
                 FARstrcat( res, str );
                 FARstrcpy( str, res );
                 FARfree( res );

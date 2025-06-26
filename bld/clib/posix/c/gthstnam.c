@@ -33,18 +33,18 @@
 #include "variety.h"
 #include "_resolve.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <stdlib.h>
 #include <netdb.h>
-#include <string.h>
 #include "rterrno.h"
 #ifdef __RDOS__
 #include "rdos.h"
 #else
 #include "thread.h"
-#include "bool.h"
 
 
 #define DNSRESOLV   "/etc/resolv.conf"

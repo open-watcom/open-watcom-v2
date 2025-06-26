@@ -158,19 +158,19 @@ void _WindowsExit( void )
 /*
  * _DestroyOnClose - Destroy the window when closed
  */
-int _DestroyOnClose( LPWDATA w )
+bool _DestroyOnClose( LPWDATA w )
 {
     w->destroy = 1;
-    return( TRUE );
+    return( true );
 } /* _DestroyOnClose */
 
 /*
  * _YieldControl - Calls _MessageLoop to yeild control to OS.
  */
-int _YieldControl( void )
+bool _YieldControl( void )
 {
     _MessageLoop( true );
-    return( TRUE );
+    return( true );
 } /* _YieldControl */
 
 /*

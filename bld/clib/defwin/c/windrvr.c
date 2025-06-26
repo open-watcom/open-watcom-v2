@@ -57,7 +57,7 @@ static long  shiftState = 0;
 #define SS_CAPS         0x04
 #define SS_CTRL         0x08
 
-int     _SetAboutDlg( const char *title, const char *text )
+bool    _SetAboutDlg( const char *title, const char *text )
 //=========================================================
 {
     if( title != NULL ) {
@@ -78,7 +78,7 @@ int     _SetAboutDlg( const char *title, const char *text )
             _OutOfMemoryExit();
         FARstrcpy( AboutMsg, text );
     }
-    return( 1 );
+    return( true );
 }
 
 /*
@@ -128,7 +128,8 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             break;
         case MSG_COPY:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->gphwin ) {
+            if( w != NULL
+              && !w->gphwin ) {
                 _CopyAllLines( w );
             }
             break;
@@ -137,11 +138,11 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             break;
         case MSG_FLUSH:
             w = _GetActiveWindowData();
-            if( w != NULL && w->InputMode == 0 ) {
-                if( w != NULL && !w->gphwin ) {
-                    _FreeAllLines( w );
-                    _ClearWindow( w );
-                }
+            if( w != NULL
+              && !w->InputMode ) {
+              && !w->gphwin ) {
+                _FreeAllLines( w );
+                _ClearWindow( w );
             }
             break;
         case MSG_WRITE:
@@ -170,7 +171,8 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             shiftState &= ~SS_CTRL;
             raise( SIGBREAK );
             break;
-        } else if( (shiftState & SS_CTRL) && ( wparam == 'C' ) ) {
+        } else if( (shiftState & SS_CTRL)
+          && ( wparam == 'C' ) ) {
             MessageBox( hwnd, "", "SIGINT",
                         MB_APPLMODAL | MB_ICONINFORMATION | MB_OK );
             shiftState &= ~SS_CTRL;
@@ -197,21 +199,23 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
         case VK_END:
             _MoveToLine( w, _GetLastLineNumber( w ), true );
             break;
+        case VK_RETURN:
+        case VK_LEFT:
+        case VK_RIGHT:
+        case VK_DELETE:
+        case VK_BACK:
+        case VK_INSERT:
+            _WindowsVirtualKeyPush( wparam, HIWORD( lparam ) );
+            break;
         default:
-            if( wparam==VK_HOME    ||  wparam==VK_END       ||
-                wparam==VK_RETURN  ||  wparam==VK_LEFT      ||
-                wparam==VK_RIGHT   ||  wparam==VK_DELETE    ||
-                wparam==VK_BACK    ||  wparam==VK_INSERT )
-            {
-                _WindowsVirtualKeyPush( wparam, HIWORD(lparam) );
-            }
             break;
         }
         ShowCursor( TRUE );
         break;
 
     case WM_CHAR:
-        if( wparam!=13 && wparam!=8 )
+        if( wparam != '\r'
+          && wparam != '\b' )
             _WindowsKeyPush( wparam, HIWORD(lparam) );
         break;
 
@@ -259,7 +263,8 @@ LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
         return( DefWindowProc( hwnd, message, wparam, lparam ) );
 
     case WM_KILLFOCUS:
-        if( ( (HWND)wparam != NULL) && ( (HWND)wparam != _MainWindow ) ) {
+        if( ( (HWND)wparam != NULL )
+          && ( (HWND)wparam != _MainWindow ) ) {
             _ShowWindowActive( NULL, w );
         }
         return( DefWindowProc( hwnd, message, wparam, lparam ) );
@@ -305,7 +310,7 @@ LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
         SelectObject( dc, oldbrush );
         ReleaseDC( hwnd, dc );
         _ResizeWin( w, rect.left, rect.top, rect.left + width, rect.top + height );
-        _DisplayAllLines( w, FALSE );
+        _DisplayAllLines( w, false );
         return( 0 );
 
     case WM_VSCROLL:

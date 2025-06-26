@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,12 @@
         "test_cio > nul < nul" without losing any information.
 */
 
-#include <conio.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+#include <conio.h>
 
-#define TRUE    1
-#define FALSE   0
+
 #define NUMFUNC 9
 
 /*
@@ -54,43 +55,44 @@ void wait( void ) // Waits for <Enter>.
 {
     char buff[20];
 
-    #if defined(_NO_IO_REDIRECTION_)
-        gets( buff );
-    #else
-        *buff = 4;
-        cgets( buff);
-    #endif
+#if defined(_NO_IO_REDIRECTION_)
+    gets( buff );
+#else
+    *buff = 4;
+    cgets( buff);
+#endif
 }
 
 int oneLetter( void ) // Returns a letter. Used in getting answers.
 {
-    char c;
+    int c;
 
-    #if defined(_NO_IO_REDIRECTION_)
-        char buff[20];
+#if defined(_NO_IO_REDIRECTION_)
+    char buff[20];
 
-        gets( buff );
-        c = *buff;
-    #else
-        c = getche();
-        dispStr( "\r\n" );
-    #endif
+    gets( buff );
+    c = *(unsigned char *)buff;
+#else
+    c = getche();
+    dispStr( "\r\n" );
+#endif
     return( c );
 }
 
-void dispStr( char * string ) // Used to display messages to console.
+void dispStr( char *string ) // Used to display messages to console.
 {
-    #if defined(_NO_IO_REDIRECTION_)
-        fprintf( stdout, string );
-        fflush( stdout );
-    #else
-        cputs( string );
-    #endif
+#if defined(_NO_IO_REDIRECTION_)
+    fprintf( stdout, string );
+    fflush( stdout );
+#else
+    cputs( string );
+#endif
 }
 
 int main( void )
 {
-    int errFlag[NUMFUNC];
+    bool error;
+    bool errFlags[NUMFUNC];
     char *funcName[] = { "cgets()",
                          "cprintf()",
                          "cputs()",
@@ -117,7 +119,7 @@ int main( void )
     sprintf( str1, "-->%s<--\r\n", &buffer[2] );
     dispStr( str1 );
     dispStr( "Note: there shouldn't be any CR/LF contained in the string.\r\n" );
-    errFlag[0] = strcmp( &buffer[2], "12345" ) != 0 ? TRUE : FALSE;
+    errFlags[0] = ( strcmp( &buffer[2], "12345" ) != 0 );
     dispStr( "Type the following (no quotes): \"123456789012345\"\r\n" );
     dispStr( "Note: only the first 10 characters should be allowed.\r\n" );
     cgets( buffer );
@@ -128,8 +130,8 @@ int main( void )
     sprintf( str1, "-->%s<--\r\n", &buffer[2] );
     dispStr( str1 );
     dispStr( "Note: there shouldn't be any CR/LF contained in the string.\r\n" );
-    if( errFlag[0] == FALSE ) {
-        errFlag[0] = strcmp( &buffer[2], "1234567890" ) != 0 ? TRUE : FALSE;
+    if( !errFlags[0] ) {
+        errFlags[0] = ( strcmp( &buffer[2], "1234567890" ) != 0 );
     }
     dispStr( "Type the following: \"\" (just press <Enter>)\r\n" );
     cgets( buffer );
@@ -140,8 +142,8 @@ int main( void )
     sprintf( str1, "-->%s<--\r\n", &buffer[2] );
     dispStr( str1 );
     dispStr( "Note: there shouldn't be anything contained in the string.\r\n" );
-    if( errFlag[0] == FALSE ) {
-        errFlag[0] = strcmp( &buffer[2], "" ) != 0 ? TRUE : FALSE;
+    if( !errFlags[0] ) {
+        errFlags[0] = ( strcmp( &buffer[2], "" ) != 0 );
     }
     dispStr( "End of cgets() test. Press <Enter> to continue.\r\n" );
     wait();
@@ -162,7 +164,7 @@ int main( void )
     dispStr( "Note: there shouldn't be any blank lines in between.\r\n" );
     dispStr( "Does cprintf() seem to work properly (y/n) ?" );
     *buffer = oneLetter();
-    errFlag[1] = *(strlwr(buffer)) == 'y' ? FALSE: TRUE;
+    errFlags[1] = ( *strlwr( buffer ) != 'y' );
     dispStr( "End of cprintf() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -176,7 +178,7 @@ int main( void )
     cputs( buffer );
     dispStr( "|\r\nDoes cputs() seem to work properly (y/n) ?" );
     *buffer = oneLetter();
-    errFlag[2] = *(strlwr(buffer)) == 'y' ? FALSE: TRUE;
+    errFlags[2] = ( *strlwr( buffer ) ) != 'y' );
     dispStr( "End of cputs() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -186,7 +188,7 @@ int main( void )
     dispStr( "\r\nthe character should have been echoed back.\r\n" );
     sprintf( buffer, "Check: you pressed ->%c<- (value=%d)\r\n", num1, num1 );
     dispStr( buffer );
-    errFlag[3] = num1 != 'a' ? TRUE : FALSE;
+    errFlags[3] = ( num1 != 'a' );
     dispStr( "End of getche() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -196,7 +198,7 @@ int main( void )
     dispStr( "\r\nNothing should have been echoed back.\r\n" );
     sprintf( buffer, "Check: you pressed ->%c<- (value=%d)\r\n", num1, num1 );
     dispStr( buffer );
-    errFlag[4] = num1 != 'b' ? TRUE : FALSE;
+    errFlags[4] = ( num1 != 'b' );
     dispStr( "End of getch() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -207,7 +209,7 @@ int main( void )
     dispStr( "getch() was used to obtain the character pressed.\r\n" );
     sprintf( buffer, "Check: you pressed ->%c<- (value=%d).\r\n", num1, num1 );
     dispStr( buffer );
-    errFlag[5] = num1 != 'c' ? TRUE : FALSE;
+    errFlags[5] = ( num1 != 'c' );
     dispStr( "End of kbhit() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -224,7 +226,7 @@ int main( void )
     dispStr( "--\r\n");
     dispStr( "Does putch() seem to work properly (y/n) ?" );
     *buffer = oneLetter();
-    errFlag[6] = *(strlwr(buffer)) == 'y' ? FALSE: TRUE;
+    errFlags[6] = ( *strlwr( buffer ) != 'y' );
     dispStr( "End of putch() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -245,11 +247,7 @@ int main( void )
     sprintf( buffer, "The character above ->%c<- was the one ", num2 );
     dispStr( buffer );
     dispStr( "being pushed back.\r\n" );
-    if( num1 != num2 || num1 != 'd' ) {
-        errFlag[7] = TRUE;
-    } else {
-        errFlag[7] = FALSE;
-    }
+    errFlags[7] = ( num1 != num2 || num1 != 'd' );
     dispStr( "End of ungetch() test. Press <Enter> to continue.\r\n" );
     wait();
 
@@ -260,25 +258,21 @@ int main( void )
     dispStr( "\r\nThis is what you entered:\r\n" );
     sprintf( buffer, "\"%s, %s, %d, %4.2lf\"\r\n", str1, str2, num1, fnum1 );
     dispStr( buffer );
-    if( strcmp( str1, "test1" ) != 0 || strcmp( str2, "test2" ) != 0 ||
-        num1 != 1234 || fnum1 != 1.45 ) {
-        errFlag[8] = TRUE;
-    } else {
-        errFlag[8] = FALSE;
-    }
+    errFlags[8] = ( strcmp( str1, "test1" ) != 0 || strcmp( str2, "test2" ) != 0 || num1 != 1234 || fnum1 != 1.45 );
     dispStr( "End of cscanf() test. Press <Enter> to continue.\r\n" );
     wait();
 
     dispStr( "End of all tests.\r\n\r\n" );
-    for( num1 = 0, num2 = FALSE; num1 < NUMFUNC; ++num1 ) {
-        if( errFlag[num1] == TRUE ) {
+    error = false;
+    for( num1 = 0; num1 < NUMFUNC; ++num1 ) {
+        if( errFlags[num1] ) {
             sprintf( buffer, "%s\r\n", funcName[num1] );
             dispStr( buffer );
-            num2 = TRUE;
+            error = true;
         }
     }
     dispStr( "\r\n" );
-    if( num2 == TRUE ) {
+    if( error ) {
         dispStr( "This program has found unexpected result(s) when testing" );
         dispStr( "\r\nthe above function(s). Reasons could be that the\r\n" );
         dispStr( "function(s) being used in the test(s) might have" );

@@ -65,33 +65,32 @@ _WCRTLINK char *cgets( char *buff )
     }
 #endif
     _AccessFileH( STDIN_FILENO );
-    h = __NTConsoleInput();     // obtain a console input handle
+    h = __NTConsoleInput();             // obtain a console input handle
     for( ; len > 1; ) {
         ReadConsoleInput( h, &r, 1, &n );
-        if( __NTRealKey( &r ) ) {       // Only interested in real keys
-            if( r.Event.KeyEvent.uChar.AsciiChar == '\r' ) {
-                break;
-            }
-            for( ; r.Event.KeyEvent.wRepeatCount > 0;
-                 --r.Event.KeyEvent.wRepeatCount ) {
-                // Deal with backspace first...
-                if( r.Event.KeyEvent.uChar.AsciiChar == '\b' ) {
-                    if( p > buff + 2 ) {
-                        putch( '\b' );
-                        putch( ' ' );
-                        putch( '\b' );
-                        --p;
-                        ++len;
-                    }
-                } else if( len > 1 ) { // Other real chars...
-                    *p = r.Event.KeyEvent.uChar.AsciiChar;
-                    putch( r.Event.KeyEvent.uChar.AsciiChar );
-                    ++p;
-                    --len;
-                } else {
-                    // Otherwise: len <= 1, can't type more.
-                    break;
+        if( !__NTRealKey( &r ) )        // Only interested in real keys
+            continue;
+        if( r.Event.KeyEvent.uChar.AsciiChar == '\r' ) {
+            break;
+        }
+        for( ; r.Event.KeyEvent.wRepeatCount > 0; --r.Event.KeyEvent.wRepeatCount ) {
+            // Deal with backspace first...
+            if( r.Event.KeyEvent.uChar.AsciiChar == '\b' ) {
+                if( p > buff + 2 ) {
+                    putch( '\b' );
+                    putch( ' ' );
+                    putch( '\b' );
+                    --p;
+                    ++len;
                 }
+            } else if( len > 1 ) {  // Other real chars...
+                *p = r.Event.KeyEvent.uChar.AsciiChar;
+                putch( r.Event.KeyEvent.uChar.AsciiChar );
+                ++p;
+                --len;
+            } else {
+                // Otherwise: len <= 1, can't type more.
+                break;
             }
         }
     }

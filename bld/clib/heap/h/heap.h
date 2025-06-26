@@ -34,12 +34,12 @@
  * Comments for heap implementation.
  */
 
+#if defined(__OS2__) && !defined(_M_I86)
+    #include <stdbool.h>
+#endif
 #ifdef _M_IX86
     #include <i86.h>
     #include "extender.h"
-#endif
-#if defined(__OS2__) && !defined(_M_I86)
-    #include "bool.h"
 #endif
 
 

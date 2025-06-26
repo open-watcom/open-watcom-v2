@@ -63,13 +63,13 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
         }
     } else {
         if( (rc + 2) < size ) {
-            buff[rc++] = 0x0d;
-            buff[rc++] = 0x0a;
+            buff[rc++] = '\r';
+            buff[rc++] = '\n';
         } else if( ( rc == 0 ) && ( size == 1 ) ) {/* rc==0 ==> key was enter */
             /* kludge to allow readers to get a single new line from the
              * system
              */
-            buff[rc++] = 0x0a;
+            buff[rc++] = '\n';
         }
     }
     return( rc );
@@ -95,10 +95,10 @@ unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
 /*
  * _DoKbhit - test if the keyboard has been pressed
  */
-unsigned _DoKbhit( LPWDATA w )
+bool _DoKbhit( LPWDATA w )
 {
     if( w == NULL )
-        return( FALSE );
+        return( false );
     if( !w->active )
         _MakeWindowActive( w );
     return( _KeyboardHit( false ) );

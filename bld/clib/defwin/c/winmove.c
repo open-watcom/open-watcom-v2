@@ -59,7 +59,7 @@ void _MovePageUp( LPWDATA w )
         w->TopLineNumber = 1;
     }
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MovePageUp */
 
@@ -81,7 +81,7 @@ void _MovePageDown( LPWDATA w )
         }
     }
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MovePageDown */
 
@@ -156,6 +156,6 @@ void _MoveToLine( LPWDATA w, DWORD line, bool center )
         w->TopLineNumber = 1;
     w->CurrentLineNumber = line;
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MoveToLine */

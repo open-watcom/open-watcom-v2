@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,12 @@
 #include "watcom.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
 #endif
-#include "bool.h"
 
 
 _WCRTLINK long long __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long */

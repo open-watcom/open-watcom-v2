@@ -33,7 +33,6 @@
 #include "variety.h"
 #include <stdlib.h>
 #include "cover.h"
-#include "bool.h"
 
 
 #define MAX_CB_PARMS            50

@@ -36,10 +36,10 @@
 
 void __fsetbits( unsigned char _WCFAR *vector, const char _WCFAR *charset )
 {
-    unsigned char   c;
+    char    c;
 
     _fmemset( vector, 0, CHARVECTOR_SIZE );
-    for( ; c = *charset; ++charset ) {
+    for( ; (c = *charset) != '\0'; ++charset ) {
         SETCHARBIT( vector, c );
     }
 }

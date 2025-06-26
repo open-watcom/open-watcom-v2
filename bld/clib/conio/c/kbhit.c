@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <dos.h>
 #include <conio.h>
 #include "dosfuncx.h"
@@ -49,14 +51,14 @@
 _WCRTLINK int kbhit( void )
 {
     if( _RWD_cbyte != 0 )
-        return( 1 );
+        return( true );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     } else {
-        return( 0 );
+        return( false );
     }
 #else
     return( _dos( DOS_INPUT_STATUS ) != 0 );

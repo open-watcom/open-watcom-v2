@@ -34,6 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
@@ -48,10 +49,10 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "bool.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "thread.h"
+
 
 /* This is heavily based on strtol() implementation; however this code needs
  * to use 64-bit arithmetic and there is little need to drag in all the

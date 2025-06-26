@@ -34,6 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
@@ -47,7 +48,6 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "bool.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "thread.h"

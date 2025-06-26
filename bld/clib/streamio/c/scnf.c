@@ -38,13 +38,14 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
 #endif
-#include <stdarg.h>
 #ifdef __QNX__
     #include "slibqnx.h"
 #endif
@@ -56,7 +57,6 @@
 #endif
 #include "setbits.h"
 #include "fltsupp.h"
-#include "bool.h"
 
 
 #define TRUE    1

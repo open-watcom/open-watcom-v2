@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #include <conio.h>
 #define INCL_16
 #define INCL_SUB
@@ -54,11 +55,11 @@ _WCRTLINK int kbhit( void )
     KBDKEYINFO  info;
 
     if( _RWD_cbyte != 0 )
-        return( 1 );
+        return( true );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {   // Default windowing
         LPWDATA     res;
-        res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
 #endif
@@ -67,9 +68,9 @@ _WCRTLINK int kbhit( void )
         return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
     KbdPeek( &info, 0 );
-    return( ( info.fbStatus & 0xe0 ) != 0 );
+    return( (info.fbStatus & 0xe0) != 0 );
 #else
     KbdPeek( &info, 0 );
-    return( ( info.fbStatus & 0xe0 ) != 0 );
+    return( (info.fbStatus & 0xe0) != 0 );
 #endif
 }

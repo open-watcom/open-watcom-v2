@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,16 +51,18 @@ _WCRTLINK int kbhit( void )
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {
         LPWDATA res;
-        res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
 #endif
     _AccessFileH( STDIN_FILENO );
     h = __NTConsoleInput();
-    for(;;) {
+    for( ;; ) {
         PeekConsoleInput( h, &r, 1, &n );
-        if( n == 0 ) break;
-        if( __NTRealKey( &r ) ) break;
+        if( n == 0 )
+            break;
+        if( __NTRealKey( &r ) )
+            break;
         // flush out mouse, window, and key up events
         ReadConsoleInput( h, &r, 1, &n );
     }

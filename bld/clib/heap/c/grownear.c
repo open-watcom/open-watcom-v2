@@ -63,7 +63,6 @@
 #include "roundmac.h"
 #include "heapacc.h"
 #include "heap.h"
-#include "bool.h"
 
 
 #define FIRST_FRL(h)    ((freelist_nptr)(h + 1))

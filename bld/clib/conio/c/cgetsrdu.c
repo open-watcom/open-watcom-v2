@@ -46,27 +46,27 @@ _WCRTLINK char *cgets( char *buff )
     p = buff + 2;
     for( ;; ) {
         ch = (char)RdosReadKeyboard();
-        if( ch ) {       // Only interested in real keys
-            if ( ch == '\r' ) {
-                break;
+        if( ch == 0 )       // Only interested in real keys
+            continue;
+        if( ch == '\r' ) {
+            break;
+        }
+        if( ch == '\b' ) {
+            if( p > buff + 2 ) {
+                putch( '\b' );
+                putch( ' ' );
+                putch( '\b' );
+                --p;
+                ++len;
             }
-            if( ch == '\b' ) {
-                if( p > buff + 2 ) {
-                    putch( '\b' );
-                    putch( ' ' );
-                    putch( '\b' );
-                    --p;
-                    ++len;
-                }
-            } else if( len > 1 ) { // Other real chars...
-                *p = ch;
-                putch( ch );
-                ++p;
-                --len;
-            } else {
-                // Otherwise: len <= 1, can't type more.
-                break;
-            }
+        } else if( len > 1 ) { // Other real chars...
+            *p = ch;
+            putch( ch );
+            ++p;
+            --len;
+        } else {
+            // Otherwise: len <= 1, can't type more.
+            break;
         }
     }
     *p = '\0';

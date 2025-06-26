@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,10 @@
 #ifndef __NTCONIO_INCLUDED__
 #define __NTCONIO_INCLUDED__
 
-extern int    __NTRealKey( INPUT_RECORD * );
+#include <stdbool.h>
+
+
+extern bool   __NTRealKey( INPUT_RECORD * );
 extern HANDLE __NTConsoleInput( void );
 extern HANDLE __NTConsoleOutput( void );
 
