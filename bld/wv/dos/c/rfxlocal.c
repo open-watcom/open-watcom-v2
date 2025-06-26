@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,14 +46,6 @@
 
 #define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
-
-extern void __buffered_keyboard_input( char * );
-#pragma aux __buffered_keyboard_input = \
-        _MOV_AH DOS_BUFF_INPUT \
-        _INT_21 \
-    __parm __caller [__ds __dx] \
-    __value         \
-    __modify        [__ax]
 
 static error_handle DOSErrCode( tiny_ret_t rc )
 {
@@ -118,7 +110,7 @@ void LocalGetBuff( char *buff, unsigned size )
     }
     new_buff[0] = size;
     new_buff[1] = 0;
-    __buffered_keyboard_input( new_buff );
+    TinyBufferedInput( new_buff );
     p = &new_buff[2];
     for( len = new_buff[1]; len != 0; --len ) {
         *(buff++) = *(p++);
