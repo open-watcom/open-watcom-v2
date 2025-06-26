@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,52 +40,46 @@
 #include "defwin.h"
 #include "qread.h"
 
-#define BACKSPACE       8
-#define SPACE           ' '
-#define CRLF            13
-
 
 _WCRTLINK char *cgets( char *buff )
 {
     char *p;
-    char len;
+    int len;
     DWORD n;
     HANDLE h;
     INPUT_RECORD r;
 
+    len = *(unsigned char *)buff;
+    p = buff + 2;
 #ifdef DEFAULT_WINDOWING
     if( _WindowsStdin != NULL ) {   // Default windowing...
-        __qread( STDIN_FILENO, buff + 2, *buff - 1 );
-        p = buff + 2;
-        len = *buff;
-        for(;;) {
-            if( len <= 1 ) break;
-            if( *p == '\r' || *p == '\0' ) break;
+        for( len = __qread( STDIN_FILENO, p, len - 1 ); len > 0; --len ) {
+            if( *p == '\r'
+              || *p == '\0' )
+                break;
             ++p;
-            --len;
         }
         *p = '\0';
-        buff[1] = p - buff - 2;
+        buff[1] = p - ( buff + 2 );
         return( buff + 2 );
     }
 #endif
     _AccessFileH( STDIN_FILENO );
     h = __NTConsoleInput();     // obtain a console input handle
-    for( p = buff + 2, len = *buff; ; ) {
+    for( ; len > 1; ) {
         ReadConsoleInput( h, &r, 1, &n );
         if( __NTRealKey( &r ) ) {       // Only interested in real keys
-            if( r.Event.KeyEvent.uChar.AsciiChar == CRLF ) {
-                *p = '\0';
+            if( r.Event.KeyEvent.uChar.AsciiChar == '\r' ) {
                 break;
             }
             for( ; r.Event.KeyEvent.wRepeatCount > 0;
                  --r.Event.KeyEvent.wRepeatCount ) {
                 // Deal with backspace first...
-                if( r.Event.KeyEvent.uChar.AsciiChar == BACKSPACE ) {
+                if( r.Event.KeyEvent.uChar.AsciiChar == '\b' ) {
                     if( p > buff + 2 ) {
-                        putch( BACKSPACE );
-                        putch( SPACE );
-                        putch( BACKSPACE );
+                        putch( '\b' );
+                        putch( ' ' );
+                        putch( '\b' );
                         --p;
                         ++len;
                     }
@@ -93,11 +88,15 @@ _WCRTLINK char *cgets( char *buff )
                     putch( r.Event.KeyEvent.uChar.AsciiChar );
                     ++p;
                     --len;
-                } // Otherwise: len <= 1, can't type more.
+                } else {
+                    // Otherwise: len <= 1, can't type more.
+                    break;
+                }
             }
         }
     }
     _ReleaseFileH( STDIN_FILENO );
-    buff[1] = p - buff - 2;
+    *p = '\0';
+    buff[1] = p - ( buff + 2 );
     return( buff + 2 );
 }
