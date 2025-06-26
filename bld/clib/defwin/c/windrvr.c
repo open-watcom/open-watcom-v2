@@ -139,7 +139,7 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
         case MSG_FLUSH:
             w = _GetActiveWindowData();
             if( w != NULL
-              && !w->InputMode ) {
+              && !w->InputMode
               && !w->gphwin ) {
                 _FreeAllLines( w );
                 _ClearWindow( w );
