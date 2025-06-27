@@ -55,27 +55,24 @@
 
 static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 {
-    unsigned    total = 0;
-    unsigned    readamt;
+    unsigned    total;
+    unsigned    amount;
     tiny_ret_t  rc;
 
+    total = 0;
+    amount = MAXBUFF;
     while( len > 0 ) {
-
-        if( len > MAXBUFF ) {
-            readamt = MAXBUFF;
-        } else {
-            readamt = len;
+        if( len < MAXBUFF ) {
+            amount = len;
         }
-        rc = TinyRead( handle, buffer, readamt );
+        rc = TinyRead( handle, buffer, amount );
         if( TINY_ERROR( rc ) )
             return( rc );
-        total += TINY_LINFO( rc );
-        if( TINY_LINFO( rc ) != readamt )
-            return( total );
-
-        len -= readamt;
-        buffer += readamt;
-
+        total += rc;
+        if( rc != amount )
+            break;
+        len -= rc;
+        buffer += rc;
     }
     return( total );
 }

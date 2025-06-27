@@ -46,16 +46,14 @@
 int __qread( int file, void *buffer, unsigned len )
 {
     unsigned    total;
-    unsigned    readamt;
     unsigned    amount;
+    unsigned    readamt;
 
     __handle_check( file, -1 );
 
     total = 0;
     amount = MAX_OS_TRANSFER;
-    for( ;; ) {
-        if( len == 0 )
-            return( total );
+    for( ; len > 0; ) {
         if( len < MAX_OS_TRANSFER )
             amount = len;
         readamt = read( file, buffer, amount );
@@ -63,8 +61,9 @@ int __qread( int file, void *buffer, unsigned len )
             return( -1 );
         total += readamt;
         if( readamt != amount )
-            return( total );
+            break;
         buffer = (char *)buffer + readamt;
         len -= readamt;
     }
+    return( total );
 }
