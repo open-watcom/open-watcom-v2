@@ -305,7 +305,7 @@ int _GetString( LPWDATA w, char *str, unsigned maxbuff )
                             p[0] = ci;
                         }
                     } else {
-                        expectingTrailByte = fasle;
+                        expectingTrailByte = false;
                         p = __mbsninc( (unsigned char *)str, curr_pos );
                         p[1] = ci;
                     }
