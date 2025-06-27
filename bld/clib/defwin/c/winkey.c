@@ -485,7 +485,7 @@ int _GetString( LPWDATA w, char *str, unsigned maxbuff )
              */
 #ifdef _MBCS
             len = __mbslen( (unsigned char *)str );
-            len2 = __mbsninc( (unsigned char *)str, len - wt ) - str;
+            len2 = __mbsninc( (unsigned char *)str, len - wt ) - (unsigned char *)str;
 #else
             len = strlen( str );
             len2 = len - wt;
