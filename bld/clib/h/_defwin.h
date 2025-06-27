@@ -42,12 +42,12 @@
 struct window_data;
 typedef struct window_data _WCI86FAR *LPWDATA;
 
-extern unsigned (*_WindowsStdin)( LPWDATA, void *, unsigned );
-extern unsigned (*_WindowsStdout)( LPWDATA, const void *, unsigned );
+extern int      (*_WindowsStdin)( LPWDATA, void *, unsigned );
+extern int      (*_WindowsStdout)( LPWDATA, const void *, unsigned );
 extern bool     (*_WindowsKbhit)( LPWDATA );
-extern unsigned (*_WindowsGetch)( LPWDATA );
-extern unsigned (*_WindowsGetche)( LPWDATA );
-extern void     (*_WindowsPutch)( LPWDATA, unsigned );
+extern int      (*_WindowsGetch)( LPWDATA );
+extern int      (*_WindowsGetche)( LPWDATA );
+extern void     (*_WindowsPutch)( LPWDATA, int );
 extern void     (*_WindowsExitRtn)( void );
 extern bool     (*_WindowsNewWindow)( const char *, ... );
 extern bool     (*_WindowsCloseWindow)( LPWDATA );

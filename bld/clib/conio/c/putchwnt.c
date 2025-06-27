@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,6 @@ _WCRTLINK int putch( int c )
     DWORD       written;
     HANDLE      h;
 
-    ch = c;
 #ifdef DEFAULT_WINDOWING
     if( _WindowsPutch != NULL ) {
         LPWDATA res;
@@ -64,6 +64,7 @@ _WCRTLINK int putch( int c )
         written = 0;
         h = __NTConsoleOutput();            // obtain a console output handle
         if( h != INVALID_HANDLE_VALUE ) {
+            ch = c;
             WriteConsole( h, &ch, 1, &written, NULL );
         }
         if( written == 0 ) {

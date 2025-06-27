@@ -42,7 +42,7 @@
 
 _WCRTLINK char *cgets( char *s )
 {
-    USHORT  len;
+    int     len;
     STRINGINBUF stringin_buf;
     char    *p;
 

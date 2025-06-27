@@ -103,9 +103,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
         res = _WindowsIsWindowedHandle( handle );
         if( res != NULL ) {
-            int rt;
-            rt = _WindowsStdin( res, buffer, len );
-            return( rt );
+            return( _WindowsStdin( res, buffer, len ) );
         }
     }
 #endif

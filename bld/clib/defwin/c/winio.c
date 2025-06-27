@@ -45,10 +45,10 @@
 /*
  * _DoStdin - get stuff from stdin
  */
-unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
+int _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 {
     unsigned            rc;
-    char *              buff;
+    char                *buff;
 
     buff = (char *)in_buff;
 
@@ -79,7 +79,7 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 /*
  * _DoStdout - put stuff to stdout
  */
-unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
+int _DoStdout( LPWDATA w, const void *buff, unsigned size )
 {
 
     if( w == NULL )
@@ -108,9 +108,9 @@ bool _DoKbhit( LPWDATA w )
 /*
  * _DoGetch - get a character
  */
-unsigned _DoGetch( LPWDATA w )
+int _DoGetch( LPWDATA w )
 {
-    unsigned    ci;
+    int     ci;
 
     if( w == NULL )
         return( 0 );
@@ -128,10 +128,12 @@ unsigned _DoGetch( LPWDATA w )
 /*
  * _DoGetche - get a character and echo it
  */
-unsigned _DoGetche( LPWDATA w )
+int _DoGetche( LPWDATA w )
 {
-    unsigned    ci;
+    int     ci;
 
+    if( w == NULL )
+        return( 0 );
     ci = _DoGetch( w );
     if( ci == '\r' ) {
         _DoPutch( w, '\n' );
@@ -145,7 +147,7 @@ unsigned _DoGetche( LPWDATA w )
 /*
  * _DoPutch - put a character to stdout
  */
-void _DoPutch( LPWDATA w, unsigned ch )
+void _DoPutch( LPWDATA w, int ch )
 {
     char tmp[2];
 

@@ -63,8 +63,10 @@ static int __read( int handle, void *buf, unsigned len )
 _WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
 {
-    unsigned    read_len, total_len;
-    unsigned    reduce_idx, finish_idx;
+    unsigned    read_len;
+    unsigned    total_len;
+    unsigned    reduce_idx;
+    unsigned    finish_idx;
     unsigned    iomode_flags;
     char        *buffer = buf;
 #if defined(__NT__)
@@ -104,9 +106,8 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #ifdef DEFAULT_WINDOWING
         if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
             total_len = _WindowsStdin( res, buffer, len );
-        } else
+        } else {
 #endif
-        {
 #if defined(__NT__)
             if( ReadFile( h, buffer, len, &amount_read, NULL ) == 0 ) {
                 error = GetLastError();
@@ -127,7 +128,9 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
             amount_read = TINY_LINFO( rc );
 #endif
             total_len = amount_read;
+#ifdef DEFAULT_WINDOWING
         }
+#endif
     } else {
         _AccessFileH( handle );
         total_len = 0;
@@ -136,9 +139,8 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #ifdef DEFAULT_WINDOWING
             if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
                 amount_read = _WindowsStdin( res, buffer, read_len );
-            } else
+            } else {
 #endif
-            {
 #if defined(__NT__)
                 if( ReadFile( h, buffer, read_len, &amount_read, NULL ) == 0 ) {
                     _ReleaseFileH( handle );
@@ -161,7 +163,9 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
                 }
                 amount_read = TINY_LINFO( rc );
 #endif
+#ifdef DEFAULT_WINDOWING
             }
+#endif
             if( amount_read == 0 ) {                    /* EOF */
                 break;
             }
@@ -198,21 +202,20 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 _WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
     unsigned    total = 0;
+    unsigned    amount;
     unsigned    readamt;
-    int         rc;
 
     __handle_check( handle, -1 );
+    amount = MAXBUFF;
     while( len > 0 ) {
-        if( len > MAXBUFF ) {
-            readamt = MAXBUFF;
-        } else {
-            readamt = len;
+        if( len < MAXBUFF ) {
+            amount = len;
         }
-        rc = __read( handle, buffer, readamt );
-        if( rc == -1 )
-            return( rc );
-        total += (unsigned)rc;
-        if( rc != readamt )
+        readamt = __read( handle, buffer, amount );
+        if( (int)readamt == -1 )
+            return( -1 );
+        total += readamt;
+        if( amount != readamt )
             return( total );
 
         len -= readamt;

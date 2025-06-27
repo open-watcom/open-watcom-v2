@@ -37,6 +37,7 @@
 #include <wos2.h>
 #include "win.h"
 #include "pmdlg.rh"
+#include "banner.h"
 
 
 #define MAX_INTEGER_FIELD       11

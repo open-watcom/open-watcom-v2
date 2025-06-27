@@ -121,12 +121,12 @@ static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
 static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 {
     LPWDATA     w;
-    USHORT      vk;
+    unsigned    vk;
+    unsigned    scan;
     HPS         hps;
     RECTL       rcl;
     USHORT      dlg_id;
     SWP         swps;
-    char        scan;
 
     switch( msg ) {
     case WM_PAINT:
@@ -199,7 +199,7 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         } else {
             if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY)
               && (SHORT2FROMMP( mp2 ) != VK_SPACE) ) {
-                scan = '\xff';
+                scan = 0xff;
                 if( SHORT2FROMMP( mp2 ) == VK_BREAK ) {
                     raise( SIGBREAK );
                     break;
@@ -219,9 +219,10 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 #ifdef _MBCS
                 if( vk & 0xFF00 ) {             /* double-byte char */
                     _WindowsKeyPush( vk & 0x00FF, scan );
-                    _WindowsKeyPush( (vk & 0xFF00) >> 8, scan );
-                } else                          /* single-byte char */
+                    _WindowsKeyPush( (vk >> 8) & 0x00FF, scan );
+                } else {                        /* single-byte char */
                     _WindowsKeyPush( vk, scan );
+                }
 #else
                 _WindowsKeyPush( vk, scan );
 #endif

@@ -59,10 +59,11 @@ static int              shiftState = 0;
 /*
  * _WindowsKeyUp - process a key up (for shift state)
  */
-void _WindowsKeyUp( WORD vk, WORD data )
+void _WindowsKeyUp( unsigned vk, unsigned data )
 {
+    (void)data;
+
     /* this routine does nothing useful anymore : JBS */
-    data = data;
     switch( vk ) {
     case VK_SHIFT:
         shiftState &= ~SS_SHIFT;
@@ -75,29 +76,27 @@ void _WindowsKeyUp( WORD vk, WORD data )
 } /* _WindowsKeyUp */
 
 
-
 /*
  * _WindowsKeyPush - handle the press of a key
 */
-void _WindowsKeyPush( WORD key, WORD data )
+void _WindowsKeyPush( unsigned key, unsigned data )
 {
     char        scan;
     int         ch;
     bool        havekey;
+#if defined(__NT__)
+    int         char_count;
+    WORD        trans_key[3];
+#elif defined(__WINDOWS__)
+    int         char_count;
+    DWORD       trans_key[3];
+#endif
 
     havekey = true;
+    scan = data;
 #if defined( __OS2__ )
     ch = key;
-    scan = data;
 #else
-    int         char_count;
-    #if defined(__NT__)
-        WORD    trans_key[3];
-    #else
-        DWORD   trans_key[3];
-    #endif
-
-    scan = LOBYTE( data );
     char_count = 1;
     trans_key[0] = key;
 
@@ -126,7 +125,7 @@ void _WindowsKeyPush( WORD key, WORD data )
 /*
  * _WindowsVirtualKeyPush - handle the press of a virtual key
 */
-void _WindowsVirtualKeyPush( WORD vk, WORD data )
+void _WindowsVirtualKeyPush( unsigned vk, unsigned data )
 {
     char        scan;
     int         ch;
@@ -138,7 +137,7 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
 #else
     ch = 0;
 #endif
-    scan = (char) data;
+    scan = data;
 
     switch( vk ) {
     case VK_HOME:
@@ -205,9 +204,9 @@ int _GetKeyboard( int *scan )
 {
     int ch;
 
-    ch = (int)charList[keyBottom];
+    ch = charList[keyBottom];
     if( scan != NULL ) {
-        *scan = (int)scanList[keyBottom];
+        *scan = scanList[keyBottom];
     }
     keyBottom = ( keyBottom + 1 ) % KBFSIZE;
     return( ch );
@@ -217,28 +216,25 @@ int _GetKeyboard( int *scan )
 /*
  * _GetString - read in a string, return the length
  */
-int _GetString( LPWDATA w, char *str, int maxbuff )
+int _GetString( LPWDATA w, char *str, unsigned maxbuff )
 {
     HWND        hwnd;
-    int         buff_end = 0;
-    int         curr_pos = 0;
+    unsigned    buff_end = 0;
+    unsigned    curr_pos = 0;
     bool        escape;
     bool        insert_flag;
-    int         maxlen = maxbuff;
+    unsigned    maxlen = maxbuff;
     LPSTR       res;
-    int         wt;
-    int         len;
-    int         i;
+    unsigned    wt;
+    unsigned    len;
+    unsigned    i;
     int         scan;
+    int         ci;
+    int         cx;
 #ifdef _MBCS
     unsigned char *p;
     int         expectingTrailByte = 0;
     int         overwrote = 0;
-    unsigned char   ci;
-    unsigned char   cx;
-#else
-    char        ci;
-    char        cx;
 #endif
 
     escape = false;
@@ -470,7 +466,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
         wt = _UpdateInputLine( w, str, strlen( str ), false );
 #endif
 
-        if( wt >= 0 ) {
+        if( (int)wt != -1 ) {
 #ifdef _MBCS
             len = __mbslen( (unsigned char *)str );
             p = __mbsninc( (unsigned char *)str, len - wt );
@@ -478,17 +474,15 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
             *p = '\0';
             FARstrcat( res, str );
             *p = ci;
-            for( i = 0; i <= wt; i++ )
-                str[i] = str[len - wt + i];
 #else
             len = strlen( str );
-            ci = str[len - wt];
+            ci = (unsigned char)str[len - wt];
             str[len - wt] = 0;
             FARstrcat( res, str );
             str[len - wt] = ci;
+#endif
             for( i = 0; i <= wt; i++ )
                 str[i] = str[len - wt + i];
-#endif
             curr_pos = wt;
             buff_end = wt;
             maxlen -= len + 1;

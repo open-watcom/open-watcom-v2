@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,25 +40,31 @@
 #include "rterrno.h"
 #include "qread.h"
 
+
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)
 
 int __qread( int file, void *buffer, unsigned len )
 {
     unsigned    total;
-    int         h;
+    unsigned    readamt;
     unsigned    amount;
 
     __handle_check( file, -1 );
 
     total = 0;
+    amount = MAX_OS_TRANSFER;
     for( ;; ) {
-        if( len == 0 ) return( total );
-        amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
-        h = read( file, buffer, amount );
-        if( h == -1 ) return( h );
-        total += (unsigned)h;
-        if( h != amount ) return( total );
-        buffer = (char *)buffer + amount;
-        len -= amount;
+        if( len == 0 )
+            return( total );
+        if( len < MAX_OS_TRANSFER )
+            amount = len;
+        readamt = read( file, buffer, amount );
+        if( (int)readamt == -1 )
+            return( -1 );
+        total += readamt;
+        if( readamt != amount )
+            return( total );
+        buffer = (char *)buffer + readamt;
+        len -= readamt;
     }
 }

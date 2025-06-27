@@ -293,20 +293,20 @@ extern bool     _YieldControl( void );
 extern void     _RemoveWindowedHandle( int handle );
 
 /* winio.c */
-extern unsigned _DoStdin( LPWDATA, void *, unsigned );
-extern unsigned _DoStdout( LPWDATA, const void *, unsigned );
+extern int      _DoStdin( LPWDATA, void *, unsigned );
+extern int      _DoStdout( LPWDATA, const void *, unsigned );
 extern bool     _DoKbhit( LPWDATA );
-extern unsigned _DoGetch( LPWDATA );
-extern unsigned _DoGetche( LPWDATA );
-extern void     _DoPutch( LPWDATA, unsigned );
+extern int      _DoGetch( LPWDATA );
+extern int      _DoGetche( LPWDATA );
+extern void     _DoPutch( LPWDATA, int );
 
 /* winkey.c */
-extern void     _WindowsKeyUp( WORD, WORD );
-extern void     _WindowsKeyPush( WORD, WORD );
-extern void     _WindowsVirtualKeyPush( WORD, WORD );
+extern void     _WindowsKeyUp( unsigned, unsigned );
+extern void     _WindowsKeyPush( unsigned, unsigned );
+extern void     _WindowsVirtualKeyPush( unsigned, unsigned );
 extern bool     _KeyboardHit( bool );
 extern int      _GetKeyboard( int * );
-extern int      _GetString( LPWDATA, char *, int );
+extern int      _GetString( LPWDATA, char *, unsigned );
 
 /* winlines.c */
 extern void     _AddLine( LPWDATA, const void *, unsigned );
