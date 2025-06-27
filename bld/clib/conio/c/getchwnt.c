@@ -41,6 +41,7 @@
 #include "fileacc.h"
 #include "defwin.h"
 
+
 enum {
     KS_EMPTY                    = 0,
     KS_HANDLE_FIRST_CALL        = 1,

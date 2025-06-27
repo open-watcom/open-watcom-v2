@@ -66,7 +66,8 @@ int _DoStdin( LPWDATA w, void *in_buff, unsigned size )
             buff[rc++] = '\r';
             buff[rc++] = '\n';
         } else if( ( rc == 0 ) && ( size == 1 ) ) {/* rc==0 ==> key was enter */
-            /* kludge to allow readers to get a single new line from the
+            /*
+             * kludge to allow readers to get a single new line from the
              * system
              */
             buff[rc++] = '\n';
@@ -81,7 +82,6 @@ int _DoStdin( LPWDATA w, void *in_buff, unsigned size )
  */
 int _DoStdout( LPWDATA w, const void *buff, unsigned size )
 {
-
     if( w == NULL )
         return( 0 );
     if( !w->active )

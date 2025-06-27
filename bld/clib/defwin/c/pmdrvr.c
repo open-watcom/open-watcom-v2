@@ -227,33 +227,32 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                 _WindowsKeyPush( vk, scan );
 #endif
                 break;
-            } else {
-                WinShowPointer( HWND_DESKTOP, FALSE );
-                switch( SHORT2FROMMP( mp2 ) ) {
-                case VK_DOWN:
-                    _MoveLineDown( w );
-                    break;
-                case VK_UP:
-                    _MoveLineUp( w );
-                    break;
-                case VK_PAGEUP:
-                    _MovePageUp( w );
-                    break;
-                case VK_PAGEDOWN:
-                    _MovePageDown( w );
-                    break;
-                case VK_HOME:
-                    _MoveToLine( w, 1, true );
-                    break;
-                case VK_END:
-                    _MoveToLine( w, _GetLastLineNumber( w ), true );
-                    break;
-                default:
-                    _WindowsVirtualKeyPush( vk, scan );
-                    break;
-                }
-                WinShowPointer( HWND_DESKTOP, TRUE );
             }
+            WinShowPointer( HWND_DESKTOP, FALSE );
+            switch( SHORT2FROMMP( mp2 ) ) {
+            case VK_DOWN:
+                _MoveLineDown( w );
+                break;
+            case VK_UP:
+                _MoveLineUp( w );
+                break;
+            case VK_PAGEUP:
+                _MovePageUp( w );
+                break;
+            case VK_PAGEDOWN:
+                _MovePageDown( w );
+                break;
+            case VK_HOME:
+                _MoveToLine( w, 1, true );
+                break;
+            case VK_END:
+                _MoveToLine( w, _GetLastLineNumber( w ), true );
+                break;
+            default:
+                _WindowsVirtualKeyPush( vk, scan );
+                break;
+            }
+            WinShowPointer( HWND_DESKTOP, TRUE );
         }
         return( (MRESULT)TRUE );
 

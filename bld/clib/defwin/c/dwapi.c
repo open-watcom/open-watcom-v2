@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <wdefwin.h>
 #include "defwin.h"
 
+
 _WCRTLINK int   _dwDeleteOnClose( int handle )
 //============================================
 {
@@ -44,12 +46,12 @@ _WCRTLINK int   _dwDeleteOnClose( int handle )
 
     if( _WindowsDestroyOnClose != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
+        if( res != NULL ) {
             return( _WindowsDestroyOnClose( res ) );
         }
     }
 #else
-    handle = handle;
+    (void)handle;
 #endif
     return( 0 );
 }
@@ -64,8 +66,8 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text )
         return( _WindowsSetAbout( title, text ) );
     }
 #else
-    text = text;
-    title = title;
+    (void)text;
+    (void)title;
 #endif
     return( 0 );
 }
@@ -80,7 +82,7 @@ _WCRTLINK int   _dwSetAppTitle( const char *title )
         return( _WindowsSetAppTitle( title ) );
     }
 #else
-    title = title;
+    (void)title;
 #endif
     return( 0 );
 }
@@ -95,13 +97,13 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title )
 
     if( _WindowsSetAppTitle != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
+        if( res != NULL ) {
             return( _WindowsSetConTitle( res, title ) );
         }
     }
 #else
-    handle = handle;
-    title = title;
+    (void)handle;
+    (void)title;
 #endif
     return( 0 );
 }

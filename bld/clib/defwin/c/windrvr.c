@@ -208,6 +208,7 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             _WindowsVirtualKeyPush( wparam, HIWORD( lparam ) );
             break;
         default:
+//            _WindowsVirtualKeyPush( wparam, HIWORD( lparam ) );
             break;
         }
         ShowCursor( TRUE );

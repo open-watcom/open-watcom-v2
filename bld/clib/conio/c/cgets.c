@@ -39,6 +39,7 @@
 #include "qread.h"
 #include "tinyio.h"
 
+
 _WCRTLINK char *cgets( char *s )
 {
     int len;
