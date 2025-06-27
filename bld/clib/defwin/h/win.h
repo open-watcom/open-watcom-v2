@@ -79,6 +79,7 @@ extern void _ReleaseWinLines( void );
   #define FARstrlen _fstrlen
   #define FARstrcpy _fstrcpy
   #define FARstrcat _fstrcat
+  #define FARstrncpy _fstrncpy
   #define FARmalloc _fmalloc
   #define FARrealloc _frealloc
   #define FARfree _ffree
@@ -89,6 +90,7 @@ extern void _ReleaseWinLines( void );
   #define FARstrlen strlen
   #define FARstrcpy strcpy
   #define FARstrcat strcat
+  #define FARstrncpy strncpy
   #define FARmalloc malloc
   #define FARrealloc realloc
   #define FARfree free
