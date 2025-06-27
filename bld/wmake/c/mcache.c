@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,10 @@
 #include "msg.h"
 #include "pathgrp2.h"
 #include "mcache.h"
+#if defined( USE_DIR_CACHE ) && defined( __NT__ )
+	#include <windows.h>
+	#include "_dtaxxx.h"
+#endif
 
 #include "clibext.h"
 
@@ -62,14 +66,12 @@
 
 #if defined( __NT__ )
 /*
-    Windows NT makes us call an expensive convert GMT to local function
-    for each time-stamp we want to look at!
-*/
+ *  Windows NT makes us call an expensive convert GMT to local function
+ *  for each time-stamp we want to look at!
+ */
 static unsigned cacheDelay;
 #define CACHE_DELAY_CHECK()     ( cacheDelay == 0 || ( --cacheDelay == 0 ) )
 #define CACHE_DELAY_RELEASE()   ( cacheDelay = 512 )
-
-#include "_dtaxxx.h"
 
 #else
 

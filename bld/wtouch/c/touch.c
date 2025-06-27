@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,12 @@
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
-#include "_dtaxxx.h"
 #include "d2ttime.h"
 #include "pathgrp2.h"
+#if defined(__NT__)
+    #include <windows.h>
+    #include "_dtaxxx.h"
+#endif
 
 #include "clibint.h"
 #include "clibext.h"

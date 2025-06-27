@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,17 +64,17 @@ typedef struct __doslfn_dta {
 
 #include "pushpck1.h"
 typedef struct __nt_dta {
-    void        *hndl;
-    time_t      tstamp;
+    HANDLE      handle;
+    time_t      time;
     unsigned    attr;
 } __nt_dta;
 #include "poppck.h"
 
-#define DTAXXX_HANDLE_OF(x)     (((__nt_dta *)(x))->hndl)
-#define DTAXXX_TSTAMP_OF(x)     (((__nt_dta *)(x))->tstamp)
+#define DTAXXX_HANDLE_OF(x)     (((__nt_dta *)(x))->handle)
+#define DTAXXX_TSTAMP_OF(x)     (((__nt_dta *)(x))->time)
 #define DTAXXX_ATTR_OF(x)       (((__nt_dta *)(x))->attr)
 
-#define DTAXXX_INVALID_HANDLE   ((void *)(~0))
+#define DTAXXX_INVALID_HANDLE   INVALID_HANDLE_VALUE
 
 #elif defined( __OS2__ )
 
