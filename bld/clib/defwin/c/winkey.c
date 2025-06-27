@@ -254,6 +254,7 @@ int _GetString( LPWDATA w, char *str, unsigned maxbuff )
     _SetInputMode( w, true );
     _GotEOF = false;
     str[0] = 0;
+    res[0] = 0;
 
     for( ;; ) {
         w->curr_pos = curr_pos;
@@ -461,28 +462,32 @@ int _GetString( LPWDATA w, char *str, unsigned maxbuff )
          * the current line info.
          */
 #ifdef _MBCS
-        wt = _UpdateInputLine( w, str, expectingTrailByte ? __mbslen( (unsigned char *)str ) - 1 : __mbslen( (unsigned char *)str ), false );
+        len = __mbslen( (unsigned char *)str );
+        wt = _UpdateInputLine( w, str, expectingTrailByte ? len - 1 : len, false );
 #else
-        wt = _UpdateInputLine( w, str, strlen( str ), false );
+        len = strlen( str );
+        wt = _UpdateInputLine( w, str, len, false );
 #endif
 
         if( (int)wt != -1 ) {
+            unsigned    len1;
+            unsigned    len2;
+
+        	/*
+        	 * len and wt is character count
+        	 * len1 and len2 is byte count
+        	 */
 #ifdef _MBCS
             len = __mbslen( (unsigned char *)str );
-            p = __mbsninc( (unsigned char *)str, len - wt );
-            ci = *p;
-            *p = '\0';
-            FARstrcat( res, str );
-            *p = ci;
+            len2 = __mbsninc( (unsigned char *)str, len - wt ) - str;
 #else
             len = strlen( str );
-            ci = (unsigned char)str[len - wt];
-            str[len - wt] = 0;
-            FARstrcat( res, str );
-            str[len - wt] = ci;
+            len2 = len - wt;
 #endif
-            for( i = 0; i <= wt; i++ )
-                str[i] = str[len - wt + i];
+			len1 = FARstrlen( res );
+            FARstrncpy( res + len1, str, len2 );
+            res[len1 + len2] = 0;
+            strcpy( str, str + len2 );
             curr_pos = wt;
             buff_end = wt;
             maxlen -= len + 1;
