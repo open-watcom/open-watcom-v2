@@ -139,7 +139,7 @@ HANDLE __getOSHandle( int hid )
     return( __OSHandles[ hid ] );
 }
 
-int __setOSHandle( unsigned hid, HANDLE hdl )
+int __setOSHandle( int hid, HANDLE hdl )
 {
     // call the Win32 API for a standard file handle
     switch( hid ) {
@@ -154,9 +154,9 @@ int __setOSHandle( unsigned hid, HANDLE hdl )
         break;
     }
     if( hid < __NHandles ) {
-        __OSHandles[ hid ] = hdl;
+        __OSHandles[hid] = hdl;
     } else {
-        hid = (unsigned)-1;     // this should never happen
+        hid = -1;       // this should never happen
     }
     return( hid );
 }
