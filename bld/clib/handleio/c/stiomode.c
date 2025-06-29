@@ -133,7 +133,7 @@ signed __SetIOMode( int handle, unsigned value )
         i = __NFiles;           // 20 -> (20+10+1) -> 31
                                 // 31 -> (31+15+1) -> 47
                                 // 47 -> (47+23+1) -> 71
-        __grow_iomode( i + (i > 1) + 1 );
+        __grow_iomode( i + (i >> 1) + 1 );
     }
     if( handle >= __NFiles ) {
         // return an error indication (errno should be set to ENOMEM)
