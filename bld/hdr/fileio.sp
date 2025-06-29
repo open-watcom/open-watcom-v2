@@ -148,10 +148,10 @@ _WCRTLINK extern int        _pipe( int *__phandles, unsigned __psize, int __text
 :elsesegment ANSINAME
 :: ANSI name version
 ::
-::-----------------------------------
+:: -----------------------------------
 :: two OS file handles exist
 :: unclear why
-::-----------------------------------
+:: -----------------------------------
 :: int  __oshandle
 :: long __osfhandle
 ::
