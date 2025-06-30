@@ -102,6 +102,7 @@ int __allocPOSIXHandle( HANDLE hdl )
     _AccessFList();
     for( i = 0; i < __NHandles; i++ ) {
         if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
+            __OSHandles[i] = hdl;
             break;
         }
     }
@@ -118,14 +119,13 @@ int __allocPOSIXHandle( HANDLE hdl )
             __grow_iomode( __NHandles );
         for( ; i < __NHandles; i++ ) {
             if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
+                __OSHandles[i] = hdl;
                 break;
             }
         }
-    }
-    if( i >= __NHandles ) {
-        i = -1;
-    } else {
-        __OSHandles[i] = hdl;
+        if( i >= __NHandles ) {
+            i = -1;
+        }
     }
     _ReleaseFList();
     return( i );
