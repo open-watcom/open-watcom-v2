@@ -230,7 +230,8 @@ void _makepath(
 {
     *path = '\0';
 
-    if( node != NULL && *node != '\0' ) {
+    if( node != NULL
+      && *node != '\0' ) {
         strcpy( path, node );
         path = strchr( path, '\0' );
         /*
@@ -242,12 +243,14 @@ void _makepath(
             *path = PC;
         }
     }
-    if( dir != NULL && *dir != '\0' ) {
+    if( dir != NULL
+      && *dir != '\0' ) {
         /*
          * if dir does not start with a '/' and we had a node then
          *       stick in a separator
          */
-        if( !ISPS( *dir ) && ISPS( *path ) )
+        if( !ISPS( *dir )
+          && ISPS( *path ) )
             path++;
 
         strcpy( path, dir );
@@ -261,8 +264,10 @@ void _makepath(
         }
     }
 
-    if( fname != NULL && *fname != '\0' ) {
-        if( !ISPS( *fname ) && ISPS( *path ) )
+    if( fname != NULL
+      && *fname != '\0' ) {
+        if( !ISPS( *fname )
+          && ISPS( *path ) )
             path++;
 
         strcpy( path, fname );
@@ -272,7 +277,8 @@ void _makepath(
             path++;
         }
     }
-    if( ext != NULL && *ext != '\0' ) {
+    if( ext != NULL
+      && *ext != '\0' ) {
         if( *ext != '.' )
             *path++ = '.';
         strcpy( path, ext );
@@ -338,7 +344,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
             }
             if( p[0] == '\0' )
                 break;
-            if( p[0] == '.' && ISPS( p[1] ) ) {
+            if( p[0] == '.'
+              && ISPS( p[1] ) ) {
                 /* go up a directory for a "../" */
                 p += 2;
                 if( !ISPS( q[-1] ) ) {
@@ -383,7 +390,8 @@ char *_fullpath( char *buff, const char *path, size_t size )
     }
     if( buff != NULL ) {
         buff[0] = '\0';
-        if( path == NULL || path[0] == '\0' ) {
+        if( path == NULL
+          || path[0] == '\0' ) {
             buff = getcwd( buff, (int)size );
         } else {
             buff = _sys_fullpath( buff, path, size );
@@ -522,19 +530,19 @@ static int _cmdname_sub( char *out, const char *path, const char *name )
     path_len = ( path == NULL ) ? 0 : ( strlen( path ) + 1 );   /* with '/' */
     name_len = ( name == NULL ) ? 0 : strlen( name );
 
-    if ( ( path_len + name_len ) >= sizeof( tmp ) ) {
+    if( ( path_len + name_len ) >= sizeof( tmp ) ) {
         abort();
     }
-    if ( path_len ) {
+    if( path_len ) {
         memcpy( tmp, path, path_len - 1 );
         tmp[path_len - 1] = '/';
     }
-    if ( name_len ) {
+    if( name_len ) {
         memcpy( tmp + path_len, name, name_len );
     }
     tmp[path_len + name_len] = '\0';
 
-    if ( tmp[0] == '/' ) {
+    if( tmp[0] == '/' ) {
         memcpy( out, tmp, path_len + name_len + 1 );
     } else {
         realpath( tmp, out );
@@ -546,12 +554,12 @@ static char *_cmdname_tokenize( char *str, char **next )
 {
     char    *p;
 
-    if ( *str == '\0' ) {
+    if( *str == '\0' ) {
         return( NULL );
     }
 
     p = strchr( str, ':' );
-    if ( p == NULL ) {
+    if( p == NULL ) {
         *next = str + strlen( str );
     } else {
         *p = '\0';
@@ -569,38 +577,38 @@ char *_cmdname(char *name)
 
     save_errno = errno;
 
-    if ( ( _argv != NULL && _argv[0] != NULL )
-      && ( *_argv[0] == '.' || *_argv[0] == '/' )
-      && ( !_cmdname_sub( name, NULL, _argv[0] ) ) ) {
+    if( ( _argv != NULL
+      && _argv[0] != NULL )
+      && ( *_argv[0] == '.'
+      || *_argv[0] == '/' )
+      && ( _cmdname_sub( name, NULL, _argv[0] ) == 0 ) ) {
         result = name;
         goto fin0;
     }
 
     envpath = getenv( "PATH" );
-    if ( envpath == NULL ) {
+    if( envpath == NULL ) {
         goto fin0;
     }
     envpath_len = strlen( envpath ) + 1;
     path = malloc( envpath_len + 1 );
-    if ( path == NULL ) {
+    if( path == NULL ) {
         goto fin0;
     }
     memcpy( path, envpath, envpath_len );
 
     /* last ":" treat as ":." */
-    if ( path[envpath_len - 2] == ':' ) {
+    if( path[envpath_len - 2] == ':' ) {
         path[envpath_len - 1] = '.';
         path[envpath_len] = '\0';
     }
-
-    for ( p = _cmdname_tokenize( path, &pp ); p != NULL;
-          p = _cmdname_tokenize( pp, &pp ) ) {
-        if ( !_cmdname_sub( name, ( *p == '\0' ) ? "." : p, __progname ) ) {
+    pp = path;
+    while( (p = _cmdname_tokenize( pp, &pp )) != NULL ) {
+        if( _cmdname_sub( name, ( *p == '\0' ) ? "." : p, __progname ) == 0 ) {
             result = name;
-            goto fin1;
+            break;
         }
     }
-fin1:
     free( path );
 fin0:
     errno = save_errno;
@@ -627,7 +635,8 @@ char *_cmdname( char *name )
     errno = save_errno;
 
     /* fall back to argv[0] if readlink doesn't work */
-    if( result == -1 || result == PATH_MAX )
+    if( result == -1
+      || result == PATH_MAX )
         return( strcpy( name, _argv[0] ) );
 
     /* readlink does not add a NUL so we need to do it ourselves */
@@ -647,7 +656,7 @@ char *_cmdname( char *name )
     int32 cookie;
 
     while( get_next_image_info( 0, &cookie, &info ) == B_OK ) {
-        if ( info.type != B_APP_IMAGE )
+        if( info.type != B_APP_IMAGE )
             continue;
         return( strcpy( name, info.name ) );
     }
@@ -669,7 +678,8 @@ char *_cmdname( char *name )
     errno = save_errno;
 
     /* fall back to argv[0] if readlink doesn't work */
-    if( result == -1 || result == PATH_MAX )
+    if( result == -1
+      || result == PATH_MAX )
         return( strcpy( name, _argv[0] ) );
 
     /* readlink does not add a NUL so we need to do it ourselves */
@@ -686,7 +696,9 @@ char *_cmdname( char *name )
     DWORD   size;
 
     pgm = NULL;
-    if( _get_pgmptr( &pgm ) != 0 || pgm == NULL || *pgm == '\0' ) {
+    if( _get_pgmptr( &pgm ) != 0
+      || pgm == NULL
+      || *pgm == '\0' ) {
         /* fix for buggy _get_pgmptr in some versions of Microsoft CRTL */
         pgm = buff;
         size = GetModuleFileName( NULL, buff, sizeof( buff ) );
@@ -720,7 +732,8 @@ int _bgetcmd( char *buffer, int len )
     char        *cmd;
     char        *tmp;
 
-    if( ( buffer != NULL ) && ( len > 0 ) )
+    if( ( buffer != NULL )
+      && ( len > 0 ) )
         *buffer = '\0';
 
     cmd = GetCommandLine();
@@ -744,7 +757,8 @@ int _bgetcmd( char *buffer, int len )
     for( cmdlen = 0, tmp = cmd; *tmp != '\0'; ++tmp, ++cmdlen )
         ;
 
-    if( ( buffer == NULL ) || ( len <= 0 ) )
+    if( ( buffer == NULL )
+      || ( len <= 0 ) )
         return( cmdlen );
 
     len--;
@@ -770,7 +784,8 @@ int (_bgetcmd)( char *buffer, int len )
     char    **argv = &_argv[1];
     int     need_quotes;
 
-    if( ( buffer != NULL ) && ( len > 0 ) ) {
+    if( ( buffer != NULL )
+      && ( len > 0 ) ) {
         p = buffer;
         --len;          /* reserve space for terminating NULL byte */
     } else {
@@ -796,18 +811,21 @@ int (_bgetcmd)( char *buffer, int len )
         if( need_quotes )
             total += 2;
 
-        if( need_quotes && len != 0 ) {
+        if( need_quotes
+          && len != 0 ) {
             --len;
             *p++ = '"';
         }
-        if( len != 0 && i != 0 ) {
+        if( len != 0
+          && i != 0 ) {
             if( i > len )
                 i = len;
             memcpy( p, word, i );
             p += i;
             len -= i;
         }
-        if( need_quotes && len != 0 ) {
+        if( need_quotes
+          && len != 0 ) {
             --len;
             *p++ = '"';
         }
@@ -1032,7 +1050,7 @@ static int sub_bracket( const char *p, int c )
     case ':':
         ++p;
         for( i = 0; i < CCL_NAME_MAX; i++ ) {
-            if( !isalpha(*p ) )
+            if( !isalpha( *p ) )
                 break;
             sname[i] = *p++;
         }
@@ -1064,7 +1082,8 @@ static const char *cclass_match( const char *patt, int c )
     int         sb;
 
     /* Meaning of '^' is unspecified in POSIX - consider it equal to '!' */
-    if( *patt == '!' || *patt == '^' ) {
+    if( *patt == '!'
+      || *patt == '^' ) {
         invert = 1;
         ++patt;
     }
@@ -1105,7 +1124,8 @@ static const char *cclass_match( const char *patt, int c )
         case 2:
             if( *patt == '\\' )
                 ++patt;
-            if( lc <= c && c <= *patt )
+            if( lc <= c
+              && c <= *patt )
                 ok = 1;
             ++patt;
             state = 0;
@@ -1126,16 +1146,22 @@ int   fnmatch( const char *patt, const char *s, int flags )
     while( (c = icase( *patt++, flags )) != '\0' ) {
         switch( c ) {
         case '?':
-            if( (flags & FNM_PATHNAME) && ISPS( *s ) )
+            if( (flags & FNM_PATHNAME)
+              && ISPS( *s ) )
                 return( FNM_NOMATCH );
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD)
+              && *s == '.'
+              && s == start )
                 return( FNM_NOMATCH );
             ++s;
             break;
         case '[':
-            if( (flags & FNM_PATHNAME) && ISPS( *s ) )
+            if( (flags & FNM_PATHNAME)
+              && ISPS( *s ) )
                 return( FNM_NOMATCH );
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD)
+              && *s == '.'
+              && s == start )
                 return( FNM_NOMATCH );
             patt = cclass_match( patt, *s );
             if( patt == NULL )
@@ -1145,19 +1171,23 @@ int   fnmatch( const char *patt, const char *s, int flags )
         case '*':
             if( *s == '\0' )
                 return( 0 );
-            if( (flags & FNM_PATHNAME) && ( *patt == '/' ) ) {
+            if( (flags & FNM_PATHNAME)
+              && ( *patt == '/' ) ) {
                 while( *s != '\0' && !ISPS( *s ) )
                     ++s;
                 break;
             }
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD)
+              && *s == '.'
+              && s == start )
                 return( FNM_NOMATCH );
             if( *patt == '\0' ) {
                 /*
                  * Shortcut - don't examine every remaining character.
                  */
                 if( flags & FNM_PATHNAME ) {
-                    if( (flags & FNM_LEADING_DIR) || strchr( s, '/' ) == NULL ) {
+                    if( (flags & FNM_LEADING_DIR)
+                      || strchr( s, '/' ) == NULL ) {
                         return( 0 );
                     } else {
                         return( FNM_NOMATCH );
@@ -1169,7 +1199,8 @@ int   fnmatch( const char *patt, const char *s, int flags )
             while( (cl = icase( *s, flags )) != '\0' ) {
                 if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
                     return( 0 );
-                if( (flags & FNM_PATHNAME) && ISPS( cl ) ) {
+                if( (flags & FNM_PATHNAME)
+                  && ISPS( cl ) ) {
                     start = s + 1;
                     break;
                 }
@@ -1185,14 +1216,16 @@ int   fnmatch( const char *patt, const char *s, int flags )
             if( ISPS( *s ) )
                 start = s + 1;
             cl = icase( *s++, flags );
-            if( (flags & FNM_PATHNAME) && cl == PC )
+            if( (flags & FNM_PATHNAME)
+              && cl == PC )
                 cl = '/';
             if( c != cl ) {
                 return( FNM_NOMATCH );
             }
         }
     }
-    if( (flags & FNM_LEADING_DIR) && ISPS( *s ) )
+    if( (flags & FNM_LEADING_DIR)
+      && ISPS( *s ) )
         return( 0 );
     return( *s != '\0' ? FNM_NOMATCH : 0 );
 }
@@ -1346,14 +1379,14 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
-bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
-/**********************************************************************************/
+bool __NTFindNextFileWithAttr( HANDLE osffh, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
+/**************************************************************************************/
 {
     for( ;; ) {
         if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
-        if( !FindNextFile( h, ffd ) ) {
+        if( FindNextFile( osffh, ffd ) == 0 ) {
             return( false );
         }
     }
@@ -1370,7 +1403,8 @@ static int is_directory( const char *name )
         prev_ch = curr_ch;
         curr_ch = *name;
         if( curr_ch == '\0' ) {
-            if( ISPS( prev_ch ) || prev_ch == ':' ){
+            if( ISPS( prev_ch )
+              || prev_ch == ':' ){
                 /* directory, need add "*.*" */
                 return( 2 );
             }
@@ -1407,18 +1441,18 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
 /*****************************************************/
 {
     WIN32_FIND_DATA     ffd;
-    HANDLE              h;
+    HANDLE              osffh;
 
     if( dirp->d_first != _DIR_CLOSED ) {
         FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = FindFirstFile( dirname, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = FindFirstFile( dirname, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         errno = ENOENT;
         return( NULL );
     }
-    DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
+    DTAXXX_HANDLE_OF( dirp->d_dta ) = osffh;
     __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
@@ -1441,7 +1475,8 @@ DIR *opendir( const char *dirname )
             return( NULL );
         }
     }
-    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+    if( i >= 0
+      && (tmp.d_attr & _A_SUBDIR) ) {
         size_t          len;
 
         /* directory, add wildcard */
@@ -1472,12 +1507,13 @@ struct dirent *readdir( DIR *dirp )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !FindNextFileA( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
+        if( FindNextFileA( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) == 0 ) {
             errno = ENOENT;
             return( NULL );
         }
@@ -1489,7 +1525,8 @@ struct dirent *readdir( DIR *dirp )
 int closedir( DIR *dirp )
 /***********************/
 {
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED ) {
         errno = ERANGE;
         return( -1 );
     }
@@ -1537,10 +1574,13 @@ int getopt( int argc, char * const argv[], const char *optstring )
         }
         break;
     }
-    if( opt_offset > 1 || optopt == '-' || optopt == __altoptchar ) {
+    if( opt_offset > 1
+      || optopt == '-'
+      || optopt == __altoptchar ) {
         if( opt_offset > 1 ) {
             optopt = curr_arg[opt_offset];
-            if( optopt == '-' || optopt == __altoptchar ) {
+            if( optopt == '-'
+              || optopt == __altoptchar ) {
                 __optchar = (char)optopt;
                 opt_offset++;
                 optopt = curr_arg[opt_offset];
@@ -1553,14 +1593,16 @@ int getopt( int argc, char * const argv[], const char *optstring )
         if( optopt == '\0' ) {  /* option char by itself should be */
             return( -1 );       /* left alone */
         }
-        if( optopt == '-' && curr_arg[opt_offset + 1] == '\0' ) {
+        if( optopt == '-'
+          && curr_arg[opt_offset + 1] == '\0' ) {
             opt_offset = 0;
             ++optind;
             return( -1 );   /* "--" POSIX end of options delimiter */
         }
         ptr = strchr( optstring, optopt );
         if( ptr == NULL ) {
-            if( opterr && *optstring != ':' ) {
+            if( opterr
+              && *optstring != ':' ) {
                 fprintf( stderr, BAD_OPT_MSG, argv[0], optopt );
             }
             return( '?' );  /* unrecognized option */
