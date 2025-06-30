@@ -63,7 +63,7 @@ _WCRTLINK int dup2( int handle1, int handle2 )
         return( -1 );
     }
 
-    ph = GetCurrentProcess();
+    osph = GetCurrentProcess();
     osfh1 = __getOSHandle( handle1 );
 
     _AccessFileH( handle1 );
