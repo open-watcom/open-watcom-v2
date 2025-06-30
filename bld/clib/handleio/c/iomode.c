@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  io_mode handle information array manipulation
+* Description:  __io_mode handle information array manipulation
 *
 ****************************************************************************/
 
@@ -56,21 +56,21 @@ unsigned __NFiles   = _NFILES;          /* maximum # of files we can open */
 #if !defined(__UNIX__)
 
 unsigned _HUGEDATA __init_mode[_NFILES] = { /* file mode information (flags) */
-        _READ,          /* stdin */
-        _WRITE,         /* stdout */
-        _WRITE,         /* stderr */
-        _READ|_WRITE,   /* stdaux */
-        _WRITE          /* stdprn */
+    _READ,          /* stdin */
+    _WRITE,         /* stdout */
+    _WRITE,         /* stderr */
+    _READ|_WRITE,   /* stdaux */
+    _WRITE          /* stdprn */
 };
 
 unsigned *__io_mode = __init_mode;      /* initially points to static array */
 
 unsigned __GetIOMode( int handle )
 {
-    if( handle >= __NFiles ) {
-        return( 0 );
+    if( handle < __NFiles ) {
+        return( __io_mode[handle] );
     }
-    return( __io_mode[handle] );
+    return( 0 );
 }
 
 void __SetIOMode( int handle, unsigned value )

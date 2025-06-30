@@ -125,26 +125,29 @@ AXI( __preinit_iomode_os2, INIT_PRIORITY_RUNTIME );
 
 #define _INITIALIZED    _DYNAMIC
 
-signed __SetIOMode_grow( int handle, unsigned value )
+int __SetIOMode_grow( int handle, unsigned value )
 {
     int         i;
 
     if( handle >= __NFiles ) {
-        i = __NFiles;           // 20 -> (20+10+1) -> 31
-                                // 31 -> (31+15+1) -> 47
-                                // 47 -> (47+23+1) -> 71
+        i = __NFiles;
+        /*
+         * 20 -> (20+10+1) -> 31
+         * 31 -> (31+15+1) -> 47
+         * 47 -> (47+23+1) -> 71
+         * ...
+         */
         __grow_iomode( i + (i >> 1) + 1 );
     }
     if( handle >= __NFiles ) {
         // return an error indication (errno should be set to ENOMEM)
         return( -1 );
-    } else {
-        if( value != 0 ) {
-            __ChkTTYIOMode( handle );
-            __io_mode[handle] = value | _INITIALIZED;
-        } else {
-            __io_mode[handle] = value;    /* we're closing it; smite _INITIALIZED */
-        }
-        return( handle );
     }
+    if( value != 0 ) {
+        __ChkTTYIOMode( handle );
+        __io_mode[handle] = value | _INITIALIZED;
+    } else {
+        __io_mode[handle] = value;    /* we're closing it; smite _INITIALIZED */
+    }
+    return( handle );
 }

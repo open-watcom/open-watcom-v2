@@ -85,7 +85,7 @@ unsigned __growPOSIXHandles( unsigned num )
             num = __NHandles;
         } else {
             for( i = __NHandles; i < num; i++ ) {
-                new2[ i ] = INVALID_HANDLE_VALUE;
+                new2[i] = INVALID_HANDLE_VALUE;
             }
             __OSHandles = new2;
             __NHandles = num;
@@ -106,9 +106,12 @@ int __allocPOSIXHandle( HANDLE hdl )
         }
     }
     if( i >= __NHandles ) {
-                                // 20 -> (20+10+1) -> 31
-                                // 31 -> (31+15+1) -> 47
-                                // 47 -> (47+23+1) -> 71
+        /*
+         * 20 -> (20+10+1) -> 31
+         * 31 -> (31+15+1) -> 47
+         * 47 -> (47+23+1) -> 71
+         * ...
+         */
         __growPOSIXHandles( i + (i >> 1) + 1 );
         // keep iomode array in sync
         if( __NHandles > __NFiles )
@@ -130,13 +133,13 @@ int __allocPOSIXHandle( HANDLE hdl )
 
 void __freePOSIXHandle( int hid )
 {
-    __OSHandles[ hid ] = INVALID_HANDLE_VALUE;
+    __OSHandles[hid] = INVALID_HANDLE_VALUE;
 }
 
 
 HANDLE __getOSHandle( int hid )
 {
-    return( __OSHandles[ hid ] );
+    return( __OSHandles[hid] );
 }
 
 int __setOSHandle( int hid, HANDLE hdl )
@@ -174,7 +177,7 @@ HANDLE __NTGetFakeHandle( void )
         os_handle = (HANDLE)fakeHandle;
     } else {
         __FakeHandles = lib_realloc( __FakeHandles, ( __topFakeHandle + 1 ) * sizeof( HANDLE ) );
-        __FakeHandles[ __topFakeHandle ] = os_handle;
+        __FakeHandles[__topFakeHandle] = os_handle;
         __topFakeHandle++;
     }
     _ReleaseFList();
@@ -183,40 +186,39 @@ HANDLE __NTGetFakeHandle( void )
 
 // called from library startup code
 
+static void __init_STD_POSIXHandle( DWORD stdhandle )
+{
+    HANDLE osfh;
+
+    osfh = GetStdHandle( stdhandle );
+    if( osfh == NULL
+      || osfh == INVALID_HANDLE_VALUE ) {
+        osfh = __NTGetFakeHandle();
+    }
+    __allocPOSIXHandle( osfh );
+}
+
 void __initPOSIXHandles( void )
 {
-    HANDLE h;
-
     // __OSHandles = NULL;
     // __NHandles = 0;
 
     __growPOSIXHandles( __NFiles );
-    h = GetStdHandle( STD_INPUT_HANDLE );
-    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
-        h = __NTGetFakeHandle();
-    }
-    __allocPOSIXHandle( h );        // should return 0==STDIN_FILENO
-    h = GetStdHandle( STD_OUTPUT_HANDLE );
-    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
-        h = __NTGetFakeHandle();
-    }
-    __allocPOSIXHandle( h );        // should return 1==STDOUT_FILENO
-    h = GetStdHandle( STD_ERROR_HANDLE );
-    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
-        h = __NTGetFakeHandle();
-    }
-    __allocPOSIXHandle( h );        // should return 3==STDERR_FILENO
+    __init_STD_POSIXHandle( STD_INPUT_HANDLE );
+    __init_STD_POSIXHandle( STD_OUTPUT_HANDLE );
+    __init_STD_POSIXHandle( STD_ERROR_HANDLE );
 }
 
 static void __finiPOSIXHandles( void )
 {
+    int     i;
+
     if( __OSHandles != NULL ) {
         lib_free( __OSHandles );
         __OSHandles = NULL;
     }
     if( __FakeHandles != NULL ) {
-        int i;
-        for( i = 0 ; i < __topFakeHandle ; i++ ) {
+        for( i = 0 ; i < __topFakeHandle; i++ ) {
             CloseHandle( __FakeHandles[i] );
         }
         lib_free( __FakeHandles );
@@ -239,7 +241,9 @@ _WCRTLINK int _grow_handles( int num )
     if( num > __NHandles ) {
 #if defined(__DOS__)
         /* increase the number of file handles beyond 20 */
-        if( _RWD_osmajor > 3 || ( _RWD_osmajor == 3 && _RWD_osminor >= 30 ) ) {
+        if( _RWD_osmajor > 3
+          || ( _RWD_osmajor == 3
+          && _RWD_osminor >= 30 ) ) {
             tiny_ret_t  rc;
 
             /* may allocate a segment of memory! */
@@ -289,9 +293,12 @@ _WCRTLINK int _grow_handles( int num )
                     int i = num;
                     for( ;; ) {
                         rc = DosSetMaxFH( i );
-                        if( rc == ERROR_NOT_ENOUGH_MEMORY ) break;
-                        if( rc == 0 ) break;
-                        if( i > (num+256) ) break;
+                        if( rc == ERROR_NOT_ENOUGH_MEMORY )
+                            break;
+                        if( rc == 0 )
+                            break;
+                        if( i > ( num + 256 ) )
+                            break;
                         i++;
                     }
                     if( rc != 0 ) {
