@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,9 @@
 #include "iomode.h"
 #include "liballoc.h"
 
+
 #define MAX_ELEM_SIZE           ( 8 + 1 + 8 + 1 + 8 + 1 )
 #define _INITIALIZED            _DYNAMIC
-
 
 /*
  * Return a pointer to a string containing information about currently open
@@ -61,19 +62,22 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
 /*******************************************************************************/
 {
     CHAR_TYPE *         p;
-    int                 posixHandle, osHandle, mode;
+    int                 posixHandle;
+    int                 osHandle;
+    int                 mode;
     CHAR_TYPE           curElem[MAX_ELEM_SIZE+1];
     CHAR_TYPE           buf[9];
     size_t              len;
 
     /*** Allocate memory for the string ***/
-    len = (__NFiles*MAX_ELEM_SIZE) + __F_NAME(strlen,wcslen)( STRING( "C_FILE_INFO=" ) ) + 1;
+    len = (__NFiles * MAX_ELEM_SIZE) + __F_NAME(strlen,wcslen)( STRING( "C_FILE_INFO=" ) ) + 1;
     p = lib_malloc( len * sizeof( CHAR_TYPE ) );
-    if( p == NULL )  return( NULL );
+    if( p == NULL )
+        return( NULL );
     __F_NAME(strcpy,wcscpy)( p, STRING( "C_FILE_INFO=" ) );
 
     /*** Process the open files ***/
-    for( posixHandle=0; posixHandle<__NFiles; posixHandle++ ) {
+    for( posixHandle = 0; posixHandle < __NFiles; posixHandle++ ) {
         __ChkTTYIOMode( posixHandle );
         mode = __GetIOMode( posixHandle );
         if( mode & _INITIALIZED ) {         /* skip it if it's not open */
@@ -81,17 +85,17 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
 
             /*** Build the element string ***/
             curElem[0] = NULLCHAR;
-            __F_NAME(itoa,_itow)( posixHandle, buf, 16 );  /* POSIX handle */
+            __F_NAME(itoa,_itow)( posixHandle, buf, 16 );       /* POSIX handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
-            __F_NAME(itoa,_itow)( osHandle, buf, 16 );      /* OS handle */
+            __F_NAME(itoa,_itow)( osHandle, buf, 16 );          /* OS handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
-            __F_NAME(itoa,_itow)( mode, buf, 16 );          /* file mode */
+            __F_NAME(itoa,_itow)( mode, buf, 16 );              /* file mode */
             __F_NAME(strcat,wcscat)( curElem, buf );
-            __F_NAME(strcat,wcscat)( curElem, STRING( "*" ) );   /* terminator */
+            __F_NAME(strcat,wcscat)( curElem, STRING( "*" ) );  /* terminator */
 
-            __F_NAME(strcat,wcscat)( p, curElem );          /* append it */
+            __F_NAME(strcat,wcscat)( p, curElem );              /* append it */
         }
     }
     return( p );

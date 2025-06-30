@@ -50,13 +50,16 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
 {
     CHAR_TYPE *         envp;
     CHAR_TYPE *         p;
-    int                 posixHandle, osHandle, mode;
+    int                 posixHandle;
+    int                 osHandle;
+    int                 mode;
     int                 len;
     CHAR_TYPE           buf[9];
 
     /*** Get the environment variable ***/
     envp = __F_NAME(getenv,_wgetenv)( STRING( "C_FILE_INFO" ) );
-    if( envp == NULL )  return;
+    if( envp == NULL )
+        return;
 
     /*** Process the items, one by one ***/
     while( *envp != NULLCHAR ) {
