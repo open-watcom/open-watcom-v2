@@ -95,7 +95,7 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title )
 
     LPWDATA     res;
 
-    if( _WindowsSetAppTitle != NULL ) {
+    if( _WindowsSetConTitle != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
         if( res != NULL ) {
             return( _WindowsSetConTitle( res, title ) );
