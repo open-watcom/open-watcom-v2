@@ -44,11 +44,9 @@ _WCRTLINK int   _dwDeleteOnClose( int handle )
 #ifdef DEFAULT_WINDOWING
     LPWDATA     res;
 
-    if( _WindowsDestroyOnClose != NULL ) {
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            return( _WindowsDestroyOnClose( res ) );
-        }
+    if( _WindowsDestroyOnClose != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsDestroyOnClose( res ) );
     }
 #else
     (void)handle;
@@ -61,7 +59,6 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text )
 //===================================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsSetAbout != NULL ) {
         return( _WindowsSetAbout( title, text ) );
     }
@@ -77,7 +74,6 @@ _WCRTLINK int   _dwSetAppTitle( const char *title )
 //=================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsSetAppTitle != NULL ) {
         return( _WindowsSetAppTitle( title ) );
     }
@@ -92,14 +88,11 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title )
 //=============================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     LPWDATA     res;
 
-    if( _WindowsSetConTitle != NULL ) {
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            return( _WindowsSetConTitle( res, title ) );
-        }
+    if( _WindowsSetConTitle != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsSetConTitle( res, title ) );
     }
 #else
     (void)handle;
@@ -113,7 +106,6 @@ _WCRTLINK int   _dwYield( void )
 //==============================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsYieldControl != NULL ) {
         return( _WindowsYieldControl() );
     }
@@ -126,7 +118,6 @@ _WCRTLINK int   _dwShutDown( void )
 //=================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsShutDown != NULL ) {
         return( _WindowsShutDown() );
     }

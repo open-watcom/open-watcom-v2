@@ -50,7 +50,7 @@ int __set_binary( int handle )
     __ChkTTYIOMode( handle );
     iomode_flags = __GetIOMode( handle );
     iomode_flags |= _BINARY;
-    __SetIOMode_grow( handle, iomode_flags );
+    __SetIOMode( handle, iomode_flags );
 #if defined( __DOS__ )
     if( iomode_flags & _ISTTY ) {
         tiny_ret_t rc;

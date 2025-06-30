@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +53,10 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attr, int *phandle 
     int         handle;
     unsigned    iomode_flags;
 
-    // First try to get the required slot.
-    // No point in creating a file only to not use it.
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
     handle = __allocPOSIXHandleDummy();
     if( handle == -1 ) {
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
@@ -62,10 +65,15 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attr, int *phandle 
     __GetNTCreateAttr( attr, &desired_access, &os_attr );
     osfh = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_NEW, os_attr, NULL );
     if( osfh == INVALID_HANDLE_VALUE ) {
+        /*
+         * Give back the slot we got
+         */
         __freePOSIXHandle( handle );
         return( __set_errno_nt_reterr() );
     }
-    // Now use the slot we got.
+    /*
+     * Now use the slot we got.
+     */
     __setOSHandle( handle, osfh );
 
     *phandle = handle;
@@ -73,6 +81,6 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attr, int *phandle 
     iomode_flags = _READ;
     if( (attr & _A_RDONLY) == 0 )
         iomode_flags |= _WRITE;
-    __SetIOMode_grow( handle, iomode_flags );
+    __SetIOMode( handle, iomode_flags );
     return( 0 );
 }

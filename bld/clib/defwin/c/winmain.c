@@ -119,7 +119,7 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 /*
  * firstInstance - initialization at startup
  */
-static bool firstInstance( HANDLE inst)
+static bool firstInstance( HANDLE inst )
 {
     char        tmp[128];
     WNDCLASS    wc;

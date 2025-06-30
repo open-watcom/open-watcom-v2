@@ -48,9 +48,10 @@ _WCRTLINK int dup( int old_handle )
     HANDLE      cprocess;
 
     __handle_check( old_handle, -1 );
-
-    // First try to get the required slot.
-    // No point in creating a new handle only to not use it.
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
     handle = __allocPOSIXHandleDummy();
     if( handle == -1 ) {
         return( -1 );
@@ -58,14 +59,17 @@ _WCRTLINK int dup( int old_handle )
 
     cprocess = GetCurrentProcess();
 
-    if( DuplicateHandle( cprocess, __getOSHandle( old_handle ), cprocess, &osfh,
-        0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
-        // Give back the slot we got
+    if( DuplicateHandle( cprocess, __getOSHandle( old_handle ), cprocess, &osfh, 0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
+        /*
+         * Give back the slot we got
+         */
         __freePOSIXHandle( handle );
         return( __set_errno_nt() );
     }
-    // Now use the slot we got
+    /*
+     * Now use the slot we got.
+     */
     __setOSHandle( handle, osfh );
-    __SetIOMode_grow( handle, __GetIOMode( old_handle ) );
+    __SetIOMode( handle, __GetIOMode( old_handle ) );
     return( handle );
 }

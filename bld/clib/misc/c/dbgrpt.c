@@ -72,16 +72,15 @@ static int window_report( int reporttype, const char *filename,
                           const char *usermsg )
 /***************************************************************/
 {
-    #if defined(__NT__) || defined(__WINDOWS__)
-        int             osrc;
-        UINT            flags;
-    #endif
-    #ifdef __OS2__
-        int             usepm = 0;
-        HMQ             hMessageQueue = 0;
-        HAB             AnchorBlock = 0;
-        USHORT          osrc;
-    #endif
+  #if defined(__NT__) || defined(__WINDOWS__)
+    int                 osrc;
+    UINT                flags;
+  #elif defined(__OS2__)
+    int                 usepm = 0;
+    HMQ                 hMessageQueue = 0;
+    HAB                 AnchorBlock = 0;
+    USHORT              osrc;
+  #endif
     char                outmsg[MAX_MSG_LEN];
     char                linestr[32];
     char                progname[_MAX_PATH];
@@ -94,20 +93,17 @@ static int window_report( int reporttype, const char *filename,
     };
 
     /*** Initialize some stuff ***/
-    #ifdef __NT__
-        if( GetModuleFileNameA( NULL, progname, _MAX_PATH ) == 0 ) {
-            strcpy( progname, "<unknown program>" );
-        }
-    #else
-    {
-        extern char **  _argv;
-        if( (_argv[0])[0] != '\0' ) {
-            strcpy( progname, _argv[0] );
-        } else {
-            strcpy( progname, "<unknown program>" );
-        }
+  #ifdef __NT__
+    if( GetModuleFileNameA( NULL, progname, _MAX_PATH ) == 0 ) {
+        strcpy( progname, "<unknown program>" );
     }
-    #endif
+  #else
+    if( (_argv[0])[0] != '\0' ) {
+        strcpy( progname, _argv[0] );
+    } else {
+        strcpy( progname, "<unknown program>" );
+    }
+  #endif
     if( linenumber != 0 ) {
         _bprintf( linestr, 32, "%d", linenumber );
     } else {
@@ -133,69 +129,70 @@ static int window_report( int reporttype, const char *filename,
     }
 
     /*** Create the window ***/
-    #if defined(__NT__) || defined(__WINDOWS__)
-        flags = MB_ICONHAND | MB_TASKMODAL | MB_ABORTRETRYIGNORE;
-        #ifdef __NT__
-            flags |= MB_SETFOREGROUND;
-        #endif
-        osrc = MessageBox( (HWND)NULL, outmsg, WINTITLE, flags );
+  #if defined(__NT__)
+    flags = MB_ICONHAND | MB_TASKMODAL | MB_ABORTRETRYIGNORE | MB_SETFOREGROUND;
+  #elif defined(__WINDOWS__)
+    flags = MB_ICONHAND | MB_TASKMODAL | MB_ABORTRETRYIGNORE;
+  #endif
+  #if defined(__NT__) || defined(__WINDOWS__)
+    osrc = MessageBox( (HWND)NULL, outmsg, WINTITLE, flags );
+    switch( osrc ) {
+    case 0:
+        retval = -1;
+        break;
+    case IDABORT:
+        raise( SIGABRT );
+        _exit( 3 );
+        // never return
+    case IDRETRY:
+        retval = 1;
+        break;
+    default:
+        retval = 0;
+        break;
+    }
+  #elif defined(__OS2__)
+    AnchorBlock = WinInitialize( 0 );
+    if( AnchorBlock != 0 ) {
+        hMessageQueue = WinCreateMsgQueue( AnchorBlock, 0 );
+        if( hMessageQueue != 0 ) {
+            usepm = 1;
+        } else {
+            int     rc;
+            rc = WinGetLastError( AnchorBlock );
+            if( (rc & 0xFFFF) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
+                usepm = 1;
+            }
+        }
+    }
+    if( usepm ) {
+        osrc = WinMessageBox( HWND_DESKTOP, 0, outmsg, WINTITLE, 0,
+                              MB_ICONHAND | MB_ABORTRETRYIGNORE );
         switch( osrc ) {
-        case 0:
+        case MBID_ERROR:
             retval = -1;
             break;
-        case IDABORT:
+        case MBID_ABORT:
             raise( SIGABRT );
             _exit( 3 );
             // never return
-        case IDRETRY:
+        case MBID_RETRY:
             retval = 1;
             break;
         default:
             retval = 0;
             break;
         }
-    #elif defined(__OS2__)
-        AnchorBlock = WinInitialize( 0 );
-        if( AnchorBlock != 0 ) {
-            hMessageQueue = WinCreateMsgQueue( AnchorBlock, 0 );
-            if( hMessageQueue != 0 ) {
-                usepm = 1;
-            } else {
-                int     rc;
-                rc = WinGetLastError( AnchorBlock );
-                if( (rc & 0xFFFF) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
-                    usepm = 1;
-                }
-            }
-        }
-        if( usepm ) {
-            osrc = WinMessageBox( HWND_DESKTOP, 0, outmsg, WINTITLE, 0,
-                                  MB_ICONHAND | MB_ABORTRETRYIGNORE );
-            switch( osrc ) {
-            case MBID_ERROR:
-                retval = -1;
-                break;
-            case MBID_ABORT:
-                raise( SIGABRT );
-                _exit( 3 );
-                // never return
-            case MBID_RETRY:
-                retval = 1;
-                break;
-            default:
-                retval = 0;
-                break;
-            }
-        } else {
-            retval = -1;
-        }
-        if( hMessageQueue != 0 ) {
-            WinDestroyMsgQueue( hMessageQueue );
-        }
-        if( AnchorBlock != 0 ) {
-            WinTerminate( AnchorBlock );
-        }
-    #endif
+    } else {
+        retval = -1;
+    }
+    if( hMessageQueue != 0 ) {
+        WinDestroyMsgQueue( hMessageQueue );
+    }
+    if( AnchorBlock != 0 ) {
+        WinTerminate( AnchorBlock );
+    }
+  #endif
 
     return( retval );
 }

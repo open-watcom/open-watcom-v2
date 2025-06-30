@@ -54,7 +54,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
 
     osffh = __lib_FindFirstFile( (LPTSTR)path, &ffd );
 //  if( dos_attrib == _A_NORMAL ) {
-//      dos_attrib = ~(_A_SUBDIR|_A_VOLID);
+//      dos_attrib = ~(_A_SUBDIR | _A_VOLID);
 //  }
     nt_attrib = DOS2NTATTR( dos_attrib );
     if( osffh == INVALID_HANDLE_VALUE ) {

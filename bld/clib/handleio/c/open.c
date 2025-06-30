@@ -165,9 +165,10 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                 _RWD_errno = EMFILE;
                 return( -1 );
             }
-
-            /* 21-nov-90 AFS: the file is created so now the file must be */
-            /*                    opened with the correct share permissions */
+            /*
+             * the file is created so now the file must be
+             * opened with the correct share permissions
+             */
             if( shflag != 0 ) {
                 rc = TinyClose( handle );
                 if( TINY_ERROR( rc ) ) {
@@ -180,18 +181,26 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
             }
         }
     }
-    iomode_flags = __GetIOMode( handle );
-    iomode_flags &= ~(_READ|_WRITE|_APPEND|_BINARY);     /* 11-aug-88 */
-    if( isatty( handle ) )              iomode_flags |= _ISTTY;
+    iomode_flags = __GetIOMode( handle ) & ~(_READ | _WRITE | _APPEND | _BINARY);
+    if( isatty( handle ) )
+        iomode_flags |= _ISTTY;
     rwmode &= ~O_NOINHERIT;
-    if( rwmode == O_RDWR )              iomode_flags |= _READ | _WRITE;
-    if( rwmode == O_RDONLY)             iomode_flags |= _READ;
-    if( rwmode == O_WRONLY)             iomode_flags |= _WRITE;
-    if( mode & O_APPEND )               iomode_flags |= _APPEND;
+    if( rwmode == O_RDWR )
+        iomode_flags |= _READ | _WRITE;
+    if( rwmode == O_RDONLY )
+        iomode_flags |= _READ;
+    if( rwmode == O_WRONLY )
+        iomode_flags |= _WRITE;
+    if( mode & O_APPEND )
+        iomode_flags |= _APPEND;
     if( mode & (O_BINARY|O_TEXT) ) {
-        if( mode & O_BINARY )           iomode_flags |= _BINARY;
+        if( mode & O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
     } else {
-        if( _RWD_fmode == O_BINARY )    iomode_flags |= _BINARY;
+        if( _RWD_fmode == O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
     }
     __SetIOMode_grow( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING

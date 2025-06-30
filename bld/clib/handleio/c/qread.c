@@ -56,20 +56,20 @@
 static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 {
     unsigned    total;
-    unsigned    amount;
+    unsigned    readamt;
     tiny_ret_t  rc;
 
     total = 0;
-    amount = MAXBUFF;
+    readamt = MAXBUFF;
     while( len > 0 ) {
         if( len < MAXBUFF ) {
-            amount = len;
+            readamt = len;
         }
-        rc = TinyRead( handle, buffer, amount );
+        rc = TinyRead( handle, buffer, readamt );
         if( TINY_ERROR( rc ) )
             return( rc );
         total += rc;
-        if( rc != amount )
+        if( rc != readamt )
             break;
         len -= rc;
         buffer += rc;
@@ -92,16 +92,15 @@ int __qread( int handle, void *buffer, unsigned len )
     unsigned        amount_read;
     tiny_ret_t      rc;
 #endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA         res;
+#endif
 
     __handle_check( handle, -1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdin != NULL ) {
-        LPWDATA res;
-
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            return( _WindowsStdin( res, buffer, len ) );
-        }
+    if( _WindowsStdin != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsStdin( res, buffer, len ) );
     }
 #endif
 #if defined(__NT__)

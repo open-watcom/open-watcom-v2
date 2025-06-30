@@ -178,20 +178,17 @@ static int zero_pad( int handle )
     if( eodPos == -1 )
         return( -1 );
 
-    if( curPos > eodPos ) {
+    if( curPos > eodPos ) {                     /* only write if needed */
+        memset( zeroBuf, 0, PAD_SIZE );         /* zero out a buffer */
+        writeAmt = PAD_SIZE;
         bytesToWrite = curPos - eodPos;         /* amount to pad by */
-        if( bytesToWrite > 0 ) {                /* only write if needed */
-            memset( zeroBuf, 0, PAD_SIZE );  /* zero out a buffer */
-            do {                                /* loop until done */
-                if( bytesToWrite > PAD_SIZE )
-                    writeAmt = 512;
-                else
-                    writeAmt = (unsigned)bytesToWrite;
-                rc = write( handle, zeroBuf, writeAmt );
-                if( rc < 0 )
-                    return( rc );
-                bytesToWrite -= writeAmt;       /* more bytes written */
-            } while( bytesToWrite != 0 );
+        while( bytesToWrite > 0 ) {             /* loop until done */
+            if( bytesToWrite < PAD_SIZE )
+                writeAmt = (unsigned)bytesToWrite;
+            rc = write( handle, zeroBuf, writeAmt );
+            if( rc < 0 )
+                return( rc );
+            bytesToWrite -= writeAmt;           /* more bytes written */
         }
     } else {
         curPos = __lseek( handle, curPos, SEEK_SET );
@@ -226,7 +223,8 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
     rc = 0;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+    if( _WindowsStdout != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
         *amt = _WindowsStdout( res, buffer, len );
     } else
 #endif
@@ -303,7 +301,8 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     // put a semaphore around our writes
 
     _AccessFileH( handle );
-    if( (iomode_flags & _APPEND) && (iomode_flags & _ISTTY) == 0 ) {
+    if( (iomode_flags & _APPEND)
+      && (iomode_flags & _ISTTY) == 0 ) {
 #if defined(__NT__)
         if( GetFileType( osfh ) == FILE_TYPE_DISK ) {
             cur_ptr_low = 0;
@@ -417,13 +416,15 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
 
 #if defined(__WINDOWS_386__)
+
 #define MAXBUFF 0x8000
+
 _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 /*****************************************************************/
 {
     unsigned    total;
     unsigned    writeamt;
-    int         rc;
+    unsigned    rc;
 
     __handle_check( handle, -1 );
 
@@ -437,9 +438,9 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
         if( len < MAXBUFF )
             writeamt = len;
         rc = __write( handle, buffer, writeamt );
-        if( rc == -1 )
-            return( rc );
-        total += (unsigned)rc;
+        if( (int)rc == -1 )
+            return( -1 );
+        total += rc;
         if( rc != writeamt )
             break;
         len -= writeamt;

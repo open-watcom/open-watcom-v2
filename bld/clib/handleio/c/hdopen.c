@@ -135,26 +135,30 @@ static int check_mode( int handle, int mode )
 
 #endif
 
-// It is questionable, whether this routine does anything useful
-// except under Win32.
-
-_WCRTLINK int _open_osfhandle( long osfhandle, int flags )
+/*
+ * It is questionable, whether this routine does anything useful
+ * except under Win32.
+ */
+_WCRTLINK int _open_osfhandle( long osfh, int flags )
 {
-    int posix_handle;
+    int handle;
 
+    /*
+     * Under Win32, we get an OS handle argument
+     * Under everything else, we get a POSIX handle argument
+     */
 #if defined(__NT__)
-    // Under Win32, we get an OS handle argument
-    posix_handle = __allocPOSIXHandle( (HANDLE)osfhandle );
-    if( posix_handle == -1 )
+    handle = __allocPOSIXHandle( (HANDLE)osfh );
+    if( handle == -1 ) {
         return( -1 );
+    }
 #else
-    // Under everything else, we get a POSIX handle argument
-    posix_handle = osfhandle;
+    handle = osfh;
 #endif
 #if defined(__NETWARE__)
     (void)flags;
 #else
-    if( check_mode( posix_handle, flags ) ) {
+    if( check_mode( handle, flags ) ) {
         return( -1 );
     }
   #if !defined(__UNIX__)
@@ -163,7 +167,7 @@ _WCRTLINK int _open_osfhandle( long osfhandle, int flags )
         unsigned    iomode_flags;
 
         rwmode = flags & ( O_RDONLY | O_WRONLY | O_RDWR );
-        iomode_flags = __GetIOMode( posix_handle ) & ~(_READ | _WRITE | _APPEND | _BINARY);
+        iomode_flags = __GetIOMode( handle ) & ~(_READ | _WRITE | _APPEND | _BINARY);
         if( rwmode == O_RDWR )
             iomode_flags |= _READ | _WRITE;
         if( rwmode == O_RDONLY )
@@ -175,14 +179,14 @@ _WCRTLINK int _open_osfhandle( long osfhandle, int flags )
         if( flags & O_BINARY ) {
             iomode_flags |= _BINARY;
         }
-        __SetIOMode_grow( posix_handle, iomode_flags );
+        __SetIOMode_grow( handle, iomode_flags );
     }
   #endif
 #endif
-    return( posix_handle );
+    return( handle );
 }
 
 _WCRTLINK int _hdopen( int os_handle, int mode )
 {
-    return( _open_osfhandle( (long)os_handle, mode ) );
+    return( _open_osfhandle( os_handle, mode ) );
 }

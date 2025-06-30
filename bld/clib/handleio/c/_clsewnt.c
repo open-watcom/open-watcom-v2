@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,13 +61,11 @@ int __close( int handle )
     osfh = __getOSHandle( handle );
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsCloseWindow != NULL ) {
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            _WindowsRemoveWindowedHandle( handle );
-            _WindowsCloseWindow( res );
-            is_closed = true;
-        }
+    if( _WindowsCloseWindow != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        _WindowsRemoveWindowedHandle( handle );
+        _WindowsCloseWindow( res );
+        is_closed = true;
     }
 #endif
     if( !is_closed

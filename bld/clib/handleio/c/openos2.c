@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,16 +132,25 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         return( -1 );
     }
     iomode_flags = 0;
-    if( rwmode == O_RDWR )              iomode_flags  = _READ | _WRITE;
-    if( rwmode == O_RDONLY)             iomode_flags  = _READ;
-    if( rwmode == O_WRONLY)             iomode_flags  = _WRITE;
-    if( mode & O_APPEND )               iomode_flags |= _APPEND;
+    if( rwmode == O_RDWR )
+        iomode_flags  = _READ | _WRITE;
+    if( rwmode == O_RDONLY )
+        iomode_flags  = _READ;
+    if( rwmode == O_WRONLY )
+        iomode_flags  = _WRITE;
+    if( mode & O_APPEND )
+        iomode_flags |= _APPEND;
     if( mode & (O_BINARY|O_TEXT) ) {
-        if( mode & O_BINARY )           iomode_flags |= _BINARY;
+        if( mode & O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
     } else {
-        if( _RWD_fmode == O_BINARY )    iomode_flags |= _BINARY;
+        if( _RWD_fmode == O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
     }
-    if( isatty( handle ) )              iomode_flags |= _ISTTY;
+    if( isatty( handle ) )
+        iomode_flags |= _ISTTY;
 
     __SetIOMode_grow( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING

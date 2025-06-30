@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <windows.h>
 #include "defwin.h"
@@ -50,14 +51,10 @@
 _WCRTLINK int isatty( int handle )
 {
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( handle ) != NULL ) {
-            return( 1 );
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        return( true );
     }
 #endif
-    if( GetFileType( __getOSHandle( handle ) ) == FILE_TYPE_CHAR ) {
-        return( 1 );
-    }
-    return( 0 );
+    return( GetFileType( __getOSHandle( handle ) ) == FILE_TYPE_CHAR );
 }

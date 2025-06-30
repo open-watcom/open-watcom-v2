@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "tinyio.h"
@@ -48,10 +49,9 @@ _WCRTLINK int isatty( int handle )
 
     __handle_check( handle, 0 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( handle ) != NULL ) {
-            return( 1 );
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        return( true );
     }
 #endif
     rc = TinyGetDeviceInfo( handle );

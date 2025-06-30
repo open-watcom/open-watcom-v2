@@ -72,7 +72,7 @@ _WCRTLINK int _setmode( int handle, int mode )
             if( mode == O_BINARY ) {
                 iomode_flags |= _BINARY;
             }
-            __SetIOMode_grow( handle, iomode_flags );
+            __SetIOMode( handle, iomode_flags );
             _AccessFileH( handle );
             for( link = _RWD_ostream; link != NULL; link = link->next ) {
                 fp = link->stream;

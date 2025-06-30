@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ BOOL __lib_RemoveDirectoryW( LPCWSTR lpPathName )
         /*** Prepare to call the OS ***/
         mbPathName = __lib_cvt_wcstombs( lpPathName );
         if( mbPathName == NULL ) {
-            return( FALSE );
+            return( 0 );
         }
 
         /*** Call the OS ***/

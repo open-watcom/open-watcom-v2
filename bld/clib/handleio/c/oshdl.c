@@ -48,15 +48,15 @@
 
 _WCRTLINK long _get_osfhandle( int handle )
 {
-    long os_handle;
+    long    osf_handle;
 
     __handle_check( handle, -1 );
 #if defined(__NT__)
-    os_handle = (long)__getOSHandle( handle );
+    osf_handle = (long)__getOSHandle( handle );
 #else
-    os_handle = handle;
+    osf_handle = handle;
 #endif
-    return( os_handle );
+    return( osf_handle );
 }
 
 _WCRTLINK int _os_handle( int handle )

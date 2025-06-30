@@ -44,15 +44,16 @@
 #include "seterrno.h"
 
 
-_WCRTLINK unsigned _dos_creat( const char *name, unsigned attribute, int *handle )
+_WCRTLINK unsigned _dos_creat( const char *name, unsigned attribute, int *phandle )
 {
     APIRET  rc;
     OS_UINT actiontaken;
-    HFILE   fhandle;
+    HFILE   handle;
 
-    while( *name == ' ' ) ++name;
+    while( *name == ' ' )
+        ++name;
     rc = DosOpen( (PSZ)name,
-                     &fhandle,
+                     &handle,
                      &actiontaken,
                      0,
                      attribute,
@@ -62,7 +63,7 @@ _WCRTLINK unsigned _dos_creat( const char *name, unsigned attribute, int *handle
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }
-    *handle = fhandle;
-    __SetIOMode_grow( fhandle, _READ | _WRITE );
+    *phandle = handle;
+    __SetIOMode_grow( handle, _READ | _WRITE );
     return( 0 );
 }

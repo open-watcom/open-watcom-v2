@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +74,7 @@ DWORD __fixed_GetFileAttributes( LPCTSTR lpFileName )
     osffh = __lib_FindFirstFile( lpFileName, &finddata );
     if( osffh == INVALID_HANDLE_VALUE ) {
         return( INVALID_FILE_ATTRIBUTES );
-    } else {
-        FindClose( osffh );
     }
+    FindClose( osffh );
     return( finddata.dwFileAttributes );
 }

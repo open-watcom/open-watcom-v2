@@ -66,26 +66,24 @@
 
 static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    writamt;
     tiny_ret_t  rc;
 
+    total = 0;
+    writamt = MAXBUFF;
     while( len > 0 ) {
-
-        if( len > MAXBUFF ) {
-            writamt = MAXBUFF;
-        } else {
+        if( len < MAXBUFF ) {
             writamt = len;
         }
         rc = TinyWrite( handle, buffer, writamt );
         if( TINY_ERROR( rc ) )
             return( rc );
-        total += TINY_LINFO( rc );
-        if( TINY_LINFO( rc ) != writamt )
-            return( total );
-
-        len -= writamt;
-        buffer = ((const char *)buffer) + writamt;
+        total += rc;
+        if( rc != writamt )
+            break;
+        len -= rc;
+        buffer = (const char *)buffer + rc;
 
     }
     return( total );
@@ -106,6 +104,10 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 #else
     unsigned        len_written;
     tiny_ret_t      rc;
+#endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA         res;
+    int             rt;
 #endif
 
     __handle_check( handle, -1 );
@@ -139,18 +141,13 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 #endif
     }
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL ) {
-        LPWDATA res;
-
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            int rt;
-            rt = _WindowsStdout( res, buffer, len );
-            if( atomic == 1 ) {
-                _ReleaseFileH( handle );
-            }
-            return( rt );
+    if( _WindowsStdout != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        rt = _WindowsStdout( res, buffer, len );
+        if( atomic == 1 ) {
+            _ReleaseFileH( handle );
         }
+        return( rt );
     }
 #endif
 #if defined(__NT__)

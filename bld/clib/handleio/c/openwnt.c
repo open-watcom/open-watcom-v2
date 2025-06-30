@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +64,10 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     unsigned            rwmode;
     unsigned            iomode_flags;
 
-    // First try to get the required slot.
-    // No point in creating a file only to not use it.
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
     handle = __allocPOSIXHandleDummy();
     if( handle == -1 ) {
         return( -1 );
@@ -82,10 +84,11 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL
-      && __F_NAME(_stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) == 0 )  {
+      && __F_NAME(_stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) == 0 ) {
         osfh = __NTGetFakeHandle();
-
-        // Now use the slot we got.
+        /*
+         * Now use the slot we got.
+         */
         __setOSHandle( handle, osfh );
         _WindowsNewWindow( NULL, handle, -1 );
 
@@ -124,12 +127,16 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
                                             create_disp, fileattr, NULL );
             }
             if( osfh == INVALID_HANDLE_VALUE ) {
+                /*
+                 * Give back the slot we got
+                 */
                 __freePOSIXHandle( handle );
                 return( __set_errno_nt() );
             }
         }
-
-        // Now use the slot we got.
+        /*
+         * Now use the slot we got.
+         */
         __setOSHandle( handle, osfh );
 
         iomode_flags = 0;
@@ -159,7 +166,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
             iomode_flags |= _BINARY;
         }
     }
-    __SetIOMode_grow( handle, iomode_flags );
+    __SetIOMode( handle, iomode_flags );
     return( handle );
 }
 

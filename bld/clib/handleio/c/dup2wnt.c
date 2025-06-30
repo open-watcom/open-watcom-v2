@@ -76,7 +76,7 @@ _WCRTLINK int dup2( int handle1, int handle2 )
     close( handle2 );
 
     __setOSHandle( handle2, osfh2 );
-    __SetIOMode_grow( handle2, __GetIOMode( handle1 ) );
+    __SetIOMode( handle2, __GetIOMode( handle1 ) );
 
     _ReleaseFileH( handle1 );
     return( 0 );

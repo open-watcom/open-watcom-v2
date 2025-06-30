@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,12 +60,10 @@ int __close( int handle )
         rv = __set_errno_dos( rc );
     } else {
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsCloseWindow != NULL ) {
-            res = _WindowsIsWindowedHandle( handle );
-            if( res != NULL ) {
-                _WindowsRemoveWindowedHandle( handle );
-                _WindowsCloseWindow( res );
-            }
+        if( _WindowsCloseWindow != NULL
+          && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+            _WindowsRemoveWindowedHandle( handle );
+            _WindowsCloseWindow( res );
         }
 #endif
     }

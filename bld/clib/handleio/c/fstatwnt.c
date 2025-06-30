@@ -80,10 +80,9 @@
 
     buf->st_mode = 0;                           /* 12-apr-94 */
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( handle ) != 0 ) {
-            buf->st_mode |= S_IFCHR;        /* it's a console */
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        buf->st_mode |= S_IFCHR;        /* it's a console */
     }
 #endif
     __ChkTTYIOMode( handle );
@@ -95,15 +94,15 @@
         buf->st_mode |= S_IWUSR | S_IWGRP | S_IWOTH;
     }
     ftype = GetFileType( osfh );
-    if( (iomode_flags & _ISTTY) || /* for default windows */
-        (ftype == FILE_TYPE_CHAR) ||
-        (ftype == FILE_TYPE_PIPE) ||
+    if( (iomode_flags & _ISTTY)     /* for default windows */
+      || (ftype == FILE_TYPE_CHAR)
+      || (ftype == FILE_TYPE_PIPE)
          /*
-            FILE_TYPE_UNKNOWN is returned when standard output handle
-            is specified and it's not a console application - also we
-            don't want to call GetFileSize()
-         */
-        (ftype == FILE_TYPE_UNKNOWN) ) {
+          * FILE_TYPE_UNKNOWN is returned when standard output handle
+          * is specified and it's not a console application - also we
+          * don't want to call GetFileSize()
+          */
+      || (ftype == FILE_TYPE_UNKNOWN) ) {
         buf->st_size = 0;
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_attr = 0;

@@ -147,10 +147,10 @@
     findbuf->chain = (char *)dinf.Entry;
 
     if( findbuf->handle ) {
-        if( __rdos_finddata_get( findbuf, fileinfo ) )
+        if( __rdos_finddata_get( findbuf, fileinfo ) ) {
             return( (intptr_t)findbuf );
-        else
-            RdosCloseDir( findbuf->handle );
+        }
+        RdosCloseDir( findbuf->handle );
     }
 
     lib_free( findbuf );
