@@ -97,7 +97,7 @@
 
     /*** Look for the first file ***/
     if( !__NTFindNextFileWithAttr( osffh, NT_FIND_ATTR, &ffd ) ) {
-        FindClose( h );
+        FindClose( osffh );
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
 
