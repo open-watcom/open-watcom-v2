@@ -46,7 +46,7 @@
 _WCRTLINK int kbhit( void )
 {
     DWORD n;
-    HANDLE h;
+    HANDLE conin;
     INPUT_RECORD r;
 
 #ifdef DEFAULT_WINDOWING
@@ -57,15 +57,15 @@ _WCRTLINK int kbhit( void )
     }
 #endif
     _AccessFileH( STDIN_FILENO );
-    h = __NTConsoleInput();
+    conin = __NTConsoleInput();
     for( ;; ) {
-        PeekConsoleInput( h, &r, 1, &n );
+        PeekConsoleInput( conin, &r, 1, &n );
         if( n == 0 )
             break;
         if( __NTRealKey( &r ) )
             break;
         // flush out mouse, window, and key up events
-        ReadConsoleInput( h, &r, 1, &n );
+        ReadConsoleInput( conin, &r, 1, &n );
     }
     // n != 0 if there is a key waiting
     _ReleaseFileH( STDIN_FILENO );

@@ -38,22 +38,22 @@
 #include "osver.h"
 
 
-BOOL __lib_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFindFileData )
-/*****************************************************************************/
+BOOL __lib_FindNextFileW( HANDLE osffh, LPWIN32_FIND_DATAW lpFindFileData )
+/*************************************************************************/
 {
     BOOL                osrc;
     WIN32_FIND_DATAA    mbFindFileData;
     size_t              cvt;
 
     if( WIN32_IS_NT ) {     /* NT */
-        return( FindNextFileW( hFindFile, lpFindFileData ) );
+        return( FindNextFileW( osffh, lpFindFileData ) );
     }
     /* Win95 or Win32s */
 
     /*** Call the OS ***/
-    osrc = __fixed_FindNextFileA( hFindFile, &mbFindFileData );
-    if( osrc == FALSE ) {
-        return( FALSE );
+    osrc = __fixed_FindNextFileA( osffh, &mbFindFileData );
+    if( osrc == 0 ) {
+        return( 0 );
     }
 
     /*** Convert the WIN32_FIND_DATAA info to WIN32_FIND_DATAW info ***/
@@ -67,11 +67,11 @@ BOOL __lib_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFindFileData )
     lpFindFileData->dwReserved1 = mbFindFileData.dwReserved1;
     cvt = mbstowcs( lpFindFileData->cFileName, mbFindFileData.cFileName, MAX_PATH );
     if( cvt == (size_t)-1 ) {
-        return( FALSE );
+        return( 0 );
     }
     cvt = mbstowcs( lpFindFileData->cAlternateFileName, mbFindFileData.cAlternateFileName, MAX_PATH );
     if( cvt == (size_t)-1 ) {
-        return( FALSE );
+        return( 0 );
     }
 
     return( osrc );

@@ -46,7 +46,7 @@ _WCRTLINK char *cgets( char *buff )
     char *p;
     int len;
     DWORD n;
-    HANDLE h;
+    HANDLE conin;
     INPUT_RECORD r;
 
     len = *(unsigned char *)buff;
@@ -65,9 +65,9 @@ _WCRTLINK char *cgets( char *buff )
     }
 #endif
     _AccessFileH( STDIN_FILENO );
-    h = __NTConsoleInput();             // obtain a console input handle
+    conin = __NTConsoleInput();             // obtain a console input handle
     for( ; len > 1; ) {
-        ReadConsoleInput( h, &r, 1, &n );
+        ReadConsoleInput( conin, &r, 1, &n );
         if( !__NTRealKey( &r ) )        // Only interested in real keys
             continue;
         if( r.Event.KeyEvent.uChar.AsciiChar == '\r' ) {

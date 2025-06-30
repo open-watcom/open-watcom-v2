@@ -96,18 +96,18 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
 /*******************************************************************************************/
 {
     WIN32_FIND_DATA     ffd;
-    HANDLE              h;
+    HANDLE              osffh;
 
     if( dirp->d_first != _DIR_CLOSED ) {
         FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = __lib_FindFirstFile( dirname, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( dirname, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         __set_errno_nt();
         return( NULL );
     }
-    DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
+    DTAXXX_HANDLE_OF( dirp->d_dta ) = osffh;
     __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );

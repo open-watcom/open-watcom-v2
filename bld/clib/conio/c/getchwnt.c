@@ -48,7 +48,7 @@ enum {
     KS_HANDLE_SECOND_CALL       = 2,
 };
 
-static int do_getch( HANDLE console_in )
+static int do_getch( HANDLE conin )
 {
     INPUT_RECORD ir;
     DWORD n;
@@ -77,7 +77,7 @@ static int do_getch( HANDLE console_in )
         return( e );
     }
     for( ;; ) {
-        if( ReadConsoleInput( console_in, &ir, 1, &n ) == 0 )
+        if( ReadConsoleInput( conin, &ir, 1, &n ) == 0 )
             break;
         if( ! __NTRealKey( &ir ) )
             continue;
@@ -101,7 +101,7 @@ static int do_getch( HANDLE console_in )
 _WCRTLINK int getch( void )
 {
     int         c;
-    HANDLE      h;
+    HANDLE      conin;
     DWORD       mode;
 
     if( (c = _RWD_cbyte) != 0 ) {
@@ -116,11 +116,11 @@ _WCRTLINK int getch( void )
     } else {
 #endif
         _AccessFileH( STDIN_FILENO );
-        h = __NTConsoleInput();
-        GetConsoleMode( h, &mode );
-        SetConsoleMode( h, 0 );
-        c = do_getch( h );
-        SetConsoleMode( h, mode );
+        conin = __NTConsoleInput();
+        GetConsoleMode( conin, &mode );
+        SetConsoleMode( conin, 0 );
+        c = do_getch( conin );
+        SetConsoleMode( conin, mode );
         _ReleaseFileH( STDIN_FILENO );
 #ifdef DEFAULT_WINDOWING
     }

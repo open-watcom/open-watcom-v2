@@ -41,13 +41,13 @@
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
-bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
+bool __NTFindNextFileWithAttr( HANDLE osffh, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
 {
-    for(;;) {
+    for( ;; ) {
         if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
-        if( __lib_FindNextFile( h, ffd ) == 0 ) {
+        if( __lib_FindNextFile( osffh, ffd ) == 0 ) {
             return( false );
         }
     }

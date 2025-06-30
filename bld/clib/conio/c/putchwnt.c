@@ -52,7 +52,7 @@ _WCRTLINK int putch( int c )
 {
     char        ch;
     DWORD       written;
-    HANDLE      h;
+    HANDLE      conout;
 
 #ifdef DEFAULT_WINDOWING
     if( _WindowsPutch != NULL ) {
@@ -62,10 +62,10 @@ _WCRTLINK int putch( int c )
     } else {
 #endif
         written = 0;
-        h = __NTConsoleOutput();            // obtain a console output handle
-        if( h != INVALID_HANDLE_VALUE ) {
+        conout = __NTConsoleOutput();            // obtain a console output handle
+        if( conout != INVALID_HANDLE_VALUE ) {
             ch = c;
-            WriteConsole( h, &ch, 1, &written, NULL );
+            WriteConsole( conout, &ch, 1, &written, NULL );
         }
         if( written == 0 ) {
             return( -1 );

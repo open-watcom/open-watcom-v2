@@ -47,16 +47,16 @@
                     typically an LPT device or a console
  */
 
-_WCRTLINK int isatty( int hid )
+_WCRTLINK int isatty( int handle )
 {
 #ifdef DEFAULT_WINDOWING
     if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( hid ) != NULL ) {
+        if( _WindowsIsWindowedHandle( handle ) != NULL ) {
             return( 1 );
         }
     }
 #endif
-    if( GetFileType( __getOSHandle( hid ) ) == FILE_TYPE_CHAR ) {
+    if( GetFileType( __getOSHandle( handle ) ) == FILE_TYPE_CHAR ) {
         return( 1 );
     }
     return( 0 );

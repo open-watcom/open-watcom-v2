@@ -72,7 +72,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #if defined(__NT__)
     DWORD       amount_read;
     DWORD       error;
-    HANDLE      h;
+    HANDLE      osfh;
 #elif defined(__OS2__)
     OS_UINT     amount_read;
     APIRET      rc;
@@ -100,7 +100,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
         return( -1 );
     }
 #ifdef __NT__
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 #endif
     if( iomode_flags & _BINARY ) {       /* if binary mode */
 #ifdef DEFAULT_WINDOWING
@@ -109,7 +109,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
         } else {
 #endif
 #if defined(__NT__)
-            if( ReadFile( h, buffer, len, &amount_read, NULL ) == 0 ) {
+            if( ReadFile( osfh, buffer, len, &amount_read, NULL ) == 0 ) {
                 error = GetLastError();
                 if( error == ERROR_BROKEN_PIPE )
                     return( amount_read );
@@ -142,7 +142,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
             } else {
 #endif
 #if defined(__NT__)
-                if( ReadFile( h, buffer, read_len, &amount_read, NULL ) == 0 ) {
+                if( ReadFile( osfh, buffer, read_len, &amount_read, NULL ) == 0 ) {
                     _ReleaseFileH( handle );
                     error = GetLastError();
                     if( error == ERROR_BROKEN_PIPE )

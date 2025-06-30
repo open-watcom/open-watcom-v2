@@ -174,12 +174,12 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 /************************************************************************/
 {
 #if defined( __NT__ )
-    HANDLE              osHandle;
-    HANDLE              oldHandle;
+    HANDLE              osfh;
+    HANDLE              osfh_old;
 #elif defined( __OS2__ )
     APIRET              rc;
-    HFILE               osHandle;
-    HFILE               oldHandle;
+    HFILE               osfh;
+    HFILE               osfh_old;
 #endif
 
     /* unused parameters */ (void)textOrBinary;
@@ -187,24 +187,24 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     if( !readOrWrite ) {
         /*** Change the standard input handle for process inheritance ***/
 #if defined( __NT__ )
-        osHandle = GetStdHandle( STD_INPUT_HANDLE );        /* get old */
-        if( osHandle == INVALID_HANDLE_VALUE ) {
+        osfh = GetStdHandle( STD_INPUT_HANDLE );        /* get old */
+        if( osfh == INVALID_HANDLE_VALUE ) {
             return( 0 );
         }
-        oldHandle = osHandle;
+        osfh_old = osfh;
         if( SetStdHandle( STD_INPUT_HANDLE, (HANDLE)_os_handle( handles[0] ) ) == 0 ) {   /* set new */
-            SetStdHandle( STD_INPUT_HANDLE, oldHandle );
+            SetStdHandle( STD_INPUT_HANDLE, osfh_old );
             return( 0 );
         }
 #elif defined( __OS2__ )
-        oldHandle = (HFILE)-1;                /* duplicate standard input */
-        rc = DosDupHandle( STDIN_FILENO, &oldHandle );
+        osfh_old = (HFILE)-1;                /* duplicate standard input */
+        rc = DosDupHandle( STDIN_FILENO, &osfh_old );
         if( rc != NO_ERROR )
             return( 0 );
-        osHandle = STDIN_FILENO;            /* use new standard input */
-        rc = DosDupHandle( (HFILE)_os_handle( handles[0] ), &osHandle );
+        osfh = STDIN_FILENO;            /* use new standard input */
+        rc = DosDupHandle( (HFILE)_os_handle( handles[0] ), &osfh );
         if( rc != NO_ERROR ) {
-            DosClose( oldHandle );
+            DosClose( osfh_old );
             return( 0 );
         }
 #endif
@@ -214,34 +214,34 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
 #if defined( __NT__ )
-        SetStdHandle( STD_INPUT_HANDLE, oldHandle );
+        SetStdHandle( STD_INPUT_HANDLE, osfh_old );
 #elif defined( __OS2__ )
-        osHandle = STDIN_FILENO;
-        rc = DosDupHandle( oldHandle, &osHandle );
+        osfh = STDIN_FILENO;
+        rc = DosDupHandle( osfh_old, &osfh );
 #endif
         close( handles[0] );        /* parent process should close this */
     } else {
         /*** Change the standard output handle for process inheritance ***/
 #if defined( __NT__ )
-        osHandle = GetStdHandle( STD_OUTPUT_HANDLE );       /* get old */
-        if( osHandle == INVALID_HANDLE_VALUE ) {
+        osfh = GetStdHandle( STD_OUTPUT_HANDLE );       /* get old */
+        if( osfh == INVALID_HANDLE_VALUE ) {
             return( 0 );
         }
-        oldHandle = osHandle;
+        osfh_old = osfh;
         if( SetStdHandle( STD_OUTPUT_HANDLE, (HANDLE)_os_handle( handles[1] ) ) == 0 ) { /* set new */
-            SetStdHandle( STD_OUTPUT_HANDLE, oldHandle );
+            SetStdHandle( STD_OUTPUT_HANDLE, osfh_old );
             return( 0 );
         }
 #elif defined( __OS2__ )
-        oldHandle = (HFILE)-1;              /* duplicate standard input */
-        rc = DosDupHandle( STDOUT_FILENO, &oldHandle );
+        osfh_old = (HFILE)-1;              /* duplicate standard input */
+        rc = DosDupHandle( STDOUT_FILENO, &osfh_old );
         if( rc != NO_ERROR ) {
             return( 0 );
         }
-        osHandle = STDOUT_FILENO;           /* use new standard input */
-        rc = DosDupHandle( (HFILE)_os_handle( handles[1] ), &osHandle );
+        osfh = STDOUT_FILENO;           /* use new standard input */
+        rc = DosDupHandle( (HFILE)_os_handle( handles[1] ), &osfh );
         if( rc != NO_ERROR ) {
-            DosClose( oldHandle );
+            DosClose( osfh_old );
             return( 0 );
         }
 #endif
@@ -251,10 +251,10 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
 #if defined( __NT__ )
-        SetStdHandle( STD_OUTPUT_HANDLE, oldHandle );
+        SetStdHandle( STD_OUTPUT_HANDLE, osfh_old );
 #elif defined( __OS2__ )
-        osHandle = STDOUT_FILENO;
-        rc = DosDupHandle( oldHandle, &osHandle );
+        osfh = STDOUT_FILENO;
+        rc = DosDupHandle( osfh_old, &osfh );
 #endif
         close( handles[1] );        /* parent process should close this */
     }
@@ -267,7 +267,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
 /*****************************************************************************************/
 {
 #if defined(__NT__)
-    HANDLE              osHandle;
+    HANDLE              osfh;
     int                 handleMode;
 #elif defined( __OS2__ )
     APIRET              rc;
@@ -310,14 +310,14 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     if( readOrWrite ) {
 #if defined( __NT__ )
         if( DuplicateHandle( GetCurrentProcess(), (HANDLE)_os_handle( handles[0] ),
-            GetCurrentProcess(), &osHandle, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
+            GetCurrentProcess(), &osfh, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
             return( 0 );
         }
         close( handles[0] );        /* don't need this any more */
         handleMode = _O_RDONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
-        handles[0] = _hdopen( (int)osHandle, handleMode );
+        handles[0] = _hdopen( (int)osfh, handleMode );
         if( handles[0] == -1 ) {
-            CloseHandle( osHandle );
+            CloseHandle( osfh );
             close( handles[1] );
             return( 0 );
         }
@@ -337,14 +337,14 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
         /*** Make write handle non-inheritable if writing ***/
 #if defined (__NT__ )
         if( DuplicateHandle( GetCurrentProcess(), (HANDLE)_os_handle( handles[1] ),
-            GetCurrentProcess(), &osHandle, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
+            GetCurrentProcess(), &osfh, 0, FALSE, DUPLICATE_SAME_ACCESS ) == 0 ) {
             return( 0 );
         }
         close( handles[1] );        /* don't need this any more */
         handleMode = _O_WRONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
-        handles[1] = _hdopen( (int)osHandle, handleMode );
+        handles[1] = _hdopen( (int)osfh, handleMode );
         if( handles[1] == -1 ) {
-            CloseHandle( osHandle );
+            CloseHandle( osfh );
             close( handles[0] );
             return( 0 );
         }

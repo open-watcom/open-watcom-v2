@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     }
 
     if( attr & attrmask ) {
-        HANDLE          h;
+        HANDLE          osfh;
         ULONG           type;
         CHAR_TYPE const *tmp;
 
@@ -96,15 +96,15 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
             tmp = orig_path;  /* Need full name with path for CreateFile */
         }
 
-        h = __lib_CreateFile( tmp, 0, 0, NULL, OPEN_EXISTING, 0, NULL );
-        if( h != INVALID_HANDLE_VALUE ) {
-            type = GetFileType(h);
+        osfh = __lib_CreateFile( tmp, 0, 0, NULL, OPEN_EXISTING, 0, NULL );
+        if( osfh != INVALID_HANDLE_VALUE ) {
+            type = GetFileType( osfh );
             if( type == FILE_TYPE_CHAR ) {
                 mode = S_IFCHR;
             } else if( type == FILE_TYPE_PIPE ) {
                 mode = S_IFIFO;
             }
-            CloseHandle(h);
+            CloseHandle( osfh );
         } else {
             if( WIN32_IS_NT ) {
                 if( GetLastError() == ERROR_ACCESS_DENIED ) {
@@ -156,7 +156,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     CHAR_TYPE           cwd[_MAX_PATH];
     WORD                d,t;
     WORD                md,mt;
-    HANDLE              h;
+    HANDLE              osffh;
     CHAR_TYPE           fullpath[_MAX_PATH];
     int                 isrootdir = 0;
 
@@ -198,11 +198,11 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         d = t = md = mt = 0;
         ffd.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
     } else {
-        h = __lib_FindFirstFile( path, &ffd );
-        if( h == INVALID_HANDLE_VALUE ) {
+        osffh = __lib_FindFirstFile( path, &ffd );
+        if( osffh == INVALID_HANDLE_VALUE ) {
             return( __set_errno_nt() );
         }
-        FindClose( h );
+        FindClose( osffh );
     }
 
     /* process drive number */

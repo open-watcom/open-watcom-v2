@@ -97,7 +97,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     int             atomic;
 #if defined(__NT__)
     DWORD           len_written;
-    HANDLE          h;
+    HANDLE          osfh;
     DWORD           error;
 #elif defined(__OS2__)
     OS_UINT         len_written;
@@ -110,14 +110,14 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 
     __handle_check( handle, -1 );
 #if defined(__NT__)
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 #endif
     atomic = 0;
     if( __GetIOMode( handle ) & _APPEND ) {
         _AccessFileH( handle );
         atomic = 1;
 #if defined(__NT__)
-        if( SetFilePointer( h, 0, NULL, FILE_END ) == INVALID_SET_FILE_POINTER ) {
+        if( SetFilePointer( osfh, 0, NULL, FILE_END ) == INVALID_SET_FILE_POINTER ) {
             error = GetLastError();
             if( error != NO_ERROR ) {
                 _ReleaseFileH( handle );
@@ -154,7 +154,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     }
 #endif
 #if defined(__NT__)
-    if( WriteFile( h, buffer, len, &len_written, NULL ) == 0 ) {
+    if( WriteFile( osfh, buffer, len, &len_written, NULL ) == 0 ) {
         error = GetLastError();
         if( atomic == 1 ) {
             _ReleaseFileH( handle );

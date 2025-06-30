@@ -44,12 +44,12 @@
 #include "thread.h"
 
 // pad with zero bytes
-void static __padfile( int hid, long offset, long diff ) {
+void static __padfile( int handle, long offset, long diff ) {
     int rc;
     unsigned amount;
     char buff[512];
 
-    if( __lseek( hid, offset, SEEK_SET ) != offset ) {
+    if( __lseek( handle, offset, SEEK_SET ) != offset ) {
         // run away
         return;
     }
@@ -58,7 +58,7 @@ void static __padfile( int hid, long offset, long diff ) {
         amount = 512;
         if( diff < 512 )
             amount = diff;
-        rc = write( hid, buff, amount );
+        rc = write( handle, buff, amount );
         if( rc != amount ) {
             // run away
             return;
@@ -67,22 +67,22 @@ void static __padfile( int hid, long offset, long diff ) {
     } while( diff != 0 );
 }
 
-_WCRTLINK int _chsize( int hid, long size )
+_WCRTLINK int _chsize( int handle, long size )
 {
     long        curOffset;
     long        oldSize;
-    HANDLE      h;
+    HANDLE      osfh;
     DWORD       error;
 
-    __handle_check( hid, -1 );
-    h = __getOSHandle( hid );
+    __handle_check( handle, -1 );
+    osfh = __getOSHandle( handle );
 
-    _AccessFileH( hid );
-    curOffset = __lseek( hid, 0L, SEEK_CUR );     /* get current offset */
+    _AccessFileH( handle );
+    curOffset = __lseek( handle, 0L, SEEK_CUR );     /* get current offset */
 
     // if windows 95 or win32s
     if( !WIN32_IS_NT ) {
-        oldSize = __lseek( hid, 0L, SEEK_END );
+        oldSize = __lseek( handle, 0L, SEEK_END );
     }
     /*
         Note that it is not an error to set the file pointer to a position
@@ -92,16 +92,16 @@ _WCRTLINK int _chsize( int hid, long size )
         position plus the size of the buffer written, leaving the intervening
         bytes uninitialized.
     */
-    if( SetFilePointer( h, size, 0, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+    if( SetFilePointer( osfh, size, 0, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         // this might be OK so need to check error
         error = GetLastError();
         if( error != NO_ERROR ) {
-            _ReleaseFileH( hid );
+            _ReleaseFileH( handle );
             return( __set_errno_dos( error ) );
         }
     }
-    if( !SetEndOfFile( h ) ) {
-        _ReleaseFileH( hid );
+    if( SetEndOfFile( osfh ) == 0 ) {
+        _ReleaseFileH( handle );
         return( __set_errno_nt() );
     }
 
@@ -109,14 +109,14 @@ _WCRTLINK int _chsize( int hid, long size )
     if( !WIN32_IS_NT ) {
         // if extending file length
         if( size > oldSize ) {
-            __padfile( hid, oldSize, size-oldSize );
+            __padfile( handle, oldSize, size-oldSize );
         }
     }
 
     if( curOffset > size )
         curOffset = size;
-    curOffset = __lseek( hid, curOffset, SEEK_SET );
-    _ReleaseFileH( hid );
+    curOffset = __lseek( handle, curOffset, SEEK_SET );
+    _ReleaseFileH( handle );
     if( curOffset == -1L ) {
         return( __set_errno_nt() );
     }

@@ -37,12 +37,12 @@
 #include "osver.h"
 
 
-BOOL __fixed_FindNextFile( HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData )
-/*****************************************************************************/
+BOOL __fixed_FindNextFile( HANDLE osffh, LPWIN32_FIND_DATA lpFindFileData )
+/*************************************************************************/
 {
     BOOL            osrc;
 
-    osrc = FindNextFile( hFindFile, lpFindFileData );
+    osrc = FindNextFile( osffh, lpFindFileData );
     if( !WIN32_IS_NT ) {
         /* Win95 or Win32s */
         if( osrc && lpFindFileData->dwFileAttributes == 0 ) {

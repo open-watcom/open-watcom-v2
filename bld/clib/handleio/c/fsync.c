@@ -62,31 +62,26 @@ _WCRTLINK int fsync( int handle )
 
     __handle_check( handle, -1 );
 
-    #if defined(__DOS__) || defined(__WINDOWS__)
+  #if defined(__DOS__) || defined(__WINDOWS__)
     ret = _dos_commit( handle );
-    #elif defined(__NT__)
-    if( !FlushFileBuffers( __getOSHandle( handle ) ) )
-    {
+  #elif defined(__NT__)
+    if( FlushFileBuffers( __getOSHandle( handle ) ) == 0 ) {
         __set_errno_nt();
         ret = -1;
     }
-    #elif defined(__OS2__)
-    if( DosBufReset( handle ) != 0 )
-    {
+  #elif defined(__OS2__)
+    if( DosBufReset( handle ) != 0 ) {
         _RWD_errno = EBADF;
         ret = -1;
     }
-    #elif defined(__NETWARE__)
-
-    if( FEFlushWrite( handle ) != 0 )
-    {
+  #elif defined(__NETWARE__)
+    if( FEFlushWrite( handle ) != 0 ) {
         _RWD_errno = EBADF;
         ret = -1;
     }
-    #else
-        #error Unknown target system
-    #endif
-
+  #else
+    #error Unknown target system
+  #endif
     return( ret );
 }
 

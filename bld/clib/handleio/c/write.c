@@ -109,7 +109,7 @@ static int zero_pad( int handle )
 /*******************************/
 {
 #if defined(__NT__)
-    HANDLE      h;
+    HANDLE      osfh;
     DWORD       pos;
     DWORD       number_of_bytes_written;
     unsigned    write_amt;
@@ -117,10 +117,10 @@ static int zero_pad( int handle )
     __i64       end_ptr;
     char        zeroBuf[PAD_SIZE];
 
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 
     cur_ptr._64 = 0;
-    pos = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
+    pos = SetFilePointer( osfh, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
     if( pos == INVALID_SET_FILE_POINTER ) {
         // this might be OK so need check error
         if( GetLastError() != NO_ERROR ) {
@@ -130,7 +130,7 @@ static int zero_pad( int handle )
     cur_ptr._32[0] = pos;
 
     end_ptr._64 = 0;
-    pos = SetFilePointer( h, end_ptr._32[0], &end_ptr._32[1], FILE_END );
+    pos = SetFilePointer( osfh, end_ptr._32[0], &end_ptr._32[1], FILE_END );
     if( pos == INVALID_SET_FILE_POINTER ) {
         // this might be OK so need check error
         if( GetLastError() != NO_ERROR ) {
@@ -147,14 +147,14 @@ static int zero_pad( int handle )
         } else {
             write_amt = cur_ptr._64 - end_ptr._64;
         }
-        if( WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
+        if( WriteFile( osfh, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
             return( -1 );
         }
         end_ptr._64 = end_ptr._64 + write_amt;
     }
 
     if( cur_ptr._64 != end_ptr._64 ) {
-        pos = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
+        pos = SetFilePointer( osfh, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
         if( pos == INVALID_SET_FILE_POINTER ) {
             // this might be OK so need check error
             if( GetLastError() != NO_ERROR ) {
@@ -217,7 +217,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     LPWDATA     res;
 #endif
 #if defined(__NT__)
-    HANDLE      h;
+    HANDLE      osfh;
 #elif defined(__OS2__)
     APIRET      rc1;
 #else
@@ -232,8 +232,8 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 #endif
     {
 #if defined(__NT__)
-        h = __getOSHandle( handle );
-        if( WriteFile( h, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
+        osfh = __getOSHandle( handle );
+        if( WriteFile( osfh, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
             return( __set_errno_nt() );
         }
 #elif defined(__OS2__)
@@ -269,7 +269,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     unsigned        len_written, i, j;
     int             rc;
 #if defined(__NT__)
-    HANDLE          h;
+    HANDLE          osfh;
     LONG            cur_ptr_low;
     LONG            cur_ptr_high;
     DWORD           error;
@@ -297,7 +297,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     }
 
 #if defined(__NT__)
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 #endif
 
     // put a semaphore around our writes
@@ -305,10 +305,10 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     _AccessFileH( handle );
     if( (iomode_flags & _APPEND) && (iomode_flags & _ISTTY) == 0 ) {
 #if defined(__NT__)
-        if( GetFileType( h ) == FILE_TYPE_DISK ) {
+        if( GetFileType( osfh ) == FILE_TYPE_DISK ) {
             cur_ptr_low = 0;
             cur_ptr_high = 0;
-            if( SetFilePointer( h, cur_ptr_low, &cur_ptr_high, FILE_END ) == INVALID_SET_FILE_POINTER ) {
+            if( SetFilePointer( osfh, cur_ptr_low, &cur_ptr_high, FILE_END ) == INVALID_SET_FILE_POINTER ) {
                 // this might be OK so need check error
                 error = GetLastError() ;
                 if( error != NO_ERROR ) {
@@ -421,7 +421,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 /*****************************************************************/
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    writeamt;
     int         rc;
 
@@ -431,19 +431,17 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
     if( len == 0 )
         return( __write( handle, buffer, 0 ) );
 
+    total = 0;
+    writeamt = MAXBUFF;
     while( len > 0 ) {
-        if( len > MAXBUFF ) {
-            writeamt = MAXBUFF;
-        } else {
+        if( len < MAXBUFF )
             writeamt = len;
-        }
         rc = __write( handle, buffer, writeamt );
         if( rc == -1 )
             return( rc );
         total += (unsigned)rc;
         if( rc != writeamt )
-            return( total );
-
+            break;
         len -= writeamt;
         buffer = ((const char *)buffer) + writeamt;
     }

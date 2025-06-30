@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileDa
 /**********************************************************************************/
 {
     char                *mbFileName;
-    HANDLE              osrc;
+    HANDLE              osffh;
     WIN32_FIND_DATAA    mbFindFileData;
     size_t              cvt;
 
@@ -61,9 +61,9 @@ HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileDa
     }
 
     /*** Call the OS ***/
-    osrc = __fixed_FindFirstFileA( mbFileName, &mbFindFileData );
+    osffh = __fixed_FindFirstFileA( mbFileName, &mbFindFileData );
     lib_free( mbFileName );
-    if( osrc == INVALID_HANDLE_VALUE ) {
+    if( osffh == INVALID_HANDLE_VALUE ) {
         return( INVALID_HANDLE_VALUE );
     }
 
@@ -85,5 +85,5 @@ HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileDa
         return( INVALID_HANDLE_VALUE );
     }
 
-    return( osrc );
+    return( osffh );
 }

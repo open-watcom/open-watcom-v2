@@ -38,10 +38,10 @@
 #include "iomode.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_read( int hid, void *buffer, unsigned count,
+_WCRTLINK unsigned _dos_read( int handle, void *buffer, unsigned count,
                     unsigned *bytes )
 {
-    if( ReadFile( __getOSHandle( hid ), buffer, count, (LPDWORD) bytes, NULL ) == 0 ) {
+    if( ReadFile( __getOSHandle( handle ), buffer, count, (LPDWORD) bytes, NULL ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,24 +70,24 @@ static int      __topFakeHandle = 0;
 
 unsigned __growPOSIXHandles( unsigned num )
 {
-    HANDLE *new2;
-    unsigned i;
+    HANDLE      *os_handles;
+    unsigned    i;
 
     if( num > __NHandles ) {
         _AccessFList();
         if( __OSHandles == NULL ) {
-            new2 = lib_malloc( num * sizeof( int ) );
+            os_handles = lib_malloc( num * sizeof( *os_handles ) );
         } else {
-            new2 = lib_realloc( __OSHandles, num * sizeof( int ) );
+            os_handles = lib_realloc( __OSHandles, num * sizeof( *os_handles ) );
         }
-        if( new2 == NULL ) {
+        if( os_handles == NULL ) {
             _RWD_errno = ENOMEM;
             num = __NHandles;
         } else {
             for( i = __NHandles; i < num; i++ ) {
-                new2[i] = INVALID_HANDLE_VALUE;
+                os_handles[i] = INVALID_HANDLE_VALUE;
             }
-            __OSHandles = new2;
+            __OSHandles = os_handles;
             __NHandles = num;
         }
         _ReleaseFList();
@@ -95,14 +95,14 @@ unsigned __growPOSIXHandles( unsigned num )
     return( __NHandles );
 }
 
-int __allocPOSIXHandle( HANDLE hdl )
+int __allocPOSIXHandle( HANDLE osfh )
 {
     int i;
 
     _AccessFList();
     for( i = 0; i < __NHandles; i++ ) {
         if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
-            __OSHandles[i] = hdl;
+            __OSHandles[i] = osfh;
             break;
         }
     }
@@ -119,7 +119,7 @@ int __allocPOSIXHandle( HANDLE hdl )
             __grow_iomode( __NHandles );
         for( ; i < __NHandles; i++ ) {
             if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
-                __OSHandles[i] = hdl;
+                __OSHandles[i] = osfh;
                 break;
             }
         }
@@ -131,57 +131,56 @@ int __allocPOSIXHandle( HANDLE hdl )
     return( i );
 }
 
-void __freePOSIXHandle( int hid )
+void __freePOSIXHandle( int handle )
 {
-    __OSHandles[hid] = INVALID_HANDLE_VALUE;
+    __OSHandles[handle] = INVALID_HANDLE_VALUE;
 }
 
 
-HANDLE __getOSHandle( int hid )
+HANDLE __getOSHandle( int handle )
 {
-    return( __OSHandles[hid] );
+    return( __OSHandles[handle] );
 }
 
-int __setOSHandle( int hid, HANDLE hdl )
+int __setOSHandle( int handle, HANDLE osfh )
 {
     // call the Win32 API for a standard file handle
-    switch( hid ) {
+    switch( handle ) {
     case STDIN_FILENO:
-        SetStdHandle( STD_INPUT_HANDLE, hdl );
+        SetStdHandle( STD_INPUT_HANDLE, osfh );
         break;
     case STDOUT_FILENO:
-        SetStdHandle( STD_OUTPUT_HANDLE, hdl );
+        SetStdHandle( STD_OUTPUT_HANDLE, osfh );
         break;
     case STDERR_FILENO:
-        SetStdHandle( STD_ERROR_HANDLE, hdl );
+        SetStdHandle( STD_ERROR_HANDLE, osfh );
         break;
     }
-    if( hid < __NHandles ) {
-        __OSHandles[hid] = hdl;
-    } else {
-        hid = -1;       // this should never happen
+    if( handle < __NHandles ) {
+        __OSHandles[handle] = osfh;
+        return( handle );
     }
-    return( hid );
+    return( -1 );           // this should never happen
 }
 
 HANDLE __NTGetFakeHandle( void )
 {
     static DWORD    fakeHandle = 0x80000000L;
-    HANDLE          os_handle;
+    HANDLE          osfh;
 
     _AccessFList();
-    os_handle = CreateEvent( 0, 0, 0, 0 );
-    if( os_handle == NULL ) {
+    osfh = CreateEvent( 0, 0, 0, 0 );
+    if( osfh == NULL ) {
         // win32s does not support event handles
         fakeHandle++;
-        os_handle = (HANDLE)fakeHandle;
+        osfh = (HANDLE)fakeHandle;
     } else {
-        __FakeHandles = lib_realloc( __FakeHandles, ( __topFakeHandle + 1 ) * sizeof( HANDLE ) );
-        __FakeHandles[__topFakeHandle] = os_handle;
+        __FakeHandles = lib_realloc( __FakeHandles, ( __topFakeHandle + 1 ) * sizeof( *__FakeHandles ) );
+        __FakeHandles[__topFakeHandle] = osfh;
         __topFakeHandle++;
     }
     _ReleaseFList();
-    return( os_handle );
+    return( osfh );
 }
 
 // called from library startup code
@@ -279,11 +278,10 @@ _WCRTLINK int _grow_handles( int num )
                 _enable();
             }
         }
-#elif defined( __OS2__ )
+#elif defined( __OS2__ ) && defined( _M_I86 )   /* 16-bit OS/2 */
         {
             APIRET  rc;
 
-    #if defined( _M_I86 )
             rc = DosSetMaxFH( num );
             if( rc ) {
                 if( rc == ERROR_NOT_ENOUGH_MEMORY ) {
@@ -309,14 +307,16 @@ _WCRTLINK int _grow_handles( int num )
                     }
                 }
             }
-    #else
+        }
+#elif defined( __OS2__ ) && !defined( _M_I86 )  /* 32-bit OS/2 */
+        {
+            APIRET  rc;
             LONG    req_count;
             ULONG   curr_max_fh;
 
             req_count = num - __NHandles;
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
-    #endif
         }
 #elif defined(__WINDOWS__)
         {

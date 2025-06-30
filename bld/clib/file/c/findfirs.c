@@ -87,16 +87,16 @@
 {
 #if defined( __NT__ )
     WIN32_FIND_DATA ffd;
-    HANDLE          h;
+    HANDLE          osffh;
 
     /*** Initialize the find ***/
-    h = __lib_FindFirstFile( filespec, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( filespec, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
 
     /*** Look for the first file ***/
-    if( !__NTFindNextFileWithAttr( h, NT_FIND_ATTR, &ffd ) ) {
+    if( !__NTFindNextFileWithAttr( osffh, NT_FIND_ATTR, &ffd ) ) {
         FindClose( h );
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
@@ -107,7 +107,7 @@
   #else
     __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffd, fileinfo );
   #endif
-    return( (intptr_t)h );
+    return( (intptr_t)osffh );
 #elif defined( __OS2__ )
     APIRET          rc;
     HDIR            h = HDIR_CREATE;

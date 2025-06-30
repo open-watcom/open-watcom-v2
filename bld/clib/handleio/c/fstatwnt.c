@@ -59,9 +59,9 @@
  */
 
 #ifdef __INT64__
- _WCRTLINK int _fstati64( int hid, struct _stati64 *buf )
+ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #else
- _WCRTLINK int fstat( int hid, struct stat *buf )
+ _WCRTLINK int fstat( int handle, struct stat *buf )
 #endif
 {
     DWORD                       size;
@@ -70,31 +70,31 @@
 #endif
     DWORD                       ftype;
     FILETIME                    ctime, atime, mtime;
-    HANDLE                      h;
+    HANDLE                      osfh;
     unsigned                    iomode_flags;
     BY_HANDLE_FILE_INFORMATION  fileinfo;
 
-    __handle_check( hid, -1 );
-    h = __getOSHandle( hid );
-    _AccessFileH( hid );
+    __handle_check( handle, -1 );
+    osfh = __getOSHandle( handle );
+    _AccessFileH( handle );
 
     buf->st_mode = 0;                           /* 12-apr-94 */
 #ifdef DEFAULT_WINDOWING
     if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( hid ) != 0 ) {
+        if( _WindowsIsWindowedHandle( handle ) != 0 ) {
             buf->st_mode |= S_IFCHR;        /* it's a console */
         }
     }
 #endif
-    __ChkTTYIOMode( hid );
-    iomode_flags = __GetIOMode( hid );
+    __ChkTTYIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
     if( iomode_flags & _READ ) {
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
     }
     if( iomode_flags & _WRITE ) {
         buf->st_mode |= S_IWUSR | S_IWGRP | S_IWOTH;
     }
-    ftype = GetFileType( h );
+    ftype = GetFileType( osfh );
     if( (iomode_flags & _ISTTY) || /* for default windows */
         (ftype == FILE_TYPE_CHAR) ||
         (ftype == FILE_TYPE_PIPE) ||
@@ -116,7 +116,7 @@
         buf->st_dev = buf->st_rdev = 1;
     } else {
         /*** Try to get attributes (can reasonably fail; see Win32 docs) ***/
-        if( GetFileInformationByHandle( h, &fileinfo ) == 0 ) {
+        if( GetFileInformationByHandle( osfh, &fileinfo ) == 0 ) {
             buf->st_attr = 0;           /* cannot be determined */
         } else {
             buf->st_attr = fileinfo.dwFileAttributes;
@@ -132,25 +132,25 @@
             buf->st_size = 0;
         } else {
 #ifdef __INT64__
-            size = GetFileSize( h, &highorder );
+            size = GetFileSize( osfh, &highorder );
             if( size == INVALID_FILE_SIZE ) {
                 DWORD   error;
 
                 error = GetLastError();
                 if( error != NO_ERROR ) {
-                    _ReleaseFileH( hid );
+                    _ReleaseFileH( handle );
                     return( __set_errno_dos( error ) );
                 }
             }
             MAKE_SIZE64( buf->st_size, highorder, size );
 #else
-            size = GetFileSize( h, NULL );
+            size = GetFileSize( osfh, NULL );
             if( size == INVALID_FILE_SIZE ) {
                 DWORD   error;
 
                 error = GetLastError();
                 if( error != NO_ERROR ) {
-                    _ReleaseFileH( hid );
+                    _ReleaseFileH( handle );
                     return( __set_errno_dos( error ) );
                 }
             }
@@ -159,8 +159,8 @@
         }
 
         /*** Get the file time ***/
-        if( !GetFileTime( h, &ctime, &atime, &mtime ) ) {
-            _ReleaseFileH( hid );
+        if( GetFileTime( osfh, &ctime, &atime, &mtime ) == 0 ) {
+            _ReleaseFileH( handle );
             return( __set_errno_nt() );
         }
         buf->st_mtime = __NT_filetime_to_timet( &mtime );
@@ -169,10 +169,10 @@
 
         buf->st_dev = buf->st_rdev = 0;
     }
-    _ReleaseFileH( hid );
+    _ReleaseFileH( handle );
 
     buf->st_nlink = 1;
-    buf->st_ino = hid;
+    buf->st_ino = handle;
     buf->st_uid = buf->st_gid = 0;
 
     buf->st_btime = buf->st_mtime;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,20 +46,20 @@
 
 // Note: there are no OS handles under anything other than Win32
 
-_WCRTLINK long _get_osfhandle( int posix_handle )
+_WCRTLINK long _get_osfhandle( int handle )
 {
     long os_handle;
 
-    __handle_check( posix_handle, -1 );
+    __handle_check( handle, -1 );
 #if defined(__NT__)
-    os_handle = (long)__getOSHandle( posix_handle );
+    os_handle = (long)__getOSHandle( handle );
 #else
-    os_handle = posix_handle;
+    os_handle = handle;
 #endif
     return( os_handle );
 }
 
-_WCRTLINK int _os_handle( int posix_handle )
+_WCRTLINK int _os_handle( int handle )
 {
-    return( (int)_get_osfhandle( posix_handle ) );
+    return( (int)_get_osfhandle( handle ) );
 }

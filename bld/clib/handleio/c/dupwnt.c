@@ -41,31 +41,31 @@
 #include "seterrno.h"
 #include "thread.h"
 
-_WCRTLINK int dup( int old_hid )
+_WCRTLINK int dup( int old_handle )
 {
-    HANDLE      new_handle;
-    int         hid;
+    HANDLE      osfh;
+    int         handle;
     HANDLE      cprocess;
 
-    __handle_check( old_hid, -1 );
+    __handle_check( old_handle, -1 );
 
     // First try to get the required slot.
-    // No point in creating a new handle only to not use it.  JBS 99/11/01
-    hid = __allocPOSIXHandleDummy();
-    if( hid == -1 ) {
+    // No point in creating a new handle only to not use it.
+    handle = __allocPOSIXHandleDummy();
+    if( handle == -1 ) {
         return( -1 );
     }
 
     cprocess = GetCurrentProcess();
 
-    if( DuplicateHandle( cprocess, __getOSHandle( old_hid ), cprocess, &new_handle,
+    if( DuplicateHandle( cprocess, __getOSHandle( old_handle ), cprocess, &osfh,
         0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
         // Give back the slot we got
-        __freePOSIXHandle( hid );
+        __freePOSIXHandle( handle );
         return( __set_errno_nt() );
     }
     // Now use the slot we got
-    __setOSHandle( hid, new_handle );   // JBS 99/11/01
-    __SetIOMode_grow( hid, __GetIOMode( old_hid ) );
-    return( hid );
+    __setOSHandle( handle, osfh );
+    __SetIOMode_grow( handle, __GetIOMode( old_handle ) );
+    return( handle );
 }

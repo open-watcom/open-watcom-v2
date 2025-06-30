@@ -53,19 +53,19 @@
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
 /***************************************************************************************/
 {
-    HANDLE              h;
+    HANDLE              osfh;
     time_t              curr_time;
     struct utimbuf      time_buf;
     FILETIME            fctime;
     FILETIME            fatime;
     FILETIME            fwtime;
 
-    h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osfh = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+    if( osfh == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
-    if( !GetFileTime( h, &fctime, &fatime, &fwtime ) ) {
-        CloseHandle( h );
+    if( GetFileTime( osfh, &fctime, &fatime, &fwtime ) == 0 ) {
+        CloseHandle( osfh );
         return( __set_errno_nt() );
     }
     if( times == NULL ) {
@@ -77,11 +77,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     __NT_timet_to_filetime( times->modtime, &fwtime );
     __NT_timet_to_filetime( times->actime, &fatime );
 
-    if( !SetFileTime( h, &fctime, &fatime, &fwtime ) ) {
-        CloseHandle( h );
+    if( SetFileTime( osfh, &fctime, &fatime, &fwtime ) == 0 ) {
+        CloseHandle( osfh );
         return( __set_errno_nt() );
     }
 
-    CloseHandle( h );
+    CloseHandle( osfh );
     return( 0 );
 }
