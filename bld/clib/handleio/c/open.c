@@ -53,9 +53,6 @@
 #include "extender.h"
 #include "msdos.h"
 
-/* file attributes */
-
-#define _A_RDONLY       0x01
 
 static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                                        unsigned shflag, va_list args )
