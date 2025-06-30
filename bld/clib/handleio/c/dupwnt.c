@@ -66,6 +66,6 @@ _WCRTLINK int dup( int old_hid )
     }
     // Now use the slot we got
     __setOSHandle( hid, new_handle );   // JBS 99/11/01
-    __SetIOMode( hid, __GetIOMode( old_hid ) );
+    __SetIOMode_grow( hid, __GetIOMode( old_hid ) );
     return( hid );
 }

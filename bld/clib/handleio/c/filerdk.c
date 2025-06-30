@@ -257,7 +257,7 @@ unsigned __GetIOMode( int handle )
     return( mode );
 }
 
-void __SetIOMode_nogrow( int handle, unsigned value )
+void __SetIOMode( int handle, unsigned value )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -268,7 +268,7 @@ void __SetIOMode_nogrow( int handle, unsigned value )
     RdosLeaveKernelSection( &handle_section );
 }
 
-signed __SetIOMode( int handle, unsigned value )
+signed __SetIOMode_grow( int handle, unsigned value )
 {
     signed ret = -1;
 

@@ -149,7 +149,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     } else {
         if( _RWD_fmode == O_BINARY ) iomode_flags |= _BINARY;
     }
-    __SetIOMode( hid, iomode_flags );
+    __SetIOMode_grow( hid, iomode_flags );
     return( hid );
 }
 

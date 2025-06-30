@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +196,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
     } else {
         if( _RWD_fmode == O_BINARY )    iomode_flags |= _BINARY;
     }
-    __SetIOMode( handle, iomode_flags );
+    __SetIOMode_grow( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL ) {
         if( !__F_NAME(_stricmp,_wcsicmp)( name, STRING( "con" ) ) ) {

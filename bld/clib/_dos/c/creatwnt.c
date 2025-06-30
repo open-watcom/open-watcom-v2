@@ -72,6 +72,6 @@ _WCRTLINK unsigned _dos_creat( const char *name, unsigned attr, int *posix_handl
     iomode_flags = _READ;
     if( !(attr & _A_RDONLY) )
         iomode_flags |= _WRITE;
-    __SetIOMode( hid, iomode_flags );
+    __SetIOMode_grow( hid, iomode_flags );
     return( 0 );
 }

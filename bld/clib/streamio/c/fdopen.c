@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         }
         __chktty( fp );                     /* JBS 31-may-91 */
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        __SetIOMode( handle, file_flags );
+        __SetIOMode_grow( handle, file_flags );
 #endif
     }
     return( fp );

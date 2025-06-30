@@ -73,7 +73,7 @@ unsigned __GetIOMode( int handle )
     return( __io_mode[handle] );
 }
 
-void __SetIOMode_nogrow( int handle, unsigned value )
+void __SetIOMode( int handle, unsigned value )
 {
     if( handle < __NFiles ) {
         __io_mode[handle] = value;

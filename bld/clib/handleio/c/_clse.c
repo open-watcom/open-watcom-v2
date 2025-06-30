@@ -66,6 +66,6 @@ int __close( int handle )
         _RWD_errno = EBADF;
         rv = -1;
     }
-    __SetIOMode_nogrow( handle, 0 );
+    __SetIOMode( handle, 0 );
     return( rv );
 }

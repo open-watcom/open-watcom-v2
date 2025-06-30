@@ -170,7 +170,7 @@ _WCRTLINK int _open_osfhandle( long osfhandle, int flags )
         if( flags & O_BINARY ) {
            io_mode |= _BINARY;
         }
-        __SetIOMode( posix_handle, io_mode );
+        __SetIOMode_grow( posix_handle, io_mode );
     }
   #endif
 #endif

@@ -143,7 +143,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     }
     if( isatty( handle ) )              iomode_flags |= _ISTTY;
 
-    __SetIOMode( handle, iomode_flags );
+    __SetIOMode_grow( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL ) {
         if( ( __F_NAME(_stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||

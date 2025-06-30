@@ -53,6 +53,6 @@ _WCRTLINK int dup( int handle )
         return( __set_errno_dos( TINY_INFO(rc) ) );
     }
     new_handle = TINY_INFO(rc);
-    __SetIOMode( new_handle, __GetIOMode( handle ) );
+    __SetIOMode_grow( new_handle, __GetIOMode( handle ) );
     return( new_handle );
 }

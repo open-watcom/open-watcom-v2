@@ -85,7 +85,7 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
         iomode_flags = _READ;
     if( rwmode == O_WRONLY )
         iomode_flags = _WRITE;
-    __SetIOMode( hid, iomode_flags );
+    __SetIOMode_grow( hid, iomode_flags );
     return( 0 );
 }
 
@@ -94,7 +94,7 @@ _WCRTLINK unsigned _dos_close( int hid )
     HANDLE  h;
 
     h = __getOSHandle( hid );
-    __SetIOMode_nogrow( hid, 0 );
+    __SetIOMode( hid, 0 );
     __freePOSIXHandle( hid );
     if( !CloseHandle( h ) ) {
         return( __set_errno_nt_reterr() );

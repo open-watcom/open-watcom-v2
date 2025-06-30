@@ -76,7 +76,7 @@ _WCRTLINK int dup2( int hid1, int hid2 )
     close( hid2 );
 
     __setOSHandle( hid2, fh2 );
-    __SetIOMode( hid2, __GetIOMode( hid1 ) );
+    __SetIOMode_grow( hid2, __GetIOMode( hid1 ) );
 
     _ReleaseFileH( hid1 );
     return( 0 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
 
         /*** Create the corresponding file ***/
         __setOSHandle( posixHandle, (HANDLE)osHandle );
-        __SetIOMode( posixHandle, mode );
+        __SetIOMode_grow( posixHandle, mode );
 
         envp = p;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ int __set_binary( int handle )
     __ChkTTYIOMode( handle );
     iomode_flags = __GetIOMode( handle );
     iomode_flags |= _BINARY;
-    __SetIOMode( handle, iomode_flags );
+    __SetIOMode_grow( handle, iomode_flags );
 #if defined( __DOS__ )
     if( iomode_flags & _ISTTY ) {
         tiny_ret_t rc;

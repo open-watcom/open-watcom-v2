@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,12 +138,12 @@ unsigned __GetIOMode( int handle )
     return( RdosGetHandleMode( handle ) );
 }
 
-void __SetIOMode_nogrow( int handle, unsigned value )
+void __SetIOMode( int handle, unsigned value )
 {
     RdosSetHandleMode( handle, value );
 }
 
-signed __SetIOMode( int handle, unsigned value )
+signed __SetIOMode_grow( int handle, unsigned value )
 {
     return( RdosSetHandleMode( handle, value ) );
 }

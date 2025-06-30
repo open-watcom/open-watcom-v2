@@ -339,7 +339,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     // Pad the file with zeros if necessary
     if( iomode_flags & _FILEEXT ) {
         // turn off file extended flag
-        __SetIOMode_nogrow( handle, iomode_flags & (~_FILEEXT) );
+        __SetIOMode( handle, iomode_flags & (~_FILEEXT) );
 
         // It is not required to pad a file with zeroes on an NTFS file system;
         // unfortunately it is required on FAT (and probably FAT32). (JBS)

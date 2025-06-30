@@ -63,6 +63,6 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attribute, int *han
         return( __set_errno_dos_reterr( rc ) );
     }
     *handle = fhandle;
-    __SetIOMode( fhandle, _READ | _WRITE );
+    __SetIOMode_grow( fhandle, _READ | _WRITE );
     return( 0 );
 }
