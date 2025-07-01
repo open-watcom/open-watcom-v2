@@ -2,7 +2,6 @@
 #=======================================================================================================
 !inject accept.obj                                                                  l32 lpc lmp rdu
 !inject bind.obj                                                                    l32 lpc lmp rdu
-!inject cfgtospd.obj                                                                l32 lpc lmp
 !inject cfspeed.obj                                                                 l32 lpc lmp
 !inject closedir.obj                                                                l32 lpc lmp
 !inject connect.obj                                                                 l32 lpc lmp rdu

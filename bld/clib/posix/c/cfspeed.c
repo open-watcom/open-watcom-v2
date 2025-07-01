@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,9 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementations of termios speed functions for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementations of POSIX termios speed functions
 *
 ****************************************************************************/
 
@@ -38,17 +36,7 @@
 #include "thread.h"
 
 
-_WCRTLINK speed_t cfgetispeed(const struct termios *tios)
-{
-    return tios->c_ispeed;
-}
-
-_WCRTLINK speed_t cfgetospeed(const struct termios *tios)
-{
-    return( tios->c_ospeed );
-}
-
-static int __valid_speed(speed_t speed)
+static int valid_speed( speed_t speed )
 {
     return ( speed == B0     ||
              speed == B50    ||
@@ -68,26 +56,50 @@ static int __valid_speed(speed_t speed)
              speed == B38400 );
 }
 
-_WCRTLINK int cfsetispeed(struct termios *tios, speed_t speed)
+_WCRTLINK speed_t cfgetispeed( const struct termios *termios_p )
 {
-    if(tios == NULL || !__valid_speed( speed )) {
+#ifdef __LINUX__
+    return( termios_p->c_ispeed );
+#else
+    return( termios_p->c_cflag & CBAUD );
+#endif
+}
+
+_WCRTLINK speed_t cfgetospeed( const struct termios *termios_p )
+{
+#ifdef __LINUX__
+    return( termios_p->c_ospeed );
+#else
+    return( termios_p->c_cflag & CBAUD );
+#endif
+}
+
+_WCRTLINK int cfsetispeed( struct termios *termios_p, speed_t speed )
+{
+    if( termios_p == NULL
+      || !valid_speed( speed ) ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-
-    tios->c_ispeed = speed;
-
+#ifdef __LINUX__
+    termios_p->c_ispeed = speed;
+#else
+    termios_p->c_cflag |= speed;
+#endif
     return( 0 );
 }
 
-_WCRTLINK int cfsetospeed(struct termios *tios, speed_t speed)
+_WCRTLINK int cfsetospeed( struct termios *termios_p, speed_t speed )
 {
-    if(tios == NULL || !__valid_speed( speed )) {
+    if( termios_p == NULL
+      || !valid_speed( speed ) ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-
-    tios->c_ospeed = speed;
-
+#ifdef __LINUX__
+    termios_p->c_ospeed = speed;
+#else
+    termios_p->c_cflag |= speed;
+#endif
     return( 0 );
 }
