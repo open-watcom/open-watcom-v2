@@ -104,7 +104,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     openmode = shflag | rwmode;
 
     perm &= ~_RWD_umaskval;
-/*      if( ( perm & S_IREAD ) && !( perm & S_IWRITE ) )  */
+/*      if( ( perm & S_IREAD ) && (perm & S_IWRITE) == 0 )  */
     if( (perm & S_IWRITE) == 0 ) {
         fileattr = FILE_READONLY;
     } else {

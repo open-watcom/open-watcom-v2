@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,22 +62,22 @@
 #endif
 
 
-static unsigned short at2mode( OS_UINT attr )
+static unsigned short attr2mode( OS_UINT attr )
 /*********************************************/
-    {
-        register unsigned short         mode;
+{
+    register unsigned short         mode;
 
-        if( attr & _A_SUBDIR ) {
-            mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
-        } else {
-            mode = S_IFREG;
-        }
-        mode |= S_IRUSR | S_IRGRP | S_IROTH;
-        if( !(attr & (_A_SYSTEM|_A_RDONLY ) ) ) {
-            mode |= S_IWUSR | S_IWGRP | S_IWOTH;
-        }
-        return( mode );
+    if( attr & _A_SUBDIR ) {
+        mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
+    } else {
+        mode = S_IFREG;
     }
+    mode |= S_IRUSR | S_IRGRP | S_IROTH;
+    if( (attr & (_A_SYSTEM | _A_RDONLY) ) == 0 ) {
+        mode |= S_IWUSR | S_IWGRP | S_IWOTH;
+    }
+    return( mode );
+}
 
 
 #ifdef __INT64__
@@ -126,12 +126,12 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         if( _FILEAPI64() ) {
 #endif
             buf->st_attr = info.attrFile;
-            buf->st_mode |= at2mode( info.attrFile );
+            buf->st_mode |= attr2mode( info.attrFile );
             buf->st_size = info.cbFile;
 #if defined( __INT64__ ) && !defined( _M_I86 )
         } else {
             buf->st_attr = ((FF_BUFFER_32 *)&info)->attrFile;
-            buf->st_mode |= at2mode( ((FF_BUFFER_32 *)&info)->attrFile );
+            buf->st_mode |= attr2mode( ((FF_BUFFER_32 *)&info)->attrFile );
             buf->st_size = ((FF_BUFFER_32 *)&info)->cbFile;
         }
 #endif
@@ -140,9 +140,9 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         /* handle attributes */
         buf->st_attr = 0;
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
-        if( ( hand_type & ~HANDTYPE_NETWORK ) == HANDTYPE_DEVICE ) {
+        if( (hand_type & ~HANDTYPE_NETWORK) == HANDTYPE_DEVICE ) {
             buf->st_mode |= S_IFCHR;
-        } else if( ( hand_type & ~HANDTYPE_NETWORK ) == HANDTYPE_PIPE ) {
+        } else if( (hand_type & ~HANDTYPE_NETWORK) == HANDTYPE_PIPE ) {
             buf->st_mode |= S_IFIFO;
         }
         buf->st_dev = buf->st_rdev = 1;

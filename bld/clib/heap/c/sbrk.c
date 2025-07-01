@@ -96,12 +96,12 @@ extern  int SegmentLimit( void );
 _WCRTLINK void_nptr sbrk( int increment )
 {
   #if defined( _M_I86 )
-    HANDLE h;
+    HANDLE hmem;
 
     if( increment > 0 ) {
-        h = LocalAlloc( LMEM_FIXED, increment );
-        if( h != NULL ) {
-            return( (void_nptr)h );
+        hmem = LocalAlloc( LMEM_FIXED, increment );
+        if( hmem != NULL ) {
+            return( (void_nptr)hmem );
         }
         _RWD_errno = ENOMEM;
     } else {
@@ -174,7 +174,8 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 _WCRTLINK void_nptr sbrk( int increment )
 {
   #ifdef __386__
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( _IsRationalZeroBase()
+      || _IsCodeBuilder() ) {
         void_nptr   cstg;
 
         if( increment > 0 ) {

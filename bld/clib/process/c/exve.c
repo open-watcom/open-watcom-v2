@@ -33,14 +33,15 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <string.h>
 #include <conio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <dos.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include "roundmac.h"
 #include "rtdata.h"
 #include "psp.h"
@@ -153,7 +154,8 @@ static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
         _blkptr( p )->next = free;
     }
     if( _RWD_osmajor == 2 ) {
-        if( free == _NULLSEG || (dosseg = doscalve( free, DOS2SIZE )) == _NULLSEG ) {
+        if( free == _NULLSEG
+          || (dosseg = doscalve( free, DOS2SIZE )) == _NULLSEG ) {
             goto error;
         }
     }
@@ -177,7 +179,9 @@ static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
     resetints();
     for( ;; ) {
         for( p = doslowblock(); ; p = p + _mcbptr( p )->size + 1 ) {
-            if( _mcbptr( p )->owner == _RWD_psp && p != _RWD_psp && p != envseg ) {
+            if( _mcbptr( p )->owner == _RWD_psp
+              && p != _RWD_psp
+              && p != envseg ) {
                 TinyFreeBlock( p );
                 break;
             }

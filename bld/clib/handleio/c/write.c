@@ -139,18 +139,22 @@ static int zero_pad( int handle )
     }
     end_ptr._32[0] = pos;
 
-    memset( zeroBuf, 0, PAD_SIZE );
+    if( end_ptr._64 < cur_ptr._64 ) {
+        unsigned long long  len;
 
-    while( end_ptr._64 < cur_ptr._64 ) {
-        if( (end_ptr._64 + PAD_SIZE) < cur_ptr._64 ) {
-            write_amt = PAD_SIZE;
-        } else {
-            write_amt = cur_ptr._64 - end_ptr._64;
+        memset( zeroBuf, 0, PAD_SIZE );
+        len = end_ptr._64 - cur_ptr._64;
+        write_amt = PAD_SIZE;
+        while( len > 0 ) {
+            if( len < PAD_SIZE ) {
+                write_amt = len;
+            }
+            if( WriteFile( osfh, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
+                return( -1 );
+            }
+            end_ptr._64 += write_amt;
+            len -= write_amt;
         }
-        if( WriteFile( osfh, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
-            return( -1 );
-        }
-        end_ptr._64 = end_ptr._64 + write_amt;
     }
 
     if( cur_ptr._64 != end_ptr._64 ) {
@@ -341,7 +345,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         __SetIOMode( handle, iomode_flags & (~_FILEEXT) );
 
         // It is not required to pad a file with zeroes on an NTFS file system;
-        // unfortunately it is required on FAT (and probably FAT32). (JBS)
+        // unfortunately it is required on FAT (and probably FAT32).
         rc = zero_pad( handle );
     }
 

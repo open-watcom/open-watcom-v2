@@ -90,7 +90,7 @@ _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
 
     ios_mode = __in | __out | __text;
 #else
-    unsigned iomode_flags;
+    unsigned    iomode_flags;
 
     iomode_flags = __GetIOMode( handle );
     ios_mode = 0;

@@ -139,7 +139,7 @@ static int check_mode( int handle, int mode )
  * It is questionable, whether this routine does anything useful
  * except under Win32.
  */
-_WCRTLINK int _open_osfhandle( long osfh, int flags )
+_WCRTLINK int _open_osfhandle( long osf_handle, int flags )
 {
     int handle;
 
@@ -148,12 +148,12 @@ _WCRTLINK int _open_osfhandle( long osfh, int flags )
      * Under everything else, we get a POSIX handle argument
      */
 #if defined(__NT__)
-    handle = __allocPOSIXHandle( (HANDLE)osfh );
+    handle = __allocPOSIXHandle( (HANDLE)osf_handle );
     if( handle == -1 ) {
         return( -1 );
     }
 #else
-    handle = osfh;
+    handle = osf_handle;
 #endif
 #if defined(__NETWARE__)
     (void)flags;
@@ -188,5 +188,7 @@ _WCRTLINK int _open_osfhandle( long osfh, int flags )
 
 _WCRTLINK int _hdopen( int os_handle, int mode )
 {
-    return( _open_osfhandle( os_handle, mode ) );
+    #define OS_TO_OSFHANDLE(h)  (long)(h)
+    return( _open_osfhandle( OS_TO_OSFHANDLE( os_handle ), mode ) );
+    #undef OS_TO_OSFHANDLE
 }

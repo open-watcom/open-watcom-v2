@@ -88,7 +88,10 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
     if( fp->_flag & _BINARY )
 #endif
     {
-        size_t bytes_left = n, bytes;
+        size_t bytes;
+        size_t bytes_left;
+
+        bytes_left = n;
         for( ;; ) {
             if( fp->_cnt != 0 ) {
                 bytes = fp->_cnt;

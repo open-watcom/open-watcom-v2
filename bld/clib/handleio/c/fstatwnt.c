@@ -78,7 +78,7 @@
     osfh = __getOSHandle( handle );
     _AccessFileH( handle );
 
-    buf->st_mode = 0;                           /* 12-apr-94 */
+    buf->st_mode = 0;
 #ifdef DEFAULT_WINDOWING
     if( _WindowsIsWindowedHandle != NULL
       && _WindowsIsWindowedHandle( handle ) != NULL ) {

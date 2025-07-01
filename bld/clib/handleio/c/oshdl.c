@@ -61,5 +61,7 @@ _WCRTLINK long _get_osfhandle( int handle )
 
 _WCRTLINK int _os_handle( int handle )
 {
-    return( (int)_get_osfhandle( handle ) );
+    #define OSF_TO_OSHANDLE(h)  (int)(h)
+    return( OSF_TO_OSHANDLE( _get_osfhandle( handle ) ) );
+    #undef OSF_TO_OSHANDLE
 }

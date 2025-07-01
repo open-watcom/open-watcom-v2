@@ -36,6 +36,7 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #if defined( _M_IX86 )
     #include <i86.h>
@@ -202,7 +203,7 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const 
     CHAR_TYPE *p;
 
     p = buffer;
-    if( ! just_args ) {
+    if( just_args == 0 ) {
 #if defined( __OS2__ )
         path = path;
         /* OS/2 wants:  argv[0] '\0' arguments '\0' '\0'

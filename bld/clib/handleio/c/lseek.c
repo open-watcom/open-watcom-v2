@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ _WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
     /*** Set the _FILEEXT iomode_flags bit if positive offset ***/
     iomode_flags = __GetIOMode( handle );
 
-    if( offset >= 0 && !( iomode_flags & _APPEND ) ) {
+    if( offset >= 0 && (iomode_flags & _APPEND) == 0 ) {
         __SetIOMode( handle, iomode_flags | _FILEEXT );
     }
 #endif
@@ -76,7 +76,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
     /*** Set the _FILEEXT iomode_flags bit if positive offset ***/
     iomode_flags = __GetIOMode( handle );
 
-    if( offset > 0 && !(iomode_flags & _APPEND) )
+    if( offset > 0 && (iomode_flags & _APPEND) == 0 )
         __SetIOMode( handle, iomode_flags | _FILEEXT );
 
 #endif

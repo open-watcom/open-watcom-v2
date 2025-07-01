@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <float.h>
 #include "rtdata.h"
 
+
 #if defined(__AXP__)
 
 /*
@@ -45,10 +47,10 @@
 #define FPCR_ZERODIVIDE     0x00040000
 #define FPCR_INVALID        0x00020000
 
-extern unsigned long _GetFPCR(void);
-extern void          _SetFPCR(unsigned long);
+extern unsigned long _GetFPCR( void );
+extern void          _SetFPCR( unsigned long );
 
-static unsigned int MapToCW(unsigned long fpcr)
+static unsigned int MapToCW( unsigned long fpcr )
 {
     unsigned int cw;
 
@@ -57,26 +59,26 @@ static unsigned int MapToCW(unsigned long fpcr)
      */
     cw = (fpcr >> 16) & ~(_MCW_RC);
 
-    if (fpcr & FPCR_INEXACT)
+    if( fpcr & FPCR_INEXACT )
         cw &= ~_EM_INEXACT;
 
-    if (fpcr & FPCR_ZERODIVIDE)
+    if( fpcr & FPCR_ZERODIVIDE )
         cw &= ~_EM_ZERODIVIDE;
 
-    if (fpcr & FPCR_OVERFLOW)
+    if( fpcr & FPCR_OVERFLOW )
         cw &= ~_EM_OVERFLOW;
 
-    if (fpcr & FPCR_UNDERFLOW)
+    if( fpcr & FPCR_UNDERFLOW )
         cw &= ~_EM_UNDERFLOW;
 
-    if (fpcr & FPCR_INVALID)
+    if( fpcr & FPCR_INVALID )
         cw &= ~_EM_INVALID;
 
-    return cw;
+    return( cw );
 } /* MapToCW() */
 
 
-static unsigned long MapFromCW(unsigned int cw)
+static unsigned long MapFromCW( unsigned int cw )
 {
     unsigned long fpcr = 0L;
 
@@ -85,42 +87,40 @@ static unsigned long MapFromCW(unsigned int cw)
      */
     fpcr = (cw & ~_MCW_RC) << 16;
 
-    if (!(cw & _EM_INEXACT))
+    if( (cw & _EM_INEXACT) == 0 )
         fpcr |= FPCR_INEXACT;
 
-    if (!(cw & _EM_INVALID))
+    if( (cw & _EM_INVALID) == 0 )
         fpcr |= FPCR_INVALID;
 
-    if (!(cw & _EM_ZERODIVIDE))
+    if( (cw & _EM_ZERODIVIDE) == 0 )
         fpcr |= FPCR_ZERODIVIDE;
 
-    if (!(cw & _EM_OVERFLOW))
+    if( (cw & _EM_OVERFLOW) == 0 )
         fpcr |= FPCR_OVERFLOW;
 
-    if (!(cw & _EM_UNDERFLOW))
+    if( (cw & _EM_UNDERFLOW) == 0 )
         fpcr |= FPCR_UNDERFLOW;
 
-    return fpcr;
+    return( fpcr );
 } /* MapFromCW() */
 #endif
 
 
-_WCRTLINK unsigned _controlfp(unsigned new, unsigned mask)
+_WCRTLINK unsigned _controlfp( unsigned new, unsigned mask )
 {
 #if defined(_M_IX86)
-    return _control87(new, mask);               /* JBS 99/09/16 */
+    return( _control87( new, mask ) );
 #elif defined(__AXP__)
     unsigned int  cw;
 
-    cw = MapToCW(_GetFPCR());
+    cw = MapToCW( _GetFPCR() );
 
-    if (mask)
-    {
+    if( mask ) {
         cw = (cw & ~mask) | (new & mask);
-        _SetFPCR(MapFromCW(cw));
+        _SetFPCR( MapFromCW( cw ) );
     }
-
-    return cw;
+    return( cw );
 #elif defined(__PPC__)
     /* unused parameters */ (void)new; (void)mask;
     // No idea yet

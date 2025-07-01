@@ -43,20 +43,24 @@
 #include "lseek.h"
 #include "thread.h"
 
+
+#define PAD_SIZE	512
+
 // pad with zero bytes
-void static __padfile( int handle, long offset, long diff ) {
+void static __padfile( int handle, long offset, long diff )
+{
     int rc;
     unsigned amount;
-    char buff[512];
+    char buff[PAD_SIZE];
 
     if( __lseek( handle, offset, SEEK_SET ) != offset ) {
         // run away
         return;
     }
-    memset( buff, 0, 512 );
+    memset( buff, 0, PAD_SIZE );
     do {
-        amount = 512;
-        if( diff < 512 )
+        amount = PAD_SIZE;
+        if( diff < PAD_SIZE )
             amount = diff;
         rc = write( handle, buff, amount );
         if( rc != amount ) {
