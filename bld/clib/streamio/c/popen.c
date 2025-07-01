@@ -157,7 +157,7 @@ static int spawn_it( FILE *fp, const CHAR_TYPE *command )
     if( pid == -1 ) {
         return( 0 );
     }
-    _FP_PIPEDATA(fp).pid = pid;
+    _FP_PIPEDATA( fp ).pid = pid;
 
     /*** Free any memory used by parse_words ('words' freed on return) ***/
     for( numWords--; numWords >= 2; numWords-- ) {
@@ -369,8 +369,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
         close( handles[1] );
         return( NULL );
     }
-    _FP_PIPEDATA(fp).isPipe = 1;
-    _FP_PIPEDATA(fp).pid = -1;
+    _FP_PIPEDATA( fp ).isPipe = 1;
+    _FP_PIPEDATA( fp ).pid = -1;
 
     /*** Spawn the process ***/
     if( connect_pipe( fp, command, handles, readOrWrite, textOrBinary ) ) {

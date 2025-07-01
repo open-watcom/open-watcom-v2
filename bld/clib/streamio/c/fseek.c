@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
                     _ReleaseFile( fp );
                     return( -1 );
                 }
-                __reset_buffer(fp);
+                __reset_buffer( fp );
             }
         }   break;
         case SEEK_SET:
@@ -168,11 +168,11 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
                     _ReleaseFile( fp );
                     return( -1 );
                 }
-                __reset_buffer(fp);
+                __reset_buffer( fp );
             }
         }   break;
         case SEEK_END:
-            __reset_buffer(fp);
+            __reset_buffer( fp );
 #ifdef __INT64__
             if( _lseeki64( fileno( fp ), offset, origin ) == -1 ) {
 #else

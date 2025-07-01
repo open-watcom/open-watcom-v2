@@ -112,7 +112,7 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
                 fp->_flag |= _DIRTY;
                 if( (fp->_cnt == fp->_bufsize)
                   || (fp->_flag & _IONBF) ) {
-                    __flush(fp);
+                    __flush( fp );
                 }
             }
             buf = ((const char *)buf) + bytes;
@@ -136,8 +136,8 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
 
         /*** Use fputc, and make it think the stream is byte-oriented ***/
     #ifndef __NETWARE__
-        old_orientation = _FP_ORIENTATION(fp);
-        _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
+        old_orientation = _FP_ORIENTATION( fp );
+        _FP_ORIENTATION( fp ) = _BYTE_ORIENTED;
     #endif
         bufptr = (const char *)buf;
         do {
@@ -148,7 +148,7 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
             ++count;
         } while( count != n );
     #ifndef __NETWARE__
-        _FP_ORIENTATION(fp) = old_orientation;
+        _FP_ORIENTATION( fp ) = old_orientation;
     #endif
 
         if( not_buffered ) {        /* if wasn't buffered, then reset */

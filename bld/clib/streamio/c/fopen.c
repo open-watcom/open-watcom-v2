@@ -257,19 +257,19 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
     }
     fp->_flag |= file_flags;
     fp->_cnt = 0;
-    fp->_bufsize = 0;                       /* was BUFSIZ JBS 31-may-91 */
+    fp->_bufsize = 0;                       /* was BUFSIZ */
 #ifndef __NETWARE__
-    _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
-    _FP_EXTFLAGS(fp) = extflags;
+    _FP_ORIENTATION( fp ) = _NOT_ORIENTED;  /* initial orientation */
+    _FP_EXTFLAGS( fp ) = extflags;
 #endif
 #if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
-    _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
+    _FP_PIPEDATA( fp ).isPipe = 0;          /* not a pipe */
 #endif
     _FP_BASE( fp ) = NULL;
     if( file_flags & _APPEND ) {
         fseek( fp, 0L, SEEK_END );
     }
-    __chktty( fp );                         /* JBS 28-aug-90 */
+    __chktty( fp );
     return( fp );
 }
 
@@ -289,9 +289,7 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
 
     fp = __allocfp();
     if( fp != NULL ) {
-        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                           file_flags, extflags,
-                                           shflag, fp );
+        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode, file_flags, extflags, shflag, fp );
     }
     return( fp );
 }
@@ -362,9 +360,7 @@ _WCRTLINK FILE *__F_NAME(freopen,_wfreopen)( const CHAR_TYPE *name,
 #endif
     fp = close_file( fp );
     if( fp != NULL ) {
-        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                           file_flags, extflags,
-                                           0, fp );
+        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode, file_flags, extflags, 0, fp );
     }
     _ReleaseFileH( hdl );
     return( fp );

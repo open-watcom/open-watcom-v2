@@ -58,10 +58,9 @@
 
 static int __iomode( int handle, unsigned amode )
 {
-    int __errno;
-
+    int             __errno;
 #ifdef __UNIX__
-    int flags;
+    int             flags;
 
     if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
         return( -1 );
@@ -82,7 +81,7 @@ static int __iomode( int handle, unsigned amode )
         }
     }
 #else
-    unsigned iomode_flags;
+    unsigned        iomode_flags;
 
     /* make sure the handle has the same text/binary mode */
     iomode_flags = __GetIOMode( handle );
@@ -90,11 +89,11 @@ static int __iomode( int handle, unsigned amode )
     if( (amode ^ iomode_flags) & (_BINARY | _APPEND) ) {
         __errno = EACCES;
     }
-    if( ( amode & _READ )
+    if( (amode & _READ)
       && (iomode_flags & _READ) == 0 ) {
         __errno = EACCES;
     }
-    if( ( amode & _WRITE )
+    if( (amode & _WRITE)
       && (iomode_flags & _WRITE) == 0 ) {
         __errno = EACCES;
     }
@@ -133,19 +132,19 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         fp->_flag |= file_flags;
         fp->_cnt = 0;
         _FP_BASE( fp ) = NULL;
-        fp->_bufsize = 0;                   /* was BUFSIZ JBS 91/05/31 */
+        fp->_bufsize = 0;                   /* was BUFSIZ */
 #ifndef __NETWARE__
-        _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
-        _FP_EXTFLAGS(fp) = extflags;
+        _FP_ORIENTATION( fp ) = _NOT_ORIENTED; /* initial orientation */
+        _FP_EXTFLAGS( fp ) = extflags;
 #endif
 #if defined( __NT__ ) || defined( __OS2__ ) || defined(__UNIX__)
-        _FP_PIPEDATA(fp).isPipe = 0;    /* not a pipe */
+        _FP_PIPEDATA( fp ).isPipe = 0;    /* not a pipe */
 #endif
-        fp->_handle = handle;               /* BJS 91-07-23 */
+        fp->_handle = handle;
         if( __F_NAME(tolower,towlower)( (UCHAR_TYPE)*access_mode ) == STRING( 'a' ) ) {
             fseek( fp, 0, SEEK_END );
         }
-        __chktty( fp );                     /* JBS 31-may-91 */
+        __chktty( fp );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         __SetIOMode_grow( handle, file_flags );
 #endif

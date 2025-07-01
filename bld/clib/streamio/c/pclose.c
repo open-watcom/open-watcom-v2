@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,13 +42,13 @@ _WCRTLINK int _pclose( FILE *fp )
     int                 status;
 
     /*** Get the return code of the process ***/
-    if( _FP_PIPEDATA(fp).isPipe == 0 ) {
+    if( _FP_PIPEDATA( fp ).isPipe == 0 ) {
         return( -1 );                       /* must be a pipe */
     }
     if( fclose( fp ) ) {
         return( -1 );                       /* must close pipe before cwait */
     }
-    if( cwait( &status, _FP_PIPEDATA(fp).pid, WAIT_CHILD ) == -1 ) {
+    if( cwait( &status, _FP_PIPEDATA( fp ).pid, WAIT_CHILD ) == -1 ) {
         return( -1 );
     }
 

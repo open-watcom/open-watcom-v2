@@ -119,7 +119,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
                         bytes &= -512;
                     }
                 }
-                n = __qread( fileno(fp), buf, bytes );
+                n = __qread( fileno( fp ), buf, bytes );
                 if( n == -1 ) {
                     fp->_flag |= _SFERR;
                     break;

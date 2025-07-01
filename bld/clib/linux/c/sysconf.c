@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,7 +27,6 @@
 * Description:  Implementation of sysconf.  The supported parameters can
 *               always be expanded.
 *
-* Author: J. Armstrong
 ****************************************************************************/
 
 
@@ -93,7 +92,7 @@ static int __sysconf_nprocessors_conf( void )
         if( ret < val )
             ret = val;
         if( *end == '\0' )
-                break;
+            break;
         start = end + 1;
     }
     free( str );
@@ -164,12 +163,12 @@ static int __sysconf_somaxconn( void )
     char line[16];
 
     ret = 128;
-    fp = fopen("/proc/sys/net/core/somaxconn", "r");
-    if(fp != NULL) {
-        if(fgets(line, sizeof( line ), fp) != NULL) {
-            ret = atoi(line);
+    fp = fopen( "/proc/sys/net/core/somaxconn", "r" );
+    if( fp != NULL ) {
+        if( fgets( line, sizeof( line ), fp ) != NULL) {
+            ret = atoi( line );
         }
-        fclose(fp);
+        fclose( fp );
     }
     return ret;
 }
