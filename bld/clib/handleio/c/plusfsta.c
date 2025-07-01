@@ -90,20 +90,20 @@ _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
 
     ios_mode = __in | __out | __text;
 #else
-    int flags;
+    unsigned iomode_flags;
 
-    flags = __GetIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
     ios_mode = 0;
-    if( flags & _APPEND ) {
+    if( iomode_flags & _APPEND ) {
         ios_mode = __append;
     }
-    if( flags & _READ ) {
+    if( iomode_flags & _READ ) {
         ios_mode |= __in;
     }
-    if( flags & _WRITE ) {
+    if( iomode_flags & _WRITE ) {
         ios_mode |= __out;
     }
-    if( flags & _BINARY ) {
+    if( iomode_flags & _BINARY ) {
         ios_mode |= __binary;
     } else {
         ios_mode |= __text;

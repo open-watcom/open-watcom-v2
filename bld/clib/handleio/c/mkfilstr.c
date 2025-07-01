@@ -64,7 +64,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
     CHAR_TYPE *         p;
     int                 posixHandle;
     int                 osHandle;
-    int                 mode;
+    unsigned            mode;
     CHAR_TYPE           curElem[MAX_ELEM_SIZE+1];
     CHAR_TYPE           buf[9];
     size_t              len;
@@ -91,7 +91,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
             __F_NAME(itoa,_itow)( osHandle, buf, 16 );          /* OS handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
-            __F_NAME(itoa,_itow)( mode, buf, 16 );              /* file mode */
+            __F_NAME(utoa,_utow)( mode, buf, 16 );              /* file mode */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( "*" ) );  /* terminator */
 

@@ -56,18 +56,20 @@
 
 #ifndef __NETWARE__
 
-static int __iomode( int handle, int amode )
+static int __iomode( int handle, unsigned amode )
 {
-    int flags;
     int __errno;
 
 #ifdef __UNIX__
+    int flags;
+
     if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
         return( -1 );
     }
 
     __errno = EOK;
-    if( (flags & O_APPEND) && !(amode & _APPEND) ) {
+    if( (flags & O_APPEND)
+      && (amode & _APPEND) == 0 ) {
         __errno = EACCES;
     }
     if( (flags & O_ACCMODE) == O_RDONLY ) {
@@ -80,16 +82,20 @@ static int __iomode( int handle, int amode )
         }
     }
 #else
+    unsigned iomode_flags;
+
     /* make sure the handle has the same text/binary mode */
-    flags = __GetIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
     __errno = 0;
-    if( (amode ^ flags) & (_BINARY | _APPEND) ) {
+    if( (amode ^ iomode_flags) & (_BINARY | _APPEND) ) {
         __errno = EACCES;
     }
-    if( ( amode & _READ )  && !(flags & _READ) ) {
+    if( ( amode & _READ )
+      && (iomode_flags & _READ) == 0 ) {
         __errno = EACCES;
     }
-    if( ( amode & _WRITE ) && !(flags & _WRITE) ) {
+    if( ( amode & _WRITE )
+      && (iomode_flags & _WRITE) == 0 ) {
         __errno = EACCES;
     }
 #endif
@@ -104,7 +110,7 @@ static int __iomode( int handle, int amode )
 
 _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_mode )
 {
-    int             file_flags;
+    unsigned        file_flags;
     FILE            *fp;
     int             extflags;
 

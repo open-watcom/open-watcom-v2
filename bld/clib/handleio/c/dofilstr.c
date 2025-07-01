@@ -52,7 +52,7 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
     CHAR_TYPE *         p;
     int                 posixHandle;
     int                 osHandle;
-    int                 mode;
+    unsigned            mode;
     int                 len;
     CHAR_TYPE           buf[9];
 
@@ -86,7 +86,7 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
         len = p - envp;
         __F_NAME(strncpy,wcsncpy)( buf, envp, len );
         buf[len] = NULLCHAR;
-        mode = (int)__F_NAME(strtol,wcstol)( buf, NULL, 16 );
+        mode = (unsigned)__F_NAME(strtoul,wcstoul)( buf, NULL, 16 );
         p++;
 
         /*** Create the corresponding file ***/
