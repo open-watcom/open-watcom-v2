@@ -59,7 +59,11 @@ static int valid_speed( speed_t speed )
 _WCRTLINK speed_t cfgetispeed( const struct termios *termios_p )
 {
 #ifdef __LINUX__
+  #ifdef __MIPS__
+    return( (termios_p->c_cflag & CIBAUD) >> IBSHIFT );
+  #else
     return( termios_p->c_ispeed );
+  #endif
 #else
     return( termios_p->c_cflag & CBAUD );
 #endif
@@ -68,7 +72,11 @@ _WCRTLINK speed_t cfgetispeed( const struct termios *termios_p )
 _WCRTLINK speed_t cfgetospeed( const struct termios *termios_p )
 {
 #ifdef __LINUX__
+  #ifdef __MIPS__
+    return( termios_p->c_cflag & CBAUD );
+  #else
     return( termios_p->c_ospeed );
+  #endif
 #else
     return( termios_p->c_cflag & CBAUD );
 #endif
@@ -82,7 +90,11 @@ _WCRTLINK int cfsetispeed( struct termios *termios_p, speed_t speed )
         return( -1 );
     }
 #ifdef __LINUX__
+  #ifdef __MIPS__
+    termios_p->c_cflag = (termios_p->c_cflag & ~CIBAUD) | speed << IBSHIFT;
+  #else
     termios_p->c_ispeed = speed;
+  #endif
 #else
     termios_p->c_cflag |= speed;
 #endif
@@ -97,7 +109,11 @@ _WCRTLINK int cfsetospeed( struct termios *termios_p, speed_t speed )
         return( -1 );
     }
 #ifdef __LINUX__
+  #ifdef __MIPS__
+    termios_p->c_cflag = (termios_p->c_cflag & ~CBAUD) | speed;
+  #else
     termios_p->c_ospeed = speed;
+  #endif
 #else
     termios_p->c_cflag |= speed;
 #endif
