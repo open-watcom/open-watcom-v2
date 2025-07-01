@@ -90,7 +90,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /*
          * NT likes to refer to CON as CONIN$ or CONOUT$.
          */
-        if( !__F_NAME(_stricmp,_wcsicmp)( fname, STRING( "con" ) ) ) {
+        if( __F_NAME(_stricmp,_wcsicmp)( fname, STRING( "con" ) ) == 0 ) {
             tmp = STRING( "conin$" );
         } else {
             tmp = orig_path;  /* Need full name with path for CreateFile */
@@ -138,7 +138,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         }
     }
     mode |= S_IRUSR | S_IRGRP | S_IROTH;
-    if( !(attr & _A_RDONLY) ) {
+    if( (attr & _A_RDONLY) == 0 ) {
         mode |= S_IWUSR | S_IWGRP | S_IWOTH;
     }
     return( mode );

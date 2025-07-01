@@ -32,6 +32,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -55,9 +56,9 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     CHAR_TYPE           *fullp;
     struct RdosDirInfo   dinf;
     struct RdosDirEntry *dirent;
-    int                  isrootdir = 0;
-    int                  handle = 0;
-    int                  ok;
+    bool                 isrootdir;
+    int                  dir_handle;
+    bool                 found;
     CHAR_TYPE            check[_MAX_PATH];
     CHAR_TYPE            name[_MAX_PATH];
     char                *chainptr;
@@ -69,9 +70,10 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         return( -1 );
 
     /*** Determine if 'path' refers to a root directory ***/
+    isrootdir = false;
     if( _fullpath( fullpath, path, _MAX_PATH ) != NULL ) {
         if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
-            isrootdir = 1;
+            isrootdir = true;
         }
     } else {
         return( -1 );
@@ -88,13 +90,15 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         getcwd( cwd, _MAX_PATH );
 
         /* try to change to specified root */
-        if( chdir( path ) != 0 )  return( -1 );
+        if( chdir( path ) != 0 )
+            return( -1 );
 
         /* restore current directory */
         chdir( cwd );
 
         attrib   = _A_SUBDIR;
         name[0] = NULLCHAR;
+        dir_handle = 0;
     } else {                            /* not a root directory */
         fullp = fullpath + strlen( fullpath ) - 1;
         while( !IS_DIR_SEP( *fullp ) && fullp != fullpath )
@@ -114,17 +118,17 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
             return( -1 );
 
         dinf.Count = 0;
-        handle = RdosOpenDir( fullpath, &dinf );
+        dir_handle = RdosOpenDir( fullpath, &dinf );
 
-        ok = 0;
+        found = false;
         i = 0;
         chainptr = (char *)dinf.Entry;
         while( i < dinf.Count ) {
             dirent = (struct RdosDirEntry *)chainptr;
             strcpy( name, dirent->PathName );
             _strlwr( name );
-            if( !strcmp( check, name ) ) {
-                ok = 1;
+            if( strcmp( check, name ) == 0 ) {
+                found = true;
                 break;
             }
             i++;
@@ -132,8 +136,8 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
             chainptr += dirent->PathNameSize;
         }
 
-        if( !ok ) {
-            RdosCloseDir( handle );
+        if( !found ) {
+            RdosCloseDir( dir_handle );
             return( -1 );
         }
 
@@ -166,21 +170,21 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
     buf->st_rdev = buf->st_dev;
 
-    if( handle )
+    if( dir_handle ) {
         buf->st_size = dirent->Size;
-    else
+    } else {
         buf->st_size = 0;
-
+    }
     buf->st_mode = at2mode( attrib, name );
 
-    if( handle ) {
+    if( dir_handle ) {
         buf->st_ctime = __rdos_filetime_cvt( dirent->CreateTime );
         buf->st_mtime = __rdos_filetime_cvt( dirent->ModifyTime );
         buf->st_atime = __rdos_filetime_cvt( dirent->AccessTime );
         buf->st_ino = dirent->Inode;
         buf->st_uid = dirent->Uid;
         buf->st_gid = dirent->Gid;
-        RdosCloseDir( handle );
+        RdosCloseDir( dir_handle );
     } else {
         buf->st_ctime = -1;
         buf->st_mtime = -1;
@@ -222,7 +226,7 @@ static unsigned short at2mode( int attr, char *fname )
         }
     }
     mode |= S_IRUSR | S_IRGRP | S_IROTH;
-    if( !(attr & _A_RDONLY) )                   /* if file is not read-only */
+    if( (attr & _A_RDONLY) == 0 )               /* if file is not read-only */
         mode |= S_IWUSR | S_IWGRP | S_IWOTH;    /* - indicate writeable     */
     return( mode );
 }

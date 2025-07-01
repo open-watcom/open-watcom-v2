@@ -39,6 +39,7 @@
 #include "libwin32.h"
 #include "seterrno.h"
 
+
 _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
 {
     DWORD       attr;
@@ -48,7 +49,7 @@ _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
         return( __set_errno_nt() );
     }
     attr &= ~FILE_ATTRIBUTE_READONLY;
-    if( !( pmode & S_IWRITE ) ) {
+    if( (pmode & S_IWRITE) == 0 ) {
         attr |= FILE_ATTRIBUTE_READONLY;
     }
     if( __lib_SetFileAttributes( pathname, attr ) == 0 ) {

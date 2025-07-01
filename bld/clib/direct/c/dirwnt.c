@@ -66,7 +66,8 @@ static int is_directory( const CHAR_TYPE *name )
         curr_ch = _mbsnextc( (unsigned char *)name );
 #endif
         if( curr_ch == NULLCHAR ) {
-            if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ) {
+            if( IS_DIR_SEP( prev_ch )
+              || prev_ch == DRV_SEP ) {
                 /* directory, need add "*.*" */
                 return( 2 );
             }
@@ -130,7 +131,8 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
             return( NULL );
         }
     }
-    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+    if( i >= 0
+      && (tmp.d_attr & _A_SUBDIR) ) {
         size_t          len;
 
         /* directory, add wildcard */
@@ -168,7 +170,8 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     WIN32_FIND_DATA     ffd;
     DWORD               err;
 
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
@@ -189,8 +192,8 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
 /***********************************************************/
 {
-
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno_dos( ERROR_INVALID_HANDLE ) );
     }
     if( FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) == 0 ) {
@@ -206,7 +209,8 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
 _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 /**************************************************************/
 {
-    if( dirp == NULL || dirp->d_openpath == NULL )
+    if( dirp == NULL
+      || dirp->d_openpath == NULL )
         return;
     __F_NAME(___opendir,___wopendir)( dirp->d_openpath, dirp );
 }

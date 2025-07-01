@@ -38,9 +38,10 @@
 #include "iomode.h"
 #include "seterrno.h"
 
+
 _WCRTLINK unsigned _dos_write( int handle, void const *buffer, unsigned count, unsigned *bytes )
 {
-    if( WriteFile( __getOSHandle( handle ), buffer, count, (LPDWORD) bytes, NULL ) == 0 ) {
+    if( WriteFile( __getOSHandle( handle ), buffer, count, (LPDWORD)bytes, NULL ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

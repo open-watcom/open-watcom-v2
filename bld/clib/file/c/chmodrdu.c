@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <direct.h>
 #include <rdos.h>
 
+
 _WCRTLINK int chmod( const CHAR_TYPE *pathname, mode_t pmode )
 {
     int       attr;
@@ -43,7 +45,7 @@ _WCRTLINK int chmod( const CHAR_TYPE *pathname, mode_t pmode )
         return( -1 );
 
     attr &= ~FILE_ATTRIBUTE_READONLY;
-    if( !( pmode & S_IWRITE ) )
+    if( (pmode & S_IWRITE) == 0 )
         attr |= FILE_ATTRIBUTE_READONLY;
 
     if( RdosSetFileAttribute( pathname, attr ) )

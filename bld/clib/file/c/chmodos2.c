@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
         return( __set_errno_dos( rc ) );
     }
     attr &= ~_A_RDONLY;
-    if( !( pmode & S_IWRITE ) ) {
+    if( (pmode & S_IWRITE) == 0 ) {
         attr |= _A_RDONLY;
     }
 #ifdef _M_I86

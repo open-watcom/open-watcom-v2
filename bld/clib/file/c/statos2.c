@@ -79,7 +79,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         }
     }
     mode |= S_IRUSR | S_IRGRP | S_IROTH;
-    if( !(attr & _A_RDONLY) )                   /* if file is not read-only */
+    if( (attr & _A_RDONLY) == 0 )               /* if file is not read-only */
         mode |= S_IWUSR | S_IWGRP | S_IWOTH;    /* - indicate writeable     */
     return( mode );
 }
@@ -183,7 +183,8 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         if( rc == 0 ) {
             DosFindClose( handle );
         }
-        if( rc != 0 || searchcount != 1 ) {
+        if( rc != 0
+          || searchcount != 1 ) {
             _RWD_errno = ENOENT;
             return( -1 );
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dos.h>
@@ -117,7 +118,7 @@ static unsigned short at2mode( int attr, char *fname )
         }
     }
     mode |= S_IRUSR | S_IRGRP | S_IROTH;
-    if( !(attr & _A_RDONLY) )                   /* if file is not read-only */
+    if( (attr & _A_RDONLY) == 0 )                   /* if file is not read-only */
         mode |= S_IWUSR | S_IWGRP | S_IWOTH;    /* - indicate writeable     */
     return( mode );
 }
@@ -184,25 +185,25 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #endif
         if( _dos_findfirst( __F_NAME(path,mbPath), ALL_ATTRIB, &fdta ) != 0 ) {
             int         handle;
-            int         canread = 0;
-            int         canwrite = 0;
-            int         fstatok = 0;
+            bool        canread = false;
+            bool        canwrite = false;
+            bool        fstatok = false;
 
             // Try getting information another way.
             rc = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle != -1 ) {
-                canwrite = 1;
+                canwrite = true;
                 if( fstat( handle, buf ) == -1 ) {
                     rc = _RWD_errno;
                 } else {
-                    fstatok = 1;
+                    fstatok = true;
                 }
             }
             close( handle );
             handle = __F_NAME(open,_wopen)( path, O_RDONLY );
             if( handle != -1 ) {
-                canread = 1;
+                canread = true;
                 if( !fstatok ) {
                     if( fstat( handle, buf ) == -1 ) {
                         rc = _RWD_errno;
@@ -210,7 +211,8 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
                 }
             }
             close( handle );
-            if( !canread && !canwrite ) {
+            if( !canread
+              && !canwrite ) {
                 _RWD_errno = ENOENT;
                 return( -1 );
             }
