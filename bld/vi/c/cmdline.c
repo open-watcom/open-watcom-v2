@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         break;
     case PCL_T_ACTIVATEIDE:
 #ifdef __WIN__
-        StartIDE( InstanceHandle, TRUE );
+        StartIDE( InstanceHandle, true );
         rc = ERR_NO_ERR;
 #endif
         break;

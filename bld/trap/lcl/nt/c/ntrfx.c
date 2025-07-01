@@ -105,7 +105,8 @@ static int nt_get_drive( void )
     char        dir[MAX_PATH];
 
     if( GetCurrentDirectory( sizeof( dir ), dir ) ) {
-        if( dir[0] != '\0' && dir[1] == ':' ) {
+        if( dir[0] != '\0'
+          && dir[1] == ':' ) {
             return( CHARLOW( dir[0] ) - 'a' );
         }
     }
@@ -317,7 +318,7 @@ trap_retval TRAP_RFX( findfirst )( void )
 {
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
-    HANDLE              h;
+    HANDLE              osffh;
     WIN32_FIND_DATA     ffd;
     rfx_find            *info;
     unsigned            nt_attribs;
@@ -327,16 +328,17 @@ trap_retval TRAP_RFX( findfirst )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-    h = __lib_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
-    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    osffh = __lib_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
+    if( osffh == INVALID_HANDLE_VALUE
+      || !__NTFindNextFileWithAttr( osffh, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
-            FindClose( h );
+            FindClose( osffh );
         }
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    makeDTARFX( &ffd, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, osffh, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
@@ -345,7 +347,7 @@ trap_retval TRAP_RFX( findnext )( void )
     WIN32_FIND_DATA     ffd;
     rfx_findnext_ret    *ret;
     rfx_find            *info;
-    HANDLE              h;
+    HANDLE              osffh;
     unsigned            nt_attribs;
 
     info = GetInPtr( sizeof( rfx_findnext_req ) );
@@ -355,16 +357,17 @@ trap_retval TRAP_RFX( findnext )( void )
         ret->err = -1;
         return( sizeof( *ret ) );
     }
-    h = (HANDLE)DTARFX_HANDLE_OF( info );
+    osffh = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( __lib_FindNextFile( h, &ffd ) == 0 || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    if( __lib_FindNextFile( osffh, &ffd ) == 0
+      || !__NTFindNextFileWithAttr( osffh, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
-        FindClose( h );
+        FindClose( osffh );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    makeDTARFX( &ffd, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, osffh, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
@@ -414,7 +417,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     if( *name != '\\' ) {
         nt_getdcwd( drive, tmp, sizeof( tmp ) );
         p = tmp;
-        if( p[0] != '\0' && p[1] == ':' )
+        if( p[0] != '\0'
+          && p[1] == ':' )
             p += 2;
         strncpy( fullname, p, fullname_maxlen );
         fullname[fullname_maxlen] = '\0';

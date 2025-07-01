@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
+#include <stdbool.h>
 #include <string.h>
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
@@ -47,30 +49,27 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam );
 WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
 {
     char        buf[256];
-    BOOL        *found;
     int         len;
 
-    lparam = lparam;
     len = GetClassName( hwnd, buf, sizeof( buf ) );
     buf[len] = '\0';
     if( strcmp( buf, IDE_WINDOW_CLASS ) == 0 ) {
         GetWindowText( hwnd, buf, sizeof( buf ) );
         if( strncmp( buf, IDE_WINDOW_CAPTION, IDE_WIN_CAP_LEN ) == 0 ) {
             SetWindowPos( hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-            found = (BOOL *)lparam;
-            *found = TRUE;
+            *(bool *)lparam = true;
             return( FALSE );
         }
     }
     return( TRUE );
 }
 
-void StartIDE( HANDLE instance, BOOL dospawn )
+void StartIDE( HANDLE instance, bool dospawn )
 {
-    BOOL        found;
+    bool        found;
     WNDENUMPROC wndenumproc;
 
-    found = FALSE;
+    found = false;
     wndenumproc = MakeProcInstance_WNDENUM( FindWatIDEHwnd, instance );
     EnumWindows( wndenumproc, (LPARAM)&found );
     FreeProcInstance_WNDENUM( wndenumproc );
@@ -82,11 +81,11 @@ void StartIDE( HANDLE instance, BOOL dospawn )
 #ifdef STAND_ALONE
 int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow )
 {
-    previnst = previnst;
-    cmdline = cmdline;
-    cmdshow = cmdshow;
+    (void)previnst;
+    (void)cmdline;
+    (void)cmdshow;
 
-    StartIDE( currinst, TRUE );
+    StartIDE( currinst, true );
     return( 0 );
 }
 #endif
