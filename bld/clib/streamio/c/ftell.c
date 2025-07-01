@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,8 @@ _WCRTLINK long ftell( FILE *fp )
 #endif
 
     _ValidFile( fp, -1 );
-    if( fp->_flag & _APPEND  &&  fp->_flag & _DIRTY ) {
+    if( (fp->_flag & _APPEND)
+      && (fp->_flag & _DIRTY) ) {
         fflush( fp );   /* if data written in append mode, OS must know */
     }
 #ifdef __INT64__

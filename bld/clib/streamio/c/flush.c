@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,8 @@ _WCRTLINK int __flush( FILE *fp )
     _AccessFile( fp );
     if( fp->_flag & _DIRTY ) {
         fp->_flag &= ~_DIRTY;
-        if( (fp->_flag & _WRITE) && (_FP_BASE( fp ) != NULL) ) {
+        if( (fp->_flag & _WRITE)
+          && (_FP_BASE( fp ) != NULL) ) {
             ptr = _FP_BASE( fp );
             amount = fp->_cnt;
             while( amount != 0 && ret == 0 ) {
@@ -81,14 +82,13 @@ _WCRTLINK int __flush( FILE *fp )
                 if( len == -1 ) {
                     fp->_flag |= _SFERR;
                     ret = EOF;
-                }
 #ifndef __UNIX__
-                else if( len == 0 ) {
+                } else if( len == 0 ) {
                     _RWD_errno = ENOSPC;
                     fp->_flag |= _SFERR;
                     ret = EOF;
-                }
 #endif
+                }
                 ptr += len;
                 amount -= len;
             }
@@ -96,9 +96,9 @@ _WCRTLINK int __flush( FILE *fp )
     } else if( _FP_BASE( fp ) != NULL ) {         /* not dirty */
         /* fseek( fp, ftell( fp ), SEEK_SET ); */
         fp->_flag &= ~_EOF;
-        if( !(fp->_flag & _ISTTY) ) {
+        if( (fp->_flag & _ISTTY) == 0 ) {
             offset = fp->_cnt;
-            if( offset != 0 ) { /* 10-aug-89 JD */
+            if( offset != 0 ) {
                 offset = __lseek( fileno( fp ), -offset, SEEK_CUR );
             }
             if( offset == -1 ) {
@@ -110,7 +110,8 @@ _WCRTLINK int __flush( FILE *fp )
     fp->_ptr = _FP_BASE( fp );   /* reset ptr to start of buffer */
     fp->_cnt = 0;
 #if !defined( __NETWARE__ )
-    if( ret == 0  &&  (_FP_EXTFLAGS(fp) & _COMMIT) ) {
+    if( ret == 0
+      && (_FP_EXTFLAGS( fp ) & _COMMIT) ) {
         if( fsync( fileno( fp ) ) == -1 ) {
             ret = EOF;
         }

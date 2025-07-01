@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,8 @@ static int docloseall( unsigned dont_close )
         next = link->next;
         fp = link->stream;
         close_handle = 1;
-        if ((fp->_flag & _DYNAMIC) || (fp->_flag & _TMPFIL)) {
+        if( (fp->_flag & _DYNAMIC)
+          || (fp->_flag & _TMPFIL) ) {
             rc |= __shutdown_stream( fp, close_handle );
             ++number_of_files_closed;
         } else if( fp >= bottom ) {

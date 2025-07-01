@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,8 +71,8 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
     if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );                    /* allocate buffer */
     }
-    oflag = fp->_flag & (_SFERR | _EOF);    /* JBS 27-jan-92 */
-    fp->_flag &= ~(_SFERR | _EOF);          /* JBS 27-jan-92 */
+    oflag = fp->_flag & (_SFERR | _EOF);
+    fp->_flag &= ~(_SFERR | _EOF);
     count = 0;
 #if !defined( __UNIX__ )
     if( fp->_flag & _BINARY ) {             /* binary I/O */
@@ -83,9 +83,10 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
 
         do {
             /* if our buffer is empty, and user's buffer is larger,
-               then write directly from user's buffer.  28-apr-90 */
+               then write directly from user's buffer. */
 
-            if( fp->_cnt == 0  &&  bytes_left >= fp->_bufsize ) {
+            if( fp->_cnt == 0
+              && bytes_left >= fp->_bufsize ) {
                 bytes = bytes_left & -512;          /* multiple of 512 */
                 if( bytes == 0 ) {
                     bytes = bytes_left;             /* bufsize < 512   */
@@ -93,13 +94,12 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
                 n = __qwrite( fileno( fp ), buf, bytes );
                 if( n == -1 ) {
                     fp->_flag |= _SFERR;
-                }
 #if !defined( __UNIX__ )
-                else if( n == 0 ) {
+                } else if( n == 0 ) {
                     _RWD_errno = ENOSPC;
                     fp->_flag |= _SFERR;
-                }
 #endif
+                }
                 bytes = n;
             } else {
                 bytes = fp->_bufsize - fp->_cnt;
@@ -110,7 +110,8 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
                 fp->_ptr += bytes;
                 fp->_cnt += bytes;
                 fp->_flag |= _DIRTY;
-                if( (fp->_cnt == fp->_bufsize) || (fp->_flag & _IONBF) ) {
+                if( (fp->_cnt == fp->_bufsize)
+                  || (fp->_flag & _IONBF) ) {
                     __flush(fp);
                 }
             }
@@ -141,7 +142,9 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
         bufptr = (const char *)buf;
         do {
             fputc( *(bufptr++), fp );
-            if( fp->_flag & (_EOF | _SFERR) ) break;
+            if( fp->_flag & (_EOF | _SFERR) ) {
+                break;
+            }
             ++count;
         } while( count != n );
     #ifndef __NETWARE__
@@ -157,13 +160,13 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
     }
     if( fp->_flag & _SFERR ) {
         /*
-         * Quantum 11-17-92 Temporary buffering confuses the return
-         *                  value if the call is interrupted.
-         *                  kludge: return 0 on error
+         * Quantum  Temporary buffering confuses the return
+         *          value if the call is interrupted.
+         *          kludge: return 0 on error
          */
         count = 0;
     }
-    fp->_flag |= oflag;                     /* JBS 27-jan-92 */
+    fp->_flag |= oflag;
     _ReleaseFile( fp );
     return( count / size );
 }

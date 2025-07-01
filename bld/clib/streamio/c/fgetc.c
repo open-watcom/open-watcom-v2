@@ -70,21 +70,19 @@ int __fill_buffer( FILE *fp )
     if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );
     }
-    if( fp->_flag & _ISTTY ) {                      /* 20-aug-90 */
+    if( fp->_flag & _ISTTY ) {
         if( fp->_flag & (_IONBF | _IOLBF) ) {
             __flushall( _ISTTY );           /* flush all TTY output */
         }
     }
-    fp->_flag &= ~_UNGET;                           /* 10-mar-90 */
+    fp->_flag &= ~_UNGET;
     fp->_ptr = _FP_BASE( fp );
 #ifdef __UNIX__
-    fp->_cnt = __qread( fileno( fp ), fp->_ptr,
-        (fp->_flag & _IONBF) ? 1 : fp->_bufsize );
+    fp->_cnt = __qread( fileno( fp ), fp->_ptr, (fp->_flag & _IONBF) ? 1 : fp->_bufsize );
 #else
-    if(( fp->_flag & (_IONBF | _ISTTY)) == (_IONBF | _ISTTY) &&
-       ( fileno( fp ) == STDIN_FILENO ))
-    {
-        int c;                      /* JBS 31-may-91 */
+    if( (fp->_flag & (_IONBF | _ISTTY)) == (_IONBF | _ISTTY)
+      && ( fileno( fp ) == STDIN_FILENO ) ) {
+        int c;
 
         fp->_cnt = 0;
         c = getche();
@@ -145,7 +143,7 @@ _WCRTLINK int fgetc( FILE *fp )
         }
     }
 #ifndef __UNIX__
-    if( !(fp->_flag & _BINARY) ) {
+    if( (fp->_flag & _BINARY) == 0 ) {
         if( c == '\r' ) {
             fp->_cnt--;
             // it is important that this remain a relative comparison
@@ -181,12 +179,13 @@ static int __read_wide_char( FILE *fp, wchar_t *wc )
         int             rc;
 
         /*** Read the multibyte character ***/
-        if( !fread( &mbc[0], 1, 1, fp ) )
+        if( fread( &mbc[0], 1, 1, fp ) == 0 )
             return( 0 );
 
         if( _ismbblead( (unsigned char)mbc[0] ) ) {
-            if( !fread( &mbc[1], 1, 1, fp ) )
+            if( fread( &mbc[1], 1, 1, fp ) == 0 ) {
                 return( 0 );
+            }
         }
 
         /*** Convert it to wide form ***/
@@ -212,12 +211,13 @@ _WCRTLINK wint_t fgetwc( FILE *fp )
     ORIENT_STREAM( fp, WEOF );
 
     /*** Read the character ***/
-    if( !__read_wide_char( fp, &c ) ) {
+    if( __read_wide_char( fp, &c ) == 0 ) {
         _ReleaseFile( fp );
         return( WEOF );
     }
-    if( !(fp->_flag & _BINARY) && (c == L'\r') ) {
-        if( !__read_wide_char( fp, &c ) ) {
+    if( (fp->_flag & _BINARY) == 0
+      && (c == L'\r') ) {
+        if( __read_wide_char( fp, &c ) == 0 ) {
             _ReleaseFile( fp );
             return( WEOF );
         }
