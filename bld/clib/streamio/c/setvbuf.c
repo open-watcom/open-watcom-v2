@@ -41,8 +41,6 @@
 
 _WCRTLINK int setvbuf( FILE *fp, char *buf, int mode, size_t size )
 {
-    unsigned    flags;
-
     __stream_check( fp, 1 );
     __null_check( buf, 2 );
     if( size > INT_MAX ) {
