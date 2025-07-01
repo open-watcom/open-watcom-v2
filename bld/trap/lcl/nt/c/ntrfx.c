@@ -332,7 +332,7 @@ trap_retval TRAP_RFX( findfirst )( void )
     if( osffh == INVALID_HANDLE_VALUE
       || !__NTFindNextFileWithAttr( osffh, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
-        if( h != INVALID_HANDLE_VALUE ) {
+        if( osffh != INVALID_HANDLE_VALUE ) {
             FindClose( osffh );
         }
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
