@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -67,7 +67,7 @@ static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
     char            szFilePath[MAX_PATH];
     char            *pch;
     WIN32_FIND_DATA wfd;
-    HANDLE          hFindFile;
+    HANDLE          osffh;
     MSG             msg;
 
     strcpy( szFilter, pszFolder );
@@ -75,7 +75,7 @@ static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
     strcpy( szFilePath, pszFolder );
     strcat( szFilePath, "\\" );
     pch = szFilePath + strlen( szFilePath );
-    hFindFile = FindFirstFile( szFilter, &wfd );
+    osffh = FindFirstFile( szFilter, &wfd );
     do {
         /* Let the progress dialog handle any messages. */
         while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
@@ -85,10 +85,11 @@ static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
             }
         }
 
-        if( !strcmp( wfd.cFileName, "." ) || !strcmp( wfd.cFileName, ".." ) ) {
+        if( strcmp( wfd.cFileName, "." ) == 0
+          || strcmp( wfd.cFileName, ".." ) == 0 ) {
             /* Skip over the special directories. */
-        } else if( pszUninstallFile != NULL &&
-                   !stricmp( wfd.cFileName, pszUninstallFile ) ) {
+        } else if( pszUninstallFile != NULL
+          && stricmp( wfd.cFileName, pszUninstallFile ) == 0 ) {
             /* Just skip over the uninstaller file for now. */
         } else {
             strcpy( pch, wfd.cFileName );
@@ -101,8 +102,8 @@ static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
             }
         }
 
-    } while( FindNextFile( hFindFile, &wfd ) );
-    FindClose( hFindFile );
+    } while( FindNextFile( osffh, &wfd ) );
+    FindClose( osffh );
 
 } /* DeleteFolder */
 
@@ -132,7 +133,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     char            *pszUninstallFile;
     HWND            hDlg;
     WIN32_FIND_DATA wfd;
-    HANDLE          hFindFile;
+    HANDLE          osffh;
     LPITEMIDLIST    pidlPrograms;
     char            szProgramsPath[MAX_PATH];
 
@@ -158,14 +159,14 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     strcpy( szCheckPath, szInstallPath );
     strcat( szCheckPath, "\\" );
     strcat( szCheckPath, CHECK_FILE_NAME );
-    hFindFile = FindFirstFile( szCheckPath, &wfd );
-    if( hFindFile == INVALID_HANDLE_VALUE ) {
+    osffh = FindFirstFile( szCheckPath, &wfd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         pszMessage = GetRCString( UNINS_NO_OW_INST );
         MessageBox( NULL, pszMessage, pszTitle, MB_OK | MB_ICONSTOP );
         FreeRCString( pszTitle );
         return( 1 );
     }
-    FindClose( hFindFile );
+    FindClose( osffh );
 
     /*
      * Check that the user actually wants to uninstall Open Watcom.
