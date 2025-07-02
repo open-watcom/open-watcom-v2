@@ -219,24 +219,39 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fname[256];
     size_t      len;
+    bool        found;
+    char        *p;
+#ifdef BLDVER
+    char        buffer[_MAX_PATH];
+#endif
 
     /* unused parameters */ (void)ftype;
 
-    len = 0;
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+    _searchenv( fname, "WD_PATH" QSTR( BLDVER ), buffer );
+    if( *buffer != '\0' ) {
+        found = true;
+        p = buffer;
+    } else {
+        found = false;
+        p = fname;
+    }
+#else
+    found = true;
+    p = fname;
+#endif
+    len = strlen( p );
     if( filename_maxlen > 0 ) {
         filename_maxlen--;
-        if( base_name_len == 0 )
-            base_name_len = strlen( base_name );
-        strncpy( fname, base_name, base_name_len );
-        strcpy( fname + base_name_len, defext );
-#ifdef BLDVER
-        _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
-#endif
-        len = strlen( fname );
-        if( len > filename_maxlen )
-            len = filename_maxlen;
-        strncpy( filename, fname, len );
-        filename[len] = '\0';
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }

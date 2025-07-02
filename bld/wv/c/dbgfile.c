@@ -789,6 +789,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     char        *p;
     char_ring   *curr;
     size_t      len;
+    bool        found;
 
     /* unused parameters */ (void)ftype;
 
@@ -800,21 +801,29 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
      * check open file in current directory
      */
     if( access( fname, F_OK ) == 0 ) {
+        found = true;
         p = fname;
     } else {
-        p = "";
         /*
          * check open file in debugger directory list
          */
+        found = false;
         for( curr = LclPath; curr != NULL; curr = curr->next ) {
             if( MakeName( curr->name, fname, buffer, sizeof( buffer ) ) ) {
                 if( access( buffer, F_OK ) == 0 ) {
+                    found = true;
                     p = buffer;
                     break;
                 }
             }
         }
     }
+    /*
+     * if file not found then return 0 and filename buffer is filled
+     * by base file name to use with error message
+     */
+    if( !found )
+        p = fname;
     len = strlen( p );
     if( filename_maxlen > 0 ) {
         filename_maxlen--;
@@ -824,7 +833,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
             strncpy( filename, p, filename_maxlen );
         filename[filename_maxlen] = NULLCHAR;
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }
 
 #if defined( __DOS__ ) || defined( __UNIX__ )

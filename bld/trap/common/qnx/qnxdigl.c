@@ -49,6 +49,8 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fname[PATH_MAX + 1];
     size_t      len;
+    bool        found;
+    char        *p;
 
     /* unused parameters */ (void)ftype;
 
@@ -57,15 +59,23 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
     len = FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff );
+    if( *RWBuff != '\0' ) {
+        found = true;
+        p = RWBuff;
+    } else {
+        found = false;
+        p = fname;
+        len = strlen( fname );
+    }
     if( filename_maxlen > 0 ) {
         filename_maxlen--;
         if( filename_maxlen > len )
             filename_maxlen = len;
         if( filename_maxlen > 0 )
-            strncpy( filename, RWBuff, filename_maxlen );
+            strncpy( filename, p, filename_maxlen );
         filename[filename_maxlen] = '\0';
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }
 
 FILE *DIGLoader( Open )( const char *filename )
