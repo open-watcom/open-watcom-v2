@@ -54,10 +54,10 @@ static int IsMatch( struct dirent *dir, const char *fname )
     if( strlen( sptr ) == 0 )
         return( 1 );
 
-    if( !strcmp( sptr, "*.*" ) )
+    if( strcmp( sptr, "*.*" ) == 0 )
         return( 1 );
 
-    if( !strcmp( sptr, "*." ) ) {
+    if( strcmp( sptr, "*." ) == 0 ) {
         if( strchr( fptr, '.' ) ) {
             return( 0 );
         } else {

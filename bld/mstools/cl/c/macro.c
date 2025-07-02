@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -238,8 +239,10 @@ static int purge_from_list( int purgeOnly, const char *name )
 
     /*** Try to find the item ***/
     while( curElem != NULL ) {
-        if( !strcmp( name, curElem->name ) ) {
-            if( (purgeOnly==PURGE_ALL)  ||  (purgeOnly==PURGE_DEFINE && curElem->type==DEFINE) ) {
+        if( strcmp( name, curElem->name ) == 0 ) {
+            if( (purgeOnly == PURGE_ALL)
+              || (purgeOnly == PURGE_DEFINE
+              && curElem->type == DEFINE) ) {
                 /*** Found one we're allowed to delete ***/
                 delete_item( curElem );
                 retcode = PURGE_PURGED;

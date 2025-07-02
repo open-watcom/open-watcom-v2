@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2007 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20257 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -79,12 +79,12 @@ void add_GML_tag_research( char * tag )
         wk = sys_tags;
     }
 
-    while( wk ) {
-        if( !stricmp( tag, wk->tagname ) ) {
+    while( wk != NULL ) {
+        if( stricmp( tag, wk->tagname ) == 0 ) {
             wk->count++;
             return;
         }
-        if( !wk->nxt ) {
+        if( wk->nxt == NULL ) {
             break;
         }
         wk = wk->nxt;
@@ -112,29 +112,29 @@ void add_GML_tag_research( char * tag )
 
 void    print_GML_tags_research( void )
 {
-    taglist *   wk = lay_tags;
-    int         cnt = 0;
-    int         cnt1 = 0;
+    taglist     *wk;
+    int         cnt;
+    int         cnt1;
 
+    cnt = 0;
+    cnt1 = 0;
+    wk = lay_tags;
     if( wk != NULL ) {
         printf_research( "\nGML layout tag list sorted by first occurrence\n\n" );
-        while( wk ) {
-            printf_research("%6d  :%s\n", wk->count, wk->tagname );
+        while( wk != NULL ) {
+            printf_research( "%6d  :%s\n", wk->count, wk->tagname );
             cnt += wk->count;
             cnt1++;
             wk = wk->nxt;
-
         }
     }
     cnt = 0;
     cnt1 = 0;
-    wk = sys_tags;
     printf_research( "\nGML tag / macro list sorted by first occurrence\n\n" );
-    while( wk ) {
+    for( wk = sys_tags; wk != NULL; wk = wk->nxt ) {
         printf_research( "%6d  :%s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
-        wk = wk->nxt;
     }
     print_total( cnt, cnt1 );
 }
@@ -145,10 +145,11 @@ void    print_GML_tags_research( void )
 
 void    free_GML_tags_research( void )
 {
-    taglist *   wk = sys_tags;
-    taglist *   wk1;
+    taglist     *wk;
+    taglist     *wk1;
 
-    while( wk ) {
+    wk = sys_tags;
+    while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
         mem_free( wk1) ;
@@ -156,7 +157,7 @@ void    free_GML_tags_research( void )
     sys_tags = NULL;
 
     wk = lay_tags;
-    while( wk ) {
+    while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
         mem_free( wk1) ;
@@ -170,18 +171,17 @@ void    free_GML_tags_research( void )
 
 void    add_SCR_tag_research( char * tag )
 {
-    taglist *   wk = scrkws;
-    taglist *   new;
+    taglist     *wk;
+    taglist     *new;
 
-    while( wk ) {
-        if( !stricmp( tag, wk->tagname ) ) {
+    for( wk = scrkws; wk != NULL; wk = wk->nxt ) {
+        if( stricmp( tag, wk->tagname ) == 0 ) {
             wk->count++;
             return;
         }
         if( wk->nxt == NULL) {
             break;
         }
-        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
@@ -201,12 +201,14 @@ void    add_SCR_tag_research( char * tag )
 
 void    print_SCR_tags_research( void )
 {
-    taglist *   wk = scrkws;
-    int         cnt = 0;
-    int         cnt1 = 0;
+    taglist     *wk;
+    int         cnt;
+    int         cnt1;
 
     printf_research(
         "\nScript controlword / macro list sorted by first occurrence\n\n" );
+    cnt = 0;
+    cnt1 = 0;
     for( wk = scrkws; wk != NULL; wk = wk->nxt ) {
         printf_research("%6d  .%s\n", wk->count, wk->tagname );
         cnt += wk->count;
@@ -221,10 +223,11 @@ void    print_SCR_tags_research( void )
 
 void    free_SCR_tags_research( void )
 {
-    taglist *   wk = scrkws;
-    taglist *   wk1;
+    taglist     *wk;
+    taglist     *wk1;
 
-    while( wk ) {
+    wk = scrkws;
+    while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
         mem_free( wk1) ;
@@ -239,18 +242,17 @@ void    free_SCR_tags_research( void )
 
 void    add_multi_func_research( const char *fun )
 {
-    taglist *   wk = multi_funcs;
-    taglist *   new;
+    taglist     *wk;
+    taglist     *new;
 
-    while( wk ) {
-        if( !stricmp( fun, wk->tagname ) ) {
+    for( wk = multi_funcs; wk != NULL; wk = wk->nxt ) {
+        if( stricmp( fun, wk->tagname ) == 0 ) {
             wk->count++;
             return;
         }
         if( wk->nxt == NULL) {
             break;
         }
-        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
@@ -270,12 +272,14 @@ void    add_multi_func_research( const char *fun )
 
 void    print_multi_funcs_research( void )
 {
-    taglist *   wk = multi_funcs;
-    int         cnt = 0;
-    int         cnt1 = 0;
+    taglist     *wk;
+    int         cnt;
+    int         cnt1;
 
     printf_research(
         "\nScript multi letter functions list sorted by first occurrence\n\n" );
+    cnt = 0;
+    cnt1 = 0;
     for( wk = multi_funcs; wk != NULL; wk = wk->nxt ) {
         printf_research("%6d  %s\n", wk->count, wk->tagname );
         cnt += wk->count;
@@ -290,10 +294,11 @@ void    print_multi_funcs_research( void )
 
 void    free_multi_funcs_research( void )
 {
-    taglist *   wk = multi_funcs;
-    taglist *   wk1;
+    taglist     *wk;
+    taglist     *wk1;
 
-    while( wk ) {
+    wk = multi_funcs;
+    while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
         mem_free( wk1) ;
@@ -308,18 +313,17 @@ void    free_multi_funcs_research( void )
 
 void    add_single_func_research( const char *fun )
 {
-    taglist *   wk = single_funcs;
-    taglist *   new;
+    taglist     *wk;
+    taglist     *new;
 
-    while( wk ) {
+    for( wk = single_funcs; wk != NULL; wk = wk->nxt ) {
         if( *fun == *(wk->tagname) ) {
             wk->count++;
             return;
         }
-        if( wk->nxt == NULL) {
+        if( wk->nxt == NULL ) {
             break;
         }
-        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
@@ -339,12 +343,14 @@ void    add_single_func_research( const char *fun )
 
 void    print_single_funcs_research( void )
 {
-    taglist *   wk = single_funcs;
-    int         cnt = 0;
-    int         cnt1 = 0;
+    taglist     *wk;
+    int         cnt;
+    int         cnt1;
 
     printf_research(
         "\nScript single letter functions list sorted by first occurrence\n\n" );
+    cnt = 0;
+    cnt1 = 0;
     for( wk = single_funcs; wk != NULL; wk = wk->nxt ) {
         printf_research("%6d  %s\n", wk->count, wk->tagname );
         cnt += wk->count;
@@ -359,13 +365,14 @@ void    print_single_funcs_research( void )
 
 void    free_single_funcs_research( void )
 {
-    taglist *   wk = single_funcs;
-    taglist *   wk1;
+    taglist     *wk;
+    taglist     *wk1;
 
-    while( wk ) {
+    wk = single_funcs;
+    while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1) ;
+        mem_free( wk1 );
     }
     single_funcs = NULL;
 }
@@ -380,7 +387,8 @@ void    test_out_t_line( text_line  * a_line )
     text_chars  *   tw;
     char            buf[BUF_SIZE + 1];
 
-    if( a_line == NULL || a_line->first == NULL) {
+    if( a_line == NULL
+      || a_line->first == NULL ) {
         return;
     }
 
@@ -388,7 +396,6 @@ void    test_out_t_line( text_line  * a_line )
              a_line->line_height );
 
     for( tw = a_line->first; tw != NULL; tw = tw->next ) {
-
         snprintf( buf, sizeof( buf ),
                   "fnt:%d x:%d-%d w:%d cnt:%d type:%x txt:'%.*s'\n",
                   tw->font, tw->x_address, tw->x_address + tw->width,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,7 +295,7 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             SetWindowText( editControl, "" );
             if( hasConnect ) {
 #ifndef __EDITOR__
-                if( !stricmp( buff, ":ol" ) ) {
+                if( stricmp( buff, ":ol" ) == 0 ) {
                     if( hasOL ) {
                         VxDPutLIT( LIT_END_OPEN_LIST );
                         hasOL = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ void TestFile::_getNextToken()
         token=strtok(Line," :!");
         token=strtok(NULL," :!");
         // check if the token equals either "Error" or "Warning"
-        if( (token!=NULL) && ( (!strcmp(token,"Warning")) || (!strcmp(token,"Error")) )  ) {
+        if( (token!=NULL) && ( (strcmp(token,"Warning") == 0 ) || (strcmp(token,"Error") == 0 ) )  ) {
             token=strtok(NULL," :!");
             strcpy(_nextToken, token);
             found=1;
@@ -80,7 +80,8 @@ void TestFile::_getNextToken()
     strcpy(_nextToken,"\0");
 }
 
-int TestFile::EndOfFile()  {
+int TestFile::EndOfFile()
+{
     return( feof( _inFile ) );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -268,9 +268,9 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
         p = g_tok_start;
         switch( my_tolower( *p ) ) {
         case 'a' :
-            if( (arg_flen > 2) && (arg_flen < 12)
-                && !strnicmp( "ATTributes", p, arg_flen ) ) {
-
+            if( (arg_flen > 2)
+              && (arg_flen < 12)
+              && strnicmp( "ATTributes", p, arg_flen ) == 0 ) {
                 *tag_flags |= GTFLG_attr;
             } else {
                 cc = CC_neg;               // invalid option
@@ -278,46 +278,45 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
             break;
         case 'c' :
             if( (arg_flen == 5)
-                && !strnicmp( "CSOFF", p, 5 ) ) {
-
+              && strnicmp( "CSOFF", p, 5 ) == 0 ) {
                 *tag_flags |= GTFLG_csoff;
             } else {
-                if( (arg_flen > 3) && (arg_flen < 9)
-                    && !strnicmp( "CONTinue", p, arg_flen ) ) {
-
+                if( (arg_flen > 3)
+                  && (arg_flen < 9)
+                  && strnicmp( "CONTinue", p, arg_flen ) == 0 ) {
                     *tag_flags |= GTFLG_cont;
-
                 } else {
                     cc = CC_neg;           // invalid option
                 }
             }
             break;
         case 'n' :
-            if( (arg_flen > 5) && (arg_flen < 11)
-                && !strnicmp( "NOCONTinue", p, arg_flen ) ) {
-
+            if( (arg_flen > 5)
+              && (arg_flen < 11)
+              && strnicmp( "NOCONTinue", p, arg_flen ) == 0 ) {
                 *tag_flags |= GTFLG_nocont;
             } else {
                 cc = CC_neg;               // invalid option
             }
             break;
         case 't' :
-            if( (arg_flen > 3) && (arg_flen < 8)
-                && !strnicmp( "TAGNext", p, arg_flen ) ) {
-
+            if( (arg_flen > 3)
+              && (arg_flen < 8)
+              && strnicmp( "TAGNext", p, arg_flen ) == 0 ) {
                 *tag_flags |= GTFLG_next;
             } else {
-                if( (arg_flen > 4 && (arg_flen < 10) ) ) {
-                    if( !strnicmp( "TEXTError", p, arg_flen ) ) {
+                if( (arg_flen > 4
+                  && (arg_flen < 10) ) ) {
+                    if( strnicmp( "TEXTError", p, arg_flen ) == 0 ) {
                         *tag_flags |= GTFLG_texterr;
                     } else {
-                        if( !strnicmp( "TEXTReqd", p, arg_flen ) ) {
+                        if( strnicmp( "TEXTReqd", p, arg_flen ) == 0 ) {
                             *tag_flags |= GTFLG_textreq;
                         } else {
-                            if( !strnicmp( "TEXTLine", p, arg_flen ) ) {
+                            if( strnicmp( "TEXTLine", p, arg_flen ) == 0 ) {
                                 *tag_flags |= GTFLG_textline;
                             } else {
-                                if( !strnicmp( "TEXTDef", p, arg_flen ) ) {
+                                if( strnicmp( "TEXTDef", p, arg_flen ) == 0 ) {
                                     *tag_flags |= GTFLG_textdef;
                                 } else {
                                     cc = CC_neg;   // invalid option
@@ -381,7 +380,8 @@ void    scr_gt( void )
             /* never return */
         }
         savetag = '*';         // remember for possible global delete / print
-        if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
+        if( GlobalFlags.firstpass
+          && (input_cbs->fmflags & II_research) ) {
             if( g_tag_entry != NULL ) {
                 out_msg("  using tagname %s %s\n", g_tagname, g_tag_entry->tagname );
             }
@@ -415,40 +415,37 @@ void    scr_gt( void )
     function = 0;
     switch( my_tolower( *p ) ) {
     case 'a':
-        if( !strnicmp( "ADD ", p, 4 ) ) {
-
+        if( strnicmp( "ADD ", p, 4 ) == 0 ) {
             function = f_add;
         }
         break;
     case 'c' :
-        if( (arg_flen > 2) && (arg_flen < 7)
-            && !strnicmp( "CHANGE", p, arg_flen ) ) {
-
+        if( (arg_flen > 2)
+          && (arg_flen < 7)
+          && strnicmp( "CHANGE", p, arg_flen ) == 0 ) {
             function = f_change;
         }
         break;
     case 'o' :
-        if( !strnicmp( "OFF", p, 3 ) ) {
-
+        if( strnicmp( "OFF", p, 3 ) == 0 ) {
             function = f_off;
         } else {
-            if( !strnicmp( "ON", p, 2 ) ) {
-
+            if( strnicmp( "ON", p, 2 ) == 0 ) {
                 function = f_on;
             }
         }
         break;
     case 'd' :
-        if( (arg_flen > 2) && (arg_flen < 7)
-            && !strnicmp( "DELETE", p, arg_flen ) ) {
-
+        if( (arg_flen > 2)
+          && (arg_flen < 7)
+          && strnicmp( "DELETE", p, arg_flen ) == 0 ) {
             function = f_delete;
         }
         break;
     case 'p' :
-        if( (arg_flen > 1) && (arg_flen < 6)
-            && !strnicmp( "PRINT", p, arg_flen ) ) {
-
+        if( (arg_flen > 1)
+          && (arg_flen < 6)
+          && strnicmp( "PRINT", p, arg_flen ) == 0 ) {
             function = f_print;
         }
         break;
@@ -467,7 +464,8 @@ void    scr_gt( void )
     /*  for add and change    get macroname                                */
     /***********************************************************************/
 
-    if( function == f_add || function == f_change ) {   // need macroname
+    if( function == f_add
+      || function == f_change ) {   // need macroname
         if( cc == CC_omit ) {
             xx_err_exit( ERR_TAG_MAC_NAME );
             /* never return */
@@ -524,7 +522,8 @@ void    scr_gt( void )
             }
             break;
         case f_off :
-            if( savetag == '*' && g_tag_entry != NULL ) {// off for last defined
+            if( savetag == '*'
+              && g_tag_entry != NULL ) {    // off for last defined
                 g_tag_entry->tagflags |= GTFLG_off;
             } else {
                 wk = find_user_tag( &tags_dict, g_tagname );
@@ -534,7 +533,8 @@ void    scr_gt( void )
             }
             break;
         case f_on :
-            if( savetag == '*' && g_tag_entry != NULL ) {// on for last defined
+            if( savetag == '*'
+              && g_tag_entry != NULL ) {    // on for last defined
                 g_tag_entry->tagflags |= GTFLG_off;
             } else {
                 wk = find_user_tag( &tags_dict, g_tagname );

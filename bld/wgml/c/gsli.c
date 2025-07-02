@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -103,8 +103,8 @@ void    scr_li( void )
         cc = getnum( &gn );             // try to get numeric value
         if( cc == CC_notnum ) {
             switch( len ) {
-            case 2 :
-                if( !strnicmp( "ON", pa, 2 ) ) {
+            case 2:
+                if( strnicmp( "ON", pa, 2 ) == 0 ) {
                     if( !ProcFlags.literal ) {
                         li_cnt = INT_MAX;
                         ProcFlags.literal = true;
@@ -119,8 +119,8 @@ void    scr_li( void )
                     }
                 }
                 break;
-            case 3 :
-                if( !strnicmp( "OFF", pa, 3 ) ) {
+            case 3:
+                if( strnicmp( "OFF", pa, 3 ) == 0 ) {
                     ProcFlags.literal = false;
                     scan_restart = pa + 3;
                 } else {

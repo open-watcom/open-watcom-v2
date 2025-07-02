@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -85,7 +85,8 @@ static void do_co_on( void )
 
     /* must have text and it must have been started by CO OFF */
 
-    if( (t_doc_el_group != NULL) && (t_doc_el_group->owner == GRT_co) ) {
+    if( (t_doc_el_group != NULL)
+      && (t_doc_el_group->owner == GRT_co) ) {
         cur_doc_el_group = t_doc_el_group;      // detach current element group
         t_doc_el_group = t_doc_el_group->next;  // processed doc_elements go to next group, if any
         cur_doc_el_group->next = NULL;
@@ -164,9 +165,8 @@ static void do_co_on( void )
                     /****************************************************************/
 
                     if( cur_doc_el_group->first->do_split
-                            && ((cur_doc_el_group->depth + t_page.cur_depth) > t_page.max_depth)
-                            && (cur_doc_el_group->depth <= t_page.max_depth) ) {
-
+                      && ((cur_doc_el_group->depth + t_page.cur_depth) > t_page.max_depth)
+                      && (cur_doc_el_group->depth <= t_page.max_depth) ) {
                         next_column();
                         page_line = 0;
                     }
@@ -182,8 +182,8 @@ static void do_co_on( void )
                     }
                     start_page = g_apage;
                     if( (cur_doc_el_group->first->type == ELT_text)
-                            && ((cur_doc_el_group->first->top_skip == 0)
-                                || (t_page.cur_depth == 0)) ) {            // first line is text
+                      && ((cur_doc_el_group->first->top_skip == 0)
+                      || (t_page.cur_depth == 0)) ) {            // first line is text
                         text_first = true;
                     }
 
@@ -191,16 +191,18 @@ static void do_co_on( void )
 
                     while( cur_doc_el_group->first != NULL ) {
                         cur_el = cur_doc_el_group->first;
-                        if( (cur_el->next != NULL) && (cur_el->type == ELT_text) &&
-                                (cur_el->next->type == ELT_vspace) ) {
+                        if( (cur_el->next != NULL)
+                          && (cur_el->type == ELT_text)
+                          && (cur_el->next->type == ELT_vspace) ) {
                             cur_el->element.text.vspace_next = true;        // matches wgml 4.0
                         }
                         if( (page_line == lpp)
-                                && ((cur_el->type != ELT_text)
-                                || (!cur_el->element.text.vspace_next)) ) {
+                          && ((cur_el->type != ELT_text)
+                          || (!cur_el->element.text.vspace_next)) ) {
                             page_line = 0;
                             /* Skip blank line at bottom of page */
-                            if( (cur_el->type == ELT_vspace) && (cur_el->blank_lines >= line_height) ) {
+                            if( (cur_el->type == ELT_vspace)
+                              && (cur_el->blank_lines >= line_height) ) {
                                 skip_blank = true;
                             } else {
                                 skip_blank = false;
@@ -217,7 +219,8 @@ static void do_co_on( void )
                         /* is implementing what appears to be a bug in wgml 4.0         */
                         /****************************************************************/
 
-                        if( (cur_el->type == ELT_text) || !skip_blank ) {
+                        if( (cur_el->type == ELT_text)
+                          || !skip_blank ) {
                             if( cur_el->type == ELT_text ) {
                                 t_cur_line += cur_el->depth / line_height;
                                 page_line += cur_el->depth / line_height;
@@ -248,13 +251,15 @@ static void do_co_on( void )
                         /*    than 1.                                                   */
                         /****************************************************************/
 
-                        if( (break_point > 0) && (cur_el->type == ELT_text) ) {
+                        if( (break_point > 0)
+                          && (cur_el->type == ELT_text) ) {
                             if( (t_cur_line == (break_point - threshold))
-                                    && (page_line >= (lpp - threshold + 1))
-                                    && !text_first ) { // the threshold line is the line before the break
+                              && (page_line >= (lpp - threshold + 1))
+                              && !text_first ) { // the threshold line is the line before the break
                                 next_column();              // threshold break
                                 page_line = 0;
-                            } else if( (t_cur_line == break_point) && (page_line < lpp) ) {
+                            } else if( (t_cur_line == break_point)
+                              && (page_line < lpp) ) {
                                 /*Take for blank lines after break point into account */
                                 if( (max_lines - (b_line_tot - b_cur_line)) >= t_line_tot ) {
                                     next_column();              // break point break
@@ -272,7 +277,8 @@ static void do_co_on( void )
 
                         /* do setup only once and only on second output page */
 
-                        if( (g_apage == (start_page + 1)) && (page_line == 1) ) {
+                        if( (g_apage == (start_page + 1))
+                          && (page_line == 1) ) {
                             lpp = t_page.max_depth / line_height;               // for empty page
                             if( (threshold < lpp) ) { // threshold must be at most lpp - 1
                                 interval = lpp + threshold + 2;
@@ -310,8 +316,7 @@ static void do_co_on( void )
                                     /********************************************************/
 
                                     if( (t_line_tot <= max_lines)
-                                            && (min_lines > (max_lines - lpp))
-                                            ) {
+                                      && (min_lines > (max_lines - lpp)) ) {
                                         break_point = max_lines - lpp;  // valid break point
                                     }
                                 }
@@ -371,7 +376,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         scan_restart = p;
         break;
     case 2 :                            // only ON valid
-        if( !strnicmp( "ON", pa, 2 ) ) {
+        if( strnicmp( "ON", pa, 2 ) == 0 ) {
             if( both ) {
                 do_co_on();
             }
@@ -383,7 +388,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         }
         break;
     case 3 :                            // only OFF valid
-        if( !strnicmp( "OFF", pa, 3 ) ) {
+        if( strnicmp( "OFF", pa, 3 ) == 0 ) {
             if( both ) {
                 do_co_off();
             }
@@ -395,7 +400,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         }
         break;
     case 4 :                            // Left or half valid
-        if( !strnicmp( "LEFT", pa, 4 ) ) {
+        if( strnicmp( "LEFT", pa, 4 ) == 0 ) {
             if( both ) {
                 ProcFlags.concat = true;
             }
@@ -407,7 +412,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             ProcFlags.justify = JUST_off; // left is like off for wgml 4.0
             scan_restart = pa + len;
         } else {
-            if( !strnicmp( "HALF", pa, 4 ) ) {
+            if( strnicmp( "HALF", pa, 4 ) == 0 ) {
                 if( both ) {
                     ProcFlags.concat = true;
                 }
@@ -420,7 +425,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         }
         break;
     case 5 :                            // only Right valid
-        if( !strnicmp( "RIGHT", pa, 5 ) ) {
+        if( strnicmp( "RIGHT", pa, 5 ) == 0 ) {
             if( both ) {
                 ProcFlags.concat = true;
             }
@@ -432,14 +437,15 @@ static void process_fo_ju( bool both , char *cwcurr )
         }
         break;
     case 6 :                            // center or inside valid
-        if( !strnicmp( "CENTER", pa, 6 ) || !strnicmp( "CENTRE", pa, 6 ) ) {
+        if( strnicmp( "CENTER", pa, 6 ) == 0
+          || strnicmp( "CENTRE", pa, 6 ) == 0 ) {
             if( both ) {
                 ProcFlags.concat = true;
             }
             ProcFlags.justify = JUST_centre;
             scan_restart = pa + len;
         } else {
-            if( !strnicmp( "INSIDE", pa, 6 ) ) {
+            if( strnicmp( "INSIDE", pa, 6 ) == 0 ) {
                 if( both ) {
                     ProcFlags.concat = true;
                 }
@@ -452,7 +458,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         }
         break;
     case 7 :                            // only outside valid
-        if( !strnicmp( "OUTSIDE", pa, 7 ) ) {
+        if( strnicmp( "OUTSIDE", pa, 7 ) == 0 ) {
             if( both ) {
                 ProcFlags.concat = true;
             }
@@ -603,7 +609,7 @@ void    scr_co( void )
         scan_restart = pa;
         break;
     case 2 :                            // only ON valid
-        if( !strnicmp( "ON", pa, 2 ) ) {
+        if( strnicmp( "ON", pa, 2 ) == 0 ) {
             do_co_on();
             scan_restart = pa + len;
         } else {
@@ -612,7 +618,7 @@ void    scr_co( void )
         }
         break;
     case 3 :                            // only OFF valid
-        if( !strnicmp( "OFF", pa, 3 ) ) {
+        if( strnicmp( "OFF", pa, 3 ) == 0 ) {
             do_co_off();
             scan_restart = pa + len;
         } else {

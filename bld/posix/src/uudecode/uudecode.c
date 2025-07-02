@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,17 +107,19 @@ int main(int argc, char **argv)
     char buf[80];
 
 #ifdef __WATCOMC__
-    if( argc == 1 || !strcmp(argv[1], "?") || !strcmp(argv[1], "-?")
-         || !strcmp(argv[1], "-h") ) {
+    if( argc == 1
+      || strcmp( argv[1], "?" ) == 0
+      || strcmp( argv[1], "-?" ) == 0
+      || strcmp( argv[1], "-h" ) == 0 ) {
         printf( "Usage: uudecode [infile]\n" );
-        exit(2);
+        exit( 2 );
     }
 #endif
     /* optional input arg */
-    if (argc > 1) {
-        if ((in = fopen(argv[1], "r")) == NULL) {
-            perror(argv[1]);
-            exit(1);
+    if( argc > 1 ) {
+        if( (in = fopen( argv[1], "r" )) == NULL ) {
+            perror( argv[1] );
+            exit( 1 );
         }
         argv++;
         argc--;
@@ -125,30 +127,30 @@ int main(int argc, char **argv)
         in = stdin;
     }
 
-    if (argc != 1) {
-        printf("Usage: uudecode [infile]\n");
-        exit(2);
+    if( argc != 1 ) {
+        printf( "Usage: uudecode [infile]\n" );
+        exit( 2 );
     }
 
-    for(;;) {
+    for( ;; ) {
         begin_flag = 1;
         /* search for header line */
-        for(;;) {
-            if (fgets(buf, sizeof( buf ), in) == NULL) {
+        for( ;; ) {
+            if( fgets( buf, sizeof( buf ), in ) == NULL ) {
                 if( begin_flag == 0 ) {
-                    fprintf(stderr, "No begin line\n");
-                    exit(3);
+                    fprintf( stderr, "No begin line\n" );
+                    exit( 3 );
                 }
                 begin_flag = 0;
                 break;
             }
             if( strnicmp( buf, "begin-", 6 ) != 0
-                    && strnicmp( buf, "begin -", 7 ) != 0
-                    && strnicmp( buf, "start-", 6 ) != 0
-                    && strnicmp( buf, "start -", 7 ) != 0 ) {
-                if (strncmp(buf, "begin ", 6) == 0)
+              && strnicmp( buf, "begin -", 7 ) != 0
+              && strnicmp( buf, "start-", 6 ) != 0
+              && strnicmp( buf, "start -", 7 ) != 0 ) {
+                if( strncmp( buf, "begin ", 6 ) == 0 )
                     break;
-                if (strnicmp(buf, "begin ", 6) == 0) {
+                if( strnicmp( buf, "begin ", 6 ) == 0 ) {
                     fprintf( stderr, "begin line is mixed case, assuming lower case\n" );
                     break;
                 }
@@ -156,53 +158,54 @@ int main(int argc, char **argv)
         }
         if( begin_flag == 0 )
             break;
-        (void)sscanf(buf+6, "%o %s", &mode, dest);
+        (void)sscanf( buf + 6, "%o %s", &mode, dest );
 
 #if defined( __UNIX__ )
         /* handle ~user/file format */
-        if (dest[0] == '~') {
+        if( dest[0] == '~' ) {
             char *sl;
             struct passwd *getpwnam();
             struct passwd *user;
             char dnbuf[100], *strcat(), *strcpy();
 
-            sl = strchr(dest, '/');
-            if (sl == NULL) {
-                fprintf(stderr, "Illegal ~user\n");
-                exit(3);
+            sl = strchr( dest, '/' );
+            if( sl == NULL ) {
+                fprintf( stderr, "Illegal ~user\n" );
+                exit( 3 );
             }
             *sl++ = 0;
-            user = getpwnam(dest+1);
-            if (user == NULL) {
-                fprintf(stderr, "No such user as %s\n", dest);
-                exit(4);
+            user = getpwnam( dest + 1 );
+            if( user == NULL ) {
+                fprintf( stderr, "No such user as %s\n", dest );
+                exit( 4 );
             }
-            strcpy(dnbuf, user->pw_dir);
-            strcat(dnbuf, "/");
-            strcat(dnbuf, sl);
-            strcpy(dest, dnbuf);
+            strcpy( dnbuf, user->pw_dir );
+            strcat( dnbuf, "/" );
+            strcat( dnbuf, sl );
+            strcpy( dest, dnbuf );
         }
 #endif  /* !defined(MSDOS) && !defined(VMS) */
 
         /* create output file */
 #if defined( __UNIX__ )
-        out = fopen(dest, "w");
+        out = fopen( dest, "w" );
 #else
-        out = fopen(dest, "wb");        /* Binary file */
+        out = fopen( dest, "wb" );        /* Binary file */
 #endif
-        if (out == NULL) {
-            perror(dest);
-            exit(4);
+        if( out == NULL ) {
+            perror( dest );
+            exit( 4 );
         }
 #if defined( __UNIX__ )
-        chmod(dest, mode);
+        chmod( dest, mode );
 #endif
 
-        decode(in, out);
+        decode( in, out );
 
-        if( fgets(buf, sizeof( buf ), in) == NULL || strcmp(buf, "end\n") ) {
-            fprintf(stderr, "No end line\n");
-            exit(5);
+        if( fgets( buf, sizeof( buf ), in ) == NULL
+          || strcmp( buf, "end\n" ) ) {
+            fprintf( stderr, "No end line\n" );
+            exit( 5 );
         }
     }
     return( 0 );
@@ -211,7 +214,8 @@ int main(int argc, char **argv)
 /*
  * copy from in to out, decoding as you go along.
  */
-void decode( FILE *in, FILE *out ) {
+void decode( FILE *in, FILE *out )
+{
     char buf[80];
     char *bp;
     int n, expected;
@@ -223,56 +227,62 @@ void decode( FILE *in, FILE *out ) {
     end_cut = 0;
     for(;;) {
         /* for each input line */
-        if (fgets(buf, sizeof( buf ), in) == NULL) {
-            printf("Short file\n");
-            exit(10);
+        if( fgets( buf, sizeof( buf ), in ) == NULL ) {
+            printf( "Short file\n" );
+            exit( 10 );
         }
         bp = buf;
         while( *bp == ' ' ) {
             bp++;
         }
-        if( !end_cut && ( *bp=='\n' || (buf[0]=='-' && buf[1]=='-')) ) {
+        if( !end_cut
+          && ( *bp == '\n'
+          || ( buf[0] == '-'
+          && buf[1] == '-' ) ) ) {
             after_blank = 0;
             for(;;) {
-                if( after_blank && buf[0] == 'M' )
+                if( after_blank
+                  && buf[0] == 'M' )
                     break;
-                if( buf[0] == ' ' || buf[0] == '\n' ) {
+                if( buf[0] == ' '
+                  || buf[0] == '\n' ) {
                     after_blank = 1;
                 } else {
                     after_blank = 0;
                 }
-                if( fgets(buf, sizeof( buf ), in) == NULL) {
-                    printf("Short file\n");
-                    exit(10);
+                if( fgets( buf, sizeof( buf ), in ) == NULL) {
+                    printf( "Short file\n" );
+                    exit( 10 );
                 }
             }
         }
 
-        n = DEC(buf[0]);
-        if( (n <= 0) || (buf[0] == '\n') )
+        n = DEC( buf[0] );
+        if( ( n <= 0 )
+          || ( buf[0] == '\n' ) )
             break;
 
         /* Calculate expected # of chars and pad if necessary */
         expected = ((n+2)/3)<<2;
 
         found_begin = 0;
-        if( expected != strlen(buf)-1
+        if( expected != strlen( buf ) - 1
             && ( strnicmp( buf, "end-", 4 ) == 0
-                    || strnicmp( buf, "end -", 5 ) == 0
-                    || strnicmp( buf, "--- end", 7 ) == 0) ) {
+            || strnicmp( buf, "end -", 5 ) == 0
+            || strnicmp( buf, "--- end", 7 ) == 0 ) ) {
             end_cut = 1;
             for(;;) {
                 if( strnicmp( buf, "--- begin", 9 ) == 0
-                    || strnicmp( buf, "begin-", 6 ) == 0
-                    || strnicmp( buf, "begin -", 7 ) == 0
-                    || strnicmp( buf, "start-", 6 ) == 0
-                    || strnicmp( buf, "start -", 7 ) == 0 ) {
+                  || strnicmp( buf, "begin-", 6 ) == 0
+                  || strnicmp( buf, "begin -", 7 ) == 0
+                  || strnicmp( buf, "start-", 6 ) == 0
+                  || strnicmp( buf, "start -", 7 ) == 0 ) {
                     found_begin = 1;
                     break;
                 }
-                if( fgets(buf, sizeof( buf ), in) == NULL ) {
-                    printf("Short file\n");
-                    exit(10);
+                if( fgets( buf, sizeof( buf ), in ) == NULL ) {
+                    printf( "Short file\n" );
+                    exit( 10 );
                 }
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -561,7 +561,8 @@ static bool parse_incremental( OPT_STRING **p )
         FatalError( "/INCREMENTAL requires an argument" );
         return( false );
     }
-    if( !stricmp( str, "yes" )  ||  !stricmp( str, "no" ) ) {
+    if( stricmp( str, "yes" ) == 0
+      || stricmp( str, "no" ) == 0 ) {
         add_string( p, str, '\0' );
         return( true );
     } else {

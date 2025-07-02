@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,8 @@ const char *IAliasLookup( const char *filename, bool is_lib )
     IALIASPTR   alias;
 
     for( alias = IAliasNames; alias != NULL; alias = alias->next ) {
-        if( (alias->is_lib == is_lib) && !strcmp( filename, alias->alias_name ) ) {
+        if( (alias->is_lib == is_lib)
+          && strcmp( filename, alias->alias_name ) == 0 ) {
             return( alias->real_name );
         }
     }
@@ -83,7 +85,8 @@ void IAliasAdd( const char *alias_name, const char *real_name, bool is_lib )
     IALIASPTR   *lnk;
 
     for( lnk = &IAliasNames; (old_alias = *lnk) != NULL; lnk = &old_alias->next ) {
-        if( (old_alias->is_lib == is_lib) && !strcmp( alias_name, old_alias->alias_name ) ) {
+        if( (old_alias->is_lib == is_lib)
+          && strcmp( alias_name, old_alias->alias_name ) == 0 ) {
             break;
         }
     }

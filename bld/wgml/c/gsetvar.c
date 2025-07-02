@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -44,7 +44,8 @@ static char *get_symbol_name( const char *p, char *symname, bool splittable )
 
     i = 0;
     while( is_symbol_char( *p ) ) {
-        if( i == SYM_NAME_LENGTH && splittable )
+        if( i == SYM_NAME_LENGTH
+          && splittable )
             /* break */;
         if( i < SYM_NAME_LENGTH ) {
             if( i == 3
@@ -87,7 +88,9 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
     *subscript = SI_no_subscript;       // not subscripted
 
     SkipSpaces( p );                    // skip over spaces
-    if( *p == d_q || *p == s_q || *p == l_q ) {
+    if( *p == d_q
+      || *p == s_q
+      || *p == l_q ) {
         quote = *p++;                   // skip over start quote
     } else {
         quote = '\0';
@@ -123,12 +126,14 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
             }
         }
     }
-    if( quote != '\0' && quote == *p ) {
+    if( quote != '\0'
+      && quote == *p ) {
         p++;                                // skip over end quote
     }
     pend = p;                               // char after symbol name if not subscripted
 
-    if( !g_scan_err && (*p == '(') ) {      // subscripted ?
+    if( !g_scan_err
+      && (*p == '(') ) {      // subscripted ?
         // find true end of subscript
         psave = p;
         p_level = 0;
@@ -199,7 +204,8 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
                     }
                     gn.ignore_blanks = false;
                     cc = getnum( &gn );     // try numeric expression evaluation
-                    if( cc == CC_pos || cc == CC_neg ) {
+                    if( cc == CC_pos
+                      || cc == CC_neg ) {
                         *subscript = gn.result;
                         if( *p == ')' ) {
                             p++;
@@ -207,7 +213,8 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
                         SkipDot( p );
                         sym->flags |= SF_subscripted;
                     } else {
-                        if( !g_scan_err && !ProcFlags.suppress_msg ) {
+                        if( !g_scan_err
+                          && !ProcFlags.suppress_msg ) {
                             xx_line_err_exit_c( ERR_SUB_INVALID, p );
                             /* never return */
                         }
@@ -315,12 +322,14 @@ void    scr_se( void )
                      *
                      *  if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
                      */
-                    if( (*valstart == p[0]) && p + 1 >= g_scandata.e ) {
+                    if( (*valstart == p[0])
+                      && p + 1 >= g_scandata.e ) {
                         break;
                     }
                     ++p;
                 }
-                if( (valstart < p) && (*p == *valstart) ) { // delete quotes if more than one character
+                if( (valstart < p)
+                  && (*p == *valstart) ) { // delete quotes if more than one character
                     valstart++;
                 }
                 len = p - valstart;
@@ -331,7 +340,8 @@ void    scr_se( void )
                 gn.arg.e = g_scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
-                if( cc == CC_pos || cc == CC_neg ) {
+                if( cc == CC_pos
+                  || cc == CC_neg ) {
                     valstart = gn.resultstr;
                     len = gn.length;
                 }                               // if notnum treat as character value
@@ -347,12 +357,12 @@ void    scr_se( void )
                 rc = add_symvar_sym( &sym, valstart, p - valstart, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
-                    xx_line_err_exit_c( ERR_EQ_EXPECTED, p);
+                    xx_line_err_exit_c( ERR_EQ_EXPECTED, p );
                     /* never return */
                 }
                 g_scan_err = true;
             }
-        } else if( !strncmp( p, "off", 3 ) ) {       // OFF
+        } else if( strncmp( p, "off", 3 ) == 0 ) {       // OFF
             p += 3;
             rc = find_symvar_sym( &sym, subscript, &symsubval );
             if( rc == 2 ) {

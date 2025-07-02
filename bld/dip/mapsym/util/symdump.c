@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +231,7 @@ int main( int argc, char *argv[] )
         return( 1 );
     }
 
-    if( !strcmp( argv[1], "-a" ) ) {
+    if( strcmp( argv[1], "-a" ) == 0 ) {
         DumpAlphaSorted = true;
         ++argv;
     }

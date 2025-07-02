@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -186,7 +186,7 @@ void    scr_in( void )
     int             newindentr;
     bool            su_relative;
 
-    static  int oldindent;
+    static int      oldindent;
 
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'i';
@@ -228,6 +228,7 @@ printf(".in relative left\n");
             newindentr = g_indentr;     // get old values
             p++;
         } else {
+printf("!!! .in right !!!\n");
             pa = p;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {

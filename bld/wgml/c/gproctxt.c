@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2010 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -218,7 +218,7 @@ static void next_tab( void )
 {
     int                 i;
     int                 last_i;
-    int             cur_h;
+    unsigned            cur_h;
     tab_stop            l_tab;
     tab_stop    *       c_tab       = NULL;
     unsigned            r_count;
@@ -243,7 +243,7 @@ static void next_tab( void )
             last_i = i;
         }
         for( ; i < user_tabs.current; i++ ) {
-            if( cur_h < (int)user_tabs.tabs[i].column ) {
+            if( cur_h < user_tabs.tabs[i].column ) {
                 c_tab = &user_tabs.tabs[i];
                 break;
             }
@@ -255,7 +255,7 @@ static void next_tab( void )
     if( c_tab == NULL ) {   // no user tab or none that works, use default tab
         def_tab_count++;    // record use of default tab
         l_tab = def_tabs.tabs[def_tabs.current - 1];
-        if( cur_h >= (int)l_tab.column ) {   // initialize more tabs
+        if( cur_h >= l_tab.column ) {   // initialize more tabs
             r_width = cur_h - l_tab.column;
             r_count = (r_width / inter_tab) + 1;
             if( (def_tabs.current + r_count) > def_tabs.length ) {
@@ -277,7 +277,7 @@ static void next_tab( void )
 
         // get the tab stop to use
         for( i = 0; i < def_tabs.current; i++ ) {
-            if( cur_h < (int)def_tabs.tabs[i].column ) {
+            if( cur_h < def_tabs.tabs[i].column ) {
                 c_tab = &def_tabs.tabs[i];
                 break;
             }
@@ -2257,7 +2257,7 @@ void process_text( char * text, font_number font )
             /***********************************************************/
 
             while( !tabbing &&
-                    ((int)(n_chars->x_address + n_chars->width) > (int)t_page.max_width) ) {
+                    (n_chars->x_address + n_chars->width > t_page.max_width) ) {
 
                 if( t_line == NULL ) {  // added when INDEX implemented
                     t_line = alloc_text_line();

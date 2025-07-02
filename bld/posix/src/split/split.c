@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,22 +68,20 @@ static int splitFile( FILE *fp, int lines, char *prefix )
     unsigned char   e1   = 'a';
     unsigned char   e2   = 'a';
 
-    file = (char *)MemAlloc( (strlen( prefix ) + 2) * sizeof( char ) + 1 );
+    file = (char *)MemAlloc( ( strlen( prefix ) + 2 ) * sizeof( char ) + 1 );
 
     for( ;; ) {
         ch = fgetc( fp );
-
         if( ch == EOF ) {                   // look for end of file.
             break;
-        } else if( cnt == 0  &&  more ) {
-
+        }
+        if( cnt == 0
+          && more ) {
             if( out != NULL ) {
                 fclose( out );
             }
-
             sprintf( file, "%s%c%c", prefix, e1, e2 );  // create and open
             out = fopen( file, "w" );                   // next split file
-
             if( out != NULL ) {                         // check for error
                 if( e2 == 'z' ) {                       // increment suffix
                     if( e1 != 'z' ) {
@@ -123,17 +121,18 @@ int main( int argc, char **argv )
     int         lines  = 1000;
 
     argv = ExpandEnv( &argc, argv, "SPLIT" );
-
     for( ;; ) {
         ch = GetOpt( &argc, argv, "#", usageMsg );
         if( ch == -1 ) {
             break;
-        } else if( ch == '#' ) {
+        }
+        if( ch == '#' ) {
             lines = atoi( OptArg );
         }
     }
 
-    if( argc == 1  ||  argc > 3 ) {
+    if( argc == 1
+      || argc > 3 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
         if( argc == 3 ) {
@@ -142,7 +141,7 @@ int main( int argc, char **argv )
         if( lines <= 0 ) {
             Die( "split: invalid number of lines per file\n" );
         }
-        if( !strcmp( argv[1], "-" ) ) {
+        if( strcmp( argv[1], "-" ) == 0 ) {
             if( splitFile( stdin, lines, prefix ) ) {
                 Die( "split: cannot open output file\n" );
             }

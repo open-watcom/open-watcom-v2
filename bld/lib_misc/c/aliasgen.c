@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -423,21 +423,21 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
 
     /*** Separate into groups by CPU type ***/
     for( syselem = alias->systems; syselem != NULL; syselem = syselem->next ) {
-        if( !strcmp( syselem->system, "nta" ) ) {               /* AXP */
+        if( strcmp( syselem->system, "nta" ) == 0 ) {           /* AXP */
             add_system( &aliasaxp, syselem->system );
-        } else if( !strcmp( syselem->system, "ntp" ) ) {        /* PPC */
+        } else if( strcmp( syselem->system, "ntp" ) == 0 ) {    /* PPC */
             add_system( &aliasppc, syselem->system );
-        } else if( !strcmp( syselem->system, "opc" ) ) {        /* PPC */
+        } else if( strcmp( syselem->system, "opc" ) == 0 ) {    /* PPC */
             add_system( &aliasppc, syselem->system );
-        } else if( !strcmp( syselem->system, "lpc" ) ) {        /* PPC */
+        } else if( strcmp( syselem->system, "lpc" ) == 0 ) {    /* PPC */
             add_system( &aliasppc, syselem->system );
-        } else if( !strcmp( syselem->system, "ppc" ) ) {        /* PPC */
+        } else if( strcmp( syselem->system, "ppc" ) == 0 ) {    /* PPC */
             add_system( &aliasppc, syselem->system );
-        } else if( !strcmp( syselem->system, "lmp" ) ) {        /* MIPS */
+        } else if( strcmp( syselem->system, "lmp" ) == 0 ) {    /* MIPS */
             add_system( &aliasmips, syselem->system );
-        } else if( !strcmp( syselem->system, "mps" ) ) {        /* MIPS */
+        } else if( strcmp( syselem->system, "mps" ) == 0 ) {    /* MIPS */
             add_system( &aliasmips, syselem->system );
-        } else if( !strcmp( syselem->system, "ntm" ) ) {        /* MIPS */
+        } else if( strcmp( syselem->system, "ntm" ) == 0 ) {    /* MIPS */
             add_system( &aliasmips, syselem->system );
         } else {                                                /* x86 */
             add_system( &aliasix86, syselem->system );

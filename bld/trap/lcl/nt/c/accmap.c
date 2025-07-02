@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,8 @@ void RemoveModuleFromLibList( const char *module, const char *filename )
 
     prev = NULL;
     for( curr = listInfoHead; curr != NULL; curr = curr->next ) {
-        if( !stricmp( module, curr->modname ) && !stricmp( filename, curr->filename ) ) {
+        if( stricmp( module, curr->modname ) == 0
+          && stricmp( filename, curr->filename ) == 0 ) {
             if( prev == NULL ) {
                 listInfoHead = curr->next;
             } else {

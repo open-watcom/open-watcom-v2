@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -617,8 +617,8 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
 #endif
 
     if( sw->sectionData[curr_block] != NULL ) {
-        if( !strcmp( buff, sw->sectionData[curr_block] ) &&
-            flags == sw->sectionDataFlags[curr_block] ) {
+        if( strcmp( buff, sw->sectionData[curr_block] ) == 0
+          && flags == sw->sectionDataFlags[curr_block] ) {
             return;
         }
     }

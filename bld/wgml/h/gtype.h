@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2010 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -866,8 +866,8 @@ typedef struct tag_cb {
     unsigned        lm;                 // left margin on entry
     unsigned        rm;                 // max width on entry
     int             align;              // current attribute value
-    int             left_indent;        // current attribute value
-    int             right_indent;       // current attribute value
+    unsigned        left_indent;        // current attribute value
+    unsigned        right_indent;       // current attribute value
     unsigned        post_skip;          // current attribute value
     unsigned        tsize;              // current attribute value
     unsigned        xl_pre_skip;        // parent list pre_skip value (used by LP)
@@ -1221,7 +1221,7 @@ typedef struct doc_page {
     unsigned        page_width;         // page right margin
     unsigned        max_width;          // maximum width (page or column)
     int             cur_left;           // net adjustment to left margin (can be negative)
-    int             cur_width;          // current width
+    unsigned        cur_width;          // current width
     doc_pane        *last_pane;
     doc_column      *cur_col;           // quick access to t_page.last_pane->cols[t_page.last_pane->cur_col]
     doc_element     *last_col_main;

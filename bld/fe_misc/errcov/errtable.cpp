@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,19 +224,19 @@ void CErrorTable::ReadInTable()
 
 
         // now, construct the errCode:
-        if( !strncmp( symbol, "ERR_", 4) ) {
+        if( strncmp( symbol, "ERR_", 4) == 0 ) {
             sprintf(code,"E%3.3i\0",errIndex);
             AddError(code, symbol);
             errIndex++;
-        } else if( !strncmp( symbol, "WARN_", 5) ) {
+        } else if( strncmp( symbol, "WARN_", 5) == 0 ) {
             sprintf(code,"W%3.3i\0",errIndex);
             AddError(code, symbol);
             errIndex++;
-        } else if( !strncmp( symbol, "ANSI", 4) ) {
+        } else if( strncmp( symbol, "ANSI", 4) == 0 ) {
             sprintf(code,"W%3.3i\0",errIndex);
             AddError(code, symbol);
             errIndex++;
-        } else if( !strncmp( symbol, "INF_", 4) ) {
+        } else if( strncmp( symbol, "INF_", 4) == 0 ) {
             sprintf(code,"N%3.3i\0",errIndex);
             AddError(code, symbol);
             errIndex++;

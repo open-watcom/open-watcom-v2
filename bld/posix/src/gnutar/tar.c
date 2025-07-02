@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,12 +94,11 @@ static int      n_argc;                 /* Argc used by name routines */
  */
 #define NBINEXTS        20
 
-static char    *binexts[NBINEXTS] =             /* extensions for O_BINARY files */
-{
-        "com",
-        "exe",
-        "obj",
-        0                                                       /* required */
+static char    *binexts[NBINEXTS] = {   /* extensions for O_BINARY files */
+    "com",
+    "exe",
+    "obj",
+    NULL                                /* required */
 };
 
 #endif
@@ -119,65 +118,67 @@ static void addname( char *name );
  */
 int main( int argc, char **argv )
 {
-        read_error_flag = false;
+    read_error_flag = false;
 
-        /*
-         * Uncomment this message in particularly buggy versions...
-         * fprintf(stderr, "tar: You are running an experimental PD tar, maybe
-         * use /bin/tar.\n");
-         */
+    /*
+     * Uncomment this message in particularly buggy versions...
+     * fprintf(stderr, "tar: You are running an experimental PD tar, maybe
+     * use /bin/tar.\n");
+     */
 
-        tar = "tar";                            /* Set program name */
+    tar = "tar";                            /* Set program name */
 #ifdef MSDOS
-        physdrv = 0;                            /* set default drive */
-        devsize = 720;                          /* default drive size */
-        ftty = open("CON", O_RDWR);             /* open console */
+    physdrv = 0;                            /* set default drive */
+    devsize = 720;                          /* default drive size */
+    ftty = open( "CON", O_RDWR );             /* open console */
 #else /* !MSDOS */
-        ftty = open("/dev/tty", 2);
+    ftty = open( "/dev/tty", 2 );
 #endif /* !MSDOS */
-        if (ftty < 0) {
-                fprintf(stderr, "Can't open %s for I/O\n",
+    if (ftty < 0) {
 #ifdef MSDOS
-                "console"
+        fprintf(stderr, "Can't open console for I/O\n" );
 #else
-                "/dev/tty"
+        fprintf(stderr, "Can't open /dev/tty for I/O\n" );
 #endif
-                );
-                exit( EX_SYSTEM );
-        }
+        exit( EX_SYSTEM );
+    }
 
-        options( argc, argv );
-        name_init( argc, argv );
-
+    options( argc, argv );
+    name_init( argc, argv );
 #if defined(MSDOS) && !defined(__NO_PHYS__)
-        if( f_phys ) {
-            uprintf( ftty, "tar: archive on %dK drive %c\n", devsize / 2, 'A' +  physdrv );
-            uprintf( ftty, "tar: insert %s disk in drive '%c' and press [Enter]: ",
-                    f_create ? "formatted" : "first", 'A' + physdrv );
-            while( ugetc( ftty ) != '\n' ) {
-                ;
-            }
+    if( f_phys ) {
+        uprintf( ftty, "tar: archive on %dK drive %c\n", devsize / 2, 'A' +  physdrv );
+        uprintf( ftty, "tar: insert %s disk in drive '%c' and press [Enter]: ",
+                f_create ? "formatted" : "first", 'A' + physdrv );
+        while( ugetc( ftty ) != '\n' ) {
+            ;
         }
+    }
 #endif
-
-        if( f_create && !f_extract && !f_list ) {
-            create_archive();
-        } else if( !f_create && f_extract && !f_list ) {
-            read_and( extract_archive );
-        } else if( !f_create && !f_extract && f_list ) {
-            read_and( list_archive );
-        } else {
-            fprintf( stderr,
-                    "tar: you must specify exactly one of the c, t, or x options\n" );
-            describe();
-            exit( EX_ARGSBAD );
-        }
-        putchar( '\n' );
-        fflush( stdout );
+    if( f_create
+      && !f_extract
+      && !f_list ) {
+        create_archive();
+    } else if( !f_create
+      && f_extract
+      && !f_list ) {
+        read_and( extract_archive );
+    } else if( !f_create
+      && !f_extract
+      && f_list ) {
+        read_and( list_archive );
+    } else {
+        fprintf( stderr,
+                "tar: you must specify exactly one of the c, t, or x options\n" );
+        describe();
+        exit( EX_ARGSBAD );
+    }
+    putchar( '\n' );
+    fflush( stdout );
 #ifndef MSDOS
-        sync(); /* insure all floppy buffers are written out */
+    sync(); /* insure all floppy buffers are written out */
 #endif
-        return( 0 );
+    return( 0 );
 }
 
 
@@ -266,7 +267,8 @@ void options( int argc, char **argv )
         case 'V':
             f_phys = true;
             physdrv = toupper( *optarg ) - 'A';
-            if( physdrv > 4 || physdrv < 0 ) {
+            if( physdrv > 4
+              || physdrv < 0 ) {
                 fprintf( stderr, "tar: drive letter for -V must be A-D\n" );
                 exit( EX_ARGSBAD );
             }
@@ -347,19 +349,19 @@ void describe( void )
  */
 static void name_init( int argc, char **argv )
 {
-    if (f_namefile) {
-        if (optind < argc) {
-            fprintf(stderr, "tar: too many args with -T option\n");
-            exit(EX_ARGSBAD);
+    if( f_namefile ) {
+        if( optind < argc ) {
+            fprintf( stderr, "tar: too many args with -T option\n" );
+            exit( EX_ARGSBAD );
         }
-        if (!strcmp(name_file, "-")) {
+        if( strcmp( name_file, "-" ) == 0 ) {
             namef = stdin;
         } else {
-            namef = fopen(name_file, "r");
-            if (namef == NULL) {
-                fprintf(stderr, "tar: ");
-                perror(name_file);
-                exit(EX_BADFILE);
+            namef = fopen( name_file, "r" );
+            if( namef == NULL ) {
+                fprintf( stderr, "tar: " );
+                perror( name_file );
+                exit( EX_BADFILE );
             }
         }
     } else {
@@ -408,114 +410,115 @@ static void name_init( int argc, char **argv )
  * FIXME: This code is embarassingly complex and needs to be rewritten.
  */
 
-char* fixname( char *s )
+char *fixname( char *s )
 {
-        char  *q;
-        char  *prd;
-        char  *lsl;
-        int   name_cnt;
-        static char     buf[256];       /* where the copy of the name is stored */
+    char  *q;
+    char  *prd;
+    char  *lsl;
+    int   name_cnt;
+    static char     buf[256];       /* where the copy of the name is stored */
 
 #ifdef MSDOS
 
-        /*
-         * CODE TO FIX DOS NAMES: DOS's filenames are always uppercase, though
-         * DOS maps lowercase characters to uppercase in filenames automatically.
-         * If we create the archive with these uppercase names, the files if
-         * un-tarred under Unix all have uppercase names. So we map the names to
-         * lowercase under DOS so that it works best for both.  The same for \ vs
-         * /: DOS takes either, Unix needs /, so we use /. This first
-         * transformation occurs on the actual string we were passed, rather than
-         * a copy of it.
-         */
-        strcpy(buf, s);
-        q = buf;
-        strlwr(q);
-        for (; *q; q++)
-                if (*q == '\\')
-                        *q = '/';
+    /*
+     * CODE TO FIX DOS NAMES: DOS's filenames are always uppercase, though
+     * DOS maps lowercase characters to uppercase in filenames automatically.
+     * If we create the archive with these uppercase names, the files if
+     * un-tarred under Unix all have uppercase names. So we map the names to
+     * lowercase under DOS so that it works best for both.  The same for \ vs
+     * /: DOS takes either, Unix needs /, so we use /. This first
+     * transformation occurs on the actual string we were passed, rather than
+     * a copy of it.
+     */
+    strcpy( buf, s );
+    q = buf;
+    strlwr( q );
+    for( ; *q; q++ ) {
+        if( *q == '\\' ) {
+            *q = '/';
+        }
+    }
 
-        /*
-         * CODE TO FIX UNIX NAMES: if more than one '.' in name, DOS won't create
-         * file.  Delete all but last '.', then see if name longer than DOS
-         * allows.  If so, prompt user for new name.  (It might be better to
-         * always do the length check, but in this case it is more likely to be a
-         * problem since names with multiple dots often have fellow files with
-         * common left substrings which the part after the dot qualifies.)
-         */
-        --q;
-        if( *q != '/' ) {
-            lsl = strrchr(buf, '/');
-            if (lsl == NULL) {
-                lsl = buf;
-            } else {
-                lsl++;
-            }
+    /*
+     * CODE TO FIX UNIX NAMES: if more than one '.' in name, DOS won't create
+     * file.  Delete all but last '.', then see if name longer than DOS
+     * allows.  If so, prompt user for new name.  (It might be better to
+     * always do the length check, but in this case it is more likely to be a
+     * problem since names with multiple dots often have fellow files with
+     * common left substrings which the part after the dot qualifies.)
+     */
+    --q;
+    if( *q != '/' ) {
+        lsl = strrchr( buf, '/' );
+        if( lsl == NULL ) {
+            lsl = buf;
+        } else {
+            lsl++;
+        }
 
-            prd = 0;
-            for (q = lsl; *q; q++)
-            {
-                    if( *q == '.' ) {
-                        if( prd != 0 ) break;
-                        prd = q;
-                    }
-            }
-            if( prd == 0 ) {
-                *q++ = '.';
-            }
-            *q = '\0';
-
-            q = strchr(lsl, '.');
-            if( q - lsl > 8 ) {
-                uprintf( ftty, "tar: the file name of %s is too long\n", buf );
-                strcpy( lsl+8, q );
-                uprintf( ftty, "tar: truncating to %s\n", buf );
-                q = strchr(lsl, '.');
-            }
-            if( strlen(q) > 4 ) {
-                uprintf( ftty, "tar: the file extension of %s is too long\n", buf );
-                q += 4;
-                *q = '\0';
-                uprintf( ftty, "tar: truncating to %s\n", buf );
-            }
-
-
-            /*
-             * prompt user for valid name, & check file existence, only if doing
-             * an "extract" operation with stdin not redirected.
-             */
-            if( f_extract && !access( buf, 0 ) ) {
-                uprintf( ftty, "tar: %s already exists\n", buf );
-                name_cnt = 3;
-                if( prd == 0 ) {
-                    strcat( buf, "002" );
-                } else if( strlen( prd ) == 2 ) {
-                    strcat( buf, "02" );
-                } else if( strlen( prd ) == 3 ) {
-                    strcat( buf, "2" );
-                } else {
-                    name_cnt = 2;
-                }
-                q = buf + strlen( buf ) - 1;
-                while( !access( buf, 0 ) ) {
-                    sprintf( q, "%d", name_cnt );
-                    if( name_cnt == 9 ) {
-                        q--;
-                    } else if( name_cnt == 99 ) {
-                        q--;
-                    }
-                    name_cnt++;
-                }
-                uprintf( ftty, "tar: written as %s\n", buf );
-            }
-            q = buf + strlen(buf) - 1;
+        prd = NULL;
+        for( q = lsl; *q; q++ ) {
             if( *q == '.' ) {
-                *q = '\0';
+                if( prd != NULL )
+                    break;
+                prd = q;
             }
         }
-#endif
+        if( prd == NULL ) {
+            *q++ = '.';
+        }
+        *q = '\0';
 
-        return (buf);
+        q = strchr( lsl, '.' );
+        if( q - lsl > 8 ) {
+            uprintf( ftty, "tar: the file name of %s is too long\n", buf );
+            strcpy( lsl + 8, q );
+            uprintf( ftty, "tar: truncating to %s\n", buf );
+            q = strchr( lsl, '.' );
+        }
+        if( strlen( q ) > 4 ) {
+            uprintf( ftty, "tar: the file extension of %s is too long\n", buf );
+            q += 4;
+            *q = '\0';
+            uprintf( ftty, "tar: truncating to %s\n", buf );
+        }
+
+        /*
+         * prompt user for valid name, & check file existence, only if doing
+         * an "extract" operation with stdin not redirected.
+         */
+        if( f_extract
+          && !access( buf, 0 ) ) {
+            uprintf( ftty, "tar: %s already exists\n", buf );
+            name_cnt = 3;
+            if( prd == NULL ) {
+                strcat( buf, "002" );
+            } else if( strlen( prd ) == 2 ) {
+                strcat( buf, "02" );
+            } else if( strlen( prd ) == 3 ) {
+                strcat( buf, "2" );
+            } else {
+                name_cnt = 2;
+            }
+            q = buf + strlen( buf ) - 1;
+            while( !access( buf, 0 ) ) {
+                sprintf( q, "%d", name_cnt );
+                if( name_cnt == 9 ) {
+                    q--;
+                } else if( name_cnt == 99 ) {
+                    q--;
+                }
+                name_cnt++;
+            }
+            uprintf( ftty, "tar: written as %s\n", buf );
+        }
+        q = buf + strlen( buf ) - 1;
+        if( *q == '.' ) {
+            *q = '\0';
+        }
+    }
+#endif
+    return( buf );
 }
 
 /*
@@ -531,35 +534,29 @@ char* fixname( char *s )
  * least this is a head start, I hope...
  */
 
-int convmode( char * s )
+int convmode( char *s )
 {
-        char          **p;
+    char    **p;
 
 #ifdef MSDOS
-        while (*s)
-        {
-                if (*s == '.')
-                        break;
-                s++;
+    while( *s ) {
+        if( *s == '.' )
+            break;
+        s++;
+    }
+    if( *s == '\0' )
+        s = " .";       /* special string for "no extension" */
+                        /* it has space in front because of  */
+    s++;                /* <- that increment */
+    for( p = binexts; *p; p++ ) {
+        if( strcmp( s, *p ) == 0 ) {
+            return( O_BINARY );
         }
-
-        if (*s == '\0')
-                s = " .";       /* special string for "no extension" */
-                                /* it has space in front because of  */
-        s++;                    /* <- that increment */
-
-        for (p = binexts; *p; p++)
-        {
-                if (strcmp(s, *p) == 0)
-                {
-                        return (O_BINARY);
-                }
-        }
-
-        return (O_TEXT);
+    }
+    return( O_TEXT );
 #else
-        /* for a Unix-like OS, always return 0 */
-        return (0);
+    /* for a Unix-like OS, always return 0 */
+    return( 0 );
 #endif
 }
 
@@ -571,25 +568,25 @@ int convmode( char * s )
 
 static void addbinext( char *s )
 {
-        char **exts;
-        int             n;
+    char    **exts;
+    int     n;
 
-        for (exts = binexts, n = 0; *exts; exts++, n++);        /* find end */
+    for( exts = binexts, n = 0; *exts; exts++, n++ )
+        ;        /* find end */
 
-        if (n >= NBINEXTS - 1)
-        {
-                annofile(stderr, tar);
-                fprintf(stderr, "%s: too many extensions added (max=%d)\n",
-                        s, NBINEXTS - 1);
-                exit(EX_ARGSBAD);
-        }
+    if( n >= NBINEXTS - 1 ) {
+        annofile( stderr, tar );
+        fprintf( stderr, "%s: too many extensions added (max=%d)\n",
+                    s, NBINEXTS - 1 );
+        exit( EX_ARGSBAD );
+    }
 
-        /* optional "." on front unless string is just "." */
-        if (s[0] == '.' && s[1] != '\0')
-                s++;
+    /* optional "." on front unless string is just "." */
+    if( s[0] == '.' && s[1] != '\0' )
+        s++;
 
-        *exts++ = s;
-        *exts = 0;
+    *exts++ = s;
+    *exts = NULL;
 }
 
 #endif
@@ -629,7 +626,8 @@ char *name_next( void )
  */
 void name_close( void )
 {
-    if( namef != NULL && namef != stdin ) {
+    if( namef != NULL
+      && namef != stdin ) {
         fclose( namef );
     }
 }
@@ -691,10 +689,10 @@ static void addname( char *name )
     p->found = 0;
     strncpy( p->name, name, len );
     p->name[len] = '\0';        /* Null term */
-    if( namelast )
+    if( namelast != NULL )
         namelast->next = p;
     namelast = p;
-    if( !namelist ) {
+    if( namelist == NULL ) {
         namelist = p;
     }
 }
@@ -712,7 +710,7 @@ int name_match( char *p )
 
     len = strlen( p );
     for( ; namelist != NULL; ) {
-        for( nlp = namelist; nlp != 0; nlp = nlp->next ) {
+        for( nlp = namelist; nlp != NULL; nlp = nlp->next ) {
             if( nlp->name[0] == p[0]        /* First chars match */
                 && nlp->length <= len       /* Archive len >= specified */
                 && ( p[nlp->length] == '\0' || p[nlp->length] == '/' )
@@ -730,7 +728,8 @@ int name_match( char *p )
          * compare it. If this was the last name, namelist->found will remain on.
          * If not, we loop to compare the newly read name.
          */
-        if( !f_sorted_names || namelist->found == 0 )
+        if( !f_sorted_names
+          || namelist->found == 0 )
             return 0;
         name_gather();                  /* Read one more */
         if( namelist->found ) {
@@ -749,7 +748,7 @@ void names_notfound( void )
     struct name *nlp;
     char        *p;
 
-    for( nlp = namelist; nlp != 0; nlp = nlp->next ) {
+    for( nlp = namelist; nlp != NULL; nlp = nlp->next ) {
         if( !nlp->found ) {
             fprintf( stderr, "tar: %s not found in archive\n", nlp->name );
         }
@@ -768,7 +767,7 @@ void names_notfound( void )
     namelast = (struct name *)NULL;
 
     if( f_sorted_names ) {
-        while( 0 != (p = name_next()) ) {
+        while( (p = name_next()) != NULL ) {
             fprintf( stderr, "tar: %s not found in archive\n", p );
         }
     }

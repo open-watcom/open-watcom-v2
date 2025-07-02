@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +187,7 @@ void CommandParser::parse()
             }
         }
 
-        if( !strncmp( "database", _token, _token.length() ) ) {
+        if( strncmp( "database", _token, _token.length() ) == 0 ) {
             token = scan();
             if( token != TOK_Id ) {
                 errMessage( "Missing database file name." );
@@ -199,13 +199,13 @@ void CommandParser::parse()
             }
         }
 
-        if( !strncmp( "quiet", _token, _token.length() ) ) {
+        if( strncmp( "quiet", _token, _token.length() ) == 0 ) {
             _quiet = true;
             token = scan();
             continue;           // <----------- unusual flow
         }
 
-        if( !strncmp( "path", _token, _token.length() ) ) {
+        if( strncmp( "path", _token, _token.length() ) == 0 ) {
             token = scan();
             if( token != TOK_Id ) {
                 errMessage( "Missing file search path." );
@@ -217,7 +217,7 @@ void CommandParser::parse()
             }
         }
 
-        if( !strncmp( "options", _token, _token.length() ) ) {
+        if( strncmp( "options", _token, _token.length() ) == 0 ) {
             token = scan();
             if( token != TOK_Id ) {
                 errMessage( "Missing options file name." );
@@ -229,7 +229,7 @@ void CommandParser::parse()
             }
         }
 
-        if( !strncmp( "file", _token, _token.length() ) ) {
+        if( strncmp( "file", _token, _token.length() ) == 0 ) {
             bool error = false;
 
             token = scan();

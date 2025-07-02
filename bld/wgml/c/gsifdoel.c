@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -225,11 +225,9 @@ static condcode gargterm( termcb * t )
     if( cc == CC_notnum ) {
         t->numeric = false;
         t->term_number = 0;
-
         cc = getqst();                  // try quoted string
         if( cc == CC_no ) {                // not quoted
             g_scandata.s = g_tok_start;   // reset start for next try
-
             cc = getarg();              // try unquoted string
             if( cc == CC_notnum ) {
                 return( cc );           // scan error
@@ -278,10 +276,9 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
         while( length > 0 ) {           // try to find a difference
             if( *p1 != *p2 ) {
                 break;                  // found
-            } else {
-                p1++;
-                p2++;
             }
+            p1++;
+            p2++;
             --length;
         }
 
@@ -495,33 +492,29 @@ void    scr_if( void )
                     continue;           // do next conditions
                 }
             } else {
-                if( !strnicmp( "and ", g_scandata.s, 4 ) ) {
+                if( strnicmp( "and ", g_scandata.s, 4 ) == 0 ) {
                     logical = AND;
                     g_scandata.s += 4;
                     continue;           // do next conditions
-                } else if( !strnicmp( "or ", g_scandata.s, 3 ) ) {
-                        logical = OR;
-                        g_scandata.s += 3;
-                        continue;       // do next conditions
+                } else if( strnicmp( "or ", g_scandata.s, 3 ) == 0 ) {
+                    logical = OR;
+                    g_scandata.s += 3;
+                    continue;       // do next conditions
                 }
             }
-
         }
         break;                          // no more operators / conditions
     }
 
-
     if( cb->if_level > 1 ) {            // nested if
         if( cb->if_flags[cb->if_level - 1].ifthen ) { // object of .th
             if( cb->if_flags[cb->if_level - 1].iffalse ) {// last .if false
-
                 cb->if_flags[cb->if_level].iftrue = true;// process nothing
                 cb->if_flags[cb->if_level].iffalse = true;
             }
         } else {
             if( cb->if_flags[cb->if_level - 1].ifelse // object of .el
-                && cb->if_flags[cb->if_level - 1].iftrue ) {// last .if true
-
+              && cb->if_flags[cb->if_level - 1].iftrue ) {// last .if true
                 cb->if_flags[cb->if_level].iftrue = true;// process nothing
                 cb->if_flags[cb->if_level].iffalse = true;
             }
@@ -600,7 +593,8 @@ void    scr_th( void )
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifthen = true;
     ProcFlags.keep_ifstate = true;
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass ) {
         show_ifcb( "then", cb );
     }
 
@@ -656,7 +650,8 @@ void    scr_el( void )
     }
     cb->if_flags[cb->if_level].ifelse = true;
     ProcFlags.keep_ifstate = true;
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass ) {
         show_ifcb( "else", cb );
     }
 
@@ -707,23 +702,23 @@ void    scr_do( void )
         }
         cb->if_flags[cb->if_level].ifdo = true;
         cb->if_flags[cb->if_level].ifindo = true;
-        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+        if( (input_cbs->fmflags & II_research)
+          && GlobalFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
         scan_restart = g_scandata.e;
         return;
     } else {
         if( strnicmp( "end", g_tok_start, 3 ) == 0 ) {
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research)
+              && GlobalFlags.firstpass ) {
                 show_ifcb( "doend", cb );
             }
             do {                            // loop for last active .do begin
-
                 if( cb->if_flags[cb->if_level].ifdo ) {
-
                     cb->if_flags[cb->if_level].ifdo = false;
-                    if( (input_cbs->fmflags & II_research) &&
-                        GlobalFlags.firstpass ) {
+                    if( (input_cbs->fmflags & II_research)
+                      && GlobalFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
                     scan_restart = g_scandata.e;
@@ -742,7 +737,8 @@ void    scr_do( void )
                 cb->if_flags[cb->if_level].ifindo = false;
             } while( cb->if_level-- > 0 );
 #if 0
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research)
+              && GlobalFlags.firstpass ) {
                 out_msg( "\t.do end Level %d\n"
                          "\t.ifcb iftrue %d, iffalse %d\n",
                          cb->if_level,
@@ -755,7 +751,8 @@ void    scr_do( void )
             /* never return */
         }
     }
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
     scan_restart = g_scandata.e;

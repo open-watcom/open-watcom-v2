@@ -105,7 +105,7 @@ static int is_name_mangled( const char *symbol )
 static int hash_compare( const void *item1, const void *item2 )
 /*************************************************************/
 {
-    return( !strcmp( (const char*)item1, (const char*)item2 ) );
+    return( strcmp( (const char*)item1, (const char*)item2 ) == 0 );
 }
 
 
@@ -560,19 +560,19 @@ static int matching_callback( const void *name_, void *info_ )
     /*** Try to match this symbol ***/
     switch( info->findmode ) {
     case MATCH_MODE_EXACT:
-        if( !strcmp( name, info->basename ) ) {
+        if( strcmp( name, info->basename ) == 0 ) {
             addit = true;
         }
         break;
     case MATCH_MODE_UNDERBAR_SYMBOL:
         sprintf( matchstr, "_%s", info->basename );
-        if( !strcmp( name, matchstr ) ) {
+        if( strcmp( name, matchstr ) == 0 ) {
             addit = true;
         }
         break;
     case MATCH_MODE_SYMBOL_UNDERBAR:
         sprintf( matchstr, "%s_", info->basename );
-        if( !strcmp( name, matchstr ) ) {
+        if( strcmp( name, matchstr ) == 0 ) {
             addit = true;
         }
         break;

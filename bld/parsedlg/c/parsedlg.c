@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -749,7 +749,7 @@ int process_statement( char *line, FILE *fo )
         get_rectangle_list( &dlg_item, separators );
         add_parms_list( &dlg_item, separators, 0 );
     }
-    if( !strcmp( dlg_item.name, "SCROLLBAR" ) ) {
+    if( strcmp( dlg_item.name, "SCROLLBAR" ) == 0 ) {
         add_parms_item( dlg_item.parms, "WC_SCROLLBAR", ADD_BEFORE );
     }
     process_style( dlg_item.parms, dlg_item.name );

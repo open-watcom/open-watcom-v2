@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,9 @@
 /* Return a type ID usable by towctrans() on success, or zero on error. */
 _WCRTLINK wctrans_t wctrans( const char *property )
 {
-    if( !strcmp( property, "tolower" ) )    return( WCTRANS_TOLOWER );
-    if( !strcmp( property, "toupper" ) )    return( WCTRANS_TOUPPER );
+    if( strcmp( property, "tolower" ) == 0 )
+        return( WCTRANS_TOLOWER );
+    if( strcmp( property, "toupper" ) == 0 )
+        return( WCTRANS_TOUPPER );
     return( 0 );
 }

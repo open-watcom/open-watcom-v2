@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,33 +49,33 @@
 
 static int CheckPredefType( const char * restype )
 {
-    if (!stricmp( restype, "CURSOR" )) {
+    if( stricmp( restype, "CURSOR" ) == 0 ) {
         return( RESOURCE2INT( RT_CURSOR ) );
-    } else if (!stricmp( restype, "BITMAP" )) {
+    } else if( stricmp( restype, "BITMAP" ) == 0 ) {
         return( RESOURCE2INT( RT_BITMAP ) );
-    } else if (!stricmp( restype, "ICON" )) {
+    } else if( stricmp( restype, "ICON" ) == 0 ) {
         return( RESOURCE2INT( RT_ICON ) );
-    } else if (!stricmp( restype, "MENU" )) {
+    } else if( stricmp( restype, "MENU" ) == 0 ) {
         return( RESOURCE2INT( RT_MENU ) );
-    } else if (!stricmp( restype, "DIALOG" )) {
+    } else if( stricmp( restype, "DIALOG" ) == 0 ) {
         return( RESOURCE2INT( RT_DIALOG ) );
-    } else if (!stricmp( restype, "STRING" )) {
+    } else if( stricmp( restype, "STRING" ) == 0 ) {
         return( RESOURCE2INT( RT_STRING ) );
-    } else if (!stricmp( restype, "FONTDIR" )) {
+    } else if( stricmp( restype, "FONTDIR" ) == 0 ) {
         return( RESOURCE2INT( RT_FONTDIR ) );
-    } else if (!stricmp( restype, "FONT" )) {
+    } else if( stricmp( restype, "FONT" ) == 0 ) {
         return( RESOURCE2INT( RT_FONT ) );
-    } else if (!stricmp( restype, "ACCELERATOR" )) {
+    } else if( stricmp( restype, "ACCELERATOR" ) == 0 ) {
         return( RESOURCE2INT( RT_ACCELERATOR ) );
-    } else if (!stricmp( restype, "RCDATA" )) {
+    } else if( stricmp( restype, "RCDATA" ) == 0 ) {
         return( RESOURCE2INT( RT_RCDATA ) );
-    } else if (!stricmp( restype, "ERRTABLE" )) {
+    } else if( stricmp( restype, "ERRTABLE" ) == 0 ) {
         return( RESOURCE2INT( RT_ERRTABLE ) );
-    } else if (!stricmp( restype, "GROUP_CURSOR" )) {
+    } else if( stricmp( restype, "GROUP_CURSOR" ) == 0 ) {
         return( RESOURCE2INT( RT_GROUP_CURSOR ) );
-    } else if (!stricmp( restype, "GROUP_ICON" )) {
+    } else if( stricmp( restype, "GROUP_ICON" ) == 0 ) {
         return( RESOURCE2INT( RT_GROUP_ICON ) );
-    } else if (!stricmp( restype, "NAMETABLE" )) {
+    } else if( stricmp( restype, "NAMETABLE" ) == 0 ) {
         return( RESOURCE2INT( RT_NAMETABLE ) );
     } else {
         return( 0 );
@@ -88,8 +88,8 @@ static bool ScanMultiOptArg( const char * arg )
 
     contok = true;
 
-    for ( ; *arg != '\0' && contok; arg++) {
-        switch (*arg) {
+    for( ; *arg != '\0' && contok; arg++) {
+        switch( *arg ) {
         case 'c':
             CmdLineParms.DumpContents = true;
             break;
@@ -113,19 +113,19 @@ static bool ScanOptionsArg( const char * arg )
 
     contok = true;
 
-    switch (*arg) {
+    switch( *arg ) {
     case '\0':
         puts( "Error: no option specifed after option character" );
         contok = false;
         break;
     case 'n':
         arg++;
-        if (*arg != '=') {
+        if( *arg != '=' ) {
             puts( "Missing = after option n" );
             contok = false;
         } else {
             arg++;
-            if (isdigit( *arg )) {
+            if( isdigit( *arg ) ) {
                 CmdLineParms.Name = WResIDFromNum( atoi( arg ) );
             } else {
                 CmdLineParms.Name = WResIDFromStr( arg );
@@ -134,16 +134,16 @@ static bool ScanOptionsArg( const char * arg )
         break;
     case 't':
         arg++;
-        if (*arg != '=') {
+        if( *arg != '=' ) {
             puts( "Missing = after option t" );
             contok = false;
         } else {
             arg++;
-            if (isdigit( *arg )) {
+            if( isdigit( *arg ) ) {
                 CmdLineParms.Type = WResIDFromNum( atoi( arg ) );
             } else {
                 predeftype = CheckPredefType( arg );
-                if (predeftype == 0) {
+                if( predeftype == 0 ) {
                     CmdLineParms.Type = WResIDFromStr( arg );
                 } else {
                     CmdLineParms.Type = WResIDFromNum( predeftype );
@@ -181,10 +181,10 @@ static void DefaultParms( void )
 void FreeParams( void )
 /*********************/
 {
-    if (CmdLineParms.Name != NULL) {
+    if( CmdLineParms.Name != NULL ) {
         TRMemFree( CmdLineParms.Name );
     }
-    if (CmdLineParms.Type != NULL) {
+    if( CmdLineParms.Type != NULL ) {
         TRMemFree( CmdLineParms.Type );
     }
 }
@@ -202,14 +202,15 @@ bool ScanParams( int argc, const char * argv[] )
     switchchar = _dos_switch_char();
     DefaultParms();
 
-    for (currarg = 1; currarg < argc && contok; currarg++) {
-        if (*argv[ currarg ] == switchchar || *argv[ currarg ] == '-') {
-            contok = ScanOptionsArg( argv[ currarg ] + 1 ) && contok;
-        } else if (*argv[ currarg ] == '?') {
+    for( currarg = 1; currarg < argc && contok; currarg++ ) {
+        if( *argv[currarg] == switchchar
+          || *argv[currarg] == '-' ) {
+            contok = ScanOptionsArg( argv[currarg] + 1 ) && contok;
+        } else if( *argv[currarg] == '?' ) {
             CmdLineParms.PrintHelp = true;
             contok = false;
-        } else if (nofilenames == 0) {
-            strncpy( CmdLineParms.FileName, argv[ currarg ], _MAX_PATH );
+        } else if( nofilenames == 0 ) {
+            strncpy( CmdLineParms.FileName, argv[currarg], _MAX_PATH );
             nofilenames++;
         } else {
             puts( "Error: Too many arguments on command line" );
@@ -217,8 +218,8 @@ bool ScanParams( int argc, const char * argv[] )
         }
     }
 
-    if (contok) {
-        switch (nofilenames) {
+    if( contok ) {
+        switch( nofilenames) {
         case 0:
             puts( "Error: filename required." );
             contok = false;

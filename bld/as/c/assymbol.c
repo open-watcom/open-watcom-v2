@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +153,7 @@ sym_handle SymLookup( const char *sym_name )
 
     sym = hashTable[ symHash( sym_name ) ];
     while( sym != NULL ) {
-        if( !strcmp( sym_name, sym->name ) )
+        if( strcmp( sym_name, sym->name ) == 0 )
             break;
         sym = sym->next;
     }

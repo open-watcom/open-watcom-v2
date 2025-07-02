@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,16 +64,16 @@ void GMLFile::_loadNext()
             if( ! strncmp(buffer, ":MSGSYM.", 8) ) {
 
                 // now, construct the errCode:
-                if( !strncmp( &buffer[9], "ERR_", 4) ) {
+                if( strncmp( &buffer[9], "ERR_", 4) == 0 ) {
                     sprintf(_nextErrCode,"E%3.3i\0",_errIndex);
                     _errIndex++;
-                } else if( !strncmp(&buffer[9] , "WARN_", 5) ) {
+                } else if( strncmp(&buffer[9] , "WARN_", 5) == 0 ) {
                     sprintf(_nextErrCode,"W%3.3i\0",_errIndex);
                     _errIndex++;
-                } else if( !strncmp( &buffer[9], "ANSI", 4) ) {
+                } else if( strncmp( &buffer[9], "ANSI", 4) == 0 ) {
                     sprintf(_nextErrCode,"W%3.3i\0",_errIndex);
                     _errIndex++;
-                } else if( !strncmp( &buffer[9], "INF_", 4) ) {
+                } else if( strncmp( &buffer[9], "INF_", 4) == 0 ) {
                     sprintf(_nextErrCode,"N%3.3i\0",_errIndex);
                     _errIndex++;
                 } else {

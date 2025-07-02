@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -576,7 +576,7 @@ static void linker_opts( struct XlatStatus *status,
     }
 
     if( cmdOpts->incremental ) {
-        if( !stricmp( cmdOpts->incremental_value->data, "yes" ) ) {
+        if( stricmp( cmdOpts->incremental_value->data, "yes" ) == 0 ) {
             if( cmdOpts->release ) {
                 Warning( "Ignoring /INCREMENTAL due to /RELEASE" );
             } else {
@@ -820,7 +820,8 @@ static void merge_opts( struct XlatStatus *status, const OPT_STORAGE *cmdOpts,
         if( p != NULL )  *p = '=';
         p = cmdOpts->subsystem_value->data;
 
-        if( !strnicmp( p, "WINDOWS", 7 )  ||  !strnicmp( p, "NATIVE", 6 ) ) {
+        if( strnicmp( p, "WINDOWS", 7 ) == 0
+          || strnicmp( p, "NATIVE", 6 ) == 0 ) {
             AppendCmdLine(cmdLine, LINK_SYSTEM_SECTION, "RUNTIME windows=4.0");
             system = SYS_NT_WINDOWED;
         } else {
