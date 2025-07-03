@@ -48,7 +48,7 @@
 #endif
 
 static HANDLE       RedirRead;
-static HANDLE       NulHdl;
+static HANDLE       NulDevHdl;
 static char         CmdProc[COMSPEC_MAXLEN + 1];
 static DWORD        ProcId;
 static HANDLE       ProcHdl;
@@ -79,13 +79,11 @@ static void RunCmd( const char *cmd_name )
     // set ShowWindow default value for nCmdShow parameter
     start.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
     start.wShowWindow = SW_HIDE;
-    DuplicateHandle( GetCurrentProcess(), redir_write, GetCurrentProcess(), &dup,
-                0, TRUE, DUPLICATE_SAME_ACCESS );
+    DuplicateHandle( GetCurrentProcess(), redir_write, GetCurrentProcess(), &dup, 0, TRUE, DUPLICATE_SAME_ACCESS );
     start.hStdError  = dup;
-    DuplicateHandle( GetCurrentProcess(), redir_write, GetCurrentProcess(), &dup,
-                0, TRUE, DUPLICATE_SAME_ACCESS );
+    DuplicateHandle( GetCurrentProcess(), redir_write, GetCurrentProcess(), &dup, 0, TRUE, DUPLICATE_SAME_ACCESS );
     start.hStdOutput = dup;
-    start.hStdInput  = NulHdl;
+    start.hStdInput  = NulDevHdl;
     if( CreateProcess( NULL, cmd, NULL, NULL, TRUE, CREATE_NEW_PROCESS_GROUP, NULL, NULL, &start, &info ) == 0 ) {
         info.dwProcessId = 0;
     }
@@ -219,8 +217,8 @@ void main( int argc, char *argv[] )
     attr.nLength = sizeof( attr );
     attr.lpSecurityDescriptor = NULL;
     attr.bInheritHandle = TRUE;
-    NulHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, &attr, OPEN_EXISTING, 0, NULL );
-    if( NulHdl == INVALID_HANDLE_VALUE ) {
+    NulDevHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, &attr, OPEN_EXISTING, 0, NULL );
+    if( NulDevHdl == INVALID_HANDLE_VALUE ) {
         fprintf( stderr, "Unable to open NUL device\n" );
         exit_link( 1 );
     }

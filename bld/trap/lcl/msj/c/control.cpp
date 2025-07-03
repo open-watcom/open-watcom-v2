@@ -237,13 +237,13 @@ HANDLE FakeOpen( char *name )
 
 static int LastNameGiven;
 
-bool FakeRead( HANDLE h, void* buff, unsigned len, DWORD *amtRead )
+bool FakeRead( HANDLE osfh, void* buff, unsigned len, DWORD *amtRead )
 /*****************************************************************/
 {
     char *data;
 
-    if( h != FakeHandle )
-        return( FALSE );
+    if( osfh != FakeHandle )
+        return( false );
     data = "JAVAxxxx";
     *(int *)( data + 4 ) = LastNameGiven;
     if( len > 8 )
