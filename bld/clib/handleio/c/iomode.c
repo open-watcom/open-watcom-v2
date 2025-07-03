@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +59,10 @@ unsigned _HUGEDATA __init_mode[_NFILES] = { /* file mode information (flags) */
     _READ,          /* stdin */
     _WRITE,         /* stdout */
     _WRITE,         /* stderr */
+#if defined(__DOS__) || defined(__WINDOWS__)
     _READ|_WRITE,   /* stdaux */
     _WRITE          /* stdprn */
+#endif
 };
 
 unsigned *__io_mode = __init_mode;      /* initially points to static array */
