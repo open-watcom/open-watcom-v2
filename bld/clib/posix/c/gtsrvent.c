@@ -72,6 +72,9 @@ _WCRTLINK struct servent *getservent( void )
 
     if( __servFile == NULL )
         setservent( 0 );
+    /* If no /etc/services, it remains NULL */
+    if( __servFile == NULL )
+        return NULL;
 
     /* First pass */
     if( buf == NULL ) {
