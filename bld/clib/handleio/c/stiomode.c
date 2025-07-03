@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,21 +65,21 @@ void __grow_iomode( int num )
     _AccessIOB();
     if( __io_mode == __init_mode ) {
         _init_NFiles = __NFiles;
-        new = (unsigned *) lib_malloc( num * sizeof( unsigned ) );
+        new = lib_malloc( num * sizeof( *new ) );
         if( new != NULL ) {
-            memcpy( new, __init_mode, __NFiles * sizeof(unsigned) );
+            memcpy( new, __init_mode, __NFiles * sizeof( *new ) );
         }
     } else {
-        #if defined(__NETWARE__)
-            new = (unsigned *) lib_realloc( __io_mode, num * sizeof( unsigned ), __NFiles * sizeof( unsigned ) );
-        #else
-            new = (unsigned *) lib_realloc( __io_mode, num * sizeof( unsigned ) );
-        #endif
+#if defined(__NETWARE__)
+        new = lib_realloc( __io_mode, num * sizeof( *new ), __NFiles * sizeof( *new ) );
+#else
+        new = lib_realloc( __io_mode, num * sizeof( *new ) );
+#endif
     }
     if( new == NULL ) {
         _RWD_errno = ENOMEM;
     } else {
-        memset( &new[__NFiles], 0, (num-__NFiles)*sizeof(unsigned) );
+        memset( &new[__NFiles], 0, ( num - __NFiles ) * sizeof( *new ) );
         __io_mode = new;
         __NFiles = num;
     }

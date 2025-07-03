@@ -58,7 +58,7 @@
 
 _WCRTLINK int fputc( int c, FILE *fp )
 {
-    int flags;
+    unsigned    flags;
 
     _ValidFile( fp, EOF );
     _AccessFile( fp );
