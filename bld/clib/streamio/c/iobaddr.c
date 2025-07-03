@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,10 +60,10 @@
 
 _WCRTLINK FILE *__get_std_stream( unsigned handle )
 {
-    if( handle > NUM_STD_STREAMS ) {
-        return( NULL );
-    } else {
+    if( handle < NUM_STD_STREAMS ) {
         return( &_RWD_iob[handle] );
+    } else {
+        return( NULL );
     }
 }
 
