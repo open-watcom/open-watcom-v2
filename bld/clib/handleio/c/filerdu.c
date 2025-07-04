@@ -130,9 +130,8 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
 
     if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 unsigned __GetIOMode( int handle )
@@ -430,9 +429,9 @@ static int vfs_read_one( int handle, int index, char *buf, long long pos, int si
                         count = size;
 
                     memcpy( buf, src, count );
-                }
-                else
+                } else {
                     count = 0;
+                }
             }
         }
     }

@@ -38,6 +38,7 @@
 #include "tinyio.h"
 #include "rtcheck.h"
 #include "iomode.h"
+#include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"
@@ -45,25 +46,24 @@
 int __close( int handle )
 {
     tiny_ret_t rc;
+    int     rv;
 #ifdef DEFAULT_WINDOWING
     LPWDATA res;
 #endif
-    int     rv;
 
     __handle_check( handle, -1 );
     rv = 0;
     rc = TinyClose( handle );
-    if( TINY_OK(rc) ) {
+    if( TINY_ERROR( rc ) ) {
+        rv = __set_errno_dos( TINY_INFO( rc ) );;
 #ifdef DEFAULT_WINDOWING
+    } else {
         if( _WindowsCloseWindow != NULL
           && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
             _WindowsRemoveWindowedHandle( handle );
             _WindowsCloseWindow( res );
         }
 #endif
-    } else {
-        _RWD_errno = EBADF;
-        rv = -1;
     }
     __SetIOMode( handle, 0 );
     return( rv );

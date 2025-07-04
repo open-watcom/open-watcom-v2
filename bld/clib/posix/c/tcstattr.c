@@ -40,12 +40,12 @@
 #include "thread.h"
 
 
-_WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
+_WCRTLINK int tcsetattr( int fd, int actions, const struct termios *termios_p )
 {
 #ifdef __LINUX__
     int cmd;
 
-    if( t == NULL ) {
+    if( termios_p == NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
@@ -65,7 +65,7 @@ _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
         return( -1 );
     }
 
-    return( ioctl( fd, cmd, t ) );
+    return( ioctl( fd, cmd, termios_p ) );
 #else
     _RWD_errno = EINVAL;
     return( -1 );

@@ -231,9 +231,9 @@ static void InitHandle( void )
     handle_count = 5;
     handle_ptr = ( rdos_handle_type ** )lib_malloc( handle_count * sizeof( rdos_handle_type * ) );
 
-    for( i = 0; i < handle_count; i++ )
+    for( i = 0; i < handle_count; i++ ) {
         handle_ptr[i] = 0;
-
+    }
 }
 
 _WCRTLINK int unlink( const CHAR_TYPE *filename )
@@ -242,9 +242,8 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
 
     if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 unsigned __GetIOMode( int handle )
@@ -411,9 +410,8 @@ _WCRTLINK int dup( int handle )
 
     if( obj ) {
         return( AllocHandleEntry( obj ) );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 _WCRTLINK int dup2( int handle1, int handle2 )
@@ -463,12 +461,10 @@ _WCRTLINK int _eof( int handle )
         pos = GetHandlePos( handle );
         if( RdosGetKernelHandleSize( rdos_handle ) == pos ) {
             return( 1 );
-        } else {
-            return( 0 );
         }
-    } else {
-        return( -1 );
+        return( 0 );
     }
+    return( -1 );
 }
 
 _WCRTLINK long long _filelength( int handle )
@@ -478,9 +474,8 @@ _WCRTLINK long long _filelength( int handle )
     rdos_handle = GetHandle( handle );
     if( rdos_handle > 0 ) {
         return( RdosGetKernelHandleSize( rdos_handle ) );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 _WCRTLINK int _chsize( int handle, long long size )
@@ -491,9 +486,8 @@ _WCRTLINK int _chsize( int handle, long long size )
     if( rdos_handle > 0 ) {
         RdosSetKernelHandleSize( rdos_handle, size );
         return( size );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 _WCRTLINK int fstat( int handle, struct stat *buf )
@@ -549,8 +543,8 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         buf->st_mode |= S_IFREG;
         buf->st_btime = buf->st_mtime;
         return( 0 );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK int _setmode( int handle, int mode )
@@ -604,8 +598,8 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
             break;
         }
         return( GetHandlePos( handle ) );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK off_t _tell( int handle )
@@ -627,8 +621,8 @@ int __qread( int handle, void *buffer, unsigned len )
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 int __qwrite( int handle, const void *buffer, unsigned len )
@@ -645,8 +639,8 @@ int __qwrite( int handle, const void *buffer, unsigned len )
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK int read( int handle, void *buffer, unsigned len )

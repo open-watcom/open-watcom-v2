@@ -39,6 +39,7 @@
 #include "iomode.h"
 #include "fileacc.h"
 
+
 /*
     DWORD GetFileType(
       HANDLE hFile   // handle to file

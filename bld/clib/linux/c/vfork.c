@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -56,8 +56,8 @@
  * in the header file.
  */
 
-#pragma aux __set_errno __parm [__eax] __modify [__edx]
-static int __set_errno( int err )
+#pragma aux __set_errno_vfork __parm [__eax] __modify [__edx]
+static int __set_errno_vfork( int err )
 {
     _RWD_errno = err;
     return( -1 );
@@ -70,7 +70,7 @@ static int __vfork( void );
         "int    80h" \
         "push   edx" \
         "cmp    eax,-125" \
-        "jnb    __set_errno" \
+        "jnb    __set_errno_vfork" \
     __value [__eax] \
     __modify __exact [__eax __edx]
 

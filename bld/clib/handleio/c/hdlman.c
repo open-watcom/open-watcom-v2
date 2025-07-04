@@ -255,9 +255,9 @@ _WCRTLINK int _grow_handles( int num )
         } else {
             /* code for pre DOS 3.3 */
             /* makes use of undocumented area of the psp */
-            char             *new_handles;
-            char _WCFAR * _WCFAR *psp_handles;
-            char        _WCFAR *psp_num_handles;
+            char            *new_handles;
+            char _WCFAR *   _WCFAR *psp_handles;
+            char            _WCFAR *psp_num_handles;
 
             new_handles = (char *)lib_nmalloc( num );
             if( new_handles == 0 ) {

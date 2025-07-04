@@ -70,11 +70,7 @@ void __grow_iomode( int num )
             memcpy( new, __init_mode, __NFiles * sizeof( *new ) );
         }
     } else {
-#if defined(__NETWARE__)
-        new = lib_realloc( __io_mode, num * sizeof( *new ), __NFiles * sizeof( *new ) );
-#else
         new = lib_realloc( __io_mode, num * sizeof( *new ) );
-#endif
     }
     if( new == NULL ) {
         _RWD_errno = ENOMEM;

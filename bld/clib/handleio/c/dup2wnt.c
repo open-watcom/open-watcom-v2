@@ -42,6 +42,7 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 _WCRTLINK int dup2( int handle1, int handle2 )
 {
     HANDLE      osph;

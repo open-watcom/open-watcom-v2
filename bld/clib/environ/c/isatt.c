@@ -45,8 +45,6 @@
 
 _WCRTLINK int isatty( int handle )
 {
-    tiny_ret_t rc;
-
     __handle_check( handle, 0 );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsIsWindowedHandle != NULL
@@ -54,6 +52,5 @@ _WCRTLINK int isatty( int handle )
         return( true );
     }
 #endif
-    rc = TinyGetDeviceInfo( handle );
-    return( ( TINY_INFO( rc ) & TIO_CTL_DEVICE ) != 0 );
+    return( ( TINY_INFO( TinyGetDeviceInfo( handle ) ) & TIO_CTL_DEVICE ) != 0 );
 }

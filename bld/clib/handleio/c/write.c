@@ -214,15 +214,14 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 /********************************************************************************/
 {
     int         rc;
-#ifdef DEFAULT_WINDOWING
-    LPWDATA     res;
-#endif
 #if defined(__NT__)
-    HANDLE      osfh;
 #elif defined(__OS2__)
     APIRET      rc1;
 #else
     tiny_ret_t  rc1;
+#endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA     res;
 #endif
 
     rc = 0;
@@ -230,12 +229,10 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     if( _WindowsStdout != NULL
       && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
         *amt = _WindowsStdout( res, buffer, len );
-    } else
+    } else {
 #endif
-    {
 #if defined(__NT__)
-        osfh = __getOSHandle( handle );
-        if( WriteFile( osfh, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
+        if( WriteFile( __getOSHandle( handle ), (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
             return( __set_errno_nt() );
         }
 #elif defined(__OS2__)
@@ -250,7 +247,9 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         }
         *amt = TINY_LINFO( rc1 );
 #endif
+#ifdef DEFAULT_WINDOWING
     }
+#endif
     if( *amt != len ) {
         rc = ENOSPC;
         _RWD_errno = rc;

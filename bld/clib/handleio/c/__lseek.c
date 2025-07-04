@@ -90,20 +90,20 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
     }
   #elif defined( __NT__ )
     {
-        DWORD           rc;
+        DWORD           pos_lo;
         DWORD           error;
-        LONG            offset_hi;
+        LONG            pos_hi;
 
-        offset_hi = HIDWORD( offset );
-        rc = SetFilePointer( __getOSHandle( handle ), LODWORD( offset ), &offset_hi, origin );
-        if( rc == INVALID_SET_FILE_POINTER ) {
+        pos_hi = HIDWORD( offset );
+        pos_lo = SetFilePointer( __getOSHandle( handle ), LODWORD( offset ), &pos_hi, origin );
+        if( pos_lo == INVALID_SET_FILE_POINTER ) {
             // this might be OK so check for error
             error = GetLastError();
             if( error != NO_ERROR ) {
                 return( __set_errno_dos( error ) );
             }
         }
-        U64Set( (unsigned_64 *)&pos, rc, offset_hi );
+        U64Set( (unsigned_64 *)&pos, pos_lo, pos_hi );
     }
   #elif defined( __LINUX__ )
     if( _llseek( handle, LODWORD( offset ), HIDWORD( offset ), &pos, origin ) ) {

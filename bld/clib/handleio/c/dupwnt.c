@@ -41,6 +41,7 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 _WCRTLINK int dup( int old_handle )
 {
     HANDLE      osfh;

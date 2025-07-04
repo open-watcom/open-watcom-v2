@@ -73,9 +73,8 @@ static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
     total = 0;
     writamt = MAXBUFF;
     while( len > 0 ) {
-        if( len < MAXBUFF ) {
+        if( len < MAXBUFF )
             writamt = len;
-        }
         rc = TinyWrite( handle, buffer, writamt );
         if( TINY_ERROR( rc ) )
             return( rc );
@@ -84,7 +83,6 @@ static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
             break;
         len -= rc;
         buffer = (const char *)buffer + rc;
-
     }
     return( total );
 }

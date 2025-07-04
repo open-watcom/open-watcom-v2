@@ -58,8 +58,8 @@ int __close( int handle )
     rc = DosClose( handle );
     if( rc != 0 ) {
         rv = __set_errno_dos( rc );
-    } else {
 #ifdef DEFAULT_WINDOWING
+    } else {
         if( _WindowsCloseWindow != NULL
           && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
             _WindowsRemoveWindowedHandle( handle );

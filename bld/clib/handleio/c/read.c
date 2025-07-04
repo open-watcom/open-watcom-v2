@@ -173,7 +173,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
             }
             finish_idx = 0;
             for( reduce_idx = 0; reduce_idx < amount_read; ++reduce_idx ) {
-                if( buffer[ reduce_idx ] == 0x1a ) {    /* EOF */
+                if( buffer[reduce_idx] == 0x1a ) {    /* EOF */
                     __lseek( handle,
                            ((long)reduce_idx - (long)amount_read) + 1L,
                            SEEK_CUR );
@@ -181,8 +181,8 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
                     _ReleaseFileH( handle );
                     return( total_len );
                 }
-                if( buffer[ reduce_idx ] != '\r' ) {
-                    buffer[ finish_idx++ ] = buffer[ reduce_idx ];
+                if( buffer[reduce_idx] != '\r' ) {
+                    buffer[finish_idx++] = buffer[reduce_idx];
                 }
             }
             total_len += finish_idx;
@@ -203,23 +203,22 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 
 _WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    amount;
     unsigned    readamt;
 
     __handle_check( handle, -1 );
+    total = 0;
     amount = MAXBUFF;
     while( len > 0 ) {
-        if( len < MAXBUFF ) {
+        if( len < MAXBUFF )
             amount = len;
-        }
         readamt = __read( handle, buffer, amount );
         if( (int)readamt == -1 )
             return( -1 );
         total += readamt;
         if( readamt != amount )
-            return( total );
-
+            break;
         len -= readamt;
         buffer = (char *)buffer + readamt;
     }
