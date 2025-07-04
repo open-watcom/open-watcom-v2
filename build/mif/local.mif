@@ -125,8 +125,8 @@ common_flags = $(common_flags_dbg)
 ! endif
 
 # C4013	"'???' undefined; assuming extern returning int"
-# C4020 "'???': too many actual parameters#"
-# C4024 "'???': different types for formal and actual parameter 3"
+# C4020 "'???': too many actual parameters"
+# C4024 "'???': different types for formal and actual parameter"
 # C4028 "formal parameter ?? different from declaration"
 # C4047 "'???': 'type1' differs in levels of indirection from 'type2'"
 # C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
