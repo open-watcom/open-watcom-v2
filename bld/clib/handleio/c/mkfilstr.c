@@ -61,7 +61,7 @@
 _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
 /*******************************************************************************/
 {
-    CHAR_TYPE *         p;
+    CHAR_TYPE           *p;
     int                 posixHandle;
     int                 osHandle;
     unsigned            mode;
@@ -70,7 +70,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
     size_t              len;
 
     /*** Allocate memory for the string ***/
-    len = (__NFiles * MAX_ELEM_SIZE) + __F_NAME(strlen,wcslen)( STRING( "C_FILE_INFO=" ) ) + 1;
+    len = ( __NFiles * MAX_ELEM_SIZE ) + __F_NAME(strlen,wcslen)( STRING( "C_FILE_INFO=" ) ) + 1;
     p = lib_malloc( len * sizeof( CHAR_TYPE ) );
     if( p == NULL )
         return( NULL );
@@ -91,7 +91,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
             __F_NAME(itoa,_itow)( osHandle, buf, 16 );          /* OS handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
-            __F_NAME(utoa,_utow)( mode, buf, 16 );              /* file mode */
+            __F_NAME(ultoa,_ultow)( mode, buf, 16 );              /* file mode */
             __F_NAME(strcat,wcscat)( curElem, buf );
             __F_NAME(strcat,wcscat)( curElem, STRING( "*" ) );  /* terminator */
 

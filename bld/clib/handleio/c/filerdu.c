@@ -212,15 +212,14 @@ _WCRTLINK int close( int handle )
     return( RdosCloseHandle( handle ) );
 }
 
-_WCRTLINK int dup( int handle )
+_WCRTLINK int dup( int old_handle )
 {
-    int                 new_handle;
+    int         handle;
 
-    new_handle = RdosDupHandle( handle );
-    if( new_handle > 0 )
-        CreateMap( new_handle );
-
-    return( new_handle );
+    handle = RdosDupHandle( old_handle );
+    if( handle > 0 )
+        CreateMap( handle );
+    return( handle );
 }
 
 _WCRTLINK int dup2( int handle1, int handle2 )

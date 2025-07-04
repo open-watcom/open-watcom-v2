@@ -59,7 +59,7 @@ int __set_binary( int handle )
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }
-        rc = TinySetDeviceInfo( handle, TINY_INFO(rc) | TIO_CTL_RAW );
+        rc = TinySetDeviceInfo( handle, TINY_INFO( rc ) | TIO_CTL_RAW );
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }

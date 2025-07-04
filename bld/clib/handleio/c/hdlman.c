@@ -82,7 +82,6 @@ unsigned __growPOSIXHandles( unsigned num )
         }
         if( os_handles == NULL ) {
             _RWD_errno = ENOMEM;
-            num = __NHandles;
         } else {
             for( i = __NHandles; i < num; i++ ) {
                 os_handles[i] = INVALID_HANDLE_VALUE;
@@ -115,7 +114,7 @@ int __allocPOSIXHandle( HANDLE osfh )
          */
         __growPOSIXHandles( i + (i >> 1) + 1 );
         // keep iomode array in sync
-        if( __NHandles > __NFiles )
+        if( __NFiles < __NHandles )
             __grow_iomode( __NHandles );
         for( ; i < __NHandles; i++ ) {
             if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,8 @@
 #include "linuxsys.h"
 
 
-_WCRTLINK int dup( int __oldfd )
+_WCRTLINK int dup( int old_handle )
 {
-    syscall_res res = sys_call1( SYS_dup, (u_long)__oldfd );
+    syscall_res res = sys_call1( SYS_dup, (u_long)old_handle );
     __syscall_return( int, res );
 }

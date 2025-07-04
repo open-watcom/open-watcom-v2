@@ -42,18 +42,18 @@
 #include "thread.h"
 
 
-_WCRTLINK int dup( int handle )
+_WCRTLINK int dup( int old_handle )
 {
-    HFILE   new_handle;
+    HFILE   handle;
     APIRET  rc;
 
-    __handle_check( handle, -1 );
+    __handle_check( old_handle, -1 );
 
-    new_handle = (HFILE)-1;
-    rc = DosDupHandle( handle, &new_handle );
+    handle = (HFILE)-1;
+    rc = DosDupHandle( old_handle, &handle );
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }
-    __SetIOMode_grow( new_handle, __GetIOMode( handle ) );
-    return( new_handle );
+    __SetIOMode_grow( handle, __GetIOMode( old_handle ) );
+    return( handle );
 }

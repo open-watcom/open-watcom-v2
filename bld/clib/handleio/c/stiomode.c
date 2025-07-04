@@ -99,7 +99,7 @@ AYI(__shrink_iomode,INIT_PRIORITY_IOSTREAM);
 
 #if defined(__OS2__) && !defined(_M_I86)
 
-static void __preinit_iomode_os2(void)
+static void __preinit_iomode_os2( void )
 {
     LONG    req_count;
     ULONG   curr_max_fh;
@@ -112,7 +112,6 @@ static void __preinit_iomode_os2(void)
         __grow_iomode( curr_max_fh );
         __NHandles = curr_max_fh;   // same as __set_handles
     }
-
 }
 
 AXI( __preinit_iomode_os2, INIT_PRIORITY_RUNTIME );

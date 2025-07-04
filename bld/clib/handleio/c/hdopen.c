@@ -179,7 +179,11 @@ _WCRTLINK int _open_osfhandle( long osf_handle, int flags )
         if( flags & O_BINARY ) {
             iomode_flags |= _BINARY;
         }
+    #if defined(__NT__)
+        __SetIOMode( handle, iomode_flags );
+    #else
         __SetIOMode_grow( handle, iomode_flags );
+    #endif
     }
   #endif
 #endif
