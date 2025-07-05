@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -914,6 +914,28 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
   #define _SREG                 __ds
 
  #endif
+#endif
+
+
+#if defined( __SMALL_DATA__ ) || defined( ZDP ) || defined( __WINDOWS__ )
+  #define _SAVE_DS              _PUSH_DS
+  #define _REST_DS              _POP_DS
+  #define _MODIF_DS
+#else
+  #define _SAVE_DS
+  #define _REST_DS
+  #define _MODIF_DS             __ds
+#endif
+
+
+#if defined( __FLAT__ )
+  #define _SAVE_ES              _PUSH_ES
+  #define _REST_ES              _POP_ES
+  #define _MODIF_ES
+#else
+  #define _SAVE_ES
+  #define _REST_ES
+  #define _MODIF_ES             __es
 #endif
 
 
