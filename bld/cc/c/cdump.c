@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,28 +239,28 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
         put_keyword( T___FAR16, fp );
     }
     switch( flags & MASK_LANGUAGES ) {
-    case LANG_WATCALL:
+    case FLAG_WATCALL:
         put_keyword( T___WATCALL, fp );
         break;
-    case LANG_CDECL:
+    case FLAG_CDECL:
         put_keyword( T___CDECL, fp );
         break;
-    case LANG_PASCAL:
+    case FLAG_PASCAL:
         put_keyword( T___PASCAL, fp );
         break;
-    case LANG_FORTRAN:
+    case FLAG_FORTRAN:
         put_keyword( T___FORTRAN, fp );
         break;
-    case LANG_SYSCALL:
+    case FLAG_SYSCALL:
         put_keyword( T__SYSCALL, fp );
         break;
-    case LANG_STDCALL:
+    case FLAG_STDCALL:
         put_keyword( T___STDCALL, fp );
         break;
-    case LANG_OPTLINK:
+    case FLAG_OPTLINK:
         put_keyword( T__OPTLINK, fp );
         break;
-    case LANG_FASTCALL:
+    case FLAG_FASTCALL:
         put_keyword( T___FASTCALL, fp );
         break;
     }

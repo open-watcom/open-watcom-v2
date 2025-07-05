@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ static void FuncDefn( SYMPTR sym )
     if( strcmp( CurFunc->name, "main" ) == 0
       || strcmp( CurFunc->name, "wmain" ) == 0 ) {
         sym->mods &= ~MASK_LANGUAGES;  // Turn off any language flags
-        sym->mods |= LANG_WATCALL;     // Turn on __watcall calling convention for main
+        sym->mods |= FLAG_WATCALL;     // Turn on __watcall calling convention for main
     }
     SymReplace( sym, CurFuncHandle );
 }
