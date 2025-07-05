@@ -78,6 +78,18 @@ extern  int SegmentLimit( void );
     __parm              [] \
     __value             [__eax] \
     __modify __exact    [__eax]
+
+extern void *TinyCBAlloc( unsigned );
+#pragma aux TinyCBAlloc = \
+        "mov  eax,80004800h" \
+        _INT_21         \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "and  eax,ebx"  \
+    __parm __caller     [__ebx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx]
+
 #endif
 
 static freelist_nptr __LinkUpNewNHeap( heapblk_nptr heap )

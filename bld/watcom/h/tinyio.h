@@ -565,7 +565,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyDPMIAlloc(x)        _TinyDPMIAlloc((x) >> 16, (x))
 #define TinyDPMIRealloc(addr,x) _TinyDPMIRealloc(addr, (x) >> 16, (x))
 #define TinyDPMIFree(x)         _TinyDPMIFree((x) >> 16, (x))
-#define TinyCBAlloc             _TinyCBAlloc
 #define TinyDPMIDOSAlloc        _TinyDPMIDOSAlloc
 #define TinyDPMIDOSFree         _TinyDPMIDOSFree
 #define TinyDPMISimulateRealInt _TinyDPMISimulateRealInt
@@ -707,7 +706,6 @@ tiny_ret_t  tiny_call   _TinySetMaxHandleCount( uint_16 );
 void *      tiny_call   _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
 void        tiny_call   _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
-void *      tiny_call   _TinyCBAlloc( uint_32 );
 uint_32                 _TinyMemAlloc( uint_32 __size );
 uint_32     tiny_call   _TinyDPMIDOSAlloc( uint_16 __paras );
 void        tiny_call   _TinyDPMIDOSFree( uint_16 __sel );
@@ -982,16 +980,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
-
-#pragma aux _TinyCBAlloc = \
-        "mov  eax,80004800h" \
-        _INT_21         \
-        "sbb  ebx,ebx"  \
-        "not  ebx"      \
-        "and  eax,ebx"  \
-    __parm __caller     [__ebx] \
-    __value             [__eax] \
-    __modify __exact    [__eax __ebx]
 
 #pragma aux _TinyMemAlloc = \
         _MOV_AH DOS_ALLOC_SEG \
