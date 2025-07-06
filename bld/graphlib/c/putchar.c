@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ void _PutChar( short row, short col, short ch )
         } else {
             p = _MK_FP( _CgaSeg, _CgaOff );
         }
-        p += _CurrActivePage * BIOSData( BDATA_REGEN_LEN, unsigned short );
+        p += _CurrActivePage * BIOSData( unsigned short, BDATA_REGEN_LEN );
         screen = (short __far *)p;
         screen += row * _CurrState->vc.numtextcols + col;
         *screen = ( _CharAttr << 8 ) + ch;

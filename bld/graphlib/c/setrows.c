@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ static void Load_25( void )
  */
 {
     VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) &= ~0x01;              // 43 line mode cursor emulation off
+    BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) &= ~0x01;              // 43 line mode cursor emulation off
     VideoInt( VIDEOINT_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
     _GrCursor = 1;                                  // cursor is on
 }
@@ -177,7 +177,7 @@ static void Load_EGA( short rows, short set_font, short cursor )
     VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
     VideoInt( set_font, 0, 0, 0 );                  // load pointer to character set in block 0
     if( rows == 43 ) {                              // cursor emulation
-        BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) |= 1; // 43 line mode cursor emulation on
+        BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) |= 1; // 43 line mode cursor emulation on
     } else {
         outpw( 0x03D4, 0x1414 );                    // reset underline location to none
     }
@@ -198,9 +198,9 @@ static void Load_MCGA( short rows, short set_font, short cursor )
     VideoInt( VIDEOINT_CHARGEN_SET_BLOCK, 0, 0, 0 );
     VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );         // reset the cursor
     outpw( 0x03D4, ( cursor & 0xFF00 ) + 0x09 );            // # double scan lines
-    BIOSData( BDATA_VIDEO_ROWS, unsigned char ) = rows - 1; // # of rows
+    BIOSData( unsigned char, BDATA_VIDEO_ROWS ) = rows - 1; // # of rows
     // # of vertical points per character
-    BIOSData( BDATA_POINT_HEIGHT, unsigned short ) = 2 * ( cursor & 0xFF + 1 );
+    BIOSData( unsigned short, BDATA_POINT_HEIGHT ) = 2 * ( cursor & 0xFF + 1 );
     _GrCursor = 1;                                          // cursor is on
 }
 
@@ -301,7 +301,7 @@ short _SetRows( short rows )
     if( _ErrorStatus != _GROK ) {
         return( 0 );
     } else {
-        rows = BIOSData( BDATA_VIDEO_ROWS, unsigned char ) + 1;   // 0 for Hercules
+        rows = BIOSData( unsigned char, BDATA_VIDEO_ROWS ) + 1;   // 0 for Hercules
         if( rows == 1 )
             rows = 25;
         _CurrState->vc.numtextrows = rows;

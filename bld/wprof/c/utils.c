@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -294,7 +294,7 @@ void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    _BIOSVideoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
+    _BIOSVideoRingBell( BIOSData( unsigned char, BDATA_ACTIVE_VIDEO_PAGE ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )

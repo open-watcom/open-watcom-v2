@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static void MapCharacter( unsigned char ch, unsigned char data[16] )
     unsigned short              j;
     unsigned char               temp;
 
-    points = BIOSData( BDATA_POINT_HEIGHT, unsigned char );
+    points = BIOSData( unsigned char, BDATA_POINT_HEIGHT );
 
     s = ch * 32;
 

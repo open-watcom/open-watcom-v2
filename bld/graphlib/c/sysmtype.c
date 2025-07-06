@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ static unsigned short DCCEmulate( void )
             alternate_type = CheckMONO();
         } else {
             if( ega_color == 0 ) {                          /* EGA colour   */
-                info = BIOSData( BDATA_VIDEO_INFO_1, unsigned char ) & 0x0F;
+                info = BIOSData( unsigned char, BDATA_VIDEO_INFO_1 ) & 0x0F;
                 if( info == 3 || info == 9 ) {
                     active_type = MT_EGA_ENHANCED;
                 } else {
@@ -214,7 +214,7 @@ unsigned short _SysMonType( void )
             }
             if( active_type == MT_EGA_COLOUR ||
                 alternate_type == MT_EGA_COLOUR ) {
-                info = BIOSData( BDATA_VIDEO_INFO_1, unsigned char ) & 0x0F;
+                info = BIOSData( unsigned char, BDATA_VIDEO_INFO_1 ) & 0x0F;
                 if( info == 3 ) {
                     alternate_type = MT_EGA_ENHANCED;
                 }

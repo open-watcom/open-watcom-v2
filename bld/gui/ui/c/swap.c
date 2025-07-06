@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -336,7 +336,7 @@ static void finiSwapperW( void )
  */
 static void setRegenClear( void )
 {
-    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) = (BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) & 0x7f) | (saveMode & 0x80);
+    BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) = (BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) & 0x7f) | (saveMode & 0x80);
 
 } /* setREgenClear */
 

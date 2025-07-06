@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +122,7 @@ void _CursorOff( void )
             TextCursor( 0 );
         } else {
             // if cursor is not where we think it is (printf), assume it is off
-            cursor = BIOSData( BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ), unsigned short );
+            cursor = BIOSData( unsigned short, BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ) );
             if( cursor == ( ( _TextPos.row << 8 ) + _TextPos.col ) ) {
                 GraphCursor();
             }
