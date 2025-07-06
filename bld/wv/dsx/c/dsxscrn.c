@@ -883,9 +883,9 @@ static void CheckMSMouse( void )
 {
     addr32_ptr      vect;
 
-    vect = RealModeData( 0, VECTOR_MOUSE * 4, addr32_ptr );
+    vect = RealModeData( addr32_ptr, 0, VECTOR_MOUSE * 4 );
     if( vect.segment == 0 && vect.offset == 0
-      || RealModeData( vect.segment, vect.offset, unsigned char ) == IRET ) {
+      || RealModeData( unsigned char, vect.segment, vect.offset ) == IRET ) {
         _SwitchOff( SW_USE_MOUSE );
     }
 }
