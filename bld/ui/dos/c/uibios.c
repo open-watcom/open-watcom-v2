@@ -268,7 +268,7 @@ bool intern initbios( void )
         UIData->desqview = desqview_present();
         UIData->f10menus = true;
         UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
-                                        BIOSData( BDATA_SCREEN_OFFSET, unsigned short ) );
+                                        BIOSData( unsigned short, BDATA_SCREEN_OFFSET ) );
         if( UIData->desqview ) {
             UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
