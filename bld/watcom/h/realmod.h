@@ -60,9 +60,9 @@
 #define RealModeDataPtr( segm, off )    EXTENDER_RM2PM( segm, off )
 #define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
 #endif
-#define RealModeData( segm, off, type ) *(type __far *)RealModeDataPtr( segm, off )
+#define RealModeData( type, segm, off ) *(type __far *)RealModeDataPtr( segm, off )
 
-#define BIOSData( off, type )           RealModeData( BDATA_SEG, off, type )
-#define VIDEOData( segm, off )          RealModeData( segm, off, unsigned char )
+#define BIOSData( type, off )           RealModeData( type, BDATA_SEG, off )
+#define VIDEOData( segm, off )          RealModeData( unsigned char, segm, off )
 
 extern  unsigned short  _ExtenderRealModeSelector;
