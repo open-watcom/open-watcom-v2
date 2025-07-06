@@ -224,7 +224,7 @@ static void _DoRingBell( unsigned char page )
 
 void Ring_Bell( void )
 {
-    _DoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
+    _DoRingBell( BIOSData( unsigned char, BDATA_ACTIVE_VIDEO_PAGE ) );
 }
 
 static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
@@ -273,7 +273,7 @@ static void DoSetMode( unsigned char mode )
     } else {
         equip |= 0x20;
     }
-    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = equip;
+    BIOSData( unsigned char, BDATA_EQUIP_LIST ) = equip;
     _BIOSVideoSetMode( mode );
 }
 
@@ -538,7 +538,7 @@ static void SetMonitor( void )
     }
     VIDPort = ( DbgBiosMode == 7 ) ? VIDMONOINDXREG : VIDCOLORINDXREG;
     if( ( (StartScrn.mode & 0x7f) == DbgBiosMode ) && ( StartScrn.strt.rows == DbgRows ) ) {
-        PageSize = BIOSData( BDATA_REGEN_LEN, uint_16 );   /* get size from BIOS */
+        PageSize = BIOSData( unsigned short, BDATA_REGEN_LEN );   /* get size from BIOS */
     } else {
         PageSize = ( DbgRows == 25 ) ? 4096 : ( 2 * DbgRows * 80 + 256 );
     }
@@ -546,7 +546,7 @@ static void SetMonitor( void )
 
 static void SaveBIOSSettings( void )
 {
-    SaveScrn.swtchs = BIOSData( BDATA_EQUIP_LIST, unsigned char );
+    SaveScrn.swtchs = BIOSData( unsigned char, BDATA_EQUIP_LIST );
     SaveScrn.mode = _BIOSVideoGetMode();
     SaveScrn.save.page = _BIOSVideoGetPage();
     SaveScrn.save.curpos = _BIOSVideoGetCursorPos( SaveScrn.save.page );
@@ -650,7 +650,7 @@ static bool SetMode( unsigned char mode )
 
 static void SetRegenClear( void )
 {
-    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) = (BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) & 0x7f) | (SaveScrn.mode & 0x80);
+    BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) = (BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) & 0x7f) | (SaveScrn.mode & 0x80);
 }
 
 static uint_16 RegenSize( void )
@@ -940,7 +940,7 @@ static void InitScreenMode( void )
         SetCharPattSet( DbgCharPattSet );
         SaveBIOSSettings();
         _BIOSVideoSetPage( 1 );
-        CurOffst = BIOSData( BDATA_REGEN_LEN, uint_16 ) / 2;
+        CurOffst = BIOSData( unsigned short, BDATA_REGEN_LEN ) / 2;
         break;
     case FLIP_TWO:
         DoSetMode( DbgBiosMode );
@@ -997,7 +997,7 @@ bool UsrScrnMode( void )
         SaveMouse( PgmMouse );
         RestoreMouse( DbgMouse );
     }
-    SaveScrn.swtchs = BIOSData( BDATA_EQUIP_LIST, unsigned char );
+    SaveScrn.swtchs = BIOSData( unsigned char, BDATA_EQUIP_LIST );
     if( ( HWDisplay.active == DISP_VGA_COLOUR ) || ( HWDisplay.active == DISP_VGA_MONO ) ) {
         UIData->colour = M_VGA;
     }
@@ -1091,7 +1091,7 @@ bool UserScreen( void )
     _BIOSVideoSetPage( SaveScrn.save.page );
     _BIOSVideoSetCursorTyp( SaveScrn.curtyp );
     _BIOSVideoSetCursorPos( SaveScrn.save.page, SaveScrn.save.curpos );
-    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = SaveScrn.swtchs;
+    BIOSData( unsigned char, BDATA_EQUIP_LIST ) = SaveScrn.swtchs;
     RestoreMouse( PgmMouse );
     return( dbg_vis );
 }
@@ -1101,7 +1101,7 @@ static void ReInitScreen( void )
     unsigned char   mode;
 
     RestoreMouse( PgmMouse );
-    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = StartScrn.swtchs;
+    BIOSData( unsigned char, BDATA_EQUIP_LIST ) = StartScrn.swtchs;
     _BIOSVideoSetMode( StartScrn.mode );
     mode = StartScrn.mode & 0x7f;
     if( ISTEXTMODE( mode ) ) {
@@ -1174,8 +1174,8 @@ void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATT
         if( FlipMech == FLIP_PAGE ) {
             bios_cursor_pos += 2;
         }
-        BIOSData( bios_cursor_pos + 0, unsigned char ) = OldCol;
-        BIOSData( bios_cursor_pos + 1, unsigned char ) = OldRow;
+        BIOSData( unsigned char, bios_cursor_pos + 0 ) = OldCol;
+        BIOSData( unsigned char, bios_cursor_pos + 1 ) = OldRow;
         VIDSetPos( VIDPort, CurOffst + crow * UIData->width + ccol );
         VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
     }
