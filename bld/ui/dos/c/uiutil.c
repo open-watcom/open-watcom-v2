@@ -51,6 +51,6 @@ bool intern mouse_installed( void )
 {
     memptr      vect;
 
-    vect = RealModeData( 0, VECTOR_MOUSE * 4, memptr );
-    return( vect.a || RealModeData( vect.s.segment, vect.s.offset, unsigned char ) != IRET );
+    vect = RealModeData( memptr, 0, VECTOR_MOUSE * 4 );
+    return( vect.a || RealModeData( unsigned char, vect.s.segment, vect.s.offset ) != IRET );
 }
