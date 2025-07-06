@@ -79,8 +79,8 @@ extern  int SegmentLimit( void );
     __value             [__eax] \
     __modify __exact    [__eax]
 
-extern void *TinyCBAlloc( unsigned );
-#pragma aux TinyCBAlloc = \
+extern void *CodeBuilderAlloc( unsigned );
+#pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
         _INT_21         \
         "sbb  ebx,ebx"  \
@@ -373,7 +373,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
             *amount = ((heapblk_nptr)brk_value)->len;
         }
     } else if( _IsCodeBuilder() ) {
-        brk_value = (unsigned)TinyCBAlloc( *amount );
+        brk_value = (unsigned)CodeBuilderAlloc( *amount );
         if( brk_value != 0 ) {
             *amount -= TAG_SIZE;
         }

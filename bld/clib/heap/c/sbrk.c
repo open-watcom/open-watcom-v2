@@ -87,8 +87,8 @@ extern  int SegmentLimit( void );
     __value             [__eax] \
     __modify __exact    [__eax]
 
-extern void *TinyCBAlloc( unsigned );
-#pragma aux TinyCBAlloc = \
+extern void *CodeBuilderAlloc( unsigned );
+#pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
         "int 21h"           \
         "sbb  ebx,ebx"  \
@@ -194,7 +194,7 @@ _WCRTLINK void_nptr sbrk( int increment )
             if( _IsRational() ) {
                 cstg = TinyDPMIAlloc( increment );
             } else {
-                cstg = TinyCBAlloc( increment );
+                cstg = CodeBuilderAlloc( increment );
             }
             if( cstg == NULL ) {
                 _RWD_errno = ENOMEM;
