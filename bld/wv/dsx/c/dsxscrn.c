@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +111,7 @@ static int10_cursor_typ         NoCur;
 static unsigned char            DbgBiosMode;
 static unsigned char            DbgCharPattSet;
 static unsigned char            DbgRows;
-static dpmi_dos_block           SwapSeg;
+static dpmi_dos_mem_block       SwapSeg;
 static addr32_off               VidStateOff = 0;
 static addr32_off               PgmMouse = 0;
 static addr32_off               DbgMouse = 0;

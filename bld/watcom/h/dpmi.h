@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ typedef struct {
 typedef struct {
     uint_16     rm;
     uint_16     pm;
-} dpmi_dos_block;
+} dpmi_dos_mem_block;
 
 #define DPMISetWatch                            _DPMISetWatch
 #define DPMIClearWatch                          _DPMIClearWatch
@@ -188,7 +188,7 @@ extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
 extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
                         uint_16 words_to_copy, rm_call_struct __far *call_st );
-extern dpmi_dos_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
+extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern void     __far *_DPMIRawPMtoRMAddr( void );
 extern uint_32  _DPMIRawRMtoPMAddr( void );

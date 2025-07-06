@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,11 +197,11 @@ unsigned short dos_get_code_page( void )
         regs.x.eax = 0x25c1;
         intdosx( &regs, &regs, &segregs );
     } else if( _IsRational() ) {
-        dpmi_dos_block      dos_block;
+        dpmi_dos_mem_block  dos_mem_block;
         rm_call_struct      dblock;
 
         /*** Allocate some DOS memory with DPMI ***/
-        dos_block = DPMIAllocateDOSMemoryBlock( 1 );    /* one paragraph is enough */
+        dos_mem_block = DPMIAllocateDOSMemoryBlock( 1 );    /* one paragraph is enough */
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6501;                /* get international info */
@@ -209,13 +209,13 @@ unsigned short dos_get_code_page( void )
         dblock.ecx = 7;                     /* buffer size */
         dblock.edx = 0xFFFF;                /* current country */
         dblock.edi = 0;                     /* buffer offset */
-        dblock.es = dos_block.rm;           /* buffer segment */
+        dblock.es = dos_mem_block.rm;           /* buffer segment */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
         if( (dblock.flags & INTR_CF) == 0 ) {
-            codepage = *(unsigned short __far *)EXTENDER_RM2PM( dos_block.rm, 5 );
+            codepage = *(unsigned short __far *)EXTENDER_RM2PM( dos_mem_block.rm, 5 );
         }
         /*** Free DOS memory with DPMI ***/
-        DPMIFreeDOSMemoryBlock( dos_block.pm );
+        DPMIFreeDOSMemoryBlock( dos_mem_block.pm );
     }
 
     return( codepage );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,56 +48,56 @@ typedef union {
 /* has to match STATICDATA structure in DSXHDLR.ASM */
 #include "pushpck1.h"
 typedef struct {
-    memptr          orig_vects[NUM_VECTS];
-    memptr          vecttable1[NUM_VECTS];
-    memptr          vecttable2[NUM_VECTS];
-    addr32_off      rm_func;
-    memptr          initfunc;
-    memptr          reqfunc;
-    memptr          finifunc;
-    dpmi_dos_block  envseg;
-    memptr          switchaddr;
-    memptr          saveaddr;
-    dpmi_dos_block  saveseg;
-    unsigned_16     savesize;
-    addr_seg        pmode_ds;
-    addr_seg        pmode_es;
-    addr_seg        pmode_cs;
-    addr48_off      pmode_eip;
-    addr_seg        pmode_ss;
-    addr48_off      pmode_esp;
-    addr_seg        save_env;
-    addr_seg        save_ss;
-    addr32_off      save_sp;
-    memptr          oldint10;
-    unsigned_8      pending;
-    unsigned_8      fail;
-    unsigned_8      act_font_tbls;
-    unsigned_8      othersaved;
-    unsigned_8      parmarea[PARM_SIZE];
-    unsigned_8      stack[STACK_SIZE];
+    memptr              orig_vects[NUM_VECTS];
+    memptr              vecttable1[NUM_VECTS];
+    memptr              vecttable2[NUM_VECTS];
+    addr32_off          rm_func;
+    memptr              initfunc;
+    memptr              reqfunc;
+    memptr              finifunc;
+    dpmi_dos_mem_block  envseg;
+    memptr              switchaddr;
+    memptr              saveaddr;
+    dpmi_dos_mem_block  saveseg;
+    unsigned_16         savesize;
+    addr_seg            pmode_ds;
+    addr_seg            pmode_es;
+    addr_seg            pmode_cs;
+    addr48_off          pmode_eip;
+    addr_seg            pmode_ss;
+    addr48_off          pmode_esp;
+    addr_seg            save_env;
+    addr_seg            save_ss;
+    addr32_off          save_sp;
+    memptr              oldint10;
+    unsigned_8          pending;
+    unsigned_8          fail;
+    unsigned_8          act_font_tbls;
+    unsigned_8          othersaved;
+    unsigned_8          parmarea[PARM_SIZE];
+    unsigned_8          stack[STACK_SIZE];
 } rm_data;
 #include "poppck.h"
 
-extern rm_data          __far *PMData;
-extern dpmi_dos_block   RMData;
+extern rm_data              __far *PMData;
+extern dpmi_dos_mem_block   RMData;
 
-extern unsigned_8       RMSegStart[];
-extern unsigned_8       RMDataStart[];
-extern void             RMTrapInit();
-extern void             RMTrapAccess();
-extern void             RMTrapFini();
-extern void             RMTrapHandler();
-extern void             RawSwitchHandler();
-extern void             Interrupt10();
-extern void             Interrupt15();
-extern void             Interrupt1b_23();
-extern void             Interrupt24();
-extern unsigned_32      MyGetRMVector( unsigned );
-extern void             MySetRMVector( unsigned, unsigned, unsigned );
-extern unsigned_8       RMSegEnd[];
+extern unsigned_8           RMSegStart[];
+extern unsigned_8           RMDataStart[];
+extern void                 RMTrapInit();
+extern void                 RMTrapAccess();
+extern void                 RMTrapFini();
+extern void                 RMTrapHandler();
+extern void                 RawSwitchHandler();
+extern void                 Interrupt10();
+extern void                 Interrupt15();
+extern void                 Interrupt1b_23();
+extern void                 Interrupt24();
+extern unsigned_32          MyGetRMVector( unsigned );
+extern void                 MySetRMVector( unsigned, unsigned, unsigned );
+extern unsigned_8           RMSegEnd[];
 
-#define RM_OFF( sym )   ((unsigned)(sym)-(unsigned)RMSegStart)
+#define RM_OFF( sym )       ((unsigned)(sym) - (unsigned)RMSegStart)
 
 extern void Boom( unsigned );
 #pragma aux Boom = "db 0xf, 0xff" __parm [__eax]
