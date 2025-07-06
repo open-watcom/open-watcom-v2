@@ -51,7 +51,7 @@ MOUSETIME UIAPI uiclock( void )
  * used for mouse & timer delays
  */
 {
-    return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned long ) );
+    return( BIOSData( unsigned long, BDATA_SYSTEM_CLOCK ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )

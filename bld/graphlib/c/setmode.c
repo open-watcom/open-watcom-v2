@@ -122,10 +122,10 @@ short _SetMode( short mode )
 {
     if( _ValidMode( mode ) ) {
         if( mode == 7 || mode == 15 ) {
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x30;        // monochrome
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) |= 0x30;        // monochrome
         } else {
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) &= ~0x30;       // remove previous settings
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x20;        // colour
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) &= ~0x30;       // remove previous settings
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) |= 0x20;        // colour
         }
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared

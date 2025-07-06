@@ -46,5 +46,5 @@ void ReleTimer( void )
 
 unsigned GetTickCnt( void )
 {
-    return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned ) );
+    return( BIOSData( unsigned, BDATA_SYSTEM_CLOCK ) );
 }
