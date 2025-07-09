@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
             /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
-    } else if( _IsRational() ) {
+    } else if( _DPMI || _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
@@ -327,7 +327,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         regs.x.edx = _FP_OFF( &pblock );    /* DS:EDX -> parameter block */
         regs.w.ds = _FP_SEG( &pblock );
         intr( 0x21, &regs );
-    } else if( _IsRational() ) {
+    } else if( _DPMI || _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );

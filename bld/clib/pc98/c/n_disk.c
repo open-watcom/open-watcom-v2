@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
+    #include "dpmi.h"
 #endif
 
 
@@ -158,25 +159,38 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         case _DISK_ALTERNATE:
         case _DISK_WRITEDDAM:
         case _DISK_READDDAM:
-            if( _IsRational() ) {
-                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
-                regs.x.eax = 0x100; /* Alloc DOS Memory under DPMI */
-                int386( 0x31, &regs, &regs );
-                psel = regs.w.dx;
-                rseg = regs.w.ax;
-                memmove( (char *)( rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
-            } else if( _IsPharLap() ) {
+            if( _IsPharLap() ) {
                 regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
                 regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
                 rseg = regs.w.ax;
                 _fmemmove( MK_FP( psel, rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
+            } else if( _DPMI || _IsRational() ) {
+                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
+                regs.x.eax = 0x100; /* Alloc DOS Memory under DPMI */
+                int386( 0x31, &regs, &regs );
+                psel = regs.w.dx;
+                rseg = regs.w.ax;
+                memmove( (char *)( rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
             }
             break;
         }
         memset( &dr, 0, sizeof( dr ) );
-        if( _IsRational() ) {
+        if( _IsPharLap() ) {
+            /* Set true register structure */
+            dp.eax = rregs.x.eax;
+            dp.edx = rregs.x.edx;
+            dp.es = rseg;
+            /* int 1BH */
+            dp.inum = 0x1b;
+            _nec_pass_bp( 0x2511, &dp, rregs.x.ebx, rregs.x.ecx, 0, &regs );
+
+            ret = regs.h.ah;
+            if( regs.x.cflag ) {
+                ret |= 0xff00;
+            }
+        } else if( _DPMI || _IsRational() ) {
             dr.ebp = 0;
             /* Set true register structure */
             dr.eax = rregs.x.eax;
@@ -191,19 +205,6 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             regs.x.ebx = 0x1b;
             int386( 0x31, &regs, &regs );
             ret = dr.ah;
-            if( regs.x.cflag ) {
-                ret |= 0xff00;
-            }
-        } else if( _IsPharLap() ) {
-            /* Set true register structure */
-            dp.eax = rregs.x.eax;
-            dp.edx = rregs.x.edx;
-            dp.es = rseg;
-            /* int 1BH */
-            dp.inum = 0x1b;
-            _nec_pass_bp( 0x2511, &dp, rregs.x.ebx, rregs.x.ecx, 0, &regs );
-
-            ret = regs.h.ah;
             if( regs.x.cflag ) {
                 ret |= 0xff00;
             }
@@ -237,16 +238,16 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         }
 
         if( psel ) {
-            if( _IsRational() ) {
-                memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len);
-                regs.x.edx = psel;
-                regs.x.eax = 0x101; /* Free DOS Memory under DPMI */
-                int386( 0x31, &regs, &regs );
-            } else if( _IsPharLap() ) {
+            if( _IsPharLap() ) {
                 _fmemmove( __diskinfo->buffer, MK_FP( psel, rseg << 4 ), __diskinfo->data_len);
                 regs.x.ecx = rseg;
                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
                 intdos( &regs, &regs );
+            } else if( _DPMI || _IsRational() ) {
+                memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len);
+                regs.x.edx = psel;
+                regs.x.eax = 0x101; /* Free DOS Memory under DPMI */
+                int386( 0x31, &regs, &regs );
             }
         }
 #endif

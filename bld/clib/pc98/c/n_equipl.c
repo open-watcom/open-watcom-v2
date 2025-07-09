@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
+    #include "dpmi.h"
     #include "realmod.h"
 #endif
 
@@ -93,16 +94,7 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         }
 #else
         /* Check mouse */
-        if( _IsRational() ) {
-            regs.w.ax = 0x200;         /* Get real mode interrupt vector */
-            regs.h.bl = 0x33;
-            int386( 0x31, &regs, &regs );
-            mouse_seg = regs.w.cx;
-            mouse_off = regs.w.dx;
-            regs.w.ax = 0x200;
-            regs.h.bl = 0x34;
-            int386( 0x31, &regs, &regs );
-         } else if( _IsPharLap() ) {
+        if( _IsPharLap() ) {
             regs.w.ax = 0x2503;         /* Get real mode interrupt vector */
             regs.h.cl = 0x33;
             intdos( &regs, &regs );
@@ -113,6 +105,15 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
             intdos( &regs, &regs );
             regs.w.cx = ( regs.x.ebx >> 16 ) & 0xffff;
             regs.w.dx = regs.x.ebx & 0xffff;
+        } else if( _DPMI || _IsRational() ) {
+            regs.w.ax = 0x200;         /* Get real mode interrupt vector */
+            regs.h.bl = 0x33;
+            int386( 0x31, &regs, &regs );
+            mouse_seg = regs.w.cx;
+            mouse_off = regs.w.dx;
+            regs.w.ax = 0x200;
+            regs.h.bl = 0x34;
+            int386( 0x31, &regs, &regs );
         }
         if( mouse_seg != regs.w.cx || mouse_off != regs.w.dx ) {
             regs.x.eax = 0;

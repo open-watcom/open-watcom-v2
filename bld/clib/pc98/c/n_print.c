@@ -40,6 +40,7 @@
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
+    #include "dpmi.h"
 #endif
 
 
@@ -110,7 +111,50 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             ret = regs.h.ah;
             break;
         case _PRINTER_WRITE_STRING:
-            if( _IsRational() ) {
+            if( _IsPharLap() ) {
+                unsigned long   psel;
+                unsigned long   rseg;
+                int             len;
+
+                len = strlen( (char *)__data );
+                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
+                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                intdos( &regs, &regs );
+                psel = _ExtenderRealModeSelector;
+                rseg = regs.w.ax;
+
+                for( ; len > 0xffff; len -= 0xffff ) {
+                    _fmemmove( MK_FP( psel, rseg << 4 ) , __data, 0xffff );
+                    __data += 0xffff;
+                    dp.eax = 0x3000;
+                    regs.x.ecx = 0xffff;
+                    dp.es = rseg;
+                    regs.x.ebx = 0;
+                    regs.x.edx = (unsigned long)&dp;
+                    regs.x.eax = 0x2511;
+                    dp.inum = 0x1a;
+                    intdos( &regs, &regs );
+                    if( dr.eax ) {
+                        ret = dr.cx;
+                        break;
+                    }
+                }
+                _fmemmove( MK_FP( psel, rseg << 4 ), __data, len );
+                dp.eax = 0x3000;
+                regs.x.ecx = len;
+                dp.es = rseg;
+                regs.x.ebx = 0;
+                regs.x.edx = (unsigned long)&dr;
+                regs.x.eax = 0x2511;
+                dp.inum = 0x1a;
+                intdos( &regs, &regs );
+                ret = regs.w.cx;
+                if( psel ){
+                    regs.x.ecx = rseg;
+                    regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
+                    intdos( &regs, &regs );
+                }
+            } else if( _DPMI || _IsRational() ) {
                 unsigned long   psel;
                 unsigned long   rseg;
                 int             len;
@@ -155,49 +199,6 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     int386( 0x31, &regs, &regs );
                 }
                 ret = dr.cx;
-            } else if( _IsPharLap() ) {
-                unsigned long   psel;
-                unsigned long   rseg;
-                int             len;
-
-                len = strlen( (char *)__data );
-                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
-                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
-
-                for( ; len > 0xffff; len -= 0xffff ) {
-                    _fmemmove( MK_FP( psel, rseg << 4 ) , __data, 0xffff );
-                    __data += 0xffff;
-                    dp.eax = 0x3000;
-                    regs.x.ecx = 0xffff;
-                    dp.es = rseg;
-                    regs.x.ebx = 0;
-                    regs.x.edx = (unsigned long)&dp;
-                    regs.x.eax = 0x2511;
-                    dp.inum = 0x1a;
-                    intdos( &regs, &regs );
-                    if( dr.eax ) {
-                        ret = dr.cx;
-                        break;
-                    }
-                }
-                _fmemmove( MK_FP( psel, rseg << 4 ), __data, len );
-                dp.eax = 0x3000;
-                regs.x.ecx = len;
-                dp.es = rseg;
-                regs.x.ebx = 0;
-                regs.x.edx = (unsigned long)&dr;
-                regs.x.eax = 0x2511;
-                dp.inum = 0x1a;
-                intdos( &regs, &regs );
-                ret = regs.w.cx;
-                if( psel ){
-                    regs.x.ecx = rseg;
-                    regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
-                    intdos( &regs, &regs );
-                }
             } else {
                 ret = 0;
             }

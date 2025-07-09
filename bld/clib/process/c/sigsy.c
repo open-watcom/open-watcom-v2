@@ -51,7 +51,6 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
  #else
   #include "extender.h"
   #include "dpmi.h"
-  #include "dpmihost.h"
 
   extern  void pharlap_setvect( unsigned, pfun );
   #pragma aux  pharlap_setvect = \
@@ -217,7 +216,7 @@ void __restore_int23( void )
     if( _IsPharLap() ) {
         pharlap_rm_setvect( 0x23, __old_int23 );
         pharlap_pm_setvect( 0x23, __old_pm_int23 );
-    } else if( __DPMI_hosted() == 1 ) {
+    } else if( _DPMI ) {
         DPMISetRealModeInterruptVector( 0x23, __old_int23 );
         DPMISetPMInterruptVector( 0x23, __old_pm_int23 );
     } else {        /* this is what it used to do */
@@ -245,7 +244,7 @@ void __restore_int_ctrl_break( void )
     if( _IsPharLap() ) {
         pharlap_rm_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
         pharlap_pm_setvect( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
-    } else if( __DPMI_hosted() == 1 ) {
+    } else if( _DPMI ) {
         DPMISetRealModeInterruptVector( CTRL_BREAK_INT, __old_int_ctrl_break );
         DPMISetPMInterruptVector( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
     } else {
@@ -275,7 +274,7 @@ void __grab_int23( void )
             __old_int23 = pharlap_rm_getvect( 0x23 );
             __old_pm_int23 = pharlap_pm_getvect( 0x23 );
             pharlap_setvect( 0x23, __int23_handler );
-        } else if( __DPMI_hosted() == 1 ) {
+        } else if( _DPMI ) {
             DPMILockLinearRegion((long)__int23_handler,
                 ((long)__int_ctrl_break_handler - (long)__int23_handler));
             __old_int23 = DPMIGetRealModeInterruptVector( 0x23 );
@@ -308,7 +307,7 @@ void __grab_int_ctrl_break( void )
             __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BREAK_INT );
             __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BREAK_INT );
             pharlap_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
-        } else if( __DPMI_hosted() == 1 ) {
+        } else if( _DPMI ) {
             DPMILockLinearRegion((long)__int_ctrl_break_handler,
                 ((long)__restore_int23 - (long)__int_ctrl_break_handler));
             __old_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BREAK_INT );

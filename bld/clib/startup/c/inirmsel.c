@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ static void init( void )
         _ExtenderRealModeSelector = 0x34 | (__get_ds() & 0x03);
     } else if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         _ExtenderRealModeSelector = __get_ds();
-    } else if( _IsRationalNonZeroBase() ) {
+    } else if( _DPMI || _IsRationalNonZeroBase() ) {
 #endif
         long    sel;
 
@@ -81,7 +81,7 @@ static void init( void )
 static void fini( void )
 {
 #ifdef __DOS__
-    if( _IsRationalNonZeroBase() ) {
+    if( _DPMI || _IsRationalNonZeroBase() ) {
 #endif
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
 #ifdef __DOS__

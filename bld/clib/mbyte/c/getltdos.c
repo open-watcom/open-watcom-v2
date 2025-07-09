@@ -36,8 +36,8 @@
 #include <dos.h>
 #include <i86.h>
 #ifndef _M_I86
-    #include "dpmi.h"
     #include "extender.h"
+    #include "dpmi.h"
     #include "realmod.h"
 #endif
 #include "getltdos.h"
@@ -125,7 +125,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
             }
         }
-    } else if( _IsRational() ) {
+    } else if( _DPMI || _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );

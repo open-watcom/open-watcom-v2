@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,6 +96,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 
 
 #include "extender.h"
+#include "dpmi.h"
 #include "rmalloc.h"
 
 
@@ -120,9 +121,8 @@ short _FastMap( long _WCI86FAR *colours, short num )
         _RMInterrupt( 0x10, VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
         _RMFree( &mem );
         return( TRUE );
-    } else {
-        return( FALSE );
     }
+    return( FALSE );
 }
 
 
@@ -145,27 +145,6 @@ typedef struct {
     unsigned short      sp;
     unsigned short      ss;
 } RMI;
-
-extern long DPMIAllocDOSMemory( short para );
-#pragma aux DPMIAllocDOSMemory = \
-        "mov  ax,100h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "sub  ax,ax"    \
-        "sub  dx,dx"    \
-    "L1: shl  eax,16"   \
-        "mov  ax,dx"    \
-    __parm      [__bx] \
-    __value     [__eax] \
-    __modify    [__dx]
-
-extern void DPMIFreeDOSMemory( short sel );
-#pragma aux DPMIFreeDOSMemory = \
-        "mov  ax,101h"  \
-        "int 31h"       \
-    __parm      [__bx] \
-    __value     \
-    __modify    [__ax]
 
 extern void DPMIRealModeInterrupt( char interrupt, char flags,
                             short words_to_copy, RMI __far *call_st );
@@ -220,45 +199,40 @@ extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
 
 short _RMAlloc( int size, RM_ALLOC *stg )
 //=======================================
-
 {
     unsigned short      seg;
     unsigned long       mem;
     int                 paragraphs;
 
     paragraphs = ( size + 15 ) / 16;
-    if( _IsRational() ) {
-        mem = DPMIAllocDOSMemory( paragraphs );
-        if( mem == 0 ) {
-            return( FALSE );
-        } else {
-            stg->rm_seg = mem >> 16L;
-            stg->pm_ptr = _MK_FP( (unsigned short)( mem & 0x0000ffffL ), 0 );
-            return( TRUE );
-        }
-    } else if( _IsPharLap() ) {
+    if( _IsPharLap() ) {
         seg = PharlapAlloc( paragraphs );
-        if( seg == 0 ) {
-            return( FALSE );
-        } else {
+        if( seg != 0 ) {
             stg->rm_seg = seg;
             stg->pm_ptr = _MK_FP( 0x34, seg << 4 );
             return( TRUE );
         }
-    } else {
-        return( FALSE );
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_dos_mem_block  dos_mem;
+
+        dos_mem = DPMIAllocateDOSMemoryBlock( paragraphs );
+        if( dos_mem.rm != 0 ) {
+            stg->rm_seg = dos_mem.rm;
+            stg->pm_ptr = _MK_FP( dos_mem.pm, 0 );
+            return( TRUE );
+        }
     }
+    return( FALSE );
 }
 
 
 void _RMFree( RM_ALLOC *stg )
 //===========================
-
 {
-    if( _IsRational() ) {
-        DPMIFreeDOSMemory( _FP_SEG( stg->pm_ptr ) );
-    } else {
+    if( _IsPharLap() ) {
         PharlapFree( stg->rm_seg );
+    } else if( _DPMI || _IsRational() ) {
+        DPMIFreeDOSMemoryBlock( _FP_SEG( stg->pm_ptr ) );
     }
 }
 
@@ -271,7 +245,14 @@ short _RMInterrupt( short intnum, short ax, short bx, short cx,
     RMI                 rmi;
     PARM_BLOCK          parms;
 
-    if( _IsRational() ) {
+    if( _IsPharLap() ) {
+        memset( &parms, 0, sizeof( PARM_BLOCK ) );
+        parms.intnum = intnum;
+        parms.eax = ax;
+        parms.edx = dx;
+        parms.es = es;
+        return( PharlapRMI( &parms, bx, cx, di ) );
+    } else if( _DPMI || _IsRational() ) {
         memset( &rmi, 0, sizeof( RMI ) );
         rmi.eax = ax;
         rmi.ebx = bx;
@@ -281,14 +262,8 @@ short _RMInterrupt( short intnum, short ax, short bx, short cx,
         rmi.edi = di;
         DPMIRealModeInterrupt( intnum, 0, 0, &rmi );
         return( rmi.eax );
-    } else {
-        memset( &parms, 0, sizeof( PARM_BLOCK ) );
-        parms.intnum = intnum;
-        parms.eax = ax;
-        parms.edx = dx;
-        parms.es = es;
-        return( PharlapRMI( &parms, bx, cx, di ) );
     }
+    return( 0 );
 }
 
 #endif

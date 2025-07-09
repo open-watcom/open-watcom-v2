@@ -35,6 +35,7 @@
 #if !defined( _M_I86 )
 #include "extender.h"
 #include "rmalloc.h"
+#include "realmod.h"
 #endif
 #if defined( __DOS__ )
 #include "getltdos.h"
@@ -196,13 +197,14 @@ void _InitSegments( void )
 //========================
 
 {
-    unsigned short      seg;
+//    unsigned short      seg;
     unsigned char       os_major;
     dbcs_pair           *p;
     dbcs_pair __far     *s;
 
     _StackSeg = _FP_SEG( &seg );        // point to stack segment
 #if !defined( _M_I86 )
+#if 0
     if( _IsRational() || _IsCodeBuilder() ) {
         seg = _FP_SEG( &_BiosSeg );
     } else if( _IsFlashTek() ) {        // FlashTek
@@ -223,11 +225,23 @@ void _InitSegments( void )
         _EgaOff  = 0x000A0000;
         _RomOff  = 0x000C0000;
     }
+#else
+    _BiosSeg = _ExtenderRealModeSelector;
+    _MonoSeg = _ExtenderRealModeSelector;
+    _CgaSeg  = _ExtenderRealModeSelector;
+    _EgaSeg  = _ExtenderRealModeSelector;
+    _RomSeg  = _ExtenderRealModeSelector;
+    _BiosOff = 0x00000400;
+    _MonoOff = 0x000B0000;
+    _CgaOff  = 0x000B8000;
+    _EgaOff  = 0x000A0000;
+    _RomOff  = 0x000C0000;
+#endif
 #endif
     // check for DBCS
     _IsDBCS = FALSE;
 #if defined( _M_I86 )
-    os_major = (unsigned char) os_version();
+    os_major = (unsigned char)os_version();
 #else
     os_major = _RMInterrupt( 0x21, 0x3000, 0x0, 0x0, 0x0, 0x0, 0x0 );
 #endif

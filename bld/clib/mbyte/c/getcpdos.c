@@ -35,8 +35,8 @@
 #include <dos.h>
 #include <i86.h>
 #ifndef _M_I86
-    #include "dpmi.h"
     #include "extender.h"
+    #include "dpmi.h"
 #endif
 #include "getcpdos.h"
 #include "dointr.h"
@@ -74,7 +74,7 @@ unsigned short dos_get_code_page( void )
         if( (regs.w.flags & INTR_CF) == 0 ) {
             codepage = regs.w.bx;                   /* return active code page */
         }
-    } else if( _IsRational() ) {
+    } else if( _DPMI || _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
@@ -196,7 +196,7 @@ unsigned short dos_get_code_page( void )
         regs.x.ecx = real_segm;
         regs.x.eax = 0x25c1;
         intdosx( &regs, &regs, &segregs );
-    } else if( _IsRational() ) {
+    } else if( _DPMI || _IsRational() ) {
         dpmi_dos_mem_block  dos_mem_block;
         rm_call_struct      dblock;
 

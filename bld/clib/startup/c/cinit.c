@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #if defined(__DOS_386__)
     #include "extender.h"
     #include "dpmi.h"
-    #include "dpmihost.h"
 #elif defined(__OS2__)
     #define INCL_DOSFILEMGR
     #include <wos2.h>
@@ -67,8 +66,7 @@ void    __CommonInit( void )
      * If we are running under DOS/4G then we need to page lock interrupt
      * handlers (since we could be running under VMM).
      */
-    if (!_IsPharLap() && (__DPMI_hosted() == 1))
-    {
+    if( !_IsPharLap() && _DPMI ) {
         DPMILockLinearRegion((long)&__GETDSStart_,
             ((long)&__GETDSEnd_ - (long)&__GETDSStart_));
     }

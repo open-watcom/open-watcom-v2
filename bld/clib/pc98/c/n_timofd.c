@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
+    #include "dpmi.h"
 #endif
 
 
@@ -71,7 +72,30 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
             unsigned long   psel;
             unsigned long   rseg;
 
-            if( _IsRational() ) {
+            if( _IsPharLap() ) {
+                rmi_struct      dp;
+
+                memset( &dp, 0, sizeof( dp ) );
+                regs.x.ebx = 1;
+                regs.x.eax = 0x25c0;
+                intdos( &regs, &regs );
+                psel = _ExtenderRealModeSelector;
+                rseg = regs.w.ax;
+                _fmemmove( MK_FP( psel, rseg << 4 ), __timeval, 6 );
+
+                dp.es = rseg;
+                regs.x.ebx = 0;     /* Offset */
+                dp.ah = __cmd;
+                dp.inum = 0x1c;     /* interrupt no */
+                regs.x.edx = (unsigned long)&dp;
+                regs.x.eax = 0x2511;
+                intdos( &regs, &regs );
+                _fmemmove( __timeval, MK_FP( psel, rseg << 4 ), 6 );
+
+                regs.x.ecx = rseg;
+                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
+                intdos( &regs, &regs );
+            } else if( _DPMI || _IsRational() ) {
                 call_struct     dr;
 
                 memset( &dr, 0, sizeof( dr ) );
@@ -95,29 +119,6 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
                 regs.x.edx = psel;
                 regs.x.eax = 0x101; /* DPMI DOS Memory Free */
                 int386( 0x31, &regs, &regs );
-            } else if( _IsPharLap() ) {
-                rmi_struct      dp;
-
-                memset( &dp, 0, sizeof( dp ) );
-                regs.x.ebx = 1;
-                regs.x.eax = 0x25c0;
-                intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
-                _fmemmove( MK_FP( psel, rseg << 4 ), __timeval, 6 );
-
-                dp.es = rseg;
-                regs.x.ebx = 0;     /* Offset */
-                dp.ah = __cmd;
-                dp.inum = 0x1c;     /* interrupt no */
-                regs.x.edx = (unsigned long)&dp;
-                regs.x.eax = 0x2511;
-                intdos( &regs, &regs );
-                _fmemmove( __timeval, MK_FP( psel, rseg << 4 ), 6 );
-
-                regs.x.ecx = rseg;
-                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                intdos( &regs, &regs );
             }
 #endif
             return( 0 );
