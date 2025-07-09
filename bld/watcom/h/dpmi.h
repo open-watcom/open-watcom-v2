@@ -153,6 +153,11 @@ typedef struct {
 #define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
 #endif
 
+/*
+ * C run-time library flag indicating that DPMI services (host) is available
+ */
+extern unsigned char _DPMI;
+
 extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
 extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
 extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
