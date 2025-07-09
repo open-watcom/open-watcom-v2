@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,67 +32,67 @@
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 
 #ifdef __FLAT__
-#define _SAVE_ES
-#define _SET_ES
-#define _REST_ES
+#define _CG_SAVE_ES
+#define _CG_SET_ES
+#define _CG_REST_ES
 #else
-#define _SAVE_ES    "push    es"
-#define _SET_ES     "push    ds" \
+#define _CG_SAVE_ES    "push    es"
+#define _CG_SET_ES     "push    ds" \
                     "pop     es"
-#define _REST_ES    "pop     es"
+#define _CG_REST_ES    "pop     es"
 #endif
 
 extern void *Copy( const void *src, void *dst, size_t len );
 #pragma aux Copy = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "mov eax,edi" \
         "rep movsb" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__esi] [__edi] [__ecx] \
     __value             [__eax]
 
 extern void *Fill( void *dst, size_t len, int byte );
 #pragma aux Fill = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "rep stosb" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__edi] [__ecx] [__al] \
     __value             [__edi]
 
 extern bool     Equal( const void *s1, const void *s2, size_t len );
 #pragma aux Equal = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "xor    eax,eax" \
         "repe cmpsb" \
         "jne short L1" \
         "inc    eax" \
     "L1:" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__esi] [__edi] [__ecx] \
     __value             [__al]
 
 extern size_t   Length( const char *);
 #pragma aux Length = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "xor    eax,eax" \
         "xor    ecx,ecx" \
         "dec    ecx" \
         "repne scasb" \
         "not    ecx" \
         "dec    ecx" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__edi] \
     __value             [__ecx] \
     __modify            [__eax]
 
 extern char *CopyStr( const char *src, char *dst );
 #pragma aux CopyStr = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "push   edi" \
         "xor    eax,eax" \
     "L1: lodsb" \
@@ -100,14 +100,14 @@ extern char *CopyStr( const char *src, char *dst );
         "or     eax,eax" \
         "jnz short L1" \
         "pop    eax" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__esi] [__edi] \
     __value             [__eax]
 
 extern char *CopyStrEnd( const char *src, char *dst );
 #pragma aux CopyStrEnd = \
-        _SAVE_ES \
-        _SET_ES \
+        _CG_SAVE_ES \
+        _CG_SET_ES \
         "xor    eax,eax" \
     "L1: lodsb" \
         "stosb" \
@@ -115,7 +115,7 @@ extern char *CopyStrEnd( const char *src, char *dst );
         "jnz short L1" \
         "dec    edi" \
         "mov    eax,edi" \
-        _REST_ES \
+        _CG_REST_ES \
     __parm __routine    [__esi] [__edi] \
     __value             [__eax]
 
