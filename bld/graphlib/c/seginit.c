@@ -202,7 +202,7 @@ void _InitSegments( void )
     dbcs_pair           *p;
     dbcs_pair __far     *s;
 
-    _StackSeg = _FP_SEG( &seg );        // point to stack segment
+    _StackSeg = _FP_SEG( &os_major );        // point to stack segment
 #if !defined( _M_I86 )
 #if 0
     if( _IsRational() || _IsCodeBuilder() ) {
