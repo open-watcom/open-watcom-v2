@@ -200,12 +200,12 @@ extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
 short _RMAlloc( int size, RM_ALLOC *stg )
 //=======================================
 {
-    unsigned short      seg;
-    unsigned long       mem;
     int                 paragraphs;
 
     paragraphs = ( size + 15 ) / 16;
     if( _IsPharLap() ) {
+        unsigned short      seg;
+
         seg = PharlapAlloc( paragraphs );
         if( seg != 0 ) {
             stg->rm_seg = seg;
