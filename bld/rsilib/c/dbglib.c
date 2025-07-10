@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2025 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -14,7 +14,6 @@
 
 #include <ctype.h>
 #include <conio.h>
-#include <i86.h>
 #include "rsi1632.h"
 #include "loader.h"
 #include "brkptcpu.h"

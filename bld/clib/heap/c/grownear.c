@@ -55,6 +55,7 @@
   #include <rdos.h>
 #elif defined( __DOS__ )
   #include "tinyio.h"
+  #include "dpmi.h"
 #endif
 #include "rtdata.h"
 #if defined(__OS2__) && !defined(_M_I86)

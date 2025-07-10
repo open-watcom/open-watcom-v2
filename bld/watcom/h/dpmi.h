@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DPMI API int 31h wrappers.
+* Description:  DPMI API (int 31h) in-line assembly wrappers.
 *
 ****************************************************************************/
 
@@ -35,9 +35,6 @@
 
 #include "watcom.h"
 #include "descript.h"
-
-
-#define VECTOR_DPMI     0x31
 
 typedef struct {
     uint_32     edi;
@@ -58,6 +55,99 @@ typedef struct {
     uint_16     sp;
     uint_16     ss;
 } rm_call_struct;
+
+/*
+ * call_struct definition for DPMI SimulateRealInt
+ */
+typedef struct {
+    union {
+        uint_32 edi;
+        uint_16 di;
+    };
+    union {
+        uint_32 esi;
+        uint_16 si;
+    };
+    union {
+        uint_32 ebp;
+        uint_16 bp;
+    };
+    uint_32     reserved;
+    union {
+        uint_32 ebx;
+        uint_16 bx;
+        uint_8  bl;
+        struct {
+            uint_8  :8;
+            uint_8  bh;
+        };
+    };
+    union {
+        uint_32 edx;
+        uint_16 dx;
+        uint_8  dl;
+        struct {
+            uint_8  :8;
+            uint_8  dh;
+        };
+    };
+    union {
+        uint_32 ecx;
+        uint_16 cx;
+        uint_8  cl;
+        struct {
+            uint_8  :8;
+            uint_8  ch;
+        };
+    };
+    union {
+        uint_32 eax;
+        uint_16 ax;
+        uint_8  al;
+        struct {
+            uint_8  :8;
+            uint_8  ah;
+        };
+    };
+    uint_16     flags;
+    uint_16     es;
+    uint_16     ds;
+    uint_16     fs;
+    uint_16     gs;
+    uint_16     ip;
+    uint_16     cs;
+    uint_16     sp;
+    uint_16     ss;
+} call_struct;
+
+/*
+ * rmi_struct definition for Pharlap SimulateRealInt
+ */
+typedef struct {
+    uint_16 inum;       /* Interrupt number */
+    uint_16 ds;         /* DS register */
+    uint_16 es;         /* ES register */
+    uint_16 fs;         /* FS register */
+    uint_16 gs;         /* GS register */
+    union {             /* EAX register */
+        uint_32 eax;
+        uint_16 ax;
+        uint_8  al;
+        struct {
+            uint_8  :8;
+            uint_8  ah;
+        };
+    };
+    union {             /* EDX register */
+        uint_32 edx;
+        uint_16 dx;
+        uint_8  dl;
+        struct {
+            uint_8  :8;
+            uint_8  dh;
+        };
+    };
+} rmi_struct;
 
 typedef struct {
     uint_32     largest_free;
@@ -137,20 +227,55 @@ typedef struct {
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
 
-#if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
-#if defined(__386__)
-#define DPMIGetVersion                          _DPMIGetVersion
-#else
+#define TinyDPMISetRealVect                     _TinyDPMISetRealVect
+#define TinyDPMIGetRealVect                     _TinyDPMIGetRealVect
+#define TinyDPMISetProtectVect                  _TinyDPMISetProtectVect
+#define TinyDPMIGetProtectVect                  _TinyDPMIGetProtectVect
+#define TinyDPMISetProtectExcpt                 _TinyDPMISetProtectExcpt
+#define TinyDPMIGetProtectExcpt                 _TinyDPMIGetProtectExcpt
+#define TinyDPMIRawRMtoPMAddr                   _TinyDPMIRawRMtoPMAddr
+#define TinyDPMIRawPMtoRMAddr                   _TinyDPMIRawPMtoRMAddr
+#define TinyDPMISaveRMStateAddr                 _TinyDPMISaveRMStateAddr
+#define TinyDPMISavePMStateAddr                 _TinyDPMISavePMStateAddr
+#define TinyDPMISaveStateSize                   _TinyDPMISaveStateSize
+#define TinyDPMIBase                            _TinyDPMIBase
+#define TinyDPMISetBase                         _TinyDPMISetBase
+#define TinyDPMISegToSel                        _TinyDPMISegToSel
+#define TinyDPMICreateSel                       _TinyDPMICreateSel
+#define TinyDPMICreateCSAlias                   _TinyDPMICreateCSAlias
+#define TinyDPMIFreeSel                         _TinyDPMIFreeSel
+#define TinyDPMISetLimit                        _TinyDPMISetLimit
+#define TinyDPMISetRights                       _TinyDPMISetRights
+#define TinyDPMIGetDescriptor                   _TinyDPMIGetDescriptor
+#define TinyDPMISetDescriptor                   _TinyDPMISetDescriptor
+
+#if defined( _M_I86SM ) || defined( _M_I86MM ) || !defined( _M_I86 )
+
+#if defined( _M_I86 )
 #define DPMIGetVersion                          _nDPMIGetVersion
+#else
+#define DPMIGetVersion                          _DPMIGetVersion
 #endif
 #define DPMIAllocateMemoryBlock                 _nDPMIAllocateMemoryBlock
 #define DPMIGetFreeMemoryInformation            _nDPMIGetFreeMemoryInformation
 #define DPMIResizeMemoryBlock                   _nDPMIResizeMemoryBlock
+
+#define TinyDPMIAlloc(x)                        _TinyDPMIAlloc((x) >> 16, (x))
+#define TinyDPMIRealloc(addr,x)                 _TinyDPMIRealloc(addr, (x) >> 16, (x))
+#define TinyDPMIFree(x)                         _TinyDPMIFree((x) >> 16, (x))
+#define TinyDPMIDOSAlloc                        _TinyDPMIDOSAlloc
+#define TinyDPMIDOSFree                         _TinyDPMIDOSFree
+#define TinyDPMISimulateRealInt                 _TinyDPMISimulateRealInt
+#define TinyDPMICallRealIntFrame                _TinyDPMICallRealIntFrame
+#define TinyDPMICallRealFarFrame                _TinyDPMICallRealFarFrame
+
 #else
+
 #define DPMIGetVersion                          _fDPMIGetVersion
 #define DPMIAllocateMemoryBlock                 _fDPMIAllocateMemoryBlock
 #define DPMIGetFreeMemoryInformation            _fDPMIGetFreeMemoryInformation
 #define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
+
 #endif
 
 /*
@@ -207,37 +332,71 @@ extern int      _DPMIClearWatch( uint_16 handle );
 extern int      _DPMITestWatch( uint_16 handle );
 extern int      _DPMIResetWatch( uint_16 handle );
 
+void *          _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
+void *          _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
+void            _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
+uint_32         _TinyDPMIDOSAlloc( uint_16 __paras );
+void            _TinyDPMIDOSFree( uint_16 __sel );
+uint_32         _TinyDPMIBase( uint_16 __sel );
+void __far *    _TinyDPMIGetProtectVect( uint_8 __intr );
+uint_32         _TinyDPMISetProtectVect( uint_8 __intr, void ( __far __interrupt *__f )() );
+void __far *    _TinyDPMIGetProtectExcpt( uint_8 __intr );
+uint_32         _TinyDPMISetProtectExcpt( uint_8 __intr, void ( __far __interrupt *__f )() );
+uint_32         _TinyDPMIGetRealVect( uint_8 __intr );
+uint_32         _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
+uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+void __far  *   _TinyDPMIRawPMtoRMAddr( void );
+uint_32         _TinyDPMIRawRMtoPMAddr( void );
+void __far  *   _TinyDPMISaveRMStateAddr( void );
+uint_32         _TinyDPMISavePMStateAddr( void );
+uint_16         _TinyDPMISaveStateSize( void );
+uint_16         _TinyDPMICreateCSAlias( uint_16 __sel );
+uint_32         _TinyDPMIFreeSel( uint_16 __sel );
+uint_16         _TinyDPMISegToSel( uint_16 __sel );
+uint_16         _TinyDPMICreateSel( uint_16 __nbsels );
+uint_32         _TinyDPMISetBase( uint_16 __sel, uint_32 );
+uint_32         _TinyDPMISetLimit( uint_16 __sel, uint_32 );
+uint_32         _TinyDPMISetRights( uint_16 __sel, uint_16 );
+uint_32         _TinyDPMIGetDescriptor( uint_16 __sel, void __far * );
+uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
+
+#include "asmbytes.h"
+
+#define VECTOR_DPMI     0x31
+
 #pragma aux _DPMIIdle = \
-        "mov  ax,1680h" \
-        "int 2fh"       \
+        _MOV_AX_W 0x80 0x16 \
+        _INT_2F         \
     __parm [] \
     __value \
     __modify __exact [__ax]
 
 #pragma aux _DPMIModeDetect = \
-        "mov  ax,1686h" \
-        "int 2fh"       \
+        _MOV_AX_W 0x86 0x16 \
+        _INT_2F         \
     __parm [] \
     __value [__ax] \
     __modify __exact [__ax]
 
 #if defined(__386__)
 #pragma aux _DPMISetWatch = \
-        "mov  ax,0b00h" \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-        "mov  ax,bx"    \
+        _MOV_CX_BX      \
+        _SHR_EBX_N 16   \
+        _MOV_AX_W 0x00 0x0B \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _USE16 _MOV_AX_BX \
     __parm [__ebx] [__dl] [__dh] \
     __value [__eax] \
     __modify __exact [__eax __ebx __ecx]
 #else
 #pragma aux _DPMISetWatch = \
-        "mov  ax,0b00h" \
-        "xchg bx,cx"    \
-        "int 31h"       \
-        "sbb  cx,cx"    \
+        _XCHG_BX_CX     \
+        _MOV_AX_W 0x00 0x0B \
+        _INT_31         \
+        _SBB_CX_CX      \
     __parm [__bx __cx] [__dl] [__dh] \
     __value [__cx __bx] \
     __modify __exact [__ax __bx __cx]
@@ -245,17 +404,17 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIClearWatch = \
-        "mov  ax,0b01h" \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x01 0x0B \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__eax] \
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIClearWatch = \
-        "mov  ax,0b01h" \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x01 0x0B \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -263,21 +422,21 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMITestWatch = \
-        "mov  ax,0b02h" \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "and  eax,1"    \
-        "or   ebx,eax"  \
+        _MOV_AX_W 0x02 0x0B \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _AND_AX_B 1     \
+        _OR_BX_AX       \
     __parm [__bx] \
     __value [__ebx] \
     __modify __exact [__eax __ebx]
 #else
 #pragma aux _DPMITestWatch = \
-        "mov  ax,0b02h" \
-        "int 31h"       \
-        "sbb  bx,bx"    \
-        "and  ax,1"     \
-        "or   bx,ax"    \
+        _MOV_AX_W 0x02 0x0B \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _AND_AX_B 1     \
+        _OR_BX_AX       \
     __parm [__bx] \
     __value [__bx] \
     __modify __exact [__ax __bx]
@@ -285,17 +444,17 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIResetWatch = \
-        "mov  ax,0b03h" \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x03 0x0B \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__eax] \
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIResetWatch = \
-        "mov  ax,0b03h" \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x03 0x0B \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -303,24 +462,24 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIGetVersion = \
-        "push ds"       \
-        "mov  ds,edx"   \
-        "mov  ax,400h"  \
-        "int 31h"       \
+        _PUSH_DS        \
+        _MOV_DS_DX      \
+        _MOV_AX_W 0x00 0x04 \
+        _INT_31         \
         "mov  byte ptr [esi],ah"    \
         "mov  byte ptr [esi+1],al"  \
         "mov  word ptr [esi+2],bx"  \
         "mov  byte ptr [esi+4],cl"  \
         "mov  byte ptr [esi+5],dh"  \
         "mov  byte ptr [esi+6],dl"  \
-        "pop  ds"         \
+        _POP_DS         \
     __parm [__dx __esi] \
     __value \
     __modify[__ax __bx __cl __dx]
 #else
 #pragma aux _nDPMIGetVersion = \
-        "mov  ax,400h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x04 \
+        _INT_31         \
         "mov  byte ptr [si],ah"     \
         "mov  byte ptr [si+1],al"   \
         "mov  word ptr [si+2],bx"   \
@@ -332,8 +491,8 @@ extern int      _DPMIResetWatch( uint_16 handle );
     __modify[__ax __bx __cl __dx]
 
 #pragma aux _fDPMIGetVersion = \
-        "mov  ax,400h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x04 \
+        _INT_31         \
         "mov  byte ptr es:[si],ah"      \
         "mov  byte ptr es:[si+1],al"    \
         "mov  word ptr es:[si+2],bx"    \
@@ -347,18 +506,18 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor  eax,eax"  \
-        "int 31h"       \
-        "sbb  ecx,ecx"  \
-        "mov  cx,ax"    \
+        _XOR_AX_AX      \
+        _INT_31         \
+        _SBB_CX_CX      \
+        _USE16 _MOV_CX_AX \
     __parm [__cx] \
     __value [__ecx] \
     __modify __exact [__eax __ecx]
 #else
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor  ax,ax"    \
-        "int 31h"       \
-        "sbb  cx,cx"    \
+        _XOR_AX_AX      \
+        _INT_31         \
+        _SBB_CX_CX      \
     __parm [__cx] \
     __value [__cx __ax] \
     __modify __exact [__ax __cx]
@@ -366,17 +525,17 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIFreeLDTDescriptor = \
-        "mov  ax,1"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x01 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__eax] \
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIFreeLDTDescriptor = \
-        "mov  ax,1"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x01 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -384,43 +543,43 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMISegmentToDescriptor = \
-        "mov  ax,2"     \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "mov  bx,ax"    \
+        _MOV_AX_W 0x02 0x00 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
     __parm [__bx] \
     __value [__ebx]\
     __modify __exact [__ax __ebx]
 #else
 #pragma aux _DPMISegmentToDescriptor = \
-        "mov  ax,2"     \
-        "int 31h"       \
-        "sbb  bx,bx"    \
+        _MOV_AX_W 0x02 0x00 \
+        _INT_31         \
+        _SBB_BX_BX      \
     __parm [__bx] \
     __value [__bx __ax] \
     __modify __exact [__ax __bx]
 #endif
 
 #pragma aux _DPMIGetNextSelectorIncrementValue = \
-        "mov  ax,3"     \
-        "int 31h"       \
+        _MOV_AX_W 0x03 0x00 \
+        _INT_31         \
     __parm [__bx] \
     __value [__ax] \
     __modify __exact [__ax]
 
 #if defined(__386__)
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov  ax,6"     \
-        "int 31h"       \
-        "shl  ecx,16"   \
-        "mov  cx,dx"    \
+        _MOV_AX_W 0x06 0x00 \
+        _INT_31         \
+        _SHL_ECX_N 16   \
+        _USE16 _MOV_CX_DX \
     __parm __caller [__bx] \
     __value [__ecx] \
     __modify __exact [__ax __ecx __edx]
 #else
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov  ax,6"     \
-        "int 31h"       \
+        _MOV_AX_W 0x06 0x00 \
+        _INT_31         \
     __parm [__bx] \
     __value[__cx __dx] \
     __modify __exact [__ax __cx __dx]
@@ -428,19 +587,19 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMISetSegmentBaseAddress = \
-        "mov  ax,7"     \
-        "mov  dx,cx"    \
-        "shr  ecx,16"   \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_DX_CX      \
+        _SHR_ECX_N 16   \
+        _MOV_AX_W 0x07 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__ecx] \
     __value [__eax] \
     __modify __exact [__eax __ecx __dx]
 #else
 #pragma aux _DPMISetSegmentBaseAddress = \
-        "mov  ax,7"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x07 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__cx __dx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -448,19 +607,19 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMISetSegmentLimit = \
-        "mov  dx,cx"    \
-        "shr  ecx,16"   \
-        "mov  ax,8"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_DX_CX      \
+        _SHR_ECX_N 16   \
+        _MOV_AX_W 0x08 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__ecx] \
     __value [__eax] \
     __modify __exact [__eax __ecx __dx]
 #else
 #pragma aux _DPMISetSegmentLimit = \
-        "mov  ax,8"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x08 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__cx __dx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -468,17 +627,17 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMISetDescriptorAccessRights = \
-        "mov  ax,9"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x09 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__cx] \
     __value [__eax] \
     __modify __exact [__eax]
 #else
 #pragma aux _DPMISetDescriptorAccessRights = \
-        "mov  ax,9"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x09 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__cx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -486,20 +645,20 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIFreeMemoryBlock =  \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  ax,502h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_DI_SI      \
+        _SHR_ESI_N 16   \
+        _MOV_AX_W 0x02 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__esi] \
     __value [__eax] \
     __modify __exact [__eax __di __esi]
 #else
 #pragma aux _DPMIFreeMemoryBlock =  \
-        "xchg si,di"    \
-        "mov  ax,502h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _XCHG_SI_DI     \
+        _MOV_AX_W 0x02 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__di __si] \
     __value [__ax] \
     __modify __exact [__ax __di __si]
@@ -507,41 +666,41 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMILockLinearRegion = \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "mov  ax,600h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_DI_SI      \
+        _SHR_ESI_N 16   \
+        _MOV_CX_BX      \
+        _SHR_EBX_N 16   \
+        _MOV_AX_W 0x00 0x06 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__ebx] [__esi] \
     __value [__eax] \
-    __modify __exact [__eax __ebx __cx __esi __di]
+    __modify __exact [__eax __ebx __ecx __esi __di]
 
 #pragma aux _DPMIUnlockLinearRegion = \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "mov  ax,601h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_DI_SI      \
+        _SHR_ESI_N 16   \
+        _MOV_CX_BX      \
+        _SHR_EBX_N 16   \
+        _MOV_AX_W 0x01 0x06 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__ebx] [__esi] \
     __value [__eax] \
-    __modify __exact [__eax __ebx __cx __esi __di]
+    __modify __exact [__eax __ebx __ecx __esi __di]
 #else
 #pragma aux _DPMILockLinearRegion = \
-        "mov  ax,600h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x00 0x06 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__cx __bx] [__si __di] \
     __value[__ax] \
     __modify __exact [__ax]
 
 #pragma aux _DPMIUnlockLinearRegion = \
-        "mov  ax,601h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x01 0x06 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__cx __bx] [__si __di] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -550,115 +709,117 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov  ax,100h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x01 \
+        _INT_31         \
         "jnc short L1"  \
-        "xor  ax,ax"    \
-        "xor  dx,dx"    \
-    "L1: shl  edx,16"   \
-        "mov  dx,ax"    \
+        _XOR_AX_AX      \
+        _XOR_DX_DX      \
+    "L1:"               \
+        _SHL_EDX_N 16   \
+        _USE16 _MOV_DX_AX \
     __parm [__bx] \
     __value [__edx] \
-    __modify [__ax __bx __edx]
+    __modify [__eax __bx __edx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov  ax,101h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x01 0x01 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__dx] \
     __value [__eax] \
     __modify __exact [__eax]
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,300h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x00 0x03 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
     __parm [__bl] [__bh] [__cx] [__dx __edi] \
     __value [__eax] \
     __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov  ax,0ah"   \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "mov  bx,ax"    \
+        _MOV_AX_W 0x0A 0x00 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
     __parm [__bx] \
     __value [__ebx] \
     __modify __exact [__eax __ebx]
 
 #pragma aux _DPMIGetDescriptor = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,0bh"   \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x0B 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
     __parm [__bx] [__dx __edi] \
     __value [__eax] \
     __modify []
 
 #pragma aux _DPMISetDescriptor = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,0ch"   \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x0C 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
     __parm [__bx] [__dx __edi] \
     __value [__eax] \
     __modify []
+
 #else
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov  ax,100h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x01 \
+        _INT_31         \
         "jnc short L1"  \
-        "xor  ax,ax"    \
-        "xor  dx,dx"    \
+        _XOR_AX_AX      \
+        _XOR_DX_DX      \
     "L1: "              \
     __parm [__bx] \
     __value [__dx __ax] \
     __modify __exact [__ax __bx __dx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov ax,101h"   \
-        "int 31h"       \
-        "sbb ax,ax"     \
+        _MOV_AX_W 0x01 0x01 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__dx] \
     __value [__ax] \
     __modify __exact [__ax]
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        "mov ax,300h"   \
-        "int 31h"       \
-        "sbb ax,ax"     \
+        _MOV_AX_W 0x00 0x03 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bl] [__bh] [__cx] [__es __di] \
     __value [__ax] \
     __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov ax,0ah"    \
-        "int 31h"       \
-        "sbb bx,bx"     \
+        _MOV_AX_W 0x0A 0x00 \
+        _INT_31         \
+        _SBB_BX_BX      \
     __parm [__bx] \
     __value [__bx __ax] \
     __modify __exact[__ax __bx]
 
 #pragma aux _DPMIGetDescriptor = \
-        "mov  ax,0bh"   \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x0B 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__es __di] \
     __value [__ax] \
     __modify []
 
 #pragma aux _DPMISetDescriptor = \
-        "mov  ax,0ch"   \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x0C 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bx] [__es __di] \
     __value [__ax] \
     __modify []
@@ -666,33 +827,33 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #endif
 
 #pragma aux _fDPMIAllocateMemoryBlock =  \
-        "push es"       \
-        "push ax"       \
-        "push dx"       \
-        "xchg bx,cx"    \
-        "mov  ax,501H"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  es"       \
-        "pop  bx"       \
+        _PUSH_ES        \
+        _PUSH_AX        \
+        _PUSH_DX        \
+        _XCHG_BX_CX     \
+        _MOV_AX_W 0x01 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_ES         \
+        _POP_BX         \
         "mov  es:[bx],cx"       \
         "mov  es:+2H[bx],dx"    \
         "mov  es:+4H[bx],di"    \
         "mov  es:+6H[bx],si"    \
-        "pop  es"               \
+        _POP_ES         \
     __parm [__ax __dx] [__bx __cx] \
     __value [__ax] \
     __modify [__bx __cx __dx __di __si]
 
 #pragma aux _nDPMIAllocateMemoryBlock =  \
-        "push ax"       \
-        "xchg bx,cx"    \
-        "mov  ax,501H"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  bx"       \
+        _PUSH_AX        \
+        _XCHG_BX_CX     \
+        _MOV_AX_W 0x01 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_BX         \
         "mov  ds:[bx],cx"       \
         "mov  ds:+2H[bx],dx"    \
         "mov  ds:+4H[bx],di"    \
@@ -702,35 +863,35 @@ extern int      _DPMIResetWatch( uint_16 handle );
     __modify [__bx __cx __dx __di __si]
 
 #pragma aux _fDPMIResizeMemoryBlock =  \
-        "push es"       \
-        "push ax"       \
-        "push dx"       \
-        "xchg si,di"    \
-        "xchg bx,cx"    \
-        "mov  ax,503h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  es"       \
-        "pop  bx"       \
+        _PUSH_ES        \
+        _PUSH_AX        \
+        _PUSH_DX        \
+        _XCHG_SI_DI     \
+        _XCHG_BX_CX     \
+        _MOV_AX_W 0x03 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_ES         \
+        _POP_BX         \
         "mov  es:[bx],cx"       \
         "mov  es:+2H[bx],dx"    \
         "mov  es:+4H[bx],di"    \
         "mov  es:+6H[bx],si"    \
-        "pop  es"               \
+        _POP_ES         \
     __parm [__dx __ax] [__bx __cx] [__di __si] \
     __value [__ax] \
     __modify [__di __si __bx __cx __dx]
 
 #pragma aux _nDPMIResizeMemoryBlock =  \
-        "push ax"       \
-        "xchg si,di"    \
-        "xchg bx,cx"    \
-        "mov  ax,503h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  bx"       \
+        _PUSH_AX        \
+        _XCHG_SI_DI     \
+        _XCHG_BX_CX     \
+        _MOV_AX_W 0x03 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_BX         \
         "mov  ds:[bx],cx"       \
         "mov  ds:+2H[bx],dx"    \
         "mov  ds:+4H[bx],di"    \
@@ -741,33 +902,33 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _nDPMIGetFreeMemoryInformation = \
-        "push es"       \
-        "push ds"       \
-        "pop  es"       \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
+        _PUSH_ES        \
+        _PUSH_DS        \
+        _POP_ES         \
+        _MOV_AX_W 0x00 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
     __parm [__edi] \
     __value [__eax] \
     __modify __exact [__eax]
 #else
 #pragma aux _fDPMIGetFreeMemoryInformation = \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x00 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__es __di] \
     __value [__ax] \
     __modify __exact [__ax]
 
 #pragma aux _nDPMIGetFreeMemoryInformation = \
-        "push es"       \
-        "push ds"       \
-        "pop  es"       \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  ax,ax"    \
+        _PUSH_ES        \
+        _PUSH_DS        \
+        _POP_ES         \
+        _MOV_AX_W 0x00 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
     __parm [__di] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -775,31 +936,31 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIGetRealModeInterruptVector = \
-        "mov  ax,200h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
-        "mov  ax,201h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x01 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bl] [__cx __edx] \
     __value [__eax] \
     __modify []
 #else
 #pragma aux _DPMIGetRealModeInterruptVector = \
-        "mov  ax,200h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x00 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
-        "mov  ax,201h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x01 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bl] [__cx __dx] \
     __value [__ax] \
     __modify []
@@ -807,59 +968,59 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIGetPMExceptionVector = \
-        "mov  ax,202h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x02 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
-        "mov  ax,203h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x03 0x02 \
+        _INT_31         \
     __parm [__bl] [__cx __edx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
-        "mov  ax,204h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x04 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
-        "mov  ax,205h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
+        _MOV_AX_W 0x05 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bl] [__cx __edx] \
     __value [__eax] \
     __modify []
 #else
 #pragma aux _DPMIGetPMExceptionVector = \
-        "mov  ax,202h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x02 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
-        "mov  ax,203h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x03 0x02 \
+        _INT_31         \
     __parm [__bl] [__cx __dx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
-        "mov  ax,204h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x04 0x02 \
+        _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
-        "mov  ax,205h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
+        _MOV_AX_W 0x05 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
     __parm [__bl] [__cx __dx] \
     __value [__ax] \
     __modify []
@@ -867,134 +1028,672 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push es"       \
-        "push ds"       \
-        "mov  ds,edx"   \
-        "mov  esi,eax"  \
-        "mov  es,ecx"   \
-        "mov  edi,ebx"  \
-        "mov  ax,303h"  \
-        "int 31h"       \
-        "pop  ds"       \
-        "pop  es"       \
+        _PUSH_ES        \
+        _PUSH_DS        \
+        _MOV_DS_DX      \
+        _MOV_SI_AX      \
+        _MOV_ES_CX      \
+        _MOV_DI_BX      \
+        _MOV_AX_W 0x03 0x03 \
+        _INT_31         \
+        _POP_DS         \
+        _POP_ES         \
     __parm [__dx __eax] [__cx __ebx] \
     __value [__cx __edx] \
     __modify [__edi __esi]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov  ax,304h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x04 0x03 \
+        _INT_31         \
     __parm [__cx __edx] \
     __value \
     __modify []
 #else
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push ds"       \
-        "mov  ds,dx"    \
-        "mov  si,ax"    \
-        "mov  ax,303h"  \
-        "int 31h"       \
-        "pop  ds"       \
+        _PUSH_DS        \
+        _MOV_DS_DX      \
+        _MOV_SI_AX      \
+        _MOV_AX_W 0x03 0x03 \
+        _INT_31         \
+        _POP_DS         \
     __parm [__dx __ax] [__es __di] \
     __value [__cx __dx] \
     __modify [__si]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov  ax,304h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x04 0x03 \
+        _INT_31         \
     __parm [__cx __dx] \
     __value \
     __modify []
 #endif
 
-#if defined(__386__)
+
+#if !defined(_M_I86)
+
+/***************************
+ * 80386 versions of pragmas
+ ***************************/
+
 #pragma aux _DPMIRawPMtoRMAddr = \
-        "mov  ax,306h"  \
-        "xor  edi,edi"  \
-        "stc"           \
-        "int 31h"       \
-        "mov  cx,si"    \
+        _MOV_AX_W 0x06 0x03 \
+        _XOR_DI_DI      \
+        _STC            \
+        _INT_31         \
+        _MOV_CX_SI      \
         "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  edi,edi"  \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
     "L1: "              \
     __parm [] \
     __value [__cx __edi] \
-    __modify __exact [__eax __cx __si __edi]
+    __modify __exact [__eax __ecx __si __edi]
 
 #pragma aux _DPMIRawRMtoPMAddr = \
-        "mov  ax,306h"  \
-        "stc"           \
-        "int 31h"       \
+        _MOV_AX_W 0x06 0x03 \
+        _STC            \
+        _INT_31         \
         "jnc short L1"  \
-        "xor  ebx,ebx"  \
+        _XOR_BX_BX      \
         "jmp short L2"  \
-    "L1: shl  ebx,16"   \
-        "mov  bx,cx"    \
+    "L1:"               \
+        _SHL_EBX_N 16   \
+        _USE16 _MOV_BX_CX \
     "L2: "              \
     __parm [] \
     __value [__ebx] \
     __modify __exact [__eax __cx __si __edi]
 
 #pragma aux _DPMISaveRMStateAddr = \
-        "mov  ax,305h"  \
-        "stc"           \
-        "int 31h"       \
-        "mov  cx,si"    \
+        _MOV_AX_W 0x05 0x03 \
+        _STC            \
+        _INT_31         \
+        _MOV_CX_SI      \
         "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  edi,edi"  \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
     "L1: "              \
     __parm [] \
     __value [__cx __edi] \
-    __modify __exact [__ax __bx __cx __si __edi]
+    __modify __exact [__ax __bx __ecx __si __edi]
 
 #pragma aux _DPMISavePMStateAddr = \
-        "mov  ax,305h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
         "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  ebx,ebx"  \
+        _XOR_CX_CX      \
+        _XOR_BX_BX      \
         "jmp short L2"  \
-    "L1: shl  ebx,16"   \
-        "mov  bx,cx"    \
+    "L1:"               \
+        _SHL_EBX_N 16   \
+        _USE16 _MOV_BX_CX \
     "L2: "              \
     __parm [] \
     __value [__ebx] \
-    __modify __exact [__ax __bx __cx __si __edi]
+    __modify __exact [__ax __ebx __ecx __si __edi]
 
 #pragma aux _DPMISaveStateSize = \
-        "mov  ax,305h"  \
-        "int 31h"       \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
         "jnc short L1"  \
-        "xor  eax,eax"  \
+        _XOR_AX_AX      \
     "L1:"               \
     __parm [] \
     __value [__ax] \
     __modify __exact [__eax __bx __cx __si __edi]
 
 #pragma aux _DPMIGetVendorSpecificAPI = \
-        "push ds"       \
-        "push es"       \
-        "push fs"       \
-        "push gs"       \
-        "push ebp"      \
-        "mov  ds,ecx"   \
-        "xor  eax,eax"  \
-        "mov  ah,0ah"   \
-        "int 31h"       \
-        "mov  ecx,es"   \
+        _PUSH_DS        \
+        _PUSH_ES        \
+        _PUSH_FS        \
+        _PUSH_GS        \
+        _PUSH_BP        \
+        _MOV_DS_CX      \
+        _XOR_AX_AX      \
+        _MOV_AH 0x0A    \
+        _INT_31         \
+        _MOV_CX_ES      \
         "jnc short L1"  \
-        "xor  ecx,ecx"  \
-        "xor  edi,edi"  \
-    "L1: pop  ebp"      \
-        "pop  gs"       \
-        "pop  fs"       \
-        "pop  es"       \
-        "pop  ds"       \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
+    "L1: "              \
+        _POP_BP         \
+        _POP_GS         \
+        _POP_FS         \
+        _POP_ES         \
+        _POP_DS         \
     __parm [__cx __esi] \
     __value [__cx __edi] \
     __modify [__eax __ebx __ecx __edx __esi]
+#endif
+
+
+#if defined(_M_I86)
+
+/***************************
+ * 8086 versions of pragmas
+ ***************************/
+
+#pragma aux _TinyDPMIGetRealVect = \
+        _MOV_AX_W 0x00 0x02 \
+        _INT_31         \
+    __parm __caller     [__bl] \
+    __value             [__cx __dx] \
+    __modify __exact    [__ax __bx __cx __dx]
+
+#pragma aux _TinyDPMISetRealVect = \
+        _MOV_AX_W 0x01 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm __caller     [__bl] [__cx] [__dx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __bx __cx __dx]
+
+#pragma aux _TinyDPMIGetProtectVect = \
+        _MOV_AX_W 0x04 0x02 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DX_DX      \
+    "finish:"           \
+    __parm __caller     [__bl] \
+    __value             [__cx __dx] \
+    __modify __exact    [__ax __bx __cx __dx]
+
+#pragma aux _TinyDPMISetProtectVect = \
+        _MOV_AX_W 0x05 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm __caller     [__bl] [__cx __dx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __bx __cx __dx]
+
+#pragma aux _TinyDPMIRawPMtoRMAddr = \
+        _MOV_AX_W 0x06 0x03 \
+        _INT_31         \
+        "jnc short L1"  \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
+        "jmp short finish" \
+    "L1:"               \
+        _MOV_CX_SI      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__cx __di] \
+    __modify __exact    [__ax __bx __cx __si __di]
+
+#pragma aux _TinyDPMIRawRMtoPMAddr = \
+        _MOV_AX_W 0x06 0x03 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_BX_BX      \
+        _XOR_CX_CX      \
+        _XCHG_BX_CX     \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__bx __cx] \
+    __modify __exact    [__ax __bx __cx __si __di]
+
+#pragma aux _TinyDPMISaveRMStateAddr = \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
+        "jnc short L1"  \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
+        "jmp short finish" \
+    "L1:"               \
+        _MOV_CX_SI      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__cx __di] \
+    __modify __exact    [__ax __bx __cx __si __di]
+
+#pragma aux _TinyDPMISavePMStateAddr = \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_BX_BX      \
+    "finish:"           \
+        _XCHG_BX_CX     \
+    __parm __caller     [] \
+    __value             [__bx __cx] \
+    __modify __exact    [__ax __bx __cx __si __di]
+
+#pragma aux _TinyDPMISaveStateSize = \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx __cx __si __di]
+
+#pragma aux _TinyDPMICreateCSAlias = \
+        _MOV_AX_W 0x0A 0x00 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm __caller     [__bx] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
+
+#pragma aux _TinyDPMIFreeSel = \
+        _MOV_AX_W 0x0A 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm __caller     [__bx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax]
+
+#pragma aux _TinyDPMIBase = \
+        _MOV_AX_W 0x06 0x00 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_DX_DX      \
+        _DEC_DX         \
+        _MOV_CX_DX      \
+    "finish:"           \
+    __parm __caller     [__bx] \
+    __value             [__cx __dx] \
+    __modify __exact    [__ax __bx __cx __dx]
+
+#pragma aux _TinyDPMISegToSel = \
+        _MOV_AX_W 0x02 0x00 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm              [__bx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx]
+
+#pragma aux _TinyDPMICreateSel = \
+        _XOR_AX_AX      \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm              [__cx] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
+
+#pragma aux _TinyDPMISetBase = \
+        _MOV_AX_W 0x07 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm              [__bx] [__cx __dx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __dx]
+
+#pragma aux _TinyDPMISetLimit = \
+        _MOV_AX_W 0x08 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm              [__bx] [__cx __dx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __dx]
+
+#pragma aux _TinyDPMISetRights = \
+        _MOV_AX_W 0x09 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+    __parm              [__bx] [__cx] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __dx]
+
+#pragma aux _TinyDPMIGetDescriptor = \
+        _PUSH_ES        \
+        _MOV_ES_CX      \
+        _MOV_AX_W 0x0B 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+        _POP_ES         \
+    __parm              [__bx] [__cx __di] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __dx]
+
+#pragma aux _TinyDPMISetDescriptor = \
+        _PUSH_ES        \
+        _MOV_ES_CX      \
+        _MOV_AX_W 0x0C 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_AX      \
+        _POP_ES         \
+    __parm              [__bx] [__cx __di] \
+    __value             [__ax __dx] \
+    __modify __exact    [__ax __dx]
+
+#else
+
+/***************************
+ * 80386 versions of pragmas
+ ***************************/
+
+#pragma aux _TinyDPMISegToSel = \
+        _MOV_AX_W 0x02 0x00 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm              [__bx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx]
+
+#pragma aux _TinyDPMICreateSel = \
+        _XOR_AX_AX      \
+        _INT_31         \
+        "jnc short L1"  \
+        _XOR_AX_AX      \
+    "L1:"               \
+    __parm              [__cx] \
+    __value             [__ax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMISetBase = \
+        _MOV_CX_DX      \
+        _SHR_ECX_N 16   \
+        _MOV_AX_W 0x07 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm              [__bx] [__edx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ecx]
+
+#pragma aux _TinyDPMISetLimit = \
+        _MOV_CX_DX      \
+        _SHR_ECX_N 16   \
+        _MOV_AX_W 0x08 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm              [__bx] [__edx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ecx]
+
+#pragma aux _TinyDPMISetRights = \
+        _MOV_AX_W 0x09 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm              [__bx] [__cx] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMIGetDescriptor = \
+        _PUSH_ES        \
+        _MOV_ES_CX      \
+        _MOV_AX_W 0x0B 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
+    __parm              [__bx] [__cx __edi] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMISetDescriptor = \
+        _PUSH_ES        \
+        _MOV_ES_CX      \
+        _MOV_AX_W 0x0C 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
+    __parm              [__bx] [__cx __edi] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMICreateCSAlias = \
+        _MOV_AX_W 0x0A 0x00 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm __caller     [__bx] \
+    __value             [__ax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMIFreeSel = \
+        _MOV_AX_W 0x01 0x00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bx] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
+
+#pragma aux _TinyDPMIRawPMtoRMAddr = \
+        _MOV_AX_W 0x06 0x03 \
+        _XOR_DI_DI      \
+        _STC            \
+        _INT_31         \
+        _MOV_CX_SI      \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__cx __edi] \
+    __modify __exact    [__eax __ecx __si __edi]
+
+#pragma aux _TinyDPMIRawRMtoPMAddr = \
+        _MOV_AX_W 0x06 0x03 \
+        _STC            \
+        _INT_31         \
+        "jnc short L1"  \
+        _XOR_BX_BX      \
+        "jmp short finish" \
+    "L1:"               \
+        _SHL_EBX_N 16   \
+        _USE16 _MOV_BX_CX \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__ebx] \
+    __modify __exact    [__eax __ebx __cx __si __edi]
+
+#pragma aux _TinyDPMISaveRMStateAddr = \
+        _MOV_AX_W 0x05 0x03 \
+        _STC            \
+        _INT_31         \
+        _MOV_CX_SI      \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__cx __edi] \
+    __modify __exact    [__ax __bx __ecx __si __edi]
+
+#pragma aux _TinyDPMISavePMStateAddr = \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
+        "jnc short L1"  \
+        _XOR_CX_CX      \
+        _XOR_BX_BX      \
+        "jmp short finish" \
+    "L1:"               \
+        _SHL_EBX_N 16   \
+        _USE16 _MOV_BX_CX \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__ebx] \
+    __modify __exact    [__ax __ebx __ecx __si __edi]
+
+#pragma aux _TinyDPMISaveStateSize = \
+        _MOV_AX_W 0x05 0x03 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_AX_AX      \
+    "finish:"           \
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx __cx __si __edi]
+
+#pragma aux _TinyDPMISimulateRealInt = \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x00 0x03 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
+    __parm __caller     [__bl] [__bh] [__cx] [__dx __edi] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __cx __edi]
+
+#pragma aux _TinyDPMICallRealFarFrame = \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x01 0x03 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
+    __parm __caller     [__bh] [__cx] [__dx __edi] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __cx __edi]
+
+#pragma aux _TinyDPMICallRealIntFrame = \
+        _PUSH_ES        \
+        _MOV_ES_DX      \
+        _MOV_AX_W 0x02 0x03 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _POP_ES         \
+    __parm __caller     [__bh] [__cx] [__dx __edi] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __cx __edi]
+
+#pragma aux _TinyDPMIGetProtectVect = \
+        _MOV_AX_W 0x04 0x02 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DX_DX      \
+    "finish:"           \
+    __parm __caller     [__bl] \
+    __value             [__cx __edx] \
+    __modify __exact    [__ax __bx __ecx __edx]
+
+#pragma aux _TinyDPMISetProtectVect = \
+        _MOV_AX_W 0x05 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bl] [__cx __edx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __cx __edx]
+
+#pragma aux _TinyDPMIGetProtectExcpt = \
+        _MOV_AX_W 0x02 0x02 \
+        _INT_31         \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DX_DX      \
+    "finish:"           \
+    __parm __caller     [__bl] \
+    __value             [__cx __edx] \
+    __modify __exact    [__ax __bx __ecx __edx]
+
+#pragma aux _TinyDPMISetProtectExcpt = \
+        _MOV_AX_W 0x03 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bl] [__cx __edx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __cx __edx]
+
+#pragma aux _TinyDPMIAlloc = \
+        _MOV_AX_W 0x01 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      /* eax=-1 if alloc failed */ \
+        _INC_AX         /* eax=0  if alloc failed */ \
+        "je short finish" \
+        _MOV_AX_BX      /* linear address returned in BX:CX */ \
+        _SHL_EAX_N 16   \
+        _USE16 _MOV_AX_CX \
+        "mov  [eax],di" /* store handle in block */ \
+        "mov  2[eax],si" /* ... */ \
+    "finish:"           \
+    __parm __caller     [__bx] [__cx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx __ecx __esi __edi]
+
+#pragma aux _TinyDPMIRealloc = \
+        "mov  di,[eax]" /* get memory block handle */\
+        "mov  si,2[eax]" /* ... */\
+        _MOV_AX_W 0x03 0x05 \
+        _INT_31         \
+        _SBB_AX_AX      /* eax=-1 if alloc failed */ \
+        _INC_AX         /* eax=0  if alloc failed */ \
+        "je short finish" \
+        _MOV_AX_BX      /* linear address returned in BX:CX */ \
+        _SHL_EAX_N 16   \
+        _USE16 _MOV_AX_CX \
+        "mov  [eax],di" /* store new handle in block */ \
+        "mov  2[eax],si" /* ... */ \
+    "finish:"           \
+    __parm __caller     [__eax] [__bx] [__cx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx __ecx __esi __edi]
+
+#pragma aux _TinyDPMIFree = \
+        _MOV_AX_W 0x02 0x05 \
+        _INT_31         \
+    __parm __caller     [__si] [__di] \
+    __value             \
+    __modify __exact    [__eax __esi __edi]
+
+#pragma aux _TinyDPMIBase = \
+        _MOV_AX_W 0x06 0x00 \
+        _INT_31         \
+        _MOV_AX_CX      \
+        _SHL_EAX_N 16   \
+        _USE16 _MOV_AX_DX \
+    __parm __caller     [__bx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx __ecx __edx]
+
+#pragma aux _TinyDPMIDOSAlloc = \
+        _MOV_AX_W 0x00 0x01 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _SHL_EAX_N 16   \
+        _USE16 _MOV_AX_DX \
+        _AND_AX_BX      \
+    __parm __caller     [__bx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx __edx]
+
+#pragma aux _TinyDPMIDOSFree = \
+        _MOV_AX_W 0x01 0x01 \
+        _INT_31         \
+    __parm __caller     [__dx] \
+    __value             \
+    __modify __exact    [__eax __edx]
+
+#pragma aux _TinyDPMIGetRealVect = \
+        _MOV_AX_W 0x00 0x02 \
+        _INT_31         \
+        _SHL_ECX_N 16   \
+        _USE16 _MOV_CX_DX \
+    __parm __caller     [__bl] \
+    __value             [__ecx] \
+    __modify __exact    [__eax __ebx __ecx __edx]
+
+#pragma aux _TinyDPMISetRealVect = \
+        _MOV_AX_W 0x01 0x02 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bl] [__cx] [__dx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ebx __ecx __edx]
+
+
 #endif
 
 #endif

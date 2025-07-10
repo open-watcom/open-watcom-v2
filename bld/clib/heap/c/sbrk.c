@@ -39,6 +39,7 @@
 #elif defined(__DOS__)
     #include <dos.h>
     #include "tinyio.h"
+    #include "dpmi.h"
 #endif
 #include "roundmac.h"
 #include "rtstack.h"
