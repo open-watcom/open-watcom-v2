@@ -319,7 +319,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
         answers[i].resource = (struct __dns_response_data *)reader;
         reader += sizeof( struct __dns_response_data );
         rdata_length = ntohs( *(uint16_t *)reader );
-        reader += sizeof( uint16_t * );
+        reader += sizeof( uint16_t );
 
         if( ntohs( answers[i].resource->type ) == DNSQ_TYPE_A ) { /* IPv4 encountered */
 
