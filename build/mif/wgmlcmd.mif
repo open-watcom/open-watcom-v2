@@ -108,10 +108,16 @@ run_wgml : .PROCEDURE .EXPLICIT
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os dos
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
 !else ifeq bld_os os2
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     -$(noecho)..\gml\os2\wgml $(wgml_cmdl_params)
 !else ifeq bld_os nt
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
 !endif
 
@@ -144,9 +150,15 @@ run_gendev : .PROCEDURE .EXPLICIT
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os dos
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     $(noecho)..\gml\dos\gendev $(gendev_cmdl_params)
 !else ifeq bld_os os2
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     $(noecho)..\gml\os2\gendev $(gendev_cmdl_params)
 !else ifeq bld_os nt
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     $(noecho)..\gml\dos\gendev $(gendev_cmdl_params)
 !endif
