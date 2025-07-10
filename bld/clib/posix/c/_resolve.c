@@ -125,6 +125,7 @@ static int _from_dns_name_format( char *dest, const char *reader, const char *bu
 
         } else {
 
+            reader++;
             /* If we havent jumped to another location then we can count up */
             if( jumped == 0 )
                 count += c + 1;
