@@ -125,6 +125,7 @@ static int _from_dns_name_format( char *dest, const char *reader, const char *bu
 
         } else {
 
+            reader++;
             /* If we havent jumped to another location then we can count up */
             if( jumped == 0 )
                 count += c + 1;
@@ -319,7 +320,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
         answers[i].resource = (struct __dns_response_data *)reader;
         reader += sizeof( struct __dns_response_data );
         rdata_length = ntohs( *(uint16_t *)reader );
-        reader += sizeof( uint16_t * );
+        reader += sizeof( uint16_t );
 
         if( ntohs( answers[i].resource->type ) == DNSQ_TYPE_A ) { /* IPv4 encountered */
 
