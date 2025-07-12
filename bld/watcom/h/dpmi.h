@@ -364,17 +364,57 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #include "asmbytes.h"
 
-#define VECTOR_DPMI     0x31
+#define MULTIPLEX_1680  0x80 0x16
+#define MULTIPLEX_1686  0x86 0x16
+
+#define DPMI_0001       0x01 0x00
+#define DPMI_0002       0x02 0x00
+#define DPMI_0003       0x03 0x00
+#define DPMI_0006       0x06 0x00
+#define DPMI_0007       0x07 0x00
+#define DPMI_0008       0x08 0x00
+#define DPMI_0009       0x09 0x00
+#define DPMI_000A       0x0A 0x00
+#define DPMI_000B       0x0B 0x00
+#define DPMI_000C       0x0C 0x00
+#define DPMI_0100       0x00 0x01
+#define DPMI_0101       0x01 0x01
+#define DPMI_0200       0x00 0x02
+#define DPMI_0201       0x01 0x02
+#define DPMI_0202       0x02 0x02
+#define DPMI_0203       0x03 0x02
+#define DPMI_0204       0x04 0x02
+#define DPMI_0205       0x05 0x02
+#define DPMI_0300       0x00 0x03
+#define DPMI_0301       0x01 0x03
+#define DPMI_0302       0x02 0x03
+#define DPMI_0303       0x03 0x03
+#define DPMI_0304       0x04 0x03
+#define DPMI_0305       0x05 0x03
+#define DPMI_0306       0x06 0x03
+#define DPMI_0400       0x00 0x04
+#define DPMI_0500       0x00 0x05
+#define DPMI_0501       0x01 0x05
+#define DPMI_0502       0x02 0x05
+#define DPMI_0503       0x03 0x05
+#define DPMI_0600       0x00 0x06
+#define DPMI_0601       0x01 0x06
+#define DPMI_0A00       0x00 0x0A
+#define DPMI_0B00       0x00 0x0B
+#define DPMI_0B01       0x01 0x0B
+#define DPMI_0B02       0x02 0x0B
+#define DPMI_0B03       0x03 0x0B
+
 
 #pragma aux _DPMIIdle = \
-        _MOV_AX_W 0x80 0x16 \
+        _MOV_AX_W MULTIPLEX_1680 \
         _INT_2F         \
     __parm [] \
     __value \
     __modify __exact [__ax]
 
 #pragma aux _DPMIModeDetect = \
-        _MOV_AX_W 0x86 0x16 \
+        _MOV_AX_W MULTIPLEX_1686 \
         _INT_2F         \
     __parm [] \
     __value [__ax] \
@@ -384,7 +424,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMISetWatch = \
         _MOV_CX_BX      \
         _SHR_EBX_N 16   \
-        _MOV_AX_W 0x00 0x0B \
+        _MOV_AX_W DPMI_0B00 \
         _INT_31         \
         _SBB_AX_AX      \
         _USE16 _MOV_AX_BX \
@@ -394,7 +434,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #else
 #pragma aux _DPMISetWatch = \
         _XCHG_BX_CX     \
-        _MOV_AX_W 0x00 0x0B \
+        _MOV_AX_W DPMI_0B00 \
         _INT_31         \
         _SBB_CX_CX      \
     __parm [__bx __cx] [__dl] [__dh] \
@@ -404,7 +444,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIClearWatch = \
-        _MOV_AX_W 0x01 0x0B \
+        _MOV_AX_W DPMI_0B01 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -412,7 +452,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIClearWatch = \
-        _MOV_AX_W 0x01 0x0B \
+        _MOV_AX_W DPMI_0B01 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -422,7 +462,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMITestWatch = \
-        _MOV_AX_W 0x02 0x0B \
+        _MOV_AX_W DPMI_0B02 \
         _INT_31         \
         _SBB_BX_BX      \
         _AND_AX_B 1     \
@@ -432,7 +472,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __ebx]
 #else
 #pragma aux _DPMITestWatch = \
-        _MOV_AX_W 0x02 0x0B \
+        _MOV_AX_W DPMI_0B02 \
         _INT_31         \
         _SBB_BX_BX      \
         _AND_AX_B 1     \
@@ -444,7 +484,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIResetWatch = \
-        _MOV_AX_W 0x03 0x0B \
+        _MOV_AX_W DPMI_0B03 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -452,7 +492,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIResetWatch = \
-        _MOV_AX_W 0x03 0x0B \
+        _MOV_AX_W DPMI_0B03 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -464,7 +504,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMIGetVersion = \
         _PUSH_DS        \
         _MOV_DS_DX      \
-        _MOV_AX_W 0x00 0x04 \
+        _MOV_AX_W DPMI_0400 \
         _INT_31         \
         "mov  byte ptr [esi],ah"    \
         "mov  byte ptr [esi+1],al"  \
@@ -478,7 +518,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify[__ax __bx __cl __dx]
 #else
 #pragma aux _nDPMIGetVersion = \
-        _MOV_AX_W 0x00 0x04 \
+        _MOV_AX_W DPMI_0400 \
         _INT_31         \
         "mov  byte ptr [si],ah"     \
         "mov  byte ptr [si+1],al"   \
@@ -491,7 +531,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify[__ax __bx __cl __dx]
 
 #pragma aux _fDPMIGetVersion = \
-        _MOV_AX_W 0x00 0x04 \
+        _MOV_AX_W DPMI_0400 \
         _INT_31         \
         "mov  byte ptr es:[si],ah"      \
         "mov  byte ptr es:[si+1],al"    \
@@ -525,7 +565,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIFreeLDTDescriptor = \
-        _MOV_AX_W 0x01 0x00 \
+        _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -533,7 +573,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax]
 #else
 #pragma aux _DPMIFreeLDTDescriptor = \
-        _MOV_AX_W 0x01 0x00 \
+        _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] \
@@ -543,7 +583,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMISegmentToDescriptor = \
-        _MOV_AX_W 0x02 0x00 \
+        _MOV_AX_W DPMI_0002 \
         _INT_31         \
         _SBB_BX_BX      \
         _USE16 _MOV_BX_AX \
@@ -552,7 +592,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax __ebx]
 #else
 #pragma aux _DPMISegmentToDescriptor = \
-        _MOV_AX_W 0x02 0x00 \
+        _MOV_AX_W DPMI_0002 \
         _INT_31         \
         _SBB_BX_BX      \
     __parm [__bx] \
@@ -561,7 +601,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #endif
 
 #pragma aux _DPMIGetNextSelectorIncrementValue = \
-        _MOV_AX_W 0x03 0x00 \
+        _MOV_AX_W DPMI_0003 \
         _INT_31         \
     __parm [__bx] \
     __value [__ax] \
@@ -569,7 +609,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        _MOV_AX_W 0x06 0x00 \
+        _MOV_AX_W DPMI_0006 \
         _INT_31         \
         _SHL_ECX_N 16   \
         _USE16 _MOV_CX_DX \
@@ -578,7 +618,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax __ecx __edx]
 #else
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        _MOV_AX_W 0x06 0x00 \
+        _MOV_AX_W DPMI_0006 \
         _INT_31         \
     __parm [__bx] \
     __value[__cx __dx] \
@@ -589,7 +629,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMISetSegmentBaseAddress = \
         _MOV_DX_CX      \
         _SHR_ECX_N 16   \
-        _MOV_AX_W 0x07 0x00 \
+        _MOV_AX_W DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__ecx] \
@@ -597,7 +637,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __ecx __dx]
 #else
 #pragma aux _DPMISetSegmentBaseAddress = \
-        _MOV_AX_W 0x07 0x00 \
+        _MOV_AX_W DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__cx __dx] \
@@ -609,7 +649,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMISetSegmentLimit = \
         _MOV_DX_CX      \
         _SHR_ECX_N 16   \
-        _MOV_AX_W 0x08 0x00 \
+        _MOV_AX_W DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__ecx] \
@@ -617,7 +657,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __ecx __dx]
 #else
 #pragma aux _DPMISetSegmentLimit = \
-        _MOV_AX_W 0x08 0x00 \
+        _MOV_AX_W DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__cx __dx] \
@@ -627,7 +667,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMISetDescriptorAccessRights = \
-        _MOV_AX_W 0x09 0x00 \
+        _MOV_AX_W DPMI_0009 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__cx] \
@@ -635,7 +675,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax]
 #else
 #pragma aux _DPMISetDescriptorAccessRights = \
-        _MOV_AX_W 0x09 0x00 \
+        _MOV_AX_W DPMI_0009 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__cx] \
@@ -647,7 +687,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMIFreeMemoryBlock =  \
         _MOV_DI_SI      \
         _SHR_ESI_N 16   \
-        _MOV_AX_W 0x02 0x05 \
+        _MOV_AX_W DPMI_0502 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__esi] \
@@ -656,7 +696,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #else
 #pragma aux _DPMIFreeMemoryBlock =  \
         _XCHG_SI_DI     \
-        _MOV_AX_W 0x02 0x05 \
+        _MOV_AX_W DPMI_0502 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__di __si] \
@@ -670,7 +710,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _SHR_ESI_N 16   \
         _MOV_CX_BX      \
         _SHR_EBX_N 16   \
-        _MOV_AX_W 0x00 0x06 \
+        _MOV_AX_W DPMI_0600 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__ebx] [__esi] \
@@ -682,7 +722,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _SHR_ESI_N 16   \
         _MOV_CX_BX      \
         _SHR_EBX_N 16   \
-        _MOV_AX_W 0x01 0x06 \
+        _MOV_AX_W DPMI_0601 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__ebx] [__esi] \
@@ -690,7 +730,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __ebx __ecx __esi __di]
 #else
 #pragma aux _DPMILockLinearRegion = \
-        _MOV_AX_W 0x00 0x06 \
+        _MOV_AX_W DPMI_0600 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__cx __bx] [__si __di] \
@@ -698,7 +738,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax]
 
 #pragma aux _DPMIUnlockLinearRegion = \
-        _MOV_AX_W 0x01 0x06 \
+        _MOV_AX_W DPMI_0601 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__cx __bx] [__si __di] \
@@ -709,7 +749,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #if defined(__386__)
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        _MOV_AX_W 0x00 0x01 \
+        _MOV_AX_W DPMI_0100 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_AX_AX      \
@@ -722,7 +762,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify [__eax __bx __edx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        _MOV_AX_W 0x01 0x01 \
+        _MOV_AX_W DPMI_0101 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__dx] \
@@ -732,7 +772,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMISimulateRealModeInterrupt = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x00 0x03 \
+        _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -741,7 +781,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        _MOV_AX_W 0x0A 0x00 \
+        _MOV_AX_W DPMI_000A \
         _INT_31         \
         _SBB_BX_BX      \
         _USE16 _MOV_BX_AX \
@@ -752,7 +792,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMIGetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x0B 0x00 \
+        _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -763,7 +803,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _DPMISetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x0C 0x00 \
+        _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -774,7 +814,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #else
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        _MOV_AX_W 0x00 0x01 \
+        _MOV_AX_W DPMI_0100 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_AX_AX      \
@@ -785,7 +825,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax __bx __dx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        _MOV_AX_W 0x01 0x01 \
+        _MOV_AX_W DPMI_0101 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__dx] \
@@ -793,7 +833,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax]
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        _MOV_AX_W 0x00 0x03 \
+        _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bl] [__bh] [__cx] [__es __di] \
@@ -801,7 +841,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        _MOV_AX_W 0x0A 0x00 \
+        _MOV_AX_W DPMI_000A \
         _INT_31         \
         _SBB_BX_BX      \
     __parm [__bx] \
@@ -809,7 +849,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact[__ax __bx]
 
 #pragma aux _DPMIGetDescriptor = \
-        _MOV_AX_W 0x0B 0x00 \
+        _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__es __di] \
@@ -817,7 +857,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify []
 
 #pragma aux _DPMISetDescriptor = \
-        _MOV_AX_W 0x0C 0x00 \
+        _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bx] [__es __di] \
@@ -831,7 +871,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_AX        \
         _PUSH_DX        \
         _XCHG_BX_CX     \
-        _MOV_AX_W 0x01 0x05 \
+        _MOV_AX_W DPMI_0501 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_BX      \
@@ -849,7 +889,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nDPMIAllocateMemoryBlock =  \
         _PUSH_AX        \
         _XCHG_BX_CX     \
-        _MOV_AX_W 0x01 0x05 \
+        _MOV_AX_W DPMI_0501 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_BX      \
@@ -868,7 +908,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_DX        \
         _XCHG_SI_DI     \
         _XCHG_BX_CX     \
-        _MOV_AX_W 0x03 0x05 \
+        _MOV_AX_W DPMI_0503 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_BX      \
@@ -887,7 +927,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_AX        \
         _XCHG_SI_DI     \
         _XCHG_BX_CX     \
-        _MOV_AX_W 0x03 0x05 \
+        _MOV_AX_W DPMI_0503 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_BX      \
@@ -905,7 +945,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_ES        \
         _PUSH_DS        \
         _POP_ES         \
-        _MOV_AX_W 0x00 0x05 \
+        _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -914,7 +954,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax]
 #else
 #pragma aux _fDPMIGetFreeMemoryInformation = \
-        _MOV_AX_W 0x00 0x05 \
+        _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__es __di] \
@@ -925,7 +965,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_ES        \
         _PUSH_DS        \
         _POP_ES         \
-        _MOV_AX_W 0x00 0x05 \
+        _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -936,14 +976,14 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIGetRealModeInterruptVector = \
-        _MOV_AX_W 0x00 0x02 \
+        _MOV_AX_W DPMI_0200 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
-        _MOV_AX_W 0x01 0x02 \
+        _MOV_AX_W DPMI_0201 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bl] [__cx __edx] \
@@ -951,14 +991,14 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify []
 #else
 #pragma aux _DPMIGetRealModeInterruptVector = \
-        _MOV_AX_W 0x00 0x02 \
+        _MOV_AX_W DPMI_0200 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
-        _MOV_AX_W 0x01 0x02 \
+        _MOV_AX_W DPMI_0201 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bl] [__cx __dx] \
@@ -968,28 +1008,28 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #if defined(__386__)
 #pragma aux _DPMIGetPMExceptionVector = \
-        _MOV_AX_W 0x02 0x02 \
+        _MOV_AX_W DPMI_0202 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
-        _MOV_AX_W 0x03 0x02 \
+        _MOV_AX_W DPMI_0203 \
         _INT_31         \
     __parm [__bl] [__cx __edx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
-        _MOV_AX_W 0x04 0x02 \
+        _MOV_AX_W DPMI_0204 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
-        _MOV_AX_W 0x05 0x02 \
+        _MOV_AX_W DPMI_0205 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bl] [__cx __edx] \
@@ -997,28 +1037,28 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify []
 #else
 #pragma aux _DPMIGetPMExceptionVector = \
-        _MOV_AX_W 0x02 0x02 \
+        _MOV_AX_W DPMI_0202 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
-        _MOV_AX_W 0x03 0x02 \
+        _MOV_AX_W DPMI_0203 \
         _INT_31         \
     __parm [__bl] [__cx __dx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
-        _MOV_AX_W 0x04 0x02 \
+        _MOV_AX_W DPMI_0204 \
         _INT_31         \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
-        _MOV_AX_W 0x05 0x02 \
+        _MOV_AX_W DPMI_0205 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm [__bl] [__cx __dx] \
@@ -1034,7 +1074,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _MOV_SI_AX      \
         _MOV_ES_CX      \
         _MOV_DI_BX      \
-        _MOV_AX_W 0x03 0x03 \
+        _MOV_AX_W DPMI_0303 \
         _INT_31         \
         _POP_DS         \
         _POP_ES         \
@@ -1043,7 +1083,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify [__edi __esi]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        _MOV_AX_W 0x04 0x03 \
+        _MOV_AX_W DPMI_0304 \
         _INT_31         \
     __parm [__cx __edx] \
     __value \
@@ -1053,7 +1093,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_DS        \
         _MOV_DS_DX      \
         _MOV_SI_AX      \
-        _MOV_AX_W 0x03 0x03 \
+        _MOV_AX_W DPMI_0303 \
         _INT_31         \
         _POP_DS         \
     __parm [__dx __ax] [__es __di] \
@@ -1061,7 +1101,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify [__si]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        _MOV_AX_W 0x04 0x03 \
+        _MOV_AX_W DPMI_0304 \
         _INT_31         \
     __parm [__cx __dx] \
     __value \
@@ -1076,7 +1116,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
  ***************************/
 
 #pragma aux _DPMIRawPMtoRMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _XOR_DI_DI      \
         _STC            \
         _INT_31         \
@@ -1090,7 +1130,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __ecx __si __edi]
 
 #pragma aux _DPMIRawRMtoPMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _STC            \
         _INT_31         \
         "jnc short L1"  \
@@ -1105,7 +1145,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__eax __cx __si __edi]
 
 #pragma aux _DPMISaveRMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _STC            \
         _INT_31         \
         _MOV_CX_SI      \
@@ -1118,7 +1158,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax __bx __ecx __si __edi]
 
 #pragma aux _DPMISavePMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_CX_CX      \
@@ -1133,7 +1173,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact [__ax __ebx __ecx __si __edi]
 
 #pragma aux _DPMISaveStateSize = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_AX_AX      \
@@ -1149,8 +1189,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _PUSH_GS        \
         _PUSH_BP        \
         _MOV_DS_CX      \
-        _XOR_AX_AX      \
-        _MOV_AH 0x0A    \
+        _MOV_AX_W DPMI_0A00 \
         _INT_31         \
         _MOV_CX_ES      \
         "jnc short L1"  \
@@ -1175,14 +1214,14 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
  ***************************/
 
 #pragma aux _TinyDPMIGetRealVect = \
-        _MOV_AX_W 0x00 0x02 \
+        _MOV_AX_W DPMI_0200 \
         _INT_31         \
     __parm __caller     [__bl] \
     __value             [__cx __dx] \
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMISetRealVect = \
-        _MOV_AX_W 0x01 0x02 \
+        _MOV_AX_W DPMI_0201 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1191,7 +1230,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMIGetProtectVect = \
-        _MOV_AX_W 0x04 0x02 \
+        _MOV_AX_W DPMI_0204 \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -1202,7 +1241,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMISetProtectVect = \
-        _MOV_AX_W 0x05 0x02 \
+        _MOV_AX_W DPMI_0205 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1211,12 +1250,11 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMIRawPMtoRMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _INT_31         \
         "jnc short L1"  \
-        _XOR_CX_CX      \
+        _XOR_SI_SI      \
         _XOR_DI_DI      \
-        "jmp short finish" \
     "L1:"               \
         _MOV_CX_SI      \
     "finish:"           \
@@ -1225,7 +1263,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMIRawRMtoPMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _INT_31         \
         "jnc short finish" \
         _XOR_BX_BX      \
@@ -1237,7 +1275,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISaveRMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_CX_CX      \
@@ -1251,7 +1289,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISavePMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -1263,7 +1301,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISaveStateSize = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1273,7 +1311,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMICreateCSAlias = \
-        _MOV_AX_W 0x0A 0x00 \
+        _MOV_AX_W DPMI_000A \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1283,7 +1321,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMIFreeSel = \
-        _MOV_AX_W 0x0A 0x00 \
+        _MOV_AX_W DPMI_000A \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1292,7 +1330,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMIBase = \
-        _MOV_AX_W 0x06 0x00 \
+        _MOV_AX_W DPMI_0006 \
         _INT_31         \
         "jnc short finish" \
         _XOR_DX_DX      \
@@ -1304,7 +1342,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMISegToSel = \
-        _MOV_AX_W 0x02 0x00 \
+        _MOV_AX_W DPMI_0002 \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1324,7 +1362,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMISetBase = \
-        _MOV_AX_W 0x07 0x00 \
+        _MOV_AX_W DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1333,7 +1371,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyDPMISetLimit = \
-        _MOV_AX_W 0x08 0x00 \
+        _MOV_AX_W DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1342,7 +1380,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyDPMISetRights = \
-        _MOV_AX_W 0x09 0x00 \
+        _MOV_AX_W DPMI_0009 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1353,7 +1391,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMIGetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        _MOV_AX_W 0x0B 0x00 \
+        _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1365,7 +1403,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        _MOV_AX_W 0x0C 0x00 \
+        _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -1381,7 +1419,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
  ***************************/
 
 #pragma aux _TinyDPMISegToSel = \
-        _MOV_AX_W 0x02 0x00 \
+        _MOV_AX_W DPMI_0002 \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1403,7 +1441,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISetBase = \
         _MOV_CX_DX      \
         _SHR_ECX_N 16   \
-        _MOV_AX_W 0x07 0x00 \
+        _MOV_AX_W DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm              [__bx] [__edx] \
@@ -1413,7 +1451,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISetLimit = \
         _MOV_CX_DX      \
         _SHR_ECX_N 16   \
-        _MOV_AX_W 0x08 0x00 \
+        _MOV_AX_W DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm              [__bx] [__edx] \
@@ -1421,7 +1459,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ecx]
 
 #pragma aux _TinyDPMISetRights = \
-        _MOV_AX_W 0x09 0x00 \
+        _MOV_AX_W DPMI_0009 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm              [__bx] [__cx] \
@@ -1431,7 +1469,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMIGetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        _MOV_AX_W 0x0B 0x00 \
+        _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -1442,7 +1480,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        _MOV_AX_W 0x0C 0x00 \
+        _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -1451,7 +1489,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMICreateCSAlias = \
-        _MOV_AX_W 0x0A 0x00 \
+        _MOV_AX_W DPMI_000A \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1461,7 +1499,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMIFreeSel = \
-        _MOV_AX_W 0x01 0x00 \
+        _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller     [__bx] \
@@ -1469,7 +1507,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMIRawPMtoRMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _XOR_DI_DI      \
         _STC            \
         _INT_31         \
@@ -1483,7 +1521,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ecx __si __edi]
 
 #pragma aux _TinyDPMIRawRMtoPMAddr = \
-        _MOV_AX_W 0x06 0x03 \
+        _MOV_AX_W DPMI_0306 \
         _STC            \
         _INT_31         \
         "jnc short L1"  \
@@ -1498,7 +1536,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ebx __cx __si __edi]
 
 #pragma aux _TinyDPMISaveRMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _STC            \
         _INT_31         \
         _MOV_CX_SI      \
@@ -1511,7 +1549,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __ecx __si __edi]
 
 #pragma aux _TinyDPMISavePMStateAddr = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short L1"  \
         _XOR_CX_CX      \
@@ -1526,7 +1564,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __ebx __ecx __si __edi]
 
 #pragma aux _TinyDPMISaveStateSize = \
-        _MOV_AX_W 0x05 0x03 \
+        _MOV_AX_W DPMI_0305 \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -1538,7 +1576,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISimulateRealInt = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x00 0x03 \
+        _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -1549,7 +1587,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMICallRealFarFrame = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x01 0x03 \
+        _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -1560,7 +1598,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMICallRealIntFrame = \
         _PUSH_ES        \
         _MOV_ES_DX      \
-        _MOV_AX_W 0x02 0x03 \
+        _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
         _POP_ES         \
@@ -1569,7 +1607,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __bx __cx __edi]
 
 #pragma aux _TinyDPMIGetProtectVect = \
-        _MOV_AX_W 0x04 0x02 \
+        _MOV_AX_W DPMI_0204 \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -1580,7 +1618,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __ecx __edx]
 
 #pragma aux _TinyDPMISetProtectVect = \
-        _MOV_AX_W 0x05 0x02 \
+        _MOV_AX_W DPMI_0205 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller     [__bl] [__cx __edx] \
@@ -1588,7 +1626,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __bx __cx __edx]
 
 #pragma aux _TinyDPMIGetProtectExcpt = \
-        _MOV_AX_W 0x02 0x02 \
+        _MOV_AX_W DPMI_0202 \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -1599,7 +1637,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __ecx __edx]
 
 #pragma aux _TinyDPMISetProtectExcpt = \
-        _MOV_AX_W 0x03 0x02 \
+        _MOV_AX_W DPMI_0203 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller     [__bl] [__cx __edx] \
@@ -1607,7 +1645,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __bx __cx __edx]
 
 #pragma aux _TinyDPMIAlloc = \
-        _MOV_AX_W 0x01 0x05 \
+        _MOV_AX_W DPMI_0501 \
         _INT_31         \
         _SBB_AX_AX      /* eax=-1 if alloc failed */ \
         _INC_AX         /* eax=0  if alloc failed */ \
@@ -1625,7 +1663,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMIRealloc = \
         "mov  di,[eax]" /* get memory block handle */\
         "mov  si,2[eax]" /* ... */\
-        _MOV_AX_W 0x03 0x05 \
+        _MOV_AX_W DPMI_0503 \
         _INT_31         \
         _SBB_AX_AX      /* eax=-1 if alloc failed */ \
         _INC_AX         /* eax=0  if alloc failed */ \
@@ -1641,14 +1679,14 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ebx __ecx __esi __edi]
 
 #pragma aux _TinyDPMIFree = \
-        _MOV_AX_W 0x02 0x05 \
+        _MOV_AX_W DPMI_0502 \
         _INT_31         \
     __parm __caller     [__si] [__di] \
     __value             \
     __modify __exact    [__eax __esi __edi]
 
 #pragma aux _TinyDPMIBase = \
-        _MOV_AX_W 0x06 0x00 \
+        _MOV_AX_W DPMI_0006 \
         _INT_31         \
         _MOV_AX_CX      \
         _SHL_EAX_N 16   \
@@ -1658,7 +1696,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ebx __ecx __edx]
 
 #pragma aux _TinyDPMIDOSAlloc = \
-        _MOV_AX_W 0x00 0x01 \
+        _MOV_AX_W DPMI_0100 \
         _INT_31         \
         _SBB_BX_BX      \
         _NOT_BX         \
@@ -1670,14 +1708,14 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ebx __edx]
 
 #pragma aux _TinyDPMIDOSFree = \
-        _MOV_AX_W 0x01 0x01 \
+        _MOV_AX_W DPMI_0101 \
         _INT_31         \
     __parm __caller     [__dx] \
     __value             \
     __modify __exact    [__eax __edx]
 
 #pragma aux _TinyDPMIGetRealVect = \
-        _MOV_AX_W 0x00 0x02 \
+        _MOV_AX_W DPMI_0200 \
         _INT_31         \
         _SHL_ECX_N 16   \
         _USE16 _MOV_CX_DX \
@@ -1686,7 +1724,7 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__eax __ebx __ecx __edx]
 
 #pragma aux _TinyDPMISetRealVect = \
-        _MOV_AX_W 0x01 0x02 \
+        _MOV_AX_W DPMI_0201 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller     [__bl] [__cx] [__dx] \

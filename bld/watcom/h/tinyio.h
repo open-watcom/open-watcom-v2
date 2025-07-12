@@ -588,11 +588,17 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #if defined( __WINDOWS_386__ ) || defined( __CALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
- #define _INT_21        "call __Int21"
+ #define __INT_21       "call __Int21"
 #else
- #define _INT_21        _INT 0x21
+ #define __INT_21       _INT 0x21
 #endif
 
+/*
+ * temporary workaround to replace macro _INT_21 by  __INT_21
+ * in C run-time library
+ */
+#undef _INT_21
+#define _INT_21         __INT_21
 
 #if defined( __386__ )
 
@@ -603,7 +609,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyCreatePSP = \
         "pushfd"        \
         _MOV_AH DOS_CREATE_PSP \
-        _INT_21         \
+        __INT_21        \
         "popfd"         \
     __parm __caller     [__dx] \
     __value             \
@@ -612,7 +618,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinySetPSP = \
         "pushfd"        \
         _MOV_AH DOS_SET_PSP \
-        _INT_21         \
+        __INT_21        \
         "popfd"         \
     __parm __caller     [__bx] \
     __value             \
@@ -622,7 +628,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _PUSHF          \
         "xor  eax,eax"  \
         _MOV_AH DOS_GET_PSP \
-        _INT_21         \
+        __INT_21        \
         "mov  ax,bx"    \
         _POPF           \
     __parm              [] \
@@ -631,7 +637,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] \
@@ -640,7 +646,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyMemAlloc = \
         _MOV_AH DOS_ALLOC_SEG \
-        _INT_21         \
+        __INT_21        \
         "sbb  ebx,ebx"  \
         "not  ebx"      \
         "and  eax,ebx"  \
@@ -650,14 +656,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__edx] \
     __value             \
     __modify __exact    [__ah]
 
 #pragma aux _nTinyOpen = \
         _MOV_AH DOS_OPEN \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__al] \
@@ -666,7 +672,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyCreate = \
         _MOV_AH DOS_CREAT \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
@@ -675,7 +681,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyCreateEx = \
         _MOV_AX_W 0 DOS_EXT_CREATE \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__esi] [__ebx] [__ecx] [__edx] \
@@ -684,7 +690,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyCreateNew = \
         _MOV_AH DOS_CREATE_NEW \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
@@ -693,7 +699,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyCreateTemp = \
         _MOV_AH DOS_CREATE_TMP \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
@@ -702,7 +708,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyClose = \
         _MOV_AH DOS_CLOSE \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] \
@@ -712,7 +718,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyCommitFile = \
         _MOV_AH DOS_COMMIT_FILE \
         "clc"           \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] \
@@ -721,7 +727,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyWrite = \
         _MOV_AH DOS_WRITE \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__edx] [__ecx] \
@@ -733,7 +739,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "xchg edx,eax"  \
         "mov  ds,eax"   \
         _MOV_AH DOS_WRITE \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop  ds"       \
@@ -743,7 +749,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyRead = \
         _MOV_AH DOS_READ \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__edx] [__ecx] \
@@ -755,7 +761,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "xchg edx,eax"  \
         "mov  ds,eax"   \
         _MOV_AH DOS_READ \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop  ds"       \
@@ -767,7 +773,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _MOV_AH DOS_LSEEK \
         "mov  ecx,edx"  \
         "shr  ecx,16"   \
-        _INT_21         \
+        __INT_21        \
         "mov  ss:[edi],ax" \
         "mov  ss:2[edi],dx" \
         "rcl  eax,1"    \
@@ -780,7 +786,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _MOV_AH DOS_LSEEK \
         "mov  ecx,edx"  \
         "shr  ecx,16"   \
-        _INT_21         \
+        __INT_21        \
         "rcl  dx,1"     \
         "ror  dx,1"     \
         "shl  edx,16"   \
@@ -791,7 +797,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyDelete = \
         _MOV_AH DOS_UNLINK \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -808,7 +814,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "push es"       \
         "mov es,ecx"    \
         _MOV_AH DOS_RENAME \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop es"        \
@@ -819,7 +825,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyMakeDir = \
         _MOV_AH DOS_MKDIR \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -828,7 +834,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyRemoveDir = \
         _MOV_AH DOS_RMDIR \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -837,7 +843,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyChangeDir = \
         _MOV_AH DOS_CHDIR \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -846,7 +852,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyGetCWDir = \
         _MOV_AH DOS_GETCWD \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__esi] [__dl] \
@@ -857,7 +863,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "push ds"       \
         "mov  ds,ecx"   \
         _MOV_AH DOS_GETCWD \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop  ds"       \
@@ -867,7 +873,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyDup = \
         _MOV_AH DOS_DUP \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] \
@@ -876,7 +882,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyDup2 = \
         _MOV_AH DOS_DUP2 \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__cx] \
@@ -885,7 +891,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__ebx] \
@@ -894,7 +900,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyTestAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
-        _INT_21         \
+        __INT_21        \
         "jnc short finish" \
         "mov  eax,ebx"   \
         "rcl  eax,1"    \
@@ -908,7 +914,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "xor  ebx,ebx"   \
         "dec  ebx"       \
         _MOV_AH DOS_ALLOC_SEG \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__ebx] \
     __modify __exact    [__eax __ebx]
@@ -917,7 +923,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "push es"       \
         "mov  es,eax"    \
         _MOV_AH DOS_FREE_SEG \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop  es"        \
@@ -929,7 +935,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "push es"       \
         "mov  es,eax"   \
         _MOV_AH DOS_MODIFY_SEG \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
         "pop  es"       \
@@ -943,7 +949,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "xor  ebx,ebx"  \
         "dec  ebx"      \
         _MOV_AH DOS_MODIFY_SEG \
-        _INT_21         \
+        __INT_21        \
         "pop  es"       \
     __parm __caller     [__eax] \
     __value             [__ebx] \
@@ -951,7 +957,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
-        _INT_21         \
+        __INT_21        \
         "rcl  edx,1"    \
         "ror  edx,1"    \
     __parm __caller     [__bx] \
@@ -961,7 +967,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinySetDeviceInfo = \
         "xor  dh,dh"    \
         _MOV_AX_W _SET_ DOS_IOCTL \
-        _INT_21         \
+        __INT_21        \
         "rcl  edx,1"    \
         "ror  edx,1"    \
     __parm __caller     [__bx] [__dl] \
@@ -970,27 +976,27 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetCtrlBreak = \
         _MOV_AX_W _GET_ DOS_CTRL_BREAK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__eax __dl]
 
 #pragma aux _TinySetCtrlBreak = \
         _MOV_AX_W _SET_ DOS_CTRL_BREAK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__dl] \
     __value             \
     __modify __exact    [__eax __dl]
 
 #pragma aux _TinyTerminateProcess = \
         _MOV_AH DOS_EXIT \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__al] \
     __aborts
 
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE \
-        _INT_21         \
+        __INT_21        \
         "sub  cx,1900"  \
         "mov  ch,al"    \
         "shl  ecx,16"   \
@@ -1001,7 +1007,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetTime = \
         _MOV_AH DOS_GET_TIME \
-        _INT_21         \
+        __INT_21        \
         "shl  ecx,16"   \
         "mov  cx,dx"    \
     __parm __caller     [] \
@@ -1010,14 +1016,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetCurrDrive = \
         _MOV_AH DOS_CUR_DISK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__al] \
     __modify __exact    [__ax]
 
 #pragma aux _TinySetCurrDrive = \
         _MOV_AH DOS_SET_DRIVE \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__dl] \
     __value             \
     __modify __exact    [__ax]
@@ -1025,7 +1031,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyGetDTA = \
         "push es"       \
         _MOV_AH DOS_GET_DTA \
-        _INT_21         \
+        __INT_21        \
         "mov  ecx,es"   \
         "pop  es"       \
     __parm __caller     [] \
@@ -1035,11 +1041,11 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyChangeDTA = \
         "push es"       \
         _MOV_AH DOS_GET_DTA \
-        _INT_21         \
+        __INT_21        \
         "push ds"       \
         "mov  ds,ecx"   \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
         "pop  ds"       \
         "mov  ecx,es"   \
         "pop  es"       \
@@ -1049,7 +1055,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinySetDTA = \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__edx] \
     __value             \
     __modify __exact    [__ah]
@@ -1058,7 +1064,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "push ds"       \
         "mov  ds,ecx"   \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
         "pop  ds"       \
     __parm __caller     [__cx __edx] \
     __value             \
@@ -1066,7 +1072,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyFindFirst = \
         _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__cx] \
@@ -1075,7 +1081,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyFindFirstDTA = \
         _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] [__cx] [__ebx] \
@@ -1084,7 +1090,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyFindNext = \
         _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [] \
@@ -1093,7 +1099,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyFindNextDTA = \
         _MOV_AX_W 0 DOS_FIND_NEXT \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -1102,7 +1108,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyFindCloseDTA = \
         _MOV_AX_W 1 DOS_FIND_NEXT \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__edx] \
@@ -1111,7 +1117,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetFileStamp = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
+        __INT_21        \
         "rcl  dx,1"      \
         "ror  dx,1"      \
         "shl  edx,16"    \
@@ -1122,7 +1128,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySetFileStamp = \
         _MOV_AX_W _SET_ DOS_FILE_DATE \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__cx] [__dx] \
@@ -1135,7 +1141,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "mov  edi,esi"   \
         "shr  esi,16"    \
         _MOV_AX_W 0 DOS_RECORD_LOCK \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__ecx] [__esi] \
@@ -1148,7 +1154,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "mov  edi,esi"   \
         "shr  esi,16"    \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
-        _INT_21         \
+        __INT_21        \
         "rcl  eax,1"    \
         "ror  eax,1"    \
     __parm __caller     [__bx] [__ecx] [__esi] \
@@ -1163,7 +1169,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__dx] \
     __value             \
     __modify __exact    [__ah]
@@ -1171,7 +1177,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyBufferedInput = \
         _SET_DS_SREG_SAFE \
         _MOV_AH DOS_BUFF_INPUT \
-        _INT_21         \
+        __INT_21        \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
     __value             \
@@ -1180,7 +1186,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyOpen = \
         _SET_DS_DGROUP_SAFE \
         _MOV_AH DOS_OPEN \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__al] \
@@ -1190,7 +1196,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyOpen = \
         _SET_DS_SREG_SAFE \
         _MOV_AH DOS_OPEN \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__al] \
@@ -1200,7 +1206,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyCreate = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_CREAT \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__cx] \
@@ -1210,7 +1216,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyCreate = \
         _SET_DS_SREG    \
         _MOV_AH DOS_CREAT    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx] \
@@ -1220,7 +1226,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyCreateEx = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_EXT_CREATE \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__si] [__bx] [__cx] [__dx] \
@@ -1230,7 +1236,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyCreateEx = \
         _SET_DS_SREG    \
         _MOV_AH DOS_EXT_CREATE \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __si] [__bx] [__cx] [__dx] \
@@ -1240,7 +1246,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyCreateNew = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_CREATE_NEW \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__cx] \
@@ -1250,7 +1256,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyCreateNew = \
         _SET_DS_SREG    \
         _MOV_AH DOS_CREATE_NEW \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx] \
@@ -1260,7 +1266,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyCreateTemp = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_CREATE_TMP \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__cx] \
@@ -1270,7 +1276,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyCreateTemp = \
         _SET_DS_SREG    \
         _MOV_AH DOS_CREATE_TMP \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx] \
@@ -1279,7 +1285,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyClose = \
         _MOV_AH DOS_CLOSE    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] \
     __value             [__dx __ax] \
@@ -1288,7 +1294,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyCommitFile = \
         _MOV_AH DOS_COMMIT_FILE    \
         _CLC            \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] \
     __value             [__dx __ax] \
@@ -1297,7 +1303,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyWrite = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_WRITE    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__bx] [__dx] [__cx] \
@@ -1307,7 +1313,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyRead = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_READ    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__bx] [__dx] [__cx] \
@@ -1317,7 +1323,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyWrite = \
         _SET_DS_SREG    \
         _MOV_AH DOS_WRITE    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [__bx] [_SREG __dx] [__cx] \
@@ -1327,7 +1333,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyRead = \
         _SET_DS_SREG    \
         _MOV_AH DOS_READ    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [__bx] [_SREG __dx] [__cx] \
@@ -1384,7 +1390,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
-        _INT_21         \
+        __INT_21        \
         "mov  ss:[di],ax" \
         "mov  ss:2[di],dx" \
         _RCL_DX_1       \
@@ -1395,7 +1401,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySeek = \
         _MOV_AH DOS_LSEEK \
-        _INT_21         \
+        __INT_21        \
         _RCL_DX_1       \
         _ROR_DX_1       \
     __parm __caller     [__bx] [__dx __cx] [__al] \
@@ -1405,7 +1411,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyGetFileAttr = \
         _SET_DS_DGROUP  \
         _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
+        __INT_21        \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
@@ -1416,7 +1422,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinySetFileAttr = \
         _SET_DS_DGROUP  \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__cx] \
@@ -1426,7 +1432,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyGetFileAttr = \
         _SET_DS_SREG    \
         _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
+        __INT_21        \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
@@ -1437,7 +1443,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinySetFileAttr = \
         _SET_DS_SREG    \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx] \
@@ -1447,7 +1453,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyDelete = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_UNLINK \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
@@ -1459,7 +1465,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _MOV_AX_SS      \
         _MOV_ES_AX      \
         _MOV_AH DOS_RENAME \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__di] \
@@ -1469,7 +1475,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyDelete = \
         _SET_DS_SREG    \
         _MOV_AH DOS_UNLINK \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
@@ -1480,7 +1486,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _SET_DS_SREG    \
         _MOV_ES_CX      \
         _MOV_AH DOS_RENAME \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx __di] \
@@ -1490,7 +1496,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyMakeDir = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_MKDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
@@ -1500,7 +1506,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyRemoveDir = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_RMDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
@@ -1510,7 +1516,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyChangeDir = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_CHDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
@@ -1520,7 +1526,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyGetCWDir = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_GETCWD \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__si] [__dl] \
@@ -1530,7 +1536,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyMakeDir = \
         _SET_DS_SREG    \
         _MOV_AH DOS_MKDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
@@ -1540,7 +1546,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyRemoveDir = \
         _SET_DS_SREG    \
         _MOV_AH DOS_RMDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
@@ -1550,7 +1556,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyChangeDir = \
         _SET_DS_SREG    \
         _MOV_AH DOS_CHDIR \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
@@ -1560,7 +1566,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyGetCWDir = \
         _SET_DS_SREG    \
         _MOV_AH DOS_GETCWD \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __si] [__dl] \
@@ -1569,7 +1575,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyDup = \
         _MOV_AH DOS_DUP \
-        _INT_21         \
+        __INT_21        \
         _SBB_BX_BX      \
     __parm __caller     [__bx] \
     __value             [__bx __ax] \
@@ -1577,7 +1583,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyDup2 = \
         _MOV_AH DOS_DUP2    \
-        _INT_21         \
+        __INT_21        \
         _SBB_BX_BX      \
     __parm __caller     [__bx] [__cx] \
     __value             [__bx __ax] \
@@ -1585,7 +1591,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG    \
-        _INT_21         \
+        __INT_21        \
         _SBB_BX_BX      \
     __parm __caller     [__bx] \
     __value             [__bx __ax] \
@@ -1593,7 +1599,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyTestAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG    \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         "jns short finish" \
         _MOV_AX_BX      \
@@ -1606,14 +1612,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _XOR_BX_BX      \
         _DEC_BX         \
         _MOV_AH DOS_ALLOC_SEG \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__bx] \
     __modify __exact    [__ax __bx]
 
 #pragma aux _TinyFreeBlock = \
         _MOV_AH DOS_FREE_SEG \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__es] \
     __value             [__dx __ax] \
@@ -1621,7 +1627,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySetBlock = \
         _MOV_AH DOS_MODIFY_SEG    \
-        _INT_21         \
+        __INT_21        \
         _SBB_BX_BX      \
     __parm __caller     [__bx] [__es] \
     __value             [__bx __ax] \
@@ -1631,14 +1637,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _XOR_BX_BX      \
         _DEC_BX         \
         _MOV_AH DOS_MODIFY_SEG    \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__es] \
     __value             [__bx] \
     __modify __exact    [__ax __bx]
 
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
-        _INT_21         \
+        __INT_21        \
         _SBB_CX_CX      \
     __parm __caller     [__bx] \
     __value             [__cx __dx] \
@@ -1647,7 +1653,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
         _MOV_AX_W _SET_ DOS_IOCTL \
-        _INT_21         \
+        __INT_21        \
         _SBB_CX_CX      \
     __parm __caller     [__bx] [__dl] \
     __value             [__cx __dx] \
@@ -1655,27 +1661,27 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetCtrlBreak = \
         _MOV_AX_W _GET_ DOS_CTRL_BREAK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinySetCtrlBreak = \
         _MOV_AX_W _SET_ DOS_CTRL_BREAK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__dl] \
     __value             \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinyTerminateProcess = \
         _MOV_AH DOS_EXIT \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__al] \
     __aborts
 
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE    \
-        _INT_21         \
+        __INT_21        \
         _SUB_CX_N 0x6c 0x07 /* 1900 */ \
         _MOV_CH_AL      \
     __parm __caller     [] \
@@ -1684,21 +1690,21 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetTime = \
         _MOV_AH DOS_GET_TIME \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__cx __dx] \
     __modify __exact    [__ax __cx __dx]
 
 #pragma aux _TinyGetCurrDrive = \
         _MOV_AH DOS_CUR_DISK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__al] \
     __modify __exact    [__ax]
 
 #pragma aux _TinySetCurrDrive = \
         _MOV_AH DOS_SET_DRIVE \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__dl] \
     __value             \
     __modify __exact    [__ax __dl]
@@ -1706,7 +1712,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinySetDTA = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
     __value             \
@@ -1715,7 +1721,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyFindFirst = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] [__cx] \
@@ -1725,7 +1731,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyGetDTA = \
         "push es"       \
         _MOV_AH DOS_GET_DTA \
-        _INT_21         \
+        __INT_21        \
         "mov  cx,es"    \
         "pop  es"       \
     __parm __caller     [] \
@@ -1735,11 +1741,11 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyChangeDTA = \
         "push es"       \
         _MOV_AH DOS_GET_DTA \
-        _INT_21         \
+        __INT_21        \
         "push ds"       \
         "mov  ds,cx"    \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
         "pop  ds"       \
         "mov  cx,es"    \
         "pop  es"       \
@@ -1750,7 +1756,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinySetDTA = \
         _SET_DS_SREG    \
         _MOV_AH DOS_SET_DTA \
-        _INT_21         \
+        __INT_21        \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
     __value             \
@@ -1759,7 +1765,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyFindFirst = \
         _SET_DS_SREG    \
         _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] [__cx] \
@@ -1768,7 +1774,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyFindNext = \
         _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [] \
     __value             [__dx __ax] \
@@ -1776,7 +1782,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetFileStamp = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
+        __INT_21        \
         _SBB_BX_BX      \
         _OR_DX_BX       \
         _MOV_AX_CX      \
@@ -1786,7 +1792,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySetFileStamp = \
         _MOV_AX_W _SET_ DOS_FILE_DATE \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx] [__dx] \
     __value             [__dx __ax] \
@@ -1797,7 +1803,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _PUSH_DS        \
         _PUSH_CS        \
         _POP_DS         \
-        _INT_21         \
+        __INT_21        \
         _POP_DS         \
     __parm __caller     [__al] [__dx] \
     __value           \
@@ -1806,7 +1812,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinySetVect = \
         _SET_DS_SREG_SAFE \
         _MOV_AH DOS_SET_INT \
-        _INT_21         \
+        __INT_21        \
         _RST_DS_SREG    \
     __parm __caller     [__al] [_SREG __dx] \
     __value           \
@@ -1814,49 +1820,49 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinyGetVect = \
         _MOV_AH DOS_GET_INT \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [__al] \
     __value             [__es __bx] \
     __modify __exact    [__ah __bx __es]
 
 #pragma aux _TinyDOSVersion = \
         _MOV_AH DOS_GET_VERSION    \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__ax] \
     __modify __exact    [__ax __bx __cx]
 
 #pragma aux _TinyGetCH = \
         _MOV_AH DOS_GET_CHAR_NO_ECHO_CHECK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__al] \
     __modify __exact    [__ax]
 
 #pragma aux _TinyGetCHE = \
         _MOV_AH DOS_GET_CHAR_ECHO_CHECK \
-        _INT_21         \
+        __INT_21        \
     __parm __caller     [] \
     __value             [__al] \
     __modify __exact    [__ax]
 
 #pragma aux _TinyGetSwitchChar = \
         _MOV_AX_W _GET_ DOS_SWITCH_CHAR   \
-        _INT_21             \
+        __INT_21            \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinySetSwitchChar = \
         _MOV_AX_W _SET_ DOS_SWITCH_CHAR   \
-        _INT_21             \
+        __INT_21            \
     __parm __caller     [__dl] \
     __value             \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinyFreeSpace = \
         _MOV_AH DOS_FREE_SPACE \
-        _INT_21         \
+        __INT_21        \
         _MUL_CX         \
         _MUL_BX         \
     __parm __caller     [__dl] \
@@ -1866,7 +1872,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyGetCountry = \
         _SET_DS_DGROUP  \
         _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
-        _INT_21         \
+        __INT_21        \
         _SBB_CX_CX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__dx] \
@@ -1876,7 +1882,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyGetCountry = \
         _SET_DS_SREG    \
         _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
-        _INT_21         \
+        __INT_21        \
         _SBB_CX_CX      \
         _RST_DS_SREG    \
     __parm __caller     [_SREG __dx] \
@@ -1891,7 +1897,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "jnz short finish" \
         _MOV_AL_BL      \
     "finish:"           \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] \
     __value             [__dx __ax] \
@@ -1900,7 +1906,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyFCBPrsFname = \
         _SET_DS_DGROUP_SAFE \
         _MOV_AH DOS_PARSE_FCB \
-        _INT_21         \
+        __INT_21        \
         _CBW            \
         _CWD            \
         _RST_DS_DGROUP  \
@@ -1913,7 +1919,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _PUSH_DS        \
         _MOV_DS_DX      \
         _MOV_AH DOS_PARSE_FCB \
-        _INT_21         \
+        __INT_21        \
         _CBW            \
         _CWD            \
         _POP_DS         \
@@ -1923,7 +1929,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #else
 #pragma aux _fTinyFCBPrsFname = \
         _MOV_AH DOS_PARSE_FCB \
-        _INT_21         \
+        __INT_21        \
         _CBW            \
         _CWD            \
     __parm __caller     [__ds __si] [__es __di] [__al] \
@@ -1934,7 +1940,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _nTinyFCBDeleteFile = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_DELETE_FCB \
-        _INT_21         \
+        __INT_21        \
         _CBW            \
         _CWD            \
         _RST_DS_DGROUP  \
@@ -1945,7 +1951,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _fTinyFCBDeleteFile = \
         _SET_DS_SREG    \
         _MOV_AH DOS_DELETE_FCB \
-        _INT_21         \
+        __INT_21        \
         _CBW            \
         _CWD            \
         _RST_DS_SREG    \
@@ -1956,7 +1962,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyLock = \
         _XCHG_SI_DI     \
         _MOV_AX_W 0 DOS_RECORD_LOCK \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx __dx] [__di __si] \
     __value             [__dx __ax] \
@@ -1965,7 +1971,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyUnlock = \
         _XCHG_SI_DI     \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
-        _INT_21         \
+        __INT_21        \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx __dx] [__si __di] \
     __value             [__dx __ax] \
@@ -1974,7 +1980,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyCreatePSP = \
         _PUSHF          \
         _MOV_AH DOS_CREATE_PSP \
-        _INT_21         \
+        __INT_21        \
         _POPF           \
     __parm __caller     [__dx] \
     __value             \
@@ -1983,7 +1989,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinySetPSP = \
         _PUSHF          \
         _MOV_AH DOS_SET_PSP \
-        _INT_21         \
+        __INT_21        \
         _POPF           \
     __parm __caller     [__bx] \
     __value             \
@@ -1992,7 +1998,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux _TinyGetPSP = \
         _PUSHF          \
         _MOV_AH DOS_GET_PSP \
-        _INT_21         \
+        __INT_21        \
         _POPF           \
     __parm __caller     [] \
     __value             [__bx] \
@@ -2000,7 +2006,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
-        _INT_21         \
+        __INT_21        \
         "sbb  dx,dx"  \
     __parm __caller     [__bx] \
     __value             [__dx __ax] \

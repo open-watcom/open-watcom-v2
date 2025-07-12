@@ -153,11 +153,15 @@
 
 #define _INT            0xcd
 
+#define VECTOR_DOS      0x21
+#define VECTOR_MULTIPLEX 0x2F
+#define VECTOR_DPMI     0x31
+
+#define _INT_21         _INT VECTOR_DOS
 #define _INT_25         _INT 0x25
 #define _INT_26         _INT 0x26
-
-#define _INT_2F         _INT 0x2F
-#define _INT_31         _INT 0x31
+#define _INT_2F         _INT VECTOR_MULTIPLEX
+#define _INT_31         _INT VECTOR_DPMI
 
 #define _GET_           0x00
 #define _SET_           0x01
