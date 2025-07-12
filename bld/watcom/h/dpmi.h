@@ -1252,11 +1252,10 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMIRawPMtoRMAddr = \
         _MOV_AX_W DPMI_0306 \
         _INT_31         \
-        "jnc short L1"  \
-        _XOR_SI_SI      \
-        _XOR_DI_DI      \
-    "L1:"               \
         _MOV_CX_SI      \
+        "jnc short finish" \
+        _XOR_CX_CX      \
+        _XOR_DI_DI      \
     "finish:"           \
     __parm __caller     [] \
     __value             [__cx __di] \
