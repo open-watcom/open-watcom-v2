@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #if defined( DOS4G )
 #elif defined( CAUSEWAY )
 
-extern int _CallRealMode( rm_call_struct __far *regs );
+extern int _CallRealMode( call_struct __far *regs );
 #pragma aux _CallRealMode = \
         "mov    ax,0ff02h" \
         "int    0x31" \
@@ -143,7 +143,7 @@ void CallRealMode( unsigned long dos_addr )
 
 void CallRealMode( unsigned long dos_addr )
 {
-    rm_call_struct  regs;
+    call_struct  regs;
 
     /* the trap file runs tiny -zu */
     regs.ds = regs.es = regs.cs = dos_addr >> 16;

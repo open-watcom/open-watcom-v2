@@ -95,7 +95,7 @@ extern gui_window_styles        WndStyle;
 
 static flip_types               FlipMech;
 static mode_types               ScrnMode;
-static rm_call_struct           CallStruct;
+static call_struct              CallStruct;
 static CURSORORD                OldRow;
 static CURSORORD                OldCol;
 static CURSOR_TYPE              OldTyp;

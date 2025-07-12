@@ -111,7 +111,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
     } else if( _DPMI || _IsRational() ) {
-        rm_call_struct  dblock;
+        call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0xfe00;                /* get video buffer addr */
@@ -328,7 +328,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         regs.w.ds = _FP_SEG( &pblock );
         intr( 0x21, &regs );
     } else if( _DPMI || _IsRational() ) {
-        rm_call_struct  dblock;
+        call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0xff00;                /* update from v-screen */

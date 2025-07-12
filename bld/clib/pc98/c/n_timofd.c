@@ -63,15 +63,16 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
             union REGS      regs;
 #ifdef _M_I86
             struct SREGS    segregs;
+#else
+            dpmi_dos_mem_block  dos_mem;
+#endif
 
+#ifdef _M_I86
             segregs.es = FP_SEG( __timeval );
             regs.x.bx = FP_OFF( __timeval );
             regs.h.ah = __cmd;
             int86x( 0x1c, &regs, &regs, &segregs );
 #else
-            unsigned long   psel;
-            unsigned long   rseg;
-
             if( _IsPharLap() ) {
                 rmi_struct      dp;
 
@@ -79,34 +80,30 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
                 regs.x.ebx = 1;
                 regs.x.eax = 0x25c0;
                 intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
-                _fmemmove( MK_FP( psel, rseg << 4 ), __timeval, 6 );
+                dos_mem.pm = _ExtenderRealModeSelector;
+                dos_mem.rm = regs.w.ax;
+                _fmemmove( MK_FP( dos_mem.pm, dos_mem.rm << 4 ), __timeval, 6 );
 
-                dp.es = rseg;
+                dp.es = dos_mem.rm;
                 regs.x.ebx = 0;     /* Offset */
                 dp.ah = __cmd;
                 dp.inum = 0x1c;     /* interrupt no */
                 regs.x.edx = (unsigned long)&dp;
                 regs.x.eax = 0x2511;
                 intdos( &regs, &regs );
-                _fmemmove( __timeval, MK_FP( psel, rseg << 4 ), 6 );
+                _fmemmove( __timeval, MK_FP( dos_mem.pm, dos_mem.rm << 4 ), 6 );
 
-                regs.x.ecx = rseg;
+                regs.x.ecx = dos_mem.rm;
                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
             } else if( _DPMI || _IsRational() ) {
                 call_struct     dr;
 
                 memset( &dr, 0, sizeof( dr ) );
-                regs.x.ebx = 1;     /* paragraph */
-                regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                int386( 0x31, &regs, &regs );
-                psel = regs.w.dx;
-                rseg = regs.w.ax;
-                memmove( (void *)( rseg << 4 ), __timeval, 6 );
+                dos_mem = DPMIAllocateDOSMemoryBlock( 1 );
+                memmove( (void *)( dos_mem.rm << 4 ), __timeval, 6 );
 
-                dr.es = rseg;
+                dr.es = dos_mem.rm;
                 dr.ebx = 0;         /* Offset */
                 dr.ah = __cmd;
                 regs.x.ebx = 0x1c;  /* interrupt no */
@@ -114,11 +111,9 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
                 regs.x.edi = (unsigned long)&dr;
                 regs.x.eax = 0x300;
                 int386( 0x31, &regs, &regs );
-                memmove( __timeval, (void *)( rseg << 4 ), 6 );
+                memmove( __timeval, (void *)( dos_mem.rm << 4 ), 6 );
 
-                regs.x.edx = psel;
-                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                int386( 0x31, &regs, &regs );
+                DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }
 #endif
             return( 0 );

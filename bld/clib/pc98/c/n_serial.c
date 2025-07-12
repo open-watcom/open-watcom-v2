@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,9 @@
 #include <string.h>
 #include <bios98.h>
 #include "tinyio.h"
-#include "rtdata.h"
+#include "roundmac.h"
 #include "realmod.h"
+#include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
     #include "dpmi.h"
@@ -53,7 +54,21 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         int                     ex_port;
 #ifdef _M_I86
         struct SREGS            segregs;
+#else
+        call_struct             dr;
+        rmi_struct              dp;
+        /* Add psel2,psel3 by M/M 30.May.94 */
+        static unsigned long    psel = 0;
+        static unsigned long    psel2 = 0;
+        static unsigned long    psel3 = 0;
+        /* Add rseg2,rseg3 by M/M 30.May.94 */
+        static unsigned long    rseg = 0;
+        static unsigned long    rseg2 = 0;
+        static unsigned long    rseg3 = 0;
+        unsigned                size_para;
+#endif
 
+#ifdef _M_I86
         ex_port = *(unsigned char _WCI86FAR *)MK_FP( 0xa000, 0x3fee ) & 0x10;
         switch( __cmd ) {
         case _COM_INIT:
@@ -143,17 +158,6 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         }
         return( regs.h.ah );
 #else
-        call_struct             dr;
-        rmi_struct              dp;
-        /* Add psel2,psel3 by M/M 30.May.94 */
-        static unsigned long    psel = 0;
-        static unsigned long    psel2 = 0;
-        static unsigned long    psel3 = 0;
-        /* Add rseg2,rseg3 by M/M 30.May.94 */
-        static unsigned long    rseg = 0;
-        static unsigned long    rseg2 = 0;
-        static unsigned long    rseg3 = 0;
-
         ex_port = 0;
         if( _ExtenderRealModeSelector ) {
             ex_port = *(unsigned char _WCFAR *)MK_FP( _ExtenderRealModeSelector, 0xa3fee ) & 0x10;
@@ -163,20 +167,23 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         switch( __cmd ) {
         case _COM_INIT:
         case _COM_INITX:
+            size_para = __ROUND_UP_SIZE_TO_PARA( (long)__data->size + 2 + 18 );
             if( __port != _COM_CH1 ) {
                 if( ex_port ) {
                     intno = 0xd4;
                     vect_src = MK_FP( _ExtenderRealModeSelector, 0xd0806 );
+                    if( __port == _COM_CH3 ) {
+                        vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
+                        intno++;
+                    }
                     if( _IsPharLap() ) {
                         if( __port == _COM_CH3 ) {
-                            vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
-                            intno++;
                             if( psel3 ) {/* Allocate BIOS buffer for port 3 by M/M 30.May.94 */
                                 regs.x.ecx = rseg3;
                                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
                                 intdos( &regs, &regs );
                             }
-                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = size_para;
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
                             regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                             intdos( &regs, &regs );
@@ -192,7 +199,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
                                 intdos( &regs, &regs );
                             }
-                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = size_para;
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
                             regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                             intdos( &regs, &regs );
@@ -209,47 +216,35 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                         regs.x.ebx = 0xd0000000 + *vect_src;
                         intdos( &regs, &regs );
                     } else if( _DPMI || _IsRational() ) {
+                        dpmi_dos_mem_block  dos_mem;
+
                         if( __port == _COM_CH3 ) {
-                            vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
-                            intno++;
                             if( psel3 ) { /* Allocate BIOS buffer for port 3 by M/M 30.May.94 */
-                                regs.x.edx = psel3;
-                                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                                int386( 0x31, &regs, &regs );
+                                DPMIFreeDOSMemoryBlock( psel3 );
                             }
-                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
-                            /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                            int386( 0x31, &regs, &regs );
-                            if ( regs.x.cflag )
-                                return( 0xff00 ); /* by M/M 01.Jun.94 */
-                            psel3 = regs.w.dx;
-                            rseg3 = regs.w.ax;
+                            /* Fix : Add the size of interface are and buffer control block */
+                            dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                            if( dos_mem.pm == 0 )
+                                return( 0xff00 );
+                            psel3 = dos_mem.pm;
+                            rseg3 = dos_mem.rm;
                             dr.es = rseg3;
                             dr.edi =  0;
                         } else { /* Allocate BIOS buffer for port 2 by M/M 30.May.94 */
                             if( psel2 ) {
-                                regs.x.edx = psel2;
-                                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                                int386( 0x31, &regs, &regs );
+                                DPMIFreeDOSMemoryBlock( psel2 );
                             }
-                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
-                            /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                            int386( 0x31, &regs, &regs );
-                            if ( regs.x.cflag )
-                                return( 0xff00 ); /* by M/M 01.Jun.94 */
-                            psel2 = regs.w.dx;
-                            rseg2 = regs.w.ax;
+                            /* Fix : Add the size of interface are and buffer control block */
+                            dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                            if( dos_mem.pm == 0 )
+                                return( 0xff00 );
+                            psel2 = dos_mem.pm;
+                            rseg2 = dos_mem.rm;
                             dr.es = rseg2;
                             dr.edi = 0;
                         }
-                        /*** Vecttor set / segment : d000h ***/
-                        regs.x.eax = 0x201;
-                        regs.h.bl = intno;
-                        regs.x.ecx = 0xd000;
-                        regs.x.edx = *vect_src;
-                        int386( 0x31, &regs, &regs );
+                        /*** Vector set / segment : d000h ***/
+                        DPMISetRealModeInterruptVector( intno, MK_FP( 0xd000, *vect_src ) );
                     }
                 } else {
                     return( 0xff00 );
@@ -263,7 +258,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                         intdos( &regs, &regs );
                     }
 
-                    regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                    regs.x.ebx = size_para;
                     /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
                     regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                     intdos( &regs, &regs );
@@ -274,20 +269,17 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                     /* _fmemmove( MK_FP( psel, rseg << 4 ), __data->buffer, __data->size ); */
                     /* No need to trasfer data by M/M 30.May.94 */
                 } else if( _DPMI || _IsRational() ) {
-                    if ( psel ) {
-                        regs.x.edx = psel;
-                        regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                        int386( 0x31, &regs, &regs );
-                    }
+                    dpmi_dos_mem_block  dos_mem;
 
-                    regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
-                    /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                    regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                    int386( 0x31, &regs, &regs );
-                    if ( regs.x.cflag )
-                        return( 0xff00 ); /* by M/M 01.Jun.94 */
-                    psel = regs.w.dx;
-                    rseg = regs.w.ax;
+                    if ( psel ) {
+                        DPMIFreeDOSMemoryBlock( psel );
+                    }
+                    /* Fix : Add the size of interface are and buffer control block */
+                    dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                    if( dos_mem.pm == 0 )
+                        return( 0xff00 );
+                    psel = dos_mem.pm;
+                    rseg = dos_mem.rm;
                     /* memmove( (char *)( rseg << 4 ), __data->buffer, __data->size ); */
                     /* No need to trasfer data by M/M 30.May.94 */
                 }

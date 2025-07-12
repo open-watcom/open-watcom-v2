@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
             }
         }
     } else if( _DPMI || _IsRational() ) {
-        rm_call_struct  dblock;
+        call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6300;                /* get DBCS vector table */

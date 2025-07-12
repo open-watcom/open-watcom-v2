@@ -258,7 +258,7 @@ static WORD             saveMode;
 static WORD             scanLines;
 static WORD             fontType;
 
-static rm_call_struct   rmRegs;
+static call_struct      rmRegs;
 static int              screenX;
 static int              screenY;
 static HBITMAP          screen_hbitmap;

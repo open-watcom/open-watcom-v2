@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <bios98.h>
 #include "tinyio.h"
 #include "realmod.h"
+#include "roundmac.h"
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
@@ -98,6 +99,8 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 #else
         call_struct     dr;
         rmi_struct      dp;
+        unsigned        len;
+        unsigned        size_para;
 
         memset( &dr, 0, sizeof( dr ) );
 
@@ -111,13 +114,13 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             ret = regs.h.ah;
             break;
         case _PRINTER_WRITE_STRING:
+            len = strlen( (char *)__data );
+            size_para = ( len > 0xffff ) ? 0x1000 : __ROUND_UP_SIZE_TO_PARA( len );   /* paragraph */
             if( _IsPharLap() ) {
                 unsigned long   psel;
                 unsigned long   rseg;
-                int             len;
 
-                len = strlen( (char *)__data );
-                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
+                regs.x.ebx = size_para;   /* paragraph */
                 regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
@@ -155,17 +158,13 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     intdos( &regs, &regs );
                 }
             } else if( _DPMI || _IsRational() ) {
-                unsigned long   psel;
-                unsigned long   rseg;
-                int             len;
+                unsigned long       psel;
+                unsigned long       rseg;
+                dpmi_dos_mem_block  dos_mem;
 
-                len = strlen( (char *)__data );
-                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
-                regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                int386( 0x31, &regs, &regs );
-                psel = regs.w.dx;
-                rseg = regs.w.ax;
-
+                dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                psel = dos_mem.pm;
+                rseg = dos_mem.rm;
                 for( ; len > 0xffff; len -= 0xffff ) {
                     memmove( (char *)( rseg << 4 ), __data, 0xffff );
                     __data += 0xffff;
@@ -194,9 +193,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 regs.x.ebx = 0x001a;
                 int386( 0x31, &regs, &regs );
                 if( psel ){
-                    regs.x.edx = psel;
-                    regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                    int386( 0x31, &regs, &regs );
+                    DPMIFreeDOSMemoryBlock( psel );
                 }
                 ret = dr.cx;
             } else {

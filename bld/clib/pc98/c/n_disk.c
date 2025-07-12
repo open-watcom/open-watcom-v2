@@ -37,6 +37,7 @@
 #include <string.h>
 #include "tinyio.h"
 #include "realmod.h"
+#include "roundmac.h"
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
@@ -92,6 +93,7 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         union REGS      regs;
         unsigned long   psel;
         unsigned long   rseg;
+        unsigned        size_para;
 #endif
 
         memset( &rregs, 0, sizeof( rregs ) );
@@ -159,19 +161,20 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         case _DISK_ALTERNATE:
         case _DISK_WRITEDDAM:
         case _DISK_READDDAM:
+            size_para = __ROUND_UP_SIZE_TO_PARA( __diskinfo->data_len );
             if( _IsPharLap() ) {
-                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
+                regs.x.ebx = size_para;  /* paragraph */
                 regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
                 rseg = regs.w.ax;
                 _fmemmove( MK_FP( psel, rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
             } else if( _DPMI || _IsRational() ) {
-                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
-                regs.x.eax = 0x100; /* Alloc DOS Memory under DPMI */
-                int386( 0x31, &regs, &regs );
-                psel = regs.w.dx;
-                rseg = regs.w.ax;
+                dpmi_dos_mem_block  dos_mem;
+
+                dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                psel = dos_mem.pm;
+                rseg = dos_mem.rm;
                 memmove( (char *)( rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
             }
             break;
@@ -199,13 +202,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             dr.edx = rregs.x.edx;
             dr.es = rseg;
             /* int 1BH */
-            regs.x.ecx = 0;  /* no stack for now */
-            regs.x.edi = (unsigned long)&dr;
-            regs.x.eax = 0x300;
-            regs.x.ebx = 0x1b;
-            int386( 0x31, &regs, &regs );
+            if( DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr ) < 0 )
+                dr.flags |= INTR_CF;
             ret = dr.ah;
-            if( regs.x.cflag ) {
+            if( dr.flags & INTR_CF ) {
                 ret |= 0xff00;
             }
         } else {
@@ -239,15 +239,13 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
 
         if( psel ) {
             if( _IsPharLap() ) {
-                _fmemmove( __diskinfo->buffer, MK_FP( psel, rseg << 4 ), __diskinfo->data_len);
+                _fmemmove( __diskinfo->buffer, MK_FP( psel, rseg << 4 ), __diskinfo->data_len );
                 regs.x.ecx = rseg;
                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
                 intdos( &regs, &regs );
             } else if( _DPMI || _IsRational() ) {
-                memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len);
-                regs.x.edx = psel;
-                regs.x.eax = 0x101; /* Free DOS Memory under DPMI */
-                int386( 0x31, &regs, &regs );
+                memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len );
+                DPMIFreeDOSMemoryBlock( psel );
             }
         }
 #endif

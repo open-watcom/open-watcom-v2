@@ -75,7 +75,7 @@ unsigned short dos_get_code_page( void )
             codepage = regs.w.bx;                   /* return active code page */
         }
     } else if( _DPMI || _IsRational() ) {
-        rm_call_struct  dblock;
+        call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6601;                        /* get extended country info */
@@ -198,7 +198,7 @@ unsigned short dos_get_code_page( void )
         intdosx( &regs, &regs, &segregs );
     } else if( _DPMI || _IsRational() ) {
         dpmi_dos_mem_block  dos_mem_block;
-        rm_call_struct      dblock;
+        call_struct      dblock;
 
         /*** Allocate some DOS memory with DPMI ***/
         dos_mem_block = DPMIAllocateDOSMemoryBlock( 1 );    /* one paragraph is enough */

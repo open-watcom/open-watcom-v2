@@ -36,26 +36,6 @@
 #include "watcom.h"
 #include "descript.h"
 
-typedef struct {
-    uint_32     edi;
-    uint_32     esi;
-    uint_32     ebp;
-    uint_32     reserved;
-    uint_32     ebx;
-    uint_32     edx;
-    uint_32     ecx;
-    uint_32     eax;
-    uint_16     flags;
-    uint_16     es;
-    uint_16     ds;
-    uint_16     fs;
-    uint_16     gs;
-    uint_16     ip;
-    uint_16     cs;
-    uint_16     sp;
-    uint_16     ss;
-} rm_call_struct;
-
 /*
  * call_struct definition for DPMI SimulateRealInt
  */
@@ -284,7 +264,7 @@ typedef struct {
 extern unsigned char _DPMI;
 
 extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
+extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, call_struct __far *cs );
 extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
 extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far * ptr );
 extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far * ptr );
@@ -317,7 +297,7 @@ extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
 extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
 extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
-                        uint_16 words_to_copy, rm_call_struct __far *call_st );
+                        uint_16 words_to_copy, call_struct __far *call_st );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern void     __far *_DPMIRawPMtoRMAddr( void );

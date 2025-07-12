@@ -34,11 +34,13 @@
 #include "variety.h"
 #include <dos.h>
 #include <bios98.h>
+#include "tinyio.h"
+#include "int33.h"
 #include "rtdata.h"
+#include "realmod.h"
 #ifdef __386__
     #include "extender.h"
     #include "dpmi.h"
-    #include "realmod.h"
 #endif
 
 
@@ -50,24 +52,13 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         unsigned short  disk_info;
         unsigned char   gpib_info;
         unsigned char   rs232_info;
-        union REGS      regs;
-        unsigned short  mouse_seg;
-        unsigned short  mouse_off;
-#if defined( _M_I86 )
-        struct SREGS    segregs;
-#endif
+        void            __far *p1;
+        void            __far *p2;
 
-#if defined( _M_I86 )
-        disk_info = *(unsigned short _WCFAR *)MK_FP(0x40,0x15c);
-        gpib_info = *(unsigned char _WCFAR *)MK_FP(0xa000, 0x3fee);
-        rs232_info = *(unsigned char _WCFAR *)MK_FP(0xd800, 0);
-#else
-        if( _ExtenderRealModeSelector ){
-            disk_info = *(unsigned short _WCFAR *)MK_FP( _ExtenderRealModeSelector, 0x55c );
-            gpib_info = *(unsigned char _WCFAR *)MK_FP( _ExtenderRealModeSelector, 0xa3fee );
-            rs232_info = *(unsigned char _WCFAR *)MK_FP( _ExtenderRealModeSelector, 0xd8000 );
-        }
-#endif
+        disk_info  = RealModeData( unsigned short, 0x40,   0x15c );
+        gpib_info  = RealModeData( unsigned char,  0xa000, 0x3fee );
+        rs232_info = RealModeData( unsigned char,  0xd800, 0 );
+
         ret = (unsigned short)_RWD_real87;
         for( count = 0; disk_info != 0; disk_info <<= 1 ) {
             if( 0x8000 & disk_info ) {
@@ -77,49 +68,38 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         ret |= count << 3;
 #if defined( _M_I86 )
         /* Check mouse */
-        regs.h.ah = 0x35;
-        regs.h.al = 0x33;
-        intdosx( &regs, &regs, &segregs );
-        mouse_seg = segregs.es;
-        mouse_off = regs.x.bx;
-        regs.h.ah = 0x35;
-        regs.h.al = 0x34;
-        intdosx( &regs, &regs, &segregs );
-        if( mouse_seg != segregs.es || mouse_off != regs.x.bx ) {
-            regs.x.ax = 0;
-            int86( 0x33, &regs, &regs );
-            if( regs.x.ax ) {
+        p1 = TinyGetVect( 0x33 );
+        p2 = TinyGetVect( 0x34 );
+        if( p1 != p2 ) {
+            if( _BIOSMouseDriverReset() ) {
                 ret |= 0x100;
             }
         }
 #else
         /* Check mouse */
         if( _IsPharLap() ) {
+            union REGS  regs;
+            unsigned    ptr;
+
             regs.w.ax = 0x2503;         /* Get real mode interrupt vector */
             regs.h.cl = 0x33;
             intdos( &regs, &regs );
-            mouse_seg = ( regs.x.ebx >> 16 ) & 0xffff;
-            mouse_off = regs.x.ebx & 0xffff;
+            ptr = regs.x.ebx;
             regs.w.ax = 0x2503;
             regs.h.cl = 0x34;
             intdos( &regs, &regs );
-            regs.w.cx = ( regs.x.ebx >> 16 ) & 0xffff;
-            regs.w.dx = regs.x.ebx & 0xffff;
+            if( ptr != regs.x.ebx ) {
+                if( _BIOSMouseDriverReset() ) {
+                    ret |= 0x100;
+                }
+            }
         } else if( _DPMI || _IsRational() ) {
-            regs.w.ax = 0x200;         /* Get real mode interrupt vector */
-            regs.h.bl = 0x33;
-            int386( 0x31, &regs, &regs );
-            mouse_seg = regs.w.cx;
-            mouse_off = regs.w.dx;
-            regs.w.ax = 0x200;
-            regs.h.bl = 0x34;
-            int386( 0x31, &regs, &regs );
-        }
-        if( mouse_seg != regs.w.cx || mouse_off != regs.w.dx ) {
-            regs.x.eax = 0;
-            int386( 0x33, &regs, &regs );
-            if( regs.w.ax ) {
-                ret |= 0x100;
+            p1 = DPMIGetRealModeInterruptVector( 0x33 );
+            p2 = DPMIGetRealModeInterruptVector( 0x34 );
+            if( p1 != p2 ) {
+                if( _BIOSMouseDriverReset() ) {
+                    ret |= 0x100;
+                }
             }
         }
 #endif
