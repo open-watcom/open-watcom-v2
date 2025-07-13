@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,15 +104,15 @@ static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
   #ifdef _M_I86
     return( ___getdcwd_lfn( buff, drv ) );
   #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = drv;
-    dpmi_rm.eax = 0x7147;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.esi = RM_TB_PARM1_OFFS;
+    dr.r.x.edx = drv;
+    dr.r.x.eax = 0x7147;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
         strcpy( buff, RM_TB_PARM1_LINEAR );
     }
     return( rc );

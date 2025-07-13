@@ -97,10 +97,11 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             break;
         }
 #else
-        call_struct     dr;
-        rmi_struct      dp;
-        unsigned        len;
-        unsigned        size_para;
+        dpmi_regs_struct    dr;
+        pharlap_regs_struct dp;
+        unsigned            len;
+        dpmi_dos_mem_block  dos_mem;
+        unsigned            size_para;
 
         memset( &dr, 0, sizeof( dr ) );
 
@@ -117,85 +118,76 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             len = strlen( (char *)__data );
             size_para = ( len > 0xffff ) ? 0x1000 : __ROUND_UP_SIZE_TO_PARA( len );   /* paragraph */
             if( _IsPharLap() ) {
-                unsigned long   psel;
-                unsigned long   rseg;
-
                 regs.x.ebx = size_para;   /* paragraph */
                 regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
+                dos_mem.rm = regs.w.ax;
+                dos_mem.pm = 0;
 
                 for( ; len > 0xffff; len -= 0xffff ) {
-                    _fmemmove( MK_FP( psel, rseg << 4 ) , __data, 0xffff );
+                    _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
                     __data += 0xffff;
-                    dp.eax = 0x3000;
+                    dp.r.x.eax = 0x3000;
                     regs.x.ecx = 0xffff;
-                    dp.es = rseg;
+                    dp.es = dos_mem.rm;
                     regs.x.ebx = 0;
                     regs.x.edx = (unsigned long)&dp;
                     regs.x.eax = 0x2511;
-                    dp.inum = 0x1a;
+                    dp.intno = 0x1a;
                     intdos( &regs, &regs );
-                    if( dr.eax ) {
-                        ret = dr.cx;
+                    if( dr.r.x.eax ) {
+                        ret = dr.r.w.cx;
                         break;
                     }
                 }
-                _fmemmove( MK_FP( psel, rseg << 4 ), __data, len );
-                dp.eax = 0x3000;
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
+                dp.r.x.eax = 0x3000;
                 regs.x.ecx = len;
-                dp.es = rseg;
+                dp.es = dos_mem.rm;
                 regs.x.ebx = 0;
                 regs.x.edx = (unsigned long)&dr;
                 regs.x.eax = 0x2511;
-                dp.inum = 0x1a;
+                dp.intno = 0x1a;
                 intdos( &regs, &regs );
                 ret = regs.w.cx;
-                if( psel ){
-                    regs.x.ecx = rseg;
+                if( dos_mem.rm ){
+                    regs.x.ecx = dos_mem.rm;
                     regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
                     intdos( &regs, &regs );
                 }
             } else if( _DPMI || _IsRational() ) {
-                unsigned long       psel;
-                unsigned long       rseg;
-                dpmi_dos_mem_block  dos_mem;
-
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
-                psel = dos_mem.pm;
-                rseg = dos_mem.rm;
                 for( ; len > 0xffff; len -= 0xffff ) {
-                    memmove( (char *)( rseg << 4 ), __data, 0xffff );
+                    _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
                     __data += 0xffff;
-                    dr.eax = 0x3000;
-                    dr.ecx = 0xffff;
-                    dr.es = rseg;
-                    dr.ebx = 0;
+                    dr.r.x.eax = 0x3000;
+                    dr.r.x.ecx = 0xffff;
+                    dr.es = dos_mem.rm;
+                    dr.r.x.ebx = 0;
                     regs.x.ecx = 0;  /* no stack for now */
                     regs.x.edi = (unsigned long)&dr;
                     regs.x.eax = 0x300;
                     regs.x.ebx = 0x001a;
                     int386( 0x31, &regs, &regs );
-                    if( dr.eax ) {
-                        ret = dr.cx;
+                    if( dr.r.x.eax ) {
+                        ret = dr.r.w.cx;
                         break;
                     }
                 }
-                memmove( (char *)( rseg << 4 ), __data, len );
-                dr.eax = 0x3000;
-                dr.ecx = len;
-                dr.es = rseg;
-                dr.ebx = 0;
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
+                dr.r.x.eax = 0x3000;
+                dr.r.x.ecx = len;
+                dr.es = dos_mem.rm;
+                dr.r.x.ebx = 0;
                 regs.x.ecx = 0;  /* no stack for now */
                 regs.x.edi = (unsigned long)&dr;
                 regs.x.eax = 0x300;
                 regs.x.ebx = 0x001a;
                 int386( 0x31, &regs, &regs );
-                if( psel ){
-                    DPMIFreeDOSMemoryBlock( psel );
+                if( dos_mem.pm ){
+                    DPMIFreeDOSMemoryBlock( dos_mem.pm );
                 }
-                ret = dr.cx;
+                ret = dr.r.w.cx;
             } else {
                 ret = 0;
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,16 +106,16 @@ static lfn_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
   #ifdef _M_I86
     return( __dos_setfileattr_lfn( path, attrib ) );
   #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.ecx = attrib;
-    dpmi_rm.ebx = 1;
-    dpmi_rm.eax = 0x7143;
-    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.r.x.ecx = attrib;
+    dr.r.x.ebx = 1;
+    dr.r.x.eax = 0x7143;
+    return( __dpmi_dos_call_lfn( &dr ) );
   #endif
 }
 

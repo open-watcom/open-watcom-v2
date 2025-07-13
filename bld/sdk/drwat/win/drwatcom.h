@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ extern WORD                     ExceptionAction;
 
 /* debug.c */
 WORD NumToAddr( HMODULE modhandle, WORD num );
-msg_id GetFaultString( int intnum, char *buff );
+msg_id GetFaultString( int intno, char *buff );
 
 /* disasm.c */
 unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes );

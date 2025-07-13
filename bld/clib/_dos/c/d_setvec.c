@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,17 +70,17 @@
         __parm __caller [__ax] [__cx __dx]
 #endif
 
-_WCRTLINK void _dos_setvect( unsigned intnum, void (__interrupt _WCFAR *func)() )
+_WCRTLINK void _dos_setvect( unsigned intno, void (__interrupt _WCFAR *func)() )
 {
 #if defined(__WINDOWS_386__)
-    TinySetVect( intnum, (void _WCNEAR *) func );
+    TinySetVect( intno, (void _WCNEAR *) func );
 #elif defined(__386__)
     if( _IsPharLap() ) {
-        pharlap_setvect( intnum, func );
+        pharlap_setvect( intno, func );
     } else {        /* DOS/4G style */
-        dos4g_setvect( intnum, func );
+        dos4g_setvect( intno, func );
     }
 #else
-    _setvect( intnum, func );
+    _setvect( intno, func );
 #endif
 }

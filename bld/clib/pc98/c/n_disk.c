@@ -65,7 +65,7 @@ unsigned short int1b( unsigned short _ax, unsigned short _dx, unsigned short _bx
 
 #else
 
-void _nec_pass_bp( unsigned srvno, rmi_struct *rmreg, unsigned _ebx, unsigned _ecx, unsigned _ebp, union REGS *outreg );
+void _nec_pass_bp( unsigned srvno, pharlap_regs_struct *dp, unsigned _ebx, unsigned _ecx, unsigned _ebp, union REGS *outreg );
 #pragma aux _nec_pass_bp = \
         "push ebp" \
         "mov ebp,esi" \
@@ -84,16 +84,14 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
-        char _WCI86FAR  *result_p;
         union REGS      rregs;
 #if defined( _M_I86 )
 #else
-        call_struct     dr;
-        rmi_struct      dp;
-        union REGS      regs;
-        unsigned long   psel;
-        unsigned long   rseg;
-        unsigned        size_para;
+        dpmi_regs_struct    dr;
+        pharlap_regs_struct dp;
+        union REGS          regs;
+        dpmi_dos_mem_block  dos_mem;
+        unsigned            size_para;
 #endif
 
         memset( &rregs, 0, sizeof( rregs ) );
@@ -139,17 +137,15 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             if( __diskinfo->command == _CMD_2D || __diskinfo->command == _CMD_HD )
                 break;
             if( __diskinfo->command == _CMD_2DD ) {
-                result_p = (char _WCFAR *)MK_FP( 0x40, 0x1d0 );
-                _fmemmove( __diskinfo->result, result_p, 16 );
+                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x1d0 ), 16 );
             } else {
-                result_p = (char _WCFAR *)MK_FP( 0x40, 0x164 ) + 8 * __diskinfo->drive;
-                _fmemmove( __diskinfo->result, result_p, 8 );
+                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x164 + 8 * __diskinfo->drive ), 8 );
             }
             break;
         }
 #else
-        psel = 0;
-        rseg = 0;
+        dos_mem.pm = 0;
+        dos_mem.rm = 0;
         switch( __cmd ) {
         case _DISK_FORMATTRACK:
             if( __diskinfo->command == _CMD_HD )
@@ -166,27 +162,25 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
                 regs.x.ebx = size_para;  /* paragraph */
                 regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
-                _fmemmove( MK_FP( psel, rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
+                dos_mem.pm = _ExtenderRealModeSelector;
+                dos_mem.rm = regs.w.ax;
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __diskinfo->buffer, __diskinfo->data_len );
             } else if( _DPMI || _IsRational() ) {
                 dpmi_dos_mem_block  dos_mem;
 
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
-                psel = dos_mem.pm;
-                rseg = dos_mem.rm;
-                memmove( (char *)( rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __diskinfo->buffer, __diskinfo->data_len );
             }
             break;
         }
         memset( &dr, 0, sizeof( dr ) );
         if( _IsPharLap() ) {
             /* Set true register structure */
-            dp.eax = rregs.x.eax;
-            dp.edx = rregs.x.edx;
-            dp.es = rseg;
+            dp.r.x.eax = rregs.x.eax;
+            dp.r.x.edx = rregs.x.edx;
+            dp.es = dos_mem.rm;
             /* int 1BH */
-            dp.inum = 0x1b;
+            dp.intno = 0x1b;
             _nec_pass_bp( 0x2511, &dp, rregs.x.ebx, rregs.x.ecx, 0, &regs );
 
             ret = regs.h.ah;
@@ -194,17 +188,17 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
                 ret |= 0xff00;
             }
         } else if( _DPMI || _IsRational() ) {
-            dr.ebp = 0;
+            dr.r.x.ebp = 0;
             /* Set true register structure */
-            dr.eax = rregs.x.eax;
-            dr.ebx = rregs.x.ebx;
-            dr.ecx = rregs.x.ecx;
-            dr.edx = rregs.x.edx;
-            dr.es = rseg;
+            dr.r.x.eax = rregs.x.eax;
+            dr.r.x.ebx = rregs.x.ebx;
+            dr.r.x.ecx = rregs.x.ecx;
+            dr.r.x.edx = rregs.x.edx;
+            dr.es = dos_mem.rm;
             /* int 1BH */
             if( DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr ) < 0 )
                 dr.flags |= INTR_CF;
-            ret = dr.ah;
+            ret = dr.r.h.ah;
             if( dr.flags & INTR_CF ) {
                 ret |= 0xff00;
             }
@@ -213,10 +207,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         }
         switch( __cmd ) {
         case _DISK_SEEK:
-            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = dr.cl;
-            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = dr.dh;
-            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = dr.dl;
-            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = dr.ch;
+            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = dr.r.h.cl;
+            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = dr.r.h.dh;
+            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = dr.r.h.dl;
+            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = dr.r.h.ch;
             break;
         case _DISK_READ:
         case _DISK_WRITE:
@@ -228,24 +222,22 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             if( __diskinfo->command == _CMD_2D || __diskinfo->command == _CMD_HD )
                 break;
             if( __diskinfo->command == _CMD_2DD ) {
-                result_p = (char *)0x5d0;
-                memmove( __diskinfo->result, result_p, 16 );
+                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x1d0 ), 16 );
             } else {
-                result_p = (char *)0x564 + 8 * __diskinfo->drive;
-                memmove( __diskinfo->result, result_p, 8 );
+                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x164 + 8 * __diskinfo->drive ), 8 );
             }
             break;
         }
 
-        if( psel ) {
+        if( dos_mem.rm ) {
             if( _IsPharLap() ) {
-                _fmemmove( __diskinfo->buffer, MK_FP( psel, rseg << 4 ), __diskinfo->data_len );
-                regs.x.ecx = rseg;
+                _fmemmove( __diskinfo->buffer, RealModeSegmPtr( dos_mem.rm ), __diskinfo->data_len );
+                regs.x.ecx = dos_mem.rm;
                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
                 intdos( &regs, &regs );
             } else if( _DPMI || _IsRational() ) {
-                memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len );
-                DPMIFreeDOSMemoryBlock( psel );
+                _fmemmove( __diskinfo->buffer, RealModeSegmPtr( dos_mem.rm ), __diskinfo->data_len );
+                DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }
         }
 #endif

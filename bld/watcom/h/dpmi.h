@@ -37,97 +37,96 @@
 #include "descript.h"
 
 /*
- * call_struct definition for DPMI SimulateRealInt
+ * DPMI registers structure definition for DPMI SimulateRealInt
  */
 typedef struct {
-    union {
-        uint_32 edi;
-        uint_16 di;
-    };
-    union {
-        uint_32 esi;
-        uint_16 si;
-    };
-    union {
-        uint_32 ebp;
-        uint_16 bp;
-    };
-    uint_32     reserved;
-    union {
-        uint_32 ebx;
-        uint_16 bx;
-        uint_8  bl;
-        struct {
-            uint_8  :8;
-            uint_8  bh;
-        };
-    };
-    union {
-        uint_32 edx;
-        uint_16 dx;
-        uint_8  dl;
-        struct {
-            uint_8  :8;
-            uint_8  dh;
-        };
-    };
-    union {
-        uint_32 ecx;
-        uint_16 cx;
-        uint_8  cl;
-        struct {
-            uint_8  :8;
-            uint_8  ch;
-        };
-    };
-    union {
-        uint_32 eax;
-        uint_16 ax;
-        uint_8  al;
-        struct {
-            uint_8  :8;
-            uint_8  ah;
-        };
-    };
-    uint_16     flags;
-    uint_16     es;
-    uint_16     ds;
-    uint_16     fs;
-    uint_16     gs;
-    uint_16     ip;
-    uint_16     cs;
-    uint_16     sp;
-    uint_16     ss;
-} call_struct;
+    union dpmi_general_regs {
+        struct dpmi_dwordregs {
+            unsigned long   edi;
+            unsigned long   esi;
+            unsigned long   ebp;
+            unsigned long   __reserved;
+            unsigned long   ebx;
+            unsigned long   edx;
+            unsigned long   ecx;
+            unsigned long   eax;
+        } x;
+        struct dpmi_wordregs {
+            unsigned short  di, __filler1;
+            unsigned short  si, __filler2;
+            unsigned short  bp, __filler3;
+            unsigned long   __reserved;
+            unsigned short  bx, __filler4;
+            unsigned short  dx, __filler5;
+            unsigned short  cx, __filler6;
+            unsigned short  ax, __filler7;
+        } w;
+        struct dpmi_byteregs {
+            unsigned long   __filler1;
+            unsigned long   __filler2;
+            unsigned long   __filler3;
+            unsigned long   __reserved;
+            unsigned char   bl, bh; unsigned short __filler4;
+            unsigned char   dl, dh; unsigned short __filler5;
+            unsigned char   cl, ch; unsigned short __filler6;
+            unsigned char   al, ah; unsigned short __filler7;
+        } h;
+    } r;
+    unsigned short  flags;
+    unsigned short  es;
+    unsigned short  ds;
+    unsigned short  fs;
+    unsigned short  gs;
+    unsigned short  ip;
+    unsigned short  cs;
+    unsigned short  sp;
+    unsigned short  ss;
+} dpmi_regs_struct;
 
 /*
- * rmi_struct definition for Pharlap SimulateRealInt
+ * Pharlap registers structure definition for Pharlap SimulateRealInt
  */
 typedef struct {
-    uint_16 inum;       /* Interrupt number */
-    uint_16 ds;         /* DS register */
-    uint_16 es;         /* ES register */
-    uint_16 fs;         /* FS register */
-    uint_16 gs;         /* GS register */
-    union {             /* EAX register */
-        uint_32 eax;
-        uint_16 ax;
-        uint_8  al;
-        struct {
-            uint_8  :8;
-            uint_8  ah;
-        };
-    };
-    union {             /* EDX register */
-        uint_32 edx;
-        uint_16 dx;
-        uint_8  dl;
-        struct {
-            uint_8  :8;
-            uint_8  dh;
-        };
-    };
-} rmi_struct;
+    unsigned short  intno;  /* Interrupt number */
+    unsigned short  ds;     /* DS register */
+    unsigned short  es;     /* ES register */
+    unsigned short  fs;     /* FS register */
+    unsigned short  gs;     /* GS register */
+    union pharlap_general_regs {
+        /*
+         * original Pharlap structure contains only EAX and EDX registers
+         * to simplify handling in OW we add remaining registers to the end of structure
+         * after EAX and EDX registers
+         * it is used for inline code to save input/output value of all registers
+         */
+        struct pharlap_dwordregs {
+            unsigned long   eax;
+            unsigned long   edx;
+            unsigned long   ebx;
+            unsigned long   ecx;
+            unsigned long   edi;
+            unsigned long   esi;
+            unsigned long   ebp;
+            unsigned long   flags;
+        } x;
+        struct pharlap_wordregs {
+            unsigned short  ax, __filler1;
+            unsigned short  dx, __filler2;
+            unsigned short  bx, __filler3;
+            unsigned short  cx, __filler4;
+            unsigned short  di, __filler5;
+            unsigned short  si, __filler6;
+            unsigned short  bp, __filler7;
+            unsigned short  flags, __filler8;
+        } w;
+        struct pharlap_byteregs {
+            unsigned char   al, ah; unsigned short __filler1;
+            unsigned char   dl, dh; unsigned short __filler2;
+            unsigned char   bl, bh; unsigned short __filler3;
+            unsigned char   cl, ch; unsigned short __filler4;
+        } h;
+    } r;
+} pharlap_regs_struct;
 
 typedef struct {
     uint_32     largest_free;
@@ -264,7 +263,7 @@ typedef struct {
 extern unsigned char _DPMI;
 
 extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, call_struct __far *cs );
+extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, dpmi_regs_struct __far *cs );
 extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
 extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far * ptr );
 extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far * ptr );
@@ -297,7 +296,7 @@ extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
 extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
 extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
-                        uint_16 words_to_copy, call_struct __far *call_st );
+                        uint_16 words_to_copy, dpmi_regs_struct __far *call_st );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern void     __far *_DPMIRawPMtoRMAddr( void );
@@ -324,9 +323,9 @@ void __far *    _TinyDPMIGetProtectExcpt( uint_8 __intr );
 uint_32         _TinyDPMISetProtectExcpt( uint_8 __intr, void ( __far __interrupt *__f )() );
 uint_32         _TinyDPMIGetRealVect( uint_8 __intr );
 uint_32         _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
-uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
-uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
-uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
+uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
+uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
 void __far  *   _TinyDPMIRawPMtoRMAddr( void );
 uint_32         _TinyDPMIRawRMtoPMAddr( void );
 void __far  *   _TinyDPMISaveRMStateAddr( void );

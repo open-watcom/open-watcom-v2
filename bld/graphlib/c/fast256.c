@@ -35,6 +35,8 @@
 #include "walloca.h"
 #include "gbios.h"
 #include "stkavail.h"
+#include "roundmac.h"
+#include "realmod.h"
 
 
 struct rgb {
@@ -126,45 +128,6 @@ short _FastMap( long _WCI86FAR *colours, short num )
 }
 
 
-typedef struct {
-    unsigned long       edi;
-    unsigned long       esi;
-    unsigned long       ebp;
-    unsigned long       reserved;
-    unsigned long       ebx;
-    unsigned long       edx;
-    unsigned long       ecx;
-    unsigned long       eax;
-    unsigned short      flags;
-    unsigned short      es;
-    unsigned short      ds;
-    unsigned short      fs;
-    unsigned short      gs;
-    unsigned short      ip;
-    unsigned short      cs;
-    unsigned short      sp;
-    unsigned short      ss;
-} RMI;
-
-extern void DPMIRealModeInterrupt( char interrupt, char flags,
-                            short words_to_copy, RMI __far *call_st );
-#pragma aux DPMIRealModeInterrupt = \
-        "mov  ax,300h"  \
-        "int 31h"       \
-    __parm      [__bl] [__bh] [__cx] [__es __edi] \
-    __value     \
-    __modify    [__ax]
-
-typedef struct {
-    short               intnum;
-    short               ds;
-    short               es;
-    short               fs;
-    short               gs;
-    long                eax;
-    long                edx;
-} PARM_BLOCK;
-
 extern short PharlapAlloc( short );
 #pragma aux PharlapAlloc = \
         "mov  ax,25c0h" \
@@ -184,7 +147,7 @@ extern void PharlapFree( short );
     __value     \
     __modify    [__ax]
 
-extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
+extern short PharlapRMI( pharlap_regs_struct __far *dp, short bx, short cx, short di );
 #pragma aux PharlapRMI = \
         "push ds"       \
         "push fs"       \
@@ -200,25 +163,22 @@ extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
 short _RMAlloc( int size, RM_ALLOC *stg )
 //=======================================
 {
-    int                 paragraphs;
+    int                 size_para;
+    dpmi_dos_mem_block  dos_mem;
 
-    paragraphs = ( size + 15 ) / 16;
+    size_para = __ROUND_UP_SIZE_TO_PARA( size );
     if( _IsPharLap() ) {
-        unsigned short      seg;
-
-        seg = PharlapAlloc( paragraphs );
-        if( seg != 0 ) {
-            stg->rm_seg = seg;
-            stg->pm_ptr = _MK_FP( 0x34, seg << 4 );
+        dos_mem.rm = PharlapAlloc( size_para );
+        if( dos_mem.rm != 0 ) {
+            stg->rm_seg = dos_mem.rm;
+            stg->pm_ptr = RealModeSegmPtr( dos_mem.rm );
             return( TRUE );
         }
     } else if( _DPMI || _IsRational() ) {
-        dpmi_dos_mem_block  dos_mem;
-
-        dos_mem = DPMIAllocateDOSMemoryBlock( paragraphs );
-        if( dos_mem.rm != 0 ) {
+        dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+        if( dos_mem.pm ) {
             stg->rm_seg = dos_mem.rm;
-            stg->pm_ptr = _MK_FP( dos_mem.pm, 0 );
+            stg->pm_ptr = RealModeSegmPtr( dos_mem.rm );
             return( TRUE );
         }
     }
@@ -237,31 +197,32 @@ void _RMFree( RM_ALLOC *stg )
 }
 
 
-short _RMInterrupt( short intnum, short ax, short bx, short cx,
+short _RMInterrupt( short intno, short ax, short bx, short cx,
                                   short dx, short es, short di )
 //==============================================================
 
 {
-    RMI                 rmi;
-    PARM_BLOCK          parms;
-
     if( _IsPharLap() ) {
-        memset( &parms, 0, sizeof( PARM_BLOCK ) );
-        parms.intnum = intnum;
-        parms.eax = ax;
-        parms.edx = dx;
-        parms.es = es;
-        return( PharlapRMI( &parms, bx, cx, di ) );
+        pharlap_regs_struct dp;
+
+        memset( &dp, 0, sizeof( dp ) );
+        dp.intno = intno;
+        dp.r.x.eax = ax;
+        dp.r.x.edx = dx;
+        dp.es = es;
+        return( PharlapRMI( &dp, bx, cx, di ) );
     } else if( _DPMI || _IsRational() ) {
-        memset( &rmi, 0, sizeof( RMI ) );
-        rmi.eax = ax;
-        rmi.ebx = bx;
-        rmi.ecx = cx;
-        rmi.edx = dx;
-        rmi.es = es;
-        rmi.edi = di;
-        DPMIRealModeInterrupt( intnum, 0, 0, &rmi );
-        return( rmi.eax );
+        dpmi_regs_struct    dr;
+
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = ax;
+        dr.r.x.ebx = bx;
+        dr.r.x.ecx = cx;
+        dr.r.x.edx = dx;
+        dr.es = es;
+        dr.r.x.edi = di;
+        DPMISimulateRealModeInterrupt( intno, 0, 0, &dr );
+        return( dr.r.x.eax );
     }
     return( 0 );
 }

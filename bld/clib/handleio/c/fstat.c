@@ -199,15 +199,15 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
   #ifdef _M_I86
     return( __cvt_stamp2dos_lfn( timestamp ) );
   #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
     *((long long *)RM_TB_PARM1_LINEAR) = *timestamp;
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.eax = 0x71A7;
-    if( __dpmi_dos_call_lfn( &dpmi_rm ) == 0 ) {
-        return( dpmi_rm.dx << 16 | dpmi_rm.cx );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.esi = RM_TB_PARM1_OFFS;
+    dr.r.x.eax = 0x71A7;
+    if( __dpmi_dos_call_lfn( &dr ) == 0 ) {
+        return( dr.r.w.dx << 16 | dr.r.w.cx );
     }
     return( -1 );
   #endif
@@ -218,15 +218,15 @@ static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
   #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );
   #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.ebx = handle;
-    dpmi_rm.eax = 0x71A6;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.r.x.ebx = handle;
+    dr.r.x.eax = 0x71A6;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
         memcpy( lfninfo, RM_TB_PARM1_LINEAR, sizeof( *lfninfo ) );
     }
     return( rc );

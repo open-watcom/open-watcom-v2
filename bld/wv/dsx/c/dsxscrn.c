@@ -95,7 +95,7 @@ extern gui_window_styles        WndStyle;
 
 static flip_types               FlipMech;
 static mode_types               ScrnMode;
-static call_struct              CallStruct;
+static dpmi_regs_struct         CallStruct;
 static CURSORORD                OldRow;
 static CURSORORD                OldCol;
 static CURSOR_TYPE              OldTyp;
@@ -134,31 +134,31 @@ static const char               ScreenOptNameTab[] = {
 static uint_16 _VidStateSize( uint_16 requested_state )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x1c00;
-    CallStruct.ecx = requested_state;
+    CallStruct.r.x.eax = 0x1c00;
+    CallStruct.r.x.ecx = requested_state;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
-    if( (CallStruct.eax & 0xff) != 0x1c )
+    if( (CallStruct.r.x.eax & 0xff) != 0x1c )
         return( 0 );
-    return( CallStruct.ebx );
+    return( CallStruct.r.x.ebx );
 }
 
 static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x1c01;
+    CallStruct.r.x.eax = 0x1c01;
     CallStruct.es = buff_rmseg;
-    CallStruct.ebx = buff_offset;
-    CallStruct.ecx = requested_state;
+    CallStruct.r.x.ebx = buff_offset;
+    CallStruct.r.x.ecx = requested_state;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x1c02;
+    CallStruct.r.x.eax = 0x1c02;
     CallStruct.es = buff_rmseg;
-    CallStruct.ebx = buff_offset;
-    CallStruct.ecx = requested_state;
+    CallStruct.r.x.ebx = buff_offset;
+    CallStruct.r.x.ecx = requested_state;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
@@ -167,58 +167,58 @@ static void BIOSCharPattSet( unsigned char vidroutine, unsigned char bytespercha
                          addr_seg table_rmseg, addr32_off table_offset )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x1100 | vidroutine;
-    CallStruct.ebx = (uint_32)bytesperchar << 8;
-    CallStruct.ecx = patterncount;
-    CallStruct.edx = charoffset;
+    CallStruct.r.x.eax = 0x1100 | vidroutine;
+    CallStruct.r.x.ebx = (uint_32)bytesperchar << 8;
+    CallStruct.r.x.ecx = patterncount;
+    CallStruct.r.x.edx = charoffset;
     CallStruct.es = table_rmseg;
-    CallStruct.ebp = table_offset;
+    CallStruct.r.x.ebp = table_offset;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 static uint_16 BIOSDevCombCode( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x1a00;
+    CallStruct.r.x.eax = 0x1a00;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
-    if( (CallStruct.eax & 0xff) != 0x1a )
+    if( (CallStruct.r.x.eax & 0xff) != 0x1a )
         return( 0 );
-    return( CallStruct.ebx );
+    return( CallStruct.r.x.ebx );
 }
 
 static uint_16 MouseStateSize( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x15;
+    CallStruct.r.x.eax = 0x15;
     DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
-    return( CallStruct.ebx );
+    return( CallStruct.r.x.ebx );
 }
 
 static void MouseStateSave( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x16;
-    CallStruct.ebx = size;
+    CallStruct.r.x.eax = 0x16;
+    CallStruct.r.x.ebx = size;
     CallStruct.es = buff_rmseg;
-    CallStruct.edx = buff_offset;
+    CallStruct.r.x.edx = buff_offset;
     DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
 }
 
 static void MouseStateRestore( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.eax = 0x17;
-    CallStruct.ebx = size;
+    CallStruct.r.x.eax = 0x17;
+    CallStruct.r.x.ebx = size;
     CallStruct.es = buff_rmseg;
-    CallStruct.edx = buff_offset;
+    CallStruct.r.x.edx = buff_offset;
     DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
 }
 
 static void _DoRingBell( unsigned char page )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
-    CallStruct.ebx = page * 0x100U;
-    CallStruct.eax = 0x0e07;
+    CallStruct.r.x.ebx = page * 0x100U;
+    CallStruct.r.x.eax = 0x0e07;
     DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 

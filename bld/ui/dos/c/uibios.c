@@ -43,16 +43,6 @@
 #include "int10.h"
 
 
-typedef struct {
-    unsigned short  int_num;
-    unsigned short  real_ds;
-    unsigned short  real_es;
-    unsigned short  real_fs;
-    unsigned short  real_gs;
-    long            real_eax;
-    long            real_edx;
-} PHARLAP_block;
-
 static unsigned     BIOSVidPage;
 
 static MONITOR ui_data = {
@@ -111,14 +101,14 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
     } else if( _DPMI || _IsRational() ) {
-        call_struct  dblock;
+        dpmi_regs_struct    dr;
 
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0xfe00;                /* get video buffer addr */
-        dblock.es = _FP_OFF( vbuff ) >> 4;
-        dblock.edi = (_FP_OFF( vbuff ) & 0x0f);
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
-        vbuff = RealModeDataPtr( dblock.es, dblock.edi );
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = 0xfe00;                /* get video buffer addr */
+        dr.es = _FP_OFF( vbuff ) >> 4;
+        dr.r.x.edi = (_FP_OFF( vbuff ) & 0x0f);
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+        vbuff = RealModeDataPtr( dr.es, dr.r.x.edi );
     }
     return( vbuff );
 #endif
@@ -313,29 +303,29 @@ static void desqview_update( unsigned short offset, unsigned short count )
     _BIOSVideo_desqview_update( UIData->screen.origin + offset, count );
 #else
     if( _IsPharLap() ) {
-        PHARLAP_block   pblock;
-        union REGPACK   regs;
+        pharlap_regs_struct dp;
+        union REGPACK       regs;
 
-        memset( &pblock, 0, sizeof( pblock ) );
+        memset( &dp, 0, sizeof( dp ) );
         memset( &regs, 0, sizeof( regs ) );
-        pblock.int_num = VECTOR_VIDEO;      /* VIDEO call */
-        pblock.real_eax = 0xff00;           /* update from v-screen */
-        pblock.real_es = _FP_OFF( UIData->screen.origin ) >> 4;
+        dp.intno = VECTOR_VIDEO;       /* VIDEO call */
+        dp.r.x.eax = 0xff00;            /* update from v-screen */
+        dp.es = _FP_OFF( UIData->screen.origin ) >> 4;
         regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        regs.w.cx = count;
+        regs.x.ecx = count;
         regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &pblock );    /* DS:EDX -> parameter block */
-        regs.w.ds = _FP_SEG( &pblock );
+        regs.x.edx = _FP_OFF( &dp );    /* DS:EDX -> parameter block */
+        regs.w.ds = _FP_SEG( &dp );
         intr( 0x21, &regs );
     } else if( _DPMI || _IsRational() ) {
-        call_struct  dblock;
+        dpmi_regs_struct    dr;
 
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0xff00;                /* update from v-screen */
-        dblock.es = _FP_OFF( UIData->screen.origin ) >> 4;
-        dblock.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        dblock.ecx = count;
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = 0xff00;                /* update from v-screen */
+        dr.es = _FP_OFF( UIData->screen.origin ) >> 4;
+        dr.r.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        dr.r.x.ecx = count;
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
     }
 #endif
 }

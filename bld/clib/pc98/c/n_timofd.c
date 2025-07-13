@@ -74,44 +74,44 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
             int86x( 0x1c, &regs, &regs, &segregs );
 #else
             if( _IsPharLap() ) {
-                rmi_struct      dp;
+                pharlap_regs_struct dp;
 
-                memset( &dp, 0, sizeof( dp ) );
                 regs.x.ebx = 1;
                 regs.x.eax = 0x25c0;
                 intdos( &regs, &regs );
-                dos_mem.pm = _ExtenderRealModeSelector;
                 dos_mem.rm = regs.w.ax;
-                _fmemmove( MK_FP( dos_mem.pm, dos_mem.rm << 4 ), __timeval, 6 );
+                dos_mem.pm = 0;
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __timeval, 6 );
 
+                memset( &dp, 0, sizeof( dp ) );
                 dp.es = dos_mem.rm;
                 regs.x.ebx = 0;     /* Offset */
-                dp.ah = __cmd;
-                dp.inum = 0x1c;     /* interrupt no */
+                dp.r.h.ah = __cmd;
+                dp.intno = 0x1c;     /* interrupt no */
                 regs.x.edx = (unsigned long)&dp;
                 regs.x.eax = 0x2511;
                 intdos( &regs, &regs );
-                _fmemmove( __timeval, MK_FP( dos_mem.pm, dos_mem.rm << 4 ), 6 );
+                _fmemmove( __timeval, RealModeSegmPtr( dos_mem.rm ), 6 );
 
                 regs.x.ecx = dos_mem.rm;
                 regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
                 intdos( &regs, &regs );
             } else if( _DPMI || _IsRational() ) {
-                call_struct     dr;
+                dpmi_regs_struct    dr;
+
+                dos_mem = DPMIAllocateDOSMemoryBlock( 1 );
+                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __timeval, 6 );
 
                 memset( &dr, 0, sizeof( dr ) );
-                dos_mem = DPMIAllocateDOSMemoryBlock( 1 );
-                memmove( (void *)( dos_mem.rm << 4 ), __timeval, 6 );
-
+                dr.r.h.ah = __cmd;
                 dr.es = dos_mem.rm;
-                dr.ebx = 0;         /* Offset */
-                dr.ah = __cmd;
+                dr.r.x.ebx = 0;         /* Offset */
                 regs.x.ebx = 0x1c;  /* interrupt no */
                 regs.x.ecx = 0;     /* no stack for now */
                 regs.x.edi = (unsigned long)&dr;
                 regs.x.eax = 0x300;
                 int386( 0x31, &regs, &regs );
-                memmove( __timeval, (void *)( dos_mem.rm << 4 ), 6 );
+                _fmemmove( __timeval, RealModeSegmPtr( dos_mem.rm ), 6 );
 
                 DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }

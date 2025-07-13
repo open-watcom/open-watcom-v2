@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,19 +59,19 @@
         __value     [__es __bx]
 #endif
 
-_WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intnum ))()
+_WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intno ))()
 {
 #if defined(__386__)
   #if defined(__WINDOWS_386__)
-    return( TinyGetVect( intnum ) );
+    return( TinyGetVect( intno ) );
   #else
     if( _IsPharLap() ) {
-        return( _getvect( 0x2502, intnum ) );
+        return( _getvect( 0x2502, intno ) );
     } else {        /* DOS/4G style */
-        return( _getvect( 0x3500 | (intnum & 0xff), 0 ) );
+        return( _getvect( 0x3500 | (intno & 0xff), 0 ) );
     }
   #endif
 #else
-    return( _getvect( intnum ) );
+    return( _getvect( intno ) );
 #endif
 }

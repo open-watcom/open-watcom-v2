@@ -124,14 +124,14 @@ extern unsigned short       __lfn_rm_tb_segment;
     __value             [__eax] \
     __modify __exact    [__eax __bx __ecx]
 
-extern int __dpmi_dos_call_lfn( call_struct *cs );
+extern int __dpmi_dos_call_lfn( dpmi_regs_struct *dr );
 #pragma aux __dpmi_dos_call_lfn = \
-        "or     byte ptr [edi+20H],1" /* cs struct flags carry */ \
+        "or     byte ptr [edi+20H],1" /* dr struct flags carry */ \
         __DPMI_DOS_CALL     \
         "sbb    eax,eax"    \
         "jnz short L2"      \
-        "mov    ax,word ptr [edi+1cH]" /* cs struct reg AX */ \
-        "test   byte ptr [edi+20H],1" /* cs struct flags carry */ \
+        "mov    ax,word ptr [edi+1cH]" /* dr struct reg AX */ \
+        "test   byte ptr [edi+20H],1" /* dr struct flags carry */ \
         "jne short L1"      \
         "cmp    ax, 7100h"  \
         "je short L1"       \
@@ -141,14 +141,14 @@ extern int __dpmi_dos_call_lfn( call_struct *cs );
     "L2:"                   \
     __DPMI_DOS_CALL_INFO
 
-extern int __dpmi_dos_call_lfn_ax( call_struct *cs );
+extern int __dpmi_dos_call_lfn_ax( dpmi_regs_struct *dr );
 #pragma aux __dpmi_dos_call_lfn_ax = \
-        "or     byte ptr [edi+20H],1" /* cs struct flags carry */ \
+        "or     byte ptr [edi+20H],1" /* dr struct flags carry */ \
         __DPMI_DOS_CALL     \
         "sbb    eax,eax"    \
         "jnz short L2"      \
-        "mov    ax,word ptr [edi+1cH]" /* cs struct reg AX */ \
-        "test   byte ptr [edi+20H],1" /* cs struct flags carry */ \
+        "mov    ax,word ptr [edi+1cH]" /* dr struct reg AX */ \
+        "test   byte ptr [edi+20H],1" /* dr struct flags carry */ \
         "jne short L1"      \
         "cmp    ax, 7100h"  \
         "jne short L2"      \

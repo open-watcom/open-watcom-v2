@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,22 +68,22 @@ extern void _setvectp(unsigned short,void (__interrupt __far *)(void));
     __modify __exact    [__ax __cl]
 
 
-unsigned long   _dos_getrealvect( int intnum ) {
+unsigned long   _dos_getrealvect( int intno ) {
 //==============================================
 
-    return( _getrealvect( intnum ) );
+    return( _getrealvect( intno ) );
 }
 
 
-void    _dos_setrealvect( int intnum, unsigned long func ) {
+void    _dos_setrealvect( int intno, unsigned long func ) {
 //==========================================================
 
-    _setrealvect( intnum, func );
+    _setrealvect( intno, func );
 }
 
 
-void    _dos_setvectp( int intnum, void (__interrupt __far *func)(void) ) {
+void    _dos_setvectp( int intno, void (__interrupt __far *func)(void) ) {
 //=================================================================
 
-    _setvectp( intnum, func );
+    _setvectp( intno, func );
 }

@@ -30,41 +30,19 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #if defined( DOS4G )
 //#define DEBUG_TRAP  1
-  #include "trapdbg.h"
-  #include "rsi1632.h"
+    #include "trapdbg.h"
+    #include "rsi1632.h"
 #elif defined( CAUSEWAY )
-  #include "dpmi.h"
-#else
+    #include "dpmi.h"
+#elif defined( PHARLAP )
+    #include "dpmi.h"
+#else       /* DPMI */
+    #include "dpmi.h"
 #endif
 #include "dosxrmod.h"
-
-#if defined( DOS4G )
-#elif defined( CAUSEWAY )
-
-extern int _CallRealMode( call_struct __far *regs );
-#pragma aux _CallRealMode = \
-        "mov    ax,0ff02h" \
-        "int    0x31" \
-        "sbb    eax,eax" \
-    __parm      [__es __edi] \
-    __value     [__eax] \
-    __modify    []
-
-#else
-
-extern int _CallRealMode( unsigned long dos_addr );
-#pragma aux _CallRealMode = \
-        "xor    ecx,ecx"    \
-        "mov    ax,0250eh"  \
-        "int    0x21"       \
-        "sbb    eax,eax"    \
-    __parm      [__ebx] \
-    __value     [__eax] \
-    __modify    [__ecx]
-
-#endif
 
 #if defined( DOS4G )
 
@@ -141,22 +119,54 @@ void CallRealMode( unsigned long dos_addr )
 
 #elif defined( CAUSEWAY )
 
+extern int _CallRealMode( dpmi_regs_struct __far *dr );
+#pragma aux _CallRealMode = \
+        "mov    ax,0ff02h" \
+        "int    0x31" \
+        "sbb    eax,eax" \
+    __parm      [__es __edi] \
+    __value     [__eax] \
+    __modify    []
+
 void CallRealMode( unsigned long dos_addr )
 {
-    call_struct  regs;
+    dpmi_regs_struct    dr;
 
     /* the trap file runs tiny -zu */
-    regs.ds = regs.es = regs.cs = dos_addr >> 16;
-    regs.ip = dos_addr & 0xFFFF;
-    _CallRealMode( &regs );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds = dr.es = dr.cs = dos_addr >> 16;
+    dr.ip = dos_addr & 0xFFFF;
+    _CallRealMode( &dr );
 }
 
+#elif defined( PHARLAP )
 
-#else
+extern int _CallRealMode( unsigned long dos_addr );
+#pragma aux _CallRealMode = \
+        "xor    ecx,ecx"    \
+        "mov    ax,0250eh"  \
+        "int    0x21"       \
+        "sbb    eax,eax"    \
+    __parm      [__ebx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 
 void CallRealMode( unsigned long dos_addr )
 {
     _CallRealMode( dos_addr );
+}
+
+#else       /* DPMI */
+
+void CallRealMode( unsigned long dos_addr )
+{
+    dpmi_regs_struct    dr;
+
+    /* the trap file runs tiny -zu */
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds = dr.es = dr.cs = dos_addr >> 16;
+    dr.ip = dos_addr & 0xFFFF;
+    TinyDPMICallRealFarFrame( 0, 0, &dr );
 }
 
 #endif

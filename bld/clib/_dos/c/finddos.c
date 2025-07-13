@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -291,19 +291,19 @@ static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind
 #ifdef _M_I86
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
 #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.es  = RM_TB_PARM2_SEGM;
-    dpmi_rm.edi = RM_TB_PARM2_OFFS;
-    dpmi_rm.ecx = attrib;
-    dpmi_rm.esi = 1;
-    dpmi_rm.eax = 0x714E;
-    if( (rc = __dpmi_dos_call_lfn_ax( &dpmi_rm )) >= 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.es  = RM_TB_PARM2_SEGM;
+    dr.r.x.edi = RM_TB_PARM2_OFFS;
+    dr.r.x.ecx = attrib;
+    dr.r.x.esi = 1;
+    dr.r.x.eax = 0x714E;
+    if( (rc = __dpmi_dos_call_lfn_ax( &dr )) >= 0 ) {
         memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     }
     return( rc );
@@ -316,16 +316,16 @@ static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
 #ifdef _M_I86
     return( __dos_find_next_lfn( handle, lfndta ) );
 #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.es  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edi = RM_TB_PARM1_OFFS;
-    dpmi_rm.ebx = handle;
-    dpmi_rm.esi = 1;
-    dpmi_rm.eax = 0x714F;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.es  = RM_TB_PARM1_SEGM;
+    dr.r.x.edi = RM_TB_PARM1_OFFS;
+    dr.r.x.ebx = handle;
+    dr.r.x.esi = 1;
+    dr.r.x.eax = 0x714F;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
         memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     }
     return( rc );
@@ -338,12 +338,12 @@ static lfn_ret_t _dos_find_close_lfn( unsigned handle )
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );
 #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ebx = handle;
-    dpmi_rm.eax = 0x71A1;
-    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.r.x.ebx = handle;
+    dr.r.x.eax = 0x71A1;
+    return( __dpmi_dos_call_lfn( &dr ) );
 #endif
 }
 

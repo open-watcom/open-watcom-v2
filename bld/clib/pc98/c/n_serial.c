@@ -55,8 +55,8 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
 #ifdef _M_I86
         struct SREGS            segregs;
 #else
-        call_struct             dr;
-        rmi_struct              dp;
+        dpmi_regs_struct        dr;
+        pharlap_regs_struct     dp;
         /* Add psel2,psel3 by M/M 30.May.94 */
         static unsigned long    psel = 0;
         static unsigned long    psel2 = 0;
@@ -192,7 +192,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel3 = 0x34;
                             rseg3 = regs.w.ax;
                             dr.es = rseg3;
-                            dr.edi =  0;
+                            dr.r.x.edi =  0;
                         } else { /* Allocate BIOS buffer for port 2 by M/M 30.May.94 */
                             if( psel2 ) {
                                 regs.x.ecx = rseg2;
@@ -208,7 +208,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel2 = 0x34;
                             rseg2 = regs.w.ax;
                             dr.es = rseg2;
-                            dr.edi = 0;
+                            dr.r.x.edi = 0;
                         }
                         /*** Vecttor set / segment : d000h ***/
                         regs.x.eax = 0x2505;
@@ -229,7 +229,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel3 = dos_mem.pm;
                             rseg3 = dos_mem.rm;
                             dr.es = rseg3;
-                            dr.edi =  0;
+                            dr.r.x.edi =  0;
                         } else { /* Allocate BIOS buffer for port 2 by M/M 30.May.94 */
                             if( psel2 ) {
                                 DPMIFreeDOSMemoryBlock( psel2 );
@@ -241,7 +241,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel2 = dos_mem.pm;
                             rseg2 = dos_mem.rm;
                             dr.es = rseg2;
-                            dr.edi = 0;
+                            dr.r.x.edi = 0;
                         }
                         /*** Vector set / segment : d000h ***/
                         DPMISetRealModeInterruptVector( intno, MK_FP( 0xd000, *vect_src ) );
@@ -284,73 +284,74 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                     /* No need to trasfer data by M/M 30.May.94 */
                 }
                 dr.es = rseg;
-                dr.edi =  0;
+                dr.r.x.edi =  0;
             }
-            dr.ah = __cmd;
+            dr.r.h.ah = __cmd;
             if( __data->baud == _COM_DEFAULT ) {
-                dr.al = _COM_1200;
+                dr.r.h.al = _COM_1200;
             } else {
-                dr.al = __data->baud;
+                dr.r.h.al = __data->baud;
             }
-            dr.bh = __data->tx_time;
-            dr.bl = __data->rx_time;
+            dr.r.h.bh = __data->tx_time;
+            dr.r.h.bl = __data->rx_time;
             if( __data->mode == 0xff ) {
-                dr.ch = (_COM_STOP1 | _COM_CHR7 | 0x02);
+                dr.r.h.ch = (_COM_STOP1 | _COM_CHR7 | 0x02);
             } else {
-                dr.ch = __data->mode | 0x02;
+                dr.r.h.ch = __data->mode | 0x02;
             }
             if( __data->command == 0xff ) {
-                dr.cl = (_COM_ER | _COM_RXEN | _COM_TXEN);
+                dr.r.h.cl = (_COM_ER | _COM_RXEN | _COM_TXEN);
             } else {
-                dr.cl = __data->command;
+                dr.r.h.cl = __data->command;
             }
-            dr.edx = __data->size;
+            dr.r.x.edx = __data->size;
             break;
         case _COM_SEND:
-            dr.ah = __cmd;
-            dr.al = *(unsigned char *)(__data->buffer);
+            dr.r.h.ah = __cmd;
+            dr.r.h.al = *(unsigned char *)(__data->buffer);
             break;
         case _COM_COMMAND:
-            dr.ah = __cmd;
+            dr.r.h.ah = __cmd;
             if( __data->command == 0xff ) {
-                dr.al = (_COM_ER | _COM_RXEN | _COM_TXEN);
+                dr.r.h.al = (_COM_ER | _COM_RXEN | _COM_TXEN);
             } else {
-                dr.al = __data->command;
+                dr.r.h.al = __data->command;
             }
             break;
         default:
-            dr.ah = __cmd;
+            dr.r.h.ah = __cmd;
             break;
         }
         switch( __port ) {
         case _COM_CH1:
-            regs.x.ebx = 0x19;  /* interrupt no */
+            intno = 0x19;  /* interrupt no */
             break;
         case _COM_CH2:
-            regs.x.ebx = 0xd4;  /* interrupt no */
+            intno = 0xd4;  /* interrupt no */
             break;
         case _COM_CH3:
-            regs.x.ebx = 0xd5;  /* interrupt no */
+            intno = 0xd5;  /* interrupt no */
             break;
         }
         if( _IsPharLap() ) {
-            dp.eax = dr.eax;
-            dp.edx = dr.edx;
+            dp.r.x.eax = dr.r.x.eax;
+            dp.r.x.edx = dr.r.x.edx;
             dp.ds = dr.ds;
             dp.es = dr.es;
             dp.fs = dr.fs;
             dp.gs = dr.gs;
-            dp.inum = regs.x.ebx;
+            dp.intno = intno;
             regs.x.eax = 0x2511;
             regs.x.edx = (unsigned long)&dp;
-            regs.x.ebx = dr.ebx;
-            regs.x.ecx = dr.ecx;
-            regs.x.edi = dr.edi;
-            regs.x.esi = dr.esi;
+            regs.x.ebx = dr.r.x.ebx;
+            regs.x.ecx = dr.r.x.ecx;
+            regs.x.edi = dr.r.x.edi;
+            regs.x.esi = dr.r.x.esi;
             intdos( &regs, &regs );
-            dr.ecx = regs.x.ecx;
-            dr.eax = regs.x.eax;
+            dr.r.x.ecx = regs.x.ecx;
+            dr.r.x.eax = regs.x.eax;
         } else if( _DPMI || _IsRational() ) {
+            regs.x.ebx = intno;
             regs.x.ecx = 0;  /* no stack for now */
             regs.x.edi = (unsigned long)&dr;
             regs.x.eax = 0x300;
@@ -359,17 +360,17 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         switch( __cmd ) {
         case _COM_GETDTL:
             if( __data )
-                __data->size = dr.ecx;
+                __data->size = dr.r.x.ecx;
             break;
         case _COM_RECEIVE:
         case _COM_STATUS:
             if( __data ) {
-                *( (unsigned char *)__data->buffer + 0 ) = dr.ch;
-                *( (unsigned char *)__data->buffer + 1 ) = dr.cl;
+                *( (unsigned char *)__data->buffer + 0 ) = dr.r.h.ch;
+                *( (unsigned char *)__data->buffer + 1 ) = dr.r.h.cl;
             }
             break;
         }
-        return( dr.ah );
+        return( dr.r.h.ah );
 #endif
     }
     /* IBM PC */
