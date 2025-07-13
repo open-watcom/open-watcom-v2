@@ -57,11 +57,12 @@
 #define RealModeDataPtr( segm, off )    _MK_FP( segm, off )
 #define RealModeSegmPtr( segm )         _MK_FP( segm, 0 )
 #else
-#define RealModeDataPtr( segm, off )    EXTENDER_RM2PM( segm, off )
-#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
+#define RealModeDataPtr( segm, off )    _MK_FP( _ExtenderRealModeSelector, (((unsigned)(segm)) << 4) + (off) )
+#define RealModeSegmPtr( segm )         _MK_FP( _ExtenderRealModeSelector, (((unsigned)(segm)) << 4) )
 #endif
 #define RealModeData( type, segm, off ) *(type __far *)RealModeDataPtr( segm, off )
 
+#define BIOSDataPtr( off )              RealModeDataPtr( BDATA_SEG, off )
 #define BIOSData( type, off )           RealModeData( type, BDATA_SEG, off )
 #define VIDEOData( segm, off )          RealModeData( unsigned char, segm, off )
 
