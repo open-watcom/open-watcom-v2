@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 extern  char    _DOS_Switch_Char( void );
 #pragma aux _DOS_Switch_Char = \
         "mov    ax,3700h"   \
-        "int 21h"           \
+        __INT_21            \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__ax __dl]

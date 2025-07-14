@@ -83,7 +83,7 @@ extern  int SegmentLimit( void );
 extern void *CodeBuilderAlloc( unsigned );
 #pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
-        _INT_21         \
+        __INT_21        \
         "sbb  ebx,ebx"  \
         "not  ebx"      \
         "and  eax,ebx"  \

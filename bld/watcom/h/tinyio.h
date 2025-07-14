@@ -593,13 +593,6 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
  #define __INT_21       _INT 0x21
 #endif
 
-/*
- * temporary workaround to replace macro _INT_21 by  __INT_21
- * in C run-time library
- */
-#undef _INT_21
-#define _INT_21         __INT_21
-
 #if defined( __386__ )
 
 /***************************

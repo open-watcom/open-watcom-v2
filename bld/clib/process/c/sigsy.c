@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,14 +57,14 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov  ds,ecx"   \
             "mov  cl,al"    \
             "mov  ax,2506h" \
-            "int 21h"       \
+            __INT_21        \
             "pop  ds"       \
         __parm __caller [__al] [__cx __edx]
 
   extern  pfun pharlap_rm_getvect( unsigned );
   #pragma aux  pharlap_rm_getvect = \
             "mov ax,2503h"  \
-            "int 21h"       \
+            __INT_21        \
             "mov cx,bx"     \
             "shr ebx,16"    \
             "mov edx,ebx"   \
@@ -78,7 +78,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "shl ebx,16"    \
             "mov bx,dx"     \
             "mov ax,2505h"  \
-            "int 21h"       \
+            __INT_21        \
         __parm __caller [__cl] [__dx __eax] \
         __modify        [__ebx]
 
@@ -86,7 +86,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
   #pragma aux  pharlap_pm_getvect = \
             "push es"       \
             "mov ax,2502h"  \
-            "int 21h"       \
+            __INT_21        \
             "mov ecx,es"    \
             "pop es"        \
         __parm __caller [__cl] \
@@ -99,7 +99,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov ds,edx"    \
             "mov edx,eax"   \
             "mov ax,2504h"  \
-            "int 21h"       \
+            __INT_21        \
             "pop ds"        \
         __parm __caller [__cl] [__dx __eax]
 

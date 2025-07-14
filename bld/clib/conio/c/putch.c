@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
     #include "tinyio.h"
     extern unsigned char    _dos( unsigned char, int );
     #pragma aux _dos = \
-            _INT_21 \
+            __INT_21    \
         __parm __caller [__ah] [__dx] \
         __value         [__al]
 #endif

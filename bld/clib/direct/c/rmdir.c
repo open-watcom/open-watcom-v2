@@ -69,7 +69,7 @@ extern unsigned __rmdir_sfn( const char *path );
 #pragma aux __rmdir_sfn =   \
         _SET_DSDX           \
         _MOV_AH DOS_RMDIR   \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "call __doserror1_" \
     AUX_INFO
@@ -85,7 +85,7 @@ extern lfn_ret_t __rmdir_lfn( const char *path );
             "mov    ds,ax"      \
             "mov    ax,713Ah"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] \
@@ -95,7 +95,7 @@ extern lfn_ret_t __rmdir_lfn( const char *path );
     #pragma aux __rmdir_lfn =   \
             "mov    ax,713Ah"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__dx] \
         __value             [__dx __ax] \

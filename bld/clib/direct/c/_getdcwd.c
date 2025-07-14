@@ -65,7 +65,7 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
 #pragma aux __getdcwd_sfn = \
         _SET_DSSI           \
         _MOV_AH DOS_GETCWD  \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "call __doserror_"  \
     AUX_INFO
@@ -80,7 +80,7 @@ extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
             "mov    ds,cx"      \
             "mov    ax,7147h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__cx __si] [__dl] \
@@ -90,7 +90,7 @@ extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
     #pragma aux ___getdcwd_lfn = \
             "mov    ax,7147h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__si] [__dl] \
         __value             [__dx __ax] \

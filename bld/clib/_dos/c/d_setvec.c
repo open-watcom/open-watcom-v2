@@ -46,7 +46,7 @@
             "mov ds,ecx"        \
             "mov cl,al"         \
             "mov ax,2504h"      \
-            "int 21h"           \
+            __INT_21            \
             "pop ds"            \
         __parm __caller [__al] [__cx __edx]
 
@@ -55,7 +55,7 @@
             "push ds"           \
             "mov ds,ecx"        \
             "mov ah,25h"        \
-            "int 21h"           \
+            __INT_21            \
             "pop ds"            \
         __parm __caller [__al] [__cx __edx]
     #endif
@@ -65,7 +65,7 @@
             "push ds"           \
             "mov ds,cx"         \
             "mov ah,25h"        \
-            "int 21h"           \
+            __INT_21            \
             "pop ds"            \
         __parm __caller [__ax] [__cx __dx]
 #endif

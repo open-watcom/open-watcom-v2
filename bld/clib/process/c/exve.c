@@ -86,7 +86,7 @@ typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 extern unsigned doslowblock( void );
 #pragma aux doslowblock = \
         _MOV_AH DOS_GET_LIST_OF_LIST \
-        "int 21h"           \
+        __INT_21            \
         "dec bx"            \
         "dec bx"            \
         "mov ax, es:[bx]"   \

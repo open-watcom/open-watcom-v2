@@ -77,11 +77,11 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             "push   es"         \
             "push   bx"         \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "pop    dx"         \
             "pop    ds"         \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             _RST_DS             \
             "call __doserror_"  \
         __parm __caller     [__es __bx] [__cx] [__dx __ax] \
@@ -91,10 +91,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_next_dta = \
             _SET_DSDX           \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _RST_DS             \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__dx __ax] \
         __value             [__ax] \
@@ -109,10 +109,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
   #else                 // 16-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    dx,bx"      \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__bx] [__cx] [__dx] \
         __value             [__ax] \
@@ -120,9 +120,9 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
     #pragma aux __dos_find_next_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__dx] \
         __value             [__ax] \
@@ -138,10 +138,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 #elif defined( __CALL21__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    edx,ebx"    \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__ebx] [__ecx] [__edx] \
         __value             [__eax] \
@@ -149,9 +149,9 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
     #pragma aux __dos_find_next_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__edx] \
         __value             [__eax] \
@@ -167,10 +167,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_first_dta = \
             "push   edx"        \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    edx,ebx"    \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "pop    edx"        \
             "call __doserror_"  \
             "test   eax,eax"    \
@@ -179,7 +179,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             "jnz short L1"      \
             "push   es"         \
             _MOV_AH DOS_GET_DTA \
-            _INT_21             \
+            __INT_21            \
             MOV_DATA_FROM_DTA   \
             "pop    es"         \
             "xor    eax,eax"    \
@@ -191,15 +191,15 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_next_dta = \
             "push   es"         \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             CMP_EXTENDER_INTEL  \
             "jnz short L1"      \
             _MOV_AH DOS_GET_DTA \
-            _INT_21             \
+            __INT_21            \
             MOV_DATA_TO_DTA     \
         "L1:"                   \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
             "test   eax,eax"    \
             "jnz short L2"      \
@@ -231,7 +231,7 @@ extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_
             "mov    si,1"       \
             "mov    ax,714Eh"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_ax" \
         __parm __caller     [__dx __ax] [__cx] [__es __di] \
@@ -242,7 +242,7 @@ extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_
             "mov    si,1"       \
             "mov    ax,714Eh"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_ax" \
         __parm __caller     [__dx] [__cx] [__es __di] \
         __value             [__dx __ax] \
@@ -254,7 +254,7 @@ extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta )
         "mov    si,1"           \
         "mov    ax,714fh"       \
         "stc"                   \
-        "int 21h"               \
+        __INT_21                \
         "call __lfnerror_0"     \
     __parm __caller     [__bx] [__es __di] \
     __value             [__dx __ax] \
@@ -264,7 +264,7 @@ extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
 #pragma aux __dos_find_close_lfn = \
         "mov    ax,71A1h"       \
         "stc"                   \
-        "int 21h"               \
+        __INT_21                \
         "call __lfnerror_0"     \
     __parm __caller     [__bx]  \
     __value             [__dx __ax] \

@@ -64,7 +64,7 @@ extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 #pragma aux __dos_setfileattr_sfn = \
         _SET_DSDX               \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21                 \
+        __INT_21                \
         _RST_DS                 \
         "call __doserror_"      \
     AUX_INFO
@@ -81,7 +81,7 @@ extern lfn_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
             "mov    bl,1"       \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] [__cx] \
@@ -92,7 +92,7 @@ extern lfn_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
             "mov    bl,1"       \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__dx] [__cx] \
         __value             [__dx __ax] \

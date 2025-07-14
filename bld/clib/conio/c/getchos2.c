@@ -46,7 +46,7 @@
 #if defined(__OS2_286__)
     extern unsigned char    _dos( char );
     #pragma aux _dos = \
-            "int 21h" \
+            __INT_21    \
         __parm __caller [__ah] \
         __value         [__al]
 #endif

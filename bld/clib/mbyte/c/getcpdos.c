@@ -47,7 +47,7 @@
 extern unsigned short _dos_get_code_page( void );
 #pragma aux _dos_get_code_page = \
         "mov ax,6601h"  \
-        "int 21h"       \
+        __INT_21        \
         "jnc short L1"  \
         "xor bx,bx"     \
     "L1:"               \

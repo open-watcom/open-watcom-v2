@@ -71,7 +71,7 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         _SET_DSDX           \
         INIT_VALUE          \
         _MOV_AX_W   _GET_ DOS_CHMOD \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "jc short L1"       \
         SAVE_VALUE          \
@@ -90,7 +90,7 @@ extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
             "xor    bl,bl"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "sbb    dx,dx"      \
             "jnz short L2"      \
@@ -108,7 +108,7 @@ extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
             "xor    bl,bl"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "sbb    dx,dx"      \
             "jnz short L2"      \
             "cmp    ax,7100h"   \

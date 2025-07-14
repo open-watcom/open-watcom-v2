@@ -67,7 +67,7 @@ extern unsigned __unlink_sfn( const char *filename );
 #pragma aux __unlink_sfn =  \
         _SET_DSDX           \
         _MOV_AH DOS_UNLINK  \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "call __doserror1_" \
     AUX_INFO
@@ -84,7 +84,7 @@ extern lfn_ret_t __unlink_lfn( const char *filename );
             "xor    si,si"      \
             "mov    ax,7141h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] \
@@ -95,7 +95,7 @@ extern lfn_ret_t __unlink_lfn( const char *filename );
             "xor    si,si"      \
             "mov    ax,7141h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__dx] \
         __value             [__dx __ax] \

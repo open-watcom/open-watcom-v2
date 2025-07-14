@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@
     #pragma aux GetDosTime =    \
             "mov    ah,2ch"     \
             "xor    edx,edx"    \
-            "int 21h"           \
+            __INT_21            \
             "mov    eax,edx"    \
             "sal    eax,16"     \
             "or     ax,cx"      \
@@ -74,7 +74,7 @@
     extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
             "mov    ah,2ch"     \
-            "int 21h"           \
+            __INT_21            \
             "mov    ax,cx"      \
         __parm __caller     [] \
         __value             [__dx __ax] \

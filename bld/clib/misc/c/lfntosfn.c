@@ -49,7 +49,7 @@ extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
             "mov    cx,1"      \
             "mov    ax,7160h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__ds __si] [__es __di] \
         __value             [__dx __ax] \
@@ -62,7 +62,7 @@ extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
             "mov    cx,1"       \
             "mov    ax,7160h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    es"         \
             "call __lfnerror_0" \
         __parm __caller     [__si] [__di] \

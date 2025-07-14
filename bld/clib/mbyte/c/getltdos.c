@@ -58,7 +58,7 @@ extern unsigned short __far *_dos_get_dbcs_lead_table( void );
         "xor ax,ax"     \
         "mov ds,ax"     \
         "mov ah,63h"    \
-        "int 21h"       \
+        __INT_21        \
         "mov di,ds"     \
         "jc short L1"   \
         "test al,al"    \

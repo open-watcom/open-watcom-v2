@@ -47,7 +47,7 @@ extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsi
             "mov    ds,ax"      \
             "mov    ax,716Ch"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_ax" \
         __parm __caller     [__si __ax] [__bx] [__cx] [__dx] \
@@ -57,7 +57,7 @@ extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsi
     #pragma aux __dos_create_open_ex_lfn = \
             "mov    ax,716Ch"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_ax" \
         __parm __caller     [__si] [__bx] [__cx] [__dx] \
         __value             [__dx __ax] \

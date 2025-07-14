@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@
         INIT_VALUE          \
         "mov    al,cl"      \
         _MOV_AH DOS_OPEN    \
-        _INT_21             \
+        __INT_21            \
         _RST_DS
 
 extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle );

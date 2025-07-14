@@ -71,7 +71,7 @@ extern  unsigned short  GetDS( void );
 extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo = \
         "mov    ah,0edH"    \
-        "int 21h"           \
+        __INT_21            \
         "shl    eax,31"     \
         "mov    ax,di"      \
     __parm __caller     [__ebx] \
@@ -91,7 +91,7 @@ extern  int SegmentLimit( void );
 extern void *CodeBuilderAlloc( unsigned );
 #pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
-        "int 21h"           \
+        __INT_21        \
         "sbb  ebx,ebx"  \
         "not  ebx"      \
         "and  eax,ebx"  \

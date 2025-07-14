@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 extern unsigned __dos_close( unsigned handle );
 #pragma aux __dos_close =   \
         _MOV_AH DOS_CLOSE   \
-        _INT_21             \
+        __INT_21            \
         "call __doserror_"  \
     AUX_INFO
 
@@ -60,7 +60,7 @@ extern unsigned __dos_commit( unsigned handle );
 #pragma aux __dos_commit =  \
         _MOV_AH DOS_COMMIT_FILE \
         "clc"               \
-        _INT_21             \
+        __INT_21            \
         "call __doserror_"  \
     AUX_INFO
 

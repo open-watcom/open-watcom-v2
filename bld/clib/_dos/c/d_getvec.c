@@ -43,7 +43,7 @@
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax, unsigned char cl ))();
     #pragma aux _getvect = \
             "push es"       \
-            "int 21h"       \
+            __INT_21        \
             "mov dx,es"     \
             "pop es"        \
         __parm      [__ax] [__cl] \
@@ -54,7 +54,7 @@
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
     #pragma aux _getvect = \
             "mov ah,35h"    \
-            "int 21h"       \
+            __INT_21        \
         __parm      [__ax] \
         __value     [__es __bx]
 #endif

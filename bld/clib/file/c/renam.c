@@ -68,7 +68,7 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         _SET_ES             \
         _SET_DSDX           \
         _MOV_AH DOS_RENAME  \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         _RST_ES             \
         "call __doserror1_" \
@@ -85,7 +85,7 @@ extern lfn_ret_t __rename_lfn( const char *old, const char *new );
             "mov    ds,ax"      \
             "mov    ax,7156h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] [__es __di] \
@@ -98,7 +98,7 @@ extern lfn_ret_t __rename_lfn( const char *old, const char *new );
             "mov    es,ax"      \
             "mov    ax,7156h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    es"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx] [__di] \

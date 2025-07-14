@@ -78,7 +78,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             "mov    ds,ax"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] [__cx] [__di] [__bx] \
@@ -88,7 +88,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
     #pragma aux __dos_utime_lfn = \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__dx] [__cx] [__di] [__bx] \
         __value             [__dx __ax] \
