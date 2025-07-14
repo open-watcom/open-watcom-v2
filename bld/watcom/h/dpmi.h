@@ -107,7 +107,6 @@ typedef struct {
             unsigned long   edi;
             unsigned long   esi;
             unsigned long   ebp;
-            unsigned long   flags;
         } x;
         struct pharlap_wordregs {
             unsigned short  ax, __filler1;
@@ -117,7 +116,6 @@ typedef struct {
             unsigned short  di, __filler5;
             unsigned short  si, __filler6;
             unsigned short  bp, __filler7;
-            unsigned short  flags, __filler8;
         } w;
         struct pharlap_byteregs {
             unsigned char   al, ah; unsigned short __filler1;
@@ -257,19 +255,31 @@ typedef struct {
 
 #endif
 
+#define PharlapAllocateDOSMemoryBlock           _PharlapAllocateDOSMemoryBlock
+#define PharlapFreeDOSMemoryBlock               _PharlapFreeDOSMemoryBlock
+#define PharlapGetPMInterruptVector             _PharlapGetPMInterruptVector
+#define PharlapGetRealModeInterruptVector       _PharlapGetRealModeInterruptVector
+#define PharlapSetPMInterruptVector             _PharlapSetPMInterruptVector
+#define PharlapSetPMInterruptVector_pass        _PharlapSetPMInterruptVector_pass
+#define PharlapSetBothInterruptVectors          _PharlapSetBothInterruptVectors
+#define PharlapSetRealModeInterruptVector       _PharlapSetRealModeInterruptVector
+#define PharlapSimulateRealModeInterrupt        _PharlapSimulateRealModeInterrupt
+#define PharlapSimulateRealModeInterruptExt     _PharlapSimulateRealModeInterruptExt
+#define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
+
 /*
  * C run-time library flag indicating that DPMI services (host) is available
  */
 extern unsigned char _DPMI;
 
-extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, dpmi_regs_struct __far *cs );
+extern void     _DPMIFreeRealModeCallBackAddress( void __far *proc );
+extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far *proc, dpmi_regs_struct __far *cs );
 extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
-extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far * ptr );
-extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far * ptr );
+extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far *ptr );
+extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far *ptr );
 extern void     __far *_DPMIGetPMExceptionVector( uint_8 iv );
 extern void     __far *_DPMIGetPMInterruptVector( uint_8 iv );
-extern int      _DPMISetRealModeInterruptVector( uint_8 iv, void __far * ptr );
+extern int      _DPMISetRealModeInterruptVector( uint_8 iv, void __far *ptr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
 extern void     _DPMIGetVersion( version_info __far * );
@@ -340,6 +350,18 @@ uint_32         _TinyDPMISetLimit( uint_16 __sel, uint_32 );
 uint_32         _TinyDPMISetRights( uint_16 __sel, uint_16 );
 uint_32         _TinyDPMIGetDescriptor( uint_16 __sel, void __far * );
 uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
+
+extern uint_16  _PharlapAllocateDOSMemoryBlock( uint_16 para );
+extern uint_16  _PharlapFreeDOSMemoryBlock( uint_16 seg );
+extern void     __far *_PharlapGetPMInterruptVector( uint_8 iv );
+extern void     __far *_PharlapGetRealModeInterruptVector( uint_8 iv );
+extern void     _PharlapSetPMInterruptVector( uint_8 iv, void __far *ptr );
+extern void     _PharlapSetRealModeInterruptVector( uint_8 iv, void __far *ptr );
+extern void     _PharlapSetPMInterruptVector_pass( uint_8 iv, void __far *ptr );
+extern void     _PharlapSetBothInterruptVectors( uint_8 iv, void __far *pm, void __far16 *rm );
+extern int      _PharlapSimulateRealModeInterrupt( pharlap_regs_struct *dp, unsigned bx, unsigned cx, unsigned di );
+extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
+extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
 #include "asmbytes.h"
 
@@ -1709,6 +1731,157 @@ uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __edx]
 
+
+#endif
+
+#define PHARLAP_2502    0x02 0x25
+#define PHARLAP_2503    0x03 0x25
+#define PHARLAP_2504    0x04 0x25
+#define PHARLAP_2505    0x05 0x25
+#define PHARLAP_2506    0x06 0x25
+#define PHARLAP_2507    0x07 0x25
+#define PHARLAP_2508    0x08 0x25
+#define PHARLAP_2511    0x11 0x25
+#define PHARLAP_25C0    0xC0 0x25
+#define PHARLAP_25C1    0xC1 0x25
+
+#if !defined(_M_I86)
+
+/***************************
+ * 80386 versions of pragmas
+ ***************************/
+
+/*
+ * if failed then return zero value
+ * if OK then return uint_16 value
+ */
+#pragma aux _PharlapAllocateDOSMemoryBlock = \
+        _MOV_AX_W PHARLAP_25C0 \
+        _INT_21         \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _AND_AX_BX      \
+    __parm [__bx]       \
+    __value [__ax]      \
+    __modify [__ax __ebx]
+
+/*
+ * if OK then return zero value
+ * if failed then return non-zero value
+ */
+#pragma aux _PharlapFreeDOSMemoryBlock = \
+        _MOV_AX_W PHARLAP_25C1 \
+        _INT_21         \
+        _SBB_CX_CX      \
+        _AND_AX_CX      \
+    __parm      [__cx]  \
+    __value     [__ax]  \
+    __modify    [__ax __cx]
+
+#pragma aux  _PharlapGetPMInterruptVector = \
+        _PUSH_ES        \
+        _MOV_AX_W PHARLAP_2502 \
+        _INT_21         \
+        _MOV_CX_ES      \
+        _POP_ES         \
+    __parm __caller [__cl] \
+    __value         [__cx __ebx] \
+    __modify        [__ax]
+
+#pragma aux _PharlapGetRealModeInterruptVector = \
+        _MOV_AX_W PHARLAP_2503 \
+        _INT_21         \
+        _MOV_CX_BX      \
+        _XOR_BX_BX      \
+        _USE16 _MOV_BX_CX \
+        _SHR_ECX_N 16   \
+    __parm __caller [__cl] \
+    __value         [__cx __ebx] \
+    __modify        [__ax __ebx __ecx]
+
+  #pragma aux  _PharlapSetPMInterruptVector = \
+        _PUSH_DS        \
+        _XCHG_AX_DX     \
+        _MOV_DS_AX      \
+        _MOV_AX_W PHARLAP_2504 \
+        _INT_21         \
+        _POP_DS         \
+    __parm __caller [__cl] [__dx __eax] \
+    __value         \
+    __modify        [__eax __edx]
+
+#pragma aux _PharlapSetRealModeInterruptVector = \
+        _SHL_EBX_N 16   \
+        _USE16 _MOV_BX_AX \
+        _MOV_AX_W PHARLAP_2505 \
+        _INT_21         \
+    __parm __caller [__cl] [__bx __eax] \
+    __value         \
+    __modify        [__eax __ebx __edx]
+
+#pragma aux  _PharlapSetPMInterruptVector_pass = \
+        _PUSH_DS        \
+        _MOV_DS_CX      \
+        _MOV_CL_AL      \
+        _MOV_AX_W PHARLAP_2506 \
+        _INT_21         \
+        _POP_DS         \
+    __parm __caller [__al] [__cx __edx] \
+    __value         \
+    __modify        [__eax __ecx __edx]
+
+#pragma aux  _PharlapSetBothInterruptVectors = \
+        _PUSH_DS        \
+        _MOV_DS_CX      \
+        _MOV_CL_AL      \
+        _MOV_AX_W PHARLAP_2507 \
+        _INT_21         \
+        _POP_DS         \
+    __parm __caller [__al] [__cx __edx] [__ebx] \
+    __value         \
+    __modify        [__eax __ebx __ecx __edx]
+
+/*
+ * if failed then return (uint_32)-1
+ */
+#pragma aux _PharlapGetSegmentBaseAddress = \
+        _MOV_AX_W PHARLAP_2508 \
+        _INT_21         \
+        _SBB_AX_AX      \
+        _OR_CX_AX       \
+    __parm __caller [__bx] \
+    __value [__ecx] \
+    __modify __exact [__eax __bx __ecx]
+
+#pragma aux _PharlapSimulateRealModeInterrupt = \
+        _PUSH_BP        \
+        _MOV_AX_W PHARLAP_2511 \
+        _INT_21         \
+        _SBB_AX_AX      \
+        _POP_BP         \
+    __parm __caller     [__edx] [__ebx] [__ecx] [__edi] \
+    __value             [__eax] \
+    __modify            [__esi]
+
+#pragma aux _PharlapSimulateRealModeInterruptExt = \
+        _PUSH_BP        \
+        "mov ebx,[edx+18]" \
+        "mov ecx,[edx+22]" \
+        "mov edi,[edx+26]" \
+        "mov esi,[edx+30]" \
+        "mov ebp,[edx+34]" \
+        _MOV_AX_W PHARLAP_2511 \
+        _INT_21         \
+        "mov [edx+34],ebp" \
+        "mov [edx+30],esi" \
+        "mov [edx+26],edi" \
+        "mov [edx+22],ecx" \
+        "mov [edx+18],ebx" \
+        _SBB_AX_AX      \
+        _POP_BP         \
+    __parm __caller     [__edx] \
+    __value             [__eax] \
+    __modify            [__ebx __ecx __edi __esi]
 
 #endif
 
