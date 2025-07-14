@@ -33,13 +33,22 @@
 #include "variety.h"
 #include <stddef.h>
 #include <dos.h>
-
-
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
-    #include "tinyio.h"
-  #else
+#include "tinyio.h"
+#if !defined( _M_I86 )
     #include "extender.h"
+#endif
+
+
+#if defined( _M_I86 )
+    extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
+    #pragma aux _setvect = \
+            "push ds"           \
+            "mov ds,cx"         \
+            "mov ah,25h"        \
+            __INT_21            \
+            "pop ds"            \
+        __parm __caller [__ax] [__cx __dx]
+#else
     extern  void pharlap_setvect( unsigned, void (__interrupt _WCFAR *)());
     #pragma aux pharlap_setvect = \
             "push ds"           \
@@ -58,21 +67,13 @@
             __INT_21            \
             "pop ds"            \
         __parm __caller [__al] [__cx __edx]
-    #endif
-#else
-    extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
-    #pragma aux _setvect = \
-            "push ds"           \
-            "mov ds,cx"         \
-            "mov ah,25h"        \
-            __INT_21            \
-            "pop ds"            \
-        __parm __caller [__ax] [__cx __dx]
 #endif
 
 _WCRTLINK void _dos_setvect( unsigned intno, void (__interrupt _WCFAR *func)() )
 {
-#if defined(__WINDOWS_386__)
+#if defined( _M_I86 )
+    _setvect( intno, func );
+#elif defined(__WINDOWS_386__)
     TinySetVect( intno, (void _WCNEAR *) func );
 #elif defined(__386__)
     if( _IsPharLap() ) {
@@ -80,7 +81,5 @@ _WCRTLINK void _dos_setvect( unsigned intno, void (__interrupt _WCFAR *func)() )
     } else {        /* DOS/4G style */
         dos4g_setvect( intno, func );
     }
-#else
-    _setvect( intno, func );
 #endif
 }

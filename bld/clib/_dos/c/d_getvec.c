@@ -33,13 +33,20 @@
 #include "variety.h"
 #include <stddef.h>
 #include <dos.h>
-
-
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
-    #include "tinyio.h"
-  #else
+#include "tinyio.h"
+#if !defined( _M_I86 )
     #include "extender.h"
+#endif
+
+
+#if defined( _M_I86 )
+    extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
+    #pragma aux _getvect = \
+            "mov ah,35h"    \
+            __INT_21        \
+        __parm      [__ax] \
+        __value     [__es __bx]
+#else
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax, unsigned char cl ))();
     #pragma aux _getvect = \
             "push es"       \
@@ -49,29 +56,19 @@
         __parm      [__ax] [__cl] \
         __value     [__dx __ebx] \
         __modify    [__edx]
-  #endif
-#else
-    extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
-    #pragma aux _getvect = \
-            "mov ah,35h"    \
-            __INT_21        \
-        __parm      [__ax] \
-        __value     [__es __bx]
 #endif
 
 _WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intno ))()
 {
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
+#if defined( _M_I86 )
+    return( _getvect( intno ) );
+#elif defined(__WINDOWS_386__)
     return( TinyGetVect( intno ) );
-  #else
+#else
     if( _IsPharLap() ) {
         return( _getvect( 0x2502, intno ) );
     } else {        /* DOS/4G style */
         return( _getvect( 0x3500 | (intno & 0xff), 0 ) );
     }
-  #endif
-#else
-    return( _getvect( intno ) );
 #endif
 }

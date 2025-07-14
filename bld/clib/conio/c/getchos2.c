@@ -39,6 +39,7 @@
 #include <wos2.h>
 #include <conio.h>
 #include "dosfuncx.h"
+#include "tinyio.h"
 #include "rtdata.h"
 #include "defwin.h"
 

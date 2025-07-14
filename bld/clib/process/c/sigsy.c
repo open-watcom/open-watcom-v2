@@ -35,6 +35,7 @@
 #include <signal.h>
 #include <string.h>
 #include <dos.h>
+#include "tinyio.h"
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"

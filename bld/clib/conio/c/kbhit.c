@@ -35,6 +35,7 @@
 #include <stdbool.h>
 #include <dos.h>
 #include <conio.h>
+#include "tinyio.h"
 #include "dosfuncx.h"
 #include "rtdata.h"
 #include "defwin.h"

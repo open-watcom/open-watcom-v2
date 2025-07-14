@@ -48,6 +48,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <i86.h>
+#include "tinyio.h"
 
 /*
  * Using interupt 21 service 2C, we get the time from DOS
@@ -58,7 +59,16 @@
  *      DH = seconds
  *      DL = seconds / 100 (but not hundredths accuracy!)
  */
-#ifdef __386__
+#ifdef _M_I86
+    extern unsigned long GetDosTime( void );
+    #pragma aux GetDosTime =    \
+            "mov    ah,2ch"     \
+            __INT_21            \
+            "mov    ax,cx"      \
+        __parm __caller     [] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx]
+#else
     extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
             "mov    ah,2ch"     \
@@ -70,15 +80,6 @@
         __parm __caller     [] \
         __value             [__eax] \
         __modify __exact    [__eax __ecx __edx]
-#else
-    extern unsigned long GetDosTime( void );
-    #pragma aux GetDosTime =    \
-            "mov    ah,2ch"     \
-            __INT_21            \
-            "mov    ax,cx"      \
-        __parm __caller     [] \
-        __value             [__dx __ax] \
-        __modify __exact    [__ax __cx __dx]
 #endif
 
 

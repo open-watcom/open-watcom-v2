@@ -33,8 +33,10 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <dos16.h>
+#include "tinyio.h"
 #include "wdebug.h"
 #include "hook387.h"
+
 
 extern void __int7( void );
 #pragma aux __int7 "*";

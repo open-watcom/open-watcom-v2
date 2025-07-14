@@ -34,7 +34,9 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
+#include "tinyio.h"
 #include "_process.h"
+
 
 #if defined(_M_IX86)
 extern  char    _DOS_Switch_Char( void );

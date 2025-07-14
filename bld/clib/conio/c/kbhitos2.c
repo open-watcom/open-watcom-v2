@@ -38,6 +38,7 @@
 #define INCL_SUB
 #include <wos2.h>
 #include "dosfuncx.h"
+#include "tinyio.h"
 #include "rtdata.h"
 #include "defwin.h"
 

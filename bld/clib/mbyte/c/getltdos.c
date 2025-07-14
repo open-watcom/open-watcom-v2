@@ -35,6 +35,7 @@
 #include <string.h>
 #include <dos.h>
 #include <i86.h>
+#include "tinyio.h"
 #ifndef _M_I86
     #include "extender.h"
     #include "dpmi.h"
