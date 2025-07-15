@@ -85,8 +85,7 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short      ret;
         union REGS          rregs;
-#if defined( _M_I86 )
-#else
+#ifndef _M_I86
         dpmi_regs_struct    dr;
         pharlap_regs_struct dp;
         union REGS          regs;
@@ -94,56 +93,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         unsigned            size_para;
 #endif
 
-        memset( &rregs, 0, sizeof( rregs ) );
-
-        rregs.h.ah = __cmd;
-        rregs.h.al = __diskinfo->drive;
-        rregs.w.dx = __diskinfo->command;
-        if( rregs.h.dl == _CMD_2D && rregs.h.ah == _DISK_FORMATDRIVE )
-            rregs.h.ah &= 0x7f;
-        rregs.w.ax |= rregs.w.dx;
-        rregs.w.bx = __diskinfo->data_len;
-        if( __diskinfo->command == _CMD_HD ) {
-            if( __cmd == _DISK_FORMATDRIVE || __cmd == _DISK_FORMATTRACK )
-                rregs.h.bh = rregs.h.bl;
-            rregs.w.cx = __diskinfo->cylinder;
-        } else {
-            rregs.h.ch = __diskinfo->sector_len;
-            rregs.h.cl = __diskinfo->cylinder;
-        }
-        rregs.h.dh = __diskinfo->head;
-        rregs.h.dl = __diskinfo->sector;
-        if( __cmd == _DISK_ALTERNATE )
-            rregs.h.dl = 0;
-
-#if defined( _M_I86 )
-        rregs.w.di = FP_SEG( __diskinfo->buffer );
-        rregs.w.si = FP_OFF( __diskinfo->buffer );
-        ret = int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
-        switch( __cmd ) {
-        case _DISK_SEEK:
-            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = rregs.h.cl;
-            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = rregs.h.dh;
-            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = rregs.h.dl;
-            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = rregs.h.ch;
-            break;
-        case _DISK_READ:
-        case _DISK_WRITE:
-        case _DISK_VERIFY:
-        case _DISK_READID:
-        case _DISK_WRITEDDAM:
-        case _DISK_READDDAM:
-        case _DISK_DIAGNOSTIC:
-            if( __diskinfo->command == _CMD_2D || __diskinfo->command == _CMD_HD )
-                break;
-            if( __diskinfo->command == _CMD_2DD ) {
-                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x1d0 ), 16 );
-            } else {
-                _fmemmove( __diskinfo->result, BIOSDataPtr( 0x164 + 8 * __diskinfo->drive ), 8 );
-            }
-            break;
-        }
-#else
+#ifndef _M_I86
+        /*
+         * Allocate DOS memory and copy buffer to it
+         */
         dos_mem.pm = 0;
         dos_mem.rm = 0;
         switch( __cmd ) {
@@ -173,6 +126,35 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             }
             break;
         }
+#endif
+
+        memset( &rregs, 0, sizeof( rregs ) );
+
+        rregs.h.ah = __cmd;
+        rregs.h.al = __diskinfo->drive;
+        rregs.w.dx = __diskinfo->command;
+        if( rregs.h.dl == _CMD_2D && rregs.h.ah == _DISK_FORMATDRIVE )
+            rregs.h.ah &= 0x7f;
+        rregs.w.ax |= rregs.w.dx;
+        rregs.w.bx = __diskinfo->data_len;
+        if( __diskinfo->command == _CMD_HD ) {
+            if( __cmd == _DISK_FORMATDRIVE || __cmd == _DISK_FORMATTRACK )
+                rregs.h.bh = rregs.h.bl;
+            rregs.w.cx = __diskinfo->cylinder;
+        } else {
+            rregs.h.ch = __diskinfo->sector_len;
+            rregs.h.cl = __diskinfo->cylinder;
+        }
+        rregs.h.dh = __diskinfo->head;
+        rregs.h.dl = __diskinfo->sector;
+        if( __cmd == _DISK_ALTERNATE )
+            rregs.h.dl = 0;
+
+#if defined( _M_I86 )
+        rregs.w.di = FP_SEG( __diskinfo->buffer );
+        rregs.w.si = FP_OFF( __diskinfo->buffer );
+        ret = int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
+#else
         memset( &dr, 0, sizeof( dr ) );
         if( _IsPharLap() ) {
             /* Set true register structure */
@@ -205,12 +187,24 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         } else {
             ret = 0;
         }
+#endif
+
+        /*
+         * set return values
+         */
         switch( __cmd ) {
         case _DISK_SEEK:
+#if defined( _M_I86 )
+            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = rregs.h.cl;
+            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = rregs.h.dh;
+            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = rregs.h.dl;
+            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = rregs.h.ch;
+#else
             *( (char _WCI86FAR *)__diskinfo->result + 0 ) = dr.r.h.cl;
             *( (char _WCI86FAR *)__diskinfo->result + 1 ) = dr.r.h.dh;
             *( (char _WCI86FAR *)__diskinfo->result + 2 ) = dr.r.h.dl;
             *( (char _WCI86FAR *)__diskinfo->result + 3 ) = dr.r.h.ch;
+#endif
             break;
         case _DISK_READ:
         case _DISK_WRITE:
@@ -229,6 +223,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             break;
         }
 
+#ifndef _M_I86
+        /*
+         * Copy buffer from DOS memory and free it
+         */
         if( dos_mem.rm ) {
             if( _IsPharLap() ) {
                 _fmemmove( __diskinfo->buffer, RealModeSegmPtr( dos_mem.rm ), __diskinfo->data_len );
@@ -241,6 +239,7 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             }
         }
 #endif
+
         return( ret );
     }
     /* IBM PC */
