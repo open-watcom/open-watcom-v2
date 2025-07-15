@@ -41,6 +41,8 @@
 
 #define _PUSHF          0x9c
 #define _POPF           0x9d
+#define _PUSHFD         0x9c
+#define _POPFD          0x9d
 
 #define _STC            0xf9
 #define _CLC            0xf8
@@ -168,31 +170,17 @@
 #define _GET_           0x00
 #define _SET_           0x01
 
+#define _SHR_EAX_N      0xc1 0xe8
 #define _SHR_ECX_N      0xc1 0xe9
+#define _SHR_EDX_N      0xc1 0xea
 #define _SHR_EBX_N      0xc1 0xeb
 #define _SHR_ESI_N      0xc1 0xee
 #define _SHL_EAX_N      0xc1 0xe0
-#define _SHL_EDX_N      0xc1 0xe2
 #define _SHL_ECX_N      0xc1 0xe1
+#define _SHL_EDX_N      0xc1 0xe2
 #define _SHL_EBX_N      0xc1 0xe3
 
-#if defined(__386__)
-
- #define _SET_DSDX
- #define _SET_DSSI
- #define _SET_ES
- #define _RST_DS
- #define _RST_ES
-
- #define _SET_DS_DGROUP
- #define _SET_DS_DGROUP_SAFE
- #define _RST_DS_DGROUP
- #define _SET_DS_SREG
- #define _SET_DS_SREG_SAFE
- #define _RST_DS_SREG
- #define _SREG
-
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
 
  #ifdef __BIG_DATA__
   #define _SET_DSDX     _PUSH_DS _XCHG_AX_DX _MOV_DS_AX
@@ -208,7 +196,7 @@
   #define _RST_ES       _POP_ES
  #endif
 
- #if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __SW_ZDP ) || defined( __WINDOWS__ )
+ #if defined( __SMALL__ ) || defined( __MEDIUM__ ) || defined( __SW_ZDP ) || defined( __WINDOWS__ )
   #define _SET_DS_DGROUP
   #define _SET_DS_DGROUP_SAFE
   #define _RST_DS_DGROUP
@@ -236,9 +224,26 @@
   #define _SREG                 __ds
 
  #endif
+
+#else       /* __386__ */
+
+ #define _SET_DSDX
+ #define _SET_DSSI
+ #define _SET_ES
+ #define _RST_DS
+ #define _RST_ES
+
+ #define _SET_DS_DGROUP
+ #define _SET_DS_DGROUP_SAFE
+ #define _RST_DS_DGROUP
+ #define _SET_DS_SREG
+ #define _SET_DS_SREG_SAFE
+ #define _RST_DS_SREG
+ #define _SREG
+
 #endif
 
-#if defined( __SMALL_DATA__ ) || defined( __SW_ZDP ) || defined( __WINDOWS__ )
+#if defined( __FLAT__ ) || defined( __SMALL__ ) || defined( __MEDIUM__ ) || defined( __SW_ZDP ) || defined( __WINDOWS__ )
   #define _SAVE_DS              _PUSH_DS
   #define _REST_DS              _POP_DS
   #define _MODIF_DS
@@ -249,7 +254,7 @@
 #endif
 
 
-#if defined( __FLAT__ )
+#if defined( __FLAT__ ) || defined( __WINDOWS_386__ )
   #define _SAVE_ES              _PUSH_ES
   #define _REST_ES              _POP_ES
   #define _MODIF_ES
