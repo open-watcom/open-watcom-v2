@@ -260,7 +260,7 @@ typedef struct {
 #define PharlapGetPMInterruptVector             _PharlapGetPMInterruptVector
 #define PharlapGetRealModeInterruptVector       _PharlapGetRealModeInterruptVector
 #define PharlapSetPMInterruptVector             _PharlapSetPMInterruptVector
-#define PharlapSetPMInterruptVector_pass        _PharlapSetPMInterruptVector_pass
+#define PharlapSetPMInterruptVector_passup      _PharlapSetPMInterruptVector_passup
 #define PharlapSetBothInterruptVectors          _PharlapSetBothInterruptVectors
 #define PharlapSetRealModeInterruptVector       _PharlapSetRealModeInterruptVector
 #define PharlapSimulateRealModeInterrupt        _PharlapSimulateRealModeInterrupt
@@ -357,7 +357,7 @@ extern void     __far *_PharlapGetPMInterruptVector( uint_8 iv );
 extern void     __far *_PharlapGetRealModeInterruptVector( uint_8 iv );
 extern void     _PharlapSetPMInterruptVector( uint_8 iv, void __far *ptr );
 extern void     _PharlapSetRealModeInterruptVector( uint_8 iv, void __far *ptr );
-extern void     _PharlapSetPMInterruptVector_pass( uint_8 iv, void __far *ptr );
+extern void     _PharlapSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
 extern void     _PharlapSetBothInterruptVectors( uint_8 iv, void __far *pm, void __far16 *rm );
 extern int      _PharlapSimulateRealModeInterrupt( pharlap_regs_struct *dp, unsigned bx, unsigned cx, unsigned di );
 extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
@@ -1819,7 +1819,7 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
     __value         \
     __modify        [__eax __ebx __edx]
 
-#pragma aux  _PharlapSetPMInterruptVector_pass = \
+#pragma aux  _PharlapSetPMInterruptVector_passup = \
         _PUSH_DS        \
         _MOV_DS_CX      \
         _MOV_CL_AL      \
