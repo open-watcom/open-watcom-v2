@@ -118,12 +118,8 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             len = strlen( (char *)__data );
             size_para = ( len > 0xffff ) ? 0x1000 : __ROUND_UP_SIZE_TO_PARA( len );   /* paragraph */
             if( _IsPharLap() ) {
-                regs.x.ebx = size_para;   /* paragraph */
-                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                intdos( &regs, &regs );
-                dos_mem.rm = regs.w.ax;
+                dos_mem.rm = PharlapAllocateDOSMemoryBlock( size_para );
                 dos_mem.pm = 0;
-
                 for( ; len > 0xffff; len -= 0xffff ) {
                     _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
                     __data += 0xffff;
@@ -151,9 +147,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 intdos( &regs, &regs );
                 ret = regs.w.cx;
                 if( dos_mem.rm ){
-                    regs.x.ecx = dos_mem.rm;
-                    regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
-                    intdos( &regs, &regs );
+                    PharlapFreeDOSMemoryBlock( dos_mem.rm );
                 }
             } else if( _DPMI || _IsRational() ) {
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
