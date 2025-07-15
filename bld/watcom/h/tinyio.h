@@ -179,6 +179,38 @@ enum {
 };
 
 /*
+ * return from TinyGetCountry
+ */
+typedef enum {
+    TDATE_M_D_Y         = 0,
+    TDATE_D_M_Y         = 1,
+    TDATE_Y_M_D         = 2,
+} date_format;
+
+typedef enum {
+    TTIME_12_HOUR       = 0,
+    TTIME_24_HOUR       = 1,
+} time_format;
+
+enum {                          /* mask values for 'currency_symbol_position' */
+    TPOSN_FOLLOWS_VALUE = 0x01, /* currency symbol follows value */
+    TPOSN_ONE_SPACE     = 0x02, /* currency symbol is one space from value */
+};
+
+/*
+ *  DOS FCB structure related definitions for TinyFCB... functions
+ */
+enum {
+    TIO_PRSFN_IGN_SEPARATORS    = 0x01, /* if (separators) present ignore them*/
+    TIO_PRSFN_DONT_OVW_DRIVE    = 0x02, /* leave drive in FCB unaltered if not*/
+    TIO_PRSFN_DONT_OVW_FNAME    = 0x04, /* present in parsed string.  Same for*/
+    TIO_PRSFN_DONT_OVW_EXT      = 0x08  /* fname and ext                      */
+};
+
+
+#pragma pack( __push, 1 )
+
+/*
  * stuff for TinyGetFileStamp & TinySetFileStamp
  */
 
@@ -236,25 +268,6 @@ typedef struct tiny_dos_version {
     uint_8              major;
     uint_8              minor;
 } tiny_dos_version;
-
-/*
- * return from TinyGetCountry
- */
-typedef enum {
-    TDATE_M_D_Y         = 0,
-    TDATE_D_M_Y         = 1,
-    TDATE_Y_M_D         = 2,
-} date_format;
-
-typedef enum {
-    TTIME_12_HOUR       = 0,
-    TTIME_24_HOUR       = 1,
-} time_format;
-
-enum {                          /* mask values for 'currency_symbol_position' */
-    TPOSN_FOLLOWS_VALUE = 0x01, /* currency symbol follows value */
-    TPOSN_ONE_SPACE     = 0x02, /* currency symbol is one space from value */
-};
 
 typedef struct tiny_country_info_dos2 {
     uint_16             date_format;
@@ -325,13 +338,6 @@ typedef union {
     } extended;
 } tiny_fcb_t;
 
-enum {
-    TIO_PRSFN_IGN_SEPARATORS    = 0x01, /* if (separators) present ignore them*/
-    TIO_PRSFN_DONT_OVW_DRIVE    = 0x02, /* leave drive in FCB unaltered if not*/
-    TIO_PRSFN_DONT_OVW_FNAME    = 0x04, /* present in parsed string.  Same for*/
-    TIO_PRSFN_DONT_OVW_EXT      = 0x08  /* fname and ext                      */
-};
-
 /*
  * type definitions
  */
@@ -342,6 +348,9 @@ typedef int_32          tiny_ret_t;
  * pointer to data on the stack, used with TinyLSeek
  */
 typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
+
+#pragma pack( __pop )
+
 
 /*
  * macro defintions
@@ -2006,7 +2015,5 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
     __modify __exact    [__ax __dx]
 
 #endif
-
-#pragma pack( __pop )
 
 #endif
