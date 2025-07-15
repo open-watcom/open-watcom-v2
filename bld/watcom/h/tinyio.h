@@ -42,8 +42,6 @@
 #include "descript.h"
 
 
-#pragma pack( __push, 1 )
-
 /*
  * miscellaneous definitions
  */

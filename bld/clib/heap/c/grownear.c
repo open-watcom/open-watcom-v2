@@ -70,6 +70,7 @@
 #define FRLPTRADD(p,o)  (freelist_nptr)((PTR)(p)+(o))
 
 #if defined( __DOS_EXT__ )
+
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit = \
         "xor    eax,eax"    \

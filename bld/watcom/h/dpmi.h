@@ -273,7 +273,7 @@ typedef struct {
 extern unsigned char _DPMI;
 
 extern void     _DPMIFreeRealModeCallBackAddress( void __far *proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far *proc, dpmi_regs_struct __far *cs );
+extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far *proc, dpmi_regs_struct __far *dr );
 extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
 extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far *ptr );
 extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far *ptr );
@@ -306,7 +306,7 @@ extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
 extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
 extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
-                        uint_16 words_to_copy, dpmi_regs_struct __far *call_st );
+                        uint_16 words_to_copy, dpmi_regs_struct __far *dr );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern void     __far *_DPMIRawPMtoRMAddr( void );
@@ -333,9 +333,9 @@ void __far *    _TinyDPMIGetProtectExcpt( uint_8 __intr );
 uint_32         _TinyDPMISetProtectExcpt( uint_8 __intr, void ( __far __interrupt *__f )() );
 uint_32         _TinyDPMIGetRealVect( uint_8 __intr );
 uint_32         _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
-uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
-uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
-uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *__struct );
+uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
+uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
+uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
 void __far  *   _TinyDPMIRawPMtoRMAddr( void );
 uint_32         _TinyDPMIRawRMtoPMAddr( void );
 void __far  *   _TinyDPMISaveRMStateAddr( void );

@@ -83,8 +83,8 @@ void _nec_pass_bp( unsigned srvno, pharlap_regs_struct *dp, unsigned _ebx, unsig
 _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *__diskinfo )
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
-        unsigned short  ret;
-        union REGS      rregs;
+        unsigned short      ret;
+        union REGS          rregs;
 #if defined( _M_I86 )
 #else
         dpmi_regs_struct    dr;
