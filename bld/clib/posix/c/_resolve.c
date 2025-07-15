@@ -357,6 +357,11 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
 
 dns_cleanup:
 
+#if defined( __LINUX__ )
+    close( query_socket );
+#else
+#error please provide closesocket( query_socket ) for your OS
+#endif
     if( answers != NULL && dns != NULL ) {
         for( i = 0; i < n_answers; i++ ) {
             if( answers[i].name != NULL )
