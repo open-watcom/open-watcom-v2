@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,12 +212,18 @@ void PPENTRY PP_IncludePathFini( incl_type incltype )
 {
     switch( incltype ) {
     case PPINCLUDE_SYS:
-        PP_Free( IncludePath2 );
+        if( IncludePath2 != NULL ) {
+            PP_Free( IncludePath2 );
+            IncludePath2 = NULL;
+        }
         break;
     case PPINCLUDE_USR:
     case PPINCLUDE_SRC:
     default:
-        PP_Free( IncludePath1 );
+        if( IncludePath1 != NULL ) {
+            PP_Free( IncludePath1 );
+            IncludePath1 = NULL;
+        }
         break;
     }
 }
@@ -481,8 +487,10 @@ static char *resize_macro_buf( char *buf, size_t new_size )
 
 static void free_macro_buf( void )
 {
-    PP_Free( macro_buf );
-    macro_buf = NULL;
+    if( macro_buf != NULL ) {
+        PP_Free( macro_buf );
+        macro_buf = NULL;
+    }
     macro_buf_size = 0;
 }
 
