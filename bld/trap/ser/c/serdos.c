@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef ZDP
-   #define ZDP
-#endif
-
 #include <dos.h>
 #include <conio.h>
 #include "trpimp.h"
@@ -43,7 +39,6 @@
 #include "serial.h"
 #include "serlink.h"
 #include "nothing.h"
-#include "tinyio.h"
 
 
 #define I8259       0x20 /* 8259 control register address */

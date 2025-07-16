@@ -33,10 +33,6 @@
 #ifndef _TINYIO_H_INCLUDED
 #define _TINYIO_H_INCLUDED
 
-#if defined(__SW_ZDP) && !defined(ZDP)
-#define ZDP
-#endif
-
 #include "dosfuncx.h"
 #include "watcom.h"
 #include "descript.h"
