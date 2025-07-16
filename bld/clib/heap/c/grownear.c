@@ -321,8 +321,7 @@ static int __AdjustAmount( unsigned *amount )
     amt = __ROUND_UP_SIZE_64K( amt );
     if( amt < old_amount )
         return( 0 );
-#elif defined( __WINDOWS_386__ ) || defined( __NT__ ) || defined( __CALL21__ ) \
-        || defined( __DOS_EXT__ ) || defined( __RDOS__ )
+#elif defined( __WINDOWS_386__ ) || defined( __NT__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
     /* make sure amount is a multiple of 4k */
     old_amount = amt;
     amt = __ROUND_UP_SIZE_4K( amt );
@@ -334,7 +333,7 @@ static int __AdjustAmount( unsigned *amount )
 }
 
 #if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
+  || defined( __DOS_EXT__ ) || defined( __RDOS__ )
 
 static heapblk_nptr __GetMemFromSystem( unsigned *amount )
 {
@@ -360,14 +359,6 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
   #elif defined( __NT__ )
     brk_value = (unsigned)VirtualAlloc( NULL, *amount, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
     //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, *amount );
-  #elif defined( __CALL21__ )
-    brk_value = (unsigned)TinyMemAlloc( *amount );
-    if( brk_value != 0 ) {
-        /* make sure it will not look like the end of a heap */
-        *(tag _WCNEAR *)brk_value = !END_TAG;
-        brk_value += 2 * TAG_SIZE;
-        *amount -= 2 * TAG_SIZE;    // subtract extra tag
-    }
   #elif defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() ) {
         brk_value = (unsigned)RationalAlloc( *amount );
@@ -418,8 +409,7 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __RDOS__ )
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) || defined( __RDOS__ )
 #else
     heapblk_nptr    heap;
     freelist_nptr   frl;
@@ -433,8 +423,7 @@ int __ExpandDGROUP( unsigned amount )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
-#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __RDOS__ )
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) || defined( __RDOS__ )
     return( __CreateNewNHeap( amount ) );
 #else
   #if defined( __DOS_EXT__ )

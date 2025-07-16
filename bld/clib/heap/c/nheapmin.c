@@ -68,7 +68,7 @@ _WCRTLINK int _heapshrink( void )
 #endif
 
 #if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+    defined(__RDOS__) || defined(__DOS_EXT__)
 
 static int __ReturnMemToSystem( heapblk_nptr heap )
 {
@@ -84,10 +84,6 @@ static int __ReturnMemToSystem( heapblk_nptr heap )
         return( -1 );
   #elif defined(__WINDOWS_286__)
     if( LocalFree( (HLOCAL)heap ) != NULL )
-        return( -1 );
-  #elif defined(__CALL21__)
-    // No way to free storage under OSI
-    if( heap != NULL )
         return( -1 );
   #elif defined(__DOS_EXT__)
     dpmi_hdr    *dpmi = BLK2DPMI( heap );
@@ -131,8 +127,7 @@ int __nheapshrink( void )
 _WCRTLINK int _nheapshrink( void )
 {
     int         rc;
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__)
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || defined(__RDOS__)
 #else
     heapblk_nptr    heap;
     freelist_nptr   last_free;
@@ -143,8 +138,7 @@ _WCRTLINK int _nheapshrink( void )
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__)
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || defined(__RDOS__)
     rc = __nheapshrink();
 #else
   #if defined(__DOS_EXT__)

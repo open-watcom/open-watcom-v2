@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  16-bit code only
 ;*
 ;*****************************************************************************
 
@@ -34,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         xrefp   __doserror_
         modstart dosio
@@ -63,7 +64,7 @@ endif
 ;
         get_parms
         mov     AH,3Fh          ; read file
-_do_io: int     21h             ; ...
+_do_io: int21h                  ; ...
         pop     DS              ; restore DS
         push    DS              ; save it again
         _if     nc              ; if no error

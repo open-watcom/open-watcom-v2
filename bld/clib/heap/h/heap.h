@@ -43,7 +43,7 @@
 #endif
 
 
-#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__CALL21__)
+#if !defined(__DOS_EXT__) && defined(__DOS_386__)
 #define __DOS_EXT__
 #endif
 
@@ -248,7 +248,7 @@ extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
 #if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+    defined(__RDOS__) || defined(__DOS_EXT__)
 extern int              __nheapshrink( void );
 #endif
 

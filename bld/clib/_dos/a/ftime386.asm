@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,7 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Implementation of _dos_get/setftime() for 32-bit DOS. 
+;* Description:  Implementation of _dos_get/setftime() (32-bit code only). 
 ;*
 ;*****************************************************************************
 
@@ -58,8 +59,8 @@ endif
         push    EBX             ; save BX
         mov     EDI,EDX         ; get pointer to date
         mov     EBX,EAX         ; get file handle
-	xor     ECX,ECX         ; clear junk in high bits of ECX
-	xor     EDX,EDX         ; and EDX
+        xor     ECX,ECX         ; clear junk in high bits of ECX
+        xor     EDX,EDX         ; and EDX
         mov     AX,5700h        ; get file's date and time
         int21h                  ; ...
         pop     EBX             ; get pointer to time

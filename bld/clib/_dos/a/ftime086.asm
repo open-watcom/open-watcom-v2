@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,7 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Implementation of _dos_get/setftime() for 16-bit DOS.
+;* Description:  Implementation of _dos_get/setftime() (16-bit code only).
 ;*
 ;*****************************************************************************
 
@@ -33,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         xrefp   __doserror_
         modstart dosftime
@@ -60,7 +62,7 @@ else
 endif
         mov     BX,AX           ; get handle
         mov     AX,5700h        ; get file's date and time
-        int     21h             ; ...
+        int21h                  ; ...
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
 else
         pop     BX              ; get pointer to time
@@ -103,7 +105,7 @@ endif
         mov     CX,BX           ; get time
         mov     BX,AX           ; get file handle
         mov     AX,5701h        ; set file's date and time
-        int     21h             ; ...
+        int21h                  ; ...
         call    __doserror_     ; set return code
         pop     CX              ; restore CX
         ret                     ; return to caller

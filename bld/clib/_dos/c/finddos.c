@@ -135,7 +135,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __modify __exact    [__ax]
 
   #endif
-#elif defined( __CALL21__ )    // 32-bit near data
+#elif defined( __WINDOWS_386__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
             __INT_21            \

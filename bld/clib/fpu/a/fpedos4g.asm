@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -38,6 +38,7 @@ include struct.inc
 include mdef.inc
 include extender.inc
 include fpeint.inc
+include int21.inc
 
 
         xrefp           __FPE2Handler_  ; handle exceptions w/o OUT's
@@ -56,7 +57,7 @@ defp    __DOS4G_hook_init_
         push    DS                      ; save DS
         mov     AH,35h                  ; get interrupt handler for
         mov     AL,FPE_INT              ; for INT 2 (INT 10 on NEC)
-        int     21h                     ; ...
+        int21h                          ; ...
         mov     __PMAddr,EBX            ; save protected-mode interrupt vector
         mov     __PMSeg,ES              ; ...
         mov     AH,25h                  ; set new FPE handler
@@ -64,7 +65,7 @@ defp    __DOS4G_hook_init_
         mov     DX,CS                   ; set DS:EDX pointing to handler
         mov     DS,DX                   ; ...
         lea     EDX,__FPE2Handler_      ; ...
-        int     21h                     ; set it
+        int21h                          ; set it
         pop     DS                      ; restore DS
         ret                             ; return
 endproc __DOS4G_hook_init_
@@ -80,7 +81,7 @@ defp    __DOS4G_hook_fini_
         mov     AL,FPE_INT              ; get interrupt number
         mov     EDX,__PMAddr            ; set DS:EDX pointing to old handler
         mov     DS,__PMSeg              ; ...
-        int     21h                     ; restore previous interrupt handler
+        int21h                          ; restore previous interrupt handler
         pop     DS                      ; restore DS
         ret                             ; return
 endproc __DOS4G_hook_fini_

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         xrefp   __doserror_
         modstart dosmem
@@ -52,7 +54,7 @@ ifdef __STACK__
 endif
         mov     EBX,EAX         ; get # of paragraphs wanted
         mov     AH,48h          ; allocate memory
-        int     21h             ; ...
+        int21h                  ; ...
         _if     nc              ; if no error
           mov   EBX,EAX         ; - get segment of allocated memory
           sub   EAX,EAX         ; - indicate no error
@@ -79,7 +81,7 @@ endif
         push    ES              ; save ES
         mov     ES,EAX          ; get segment to be freed
         mov     AH,49h          ; free allocated memory
-        int     21h             ; ...
+        int21h                  ; ...
         call    __doserror_     ; set return code
         pop     ES              ; restore ES
         ret                     ; return to caller
@@ -104,7 +106,7 @@ endif
         mov     ES,EDX          ; get segment to be modified
         mov     EBX,EAX         ; get new size
         mov     AH,4Ah          ; modify allocated memory
-        int     21h             ; ...
+        int21h                  ; ...
         mov     EDX,EBX         ; get maximum block size if failure
         pop     EBX             ; restore pointer to maxsize
         _if     c               ; if error

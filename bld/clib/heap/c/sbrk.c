@@ -48,7 +48,7 @@
 #include "heap.h"
 
 
-#if defined( __DOS__ ) && !defined( __CALL21__ )
+#if defined( __DOS__ )
 
 #ifdef _M_I86
 

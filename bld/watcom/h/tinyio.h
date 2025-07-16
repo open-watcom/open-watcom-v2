@@ -455,7 +455,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyGetCountry          _nTinyGetCountry
 #define TinyFCBPrsFname         _nTinyFCBPrsFname
 #define TinyFCBDeleteFile       _nTinyFCBDeleteFile
-#define TinyMemAlloc            _TinyMemAlloc
 
 #else
 
@@ -604,7 +603,6 @@ uint        tiny_call   _TinyGetPSP( void );
 void        tiny_call   _TinySetPSP( uint_16 __seg );
 void        tiny_call   _TinyCreatePSP( uint_16 __seg );
 tiny_ret_t  tiny_call   _TinySetMaxHandleCount( uint_16 );
-uint_32                 _TinyMemAlloc( uint_32 __size );
 
 /*********************************************************
  * BIOS absolute read/write related pragmas (INT 25h/26h)
@@ -622,7 +620,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #include "asmbytes.h"
 
-#if defined( __WINDOWS_386__ ) || defined( __CALL21__ )
+#if defined( __WINDOWS_386__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define __INT_21       "call __Int21"
@@ -673,21 +671,11 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
         __INT_21        \
-        "rcl  eax,1"    \
-        "ror  eax,1"    \
+        _SBB_BX_BX      \
+        _USE16 _AND_BX_AX \
     __parm __caller     [__bx] \
-    __value             [__eax] \
+    __value             [__ebx] \
     __modify __exact    [__eax]
-
-#pragma aux _TinyMemAlloc = \
-        _MOV_AH DOS_ALLOC_SEG \
-        __INT_21        \
-        "sbb  ebx,ebx"  \
-        "not  ebx"      \
-        "and  eax,ebx"  \
-    __parm __caller     [__ebx] \
-    __value             [__eax] \
-    __modify __exact    [__eax __ebx]
 
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \

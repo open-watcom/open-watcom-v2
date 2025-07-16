@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS 16-bit code only
 ;*
 ;*****************************************************************************
 
@@ -34,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         name    harderr
 
@@ -75,7 +76,7 @@ _TEXT   segment
         mov     DS,AX           ; ...
         mov     DX,offset int24rtn ; point to int 24 interrupt handler
         mov     AX,2524h        ; set interrupt handler
-        int     21h             ; ...
+        int21h                  ; ...
         sub     AX,AX           ; set success
         pop     DS              ; restore DS
         ret                     ; return to caller

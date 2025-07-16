@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -38,6 +38,7 @@ include struct.inc
 include mdef.inc
 include extender.inc
 include fpeint.inc
+include int21.inc
 
         xrefp           __FPEHandler_   ; handle exceptions
         xrefp           __FPE2Handler_  ; handle exceptions w/o OUT's
@@ -71,31 +72,31 @@ endif
         _if     b                       ; - then
           mov   CL,50h                  ; - get contents of interrupt 50h
           mov   AX,2503h                ; - get real-mode interrupt vector
-          int   21h                     ; - ...
+          int21h                        ; - ...
           push  EBX                     ; - save rm int 50
           mov   AX,2502h                ; - get protected-mode interrupt vector
-          int   21h                     ; - ...
+          int21h                        ; - ...
           push  EBX                     ; - save pm int 50
           push  ES                      ; - ...
           push  DS                      ; - save DS
           mov   AX,CS                   ; - set DS:EDX pointing at handler
           mov   DS,AX                   ; - (EDX set up above)
           mov   AX,2506h                ; - set new interrupt handler
-          int   21h                     ; - ...
+          int21h                        ; - ...
           pop   DS                      ; - restore DS
         _endif                          ; endif
         mov     AX,250ch                ; get base interrupt vector for
-        int     21h                     ; ... IRQ8-IRQ15
+        int21h                          ; ... IRQ8-IRQ15
         mov     CL,AH                   ; get interrupt # for IRQ 13 (8 on NEC)
 ;;      add     CL,13-8                 ; ... JBS 92/10/05
         add     CL,IRQ_NUM              ; ...
         sub     CL,8                    ; ...
         mov     AX,2502h                ; get protected-mode interrupt vector
-        int     21h                     ; ...
+        int21h                          ; ...
         mov     __PMAddr,EBX            ; save protected-mode interrupt vector
         mov     __PMSeg,ES              ; ...
         mov     AX,2503h                ; get real-mode interrupt vector
-        int     21h                     ; ...
+        int21h                          ; ...
         mov     __RMAddr,EBX            ; save real-mode interrupt vector
         cmp     byte ptr _Extender,X_PHARLAP_V3 ; if version 2.x
         _if     b                       ; - then
@@ -116,12 +117,12 @@ endif
           pop   EDX                     ; - set EDX=EBX saved above (pm int 50)
           pop   EBX                     ; - set EBX=EBX saved above (rm int 50)
           mov   AX,2507h                ; - ...
-          int   21h                     ; - ...
+          int21h                        ; - ...
         _else                           ; else version 3.x or 4.x
           mov   AX,CS                   ; - set DS:EDX pointing to handler
           mov   DS,AX                   ; - (EDX set up above)
           mov   AX,2506h                ; - set interrupt handler
-          int   21h                     ; - grab IRQ 13 (8 on NEC)
+          int21h                        ; - grab IRQ 13 (8 on NEC)
         _endif                          ; endif
         pop     DS                      ; restore
         ret                             ; return
@@ -132,7 +133,7 @@ endproc __Phar_hook_init_
 defp    __Phar_hook_fini_
         push    DS                      ; save DS
         mov     AX,250ch                ; get base interrupt vector for
-        int     21h                     ; ... IRQ8-IRQ15
+        int21h                          ; ... IRQ8-IRQ15
         mov     CL,AH                   ; get interrupt # for IRQ 13 (8 on NEC)
 ;;      add     CL,13-8                 ; ... JBS 92/10/05
         add     CL,IRQ_NUM              ; ...
@@ -141,7 +142,7 @@ defp    __Phar_hook_fini_
         mov     EDX,__PMAddr            ; set DS:EDX pointing to old handler
         mov     DS,__PMSeg              ; ...
         mov     AX,2507h                ; ...
-        int     21h                     ; restore previous interrupt handler
+        int21h                          ; restore previous interrupt handler
         pop     DS                      ; restore DS
         ret                             ; return
 endproc __Phar_hook_fini_
