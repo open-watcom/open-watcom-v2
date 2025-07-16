@@ -360,6 +360,11 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 /* 5-nov-90 AFS TinySeek returns a 31-bit offset that must be sign extended */
 #define TINY_INFO_SEEK( h )     (((int_32)(h)^0xc0000000L)-0xc0000000L)
 
+
+/*********************************************************
+ * DOS functions related pragmas (INT 21h)
+ ********************************************************/
+
 /*
  * match up functions with proper pragma for memory model
  */
@@ -372,8 +377,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyCommitFile          _TinyCommitFile
 #define TinyFarWrite            _fTinyWrite
 #define TinyFarRead             _fTinyRead
-#define TinyFarAbsWrite         _fTinyAbsWrite
-#define TinyFarAbsRead          _fTinyAbsRead
 #define TinyFarDelete           _fTinyDelete
 #define TinyFarRename           _fTinyRename
 #define TinyFarMakeDir          _fTinyMakeDir
@@ -452,8 +455,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyGetCountry          _nTinyGetCountry
 #define TinyFCBPrsFname         _nTinyFCBPrsFname
 #define TinyFCBDeleteFile       _nTinyFCBDeleteFile
-#define TinyAbsWrite            _nTinyAbsWrite
-#define TinyAbsRead             _nTinyAbsRead
 #define TinyMemAlloc            _TinyMemAlloc
 
 #else
@@ -479,12 +480,31 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyGetCountry          _fTinyGetCountry
 #define TinyFCBPrsFname         _fTinyFCBPrsFname
 #define TinyFCBDeleteFile       _fTinyFCBDeleteFile
-#define TinyAbsWrite            _fTinyAbsWrite
-#define TinyAbsRead             _fTinyAbsRead
 
 #endif
 
+
+/*********************************************************
+ * BIOS absolute read/write related pragmas (INT 25h/26h)
+ ********************************************************/
+
+#define TinyFarAbsWrite         _fTinyAbsWrite
+#define TinyFarAbsRead          _fTinyAbsRead
+#if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
+#define TinyAbsWrite            _nTinyAbsWrite
+#define TinyAbsRead             _nTinyAbsRead
+#else
+#define TinyAbsWrite            _fTinyAbsWrite
+#define TinyAbsRead             _fTinyAbsRead
+#endif
+
+
 #define tiny_call
+
+
+/*********************************************************
+ * DOS functions related pragmas (INT 21h)
+ ********************************************************/
 
 /*
  *  Function prototypes (_f functions not supported under 386)
@@ -507,10 +527,6 @@ tiny_ret_t  tiny_call   _nTinyCreateTemp( const char __far *__n, create_attr __a
 tiny_ret_t  tiny_call   _TinyClose( tiny_handle_t );
 tiny_ret_t  tiny_call   _TinyCommitFile( tiny_handle_t );
 tiny_ret_t              _fTinyWrite( tiny_handle_t, const void __far *, uint );
-tiny_ret_t              _fTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
-tiny_ret_t              _nTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
-tiny_ret_t              _fTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
-tiny_ret_t              _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
 tiny_ret_t  tiny_call   _nTinyWrite( tiny_handle_t, const void __near *, uint );
 tiny_ret_t              _fTinyRead( tiny_handle_t, void __far *, uint );
 tiny_ret_t  tiny_call   _nTinyRead( tiny_handle_t, void __near *, uint );
@@ -590,6 +606,20 @@ void        tiny_call   _TinyCreatePSP( uint_16 __seg );
 tiny_ret_t  tiny_call   _TinySetMaxHandleCount( uint_16 );
 uint_32                 _TinyMemAlloc( uint_32 __size );
 
+/*********************************************************
+ * BIOS absolute read/write related pragmas (INT 25h/26h)
+ ********************************************************/
+
+tiny_ret_t  _fTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
+tiny_ret_t  _nTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
+tiny_ret_t  _fTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
+tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
+
+
+/*********************************************************
+ * in-line assembly instruction bytes definition
+ ********************************************************/
+
 #include "asmbytes.h"
 
 #if defined( __WINDOWS_386__ ) || defined( __CALL21__ )
@@ -599,6 +629,11 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #else
  #define __INT_21       _INT 0x21
 #endif
+
+
+/*********************************************************
+ * DOS functions related pragmas (INT 21h)
+ ********************************************************/
 
 #if defined( __386__ )
 
@@ -1340,54 +1375,6 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 
-#pragma aux _nTinyAbsRead = \
-        _SET_DS_DGROUP_SAFE  \
-        _INT_25         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller     [__al] [__dx] [__cx] [__bx] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx __si __di]
-
-#pragma aux _fTinyAbsRead = \
-        _SET_DS_SREG_SAFE \
-        _INT_25         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx __si __di]
-
-#pragma aux _nTinyAbsWrite = \
-        _SET_DS_DGROUP_SAFE \
-        _INT_26         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller     [__al] [__dx] [__cx] [__bx] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx __si __di]
-
-#pragma aux _fTinyAbsWrite = \
-        _SET_DS_SREG_SAFE \
-        _INT_26         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx __si __di]
-
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
         __INT_21        \
@@ -2013,5 +2000,59 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
     __modify __exact    [__ax __dx]
 
 #endif
+
+
+/*********************************************************
+ * BIOS absolute read/write related pragmas (INT 25h/26h)
+ ********************************************************/
+
+#pragma aux _nTinyAbsRead = \
+        _SET_DS_DGROUP_SAFE  \
+        _INT_25         \
+        "jc short finish" \
+        _ADD_SP 0x02    \
+    "finish:"           \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller     [__al] [__dx] [__cx] [__bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __bx __cx __dx __si __di]
+
+#pragma aux _fTinyAbsRead = \
+        _SET_DS_SREG_SAFE \
+        _INT_25         \
+        "jc short finish" \
+        _ADD_SP 0x02    \
+    "finish:"           \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __bx __cx __dx __si __di]
+
+#pragma aux _nTinyAbsWrite = \
+        _SET_DS_DGROUP_SAFE \
+        _INT_26         \
+        "jc short finish" \
+        _ADD_SP 0x02    \
+    "finish:"           \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller     [__al] [__dx] [__cx] [__bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __bx __cx __dx __si __di]
+
+#pragma aux _fTinyAbsWrite = \
+        _SET_DS_SREG_SAFE \
+        _INT_26         \
+        "jc short finish" \
+        _ADD_SP 0x02    \
+    "finish:"           \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __bx __cx __dx __si __di]
+
 
 #endif
