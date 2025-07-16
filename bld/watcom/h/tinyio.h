@@ -2009,9 +2009,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _nTinyAbsRead = \
         _SET_DS_DGROUP_SAFE  \
         _INT_25         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
+        _POP_DX         \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__al] [__dx] [__cx] [__bx] \
@@ -2021,9 +2019,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _fTinyAbsRead = \
         _SET_DS_SREG_SAFE \
         _INT_25         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
+        _POP_DX         \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
@@ -2033,9 +2029,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _nTinyAbsWrite = \
         _SET_DS_DGROUP_SAFE \
         _INT_26         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
+        _POP_DX         \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
     __parm __caller     [__al] [__dx] [__cx] [__bx] \
@@ -2045,9 +2039,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _fTinyAbsWrite = \
         _SET_DS_SREG_SAFE \
         _INT_26         \
-        "jc short finish" \
-        _ADD_SP 0x02    \
-    "finish:"           \
+        _POP_DX         \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
     __parm __caller     [__al] [__dx] [__cx] [_SREG __bx] \
