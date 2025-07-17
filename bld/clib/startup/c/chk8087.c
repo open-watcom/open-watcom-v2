@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ extern void __init_80x87( void );
 extern unsigned char _WCI86NEAR __x87id( void );
 #pragma aux __x87id "*"
 
-#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_386__ )
+#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_32BIT__ )
 
 extern void __fsave( _87state * );
 extern void __frstor( _87state * );
@@ -193,7 +193,7 @@ static void __rest_8087( _87state *fst )
     __frstor( fst );
 }
 
-#endif  /* _M_IX86 && !__UNIX__ && !__OS2_386__ */
+#endif  /* _M_IX86 && !__UNIX__ && !__OS2_32BIT__ */
 
 _WCRTLINK void _fpreset( void )
 {
@@ -204,7 +204,7 @@ _WCRTLINK void _fpreset( void )
 
 void __init_8087( void )
 {
-#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_386__ )
+#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_32BIT__ )
     if( _RWD_real87 != 0 ) {            /* if our emulator, don't worry */
         _RWD_Save8087 = __save_8087;    /* point to real save 8087 routine */
         _RWD_Rest8087 = __rest_8087;    /* point to real restore 8087 routine */
@@ -213,7 +213,7 @@ void __init_8087( void )
     _fpreset();
 }
 
-#if defined( __DOS__ ) || defined( __OS2_286__ )
+#if defined( __DOS__ ) || defined( __OS2_16BIT__ )
 
 extern unsigned char _bin_to_ascii_offs( unsigned char c );
 #pragma aux _bin_to_ascii_offs = \

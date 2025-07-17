@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 // This file is compiled to ensure that important structures don't change.
 // The following sizes are important to maintaining the alignment of the heap
 #define SIZEOF_FREELIST     (TAG_SIZE * 3)
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2_32BIT__ )
 // 32-bit OS/2 has one more for high memory flags - was 8
 #define SIZEOF_HEAPBLK      (TAG_SIZE * 9 + SIZEOF_FREELIST)
 #else

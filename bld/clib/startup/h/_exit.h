@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-#if defined(__OS2_286__) && defined(__SW_BD)
+#if defined(__OS2_16BIT__) && defined(__SW_BD)
 extern _WCRTLINK void _UnloadCLib( void );
 #endif

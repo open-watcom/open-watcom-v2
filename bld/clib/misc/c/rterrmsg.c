@@ -87,7 +87,7 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
     if( (rc == EOF) && (_RWD_errno == EBADF) ) {
         MessageBox( NULL, msg, hdr, MB_OK | MB_TASKMODAL );
     }
-#elif defined( __OS2__ ) && defined( __386__ )
+#elif defined( __OS2_32BIT__ )
     TIB     *ptib;
     PIB     *ppib;
     ULONG   (APIENTRY *pfnWinMessageBox)( HWND, HWND, PCSZ, PCSZ, ULONG, ULONG );

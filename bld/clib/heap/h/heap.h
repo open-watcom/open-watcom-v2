@@ -34,7 +34,7 @@
  * Comments for heap implementation.
  */
 
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
     #include <stdbool.h>
 #endif
 #ifdef _M_IX86
@@ -148,7 +148,7 @@ struct heapblk {
     unsigned int        numalloc;           /* number of allocated blocks in heap */
     unsigned int        numfree;            /* number of free blocks in the heap */
     freelist            freehead;           /* listhead of free blocks in heap */
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
     unsigned int        used_obj_any :1;    /* allocated with OBJ_ANY - block may be in high memory */
 #endif
 };
@@ -197,7 +197,7 @@ extern heapblk_nptr     __MiniHeapRover;
 extern unsigned int     __LargestSizeB4MiniHeapRover;
 extern heapblk_nptr     __MiniHeapFreeRover;
 
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
 extern bool             _os2_use_obj_any;           // Prefer high memory heap block
 extern bool             _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif
@@ -247,7 +247,7 @@ extern void             *__ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size
 extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2_32BIT__) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__RDOS__) || defined(__DOS_EXT__)
 extern int              __nheapshrink( void );
 #endif

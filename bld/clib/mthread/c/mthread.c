@@ -947,7 +947,7 @@ static void __FiniSema4s( void )              // called from finalizer
 #endif
 #if !defined( __QNX__ )
     __FiniThreadProcessing();
-  #if !defined( __OS2_286__ )
+  #if !defined( __OS2_16BIT__ )
     // All thread data areas freed, including main process thread data
     // so mark first thread data pointer null. Note that OS/2 1.x does
     // not have __FirstThreadData at all.

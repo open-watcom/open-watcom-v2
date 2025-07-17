@@ -43,7 +43,7 @@
 #include "defwin.h"
 
 
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     extern unsigned char    _dos( unsigned char );
     #pragma aux _dos = \
             __INT_21    \
@@ -64,14 +64,11 @@ _WCRTLINK int kbhit( void )
         return( _WindowsKbhit( res ) );
     }
 #endif
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     if( _osmode_REALMODE() ) {
         return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
-    KbdPeek( &info, 0 );
-    return( (info.fbStatus & 0xe0) != 0 );
-#else
-    KbdPeek( &info, 0 );
-    return( (info.fbStatus & 0xe0) != 0 );
 #endif
+    KbdPeek( &info, 0 );
+    return( (info.fbStatus & 0xe0) != 0 );
 }

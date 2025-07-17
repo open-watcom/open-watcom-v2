@@ -97,7 +97,7 @@ void __shrink_iomode( void )
 AYI(__shrink_iomode,INIT_PRIORITY_IOSTREAM);
 
 
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
 
 static void __preinit_iomode_os2( void )
 {

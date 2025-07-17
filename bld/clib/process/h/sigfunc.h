@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#if defined( __NT__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __RDOS__ )
+#if defined( __NT__ ) || defined( __OS2_32BIT__ ) || defined( __RDOS__ )
 _WCRTLINK extern int        __sigfpe_handler( int );
 #else
 _WCRTLINK extern void       _WCI86FAR __sigfpe_handler( int );

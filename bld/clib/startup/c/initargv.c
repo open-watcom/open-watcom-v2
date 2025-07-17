@@ -188,7 +188,7 @@ static void *__F_NAME( _getargv, _wgetargv )(
     size = ALIGN_SIZE( size );
 
 #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
-  #if defined(__OS2_286__)
+  #if defined(__OS2_16BIT__)
     if( _osmode_REALMODE() ) {
         cmdline = ncmd = lib_nmalloc( size );
         if( ncmd == NULL ) {

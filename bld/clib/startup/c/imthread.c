@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "mthread.h"
 
 
-#if defined(__OS2_286__) || defined(__NETWARE__)
+#if defined(__OS2_16BIT__) || defined(__NETWARE__)
   #ifdef __SW_BM
         int __imthread;
   #endif

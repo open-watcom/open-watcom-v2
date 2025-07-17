@@ -84,7 +84,7 @@ static int check_mode( int handle, int mode )
         _RWD_errno = __errno;
         return( -1 );
     }
-  #elif defined(__OS2__) && !defined(_M_I86)    /* 32-bit OS/2 */
+  #elif defined(__OS2_32BIT__)
     int     __errno;
     ULONG   state;
     int     rc;
@@ -113,7 +113,7 @@ static int check_mode( int handle, int mode )
         _RWD_errno = __errno;
         return( -1 );
     }
-  #elif defined(__OS2__) && defined(_M_I86)     /* 16-bit OS/2 */
+  #elif defined(__OS2_16BIT__)
     // there is support under OS/2 1.x, but Pharlap's run286 doesn't
     // support the DosQFHandState() function
     (void)handle;

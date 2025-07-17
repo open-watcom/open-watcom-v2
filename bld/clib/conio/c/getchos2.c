@@ -44,7 +44,7 @@
 #include "defwin.h"
 
 
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     extern unsigned char    _dos( char );
     #pragma aux _dos = \
             __INT_21    \
@@ -69,7 +69,7 @@ _WCRTLINK int getch( void )
         return( _WindowsGetch( res ) );
     }
 #endif
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     if( _osmode_REALMODE() ) {
         return( _dos( DOS_GET_CHAR_NO_ECHO_CHECK ) );
     }

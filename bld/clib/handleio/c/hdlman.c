@@ -277,7 +277,7 @@ _WCRTLINK int _grow_handles( int num )
                 _enable();
             }
         }
-#elif defined( __OS2__ ) && defined( _M_I86 )   /* 16-bit OS/2 */
+#elif defined( __OS2_16BIT__ )
         {
             APIRET  rc;
 
@@ -307,7 +307,7 @@ _WCRTLINK int _grow_handles( int num )
                 }
             }
         }
-#elif defined( __OS2__ ) && !defined( _M_I86 )  /* 32-bit OS/2 */
+#elif defined( __OS2_32BIT__ )
         {
             APIRET  rc;
             LONG    req_count;
