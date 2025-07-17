@@ -1832,7 +1832,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinyFreeSpace = \
-        _MOV_AH DOS_FREE_SPACE \
+        _MOV_AH DOS_DRIVE_FREE_SPACE \
         __INT_21        \
         _MUL_CX         \
         _MUL_BX         \

@@ -30,7 +30,11 @@
 
 
 #define DOS_GET_CHAR_ECHO_CHECK     0x01
-#define DOS_OUTPUT_CHAR             0x06
+#define DOS_OUT_CHAR_CHECK          0x02
+#define DOS_GET_CHAR_AUX            0x03
+#define DOS_OUT_CHAR_AUX            0x04
+#define DOS_OUT_CHAR_PRINTER        0x05
+#define DOS_OUT_CHAR                0x06
 #define DOS_GET_CHAR_NO_ECHO        0x07    /* dosfunc.h */
 #define DOS_GET_CHAR_NO_ECHO_CHECK  0x08
 #define DOS_BUFF_INPUT              0x0A
@@ -39,14 +43,20 @@
 #define DOS_DELETE_FCB              0x13
 #define DOS_CUR_DISK                0x19    /* dosfunc.h */
 #define DOS_SET_DTA                 0x1A    /* dosfunc.h */
+#define DOS_GET_DEF_DRIVE_INFO      0x1B
+#define DOS_GET_DRIVE_INFO          0x1C
 #define DOS_SET_INT                 0x25    /* dosfunc.h */
 #define DOS_CREATE_PSP              0x26
 #define DOS_PARSE_FCB               0x29
 #define DOS_GET_DATE                0x2A    /* dosfunc.h */
+#define DOS_SET_DATE                0x2B
 #define DOS_GET_TIME                0x2C    /* dosfunc.h */
+#define DOS_SET_TIME                0x2D
+#define DOS_SET_VERIFY_FLAG         0x2E
 #define DOS_GET_DTA                 0x2F
 #define DOS_GET_VERSION             0x30    /* dosfunc.h */
 #define DOS_TERM_STAY_RESID         0x31
+#define DOS_GET_DRIVE_PARAM_BLOCK   0x32
 #define DOS_CTRL_BREAK              0x33    /* dosfunc.h */
 #define DOS_GET_INT                 0x35    /* dosfunc.h */
 #define DOS_FREE_SPACE              0x36
@@ -70,7 +80,9 @@
 #define DOS_ALLOC_SEG               0x48    /* dosfunc.h */
 #define DOS_FREE_SEG                0x49    /* dosfunc.h */
 #define DOS_MODIFY_SEG              0x4A    /* dosfunc.h */
+#define DOS_EXEC                    0x4B
 #define DOS_EXIT                    0x4C    /* dosfunc.h */
+#define DOS_CHILD_RC                0x4D
 #define DOS_FIND_FIRST              0x4E    /* dosfunc.h */
 #define DOS_FIND_NEXT               0x4F    /* dosfunc.h */
 #define DOS_SET_PSP                 0x50
@@ -78,11 +90,13 @@
 #define DOS_GET_LIST_OF_LIST        0x52
 #define DOS_RENAME                  0x56    /* dosfunc.h */
 #define DOS_FILE_DATE               0x57    /* dosfunc.h */
+#define DOS_MEM_STRATEGY            0x58
 #define DOS_EXT_ERR                 0x59
 #define DOS_CREATE_TMP              0x5A
 #define DOS_CREATE_NEW              0x5B
 #define DOS_RECORD_LOCK             0x5C
 #define DOS_TRUENAME                0x60
+#define DOS_GET_PSP_2               0x62
 #define DOS_SET_HCOUNT              0x67
 #define DOS_COMMIT_FILE             0x68    /* dosfunc.h */
 #define DOS_EXT_CREATE              0x6C

@@ -56,7 +56,7 @@ _WCRTLINK int putch( int c )
         _WindowsPutch( res, c );
     }
 #else
-    _dos( DOS_OUTPUT_CHAR, c );
+    _dos( DOS_OUT_CHAR, c );
 #endif
     return( c );
 }
