@@ -581,9 +581,9 @@ void        tiny_call   _TinySetVect(uint_8, void (__far __interrupt *__f)());
 void  (__far __interrupt * tiny_call _TinyGetVect( uint_8 ))();
 #endif
 tiny_dos_version  tiny_call _TinyDOSVersion( void );
-char        tiny_call   _TinyGetCH( void );
-char        tiny_call   _TinyGetCHE( void );
-char        tiny_call   _TinyGetSwitchChar( void );
+uint_8      tiny_call   _TinyGetCH( void );
+uint_8      tiny_call   _TinyGetCHE( void );
+uint_8      tiny_call   _TinyGetSwitchChar( void );
 void        tiny_call   _TinySetSwitchChar( char );
 uint_32     tiny_call   _TinyFreeSpace( uint_8 );
 tiny_ret_t  tiny_call   _nTinyGetCountry( const tiny_country_info __near * );
@@ -660,7 +660,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         __INT_21        \
         "mov  ax,bx"    \
         _POPF           \
-    __parm              [] \
+    __parm __caller     [] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
 
