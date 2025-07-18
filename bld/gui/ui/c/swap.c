@@ -536,9 +536,9 @@ void ToCharacter( void )
     }
     isGraphical = false;
     if( SwapScrnLines() >=43 ) {
-        SetCharPattSet( DOUBLE_DOT_CHAR_PATTSET );
+        SetCharPattSet( PATTSET_DOUBLE_DOT_CHAR );
     } else if( SwapScrnLines() >= 28 ) {
-        SetCharPattSet( COMPRESSED_CHAR_PATTSET );
+        SetCharPattSet( PATTSET_COMPRESSED_CHAR );
     }
 }
 
