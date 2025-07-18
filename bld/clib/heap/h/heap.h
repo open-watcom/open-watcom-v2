@@ -43,7 +43,8 @@
 #endif
 
 
-#if !defined(__DOS_EXT__) && defined(__DOS_386__)
+#if !defined(__DOS_EXT__) \
+  && defined(__DOS_386__)
 #define __DOS_EXT__
 #endif
 
@@ -247,8 +248,11 @@ extern void             *__ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size
 extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
-#if defined(__OS2_32BIT__) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__RDOS__) || defined(__DOS_EXT__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__) \
+  || defined(__DOS_EXT__)
 extern int              __nheapshrink( void );
 #endif
 

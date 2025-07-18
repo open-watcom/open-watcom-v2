@@ -38,7 +38,8 @@
 #include "roundmac.h"
 #include "heap.h"
 #include "heapacc.h"
-#if defined(__WINDOWS_286__) || defined(__NT__)
+#if defined(__WINDOWS_286__) \
+  || defined(__NT__)
     #include <windows.h>
 #elif defined(__WINDOWS_386__)
     #include "windpmi.h"
@@ -67,8 +68,11 @@ _WCRTLINK int _heapshrink( void )
 
 #endif
 
-#if defined(__OS2_32BIT__) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__RDOS__) || defined(__DOS_EXT__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__) \
+  || defined(__DOS_EXT__)
 
 static int __ReturnMemToSystem( heapblk_nptr heap )
 {
@@ -127,7 +131,10 @@ int __nheapshrink( void )
 _WCRTLINK int _nheapshrink( void )
 {
     int         rc;
-#if defined(__OS2_32BIT__) || defined(__WINDOWS__) || defined(__NT__) || defined(__RDOS__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__)
 #else
     heapblk_nptr    heap;
     freelist_nptr   last_free;
@@ -138,7 +145,10 @@ _WCRTLINK int _nheapshrink( void )
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-#if defined(__OS2_32BIT__) || defined(__WINDOWS__) || defined(__NT__) || defined(__RDOS__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__)
     rc = __nheapshrink();
 #else
   #if defined(__DOS_EXT__)

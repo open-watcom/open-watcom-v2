@@ -135,7 +135,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __modify __exact    [__ax]
 
   #endif
-#elif defined( __WINDOWS_386__ )    // 32-bit near data
+#elif defined( __WINDOWS_386__ )    // 32-bit near data (Windows 3.x 32-bit Extender)
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
             __INT_21            \
@@ -163,7 +163,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __value             [__eax] \
         __modify __exact    [__eax]
 
-#else                   // 32-bit near data
+#else                   // 32-bit near data (DOS)
     #pragma aux __dos_find_first_dta = \
             "push   edx"        \
             _MOV_AH DOS_SET_DTA \
