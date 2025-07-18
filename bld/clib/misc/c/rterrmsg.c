@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
+#if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
   #if defined( _M_I86 )
@@ -66,7 +66,7 @@
  */
 void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
 {
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ )
     #ifdef __WIDECHAR__
         char    outhdr[ MB_CUR_MAX * STR_SIZE ];
         char    outmsg[ MB_CUR_MAX * STR_SIZE ];

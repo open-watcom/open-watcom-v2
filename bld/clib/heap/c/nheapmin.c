@@ -152,7 +152,8 @@ _WCRTLINK int _nheapshrink( void )
     rc = __nheapshrink();
 #else
   #if defined(__DOS_EXT__)
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( _IsRationalZeroBase()
+      || _IsCodeBuilder() ) {
         rc = __nheapshrink();
     } else {
   #endif

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #if defined(__WINDOWS_386__)
     #include "windpmi.h"
-#elif defined(__WINDOWS__)
+#elif defined(__WINDOWS_286__)
     #include <windows.h>
 #elif defined(__DOS__)
     #include <dos.h>

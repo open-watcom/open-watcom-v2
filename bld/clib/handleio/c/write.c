@@ -284,7 +284,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     __handle_check( handle, -1 );
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
+#if defined(__WINDOWS__)
         // How can we write to the handle if we never opened it? JBS
         return( _lwrite( handle, buffer, len ) );
 #else
