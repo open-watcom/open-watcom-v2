@@ -59,7 +59,7 @@
 #define DOS_GET_DRIVE_PARAM_BLOCK   0x32
 #define DOS_CTRL_BREAK              0x33    /* dosfunc.h */
 #define DOS_GET_INT                 0x35    /* dosfunc.h */
-#define DOS_FREE_SPACE              0x36
+#define DOS_DRIVE_FREE_SPACE        0x36
 #define DOS_SWITCH_CHAR             0x37    /* dosfunc.h */
 #define DOS_COUNTRY_INFO            0x38
 #define DOS_MKDIR                   0x39    /* dosfunc.h */
