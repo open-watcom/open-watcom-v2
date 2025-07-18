@@ -36,6 +36,7 @@
 #include "watcom.h"
 #include "descript.h"
 
+
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
  */
@@ -267,6 +268,8 @@ typedef struct {
 #define PharlapSimulateRealModeInterruptExt     _PharlapSimulateRealModeInterruptExt
 #define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
 
+#define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
+
 /*
  * C run-time library flag indicating that DPMI services (host) is available
  */
@@ -362,6 +365,8 @@ extern void     _PharlapSetBothInterruptVectors( uint_8 iv, void __far *pm, void
 extern int      _PharlapSimulateRealModeInterrupt( pharlap_regs_struct *dp, unsigned bx, unsigned cx, unsigned di );
 extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
 extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
+
+extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
 
 #include "asmbytes.h"
 
@@ -1734,6 +1739,7 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
 #endif
 
+
 #define PHARLAP_2502    0x02 0x25
 #define PHARLAP_2503    0x03 0x25
 #define PHARLAP_2504    0x04 0x25
@@ -1882,6 +1888,28 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify            [__ebx __ecx __edi __esi]
+
+#endif
+
+#if !defined(_M_I86)
+
+/***************************
+ * 80386 versions of pragmas
+ ***************************/
+
+/*
+ * only interrupt 0x08-0x2e is auto-passup
+ * others need to create appropriate callback
+ */
+#pragma aux _DOS4GSetPMInterruptVector_passup = \
+        _SAVE_DS        \
+        _MOV_DS_CX      \
+        _MOV_AH DOS_SET_INT \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__al] [__cx __edx] \
+    __value         \
+    __modify __exact [__ah _MODIF_DS]
 
 #endif
 
