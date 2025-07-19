@@ -36,19 +36,20 @@
 #include "rtdata.h"
 #include "rtinit.h"
 
+extern short _CheckDPMIVersion( void );
+#pragma aux _CheckDPMIVersion = \
+        _MOV_AX_W DPMI_0400 \
+        _INT_31         \
+    __parm   [] \
+    __value  [__ax] \
+    __modify [__bx __cx __dx]
 
 unsigned char   _DPMI = 0;
 
 static void dpmi_check( void )
 {
     if( DPMIModeDetect() == 0 || _IsRational() ) {
-        version_info vi;
-        vi.major_version = 0;
-        vi.minor_version = 0;
-        vi.flags = 0;
-        vi.processor_type = 0;
-        DPMIGetVersion( &vi );
-        if( (vi.major_version + vi.minor_version) > 0 ) {
+        if( _CheckDPMIVersion() ) {
             _DPMI = 1;
         }
     }

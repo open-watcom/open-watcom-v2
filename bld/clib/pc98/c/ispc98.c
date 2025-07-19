@@ -72,7 +72,7 @@ static void init_on_startup( void )
 
     p = MK_FP( _F000H, BIOS_CHK_OFFS );
   #else
-    p = RealModeDataPtr( _F000H, BIOS_CHK_OFFS );
+    p = RealModeDataPtr( 0xF000, BIOS_CHK_OFFS );
   #endif
     if( p[0] != '/' && p[3] != '/' ) {
         __isPC98 = 1;

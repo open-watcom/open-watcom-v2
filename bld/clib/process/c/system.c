@@ -84,7 +84,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
         return( 0 );    /* indicate no COMMAND.COM available */
   #endif
     }
-  #if defined( __NT__ )
+  #if defined( __NT__ ) \
     || defined(__OS2_32BIT__)
     use_cmd = 1;
   #elif defined(__OS2_16BIT__)
