@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#ifndef __DPMI_H
-#define __DPMI_H
+#ifndef _DPMI_H_INCLUDED
+#define _DPMI_H_INCLUDED
 
 #include "watcom.h"
+#include "dosfuncx.h"
 #include "descript.h"
 
 
@@ -269,6 +270,7 @@ typedef struct {
 #define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
 
 #define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
+#define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
 
 /*
  * C run-time library flag indicating that DPMI services (host) is available
@@ -367,6 +369,7 @@ extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
 extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
 extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
+extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
 
 #include "asmbytes.h"
 
@@ -1785,14 +1788,15 @@ extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
     __modify    [__ax __cx]
 
 #pragma aux  _PharlapGetPMInterruptVector = \
-        _PUSH_ES        \
+        _SAVE_ES        \
         _MOV_AX_W PHARLAP_2502 \
         _INT_21         \
-        _MOV_CX_ES      \
-        _POP_ES         \
+        _MOV_DX_ES      \
+        _MOV_AX_BX      \
+        _REST_ES        \
     __parm __caller [__cl] \
-    __value         [__cx __ebx] \
-    __modify        [__ax]
+    __value         [__dx __eax] \
+    __modify __exact [__eax __ebx __edx _MODIF_ES]
 
 #pragma aux _PharlapGetRealModeInterruptVector = \
         _MOV_AX_W PHARLAP_2503 \
@@ -1905,11 +1909,22 @@ extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
         _SAVE_DS        \
         _MOV_DS_CX      \
         _MOV_AH DOS_SET_INT \
-        __INT_21        \
+        _INT_21         \
         _REST_DS        \
     __parm __caller [__al] [__cx __edx] \
     __value         \
     __modify __exact [__ah _MODIF_DS]
+
+#pragma aux _DOS4GGetPMInterruptVector = \
+        _SAVE_ES        \
+        _MOV_AH DOS_GET_INT \
+        _INT_21         \
+        _MOV_DX_ES      \
+        _MOV_AX_BX      \
+        _REST_ES        \
+    __parm __caller [__al] \
+    __value         [__dx __eax] \
+    __modify __exact [__eax __ebx __edx _MODIF_ES]
 
 #endif
 

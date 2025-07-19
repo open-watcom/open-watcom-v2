@@ -1154,6 +1154,27 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value             [__eax] \
     __modify __exact    [__eax]
 
+#pragma aux _TinySetVect = \
+        _SAVE_DS        \
+        _MOV_DS_CX      \
+        _MOV_AH DOS_SET_INT \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__al] [__cx __edx] \
+    __value         \
+    __modify __exact [__ah _MODIF_DS]
+
+#pragma aux _TinyGetVect = \
+        _SAVE_ES        \
+        _MOV_AH DOS_GET_INT \
+        __INT_21        \
+        _MOV_DX_ES      \
+        _MOV_AX_BX      \
+        _REST_ES        \
+    __parm __caller [__al] \
+    __value         [__dx __eax] \
+    __modify __exact [__eax __ebx __edx _MODIF_ES]
+
 #pragma aux _TinyLock = \
         "mov  edx,ecx"   \
         "shr  ecx,16"    \
@@ -1781,20 +1802,25 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact    [__ah]
 
 #pragma aux _TinySetVect = \
-        _SET_DS_SREG_SAFE \
+        _SAVE_DS        \
+        _MOV_DS_CX      \
         _MOV_AH DOS_SET_INT \
         __INT_21        \
-        _RST_DS_SREG    \
-    __parm __caller     [__al] [_SREG __dx] \
-    __value           \
-    __modify __exact    [__ah]
+        _REST_DS        \
+    __parm __caller [__al] [__cx __dx] \
+    __value         \
+    __modify __exact [__ah _MODIF_DS]
 
 #pragma aux _TinyGetVect = \
+        _SAVE_ES        \
         _MOV_AH DOS_GET_INT \
         __INT_21        \
-    __parm __caller     [__al] \
-    __value             [__es __bx] \
-    __modify __exact    [__ah __bx __es]
+        _MOV_DX_ES      \
+        _MOV_AX_BX      \
+        _REST_ES        \
+    __parm __caller [__al] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __bx __dx _MODIF_ES]
 
 #pragma aux _TinyDOSVersion = \
         _MOV_AH DOS_GET_VERSION    \
