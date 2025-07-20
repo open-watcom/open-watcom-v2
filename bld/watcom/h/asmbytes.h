@@ -103,6 +103,7 @@
 
 #define _NOT_AX         0xf7 0xd0
 #define _NOT_BX         0xf7 0xd3
+#define _NOT_DI         0xf7 0xd7
 #define _INC_AX         0x40
 #define _INC_DX         0x42
 #define _INC_BX         0x43
@@ -115,9 +116,16 @@
 #define _SBB_BX_BX      0x19 0xdb
 #define _SBB_AX_AX      0x19 0xc0
 #define _SBB_BP_BP      0x19 0xed
+#define _SBB_DI_DI      0x19 0xff
 #define _AND_AX_BX      0x21 0xd8
 #define _AND_AX_CX      0x21 0xc8
+#define _AND_AX_DI      0x21 0xf8
 #define _AND_BX_AX      0x21 0xc3
+#define _AND_CX_AX      0x21 0xc1
+#define _AND_DX_AX      0x21 0xc2
+#define _AND_DX_BX      0x21 0xda
+#define _AND_DI_AX      0x21 0xc7
+#define _OR_DX_AX       0x09 0xc2
 #define _OR_DX_BX       0x09 0xda
 #define _OR_CX_AX       0x09 0xc1
 #define _OR_BX_AX       0x09 0xc3
@@ -256,7 +264,7 @@
 #endif
 
 
-#if defined( __FLAT__ ) || defined( __WINDOWS_386__ )
+#if defined( __FLAT__ ) || defined( __SMALL__ ) || defined( __WINDOWS_386__ )
   #define _SAVE_ES              _PUSH_ES
   #define _REST_ES              _POP_ES
   #define _MODIF_ES
