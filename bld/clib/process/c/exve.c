@@ -79,7 +79,7 @@ typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 
 #define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
 #define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
-#define _pspptr( seg )  ((a_psp    _WCFAR *)((long)(seg)<<16))
+#define _pspptr( seg )  ((dospsp   _WCFAR *)((long)(seg)<<16))
 
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 
