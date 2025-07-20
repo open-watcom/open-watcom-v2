@@ -37,6 +37,8 @@
 
 #include "dosfcb.h"
 
+typedef unsigned char   _WCFAR *handle_tab_ptr;
+
 #pragma pack(__push,1);
 typedef struct dospsp {                      /* DOS 3.X Program Segment Prefix */
     unsigned char   exit[2];                /* Contains INT 20h */
@@ -53,7 +55,7 @@ typedef struct dospsp {                      /* DOS 3.X Program Segment Prefix *
     unsigned        envp;                   /* Segment address of environment */
     void            _WCFAR *savstk;         /* undocumented */
     unsigned        num_handles;            /* undocumented */
-    unsigned char   _WCFAR *handle_table;   /* undocumented */
+    handle_tab_ptr  handle_table;           /* undocumented */
     unsigned char   res3[8];
     unsigned char   doscall[2];             /* DOS call */
     unsigned char   res4[10];
