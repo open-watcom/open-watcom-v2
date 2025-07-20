@@ -1548,7 +1548,7 @@ extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_DI_AX      \
     __parm __caller     [] \
     __value             [__cx __edi] \
-    __modify __exact    [__eax __ebx__ecx __esi __edi]
+    __modify __exact    [__eax __ebx __ecx __esi __edi]
 
 #pragma aux _TinyDPMIRawRMtoPMAddr = \
         _STC /* for missing service check */\
