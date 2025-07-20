@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +31,12 @@
 ****************************************************************************/
 
 
-#ifndef _fcb_h
-#define _fcb_h
-
-typedef unsigned char   byte;
+#ifndef _DOSFCB_H_INCLUDED
+#define _DOSFCB_H_INCLUDED
 
 #pragma pack(__push,1);
-typedef struct an_fcb {
-    byte                drive;          /* Drive number. 0 before open
+typedef struct dosfcb {
+    unsigned char       drive;          /* Drive number. 0 before open
                                            indicates default drive.  0 is
                                            replaced by the actual drive number
                                            (A = 1, B = 2, ... ) during open. */
@@ -64,10 +63,10 @@ typedef struct an_fcb {
                                            determine the proper locations in the
                                            file for all disk reads and
                                            writes. */
-} an_fcb;
+} dosfcb;
 
-typedef struct a_std_fcb {
-    an_fcb              fcb;
+typedef struct dosfcb_std {
+    dosfcb              fcb;
     unsigned long       size;           /* File size in bytes. */
     unsigned            date;           /* Date the file was created or last
                                            updated.  The mm/dd/yy are mapped in
@@ -75,7 +74,7 @@ typedef struct a_std_fcb {
                                              yyyyyyymmmmddddd
                                            where:  mm is 1-12, dd is 1-31,
                                            yy is 0-119 (1980-2099). */
-    byte                res1[10];
+    unsigned char       res1[10];
     unsigned            currec;         /* Current relative record number
                                           (0-127) within the current block.  You
                                           must set this field before doing
@@ -95,13 +94,13 @@ typedef struct a_std_fcb {
                                            at 5dh in the PSP, the last byte of
                                            the FCP overlaps the first byte of
                                            the unformatted parameter area. */
-} a_std_fcb;
+} dosfcb_std;
 
-typedef struct an_ext_fcb {
-    byte                hexff;          /* Contains 0xff. */
-    byte                res1[6];        /* Currently contain zeroes. */
-    byte                attr;           /* Attribute byte. */
-    a_std_fcb           fcb;
-} an_ext_fcb;
+typedef struct dosfcb_ext {
+    unsigned char       hexff;          /* Contains 0xff. */
+    unsigned char       res1[6];        /* Currently contain zeroes. */
+    unsigned char       attr;           /* Attribute byte. */
+    dosfcb_std          fcb;
+} dosfcb_ext;
 #pragma pack(__pop);
 #endif

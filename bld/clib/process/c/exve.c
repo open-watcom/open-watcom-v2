@@ -44,7 +44,7 @@
 #include <dos.h>
 #include "roundmac.h"
 #include "rtdata.h"
-#include "psp.h"
+#include "dospsp.h"
 #include "msdos.h"
 #include "exe.h"
 #include "tinyio.h"

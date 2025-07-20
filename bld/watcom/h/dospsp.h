@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,39 +32,36 @@
 ****************************************************************************/
 
 
-#ifndef _psp_h
-#define _psp_h
+#ifndef _DOSPSP_H_INCLUDED
+#define _DOSPSP_H_INCLUDED
 
-#include "fcb.h"
-
-typedef unsigned char   _byte;
-typedef _byte           _WCFAR *handle_tab_ptr;
+#include "dosfcb.h"
 
 #pragma pack(__push,1);
-typedef struct a_psp {                      /* DOS 3.X Program Segment Prefix */
-    _byte           exit[2];                /* Contains INT 20h */
+typedef struct dospsp {                      /* DOS 3.X Program Segment Prefix */
+    unsigned char   exit[2];                /* Contains INT 20h */
     unsigned        maxpara;                /* Top of memory */
-    _byte           res1[1];
-    _byte           opcode;                 /* Long call to DOS */
+    unsigned char   res1[1];
+    unsigned char   opcode;                 /* Long call to DOS */
     unsigned        avail;                  /* # bytes in segment */
     unsigned        segment;
     void            _WCFAR *terminate;      /* Terminate address */
     void            _WCFAR *ctrl_break;     /* Ctrl-break exit address */
     void            _WCFAR *crit_error;     /* Critical error exit address */
     unsigned        parent_psp;             /* undocumented */
-    _byte           sft_indices[20];        /* undocumented */
+    unsigned char   sft_indices[20];        /* undocumented */
     unsigned        envp;                   /* Segment address of environment */
     void            _WCFAR *savstk;         /* undocumented */
     unsigned        num_handles;            /* undocumented */
-    handle_tab_ptr  handle_table;           /* undocumented */
-    _byte           res3[8];
-    _byte           doscall[2];             /* DOS call */
-    _byte           res4[10];
-    an_fcb          fcb1;                   /* unopened standard FCB1 */
-    an_fcb          fcb2;                   /* unopened standard FCB2 */
-    _byte           fcbx[4];
+    unsigned char   _WCFAR *handle_table;   /* undocumented */
+    unsigned char   res3[8];
+    unsigned char   doscall[2];             /* DOS call */
+    unsigned char   res4[10];
+    dosfcb          fcb1;                   /* unopened standard FCB1 */
+    dosfcb          fcb2;                   /* unopened standard FCB2 */
+    unsigned char   fcbx[4];
     char            cmdline[128];           /* Command parameters */
-} a_psp;
+} dospsp;
 #pragma pack(__pop);
 
 #endif
