@@ -354,7 +354,7 @@ WORD _DPMI_Get32( dpmi_mem_block _FAR *adata, DWORD len )
      * get memory region
      */
 #ifdef DLL32
-    rc = DPMIFarAllocateMemoryBlock( adata, len );
+    rc = _fDPMIAllocateMemoryBlock( adata, len );
 #else
     rc = DPMIAllocateMemoryBlock( adata, len );
 #endif

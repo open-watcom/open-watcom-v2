@@ -167,7 +167,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * verify that we are running on a 32-bit DPMI
      */
-    DPMIFarGetVersion( &vi );
+    _fDPMIGetVersion( &vi );
     if( (vi.flags & VERSION_80386) == 0 ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
