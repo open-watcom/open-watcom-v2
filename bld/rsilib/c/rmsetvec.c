@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -19,13 +19,13 @@ bool rsi_rm_set_vector( int int_no, void FarPtr v )
     void FarPtr     FarPtr vect;
 
     if( USESDPMI() ) {
-        return( DPMISetRealModeInterruptVector( int_no, v ) == 0 );
+        DPMISetRealModeInterruptVector( int_no, v );
     } else {
         vect = makeptr( mem0_sel, 0 );
         old_intf = reset_intflag();
         vect[int_no] = v;
         set_intflag( old_intf );
-        return( true );
     }
+    return( true );
 }
 
