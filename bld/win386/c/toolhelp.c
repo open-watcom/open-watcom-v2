@@ -34,6 +34,7 @@
 #include <string.h>
 #include <windows.h>
 #include <toolhelp.h>
+#include "bool.h"
 #include "winext.h"
 #include "_windpmi.h"
 #include "_toolhlp.h"

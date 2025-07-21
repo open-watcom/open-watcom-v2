@@ -36,6 +36,7 @@
 #include <dos.h>
 #define INCLUDE_MMSYSTEM_H
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "_windpmi.h"
 #include "winstubs.h"

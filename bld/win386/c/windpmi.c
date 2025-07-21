@@ -93,10 +93,11 @@ static void removeFromSelList( WORD sel )
  */
 WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 {
-    long                sel;
+    WORD                sel;
     WORD                i;
     DWORD               limit,base;
     alias_cache_entry   *ace;
+    dpmi_ret            dpmirc;
 
     if( offset == 0L ) {
         *res = 0L;
@@ -143,11 +144,12 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
      * get a descriptor
      */
     *res = 0L;
-    sel = DPMIAllocateLDTDescriptors( cnt );
-    if( sel < 0 ) {
+    dpmirc = DPMIAllocateLDTDescriptors( cnt );
+    if( DPMI_ERROR( dpmirc ) ) {
         return( 666 );
     }
-    *res = sel << 16;
+    sel = DPMI_INFO( dpmirc );
+    *res = (DWORD)sel << 16;
     limit = cnt * 0x10000 - 1;
 
     for( i = 0; i < cnt; i++ ) {
@@ -295,32 +297,32 @@ static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
  */
 WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 {
-    long        sel;
     descriptor  desc;
+    dpmi_ret    dpmirc;
 
     hugeIncrement = DPMIGetNextSelectorIncrementValue();
     /*
      * get a code selector pointing to the memory
      */
-    sel = DPMIAllocateLDTDescriptors( 1 );
-    if( sel < 0 ) {
+    dpmirc = DPMIAllocateLDTDescriptors( 1 );
+    if( DPMI_ERROR( dpmirc ) ) {
         return( 4 );
     }
-    CodeEntry.seg = sel;
-    setLimitAndAddr( sel, baseaddr, len, DESC_ACCESS_CODE );
+    CodeEntry.seg = DPMI_INFO( dpmirc );
+    setLimitAndAddr( CodeEntry.seg, baseaddr, len, DESC_ACCESS_CODE );
     CodeSelectorBase = baseaddr;
 
     /*
      * get a data and stack selector pointing to the memory
      */
-    sel = DPMIAllocateLDTDescriptors( 2 );
-    if( sel < 0 ) {
+    dpmirc = DPMIAllocateLDTDescriptors( 2 );
+    if( DPMI_ERROR( dpmirc ) ) {
         DPMIFreeLDTDescriptor( CodeEntry.seg );
         return( 4 );
     }
-    DataSelector = sel;
-    setLimitAndAddr( sel, baseaddr, len, DESC_ACCESS_DATA );
-    StackSelector = sel + hugeIncrement;
+    DataSelector = DPMI_INFO( dpmirc );
+    setLimitAndAddr( DataSelector, baseaddr, len, DESC_ACCESS_DATA );
+    StackSelector = DataSelector + hugeIncrement;
 //    setLimitAndAddr( StackSelector, baseaddr, StackSize, DESC_ACCESS_DATA );
 //      The code generator sometimes uses EBP as general purpose
 //      register for accessing data that is not in the STACK segment
@@ -353,11 +355,7 @@ WORD _DPMI_Get32( dpmi_mem_block _FAR *adata, DWORD len )
     /*
      * get memory region
      */
-#ifdef DLL32
-    rc = _fDPMIAllocateMemoryBlock( adata, len );
-#else
     rc = DPMIAllocateMemoryBlock( adata, len );
-#endif
     if( rc ) {
         return( 5 );
     }
@@ -477,15 +475,17 @@ void GetDataSelectorInfo( void )
 /*
  * InitSelectorCache - allocate the selector cache
  */
-int InitSelectorCache( void )
+bool InitSelectorCache( void )
 {
     long        sel;
     int         i;
+    dpmi_ret    dpmirc;
 
-    sel = DPMIAllocateLDTDescriptors( MAX_CACHE + 2 );
-    if( sel < 0 ) {
-        return( sel );
+    dpmirc = DPMIAllocateLDTDescriptors( MAX_CACHE + 2 );
+    if( DPMI_ERROR( dpmirc ) ) {
+        return( true );
     }
+    sel = DPMI_INFO( dpmirc );
     firstCacheSel = sel;
     for( i = 0; i < MAX_CACHE + 2; i++ ) {
         if( i < MAX_CACHE ) {
@@ -507,7 +507,7 @@ int InitSelectorCache( void )
     }
     StackBase_64K = SaveSP;
     DPMISetSegmentBaseAddress( StackCacheSel, DataSelectorBase + StackBase );
-    return( 0 );
+    return( false );
 
 } /* InitSelectorCache */
 

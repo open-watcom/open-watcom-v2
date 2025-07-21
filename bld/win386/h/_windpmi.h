@@ -33,7 +33,6 @@
 #include "dpmi.h"
 
 
-
 extern WORD     _DPMI_GetAliases( DWORD offset, DWORD __far *desc, WORD cnt);
 extern WORD     _DPMI_GetAlias( DWORD offset, DWORD __far *desc);
 #pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si] __value [__ax]
@@ -45,6 +44,6 @@ extern void     _DPMI_Free32( DWORD handle );
 extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     FreeDPMIMemBlocks( void );
 extern void     GetDataSelectorInfo( void );
-extern int      InitSelectorCache( void );
+extern bool     InitSelectorCache( void );
 extern void     FiniSelectorCache( void );
 extern void     FiniSelList( void );
