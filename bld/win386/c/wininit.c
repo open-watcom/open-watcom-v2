@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Win386 Supervisor 32-bit DPMI mode startup code (16-bit).
+* Description:  Win386 Supervisor 32-bit DPMI mode startup code (16-bit code).
 *
 ****************************************************************************/
 
@@ -167,7 +167,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * verify that we are running on a 32-bit DPMI
      */
-    _fDPMIGetVersion( &vi );
+    DPMIFarGetVersion( &vi );
     if( (vi.flags & VERSION_80386) == 0 ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
@@ -265,7 +265,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     tried_global_compact = false;
     save_maxmem = maxmem;
-    while( (i = _DPMIGet32( &adata, maxmem )) != 0 ) {
+    while( (i = _DPMI_Get32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
                 return( Fini( 3,
@@ -320,7 +320,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     currsize = size - file_header_size;
     _TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
-    i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
+    i = _DPMI_GetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
         return( Fini( 3, (char _FAR *)"Error ",
                 dwordToStr( i ),
@@ -445,7 +445,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * free alias selector
      */
-    _DPMIFreeAlias( sel );
+    _DPMI_FreeAlias( sel );
 
     /*
      * check for FPU and WGod
@@ -523,7 +523,7 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
-        _DPMIFree32( DataHandle );
+        _DPMI_Free32( DataHandle );
     }
 
     /*

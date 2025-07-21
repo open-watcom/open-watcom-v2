@@ -59,9 +59,9 @@ DWORD FAR PASCAL __MemoryRead( WORD sel, DWORD off, LPVOID buff, DWORD cb )
             return( 0 );
         }
     }
-    _DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
+    _DPMI_GetHugeAlias( (DWORD) buff, &alias, cb );
     rc = toolhelpMemoryRead( sel, off, (LPVOID) alias, cb );
-    _DPMIFreeHugeAlias( alias, cb );
+    _DPMI_FreeHugeAlias( alias, cb );
 
     return( rc );
 
@@ -81,9 +81,9 @@ DWORD FAR PASCAL __MemoryWrite( WORD sel, DWORD off, LPVOID buff, DWORD cb )
             return( 0 );
         }
     }
-    _DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
+    _DPMI_GetHugeAlias( (DWORD) buff, &alias, cb );
     rc = toolhelpMemoryWrite( sel, off, (LPVOID) alias, cb );
-    _DPMIFreeHugeAlias( alias, cb );
+    _DPMI_FreeHugeAlias( alias, cb );
 
     return( rc );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +34,14 @@
 
 
 
-extern WORD     _DPMIGetAliases( DWORD offset, DWORD __far *desc, WORD cnt);
-extern WORD     _DPMIGetAlias( DWORD offset, DWORD __far *desc);
-#pragma aux _DPMIGetAlias __parm [__dx __ax] [__es __si] __value [__ax]
-extern void     _DPMIFreeAlias( WORD sel );
-extern WORD     _DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
-extern void     _DPMIFreeHugeAlias( DWORD desc, DWORD size );
-extern WORD     _DPMIGet32( dpmi_mem_block _FAR *addr_data, DWORD len );
-extern void     _DPMIFree32( DWORD handle );
+extern WORD     _DPMI_GetAliases( DWORD offset, DWORD __far *desc, WORD cnt);
+extern WORD     _DPMI_GetAlias( DWORD offset, DWORD __far *desc);
+#pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si] __value [__ax]
+extern void     _DPMI_FreeAlias( WORD sel );
+extern WORD     _DPMI_GetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
+extern void     _DPMI_FreeHugeAlias( DWORD desc, DWORD size );
+extern WORD     _DPMI_Get32( dpmi_mem_block _FAR *addr_data, DWORD len );
+extern void     _DPMI_Free32( DWORD handle );
 extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     FreeDPMIMemBlocks( void );
 extern void     GetDataSelectorInfo( void );
