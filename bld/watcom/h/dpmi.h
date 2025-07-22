@@ -530,7 +530,7 @@ extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
     __value         \
     __modify __exact [__ax __bx __cx __dx]
 #else
-#pragma aux _fDPMIGetVersion = \
+#pragma aux _DPMIGetVersion = \
         _MOV_AX_W DPMI_0400 \
         _INT_31         \
         "mov  byte ptr es:[si],ah"      \
