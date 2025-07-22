@@ -169,6 +169,12 @@ typedef struct {
 
 typedef uint_32     dpmi_ret;
 
+#ifdef _M_I86
+#define DPMIDATA    __far
+#else
+#define DPMIDATA
+#endif
+
 #define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
 #define DPMI_OK(rc)     ((int_32)(rc) >= 0)
 #define DPMI_INFO(rc)   ((uint_16)(rc))
@@ -212,6 +218,7 @@ typedef uint_32     dpmi_ret;
 #define DPMISavePMStateAddr                     _DPMISavePMStateAddr
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
+#define DPMIGetVersion                          _DPMIGetVersion
 
 #define TinyDPMISetRealVect                     _TinyDPMISetRealVect
 #define TinyDPMIGetRealVect                     _TinyDPMIGetRealVect
@@ -237,11 +244,6 @@ typedef uint_32     dpmi_ret;
 
 #if defined( _M_I86SM ) || defined( _M_I86MM ) || !defined( _M_I86 )
 
-#if defined( _M_I86 )
-#define DPMIGetVersion                          _nDPMIGetVersion
-#else
-#define DPMIGetVersion                          _DPMIGetVersion
-#endif
 #define DPMIAllocateMemoryBlock                 _nDPMIAllocateMemoryBlock
 #define DPMIGetFreeMemoryInformation            _nDPMIGetFreeMemoryInformation
 #define DPMIResizeMemoryBlock                   _nDPMIResizeMemoryBlock
@@ -257,7 +259,6 @@ typedef uint_32     dpmi_ret;
 
 #else
 
-#define DPMIGetVersion                          _fDPMIGetVersion
 #define DPMIAllocateMemoryBlock                 _fDPMIAllocateMemoryBlock
 #define DPMIGetFreeMemoryInformation            _fDPMIGetFreeMemoryInformation
 #define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
@@ -294,9 +295,7 @@ extern void     __far *_DPMIGetPMInterruptVector( uint_8 iv );
 extern void     _DPMISetRealModeInterruptVector( uint_8 iv, void __far *ptr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
-extern void     _DPMIGetVersion( version_info __far * );
-extern void     _fDPMIGetVersion( version_info __far * );
-extern void     _nDPMIGetVersion( version_info * );
+extern void     _DPMIGetVersion( version_info DPMIDATA * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
 extern int_32   _DPMISegmentToDescriptor( uint_16 );
 extern int      _DPMIFreeLDTDescriptor( uint_16 );
@@ -519,8 +518,6 @@ extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
 
 #if defined(__386__)
 #pragma aux _DPMIGetVersion = \
-        _PUSH_DS        \
-        _MOV_DS_DX      \
         _MOV_AX_W DPMI_0400 \
         _INT_31         \
         "mov  byte ptr [esi],ah"    \
@@ -529,24 +526,10 @@ extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
         "mov  byte ptr [esi+4],cl"  \
         "mov  byte ptr [esi+5],dh"  \
         "mov  byte ptr [esi+6],dl"  \
-        _POP_DS         \
-    __parm __caller [__dx __esi] \
+    __parm __caller [__esi] \
     __value         \
-    __modify __exact [__ax __bx __cl __dx]
+    __modify __exact [__ax __bx __cx __dx]
 #else
-#pragma aux _nDPMIGetVersion = \
-        _MOV_AX_W DPMI_0400 \
-        _INT_31         \
-        "mov  byte ptr [si],ah"     \
-        "mov  byte ptr [si+1],al"   \
-        "mov  word ptr [si+2],bx"   \
-        "mov  byte ptr [si+4],cl"   \
-        "mov  byte ptr [si+5],dh"   \
-        "mov  byte ptr [si+6],dl"   \
-    __parm __caller [__si] \
-    __value         \
-    __modify __exact [__ax __bx __cl __dx]
-
 #pragma aux _fDPMIGetVersion = \
         _MOV_AX_W DPMI_0400 \
         _INT_31         \
@@ -558,7 +541,7 @@ extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
         "mov  byte ptr es:[si+6],dl"    \
     __parm __caller [__es __si]  \
     __value         \
-    __modify __exact [__ax __bx __cl __dx]
+    __modify __exact [__ax __bx __cx __dx]
 #endif
 
 #if defined(__386__)
