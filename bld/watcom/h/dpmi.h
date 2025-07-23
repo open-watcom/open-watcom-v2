@@ -189,7 +189,6 @@ typedef void __far  *proc_addr;
 #define DPMIClearWatch                          _DPMIClearWatch
 #define DPMITestWatch                           _DPMITestWatch
 #define DPMIResetWatch                          _DPMIResetWatch
-#define DPMIFreeMemoryBlock                     _DPMIFreeMemoryBlock
 #define DPMILockLinearRegion                    _DPMILockLinearRegion
 #define DPMIUnlockLinearRegion                  _DPMIUnlockLinearRegion
 #define DPMIGetDescriptor                       _DPMIGetDescriptor
@@ -203,6 +202,8 @@ typedef void __far  *proc_addr;
 #define DPMISetSegmentLimit                     _DPMISetSegmentLimit
 #define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
 #define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
+#define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
+#define DPMICallRealModeProcedureWithIRETFrame  _DPMICallRealModeProcedureWithIRETFrame
 #define DPMIGetNextSelectorIncrementValue       _DPMIGetNextSelectorIncrementValue
 #define DPMIGetRealModeInterruptVector          _DPMIGetRealModeInterruptVector
 #define DPMISetRealModeInterruptVector          _DPMISetRealModeInterruptVector
@@ -213,6 +214,9 @@ typedef void __far  *proc_addr;
 #define DPMISetPMExceptionVector                _DPMISetPMExceptionVector
 #define DPMIGetPMExceptionVector                _DPMIGetPMExceptionVector
 
+#define DPMIAllocateMemoryBlock                 _DPMIAllocateMemoryBlock
+#define DPMIFreeMemoryBlock                     _DPMIFreeMemoryBlock
+#define DPMIResizeMemoryBlock                   _DPMIResizeMemoryBlock
 #define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
 #define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
 #define DPMIIdle                                _DPMIIdle
@@ -224,8 +228,6 @@ typedef void __far  *proc_addr;
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
 #define DPMIGetVersion                          _DPMIGetVersion
-#define DPMIAllocateMemoryBlock                 _DPMIAllocateMemoryBlock
-#define DPMIResizeMemoryBlock                   _DPMIResizeMemoryBlock
 #define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
 
 #define TinyDPMISetRealVect                     _TinyDPMISetRealVect
@@ -312,6 +314,8 @@ extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
 extern dpmi_ret _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
 extern int      _DPMIGetFreeMemoryInformation( dpmi_mem DPMIDATA * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct __far *dr );
+extern int      _DPMICallRealModeProcedureWithFarReturnFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct DPMIDATA *dr );
+extern int      _DPMICallRealModeProcedureWithIRETFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct DPMIDATA *dr );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern proc_addr _DPMIRawPMtoRMAddr( void );
