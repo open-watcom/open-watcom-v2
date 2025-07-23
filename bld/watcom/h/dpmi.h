@@ -224,6 +224,9 @@ typedef void __far  *proc_addr;
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
 #define DPMIGetVersion                          _DPMIGetVersion
+#define DPMIAllocateMemoryBlock                 _DPMIAllocateMemoryBlock
+#define DPMIResizeMemoryBlock                   _DPMIResizeMemoryBlock
+#define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
 
 #define TinyDPMISetRealVect                     _TinyDPMISetRealVect
 #define TinyDPMIGetRealVect                     _TinyDPMIGetRealVect
@@ -249,10 +252,6 @@ typedef void __far  *proc_addr;
 
 #if defined( _M_I86SM ) || defined( _M_I86MM ) || !defined( _M_I86 )
 
-#define DPMIAllocateMemoryBlock                 _nDPMIAllocateMemoryBlock
-#define DPMIGetFreeMemoryInformation            _nDPMIGetFreeMemoryInformation
-#define DPMIResizeMemoryBlock                   _nDPMIResizeMemoryBlock
-
 #define TinyDPMIAlloc(x)                        _TinyDPMIAlloc((x) >> 16, (x))
 #define TinyDPMIRealloc(addr,x)                 _TinyDPMIRealloc(addr, (x) >> 16, (x))
 #define TinyDPMIFree(x)                         _TinyDPMIFree((x) >> 16, (x))
@@ -261,12 +260,6 @@ typedef void __far  *proc_addr;
 #define TinyDPMISimulateRealInt                 _TinyDPMISimulateRealInt
 #define TinyDPMICallRealIntFrame                _TinyDPMICallRealIntFrame
 #define TinyDPMICallRealFarFrame                _TinyDPMICallRealFarFrame
-
-#else
-
-#define DPMIAllocateMemoryBlock                 _fDPMIAllocateMemoryBlock
-#define DPMIGetFreeMemoryInformation            _fDPMIGetFreeMemoryInformation
-#define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
 
 #endif
 
@@ -309,18 +302,15 @@ extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_32 );
 extern int      _DPMISetSegmentLimit( uint_16, uint_32 );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
-extern int_16   _fDPMIAllocateMemoryBlock( dpmi_mem_block __far *, uint_32 );
-extern int_16   _nDPMIAllocateMemoryBlock( dpmi_mem_block *, uint_32 );
-extern int_16   _fDPMIResizeMemoryBlock( dpmi_mem_block __far *, uint_32, uint_32 );
-extern int_16   _nDPMIResizeMemoryBlock( dpmi_mem_block *, uint_32, uint_32 );
+extern int_16   _DPMIAllocateMemoryBlock( dpmi_mem_block DPMIDATA *, uint_32 );
+extern int_16   _DPMIResizeMemoryBlock( dpmi_mem_block DPMIDATA *, uint_32, uint_32 );
 extern int      _DPMIFreeMemoryBlock( uint_32 );
 extern int      _DPMILockLinearRegion( uint_32, uint_32 );
 extern int      _DPMIUnlockLinearRegion( uint_32, uint_32 );
 extern int      _DPMIGetDescriptor( uint_16, descriptor __far * );
 extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
 extern dpmi_ret _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
-extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
-extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
+extern int      _DPMIGetFreeMemoryInformation( dpmi_mem DPMIDATA * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct __far *dr );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
@@ -870,27 +860,8 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 #endif
 
-#pragma aux _fDPMIAllocateMemoryBlock =  \
-        _PUSH_ES        \
-        _PUSH_AX        \
-        _PUSH_DX        \
-        _XCHG_BX_CX     \
-        _MOV_AX_W DPMI_0501 \
-        _INT_31         \
-        _SBB_AX_AX      \
-        _MOV_DX_BX      \
-        _POP_ES         \
-        _POP_BX         \
-        "mov  es:[bx],cx"       \
-        "mov  es:+2H[bx],dx"    \
-        "mov  es:+4H[bx],di"    \
-        "mov  es:+6H[bx],si"    \
-        _POP_ES         \
-    __parm __caller [__ax __dx] [__bx __cx] \
-    __value         [__ax] \
-    __modify __exact [__ax __bx __cx __dx __di __si]
-
-#pragma aux _nDPMIAllocateMemoryBlock =  \
+#if defined(__386__)
+#pragma aux _DPMIAllocateMemoryBlock =  \
         _PUSH_AX        \
         _XCHG_BX_CX     \
         _MOV_AX_W DPMI_0501 \
@@ -898,54 +869,69 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _SBB_AX_AX      \
         _MOV_DX_BX      \
         _POP_BX         \
-        "mov  ds:[bx],cx"       \
-        "mov  ds:+2H[bx],dx"    \
-        "mov  ds:+4H[bx],di"    \
-        "mov  ds:+6H[bx],si"    \
-    __parm __caller [__ax] [__bx __cx] \
-    __value         [__ax] \
-    __modify __exact [__ax __bx __cx __dx __di __si]
-
-#pragma aux _fDPMIResizeMemoryBlock =  \
-        _PUSH_ES        \
+        "mov  [ebx],cx"       \
+        "mov  [ebx+2],dx"    \
+        "mov  [ebx+4],di"    \
+        "mov  [ebx+6],si"    \
+    __parm __caller [__eax] [__bx __cx] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __cx __edx __di __si]
+#else
+#pragma aux _DPMIAllocateMemoryBlock =  \
         _PUSH_AX        \
-        _PUSH_DX        \
-        _XCHG_SI_DI     \
         _XCHG_BX_CX     \
-        _MOV_AX_W DPMI_0503 \
+        _MOV_AX_W DPMI_0501 \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_BX      \
-        _POP_ES         \
         _POP_BX         \
         "mov  es:[bx],cx"       \
-        "mov  es:+2H[bx],dx"    \
-        "mov  es:+4H[bx],di"    \
-        "mov  es:+6H[bx],si"    \
-        _POP_ES         \
-    __parm __caller [__dx __ax] [__bx __cx] [__di __si] \
+        "mov  es:[bx+2],dx"    \
+        "mov  es:[bx+4],di"    \
+        "mov  es:[bx+6],si"    \
+    __parm __caller [__es __ax] [__bx __cx] \
     __value         [__ax] \
     __modify __exact [__ax __bx __cx __dx __di __si]
-
-#pragma aux _nDPMIResizeMemoryBlock =  \
-        _PUSH_AX        \
-        _XCHG_SI_DI     \
-        _XCHG_BX_CX     \
-        _MOV_AX_W DPMI_0503 \
-        _INT_31         \
-        _SBB_AX_AX      \
-        _MOV_DX_BX      \
-        _POP_BX         \
-        "mov  ds:[bx],cx"       \
-        "mov  ds:+2H[bx],dx"    \
-        "mov  ds:+4H[bx],di"    \
-        "mov  ds:+6H[bx],si"    \
-    __parm __caller [__ax] [__bx __cx] [__di __si] \
-    __value         [__ax] \
-    __modify __exact [__ax __bx __cx __dx __di __si]
+#endif
 
 #if defined(__386__)
-#pragma aux _nDPMIGetFreeMemoryInformation = \
+#pragma aux _DPMIResizeMemoryBlock =  \
+        _PUSH_AX        \
+        _XCHG_SI_DI     \
+        _XCHG_BX_CX     \
+        _MOV_AX_W DPMI_0503 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_BX         \
+        "mov  [ebx],cx"       \
+        "mov  [ebx+2],dx"    \
+        "mov  [ebx+4],di"    \
+        "mov  [ebx+6],si"    \
+    __parm __caller [__eax] [__bx __cx] [__di __si] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __cx __edx __di __si]
+#else
+#pragma aux _DPMIResizeMemoryBlock =  \
+        _PUSH_AX        \
+        _XCHG_SI_DI     \
+        _XCHG_BX_CX     \
+        _MOV_AX_W DPMI_0503 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _MOV_DX_BX      \
+        _POP_BX         \
+        "mov  es:[bx],cx"       \
+        "mov  es:[bx+2],dx"    \
+        "mov  es:[bx+4],di"    \
+        "mov  es:[bx+6],si"    \
+    __parm __caller [__es __ax] [__bx __cx] [__di __si] \
+    __value         [__ax] \
+    __modify __exact [__ax __bx __cx __dx __di __si]
+#endif
+
+#if defined(__386__)
+#pragma aux _DPMIGetFreeMemoryInformation = \
         _PUSH_ES        \
         _PUSH_DS        \
         _POP_ES         \
@@ -955,25 +941,13 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _POP_ES         \
     __parm __caller [__edi] \
     __value         [__eax] \
-    __modify __exact [__eax]
+    __modify __exact [__eax _MODIF_ES]
 #else
-#pragma aux _fDPMIGetFreeMemoryInformation = \
+#pragma aux _DPMIGetFreeMemoryInformation = \
         _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__es __di] \
-    __value         [__ax] \
-    __modify __exact [__ax]
-
-#pragma aux _nDPMIGetFreeMemoryInformation = \
-        _PUSH_ES        \
-        _PUSH_DS        \
-        _POP_ES         \
-        _MOV_AX_W DPMI_0500 \
-        _INT_31         \
-        _SBB_AX_AX      \
-        _POP_ES         \
-    __parm __caller [__di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #endif
