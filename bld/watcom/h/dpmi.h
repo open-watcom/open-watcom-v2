@@ -38,6 +38,17 @@
 #include "descript.h"
 
 
+#ifdef _M_I86
+#define DPMIDATA    __far
+#else
+#define DPMIDATA
+#endif
+
+#define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
+#define DPMI_OK(rc)     ((int_32)(rc) >= 0)
+#define DPMI_INFO(rc)   ((uint_16)(rc))
+#define DPMI_LINFO(rc)  ((uint_32)(rc))
+
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
  */
@@ -88,6 +99,7 @@ typedef struct {
 /*
  * Pharlap registers structure definition for Pharlap SimulateRealInt
  */
+#pragma pack( __push, 1 )
 typedef struct {
     unsigned short  intno;  /* Interrupt number */
     unsigned short  ds;     /* DS register */
@@ -127,6 +139,7 @@ typedef struct {
         } h;
     } r;
 } pharlap_regs_struct;
+#pragma pack( __pop )
 
 typedef struct {
     uint_32     largest_free;
@@ -169,16 +182,8 @@ typedef struct {
 
 typedef uint_32     dpmi_ret;
 
-#ifdef _M_I86
-#define DPMIDATA    __far
-#else
-#define DPMIDATA
-#endif
-
-#define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
-#define DPMI_OK(rc)     ((int_32)(rc) >= 0)
-#define DPMI_INFO(rc)   ((uint_16)(rc))
-#define DPMI_LINFO(rc)  ((uint_32)(rc))
+typedef void __far  *intr_addr;
+typedef void __far  *proc_addr;
 
 #define DPMISetWatch                            _DPMISetWatch
 #define DPMIClearWatch                          _DPMIClearWatch
@@ -285,14 +290,14 @@ typedef uint_32     dpmi_ret;
  */
 extern unsigned char _DPMI;
 
-extern dpmi_ret _DPMIFreeRealModeCallBackAddress( void __far *proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far *proc, dpmi_regs_struct __far *dr );
-extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
-extern dpmi_ret _DPMISetPMInterruptVector( uint_8 iv, void __far *ptr );
-extern int      _DPMISetPMExceptionVector( uint_8 iv, void __far *ptr );
-extern void     __far *_DPMIGetPMExceptionVector( uint_8 iv );
-extern void     __far *_DPMIGetPMInterruptVector( uint_8 iv );
-extern void     _DPMISetRealModeInterruptVector( uint_8 iv, void __far *ptr );
+extern dpmi_ret _DPMIFreeRealModeCallBackAddress( proc_addr proc );
+extern proc_addr _DPMIAllocateRealModeCallBackAddress( proc_addr proc, dpmi_regs_struct __far *dr );
+extern intr_addr _DPMIGetRealModeInterruptVector( uint_8 iv );
+extern dpmi_ret _DPMISetPMInterruptVector( uint_8 iv, intr_addr intr );
+extern int      _DPMISetPMExceptionVector( uint_8 iv, proc_addr proc );
+extern proc_addr _DPMIGetPMExceptionVector( uint_8 iv );
+extern intr_addr _DPMIGetPMInterruptVector( uint_8 iv );
+extern void     _DPMISetRealModeInterruptVector( uint_8 iv, intr_addr intr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
 extern void     _DPMIGetVersion( version_info DPMIDATA * );
@@ -316,66 +321,65 @@ extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
 extern dpmi_ret _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
 extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
 extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
-extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
-                        uint_16 words_to_copy, dpmi_regs_struct __far *dr );
+extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct __far *dr );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
-extern void     __far *_DPMIRawPMtoRMAddr( void );
+extern proc_addr _DPMIRawPMtoRMAddr( void );
 extern uint_32  _DPMIRawRMtoPMAddr( void );
-extern void     __far *_DPMISaveRMStateAddr( void );
+extern proc_addr _DPMISaveRMStateAddr( void );
 extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
-extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
+extern proc_addr _DPMIGetVendorSpecificAPI( char __far * );
 
 extern dpmi_ret _DPMISetWatch( uint_32 linear, uint_8 len, uint_8 type );
 extern dpmi_ret _DPMIClearWatch( uint_16 handle );
 extern dpmi_ret _DPMITestWatch( uint_16 handle );
 extern dpmi_ret _DPMIResetWatch( uint_16 handle );
 
-void *          _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
-void *          _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
-void            _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
+extern void     *_TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
+extern void     *_TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
+extern void     _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
 extern dpmi_dos_mem_block _TinyDPMIDOSAlloc( uint_16 __paras );
-void            _TinyDPMIDOSFree( uint_16 __sel );
-uint_32         _TinyDPMIBase( uint_16 __sel );
-void __far *    _TinyDPMIGetProtectVect( uint_8 __intr );
-extern dpmi_ret _TinyDPMISetProtectVect( uint_8 __intr, void ( __far __interrupt *__f )() );
-void __far *    _TinyDPMIGetProtectExcpt( uint_8 __intr );
-uint_32         _TinyDPMISetProtectExcpt( uint_8 __intr, void ( __far __interrupt *__f )() );
-uint_32         _TinyDPMIGetRealVect( uint_8 __intr );
-uint_32         _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
-uint_32         _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
-uint_32         _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
-uint_32         _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
-void __far  *   _TinyDPMIRawPMtoRMAddr( void );
-uint_32         _TinyDPMIRawRMtoPMAddr( void );
-void __far  *   _TinyDPMISaveRMStateAddr( void );
-uint_32         _TinyDPMISavePMStateAddr( void );
-uint_16         _TinyDPMISaveStateSize( void );
+extern void     _TinyDPMIDOSFree( uint_16 __sel );
+extern uint_32  _TinyDPMIBase( uint_16 __sel );
+extern intr_addr _TinyDPMIGetProtectVect( uint_8 __intr );
+extern dpmi_ret _TinyDPMISetProtectVect( uint_8 __intr, intr_addr intr );
+extern proc_addr _TinyDPMIGetProtectExcpt( uint_8 __intr );
+extern uint_32  _TinyDPMISetProtectExcpt( uint_8 __intr, proc_addr proc );
+extern uint_32  _TinyDPMIGetRealVect( uint_8 __intr );
+extern uint_32  _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
+extern uint_32  _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
+extern uint_32  _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
+extern uint_32  _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, dpmi_regs_struct __far *dr );
+extern proc_addr _TinyDPMIRawPMtoRMAddr( void );
+extern uint_32  _TinyDPMIRawRMtoPMAddr( void );
+extern proc_addr _TinyDPMISaveRMStateAddr( void );
+extern uint_32  _TinyDPMISavePMStateAddr( void );
+extern uint_16  _TinyDPMISaveStateSize( void );
 extern dpmi_ret _TinyDPMICreateCSAlias( uint_16 __sel );
-uint_32         _TinyDPMIFreeSel( uint_16 __sel );
-uint_16         _TinyDPMISegToSel( uint_16 __sel );
-uint_16         _TinyDPMICreateSel( uint_16 __nbsels );
-uint_32         _TinyDPMISetBase( uint_16 __sel, uint_32 );
-uint_32         _TinyDPMISetLimit( uint_16 __sel, uint_32 );
-uint_32         _TinyDPMISetRights( uint_16 __sel, uint_16 );
-uint_32         _TinyDPMIGetDescriptor( uint_16 __sel, void __far * );
-uint_32         _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
+extern uint_32  _TinyDPMIFreeSel( uint_16 __sel );
+extern uint_16  _TinyDPMISegToSel( uint_16 __sel );
+extern uint_16  _TinyDPMICreateSel( uint_16 __nbsels );
+extern uint_32  _TinyDPMISetBase( uint_16 __sel, uint_32 );
+extern uint_32  _TinyDPMISetLimit( uint_16 __sel, uint_32 );
+extern uint_32  _TinyDPMISetRights( uint_16 __sel, uint_16 );
+extern uint_32  _TinyDPMIGetDescriptor( uint_16 __sel, void __far * );
+extern uint_32  _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 extern uint_16  _PharlapAllocateDOSMemoryBlock( uint_16 para );
 extern uint_16  _PharlapFreeDOSMemoryBlock( uint_16 seg );
-extern void     __far *_PharlapGetPMInterruptVector( uint_8 iv );
-extern void     __far *_PharlapGetRealModeInterruptVector( uint_8 iv );
-extern void     _PharlapSetPMInterruptVector( uint_8 iv, void __far *ptr );
-extern void     _PharlapSetRealModeInterruptVector( uint_8 iv, void __far *ptr );
-extern void     _PharlapSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
-extern void     _PharlapSetBothInterruptVectors( uint_8 iv, void __far *pm, void __far16 *rm );
+extern intr_addr _PharlapGetPMInterruptVector( uint_8 iv );
+extern intr_addr _PharlapGetRealModeInterruptVector( uint_8 iv );
+extern void     _PharlapSetPMInterruptVector( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetRealModeInterruptVector( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetBothInterruptVectors( uint_8 iv, intr_addr pm, void __far16 *rm );
 extern int      _PharlapSimulateRealModeInterrupt( pharlap_regs_struct *dp, unsigned bx, unsigned cx, unsigned di );
 extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
 extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
-extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, void __far *ptr );
-extern void     __far *_DOS4GGetPMInterruptVector( uint_8 iv );
+extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
+extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 #include "asmbytes.h"
 
