@@ -39,51 +39,22 @@
 #include "realvec.h"
 
 
-extern unsigned long _getrealvect(char);
-#pragma aux _getrealvect = \
-        "mov    ax,2503h" \
-        "int    21h" \
-    __parm              [__cl] \
-    __value             [__ebx] \
-    __modify __exact    [__ax __ebx]
-
-extern void _setrealvect(char,unsigned long);
-#pragma aux _setrealvect = \
-        "mov    ax,2505h" \
-        "int    21h" \
-    __parm              [__cl] [__ebx] \
-    __value             \
-    __modify __exact    [__ax]
-
-extern void _setvectp(unsigned short,void (__interrupt __far *)(void));
-#pragma aux _setvectp = \
-        "push   ds" \
-        "mov    ds,cx" \
-        "mov    cl,al" \
-        "mov    ax,2506h" \
-        "int    21h" \
-        "pop    ds" \
-    __parm              [__al] [__cx __edx] \
-    __value             \
-    __modify __exact    [__ax __cl]
-
-
-unsigned long   _dos_getrealvect( int intno ) {
-//==============================================
-
-    return( _getrealvect( intno ) );
+intr_addr _dos_getrealvect( int intno )
+//=====================================
+{
+    return( PharlapGetRealModeInterruptVector( intno ) );
 }
 
 
-void    _dos_setrealvect( int intno, unsigned long func ) {
-//==========================================================
-
-    _setrealvect( intno, func );
+void    _dos_setrealvect( int intno, intr_addr func )
+//===================================================
+{
+    PharlapSetRealModeInterruptVector( intno, func );
 }
 
 
-void    _dos_setvectp( int intno, void (__interrupt __far *func)(void) ) {
-//=================================================================
-
-    _setvectp( intno, func );
+void    _dos_setvectp( int intno, intr_addr func )
+//================================================
+{
+    PharlapSetPMInterruptVector_passup( intno, func );
 }

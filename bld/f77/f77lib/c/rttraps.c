@@ -33,9 +33,9 @@
 #include "ftnstd.h"
 #include <signal.h>
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-  #include <dos.h>
+    #include <dos.h>
 #elif defined( _M_IX86 )
-  #include <i86.h>
+    #include <i86.h>
 #endif
 #if defined( __NT__ )
     #include <windows.h>
@@ -53,26 +53,29 @@
 #include "fthread.h"
 #include "xfflags.h"
 #if defined( __DOS__ )
-  #include "extender.h"
+    #include "extender.h"
 #endif
 #include "rterr.h"
 #include "errcod.h"
 #include "rundat.h"
 #if defined( __NT__ )
-  #include "enterdb.h"
+    #include "enterdb.h"
 #endif
 #include "thread.h"
 #include "fptraps.h"
 #include "rttraps.h"
 #include "rtexcpfl.h"
+#if defined( __DOS__ ) && defined( __386__ )
+    #include "realvec.h"
+#endif
 
 
 #if defined( __OS2_286__ )
-  #define       _handler        __interrupt __pascal __far
+    #define _handler        __interrupt __pascal __far
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
-  #define       _handler        __interrupt
+    #define _handler        __interrupt
 #else
-  #define       _handler
+    #define _handler
 #endif
 
 typedef void            (*fsig_func)( intstar4 );
@@ -80,30 +83,30 @@ typedef void            (*fsig_func)( intstar4 );
 #if defined( __WINDOWS_386__ )
 
 #elif defined( __OS2_286__ ) || defined( __DOS__ ) || defined( __WINDOWS__ )
-         void           (* __UserIOvFlHandler)(intstar4) = { (fsig_func)SIG_DFL };
-         void           (* __UserIDivZHandler)(intstar4) = { (fsig_func)SIG_DFL };
+    void                (* __UserIOvFlHandler)(intstar4) = { (fsig_func)SIG_DFL };
+    void                (* __UserIDivZHandler)(intstar4) = { (fsig_func)SIG_DFL };
 
-  static byte           IntOverFlow = { 0x04 };
-  static byte           IntDivBy0 = { 0x00 };
-  static void           (_handler *ISave)(void);
-  static void           (_handler *ZSave)(void);
+    static byte         IntOverFlow = { 0x04 };
+    static byte         IntDivBy0 = { 0x00 };
+    static void         (_handler *ISave)(void);
+    static void         (_handler *ZSave)(void);
 #endif
 
 #if defined( __DOS__ )
-         void           (* __UserBreakHandler)(intstar4) = { (fsig_func)SIG_DFL };
+    void                (* __UserBreakHandler)(intstar4) = { (fsig_func)SIG_DFL };
 
-  static byte           BreakVector = { 0x1b };
-  static void           (_handler *CBSave)(void);
+    static byte         BreakVector = { 0x1b };
+    static void         (_handler *CBSave)(void);
  #if defined( __386__ )
-  static unsigned long  CBRealSave;
+    static intr_addr    CBRealSave;
  #endif
 #endif
 
 #if defined( __OS2_386__ ) || defined( __NT__ )
-  static void           IOvFlSignal(int);
+    static void         IOvFlSignal(int);
 #endif
 
-#if (defined( __DOS__ ) || defined( __WINDOWS__ )) && defined( __386__ )
+#if ( defined( __DOS__ ) || defined( __WINDOWS__ ) ) && defined( __386__ )
 
 void _movestack( unsigned_32 );
 #pragma aux _movestack = \
@@ -114,8 +117,6 @@ void _movestack( unsigned_32 );
     __value     \
     __modify    [__esp]
 
-#include "realvec.h"
-
 #endif
 
 
@@ -123,9 +124,9 @@ void _movestack( unsigned_32 );
 
 #else
 
-static  void    ProcessBreak( void ) {
-//==============================
-
+static  void    ProcessBreak( void )
+//==================================
+{
     _RWD_XcptFlags &= ~XF_ERR_MASK;
     _RWD_XcptFlags |= XF_LIMIT_ERR | XF_KO_INTERRUPT;
     if( _RWD_XcptFlags & XF_IO_INTERRUPTABLE ) {
@@ -137,9 +138,9 @@ static  void    ProcessBreak( void ) {
     }
 }
 
-static  void    BreakSignal( int sig ) {
-//===================================================
-
+static  void    BreakSignal( int sig )
+//====================================
+{
     sig = sig;
     signal( SIGINT, BreakSignal );
  #if defined( __OS2__ ) || defined( __NT__ )
@@ -151,13 +152,13 @@ static  void    BreakSignal( int sig ) {
 #endif
 
 #if defined( __DOS__ )
-static  void    _handler BreakHandler( void ) {
-//=============================================
-
+static  void    _handler BreakHandler( void )
+//===========================================
+{
     _enable();
     if( __UserBreakHandler != (fsig_func)SIG_DFL ) {
-        if( (__UserBreakHandler != (fsig_func)SIG_IGN) &&
-            (__UserBreakHandler != (fsig_func)SIG_ERR) ) {
+        if( (__UserBreakHandler != (fsig_func)SIG_IGN)
+          && (__UserBreakHandler != (fsig_func)SIG_ERR) ) {
             __UserBreakHandler( SIGBREAK );
         }
     } else {
@@ -169,17 +170,20 @@ static  void    _handler BreakHandler( void ) {
 
 #if defined( __WINDOWS_386__ )
 
-#elif defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OS2__ ) || defined( __NT__ )
+#elif defined( __DOS__ ) \
+  || defined( __WINDOWS__ ) \
+  || defined( __OS2__ ) \
+  || defined( __NT__ )
 
-static  void    ProcessIDivZ( void ) {
-//==============================
-
+static  void    ProcessIDivZ( void )
+//==================================
+{
     RTErr( KO_IDIV_ZERO );
 }
 
-static  void    ProcessIOvFl( void ) {
-//==============================
-
+static  void    ProcessIOvFl( void )
+//==================================
+{
     // Set flag so that we report an overflow when we read an integer
     // regardless of whether user wants integer overflows reported
     _RWD_XcptFlags |= XF_IOVERFLOW;
@@ -190,16 +194,16 @@ static  void    ProcessIOvFl( void ) {
 
 #elif defined( __OS2_386__ ) || defined( __NT__ )
 
-static  void    IDivZSignal( int sig ) {
-//===================================================
-
+static  void    IDivZSignal( int sig )
+//====================================
+{
     sig = sig;
     ProcessIDivZ();
 }
 
-static  void    IOvFlSignal( int sig ) {
-//===================================================
-
+static  void    IOvFlSignal( int sig )
+//====================================
+{
     sig = sig;
     // re-signal exception since we may get many overflows
     // before we actually report the condition
@@ -207,40 +211,42 @@ static  void    IOvFlSignal( int sig ) {
     ProcessIOvFl();
 }
 
-#elif defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OS2_286__ )
+#elif defined( __DOS__ ) \
+  || defined( __WINDOWS__ ) \
+  || defined( __OS2_286__ )
 
-static  void    _handler IDivZHandler( void ) {
-//=============================================
-
+static  void    _handler IDivZHandler( void )
+//===========================================
+{
  #if defined( __DOS__ ) || defined( __WINDOWS__ )
     _enable();
   #ifdef __386__
     // Under pharlap, ss != ds when this interrupt is taken.
     // But in order for our error reporting code to work we have to
     // set ss = ds.
-    _movestack( _STACKLOW+512 );
+    _movestack( _STACKLOW + 512 );
   #endif
  #endif
     if( __UserIDivZHandler != (fsig_func)SIG_DFL ) {
-        if( (__UserIDivZHandler != (fsig_func)SIG_IGN) &&
-            (__UserIDivZHandler != (fsig_func)SIG_ERR) ) {
-            __UserIDivZHandler(SIGIDIVZ);
+        if( (__UserIDivZHandler != (fsig_func)SIG_IGN)
+          && (__UserIDivZHandler != (fsig_func)SIG_ERR) ) {
+            __UserIDivZHandler( SIGIDIVZ );
         }
     } else {
         ProcessIDivZ();
     }
 }
 
-static  void    _handler IOvFlHandler( void ) {
-//=============================================
-
+static  void    _handler IOvFlHandler( void )
+//===========================================
+{
  #if defined( __DOS__ ) || defined( __WINDOWS__ )
     _enable();
  #endif
     if( __UserIOvFlHandler != (fsig_func)SIG_DFL ) {
-        if( (__UserIOvFlHandler != (fsig_func)SIG_IGN) &&
-            (__UserIOvFlHandler != (fsig_func)SIG_ERR) ) {
-            __UserIOvFlHandler(SIGIOVFL);
+        if( (__UserIOvFlHandler != (fsig_func)SIG_IGN)
+          && (__UserIOvFlHandler != (fsig_func)SIG_ERR) ) {
+            __UserIOvFlHandler( SIGIOVFL );
         }
     } else {
         ProcessIOvFl();
@@ -256,9 +262,9 @@ static  void    AbnormalTerm( int dummy )
     RTErr( CP_TERMINATE );
 }
 
-int     __EnableF77RTExceptionHandling( void ) {
-//==============================================
-
+int     __EnableF77RTExceptionHandling( void )
+//============================================
+{
 #if defined( __NT__ )
     return( !DebuggerPresent() );
 #else
@@ -266,9 +272,9 @@ int     __EnableF77RTExceptionHandling( void ) {
 #endif
 }
 
-void    R_TrapInit( void ) {
-//====================
-
+void    R_TrapInit( void )
+//========================
+{
     int enable_excpt;
 
     enable_excpt = __EnableF77RTExceptionHandling();
@@ -314,9 +320,9 @@ void    R_TrapInit( void ) {
     FPTrapInit();
 }
 
-void    R_TrapFini( void ) {
-//====================
-
+void    R_TrapFini( void )
+//========================
+{
 #if defined( __DOS__ )
     _dos_setvect( BreakVector, CBSave );
  #if defined( __386__ )
@@ -341,9 +347,9 @@ void    R_TrapFini( void ) {
 #if 0
 #include "rt_init.h"
 
-void    __InitExceptionVectors( void ) {
-//================================
-
+void    __InitExceptionVectors( void )
+//====================================
+{
     _ExceptionInit = &R_TrapInit;
     _ExceptionFini = &R_TrapFini;
 }

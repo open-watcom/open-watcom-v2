@@ -193,7 +193,14 @@ _WCRTLINK void_nptr sbrk( int increment )
         if( increment > 0 ) {
             increment = __ROUND_UP_SIZE_4K( increment );
             if( _IsRational() ) {
-                cstg = TinyDPMIAlloc( increment );
+                dpmi_mem_block  dpmimem;
+
+                if( DPMIAllocateMemoryBlock( &dpmimem, increment ) ) {
+                    cstg = NULL;
+                } else {
+                    cstg = (void_nptr)dpmimem.linear;
+                    ((dpmi_hdr *)dpmimem.linear)->dpmi_handle = dpmimem.handle;
+                }
             } else {
                 cstg = CodeBuilderAlloc( increment );
             }

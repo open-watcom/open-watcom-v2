@@ -78,24 +78,26 @@
 #define _MOV_DX_ES      0x8c 0xc2
 #define _MOV_AX_SS      0x8c 0xd0
 
+#define _MOV_AX_CX      0x89 0xc8
+#define _MOV_AX_DX      0x89 0xd0
+#define _MOV_AX_BX      0x89 0xd8
+#define _MOV_AX_BP      0x89 0xe8
+#define _MOV_AX_SI      0x89 0xf0
 #define _MOV_CX_AX      0x89 0xc1
 #define _MOV_CX_DX      0x89 0xd1
 #define _MOV_CX_BX      0x89 0xd9
 #define _MOV_CX_SI      0x89 0xf1
+#define _MOV_DX_AX      0x89 0xc2
+#define _MOV_DX_CX      0x89 0xca
+#define _MOV_DX_BX      0x89 0xda
 #define _MOV_BX_AX      0x89 0xc3
 #define _MOV_BX_CX      0x89 0xcb
-#define _MOV_DX_AX      0x89 0xc2
-#define _MOV_DX_BX      0x89 0xda
-#define _MOV_DX_CX      0x89 0xca
-#define _MOV_AX_BX      0x89 0xd8
-#define _MOV_AX_CX      0x89 0xc8
-#define _MOV_AX_DX      0x89 0xd0
-#define _MOV_AX_SI      0x89 0xf0
+#define _MOV_BX_SI      0x89 0xf3
+#define _MOV_BP_AX      0x89 0xc5
+#define _MOV_SI_AX      0x89 0xc6
+#define _MOV_SI_BX      0x89 0xde
 #define _MOV_DI_BX      0x89 0xdf
 #define _MOV_DI_SI      0x89 0xf7
-#define _MOV_SI_AX      0x89 0xc6
-#define _MOV_BP_AX      0x89 0xc5
-#define _MOV_AX_BP      0x89 0xe8
 
 #define _MOV_CL_AL      0x88 0xc1
 #define _MOV_CH_AL      0x88 0xc5
@@ -144,6 +146,7 @@
 #define _XCHG_AX_SI     0x96
 #define _XCHG_SI_DI     0x87 0xf7
 #define _XCHG_BX_CX     0x87 0xd9
+#define _XCHG_BX_DX     0x87 0xda
 
 #define _MUL_BX         0xf7 0xe3
 #define _MUL_CX         0xf7 0xe1
@@ -189,6 +192,7 @@
 #define _SHL_ECX_N      0xc1 0xe1
 #define _SHL_EDX_N      0xc1 0xe2
 #define _SHL_EBX_N      0xc1 0xe3
+#define _SHL_ESI_N      0xc1 0xe6
 
 #if defined( _M_I86 )
 
@@ -230,6 +234,8 @@
   #define _SET_DS_SREG_SAFE     _PUSH_DS _PUSH_ES _POP_DS
   #define _RST_DS_SREG          _POP_DS
   #define _SREG                 __es
+  #define _SAVE_DSCX            _PUSH_DS _MOV_DS_CX
+  #define _SAVE_DSDX            _PUSH_DS _MOV_DS_DX
   #define _SAVE_DS              _PUSH_DS
   #define _REST_DS              _POP_DS
   #define _MODIF_DS
@@ -241,6 +247,8 @@
   #define _SET_DS_SREG_SAFE
   #define _RST_DS_SREG
   #define _SREG                 __ds
+  #define _SAVE_DSCX            _MOV_DS_CX
+  #define _SAVE_DSDX            _MOV_DS_DX
   #define _SAVE_DS
   #define _REST_DS
   #define _MODIF_DS             __ds
@@ -248,8 +256,13 @@
 
 #else       /* __386__ */
 
- #define _SET_ES
- #define _RST_ES
+ #if defined( __FLAT__ )
+  #define _SET_ES
+  #define _RST_ES
+ #else
+  #define _SET_ES               _PUSH_ES _PUSH_DS _POP_ES
+  #define _RST_ES               _POP_ES
+ #endif
  #define _SAVE_ES               _PUSH_ES
  #define _REST_ES               _POP_ES
  #define _MODIF_ES
@@ -264,6 +277,8 @@
  #define _SET_DS_SREG_SAFE
  #define _RST_DS_SREG
  #define _SREG
+ #define _SAVE_DSCX             _PUSH_DS _MOV_DS_CX
+ #define _SAVE_DSDX             _PUSH_DS _MOV_DS_DX
  #define _SAVE_DS               _PUSH_DS
  #define _REST_DS               _POP_DS
  #define _MODIF_DS

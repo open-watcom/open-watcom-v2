@@ -166,7 +166,7 @@ void CallRealMode( unsigned long dos_addr )
     memset( &dr, 0, sizeof( dr ) );
     dr.ds = dr.es = dr.cs = dos_addr >> 16;
     dr.ip = dos_addr & 0xFFFF;
-    TinyDPMICallRealFarFrame( 0, 0, &dr );
+    DPMICallRealModeProcedureWithFarReturnFrame( 0, 0, &dr );
 }
 
 #endif

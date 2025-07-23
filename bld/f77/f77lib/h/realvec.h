@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
-extern unsigned long    _dos_getrealvect( int intno );
-extern void             _dos_setrealvect( int intno, unsigned long func );
-extern void             _dos_setvectp( int intno, void (__interrupt __far *func)(void) );
+#include "dpmi.h"
+
+
+extern intr_addr    _dos_getrealvect( int intno );
+extern void         _dos_setrealvect( int intno, intr_addr func );
+extern void         _dos_setvectp( int intno, intr_addr func );

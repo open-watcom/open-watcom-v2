@@ -151,6 +151,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
         if( ((PTR)heap + sizeof( heapblk ) == (PTR)frl_old) && (heap->numalloc == 1) ) {
             heapblk_nptr    prev_heap;
             heapblk_nptr    next_heap;
+            dpmi_mem_block  dpmimem;
 
             // The mini-heap contains only this memblk
             dpmi = BLK2DPMI( heap );
@@ -160,11 +161,11 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
             next_heap = heap->next.nptr;
             size = __ROUND_UP_SIZE_4K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
 //            prev_dpmi = dpmi;
-            dpmi = TinyDPMIRealloc( dpmi, size );
-            if( dpmi == NULL ) {
-//                dpmi = prev_dpmi;
+            if( DPMIResizeMemoryBlock( &dpmimem, dpmi->dpmi_handle, size ) ) {
                 return( NULL );         // indicate resize failed
             }
+            dpmi = (dpmi_hdr *)dpmimem.linear;
+            dpmi->dpmi_handle = dpmimem.handle;
             dpmi->dos_seg_value = 0;
             __UnlinkNHeap( heap, prev_heap, next_heap );
             heap = DPMI2BLK( dpmi );
@@ -221,11 +222,13 @@ static heapblk_nptr RationalAlloc( size_t size )
     heapblk_nptr    heap;
     tiny_ret_t      save_DOS_block;
     tiny_ret_t      DOS_block;
+    dpmi_mem_block  dpmimem;
 
     __nheapshrink();
     /* size is a multiple of 4k */
-    dpmi = TinyDPMIAlloc( size );
-    if( dpmi != NULL ) {
+    if( DPMIAllocateMemoryBlock( &dpmimem, size ) == 0 ) {
+        dpmi = (dpmi_hdr *)dpmimem.linear;
+        dpmi->dpmi_handle = dpmimem.handle;
         dpmi->dos_seg_value = 0;        // indicate DPMI block
         heap = DPMI2BLK( dpmi );
         heap->len = size - sizeof( dpmi_hdr );
@@ -244,8 +247,9 @@ static heapblk_nptr RationalAlloc( size_t size )
         DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
         TinyFreeBlock( save_DOS_block );
         if( TINY_OK( DOS_block ) ) {
-            dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
-            dpmi->dos_seg_value = DOS_block;
+            dpmi = (dpmi_hdr *)DPMIGetSegmentBaseAddress( DOS_block );
+            dpmi->dpmi_handle = 0;
+            dpmi->dos_seg_value = TINY_INFO( DOS_block );
             heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr );
             return( heap );

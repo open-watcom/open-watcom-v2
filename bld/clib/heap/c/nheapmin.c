@@ -92,7 +92,7 @@ static int __ReturnMemToSystem( heapblk_nptr heap )
   #elif defined(__DOS_EXT__)
     dpmi_hdr    *dpmi = BLK2DPMI( heap );
     if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
-        TinyDPMIFree( dpmi->dpmi_handle );
+        DPMIFreeMemoryBlock( dpmi->dpmi_handle );
     } else {                            // else DOS block below 1MB
         TinyFreeBlock( dpmi->dos_seg_value );
     }
