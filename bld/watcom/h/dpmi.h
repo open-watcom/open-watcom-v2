@@ -350,12 +350,12 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #define DPMI_0204       0x04 0x02
 #define DPMI_0205       0x05 0x02
 #define DPMI_0300       0x00 0x03
-#define DPMI_0301       0x01 0x03
-#define DPMI_0302       0x02 0x03
-#define DPMI_0303       0x03 0x03
-#define DPMI_0304       0x04 0x03
-#define DPMI_0305       0x05 0x03
-#define DPMI_0306       0x06 0x03
+#define DPMI_0301       0x01 0x03   /* not in DOS/4GW */
+#define DPMI_0302       0x02 0x03   /* not in DOS/4GW */
+#define DPMI_0303       0x03 0x03   /* not in DOS/4GW */
+#define DPMI_0304       0x04 0x03   /* not in DOS/4GW */
+#define DPMI_0305       0x05 0x03   /* not in DOS/4GW */
+#define DPMI_0306       0x06 0x03   /* not in DOS/4GW */
 #define DPMI_0400       0x00 0x04
 #define DPMI_0500       0x00 0x05
 #define DPMI_0501       0x01 0x05
@@ -739,6 +739,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify []
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
@@ -753,6 +757,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact    [__eax]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
@@ -767,6 +775,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact    [__eax]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
 #ifdef _M_I86
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
         _SAVE_DSDX      \
@@ -799,6 +811,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact [__eax __ecx __edx _MODIF_DS _MODIF_ES]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
 #ifdef _M_I86
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
         _MOV_AX_W DPMI_0304 \
@@ -820,6 +836,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #endif
 
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMISaveRMStateAddr = \
@@ -836,6 +856,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact [__eax __bx __ecx __si __edi]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMISavePMStateAddr = \
@@ -852,6 +876,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact [__eax __ebx __cx __si __edi]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMISaveStateSize = \
@@ -866,6 +894,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact [__eax __bx __cx __si __edi]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMIRawPMtoRMAddr = \
@@ -883,6 +915,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify __exact [__eax __bx __ecx __si __edi]
 #endif
 
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
 #ifdef _M_I86
 #else
 #pragma aux _DPMIRawRMtoPMAddr = \
