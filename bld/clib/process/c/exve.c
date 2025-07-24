@@ -45,6 +45,7 @@
 #include "roundmac.h"
 #include "rtdata.h"
 #include "dospsp.h"
+#include "dosmem.h"
 #include "msdos.h"
 #include "exe.h"
 #include "tinyio.h"
@@ -61,25 +62,15 @@
 
 #pragma on(check_stack);
 
-#pragma pack( __push, 1 )
-typedef struct a_memblk {
-    char                flag;           /* 'Z' if last; 'M' otherwise */
-    unsigned            owner;          /* segment of psp; 0 if free */
-    unsigned            size;           /* in paragraphs */
-    char                unknown[11];    /* rest of header */
-    char                data[1];        /* size paragraphs of data */
-} a_memblk;
-
 typedef struct a_blk {
     unsigned            next;
 } a_blk;
-#pragma pack( __pop )
 
 typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 
-#define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
-#define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
-#define _pspptr( seg )  ((dospsp   _WCFAR *)((long)(seg)<<16))
+#define _blkptr( seg )  ((a_blk      _WCFAR *)((long)(seg)<<16))
+#define _mcbptr( seg )  ((dosmem_blk _WCFAR *)((long)((seg)-1)<<16))
+#define _pspptr( seg )  ((dospsp     _WCFAR *)((long)(seg)<<16))
 
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,12 @@
 #define NOT_LAST_BLOCK  'M'
 #define LAST_BLOCK      'Z'
 
-#pragma pack(__push,1);
-typedef struct a_memhdr {
-    char                flag;
-    unsigned            owner;          /* process id (seg of psp) of owner */
-    unsigned            length;
-    byte                unkown[11]
-} a_memhdr;
-#pragma pack(__pop);
+#pragma pack( __push, 1 )
+typedef struct dosmem_blk {
+    char                flag;           /* 'Z' if last; 'M' otherwise */
+    unsigned short      owner;          /* segment of psp; 0 if free */
+    unsigned short      size;           /* in paragraphs */
+    char                unknown[11];    /* rest of header */
+    char                data[1];        /* size paragraphs of data */
+} dosmem_blk;
+#pragma pack( __pop )
