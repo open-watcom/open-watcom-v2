@@ -250,10 +250,10 @@ typedef void __far  *proc_addr;
  */
 extern unsigned char _DPMI;
 
-extern dpmi_ret _DPMIFreeRealModeCallBackAddress( proc_addr proc );
+extern int      _DPMIFreeRealModeCallBackAddress( proc_addr proc );
 extern proc_addr _DPMIAllocateRealModeCallBackAddress( proc_addr proc, dpmi_regs_struct DPMIDATA *dr );
 extern intr_addr _DPMIGetRealModeInterruptVector( uint_8 iv );
-extern dpmi_ret _DPMISetPMInterruptVector( uint_8 iv, intr_addr intr );
+extern int      _DPMISetPMInterruptVector( uint_8 iv, intr_addr intr );
 extern int      _DPMISetPMExceptionVector( uint_8 iv, proc_addr proc );
 extern proc_addr _DPMIGetPMExceptionVector( uint_8 iv );
 extern intr_addr _DPMIGetPMInterruptVector( uint_8 iv );
@@ -290,7 +290,7 @@ extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
 extern proc_addr _DPMIGetVendorSpecificAPI( char DPMIDATA * );
 
-extern dpmi_ret _DPMISetWatch( uint_16 __hiw, uint_16 __low, uint_8 len, uint_8 type );
+extern dpmi_ret _DPMISetWatch( uint_16 hiw, uint_16 low, uint_8 len, uint_8 type );
 extern dpmi_ret _DPMIClearWatch( uint_16 handle );
 extern dpmi_ret _DPMITestWatch( uint_16 handle );
 extern dpmi_ret _DPMIResetWatch( uint_16 handle );
@@ -541,7 +541,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _RST_ES         \
     __parm __caller [__bx] [__edi] \
     __value         [__eax] \
-    __modify __exact [__eax]
+    __modify __exact [__eax _MODIF_ES]
 #endif
 
 #ifdef _M_I86
@@ -561,17 +561,17 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _RST_ES         \
     __parm __caller [__bx] [__edi] \
     __value         [__eax] \
-    __modify __exact [__eax]
+    __modify __exact [__eax _MODIF_ES]
 #endif
 
 #ifdef _M_I86
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
         _MOV_AX_W DPMI_0100 \
         _INT_31         \
-        "jnc short L1"  \
-        _XOR_AX_AX      \
-        _XOR_DX_DX      \
-    "L1: "              \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _AND_AX_BX      \
+        _AND_DX_BX      \
     __parm __caller [__bx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __bx __dx]
@@ -579,15 +579,14 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
         _MOV_AX_W DPMI_0100 \
         _INT_31         \
-        "jnc short L1"  \
-        _XOR_AX_AX      \
-        _XOR_DX_DX      \
-    "L1:"               \
+        _SBB_BX_BX      \
+        _NOT_BX         \
         _SHL_EDX_N 16   \
         _USE16 _MOV_DX_AX \
+        _AND_DX_BX      \
     __parm __caller [__bx] \
     __value         [__edx] \
-    __modify [__eax __bx __edx]
+    __modify [__eax __ebx __edx]
 #endif
 
 #ifdef _M_I86
@@ -703,20 +702,18 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #pragma aux _DPMISetPMInterruptVector = \
         _MOV_AX_W DPMI_0205 \
         _INT_31         \
-        _SBB_CX_CX      \
-        _AND_AX_CX      \
+        _SBB_AX_AX      \
     __parm __caller [__bl] [__cx __dx] \
-    __value         [__cx __ax] \
-    __modify __exact [__ax __cx]
+    __value         [__ax] \
+    __modify __exact [__ax]
 #else
 #pragma aux _DPMISetPMInterruptVector = \
         _MOV_AX_W DPMI_0205 \
         _INT_31         \
-        _SBB_CX_CX      \
-        _USE16 _AND_CX_AX \
+        _SBB_AX_AX      \
     __parm __caller [__bl] [__cx __edx] \
-    __value         [__ecx] \
-    __modify __exact [__eax __ecx]
+    __value         [__eax] \
+    __modify __exact [__eax]
 #endif
 
 #ifdef _M_I86
@@ -736,7 +733,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _RST_ES         \
     __parm __caller [__bl] [__bh] [__cx] [__edi] \
     __value         [__eax] \
-    __modify []
+    __modify __exact [__eax _MODIF_ES]
 #endif
 
 /*
@@ -744,17 +741,25 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
  *  no      yes         yes
  */
 #ifdef _M_I86
+#pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
+        _STC /* for missing service check */\
+        _MOV_AX_W DPMI_0301 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bh] [__cx] [__es __di] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
         _SET_ES         \
-        _STC /* missing service check */\
+        _STC /* for missing service check */\
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
         _RST_ES         \
     __parm __caller     [__bh] [__cx] [__edi] \
     __value             [__eax] \
-    __modify __exact    [__eax]
+    __modify __exact    [__eax _MODIF_ES]
 #endif
 
 /*
@@ -762,17 +767,25 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
  *  no      yes         yes
  */
 #ifdef _M_I86
+#pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
+        _STC /* for missing service check */\
+        _MOV_AX_W DPMI_0302 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller     [__bh] [__cx] [__es __di] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
         _SET_ES         \
-        _STC /* missing service check */\
+        _STC /* for missing service check */\
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
         _RST_ES         \
     __parm __caller     [__bh] [__cx] [__edi] \
     __value             [__eax] \
-    __modify __exact    [__eax]
+    __modify __exact    [__eax _MODIF_ES]
 #endif
 
 /*
@@ -817,22 +830,22 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
  */
 #ifdef _M_I86
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
+        _STC /* for missing service check */\
         _MOV_AX_W DPMI_0304 \
         _INT_31         \
-        _SBB_CX_CX      \
-        _AND_AX_CX      \
+        _SBB_AX_AX      \
     __parm __caller [__cx __dx] \
-    __value         [__cx __ax] \
-    __modify __exact [__ax __cx]
+    __value         [__ax] \
+    __modify __exact [__ax]
 #else
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
+        _STC /* for missing service check */\
         _MOV_AX_W DPMI_0304 \
         _INT_31         \
-        _SBB_CX_CX      \
-        _USE16 _AND_CX_AX \
+        _SBB_AX_AX      \
     __parm __caller [__cx __edx] \
-    __value         [__ecx] \
-    __modify __exact [__eax __ecx]
+    __value         [__eax] \
+    __modify __exact [__eax]
 #endif
 
 
@@ -1132,7 +1145,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _USE16 _MOV_AX_BX \
     __parm __caller [__bx] [__cx] [__dl] [__dh] \
     __value         [__eax] \
-    __modify __exact [__eax __ebx __ecx]
+    __modify __exact [__eax __ebx]
 #endif
 
 #ifdef _M_I86
@@ -1195,6 +1208,16 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #endif
 
 
+/*************************************
+ * only 80386 version pragmas
+ *************************************/
+
+#ifndef _M_I86
+
+/*************************************
+ * Pharlap specific pragmas
+ *************************************/
+
 #define PHARLAP_2502    0x02 0x25
 #define PHARLAP_2503    0x03 0x25
 #define PHARLAP_2504    0x04 0x25
@@ -1205,12 +1228,6 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #define PHARLAP_2511    0x11 0x25
 #define PHARLAP_25C0    0xC0 0x25
 #define PHARLAP_25C1    0xC1 0x25
-
-#if !defined(_M_I86)
-
-/***************************
- * 80386 versions of pragmas
- ***************************/
 
 /*
  * if failed then return zero value
@@ -1260,7 +1277,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __value         [__cx __ebx] \
     __modify        [__ax __ebx __ecx]
 
-  #pragma aux  _PharlapSetPMInterruptVector = \
+#pragma aux  _PharlapSetPMInterruptVector = \
         _SAVE_DSDX      \
         _MOV_DX_AX      \
         _MOV_AX_W PHARLAP_2504 \
@@ -1268,7 +1285,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS        \
     __parm __caller [__cl] [__dx __eax] \
     __value         \
-    __modify        [__eax __edx]
+    __modify        [__eax __edx _MODIF_DS]
 
 #pragma aux _PharlapSetRealModeInterruptVector = \
         _SHL_EBX_N 16   \
@@ -1277,7 +1294,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _INT_21         \
     __parm __caller [__cl] [__bx __eax] \
     __value         \
-    __modify        [__eax __ebx __edx]
+    __modify        [__eax __ebx]
 
 #pragma aux  _PharlapSetPMInterruptVector_passup = \
         _SAVE_DSCX      \
@@ -1287,7 +1304,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS         \
     __parm __caller [__al] [__cx __edx] \
     __value         \
-    __modify        [__eax __ecx __edx]
+    __modify        [__eax __ecx __edx _MODIF_DS]
 
 #pragma aux  _PharlapSetBothInterruptVectors = \
         _SAVE_DSCX      \
@@ -1300,7 +1317,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS         \
     __parm __caller [__al] [__cx __edx] [__si __ebx] \
     __value         \
-    __modify        [__eax __ebx __ecx __edx __esi]
+    __modify        [__eax __ebx __ecx __edx __esi _MODIF_DS]
 
 /*
  * if failed then return (uint_32)-1
@@ -1344,13 +1361,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __value         [__eax] \
     __modify        [__ebx __ecx __edi __esi]
 
-#endif
 
-#if !defined(_M_I86)
-
-/***************************
- * 80386 versions of pragmas
- ***************************/
+/*************************************
+ * Rational DOS/4G specific pragmas
+ *************************************/
 
 /*
  * only interrupt 0x08-0x2e is auto-passup
