@@ -236,6 +236,7 @@
   #define _SREG                 __es
   #define _SAVE_DSCX            _PUSH_DS _MOV_DS_CX
   #define _SAVE_DSDX            _PUSH_DS _MOV_DS_DX
+  #define _SAVE_DSCS            _PUSH_DS _PUSH_CS _POP_DS
   #define _SAVE_DS              _PUSH_DS
   #define _REST_DS              _POP_DS
   #define _MODIF_DS
@@ -249,6 +250,7 @@
   #define _SREG                 __ds
   #define _SAVE_DSCX            _MOV_DS_CX
   #define _SAVE_DSDX            _MOV_DS_DX
+  #define _SAVE_DSCS            _PUSH_CS _POP_DS
   #define _SAVE_DS
   #define _REST_DS
   #define _MODIF_DS             __ds
@@ -279,6 +281,7 @@
  #define _SREG
  #define _SAVE_DSCX             _PUSH_DS _MOV_DS_CX
  #define _SAVE_DSDX             _PUSH_DS _MOV_DS_DX
+ #define _SAVE_DSCS             _PUSH_DS _PUSH_CS _POP_DS
  #define _SAVE_DS               _PUSH_DS
  #define _REST_DS               _POP_DS
  #define _MODIF_DS
