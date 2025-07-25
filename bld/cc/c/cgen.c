@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "cvars.h"
+#include "langenv.h"
 #include "jmpbuf.h"
 #include "cg.h"
 #include "cgdefs.h"
@@ -1923,7 +1924,7 @@ void DoCompile( void )
             if( cg_info.revision != 0 || cg_info.target != 0 ) {
 #if _CPU == 386
                 if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
-                    FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
+                    FunctionProfileSegId = AddSegName( TS_SEG_TI, "DATA", SEGTYPE_INITFINI );
                 }
 #endif
                 SetSegs();
