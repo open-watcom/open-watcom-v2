@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,8 @@
 /* DOS EXE file header */
 /* =================== */
 
-#define DOS_RELOC_OFFSET        0x0018
-#define NE_HEADER_OFFSET        0x003c
+#define DOS_RELOC_OFFSET        0x0018L
+#define NE_HEADER_OFFSET        0x003cL
 #define NE_HEADER_FOLLOWS(x)    ((x) >= 0x0040) /* reloc table offset 0x40 */
 
 #include "pushpck1.h"
