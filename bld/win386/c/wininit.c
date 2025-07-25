@@ -184,7 +184,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     }
     handle = TINY_INFO( rc );
 
-    TinySeek( handle, 0x38, TIO_SEEK_SET );
+    TinySeek( handle, 0x38L, TIO_SEEK_SET );
     TinyFarRead( handle, &exelen, sizeof( DWORD ) );
     TinySeek( handle, exelen, TIO_SEEK_SET );
 
