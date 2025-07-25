@@ -27,6 +27,20 @@
     #define _USE16      0x66
 #endif
 
+/*
+ * General registers encoding
+ *
+ *
+ * 000     ax
+ * 001     cx
+ * 010     dx
+ * 011     bx
+ * 100     sp
+ * 101     bp
+ * 110     si
+ * 111     di
+ */
+
 #define _PUSH_CS        0x0e
 #define _PUSH_DS        0x1e
 #define _POP_DS         0x1f
@@ -104,6 +118,7 @@
 #define _MOV_AL_BL      0x88 0xd8
 
 #define _NOT_AX         0xf7 0xd0
+#define _NOT_DX         0xf7 0xd2
 #define _NOT_BX         0xf7 0xd3
 #define _NOT_DI         0xf7 0xd7
 #define _INC_AX         0x40
@@ -119,14 +134,17 @@
 #define _SBB_AX_AX      0x19 0xc0
 #define _SBB_BP_BP      0x19 0xed
 #define _SBB_DI_DI      0x19 0xff
+#define _AND_AX_DX      0x21 0xd0
 #define _AND_AX_BX      0x21 0xd8
 #define _AND_AX_CX      0x21 0xc8
 #define _AND_AX_DI      0x21 0xf8
 #define _AND_BX_AX      0x21 0xc3
+#define _AND_BX_DX      0x21 0xd3
 #define _AND_CX_AX      0x21 0xc1
 #define _AND_DX_AX      0x21 0xc2
 #define _AND_DX_BX      0x21 0xda
 #define _AND_DI_AX      0x21 0xc7
+#define _OR_AX_BX       0x09 0xd8
 #define _OR_DX_AX       0x09 0xc2
 #define _OR_DX_BX       0x09 0xda
 #define _OR_CX_AX       0x09 0xc1
