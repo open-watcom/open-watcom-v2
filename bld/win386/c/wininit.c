@@ -178,15 +178,15 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      * get exe to load
      */
     GetModuleFileName( thisInstance, file, 128 );
-    rc = _fTinyOpen( file, TIO_READ );
+    rc = TinyFarOpen( file, TIO_READ );
     if( TINY_ERROR( rc ) ) {
         return( Fini( 2, (char _FAR *)"Error opening file", (char _FAR *)file ) );
     }
     handle = TINY_INFO( rc );
 
-    _TinySeek( handle, 0x38, TIO_SEEK_SET );
-    _fTinyRead( handle, &exelen, sizeof( DWORD ) );
-    _TinySeek( handle, exelen, TIO_SEEK_SET );
+    TinySeek( handle, 0x38, TIO_SEEK_SET );
+    TinyFarRead( handle, &exelen, sizeof( DWORD ) );
+    TinySeek( handle, exelen, TIO_SEEK_SET );
 
     /*
      * check if we are being run by the debugger.  When the debugger
@@ -208,7 +208,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * validate header signature
      */
-    _fTinyRead( handle, &exe, sizeof( rex_exe ) );
+    TinyFarRead( handle, &exe, sizeof( rex_exe ) );
 //    BreakPoint();
     if( !(exe.sig[0] == 'M' && exe.sig[1] == 'Q') ) {
         return( Fini( 1, (char _FAR *)"Invalid EXE" ) );
@@ -225,8 +225,8 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * get exe data - data start and stack start
      */
-    _TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_SET );
-    _fTinyRead( handle, &exedat, sizeof( exe_data ) );
+    TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_SET );
+    TinyFarRead( handle, &exedat, sizeof( exe_data ) );
     /*
      * get file size
      */
@@ -319,7 +319,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      * read the exe into memory
      */
     currsize = size - file_header_size;
-    _TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
+    TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
     i = _DPMI_GetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
         return( Fini( 3, (char _FAR *)"Error ",
@@ -335,7 +335,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         } else {
             amount = (WORD)currsize;
         }
-        rc = _fTinyRead( handle, dataptr, amount );
+        rc = TinyFarRead( handle, dataptr, amount );
         bytes_read = TINY_INFO( rc );
         if( bytes_read != amount ) {
             return( Fini( 1, (char _FAR *)"Read error" ) );
@@ -361,7 +361,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         relsize += kcnt * ( 0x10000L * sizeof( DWORD ) );
     }
     if( relsize != 0 ) {
-        _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_SET );
+        TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_SET );
         if( StackSize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {
@@ -371,7 +371,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
             if( relsize < (DWORD)amount ) {
                 amount = (WORD)relsize;
             }
-            rc = _fTinyRead( handle, relptr, amount );
+            rc = TinyFarRead( handle, relptr, amount );
             bytes_read = TINY_INFO( rc );
             if( bytes_read != amount ) {
                 return( Fini( 1, (char _FAR *)"Relocation read error" ) );
@@ -381,7 +381,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         }
     }
 
-    _TinyClose( handle );
+    TinyClose( handle );
 
     /* initialize emulator 8087 save area 20-oct-94 */
 

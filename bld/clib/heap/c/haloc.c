@@ -110,6 +110,6 @@ _WCRTLINK void hfree( void_hptr cstg )
 #if defined(__WINDOWS__)
     __FreeSeg( _FP_SEG( cstg ) );
 #else
-    _TinyFreeBlock( _FP_SEG( cstg ) );
+    TinyFreeBlock( _FP_SEG( cstg ) );
 #endif
 }
