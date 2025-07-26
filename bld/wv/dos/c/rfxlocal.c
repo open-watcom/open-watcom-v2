@@ -82,11 +82,10 @@ bool LocalInteractive( sys_handle sh )
     tiny_ret_t rc;
 
     rc = TinyGetDeviceInfo( SYSH2LH( sh ) );
-    if( TINY_ERROR( rc ) ) {
-        return( false );
-    }
-    if( TINY_INFO( rc ) & TIO_CTL_DEVICE ) {
-        return( true );
+    if( TINY_OK( rc ) ) {
+        if( TINY_INFO( rc ) & TIO_CTL_DEVICE ) {
+            return( true );
+        }
     }
     return( false );
 }

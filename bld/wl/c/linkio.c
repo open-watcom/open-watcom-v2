@@ -325,11 +325,15 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 bool QIsDevice( f_handle file )
 /*****************************/
 {
-    if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
-        return( true );
-    } else {
-        return( false );  // don't write the prompt if input not from stdin
+    tiny_ret_t      rc;
+
+    rc = TinyGetDeviceInfo( file );
+    if( TINY_OK( rc ) ) {
+        if( TINY_INFO( rc ) & TIO_CTL_DEVICE ) {
+            return( true );
+        }
     }
+    return( false );
 }
 
 f_handle ExeCreate( const char *name )

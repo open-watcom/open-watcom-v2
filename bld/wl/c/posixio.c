@@ -354,9 +354,12 @@ bool QIsDevice( f_handle file )
 {
     struct stat     st;
 
-    if( fstat( file, &st ) != 0 )
-        return( false );
-    return( S_ISCHR( st.st_mode ) != 0 );
+    if( fstat( file, &st ) == 0 ) {
+        if( S_ISCHR( st.st_mode ) ) {
+    		return( true );
+        }
+    }
+    return( false );
 }
 
 static f_handle NSOpen( const char *name, unsigned mode )
