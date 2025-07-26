@@ -911,10 +911,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _MOV_AH DOS_ALLOC_SEG \
         __INT_21        \
         _SBB_DX_DX      \
-        _AND_BX_DX      \
-        _USE16 _NOT_DX  \
-        _USE16 _AND_DX_AX \
-        _USE16 _OR_DX_BX \
+        "jz short L1"   \
+        _MOV_AX_BX      \
+    "L1:"               \
+        _USE16 _MOV_DX_AX \
     __parm __caller [__bx] \
     __value         [__edx] \
     __modify __exact [__eax __ebx __edx]
@@ -1576,11 +1576,9 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _MOV_AH DOS_ALLOC_SEG    \
         __INT_21        \
         _SBB_DX_DX      \
-        _AND_BX_DX      \
-        _NOT_DX         \
-        _AND_AX_DX      \
-        _OR_AX_BX       \
-        _NOT_DX         \
+        "jz short L1"   \
+        _MOV_AX_BX      \
+    "L1:"               \
     __parm __caller [__bx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __bx __dx]
@@ -1873,9 +1871,9 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _DEC_DX         \
         _MOV_AX_W 0xff DOS_COUNTRY_INFO \
         _TEST_BH_BH     \
-        "jnz short finish" \
+        "jnz short L1"  \
         _MOV_AL_BL      \
-    "finish:"           \
+    "L1:"               \
         __INT_21        \
         _SBB_DX_DX      \
     __parm __caller [__bx] \
