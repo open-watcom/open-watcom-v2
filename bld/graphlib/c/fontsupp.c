@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <limits.h>
 #include "gdefn.h"
 #include "fontsupp.h"
+#include "roundmac.h"
 #if defined( __QNX__ )
   #include <dirent.h>
   #include <unistd.h>
@@ -163,7 +164,7 @@ static void _WCI86FAR *Alloc( unsigned short size )
   #else
     tiny_ret_t          rc;
 
-    rc = TinyAllocBlock( ( size + 15 ) / 16 );
+    rc = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( size ) );
     if( TINY_ERROR( rc ) ) {
         return( NULL );
     }
