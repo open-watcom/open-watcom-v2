@@ -69,11 +69,15 @@
 #define _PUSH_DX        0x52
 #define _PUSH_BX        0x53
 #define _PUSH_BP        0x55
+#define _PUSH_SI        0x56
+#define _PUSH_DI        0x57
 #define _POP_AX         0x58
 #define _POP_CX         0x59
 #define _POP_DX         0x5a
 #define _POP_BX         0x5b
 #define _POP_BP         0x5d
+#define _POP_SI         0x5e
+#define _POP_DI         0x5f
 
 #define _MOV_AL         0xb0
 #define _MOV_AH         0xb4
