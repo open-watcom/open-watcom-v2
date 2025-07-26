@@ -799,7 +799,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _USE16 _RCL_DX_1 \
         _USE16 _ROR_DX_1 \
         _SHL_EDX_N 16   \
-        _MOV_DX_AX      \
+        _USE16 _MOV_DX_AX \
     __parm __caller [__bx] [__cx] [__dx] [__al] \
     __value         [__edx] \
     __modify __exact [__eax __edx]
@@ -967,18 +967,21 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
         __INT_21        \
-        _RCL_DX_1       \
-        _ROR_DX_1       \
+        _SBB_BX_BX      \
+        "jnz short L1"  \
+        _MOV_AX_DX      \
+    "L1:"               \
+        _USE16 _MOV_BX_AX \
     __parm __caller [__bx] \
-    __value         [__edx] \
-    __modify __exact [__eax __edx]
+    __value         [__ebx] \
+    __modify __exact [__eax __ebx __edx]
 
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
         _MOV_AX_W _SET_ DOS_IOCTL \
         __INT_21        \
-        _RCL_DX_1       \
-        _ROR_DX_1       \
+        _SBB_DX_DX      \
+        _USE16 _AND_DX_AX \
     __parm __caller [__bx] [__dl] \
     __value         [__edx] \
     __modify __exact [__eax __edx]
@@ -1619,19 +1622,23 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
         __INT_21        \
-        _SBB_CX_CX      \
+        _SBB_BX_BX      \
+        "jnz short L1"  \
+        _MOV_AX_DX      \
+    "L1:"               \
     __parm __caller [__bx] \
-    __value         [__cx __dx] \
-    __modify __exact [__ax __cx __dx]
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx __dx]
 
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
         _MOV_AX_W _SET_ DOS_IOCTL \
         __INT_21        \
-        _SBB_CX_CX      \
+        _SBB_DX_DX      \
+        _AND_AX_DX      \
     __parm __caller [__bx] [__dl] \
-    __value         [__cx __dx] \
-    __modify __exact [__ax __cx __dx]
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
 
 #pragma aux _TinyGetCtrlBreak = \
         _MOV_AX_W _GET_ DOS_CTRL_BREAK \
