@@ -78,6 +78,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     tiny_ret_t      rc;
     unsigned int    num_of_paras;
     void_hptr       hp;
+    void_hptr       start;
 
     amount = (unsigned long)numb * size;
     if( amount == 0
@@ -90,7 +91,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) )
         return( NULL );  /* allocation failed */
-    hp = (void_hptr)_MK_FP( TINY_INFO( rc ), 0 );
+    hp = start = (void_hptr)_MK_FP( TINY_INFO( rc ), 0 );
     for( ;; ) {
         size = 0x8000;
         if( num_of_paras < 0x0800 )
@@ -101,7 +102,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
         hp = (char _WCHUGE *)hp + size;
         num_of_paras -= 0x0800;
     }
-    return( (void_hptr)_MK_FP( (unsigned short)rc, 0 ) );
+    return( start );
 #endif
 }
 

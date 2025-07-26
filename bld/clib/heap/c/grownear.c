@@ -220,8 +220,9 @@ static heapblk_nptr RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
     heapblk_nptr    heap;
-    tiny_ret_t      save_DOS_block;
-    tiny_ret_t      DOS_block;
+    tiny_ret_t      rc;
+    unsigned        save_DOS_block;
+    unsigned        DOS_block;
     dpmi_mem_block  dpmimem;
 
     __nheapshrink();
@@ -242,14 +243,16 @@ static heapblk_nptr RationalAlloc( size_t size )
         /* cannot allocate more than 64k from DOS real memory */
         return( NULL );
     }
-    save_DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( __minreal ) | 1 );
-    if( TINY_OK( save_DOS_block ) ) {
-        DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
+    rc = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( __minreal ) | 1 );
+    if( TINY_OK( rc ) ) {
+        save_DOS_block = TINY_INFO( rc );
+        rc = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
         TinyFreeBlock( save_DOS_block );
-        if( TINY_OK( DOS_block ) ) {
+        if( TINY_OK( rc ) ) {
+            DOS_block = TINY_INFO( rc );
             dpmi = (dpmi_hdr *)DPMIGetSegmentBaseAddress( DOS_block );
             dpmi->dpmi_handle = 0;
-            dpmi->dos_seg_value = TINY_INFO( DOS_block );
+            dpmi->dos_seg_value = DOS_block;
             heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr );
             return( heap );
