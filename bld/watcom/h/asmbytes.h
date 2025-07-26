@@ -233,6 +233,10 @@
   #define _REST_ES      _POP_ES
   #define _MODIF_ES
  #endif
+  #define _SAVE_ESAX    _SAVE_ES _MOV_ES_AX
+  #define _SAVE_ESCX    _SAVE_ES _MOV_ES_CX
+  #define _REST_ESCX    _MOV_CX_ES _REST_ES
+  #define _REST_ESDX    _MOV_DX_ES _REST_ES
 
  #if defined( __COMPACT__ ) \
    || defined( __LARGE__ ) \
@@ -290,6 +294,10 @@
  #define _SAVE_ES               _PUSH_ES
  #define _REST_ES               _POP_ES
  #define _MODIF_ES
+ #define _SAVE_ESAX             _SAVE_ES _MOV_ES_AX
+ #define _SAVE_ESCX             _SAVE_ES _MOV_ES_CX
+ #define _REST_ESCX             _MOV_CX_ES _REST_ES
+ #define _REST_ESDX             _MOV_DX_ES _REST_ES
 
  #define _SET_DSDX
  #define _SET_DSSI
