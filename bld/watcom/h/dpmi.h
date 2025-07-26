@@ -444,7 +444,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #pragma aux _DPMIGetSegmentBaseAddress = \
         _MOV_AX_W DPMI_0006 \
         _INT_31         \
-        _SHL_ECX_N 16   \
+        _SHL_ECX_16     \
         _USE16 _MOV_CX_DX \
     __parm __caller [__bx] \
     __value         [__ecx] \
@@ -581,7 +581,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _INT_31         \
         _SBB_BX_BX      \
         _NOT_BX         \
-        _SHL_EDX_N 16   \
+        _SHL_EDX_16     \
         _USE16 _MOV_DX_AX \
         _AND_DX_BX      \
     __parm __caller [__bx] \
@@ -881,7 +881,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _INT_31         \
         _SBB_AX_AX      \
         _NOT_AX         \
-        _SHL_EBX_N 16   \
+        _SHL_EBX_16     \
         _USE16 _MOV_BX_CX \
         _AND_BX_AX      \
     __parm __caller [] \
@@ -940,7 +940,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _INT_31         \
         _SBB_AX_AX      \
         _NOT_AX         \
-        _SHL_EBX_N 16   \
+        _SHL_EBX_16     \
         _USE16 _MOV_BX_CX \
         _AND_BX_AX      \
     __parm __caller [] \
@@ -1272,7 +1272,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_CX_BX      \
         _XOR_BX_BX      \
         _USE16 _MOV_BX_CX \
-        _SHR_ECX_N 16   \
+        _SHR_ECX_16     \
     __parm __caller [__cl] \
     __value         [__cx __ebx] \
     __modify        [__ax __ebx __ecx]
@@ -1288,7 +1288,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __modify        [__eax __edx _MODIF_DS]
 
 #pragma aux _PharlapSetRealModeInterruptVector = \
-        _SHL_EBX_N 16   \
+        _SHL_EBX_16     \
         _USE16 _MOV_BX_AX \
         _MOV_AX_W PHARLAP_2505 \
         _INT_21         \
@@ -1308,7 +1308,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 #pragma aux  _PharlapSetBothInterruptVectors = \
         _SAVE_DSCX      \
-        _SHL_ESI_N 16   \
+        _SHL_ESI_16     \
         _USE16 _MOV_SI_BX \
         _MOV_BX_SI      \
         _MOV_CL_AL      \

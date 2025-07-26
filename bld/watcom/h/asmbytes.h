@@ -201,16 +201,16 @@
 #define _GET_           0x00
 #define _SET_           0x01
 
-#define _SHR_EAX_N      0xc1 0xe8
-#define _SHR_ECX_N      0xc1 0xe9
-#define _SHR_EDX_N      0xc1 0xea
-#define _SHR_EBX_N      0xc1 0xeb
-#define _SHR_ESI_N      0xc1 0xee
-#define _SHL_EAX_N      0xc1 0xe0
-#define _SHL_ECX_N      0xc1 0xe1
-#define _SHL_EDX_N      0xc1 0xe2
-#define _SHL_EBX_N      0xc1 0xe3
-#define _SHL_ESI_N      0xc1 0xe6
+#define _SHR_EAX_16     0xc1 0xe8 16
+#define _SHR_ECX_16     0xc1 0xe9 16
+#define _SHR_EDX_16     0xc1 0xea 16
+#define _SHR_EBX_16     0xc1 0xeb 16
+#define _SHR_ESI_16     0xc1 0xee 16
+#define _SHL_EAX_16     0xc1 0xe0 16
+#define _SHL_ECX_16     0xc1 0xe1 16
+#define _SHL_EDX_16     0xc1 0xe2 16
+#define _SHL_EBX_16     0xc1 0xe3 16
+#define _SHL_ESI_16     0xc1 0xe6 16
 
 #if defined( _M_I86 )
 

@@ -798,7 +798,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         __INT_21        \
         _USE16 _RCL_DX_1 \
         _USE16 _ROR_DX_1 \
-        _SHL_EDX_N 16   \
+        _SHL_EDX_16     \
         _USE16 _MOV_DX_AX \
     __parm __caller [__bx] [__cx] [__dx] [__al] \
     __value         [__edx] \
@@ -1011,7 +1011,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         __INT_21        \
         _USE16 _SUB_CX_N 0x6c 0x07 /* 1900 */ \
         _MOV_CH_AL      \
-        _SHL_ECX_N 16   \
+        _SHL_ECX_16     \
         _USE16 _MOV_CX_DX \
     __parm __caller [] \
     __value         [__ecx] \
@@ -1020,7 +1020,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyGetTime = \
         _MOV_AH DOS_GET_TIME \
         __INT_21        \
-        _SHL_ECX_N 16   \
+        _SHL_ECX_16     \
         _USE16 _MOV_CX_DX \
     __parm __caller [] \
     __value         [__ecx] \
@@ -1132,7 +1132,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         __INT_21        \
         _USE16 _RCL_DX_1 \
         _USE16 _ROR_DX_1 \
-        _SHL_EDX_N 16   \
+        _SHL_EDX_16     \
         _USE16 _MOV_DX_CX \
     __parm __caller [__bx] \
     __value         [__edx] \
