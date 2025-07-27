@@ -132,7 +132,7 @@ void ProcSysOptInit( void )
     MemSize = 2L*1024*1024;
     ptr = (unsigned char *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF;
     ptr[*ptr + 1] = NULLCHAR;
-    cmdStart = ptr + 1;
+    cmdStart = (char *)ptr + 1;
 }
 
 
