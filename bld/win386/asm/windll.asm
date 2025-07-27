@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -92,7 +92,7 @@ assume cs:_TEXT
 ;*
 ;*** externals we need
 ;*
-extrn   Fini_:proc
+extrn   Fini32BitTask_:proc
 extrn   _DataSelector:WORD
 extrn   _StackSelector:WORD
 extrn   _EntryStackSave:DWORD
@@ -243,7 +243,7 @@ WEP     proc    far
         call    fword ptr 4[esp]        ; call __WEP
         lss     sp,[esp]                ; switch back to 16-bit stack
 no_WEP: push    0                       ; indicate no message
-        call    Fini_                   ; do final cleanup
+        call    Fini32BitTask_          ; do final cleanup
         add     sp,2                    ; clean up stack
 WEP_exit:mov    ax,1                    ; indicate success
         pop     ds                      ; restore ds
