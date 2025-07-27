@@ -36,19 +36,19 @@
 #include "bool.h"
 
 
-bhandle myopen( char *name )
+oshandle myopen( char *name )
 {
     return( CreateFile( name, GENERIC_READ+GENERIC_WRITE,
                         FILE_SHARE_READ+FILE_SHARE_WRITE, NULL,
                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL ) );
 }
 
-void myclose( bhandle handle )
+void myclose( oshandle handle )
 {
     CloseHandle( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( oshandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
@@ -59,7 +59,7 @@ int myread( bhandle handle, void *buff, int len )
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( oshandle handle, void *buff, int len )
 {
     DWORD               bytes;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,23 +38,23 @@
 extern struct ResourceTagStructure             *TimerTag;
 extern void DelayMyself( LONG timeInTicks, struct ResourceTagStructure *TimerResourceTag );
 
-bhandle myopen( char *name )
+oshandle myopen( char *name )
 {
     return( open( name, O_RDWR+O_BINARY ) );
 }
 
-void myclose( bhandle handle )
+void myclose( oshandle handle )
 {
     close( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( oshandle handle, void *buff, int len )
 {
     return( read( handle, buff, len ) );
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( oshandle handle, void *buff, int len )
 {
     return( write( handle, buff, len ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,21 +90,21 @@ enum {
 #define BROKEN_PIPE       109
 
 #if defined( __NT__ )
-#define bhandle         HANDLE
-#define BHANDLE_INVALID INVALID_HANDLE_VALUE
-#define BHANDLE_STDERR  GetStdHandle( STD_ERROR_HANDLE )
+#define oshandle            HANDLE
+#define OSHANDLE_INVALID    INVALID_HANDLE_VALUE
+#define OSHANDLE_STDERR     GetStdHandle( STD_ERROR_HANDLE )
 #elif defined( __OS2__ )
-#define bhandle         HFILE
-#define BHANDLE_INVALID ((HFILE) - 1L)
-#define BHANDLE_STDERR  2
+#define oshandle            HFILE
+#define OSHANDLE_INVALID    ((HFILE)-1)
+#define OSHANDLE_STDERR     2
 #else
-#define bhandle         int
-#define BHANDLE_INVALID (-1)
-#define BHANDLE_STDERR  2
+#define oshandle            int
+#define OSHANDLE_INVALID    (-1)
+#define OSHANDLE_STDERR     2
 #endif
 
-extern bhandle myopen( char * );
-extern void myclose( bhandle );
-extern int myread( bhandle, void *, int );
-extern int mywrite( bhandle, void *, int );
+extern oshandle myopen( char * );
+extern void myclose( oshandle );
+extern int myread( oshandle, void *, int );
+extern int mywrite( oshandle, void *, int );
 extern void mysnooze( void );

@@ -111,6 +111,7 @@ void CallRealMode( unsigned long dos_addr )
 {
     D16REGS     regs;
 
+    memset( &regs, 0, sizeof( regs ) );
     regs.ds = regs.es = dos_addr >> 16; /* the trap file runs tiny -zu */
     _DBG_Writeln( "Calling RealMode" );
     rsi_rm_far_call( MK_FP( dos_addr >> 16, dos_addr & 0xffff ), &regs, &regs );

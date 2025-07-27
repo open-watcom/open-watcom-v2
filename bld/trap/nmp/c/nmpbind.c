@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 #include "trperr.h"
 #include <process.h>
 
-HPIPE   BindHdl;
+HPIPE   BindHandle;
 
 typedef struct a_pipe {
     HPIPE       read_hdl;
@@ -357,8 +357,8 @@ static void CheckForTraffic( HPIPE hdl )
 
 static void Error( char *msg )
 {
-    mywrite( BHANDLE_STDERR, msg, strlen( msg ) );
-    mywrite( BHANDLE_STDERR, "\r\n", 2 );
+    mywrite( OSHANDLE_STDERR, msg, strlen( msg ) );
+    mywrite( OSHANDLE_STDERR, "\r\n", 2 );
     exit( 1 );
 }
 
@@ -366,26 +366,26 @@ int main( int argc, char *argv[] )
 {
     APIRET      rc;
     char        req;
-    bhandle     bind;
+    oshandle    handle;
 
     if( argc > 1 && argv[1][0] == 'q' ) {
-        bind = myopen( BINDERY );
-        if( bind != BHANDLE_INVALID ) {
+        handle = myopen( BINDERY );
+        if( handle != OSHANDLE_INVALID ) {
             req = BIND_KILL;
-            mywrite( bind, &req, sizeof( req ) );
-            myread( bind, &req, sizeof( req ) );
-            myclose( bind );
+            mywrite( handle, &req, sizeof( req ) );
+            myread( handle, &req, sizeof( req ) );
+            myclose( handle );
         }
         exit( 0 );
     }
-    rc = PipeOpen( BINDERY, &BindHdl );
+    rc = PipeOpen( BINDERY, &BindHandle );
     if( rc != 0 ) {
         if( rc == PIPE_ALREADY_OPEN )
             Error( TRP_NMPBIND_running );
         Error( TRP_OS2_no_pipe );
     }
     for( ;; ) {
-        CheckForTraffic( BindHdl );
+        CheckForTraffic( BindHandle );
     }
     return( 0 );
 }
