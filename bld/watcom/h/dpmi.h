@@ -36,18 +36,81 @@
 #include "watcom.h"
 #include "dosfuncx.h"
 #include "descript.h"
+#include "asmbytes.h"
 
 
-#ifdef _M_I86
-#define DPMIDATA    __far
-#else
+#if defined( __FLAT__ )
 #define DPMIDATA
+#define DPMIDATAREG
+#else
+#define DPMIDATA        __far
+#define DPMIDATAREG     __es
 #endif
 
 #define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
 #define DPMI_OK(rc)     ((int_32)(rc) >= 0)
 #define DPMI_INFO(rc)   ((uint_16)(rc))
 #define DPMI_LINFO(rc)  ((uint_32)(rc))
+
+#define DPMISetWatch(a,b,c)                     _DPMISetWatch( (a) >> 16, (a), (b), (c) )
+#define DPMIClearWatch                          _DPMIClearWatch
+#define DPMITestWatch                           _DPMITestWatch
+#define DPMIResetWatch                          _DPMIResetWatch
+#define DPMILockLinearRegion(a,b)               _DPMILockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
+#define DPMIUnlockLinearRegion(a,b)             _DPMIUnlockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
+#define DPMIGetDescriptor                       _DPMIGetDescriptor
+#define DPMISetDescriptor                       _DPMISetDescriptor
+#define DPMICreateCodeSegmentAliasDescriptor    _DPMICreateCodeSegmentAliasDescriptor
+#define DPMIAllocateLDTDescriptors              _DPMIAllocateLDTDescriptors
+#define DPMISegmentToDescriptor                 _DPMISegmentToDescriptor
+#define DPMIFreeLDTDescriptor                   _DPMIFreeLDTDescriptor
+#define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
+#define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
+#define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
+#define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
+#define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
+#define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
+#define DPMICallRealModeProcedureWithIRETFrame  _DPMICallRealModeProcedureWithIRETFrame
+#define DPMIGetNextSelectorIncrementValue       _DPMIGetNextSelectorIncrementValue
+#define DPMIGetRealModeInterruptVector          _DPMIGetRealModeInterruptVector
+#define DPMISetRealModeInterruptVector          _DPMISetRealModeInterruptVector
+#define DPMIAllocateRealModeCallBackAddress     _DPMIAllocateRealModeCallBackAddress
+#define DPMIFreeRealModeCallBackAddress         _DPMIFreeRealModeCallBackAddress
+#define DPMIGetPMInterruptVector                _DPMIGetPMInterruptVector
+#define DPMISetPMInterruptVector                _DPMISetPMInterruptVector
+#define DPMISetPMExceptionVector                _DPMISetPMExceptionVector
+#define DPMIGetPMExceptionVector                _DPMIGetPMExceptionVector
+
+#define DPMIAllocateMemoryBlock(a,b)            _DPMIAllocateMemoryBlock( (a), (b) >> 16, (b) )
+#define DPMIFreeMemoryBlock(a)                  _DPMIFreeMemoryBlock( (a) >> 16, (a) )
+#define DPMIResizeMemoryBlock(a,b,c)            _DPMIResizeMemoryBlock( (a), (b) >> 16, (b), (c) >> 16, (c) )
+#define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
+#define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
+#define DPMIIdle                                _DPMIIdle
+#define DPMIModeDetect                          _DPMIModeDetect
+#define DPMIRawRMtoPMAddr                       _DPMIRawRMtoPMAddr
+#define DPMIRawPMtoRMAddr                       _DPMIRawPMtoRMAddr
+#define DPMISaveRMStateAddr                     _DPMISaveRMStateAddr
+#define DPMISavePMStateAddr                     _DPMISavePMStateAddr
+#define DPMISaveStateSize                       _DPMISaveStateSize
+#define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
+#define DPMIGetVersion                          _DPMIGetVersion
+#define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
+
+#define PharlapAllocateDOSMemoryBlock           _PharlapAllocateDOSMemoryBlock
+#define PharlapFreeDOSMemoryBlock               _PharlapFreeDOSMemoryBlock
+#define PharlapGetPMInterruptVector             _PharlapGetPMInterruptVector
+#define PharlapGetRealModeInterruptVector       _PharlapGetRealModeInterruptVector
+#define PharlapSetPMInterruptVector             _PharlapSetPMInterruptVector
+#define PharlapSetPMInterruptVector_passup      _PharlapSetPMInterruptVector_passup
+#define PharlapSetBothInterruptVectors          _PharlapSetBothInterruptVectors
+#define PharlapSetRealModeInterruptVector       _PharlapSetRealModeInterruptVector
+#define PharlapSimulateRealModeInterrupt        _PharlapSimulateRealModeInterrupt
+#define PharlapSimulateRealModeInterruptExt     _PharlapSimulateRealModeInterruptExt
+#define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
+
+#define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
+#define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -185,66 +248,6 @@ typedef uint_32     dpmi_ret;
 typedef void __far  *intr_addr;
 typedef void __far  *proc_addr;
 
-#define DPMISetWatch(a,b,c)                     _DPMISetWatch( (a) >> 16, (a), (b), (c) )
-#define DPMIClearWatch                          _DPMIClearWatch
-#define DPMITestWatch                           _DPMITestWatch
-#define DPMIResetWatch                          _DPMIResetWatch
-#define DPMILockLinearRegion(a,b)               _DPMILockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
-#define DPMIUnlockLinearRegion(a,b)             _DPMIUnlockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
-#define DPMIGetDescriptor                       _DPMIGetDescriptor
-#define DPMISetDescriptor                       _DPMISetDescriptor
-#define DPMICreateCodeSegmentAliasDescriptor    _DPMICreateCodeSegmentAliasDescriptor
-#define DPMIAllocateLDTDescriptors              _DPMIAllocateLDTDescriptors
-#define DPMISegmentToDescriptor                 _DPMISegmentToDescriptor
-#define DPMIFreeLDTDescriptor                   _DPMIFreeLDTDescriptor
-#define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
-#define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
-#define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
-#define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
-#define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
-#define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
-#define DPMICallRealModeProcedureWithIRETFrame  _DPMICallRealModeProcedureWithIRETFrame
-#define DPMIGetNextSelectorIncrementValue       _DPMIGetNextSelectorIncrementValue
-#define DPMIGetRealModeInterruptVector          _DPMIGetRealModeInterruptVector
-#define DPMISetRealModeInterruptVector          _DPMISetRealModeInterruptVector
-#define DPMIAllocateRealModeCallBackAddress     _DPMIAllocateRealModeCallBackAddress
-#define DPMIFreeRealModeCallBackAddress         _DPMIFreeRealModeCallBackAddress
-#define DPMIGetPMInterruptVector                _DPMIGetPMInterruptVector
-#define DPMISetPMInterruptVector                _DPMISetPMInterruptVector
-#define DPMISetPMExceptionVector                _DPMISetPMExceptionVector
-#define DPMIGetPMExceptionVector                _DPMIGetPMExceptionVector
-
-#define DPMIAllocateMemoryBlock(a,b)            _DPMIAllocateMemoryBlock( (a), (b) >> 16, (b) )
-#define DPMIFreeMemoryBlock(a)                  _DPMIFreeMemoryBlock( (a) >> 16, (a) )
-#define DPMIResizeMemoryBlock(a,b,c)            _DPMIResizeMemoryBlock( (a), (b) >> 16, (b), (c) >> 16, (c) )
-#define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
-#define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
-#define DPMIIdle                                _DPMIIdle
-#define DPMIModeDetect                          _DPMIModeDetect
-#define DPMIRawRMtoPMAddr                       _DPMIRawRMtoPMAddr
-#define DPMIRawPMtoRMAddr                       _DPMIRawPMtoRMAddr
-#define DPMISaveRMStateAddr                     _DPMISaveRMStateAddr
-#define DPMISavePMStateAddr                     _DPMISavePMStateAddr
-#define DPMISaveStateSize                       _DPMISaveStateSize
-#define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
-#define DPMIGetVersion                          _DPMIGetVersion
-#define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
-
-#define PharlapAllocateDOSMemoryBlock           _PharlapAllocateDOSMemoryBlock
-#define PharlapFreeDOSMemoryBlock               _PharlapFreeDOSMemoryBlock
-#define PharlapGetPMInterruptVector             _PharlapGetPMInterruptVector
-#define PharlapGetRealModeInterruptVector       _PharlapGetRealModeInterruptVector
-#define PharlapSetPMInterruptVector             _PharlapSetPMInterruptVector
-#define PharlapSetPMInterruptVector_passup      _PharlapSetPMInterruptVector_passup
-#define PharlapSetBothInterruptVectors          _PharlapSetBothInterruptVectors
-#define PharlapSetRealModeInterruptVector       _PharlapSetRealModeInterruptVector
-#define PharlapSimulateRealModeInterrupt        _PharlapSimulateRealModeInterrupt
-#define PharlapSimulateRealModeInterruptExt     _PharlapSimulateRealModeInterruptExt
-#define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
-
-#define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
-#define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
-
 /*
  * C run-time library flag indicating that DPMI services (host) is available
  */
@@ -309,8 +312,6 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
 extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
 extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
-
-#include "asmbytes.h"
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -529,19 +530,17 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [__es __di] \
+    __parm __caller [__bx] [DPMIDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _DPMIGetDescriptor = \
-        _SET_ES         \
         _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller [__bx] [__edi] \
+    __parm __caller [__bx] [DPMIDATAREG __edi] \
     __value         [__eax] \
-    __modify __exact [__eax _MODIF_ES]
+    __modify __exact [__eax]
 #endif
 
 #ifdef _M_I86
@@ -549,19 +548,17 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [__es __di] \
+    __parm __caller [__bx] [DPMIDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _DPMISetDescriptor = \
-        _SET_ES         \
         _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller [__bx] [__edi] \
+    __parm __caller [__bx] [DPMIDATAREG __edi] \
     __value         [__eax] \
-    __modify __exact [__eax _MODIF_ES]
+    __modify __exact [__eax]
 #endif
 
 #ifdef _M_I86
@@ -721,19 +718,17 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bl] [__bh] [__cx] [__es __di] \
+    __parm __caller [__bl] [__bh] [__cx] [DPMIDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        _SET_ES         \
         _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller [__bl] [__bh] [__cx] [__edi] \
+    __parm __caller [__bl] [__bh] [__cx] [DPMIDATAREG __edi] \
     __value         [__eax] \
-    __modify __exact [__eax _MODIF_ES]
+    __modify __exact [__eax]
 #endif
 
 /*
@@ -746,20 +741,18 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [__es __di] \
+    __parm __caller     [__bh] [__cx] [DPMIDATAREG __di] \
     __value             [__ax] \
     __modify __exact    [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
-        _SET_ES         \
         _STC /* for missing service check */\
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller     [__bh] [__cx] [__edi] \
+    __parm __caller     [__bh] [__cx] [DPMIDATAREG __edi] \
     __value             [__eax] \
-    __modify __exact    [__eax _MODIF_ES]
+    __modify __exact    [__eax]
 #endif
 
 /*
@@ -772,20 +765,18 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [__es __di] \
+    __parm __caller     [__bh] [__cx] [DPMIDATAREG __di] \
     __value             [__ax] \
     __modify __exact    [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
-        _SET_ES         \
         _STC /* for missing service check */\
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller     [__bh] [__cx] [__edi] \
+    __parm __caller     [__bh] [__cx] [DPMIDATAREG __edi] \
     __value             [__eax] \
-    __modify __exact    [__eax _MODIF_ES]
+    __modify __exact    [__eax]
 #endif
 
 /*
@@ -803,12 +794,11 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_CX_AX      \
         _AND_DX_AX      \
         _REST_DS         \
-    __parm __caller [__dx __si] [__es __di] \
+    __parm __caller [__dx __si] [DPMIDATAREG __di] \
     __value         [__cx __dx] \
     __modify __exact [__ax __cx __dx _MODIF_DS]
 #else
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        _SET_ES         \
         _SAVE_DSDX      \
         _STC /* missing service check */\
         _MOV_AX_W DPMI_0303 \
@@ -818,10 +808,9 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_CX_AX      \
         _AND_DX_AX      \
         _REST_DS        \
-        _RST_ES         \
-    __parm __caller [__dx __esi] [__edi] \
+    __parm __caller [__dx __esi] [DPMIDATAREG __edi] \
     __value         [__cx __edx] \
-    __modify __exact [__eax __ecx __edx _MODIF_DS _MODIF_ES]
+    __modify __exact [__eax __ecx __edx _MODIF_DS]
 #endif
 
 /*
@@ -981,19 +970,17 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__es __di] \
+    __parm __caller [DPMIDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _DPMIGetFreeMemoryInformation = \
-        _SET_ES         \
         _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
-        _RST_ES         \
-    __parm __caller [__edi] \
+    __parm __caller [DPMIDATAREG __edi] \
     __value         [__eax] \
-    __modify __exact [__eax _MODIF_ES]
+    __modify __exact [__eax]
 #endif
 
 #ifdef _M_I86

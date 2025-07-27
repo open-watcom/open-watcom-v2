@@ -760,7 +760,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _RST_DS         \
     __parm __caller [__bx] [__dx __eax] [__ecx] \
     __value         [__eax] \
-    __modify __exact [__eax __edx]
+    __modify __exact [__eax __edx _MODIF_DS]
 
 #pragma aux _nTinyRead = \
         _MOV_AH DOS_READ \
@@ -780,7 +780,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _RST_DS         \
     __parm __caller [__bx] [__dx __eax] [__ecx] \
     __value         [__eax] \
-    __modify __exact [__eax __edx]
+    __modify __exact [__eax __edx _MODIF_DS]
 
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
@@ -791,7 +791,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _ROR_AX_1       \
     __parm __caller [__bx] [__cx] [__dx] [__al] [__edi] \
     __value         [__eax] \
-    __modify __exact [__eax __edx]
+    __modify __exact [__eax __dx]
 
 #pragma aux _TinySeek = \
         _MOV_AH DOS_LSEEK \
@@ -1173,7 +1173,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _ROR_AX_1       \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__eax] \
-    __modify __exact [__eax __ecx __edx __edi __esi]
+    __modify __exact [__eax]
 
 #pragma aux _TinyUnlock = \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
@@ -1182,7 +1182,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _ROR_AX_1       \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__eax] \
-    __modify __exact [__eax __ecx __edx __edi __esi]
+    __modify __exact [__eax]
 
 #elif defined( _M_I86 )
 
@@ -1315,8 +1315,8 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 
 #pragma aux _TinyCommitFile = \
-        _MOV_AH DOS_COMMIT_FILE    \
         _CLC            \
+        _MOV_AH DOS_COMMIT_FILE    \
         __INT_21        \
         _SBB_DX_DX      \
     __parm __caller [__bx] \
@@ -1781,9 +1781,9 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _SAVE_DSCS      \
         _MOV_AH DOS_SET_INT \
         __INT_21        \
-        _REST_DS         \
+        _REST_DS        \
     __parm __caller [__al] [__dx] \
-    __value           \
+    __value         \
     __modify __exact [__ah _MODIF_DS]
 
 #pragma aux _TinySetVect = \
@@ -1942,7 +1942,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _SBB_DX_DX      \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__dx __ax] \
-    __modify __exact [__ax __dx __di __si]
+    __modify __exact [__ax __dx]
 
 #pragma aux _TinyUnlock = \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
@@ -1950,7 +1950,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _SBB_DX_DX      \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__dx __ax] \
-    __modify __exact [__ax __dx __di __si]
+    __modify __exact [__ax __dx]
 
 #pragma aux _TinyCreatePSP = \
         _PUSHF          \
