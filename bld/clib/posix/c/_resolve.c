@@ -49,7 +49,7 @@
 
 
 /* Our send/receive buffer size */
-#define DNS_BUFFER_SIZE     0xFFFF
+#define DNS_BUFFER_SIZE     0x1000
 
 struct __dns_header
 {
