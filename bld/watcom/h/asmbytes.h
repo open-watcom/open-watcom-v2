@@ -11,8 +11,8 @@
 ****************************************************************************/
 
 
-#ifndef _ASMENC_H_INCLUDED
-#define _ASMENC_H_INCLUDED
+#ifndef _ASMBYTES_H_INCLUDED
+#define _ASMBYTES_H_INCLUDED
 
 /*
  * machine code instructions
@@ -122,13 +122,16 @@
 #define _MOV_AL_BL      0x88 0xd8
 
 #define _NOT_AX         0xf7 0xd0
+#define _NOT_CX         0xf7 0xd1
 #define _NOT_DX         0xf7 0xd2
 #define _NOT_BX         0xf7 0xd3
 #define _NOT_DI         0xf7 0xd7
 #define _INC_AX         0x40
+#define _INC_CX         0x41
 #define _INC_DX         0x42
 #define _INC_BX         0x43
 #define _DEC_AX         0x48
+#define _DEC_CX         0x49
 #define _DEC_DX         0x4a
 #define _DEC_BX         0x4b
 #define _SUB_CX_N       0x81 0xe9

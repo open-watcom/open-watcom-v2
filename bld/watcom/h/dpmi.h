@@ -583,7 +583,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_DX_BX      \
     __parm __caller [__bx] \
     __value         [__edx] \
-    __modify [__eax __ebx __edx]
+    __modify __exact [__eax __ebx __edx]
 #endif
 
 #ifdef _M_I86
@@ -1218,7 +1218,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 /*
  * if failed then return zero value
- * if OK then return uint_16 value
+ * if OK then return allocated segment value
  */
 #pragma aux _PharlapAllocateDOSMemoryBlock = \
         _MOV_AX_W PHARLAP_25C0 \
@@ -1248,7 +1248,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W PHARLAP_2502 \
         _INT_21         \
         _MOV_CX_ES      \
-        _REST_ES         \
+        _REST_ES        \
     __parm __caller [__cl] \
     __value         [__cx __ebx] \
     __modify __exact [__ax __ebx __cx _MODIF_ES]
@@ -1262,7 +1262,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _SHR_ECX_16     \
     __parm __caller [__cl] \
     __value         [__cx __ebx] \
-    __modify        [__ax __ebx __ecx]
+    __modify __exact [__ax __ebx __ecx]
 
 #pragma aux  _PharlapSetPMInterruptVector = \
         _SAVE_DSDX      \
@@ -1272,7 +1272,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS        \
     __parm __caller [__cl] [__dx __eax] \
     __value         \
-    __modify        [__eax __edx _MODIF_DS]
+    __modify __exact [__eax __edx _MODIF_DS]
 
 #pragma aux _PharlapSetRealModeInterruptVector = \
         _SHL_EBX_16     \
@@ -1281,7 +1281,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _INT_21         \
     __parm __caller [__cl] [__bx __eax] \
     __value         \
-    __modify        [__eax __ebx]
+    __modify __exact [__eax __ebx]
 
 #pragma aux  _PharlapSetPMInterruptVector_passup = \
         _SAVE_DSCX      \
@@ -1291,7 +1291,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS         \
     __parm __caller [__al] [__cx __edx] \
     __value         \
-    __modify        [__eax __ecx __edx _MODIF_DS]
+    __modify __exact [__eax __ecx _MODIF_DS]
 
 #pragma aux  _PharlapSetBothInterruptVectors = \
         _SAVE_DSCX      \
@@ -1304,7 +1304,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _REST_DS         \
     __parm __caller [__al] [__cx __edx] [__si __ebx] \
     __value         \
-    __modify        [__eax __ebx __ecx __edx __esi _MODIF_DS]
+    __modify __exact [__eax __ebx __ecx __esi _MODIF_DS]
 
 /*
  * if failed then return (uint_32)-1
@@ -1320,16 +1320,19 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 #pragma aux _PharlapSimulateRealModeInterrupt = \
         _PUSH_BP        \
+        _PUSH_SI        \
         _MOV_AX_W PHARLAP_2511 \
         _INT_21         \
         _SBB_AX_AX      \
+        _POP_SI         \
         _POP_BP         \
     __parm __caller [__edx] [__ebx] [__ecx] [__edi] \
     __value         [__eax] \
-    __modify        [__esi]
+    __modify __exact [__eax __ebx __ecx __edi]
 
 #pragma aux _PharlapSimulateRealModeInterruptExt = \
         _PUSH_BP        \
+        _PUSH_SI        \
         "mov ebx,[edx+18]" \
         "mov ecx,[edx+22]" \
         "mov edi,[edx+26]" \
@@ -1343,10 +1346,11 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         "mov [edx+22],ecx" \
         "mov [edx+18],ebx" \
         _SBB_AX_AX      \
+        _POP_SI         \
         _POP_BP         \
     __parm __caller [__edx] \
     __value         [__eax] \
-    __modify        [__ebx __ecx __edi __esi]
+    __modify __exact [__eax __ebx __ecx __edi]
 
 
 /*************************************
