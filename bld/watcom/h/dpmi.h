@@ -741,18 +741,18 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [DPMIDATAREG __di] \
-    __value             [__ax] \
-    __modify __exact    [__ax]
+    __parm __caller [__bh] [__cx] [DPMIDATAREG __di] \
+    __value         [__ax] \
+    __modify __exact [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
         _STC /* for missing service check */\
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [DPMIDATAREG __edi] \
-    __value             [__eax] \
-    __modify __exact    [__eax]
+    __parm __caller [__bh] [__cx] [DPMIDATAREG __edi] \
+    __value         [__eax] \
+    __modify __exact [__eax]
 #endif
 
 /*
@@ -765,18 +765,18 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [DPMIDATAREG __di] \
-    __value             [__ax] \
-    __modify __exact    [__ax]
+    __parm __caller [__bh] [__cx] [DPMIDATAREG __di] \
+    __value         [__ax] \
+    __modify __exact [__ax]
 #else
 #pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
         _STC /* for missing service check */\
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller     [__bh] [__cx] [DPMIDATAREG __edi] \
-    __value             [__eax] \
-    __modify __exact    [__eax]
+    __parm __caller [__bh] [__cx] [DPMIDATAREG __edi] \
+    __value         [__eax] \
+    __modify __exact [__eax]
 #endif
 
 /*
@@ -1112,7 +1112,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _POP_ES         \
         _POP_DS         \
     __parm __caller [__esi] \
-    __value [__cx __edi] \
+    __value         [__cx __edi] \
     __modify __exact [__eax __ebx __ecx __edx __esi]
 #endif
 
@@ -1315,7 +1315,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _SBB_AX_AX      \
         _OR_CX_AX       \
     __parm __caller [__bx] \
-    __value [__ecx] \
+    __value         [__ecx] \
     __modify __exact [__eax __bx __ecx]
 
 #pragma aux _PharlapSimulateRealModeInterrupt = \
