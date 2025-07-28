@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +40,19 @@ _WCRTLINK time_t time( time_t *timer )
 {
     struct tm       t;
     time_t          seconds;
+#if 0
     int             milliseconds;
 
     milliseconds = __getctime( &t );        /* get raw time and date */
     if( milliseconds >= 500 )
         t.tm_sec++;
+#else
+    /*
+     * using the standard POSIX specification
+     * for elapsed seconds for all platforms
+     */
+    __getctime( &t );                       /* get raw time and date */
+#endif
     seconds = mktime( &t );
     if( timer != NULL )
         *timer = seconds;
