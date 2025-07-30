@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +32,22 @@
 
 #include "gdefn.h"
 #include "gbios.h"
-#if !defined( _M_I86 )
-#include "extender.h"
-#include "rmalloc.h"
-#include "realmod.h"
-#endif
 #if defined( __DOS__ )
-#include "getltdos.h"
+    #include "getltdos.h"
+    #include "realmod.h"
+    #if !defined( _M_I86 )
+        #include "extender.h"
+        #include "rmalloc.h"
+    #endif
+#elif defined( __QNX__ )        // 16 and 32 bit QNX
+    #include <stdio.h>
+    #include <fcntl.h>
+    #include <sys/mman.h>
+    #include <sys/seginfo.h>
+    #include <sys/types.h>
+    #if defined( _M_I86 )
+        #include <sys/slib16.h>
+    #endif
 #endif
 
 
@@ -50,17 +59,6 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #if defined( __QNX__ )        // 16 and 32 bit QNX
-
-#include <stdio.h>
-#include <i86.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/seginfo.h>
-#include <sys/types.h>
-#if defined( _M_I86 )
-  #include <sys/slib16.h>
-#endif
-
 
 static char __far *qnx_mmap_physical( long addr, unsigned long len, unsigned perms )
 //==================================================================================
@@ -125,13 +123,13 @@ void _InitSegments( void )
 
 #elif defined( DOSX286 )        // 286 DOS-Extender
 
-
 #if 0
 #include "phapi.h"
 #else
 typedef unsigned short USHORT;
 typedef unsigned long ULONG;
 typedef unsigned short __far * PSEL;
+
 extern void __far __pascal DosMapRealSeg( USHORT, ULONG, PSEL );
 extern void __far __pascal DosGetBIOSSeg( PSEL );
 extern void __far __pascal DosCreateCSAlias( USHORT, PSEL );
@@ -155,7 +153,6 @@ static struct seg_table _SegTable[NUM_SELECTORS] = {
 
 void _InitSegments( void )
 //========================
-
 {
     int                 i;
     struct seg_table    *p;
@@ -175,57 +172,22 @@ void _InitSegments( void )
 
 #else           // normal 16 and 32 bit DOS
 
-
-#if defined( _M_I86 )
-extern short os_version( void );
-#pragma aux os_version = \
-        "push bx"       \
-        "push cx"       \
-        "push dx"       \
-        "mov ah,30h"    \
+extern unsigned char    dos_version( void );
+#pragma aux dos_version = \
+        "mov ax,3000h"  \
         "int 21h"       \
-        "pop dx"        \
-        "pop cx"        \
-        "pop bx"        \
     __parm      [] \
-    __value     [__ax] \
-    __modify    []
-#endif
-
+    __value     [__al] \
+    __modify __exact [ __ax __bx __cx __dx]
 
 void _InitSegments( void )
 //========================
-
 {
-//    unsigned short      seg;
-    unsigned char       os_major;
     dbcs_pair           *p;
     dbcs_pair __far     *s;
 
-    _StackSeg = _FP_SEG( &os_major );        // point to stack segment
+    _StackSeg = _FP_SEG( &p );          // point to stack segment
 #if !defined( _M_I86 )
-#if 0
-    if( _IsRational() || _IsCodeBuilder() ) {
-        seg = _FP_SEG( &_BiosSeg );
-    } else if( _IsFlashTek() ) {        // FlashTek
-        seg = __x386_zero_base_selector;
-    } else {
-        // variables already initialized to PharLap defaults
-        seg = 0;
-    }
-    if( seg != 0 ) {
-        _BiosSeg = seg;
-        _MonoSeg = seg;
-        _CgaSeg  = seg;
-        _EgaSeg  = seg;
-        _RomSeg  = seg;
-        _BiosOff = 0x00000400;
-        _MonoOff = 0x000B0000;
-        _CgaOff  = 0x000B8000;
-        _EgaOff  = 0x000A0000;
-        _RomOff  = 0x000C0000;
-    }
-#else
     _BiosSeg = _ExtenderRealModeSelector;
     _MonoSeg = _ExtenderRealModeSelector;
     _CgaSeg  = _ExtenderRealModeSelector;
@@ -237,16 +199,10 @@ void _InitSegments( void )
     _EgaOff  = 0x000A0000;
     _RomOff  = 0x000C0000;
 #endif
-#endif
+
     // check for DBCS
     _IsDBCS = FALSE;
-#if defined( _M_I86 )
-    os_major = (unsigned char)os_version();
-#else
-    os_major = _RMInterrupt( 0x21, 0x3000, 0x0, 0x0, 0x0, 0x0, 0x0 );
-#endif
-
-    if( os_major >= 5 ) {
+    if( dos_version() >= 5 ) {
         // The DBCS vector table call is not supported in earlier versions
         p = _DBCSPairs;
         s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
