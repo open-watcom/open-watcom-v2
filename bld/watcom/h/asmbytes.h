@@ -321,4 +321,12 @@
 
 #endif
 
+#if defined( __FLAT__ )
+#define ESDATA
+#define ESDATAREG
+#else
+#define ESDATA          __far
+#define ESDATAREG       __es
+#endif
+
 #endif

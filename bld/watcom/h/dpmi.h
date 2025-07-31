@@ -39,14 +39,6 @@
 #include "asmbytes.h"
 
 
-#if defined( __FLAT__ )
-#define DPMIDATA
-#define DPMIDATAREG
-#else
-#define DPMIDATA        __far
-#define DPMIDATAREG     __es
-#endif
-
 #define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
 #define DPMI_OK(rc)     ((int_32)(rc) >= 0)
 #define DPMI_INFO(rc)   ((uint_16)(rc))
@@ -254,7 +246,7 @@ typedef void __far  *proc_addr;
 extern unsigned char _DPMI;
 
 extern int      _DPMIFreeRealModeCallBackAddress( proc_addr proc );
-extern proc_addr _DPMIAllocateRealModeCallBackAddress( proc_addr proc, dpmi_regs_struct DPMIDATA *dr );
+extern proc_addr _DPMIAllocateRealModeCallBackAddress( proc_addr proc, dpmi_regs_struct ESDATA *dr );
 extern intr_addr _DPMIGetRealModeInterruptVector( uint_8 iv );
 extern int      _DPMISetPMInterruptVector( uint_8 iv, intr_addr intr );
 extern int      _DPMISetPMExceptionVector( uint_8 iv, proc_addr proc );
@@ -263,7 +255,7 @@ extern intr_addr _DPMIGetPMInterruptVector( uint_8 iv );
 extern void     _DPMISetRealModeInterruptVector( uint_8 iv, intr_addr intr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
-extern void     _DPMIGetVersion( version_info DPMIDATA * );
+extern void     _DPMIGetVersion( version_info _WCI86FAR * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
 extern int_32   _DPMISegmentToDescriptor( uint_16 );
 extern int      _DPMIFreeLDTDescriptor( uint_16 );
@@ -272,18 +264,18 @@ extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetSegmentLimit( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
-extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block DPMIDATA *, uint_16 hiw, uint_16 low );
-extern int      _DPMIResizeMemoryBlock( dpmi_mem_block DPMIDATA *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
+extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw, uint_16 low );
+extern int      _DPMIResizeMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
 extern int      _DPMIFreeMemoryBlock( uint_16 hiw, uint_16 low );
 extern int      _DPMILockLinearRegion( uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
 extern int      _DPMIUnlockLinearRegion( uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
-extern int      _DPMIGetDescriptor( uint_16, descriptor DPMIDATA * );
-extern int      _DPMISetDescriptor( uint_16, descriptor DPMIDATA * );
+extern int      _DPMIGetDescriptor( uint_16, descriptor ESDATA * );
+extern int      _DPMISetDescriptor( uint_16, descriptor ESDATA * );
 extern dpmi_ret _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
-extern int      _DPMIGetFreeMemoryInformation( dpmi_mem DPMIDATA * );
-extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct DPMIDATA *dr );
-extern int      _DPMICallRealModeProcedureWithFarReturnFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct DPMIDATA *dr );
-extern int      _DPMICallRealModeProcedureWithIRETFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct DPMIDATA *dr );
+extern int      _DPMIGetFreeMemoryInformation( dpmi_mem ESDATA * );
+extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
+extern int      _DPMICallRealModeProcedureWithFarReturnFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
+extern int      _DPMICallRealModeProcedureWithIRETFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
 extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern proc_addr _DPMIRawPMtoRMAddr( void );
@@ -291,7 +283,7 @@ extern uint_32  _DPMIRawRMtoPMAddr( void );
 extern proc_addr _DPMISaveRMStateAddr( void );
 extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
-extern proc_addr _DPMIGetVendorSpecificAPI( char DPMIDATA * );
+extern proc_addr _DPMIGetVendorSpecificAPI( char * );
 
 extern dpmi_ret _DPMISetWatch( uint_16 hiw, uint_16 low, uint_8 len, uint_8 type );
 extern dpmi_ret _DPMIClearWatch( uint_16 handle );
@@ -530,7 +522,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [DPMIDATAREG __di] \
+    __parm __caller [__bx] [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -538,7 +530,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [DPMIDATAREG __edi] \
+    __parm __caller [__bx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
@@ -548,7 +540,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [DPMIDATAREG __di] \
+    __parm __caller [__bx] [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -556,7 +548,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_000C \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [DPMIDATAREG __edi] \
+    __parm __caller [__bx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
@@ -718,7 +710,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bl] [__bh] [__cx] [DPMIDATAREG __di] \
+    __parm __caller [__bl] [__bh] [__cx] [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -726,7 +718,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0300 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bl] [__bh] [__cx] [DPMIDATAREG __edi] \
+    __parm __caller [__bl] [__bh] [__cx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
@@ -741,7 +733,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bh] [__cx] [DPMIDATAREG __di] \
+    __parm __caller [__bh] [__cx] [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -750,7 +742,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0301 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bh] [__cx] [DPMIDATAREG __edi] \
+    __parm __caller [__bh] [__cx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
@@ -765,7 +757,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bh] [__cx] [DPMIDATAREG __di] \
+    __parm __caller [__bh] [__cx] [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -774,7 +766,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0302 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bh] [__cx] [DPMIDATAREG __edi] \
+    __parm __caller [__bh] [__cx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
@@ -794,7 +786,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_CX_AX      \
         _AND_DX_AX      \
         _REST_DS         \
-    __parm __caller [__dx __si] [DPMIDATAREG __di] \
+    __parm __caller [__dx __si] [ESDATAREG __di] \
     __value         [__cx __dx] \
     __modify __exact [__ax __cx __dx _MODIF_DS]
 #else
@@ -808,7 +800,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _AND_CX_AX      \
         _AND_DX_AX      \
         _REST_DS        \
-    __parm __caller [__dx __esi] [DPMIDATAREG __edi] \
+    __parm __caller [__dx __esi] [ESDATAREG __edi] \
     __value         [__cx __edx] \
     __modify __exact [__eax __ecx __edx _MODIF_DS]
 #endif
@@ -970,7 +962,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [DPMIDATAREG __di] \
+    __parm __caller [ESDATAREG __di] \
     __value         [__ax] \
     __modify __exact [__ax]
 #else
@@ -978,7 +970,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _MOV_AX_W DPMI_0500 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [DPMIDATAREG __edi] \
+    __parm __caller [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 #endif

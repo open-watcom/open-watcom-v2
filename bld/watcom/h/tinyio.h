@@ -36,6 +36,7 @@
 #include "dosfuncx.h"
 #include "watcom.h"
 #include "descript.h"
+#include "asmbytes.h"
 
 
 /*
@@ -529,8 +530,8 @@ tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_16 hiw, uint_16 low, int_
 tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_16 hiw, uint_16 low, int_8 __where, u32_stk_ptr );
 tiny_ret_t              _fTinyDelete( const char __far * );
 tiny_ret_t  tiny_call   _nTinyDelete( const char __near * );
-tiny_ret_t              _fTinyRename( const char __far *__o, const char __far *__n );
-tiny_ret_t  tiny_call   _nTinyRename( const char __near *__o, const char __near *__n);
+tiny_ret_t              _fTinyRename( const char __far *__o, const char ESDATA *__n );
+tiny_ret_t  tiny_call   _nTinyRename( const char __near *__o, const char ESDATA *__n);
 tiny_ret_t              _fTinyMakeDir( const char __far *__name );
 tiny_ret_t  tiny_call   _nTinyMakeDir( const char __near *__name );
 tiny_ret_t              _fTinyRemoveDir( const char __far *__name );
@@ -613,8 +614,6 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 /*********************************************************
  * in-line assembly instruction bytes definition
  ********************************************************/
-
-#include "asmbytes.h"
 
 #if defined( __WINDOWS_386__ )
  extern  void   __Int21( void );
@@ -820,15 +819,12 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 // trashed.
 #pragma aux _nTinyRename = \
         _PUSH_BX        \
-        _PUSH_ES        \
-        _MOV_ES_CX      \
         _MOV_AH DOS_RENAME \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
-        _POP_ES         \
         _POP_BX         \
-    __parm __caller [__edx] [__cx __edi] \
+    __parm __caller [__edx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
 
@@ -1437,15 +1433,13 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #pragma aux _nTinyRename = \
         _SET_DS_DGROUP  \
-        _MOV_AX_SS      \
-        _MOV_ES_AX      \
         _MOV_AH DOS_RENAME \
         __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__di] \
+    __parm __caller [__dx] [ESDATAREG __di] \
     __value         [__dx __ax] \
-    __modify __exact [__ax __dx __es]
+    __modify __exact [__ax __dx]
 
 #pragma aux _fTinyDelete = \
         _SET_DS_SREG    \
@@ -1457,16 +1451,26 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__dx __ax] \
     __modify __exact [__ax __dx]
 
+#if defined( _M_I86MM ) || defined( _M_I86SM ) || defined(__SW_ZDP)
 #pragma aux _fTinyRename = \
-        _SET_DS_SREG    \
-        _MOV_ES_CX      \
+        _PUSH_DS        \
+        _MOV_DS_CX      \
         _MOV_AH DOS_RENAME \
         __INT_21        \
         _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__cx __di] \
+        _POP_DS         \
+    __parm __caller [__cx __dx] [ESDATAREG __di] \
     __value         [__dx __ax] \
-    __modify __exact [__ax __dx __es]
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _fTinyRename = \
+        _MOV_AH DOS_RENAME \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__ds __dx] [ESDATAREG __di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#endif
 
 #pragma aux _nTinyMakeDir = \
         _SET_DS_DGROUP  \
