@@ -32,23 +32,24 @@
 
 #include <string.h>
 #include <limits.h>
-#include "gdefn.h"
-#include "fontsupp.h"
-#include "roundmac.h"
 #if defined( __QNX__ )
-  #include <dirent.h>
-  #include <unistd.h>
-  #include <fcntl.h>
+    #include <dirent.h>
+    #include <unistd.h>
+    #include <fcntl.h>
   #if defined( _M_I86 )
     #include <sys/slib16.h>
   #endif
-  #include "watcom.h"
-#else
-  #include "tinyio.h"
-  #include "exedos.h"
+#endif
+#include "watcom.h"
+#include "gdefn.h"
+#include "fontsupp.h"
+#include "roundmac.h"
+#include "exedos.h"
+#ifdef __DOS__
+    #include "tinyio.h"
 #endif
 #if !defined( _DEFAULT_WINDOWS )
-  #include "font8x8.h"
+    #include "font8x8.h"
 #endif
 
 
@@ -79,26 +80,6 @@
     #define StrCpy          strcpy
     #define StrCmp          strcmp
     #define StrLen          strlen
-#endif
-
-#if defined( __QNX__ )
-  #define tiny_ret_t                    int
-  #define tiny_handle_t                 int
-  #define TINY_ERROR( rc )              ( rc < 0 )
-  #define TINY_OK( rc )                 ( rc >= 0 )
-  #define TINY_INFO( rc )               ( rc )
-  #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
-  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1L ) ? -1 : 0 )
-  #define TinyRead( f, b, l )           read( f, b, l )
-  #define MyTinyFarRead( f, b, l )      read( f, b, l )
-  #define TinyClose( f )                close( f )
-#else
-  #if defined( _M_I86 )
-    #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
-  #else
-    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
-  #endif
-  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_SET )
 #endif
 
 #if !defined( _DEFAULT_WINDOWS )
@@ -191,31 +172,35 @@ static void Free( void _WCI86FAR *p )
 }
 
 
-static short seek_and_read( tiny_handle_t handle, long offset,
+static short seek_and_read( int handle, long offset,
                      void _WCI86FAR *buf, unsigned short len )
 /*===========================================================*/
 {
-    tiny_ret_t          rc;
-    short               rlen;
+#if defined( __QNX__ )
+    if( lseek( handle, offset, SEEK_SET ) != -1L ) {
+        if( read( handle, buf, len ) == len ) {
+            return( 1 );
+        }
+    }
+#else
+    tiny_ret_t      rc;
 
-    if( TINY_ERROR( FontSeekSet( handle, offset ) ) ) {
-        _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
-        return( 0 );
+    rc = TinySeek( handle, offset, TIO_SEEK_SET );
+    if( TINY_OK( rc ) ) {
+  #if defined( _M_I86 )
+        rc = TinyFarRead( handle, buf, len );
+  #else
+        rc = TinyRead( handle, buf, len );
+  #endif
+        if( TINY_OK( rc ) ) {
+            if( TINY_INFO( rc ) == len ) {
+                return( 1 );
+            }
+        }
     }
-    rc = MyTinyFarRead( handle, buf, len );
-    if( TINY_ERROR( rc ) ) {
-        _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
-        return( 0 );
-    }
-    rlen = TINY_INFO( rc );
-    if( rlen != len ) {
-        _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
-        return( 0 );
-    }
-    return( 1 );
+#endif
+    _ErrorStatus = _GRINVALIDFONTFILE;
+    return( 0 );
 }
 
 
@@ -223,10 +208,9 @@ static short seek_and_read( tiny_handle_t handle, long offset,
 #define RS_DESC     ( 6 * sizeof( short ) )
 
 
-static short addfont( unsigned long offset, tiny_handle_t handle, char *font_file )
+static short addfont( unsigned long offset, int handle, char *font_file )
 //=================================================================================
 {
-    tiny_ret_t              rc;
     WINDOWS_FONT            w_font;
     FONT_ENTRY _WCI86FAR    *curr;
     char                    facename[32];
@@ -236,22 +220,13 @@ static short addfont( unsigned long offset, tiny_handle_t handle, char *font_fil
         return( 0 );
     }
     // read facename, can't use seek_and_read, since it might be at end of file
-    if( TINY_ERROR( FontSeekSet( handle, offset + w_font.dfFace ) ) ) {
-        _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
-        return( 0 );
-    }
-    rc = TinyRead( handle, facename, 32 );
-    if( TINY_ERROR( rc ) ) {        // only check for error, not length
-        _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
+    if( seek_and_read( handle, offset + w_font.dfFace, facename, sizeof( facename ) ) == 0 ) {
         return( 0 );
     }
     facename[31] = '\0';
     curr = Alloc( sizeof( FONT_ENTRY ) );
     if( curr == NULL ) {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        TinyClose( handle );
         return( 0 );
     }
     MemSet( curr, 0, sizeof( FONT_ENTRY ) );
@@ -282,7 +257,7 @@ static short addfont( unsigned long offset, tiny_handle_t handle, char *font_fil
 }
 
 
-static short readfontfile( char *font_file )
+static short readfontfile_a( int handle, char *font_file )
 //==========================================
 {
     unsigned_16         data;
@@ -293,24 +268,15 @@ static short readfontfile( char *font_file )
     unsigned short      type;
     short               count;
     short               i;
-    tiny_ret_t          rc;
-    tiny_handle_t       handle;
     short               table[RS_DESC];
 
 //  printf( "Found file '%s'\n", font_file );
-    rc = TinyOpen( font_file, TIO_READ );
-    if( TINY_ERROR( rc ) ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( 0 );
-    }
-    handle = TINY_INFO( rc );
     // check for signature of 0x40 at location 0x18
     if( seek_and_read( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) ) == 0 ) {
         return( 0 );
     }
     if( !NE_HEADER_FOLLOWS( data ) ) {
         _ErrorStatus = _GRINVALIDFONTFILE;
-        TinyClose( handle );
         return( 0 );
     }
     // get offset of NE header
@@ -348,8 +314,39 @@ static short readfontfile( char *font_file )
         }
         ne_offset += RS_HEADER + count * RS_DESC;
     }
-    TinyClose( handle );
     return( 1 );
+}
+
+
+static short readfontfile( char *font_file )
+//==========================================
+{
+    int                 handle;
+    int                 rc;
+#if !defined( __QNX__ )
+    tiny_ret_t          rc1;
+#endif
+
+//  printf( "Found file '%s'\n", font_file );
+#if defined( __QNX__ )
+    handle = __open_slib( font_file, O_RDONLY, 0 );
+    if( handle == -1 ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( 0 );
+    }
+    rc = readfontfile_a( handle, font_file );
+    close( handle );
+#else
+    rc1 = TinyOpen( font_file, TIO_READ );
+    if( TINY_ERROR( rc1 ) ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( 0 );
+    }
+    handle = TINY_INFO( rc1 );
+    rc = readfontfile_a( handle, font_file );
+    TinyClose( handle );
+#endif
+    return( rc );
 }
 
 
@@ -380,28 +377,17 @@ static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 }
 
 
-static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
-//=======================================================================
+static short loadfont_a( int handle, FONT_ENTRY _WCI86FAR *curr )
+//==============================================================
 {
-    tiny_ret_t          rc;
-    tiny_handle_t       handle;
     short               num;
     short               glyph_width;
-    char                file_name[_MAX_PATH];
 
-    StrCpy( file_name, curr->filename );        // copy into near memory
-    rc = TinyOpen( file_name, TIO_READ );
-    if( TINY_ERROR( rc ) ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( -1 );
-    }
-    handle = TINY_INFO( rc );
     num = curr->lastchar - curr->firstchar + 2;   // extra 1
     glyph_width = GlyphWidth( curr );
     curr->glyph_table = Alloc( num * glyph_width );
     if( curr->glyph_table == NULL ) {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        TinyClose( handle );
         return( -1 );
     }
     if( seek_and_read( handle, curr->glyph_offset,
@@ -413,14 +399,46 @@ static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
         Free( curr->glyph_table );
         curr->glyph_table = NULL;
-        TinyClose( handle );
         return( -1 );
     }
     if( seek_and_read( handle, curr->start_offset + curr->bitmap_offset,
                        curr->bitmap_table, curr->bitmap_size ) == 0 ) {
         return( -1 );
     }
+    return( 0 );    // success
+}
+
+static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
+//=======================================================================
+{
+    int                 handle;
+    char                file_name[_MAX_PATH];
+    int                 rc;
+#if !defined( __QNX__ )
+    tiny_ret_t          rc1;
+#endif
+
+    StrCpy( file_name, curr->filename );        // copy into near memory
+#if defined( __QNX__ )
+    handle = __open_slib( file_name, O_RDONLY, 0 );
+    if( handle == -1 ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );
+    }
+    rc = loadfont_a( handle, curr );
+    close( handle );
+#else
+    rc1 = TinyOpen( file_name, TIO_READ );
+    if( TINY_ERROR( rc1 ) ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );
+    }
+    handle = TINY_INFO( rc1 );
+    rc = loadfont_a( handle, curr );
     TinyClose( handle );
+#endif
+    if( rc == -1 )
+        return( -1 );
     _CurFont = curr;
     _XVecScale = 1;
     _YVecScale = 1;
