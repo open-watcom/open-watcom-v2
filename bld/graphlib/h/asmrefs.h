@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,16 +257,15 @@
 #pragma aux _coltbl "_*";
 #endif
 
-#if defined( VERSION2 ) && defined( _SUPERVGA )
-#pragma aux _VGABytesPerPixel "_*";
-#endif
-
 #if defined( _SUPERVGA )
 #pragma aux _VGAPage "_*";
 #pragma aux _VGAGran "_*";
 #pragma aux _SVGAType "_*";
 #pragma aux _SetVGAPage "_*";
 #pragma aux _VGAStride "_*";
+  #if defined( VERSION2 )
+#pragma aux _VGABytesPerPixel "_*";
+  #endif
 #endif
 
 // generic, CGA or Hecules

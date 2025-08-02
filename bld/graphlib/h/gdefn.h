@@ -34,12 +34,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
+#if( defined( __WINDOWS__ ) || defined( __OS2__ ) )
+    #define _DEFAULT_WINDOWS
+    #if defined( __WINDOWS__ )
+        #include <windows.h>
+    #else
+        #define __OS2_PM__
+        #define INCL_WIN
+        #define INCL_GPI
+        #include <wos2.h>
+    #endif
+    #include "wpi.h"
+    #include "wingph.h"
+#endif
 #if defined( VERSION2 )
 #include "graph2.gh"
 #else
 #include "graph.gh"
 #endif
 #include "bool.h"
+#include "arcinfo.h"
+#include "fontdef.h"
+#include "scrdesc.h"
+#include "globals.h"
+#include "grdev.h"
+#include "lineent.h"
+#include "fpi.h"
+#include "entry.h"
+#include "svgapage.h"
+#include "asmrefs.h"
 
 
 #define COLOR_RED(c)    (((c) >> 0) & 0xFF)
@@ -77,59 +100,6 @@
 #define VBEMODE_MODEL_RGB       (6)     // Direct color RGB
 #define VBEMODE_MODEL_YUV       (7)     // Direct color YUV
 
-#endif
-
-// The page setting functions are defined as FARC pointers.
-// This is _WCI86FAR for 16-bit, and nothing for 32-bit flat model.
-// QNX 32-bit uses small model, and FARC is defined as _WCI86FAR.
-// For QNX 32-bit, we still want only near pointers in the table though,
-// to avoid segment relocations in the executable.
-// The assignment to _SetVGAPage provides the CS value at runtime.
-
-#if defined( _M_I86 )
-    #define _FARC       __far
-    #define QNXFAR2NEAR(t,f)    ((t *)(f))
-#elif defined( __QNX__ )
-    #define _FARC       __far
-    #define QNXFAR2NEAR(t,f)    ((t *)(unsigned)(f))
-#else
-    #define _FARC
-    #define QNXFAR2NEAR(t,f)    ((t *)(f))
-#endif
-
-#if defined( _M_I86 )
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__ax]
-#else
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__eax]
-#endif
-
-typedef void __pascal vgapage_fn( short );
-
-#pragma aux (VGAPAGE_FUNC) vgapage_fn;
-
-
-#include "arcinfo.h"
-#include "fontdef.h"
-#include "scrdesc.h"
-#include "globals.h"
-#include "asmrefs.h"
-#include "grdev.h"
-#include "lineent.h"
-#include "fpi.h"
-#include "entry.h"
-
-#if( defined( __WINDOWS__ ) || defined( __OS2__ ) )
-    #define _DEFAULT_WINDOWS
-    #if defined( __WINDOWS__ )
-        #include <windows.h>
-    #else
-        #define __OS2_PM__
-        #define INCL_WIN
-        #define INCL_GPI
-        #include <wos2.h>
-    #endif
-    #include "wpi.h"
-    #include "wingph.h"
 #endif
 
 #define MASK_LEN        8               /* length of fill mask  */

@@ -111,10 +111,9 @@ unsigned char           _VGAGran;                   // SuperVGA page granularity
 short                   _SVGAType;                  // type of SuperVGA
 vgapage_fn              _FARC *_SetVGAPage;         // function to set SVGA page
 short                   _VGAStride;                 // SuperVGA mode stride
-#endif
-
-#if defined( VERSION2 ) && defined( _SUPERVGA )
+  #if defined( VERSION2 )
 unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pixel
+  #endif
 #endif
 
 // segments of screen memory and BIOS and ROM BIOS data area

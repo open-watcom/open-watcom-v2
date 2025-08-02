@@ -40,6 +40,14 @@
 #endif
 
 
+#if defined( _M_I86 )
+    #define QNXFAR2NEAR(t,f)    ((t *)(f))
+#elif defined( __QNX__ )
+    #define QNXFAR2NEAR(t,f)    ((t *)(unsigned)(f))
+#else
+    #define QNXFAR2NEAR(t,f)    ((t *)(f))
+#endif
+
 extern unsigned short   cs( void );
 #pragma aux cs = "mov ax,cs" __value [__ax] __modify []
 

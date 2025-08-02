@@ -93,12 +93,10 @@ extern long             _coltbl[ 16 ];              // EGA colors for TrueColor 
 extern unsigned char    _VGAPage;                   // SuperVGA page number
 extern unsigned char    _VGAGran;                   // SuperVGA page granularity
 extern short            _SVGAType;                  // type of SuperVGA
-extern vgapage_fn       _FARC *_SetVGAPage;         // function to set SVGA page
 extern short            _VGAStride;                 // SuperVGA mode stride
-#endif
-
-#if defined( VERSION2 ) && defined( _SUPERVGA )
+  #if defined( VERSION2 )
 extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
+  #endif
 #endif
 
 extern unsigned short   _BiosSeg;                   // seg of BIOS data area
