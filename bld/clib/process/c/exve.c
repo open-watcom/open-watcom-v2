@@ -96,7 +96,7 @@ static void dosexpand( unsigned block )
     unsigned num_of_paras;
 
     num_of_paras = TinyMaxSet( block );
-    TinySetBlock( num_of_paras, block );
+    TinySetBlock( block, num_of_paras );
 }
 
 static unsigned dosalloc( unsigned num_of_paras )
@@ -121,7 +121,7 @@ static unsigned doscalve( unsigned block, unsigned req_paras )
     if( block_num_of_paras < req_paras + 1 ) {
         return( 0 );
     } else {
-        TinySetBlock( block_num_of_paras - ( req_paras + 1 ), block );
+        TinySetBlock( block, block_num_of_paras - ( req_paras + 1 ) );
         return( dosalloc( req_paras ) );
     }
 }

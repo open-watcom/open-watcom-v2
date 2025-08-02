@@ -541,7 +541,7 @@ tiny_ret_t  tiny_call   _TinyAllocBlock( uint_16 __paras );
 tiny_ret_t  tiny_call   _TinyTestAllocBlock( uint_16 __paras );
 uint_16     tiny_call   _TinyMaxAlloc( void );
 tiny_ret_t  tiny_call   _TinyFreeBlock( uint_16 __seg );
-tiny_ret_t  tiny_call   _TinySetBlock( uint_16 __paras, uint_16 __seg );
+tiny_ret_t  tiny_call   _TinySetBlock( uint_16 __seg, uint_16 __paras );
 uint_16     tiny_call   _TinyMaxSet( uint_16 __seg );
 tiny_ret_t              _fTinyGetCWDir( char __far *__buff, uint_8 __drive );
 tiny_ret_t  tiny_call   _nTinyGetCWDir( char __near *__buff, uint_8 __drive );
@@ -891,10 +891,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
         __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
     __parm __caller [__bx] \
-    __value         [__eax] \
+    __value         [__ebx] \
     __modify __exact [__eax __ebx]
 
 #pragma aux _TinyTestAllocBlock = \
@@ -919,37 +919,34 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__eax __ebx]
 
 #pragma aux _TinyFreeBlock = \
-        _PUSH_ES        \
-        _MOV_ES_AX      \
+        _SAVE_ESAX      \
         _MOV_AH DOS_FREE_SEG \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
-        _POP_ES         \
+        _REST_ES        \
     __parm __caller [__ax] \
     __value         [__eax] \
     __modify __exact [__eax]
 
 #pragma aux _TinySetBlock = \
-        _PUSH_ES        \
-        _MOV_ES_AX      \
+        _SAVE_ESAX      \
         _MOV_AH DOS_MODIFY_SEG \
         __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
-        _POP_ES         \
-    __parm __caller [__bx] [__ax] \
-    __value         [__eax] \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
+        _REST_ES        \
+    __parm __caller [__ax] [__bx] \
+    __value         [__ebx] \
     __modify __exact [__eax __ebx]
 
 #pragma aux _TinyMaxSet = \
-        _PUSH_ES        \
-        _MOV_ES_AX      \
+        _SAVE_ESAX      \
         _XOR_BX_BX      \
         _DEC_BX         \
         _MOV_AH DOS_MODIFY_SEG \
         __INT_21        \
-        _POP_ES         \
+        _REST_ES        \
     __parm __caller [__ax] \
     __value         [__bx] \
     __modify __exact [__eax __ebx]
@@ -1031,17 +1028,16 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax]
 
 #pragma aux _TinyGetDTA = \
-        _PUSH_ES        \
+        _SAVE_ES        \
         _MOV_AH DOS_GET_DTA \
         __INT_21        \
-        _MOV_CX_ES      \
-        _POP_ES         \
+        _REST_ESCX      \
     __parm __caller [] \
     __value         [__cx __ebx] \
     __modify __exact [__ah __ebx __ecx]
 
 #pragma aux _TinyChangeDTA = \
-        _PUSH_ES        \
+        _SAVE_ES        \
         _MOV_AH DOS_GET_DTA \
         __INT_21        \
         _PUSH_DS        \
@@ -1049,8 +1045,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
         _POP_DS         \
-        _MOV_CX_ES      \
-        _POP_ES         \
+        _REST_ESCX      \
     __parm __caller [__cx __edx] \
     __value         [__cx __ebx] \
     __modify __exact [__ah __ebx __ecx]
@@ -1059,16 +1054,6 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
     __parm __caller [__edx] \
-    __value         \
-    __modify __exact [__ah]
-
-#pragma aux _fTinySetDTA = \
-        _PUSH_DS        \
-        _MOV_DS_CX      \
-        _MOV_AH DOS_SET_DTA \
-        __INT_21        \
-        _POP_DS         \
-    __parm __caller [__cx __edx] \
     __value         \
     __modify __exact [__ah]
 
@@ -1572,10 +1557,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 
 #pragma aux _TinySetBlock = \
-        _MOV_AH DOS_MODIFY_SEG    \
+        _MOV_AH DOS_MODIFY_SEG \
         __INT_21        \
         _SBB_BX_BX      \
-    __parm __caller [__bx] [__es] \
+    __parm __caller [__es] [__bx] \
     __value         [__bx __ax] \
     __modify __exact [__ax __bx]
 
@@ -1660,13 +1645,11 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dl]
 
 #pragma aux _nTinySetDTA = \
-        _SET_DS_DGROUP  \
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
-        _RST_DS_DGROUP  \
     __parm __caller [__dx] \
     __value         \
-    __modify __exact [__ax]
+    __modify __exact [__ah]
 
 #pragma aux _nTinyFindFirst = \
         _SET_DS_DGROUP  \
@@ -1679,38 +1662,31 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 
 #pragma aux _TinyGetDTA = \
-        _PUSH_ES        \
         _MOV_AH DOS_GET_DTA \
         __INT_21        \
-        _MOV_CX_ES      \
-        _POP_ES         \
     __parm __caller [] \
-    __value         [__cx __bx] \
-    __modify __exact [__ah __bx __cx]
+    __value         [__es __bx] \
+    __modify __exact [__ah __bx __es]
 
 #pragma aux _TinyChangeDTA = \
-        _PUSH_ES        \
         _MOV_AH DOS_GET_DTA \
         __INT_21        \
-        _PUSH_DS        \
-        _MOV_DS_CX      \
+        _SAVE_DSCX      \
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
-        _POP_DS         \
-        _MOV_CX_ES      \
-        _POP_ES         \
+        _REST_DS        \
     __parm __caller [__cx __dx] \
-    __value         [__cx __bx] \
-    __modify __exact [__ah __bx __cx]
+    __value         [__es __bx] \
+    __modify __exact [__ah __bx __es]
 
 #pragma aux _fTinySetDTA = \
-        _SET_DS_SREG    \
+        _SAVE_DSCX      \
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
+        _REST_DS        \
+    __parm __caller [__cx __dx] \
     __value         \
-    __modify __exact [__ax]
+    __modify __exact [__ah]
 
 #pragma aux _fTinyFindFirst = \
         _SET_DS_SREG    \

@@ -158,7 +158,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
             num_of_paras = 0x0FFFFFFF;
         parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( TINY_ERROR( TinySetBlock( num_of_paras, parent & 0xffff ) ) ) {
+            if( TINY_ERROR( TinySetBlock( parent & 0xffff, num_of_paras ) ) ) {
                 _RWD_errno = ENOMEM;
                 return( (void_nptr)-1 );
             }
@@ -173,7 +173,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         }
     }
   #endif
-    if( TINY_ERROR( TinySetBlock( num_of_paras, segm ) ) ) {
+    if( TINY_ERROR( TinySetBlock( segm, num_of_paras ) ) ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
