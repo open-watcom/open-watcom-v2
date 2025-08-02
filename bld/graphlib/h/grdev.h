@@ -77,7 +77,6 @@ typedef void    reset_fn( void );
 typedef void    setup_fn( short, short, grcolor );
 
 
-#pragma pack(__push, 1);
 typedef struct graphics_device {
     init_fn         *init;          // initialization
     finish_fn       *finish;        // finish up device
@@ -97,4 +96,3 @@ typedef struct graphics_device {
     scan_fn         *scanleft;      // left scan in paint
     scan_fn         *scanright;     // right scan in paint
 } gr_device;
-#pragma pack (__pop);
