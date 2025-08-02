@@ -37,7 +37,10 @@
 #include "stkavail.h"
 #include "roundmac.h"
 #include "realmod.h"
-
+#if !defined( _M_I86 ) && !defined( __QNX__ )
+    #include "extender.h"
+    #include "rmalloc.h"
+#endif
 
 struct rgb {
     char                red;
@@ -77,11 +80,6 @@ short _FastMap( long _WCI86FAR *colours, short num )
 #else
 
 
-#include "extender.h"
-#include "dpmi.h"
-#include "rmalloc.h"
-
-
 short _FastMap( long _WCI86FAR *colours, short num )
 //=============================================
 
@@ -100,7 +98,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
             rgb[i].red = COLOR_RED( colour );
             ++colours;
         }
-        _RMInterrupt( 0x10, VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
+        _RMVideoInt( VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.dpmi.rm, 0 );
         _RMFree( &mem );
         return( TRUE );
     }
@@ -149,15 +147,16 @@ short _RMAlloc( int size, RM_ALLOC *stg )
     size_para = __ROUND_UP_SIZE_TO_PARA( size );
     if( _IsPharLap() ) {
         dos_mem.rm = PharlapAlloc( size_para );
+        dos_mem.pm = 0;
         if( dos_mem.rm != 0 ) {
-            stg->rm_seg = dos_mem.rm;
+            stg->dpmi = dos_mem;
             stg->pm_ptr = RealModeSegmPtr( dos_mem.rm );
             return( TRUE );
         }
     } else if( _DPMI || _IsRational() ) {
         dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
         if( dos_mem.pm ) {
-            stg->rm_seg = dos_mem.rm;
+            stg->dpmi = dos_mem;
             stg->pm_ptr = RealModeSegmPtr( dos_mem.rm );
             return( TRUE );
         }
@@ -170,15 +169,14 @@ void _RMFree( RM_ALLOC *stg )
 //===========================
 {
     if( _IsPharLap() ) {
-        PharlapFree( stg->rm_seg );
+        PharlapFree( stg->dpmi.rm );
     } else if( _DPMI || _IsRational() ) {
-        DPMIFreeDOSMemoryBlock( _FP_SEG( stg->pm_ptr ) );
+        DPMIFreeDOSMemoryBlock( stg->dpmi.pm );
     }
 }
 
 
-short _RMInterrupt( short intno, short ax, short bx, short cx,
-                                  short dx, short es, short di )
+short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
 //==============================================================
 
 {
@@ -186,7 +184,7 @@ short _RMInterrupt( short intno, short ax, short bx, short cx,
         pharlap_regs_struct dp;
 
         memset( &dp, 0, sizeof( dp ) );
-        dp.intno = intno;
+        dp.intno = 0x10;
         dp.r.x.eax = ax;
         dp.r.x.edx = dx;
         dp.es = es;
@@ -201,7 +199,7 @@ short _RMInterrupt( short intno, short ax, short bx, short cx,
         dr.r.x.edx = dx;
         dr.es = es;
         dr.r.x.edi = di;
-        DPMISimulateRealModeInterrupt( intno, 0, 0, &dr );
+        DPMISimulateRealModeInterrupt( 0x10, 0, 0, &dr );
         return( dr.r.x.eax );
     }
     return( 0 );

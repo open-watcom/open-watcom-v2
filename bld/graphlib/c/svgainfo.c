@@ -35,8 +35,8 @@
 #include "gdefn.h"
 #include "gbios.h"
 #include "svgadef.h"
-#if !defined( _M_I86 )
-  #include "rmalloc.h"
+#if !defined( _M_I86 ) && !defined( __QNX__ )
+    #include "rmalloc.h"
 #endif
 
 
@@ -79,7 +79,7 @@ static int TestForVESA( void )
 #else
     if( _RMAlloc( 256, &mem ) ) {
         buf = mem.pm_ptr;
-        val = _RMInterrupt( 0x10, 0x4f00, 0, 0, 0, mem.rm_seg, 0 );
+        val = _RMVideoInt( 0x4f00, 0, 0, 0, mem.dpmi.rm, 0 );
         if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                              buf[2] == 'S' && buf[3] == 'A' ) {
             is_vesa = TRUE;
