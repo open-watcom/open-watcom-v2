@@ -34,6 +34,7 @@
 #include "gdefn.h"
 #include "gbios.h"
 #include "svgadef.h"
+#include "realmod.h"
 #if !defined( _M_I86 ) && !defined(__QNX__)
     #include "rmalloc.h"
 #endif
@@ -104,7 +105,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 #else
 //    short               i;
     char __far          *rbuf;
-    RM_ALLOC            mem;
+    dpmi_dos_mem_block  dos_mem;
 #endif
 //#endif
 
@@ -121,7 +122,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     #endif
 #else
 //            assert(256>=sizeof(struct VbeModeInfo));//large enough?
-        if( !_RMAlloc( 256, &mem ) ) {
+        if( !_RMAlloc( 256, &dos_mem ) ) {
             return( FALSE );
         }
         /*
@@ -130,15 +131,15 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             ES:DI=address of information block
             return value AL=0x4F AH=0x00
         */
-        val = _RMVideoInt( 0x4f01, 0, mode, 0, mem.dpmi.rm, 0 );
+        val = _RMVideoInt( 0x4f01, 0, mode, 0, dos_mem.rm, 0 );
         if( val == 0x004f ) {
-            rbuf = mem.pm_ptr;
+            rbuf = RealModeDataPtr( dos_mem.rm, 0 );
     #if defined( VERSION2 )
             mymemcpy( (char *)&(_CurrState->mi), rbuf, sizeof( struct VbeModeInfo ) );
     #endif
             mymemcpy( buf, rbuf, 16 );
         }
-        _RMFree( &mem );
+        _RMFree( &dos_mem );
         if( val != 0x004f ) {
             return( FALSE );
         }

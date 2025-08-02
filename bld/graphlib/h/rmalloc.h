@@ -34,14 +34,6 @@
 #include "dpmi.h"
 
 
-#pragma pack(__push, 1);
-typedef struct rm_alloc {
-    dpmi_dos_mem_block  dpmi;
-    void                __far *pm_ptr;
-} RM_ALLOC;
-#pragma pack (__pop);
-
-
-extern short    _RMAlloc( int, RM_ALLOC * );
-extern void     _RMFree( RM_ALLOC * );
+extern short    _RMAlloc( int, dpmi_dos_mem_block *dos_mem );
+extern void     _RMFree( dpmi_dos_mem_block *dos_mem );
 extern short    _RMVideoInt( short, short, short, short, short, short );

@@ -35,8 +35,9 @@
 #include "gdefn.h"
 #include "gbios.h"
 #include "svgadef.h"
+#include "realmod.h"
 #if !defined( _M_I86 ) && !defined( __QNX__ )
-    #include "rmalloc.h"
+  	#include "rmalloc.h"
 #endif
 
 
@@ -66,7 +67,7 @@ static int TestForVESA( void )
     char                buf[256];
 #else
     char __far          *buf;
-    RM_ALLOC            mem;
+    dpmi_dos_mem_block  dos_mem;
     int                 is_vesa;
 #endif
 
@@ -77,16 +78,16 @@ static int TestForVESA( void )
         return( TRUE );
     }
 #else
-    if( _RMAlloc( 256, &mem ) ) {
-        buf = mem.pm_ptr;
-        val = _RMVideoInt( 0x4f00, 0, 0, 0, mem.dpmi.rm, 0 );
+    if( _RMAlloc( 256, &dos_mem ) ) {
+        buf = RealModeDataPtr( dos_mem.rm, 0 );
+        val = _RMVideoInt( 0x4f00, 0, 0, 0, dos_mem.rm, 0 );
         if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                              buf[2] == 'S' && buf[3] == 'A' ) {
             is_vesa = TRUE;
         } else {
             is_vesa = FALSE;
         }
-        _RMFree( &mem );
+        _RMFree( &dos_mem );
         return( is_vesa );
     }
 #endif
