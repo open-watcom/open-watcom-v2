@@ -108,12 +108,6 @@ typedef void __pascal vgapage_fn( short );
 #pragma aux (VGAPAGE_FUNC) vgapage_fn;
 
 
-#pragma pack(__push, 1);
-typedef struct {
-    unsigned char       start_range;
-    unsigned char       end_range;
-} dbcs_pair;
-
 #include "arcinfo.h"
 #include "fontdef.h"
 #include "scrdesc.h"
@@ -140,6 +134,7 @@ typedef struct {
 
 #define MASK_LEN        8               /* length of fill mask  */
 
+#pragma pack(__push, 1);
 struct clip_region {
     short       xmin;
     short       xmax;

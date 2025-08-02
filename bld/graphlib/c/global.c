@@ -31,6 +31,8 @@
 
 
 #include "gdefn.h"
+#include "grdbcs.h"
+
 
 /* External Variable Definitions */
 
@@ -96,7 +98,7 @@ struct window_def       _Window =                   // default window def'n
                             { TRUE, 0.0, 0.0, 1.0, 1.0 };
 SCREEN_DESC             _Screen;                    // screen description
 
-unsigned char           _IsDBCS;                    // is this a DBCS system
+bool                    _IsDBCS;                    // is this a DBCS system
 dbcs_pair               _DBCSPairs[5];              // range of DBCS chars
 
 #if defined( VERSION2 )

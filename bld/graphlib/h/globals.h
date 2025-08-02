@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,9 +100,6 @@ extern short            _VGAStride;                 // SuperVGA mode stride
 #if defined( VERSION2 ) && defined( _SUPERVGA )
 extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
 #endif
-
-extern unsigned char    _IsDBCS;                    // is this a DBCS system
-extern dbcs_pair        _DBCSPairs[];               // range of DBCS chars
 
 extern unsigned short   _BiosSeg;                   // seg of BIOS data area
 extern unsigned short   _MonoSeg;                   // seg of MONO screen

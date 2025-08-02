@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "grdbcs.h"
 #if !defined( _DEFAULT_WINDOWS )
 #include "realmod.h"
 #include "gbios.h"

@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "grdbcs.h"
 #include "gbios.h"
 #if defined( __DOS__ )
     #include "getltdos.h"
@@ -201,7 +202,7 @@ void _InitSegments( void )
 #endif
 
     // check for DBCS
-    _IsDBCS = FALSE;
+    _IsDBCS = false;
     if( dos_version() >= 5 ) {
         // The DBCS vector table call is not supported in earlier versions
         p = _DBCSPairs;
@@ -217,7 +218,7 @@ void _InitSegments( void )
         p->start_range = 0;
         p->end_range = 0;
         if( _DBCSPairs[0].start_range != 0 ) {
-            _IsDBCS = TRUE;
+            _IsDBCS = true;
         }
     }
 }

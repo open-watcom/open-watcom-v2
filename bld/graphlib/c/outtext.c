@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "grdbcs.h"
 #include "gbios.h"
 #include <conio.h>
 
