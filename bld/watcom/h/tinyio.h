@@ -1040,11 +1040,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _SAVE_ES        \
         _MOV_AH DOS_GET_DTA \
         __INT_21        \
-        _PUSH_DS        \
-        _MOV_DS_CX      \
+        _SAVE_DSCX      \
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
-        _POP_DS         \
+        _REST_DS        \
         _REST_ESCX      \
     __parm __caller [__cx __edx] \
     __value         [__cx __ebx] \
@@ -1105,11 +1104,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ah _MODIF_DS]
 
 #pragma aux _TinyGetVect = \
-        _PUSH_ES        \
+        _SAVE_ES        \
         _MOV_AH DOS_GET_INT \
         __INT_21        \
-        _MOV_CX_ES      \
-        _POP_ES         \
+        _REST_ESCX      \
     __parm __caller [__al] \
     __value         [__cx __ebx] \
     __modify __exact [__eax __ebx __ecx _MODIF_ES]
