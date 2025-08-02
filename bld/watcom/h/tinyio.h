@@ -401,8 +401,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyFarSetDTA           _fTinySetDTA
 #define TinyFarFindFirst        _fTinyFindFirst
 #define TinyFindNext            _TinyFindNext
-#define TinyFindNextDTA         _TinyFindNextDTA
-#define TinyFindCloseDTA        _TinyFindCloseDTA
 #define TinyGetFileStamp        _TinyGetFileStamp
 #define TinySetFileStamp        _TinySetFileStamp
 #define TinyGetVect             _TinyGetVect
@@ -446,7 +444,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyGetCWDir            _nTinyGetCWDir
 #define TinySetDTA              _nTinySetDTA
 #define TinyFindFirst           _nTinyFindFirst
-#define TinyFindFirstDTA        _nTinyFindFirstDTA
 #define TinyGetFileAttr         _nTinyGetFileAttr
 #define TinySetFileAttr         _nTinySetFileAttr
 #define TinyGetCountry          _nTinyGetCountry
@@ -563,10 +560,7 @@ void                    _fTinySetDTA( void __far * );
 void        tiny_call   _nTinySetDTA( void __near * );
 tiny_ret_t              _fTinyFindFirst( const char __far *__pattern, create_attr __attr);
 tiny_ret_t  tiny_call   _nTinyFindFirst( const char __near *, create_attr );
-tiny_ret_t  tiny_call   _nTinyFindFirstDTA( const char __near *, create_attr, void * );
 tiny_ret_t  tiny_call   _TinyFindNext( void );
-tiny_ret_t  tiny_call   _TinyFindNextDTA( void * );
-tiny_ret_t  tiny_call   _TinyFindCloseDTA( void * );
 tiny_ret_t  tiny_call   _TinyGetFileStamp( tiny_handle_t );
 tiny_ret_t  tiny_call   _TinySetFileStamp( tiny_handle_t, tiny_ftime_t __hms, tiny_fdate_t __ymd );
 tiny_ret_t  tiny_call   _nTinyGetFileAttr( const char __near *__file );
@@ -1087,39 +1081,12 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__eax] \
     __modify __exact [__eax]
 
-#pragma aux _nTinyFindFirstDTA = \
-        _MOV_AH DOS_FIND_FIRST \
-        __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
-    __parm __caller [__edx] [__cx] [__ebx] \
-    __value         [__eax] \
-    __modify __exact [__eax]
-
 #pragma aux _TinyFindNext = \
         _MOV_AH DOS_FIND_NEXT \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
     __parm __caller [] \
-    __value         [__eax] \
-    __modify __exact [__eax]
-
-#pragma aux _TinyFindNextDTA = \
-        _MOV_AX_W 0 DOS_FIND_NEXT \
-        __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
-    __parm __caller [__edx] \
-    __value         [__eax] \
-    __modify __exact [__eax]
-
-#pragma aux _TinyFindCloseDTA = \
-        _MOV_AX_W 1 DOS_FIND_NEXT \
-        __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
-    __parm __caller [__edx] \
     __value         [__eax] \
     __modify __exact [__eax]
 
