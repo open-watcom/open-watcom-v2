@@ -426,10 +426,16 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __value         [__ax] \
     __modify __exact [__ax]
 
+/*
+ * if failed then return (uint_32)-1
+ */
 #ifdef _M_I86
 #pragma aux _DPMIGetSegmentBaseAddress = \
         _MOV_AX_W DPMI_0006 \
         _INT_31         \
+        _SBB_AX_AX      \
+        _OR_CX_AX       \
+        _OR_DX_AX       \
     __parm __caller [__bx] \
     __value         [__cx __dx] \
     __modify __exact [__ax __cx __dx]
@@ -437,11 +443,13 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 #pragma aux _DPMIGetSegmentBaseAddress = \
         _MOV_AX_W DPMI_0006 \
         _INT_31         \
+        _SBB_AX_AX      \
         _SHL_ECX_16     \
         _USE16 _MOV_CX_DX \
+        _OR_CX_AX       \
     __parm __caller [__bx] \
     __value         [__ecx] \
-    __modify __exact [__ax __ecx __edx]
+    __modify __exact [__eax __ecx __edx]
 #endif
 
 #ifdef _M_I86
@@ -1239,8 +1247,7 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _SAVE_ES        \
         _MOV_AX_W PHARLAP_2502 \
         _INT_21         \
-        _MOV_CX_ES      \
-        _REST_ES        \
+        _REST_ESCX      \
     __parm __caller [__cl] \
     __value         [__cx __ebx] \
     __modify __exact [__ax __ebx __cx _MODIF_ES]
@@ -1366,9 +1373,8 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
         _SAVE_ES        \
         _MOV_AH DOS_GET_INT \
         _INT_21         \
-        _MOV_DX_ES      \
         _MOV_AX_BX      \
-        _REST_ES        \
+        _REST_ESDX      \
     __parm __caller [__al] \
     __value         [__dx __eax] \
     __modify __exact [__eax __ebx __edx _MODIF_ES]
