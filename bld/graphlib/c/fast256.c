@@ -48,26 +48,6 @@ struct rgb {
 
 #if defined( _M_I86 ) || defined( __QNX__ )
 
-extern void VideoIntDAC( short, short, short, void __far * );
-#if defined( _M_I86 )
-#pragma aux VideoIntDAC = \
-        "push bp"   \
-        "int 10h"   \
-        "pop  bp"   \
-    __parm __caller [__ax] [__bx] [__cx] [__es __dx] \
-    __value         \
-    __modify        []
-#else
-#pragma aux VideoIntDAC = \
-        "push bp"   \
-        "int 10h"   \
-        "pop  bp"   \
-    __parm __caller [__ax] [__bx] [__cx] [__es __edx] \
-    __value         \
-    __modify        []
-#endif
-
-
 short _FastMap( long _WCI86FAR *colours, short num )
 //=============================================
 
@@ -89,7 +69,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
         rgb[i].red = COLOR_RED( colour );
         ++colours;
     }
-    VideoIntDAC( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
+    VideoInt2( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
     return( TRUE );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,34 +93,6 @@ static char             EGA_Intensity[] = {
 };
 
 
-extern long GetVGAPalette( short func, short reg );
-#if defined( _M_I86 )
-    #pragma aux GetVGAPalette = \
-            "push bp"                   \
-            "int 10h"                   \
-            "pop  bp"                   \
-            "mov  ah,ch" /* (green) */  \
-            "mov  al,dh" /* (red)   */  \
-            "mov  dl,cl" /* (blue)  */  \
-            "xor  dh,dh"                \
-        __parm __caller [__ax] [__bx] \
-        __value         [__ax __dx] \
-        __modify        [__cx]
-#else
-    #pragma aux GetVGAPalette = \
-            "push ebp"      \
-            "int 10H"       \
-            "pop  ebp"      \
-            "xchg cl,ch"    \
-            "movzx eax,cx"  \
-            "shl  eax,08H"  \
-            "mov  al,dh"    \
-        __parm __caller [__eax] [__ebx] \
-        __value         [__eax] \
-        __modify        [__ecx __edx]
-#endif
-
-
 static void PutPalette( short pixval, long colour )
 //=================================================
 
@@ -138,7 +110,7 @@ static void PutPalette( short pixval, long colour )
     case _MCGA :
     case _VGA :
     case _SVGA :
-        VideoInt( VIDEOINT_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
+        VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
         break;
     case _EGA :
         mode = _CurrState->vc.mode;
@@ -154,7 +126,7 @@ static void PutPalette( short pixval, long colour )
             cnvcol = EGA_Intensity[blue] + ( EGA_Intensity[green] << 1 )
                                            + ( EGA_Intensity[red] << 2 );
         }
-        VideoInt( VIDEOINT_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
     }
 }
 
@@ -169,7 +141,7 @@ static long GetPalette( short pixval )
     case _MCGA :
     case _VGA :
     case _SVGA :
-        prev = GetVGAPalette( VIDEOINT_SET_PALETTE + 0x15, pixval );
+        prev = VideoInt4( VIDEOINT_SET_PALETTE + 0x15, pixval );
         break;
     case _EGA :
         prev = 0;

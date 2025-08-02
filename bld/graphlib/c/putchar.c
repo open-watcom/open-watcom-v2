@@ -152,9 +152,9 @@ void _PutChar( short row, short col, short ch )
         *screen = ( _CharAttr << 8 ) + ch;
     } else if( _IsDBCS ) {      // use BIOS for DBCS
         // set cursor position
-        VideoInt( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
+        VideoInt1_ax( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
         // write character
-        VideoInt( VIDEOINT_PUT_CHAR + ch, ( _CurrActivePage << 8 ) + _CharAttr, 1, 0 );
+        VideoInt1_ax( VIDEOINT_PUT_CHAR + ch, ( _CurrActivePage << 8 ) + _CharAttr, 1, 0 );
     } else {
         char_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
         if( char_height < _HERC_HEIGHT ) {

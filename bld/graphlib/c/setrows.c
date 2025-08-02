@@ -130,12 +130,12 @@ static void GrModeRows( short rows )
         }
         return;
     }
-    VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
     // Load pointer to character set
     if( _CurrState->vc.adapter == _EGA ) {
-        VideoInt( set_font, 0, 0, rows - 1 );   // do this only for the EGA
+        VideoInt1_ax( set_font, 0, 0, rows - 1 );   // do this only for the EGA
     } else {
-        VideoInt( set_font, 0, 0, rows );
+        VideoInt1_ax( set_font, 0, 0, rows );
     }
     _GrCursor = 0;                          // cursor is off
 }
@@ -147,9 +147,9 @@ static void Load_25( void )
  * and update a few variables.
  */
 {
-    VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
     BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) &= ~0x01;              // 43 line mode cursor emulation off
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
     _GrCursor = 1;                                  // cursor is on
 }
 
@@ -159,11 +159,11 @@ static void Load_VGA( short set_scan, short set_font, short cursor )
  * This routines loads an alphanumeric font for the VGA.
  */
 {
-    VideoInt( set_scan, 0x0030, 0, 0 );             // becomes effective at next set mode
-    VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    VideoInt( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );       // set active page to 0
-    VideoInt( set_font, 0, 0, 0 );                  // load character set
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 ); // reset the cursor
+    VideoInt1_ax( set_scan, 0x0030, 0, 0 );             // becomes effective at next set mode
+    VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );       // set active page to 0
+    VideoInt1_ax( set_font, 0, 0, 0 );                  // load character set
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 ); // reset the cursor
     _GrCursor = 1;                                  // cursor is on
 }
 
@@ -173,15 +173,15 @@ static void Load_EGA( short rows, short set_font, short cursor )
  * This routines loads an alphanumeric font for the EGA.
  */
 {
-    VideoInt( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );       // set active page to 0
-    VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    VideoInt( set_font, 0, 0, 0 );                  // load pointer to character set in block 0
+    VideoInt1_ax( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );       // set active page to 0
+    VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt1_ax( set_font, 0, 0, 0 );                  // load pointer to character set in block 0
     if( rows == 43 ) {                              // cursor emulation
         BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) |= 1; // 43 line mode cursor emulation on
     } else {
         outpw( 0x03D4, 0x1414 );                    // reset underline location to none
     }
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
     _GrCursor = 1;                                  // cursor is on
 }
 
@@ -191,12 +191,12 @@ static void Load_MCGA( short rows, short set_font, short cursor )
  * This routines loads an alphanumeric font for the MCGA.
  */
 {
-    VideoInt( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );               // set active page to 0
-    VideoInt( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );               // set active page to 0
+    VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
     _fmemset( _MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 );      // must do for MCGA 40 rows
-    VideoInt( set_font & 0xFF0F, 0, 0, 0 );                 // load character set
-    VideoInt( VIDEOINT_CHARGEN_SET_BLOCK, 0, 0, 0 );
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );         // reset the cursor
+    VideoInt1_ax( set_font & 0xFF0F, 0, 0, 0 );                 // load character set
+    VideoInt1_ax( VIDEOINT_CHARGEN_SET_BLOCK, 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );         // reset the cursor
     outpw( 0x03D4, ( cursor & 0xFF00 ) + 0x09 );            // # double scan lines
     BIOSData( unsigned char, BDATA_VIDEO_ROWS ) = rows - 1; // # of rows
     // # of vertical points per character
@@ -316,7 +316,7 @@ short _SetRows( short rows )
         _TextPos.col = 0;                           // sets position to 0,0
         _CurrVisualPage = 0;
         _CurrActivePage = 0;
-        VideoInt( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );   // set to page 0
+        VideoInt1_ax( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );   // set to page 0
         return( _CurrState->vc.numtextrows );
     }
 }

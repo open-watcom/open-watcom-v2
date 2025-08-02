@@ -48,7 +48,7 @@ static void TextCursor( short turning_on )
     if( !turning_on ) {
         cursor |= 0x2000;       // set blank cursor bit
     }
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );
 }
 #endif
 

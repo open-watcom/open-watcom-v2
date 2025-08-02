@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,7 @@ short _SetMode( short mode )
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared
         }
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
     }
     return( GetVideoMode() );
 }

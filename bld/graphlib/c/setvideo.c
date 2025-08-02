@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -841,10 +841,10 @@ void _PaletteInit( void )
     // reset the palette so the 1st 16 colors use the 1st 16 palette registers
     if( _CurrState->vc.adapter >= _MCGA &&
         ( _CurrState->vc.mode != 7 && _CurrState->vc.mode != 15 ) ) {
-        VideoInt( VIDEOINT_SET_PALETTE + 0x10, 16, 0, 0 ); // map 16 to black
-        VideoInt( VIDEOINT_SET_PALETTE + 0x01, 16 << 8, 0, 0 ); // overscan = 16
+        VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x10, 16, 0, 0 ); // map 16 to black
+        VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x01, 16 << 8, 0, 0 ); // overscan = 16
         for( i = 0; i < 16; ++i ) {
-            VideoInt( VIDEOINT_SET_PALETTE + 0x00, ( i << 8 ) | i, 0, 0 );
+            VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x00, ( i << 8 ) | i, 0, 0 );
         }
         if( _CurrState->vc.numcolors == 2 ) {
             _remappalette( 0, _BLACK );

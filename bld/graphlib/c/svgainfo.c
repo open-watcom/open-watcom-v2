@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static int TestForVESA( void )
 #endif
 
 #if defined( _M_I86 ) || defined( __QNX__ )
-    val = GetVESAInfo( 0x4f00, 0, buf );
+    val = VideoInt3( 0x4f00, 0, buf );
     if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                          buf[2] == 'S' && buf[3] == 'A' ) {
         return( TRUE );
@@ -112,7 +112,7 @@ short _SuperVGAType( void )
         return _SVGAType;
     }
 
-    dcc = VideoInt( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
+    dcc = VideoInt1_ax( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc != 0x1a ) {
         return( _SV_NONE );
     }
@@ -196,12 +196,12 @@ short _SuperVGAType( void )
 #endif
 
 //  test for Video-7
-    if( VideoInt_bx( 0x6f00, 0, 0, 0 ) == ( 'V' << 8 ) + '7' ) {
+    if( VideoInt1_bx( 0x6f00, 0, 0, 0 ) == ( 'V' << 8 ) + '7' ) {
         return( _SV_VIDEO7 );
     }
 
 //  test for Chips and Technologies
-    if( ( VideoInt( 0x5f00, 0, 0, 0 ) & 0x00ff ) == 0x5f ) {
+    if( ( VideoInt1_ax( 0x5f00, 0, 0, 0 ) & 0x00ff ) == 0x5f ) {
         return( _SV_CHIPS );
     }
 
@@ -250,7 +250,7 @@ short _SuperVGAType( void )
             return( _SV_CIRRUS );
         }
     }
-//  val = VideoInt( 0x12ff, 0x0080, 0, 0 );
+//  val = VideoInt1_ax( 0x12ff, 0x0080, 0, 0 );
 //  if( val >= 2 && val <= 0x31 ) {
 //      return( _SV_CIRRUS );
 //  }

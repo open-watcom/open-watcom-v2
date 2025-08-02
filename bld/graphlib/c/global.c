@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,6 +130,9 @@ unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pi
     unsigned int        _RomOff  = 0x0000;          // off of ROM BIOS area
     unsigned short      _StackSeg;                  // seg of stack
 #else
+    /*
+     * default values are for Pharlap Extender
+     */
     unsigned short      _BiosSeg = 0x0034;          // seg of BIOS data area
     unsigned short      _MonoSeg = 0x001C;          // seg of MONO screen
     unsigned short      _CgaSeg  = 0x001C;          // seg of CGA screen

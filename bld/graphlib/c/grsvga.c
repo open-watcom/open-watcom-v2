@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 //#if !defined( __QNX__ )
     case _SV_VESA:
 #if defined( _M_I86 ) || defined(__QNX__)
-        if( GetVESAInfo( 0x4f01, mode, buf ) != 0x004f ) {
+        if( VideoInt3( 0x4f01, mode, buf ) != 0x004f ) {
             return( FALSE );
         }
     #if defined( VERSION2 )
@@ -156,7 +156,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             BX=desired mode
             return value AL=0x4F AH=0x00
         */
-        if( VideoInt( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
+        if( VideoInt1_ax( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
             return( FALSE );
         }
         granule = 64 / U16( buf, 2 );
@@ -169,8 +169,8 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 //#endif
 
     case _SV_VIDEO7:
-        VideoInt( 0x6f05, mode, 0, 0 );         // set mode
-        if( ( VideoInt( 0x6f04, 0, 0, 0 ) & 0x00ff ) != mode ) {  // get mode
+        VideoInt1_ax( 0x6f05, mode, 0, 0 );         // set mode
+        if( ( VideoInt1_ax( 0x6f04, 0, 0, 0 ) & 0x00ff ) != mode ) {  // get mode
             return( FALSE );
         }
         outpw( 0x3c4, 0xea06 );     // enable extended register access
@@ -188,7 +188,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_PARADISE:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -196,7 +196,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_ATI:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -211,16 +211,16 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_OAK:
     case _SV_GENOA:
     case _SV_VIPER:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
         break;
 
     case _SV_S3:
-        if( VideoInt( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
+        if( VideoInt1_ax( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
             // if 100 range modes don't work, try 200 range
-            if( VideoInt( 0x4f02, mode + 0x100, 0, 0 ) != 0x004f ) {
+            if( VideoInt1_ax( 0x4f02, mode + 0x100, 0, 0 ) != 0x004f ) {
                 return( FALSE );
             }
         }
@@ -233,7 +233,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_TRIDENT:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -245,7 +245,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_CHIPS:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -262,7 +262,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         }
 
     case _SV_CIRRUS:
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }

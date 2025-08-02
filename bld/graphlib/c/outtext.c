@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
     _RefreshWindow();
     // update cursor position
 #if !defined( _DEFAULT_WINDOWS )
-    VideoInt( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( _TextPos.row << 8 ) + _TextPos.col );
+    VideoInt1_ax( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( _TextPos.row << 8 ) + _TextPos.col );
 #endif
 }
 
@@ -229,7 +229,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _settextcursor( short shape )
     previous = _CursorShape;
     _CursorShape = shape;
 
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, shape, 0 );     // set new shape
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, shape, 0 );     // set new shape
     return( previous );
 #endif
 }

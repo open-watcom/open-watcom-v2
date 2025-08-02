@@ -149,7 +149,7 @@ static unsigned short DCCEmulate( void )
     short           alternate_type;
     char            video_mode;
 
-    if( (VideoInt_cx( VIDEOINT_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff) < 0x0C ) {
+    if( (VideoInt1_cx( VIDEOINT_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff) < 0x0C ) {
         ega_info = EGA_Info();
         ega_color = ega_info >> 8;                          /* low byte     */
         ega_memory = ega_info & 0x00FF;                     /* high byte    */
@@ -200,9 +200,9 @@ unsigned short _SysMonType( void )
     short           alternate_type;
 //    char __far *    p;
 
-    dcc = VideoInt( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
+    dcc = VideoInt1_ax( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc == ( VIDEOINT_VIDEO_DCC >> 8 ) ) {       /* DCC function supported */
-        monitor_type = VideoInt_bx( VIDEOINT_VIDEO_DCC, 0, 0, 0 );
+        monitor_type = VideoInt1_bx( VIDEOINT_VIDEO_DCC, 0, 0, 0 );
         active_type = monitor_type & 0x00FF;                /* low byte     */
         alternate_type = monitor_type >> 8;                 /* high byte    */
         if( active_type <= MAX_DCC ) {              /* test for PS/2 series */
