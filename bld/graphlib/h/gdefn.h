@@ -48,9 +48,9 @@
     #include "wingph.h"
 #endif
 #if defined( VERSION2 )
-#include "graph2.gh"
+    #include "graph2.gh"
 #else
-#include "graph.gh"
+    #include "graph.gh"
 #endif
 #include "bool.h"
 #include "arcinfo.h"
@@ -104,7 +104,6 @@
 
 #define MASK_LEN        8               /* length of fill mask  */
 
-#pragma pack(__push, 1);
 struct clip_region {
     short       xmin;
     short       xmax;
@@ -114,6 +113,7 @@ struct clip_region {
 
 #if defined( VERSION2 )
 
+#pragma pack(__push, 1);
 struct VbeModeInfo
 {
   // Mandatory information for all VBE revisions:
@@ -173,11 +173,12 @@ struct VbeModeInfo
   unsigned char   RsvdFieldPositionL;    // bit position of lsb of reserved mask(linear)
   unsigned long   MaxPixelClock;         // Maximum pixel clock for graphics video mode (Hertz)
   char                  __Reserved[190];
-
 };
+#pragma pack (__pop);
 
 #endif
 
+#pragma pack(__push, 1);
 struct videoinfo {
     struct videoconfig      vc;
     gr_device _FARD         *deviceptr;
@@ -196,6 +197,7 @@ struct videoinfo {
     struct VbeModeInfo      mi;
 #endif
 };
+#pragma pack (__pop);
 
 #define PLANAR          0x0001      // videoinfo.misc_info bits
 #define NO_BIOS         0x0002
@@ -204,13 +206,12 @@ struct videoinfo {
 #define               IsTextMode      ( !_GrMode )
 
 struct window_def {
-    short           invert;
     float           xleft;
     float           ybottom;
     float           xright;
     float           ytop;
+    short           invert;
 };
-#pragma pack (__pop);
 
 #if defined( _DEFAULT_WINDOWS )
     // This macro causes repaints to be done
@@ -343,5 +344,4 @@ extern void             _WCI86FAR _L2putimage( short, short, char _WCI86HUGE *, 
 extern long             _WCI86FAR _L2imagesize( short, short, short, short );
 extern short            _WCI86FAR _L2grtext( short, short, char _WCI86FAR * );
 extern void             _WCI86FAR _L2setcliprgn( short, short, short, short );
-extern short            _WCI86FAR _L2setclip( short );
 extern grcolor          _WCI86FAR _L2setcolor( grcolor );

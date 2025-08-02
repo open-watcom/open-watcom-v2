@@ -52,6 +52,10 @@
 
 /* Video Interrupt Routines */
 
+#define GetVideoMode()  ( VideoInt1_ax( VIDEOINT_GET_MODE, 0, 0, 0 ) & 0x7f )
+#define EGA_Info()      ( VideoInt1_bx( VIDEOINT_ALT_SELECT, 0x0010, 0, 0 ) )
+#define EGA_Memory()    ( VideoInt1_bx( VIDEOINT_ALT_SELECT, 0x0010, 0, 0 ) & 0xff )
+
 extern unsigned short VideoInt1_ax( short, short, short, short );
 #pragma aux VideoInt1_ax = \
         "push bp"   \
@@ -76,10 +80,6 @@ extern unsigned short VideoInt1_cx( short, short, short, short );
     __parm __caller [__ax] [__bx] [__cx] [__dx] \
     __value         [__cx]
 
-#define GetVideoMode()  ( VideoInt1_ax( VIDEOINT_GET_MODE, 0, 0, 0 ) & 0x7f )
-#define EGA_Info()      ( VideoInt1_bx( VIDEOINT_ALT_SELECT, 0x0010, 0, 0 ) )
-#define EGA_Memory()    ( VideoInt1_bx( VIDEOINT_ALT_SELECT, 0x0010, 0, 0 ) & 0xff )
-
 extern void VideoInt2( short, short, short, void __far * );
 #if defined( _M_I86 )
 #pragma aux VideoInt2 = \
@@ -99,8 +99,6 @@ extern void VideoInt2( short, short, short, void __far * );
     __modify        []
 #endif
 
-
-
 extern short VideoInt3( short, short, void __far * );
 #if defined( _M_I86 )
 #pragma aux VideoInt3 = \
@@ -118,7 +116,6 @@ extern short VideoInt3( short, short, void __far * );
     __value         [__ax]
 #endif
 
-//extern long GetVGAPalette( short func, short reg );
 extern long VideoInt4( short func, short reg );
 #if defined( _M_I86 )
     #pragma aux VideoInt4 = \

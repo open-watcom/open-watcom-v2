@@ -32,9 +32,9 @@
 
 
 #if defined( VERSION2 )
-#include "graph2.gh"
+    #include "graph2.gh"
 #else
-#include "graph.gh"
+    #include "graph.gh"
 #endif
 #include "bool.h"
 #include "pgchart.gh"
