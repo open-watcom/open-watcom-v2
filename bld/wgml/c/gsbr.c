@@ -358,33 +358,45 @@ void  scr_process_break( void )
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;
-    } else if( ProcFlags.note_starting ) {    // NOTE with no text before break
-        t_page.cur_left = note_lm;
-        ProcFlags.note_starting = false;
-    } else if( ProcFlags.para_starting ) {    // LP, P or PC with no text before break
+    } else if( ProcFlags.note_starting
+      || ProcFlags.para_starting ) {        // NOTE with no text before break
 
-        /* Putting set_skip_vars() first can affect the result of the if() */
+        if( ProcFlags.block_starting ) {    // P, PC, NOTE paragraph is empty
+            g_subs_skip += g_post_skip;
+            g_post_skip = 0;
+            ProcFlags.block_starting = false;
+        }
 
-        if( (g_line_indent > 0) || (g_blank_units_lines > 0) ) {
-            set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
+        if( ProcFlags.note_starting ) {     // NOTE with no text before break
+            t_page.cur_left = note_lm;
+            ProcFlags.note_starting = false;
+        } else if( ProcFlags.para_starting ) {  // LP, P or PC with no text before break
+            /*
+             * ProcFlags.block_starting must be done before this point or the
+             * call to set_skip_vars() will change the results
+             * Putting set_skip_vars() first can affect the result of the if()
+             */
+            if( (g_line_indent > 0) || (g_blank_units_lines > 0) ) {
+                set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
 
-            t_element = init_doc_el( ELT_text, wgml_fonts[g_curr_font].line_height );
-            if( g_line_indent == 0 ) {  // special case
-                t_element->depth = 0;
-            }
-            t_element->element.text.first = alloc_text_line();
+                t_element = init_doc_el( ELT_text, wgml_fonts[g_curr_font].line_height );
+                if( g_line_indent == 0 ) {  // special case
+                    t_element->depth = 0;
+                }
+                t_element->element.text.first = alloc_text_line();
 
-            if( g_line_indent > 0 ) {
-                t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
+                if( g_line_indent > 0 ) {
+                    t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
+                } else {
+                    t_element->element.text.first->line_height = 0;
+                }
+                t_element->element.text.first->first = NULL;
+                insert_col_main( t_element );
+                t_element = NULL;
+                t_el_last = NULL;
             } else {
-                t_element->element.text.first->line_height = 0;
+                set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
             }
-            t_element->element.text.first->first = NULL;
-            insert_col_main( t_element );
-            t_element = NULL;
-            t_el_last = NULL;
-        } else {
-            set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
         }
     } else if( g_blank_text_lines > 0  ) {                  // pending blank lines
         set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );  // emits vspace doc_element

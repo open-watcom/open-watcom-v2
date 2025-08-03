@@ -34,7 +34,8 @@
 #include "clibext.h"
 
 
-static  int    vspace  = 0;                 // vertical space entered (vbus)
+static int          vspace = 0;         // vertical space entered (vbus)
+static bool         c_seen = false;     // records use of operand C (or COND)
 
 /**************************************************************************/
 /* Implements most of SK and SP                                           */
@@ -44,15 +45,15 @@ static  int    vspace  = 0;                 // vertical space entered (vbus)
 
 static void sksp_common( void )
 {
-    bool            a_seen          = false;    // records use of operand A (or ABS)
-    bool            c_seen          = false;    // records use of operand C (or COND)
-    bool            scanerr         = false;
+    bool            a_seen  = false;    // records use of operand A (or ABS)
+    bool            scanerr = false;
     const char      *p;
     const char      *pa;
     unsigned        len;
     su              spskwork;
     text_space      text_spacing;
 
+    c_seen = false;
     spskwork.su_u = SU_undefined;
     text_spacing = g_text_spacing;          // set spacing to default
 
@@ -115,6 +116,11 @@ static void sksp_common( void )
             }
         } else {
             vspace = conv_vert_unit( &spskwork, 1, g_curr_font );
+        }
+        if( ProcFlags.wh_device
+          && c_seen
+          && (g_subs_skip > 0) ) {
+            vspace += g_subs_skip;
         }
     }
 

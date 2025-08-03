@@ -167,7 +167,7 @@ static void gml_xl_lp_common( g_tags t )
 
 void gml_dl( const gmltag * entry )
 {
-    bool            compact     =   false;
+    bool            compact = false;
     bool            dl_break;
     char            *p;
     char            *pa;
@@ -198,6 +198,8 @@ void gml_dl( const gmltag * entry )
     } else {
         dl_cur_level = 1;
     }
+
+    ProcFlags.block_starting = true;    // to catch empty lists
 
     dl_break = dl_layout->line_break;
     headhi = layout_work.dthd.font;
@@ -314,6 +316,8 @@ void gml_gl( const gmltag * entry )
         start_doc_sect();
     }
 
+    ProcFlags.block_starting = true;    // to catch empty lists
+
     termhi = layout_work.gt.font;
 
     p = g_scandata.s;
@@ -409,6 +413,8 @@ void gml_ol( const gmltag * entry )
         start_doc_sect();
     }
 
+    ProcFlags.block_starting = true;    // to catch empty lists
+
     p = g_scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
@@ -496,6 +502,8 @@ void gml_sl( const gmltag * entry )
         start_doc_sect();
     }
 
+    ProcFlags.block_starting = true;    // to catch empty lists
+
     p = g_scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
@@ -581,6 +589,8 @@ void gml_ul( const gmltag * entry )
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
+
+    ProcFlags.block_starting = true;    // to catch empty lists
 
     p = g_scandata.s;
     SkipSpaces( p );                        // over spaces
@@ -1095,6 +1105,8 @@ void    gml_lp( const gmltag * entry )
     }
     scr_process_break();
 
+    ProcFlags.block_starting = true;    // to catch empty lists
+
     nest_cb->compact = false;
     nest_cb->font = g_curr_font;
     g_curr_font = layout_work.defaults.font;    // matches wgml 4.0
@@ -1554,7 +1566,7 @@ void gml_gd( const gmltag * entry )
     ProcFlags.concat = true;        // even if was false on entry
     process_text( delim, g_curr_font );
 
-    /* This is from DD processing, hence marker type used */
+    /* This is from GD processing, hence marker type used */
 
     if( ProcFlags.wh_device ) {             // Insert a marker
         marker = process_word( NULL, 0, g_curr_font, false );

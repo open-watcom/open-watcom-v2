@@ -412,6 +412,8 @@ void gml_fig( const gmltag * entry )
     }
     g_keep_nest( "Figure" );            // catch nesting errors
 
+    ProcFlags.block_starting = true;    // to catch empty blocks
+
     figcap_done = false;                // reset for this FIG
     *figrefid = '\0';
     page_width = false;
@@ -747,6 +749,12 @@ void gml_efig( const gmltag * entry )
     t_page.max_width += right_inset;
     ProcFlags.concat = false;
     set_skip_vars( NULL, NULL, &layout_work.fig.post_skip, g_text_spacing, layout_work.fig.font );
+
+    if( ProcFlags.block_starting ) {    // block is empty
+        g_subs_skip += g_post_skip;
+        g_post_skip = 0;
+        ProcFlags.block_starting = false;
+    }
 
     raw_p_skip = g_post_skip;           // save for future use
 

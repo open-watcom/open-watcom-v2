@@ -75,6 +75,8 @@ static void proc_p_pc( p_lay_tag *p_pc, g_tags t )
 
     p_pc_setup( p_pc );
 
+    ProcFlags.block_starting = true;    // to catch empty paragraphs
+
     g_scan_err = false;
     p = g_scandata.s;
 
@@ -136,7 +138,7 @@ extern void gml_note( const gmltag * entry )
 
     note_lm = t_page.cur_left;
     font_save = g_curr_font;
-    set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip,
+    set_skip_vars( &layout_work.note.pre_skip, NULL, NULL,
                     g_text_spacing, layout_work.note.font );
 
     t_page.cur_left += conv_hor_unit( &layout_work.note.left_indent, layout_work.note.font );
@@ -155,7 +157,7 @@ extern void gml_note( const gmltag * entry )
     g_text_spacing = layout_work.note.spacing;
     g_curr_font = layout_work.defaults.font;
 
-    set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font );
+    set_skip_vars( NULL, NULL, &layout_work.note.post_skip, g_text_spacing, g_curr_font );
     SkipDot( p );                       // over '.'
     SkipSpaces( p );                    // skip initial space
     if( *p != '\0' ) {                  // if text follows
@@ -180,6 +182,8 @@ extern void gml_note( const gmltag * entry )
         post_space = 0;
     }
 
+    ProcFlags.block_starting = true;    // to catch empty paragraphs
+
     g_curr_font = font_save;
     g_scandata.s = g_scandata.e;
     return;
@@ -187,6 +191,7 @@ extern void gml_note( const gmltag * entry )
 
 /***************************************************************************/
 /*  Force PC on text line following certain blocks                         */
+/*  Note: only called with text, so ProcFlags.block_starting is not set    */ 
 /***************************************************************************/
 
 extern void do_force_pc( char * p )

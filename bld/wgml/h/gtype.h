@@ -1612,6 +1612,7 @@ typedef struct proc_flags {
     unsigned        op_done             : 1;// overprint done (used for heading page adjustment)
     unsigned        overprint           : 1;// .sk -1 active or not
 
+    unsigned        block_starting      : 1;// P, PC, LP, NOTE, DL, FIG, GL, LQ, XMP block starting
     unsigned        keep_left_margin    : 1;// for indented NOTE tag paragraph (and others)
     unsigned        note_starting       : 1;// :NOTE had no text (in scr_process_break())
     unsigned        para_starting       : 1;// :LP, :P or :PC had no text (in scr_process_break())
