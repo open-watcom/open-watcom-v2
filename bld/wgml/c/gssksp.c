@@ -35,7 +35,6 @@
 
 
 static int          vspace = 0;         // vertical space entered (vbus)
-static bool         c_seen = false;     // records use of operand C (or COND)
 
 /**************************************************************************/
 /* Implements most of SK and SP                                           */
@@ -45,17 +44,20 @@ static bool         c_seen = false;     // records use of operand C (or COND)
 
 static void sksp_common( void )
 {
-    bool            a_seen  = false;    // records use of operand A (or ABS)
-    bool            scanerr = false;
+    bool            abs_seen;           // records use of operand A (or ABS)
+    bool            cond_seen;          // records use of operand C (or COND)
+    bool            scanerr;
     const char      *p;
     const char      *pa;
     unsigned        len;
     su              spskwork;
     text_space      text_spacing;
 
-    c_seen = false;
+    scanerr = false;
+    abs_seen  = false;
+    cond_seen = false;
     spskwork.su_u = SU_undefined;
-    text_spacing = g_text_spacing;          // set spacing to default
+    text_spacing = g_text_spacing;      // set spacing to default
 
     p = g_scandata.s;
     if( *p != '\0' ) {
@@ -76,18 +78,18 @@ static void sksp_common( void )
                 pa = p;
                 SkipNonSpaces( pa );
                 len = pa - p;
-                if( !a_seen && (len <= 3) ) {
-                    if( strnicmp( "abs", p, len ) == 0 ) {   // wgml 4.0 matches 'a', 'ab', 'abs' only
-                        a_seen = true;
+                if( !abs_seen && (len <= 3) ) {
+                    if( strnicmp( "abs", p, len ) == 0 ) {  // wgml 4.0 matches 'a', 'ab', 'abs' only
+                        abs_seen = true;
                         p = pa;
-                        text_spacing = 1;               // forced to single spacing if A (ABS)
+                        text_spacing = 1;                   // forced to single spacing if A (ABS)
                         continue;
                     }
                 }
 
-                if( !c_seen && (len <= 4) ) {
-                    if( strnicmp( "cond", p, len ) == 0 ) {  // wgml 4.0 matches 'c', 'co', 'con', 'cond' only
-                        c_seen = true;
+                if( !cond_seen && (len <= 4) ) {
+                    if( strnicmp( "cond", p, len ) == 0 ) { // wgml 4.0 matches 'c', 'co', 'con', 'cond' only
+                        cond_seen = true;
                         p = pa;
                         continue;
                     }
@@ -112,13 +114,13 @@ static void sksp_common( void )
                 vspace = 0;                             // avoid evaluating negative spacing
             } else {
                 ProcFlags.overprint = false;            // disable overprint
-                vspace = (text_spacing * spskwork.su_whole * (int) bin_device->vertical_base_units) / LPI;
+                vspace = ( text_spacing * spskwork.su_whole * (int)bin_device->vertical_base_units ) / LPI;
             }
         } else {
             vspace = conv_vert_unit( &spskwork, 1, g_curr_font );
         }
         if( ProcFlags.wh_device
-          && c_seen
+          && cond_seen
           && (g_subs_skip > 0) ) {
             vspace += g_subs_skip;
         }
