@@ -1226,34 +1226,28 @@ fwd_ref *init_fwd_ref( fwd_ref *dict, const char *refid )
     fwd_ref *   local;
     fwd_ref *   prev;
 
-    if( dict == NULL ) {
-        curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
-        curr->next = NULL;
-        strcpy( curr->refid, refid );
-        dict = curr;         // first entry
-        return( dict );
-    }
     prev = NULL;
     for( local = dict; local != NULL; local = local->next ) {
         if( strcmp( local->refid, refid ) >= 0 ) {
-            curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
-            curr->next = NULL;
-            strcpy( curr->refid, refid );
-            if( prev == NULL ) {    // curr goes at start of list
-                dict = curr;
-            } else {
-                prev->next = curr;  // curr goes between two existing entries
-            }
-            curr->next = local;
-            return( dict );
+            break;
         }
         prev = local;
     }
-    // curr goes at end of list
     curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
     curr->next = NULL;
     strcpy( curr->refid, refid );
-    prev->next = curr;
+    if( dict == NULL ) {
+        dict = curr;           // first entry
+    } else if( local == NULL ) {
+        prev->next = curr;     // curr goes at end of list
+    } else {
+        if( prev == NULL ) {   // curr goes at start of list
+            dict = curr;
+        } else {
+            prev->next = curr; // curr goes between two existing entries
+        }
+        curr->next = local;
+    }
     return( dict );
 }
 
