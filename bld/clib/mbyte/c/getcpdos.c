@@ -68,29 +68,24 @@ unsigned short dos_get_code_page( void )
 #else
     codepage = 0;
     if( _IsPharLap() ) {
-        union REGS          regs;
-        struct SREGS        segregs;
         pharlap_regs_struct dp;
+        int                 cflag;
 
-        memset( &regs, 0, sizeof( regs ) );
-        memset( &segregs, 0, sizeof( segregs ) );
         memset( &dp, 0, sizeof( dp ) );
         dp.r.x.eax = 0x6601;            /* get extended country info */
         dp.intno = 0x21;                /* DOS call */
-        regs.x.eax = 0x2511;            /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &dp );    /* DS:EDX -> parameter block */
-        segregs.ds = _FP_SEG( &dp );
-        intdosx( &regs, &regs, &segregs );
-        if( regs.w.cflag == 0 ) {
-            codepage = regs.w.bx;       /* return active code page */
+        cflag = PharlapSimulateRealModeInterruptExt( &dp );
+        if( cflag == 0 ) {
+            codepage = dp.r.w.bx;       /* return active code page */
         }
     } else if( _DPMI || _IsRational() ) {
         dpmi_regs_struct    dr;
+        int                 cflag;
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.x.eax = 0x6601;            /* get extended country info */
-        DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
-        if( (dr.flags & INTR_CF) == 0 ) {
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
+        if( cflag == 0 && (dr.flags & INTR_CF) == 0 ) {
             codepage = dr.r.w.bx;       /* return active code page */
         }
     }

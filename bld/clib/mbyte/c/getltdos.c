@@ -82,19 +82,13 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
 #else
     if( _IsPharLap() ) {
         pharlap_regs_struct dp;
-        union REGS          regs;
-        struct SREGS        segregs;
+        int                 cflag;
 
         memset( &dp, 0, sizeof( dp ) );
-        memset( &regs, 0, sizeof( regs ) );
-        memset( &segregs, 0, sizeof( segregs ) );
         dp.r.x.eax = 0x6300;                 /* get DBCS vector table */
         dp.intno = 0x21;                    /* DOS call */
-        regs.x.eax = 0x2511;                 /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &dp );        /* DS:EDX -> parameter block */
-        segregs.ds = _FP_SEG( &dp );
-        intdosx( &regs, &regs, &segregs );
-        if( regs.x.cflag == 0 && dp.r.h.al == 0 ) {
+        cflag = PharlapSimulateRealModeInterruptExt( &dp );
+        if( cflag == 0 && dp.r.h.al == 0 ) {
             /*
              * check if DS not 0 or weird OS/2 value 0xFFFF
              * otherwise it is invalid
@@ -105,11 +99,12 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         }
     } else if( _DPMI || _IsRational() ) {
         dpmi_regs_struct    dr;
+        int                 cflag;
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.x.eax = 0x6300;                /* get DBCS vector table */
-        DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
-        if( (dr.flags & INTR_CF) == 0 && dr.r.h.al == 0 ) {
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
+        if( cflag == 0 && (dr.flags & INTR_CF) == 0 && dr.r.h.al == 0 ) {
             /*
              * check if DS not 0
              * otherwise it is invalid
