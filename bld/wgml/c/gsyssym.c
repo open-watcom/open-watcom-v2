@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1174,7 +1174,7 @@ static  void    init_predefined_symbols( void )
 {
     char            wkstring[2];
 
-    add_symvar( global_dict, "amp", "&", 1, SI_no_subscript, SF_is_AMP+SF_predefined );
+    add_symvar( global_dict, "amp", "&", 1, SI_no_subscript, SF_is_AMP | SF_predefined );
     wkstring[0] = GML_CHAR_DEFAULT;
     wkstring[1] = '\0';
     add_symvar( global_dict, "gml", wkstring, 1, SI_no_subscript, SF_predefined );

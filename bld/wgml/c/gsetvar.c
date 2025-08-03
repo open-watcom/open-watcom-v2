@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 200-20259 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 200--2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -164,7 +164,7 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
                 } else {
                     *subscript = 1;         // start with index 1
                 }
-                sym->flags |= SF_auto_inc + SF_subscripted;
+                sym->flags |= SF_auto_inc | SF_subscripted;
             } else if( *p == '*' ) {        // * concatenates all elements
                 p++;
                 if( *p == '+' ) {
