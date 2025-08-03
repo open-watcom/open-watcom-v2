@@ -1533,8 +1533,9 @@ void gml_gt( const gmltag * entry )
 
 void gml_gd( const gmltag * entry )
 {
-    char    *   p;
-    char        delim[3];
+    char        	*p;
+    char            delim[3];
+    text_chars  	*marker;
 
     (void)entry;
 
@@ -1558,7 +1559,26 @@ void gml_gd( const gmltag * entry )
     delim[0] = nest_cb->u.gl_layout->delim;
     delim[1] = CONT_char;
     delim[2] = '\0';
+    ProcFlags.concat = true;        // even if was false on entry
     process_text( delim, g_curr_font );
+
+    /* This is from DD processing, hence marker type used */
+
+    if( ProcFlags.wh_device ) {             // Insert a marker
+        marker = process_word( NULL, 0, g_curr_font, false );
+        marker->f_switch = FSW_from;         // emit marker
+        marker->x_address = t_page.cur_width;
+        t_line->last->next = marker;
+        marker->prev = t_line->last;
+        t_line->last = marker;
+        marker = process_word( NULL, 0, g_curr_font, false );
+        marker->f_switch = FSW_full;         // emit marker
+        marker->x_address = t_page.cur_width;
+        t_line->last->next = marker;
+        marker->prev = t_line->last;
+        t_line->last = marker;
+        marker = NULL;
+    }
 
     g_curr_font = layout_work.gd.font;
     g_prev_font = g_curr_font;

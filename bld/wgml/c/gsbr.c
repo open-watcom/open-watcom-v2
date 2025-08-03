@@ -358,7 +358,10 @@ void  scr_process_break( void )
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;
-    } else if( ProcFlags.para_starting ) {    // LP, P or PC : no text before break
+    } else if( ProcFlags.note_starting ) {    // NOTE with no text before break
+        t_page.cur_left = note_lm;
+        ProcFlags.note_starting = false;
+    } else if( ProcFlags.para_starting ) {    // LP, P or PC with no text before break
 
         /* Putting set_skip_vars() first can affect the result of the if() */
 

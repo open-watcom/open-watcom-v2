@@ -1591,10 +1591,8 @@ typedef struct proc_flags {
     unsigned        force_pc            : 1;// use PC tag processing on text not preceded by a tag or control word
     unsigned        utc                 : 1;// user tag with "continue" is active
     unsigned        in_trans            : 1;// esc char is specified (.ti set x)
-    unsigned        reprocess_line      : 1;// unget for current input line
     unsigned        sk_2nd              : 1;// .sk follows blank lines of .sp
     unsigned        sk_co               : 1;// CO OFF and .sk -1 or .sk n, n > 0 done
-    unsigned        tag_end_found       : 1;// '.' ending tag found
     unsigned        skips_valid         : 1;// controls set_skip_vars() useage
     unsigned        new_pagenr          : 1;// FIG/heading page number changed
     unsigned        first_hdr           : 1;// first header done
@@ -1605,17 +1603,24 @@ typedef struct proc_flags {
     unsigned        no_bx_hline         : 1;// determines if a horizontal line is to be emitted or not
     unsigned        top_line            : 1;// determines if current line is at top of page
     unsigned        vline_done          : 1;// determines if a vertical line was done
-    unsigned        keep_left_margin    : 1;// for indent NOTE tag paragraph
     unsigned        skip_blank_line     : 1;// for XMP/eXMP blocks in macros
     unsigned        in_reduced          : 1;// position resulting from IN reduced to left edge of device page
     unsigned        dd_starting         : 1;// DD after break had no text (in next scr_process_break())
-    unsigned        para_starting       : 1;// :LP, :P or :PC had no text (in scr_process_break())
-    unsigned        para_has_text       : 1;// :LP, :P, :PB or :PC had text (used by PB)
     unsigned        titlep_starting     : 1;// AUTHOR or TITLE had no text (in scr_process_break())
     unsigned        space_fnd           : 1;// last input record ended with a space character
     unsigned        force_op            : 1;// force overprint (used with BX CAN/BX DEL)
     unsigned        op_done             : 1;// overprint done (used for heading page adjustment)
     unsigned        overprint           : 1;// .sk -1 active or not
+
+    unsigned        keep_left_margin    : 1;// for indented NOTE tag paragraph (and others)
+    unsigned        note_starting       : 1;// :NOTE had no text (in scr_process_break())
+    unsigned        para_starting       : 1;// :LP, :P or :PC had no text (in scr_process_break())
+    unsigned        para_has_text       : 1;// :LP, :P, :PB or :PC had text (used by PB)
+
+    unsigned        no_equal_sign       : 1;// equal sign not found after attribute name (whitespace allowed)
+    unsigned        no_value_found      : 1;// value not found after attribute name =
+    unsigned        reprocess_line      : 1;// unget for current input line
+    unsigned        tag_end_found       : 1;// '.' ending tag found
 
     unsigned        ix_seen             : 1;// index tag/cw preceded current text (indexing on or not)
     unsigned        post_ix             : 1;// index tag/cw preceded current text (indexing on)
@@ -1651,6 +1656,7 @@ typedef struct proc_flags {
     unsigned        lay_specified       : 1;// LAYOUT option or :LAYOUT tag seen
     unsigned        banner              : 1;// within layout banner definition
     unsigned        banregion           : 1;// within layout banregion definition
+
     l_tags          lay_xxx;                // active :layout sub tag
 
     ju_enum         justify             : 8;// .ju on half off ...
@@ -1697,6 +1703,7 @@ typedef struct attr_flags {
     unsigned        index_delim     : 1;
     unsigned        index_string    : 1;
     unsigned        input_esc       : 1;
+    unsigned        ix              : 1;
     unsigned        ixhead_frame    : 1;
     unsigned        justify         : 1;
     unsigned        left_adjust     : 1;
@@ -1732,6 +1739,7 @@ typedef struct attr_flags {
     unsigned        right_indent    : 1;
     unsigned        right_margin    : 1;
     unsigned        script_format   : 1;
+    unsigned        sec             : 1;
     unsigned        section_eject   : 1;
     unsigned        see_string      : 1;
     unsigned        see_also_string : 1;

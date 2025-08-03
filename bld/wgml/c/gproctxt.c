@@ -1879,7 +1879,7 @@ void process_text( char * text, font_number font )
     process_late_subst( text );
 
     /********************************************************************/
-    /*  force a break in when certain conditions involving new input    */
+    /*  force a break when certain conditions involving new input       */
     /*  lines, user tabs, and a tab character in the input              */
     /*  Note: this only works if the tab is in the first logical record */
     /********************************************************************/
@@ -1913,6 +1913,7 @@ void process_text( char * text, font_number font )
     if( ProcFlags.einl_in_inlp
       && ProcFlags.br_done ) {
         font = FONT0;                   // matches wgml 4.0
+        g_curr_font = font;
     }
 
     phrase_start = true;

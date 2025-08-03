@@ -197,6 +197,9 @@ global ix_h_blk     *index_dict;        // index structure dictionary
 global ix_h_blk     *ixhtag[3];         // current entry for each level in index
 global ref_entry    *ix_ref_dict;       // reference id dictionary :Ix :IHx :IREF
 
+// NOTE support
+global unsigned     note_lm;            // left margin on entering NOTE
+
 // page number format
 global num_style    pgnum_style[PGNST_max];
 

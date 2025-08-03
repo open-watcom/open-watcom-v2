@@ -134,6 +134,7 @@ extern void gml_note( const gmltag * entry )
 
     scr_process_break();
 
+    note_lm = t_page.cur_left;
     font_save = g_curr_font;
     set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip,
                     g_text_spacing, layout_work.note.font );
@@ -148,6 +149,7 @@ extern void gml_note( const gmltag * entry )
     }
     insert_hard_spaces( layout_work.note.spaces, strlen( layout_work.note.spaces ), FONT0 );
     t_page.cur_left = t_page.cur_width; // set indent for following text
+    ProcFlags.note_starting = true;
     ProcFlags.zsp = true;
 
     g_text_spacing = layout_work.note.spacing;
