@@ -250,7 +250,7 @@ static void gml_e_inline_common( const gmltag *entry )
         if( nest_cb->gtag == T_NONE ) {
             g_tag_no_err_exit( entry->u.tagid );                // no exxx expected
         } else {
-            g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag );   // exxx expected
         }
         /* never return */
     }

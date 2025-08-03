@@ -78,7 +78,7 @@ void gml_xmp( const gmltag * entry )
     g_keep_nest( "Example" );           // catch nesting errors
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
         /* never return */
     }
 
@@ -194,7 +194,7 @@ void gml_exmp( const gmltag * entry )
     (void)entry;
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
         /* never return */
     }
 

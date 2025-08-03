@@ -407,7 +407,7 @@ void gml_fig( const gmltag * entry )
     g_scan_err = false;
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
         /* never return */
     }
     g_keep_nest( "Figure" );            // catch nesting errors

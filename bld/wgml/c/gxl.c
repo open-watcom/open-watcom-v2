@@ -76,7 +76,7 @@ static void gml_xl_lp_common( g_tags t )
 
     if( t != T_LP ) {
         if( is_ip_tag( nest_cb->gtag ) ) {         // inline phrase not closed
-            g_tag_nest_err_exit( nest_cb->gtag + 1 );   // end tag expected
+            g_tag_nest_err_exit( nest_cb->gtag );   // end tag expected
             /* never return */
         }
     }
@@ -661,7 +661,7 @@ static bool    gml_exl_entry( const gmltag *entry )
         if( nest_cb->gtag == T_NONE ) {
             g_tag_no_err_exit( entry->u.tagid );                // no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag );   // exxx expected
         }
         /* never return */
     }
@@ -1062,7 +1062,7 @@ void    gml_li( const gmltag * entry )
         break;
     case T_DL :
     case T_GL :
-        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
         /* never return */
     default:
         break;

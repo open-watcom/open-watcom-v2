@@ -591,7 +591,7 @@ void g_tag_err_exit( g_tags gtag )
 
 void g_tag_nest_err_exit( g_tags gtag )
 {
-    g_tag_common_err( gtag, true );         // nested tag stack display
+    g_tag_common_err( get_tclo( gtag ), true );         // nested tag stack display
     err_exit();
     /* never return */
 }
