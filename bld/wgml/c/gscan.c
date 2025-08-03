@@ -41,8 +41,7 @@
 static const gmltag     gml_tags[] = {
     #define pick1(n,l,r,g,o,c) { { T_##n }, #n, l, r, g, o, c },
     #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2) \
-                    pick1(n1,l1,r1,g1,o1,c1) \
-                    pick1(n2,l2,r2,g2,o2,c2)
+                pick1(n1,l1,r1,g1,o1,c1) pick1(n2,l2,r2,g2,o2,c2)
     #include "gtags.h"
     #undef pick2
     #undef pick1
