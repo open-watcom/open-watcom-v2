@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -284,10 +284,10 @@ static void insert_frame_line( void )
 
     if( bin_driver->hline.text == NULL ) {              // character device
         resize_record_buffer( &line_buff, width );
-        if( frame.type == rule_frame ) {
+        if( frame.type == FRAME_rule ) {
             memset( line_buff.text, bin_device->box.chars.horizontal_line, line_buff.current );
             line_buff.text[line_buff.current] = '\0';
-        } else {                    // char_frame Note: wgml 4.0 uses font 0 regardless of the default font for the section
+        } else {                    // FRAME_char Note: wgml 4.0 uses font 0 regardless of the default font for the section
             line_buff.text[0] = '\0';
             str_count = strlen( frame.string );
             cur_limit = line_buff.current / str_count;  // number of complete strings that will fit
@@ -304,7 +304,7 @@ static void insert_frame_line( void )
         process_text( line_buff.text, FONT0 );  // matches wgml 4.0
         scr_process_break();        // commit line
     } else {                                        // page-oriented device
-        if( frame.type == rule_frame ) {
+        if( frame.type == FRAME_rule ) {
 
         /*******************************************************************/
         /* This uses code written originally for use with control word BX  */
@@ -321,7 +321,7 @@ static void insert_frame_line( void )
             h_line_el->element.hline.h_start = nest_cb->left_indent;
             h_line_el->element.hline.h_len = width;
             insert_col_main( h_line_el );
-        } else {                    // char_frame Note: wgml 4.0 uses font 0 regardless of the default font for the section
+        } else {                    // FRAME_char Note: wgml 4.0 uses font 0 regardless of the default font for the section
             str_count = strlen( frame.string );
             str_width = 0;
             for( i = 0; i < strlen( frame.string ); i++ ) {
@@ -418,7 +418,7 @@ void gml_fig( const gmltag * entry )
     p = g_scandata.s;
     depth = 0;                          // default value; depth is space reserved for some other item
     frame.type = layout_work.fig.default_frame.type;
-    if( frame.type == char_frame ) {
+    if( frame.type == FRAME_char ) {
         strcpy( frame.string, layout_work.fig.default_frame.string );
     }
     place = layout_work.fig.default_place;
@@ -454,21 +454,21 @@ void gml_fig( const gmltag * entry )
                     break;
                 }
                 if( strcmp( "none", attr_val.specval ) == 0 ) {
-                    frame.type = none_frame;
+                    frame.type = FRAME_none;
                 } else if( strcmp( "box", attr_val.specval ) == 0 ) {
-                    frame.type = box_frame;
+                    frame.type = FRAME_box;
                 } else if( strcmp( "rule", attr_val.specval ) == 0 ) {
-                    frame.type = rule_frame;
+                    frame.type = FRAME_rule;
                 } else {
-                    frame.type = char_frame;
+                    frame.type = FRAME_char;
                 }
-                if( frame.type == char_frame ) {
+                if( frame.type == FRAME_char ) {
                     if( attr_val.tok.l > STRBLK_SIZE )
                         attr_val.tok.l = STRBLK_SIZE;
                     strncpy( frame.string, attr_val.tok.s, attr_val.tok.l );
                     frame.string[attr_val.tok.l] = '\0';
                     if( frame.string[0] == '\0' ) {
-                        frame.type = none_frame;    // treat null string as "none"
+                        frame.type = FRAME_none;    // treat null string as "none"
                     }
                 } else {                            // blank any existing frame.string value
                     frame.string[0] = '\0';
@@ -544,7 +544,7 @@ void gml_fig( const gmltag * entry )
     /* For an inline dbox, the actual skip must be done before the box itself */
 
     if( place == inline_place ) {
-        if( (frame.type == box_frame) && (bin_driver->dbox.text != NULL) ) {
+        if( (frame.type == FRAME_box) && (bin_driver->dbox.text != NULL) ) {
             g_blank_units_lines += g_subs_skip;
             g_subs_skip = 0;
             scr_process_break();
@@ -591,9 +591,9 @@ void gml_fig( const gmltag * entry )
     /* insert_frame_line() uses width and nest_cb->left_indent */
 
     if( (place != top_place)
-      && ((frame.type == rule_frame)
-      || (frame.type == char_frame)) ) {
-        if( (frame.type == rule_frame)
+      && ((frame.type == FRAME_rule)
+      || (frame.type == FRAME_char)) ) {
+        if( (frame.type == FRAME_rule)
           && (bin_driver->hline.text != NULL)
           && (place == inline_place) ) {
             g_subs_skip += wgml_fonts[FONT0].line_height;   // this is actually the depth used by the HLINE
@@ -602,7 +602,7 @@ void gml_fig( const gmltag * entry )
         insert_frame_line();
     }
 
-    if( (frame.type == none_frame)
+    if( (frame.type == FRAME_none)
       && (place != bottom_place) ) {
         if( depth > g_subs_skip ) {
             g_blank_units_lines = depth;
@@ -637,7 +637,7 @@ void gml_fig( const gmltag * entry )
 
     /* Initialize the insets */
 
-    if( frame.type == none_frame ) {
+    if( frame.type == FRAME_none ) {
         left_inset = 0;
         right_inset = 0;
     } else {
@@ -668,7 +668,7 @@ void gml_fig( const gmltag * entry )
 
     if( (t_page.cur_left >= t_page.max_width)
       || (t_page.cur_left >= g_page_right_org) ) {
-        if( frame.type == none_frame ) {
+        if( frame.type == FRAME_none ) {
             xx_line_err_exit_c( ERR_INV_MARGINS_1, attr_val.tok.s );
         } else {
             xx_line_err_exit_c( ERR_INV_MARGINS_2, attr_val.tok.s );
@@ -684,7 +684,7 @@ void gml_fig( const gmltag * entry )
 
 
     if( t_page.max_width < right_inset ) {
-        if( frame.type == none_frame ) {
+        if( frame.type == FRAME_none ) {
             xx_line_err_exit_c( ERR_INV_MARGINS_1, attr_val.tok.s );
         } else {
             xx_line_err_exit_c( ERR_INV_MARGINS_2, attr_val.tok.s );
@@ -770,9 +770,9 @@ void gml_efig( const gmltag * entry )
     }
 
     if( (place != bottom_place)
-      && ((frame.type == rule_frame)
-      || (frame.type == char_frame)) ) {
-        if( (frame.type == rule_frame)
+      && ((frame.type == FRAME_rule)
+      || (frame.type == FRAME_char)) ) {
+        if( (frame.type == FRAME_rule)
           && (bin_driver->hline.text != NULL) ) {
             g_subs_skip += wgml_fonts[layout_work.fig.font].line_height; // this is actually the depth used by the HLINE
         }
@@ -780,7 +780,7 @@ void gml_efig( const gmltag * entry )
     }
 
     if( (place == inline_place)
-      && (frame.type == box_frame)
+      && (frame.type == FRAME_box)
       && (bin_driver->dbox.text != NULL) ) {
         t_doc_el_group->first->subs_skip += wgml_fonts[FONT0].line_height;
         t_doc_el_group->depth += wgml_fonts[FONT0].line_height;
@@ -806,7 +806,7 @@ void gml_efig( const gmltag * entry )
             split_done = false;
             while( (cur_doc_el_group != NULL) && (cur_doc_el_group->first != NULL) ) {
                 splitting = false;
-                if( frame.type == box_frame ) {
+                if( frame.type == FRAME_box ) {
                     if( bin_driver->dbox.text != NULL ) {   // DBOX available
                         bias = 2 * wgml_fonts[FONT0].line_height;
                         cur_doc_el_group->first->top_skip = bias; // this is actually the depth used by the HLINE
@@ -828,7 +828,7 @@ void gml_efig( const gmltag * entry )
                         /* the block will be in the next column */
 
                         next_column();
-                        if( frame.type == box_frame ) {
+                        if( frame.type == FRAME_box ) {
 
                             /* Last part of split box */
 
@@ -911,7 +911,7 @@ void gml_efig( const gmltag * entry )
 
                         /* then output the part that fits */
 
-                        if( frame.type == box_frame ) {
+                        if( frame.type == FRAME_box ) {
                             draw_box( cur_doc_el_group );
                         }
                         while( cur_doc_el_group->first != NULL ) {
@@ -927,7 +927,7 @@ void gml_efig( const gmltag * entry )
                         cur_group = NULL;
                     }
                 } else {
-                    if( frame.type == box_frame ) {
+                    if( frame.type == FRAME_box ) {
                         draw_box( cur_doc_el_group );
                     }
                     while( cur_doc_el_group->first != NULL ) {
@@ -952,7 +952,7 @@ void gml_efig( const gmltag * entry )
             /*   and so must be reduced by them as well                  */
             /*************************************************************/
 
-            if( frame.type != none_frame ) {
+            if( frame.type != FRAME_none ) {
                 g_blank_units_lines = cur_doc_el_group->first->blank_lines;
                 cur_doc_el_group->first->blank_lines = 0;
                 cur_doc_el_group->depth -= g_blank_units_lines;
@@ -969,7 +969,7 @@ void gml_efig( const gmltag * entry )
 
             /* box drawn by dbox requires special handling */
 
-            if( (frame.type == box_frame )
+            if( (frame.type == FRAME_box )
               && (bin_driver->dbox.text != NULL) ) {
                 cur_doc_el_group->first->blank_lines = wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
             }
@@ -977,14 +977,14 @@ void gml_efig( const gmltag * entry )
             /* top rule in a bottom fig requires special handling */
 
             if( (place == bottom_place)
-              && (frame.type == rule_frame) ) {
+              && (frame.type == FRAME_rule) ) {
                 cur_doc_el_group->first->subs_skip = wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
                 cur_doc_el_group->depth += wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
             }
             g_top_skip = cur_doc_el_group->first->top_skip;
             cur_doc_el_group->first->top_skip = 0;
 
-            if( frame.type == box_frame ) {
+            if( frame.type == FRAME_box ) {
                 draw_box( cur_doc_el_group );
             }
 

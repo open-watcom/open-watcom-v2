@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -333,19 +333,19 @@ bool    i_default_frame( const char *p, lay_attr_i lay_attr, def_frame *tm )
 
     cvterr = false;
     if( strcmp( "none", lay_attr->specval ) == 0 ) {
-        tm->type = none_frame;
+        tm->type = FRAME_none;
     } else if( strcmp( "rule", lay_attr->specval ) == 0 ) {
-        tm->type = rule_frame;
+        tm->type = FRAME_rule;
     } else if( strcmp( "box", lay_attr->specval ) == 0 ) {
-        tm->type = box_frame;
+        tm->type = FRAME_box;
     } else if( !is_quote_char( *p ) ) {
         cvterr = true;
     } else {
         if( lay_attr->tok.l == 0 ) {  // empty string entered
-            tm->type = none_frame;      // should work for both FIG and IXHEAD
+            tm->type = FRAME_none;      // should work for both FIG and IXHEAD
         } else {                        // string value entered
             i_xx_string( p, lay_attr, tm->string );
-            tm->type = char_frame;
+            tm->type = FRAME_char;
         }
     }
     if( cvterr ) {
@@ -360,16 +360,16 @@ void    o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame *tm )
 {
 
     switch( tm->type ) {
-    case none_frame:
+    case FRAME_none:
         fprintf( fp, "        %s = none\n", lay_att_names[lay_attr] );
         break;
-    case rule_frame:
+    case FRAME_rule:
         fprintf( fp, "        %s = rule\n", lay_att_names[lay_attr] );
         break;
-    case box_frame:
+    case FRAME_box:
         fprintf( fp, "        %s = box\n", lay_att_names[lay_attr] );
         break;
-    case char_frame:
+    case FRAME_char:
         fprintf( fp, "        %s = '%s'\n", lay_att_names[lay_attr], tm->string );
         break;
     default:

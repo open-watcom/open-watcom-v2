@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2010 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -249,7 +249,7 @@ static void gen_rule_head( char * letter )
     } else {                                            // page-oriented device
         full_line = frame_line_len;
         full_line += wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
-        if( layout_work.ixhead.frame.type == rule_frame ) {
+        if( layout_work.ixhead.frame.type == FRAME_rule ) {
 
         /*******************************************************************/
         /* This uses code written originally for use with control word BX  */
@@ -277,7 +277,7 @@ static void gen_rule_head( char * letter )
             h_line_el->element.hline.h_start = t_page.cur_width;
             h_line_el->element.hline.h_len = full_line;
             insert_col_main( h_line_el );
-        } else {                        // char_frame
+        } else {                        // FRAME_char
             cur_limit = full_line / str_width;
             cur_count = 0;
             cur_width = 0;
@@ -658,8 +658,8 @@ static void gen_index( void )
 
     /* Set up for device/frame selected by the LAYOUT tag IXHEAD*/
 
-    if( layout_work.ixhead.frame.type != none_frame ) {
-        if( layout_work.ixhead.frame.type == box_frame ) {  // frame is box
+    if( layout_work.ixhead.frame.type != FRAME_none ) {
+        if( layout_work.ixhead.frame.type == FRAME_box ) {  // frame is box
             if( bin_driver->dbox.text == NULL ) {           // character device
                 memset( &frame_line_1[1], bin_device->box.chars.horizontal_line, frame_line_len - 2 );
                 frame_line_1[0] = bin_device->box.chars.top_left;
@@ -671,11 +671,11 @@ static void gen_index( void )
                 frame_line_3[0] = bin_device->box.chars.bottom_left;
                 frame_line_3[frame_line_len - 1 ] = bin_device->box.chars.bottom_right;
             }
-        } else if( layout_work.ixhead.frame.type == rule_frame  ) { // rule frame
+        } else if( layout_work.ixhead.frame.type == FRAME_rule  ) { // rule frame
             if( bin_driver->hline.text == NULL ) {          // character device
                 memset( frame_line_1, bin_device->box.chars.horizontal_line, frame_line_len );
             }
-        } else if( layout_work.ixhead.frame.type == char_frame ) {   // frame is 'character string'
+        } else if( layout_work.ixhead.frame.type == FRAME_char ) {   // frame is 'character string'
             str_count = strlen( layout_work.ixhead.frame.string );
             str_width = 0;
             for( i = 0; i < strlen( layout_work.ixhead.frame.string ); i++ ) {
@@ -774,21 +774,21 @@ static void gen_index( void )
                 t_page.cur_width += ixh_indent;
 
                 switch( layout_work.ixhead.frame.type ) {
-                case none_frame:
+                case FRAME_none:
                     process_text( letter, layout_work.ixhead.font );
                     break;
-                case box_frame:
+                case FRAME_box:
                     if( !ProcFlags.col_started ) {      // at top of page
                         g_top_skip = wgml_fonts[layout_work.ixhead.font].line_height;
                     }
                     gen_box_head( letter );
                     break;
-                case rule_frame:
+                case FRAME_rule:
                     if( !ProcFlags.col_started ) {      // at top of page
                         g_top_skip = wgml_fonts[layout_work.ixhead.font].line_height;
                     }
                     /* fall through */
-                case char_frame:                   // no top-of-page correction in wgml 4.0
+                case FRAME_char:                   // no top-of-page correction in wgml 4.0
                     gen_rule_head( letter );
                     break;
                 default:

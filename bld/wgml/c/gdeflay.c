@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -122,7 +122,7 @@ void    init_def_lay( void )
     layout_work.fig.spacing = 1;
     layout_work.fig.font = FONT0;
     layout_work.fig.default_place = top_place;
-    layout_work.fig.default_frame.type = rule_frame;
+    layout_work.fig.default_frame.type = FRAME_rule;
     layout_work.fig.default_frame.string[0] = '\0';
 
     /***********************************************************************/
@@ -377,7 +377,7 @@ void    init_def_lay( void )
     lay_init_su( z0, &layout_work.ixhead.post_skip );
     layout_work.ixhead.font = FONT2;
     lay_init_su( z0, &layout_work.ixhead.indent );
-    layout_work.ixhead.frame.type = box_frame;
+    layout_work.ixhead.frame.type = FRAME_box;
     layout_work.ixhead.frame.string[0] = '\0';
     layout_work.ixhead.header = true;
 
