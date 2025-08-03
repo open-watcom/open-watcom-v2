@@ -650,6 +650,18 @@ void g_tag_no_err_exit( g_tags gtag )
     /* never return */
 }
 
+void check_close_tag_err_exit( g_tags gtag )
+{
+    if( nest_cb->gtag != get_topn( gtag ) ) {       // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( gtag );              // no exxx expected
+        } else {
+            g_tag_nest_err_exit( nest_cb->gtag );   // exxx expected
+        }
+        /* never return */
+    }
+}
+
 void g_tag_prec_err_exit( g_tags gtag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];

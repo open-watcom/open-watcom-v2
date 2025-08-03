@@ -465,6 +465,7 @@ NO_RETURN( extern void  g_tag_err_exit( g_tags gtag ) );
 NO_RETURN( extern void  g_tag_mac_err_exit( const gtentry *ge ) );
 NO_RETURN( extern void  g_tag_nest_err_exit( g_tags gtag ) );
 NO_RETURN( extern void  g_tag_no_err_exit( g_tags gtag ) );
+extern void check_close_tag_err_exit( g_tags gtag );
 NO_RETURN( extern void  g_tag_prec_err_exit( g_tags gtag ) );
 NO_RETURN( extern void  g_tag_rsloc_err_exit( locflags inloc, const char *pa ) );
 NO_RETURN( extern void  keep_nest_err_exit( const char *arg1, const char *arg2 ) );

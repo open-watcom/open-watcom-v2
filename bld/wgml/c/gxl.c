@@ -656,15 +656,7 @@ static bool    gml_exl_entry( const gmltag *entry )
     if( nest_cb->gtag == T_LP ) {           // terminate :LP if active
         end_lp();
     }
-
-    if( nest_cb->gtag != get_topn( entry->u.tagid ) ) {         // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );                // no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag );   // exxx expected
-        }
-        /* never return */
-    }
+    check_close_tag_err_exit( entry->u.tagid );
     return( true );
 }
 

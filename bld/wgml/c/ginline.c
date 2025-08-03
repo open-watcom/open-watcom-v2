@@ -246,14 +246,7 @@ static void gml_e_inline_common( const gmltag *entry )
     char            *p;
     tag_cb          *wk;
 
-    if( nest_cb->gtag != get_topn( entry->u.tagid ) ) {         // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );                // no exxx expected
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag );   // exxx expected
-        }
-        /* never return */
-    }
+    check_close_tag_err_exit( entry->u.tagid );
     /* Mark end of highlighted phrase embedded in a highlighted phrase */
     if( cur_group_type != GRT_xmp
       && ProcFlags.concat ) {
