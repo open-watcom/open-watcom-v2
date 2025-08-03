@@ -59,50 +59,35 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         gpib_info  = RealModeData( unsigned char,  0xa000, 0x3fee );
         rs232_info = RealModeData( unsigned char,  0xd800, 0 );
 
+        /* Check FPU */
         ret = (unsigned short)_RWD_real87;
+        /* Check disk drives */
         for( count = 0; disk_info != 0; disk_info <<= 1 ) {
             if( 0x8000 & disk_info ) {
                 count++;
             }
         }
         ret |= count << 3;
-#if defined( _M_I86 )
         /* Check mouse */
+#if defined( _M_I86 )
         p1 = TinyGetVect( 0x33 );
         p2 = TinyGetVect( 0x34 );
+#else
+        if( _IsPharLap() ) {
+            p1 = PharlapGetRealModeInterruptVector( 0x33 );
+            p2 = PharlapGetRealModeInterruptVector( 0x34 );
+        } else if( _DPMI || _IsRational() ) {
+            p1 = DPMIGetRealModeInterruptVector( 0x33 );
+            p2 = DPMIGetRealModeInterruptVector( 0x34 );
+        } else {
+            p1 = p2 = 0;
+        }
+#endif
         if( p1 != p2 ) {
             if( _BIOSMouseDriverReset() ) {
                 ret |= 0x100;
             }
         }
-#else
-        /* Check mouse */
-        if( _IsPharLap() ) {
-            union REGS  regs;
-            unsigned    ptr;
-
-            regs.w.ax = 0x2503;         /* Get real mode interrupt vector */
-            regs.h.cl = 0x33;
-            intdos( &regs, &regs );
-            ptr = regs.x.ebx;
-            regs.w.ax = 0x2503;
-            regs.h.cl = 0x34;
-            intdos( &regs, &regs );
-            if( ptr != regs.x.ebx ) {
-                if( _BIOSMouseDriverReset() ) {
-                    ret |= 0x100;
-                }
-            }
-        } else if( _DPMI || _IsRational() ) {
-            p1 = DPMIGetRealModeInterruptVector( 0x33 );
-            p2 = DPMIGetRealModeInterruptVector( 0x34 );
-            if( p1 != p2 ) {
-                if( _BIOSMouseDriverReset() ) {
-                    ret |= 0x100;
-                }
-            }
-        }
-#endif
         if( gpib_info & 0x20 )
             ret |= 0x1000;
         if( gpib_info & 0x08 )

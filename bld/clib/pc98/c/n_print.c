@@ -39,7 +39,7 @@
 #include "realmod.h"
 #include "roundmac.h"
 #include "rtdata.h"
-#ifdef __386__
+#ifndef _M_I86
     #include "extender.h"
     #include "dpmi.h"
 #endif
@@ -71,126 +71,127 @@
 _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__data )
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
-        unsigned short  ret;
-        union REGS      regs;
-#if defined( _M_I86 )
-        struct SREGS    segregs;
+        unsigned short      ret;
+#ifdef _M_I86
+        union REGS          regs;
+        struct SREGS        segregs;
+#else
+        unsigned            len;
+        dpmi_dos_mem_block  dos_mem;
+        unsigned            size_para;
+#endif
 
-        switch( regs.h.ah = __cmd ) {
+        switch( __cmd ) {
         case _PRINTER_WRITE:
-            regs.h.al = *__data;
-            /* fall through */
         case _PRINTER_INIT:
         case _PRINTER_STATUS:
-            int86x( 0x1a, &regs, &regs, &segregs );
+#ifdef _M_I86
+            regs.h.ah = __cmd;
+            regs.h.al = ( __cmd == _PRINTER_WRITE ) ? *__data : 0;
+            int86( 0x1a, &regs, &regs );
             ret = regs.w.ax;
+#else
+            if( _IsPharLap() ) {
+                pharlap_regs_struct dp;
+
+                memset( &dp, 0, sizeof( dp ) );
+                dp.r.h.ah = __cmd;
+                if( __cmd == _PRINTER_WRITE )
+                    dp.r.h.al = *__data;
+                dp.intno = 0x1a;
+                PharlapSimulateRealModeInterrupt( &dp, 0, 0, 0 );
+                ret = dp.r.h.ah;
+            } else if( _DPMI || _IsRational() ) {
+                dpmi_regs_struct    dr;
+
+                memset( &dr, 0, sizeof( dr ) );
+                dr.r.h.ah = __cmd;
+                if( __cmd == _PRINTER_WRITE )
+                    dr.r.h.al = *__data;
+                DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
+                ret = dr.r.h.ah;
+            } else {
+                ret = 0;
+            }
+#endif
             break;
         case _PRINTER_WRITE_STRING:
+#ifdef _M_I86
+            regs.w.ax = _PRINTER_WRITE_STRING << 8;
             regs.w.cx = strlen( (char *)__data );
             regs.w.bx = FP_OFF( __data );
             segregs.es = FP_SEG( __data );
             int86x( 0x1a, &regs, &regs, &segregs );
             ret = regs.w.cx;
-            break;
-        default:
-            ret = 0;
-            break;
-        }
 #else
-        dpmi_regs_struct    dr;
-        pharlap_regs_struct dp;
-        unsigned            len;
-        dpmi_dos_mem_block  dos_mem;
-        unsigned            size_para;
-
-        memset( &dr, 0, sizeof( dr ) );
-
-        switch( regs.h.ah = __cmd ) {
-        case _PRINTER_WRITE:
-            regs.h.al = *__data;
-            /* fall through */
-        case _PRINTER_INIT:
-        case _PRINTER_STATUS:
-            int386( 0x1a, &regs, &regs );
-            ret = regs.h.ah;
-            break;
-        case _PRINTER_WRITE_STRING:
             len = strlen( (char *)__data );
             size_para = ( len > 0xffff ) ? 0x1000 : __ROUND_UP_SIZE_TO_PARA( len );   /* paragraph */
             if( _IsPharLap() ) {
-                dos_mem.rm = PharlapAllocateDOSMemoryBlock( size_para );
+                pharlap_regs_struct dp;
+
                 dos_mem.pm = 0;
+                dos_mem.rm = PharlapAllocateDOSMemoryBlock( size_para );
                 for( ; len > 0xffff; len -= 0xffff ) {
                     _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
                     __data += 0xffff;
-                    dp.r.x.eax = 0x3000;
-                    regs.x.ecx = 0xffff;
+                    memset( &dp, 0, sizeof( dp ) );
+                    dp.r.x.eax = _PRINTER_WRITE_STRING << 8;
+                    dp.r.x.ecx = 0xffff;
                     dp.es = dos_mem.rm;
-                    regs.x.ebx = 0;
-                    regs.x.edx = (unsigned long)&dp;
-                    regs.x.eax = 0x2511;
                     dp.intno = 0x1a;
-                    intdos( &regs, &regs );
-                    if( dr.r.x.eax ) {
-                        ret = dr.r.w.cx;
+                    PharlapSimulateRealModeInterruptExt( &dp );
+                    if( dp.r.x.eax ) {
+                        ret = dp.r.x.ecx;
                         break;
                     }
                 }
                 _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
-                dp.r.x.eax = 0x3000;
-                regs.x.ecx = len;
+                memset( &dp, 0, sizeof( dp ) );
+                dp.r.x.eax = _PRINTER_WRITE_STRING << 8;
+                dp.r.x.ecx = len;
                 dp.es = dos_mem.rm;
-                regs.x.ebx = 0;
-                regs.x.edx = (unsigned long)&dr;
-                regs.x.eax = 0x2511;
                 dp.intno = 0x1a;
-                intdos( &regs, &regs );
-                ret = regs.w.cx;
+                PharlapSimulateRealModeInterruptExt( &dp );
+                ret = dp.r.x.ecx;
                 if( dos_mem.rm ){
                     PharlapFreeDOSMemoryBlock( dos_mem.rm );
                 }
             } else if( _DPMI || _IsRational() ) {
+                dpmi_regs_struct    dr;
+
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
                 for( ; len > 0xffff; len -= 0xffff ) {
                     _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
                     __data += 0xffff;
-                    dr.r.x.eax = 0x3000;
+                    memset( &dr, 0, sizeof( dr ) );
+                    dr.r.x.eax = _PRINTER_WRITE_STRING << 8;
                     dr.r.x.ecx = 0xffff;
                     dr.es = dos_mem.rm;
-                    dr.r.x.ebx = 0;
-                    regs.x.ecx = 0;  /* no stack for now */
-                    regs.x.edi = (unsigned long)&dr;
-                    regs.x.eax = 0x300;
-                    regs.x.ebx = 0x001a;
-                    int386( 0x31, &regs, &regs );
+                    DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
                     if( dr.r.x.eax ) {
-                        ret = dr.r.w.cx;
+                        ret = dr.r.x.ecx;
                         break;
                     }
                 }
                 _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
-                dr.r.x.eax = 0x3000;
+                memset( &dr, 0, sizeof( dr ) );
+                dr.r.x.eax = _PRINTER_WRITE_STRING << 8;
                 dr.r.x.ecx = len;
                 dr.es = dos_mem.rm;
-                dr.r.x.ebx = 0;
-                regs.x.ecx = 0;  /* no stack for now */
-                regs.x.edi = (unsigned long)&dr;
-                regs.x.eax = 0x300;
-                regs.x.ebx = 0x001a;
-                int386( 0x31, &regs, &regs );
+                DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
+                ret = dr.r.x.ecx;
                 if( dos_mem.pm ){
                     DPMIFreeDOSMemoryBlock( dos_mem.pm );
                 }
-                ret = dr.r.w.cx;
             } else {
                 ret = 0;
             }
+#endif
             break;
         default:
             ret = 0;
             break;
         }
-#endif
         return( ret );
     }
     /* IBM PC */

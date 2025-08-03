@@ -47,7 +47,7 @@
 
 #ifdef _M_I86
 
-unsigned short int1b( unsigned short _ax, unsigned short _dx, unsigned short _bx, unsigned short _cx, unsigned short _bp, unsigned short _es );
+unsigned short rm_int1b( unsigned short _ax, unsigned short _dx, unsigned short _bx, unsigned short _cx, unsigned short _bp, unsigned short _es );
 #pragma aux int1b = \
         "push bp" \
         "push es" \
@@ -63,20 +63,6 @@ unsigned short int1b( unsigned short _ax, unsigned short _dx, unsigned short _bx
     __parm [__ax] [__dx] [__bx] [__cx] [__si] [__di] \
     __value [__ax];
 
-#else
-
-void _nec_pass_bp( unsigned srvno, pharlap_regs_struct *dp, unsigned _ebx, unsigned _ecx, unsigned _ebp, union REGS *outreg );
-#pragma aux _nec_pass_bp = \
-        "push ebp" \
-        "mov ebp,esi" \
-        "int 0x21" \
-        "pop ebp" \
-        "mov dword ptr [edi],eax" /* [edi].x.eax,eax */ \
-        "rcl eax,1" \
-        "and eax,1" \
-        "mov dword ptr [edi+24],eax" /* [edi].x.cflag,eax */ \
-    __parm [__eax] [__edx] [__ebx] [__ecx] [__esi] [__edi];
-
 #endif
 
 
@@ -88,9 +74,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
 #ifndef _M_I86
         dpmi_regs_struct    dr;
         pharlap_regs_struct dp;
-        union REGS          regs;
         dpmi_dos_mem_block  dos_mem;
+        void                __far *p;
         unsigned            size_para;
+        int                 cflag;
 #endif
 
 #ifndef _M_I86
@@ -112,33 +99,30 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         case _DISK_READDDAM:
             size_para = __ROUND_UP_SIZE_TO_PARA( __diskinfo->data_len );
             if( _IsPharLap() ) {
-                regs.x.ebx = size_para;  /* paragraph */
-                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                intdos( &regs, &regs );
-                dos_mem.pm = _ExtenderRealModeSelector;
-                dos_mem.rm = regs.w.ax;
-                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __diskinfo->buffer, __diskinfo->data_len );
+                dos_mem.rm = PharlapAllocateDOSMemoryBlock( size_para );
+                p = RealModeSegmPtr( dos_mem.rm );
+                _fmemmove( p, __diskinfo->buffer, __diskinfo->data_len );
             } else if( _DPMI || _IsRational() ) {
-                dpmi_dos_mem_block  dos_mem;
-
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
-                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __diskinfo->buffer, __diskinfo->data_len );
+                p = RealModeSegmPtr( dos_mem.rm );
+                _fmemmove( p, __diskinfo->buffer, __diskinfo->data_len );
             }
             break;
         }
 #endif
 
         memset( &rregs, 0, sizeof( rregs ) );
-
         rregs.h.ah = __cmd;
         rregs.h.al = __diskinfo->drive;
         rregs.w.dx = __diskinfo->command;
-        if( rregs.h.dl == _CMD_2D && rregs.h.ah == _DISK_FORMATDRIVE )
+        if( rregs.h.dl == _CMD_2D
+          && rregs.h.ah == _DISK_FORMATDRIVE )
             rregs.h.ah &= 0x7f;
         rregs.w.ax |= rregs.w.dx;
         rregs.w.bx = __diskinfo->data_len;
         if( __diskinfo->command == _CMD_HD ) {
-            if( __cmd == _DISK_FORMATDRIVE || __cmd == _DISK_FORMATTRACK )
+            if( __cmd == _DISK_FORMATDRIVE
+              || __cmd == _DISK_FORMATTRACK )
                 rregs.h.bh = rregs.h.bl;
             rregs.w.cx = __diskinfo->cylinder;
         } else {
@@ -153,24 +137,27 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
 #if defined( _M_I86 )
         rregs.w.di = FP_SEG( __diskinfo->buffer );
         rregs.w.si = FP_OFF( __diskinfo->buffer );
-        ret = int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
+        ret = rm_int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
 #else
-        memset( &dr, 0, sizeof( dr ) );
         if( _IsPharLap() ) {
+            memset( &dp, 0, sizeof( dp ) );
             /* Set true register structure */
             dp.r.x.eax = rregs.x.eax;
+            dp.r.x.ebx = rregs.x.ebx;
+            dp.r.x.ecx = rregs.x.ecx;
             dp.r.x.edx = rregs.x.edx;
             dp.es = dos_mem.rm;
             /* int 1BH */
             dp.intno = 0x1b;
-            _nec_pass_bp( 0x2511, &dp, rregs.x.ebx, rregs.x.ecx, 0, &regs );
-
-            ret = regs.h.ah;
-            if( regs.x.cflag ) {
+            cflag = PharlapSimulateRealModeInterruptExt( &dp );
+            ret = dp.r.h.ah;
+            if( cflag ) {
                 ret |= 0xff00;
             }
+            rregs.x.edx = dp.r.x.edx;
+            rregs.x.ecx = dp.r.x.ecx;
         } else if( _DPMI || _IsRational() ) {
-            dr.r.x.ebp = 0;
+            memset( &dr, 0, sizeof( dr ) );
             /* Set true register structure */
             dr.r.x.eax = rregs.x.eax;
             dr.r.x.ebx = rregs.x.ebx;
@@ -178,12 +165,12 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             dr.r.x.edx = rregs.x.edx;
             dr.es = dos_mem.rm;
             /* int 1BH */
-            if( DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr ) < 0 )
-                dr.flags |= INTR_CF;
+            cflag = DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr );
             ret = dr.r.h.ah;
-            if( dr.flags & INTR_CF ) {
+            if( cflag || (dr.flags & INTR_CF) )
                 ret |= 0xff00;
-            }
+            rregs.x.edx = dr.r.x.edx;
+            rregs.x.ecx = dr.r.x.ecx;
         } else {
             ret = 0;
         }
@@ -194,17 +181,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
          */
         switch( __cmd ) {
         case _DISK_SEEK:
-#if defined( _M_I86 )
-            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = rregs.h.cl;
-            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = rregs.h.dh;
-            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = rregs.h.dl;
-            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = rregs.h.ch;
-#else
-            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = dr.r.h.cl;
-            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = dr.r.h.dh;
-            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = dr.r.h.dl;
-            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = dr.r.h.ch;
-#endif
+            ((char _WCI86FAR *)__diskinfo->result)[0] = rregs.h.cl;
+            ((char _WCI86FAR *)__diskinfo->result)[1] = rregs.h.dh;
+            ((char _WCI86FAR *)__diskinfo->result)[2] = rregs.h.dl;
+            ((char _WCI86FAR *)__diskinfo->result)[3] = rregs.h.ch;
             break;
         case _DISK_READ:
         case _DISK_WRITE:
@@ -229,12 +209,10 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
          */
         if( dos_mem.rm ) {
             if( _IsPharLap() ) {
-                _fmemmove( __diskinfo->buffer, RealModeSegmPtr( dos_mem.rm ), __diskinfo->data_len );
-                regs.x.ecx = dos_mem.rm;
-                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
-                intdos( &regs, &regs );
+                _fmemmove( __diskinfo->buffer, p, __diskinfo->data_len );
+                PharlapFreeDOSMemoryBlock( dos_mem.rm );
             } else if( _DPMI || _IsRational() ) {
-                _fmemmove( __diskinfo->buffer, RealModeSegmPtr( dos_mem.rm ), __diskinfo->data_len );
+                _fmemmove( __diskinfo->buffer, p, __diskinfo->data_len );
                 DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }
         }
