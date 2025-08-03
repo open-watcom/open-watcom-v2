@@ -49,9 +49,12 @@ typedef struct {
 /***************************************************************************/
 static const char * const str_tags[] = {
     "NONE",
-    #define pick( name, length, routine, gmlflags, locflags, classflags )  #name,
+    #define pick1(n,l,r,g,o,c) #n,
+    #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2) \
+                pick1(n1,l1,r1,g1,o1,c1) pick1(n2,l2,r2,g2,o2,c2)
     #include "gtags.h"
-    #undef pick
+    #undef pick2
+    #undef pick1
 //    #define pick( name, routine, flags )  extern void routine( void );
 //    #include "gscrcws.h" TBD
 //    #undef pick

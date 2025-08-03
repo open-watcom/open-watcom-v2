@@ -1310,26 +1310,11 @@ g_tags get_topn( g_tags tclo )
     g_tags      topn;
 
     switch( tclo ) {
-    case T_EADDRESS:    topn = T_ADDRESS;   break;
-    case T_ECIT:        topn = T_CIT;       break;
-    case T_EDL:         topn = T_DL;        break;
-    case T_EFIG:        topn = T_FIG;       break;
-    case T_EFN:         topn = T_FN;        break;
-    case T_EGDOC:       topn = T_GDOC;      break;
-    case T_EGL:         topn = T_GL;        break;
-    case T_EHP0:        topn = T_HP0;       break;
-    case T_EHP1:        topn = T_HP1;       break;
-    case T_EHP2:        topn = T_HP2;       break;
-    case T_EHP3:        topn = T_HP3;       break;
-    case T_ELQ:         topn = T_LQ;        break;
-    case T_EOL:         topn = T_OL;        break;
-    case T_EPSC:        topn = T_PSC;       break;
-    case T_EQ:          topn = T_Q;         break;
-    case T_ESF:         topn = T_SF;        break;
-    case T_ESL:         topn = T_SL;        break;
-    case T_ETITLEP:     topn = T_TITLEP;    break;
-    case T_EUL:         topn = T_UL;        break;
-    case T_EXMP:        topn = T_XMP;       break;
+    #define pick1(n,l,r,g,o,c)
+    #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2)  case T_##n2: topn = T_##n1; break;
+    #include "gtags.h"
+    #undef pick2
+    #undef pick1
     default:
         topn = tclo;
         break;
@@ -1342,26 +1327,11 @@ g_tags get_tclo( g_tags topn )
     g_tags      tclo;
 
     switch( topn ) {
-    case T_ADDRESS: tclo = T_EADDRESS;  break;
-    case T_CIT:     tclo = T_ECIT;      break;
-    case T_DL:      tclo = T_EDL;       break;
-    case T_FIG:     tclo = T_EFIG;      break;
-    case T_FN:      tclo = T_EFN;       break;
-    case T_GDOC:    tclo = T_EGDOC;     break;
-    case T_GL:      tclo = T_EGL;       break;
-    case T_HP0:     tclo = T_EHP0;      break;
-    case T_HP1:     tclo = T_EHP1;      break;
-    case T_HP2:     tclo = T_EHP2;      break;
-    case T_HP3:     tclo = T_EHP3;      break;
-    case T_LQ:      tclo = T_ELQ;       break;
-    case T_OL:      tclo = T_EOL;       break;
-    case T_PSC:     tclo = T_EPSC;      break;
-    case T_Q:       tclo = T_EQ;        break;
-    case T_SF:      tclo = T_ESF;       break;
-    case T_SL:      tclo = T_ESL;       break;
-    case T_TITLEP:  tclo = T_ETITLEP;   break;
-    case T_UL:      tclo = T_EUL;       break;
-    case T_XMP:     tclo = T_EXMP;      break;
+    #define pick1(n,l,r,g,o,c)
+    #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2)  case T_##n1: tclo = T_##n2; break;
+    #include "gtags.h"
+    #undef pick2
+    #undef pick1
     default:
         tclo = topn;
         break;

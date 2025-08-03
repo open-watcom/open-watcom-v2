@@ -525,9 +525,12 @@ extern void         show_include_stack( void );
 /*
  * prototypes for the gml tag processing routines
  */
-#define pick( name, length, routine, gmlflags, locflags, classflags )  extern void routine( const gmltag *entry );
+#define pick1(n,l,r,g,o,c) extern void r( const gmltag *entry );
+#define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2) \
+            pick1(n1,l1,r1,g1,o1,c1) pick1(n2,l2,r2,g2,o2,c2)
 #include "gtags.h"
-#undef pick
+#undef pick2
+#undef pick1
 
 /*
  * prototypes for the layout tag processing routines
