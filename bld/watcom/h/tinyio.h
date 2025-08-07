@@ -918,6 +918,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__bx] \
     __modify __exact [__eax __ebx]
 
+#ifdef __FLAT__
 #pragma aux _TinyFreeBlock = \
         _SAVE_ESAX      \
         _MOV_AH DOS_FREE_SEG \
@@ -928,7 +929,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__ax] \
     __value         [__eax] \
     __modify __exact [__eax]
+#else
+#pragma aux _TinyFreeBlock = \
+        _MOV_AH DOS_FREE_SEG \
+        __INT_21        \
+        _RCL_AX_1       \
+        _ROR_AX_1       \
+    __parm __caller [__es] \
+    __value         [__eax] \
+    __modify __exact [__eax]
+#endif
 
+#ifdef __FLAT__
 #pragma aux _TinySetBlock = \
         _SAVE_ESAX      \
         _MOV_AH DOS_MODIFY_SEG \
@@ -939,7 +951,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__ax] [__bx] \
     __value         [__ebx] \
     __modify __exact [__eax __ebx]
+#else
+#pragma aux _TinySetBlock = \
+        _MOV_AH DOS_MODIFY_SEG \
+        __INT_21        \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
+    __parm __caller [__es] [__bx] \
+    __value         [__ebx] \
+    __modify __exact [__eax __ebx]
+#endif
 
+#ifdef __FLAT__
 #pragma aux _TinyMaxSet = \
         _SAVE_ESAX      \
         _XOR_BX_BX      \
@@ -950,6 +973,16 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__ax] \
     __value         [__bx] \
     __modify __exact [__eax __ebx]
+#else
+#pragma aux _TinyMaxSet = \
+        _XOR_BX_BX      \
+        _DEC_BX         \
+        _MOV_AH DOS_MODIFY_SEG \
+        __INT_21        \
+    __parm __caller [__es] \
+    __value         [__bx] \
+    __modify __exact [__eax __ebx]
+#endif
 
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
@@ -1027,6 +1060,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         \
     __modify __exact [__ax]
 
+#ifdef __FLAT__
 #pragma aux _TinyGetDTA = \
         _SAVE_ES        \
         _MOV_AH DOS_GET_DTA \
@@ -1035,7 +1069,16 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__cx __ebx] \
     __modify __exact [__ah __ebx __ecx]
+#else
+#pragma aux _TinyGetDTA = \
+        _MOV_AH DOS_GET_DTA \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__es __ebx] \
+    __modify __exact [__ah __ebx __es]
+#endif
 
+#ifdef __FLAT__
 #pragma aux _TinyChangeDTA = \
         _SAVE_ES        \
         _MOV_AH DOS_GET_DTA \
@@ -1048,6 +1091,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__cx __edx] \
     __value         [__cx __ebx] \
     __modify __exact [__ah __ebx __ecx]
+#else
+#pragma aux _TinyChangeDTA = \
+        _MOV_AH DOS_GET_DTA \
+        __INT_21        \
+        _SAVE_DSCX      \
+        _MOV_AH DOS_SET_DTA \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__cx __edx] \
+    __value         [__es __ebx] \
+    __modify __exact [__ah __ebx __ecx __es]
+#endif
 
 #pragma aux _nTinySetDTA = \
         _MOV_AH DOS_SET_DTA \
@@ -1103,6 +1158,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         \
     __modify __exact [__ah _MODIF_DS]
 
+#ifdef __FLAT__
 #pragma aux _TinyGetVect = \
         _SAVE_ES        \
         _MOV_AH DOS_GET_INT \
@@ -1110,7 +1166,15 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
         _REST_ESCX      \
     __parm __caller [__al] \
     __value         [__cx __ebx] \
-    __modify __exact [__eax __ebx __ecx _MODIF_ES]
+    __modify __exact [__eax __ebx __ecx]
+#else
+#pragma aux _TinyGetVect = \
+        _MOV_AH DOS_GET_INT \
+        __INT_21        \
+    __parm __caller [__al] \
+    __value         [__es __ebx] \
+    __modify __exact [__eax __ebx __es]
+#endif
 
 #pragma aux _TinyLock = \
         _MOV_AX_W 0 DOS_RECORD_LOCK \
