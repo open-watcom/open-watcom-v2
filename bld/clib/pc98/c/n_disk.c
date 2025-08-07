@@ -72,8 +72,6 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         unsigned short      ret;
         union REGS          rregs;
 #ifndef _M_I86
-        dpmi_regs_struct    dr;
-        pharlap_regs_struct dp;
         dpmi_dos_mem_block  dos_mem;
         void                __far *p;
         unsigned            size_para;
@@ -140,6 +138,8 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         ret = rm_int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
 #else
         if( _IsPharLap() ) {
+            pharlap_regs_struct dp;
+
             memset( &dp, 0, sizeof( dp ) );
             /* Set true register structure */
             dp.r.x.eax = rregs.x.eax;
@@ -147,16 +147,17 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             dp.r.x.ecx = rregs.x.ecx;
             dp.r.x.edx = rregs.x.edx;
             dp.es = dos_mem.rm;
-            /* int 1BH */
             dp.intno = 0x1b;
             cflag = PharlapSimulateRealModeInterruptExt( &dp );
             ret = dp.r.h.ah;
             if( cflag ) {
                 ret |= 0xff00;
             }
-            rregs.x.edx = dp.r.x.edx;
             rregs.x.ecx = dp.r.x.ecx;
+            rregs.x.edx = dp.r.x.edx;
         } else if( _DPMI || _IsRational() ) {
+            dpmi_regs_struct    dr;
+
             memset( &dr, 0, sizeof( dr ) );
             /* Set true register structure */
             dr.r.x.eax = rregs.x.eax;
@@ -165,12 +166,13 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             dr.r.x.edx = rregs.x.edx;
             dr.es = dos_mem.rm;
             /* int 1BH */
-            cflag = DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr );
+            cflag = DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr ) || (dr.flags & INTR_CF);
             ret = dr.r.h.ah;
-            if( cflag || (dr.flags & INTR_CF) )
+            if( cflag ) {
                 ret |= 0xff00;
-            rregs.x.edx = dr.r.x.edx;
+            }
             rregs.x.ecx = dr.r.x.ecx;
+            rregs.x.edx = dr.r.x.edx;
         } else {
             ret = 0;
         }
