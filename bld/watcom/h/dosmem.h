@@ -34,7 +34,7 @@
 #define NOT_LAST_BLOCK  'M'
 #define LAST_BLOCK      'Z'
 
-#pragma pack( __push, 1 )
+#include "pushpck1.h"
 typedef struct dosmem_blk {
     char                flag;           /* 'Z' if last; 'M' otherwise */
     unsigned short      owner;          /* segment of psp; 0 if free */
@@ -42,4 +42,4 @@ typedef struct dosmem_blk {
     char                unknown[11];    /* rest of header */
     char                data[1];        /* size paragraphs of data */
 } dosmem_blk;
-#pragma pack( __pop )
+#include "poppck.h"

@@ -34,7 +34,7 @@
 #ifndef _DOSFCB_H_INCLUDED
 #define _DOSFCB_H_INCLUDED
 
-#pragma pack(__push,1);
+#include "pushpck1.h"
 typedef struct dosfcb {
     unsigned char       drive;          /* Drive number. 0 before open
                                            indicates default drive.  0 is
@@ -47,7 +47,7 @@ typedef struct dosfcb {
                                            colon. */
     char                ext[3];         /* Filename extension, left-justified
                                            with trailing blanks. */
-    unsigned            curblock;       /* Current block number relative to the
+    unsigned short      curblock;       /* Current block number relative to the
                                            beginnning of the file, starting with
                                            0 (set to 0 by the open function
                                            call.)  A block consists of 128
@@ -56,7 +56,7 @@ typedef struct dosfcb {
                                            The current blcok number is used with
                                            the current record field for
                                            sequential reads and writes. */
-    unsigned            recsize;        /* Logical record size in bytes.  Set to
+    unsigned short      recsize;        /* Logical record size in bytes.  Set to
                                            80h by the open function call.  If
                                            this is not correct, you must set the
                                            value because DOS uses it to
@@ -68,20 +68,20 @@ typedef struct dosfcb {
 typedef struct dosfcb_std {
     dosfcb              fcb;
     unsigned long       size;           /* File size in bytes. */
-    unsigned            date;           /* Date the file was created or last
+    unsigned short      date;           /* Date the file was created or last
                                            updated.  The mm/dd/yy are mapped in
                                            the bits as follows:
                                              yyyyyyymmmmddddd
                                            where:  mm is 1-12, dd is 1-31,
                                            yy is 0-119 (1980-2099). */
     unsigned char       res1[10];
-    unsigned            currec;         /* Current relative record number
+    unsigned char       currec;         /* Current relative record number
                                           (0-127) within the current block.  You
                                           must set this field before doing
                                           sequential read/write operations.
                                           This field is not initialized by the
                                           open function call. */
-    unsigned long       randomrec;      /* Record number relative to the
+    unsigned char       randomrec[3];   /* Record number relative to the
                                            beginning of the file, starting with
                                            0.  You must set this field before
                                            doing random read/write operations.
@@ -102,5 +102,6 @@ typedef struct dosfcb_ext {
     unsigned char       attr;           /* Attribute byte. */
     dosfcb_std          fcb;
 } dosfcb_ext;
-#pragma pack(__pop);
+#include "poppck.h"
+
 #endif

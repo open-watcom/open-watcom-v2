@@ -37,24 +37,24 @@
 
 #include "dosfcb.h"
 
-typedef unsigned char   _WCFAR *handle_tab_ptr;
+typedef unsigned char   _WCI86FAR *handle_tab_ptr;
 
-#pragma pack(__push,1);
-typedef struct dospsp {                      /* DOS 3.X Program Segment Prefix */
+#include "pushpck1.h"
+typedef struct dospsp {                     /* DOS 3.X Program Segment Prefix */
     unsigned char   exit[2];                /* Contains INT 20h */
-    unsigned        maxpara;                /* Top of memory */
+    unsigned short  maxpara;                /* Top of memory */
     unsigned char   res1[1];
     unsigned char   opcode;                 /* Long call to DOS */
-    unsigned        avail;                  /* # bytes in segment */
-    unsigned        segment;
-    void            _WCFAR *terminate;      /* Terminate address */
-    void            _WCFAR *ctrl_break;     /* Ctrl-break exit address */
-    void            _WCFAR *crit_error;     /* Critical error exit address */
-    unsigned        parent_psp;             /* undocumented */
+    unsigned short  avail;                  /* # bytes in segment */
+    unsigned short  segment;
+    void            _WCI86FAR *terminate;   /* Terminate address */
+    void            _WCI86FAR *ctrl_break;  /* Ctrl-break exit address */
+    void            _WCI86FAR *crit_error;  /* Critical error exit address */
+    unsigned short  parent_psp;             /* undocumented */
     unsigned char   sft_indices[20];        /* undocumented */
-    unsigned        envp;                   /* Segment address of environment */
-    void            _WCFAR *savstk;         /* undocumented */
-    unsigned        num_handles;            /* undocumented */
+    unsigned short  envp;                   /* Segment address of environment */
+    void            _WCI86FAR *savstk;      /* undocumented */
+    unsigned short  num_handles;            /* undocumented */
     handle_tab_ptr  handle_table;           /* undocumented */
     unsigned char   res3[8];
     unsigned char   doscall[2];             /* DOS call */
@@ -64,6 +64,6 @@ typedef struct dospsp {                      /* DOS 3.X Program Segment Prefix *
     unsigned char   fcbx[4];
     char            cmdline[128];           /* Command parameters */
 } dospsp;
-#pragma pack(__pop);
+#include "poppck.h"
 
 #endif
