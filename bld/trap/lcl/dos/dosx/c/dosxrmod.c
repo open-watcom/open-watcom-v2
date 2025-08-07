@@ -142,19 +142,9 @@ void CallRealMode( unsigned long dos_addr )
 
 #elif defined( PHARLAP )
 
-extern int _CallRealMode( unsigned long dos_addr );
-#pragma aux _CallRealMode = \
-        "xor    ecx,ecx"    \
-        "mov    ax,0250eh"  \
-        "int    0x21"       \
-        "sbb    eax,eax"    \
-    __parm      [__ebx] \
-    __value     [__eax] \
-    __modify    [__ecx]
-
 void CallRealMode( unsigned long dos_addr )
 {
-    _CallRealMode( dos_addr );
+    PharlapCallRealModeProcedureNoRegs( dos_addr );
 }
 
 #else       /* DPMI */
