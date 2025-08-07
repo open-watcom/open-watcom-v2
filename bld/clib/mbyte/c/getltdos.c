@@ -103,8 +103,8 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.x.eax = 0x6300;                /* get DBCS vector table */
-        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
-        if( cflag == 0 && (dr.flags & INTR_CF) == 0 && dr.r.h.al == 0 ) {
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        if( cflag == 0 && dr.r.h.al == 0 ) {
             /*
              * check if DS not 0
              * otherwise it is invalid

@@ -84,8 +84,8 @@ unsigned short dos_get_code_page( void )
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.x.eax = 0x6601;            /* get extended country info */
-        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr );
-        if( cflag == 0 && (dr.flags & INTR_CF) == 0 ) {
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        if( cflag == 0 ) {
             codepage = dr.r.w.bx;       /* return active code page */
         }
     }
