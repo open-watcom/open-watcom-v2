@@ -36,26 +36,9 @@
 #include "gbios.h"
 #include "svgadef.h"
 #include "realmod.h"
+#include "dpmi.h"
 #if !defined( _M_I86 ) && !defined( __QNX__ )
-  	#include "rmalloc.h"
-#endif
-
-
-#if defined( __QNX__ )
-extern unsigned LoadSegLimit( unsigned );
-  #if defined( _M_I86 )
-    #pragma aux LoadSegLimit = \
-            ".286p" \
-            "lsl  ax,dx" \
-        __parm __caller [__dx] \
-        __value         [__ax]
-  #else
-    #pragma aux LoadSegLimit = \
-            ".386p" \
-            "lsl eax,dx" \
-        __parm __caller [__edx] \
-        __value         [__eax]
-  #endif
+        #include "rmalloc.h"
 #endif
 
 
@@ -185,7 +168,7 @@ short _SuperVGAType( void )
     p = _MK_FP( _RomSeg, _RomOff + 0x0037 );
     val = *(short __far *)p;
 #if defined( __QNX__ )
-    seg_len = LoadSegLimit( _RomSeg );
+    seg_len = GetSelectorLimit( _RomSeg );
     if( _RomOff + val <= seg_len - 3 ) {
 #endif
     p = _MK_FP( _RomSeg, _RomOff + val );

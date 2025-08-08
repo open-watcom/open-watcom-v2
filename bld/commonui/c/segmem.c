@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,18 +43,6 @@ void PopAll( void );
 #pragma aux PushAll = ".386" "pusha"
 #pragma aux PopAll = ".386" "popa" __modify [__ax __bx __cx __dx __sp __bp __di __si]
 
-extern DWORD _GetASelectorLimit( WORD );
-#pragma aux _GetASelectorLimit = \
-        ".386" \
-        "movzx edx,ax" \
-        "lsl   eax,edx" \
-        "inc   eax" \
-        "mov   edx,eax" \
-        "shr   edx,16" \
-    __parm      [__ax] \
-    __value     [__dx __ax] \
-    __modify    []
-
 extern bool _IsValidSelector( WORD );
 #pragma aux _IsValidSelector = \
         ".386" \
@@ -74,7 +62,7 @@ extern bool             WDebug386;
 
 DWORD GetASelectorLimit( WORD sel )
 {
-    return( _GetASelectorLimit( sel ) );
+    return( GetSelectorLimit( sel ) + 1 );
 }
 
 bool IsValidSelector( WORD sel )

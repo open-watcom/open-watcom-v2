@@ -78,16 +78,6 @@ extern  int SegInfo( unsigned short selector );
     __value             [__eax] \
     __modify __exact    [__eax __ecx __edx __esi __ebx __edi]
 
-extern  int SegmentLimit( void );
-#pragma aux SegmentLimit = \
-        "xor    eax,eax"    \
-        "mov    ax,ds"      \
-        "lsl    eax,ax"     \
-        "inc    eax"        \
-    __parm __caller     [] \
-    __value             [__eax] \
-    __modify __exact    [__eax]
-
 extern void *CodeBuilderAlloc( unsigned );
 #pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
@@ -214,7 +204,7 @@ _WCRTLINK void_nptr sbrk( int increment )
         }
         return( cstg );
     } else if( _IsPharLap() ) {
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimit() + 1;
     }
   #endif
     return( __brk( _curbrk + increment ) );

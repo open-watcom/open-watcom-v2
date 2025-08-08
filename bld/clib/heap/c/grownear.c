@@ -71,16 +71,6 @@
 
 #if defined( __DOS_EXT__ )
 
-extern  int SegmentLimit( void );
-#pragma aux SegmentLimit = \
-        "xor    eax,eax"    \
-        "mov    ax,ds"      \
-        "lsl    eax,ax"     \
-        "inc    eax"        \
-    __parm              [] \
-    __value             [__eax] \
-    __modify __exact    [__eax]
-
 extern void *CodeBuilderAlloc( unsigned );
 #pragma aux CodeBuilderAlloc = \
         "mov  eax,80004800h" \
@@ -206,7 +196,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimit() + 1;
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
         return( frl_last->len );
@@ -437,7 +427,7 @@ int __ExpandDGROUP( unsigned amount )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         return( __CreateNewNHeap( amount ) );
     } else if( _IsPharLap() && !_IsFlashTek() ) {
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimit() + 1;
 //    } else {
         // Rational non-zero based system should go through.
     }
