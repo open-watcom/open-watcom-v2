@@ -121,6 +121,9 @@
 #define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
 #define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
 
+#define GetSelectorLimit                        _GetSelectorLimit
+#define GetDataSelectorLimit                    _GetDataSelectorLimit
+
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
  */
@@ -322,6 +325,9 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 
 extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
 extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
+
+extern unsigned _GetSelectorLimit( unsigned short sel );
+extern unsigned _GetDataSelectorLimit( void );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -1178,6 +1184,40 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
     __value         [__dx __eax] \
     __modify __exact [__eax __ebx __edx _MODIF_ES]
 
+#endif
+
+#ifdef _M_I86
+#pragma aux _GetSelectorLimit = \
+        ".286p" \
+        "lsl  ax,ax" \
+    __parm      [__ax] \
+    __value     [__ax] \
+    __modify __exact [__ax]
+#else
+#pragma aux _GetSelectorLimit = \
+        ".386p" \
+        "lsl eax,ax" \
+    __parm      [__ax] \
+    __value     [__eax] \
+    __modify __exact [__eax]
+#endif
+
+#ifdef _M_I86
+#pragma aux _GetDataSelectorLimit = \
+        ".286p" \
+        "mov ax,ds" \
+        "lsl  ax,ax" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify __exact [__ax]
+#else
+#pragma aux _GetDataSelectorLimit = \
+        ".386p" \
+        "mov eax,ds" \
+        "lsl eax,eax" \
+    __parm      [] \
+    __value     [__eax] \
+    __modify __exact [__eax]
 #endif
 
 #endif
