@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,14 +67,14 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setfillmask( unsigned char _WCI86FAR * mask )
 
 {
     if( mask == NULL ) {
-        _HaveMask = 0;
+        _HaveMask = false;
         memcpy( _FillMask, _DefMask, MASK_LEN );
     } else {
         Copy( _FillMask, mask, MASK_LEN );
         if( memcmp( _FillMask, _DefMask, MASK_LEN ) == 0 ) {
-            _HaveMask = 0;
+            _HaveMask = false;
         } else {
-            _HaveMask = 1;
+            _HaveMask = true;
         }
     }
 }

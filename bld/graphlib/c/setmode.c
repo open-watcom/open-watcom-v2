@@ -86,10 +86,10 @@ static long ModeTable[18] = {
 };
 
 
-short                   _NoClear = 0;       // allow user to control whether
+bool                _NoClear = false;       // allow user to control whether
                                             // SetMode clears the screen
 
-static short _ValidMode( short mode )
+static bool _ValidMode( short mode )
 /*===================================
  *
  * Check if desired mode is valid
@@ -107,9 +107,9 @@ static short _ValidMode( short mode )
     mode_test = 1L << mode;
     if( ModeTable[monitor] & mode_test ||       // check active
         ModeTable[alternate] & mode_test ) {    // check alternate
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ typedef void    __near __pascal move_fn( void );
 
 /* C code device functions calling convention declarations */
 
-typedef short   init_fn( short );
+typedef bool    init_fn( short );
 typedef void    finish_fn( void );
 typedef void    set_fn( void );
 typedef void    reset_fn( void );

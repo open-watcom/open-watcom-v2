@@ -34,6 +34,6 @@
 #include "dpmi.h"
 
 
-extern short    _RMAlloc( int, dpmi_dos_mem_block *dos_mem );
+extern bool     _RMAlloc( int, dpmi_dos_mem_block *dos_mem );
 extern void     _RMFree( dpmi_dos_mem_block *dos_mem );
 extern short    _RMVideoInt( short, short, short, short, short, short );

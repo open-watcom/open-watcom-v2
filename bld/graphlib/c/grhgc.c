@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ static void GraphicsMode( void )
 }
 
 
-static short _HercInit( short mode )
+static bool _HercInit( short mode )
 /*==================================
  *
  * Initialize the Hercules graphics video mode.
@@ -96,9 +96,9 @@ static short _HercInit( short mode )
         GraphicsMode();
         //         x,   y, str, col, bpp, pag, seg,      off,      siz, mis
         _GrInit( 720, 350,  90,   2,   1,   1, _MonoSeg, _MonoOff,   0, NO_BIOS );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

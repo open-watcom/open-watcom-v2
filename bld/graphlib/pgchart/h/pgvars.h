@@ -60,10 +60,6 @@
 #endif
 
 enum {
-    FALSE, TRUE
-};
-
-enum {
     _XVECTOR, _YVECTOR
 };
 

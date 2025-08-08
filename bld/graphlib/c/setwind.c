@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double 
     float               tmp;
 
     if( !_GraphMode() ) {
-        return( 0 );
+        return( false );
     }
     l = left;       // convert to float's
     r = right;
@@ -54,7 +55,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double 
     b = bottom;
     if( l == r || t == b ) {
         _ErrorStatus = _GRINVALIDPARAMETER;
-        return( 0 );
+        return( false );
     }
     if( t < b ) {        // ensure bottom < top
         tmp = t;
@@ -63,8 +64,8 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double 
     }
     _Window.xleft = l;
     _Window.xright = r;
-    _Window.invert = invert;
-    if( invert ) {
+    _Window.invert = ( invert != 0 );
+    if( _Window.invert ) {
         _Window.ytop = t;
         _Window.ybottom = b;
     } else {
@@ -73,7 +74,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double 
     }
     _resetscalefactor();
     _moveto_w( l, _Window.ybottom );
-    return( 1 );
+    return( true );
 }
 
 Entry1( _SETWINDOW, _setwindow ) // alternate entry-point

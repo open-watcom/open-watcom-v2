@@ -36,14 +36,14 @@
 
 /* External Variable Definitions */
 
-char                    _StartUp = 1;               // graphics startup flag
-char                    _GrMode = 0;                // graphics mode flag
+bool                    _StartUp = true;            // graphics startup flag
+bool                    _GrMode = false;            // graphics mode flag
 short                   _ErrorStatus = _GROK;       // error status
 
 struct xycoord          _CurrPos = { 0, 0 };        // current logical position
 struct xycoord          _LogOrg = { 0, 0 };         // logical origin location
 
-char                    _Clipping = _GCLIPON;       // clipping indicator
+bool                    _Clipping = true;           // clipping indicator
 
 short                   _Tx_Row_Min;                // upper left and lower right
 short                   _Tx_Col_Min;                // corners of text window
@@ -56,10 +56,10 @@ grcolor                 _CharAttr = _DEFAULT_ATTR;  // current text attribute
 #else
 char                    _CharAttr = _DEFAULT_ATTR;  // current text attribute
 #endif
-short                   _Wrap = _GWRAPON;           // text wrap flag
-short                   _CursState = _GCURSORON;    // cursor state flag
+bool                    _Wrap = true;               // text wrap flag
+bool                    _CursState = true;          // cursor state flag
 short                   _CursorShape;               // cursor shape
-short                   _GrCursor = 0;              // graphics cursor
+bool                    _GrCursor = false;          // graphics cursor
 
 short                   _CurrActivePage = 0;        // current active page
 short                   _CurrVisualPage = 0;        // current display page
@@ -76,12 +76,12 @@ unsigned char           _FillMask[MASK_LEN] =       // current fill mask
 unsigned char           _DefMask[MASK_LEN] =        // default fill mask
                             { 0xff, 0xff, 0xff, 0xff,
                               0xff, 0xff, 0xff, 0xff };
-char                    _HaveMask = 0;              // is there a fill mask?
-short                   _Transparent = 1;           // fill transparency
+bool                    _HaveMask = false;              // is there a fill mask?
+bool                    _Transparent = true;        // fill transparency
 short                   _PaRf_x = 0;                // pattern reference x-coord
 short                   _PaRf_y = 0;                // pattern reference y-coord
 unsigned short          _LineStyle = SOLID_LINE;    // current line style
-short                   _StyleWrap = 0;             // flag for continuous style
+bool                    _StyleWrap = false;             // flag for continuous style
 short                   _PlotAct = 0;               // plotting action
 
 struct textsettings     _TextSettings =             // default text settings
@@ -95,7 +95,7 @@ struct arcinfo          _ArcInfo =                  // arc information
 struct _wxycoord        _CurrPos_w =                // current window position
                             { 0.0, 0.0 };
 struct window_def       _Window =                   // default window def'n
-                            { TRUE, 0.0, 0.0, 1.0, 1.0 };
+                            { 0.0, 0.0, 1.0, 1.0, true };
 SCREEN_DESC             _Screen;                    // screen description
 
 bool                    _IsDBCS;                    // is this a DBCS system

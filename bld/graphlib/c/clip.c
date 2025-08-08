@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setclip( short mode )
    This routine sets the clipping indicator. */
 
 {
-    short               prev;
+    bool            prev;
 
     prev = _Clipping;
-    _Clipping = mode;
+    _Clipping = ( mode != 0 );
     if( _Clipping ) {
         _CurrState->clip.xmin = _CurrState->clip_def.xmin;
         _CurrState->clip.xmax = _CurrState->clip_def.xmax;

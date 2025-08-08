@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 // keep track of what points we have visited.
 
 
-short _flood_is_visited( short x, short y )
+bool _flood_is_visited( short x, short y )
 //=========================================
 
 // Stub version of _flood_is_visited
@@ -49,7 +50,7 @@ short _flood_is_visited( short x, short y )
 {
     x = x;
     y = y;
-    return( FALSE );
+    return( false );
 }
 
 

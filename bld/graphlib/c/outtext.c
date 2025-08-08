@@ -58,13 +58,13 @@ short _CharLen( char c )
 }
 
 
-static void OutputString( char _WCI86FAR *text, short length, short newline )
+static void OutputString( char _WCI86FAR *text, short length, bool newline )
 /*=========================================================================*/
 {
-    short               can_display;
-    short               ch_len;
+    bool            can_display;
+    short           ch_len;
 
-    can_display = TRUE;
+    can_display = true;
     while( length > 0 ) {
         ch_len = _CharLen( text[0] );
         if( ch_len == 2 && length == 1 ) {  // don't go past end of string
@@ -78,11 +78,11 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
             } else {
                ++_TextPos.row;
             }
-            can_display = TRUE;
+            can_display = true;
         } else if( text[0] == '\r' && newline ) {
             _RefreshWindow();
             _TextPos.col = _Tx_Col_Min;     // move to start of current line
-            can_display = TRUE;
+            can_display = true;
         } else if( can_display ) {
             if( ch_len == 1 ) {
                 _PutChar( _TextPos.row, _TextPos.col, (unsigned char)text[0] );
@@ -111,7 +111,7 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
                     }
                 } else {
                     _TextPos.col = _Tx_Col_Max;
-                    can_display = FALSE;        // past right edge of window
+                    can_display = false;        // past right edge of window
                 }
             }
         }
@@ -135,7 +135,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outtext( char _WCI86FAR *text )
 {
     _InitState();
     _CursorOff();
-    OutputString( text, Length( text ), TRUE );     // newline's allowed
+    OutputString( text, Length( text ), true );     // newline's allowed
     _GrEpilog();
 }
 
@@ -151,7 +151,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outmem( unsigned char _WCI86FAR *text, short l
 {
     _InitState();
     _CursorOff();
-    OutputString( (char _WCI86FAR *)text, length, FALSE );
+    OutputString( (char _WCI86FAR *)text, length, false );
     _GrEpilog();
 }
 

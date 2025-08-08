@@ -139,12 +139,12 @@ static void OrderLines( void )
     struct seg_entry    *curr;
     struct seg_entry    *next;
     struct seg_entry    *prev;
-    char                swap;
+    bool                swap;
     struct seg_entry    temp;   // dummy entry for start of list
 
     temp.link = LineList;   // place start of list in dummy so that
     do {                    // we can do swaps more easily
-        swap = 0;
+        swap = false;
         prev = &temp;
         for( ;; ) {
             curr = prev->link;
@@ -159,7 +159,7 @@ static void OrderLines( void )
                 prev->link = next;
                 curr->link = next->link;
                 next->link = curr;
-                swap = 1;
+                swap = true;
             }
             prev = curr;
         }
@@ -324,10 +324,10 @@ static void UpdateLines( void )
     struct seg_entry    *next;
     struct seg_entry    *prev;
     short               curr_x;
-    short               re_sort;
+    bool                re_sort;
 
     curr_x = 0;
-    re_sort = FALSE;
+    re_sort = false;
     for( curr = LineList; curr != NULL; ) {
         next = curr->link;
         if( curr->delete ) {
@@ -341,7 +341,7 @@ static void UpdateLines( void )
         } else {
             _LineMove( &curr->line );
             if( curr->line.curr_x < curr_x ) {
-                re_sort = TRUE;     // need to re-sort the line segments
+                re_sort = true;     // need to re-sort the line segments
             }
             curr_x = curr->line.curr_x;
             prev = curr;
@@ -354,7 +354,7 @@ static void UpdateLines( void )
 }
 
 
-static short InitLineList( void )
+static bool InitLineList( void )
 //=========================
 
 {
@@ -366,7 +366,7 @@ static short InitLineList( void )
     max_lines = StackSize / sizeof( struct seg_entry );
     if( max_lines < 2 ) {   // need at least 2, since we have 2 for each min
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( FALSE );
+        return( false );
     }
     LineList = NULL;
     FreeList = (struct seg_entry *) Stack;  // initialize free list
@@ -374,7 +374,7 @@ static short InitLineList( void )
         FreeList[i].link = &FreeList[i + 1];
     }
     FreeList[max_lines - 1].link = NULL;
-    return( TRUE );
+    return( true );
 }
 
 #elif defined( __OS2__ )
@@ -431,7 +431,7 @@ bool _L1FillArea( short n, struct xycoord _WCI86FAR *points )
     color = _Col2RGB( _CurrColor );
     pen = _wpi_createpen( PS_NULL, 0, color );
 
-    if( _HaveMask == 0 ) {
+    if( !_HaveMask ) {
         brush = _wpi_createsolidbrush( color );
     } else {
         // if a mask is defined, convert it to bitmap
@@ -471,7 +471,7 @@ bool _L1FillArea( short n, struct xycoord _WCI86FAR *points )
     _wpi_getoldbrush( dc, old_brush );
     _wpi_deletebrush( brush );
 
-    if( _HaveMask != 0 ) {
+    if( _HaveMask ) {
         _wpi_deletebitmap( bm );
     }
 
@@ -504,15 +504,15 @@ bool _L1FillArea( short n, struct xycoord _WCI86FAR *points )
         Stack = __alloca( StackSize );
     } else {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( FALSE );
+        return( false );
     }
     MinList = (short *)Stack;
     CalcMinima( n, points );
     if( NumMinima == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( !InitLineList() ) {
-        return( FALSE );
+        return( false );
     }
     y = points[MinList[0]].ycoord;
     next_min = y;

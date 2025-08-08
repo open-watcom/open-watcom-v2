@@ -101,7 +101,7 @@ static void mymemcpy( char *d, char __far *s, int len )
 
 #define U16(p,o)    *((unsigned short *)p + o)
 
-static short SuperVGASetMode( short adapter, short mode, short *stride )
+static bool SuperVGASetMode( short adapter, short mode, short *stride )
 //======================================================================
 
 {
@@ -123,7 +123,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_VESA:
 #if defined( _M_I86 ) || defined(__QNX__)
         if( VideoInt3( 0x4f01, mode, buf ) != 0x004f ) {
-            return( FALSE );
+            return( false );
         }
     #if defined( VERSION2 )
         memcpy( &(_CurrState->mi), buf, sizeof( struct VbeModeInfo ) );
@@ -131,7 +131,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 #else
 //            assert(256>=sizeof(struct VbeModeInfo));//large enough?
         if( !_RMAlloc( 256, &dos_mem ) ) {
-            return( FALSE );
+            return( false );
         }
         /*
             AH=0x4F is a VESA BIOS call AL=0x01 VESA return SVGA Mode info
@@ -149,7 +149,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         }
         _RMFree( &dos_mem );
         if( val != 0x004f ) {
-            return( FALSE );
+            return( false );
         }
 #endif
 #if !defined( __QNX__ )
@@ -157,7 +157,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 #else
         if( U16( buf, 3 ) != 64 ) {    // need 64k pages
 #endif
-            return( FALSE );                            // starting at A000
+            return( false );                            // starting at A000
         }
         *stride = U16( buf, 8 );
         /*
@@ -166,7 +166,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             return value AL=0x4F AH=0x00
         */
         if( VideoInt1_ax( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
-            return( FALSE );
+            return( false );
         }
         granule = 64 / U16( buf, 2 );
         _VGAGran = 0;
@@ -180,7 +180,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_VIDEO7:
         VideoInt1_ax( 0x6f05, mode, 0, 0 );         // set mode
         if( ( VideoInt1_ax( 0x6f04, 0, 0, 0 ) & 0x00ff ) != mode ) {  // get mode
-            return( FALSE );
+            return( false );
         }
         outpw( 0x3c4, 0xea06 );     // enable extended register access
         if( mode == 0x66 ) {        // enable access to 2nd bank
@@ -199,7 +199,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_PARADISE:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         outpw( 0x3ce, 0x050f );     // unlock extended registers
         break;
@@ -207,7 +207,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_ATI:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         outp( 0x1ce, 0xbe );        // ensure we're in single bank mode
         val = inp( 0x1ce + 1 );
@@ -222,7 +222,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_VIPER:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         break;
 
@@ -230,7 +230,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         if( VideoInt1_ax( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
             // if 100 range modes don't work, try 200 range
             if( VideoInt1_ax( 0x4f02, mode + 0x100, 0, 0 ) != 0x004f ) {
-                return( FALSE );
+                return( false );
             }
         }
         // different paging mechanism for 16/256 - use VGAGran to distinguish
@@ -244,7 +244,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_TRIDENT:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         outp( 0x3c4, 0x0b );        // enable extended register
         inp( 0x3c4+1 );
@@ -256,7 +256,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_CHIPS:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         outp( 0x46e8, 0x18 );       // enable setup
         outp( 0x103, 0x80 );        // enable extended registers
@@ -273,7 +273,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_CIRRUS:
         VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
-            return( FALSE );
+            return( false );
         }
         outp( 0x3ce, 0x0b );        // enable single-page mapping
         val = inp( 0x3ce+1 );
@@ -281,7 +281,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     }
-    return( TRUE );
+    return( true );
 }
 
 #if defined( VERSION2 )
@@ -679,7 +679,7 @@ static void _setup_grvesa(void)
 }
 #endif
 
-static short _SuperVGAInit( short mode )
+static bool _SuperVGAInit( short mode )
 //======================================
 
 // This routine checks for the presence of a SuperVGA adapter
@@ -692,7 +692,7 @@ static short _SuperVGAInit( short mode )
 
     adapter = _SuperVGAType();
     if( adapter == _SV_NONE ) {
-        return( FALSE );
+        return( false );
     }
 
     if( adapter == _SV_VESA ) {
@@ -708,11 +708,11 @@ static short _SuperVGAInit( short mode )
     }
 
     if( bios_mode == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !SuperVGASetMode( adapter, bios_mode, &stride ) ) {
-        return( FALSE );
+        return( false );
     }
 
     _VGAPage = 0xff;
@@ -802,7 +802,7 @@ static short _SuperVGAInit( short mode )
             }
             _setup_grvesa();
         } else {
-            return( FALSE );
+            return( false );
         }
 #endif
         break;
@@ -812,7 +812,7 @@ static short _SuperVGAInit( short mode )
     if( stride )
         _CurrState->stride = stride;    // Override default stride if necessary
     _VGAStride = _CurrState->stride;
-    return( TRUE );
+    return( true );
 }
 
 

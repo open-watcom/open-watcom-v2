@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +97,7 @@ void _WCI86FAR _L2setcliprgn( short x1, short y1, short x2, short y2 )
     _CurrState->clip_def.xmax = x2;
     _CurrState->clip_def.ymax = y2;
 #endif
-    _setclip( _GCLIPON );
+    _setclip( true );
 }
 
 

@@ -155,7 +155,7 @@ bool _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
 // Check for a fillmask
     if( fill == _GFILLINTERIOR ) {
         pen = _wpi_createpen( PS_NULL, 0, color );
-        if( _HaveMask == 0 ) {
+        if( !_HaveMask ) {
             brush = _wpi_createsolidbrush( color );
         } else {
             // if a mask is defined, convert it to bitmap
@@ -190,7 +190,7 @@ bool _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
     _wpi_getoldpen( dc, old_pen );
     _wpi_deletepen( pen );
 
-    if( _HaveMask != 0 ) {
+    if( _HaveMask ) {
         _wpi_deletebitmap( bm );
     }
 #if defined( __WINDOWS__ )

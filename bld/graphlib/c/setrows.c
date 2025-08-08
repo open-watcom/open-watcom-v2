@@ -137,7 +137,7 @@ static void GrModeRows( short rows )
     } else {
         VideoInt1_ax( set_font, 0, 0, rows );
     }
-    _GrCursor = 0;                          // cursor is off
+    _GrCursor = false;                          // cursor is off
 }
 
 
@@ -150,7 +150,7 @@ static void Load_25( void )
     VideoInt1_ax( VIDEOINT_SET_MODE + GetVideoMode(), 0, 0, 0 );
     BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) &= ~0x01;              // 43 line mode cursor emulation off
     VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
+    _GrCursor = true;                                  // cursor is on
 }
 
 
@@ -164,7 +164,7 @@ static void Load_VGA( short set_scan, short set_font, short cursor )
     VideoInt1_ax( VIDEOINT_VIDEO_PAGE, 0, 0, 0 );       // set active page to 0
     VideoInt1_ax( set_font, 0, 0, 0 );                  // load character set
     VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 ); // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
+    _GrCursor = true;                                  // cursor is on
 }
 
 
@@ -182,7 +182,7 @@ static void Load_EGA( short rows, short set_font, short cursor )
         outpw( 0x03D4, 0x1414 );                    // reset underline location to none
     }
     VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
+    _GrCursor = true;                                  // cursor is on
 }
 
 
@@ -201,7 +201,7 @@ static void Load_MCGA( short rows, short set_font, short cursor )
     BIOSData( unsigned char, BDATA_VIDEO_ROWS ) = rows - 1; // # of rows
     // # of vertical points per character
     BIOSData( unsigned short, BDATA_POINT_HEIGHT ) = 2 * ( cursor & 0xFF + 1 );
-    _GrCursor = 1;                                          // cursor is on
+    _GrCursor = true;                                          // cursor is on
 }
 
 

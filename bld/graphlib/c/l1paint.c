@@ -72,7 +72,7 @@ static bool _L0Paint( grcolor stop_color, short x, short y )
     HBRUSH              old_brush;
     HRGN                temprgn;
     WPI_COLOUR          color;
-    bool                rc;
+    bool                ok;
     WPI_RECT            clip_rect, temp_rect;
     WPI_INST            inst;
     short               t;
@@ -112,7 +112,7 @@ static bool _L0Paint( grcolor stop_color, short x, short y )
     color = _Col2RGB( _CurrColor );
 
 // Check for fillmask
-    if( _HaveMask == 0 ) {
+    if( !_HaveMask ) {
         brush = _wpi_createsolidbrush( color );
     } else {
         /* if a mask is defined, convert it to bitmap */
@@ -124,11 +124,11 @@ static bool _L0Paint( grcolor stop_color, short x, short y )
 
 // Do the floodfill
     y = _wpi_cvth_y( y, _GetPresHeight() );
-    rc = ( _wpi_extfloodfill( dc, x, y, _Col2RGB( stop_color ), fill_style ) != 0 );
+    ok = ( _wpi_extfloodfill( dc, x, y, _Col2RGB( stop_color ), fill_style ) != 0 );
 
 
 // Cleanup
-    if( _HaveMask != 0 ) {
+    if( _HaveMask ) {
         _wpi_deletebitmap( bm );
     }
 
@@ -151,7 +151,7 @@ static bool _L0Paint( grcolor stop_color, short x, short y )
     inst = _GetInst();
     _wpi_offsetrect( inst, &temp_rect, -_BitBlt_Coord.xcoord, -t );
     _wpi_invalidaterect( _CurrWin, &temp_rect, 0 );
-    return ( rc );
+    return( ok );
 }
 #endif
 
@@ -408,13 +408,13 @@ bool _L1Paint( grcolor stop_color, short x, short y )
     stop_color is -1, then painting continues as long as the color of
     the neighbouring pixels is the same as the color of the starting pixel.
     Otherwise, stop_color defines the boundary of the fill region. Returns
-    TRUE if paint is successful. Otherwise, returns false and will try
+    true if paint is successful. Otherwise, returns false and will try
     to paint as much as possible. This function obtains its dynamic
     memory off the stack.   */
 
 {
 #if defined( _DEFAULT_WINDOWS )
-    bool                rc;
+    bool                ok;
 #else
     unsigned            max_frames;             /* maximum # of frames      */
     unsigned            stack_count;            /* # of non-active frames   */
@@ -435,9 +435,9 @@ bool _L1Paint( grcolor stop_color, short x, short y )
     }
 
 #if defined( _DEFAULT_WINDOWS )
-    rc = _L0Paint( stop_color, x, y );
+    ok = _L0Paint( stop_color, x, y );
     _RefreshWindow();
-    return ( rc );
+    return( ok );
 #else
     /*  Calculate the number of frames which can be held on the stack.
         Note : stack[0] always contains the active frame.   */
@@ -454,7 +454,7 @@ bool _L1Paint( grcolor stop_color, short x, short y )
     if( stop_color == -1 ) {
         stop_color = _L1GetDot( x, y );     /* get color of starting pixel  */
         if( stop_color == _CurrColor ) {
-            if( _HaveMask == 0 ) {                  /* solid fill and pixel */
+            if( !_HaveMask ) {                  /* solid fill and pixel */
                 _ErrorStatus = _GRINVALIDPARAMETER; /* already in the       */
                 return( false );                    /* current color        */
             }

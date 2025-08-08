@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +85,7 @@ static void _WindowInit( windowtype _WCI86FAR *window )
 //================================================
 
 {
-    window->border = TRUE;
+    window->border = true;
     window->borderstyle = 1;
     window->bordercolor = 1;
 }
@@ -105,10 +106,10 @@ static void _AxisInit( axistype _WCI86FAR *axis )
 {
     axis->gridstyle = 1;
     axis->axiscolor = 1;
-    axis->labeled = TRUE;
+    axis->labeled = true;
     axis->rangetype = _PG_LINEARAXIS;
     axis->logbase = 10;
-    axis->autoscale = TRUE;
+    axis->autoscale = true;
     axis->scalefactor = 1;
     axis->ticformat = _PG_DECFORMAT;
     _TitleInit( &axis->axistitle );
@@ -120,10 +121,10 @@ static void _LegendInit( legendtype _WCI86FAR *legend )
 //================================================
 
 {
-    legend->legend = TRUE;
+    legend->legend = true;
     legend->place = _PG_RIGHT;
     legend->textcolor = 1;
-    legend->autosize = TRUE;
+    legend->autosize = true;
     _WindowInit( &legend->legendwindow );
 }
 

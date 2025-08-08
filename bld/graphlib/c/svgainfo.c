@@ -42,7 +42,7 @@
 #endif
 
 
-static int TestForVESA( void )
+static bool TestForVESA( void )
 //======================
 {
     short               val;
@@ -51,14 +51,14 @@ static int TestForVESA( void )
 #else
     char __far          *buf;
     dpmi_dos_mem_block  dos_mem;
-    int                 is_vesa;
+    bool                is_vesa;
 #endif
 
 #if defined( _M_I86 ) || defined( __QNX__ )
     val = VideoInt3( 0x4f00, 0, buf );
     if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                          buf[2] == 'S' && buf[3] == 'A' ) {
-        return( TRUE );
+        return( true );
     }
 #else
     if( _RMAlloc( 256, &dos_mem ) ) {
@@ -66,15 +66,15 @@ static int TestForVESA( void )
         val = _RMVideoInt( 0x4f00, 0, 0, 0, dos_mem.rm, 0 );
         if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                              buf[2] == 'S' && buf[3] == 'A' ) {
-            is_vesa = TRUE;
+            is_vesa = true;
         } else {
-            is_vesa = FALSE;
+            is_vesa = false;
         }
         _RMFree( &dos_mem );
         return( is_vesa );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 
@@ -102,7 +102,7 @@ short _SuperVGAType( void )
     }
 
 //  test for VESA standard compatible
-    if ((_SVGAType != -1) && TestForVESA()) {
+    if( (_SVGAType != -1) && TestForVESA() ) {
         return _SV_VESA;
     }
 

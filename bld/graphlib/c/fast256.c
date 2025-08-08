@@ -52,7 +52,7 @@ struct rgb {
 
 #if defined( _M_I86 ) || defined( __QNX__ )
 
-short _FastMap( long _WCI86FAR *colours, short num )
+bool _FastMap( long _WCI86FAR *colours, short num )
 //=============================================
 
 {
@@ -62,7 +62,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 
     i = _RoundUp( sizeof( struct rgb ) * num );
     if( _stackavail() - i <= 0x100 ) {
-        return( FALSE );
+        return( false );
     } else {
         rgb = __alloca( i );
     }
@@ -74,14 +74,14 @@ short _FastMap( long _WCI86FAR *colours, short num )
         ++colours;
     }
     VideoInt2( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
-    return( TRUE );
+    return( true );
 }
 
 
 #else
 
 
-short _FastMap( long _WCI86FAR *colours, short num )
+bool _FastMap( long _WCI86FAR *colours, short num )
 //==================================================
 
 {
@@ -101,31 +101,31 @@ short _FastMap( long _WCI86FAR *colours, short num )
         }
         _RMVideoInt( VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, dos_mem.rm, 0 );
         _RMFree( &dos_mem );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
-short _RMAlloc( int size, dpmi_dos_mem_block *dos_mem )
+bool _RMAlloc( int size, dpmi_dos_mem_block *dos_mem )
 //=================================================
 {
-    int                 size_para;
+    int             size_para;
 
     size_para = __ROUND_UP_SIZE_TO_PARA( size );
     if( _IsPharLap() ) {
         dos_mem->pm = 0;
         dos_mem->rm = PharlapAllocateDOSMemoryBlock( size_para );
         if( dos_mem->rm != 0 ) {
-            return( TRUE );
+            return( true );
         }
     } else if( _DPMI || _IsRational() ) {
         *dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
         if( dos_mem->rm != 0 ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -158,8 +158,7 @@ short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
         dp.r.x.edx = dx;
         dp.es = es;
         PharlapSimulateRealModeInterrupt( &dp, bx, cx, di );
-        return( dp.r.x.eax );
-//        return( PharlapRMI( &dp, bx, cx, di ) );
+        return( dp.r.w.ax );
     } else if( _DPMI || _IsRational() ) {
         dpmi_regs_struct    dr;
 
@@ -171,7 +170,7 @@ short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
         dr.es = es;
         dr.r.x.edi = di;
         DPMISimulateRealModeInterrupt( 0x10, 0, 0, &dr );
-        return( dr.r.x.eax );
+        return( dr.r.w.ax );
     }
     return( 0 );
 }

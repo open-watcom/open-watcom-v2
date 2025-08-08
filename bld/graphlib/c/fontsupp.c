@@ -124,7 +124,7 @@ static short            _YVecDir = 0;
 
 #if defined( _DEFAULT_WINDOWS )
   #if defined( __WINDOWS__ )
-    static short            StockFont = TRUE;
+    static bool             StockFont = true;
   #endif
 #else
     static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8FontDef;
@@ -623,7 +623,7 @@ Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
 
 #else
 
-short _IsStockFont( void )
+bool _IsStockFont( void )
 /*========================
 This function tells if the current font is a stock font.*/
 {
@@ -697,7 +697,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
     short                   width;
     short                   spacing;
     short                   font_type;
-    short                   best_fit;
+    bool                    best_fit;
     char                    option;
     char                    *face;
     char                    facename[32];
@@ -739,7 +739,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
     width = 0;
     spacing = _UNDEFINED;
     font_type = _UNDEFINED;
-    best_fit = FALSE;
+    best_fit = false;
 #if !defined( _DEFAULT_WINDOWS )
     font_num = 0;
 #endif
@@ -799,7 +799,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
             break;
         case 'b':
         case 'B':
-            best_fit = TRUE;
+            best_fit = true;
             break;
         case 'n':
         case 'N':
@@ -827,7 +827,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
         _CurFnt = GetStockObject( SYSTEM_FONT );
         return( -1 );
     }
-    StockFont = FALSE;
+    StockFont = false;
     return( 0 );
 #elif defined( __OS2__ )
     _CurFnt = LCID_DEFAULT;
@@ -1156,7 +1156,7 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
     short               length;
     short               width;
     long                offset;
-    short               penup;
+    bool                penup;
     signed char _WCI86FAR    *strokes;
     short _WCI86FAR          *glyph;
     struct xycoord      pos;
@@ -1176,13 +1176,13 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
     pos.xcoord = x1 + roundoff( x1 );
     y1 = y0 - _YVecDir * width * _XVecScale;
     pos.ycoord =  y1 + roundoff( y1 );
-    penup = TRUE;
+    penup = true;
     while( length != 0 ) {
         x = *strokes;
         ++strokes;
         --length;
         if( (unsigned char)x == 0x80 ) {
-            penup = TRUE;
+            penup = true;
             continue;
         }
         y = *strokes;
@@ -1191,7 +1191,7 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
         x1 = x0 + _XVecDir * x * _XVecScale + _YVecDir * y * _YVecScale;
         y1 = y0 + _XVecDir * y * _YVecScale - _YVecDir * x * _XVecScale;
         if( penup ) {
-            penup = FALSE;
+            penup = false;
         } else {
             _L1SLine( x0 + roundoff( x0 ), y0 + roundoff( y0 ),
                       x1 + roundoff( x1 ), y1 + roundoff( y1 ) );

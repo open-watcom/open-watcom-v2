@@ -212,7 +212,7 @@ void _InitState( void )
 #endif
 
     if( _StartUp ) {        // if first time through
-        _StartUp = 0;
+        _StartUp = false;
 #if defined( _DEFAULT_WINDOWS )
         _CurrState->vc.mode = 0;
 #else
@@ -247,7 +247,7 @@ void _GrInit( short x, short y, short stride, grcolor col, short bpp,
 #if defined( VERSION2 )
     int i;
 #endif
-    _GrMode = TRUE;
+    _GrMode = true;
     _GetState();    // initialize text mode fields
     _CurrState->vc.numxpixels    = x;
     _CurrState->vc.numypixels    = y;

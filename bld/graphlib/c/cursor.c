@@ -91,7 +91,7 @@ void _CursorOn( void )
 //====================
 
 {
-    if( _GrCursor == 0 ) {      // if it isn't already on
+    if( !_GrCursor ) {      // if it isn't already on
 #if defined( _DEFAULT_WINDOWS )
         GraphCursor();
 #else
@@ -101,7 +101,7 @@ void _CursorOn( void )
             GraphCursor();
         }
 #endif
-        _GrCursor = 1;          // cursor is on
+        _GrCursor = true;          // cursor is on
     }
 }
 
@@ -114,7 +114,7 @@ void _CursorOff( void )
     unsigned short      cursor;
 #endif
 
-    if( _GrCursor != 0 ) {      // if the cursor is on
+    if( _GrCursor ) {      // if the cursor is on
 #if defined( _DEFAULT_WINDOWS )
         GraphCursor();
 #else
@@ -128,6 +128,6 @@ void _CursorOff( void )
             }
         }
 #endif
-        _GrCursor = 0;      // cursor is off
+        _GrCursor = false;      // cursor is off
     }
 }

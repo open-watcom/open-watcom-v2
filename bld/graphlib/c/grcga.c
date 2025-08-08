@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "rotate.h"
 
 
-static short _CGAInit( short mode )
+static bool _CGAInit( short mode )
 //=================================
 
 {
@@ -46,9 +46,9 @@ static short _CGAInit( short mode )
         } else {    // modes 4 and 5
             _GrInit( 320, 200,  40,   4,   2,   1, _CgaSeg, _CgaOff,   0,   0 );
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -108,15 +108,15 @@ static void _Setup4( short x, short y, grcolor colour )
 }
 
 
-static short _TextInit( short mode )
+static bool _TextInit( short mode )
 //==================================
 
 {
     if( _SetMode( mode ) == mode ) {
         _GetState();
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

@@ -210,24 +210,17 @@ struct window_def {
     float           ybottom;
     float           xright;
     float           ytop;
-    short           invert;
+    bool            invert;
 };
 
 #if defined( _DEFAULT_WINDOWS )
     // This macro causes repaints to be done
-    #define _RefreshWindow()    _wpi_updatewindow( _CurrWin ); _MessageLoop( TRUE );
+    #define _RefreshWindow()    _wpi_updatewindow( _CurrWin ); _MessageLoop( true );
 #else
     #define _RefreshWindow()
-    enum {
-            FALSE, TRUE
-    };
 #endif
 
 #define SOLID_LINE      0xffff  /* linestyle for solid lines */
-
-enum {                          /* clipping indicator */
-        _GCLIPOFF, _GCLIPON
-};
 
 enum {                          /* font type indicator  */
         _BITMAPPED, _STROKE
@@ -267,22 +260,22 @@ extern short            _CharLen( char );
 extern short            _CnvColour( long );
 extern void             _CursorOff( void );
 extern void             _CursorOn( void );
-extern short            _FastMap( long _WCI86FAR *, short );
+extern bool             _FastMap( long _WCI86FAR *, short );
 extern void             _RemapNum( long _WCI86FAR *, short );
 extern void             _InitSegments( void );
 extern void             _InitState( void );
 extern void             _FiniDevice( void );
 extern unsigned         _GetStackLow( void );
-extern short            _GraphMode( void );
+extern bool             _GraphMode( void );
 extern void             _GrClear( short, short, short, short );
 extern void             _TxtClear( short, short, short, short );
 extern void             _GrInit( short, short, short, grcolor, short,
                                      short, short, int, short, short );
-extern short            _GrProlog( void );
+extern bool             _GrProlog( void );
 extern void             _GrEpilog( void );
 extern void             _GetState( void );
 extern void             _HershDraw( char, short, short, short, short, short, short );
-extern short            _InitDevice( short );
+extern bool             _InitDevice( short );
 extern short            _Line( short, short, short, short );
 extern void             _LineInit( short, short, short, short, struct line_entry * );
 extern void             _LineMove( struct line_entry * );
