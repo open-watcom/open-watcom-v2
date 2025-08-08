@@ -330,8 +330,8 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 extern unsigned _GetSelectorLimitB( unsigned short sel );
 extern unsigned _GetDataSelectorLimitB( void );
-extern bool     _IsReadSelectorB( unsigned short sel );
-extern bool     _IsWriteSelectorB( unsigned short sel );
+extern uint_8   _IsReadSelectorB( unsigned short sel );
+extern uint_8   _IsWriteSelectorB( unsigned short sel );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
