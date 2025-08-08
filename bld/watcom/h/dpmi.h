@@ -1189,14 +1189,18 @@ extern unsigned _GetDataSelectorLimit( void );
 #ifdef _M_I86
 #pragma aux _GetSelectorLimit = \
         ".286p" \
-        "lsl  ax,ax" \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
     __parm      [__ax] \
     __value     [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _GetSelectorLimit = \
         ".386p" \
-        "lsl eax,ax" \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
     __parm      [__ax] \
     __value     [__eax] \
     __modify __exact [__eax]
@@ -1205,16 +1209,20 @@ extern unsigned _GetDataSelectorLimit( void );
 #ifdef _M_I86
 #pragma aux _GetDataSelectorLimit = \
         ".286p" \
-        "mov ax,ds" \
-        "lsl  ax,ax" \
+        _MOV_AX_DS \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
     __parm      [] \
     __value     [__ax] \
     __modify __exact [__ax]
 #else
 #pragma aux _GetDataSelectorLimit = \
         ".386p" \
-        "mov eax,ds" \
-        "lsl eax,eax" \
+        _MOV_AX_DS \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
     __parm      [] \
     __value     [__eax] \
     __modify __exact [__eax]
