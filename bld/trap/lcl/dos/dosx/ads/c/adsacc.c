@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include "bool.h"
-#include "tinyio.h"
+#include "dpmi.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "packet.h"
@@ -71,15 +71,6 @@ typedef struct watch_point {
     word        size;
     word        dregs;
 } watch_point;
-
-static dword    SegLimit( dword sel );
-#pragma aux SegLimit = \
-        "lsl eax,eax" \
-        "jz short L1" \
-        "xor eax,eax" \
-    "L1: " \
-    __parm [__eax] \
-    __value [__eax]
 
 static dword SegBase( dword sel );
 #pragma aux SegBase = \
@@ -274,7 +265,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
     dword       linear;
     word        otherseg;
 
-    sdtlim = SegLimit( sdtseg );
+    sdtlim = GetSelectorLimit( sdtseg );
     linear = GET_LINEAR( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
@@ -339,7 +330,7 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     if( !ReadOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
         DoReadBytes( segment, addr->offset, data, len );
         return( false );
     }
@@ -356,7 +347,7 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     if( !WriteOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
         DoWriteBytes( segment, addr->offset, data, len );
         return( false );
     }
