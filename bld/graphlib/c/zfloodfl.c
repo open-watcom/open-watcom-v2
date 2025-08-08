@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w( double x, double y, grcolor stop
    and continuing until the stop_color is met. */
 
 {
-    short               success;        /* successful fill flag */
+    bool            success;        /* successful fill flag */
 
     if( _GrProlog() ) {
         success = _L2floodfill( _WtoPhysX( x ), _WtoPhysY( y ), stop_color );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }

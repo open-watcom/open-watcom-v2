@@ -41,8 +41,8 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
    fills the regions of this polygon based on the fill parameter. */
 
 {
-    short               i;
-    short               success;
+    short           i;
+    bool            success;
 
     if( _GrProlog() ) {
         for( i = 0; i < numpts; ++i ) {                /* translate points */
@@ -56,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
         }
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -64,7 +64,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
 Entry1( _POLYGON, _polygon ) // alternate entry-point
 
 
-short _WCI86FAR _L2polygon( short fill, short numpts,
+bool _WCI86FAR _L2polygon( short fill, short numpts,
 /*==================*/ struct xycoord _WCI86FAR *points )
 
 /* This routine draws or fills a polygon specified by the array points[].
@@ -73,25 +73,30 @@ short _WCI86FAR _L2polygon( short fill, short numpts,
 {
     short i;
     short x1, y1, x2, y2;
-    int   count = 0;
+    int   count;
 
     if( numpts < 3 ) {
         _ErrorStatus = _GRINVALIDPARAMETER;
-        return( 0 );
+        return( false );
     }
     if( fill == _GFILLINTERIOR ) {
         return( _L1FillArea( numpts, points ) );
     } else {
         x1 = points[numpts-1].xcoord;
         y1 = points[numpts-1].ycoord;
+        count = 0;
         for( i = 0; i < numpts; i++ ) {
             x2 = points[i].xcoord;
             y2 = points[i].ycoord;
 
             if( y1 < y2 ) {
-                count += _L1Line( x1, y1, x2, y2 );
+                 if( _L1Line( x1, y1, x2, y2 ) ) {
+                     count++;
+                 }
             } else {
-                count += _L1Line( x2, y2, x1, y1 );
+                 if( _L1Line( x2, y2, x1, y1 ) ) {
+                     count++;
+                 }
             }
 
             x1 = x2;
@@ -106,6 +111,6 @@ short _WCI86FAR _L2polygon( short fill, short numpts,
             _ErrorStatus = _GRNOOUTPUT;
         }
 
-        return( 1 );
+        return( true );
     }
 }

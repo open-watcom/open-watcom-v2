@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,7 @@ void _L1SLine( short x1, short y1, short x2, short y2 )
     }
 }
 
-short _L1Line( short x1, short y1, short x2, short y2 )
+bool _L1Line( short x1, short y1, short x2, short y2 )
 /*===================================================*/
 
 /*  Draw a clipped line using the given color and style.    */
@@ -158,8 +158,8 @@ short _L1Line( short x1, short y1, short x2, short y2 )
             style = _wrol( style, dx & 15 );    // rotate mask left
         }
         _L0Line( x1, y1, x2, y2, _CurrColor, style );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

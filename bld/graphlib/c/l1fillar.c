@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@ struct seg_entry {
     struct line_entry   line;
     short               end_pt;
     struct seg_entry    *link;
-    short               delete;
+    bool                delete;
 };
 
 
@@ -168,7 +168,7 @@ static void OrderLines( void )
 }
 
 
-static short AddLine( short p1, short p2, struct xycoord _WCI86FAR *points )
+static bool AddLine( short p1, short p2, struct xycoord _WCI86FAR *points )
 //=====================================================================
 
 {
@@ -177,20 +177,20 @@ static short AddLine( short p1, short p2, struct xycoord _WCI86FAR *points )
     segment = FreeList;         // get element from free list
     if( segment == NULL ) {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( FALSE );
+        return( false );
     }
     FreeList = FreeList->link;
     _LineInit( points[p1].xcoord, points[p1].ycoord,
                points[p2].xcoord, points[p2].ycoord, &segment->line );
     segment->end_pt = p2;
-    segment->delete = FALSE;
+    segment->delete = false;
     segment->link = LineList;
     LineList = segment;
-    return( TRUE );
+    return( true );
 }
 
 
-static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
+static bool AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
 //=====================================================================
 
 {
@@ -207,7 +207,7 @@ static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
             p2 = 0;
         }
         if( !AddLine( p2, prev, points ) ) {
-            return( FALSE );
+            return( false );
         }
         next = NextPoint( p, 1, n, points );
         p2 = next - 1;
@@ -215,7 +215,7 @@ static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
             p2 = n - 1;
         }
         if( !AddLine( p2, next, points ) ) {
-            return( FALSE );
+            return( false );
         }
         --NumMinima;
         if( NumMinima == 0 ) {
@@ -228,7 +228,7 @@ static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
         }
     }
     OrderLines();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -272,7 +272,7 @@ static void ExtendLines( short y, short n, struct xycoord _WCI86FAR *points )
                         p1 = n - 1;
                     }
                 } else {    // no upward extension
-                    line->delete = TRUE;    // mark line to be deleted
+                    line->delete = true;    // mark line to be deleted
                     continue;
                 }
             }
@@ -382,7 +382,7 @@ static short InitLineList( void )
 #endif
 
 
-short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
+bool _L1FillArea( short n, struct xycoord _WCI86FAR *points )
 //=======================================================
 
 {
@@ -410,7 +410,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
     short               next_min;
 #endif
 
-    short               success;
+    bool                success;
 
 #if defined( _DEFAULT_WINDOWS )
     dc = _Mem_dc;
@@ -496,7 +496,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
   #if defined( __WINDOWS__ )
     DeleteObject( Refresh );
   #endif
-    success = TRUE;
+    success = true;
 
 #else
     StackSize = _RoundUp( _stackavail() - 0x100 );  // obtain memory from stack
@@ -517,6 +517,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
     y = points[MinList[0]].ycoord;
     next_min = y;
     _StartDevice();
+    success = false;
     for( ; ; ++y ) {
         if( y == next_min ) {
             success = AddMinima( y, n, points );

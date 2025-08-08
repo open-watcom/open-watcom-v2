@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grtext_w( double x, double y, char _WCI86FAR 
    The letters are clipped.  The routine returns a success flag. */
 
 {
-    short           success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2grtext( _WtoPhysX( x ), _WtoPhysY( y ), string );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }

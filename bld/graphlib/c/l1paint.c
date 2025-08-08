@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ struct frame {
 
 
 #if defined( _DEFAULT_WINDOWS )
-static short _L0Paint( grcolor stop_color, short x, short y )
+static bool _L0Paint( grcolor stop_color, short x, short y )
 /*===========================================================
   This function does the filling. */
 {
@@ -72,7 +72,7 @@ static short _L0Paint( grcolor stop_color, short x, short y )
     HBRUSH              old_brush;
     HRGN                temprgn;
     WPI_COLOUR          color;
-    short               rc;
+    bool                rc;
     WPI_RECT            clip_rect, temp_rect;
     WPI_INST            inst;
     short               t;
@@ -124,7 +124,7 @@ static short _L0Paint( grcolor stop_color, short x, short y )
 
 // Do the floodfill
     y = _wpi_cvth_y( y, _GetPresHeight() );
-    rc = _wpi_extfloodfill( dc, x, y, _Col2RGB( stop_color ), fill_style );
+    rc = ( _wpi_extfloodfill( dc, x, y, _Col2RGB( stop_color ), fill_style ) != 0 );
 
 
 // Cleanup
@@ -158,19 +158,24 @@ static short _L0Paint( grcolor stop_color, short x, short y )
 
 #if !defined( _DEFAULT_WINDOWS )
 
-static char CheckIfOut( short left_edge, short right_edge, short y )
+static bool CheckIfOut( short left_edge, short right_edge, short y )
 /*==================================================================
 
-    Returns true if TRUE if point is out of viewport or
+    Returns true if true if point is out of viewport or
     left_edge > right_edge. */
 
 {
-    if( left_edge > right_edge ) return( TRUE );
-    if( _CurrState->clip.xmin > left_edge ) return( TRUE );
-    if( left_edge > _CurrState->clip.xmax ) return( TRUE );
-    if( _CurrState->clip.ymin > y ) return( TRUE );
-    if( y > _CurrState->clip.ymax ) return( TRUE );
-    return( FALSE );
+    if( left_edge > right_edge )
+        return( true );
+    if( _CurrState->clip.xmin > left_edge )
+        return( true );
+    if( left_edge > _CurrState->clip.xmax )
+        return( true );
+    if( _CurrState->clip.ymin > y )
+        return( true );
+    if( y > _CurrState->clip.ymax )
+        return( true );
+    return( false );
 }
 
 
@@ -260,7 +265,7 @@ static void swap( unsigned k, struct frame *stack )
 }
 
 
-static short AddEntry( short ypos, short right, short left, short direction,
+static bool AddEntry( short ypos, short right, short left, short direction,
 /*==================*/ unsigned max_frames, unsigned *stack_count,
                        struct frame *stack )
 
@@ -269,18 +274,18 @@ static short AddEntry( short ypos, short right, short left, short direction,
 {
     if( *stack_count == max_frames ) {          /* stack is full    */
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( TRUE );
+        return( true );
     }
     *stack_count += 1;                          /* append to stack  */
     stack[*stack_count].left = left;
     stack[*stack_count].right = right;
     stack[*stack_count].ypos = ypos;
     stack[*stack_count].direction = direction;
-    return( FALSE );
+    return( false );
 }
 
 
-static char NotValidFrame( unsigned curr, unsigned *stack_count,
+static bool NotValidFrame( unsigned curr, unsigned *stack_count,
 /*======================*/ struct frame *stack )
 
 /*  If the current frame is no longer valid then replace it by the last one.*/
@@ -290,18 +295,18 @@ static char NotValidFrame( unsigned curr, unsigned *stack_count,
         memcpy( &stack[curr], &stack[*stack_count], sizeof( struct frame ) );
         *stack_count -= 1;
     }
-    return( FALSE );                /* signal no direction  */
+    return( false );                /* signal no direction  */
 }
 
 
-static char StackCompare( struct frame * stack, unsigned *stack_count )
+static bool StackCompare( struct frame * stack, unsigned *stack_count )
 /*=====================================================================
 
     Perform intersections, unions with entries already on the stack.
-    Return with FALSE if entry completely cancelled or TRUE otherwise.  */
+    Return with false if entry completely cancelled or true otherwise.  */
 
 {
-    short           startover;
+    bool            startover;
     unsigned        count;
     unsigned        smallest;
     unsigned        curr;
@@ -309,12 +314,12 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
 
     if( *stack_count == 0 ) {                   /* nothing on the stack */
         stack[0].ypos += stack[0].direction;    /* go to next line in same  */
-        return( TRUE );                         /* direction    */
+        return( true );                         /* direction    */
     }
     do {
         /* Find shortest of the first TUNING non-active frames on the
            stack and the active frame.  */
-        startover = FALSE;
+        startover = false;
         count = *stack_count;
         if( count > TUNING ) {
             count = TUNING;
@@ -358,7 +363,7 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
                             stack[0].right = stack[0].left - 2;
                             stack[0].left = temp;
                             stack[0].direction = stack[curr].direction;
-                            startover = TRUE;
+                            startover = true;
                             break;
                         }
                         stack[0].right = temp - 2;
@@ -390,26 +395,26 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 #endif
 
 
-short _L1Paint( grcolor stop_color, short x, short y )
+bool _L1Paint( grcolor stop_color, short x, short y )
 /*==================================================
 
     Paint a region on the screen starting at the point (x,y). If the
     stop_color is -1, then painting continues as long as the color of
     the neighbouring pixels is the same as the color of the starting pixel.
     Otherwise, stop_color defines the boundary of the fill region. Returns
-    TRUE if paint is successful. Otherwise, returns FALSE and will try
+    TRUE if paint is successful. Otherwise, returns false and will try
     to paint as much as possible. This function obtains its dynamic
     memory off the stack.   */
 
 {
 #if defined( _DEFAULT_WINDOWS )
-    short               rc;
+    bool                rc;
 #else
     unsigned            max_frames;             /* maximum # of frames      */
     unsigned            stack_count;            /* # of non-active frames   */
@@ -419,14 +424,14 @@ short _L1Paint( grcolor stop_color, short x, short y )
     short               left_scan;          /* temp. left while scanning    */
     short               right_scan;         /* temp. right while scanning   */
     short               cutoff;             /* stopping pixel in scanning   */
-    short               success;                    /* flag for success     */
+    bool                success;                    /* flag for success     */
     char                border_flag;                /* 0 - until; 1 - while */
     struct frame *      stack;                      /* ptr to list of frames*/
 #endif
 
     if( _L1OutCode( x, y ) ) {              /* starting point is outside    */
         _ErrorStatus = _GRINVALIDPARAMETER;
-        return( FALSE );                    /* so do nothing                */
+        return( false );                    /* so do nothing                */
     }
 
 #if defined( _DEFAULT_WINDOWS )
@@ -442,7 +447,7 @@ short _L1Paint( grcolor stop_color, short x, short y )
         stack = __alloca( _RoundUp( sizeof( struct frame ) * max_frames ) );
     } else {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( FALSE );                    /* not enough memory so quit    */
+        return( false );                    /* not enough memory so quit    */
     }
     max_frames -= 1;                    /* stack[0] is the active frame     */
 
@@ -451,7 +456,7 @@ short _L1Paint( grcolor stop_color, short x, short y )
         if( stop_color == _CurrColor ) {
             if( _HaveMask == 0 ) {                  /* solid fill and pixel */
                 _ErrorStatus = _GRINVALIDPARAMETER; /* already in the       */
-                return( FALSE );                    /* current color        */
+                return( false );                    /* current color        */
             }
         }
         border_flag = 1;                /* paint inside while same color    */
@@ -463,7 +468,7 @@ short _L1Paint( grcolor stop_color, short x, short y )
 #endif
         if( stop_color == _L1GetDot( x, y ) ) {     /* on border of region */
             _ErrorStatus = _GRINVALIDPARAMETER;
-            return( FALSE );
+            return( false );
         }
         border_flag = 0;        /* paint inside until border encountered    */
     }
@@ -481,7 +486,7 @@ short _L1Paint( grcolor stop_color, short x, short y )
     stack[1].right = right_edge;                        /* going up         */
     stack[1].left = left_edge;
     stack[1].direction = 1;
-    success = 0;                                /* assume success at first  */
+    success = false;                                /* assume success at first  */
     for( ;; ) {                                 /* process all the frames   */
         do {                                /* process frame row per row    */
             direction = stack[0].direction;         /* load active frame    */
@@ -497,8 +502,10 @@ short _L1Paint( grcolor stop_color, short x, short y )
             left_edge = left_scan;
             /* Check for a hole to the left */
             if( left_scan <= right_scan - 2 ) {
-                success += AddEntry( y, right_scan - 2, left_scan, -direction,
-                                     max_frames, &stack_count, stack );
+                if( AddEntry( y, right_scan - 2, left_scan, -direction,
+                                     max_frames, &stack_count, stack ) ) {
+                    success = true;
+                }
             }
             /* Now scan right until we reach the right edge */
             /* and skip holes if any.   */
@@ -512,9 +519,9 @@ short _L1Paint( grcolor stop_color, short x, short y )
                     } else {                    /* something was painted    */
                         if( left_scan != cutoff ) {     /* Check for a hole */
                             if( left_edge <= cutoff ) {
-                                success += AddEntry( y, cutoff, left_edge,
-                                                     direction, max_frames,
-                                                     &stack_count, stack );
+                                if( AddEntry( y, cutoff, left_edge, direction, max_frames, &stack_count, stack ) ) {
+                                    success = true;
+                                }
                             }
                             left_edge = left_scan + 1;  /* adjust left edge */
                         }
@@ -524,8 +531,9 @@ short _L1Paint( grcolor stop_color, short x, short y )
             }
             /* Check for a hole to the right    */
             if( right_scan >= right_edge + 2 ) {
-                success += AddEntry( y, right_scan, right_edge + 2, -direction,
-                                     max_frames, &stack_count, stack );
+                if( AddEntry( y, right_scan, right_edge + 2, -direction, max_frames, &stack_count, stack ) ) {
+                    success = true;
+                }
             }
             stack[0].direction = direction;         /* load new endpoints   */
             stack[0].left = left_edge;              /* after scan           */

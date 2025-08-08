@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grtext( short x, short y, char _WCI86FAR *str
    The letters are clipped.  The routine returns a success flag. */
 
 {
-    short           success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2grtext( _VtoPhysX( x ), _VtoPhysY( y ), string );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -54,7 +55,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grtext( short x, short y, char _WCI86FAR *str
 Entry1( _GRTEXT, _grtext ) // alternate entry-point
 
 
-short _WCI86FAR _L2grtext( short x, short y, char _WCI86FAR *string )
+bool _WCI86FAR _L2grtext( short x, short y, char _WCI86FAR *string )
 /*=========================================================
 
    This routine prints a text string using the current text settings.
@@ -62,5 +63,5 @@ short _WCI86FAR _L2grtext( short x, short y, char _WCI86FAR *string )
 
 {
     _L1Text( x, y, string );
-    return( TRUE );
+    return( true );
 }
