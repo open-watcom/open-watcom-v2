@@ -223,6 +223,8 @@
 #define _SHL_EBX_16     0xc1 0xe3 16
 #define _SHL_ESI_16     0xc1 0xe6 16
 
+#define _LSL_AX_AX      0x0F 0x03 0xc0
+
 #if defined( _M_I86 )
 
  #if defined( __COMPACT__ ) \
