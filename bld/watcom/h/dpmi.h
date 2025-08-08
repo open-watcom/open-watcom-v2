@@ -121,8 +121,8 @@
 #define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
 #define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
 
-#define GetSelectorLimit                        _GetSelectorLimit
-#define GetDataSelectorLimit                    _GetDataSelectorLimit
+#define GetSelectorLimitB                       _GetSelectorLimitB
+#define GetDataSelectorLimitB                   _GetDataSelectorLimitB
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -326,8 +326,8 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
 extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
-extern unsigned _GetSelectorLimit( unsigned short sel );
-extern unsigned _GetDataSelectorLimit( void );
+extern unsigned _GetSelectorLimitB( unsigned short sel );
+extern unsigned _GetDataSelectorLimitB( void );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -1186,7 +1186,7 @@ extern unsigned _GetDataSelectorLimit( void );
 
 #endif
 
-#pragma aux _GetSelectorLimit = \
+#pragma aux _GetSelectorLimitB = \
         _PROTECTED \
         _LSL_AX_AX \
         _JZ 2 \
@@ -1195,7 +1195,7 @@ extern unsigned _GetDataSelectorLimit( void );
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
 
-#pragma aux _GetDataSelectorLimit = \
+#pragma aux _GetDataSelectorLimitB = \
         _PROTECTED \
         _MOV_AX_DS \
         _LSL_AX_AX \

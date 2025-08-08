@@ -265,7 +265,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
     dword       linear;
     word        otherseg;
 
-    sdtlim = GetSelectorLimit( sdtseg );
+    sdtlim = GetSelectorLimitB( sdtseg );
     linear = GET_LINEAR( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
@@ -330,7 +330,7 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     if( !ReadOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( GetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
         DoReadBytes( segment, addr->offset, data, len );
         return( false );
     }
@@ -347,7 +347,7 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     if( !WriteOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( GetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
         DoWriteBytes( segment, addr->offset, data, len );
         return( false );
     }

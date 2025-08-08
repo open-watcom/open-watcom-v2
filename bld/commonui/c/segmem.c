@@ -62,7 +62,7 @@ extern bool             WDebug386;
 
 DWORD GetASelectorLimit( WORD sel )
 {
-    return( GetSelectorLimit( sel ) + 1 );
+    return( GetSelectorLimitB( sel ) + 1 );
 }
 
 bool IsValidSelector( WORD sel )
