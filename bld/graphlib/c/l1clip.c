@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ static void line_inter( short * x1, short * y1, short x2, short y2, short x )
 }
 
 
-short _L0LineClip( short *x1, short *y1, short *x2, short *y2 )
+bool _L0LineClip( short *x1, short *y1, short *x2, short *y2 )
 /*=============================================================
 
     Clips the line with end points (x1,y1) and (x2,y2) to the active
@@ -124,7 +125,7 @@ short _L0LineClip( short *x1, short *y1, short *x2, short *y2 )
             flag1 = _L1OutCode( *x1, *y1 );
         }
     }
-    return( flag1 & flag2 );
+    return( (flag1 & flag2) != 0 );
 }
 
 
@@ -145,7 +146,7 @@ static void block_inter( short *x, short *y, char flag )
 }
 
 
-short _L0BlockClip( short *x1, short *y1, short *x2, short* y2 )
+bool _L0BlockClip( short *x1, short *y1, short *x2, short* y2 )
 /*==============================================================
 
     Clip a block with opposite corners (x1,y1) and (x2,y2) to the
@@ -169,5 +170,5 @@ short _L0BlockClip( short *x1, short *y1, short *x2, short* y2 )
             flag1 = _L1OutCode( *x1, *y1 );
         }
     }
-    return( flag1 & flag2 );
+    return( (flag1 & flag2) != 0 );
 }

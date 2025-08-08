@@ -280,7 +280,7 @@ HPEN _MyCreatePen( WPI_COLOUR color )
 }
 
 
-short _CreateSysMonoFnt( WPI_PRES dc )
+bool _CreateSysMonoFnt( WPI_PRES dc )
 /*====================================
   This function create the system monospaced font. */
 {

@@ -123,7 +123,7 @@ void _L1SLine( short x1, short y1, short x2, short y2 )
               If you call this function you have to update the window with
               the UpdateWindow yourself.*/
 {
-    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+    if( !_L0LineClip( &x1, &y1, &x2, &y2 ) ) {
         _L0Line( x1, y1, x2, y2, _CurrColor, SOLID_LINE );
     }
 }
@@ -146,7 +146,7 @@ bool _L1Line( short x1, short y1, short x2, short y2 )
     init_x = x1;
     init_y = y1;
     style = _LineStyle;
-    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+    if( !_L0LineClip( &x1, &y1, &x2, &y2 ) ) {
         // if the initial point of a non-solid line was clipped,
         // rotate the mask accordingly
         if( style != SOLID_LINE && ( x1 != init_x || y1 != init_y ) ) {

@@ -266,8 +266,8 @@ static void swap( unsigned k, struct frame *stack )
 
 
 static bool AddEntry( short ypos, short right, short left, short direction,
-/*==================*/ unsigned max_frames, unsigned *stack_count,
-                       struct frame *stack )
+            unsigned max_frames, unsigned *stack_count, struct frame *stack )
+/*=========================================================================*/
 
 /*  Add an entry to the stack. Quit if out of stack space.  */
 
@@ -416,17 +416,17 @@ bool _L1Paint( grcolor stop_color, short x, short y )
 #if defined( _DEFAULT_WINDOWS )
     bool                ok;
 #else
-    unsigned            max_frames;             /* maximum # of frames      */
-    unsigned            stack_count;            /* # of non-active frames   */
+    unsigned            max_frames;         /* maximum # of frames      */
+    unsigned            stack_count;        /* # of non-active frames   */
     short               left_edge;          /* left pixel of active frame   */
     short               right_edge;         /* right pixel of active frame  */
     short               direction;          /* direction of active frame    */
     short               left_scan;          /* temp. left while scanning    */
     short               right_scan;         /* temp. right while scanning   */
     short               cutoff;             /* stopping pixel in scanning   */
-    bool                success;                    /* flag for success     */
-    char                border_flag;                /* 0 - until; 1 - while */
-    struct frame *      stack;                      /* ptr to list of frames*/
+    bool                success;            /* flag for success     */
+    char                border_flag;        /* 0 - until; 1 - while */
+    struct frame *      stack;              /* ptr to list of frames*/
 #endif
 
     if( _L1OutCode( x, y ) ) {              /* starting point is outside    */
@@ -502,8 +502,7 @@ bool _L1Paint( grcolor stop_color, short x, short y )
             left_edge = left_scan;
             /* Check for a hole to the left */
             if( left_scan <= right_scan - 2 ) {
-                if( AddEntry( y, right_scan - 2, left_scan, -direction,
-                                     max_frames, &stack_count, stack ) ) {
+                if( AddEntry( y, right_scan - 2, left_scan, -direction, max_frames, &stack_count, stack ) ) {
                     success = true;
                 }
             }
@@ -539,8 +538,9 @@ bool _L1Paint( grcolor stop_color, short x, short y )
             stack[0].left = left_edge;              /* after scan           */
             stack[0].right = cutoff;
             stack[0].ypos = y;
-            if( left_edge > cutoff )        /* right most point on boundary */
+            if( left_edge > cutoff ) {      /* right most point on boundary */
                 break;
+            }
         } while( StackCompare( stack, &stack_count ) );
         /* We are done with the previous frame so we have to load   */
         /* another one.     */

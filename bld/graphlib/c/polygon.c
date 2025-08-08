@@ -90,13 +90,13 @@ bool _WCI86FAR _L2polygon( short fill, short numpts,
             y2 = points[i].ycoord;
 
             if( y1 < y2 ) {
-                 if( _L1Line( x1, y1, x2, y2 ) ) {
-                     count++;
-                 }
+                if( _L1Line( x1, y1, x2, y2 ) ) {
+                    count++;
+                }
             } else {
-                 if( _L1Line( x2, y2, x1, y1 ) ) {
-                     count++;
-                 }
+                if( _L1Line( x2, y2, x1, y1 ) ) {
+                    count++;
+                }
             }
 
             x1 = x2;
@@ -107,7 +107,7 @@ bool _WCI86FAR _L2polygon( short fill, short numpts,
         /*
          * If ALL lines were completely clipped then set _GRNOOUTPUT.
          */
-        if ((_ErrorStatus == _GRCLIPPED) && (count == 0)) {
+        if( ( _ErrorStatus == _GRCLIPPED ) && ( count == 0 ) ) {
             _ErrorStatus = _GRNOOUTPUT;
         }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,16 +80,16 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
         y1 = y2;
         y2 = t;
     }
-    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) != 0 ) {     /* clip image to    */
-        image->picwidth = 0;                            /* active viewport  */
+    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) ) {      /* clip image to    */
+        image->picwidth = 0;                        /* active viewport  */
         image->picheight = 0;
         _ErrorStatus = _GRNOOUTPUT;
         return;
     }
     dx = x2 - x1 + 1;                               /* row width in pixels  */
     dy = y2 - y1 + 1;                               /* height in pixel rows */
-    image->picwidth = dx;                   /* save width in image picture  */
-    image->picheight = dy;                  /* save height in image picture */
+    image->picwidth = dx;                           /* save width in image picture  */
+    image->picheight = dy;                          /* save height in image picture */
 #if defined( _DEFAULT_WINDOWS )
     dc = _Mem_dc;
 

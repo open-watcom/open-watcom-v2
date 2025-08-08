@@ -38,8 +38,8 @@
 
 
 #if !defined( _DEFAULT_WINDOWS )
-static void TextCursor( short turning_on )
-//========================================
+static void TextCursor( bool turning_on )
+//=======================================
 
 {
     short               cursor;
@@ -96,7 +96,7 @@ void _CursorOn( void )
         GraphCursor();
 #else
         if( IsTextMode ) {
-            TextCursor( 1 );
+            TextCursor( true );
         } else {
             GraphCursor();
         }
@@ -119,7 +119,7 @@ void _CursorOff( void )
         GraphCursor();
 #else
         if( IsTextMode ) {
-            TextCursor( 0 );
+            TextCursor( false );
         } else {
             // if cursor is not where we think it is (printf), assume it is off
             cursor = BIOSData( unsigned short, BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ) );

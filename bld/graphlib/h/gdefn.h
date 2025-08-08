@@ -299,11 +299,11 @@ extern void             _EGASetEO( void );
 extern void             _EGAReset( void );
 extern void             _EGASetup80( short x, short y, grcolor colour );
 
-extern short            _L0BlockClip( short *, short *, short *, short * );
+extern bool             _L0BlockClip( short *, short *, short *, short * );
 extern void             _L0DrawLine( char __far *, grcolor, unsigned short, short,
                                          short, short, move_fn *, move_fn *, putdot_fn * );
 extern void             _L0Ellipse( short, short, short, short, void (*)( short, short, short ) );
-extern short            _L0LineClip( short *, short *, short *, short * );
+extern bool             _L0LineClip( short *, short *, short *, short * );
 
 extern void             _L1Arc( short, short, short, short, short,
                                     short, short, short, short );

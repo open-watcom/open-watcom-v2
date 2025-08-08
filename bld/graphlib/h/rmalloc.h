@@ -36,4 +36,4 @@
 
 extern bool     _RMAlloc( int, dpmi_dos_mem_block *dos_mem );
 extern void     _RMFree( dpmi_dos_mem_block *dos_mem );
-extern short    _RMVideoInt( short, short, short, short, short, short );
+extern short    _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di );

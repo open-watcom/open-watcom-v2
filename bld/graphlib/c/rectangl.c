@@ -107,7 +107,7 @@ bool _WCI86FAR _L2rectangle( short fill, short x1, short y1,
     } else {
 //      _PaRf_x = x1;               /* should make sure first that  */
 //      _PaRf_y = y1;               /* x1 < x2 and y1 < y2          */
-        if( _L0BlockClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+        if( !_L0BlockClip( &x1, &y1, &x2, &y2 ) ) {
             _L1Block( x1, y1, x2, y2 );
         } else {
             _ErrorStatus = _GRNOOUTPUT;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE *image, short disp
     desty = y;
   #endif
 
-    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) != 0 ) { /* clip rectangle to vp */
+    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) ) {      /* clip rectangle to vp */
         _ErrorStatus = _GRNOOUTPUT;                 /* image is completely  */
         return;                                     /* outside view port    */
     }

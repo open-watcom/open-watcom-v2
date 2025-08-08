@@ -81,7 +81,7 @@ extern WPI_MRESULT CALLBACK GraphWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 
 extern WPI_MRESULT CALLBACK GraphFrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 extern void             _MyInvalidate( WPI_RECTDIM x1, WPI_RECTDIM y1, WPI_RECTDIM x2, WPI_RECTDIM y2 );
 extern HPEN             _MyCreatePen( WPI_COLOUR );
-extern short            _CreateSysMonoFnt( WPI_PRES );
+extern bool             _CreateSysMonoFnt( WPI_PRES );
 extern HFONT            _GetSysMonoFnt( void );
 extern bool             _IsStockFont( void );
 extern long             _GetPresHeight( void );
