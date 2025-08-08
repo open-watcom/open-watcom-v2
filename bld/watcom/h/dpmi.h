@@ -1186,46 +1186,23 @@ extern unsigned _GetDataSelectorLimit( void );
 
 #endif
 
-#ifdef _M_I86
 #pragma aux _GetSelectorLimit = \
-        ".286p" \
+        _PROTECTED \
         _LSL_AX_AX \
         _JZ 2 \
         _XOR_AX_AX  \
     __parm      [__ax] \
-    __value     [__ax] \
-    __modify __exact [__ax]
-#else
-#pragma aux _GetSelectorLimit = \
-        ".386p" \
-        _LSL_AX_AX \
-        _JZ 2 \
-        _XOR_AX_AX  \
-    __parm      [__ax] \
-    __value     [__eax] \
-    __modify __exact [__eax]
-#endif
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#ifdef _M_I86
 #pragma aux _GetDataSelectorLimit = \
-        ".286p" \
+        _PROTECTED \
         _MOV_AX_DS \
         _LSL_AX_AX \
         _JZ 2 \
         _XOR_AX_AX  \
     __parm      [] \
-    __value     [__ax] \
-    __modify __exact [__ax]
-#else
-#pragma aux _GetDataSelectorLimit = \
-        ".386p" \
-        _MOV_AX_DS \
-        _LSL_AX_AX \
-        _JZ 2 \
-        _XOR_AX_AX  \
-    __parm      [] \
-    __value     [__eax] \
-    __modify __exact [__eax]
-#endif
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
 #endif
