@@ -156,7 +156,7 @@ set correctly
 all depended upon projects have been built
 .bull
 any required executables from under
-.us build/bin
+.us build/binbuild
 are in the path
 .endbull
 .np
@@ -230,7 +230,7 @@ If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
 More general tools (yacc, re2c) that are likely to be used by several
-projects should be copied up into the build/bin directory.
+projects should be copied up into the build/binbuild directory.
 .*
 .section The Runtime DLL Libraries
 .*
