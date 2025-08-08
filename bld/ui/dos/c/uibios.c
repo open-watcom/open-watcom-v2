@@ -304,24 +304,17 @@ static void desqview_update( unsigned short offset, unsigned short count )
 #else
     if( _IsPharLap() ) {
         pharlap_regs_struct dp;
-        union REGPACK       regs;
 
         memset( &dp, 0, sizeof( dp ) );
-        memset( &regs, 0, sizeof( regs ) );
-        dp.intno = VECTOR_VIDEO;       /* VIDEO call */
-        dp.r.x.eax = 0xff00;            /* update from v-screen */
+        dp.r.h.ah = 0xff;            /* update from v-screen */
         dp.es = _FP_OFF( UIData->screen.origin ) >> 4;
-        regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        regs.x.ecx = count;
-        regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &dp );    /* DS:EDX -> parameter block */
-        regs.w.ds = _FP_SEG( &dp );
-        intr( 0x21, &regs );
+        dp.intno = VECTOR_VIDEO;       /* VIDEO call */
+        PharlapSimulateRealModeInterrupt( &dp, 0, count, (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset );
     } else if( _DPMI || _IsRational() ) {
         dpmi_regs_struct    dr;
 
         memset( &dr, 0, sizeof( dr ) );
-        dr.r.x.eax = 0xff00;                /* update from v-screen */
+        dr.r.h.ah = 0xff;                /* update from v-screen */
         dr.es = _FP_OFF( UIData->screen.origin ) >> 4;
         dr.r.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
         dr.r.x.ecx = count;
