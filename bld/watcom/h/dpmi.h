@@ -123,6 +123,8 @@
 
 #define GetSelectorLimitB                       _GetSelectorLimitB
 #define GetDataSelectorLimitB                   _GetDataSelectorLimitB
+#define IsReadSelectorB                         _IsReadSelectorB
+#define IsWriteSelectorB                        _IsWriteSelectorB
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -328,6 +330,8 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 extern unsigned _GetSelectorLimitB( unsigned short sel );
 extern unsigned _GetDataSelectorLimitB( void );
+extern bool     _IsReadSelectorB( unsigned short sel );
+extern bool     _IsWriteSelectorB( unsigned short sel );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -1204,5 +1208,25 @@ extern unsigned _GetDataSelectorLimitB( void );
     __parm      [] \
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
+
+#pragma aux _IsReadSelectorB = \
+        _PROTECTED \
+        _VERR_AX \
+        _MOV_AL 0 \
+        _JNZ 2    \
+        _MOV_AL 1 \
+    __parm      [__ax] \
+    __value     [__al] \
+    __modify    []
+
+#pragma aux _IsWriteSelectorB = \
+        _PROTECTED \
+        _VERW_AX \
+        _MOV_AL 0 \
+        _JNZ 2    \
+        _MOV_AL 1 \
+    __parm      [__ax] \
+    __value     [__al] \
+    __modify    []
 
 #endif

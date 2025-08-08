@@ -78,18 +78,6 @@ static dword SegBase( dword sel );
         "int 21h" \
     __parm [__ebx] __value [__ecx] __modify [__eax]
 
-static bool     WriteOK( word sel );
-#pragma aux WriteOK = \
-        "verw ax" /* if ok for write */\
-        "sete al" /* then return true */\
-    __parm [__ax] __value [__al]
-
-static bool     ReadOK( word sel );
-#pragma aux ReadOK = \
-        "verr ax" /* if ok for read */\
-        "sete al" /* then return true */\
-    __parm [__ax] __value [__al]
-
 static void     DoReadBytes( word sel, dword offs, void *data, size_t len );
 #pragma aux DoReadBytes = \
         "push es" \
@@ -275,7 +263,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
         } else {
             otherseg = sdtoff + 4;
         }
-        if( !WriteOK( otherseg ) )
+        if( !IsWriteSelectorB( otherseg ) )
             continue;
         if( GET_LINEAR( otherseg, 0 ) != linear )
             continue;
@@ -327,7 +315,7 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     addr_seg    segment;
 
     segment = addr->segment;
-    if( !ReadOK( segment ) ) {
+    if( !IsReadSelectorB( segment ) ) {
         segment = AltSegment( segment );
     }
     if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
@@ -344,7 +332,7 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     segment = addr->segment;
     if( segment == Regs.CS )
         segment = Regs.DS; // hack, ack
-    if( !WriteOK( segment ) ) {
+    if( !IsWriteSelectorB( segment ) ) {
         segment = AltSegment( segment );
     }
     if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
