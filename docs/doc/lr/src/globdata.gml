@@ -448,12 +448,14 @@ This
 data item is a pointer to an array of wide character pointers to the
 wide character equivalents of the environment strings.
 .df __win_alloc_flags
+(Win16 only)
 .proto stdlib.h
 This
 .id unsigned long int
 variable contains the flags to be used when allocating memory in
 Windows.
 .df __win_realloc_flags
+(Win16 only)
 .proto stdlib.h
 This
 .id unsigned long int
