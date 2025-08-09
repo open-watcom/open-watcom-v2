@@ -155,6 +155,10 @@ _DATA ends
 ;*
 _TEXT segment word public 'CODE'
 
+ifdef WINDOWS10
+else
+        extrn   GETVERSION  : far
+endif
         extrn   LIBMAIN     : far       ; startup code
         extrn   LOCALINIT   : far       ; Windows heap init routine
 
