@@ -40,12 +40,25 @@
 #include "vhandle.h"
 #include "hash.h"
 
+
+typedef struct hash_element {
+    struct hash_element *next;
+    hash_key            key;
+    vhandle             data;
+} hash_element;
+
+typedef struct hash_table {
+    size_t              size;
+    hash_key_cmp        cmp_func;
+    hash_element        *table[1];
+} hash_table;
+
 static unsigned int     hashKey( size_t size, hash_key k );
 
-hash_table     *HashInit( size_t size, hash_key_cmp func )
+hash_handle     HashInit( size_t size, hash_key_cmp func )
 /********************************************************/
 {
-    hash_table  *ht;
+    hash_handle ht;
 
     assert( size != 0 );
     assert( func );
@@ -59,7 +72,7 @@ hash_table     *HashInit( size_t size, hash_key_cmp func )
     return( ht );
 }
 
-bool HashInsert( hash_table *ht, hash_key k, vhandle data )
+bool HashInsert( hash_handle ht, hash_key k, vhandle data )
 /*********************************************************/
 {
     unsigned int        i;
@@ -80,7 +93,7 @@ bool HashInsert( hash_table *ht, hash_key k, vhandle data )
 }
 
 
-vhandle HashFind( hash_table *ht, hash_key k )
+vhandle HashFind( hash_handle ht, hash_key k )
 /********************************************/
 {
     unsigned int        i;
@@ -98,7 +111,7 @@ vhandle HashFind( hash_table *ht, hash_key k )
     return( NO_VAR );
 }
 
-void HashFini( hash_table *ht )
+void HashFini( hash_handle ht )
 /*****************************/
 {
     size_t              i;

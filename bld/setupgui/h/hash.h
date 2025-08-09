@@ -30,26 +30,14 @@
 ****************************************************************************/
 
 
-typedef void        *hash_handle;
-typedef const char  *hash_key;
+typedef struct hash_table   *hash_handle;
+typedef const char          *hash_key;
 
 /* standard compare function return, 0 if equal, < 0 if s1 < s2, > 0 is s1 > s2
  */
 typedef int     (*hash_key_cmp)( hash_key s1, hash_key s2 );
 
-typedef struct hash_element_struct {
-    struct hash_element_struct  *next;
-    hash_key                    key;
-    vhandle                     data;
-} hash_element;
-
-typedef struct hash_table_struct {
-    size_t              size;
-    hash_key_cmp        cmp_func;
-    hash_element        *table[1];
-} hash_table;
-
-extern hash_table       *HashInit( size_t size, hash_key_cmp func );
-extern bool             HashInsert( hash_table *ht, hash_key k, vhandle data );
-extern vhandle          HashFind( hash_table *ht, hash_key k );
-extern void             HashFini( hash_table *ht );
+extern hash_handle      HashInit( size_t size, hash_key_cmp func );
+extern bool             HashInsert( hash_handle ht, hash_key k, vhandle data );
+extern vhandle          HashFind( hash_handle ht, hash_key k );
+extern void             HashFini( hash_handle ht );

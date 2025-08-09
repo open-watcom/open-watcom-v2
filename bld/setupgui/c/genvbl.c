@@ -64,7 +64,7 @@ typedef struct  a_variable {
 struct {
     a_variable   *list;
     array_info   array;
-    hash_table   *hash;
+    hash_handle  hash;
 } Vars = {
     NULL, { 0 }, NULL
 };
@@ -457,52 +457,66 @@ void SetDefaultVarsList( void )
 
 
 void FreeVarsList( bool delete_all_vars )
-/***************************************/
+/****************************************
+ * This destroys the concept that a handle to a variable
+ * will always point to the same variable.
+ * Between script launches, variable ids will change.
+ */
 {
     array_idx   i;
+    array_idx   j;
 
     if( Vars.list == NULL )
         return;
 
+    /*
+     * free Hash table
+     */
+    if( Vars.hash != NULL ) {
+        HashFini( Vars.hash );
+        Vars.hash = NULL;
+    }
+    /*
+     * free list
+     */
+    j = 0;
     if( delete_all_vars ) {
         for( i = 0; i < Vars.array.num; i++ ) {
             GUIMemFree( Vars.list[i].name );
             GUIMemFree( Vars.list[i].strval );
             GUIMemFree( Vars.list[i].autoset );
         }
-        Vars.array.num = 0;
-        GUIMemFree( Vars.list );
-        if( Vars.hash != NULL ) {
-            HashFini( Vars.hash );
-            Vars.hash = NULL;
-        }
     } else {
-        for( i = 0; i < Vars.array.num; ) {
-            if( Vars.list[i].name[0] != '$' ) {
+        for( i = 0; i < Vars.array.num; i++ ) {
+            if( Vars.list[i].name[0] == '$' ) {
+                /*
+                 * hold all system variables
+                 */
+                if( i != j ) {
+                    memcpy( &Vars.list[j], &Vars.list[i], sizeof( a_variable ) );
+                }
+                j++;
+            } else {
                 GUIMemFree( Vars.list[i].name );
                 GUIMemFree( Vars.list[i].strval );
                 GUIMemFree( Vars.list[i].autoset );
-
-                Vars.array.num -= 1;
-                if( i < Vars.array.num ) {
-                    memcpy( &Vars.list[i], &Vars.list[i + 1], sizeof( a_variable ) * ( Vars.array.num - i ) );
-                    // This destroys the concept that a handle to a variable
-                    // will always point to the same variable.  Between
-                    // script launches, variable ids will change.
-                }
-                BumpDownArray( &Vars.array );
-            } else {
-                i++;
-            }
-        }
-        // We have to rebuild the hash table
-        if( Vars.hash != NULL ) {
-            HashFini( Vars.hash );
-            Vars.hash = HashInit( HASH_SIZE, &stricmp );
-            for( i = 0; i < Vars.array.num; i++ ) {
-                HashInsert( Vars.hash, Vars.list[i].name, i );
             }
         }
     }
+    Vars.array.num = j;
+    if( j ) {
+        /*
+         * reduce variables array to minimum size
+         */
+        BumpDownArray( &Vars.array );
+        /*
+         * We have to rebuild the hash table for system variables
+         */
+        Vars.hash = HashInit( HASH_SIZE, &stricmp );
+        for( i = 0; i < Vars.array.num; i++ ) {
+            HashInsert( Vars.hash, Vars.list[i].name, i );
+        }
+    } else {
+        GUIMemFree( Vars.list );
+    }
 }
-

@@ -852,8 +852,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
     for( e = text;; ) {
         if( *e == '\0' )
             return( text );
-        if( *e == '\\'
-          && *( e + 1 ) == 'n' )
+        if( e[0] == '\\'
+          && e[1] == 'n' )
             return( e );
         n = e + GUICharLen( UCHAR_VALUE( *e ) );
         width = GUIGetExtentX( MainWnd, text, n - text );
@@ -950,33 +950,33 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
          */
         new_index = text;
         orig_index = text;
-        for( ; *orig_index != '\0';  ) {
-            if( *orig_index == '\r' ) {
-                if( *(orig_index + 1) == '\n' ) {
-                    if( *(orig_index + 2) == '\r' ) {
+        for( ; orig_index[0] != '\0';  ) {
+            if( orig_index[0] == '\r' ) {
+                if( orig_index[1] == '\n' ) {
+                    if( orig_index[2] == '\r' ) {
                         do {
                             *new_index++ = *orig_index++;
                             *new_index++ = *orig_index++;
-                        } while( *orig_index == '\r' && *(orig_index + 1) == '\n' );
+                        } while( orig_index[0] == '\r' && orig_index[1] == '\n' );
                     } else {
                         orig_index += 2;
                         *new_index++ = ' ';
                     }
-                } else if( *(orig_index + 1) == '\r' ) {
+                } else if( orig_index[1] == '\r' ) {
                     do {
                         *new_index++ = *orig_index++;
-                    } while( *orig_index == '\r' );
+                    } while( orig_index[0] == '\r' );
                 } else {
                     orig_index++;
                     *new_index++ = ' ';
                 }
                 continue;
             }
-            if( *orig_index == '\n' ) {
-                if( *(orig_index + 1) == '\n' ) {
+            if( orig_index[0] == '\n' ) {
+                if( orig_index[1] == '\n' ) {
                     do {
                         *new_index++ = *orig_index++;
-                    } while( *orig_index == '\n' );
+                    } while( orig_index[0] == '\n' );
                 } else {
                     orig_index++;
                     *new_index++ = ' ';
@@ -990,22 +990,22 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     orig_index = text;
     new_index = big_buffer;
     break_candidate = find_break( orig_index, parse_dlg, &chwidth );
-    for( ; *orig_index != '\0'; orig_index++ ) {
+    for( ; orig_index[0] != '\0'; orig_index++ ) {
         if( new_line ) {
             SKIP_WS( orig_index );
         }
 
         if( convert_newline
-          && *orig_index == '\\'
-          && *(orig_index + 1) == 'n' ) {
+          && orig_index[0] == '\\'
+          && orig_index[1] == 'n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             orig_index++;
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
         } else if( !convert_newline
-          && *orig_index == '\r' ) {
+          && orig_index[0] == '\r' ) {
         } else if( !convert_newline
-          && *orig_index == '\n' ) {
+          && orig_index[0] == '\n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
@@ -1017,7 +1017,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
             new_line = true;
             continue;
-        } else if( *orig_index == '\t' ) {
+        } else if( orig_index[0] == '\t' ) {
             *(new_index++) = ' ';
         } else {
             *(new_index++) = *orig_index;
@@ -1870,17 +1870,12 @@ static bool ProcLine( char *line, pass_type pass )
             }
             SetupInfo.pm_group_iconfile = GUIStrDup( next );
         } else {
-            if( line[0] == '$' ) {
-                /*
-                 * global variables start with '$'
-                 */
-                if( GetVariableByName( line ) == NO_VAR ) {
-                    /*
-                     * if variable already is set, do not change it
-                     */
-                    SetVariableByName( line, next );
-                }
-            } else {
+            /*
+             * system variables start with '$'
+             * if system variable already exists, do not change it
+             */
+            if( line[0] != '$'
+              || GetVariableByName( line ) == NO_VAR ) {
                 SetVariableByName( line, next );
             }
         }
