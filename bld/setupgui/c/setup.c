@@ -303,7 +303,7 @@ void GUImain( void )
 
     if( SetupPreInit( argc, argv ) ) {
         SetupInit();
-        InitGlobalVarList();
+        InitVarsList();
         VbufInit( &inf_name );
         VbufInit( &src_path );
         VbufInit( &arc_name );
@@ -360,7 +360,7 @@ void GUImain( void )
 
                 FreeDefaultDialogs();
                 FreeAllStructs();
-                FreeGlobalVarList( false );
+                FreeVarsList( false );
                 ConfigModified = false;
             } /* while */
             VbufFree( &dir );
@@ -376,7 +376,7 @@ void GUImain( void )
         VbufFree( &arc_name );
         VbufFree( &src_path );
         VbufFree( &inf_name );
-        FreeGlobalVarList( true );
+        FreeVarsList( true );
         SetupFini();
     }
 }

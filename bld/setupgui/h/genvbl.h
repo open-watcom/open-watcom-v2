@@ -35,8 +35,8 @@
 *   COMMENTS: Function prototypes contolling the abstract type "a_variable"
 */
 
-extern vhandle      NextGlobalVar( vhandle var_handle );
-extern void         InitGlobalVarList( void );
+extern vhandle      NextVar( vhandle var_handle );
+extern void         InitVarsList( void );
 extern vhandle      GetVariableByName( const char *vbl_name );
 extern vhandle      GetVariableById( gui_ctl_id id );
 extern gui_ctl_id   VarGetId( vhandle var_handle );
@@ -50,8 +50,8 @@ extern vhandle      SetBoolVariableByHandle( vhandle var_handle, bool bval );
 extern vhandle      SetBoolVariableByName( const char *vbl_name, bool bval );
 extern vhandle      SetVariableByHandle( vhandle var_handle, const char *strval );
 extern vhandle      SetVariableByName( const char *vbl_name, const char *strval );
-extern void         SetDefaultGlobalVarList( void );
-extern void         FreeGlobalVarList( bool );
+extern void         SetDefaultVarsList( void );
+extern void         FreeVarsList( bool );
 extern const char   *VarGetName( vhandle var_handle );
 extern void         VarSetHook( vhandle var_handle, void (*hook)(vhandle) );
 extern bool         VarHasValue( vhandle var_handle );

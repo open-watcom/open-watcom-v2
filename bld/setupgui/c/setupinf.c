@@ -2437,7 +2437,7 @@ int SimInit( const VBUF *inf_name )
     NONMAGICVARS( setvar, 0 )
 #undef setvar
 
-    SetDefaultGlobalVarList();
+    SetDefaultVarsList();
     afh = FileOpen( inf_name, DATA_TEXT );
     if( afh == NULL ) {
         return( SIM_INIT_NOFILE );
@@ -3846,7 +3846,7 @@ static void ZeroAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
+    for( var_handle = NextVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextVar( var_handle ) ) {
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
             SetBoolVariableByHandle( var_handle, VarIsRestrictedTrue( var_handle ) );
         }
@@ -3870,7 +3870,7 @@ static void InitAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
+    for( var_handle = NextVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextVar( var_handle ) ) {
         SetDefaultAutoSetValue( var_handle );
     }
     NeedInitAutoSetValues = false;
