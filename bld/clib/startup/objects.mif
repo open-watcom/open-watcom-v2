@@ -161,9 +161,9 @@
 !inject wep.obj                                                                     w16 w32
 !inject wmainwnt.obj                nt  nta ntp ntm
 !inject wmnwwnt.obj                 nt  nta ntp ntm
-!inject wnmjptr.obj                 nt
-!inject wnmnptr.obj                 nt
-!inject wnvrptr.obj                 nt
+!inject wnmjptr.obj                 nt                                              w16 w32
+!inject wnmnptr.obj                 nt                                              w16 w32
+!inject wnvrptr.obj                 nt                                              w16 w32
 !inject wpgmptr.obj                 nt  nta ntp ntm                     o32
 !inject wpgmptra.obj                nt  nta ntp ntm                     o32
 !inject wpgmptrs.obj                nt  nta ntp ntm                     o32

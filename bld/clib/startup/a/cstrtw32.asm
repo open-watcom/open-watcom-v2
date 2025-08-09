@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -66,6 +66,7 @@ ENDM
         extrn   _edata          : byte          ; end of DATA (start of BSS)
         extrn   _end            : byte          ; end of BSS (start of STACK)
 
+        extrn   GETVERSION      : near
         extrn   GETMODULEFILENAME : near
         extrn   WEP             : near
         extrn   __InitRtns      : near
@@ -171,8 +172,11 @@ __ASTACKSIZ dd 0          ; alternate stack size
 __ASTACKPTR dd 0          ; alternate stack pointer
 _curbrk     dd 0          ; top of usable memory
 _cbyte      dd 0          ; used by getch, getche
+_winver     dd 0          ; Windows version number
 _osmajor    db 4          ; major DOS version number
 _osminor    db 0          ; minor DOS version number
+_winmajor   db 0          ; major Windows version number
+_winminor   db 0          ; minor Windows version number
 __init_387_emulator db 0  ; to prevent emulator from coming in with
                           ;       -fpi
 
@@ -199,6 +203,9 @@ __FPE_handler dd __null_FPE_rtn ; FPE handler
         public  "C",_cbyte
         public  "C",_osmajor
         public  "C",_osminor
+        public  "C",_winmajor
+        public  "C",_winminor
+        public  "C",_winver
         public  "C",__FPE_handler
         public  __init_387_emulator
 
@@ -304,6 +311,11 @@ again:  mov     al,byte ptr es:[esi]
 
 donecpy:
         pop     es
+        call    GETVERSION              ; get Windows version number
+        mov     _winmajor,al            ; ...
+        mov     _winminor,ah            ; ...
+        xchg    al,ah                   ; ...
+        mov     _winver,ax              ; ...
         movzx   eax,hThisInstance
         push    eax
         mov     edi,offset filename

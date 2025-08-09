@@ -462,11 +462,13 @@ Windows.
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _winmajor
-(Win32 only)
+(Windows only)
 .proto stdlib.h
 This
 .id unsigned int
-variable contains the operating system major version number for the
+(Win32) or
+.id unsigned char
+(Win16) variable contains the operating system major version number for the
 version of Windows executing on the computer.
 For example, the major version number of the Daytona release of
 Windows NT is 3.
@@ -478,11 +480,13 @@ version number information.
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _winminor
-(Win32 only)
+(Window only)
 .proto stdlib.h
 This
 .id unsigned int
-variable contains the operating system minor version number for the
+(Win32) or
+.id unsigned char
+(Win16) variable contains the operating system minor version number for the
 version of Windows executing on the computer.
 For example, the minor version number of the Daytona release of
 Windows NT is 5.
@@ -494,7 +498,7 @@ version number information.
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _winver
-(Win32 only)
+(Windows only)
 .proto stdlib.h
 This
 .id unsigned int
