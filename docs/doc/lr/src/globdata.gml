@@ -480,7 +480,7 @@ version number information.
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _winminor
-(Window only)
+(Windows only)
 .proto stdlib.h
 This
 .id unsigned int
