@@ -169,13 +169,15 @@ ifdef WINDOWS10
 _winmajor  db 1                 ; major Windows version number
 _winminor  db 0                 ; minor Windows version number
 _winver    dw 100h              ; Windows version number
+_osmode    db 0                 ; 0 => real mode, 1 => protected mode
+_HShift    db 12                ; Huge Shift value 12 => real mode, 3 => protected mode
 else
 _winmajor  db 0                 ; major Windows version number
 _winminor  db 0                 ; minor Windows version number
 _winver    dw 0                 ; Windows version number
+_osmode    db 0                 ; 0 => real mode, 1 => protected mode
+_HShift    db 0                 ; Huge Shift value 12 => real mode, ? => protected mode
 endif
-_osmode    db 0                 ; 0 => DOS real mode
-_HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
 __child    dw 0                 ; non-zero => a spawned process is running
 __no87     db 0                 ; always try to use the 8087
@@ -282,17 +284,7 @@ endif
         sub     cx,di                   ; calc # of bytes in _BSS segment
         xor     al,al                   ; zero the _BSS segment
         rep     stosb                   ; . . .
-ifdef WINDOWS10
-        mov     ax,12                   ; get huge shift value
-else
-        mov     ax,offset __AHSHIFT     ; get huge shift value
-endif
-        mov     _HShift,al              ; ...
-        cmp     al,12                   ; real mode?
-        je      notprot                 ; yes, so leave osmode alone
-        mov     al,1
-        mov     _osmode,al              ; protected mode!
-notprot:
+
         mov     ax,offset __null_FPE_rtn; initialize floating-point exception
         mov     word ptr __FPE_handler,ax       ; ... handler address
         mov     ax,seg __null_FPE_rtn   ; initialize floating-point exception
@@ -309,6 +301,13 @@ else
         mov     _winminor,ah            ; ...
         xchg    al,ah                   ; ...
         mov     _winver,ax              ; ...
+        mov     ax,offset __AHSHIFT     ; get huge shift value
+        mov     _HShift,al              ; ...
+        cmp     al,12                   ; real mode?
+        je      notprot                 ; yes, so leave osmode alone
+        mov     al,1
+        mov     _osmode,al              ; protected mode!
+notprot:
 endif
         ; hinst is already on the stack
         push    ds
