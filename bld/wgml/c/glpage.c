@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,15 +28,18 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :PAGE  attributes                                                     */
 /***************************************************************************/
-const   lay_att     page_att[5] =
-    { e_top_margin, e_left_margin, e_right_margin, e_depth, e_dummy_zero };
+static const lay_att    page_att[] = {
+    e_top_margin, e_left_margin, e_right_margin, e_depth
+};
 
 /***************************************************************************/
 /*                                                                         */
@@ -75,72 +78,120 @@ const   lay_att     page_att[5] =
 /*  lay_page                                                               */
 /***************************************************************************/
 
-void    lay_page( lay_tag ltag )
+void    lay_page( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             k;
-    lay_att         curr;
-    att_args        l_args;
-    int             cvterr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = g_scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_page ) {
-        ProcFlags.lay_xxx = el_page;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get one with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = page_att[k]; curr > 0; k++, curr = page_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( page_att ); k++ ) {
+            curr = page_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_top_margin:
-                    cvterr = i_space_unit( p, curr,
+                case e_top_margin:
+                    if( AttrFlags.top_margin ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.page.top_margin );
+                    AttrFlags.top_margin = true;
                     break;
-                case   e_left_margin:
-                    cvterr = i_space_unit( p, curr,
+                case e_left_margin:
+                    if( AttrFlags.left_margin ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.page.left_margin );
+                    AttrFlags.left_margin = true;
                     break;
-                case   e_right_margin:
-                    cvterr = i_space_unit( p, curr,
+                case e_right_margin:
+                    if( AttrFlags.right_margin ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.page.right_margin );
+                    AttrFlags.right_margin = true;
                     break;
-                case   e_depth:
-                    cvterr = i_space_unit( p, curr, &layout_work.page.depth );
+                case e_depth:
+                    if( AttrFlags.depth ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.page.depth );
+                    AttrFlags.depth = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get one with value
     }
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
+}
+
+
+/***************************************************************************/
+/*   :PAGE   output  page attribute values                                 */
+/***************************************************************************/
+void    put_lay_page( FILE *fp, layout_data * lay )
+{
+    int             k;
+    lay_att         curr;
+    su          *   units;
+
+    fprintf( fp, ":PAGE\n" );
+
+    for( k = 0; k < TABLE_SIZE( page_att ); k++ ) {
+        curr = page_att[k];
+        switch( curr ) {
+        case e_top_margin:
+            units = &(lay->page.top_margin);
+            break;
+        case e_left_margin:
+            units = &(lay->page.left_margin);
+            break;
+        case e_right_margin:
+            units = &(lay->page.right_margin);
+            break;
+        case e_depth:
+            units = &(lay->page.depth);
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+        o_space_unit( fp, curr, units );
+    }
 }

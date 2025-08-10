@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'strip(                                        */
@@ -51,93 +53,74 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   pa;
-    char            *   pe;
-    char                stripchar;
-    char                type;
+    tok_type        string;
+    char            stripchar;
+    char            typechar;
 
-    if( (parmcount < 1) || (parmcount > 3) ) {
-        return( neg );
-    }
+    if( parmcount < 1
+      || parmcount > 3 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
-
-    unquote_if_quoted( &pval, &pend );
-
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    stripchar = ' ';                    // default char to delete
-    type      = 'b';                    // default strip both ends
-
-    if( parmcount > 1 ) {               // evalute type
-        if( parms[1].stop > parms[1].start ) {// type
-            pa  = parms[1].start;
-            pe  = parms[1].stop;
-
-            unquote_if_quoted( &pa, &pe );
-            type = tolower( *pa );
-
-            switch( type ) {
-            case   'b':
-            case   'l':
-            case   't':
+    string = parms[0].arg;
+    if( unquote_arg( &string ) > 0 ) {    // null string nothing to do
+        typechar  = 'B';                        // default strip both ends
+        if( parmcount > 1 ) {
+            tok_type type = parms[1].arg;       // evalute type
+            if( unquote_arg( &type ) > 0 ) {
+                typechar = my_toupper( *type.s );
+            }
+            switch( typechar ) {
+            case 'B':
+            case 'L':
+            case 'T':
                 // type value is valid do nothing
                 break;
             default:
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "2 (type)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_exit_c( ERR_FUNC_PARM, "2 (type)" );
+                    /* never return */
                 }
-                return( neg );
-                break;
+                return( CC_neg );
             }
         }
-    }
 
-    if( parmcount > 2 ) {               // stripchar
-        if( parms[2].stop > parms[2].start ) {
-            pa  = parms[2].start;
-            pe  = parms[2].stop;
-
-            unquote_if_quoted( &pa, &pe );
-            stripchar = *pa;
-        }
-    }
-
-    if( type != 't' ) {                 // strip leading requested
-        for( ; pval < pend; pval++ ) {
-            if( *pval != stripchar ) {
-                break;
+        stripchar = ' ';                    // default char to delete
+        if( parmcount > 2 ) {               // stripchar
+            tok_type strip = parms[2].arg;
+            if( unquote_arg( &strip ) > 0 ) {
+                stripchar = *strip.s;
             }
         }
-    }
-
-    for( ; pval < pend; pval++ ) {
-        if( ressize <= 0 ) {
-            break;
+        /*
+         * strip leading requested
+         */
+        if( typechar != 'T' ) {
+            for( ; string.s < string.e; string.s++ ) {
+                if( *string.s != stripchar ) {
+                    break;
+                }
+            }
         }
-        **result = *pval;
-        *result += 1;
-        ressize--;
-    }
-
-    if( type != 'l' ) {                 // strip trailing requested
-        while( *(*result - 1) == stripchar ) {
-            *result -= 1;
+        /*
+         * copy string body
+         */
+        for( ; string.s < string.e && ressize > 0; string.s++ ) {
+            *(*result)++ = *string.s;
+            ressize--;
+        }
+        /*
+         * strip trailing requested
+         */
+        if( typechar != 'L' ) {
+            while( *(*result - 1) == stripchar ) {
+                *result -= 1;
+            }
         }
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

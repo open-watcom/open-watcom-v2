@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'delstr(                                       */
@@ -46,89 +48,81 @@
 /*      &'delstr('abcdef',10) ==> abcdef                                   */
 /***************************************************************************/
 
-condcode    scr_delstr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
+    tok_type        string;
+    int             n;
+    int             length;
+    condcode        cc;
+    int             k;
+    int             string_len;
+    getnum_block    gn;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 2
+      || parmcount > 3 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    string = parms[0].arg;
+    string_len = unquote_arg( &string );
 
-    unquote_if_quoted( &pval, &pend );
+    if( string_len > 0 ) {
+        gn.ignore_blanks = false;
 
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    n   = 0;                            // default start pos
-    gn.ignore_blanks = false;
-
-    if( parms[1].stop > parms[1].start ) {// start pos
-        gn.argstart = parms[1].start;
-        gn.argstop  = parms[1].stop;
-        cc = getnum( &gn );
-        if( (cc != pos) || (gn.result == 0) ) {
-            if( !ProcFlags.suppress_msg ) {
-                g_err( err_func_parm, "2 (startpos)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
-            }
-            return( cc );
-        }
-        n = gn.result - 1;
-    }
-
-    if( parmcount > 2 ) {               // evalute length
-        if( parms[2].stop > parms[2].start ) {// length specified
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+        n = 0;                                  // default start pos
+        if( parms[1].arg.s < parms[1].arg.e ) {// start pos
+            gn.arg = parms[1].arg;
             cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
+            if( (cc != CC_pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (length)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_exit_c( ERR_FUNC_PARM, "2 (startpos)" );
+                    /* never return */
                 }
                 return( cc );
             }
-            len = gn.result;
+            n = gn.result - 1;
         }
-    }
 
-    k = 0;
-    while( (k < n) && (pval < pend) && (ressize > 0) ) {// copy unchanged before startpos
-        **result = *pval++;
-        *result += 1;
-        k++;
-        ressize--;
-    }
-
-    k = 0;
-    while( (k < len) && (pval < pend) ) {  // delete
-        pval++;
-        k++;
-    }
-
-    while( (pval < pend) && (ressize > 0) ) {// copy unchanged
-        **result = *pval++;
-        *result += 1;
-        ressize--;
+        length = string_len;
+        if( parmcount > 2 ) {                       // evalute length
+            if( parms[2].arg.s < parms[2].arg.e ) {// length specified
+                gn.arg = parms[2].arg;
+                cc = getnum( &gn );
+                if( (cc != CC_pos) || (gn.result == 0) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_exit_c( ERR_FUNC_PARM, "3 (length)" );
+                        /* never return */
+                    }
+                    return( cc );
+                }
+                length = gn.result;
+            }
+        }
+        /*
+         * copy unchanged string before startpos
+         */
+        k = 0;
+        while( (k < n) && (string.s < string.e) && (ressize > 0) ) {
+            *(*result)++ = *string.s++;
+            k++;
+            ressize--;
+        }
+        /*
+         * skip (don't copy) deleted characters
+         */
+        while( (length > 0) && (string.s < string.e) ) {
+            string.s++;
+            length--;
+        }
+        /*
+         * copy rest of string (if any)
+         */
+        while( (string.s < string.e) && (ressize > 0) ) {
+            *(*result)++ = *string.s++;
+            ressize--;
+        }
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

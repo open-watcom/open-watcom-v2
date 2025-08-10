@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of sbrk() for DOS, OSI and Windows.
+* Description:  Implementation of sbrk() for DOS and Windows.
 *
 ****************************************************************************/
 
@@ -34,11 +34,12 @@
 #include <stdlib.h>
 #if defined(__WINDOWS_386__)
     #include "windpmi.h"
-#elif defined(__WINDOWS__)
+#elif defined(__WINDOWS_286__)
     #include <windows.h>
 #elif defined(__DOS__)
     #include <dos.h>
     #include "tinyio.h"
+    #include "dpmi.h"
 #endif
 #include "roundmac.h"
 #include "rtstack.h"
@@ -47,7 +48,7 @@
 #include "heap.h"
 
 
-#if defined( __DOS__ ) && !defined( __CALL21__ )
+#if defined( __DOS__ )
 
 #ifdef _M_I86
 
@@ -70,22 +71,23 @@ extern  unsigned short  GetDS( void );
 extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo = \
         "mov    ah,0edH"    \
-        "int 21h"           \
+        __INT_21            \
         "shl    eax,31"     \
         "mov    ax,di"      \
     __parm __caller     [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx __edx __esi __ebx __edi]
 
-extern  int SegmentLimit( void );
-#pragma aux SegmentLimit = \
-        "xor    eax,eax"    \
-        "mov    ax,ds"      \
-        "lsl    eax,ax"     \
-        "inc    eax"        \
-    __parm __caller     [] \
+extern void *CodeBuilderAlloc( unsigned );
+#pragma aux CodeBuilderAlloc = \
+        "mov  eax,80004800h" \
+        __INT_21        \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "and  eax,ebx"  \
+    __parm __caller     [__ebx] \
     __value             [__eax] \
-    __modify __exact    [__eax]
+    __modify __exact    [__eax __ebx]
 
 #endif
 
@@ -96,12 +98,12 @@ extern  int SegmentLimit( void );
 _WCRTLINK void_nptr sbrk( int increment )
 {
   #if defined( _M_I86 )
-    HANDLE h;
+    HANDLE hmem;
 
     if( increment > 0 ) {
-        h = LocalAlloc( LMEM_FIXED, increment );
-        if( h != NULL ) {
-            return( (void_nptr)h );
+        hmem = LocalAlloc( LMEM_FIXED, increment );
+        if( hmem != NULL ) {
+            return( (void_nptr)hmem );
         }
         _RWD_errno = ENOMEM;
     } else {
@@ -146,7 +148,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
             num_of_paras = 0x0FFFFFFF;
         parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( TINY_ERROR( TinySetBlock( num_of_paras, parent & 0xffff ) ) ) {
+            if( TINY_ERROR( TinySetBlock( parent & 0xffff, num_of_paras ) ) ) {
                 _RWD_errno = ENOMEM;
                 return( (void_nptr)-1 );
             }
@@ -161,7 +163,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         }
     }
   #endif
-    if( TINY_ERROR( TinySetBlock( num_of_paras, segm ) ) ) {
+    if( TINY_ERROR( TinySetBlock( segm, num_of_paras ) ) ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
@@ -174,15 +176,23 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 _WCRTLINK void_nptr sbrk( int increment )
 {
   #ifdef __386__
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( _IsRationalZeroBase()
+      || _IsCodeBuilder() ) {
         void_nptr   cstg;
 
         if( increment > 0 ) {
             increment = __ROUND_UP_SIZE_4K( increment );
             if( _IsRational() ) {
-                cstg = TinyDPMIAlloc( increment );
+                dpmi_mem_block  dpmimem;
+
+                if( DPMIAllocateMemoryBlock( &dpmimem, increment ) ) {
+                    cstg = NULL;
+                } else {
+                    cstg = (void_nptr)dpmimem.linear;
+                    ((dpmi_hdr *)dpmimem.linear)->dpmi_handle = dpmimem.handle;
+                }
             } else {
-                cstg = TinyCBAlloc( increment );
+                cstg = CodeBuilderAlloc( increment );
             }
             if( cstg == NULL ) {
                 _RWD_errno = ENOMEM;
@@ -194,7 +204,7 @@ _WCRTLINK void_nptr sbrk( int increment )
         }
         return( cstg );
     } else if( _IsPharLap() ) {
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimitB() + 1;
     }
   #endif
     return( __brk( _curbrk + increment ) );

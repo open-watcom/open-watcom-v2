@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "pmmenu.rh"
 
 
-int _MessageLoop( BOOL doexit )
+int _MessageLoop( bool doexit )
 //=============================
 {
     QMSG        msg;
@@ -62,7 +62,7 @@ int _MessageLoop( BOOL doexit )
     return( rc );
 }
 
-int _BlockingMessageLoop( BOOL doexit )
+int _BlockingMessageLoop( bool doexit )
 //=====================================
 {
     int         rc;
@@ -81,33 +81,33 @@ int _BlockingMessageLoop( BOOL doexit )
     return( _MessageLoop( doexit ) );
 }
 
-int     _SetConTitle( LPWDATA w, const char *title )
+bool    _SetConTitle( LPWDATA w, const char *title )
 //==================================================
 {
-    return( WinSetWindowText( w->frame, title ) );
+    return( WinSetWindowText( w->frame, title ) != 0 );
 }
 
-int     _SetAppTitle( const char *title )
+bool    _SetAppTitle( const char *title )
 //=======================================
 {
-    return( WinSetWindowText( _MainFrameWindow, title ) );
+    return( WinSetWindowText( _MainFrameWindow, title ) != 0 );
 }
 
-int     _ShutDown( void )
+bool    _ShutDown( void )
 //=======================
 {
     WinSetWindowPos( _MainFrameWindow, 0, 0, 0, 0, 0, SWP_MINIMIZE );
     WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
-    return( 0 );
+    return( false );
 }
 
-int     _CloseWindow( LPWDATA w )
+bool    _CloseWindow( LPWDATA w )
 //===============================
 {
     if( w->destroy ) {
         WinSendMsg( w->hwnd, WM_CLOSE, 0, 0 );
     }
-    return( 0 );
+    return( false );
 }
 
 void    _NewCursor( LPWDATA w, cursors type )
@@ -116,7 +116,7 @@ void    _NewCursor( LPWDATA w, cursors type )
 {
     if( w->hascursor ) {
         WinDestroyCursor( w->hwnd );
-        w->hascursor = FALSE;
+        w->hascursor = false;
     }
     if( type == KILL_CURSOR )
         return;
@@ -125,12 +125,12 @@ void    _NewCursor( LPWDATA w, cursors type )
     case SMALL_CURSOR:
         WinCreateCursor( w->hwnd, 0, 0, 0, w->ychar - SPACE_BETWEEN_LINES,
                          CURSOR_SOLID | CURSOR_FLASH, NULL );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case FAT_CURSOR:
         WinCreateCursor( w->hwnd, 0, 0, 4, w->ychar - SPACE_BETWEEN_LINES,
                          CURSOR_SOLID | CURSOR_FLASH, NULL );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case ORIGINAL_CURSOR:
         break;
@@ -163,11 +163,11 @@ void    _DisplayCursor( LPWDATA w )
 }
 
 
-void    _SetInputMode( LPWDATA w, int val )
-//=========================================
+void    _SetInputMode( LPWDATA w, bool inpmode )
+//==============================================
 // set whether or not we are in input mode
 {
-    w->InputMode = val;
+    w->InputMode = inpmode;
 }
 
 
@@ -254,9 +254,10 @@ void _ResizeWindows( void )
     LPWDATA     w;
     SWP         swps;
     SWP         mwps;
-    int         resize = FALSE;
+    bool        resize;
 
     WinQueryWindowPos( _MainFrameWindow, &mwps );
+    resize = false;
     for( i = 0; i < _MainWindowData->window_count; i++ ) {
         w = _MainWindowData->windows[i];
         WinQueryWindowPos( w->frame, &swps );
@@ -269,12 +270,12 @@ void _ResizeWindows( void )
             if( ( swps.x + swps.cx ) > mwps.cx ) {
                 swps.cx = mwps.cx - ( place * w->xchar ) + 4;
                 swps.x = ( place * w->xchar ) - 4;
-                resize = TRUE;
+                resize = true;
             }
             if( ( swps.y + swps.cy ) > mwps.cy ) {
                 swps.cy = mwps.cy - ( ( place + 3 ) * w->ychar );
                 swps.y = 0;
-                resize = TRUE;
+                resize = true;
             }
             if( resize ) {
                 place += 4;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +135,7 @@ int main( int argc, char **argv )
         printEnv( environ );
         MemFree( argv );
         return( 0 );
-    } else if( !strcmp( argv[1], "-" ) ) {
+    } else if( strcmp( argv[1], "-" ) == 0 ) {
         envptr  = (char **)MemAlloc( argc * sizeof( char * ) );
         *envptr = NULL;
         alloc   = 1;

@@ -220,7 +220,7 @@ nomapfile = 1
 !ifdef $(proj_name)_dos_extender
 dos_extender = $($(proj_name)_dos_extender)
 !else ifndef dos_extender
-dos_extender = causeway #dos4g
+dos_extender = dos4g #causeway
 !endif
 
 !ifeq debugfmt codeview
@@ -893,6 +893,7 @@ incl_file_opts  = -fi
 rcbind  = $(noecho)*bwrc -q -k
 wstrip  = $(noecho)bwstrip
 wbind   = $(noecho)bwbind
+yacc    = $(noecho)byacc
 
 !include local.mif
 

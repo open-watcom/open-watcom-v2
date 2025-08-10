@@ -76,16 +76,12 @@
 ****************************************************************************/
 
 #ifndef COPFILE_H_INCLUDED
-#define COPFILE_H_INCLUDED
 
-typedef uint8_t     font_number;
-//typedef long        font_number;
-typedef int8_t      spacing_line;
-//typedef long        spacing_line;
-typedef uint32_t    spacing_bu;
-//typedef long        spacing_bu;
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 
-#define SPACING_BU_MAX  _UI32_MAX
+typedef uint8_t font_number;
 
 /* struct declarations. */
 
@@ -106,8 +102,8 @@ typedef struct {
 /* To hold the data extracted from an OuttransData struct. */
 
 typedef struct {
-    uint8_t *       data;
     uint8_t         count;
+    uint8_t *       data;
 } translation;
 
 /* To hold the data extracted from an OuttransBlock struct.
@@ -122,8 +118,8 @@ typedef struct {
 /* To hold the data extracted from a CodeBlock struct. */
 
 typedef struct {
-    char                *text;
     uint16_t            count;
+    char                *text;
 } code_text;
 
 /* These structs are unique to the top-level struct cop_device. */
@@ -133,7 +129,7 @@ typedef struct {
  * These structs have two font fields: font_name and font.
  *
  * For the UnderscoreBlock only, if specified_font is false, then both font_name
- * and font number are to be ignored and whatever font is in use when the
+ * and font are to be ignored and whatever font is in use when the
  * underscore character is needed is to be used.
  *
  * If font_name is NULL, then font_name is to be ignored and font
@@ -172,9 +168,9 @@ typedef struct {
 
 typedef struct {
     char                *font_name;
-    bool                specified_font;
     font_number         font;
     char                underscore_char;
+    bool                specified_font;
 } underscore_block;
 
 /* To hold the data from the DefaultFont struct. */
@@ -189,8 +185,8 @@ typedef struct {
 /* To hold the data from the DefaultfontBlock struct. */
 
 typedef struct {
-    default_font *      fonts;
     uint16_t            font_count;
+    default_font *      fonts;
 } defaultfont_block;
 
 /* To hold the data from the PauseBlock struct. */
@@ -207,15 +203,15 @@ typedef struct {
 typedef struct {
     char *              font_name;
     char *              font_switch;
-    code_text *         font_pause;
     uint8_t             resident;
+    code_text *         font_pause;
 } device_font;
 
 /* To hold the data from the DevicefontBlock struct. */
 
 typedef struct {
-    device_font *       fonts;
     uint16_t            font_count;
+    device_font *       fonts;
 } devicefont_block;
 
 /* These structs are unique to the top-level struct cop_driver. */
@@ -233,17 +229,17 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
-    uint16_t            count;
     bool                is_fontvalue;
+    uint16_t            count;
+    char                *text;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
 /* The field names do not all correspond to those in the Wiki. */
 
 typedef struct {
-    init_text *         codeblock;
     uint16_t            count;
+    init_text *         codeblock;
 } init_block;
 
 /* To hold the data from the InitFuncs struct.
@@ -278,16 +274,16 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
     uint16_t            advance;
     uint16_t            count;
+    char                *text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
 
 typedef struct {
-    newline_block *     newlineblocks;
     uint16_t            count;
+    newline_block *     newlineblocks;
 } newline_funcs;
 
 /* To hold the data from the FontswitchBlock struct.
@@ -301,8 +297,6 @@ typedef struct {
 
 typedef struct {
     char *              type;
-    code_text *         startvalue;
-    code_text *         endvalue;
     bool                do_always;
     bool                default_width_flag;
     bool                font_height_flag;
@@ -312,13 +306,15 @@ typedef struct {
     bool                font_space_flag;
     bool                line_height_flag;
     bool                line_space_flag;
+    code_text *         startvalue;
+    code_text *         endvalue;
 } fontswitch_block;
 
 /* To hold the data extracted from a FontswitchFuncs struct. */
 
 typedef struct {
-    fontswitch_block *  fontswitchblocks;
     uint16_t            count;
+    fontswitch_block *  fontswitchblocks;
 } fontswitch_funcs;
 
 /* To hold some of the data extracted from a FontstyleFuncs struct.
@@ -343,11 +339,11 @@ typedef struct {
  */
 
 typedef struct {
+    uint16_t            line_passes;
     char *              type;
     code_text *         startvalue;
     code_text *         endvalue;
     line_proc *         lineprocs;
-    uint16_t            line_passes;
 } fontstyle_block;
 
 /* To hold the data extracted from a FontstyleGroup struct.
@@ -356,8 +352,8 @@ typedef struct {
  */
 
 typedef struct {
-    fontstyle_block *   fontstyleblocks;
     uint16_t            count;
+    fontstyle_block *   fontstyleblocks;
 } fontstyle_group;
 
 /* To hold the data extracted from an HlineBlock, a VlineBlock, or a DboxBlock
@@ -367,9 +363,9 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
-    uint32_t            thickness;
+    unsigned            thickness;
     uint16_t            count;
+    char                *text;
 } line_block;
 
 /* This struct is unique to the top-level struct cop_font. */
@@ -379,7 +375,7 @@ typedef struct {
  */
 
 typedef struct {
-    uint32_t            table[0x100];
+    unsigned            table[0x100];
 } width_block;
 
 /* These are the top-level structs. These are the only structs intended to
@@ -401,21 +397,21 @@ typedef struct {
  */
 
 typedef struct {
-    size_t              allocated_size;
-    size_t              next_offset;
+    unsigned            allocated_size;
+    unsigned            next_offset;
     /* The Attributes */
     char            *   driver_name;
     char            *   output_name;
     char            *   output_extension;
-    uint32_t            page_width;
-    spacing_bu          page_depth;
-    uint32_t            horizontal_base_units;
-    uint32_t            vertical_base_units;
+    unsigned            page_width;
+    unsigned            page_depth;
+    unsigned            horizontal_base_units;
+    unsigned            vertical_base_units;
     /* PagegeometryBlock */
-    uint32_t            x_start;
-    uint32_t            y_start;
-    uint32_t            x_offset;
-    uint32_t            y_offset;
+    unsigned            x_start;
+    unsigned            y_start;
+    unsigned            x_offset;
+    unsigned            y_offset;
     /* BoxBlock */
     box_block           box;
     /* UnderscoreBlock */
@@ -431,12 +427,13 @@ typedef struct {
     devicefont_block    devicefonts;
 } cop_device;
 
-#define OUT_DEV_MAP_OFF(x)      (void *)((char *)out_device + (size_t)x)
-#define OUT_DEV_CUR_PTR()       (void *)((char *)out_device + (size_t)out_device->next_offset)
-#define OUT_DEV_CUR_OFF()       (void *)(out_device->next_offset)
-#define OUT_DEV_ADD_OFF(x)      out_device->next_offset += x
-#define OUT_DEV_REMAP_MBR(x)    out_device->x = (void *)((char *)out_device + (size_t)out_device->x)
-#define OUT_DEV_EXPAND_CHK(x)   (out_device->allocated_size < (out_device->next_offset + x))
+#define OUT_DEV_MAP_OFF(x)      (void *)((char *)out_device + (unsigned)(uintptr_t)(x))
+#define OUT_DEV_SET_OFF(x,s) \
+    (void *)((char *)out_device + out_device->next_offset); \
+    x = (void *)(uintptr_t)out_device->next_offset; \
+    out_device->next_offset += s
+#define OUT_DEV_REMAP_MBR(x)    out_device->x = OUT_DEV_MAP_OFF(out_device->x)
+#define OUT_DEV_EXPAND_CHK(s)   (out_device->allocated_size < (out_device->next_offset + s))
 
 /* This struct embodies the binary form of the :DRIVER block.
  *
@@ -444,15 +441,14 @@ typedef struct {
  */
 
 typedef struct {
-    size_t              allocated_size;
-    size_t              next_offset;
+    unsigned            allocated_size;
+    unsigned            next_offset;
     /* The Attributes */
     char            *   rec_spec;
     char                fill_char;
     /* PageAddressBlock */
     uint8_t             x_positive;
     uint8_t             y_positive;
-    int                 :0;
     /* InitFuncs */
     init_funcs          inits;
     /* FinishFuncs */
@@ -476,19 +472,21 @@ typedef struct {
     line_block          dbox;
 } cop_driver;
 
-#define OUT_DRV_MAP_OFF(x)      (void *)((char *)out_driver + (size_t)x)
-#define OUT_DRV_CUR_PTR()       (void *)((char *)out_driver + (size_t)out_driver->next_offset)
-#define OUT_DRV_CUR_OFF()       ((void *)out_driver->next_offset)
-#define OUT_DRV_ADD_OFF(x)      out_driver->next_offset += x
-#define OUT_DRV_REMAP_MBR(x)    out_driver->x = (void *)((char *)out_driver + (size_t)out_driver->x)
-#define OUT_DRV_EXPAND_CHK(x)   (out_driver->allocated_size < (out_driver->next_offset + x))
+#define OUT_DRV_MAP_OFF(x)      (void *)((char *)out_driver + (unsigned)(uintptr_t)(x))
+#define OUT_DRV_SET_OFF(x,s) \
+    (void *)((char *)out_driver + out_driver->next_offset); \
+    x = (void *)(uintptr_t)out_driver->next_offset; \
+    out_driver->next_offset += s
+#define OUT_DRV_REMAP_MBR(x)    out_driver->x = OUT_DRV_MAP_OFF(out_driver->x)
+#define OUT_DRV_EXPAND_CHK(s)   (out_driver->allocated_size < (out_driver->next_offset + s))
 
-#define IN_DRV_MAP_OFF(x)       (void *)((char *)in_driver + (size_t)x)
-#define IN_DRV_CUR_PTR()        (void *)((char *)in_driver + (size_t)in_driver->next_offset)
-#define IN_DRV_CUR_OFF()        ((void *)in_driver->next_offset)
-#define IN_DRV_ADD_OFF(x)       in_driver->next_offset += x
-#define IN_DRV_REMAP_MBR(x)     in_driver->x = (void *)((char *)in_driver + (size_t)in_driver->x)
-#define IN_DRV_EXPAND_CHK(x)    (in_driver->allocated_size < (in_driver->next_offset + x))
+#define IN_DRV_MAP_OFF(x)       (void *)((char *)in_driver + (unsigned)(uintptr_t)(x))
+#define IN_DRV_SET_OFF(x,s) \
+    (void *)((char *)in_driver + in_driver->next_offset); \
+    x = (void *)(uintptr_t)in_driver->next_offset; \
+    in_driver->next_offset += s
+#define IN_DRV_REMAP_MBR(x)     in_driver->x = IN_DRV_MAP_OFF(in_driver->x)
+#define IN_DRV_EXPAND_CHK(s)    (in_driver->allocated_size < (in_driver->next_offset + s))
 #define IN_DRV_GET_OFF(x)       ((char *)x - (char *)in_driver)
 
 /* This struct embodies the binary form of the :FONT block.
@@ -497,31 +495,32 @@ typedef struct {
 
 typedef struct cop_font {
     struct cop_font *   next_font;
-    size_t              allocated_size;
-    size_t              next_offset;
+    unsigned            allocated_size;
+    unsigned            next_offset;
     /* For matching by defined name. */
     char            *   defined_name;
     /* The Attributes */
     char            *   font_out_name1;
     char            *   font_out_name2;
-    uint32_t            line_height;
-    uint32_t            line_space;
-    uint32_t            scale_basis;
-    uint32_t            scale_min;
-    uint32_t            scale_max;
-    uint32_t            char_width;
+    unsigned            line_height;
+    unsigned            line_space;
+    unsigned            scale_basis;
+    unsigned            scale_min;
+    unsigned            scale_max;
+    unsigned            char_width;
     /* CharacterDescriptionBlock */
     intrans_block   *   intrans;
     outtrans_block  *   outtrans;
     width_block     *   width;
 } cop_font;
 
-#define OUT_FONT_MAP_OFF(x)     (void *)((char *)out_font + (size_t)x)
-#define OUT_FONT_CUR_PTR()      (void *)((char *)out_font + (size_t)out_font->next_offset)
-#define OUT_FONT_CUR_OFF()      (void *)(out_font->next_offset)
-#define OUT_FONT_ADD_OFF(x)     out_font->next_offset += x
-#define OUT_FONT_REMAP_MBR(x)   out_font->x = (void *)((char *)out_font + (size_t)out_font->x)
-#define OUT_FONT_EXPAND_CHK(x)  (out_font->allocated_size < (out_font->next_offset + x))
+#define OUT_FONT_MAP_OFF(x)     (void *)((char *)out_font + (unsigned)(uintptr_t)(void *)(x))
+#define OUT_FONT_SET_OFF(x,s) \
+    (void *)((char *)out_font + out_font->next_offset); \
+    x = (void *)(uintptr_t)out_font->next_offset; \
+    out_font->next_offset += s
+#define OUT_FONT_REMAP_MBR(x)   out_font->x = OUT_FONT_MAP_OFF(out_font->x)
+#define OUT_FONT_EXPAND_CHK(s)  (out_font->allocated_size < (out_font->next_offset + s))
 
 /* This struct was originally developed for use with the output buffer. It's
  * use has since expanded. current records the current write position, length
@@ -530,33 +529,36 @@ typedef struct cop_font {
  */
 
 typedef struct {
-    size_t              current;
-    size_t              length;
     char                *text;
+    unsigned            current;
+    unsigned            size;
 } record_buffer;
 
 /* This struct implements the wgml_font struct in the Wiki. */
 
 typedef struct {
-    cop_font            *   bin_font;
-    fontswitch_block    *   font_switch;
-    code_text           *   font_pause;
-    fontstyle_block     *   font_style;
-    outtrans_block      *   outtrans;
-    uint32_t                default_width;
-    uint32_t                em_base;
-    uint32_t                font_height;
-    uint32_t                font_space;
-    uint32_t                line_height;
-    uint32_t                line_space;
-    uint32_t                spc_width;
-    width_block             width;
-    char                    font_resident;
-    unsigned char           shift_count;
-    char                    shift_height[4];
+    cop_font            *bin_font;
+    fontswitch_block    *font_switch;
+    code_text           *font_pause;
+    fontstyle_block     *font_style;
+    outtrans_block      *outtrans;
+    unsigned            default_width;
+    unsigned            em_base;
+    unsigned            font_height;
+    unsigned            font_space;
+    unsigned            line_height;
+    unsigned            line_space;
+    unsigned            spc_width;
+    width_block         width;
+    char                font_resident;
+    unsigned char       shift_count;
+    char                shift_height[4];
 } wgml_font;
 
 #endif  /* COPFILE_H_INCLUDED */
+
+#if !defined( COPFILE_H_INCLUDED ) || defined( global )
+#define COPFILE_H_INCLUDED
 
 /* Variable declarations. */
 
@@ -572,3 +574,6 @@ global wgml_font    *wgml_fonts;     // the available fonts
 /* Reset so can be reused with other headers. */
 
 #undef global
+
+#endif  /* COPFILE_H_INCLUDED */
+

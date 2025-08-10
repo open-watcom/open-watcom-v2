@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,44 +33,44 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 #include <string.h>
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 _zip_set_name(struct zip *za, int idx, const char *name)
 {
     char *s;
     int i;
-    
+
     if (idx < 0 || idx >= za->nentry || name == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-	return -1;
+        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+        return -1;
     }
 
     if ((i=_zip_name_locate(za, name, 0, NULL)) != -1 && i != idx) {
-	_zip_error_set(&za->error, ZIP_ER_EXISTS, 0);
-	return -1;
+        _zip_error_set(&za->error, ZIP_ER_EXISTS, 0);
+        return -1;
     }
 
     /* no effective name change */
     if (i == idx)
-	return 0;
-    
-    if ((s=strdup(name)) == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	return -1;
-    }
-    
-    if (za->entry[idx].state == ZIP_ST_UNCHANGED) 
-	za->entry[idx].state = ZIP_ST_RENAMED;
+        return 0;
 
-    free(za->entry[idx].ch_filename);
+    if ((s=strdup(name)) == NULL) {
+        _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+        return -1;
+    }
+
+    if (za->entry[idx].state == ZIP_ST_UNCHANGED)
+        za->entry[idx].state = ZIP_ST_RENAMED;
+
+    ZIP_FREE(za->entry[idx].ch_filename);
     za->entry[idx].ch_filename = s;
 
     return 0;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include "chbffile.h"
 #include "fileinfo.h"
 
-static const char * ElfFile::_drSectNames[ DR_DEBUG_NUM_SECTS ] = {
+static const char * ElfFile::_drSectNames[DR_DEBUG_NUM_SECTS] = {
     ".debug_info",
     ".debug_pubnames",
     ".debug_aranges",
@@ -63,7 +64,7 @@ static const char * ComponentSignature = "\144\144\001WBRComp";
 #pragma pack(__push, 1);
 
 struct ComponentHeader {
-    char    signature[ COMP_HDR_SIG_LEN ];
+    char    signature[COMP_HDR_SIG_LEN];
     short   numItms;
 };
 
@@ -118,7 +119,7 @@ ElfFile::~ElfFile()
 //-----------------
 {
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        ComponentFile::freeComponent( (*_components)[ i ] );
+        ComponentFile::freeComponent( (*_components)[i] );
     }
     _components->clear();
     delete _components;
@@ -194,15 +195,15 @@ bool ElfFile::addSection( const char * name, void * h )
     Elf32_Shdr * hdr = (Elf32_Shdr *) h;
 
     for( int i = DR_DEBUG_NUM_SECTS; i > 0; i -= 1 ) {
-        if( !strcmp( name, _drSectNames[ i - 1 ] ) ) {
-            _drSections[ i - 1 ] = hdr->sh_offset;
-            _drSizes[ i - 1 ] = hdr->sh_size;
+        if( strcmp( name, _drSectNames[i - 1] ) == 0 ) {
+            _drSections[i - 1] = hdr->sh_offset;
+            _drSizes[i - 1] = hdr->sh_size;
 
             return true;
         }
     }
 
-    if( !strcmp( name, _componentSectName ) ) {
+    if( strcmp( name, _componentSectName ) == 0 ) {
         readComponentSect( hdr->sh_offset, hdr->sh_size );
         return true;
     }
@@ -220,7 +221,7 @@ void ElfFile::writeStringSect()
 
 
     for( i = 0; i < _sectNames->entries(); i += 1 ) {
-        str = (*_sectNames)[ i ];
+        str = (*_sectNames)[i];
         _file->write( str, strlen( str ) + 1 );
     }
 
@@ -241,14 +242,14 @@ void ElfFile::seekSect( dr_section sect, long pos )
 //-------------------------------------------------
 {
     assert( _drSections[sect] != 0 );
-    _file->seek( pos + _drSections[ sect ], SEEK_SET );
+    _file->seek( pos + _drSections[sect], SEEK_SET );
 }
 
 long ElfFile::getSectOff( dr_section sect )
 //-----------------------------------------
 {
     assert( _drSections[sect] != 0 );
-    return _file->tell() - _drSections[ sect ];
+    return _file->tell() - _drSections[sect];
 }
 
 void ElfFile::setComponentFiles( CompFileList list )
@@ -268,7 +269,7 @@ void ElfFile::addComponentFile( const char * fileName, bool enable )
     // NYI -- use the WCVector find!
     for( int i = 0; i < _components->entries(); i += 1 ) {
         if( strcmp( (*_components)[i]->name, fileName ) == 0 ) {
-            comp = (*_components)[ i ];
+            comp = (*_components)[i];
             found = true;
         }
     }
@@ -321,7 +322,7 @@ void ElfFile::writeComponentSect()
     _file->write( &hdr, sizeof( ComponentHeader ) );
 
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        curr = (*_components)[ i ];
+        curr = (*_components)[i];
         _file->write( curr, sizeof( ComponentFile ) + curr->nameLen - 1 );
     }
 
@@ -332,8 +333,8 @@ void ElfFile::getEnabledComponents( CompFileList list )
 //-----------------------------------------------------
 {
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        if( (*_components)[ i ]->enabled ) {
-            list->append( (*_components)[ i ] );
+        if( (*_components)[i]->enabled ) {
+            list->append( (*_components)[i] );
         }
     }
 }
@@ -342,8 +343,8 @@ void ElfFile::getDisabledComponents( CompFileList list )
 //------------------------------------------------------
 {
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        if( !(*_components)[ i ]->enabled ) {
-            list->append( (*_components)[ i ] );
+        if( !(*_components)[i]->enabled ) {
+            list->append( (*_components)[i] );
         }
     }
 }
@@ -352,7 +353,7 @@ void ElfFile::resetComponents()
 //-----------------------------
 {
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        ComponentFile::freeComponent( (*_components)[ i ] );
+        ComponentFile::freeComponent( (*_components)[i] );
     }
 
     _components->clear();
@@ -382,7 +383,7 @@ long ElfFile::seek( const char * sect, long offset )
         return 0;       // <------------ early return for bad sect
     }
 
-    offset += (*_sections)[ index ]->sh_offset;
+    offset += (*_sections)[index]->sh_offset;
 
     return _file->seek( offset, SEEK_SET );
 }
@@ -400,7 +401,7 @@ long ElfFile::tell( const char * sect )
     }
 
     offset = _file->tell();
-    offset -= (*_sections)[ index ]->sh_offset;
+    offset -= (*_sections)[index]->sh_offset;
 
     return offset;
 }
@@ -416,9 +417,9 @@ void ElfFile::startWrite()
 
     memset( &_elfHdr, 0, sizeof( Elf32_Ehdr ) );
     memcpy( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN );
-    _elfHdr.e_ident[ EI_CLASS ] =   ELFCLASS32;
-    _elfHdr.e_ident[ EI_DATA ] =    ELFDATA2LSB;
-    _elfHdr.e_ident[ EI_VERSION ] = EV_CURRENT;
+    _elfHdr.e_ident[EI_CLASS] = ELFCLASS32;
+    _elfHdr.e_ident[EI_DATA] = ELFDATA2LSB;
+    _elfHdr.e_ident[EI_VERSION] = EV_CURRENT;
 
     _elfHdr.e_type = ET_DYN;        // shared object file
     _elfHdr.e_machine = EM_386;
@@ -441,15 +442,15 @@ void ElfFile::startWrite()
     _sectNameOff += 1;          // strlen( "" );
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        _drSections[ i ] = 0;
-        _drSizes[ i ] = 0;
+        _drSections[i] = 0;
+        _drSizes[i] = 0;
     }
 }
 
 void ElfFile::startWriteSect( dr_section sect )
 //---------------------------------------------
 {
-    startWriteSect( _drSectNames[ sect ] );
+    startWriteSect( _drSectNames[sect] );
 }
 
 void ElfFile::startWriteSect( const char * name, long sh_type )
@@ -472,8 +473,8 @@ void ElfFile::startWriteSect( const char * name, long sh_type )
     _sectNames->append( name );
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( !strcmp( _drSectNames[ i ], name ) ) {
-            _drSections[ i ] = _file->tell();
+        if( strcmp( _drSectNames[i], name ) == 0 ) {
+            _drSections[i] = _file->tell();
             break;
         }
     }
@@ -485,14 +486,14 @@ void ElfFile::endWriteSect()
     SectHdr *   shdr;
     int         i;
 
-    shdr = (*_sections)[ _sections->entries() - 1 ];
+    shdr = (*_sections)[_sections->entries() - 1];
 
     _file->seek( 0, SEEK_END );
     shdr->sh_size = _file->tell() - shdr->sh_offset;
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( !strcmp( _drSectNames[ i ], _sectNames->last() ) ) {
-            _drSizes[ i ] = _file->st_size() - _drSections[ i ];
+        if( strcmp( _drSectNames[i], _sectNames->last() ) == 0 ) {
+            _drSizes[i] = _file->st_size() - _drSections[i];
             break;
         }
     }
@@ -511,7 +512,7 @@ void ElfFile::endWrite()
     _elfHdr.e_shstrndx = (uint_16)( _sections->entries() - 1 );
 
     for( i = 0; i < _sections->entries(); i += 1 ) {
-        _file->write( (*_sections)[ i ], sizeof( Elf32_Shdr ) );
+        _file->write( (*_sections)[i], sizeof( Elf32_Shdr ) );
     }
 
     _file->seek( 0, SEEK_SET );

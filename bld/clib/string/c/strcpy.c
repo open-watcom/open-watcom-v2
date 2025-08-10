@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 #undef  strcpy
 
-extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
+extern CHAR_TYPE *__strcpy( CHAR_TYPE *s, const CHAR_TYPE *t );
 #if defined( _M_I86 )
  #if defined(__SMALL_DATA__)
   #pragma aux __strcpy = \
@@ -66,14 +67,14 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
         "jne short L1"  \
         "je short L3"   \
     "L2: mov  [di],al"  \
-    "L3: pop  ax"       \
+    "L3: pop  di"       \
     __parm              [__di] [__si] \
-    __value             [__ax] \
-    __modify __exact    [__si __di]
+    __value             [__di] \
+    __modify __exact    [__ax __si]
  #else  // compact, large, or huge
   #pragma aux __strcpy = \
-        "push ds"       \
         "push di"       \
+        "push ds"       \
         "mov  ds,dx"    \
         "test si,1"     \
         "je short L1"   \
@@ -96,12 +97,11 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
         "jne short L1"  \
         "je short L3"   \
     "L2: stosb"         \
-    "L3: pop  ax"       \
-        "mov  dx,es"    \
-        "pop  ds"       \
+    "L3: pop  ds"       \
+        "pop  di"       \
     __parm              [__es __di] [__dx __si] \
-    __value             [__dx __ax] \
-    __modify __exact    [__si __di]
+    __value             [__es __di] \
+    __modify __exact    [__ax __si]
  #endif
 #elif defined(__386__)
  #if defined(__SMALL_DATA__)
@@ -120,11 +120,11 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
     "L2: pop  eax"          \
     __parm              [__eax] [__edx] \
     __value             [__eax] \
-    __modify __exact    [__eax __edx __ecx]
+    __modify __exact    [__ecx __edx]
  #else  // compact or large
   #pragma aux __strcpy = \
-        "push ds"           \
         "push edi"          \
+        "push ds"           \
         "mov  ds,edx"       \
         "test esi,1"        \
         "je short L1"       \
@@ -147,12 +147,11 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
         "jne short L1"      \
         "je short L3"       \
     "L2: stosb"             \
-    "L3: pop  eax"          \
-        "mov  edx,es"       \
-        "pop  ds"           \
+    "L3: pop  ds"           \
+        "pop  edi"          \
     __parm              [__es __edi] [__edx __esi] \
-    __value             [__dx __eax] \
-    __modify __exact    [__esi __edi]
+    __value             [__es __edi] \
+    __modify __exact    [__eax __esi]
  #endif
 #else
  /* currently no pragma for non-x86 */
@@ -170,11 +169,10 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
 #if !defined(__WIDECHAR__) && defined(_M_IX86)
     return( __strcpy( s, t ) );
 #else
-    CHAR_TYPE *dst;
+    CHAR_TYPE *p;
 
-    dst = s;
-    while( *dst++ = *t++ )
-        ;
+    for( p = s; (*p++ = *t++) != NULLCHAR; )
+        /* empty */;
     return( s );
 #endif
 }

@@ -33,13 +33,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_unchange(struct zip *za, int idx)
@@ -47,7 +47,7 @@ zip_unchange(struct zip *za, int idx)
     return _zip_unchange(za, idx, 0);
 }
 
-
+
 
 int
 _zip_unchange(struct zip *za, int idx, int allow_duplicates)

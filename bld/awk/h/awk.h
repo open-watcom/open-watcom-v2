@@ -25,6 +25,7 @@ THIS SOFTWARE.
 
 #include <assert.h>
 #include "bool.h"
+#include "wnoret.h"
 
 
 #define DEBUG
@@ -41,7 +42,7 @@ THIS SOFTWARE.
 
 #define RECSIZE     (8 * 1024)      /* sets limit on records, fields, etc., etc. */
 
-#define NOPAT       ((size_t)-1)
+#define NOPAT       (-1)
 
 #define NIL         ((Node *)0)
 
@@ -225,7 +226,7 @@ extern char         inputFS[];      /* FS at time of input, for field splitting 
 extern int          dbg;
 
 extern const char   *patbeg;        /* beginning of pattern matched */
-extern size_t       patlen;         /* length of pattern matched.  set in b.c */
+extern int          patlen;         /* length of pattern matched.  set in b.c */
 
 extern Array        *symtab;
 

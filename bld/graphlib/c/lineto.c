@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _lineto( short x, short y )
    success flag. */
 
 {
-    short               success;        /* line successfully drawn */
+    bool            success;        /* line successfully drawn */
 
     if( _GrProlog() ) {
         success = _L2line( _VtoPhysX( _CurrPos.xcoord ),
@@ -52,7 +53,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _lineto( short x, short y )
         _moveto( x, y );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -60,7 +61,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _lineto( short x, short y )
 Entry1( _LINETO, _lineto ) // alternate entry-point
 
 
-short _WCI86FAR _L2line( short x1, short y1, short x2, short y2 )
+bool _WCI86FAR _L2line( short x1, short y1, short x2, short y2 )
 /*==========================================================
 
    This function draws a line from the current position to the specified
@@ -68,8 +69,8 @@ short _WCI86FAR _L2line( short x1, short y1, short x2, short y2 )
    success flag. */
 
 {
-    short               success;        /* line successfully drawn */
-    short               dx, dy;
+    bool            success;        /* line successfully drawn */
+    short           dx, dy;
 
     success = _L1Line( x1, y1, x2, y2 );
     if( ( _LineStyle != SOLID_LINE ) && _StyleWrap ) {

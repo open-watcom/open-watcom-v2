@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 *
 *  comments are from script-tso.txt
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -66,12 +67,12 @@ void    scr_oc( void )
 {
     char        *   p;
 
-    if( GlobFlags.lastpass ) {
-        p = scan_start;                 // next char after .oc
-        if( *p ) {                      // line operand specified
-            p++;                        // over space
-            if( *p ) {
-                ob_direct_out( p );
+    if( GlobalFlags.lastpass ) {
+        p = g_scandata.s;                 // next char after .oc
+        if( *p != '\0' ) {              // line operand specified
+            SkipSpaces( p );
+            if( *p != '\0' ) {
+                ob_oc( p );
                 if( input_cbs->fmflags & II_research ) {
                     out_msg( p );       // TBD
                     out_msg( "<-.oc.oc.oc\n" ); // TBD
@@ -79,7 +80,7 @@ void    scr_oc( void )
             }
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = g_scandata.e;
     return;
 }
 

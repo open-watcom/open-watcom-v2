@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -26,7 +26,7 @@
 *  ========================================================================
 *
 * Description:  Ctrl-Break, critical error and FPE hooking and handling.
-*                   (DOS and Windows 3.x code)
+*                   (16/32-bit DOS and 16-bit Windows 3.x code)
 *
 ****************************************************************************/
 
@@ -35,23 +35,22 @@
 #include <signal.h>
 #include <string.h>
 #include <dos.h>
+#include "tinyio.h"
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "sigfunc.h"
 #include "_int23.h"
 #include "_ctrlc.h"
+#ifndef _M_I86
+    #include "extender.h"
+    #include "dpmi.h"
+#endif
 
 
 typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
 
-#if defined( __386__ )
- #if defined( __WINDOWS_386__ )
-  #include "tinyio.h"
- #else
-  #include "extender.h"
-  #include "dpmi.h"
-  #include "dpmihost.h"
+#ifndef _M_I86
 
   extern  void pharlap_setvect( unsigned, pfun );
   #pragma aux  pharlap_setvect = \
@@ -59,14 +58,14 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov  ds,ecx"   \
             "mov  cl,al"    \
             "mov  ax,2506h" \
-            "int 21h"       \
+            __INT_21        \
             "pop  ds"       \
         __parm __caller [__al] [__cx __edx]
 
   extern  pfun pharlap_rm_getvect( unsigned );
   #pragma aux  pharlap_rm_getvect = \
             "mov ax,2503h"  \
-            "int 21h"       \
+            __INT_21        \
             "mov cx,bx"     \
             "shr ebx,16"    \
             "mov edx,ebx"   \
@@ -80,7 +79,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "shl ebx,16"    \
             "mov bx,dx"     \
             "mov ax,2505h"  \
-            "int 21h"       \
+            __INT_21        \
         __parm __caller [__cl] [__dx __eax] \
         __modify        [__ebx]
 
@@ -88,7 +87,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
   #pragma aux  pharlap_pm_getvect = \
             "push es"       \
             "mov ax,2502h"  \
-            "int 21h"       \
+            __INT_21        \
             "mov ecx,es"    \
             "pop es"        \
         __parm __caller [__cl] \
@@ -101,7 +100,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov ds,edx"    \
             "mov edx,eax"   \
             "mov ax,2504h"  \
-            "int 21h"       \
+            __INT_21        \
             "pop ds"        \
         __parm __caller [__cl] [__dx __eax]
 
@@ -117,7 +116,6 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
         __value         [__dx __eax] \
         __modify        [__bx __ecx]
 
- #endif
 #endif
 
 static  void    __restore_int( void );
@@ -127,13 +125,18 @@ static  void    __restore_int( void );
 // __restore_int_ctrl_break -> implies only ctrl_break is hooked
 // __restore_int            -> implies both int 23 and ctrl_break are hooked
 
+#ifdef _M_I86
+
 static pfun __old_int23 = 0;
 static pfun __old_int_ctrl_break = 0;
 
-#if defined( __386__ )
+#else
 
+static pfun __old_rm_int23 = 0;
+static pfun __old_rm_int_ctrl_break = 0;
 static pfun __old_pm_int23 = 0;
 static pfun __old_pm_int_ctrl_break = 0;
+
 #define MY_STACK_SIZE 256
 static unsigned int my_stack[MY_STACK_SIZE];
 
@@ -141,7 +144,7 @@ static unsigned int my_stack[MY_STACK_SIZE];
 
 static void _WCINTERRUPT _WCFAR __int23_handler( void )
 {
-#if defined( __386__ )
+#ifndef _M_I86
     unsigned save_stacklow;
     void _WCFAR *save_stack;
 
@@ -155,9 +158,13 @@ static void _WCINTERRUPT _WCFAR __int23_handler( void )
         _enable();
         raise( SIGINT );
     } else {
+#ifdef _M_I86
         _chain_intr( __old_int23 );
+#else
+        _chain_intr( __old_rm_int23 );
+#endif
     }
-#if defined( __386__ )
+#ifndef _M_I86
     set_stack( save_stack );
     _STACKLOW = save_stacklow;
 #endif
@@ -171,7 +178,7 @@ static void _WCINTERRUPT _WCFAR __int23_handler( void )
 
 static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 {
-#if defined( __386__ )
+#ifndef _M_I86
     unsigned save_stacklow;
     void _WCFAR *save_stack;
 
@@ -185,9 +192,13 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
         _enable();
         raise( SIGBREAK );
     } else {
+#ifdef _M_I86
         _chain_intr( __old_int_ctrl_break );
+#else
+        _chain_intr( __old_rm_int_ctrl_break );
+#endif
     }
-#if defined( __386__ )
+#ifndef _M_I86
     set_stack( save_stack );
     _STACKLOW = save_stacklow;
 #endif
@@ -201,7 +212,11 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 
 void __restore_int23( void )
 {
+#ifdef _M_I86
     if( __old_int23 == 0 ) {
+#else
+    if( __old_rm_int23 == 0 ) {
+#endif
         return;
     }
     if( __int23_exit == __restore_int ) {
@@ -209,27 +224,30 @@ void __restore_int23( void )
     } else if( __int23_exit == __restore_int23 ) {
         __int23_exit = __null_int23_exit;
     }
-#if defined(__WINDOWS_386__)
-    TinySetVect( 0x23, __old_int23 );
-#elif defined( _M_I86 )
+#ifdef _M_I86
     _dos_setvect( 0x23, __old_int23 );
+    __old_int23 = 0;
 #else
     if( _IsPharLap() ) {
-        pharlap_rm_setvect( 0x23, __old_int23 );
+        pharlap_rm_setvect( 0x23, __old_rm_int23 );
         pharlap_pm_setvect( 0x23, __old_pm_int23 );
-    } else if( __DPMI_hosted() == 1 ) {
-        DPMISetRealModeInterruptVector( 0x23, __old_int23 );
+    } else if( _DPMI ) {
+        DPMISetRealModeInterruptVector( 0x23, __old_rm_int23 );
         DPMISetPMInterruptVector( 0x23, __old_pm_int23 );
     } else {        /* this is what it used to do */
-        _dos_setvect( 0x23, __old_int23 );
+        _dos_setvect( 0x23, __old_rm_int23 );
     }
+    __old_rm_int23 = 0;
 #endif
-    __old_int23 = 0;
 }
 
 void __restore_int_ctrl_break( void )
 {
+#ifdef _M_I86
     if( __old_int_ctrl_break == 0 ) {
+#else
+    if( __old_rm_int_ctrl_break == 0 ) {
+#endif
         return;
     }
     if( __int23_exit == __restore_int ) {
@@ -237,22 +255,21 @@ void __restore_int_ctrl_break( void )
     } else if( __int23_exit == __restore_int_ctrl_break ) {
         __int23_exit = __null_int23_exit;
     }
-#if defined(__WINDOWS_386__)
-    TinySetVect( CTRL_BREAK_INT, __old_int_ctrl_break );
-#elif defined( _M_I86 )
+#ifdef _M_I86
     _dos_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
+    __old_int_ctrl_break = 0;
 #else
     if( _IsPharLap() ) {
-        pharlap_rm_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
+        pharlap_rm_setvect( CTRL_BREAK_INT, __old_rm_int_ctrl_break );
         pharlap_pm_setvect( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
-    } else if( __DPMI_hosted() == 1 ) {
-        DPMISetRealModeInterruptVector( CTRL_BREAK_INT, __old_int_ctrl_break );
+    } else if( _DPMI ) {
+        DPMISetRealModeInterruptVector( CTRL_BREAK_INT, __old_rm_int_ctrl_break );
         DPMISetPMInterruptVector( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
     } else {
-        _dos_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
+        _dos_setvect( CTRL_BREAK_INT, __old_rm_int_ctrl_break );
     }
+    __old_rm_int_ctrl_break = 0;
 #endif
-    __old_int_ctrl_break = 0;
 }
 
 static void __restore_int( void )
@@ -263,26 +280,24 @@ static void __restore_int( void )
 
 void __grab_int23( void )
 {
+#ifdef _M_I86
     if( __old_int23 == 0 ) {
-#if defined(__WINDOWS_386__)
-        __old_int23 = _dos_getvect( 0x23 );
-        TinySetVect( 0x23, (void (_WCNEAR *)(void))__int23_handler );
-#elif defined( _M_I86 )
         __old_int23 = _dos_getvect( 0x23 );
         _dos_setvect( 0x23, __int23_handler );
 #else
+    if( __old_rm_int23 == 0 ) {
         if( _IsPharLap() ) {
-            __old_int23 = pharlap_rm_getvect( 0x23 );
+            __old_rm_int23 = pharlap_rm_getvect( 0x23 );
             __old_pm_int23 = pharlap_pm_getvect( 0x23 );
             pharlap_setvect( 0x23, __int23_handler );
-        } else if( __DPMI_hosted() == 1 ) {
+        } else if( _DPMI ) {
             DPMILockLinearRegion((long)__int23_handler,
                 ((long)__int_ctrl_break_handler - (long)__int23_handler));
-            __old_int23 = DPMIGetRealModeInterruptVector( 0x23 );
+            __old_rm_int23 = DPMIGetRealModeInterruptVector( 0x23 );
             __old_pm_int23 = DPMIGetPMInterruptVector( 0x23 );
             DPMISetPMInterruptVector( 0x23, __int23_handler );
         } else {        /* what it used to do */
-            __old_int23 = _dos_getvect( 0x23 );
+            __old_rm_int23 = _dos_getvect( 0x23 );
             _dos_setvect( 0x23, __int23_handler );
         }
 #endif
@@ -296,26 +311,24 @@ void __grab_int23( void )
 
 void __grab_int_ctrl_break( void )
 {
+#ifdef _M_I86
     if( __old_int_ctrl_break == 0 ) {
-#if defined(__WINDOWS_386__)
-        __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
-        TinySetVect( CTRL_BREAK_INT, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
-#elif defined( _M_I86 )
         __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
         _dos_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
 #else
+    if( __old_rm_int_ctrl_break == 0 ) {
         if( _IsPharLap() ) {
-            __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BREAK_INT );
+            __old_rm_int_ctrl_break = pharlap_rm_getvect( CTRL_BREAK_INT );
             __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BREAK_INT );
             pharlap_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
-        } else if( __DPMI_hosted() == 1 ) {
+        } else if( _DPMI ) {
             DPMILockLinearRegion((long)__int_ctrl_break_handler,
                 ((long)__restore_int23 - (long)__int_ctrl_break_handler));
-            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BREAK_INT );
+            __old_rm_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BREAK_INT );
             __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( CTRL_BREAK_INT );
             DPMISetPMInterruptVector( CTRL_BREAK_INT, __int_ctrl_break_handler );
         } else {        /* what it used to do */
-            __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
+            __old_rm_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
             _dos_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
         }
 #endif

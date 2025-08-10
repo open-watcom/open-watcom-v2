@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,18 +36,18 @@
 
 LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { NULL };
 void (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
-unsigned (*_WindowsNewWindow)( const char *s, ... ) = { NULL };
-int (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
-int (*_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
-int (*_WindowsSetAppTitle)( const char *p ) = { NULL };
-int (*_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
-int (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
-int (*_WindowsYieldControl)( void ) = { NULL };
-int (*_WindowsShutDown)( void ) = { NULL };
-unsigned (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
-unsigned (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
-unsigned (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
-unsigned (*_WindowsGetch)( LPWDATA lp ) = { NULL };
-unsigned (*_WindowsGetche)( LPWDATA lp ) = { NULL };
-void (*_WindowsPutch)( LPWDATA lp, unsigned u ) = { NULL };
+bool (*_WindowsNewWindow)( const char *s, ... ) = { NULL };
+bool (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
+bool (*_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
+bool (*_WindowsSetAppTitle)( const char *p ) = { NULL };
+bool (*_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
+bool (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
+bool (*_WindowsYieldControl)( void ) = { NULL };
+bool (*_WindowsShutDown)( void ) = { NULL };
+int (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
+int (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
+bool (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
+int (*_WindowsGetch)( LPWDATA lp ) = { NULL };
+int (*_WindowsGetche)( LPWDATA lp ) = { NULL };
+void (*_WindowsPutch)( LPWDATA lp, int c ) = { NULL };
 void (*_WindowsExitRtn)( void ) = { NULL };

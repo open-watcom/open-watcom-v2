@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'insert(                                       */
@@ -49,56 +51,41 @@
 /*      "&'insert('123','abc',5,,'-')" ==> "abc--123"                      */
 /*      "&'insert('123','abc',,,'-')" ==> "123abc"                         */
 /*                                                                         */
-/* ! optional parms LENGTH and PAD are NOT implemented                     */
-/*                                                                         */
-/*                                                                         */
 /***************************************************************************/
 
-condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    getnum_block        gn;
-    char            *   ptarget;
-    char            *   ptargetend;
+    tok_type        new;
+    tok_type        target;
+    int             n;
+    int             length;
+    char            padchar;
+    condcode        cc;
+    int             k;
+    int             new_len;
+    int             target_len;
+    getnum_block    gn;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 2
+      || parmcount > 5 )
+        return( CC_neg );
 
-    pval = parms[0].start;              // string to insert
-    pend = parms[0].stop;
+    new = parms[0].arg;
+    new_len = unquote_arg( &new );
 
-    unquote_if_quoted( &pval, &pend );
+    target = parms[1].arg;
+    target_len = unquote_arg( &target );
 
-    ptarget    = parms[1].start;        // string to be modified
-    ptargetend = parms[1].stop;
-
-    unquote_if_quoted( &ptarget, &ptargetend );
-
-    if( pend == pval ) {                // null string insert nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    n = 0;                              // default start pos
-    gn.ignore_blanks = false;
-
-    if( parmcount > 2 ) {               // evalute startpos
-        if( parms[2].stop > parms[2].start ) {
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+    n = 0;                  // default start pos
+    if( parmcount > 2 ) {   // evalute startpos
+        if( parms[2].arg.s < parms[2].arg.e ) {
+            gn.arg = parms[2].arg;
+            gn.ignore_blanks = false;
             cc = getnum( &gn );
-            if( cc != pos ) {
+            if( cc != CC_pos ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_exit_c( ERR_FUNC_PARM, "3 (startpos)" );
+                    /* never return */
                 }
                 return( cc );
             }
@@ -106,33 +93,73 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         }
     }
 
+    length = new_len;       // default length
+    if( parmcount > 3 ) {   // evalute length
+        if( parms[3].arg.s < parms[3].arg.e ) {
+            gn.arg = parms[3].arg;
+            gn.ignore_blanks = false;
+            cc = getnum( &gn );
+            if( cc != CC_pos ) {
+                if( !ProcFlags.suppress_msg ) {
+                    xx_source_err_exit_c( ERR_FUNC_PARM, "4 (length)" );
+                    /* never return */
+                }
+                return( cc );
+            }
+            length = gn.result;
+        }
+    }
+
+    padchar = ' ';          // default pad character
+    if( parmcount > 4 ) {   // evalute length
+        tok_type pad = parms[3].arg;
+        if( unquote_arg( &pad ) > 0 ) {
+            padchar = *pad.s;
+        }
+    }
+
     k = 0;
-    while( (k < n) && (ptarget < ptargetend) && (ressize > 0) ) { // copy up to startpos
-        **result = *ptarget++;
-        *result += 1;
+    /*
+     * copy target up to startpos
+     */
+    while( (k < n) && (target.s < target.e) && (ressize > 0) ) {
+        *(*result)++ = *target.s++;
         k++;
         ressize--;
     }
-    if( n > k ) {         // startpos > target length, insert one extra blank
-        **result = ' ';
-        *result += 1;
+    /*
+     * pad up to startpos (if needed)
+     */
+    while( (k < n) && (ressize > 0) ) {
+        *(*result)++ = padchar;
+        k++;
         ressize--;
     }
-
-    while( (pval < pend) && (ressize > 0) ) { // insert new string
-        **result = *pval++;
-        *result += 1;
+    /*
+     * insert new string up to length
+     */
+    while( (k < n + length) && (new.s < new.e) && (ressize > 0) ) {
+        *(*result)++ = *new.s++;
+        k++;
         ressize--;
     }
-
-    while( (ptarget < ptargetend) && (ressize > 0) ) { // copy rest (if any)
-        **result = *ptarget++;
-        *result += 1;
+    /*
+     * pad up to length (if needed)
+     */
+    while( (k < n + length) && (ressize > 0) ) {
+        *(*result)++ = padchar;
+        k++;
+        ressize--;
+    }
+    /*
+     * copy rest of target (if any)
+     */
+    while( (target.s < target.e) && (ressize > 0) ) {
+        *(*result)++ = *target.s++;
         ressize--;
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }
-

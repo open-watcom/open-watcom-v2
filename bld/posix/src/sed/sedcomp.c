@@ -255,6 +255,7 @@ static char *recomp(
     char            *obr[MAXTAGS+1] = {0}; /* ep values when \( seen */
     int             opentags = 0;       /* Used to index obr */
     int             i;
+    unsigned        j;
     char            tagindex;
     int             ilow;
     int             ihigh;
@@ -509,15 +510,15 @@ static char *recomp(
                         };
                         int ( *isf )( int c );
 
-                        for( i = 0; i < sizeof( t ) / sizeof( *t ); i++ ) {
-                            if( strncmp( sp + 1, t[i].s, strlen( t[i].s ) ) == 0 ) {
+                        for( j = 0; j < sizeof( t ) / sizeof( *t ); j++ ) {
+                            if( strncmp( sp + 1, t[j].s, strlen( t[j].s ) ) == 0 ) {
                                 break;
                             }
                         }
-                        if( i >= sizeof( t ) / sizeof( *t ) ) /* Add class */
+                        if( j >= sizeof( t ) / sizeof( *t ) ) /* Add class */
                             ABORT( UNCLS );
-                        sp += 1 + strlen( t[i].s );
-                        isf = t[i].isf;
+                        sp += 1 + strlen( t[j].s );
+                        isf = t[j].isf;
                         for( i = 1; i < CHARSETSIZE * 8; i++ ) {
                             if( isf( i ) ) {
                                 SETCHARSET( ep, i );
@@ -833,6 +834,8 @@ static char *rhscomp(
             if( c >= '1' && c <= '9' ) {
                 c |= 0x80;          /* mark the good ones */
             }
+        } else if( c == '&' ) {
+            c |= 0x80;              /* mark the good ones */
         } else if( c == delim ) {   /* found RE end, hooray... */
             *rhsp++ = '\0';         /* cap the expression string */
             return( rhsp );         /* pt at 1 past the RE */

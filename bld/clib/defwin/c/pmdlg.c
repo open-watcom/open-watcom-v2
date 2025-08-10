@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <wos2.h>
 #include "win.h"
 #include "pmdlg.rh"
+#include "banner.h"
 
 
 #define MAX_INTEGER_FIELD       11
@@ -119,7 +120,7 @@ static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 }
 
 
-static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
+static bool getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
 //=================================================================
 {
     char        buff[MAX_INTEGER_FIELD + 1];
@@ -133,29 +134,29 @@ static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
     while( isspace( (unsigned char)*ptr ) )
         ++ptr;
     if( *ptr == '-' )
-        return( FALSE );
+        return( false );
     val = strtoul( ptr, &ptr, 10 );
     if( len == 0 )
-        return( FALSE ); // blank entry
+        return( false ); // blank entry
     while( isspace( (unsigned char)*ptr ) )
         ++ptr;
     if( *ptr == '\0' ) {
         *pval = val;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
 
-static BOOL chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg )
+static bool chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg )
 //===============================================================================
 {
     if( getIntegerValue( hwndDlg, id, pval ) ) {
-        return( TRUE );
+        return( true );
     } else {
         _Error( hwndDlg, titleName, errmsg );
-        return( FALSE );
+        return( false );
     }
 }
 

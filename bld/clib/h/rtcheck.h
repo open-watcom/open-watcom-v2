@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,11 @@
 #if ( defined(__NT__) || defined(__RUNTIME_HANDLE_CHECKS__) )   \
     && ( !defined(__NETWARE__) && !defined(__UNIX__) )
 
-    #define __handle_check( __h, __r )                          \
-                    if( (__h) < 0  ||  (__h) >= __NFiles ) {    \
-                        _RWD_errno = EBADF;                     \
-                        return( __r );                          \
-                    }
+    #define __handle_check( __h, __r ) \
+            if( (__h) < 0 || (__h) >= __NFiles ) {  \
+                _RWD_errno = EBADF;                 \
+                return( __r );                      \
+            }
 
 #else
 

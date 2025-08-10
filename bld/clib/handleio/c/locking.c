@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,10 +96,14 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
     tries = 10;
     for( ;; ) {
         ret = fcntl( handle, cmd, &flock_buff );
-        if( ret != -1 ) break;
-        if( _RWD_errno != EAGAIN ) break;
-        if( mode != LK_LOCK ) break;
-        if( --tries == 0 ) break;
+        if( ret != -1 )
+            break;
+        if( _RWD_errno != EAGAIN )
+            break;
+        if( mode != LK_LOCK )
+            break;
+        if( --tries == 0 )
+            break;
         sleep( 1 );
     }
     if( _RWD_errno == EAGAIN )
@@ -118,12 +122,15 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
     __handle_check( handle, -1 );
 
     offset = __lseek( handle, 0L, SEEK_CUR );
-    if( mode == LK_UNLCK ) return( unlock( handle, offset, nbytes ) );
+    if( mode == LK_UNLCK )
+        return( unlock( handle, offset, nbytes ) );
     for( retry_count = 0; retry_count < 10; ++retry_count ) {
         rc = lock( handle, offset, nbytes );
-        if( rc == 0 )  return( 0 );
-        if( mode == LK_NBLCK  ||  mode == LK_NBRLCK ) {
-            return( rc );                               /* JBS 22-aug-90 */
+        if( rc == 0 )
+            return( 0 );
+        if( mode == LK_NBLCK
+          || mode == LK_NBRLCK ) {
+            return( rc );
         }
         sleep( 1 );                             /* wait 1 second */
     }

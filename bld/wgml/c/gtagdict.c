@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
@@ -37,9 +38,9 @@
 /*  init_tag_dict   initialize dictionary pointer                          */
 /***************************************************************************/
 
-void    init_tag_dict( gtentry * * dict )
+void    init_tag_dict( tag_dict *pdict )
 {
-    *dict = NULL;
+    *pdict = NULL;
     return;
 }
 
@@ -49,32 +50,27 @@ void    init_tag_dict( gtentry * * dict )
 /*              if tag already defined error                               */
 /***************************************************************************/
 
-gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac, const int flags )
+gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int flags )
 {
-    gtentry     *   ge;
-    gtentry     *   wk;
+    tag_dict    dict;
+    gtentry     *ge;
 
-    wk = find_tag( dict, name );
-    if( wk != NULL ) {
-        err_count++;
-        g_err( err_tag_exist, name );
-        g_info_inp_pos();
-        show_include_stack();
-        return( NULL );
+    ge = find_user_tag( pdict, tagname );
+    if( ge != NULL ) {
+        xx_source_err_exit_c( ERR_TAG_EXIST, tagname );
+        /* never return */
     }
+    dict = mem_alloc( sizeof( *dict ) );
+    dict->next = *pdict;
+    *pdict = dict;
 
-    ge = mem_alloc( sizeof( gtentry ) );
-
-    ge->next = *dict;
-    *dict = ge;
-
-    memcpy( ge->name, name, sizeof( ge->name ) );
-    ge->namelen = strlen( ge->name );
-    strcpy( ge->macname, mac );
+    ge = DICT2GE( dict );
+    strcpy( ge->tagname, tagname );
+    ge->taglen = strlen( ge->tagname );
+    strcpy( ge->macname, macname );
     ge->tagflags = flags;
     ge->attribs = NULL;
     ge->usecount = 0;
-
     return( ge );
 }
 
@@ -83,14 +79,14 @@ gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac, cons
 /*  change_tag     change macro to execute in tag entry                    */
 /***************************************************************************/
 
-gtentry *   change_tag( gtentry * * dict, const char * name, const char * mac )
+gtentry *change_tag( tag_dict *pdict, const char *tagname, const char *macname )
 {
-    gtentry     *   ge = NULL;
+    gtentry     *ge = NULL;
 
-    if( *dict != NULL ) {
-        ge = find_tag( dict, name );
+    if( *pdict != NULL ) {
+        ge = find_user_tag( pdict, tagname );
         if( ge != NULL ) {
-           strcpy( ge->macname, mac );
+           strcpy( ge->macname, macname );
         }
     }
     return( ge );
@@ -100,14 +96,14 @@ gtentry *   change_tag( gtentry * * dict, const char * name, const char * mac )
 /***************************************************************************/
 /*  free_att  delete single attribute                                      */
 /***************************************************************************/
-static  void    free_att( gaentry * ga )
+static  void    free_att( gaentry *ga )
 {
-    gavalentry  *   vw;
-    gavalentry  *   vwn;
+    gavalentry  *vw;
+    gavalentry  *vwn;
 
     vw = ga->vals;
     while( vw != NULL ) {
-        if( vw->valflags & val_valptr ) {
+        if( vw->valflags & GAVAL_valptr ) {
             mem_free( vw->a.valptr );
         }
         vwn = vw->next;
@@ -123,35 +119,38 @@ static  void    free_att( gaentry * ga )
 /*            returns previuos entry or null if first deleted              */
 /***************************************************************************/
 
-gtentry     *   free_tag( gtentry * * dict, gtentry * ge )
+tag_dict    free_tag( tag_dict *pdict, gtentry *ge )
 {
-    gtentry     *   wk;
-    gaentry     *   gaw;
-    gaentry     *   gawn;
+    tag_dict    prev_dict;
+    tag_dict    dict;
+    gaentry     *attrib;
 
-
-    if( ge == NULL ) {                  // nothing to delete
-        return( NULL );
-    }
-    if( *dict == ge ) {                 // delete first entry
-        *dict = ge->next;
-        wk = NULL;                      // previous is null
+    /*
+     * it is always call for existing dictionary entry
+     * - call for delete all dictionary entries
+     * - call for just find dictionary entry
+     * not need check for entry existence
+     */
+    dict = *pdict;
+    if( DICT2GE( dict ) == ge ) {              // delete first entry
+        *pdict = dict->next;
+        prev_dict = NULL;               // previous is null
     } else {
-        for( wk = *dict; wk != NULL; wk = wk->next ) {
-            if( wk->next == ge ) {
-                wk->next = ge->next;    // chain update
+        dict = NULL;
+        for( prev_dict = *pdict; prev_dict != NULL; prev_dict = prev_dict->next ) {
+            if( DICT2GE( prev_dict->next ) == ge ) {
+                dict = prev_dict->next;
+                prev_dict->next = prev_dict->next->next;  // chain update
                 break;
             }
         }
     }
-    gaw = ge->attribs;
-    while( gaw != NULL ) {              // delete all attributes
-        gawn = gaw->next;
-        free_att( gaw );
-        gaw = gawn;
+    while( (attrib = DICT2GE( dict )->attribs) != NULL ) {      // delete all attributes
+        DICT2GE( dict )->attribs = attrib->next;
+        free_att( attrib );
     }
-    mem_free( ge );                     // now the entry itself
-    return( wk );                       // return previous entry or NULL
+    mem_free( dict );                   // now the entry itself
+    return( prev_dict );                // return previous entry or NULL
 }
 
 
@@ -159,18 +158,17 @@ gtentry     *   free_tag( gtentry * * dict, gtentry * ge )
 /*  free_tag_dict   free all user tag dictionary entries                   */
 /***************************************************************************/
 
-void    free_tag_dict( gtentry * * dict )
+void    free_tag_dict( tag_dict *pdict )
 {
-    gtentry     *   gtw;
-    gtentry     *   gtwn;
+    tag_dict    dict;
+    tag_dict    next;
 
-    gtw = *dict;
-    while( gtw != NULL ) {
-        gtwn = gtw->next;;
-        free_tag( dict, gtw );
-        gtw = gtwn;
+    dict = *pdict;
+    while( dict != NULL ) {
+        next = dict->next;
+        free_tag( pdict, DICT2GE( dict ) );
+        dict = next;
     }
-    return;
 }
 
 
@@ -179,16 +177,20 @@ void    free_tag_dict( gtentry * * dict )
 /*  returns ptr to tag or NULL if not found                                */
 /***************************************************************************/
 
-gtentry     *   find_tag( gtentry * * dict, const char * name )
+gtentry     *find_user_tag( tag_dict *pdict, const char *tagname )
 {
-    gtentry     *   wk;
+    tag_dict    dict;
+    unsigned    taglen;
 
-    for( wk = *dict; wk != NULL; wk = wk->next ) {
-        if( !stricmp( wk->name, name ) ) {
-            break;
+    taglen = strlen( tagname );
+    for( dict = *pdict; dict != NULL; dict = dict->next ) {
+        if( DICT2GE( dict )->taglen == taglen ) {
+            if( strcmp( DICT2GE( dict )->tagname, tagname ) == 0 ) {
+                return( DICT2GE( dict ) );
+            }
         }
     }
-    return( wk );
+    return( NULL );
 }
 
 
@@ -198,7 +200,7 @@ gtentry     *   find_tag( gtentry * * dict, const char * name )
 
 static  void    print_val_entry( gavalentry *wk )
 {
-    unsigned            flags;
+    gavalflags          flags;
     int                 find;
     char                opt[256];
     static const char   v_txt[8] [11] =
@@ -229,54 +231,54 @@ static  void    print_val_entry( gavalentry *wk )
 //    out_msg( "val:        %-10.10s %s\n", "jaja", opt );
     flags = wk->valflags;
 
-    if( flags & val_range ) {
-        if( flags & val_def ) {
-            sprintf( opt, "default=%ld %ld min=%ld max=%ld",
+    if( flags & GAVAL_range ) {
+        if( flags & GAVAL_def ) {
+            sprintf( opt, "default=%d %d min=%d max=%d",
                      wk->a.range[2], wk->a.range[3],
                      wk->a.range[0], wk->a.range[1] );
         } else {
-            sprintf( opt, "min=%ld max=%ld", wk->a.range[0],
+            sprintf( opt, "min=%d max=%d", wk->a.range[0],
                      wk->a.range[1] );
         }
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
-    } else if( flags & val_length ) {
+    } else if( flags & GAVAL_length ) {
 
-        sprintf( opt, "length=%ld\n", wk->a.range[0] );
+        sprintf( opt, "length=%d\n", wk->a.range[0] );
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
-    } else if( flags & val_any ) {
+    } else if( flags & GAVAL_any ) {
 
-        if( flags & val_value ) {
+        if( flags & GAVAL_value ) {
 
             out_msg( "val:        %-10.10s any use='%s'\n", "", wk->a.value );
 
-        } else if( flags & val_valptr ) {
+        } else if( flags & GAVAL_valptr ) {
 
             out_msg( "val:        %-10.10s any use='%s'\n", " ", wk->a.valptr );
         }
-    } else if( flags & val_auto ) {
+    } else if( flags & GAVAL_auto ) {
 
-        if( flags & val_value ) {
+        if( flags & GAVAL_value ) {
 
             out_msg( "val:        %-10.10s automatic use='%s'\n", "", wk->a.value );
 
-        } else if( flags & val_valptr ) {
+        } else if( flags & GAVAL_valptr ) {
 
             out_msg( "val:        %-10.10s automatic use='%s'\n", " ", wk->a.valptr );
         }
-    } else if( flags & val_value ) {
+    } else if( flags & GAVAL_value ) {
 
-        if( flags & val_def ) {
+        if( flags & GAVAL_def ) {
             strcpy( opt, "default" );
         } else {
             opt[0] = '\0';
         }
         out_msg( "val:        %-10.10s %s\n", wk->a.value, opt );
 
-    } else if( flags & val_valptr ) {
+    } else if( flags & GAVAL_valptr ) {
 
-        if( flags & val_def ) {
+        if( flags & GAVAL_def ) {
             strcpy( opt, "default" );
         } else {
             opt[0] = '\0';
@@ -313,7 +315,7 @@ static  void    print_att_entry( gaentry *wk )
         return;                         // nothing to print
     }
     opt[0] = '\0';
-    flags = wk->attflags & ~att_proc_all;   // clear processing flags
+    flags = wk->attflags & ~GAFLG_proc_all;   // clear processing flags
     find = 0;
     while( flags > 0 ) {
         if( flags & 1 ) {
@@ -322,7 +324,7 @@ static  void    print_att_entry( gaentry *wk )
         find++;
         flags >>= 1;
     }
-    out_msg( "att:     %-13.13s %s\n", wk->name, opt );
+    out_msg( "att:     %-13.13s %s\n", wk->attname, opt );
     for( gaval = wk->vals; gaval != NULL; gaval = gaval->next ) {
         print_val_entry( gaval );
     }
@@ -333,29 +335,25 @@ static  void    print_att_entry( gaentry *wk )
 /*  print_tag_entry   print single GML tag                                 */
 /***************************************************************************/
 
-void    print_tag_entry( gtentry * wk )
+void    print_tag_entry( const gtentry *wk )
 {
     gaentry         *   gawk;
     unsigned            flags;
     int                 find;
     char                opt[256];
-    static const char   t_txt[10] [12] =
-                    {
-                        { "attributes " },
-                        { "continue "   },
-                        { "nocontinue " },
-                        { "csoff "      },
-                        { "tagnext "    },
-                        { "textdef "    },
-                        { "texterror "  },
-                        { "textline "   },
-                        { "textreqd "   },
-                        { "off "        }
-                    };
+    static const char   * const t_txt[] = {
+        "attributes ",
+        "continue ",
+        "nocontinue ",
+        "csoff ",
+        "tagnext ",
+        "textdef ",
+        "texterror ",
+        "textline ",
+        "textreqd ",
+        "off "
+    };
 
-    if( wk == NULL ) {
-        return;                         // nothing to print
-    }
     opt[0] = '\0';
     flags = wk->tagflags;
     find = 0;
@@ -366,7 +364,7 @@ void    print_tag_entry( gtentry * wk )
         find++;
         flags >>= 1;
     }
-    out_msg( "tag:  %-16.16s tagcount=%d macro=%s %s\n", wk->name,
+    out_msg( "tag:  %-16.16s tagcount=%u macro=%s %s\n", wk->tagname,
              wk->usecount, wk->macname, opt );
     for( gawk = wk->attribs; gawk != NULL; gawk = gawk->next ) {
         print_att_entry( gawk );
@@ -380,15 +378,14 @@ void    print_tag_entry( gtentry * wk )
 /*  print_tag_dict  output all of the user tag dictionary                  */
 /***************************************************************************/
 
-void    print_tag_dict( gtentry * dict )
+void    print_tag_dict( tag_dict dict )
 {
-    gtentry         *   wk;
-    int                 cnt;
+    int         cnt;
 
     cnt = 0;
     out_msg( "\nList of defined User GML tags:\n" );
-    for( wk = dict; wk != NULL; wk = wk->next ) {
-        print_tag_entry( wk );
+    for( ; dict != NULL; dict = dict->next ) {
+        print_tag_entry( DICT2GE( dict ) );
         cnt++;
     }
     out_msg( "\nTotal GML tags defined: %d\n", cnt );

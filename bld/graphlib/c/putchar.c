@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "grdbcs.h"
 #if !defined( _DEFAULT_WINDOWS )
 #include "realmod.h"
 #include "gbios.h"
@@ -146,15 +147,15 @@ void _PutChar( short row, short col, short ch )
         } else {
             p = _MK_FP( _CgaSeg, _CgaOff );
         }
-        p += _CurrActivePage * BIOSData( BDATA_REGEN_LEN, unsigned short );
+        p += _CurrActivePage * BIOSData( unsigned short, BDATA_REGEN_LEN );
         screen = (short __far *)p;
         screen += row * _CurrState->vc.numtextcols + col;
         *screen = ( _CharAttr << 8 ) + ch;
     } else if( _IsDBCS ) {      // use BIOS for DBCS
         // set cursor position
-        VideoInt( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
+        VideoInt1_ax( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
         // write character
-        VideoInt( VIDEOINT_PUT_CHAR + ch, ( _CurrActivePage << 8 ) + _CharAttr, 1, 0 );
+        VideoInt1_ax( VIDEOINT_PUT_CHAR + ch, ( _CurrActivePage << 8 ) + _CharAttr, 1, 0 );
     } else {
         char_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
         if( char_height < _HERC_HEIGHT ) {

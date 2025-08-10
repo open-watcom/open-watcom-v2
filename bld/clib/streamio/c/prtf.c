@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_PRINTF
@@ -38,6 +39,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
@@ -53,8 +55,6 @@
 
 
 #define BUF_SIZE    72  /* 64-bit ints formatted as binary can get big */
-#define TRUE        1
-#define FALSE       0
 
 #define PASCAL_STRING           STRING( 'S' )       /* for Novell */
 #define WIDE_CHAR_STRING        STRING( 'S' )
@@ -73,13 +73,13 @@
 
 
 #if defined( __WIDECHAR__ )
-    #define _OTHER_FAR_STRING           FAR_ASCII_STRING
-    #define _OTHER_NULLCHAR             '\0'
-    #define _OTHER_TO_WIDE(c)           ((unsigned char)c)
+    #define _ALT_FAR_STRING           FAR_ASCII_STRING
+    #define _ALT_NULLCHAR             '\0'
+    #define _ALT_TO_WIDE(c)           ((unsigned char)c)
 #else
-    #define _OTHER_FAR_STRING           FAR_WIDE_STRING
-    #define _OTHER_NULLCHAR             L'\0'
-    #define _OTHER_TO_WIDE(c)           (c)
+    #define _ALT_FAR_STRING           FAR_WIDE_STRING
+    #define _ALT_NULLCHAR             L'\0'
+    #define _ALT_TO_WIDE(c)           (c)
 #endif
 
 
@@ -231,13 +231,13 @@ static int far_strlen( FAR_STRING s, int precision )
 }
 
 /*
- * far_other_strlen - calculates the length of an ascii string
+ * far_alt_strlen - calculates the length of an ascii string
  *                    for the unicode version
  *                  - calculates the length of a unicode string
  *                    for the ascii version
  */
 
-static int far_other_strlen( FAR_STRING s, int precision )
+static int far_alt_strlen( FAR_STRING s, int precision )
 {
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
@@ -246,13 +246,13 @@ static int far_other_strlen( FAR_STRING s, int precision )
     return( 0 );  // RDOS doesn't support unicode
 #else
     int                 len = 0;
-    _OTHER_FAR_STRING   ptr = (_OTHER_FAR_STRING)s;
+    _ALT_FAR_STRING     ptr = (_ALT_FAR_STRING)s;
   #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     char                mbBuf[MB_CUR_MAX];
     int                 chBytes;
 
     if( precision == -1 ) {
-        while( *ptr != _OTHER_NULLCHAR ) {
+        while( *ptr != _ALT_NULLCHAR ) {
             chBytes = wctomb( mbBuf, *ptr++ );
             if( chBytes != -1 ) {
                 len += chBytes;
@@ -260,7 +260,7 @@ static int far_other_strlen( FAR_STRING s, int precision )
         }
         return( len );
     }
-    while( *ptr != _OTHER_NULLCHAR && ( len <= precision )) {
+    while( *ptr != _ALT_NULLCHAR && ( len <= precision )) {
         chBytes = wctomb( mbBuf, *ptr++ );
         if( chBytes != -1 ) {
             len += chBytes;
@@ -268,7 +268,7 @@ static int far_other_strlen( FAR_STRING s, int precision )
     }
     return(( len <= precision ) ? len : precision );
   #else
-    while( *ptr++ != _OTHER_NULLCHAR && ( len != precision ))
+    while( *ptr++ != _ALT_NULLCHAR && ( len != precision ))
         ++len;
 
     return( len );
@@ -419,8 +419,8 @@ static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS spec
     specs->_nz1 = mbSpecs._nz1;
     specs->_n2 = mbSpecs._n2;
     specs->_nz2 = mbSpecs._nz2;
-    specs->_character = _OTHER_TO_WIDE( mbSpecs._character );
-    specs->_pad_char = _OTHER_TO_WIDE( mbSpecs._pad_char );
+    specs->_character = _ALT_TO_WIDE( mbSpecs._character );
+    specs->_pad_char = _ALT_TO_WIDE( mbSpecs._pad_char );
 #endif
 }
 
@@ -549,14 +549,14 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
             }
         }
         {
-            int negative = FALSE;
+            bool negative = false;
 
             if( specs->_flags & SPF_LONG_LONG ) {
                 if( (long long)long_long_value < 0 ) {
-                    negative = TRUE;
+                    negative = true;
                 }
             } else if( (long)long_value < 0 ) {
-                negative = TRUE;
+                negative = true;
             }
             if( negative ) {
                 buffer[specs->_n0++] = STRING( '-' );
@@ -645,8 +645,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
             if( specs->_flags & SPF_LONG )
 #endif
             {
-                length = *( (_OTHER_FAR_STRING)arg );
-                arg = (FAR_STRING)( (_OTHER_FAR_STRING)arg + 1 );
+                length = *( (_ALT_FAR_STRING)arg );
+                arg = (FAR_STRING)( (_ALT_FAR_STRING)arg + 1 );
             } else {
                 length = *arg++;
             }
@@ -656,7 +656,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
             if( specs->_flags & SPF_SHORT ) {
                 length = far_strlen( arg, specs->_prec );
             } else {
-                length = far_other_strlen( arg, specs->_prec );
+                length = far_alt_strlen( arg, specs->_prec );
             }
         } else
 #endif
@@ -665,7 +665,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
 #else
         if( specs->_flags & SPF_LONG ) {
 #endif
-            length = far_other_strlen( arg, specs->_prec );
+            length = far_alt_strlen( arg, specs->_prec );
         } else {
             length = far_strlen( arg, specs->_prec );
         }

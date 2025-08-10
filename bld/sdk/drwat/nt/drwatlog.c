@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -748,7 +748,6 @@ void EraseLog( void ) {
 void ViewLog( void ) {
 
     char                        buf[ MAX_CMDLINE + _MAX_PATH ];
-    BOOL                        ret;
     STARTUPINFO                 startinfo;
     PROCESS_INFORMATION         procinfo;
 
@@ -766,39 +765,34 @@ void ViewLog( void ) {
     strcat( buf, " " );
     strcat( buf, LogData.logname );
 
-    ret = CreateProcess( NULL,                  /* application path */
-                   buf,                         /* command line */
-                   NULL,                        /* process security
-                                                   attributes */
-                   NULL,                        /* main thread security
-                                                   attributes */
-                   FALSE,                       /* inherits parent handles */
-                   NORMAL_PRIORITY_CLASS,       /* create parameters */
-                   NULL,                        /* environment block */
-                   NULL,                        /* current directory */
-                   &startinfo,                  /* other startup info */
-                   &procinfo );                 /* structure to get process
-                                                   info */
-    if( ret )  return;
+    if( CreateProcess(
+            NULL,                   /* application path */
+            buf,                    /* command line */
+            NULL,                   /* process security attributes */
+            NULL,                   /* main thread security attributes */
+            FALSE,                  /* inherits parent handles */
+            NORMAL_PRIORITY_CLASS,  /* create parameters */
+            NULL,                   /* environment block */
+            NULL,                   /* current directory */
+            &startinfo,             /* other startup info */
+            &procinfo ) ) {         /* structure to get process info */
+        return;
+    }
     strcpy( buf, "notepad.exe" );
     strcat( buf, " " );
     strcat( buf, LogData.logname );
-    ret = CreateProcess( NULL,                  /* application path */
-                   buf,                         /* command line */
-                   NULL,                        /* process security
-                                                   attributes */
-                   NULL,                        /* main thread security
-                                                   attributes */
-                   FALSE,                       /* inherits parent handles */
-                   NORMAL_PRIORITY_CLASS,       /* create parameters */
-                   NULL,                        /* environment block */
-                   NULL,                        /* current directory */
-                   &startinfo,                  /* other startup info */
-                   &procinfo );                 /* structure to get process
-                                                   info */
-    if( !ret ) {
-        RCMessageBox( MainHwnd, STR_CANT_START_EDITOR,
-                      AppName, MB_OK | MB_ICONEXCLAMATION );
+    if( CreateProcess(
+            NULL,                   /* application path */
+            buf,                    /* command line */
+            NULL,                   /* process security attributes */
+            NULL,                   /* main thread security attributes */
+            FALSE,                  /* inherits parent handles */
+            NORMAL_PRIORITY_CLASS,  /* create parameters */
+            NULL,                   /* environment block */
+            NULL,                   /* current directory */
+            &startinfo,             /* other startup info */
+            &procinfo ) == 0 ) {    /* structure to get process info */
+        RCMessageBox( MainHwnd, STR_CANT_START_EDITOR, AppName, MB_OK | MB_ICONEXCLAMATION );
     }
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 #include <malloc.h>
 
 int __nmemneed( size_t size )
-    {
-        size = size;
-        return( 0 );
-    }
+{
+    (void)size;
+    return( 0 );
+}
 

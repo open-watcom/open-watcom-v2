@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,17 @@
 
 
 #if defined( VERSION2 )
-#include "graph2.gh"
+    #include "graph2.gh"
 #else
-#include "graph.gh"
+    #include "graph.gh"
 #endif
+#include "bool.h"
 #include "pgchart.gh"
 #include "pgstubs.h"
+
+#include "fpi.h"
+#include "entry.h"
+#include "pgentry.h"
 
 
 #if defined( _M_I86 )
@@ -53,14 +58,6 @@
     #define MemorySet   memset
     #define MemoryCopy  memcpy
 #endif
-
-#include "fpi.h"
-#include "entry.h"
-#include "pgentry.h"
-
-enum {
-    FALSE, TRUE
-};
 
 enum {
     _XVECTOR, _YVECTOR

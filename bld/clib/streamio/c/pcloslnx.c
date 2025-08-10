@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    Portions Copyright (c) 2014 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -41,24 +41,24 @@ _WCRTLINK int pclose( FILE *fp )
     pid_t pret;
 
     /*** Get the return code of the process ***/
-    if( _FP_PIPEDATA(fp).isPipe == 0 ) {
+    if( _FP_PIPEDATA( fp ).isPipe == 0 ) {
         return( -1 ); /* must be a pipe */
     }
-    
+
     if( fclose( fp ) ) {
         return( -1 ); /* must close pipe before waitpid */
     }
 
     /* close stream and wait for process termination */
     do {
-        pret = waitpid(_FP_PIPEDATA(fp).pid, &status, 0);
+        pret = waitpid(_FP_PIPEDATA( fp ).pid, &status, 0);
     } while (pret == -1 && _RWD_errno == EINTR);
 
 
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     }
-    
+
     _RWD_errno = ECHILD;
     return -1;
 }

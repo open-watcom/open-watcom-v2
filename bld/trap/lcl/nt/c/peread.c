@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,19 +37,19 @@
 #include "stdnt.h"
 
 
-bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
+bool SeekRead( HANDLE h, DWORD newpos, void *buff, WORD size )
 /******************************************************************
  * seek to a specified spot in the file, and read some data
  */
 {
-    int     rc;
     DWORD   bytes;
 
-    if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+    if( SetFilePointer( h, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
-    rc = ReadFile( handle, buff, size, &bytes, NULL );
-    if( !rc ) {
+    if( ReadFile( h, buff, size, &bytes, NULL ) == 0 ) {
         return( false );
     }
     if( bytes != size ) {
@@ -59,7 +59,7 @@ bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 
 }
 
-bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
+bool GetEXEHeader( HANDLE h, header_info *hi, WORD *stack )
 /***************************************************************
  * get type of EXE
  */
@@ -68,29 +68,29 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     WORD    signature;
     DWORD   ne_header_off;
 
-    if( !SeekRead( handle, 0, &data, sizeof( data ) )
+    if( !SeekRead( h, 0, &data, sizeof( data ) )
       || data != EXESIGN_DOS ) {
         return( false );
     }
 
-    if( !SeekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+    if( !SeekRead( h, DOS_RELOC_OFFSET, &data, sizeof( data ) )
       || !NE_HEADER_FOLLOWS( data ) ) {
         return( false );
     }
 
-    if( !SeekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
+    if( !SeekRead( h, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
         return( false );
     }
 
-    if( !SeekRead( handle, ne_header_off, &signature, sizeof( signature ) ) ) {
+    if( !SeekRead( h, ne_header_off, &signature, sizeof( signature ) ) ) {
         signature = 0;
     }
     if( signature == EXESIGN_PE ) {
         DWORD      bytes;
 
         hi->signature = EXESIGN_PE;
-        if( !SeekRead( handle, ne_header_off, &hi->u.pehdr, PE_HDR_SIZE )
-          || !ReadFile( handle, (char *)&hi->u.pehdr + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.pehdr ), &bytes, NULL ) ) {
+        if( !SeekRead( h, ne_header_off, &hi->u.pehdr, PE_HDR_SIZE )
+          || ReadFile( h, (char *)&hi->u.pehdr + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.pehdr ), &bytes, NULL ) == 0 ) {
             return( false );
         }
         return( true );
@@ -98,7 +98,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 #if MADARCH & MADARCH_X86
     if( signature == EXESIGN_NE ) {
         hi->signature = EXESIGN_NE;
-        if( !SeekRead( handle, ne_header_off, &hi->u.nehdr, sizeof( hi->u.nehdr ) ) ) {
+        if( !SeekRead( h, ne_header_off, &hi->u.nehdr, sizeof( hi->u.nehdr ) ) ) {
             return( false );
         }
         if( hi->u.nehdr.target == TARGET_WINDOWS ) {
@@ -108,23 +108,20 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
             DWORD           pos;
 
             off = ne_header_off + hi->u.nehdr.resident_off;
-            if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-                return( false );
-            }
-            if( !ReadFile( handle, &len, sizeof( len ), &bytes, NULL ) ) {
+            if( !SeekRead( h, off, &len, sizeof( len ) ) ) {
                 return( false );
             }
             if( len > sizeof( hi->modname ) - 1 ) {
                 len = sizeof( hi->modname ) - 1;
             }
-            if( !ReadFile( handle, hi->modname, len, &bytes, NULL ) ) {
+            if( ReadFile( h, hi->modname, len, &bytes, NULL ) == 0 ) {
                 return( false );
             }
             hi->modname[len] = 0;
             pos = ne_header_off + hi->u.nehdr.segment_off +
                 ( hi->u.nehdr.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
-            if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {
+            if( !SeekRead( h, pos, stack, sizeof( *stack ) ) ) {
                 return( false );
             }
             *stack += hi->u.nehdr.stack;
@@ -145,7 +142,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 #endif
 }
 
-bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
+bool GetModuleName( HANDLE h, char *buff, size_t maxlen )
 {
     header_info         hi;
     pe_object           obj;
@@ -156,7 +153,7 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
     WORD                stack;
     int                 num_objects;
 
-    if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
+    if( !GetEXEHeader( h, &hi, &stack ) ) {
         return( false );
     }
     if( hi.signature != EXESIGN_PE ) {
@@ -169,7 +166,8 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
     }
     memset( &obj, 0, sizeof( obj ) );
     for( i = 0; i < num_objects; i++ ) {
-        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
+        if( ReadFile( h, &obj, sizeof( obj ), &lenread, NULL ) == 0
+          || lenread != sizeof( obj ) ) {
             return( false );
         }
         if( export_rva >= obj.rva && export_rva < ( obj.rva + obj.physical_size ) ) {
@@ -179,18 +177,20 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
     if( i == num_objects ) {
         return( false );
     }
-    if( !SeekRead( fhdl, obj.physical_offset + export_rva - obj.rva, &expdir, sizeof( expdir ) ) ) {
+    if( !SeekRead( h, obj.physical_offset + export_rva - obj.rva, &expdir, sizeof( expdir ) ) ) {
         return( false );
     }
-    if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, buff, maxlen ) ) {
+    if( !SeekRead( h, obj.physical_offset + expdir.name_rva - obj.rva, buff, maxlen ) ) {
         return( false );
     }
-    if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+    if( SetFilePointer( h, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
     if( maxlen > 0 )
         maxlen--;
-    if( !ReadFile( fhdl, buff, maxlen, &lenread, NULL ) ) {
+    if( ReadFile( h, buff, maxlen, &lenread, NULL ) == 0 ) {
         return( false );
     }
     buff[lenread] = '\0';
@@ -198,36 +198,36 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
 }
 
 #if 0
-int CpFile( HANDLE in )
+int CpFile( HANDLE hin )
 {
-    HANDLE  out;
+    HANDLE  hout;
     char    buff[1024];
     DWORD   lenread;
     DWORD   old;
     int     rc;
 
-    out = CreateFile( "CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-    if( out == INVALID_HANDLE_VALUE ) {
+    hout = CreateFile( "CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+    if( hout == INVALID_HANDLE_VALUE ) {
         return( 1 );
     }
-    old = SetFilePointer( in, 0, NULL, FILE_CURRENT );
-    SetFilePointer( in, 0, NULL, FILE_BEGIN );
+    old = SetFilePointer( hin, 0, NULL, FILE_CURRENT );
+    SetFilePointer( hin, 0, NULL, FILE_BEGIN );
     rc = 0;
     for( ;; ) {
-        if( !ReadFile( in, buff, sizeof( buff ), &lenread, NULL ) ) {
+        if( ReadFile( hin, buff, sizeof( buff ), &lenread, NULL ) == 0 ) {
             rc = 2;
             break;
         }
         if( lenread == 0 ) {
             break;
         }
-        if( !WriteFile( out, buff, lenread, &lenread, NULL ) ) {
+        if( WriteFile( hout, buff, lenread, &lenread, NULL ) == 0 ) {
             rc = 3;
             break;
         }
     }
-    SetFilePointer( in, old, NULL, FILE_BEGIN );
-    CloseHandle( out );
+    SetFilePointer( hin, old, NULL, FILE_BEGIN );
+    CloseHandle( hout );
     return( rc );
 }
 #endif

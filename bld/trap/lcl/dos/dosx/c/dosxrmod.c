@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,41 +30,19 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #if defined( DOS4G )
 //#define DEBUG_TRAP  1
-  #include "trapdbg.h"
-  #include "rsi1632.h"
+    #include "trapdbg.h"
+    #include "rsi1632.h"
 #elif defined( CAUSEWAY )
-  #include "dpmi.h"
-#else
+    #include "dpmi.h"
+#elif defined( PHARLAP )
+    #include "dpmi.h"
+#else       /* DPMI */
+    #include "dpmi.h"
 #endif
 #include "dosxrmod.h"
-
-#if defined( DOS4G )
-#elif defined( CAUSEWAY )
-
-extern int _CallRealMode( rm_call_struct __far *regs );
-#pragma aux _CallRealMode = \
-        "mov    ax,0ff02h" \
-        "int    0x31" \
-        "sbb    eax,eax" \
-    __parm      [__es __edi] \
-    __value     [__eax] \
-    __modify    []
-
-#else
-
-extern int _CallRealMode( unsigned long dos_addr );
-#pragma aux _CallRealMode = \
-        "xor    ecx,ecx"    \
-        "mov    ax,0250eh"  \
-        "int    0x21"       \
-        "sbb    eax,eax"    \
-    __parm      [__ebx] \
-    __value     [__eax] \
-    __modify    [__ecx]
-
-#endif
 
 #if defined( DOS4G )
 
@@ -133,30 +111,53 @@ void CallRealMode( unsigned long dos_addr )
 {
     D16REGS     regs;
 
-    regs.ds = regs.es = _FP_SEG( dos_addr ); /* the trap file runs tiny -zu */
+    memset( &regs, 0, sizeof( regs ) );
+    regs.ds = regs.es = dos_addr >> 16; /* the trap file runs tiny -zu */
     _DBG_Writeln( "Calling RealMode" );
-    rsi_rm_far_call( (void __far *)( dos_addr ), &regs, &regs );
+    rsi_rm_far_call( MK_FP( dos_addr >> 16, dos_addr & 0xffff ), &regs, &regs );
     _DBG_Writeln( "Back from RealMode" );
 }
 
 #elif defined( CAUSEWAY )
 
+extern int _CallRealMode( dpmi_regs_struct __far *dr );
+#pragma aux _CallRealMode = \
+        "mov    ax,0ff02h" \
+        "int    0x31" \
+        "sbb    eax,eax" \
+    __parm      [__es __edi] \
+    __value     [__eax] \
+    __modify    []
+
 void CallRealMode( unsigned long dos_addr )
 {
-    rm_call_struct  regs;
+    dpmi_regs_struct    dr;
 
     /* the trap file runs tiny -zu */
-    regs.ds = regs.es = regs.cs = dos_addr >> 16;
-    regs.ip = dos_addr & 0xFFFF;
-    _CallRealMode( &regs );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds = dr.es = dr.cs = dos_addr >> 16;
+    dr.ip = dos_addr & 0xFFFF;
+    _CallRealMode( &dr );
 }
 
-
-#else
+#elif defined( PHARLAP )
 
 void CallRealMode( unsigned long dos_addr )
 {
-    _CallRealMode( dos_addr );
+    PharlapCallRealModeProcedureNoRegs( dos_addr );
+}
+
+#else       /* DPMI */
+
+void CallRealMode( unsigned long dos_addr )
+{
+    dpmi_regs_struct    dr;
+
+    /* the trap file runs tiny -zu */
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds = dr.es = dr.cs = dos_addr >> 16;
+    dr.ip = dos_addr & 0xFFFF;
+    DPMICallRealModeProcedureWithFarReturnFrame( 0, 0, &dr );
 }
 
 #endif

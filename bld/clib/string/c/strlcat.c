@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,32 +36,26 @@
 #include "libwchar.h"
 
 
-_WCRTLINK size_t __F_NAME(strlcat,wcslcat)( CHAR_TYPE *dst, const CHAR_TYPE *t, size_t n )
+_WCRTLINK size_t __F_NAME(strlcat,wcslcat)( CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 {
-    CHAR_TYPE   *s;
+    CHAR_TYPE   *p;
     size_t      len;
 
-    s = dst;
     // Find end of string in destination buffer but don't overrun
-    for( len = n; len; --len ) {
-        if( *s == NULLCHAR ) break;
-        ++s;
+    for( p = s, len = n; len != 0 && *p != NULLCHAR; --len ) {
+        ++p;
     }
-    // If no null char was found in dst, the buffer is messed up; don't
+    // If no null char was found in s, the buffer is messed up; don't
     // touch it
-    if( *s == NULLCHAR ) {
-        --len;      // Decrement len to leave space for terminating null
-        while( len != 0 ) {
-            *s = *t;
-            if( *s == NULLCHAR ) {
+    if( *p == NULLCHAR ) {
+        // Decrement len to leave space for terminating null
+        for( --len; len != 0; ++p, ++t, --len ) {
+            if( (*p = *t) == NULLCHAR ) {
                 return( n - len - 1 );
             }
-            ++s;
-            ++t;
-            --len;
         }
         // Buffer not large enough. Terminate and figure out desired length
-        *s = NULLCHAR;
+        *p = NULLCHAR;
         while( *t++ != NULLCHAR )
             ++n;
         --n;

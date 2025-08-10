@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,8 @@ _WCRTLINK _HFILE _CrtSetReportFile( int reporttype, _HFILE reportfile )
     int                 reportmode;
 
     /*** Ensure reporttype is valid ***/
-    if( reporttype < _CRT_WARN  ||  reporttype > _CRT_ASSERT ) {
+    if( reporttype < _CRT_WARN
+      || reporttype > _CRT_ASSERT ) {
         return( _CRTDBG_HFILE_ERROR );
     }
 

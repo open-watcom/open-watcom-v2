@@ -6,6 +6,9 @@ EXPORTS
 @ExAcquireRundownProtectionCacheAwareEx@8
 @ExAcquireRundownProtectionEx@8
 @ExInitializeRundownProtection@4
+@ExInterlockedAddUlong@12
+@ExInterlockedInsertHeadList@12
+@ExInterlockedInsertTailList@12
 @ExInterlockedFlushSList@4
 @ExInterlockedPopEntrySList@8
 @ExInterlockedPushEntrySList@12

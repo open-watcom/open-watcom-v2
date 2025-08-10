@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #if defined( _M_IX86 )
     #include <i86.h>
@@ -57,7 +58,7 @@
 
 static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
 {
-    while( *dest = *src ) {
+    while( (*dest = *src) != '\0' ) {
         ++dest;
         ++src;
     }
@@ -76,7 +77,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     CHAR_TYPE           **envptr,       /* o: environment ptr (DOS 16-bit aligned to para) */
     unsigned            *envseg,        /* o: environment segment (DOS 16-bit normalized, zero for others) */
     size_t              *cmdline_len,   /* o: size required to hold cmd line */
-    int                 exec )          /* i: TRUE if for exec */
+    bool                exec )          /* i: true if for exec */
 {
     unsigned            length;         /* environment length in bytes */
     unsigned            old_amblksiz;
@@ -86,7 +87,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     int                 i;
 
 #if !defined( __DOS_086__ )
-    exec = exec;
+    (void)exec;
 #endif
     if( envp == NULL ) {
         CHECK_WIDE_ENV();
@@ -202,7 +203,7 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const 
     CHAR_TYPE *p;
 
     p = buffer;
-    if( ! just_args ) {
+    if( just_args == 0 ) {
 #if defined( __OS2__ )
         path = path;
         /* OS/2 wants:  argv[0] '\0' arguments '\0' '\0'

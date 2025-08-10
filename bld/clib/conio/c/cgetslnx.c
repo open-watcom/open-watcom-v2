@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,15 @@
 #include <unistd.h>
 #include <conio.h>
 
+
 _WCRTLINK char *(cgets)( char *buf )
 {
     int len;
     char *p;
 
-    len = *buf;
+    len = *(unsigned char *)buf;
     p = buf + 2;
-    len = read( 0, p, len );
+    len = read( 0, p, len - 1 );
     p[len] = '\0';
     buf[1] = len;
     return( p );

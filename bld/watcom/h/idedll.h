@@ -48,10 +48,10 @@ extern "C" {
 #define IDEAPI
 #endif
 
-#if !defined( IDE_PGM )
-#define IDEDLLENTRY             __declspec(dllexport)
-#else
+#if defined( IDE_PGM ) || defined( __LINUX__ )
 #define IDEDLLENTRY
+#else
+#define IDEDLLENTRY             __declspec(dllexport)
 #endif
 
 #define IDE_CUR_DLL_VER         3

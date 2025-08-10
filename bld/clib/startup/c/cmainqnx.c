@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +143,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
         }
     }
     --cpp;                                      /* Back up to the __CWD     */
-    if( !strncmp( "__CWD=", *cpp, 6 ) ) {       /* Did spawn pass __CWD ?   */
+    if( strncmp( "__CWD=", *cpp, 6 ) == 0 ) {   /* Did spawn pass __CWD ?   */
         /*
         Copy the cwd passed in an envar into magic and remove it from the
         environment. For old programs, also check the Q_CWD envar.
@@ -159,7 +159,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
     *cpp = NULL;    /* Null terminate the environment                       */
 
     --cpp;                                      /* Back up to the __PFX     */
-    if( !strncmp( "__PFX=", *cpp, 6 ) ) {       /* Did spawn pass __PFX ?   */
+    if( strncmp( "__PFX=", *cpp, 6 ) == 0 ) {   /* Did spawn pass __PFX ?   */
         /*
         Copy the pfx passed in an envar into magic and remove it from the
         environment. The +6 skips over the __PFX=

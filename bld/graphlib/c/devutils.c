@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "gdefn.h"
 
 
-short _GraphMode( void )
+bool _GraphMode( void )
 //======================
 
 // make sure we are in a graphics mode
@@ -47,7 +48,7 @@ short _GraphMode( void )
 }
 
 
-short _GrProlog( void )
+bool _GrProlog( void )
 //=====================
 
 // same as GraphMode, except it also turns off the cursor
@@ -69,13 +70,13 @@ void _GrEpilog( void )
 // conditionally turn the cursor back on
 
 {
-    if( _CursState == _GCURSORON ) {
+    if( _CursState ) {
         _CursorOn();
     }
 }
 
 
-short _InitDevice( short mode )
+bool _InitDevice( short mode )
 //=============================
 
 // call the 'init' routine for the given graphics device

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +42,14 @@
 
 _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
 {
-    HANDLE              h;
+    HANDLE              osffh;
     WIN32_FIND_DATA     ffd;
 
-    h = __lib_FindFirstFile( path, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( path, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt_reterr() );
     }
     *dos_attrib = NT2DOSATTR( ffd.dwFileAttributes );
-    FindClose( h );
+    FindClose( osffh );
     return( 0 );
 }

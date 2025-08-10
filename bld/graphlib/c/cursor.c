@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,8 @@
 
 
 #if !defined( _DEFAULT_WINDOWS )
-static void TextCursor( short turning_on )
-//========================================
+static void TextCursor( bool turning_on )
+//=======================================
 
 {
     short               cursor;
@@ -48,7 +48,7 @@ static void TextCursor( short turning_on )
     if( !turning_on ) {
         cursor |= 0x2000;       // set blank cursor bit
     }
-    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );
+    VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );
 }
 #endif
 
@@ -91,17 +91,17 @@ void _CursorOn( void )
 //====================
 
 {
-    if( _GrCursor == 0 ) {      // if it isn't already on
+    if( !_GrCursor ) {      // if it isn't already on
 #if defined( _DEFAULT_WINDOWS )
         GraphCursor();
 #else
         if( IsTextMode ) {
-            TextCursor( 1 );
+            TextCursor( true );
         } else {
             GraphCursor();
         }
 #endif
-        _GrCursor = 1;          // cursor is on
+        _GrCursor = true;          // cursor is on
     }
 }
 
@@ -114,20 +114,20 @@ void _CursorOff( void )
     unsigned short      cursor;
 #endif
 
-    if( _GrCursor != 0 ) {      // if the cursor is on
+    if( _GrCursor ) {      // if the cursor is on
 #if defined( _DEFAULT_WINDOWS )
         GraphCursor();
 #else
         if( IsTextMode ) {
-            TextCursor( 0 );
+            TextCursor( false );
         } else {
             // if cursor is not where we think it is (printf), assume it is off
-            cursor = BIOSData( BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ), unsigned short );
+            cursor = BIOSData( unsigned short, BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ) );
             if( cursor == ( ( _TextPos.row << 8 ) + _TextPos.col ) ) {
                 GraphCursor();
             }
         }
 #endif
-        _GrCursor = 0;      // cursor is off
+        _GrCursor = false;      // cursor is off
     }
 }

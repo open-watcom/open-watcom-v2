@@ -1,0 +1,107 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#ifndef _DOSFCB_H_INCLUDED
+#define _DOSFCB_H_INCLUDED
+
+#include "pushpck1.h"
+typedef struct dosfcb {
+    unsigned char       drive;          /* Drive number. 0 before open
+                                           indicates default drive.  0 is
+                                           replaced by the actual drive number
+                                           (A = 1, B = 2, ... ) during open. */
+    char                name[8];        /* Filename, left-justified with
+                                           trailing blanks.  If a reserved
+                                           device name is placed here (such as
+                                           LPT1), do not include the optional
+                                           colon. */
+    char                ext[3];         /* Filename extension, left-justified
+                                           with trailing blanks. */
+    unsigned short      curblock;       /* Current block number relative to the
+                                           beginnning of the file, starting with
+                                           0 (set to 0 by the open function
+                                           call.)  A block consists of 128
+                                           records, each of the size specified
+                                           in the logical record size field.
+                                           The current blcok number is used with
+                                           the current record field for
+                                           sequential reads and writes. */
+    unsigned short      recsize;        /* Logical record size in bytes.  Set to
+                                           80h by the open function call.  If
+                                           this is not correct, you must set the
+                                           value because DOS uses it to
+                                           determine the proper locations in the
+                                           file for all disk reads and
+                                           writes. */
+} dosfcb;
+
+typedef struct dosfcb_std {
+    dosfcb              fcb;
+    unsigned long       size;           /* File size in bytes. */
+    unsigned short      date;           /* Date the file was created or last
+                                           updated.  The mm/dd/yy are mapped in
+                                           the bits as follows:
+                                             yyyyyyymmmmddddd
+                                           where:  mm is 1-12, dd is 1-31,
+                                           yy is 0-119 (1980-2099). */
+    unsigned char       res1[10];
+    unsigned char       currec;         /* Current relative record number
+                                          (0-127) within the current block.  You
+                                          must set this field before doing
+                                          sequential read/write operations.
+                                          This field is not initialized by the
+                                          open function call. */
+    unsigned char       randomrec[3];   /* Record number relative to the
+                                           beginning of the file, starting with
+                                           0.  You must set this field before
+                                           doing random read/write operations.
+                                           This field is not initialized by the
+                                           open function call.
+                                           If the record size is less than 64
+                                           bytes, both words are used.
+                                           Otherwise, only the first 3 bytes are
+                                           used.  Note that if you use the FCB
+                                           at 5dh in the PSP, the last byte of
+                                           the FCP overlaps the first byte of
+                                           the unformatted parameter area. */
+} dosfcb_std;
+
+typedef struct dosfcb_ext {
+    unsigned char       hexff;          /* Contains 0xff. */
+    unsigned char       res1[6];        /* Currently contain zeroes. */
+    unsigned char       attr;           /* Attribute byte. */
+    dosfcb_std          fcb;
+} dosfcb_ext;
+#include "poppck.h"
+
+#endif

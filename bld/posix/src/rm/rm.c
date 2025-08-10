@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <dos.h>
-#include <direct.h>
 #include <conio.h>
 #ifdef __NT__
 #include <windows.h>

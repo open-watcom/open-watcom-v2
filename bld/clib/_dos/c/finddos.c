@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,11 +77,11 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             "push   es"         \
             "push   bx"         \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "pop    dx"         \
             "pop    ds"         \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             _RST_DS             \
             "call __doserror_"  \
         __parm __caller     [__es __bx] [__cx] [__dx __ax] \
@@ -91,10 +91,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_next_dta = \
             _SET_DSDX           \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _RST_DS             \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__dx __ax] \
         __value             [__ax] \
@@ -109,10 +109,10 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
   #else                 // 16-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    dx,bx"      \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__bx] [__cx] [__dx] \
         __value             [__ax] \
@@ -120,9 +120,9 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
     #pragma aux __dos_find_next_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__dx] \
         __value             [__ax] \
@@ -135,13 +135,13 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __modify __exact    [__ax]
 
   #endif
-#elif defined( __CALL21__ )    // 32-bit near data
+#elif defined( __WINDOWS_386__ )    // 32-bit near data (Windows 3.x 32-bit Extender)
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    edx,ebx"    \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__ebx] [__ecx] [__edx] \
         __value             [__eax] \
@@ -149,9 +149,9 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
     #pragma aux __dos_find_next_dta = \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
         __parm __caller     [__edx] \
         __value             [__eax] \
@@ -163,14 +163,14 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __value             [__eax] \
         __modify __exact    [__eax]
 
-#else                   // 32-bit near data
+#else                   // 32-bit near data (DOS)
     #pragma aux __dos_find_first_dta = \
             "push   edx"        \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             "mov    edx,ebx"    \
             _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
+            __INT_21            \
             "pop    edx"        \
             "call __doserror_"  \
             "test   eax,eax"    \
@@ -179,7 +179,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             "jnz short L1"      \
             "push   es"         \
             _MOV_AH DOS_GET_DTA \
-            _INT_21             \
+            __INT_21            \
             MOV_DATA_FROM_DTA   \
             "pop    es"         \
             "xor    eax,eax"    \
@@ -191,15 +191,15 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_next_dta = \
             "push   es"         \
             _MOV_AH DOS_SET_DTA \
-            _INT_21             \
+            __INT_21            \
             CMP_EXTENDER_INTEL  \
             "jnz short L1"      \
             _MOV_AH DOS_GET_DTA \
-            _INT_21             \
+            __INT_21            \
             MOV_DATA_TO_DTA     \
         "L1:"                   \
             _MOV_AH DOS_FIND_NEXT \
-            _INT_21             \
+            __INT_21            \
             "call __doserror_"  \
             "test   eax,eax"    \
             "jnz short L2"      \
@@ -231,7 +231,7 @@ extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_
             "mov    si,1"       \
             "mov    ax,714Eh"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_ax" \
         __parm __caller     [__dx __ax] [__cx] [__es __di] \
@@ -242,7 +242,7 @@ extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_
             "mov    si,1"       \
             "mov    ax,714Eh"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_ax" \
         __parm __caller     [__dx] [__cx] [__es __di] \
         __value             [__dx __ax] \
@@ -254,7 +254,7 @@ extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta )
         "mov    si,1"           \
         "mov    ax,714fh"       \
         "stc"                   \
-        "int 21h"               \
+        __INT_21                \
         "call __lfnerror_0"     \
     __parm __caller     [__bx] [__es __di] \
     __value             [__dx __ax] \
@@ -264,7 +264,7 @@ extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
 #pragma aux __dos_find_close_lfn = \
         "mov    ax,71A1h"       \
         "stc"                   \
-        "int 21h"               \
+        __INT_21                \
         "call __lfnerror_0"     \
     __parm __caller     [__bx]  \
     __value             [__dx __ax] \
@@ -291,19 +291,19 @@ static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind
 #ifdef _M_I86
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
 #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.es  = RM_TB_PARM2_SEGM;
-    dpmi_rm.edi = RM_TB_PARM2_OFFS;
-    dpmi_rm.ecx = attrib;
-    dpmi_rm.esi = 1;
-    dpmi_rm.eax = 0x714E;
-    if( (rc = __dpmi_dos_call_lfn_ax( &dpmi_rm )) >= 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.es  = RM_TB_PARM2_SEGM;
+    dr.r.x.edi = RM_TB_PARM2_OFFS;
+    dr.r.x.ecx = attrib;
+    dr.r.x.esi = 1;
+    dr.r.x.eax = 0x714E;
+    if( (rc = __dpmi_dos_call_lfn_ax( &dr )) >= 0 ) {
         memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     }
     return( rc );
@@ -316,16 +316,16 @@ static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
 #ifdef _M_I86
     return( __dos_find_next_lfn( handle, lfndta ) );
 #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.es  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edi = RM_TB_PARM1_OFFS;
-    dpmi_rm.ebx = handle;
-    dpmi_rm.esi = 1;
-    dpmi_rm.eax = 0x714F;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.es  = RM_TB_PARM1_SEGM;
+    dr.r.x.edi = RM_TB_PARM1_OFFS;
+    dr.r.x.ebx = handle;
+    dr.r.x.esi = 1;
+    dr.r.x.eax = 0x714F;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
         memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     }
     return( rc );
@@ -338,12 +338,12 @@ static lfn_ret_t _dos_find_close_lfn( unsigned handle )
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );
 #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ebx = handle;
-    dpmi_rm.eax = 0x71A1;
-    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.r.x.ebx = handle;
+    dr.r.x.eax = 0x71A1;
+    return( __dpmi_dos_call_lfn( &dr ) );
 #endif
 }
 

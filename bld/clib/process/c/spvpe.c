@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,9 +59,13 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
     CHAR_TYPE       *end;
 
     retval = __F_NAME(spawnve,_wspawnve)( mode, file, argv, envp );
-    if( retval != -1  || (_RWD_errno != ENOENT && _RWD_errno != EINVAL) )
+    if( retval != -1
+      || (_RWD_errno != ENOENT
+      && _RWD_errno != EINVAL) )
         return( retval );
-    if( file[0] == DIR_SEP || file[0] == NULLCHAR || file[1] == DRV_SEP )
+    if( file[0] == DIR_SEP
+      || file[0] == NULLCHAR
+      || file[1] == DRV_SEP )
         return( retval );
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
     if( p == NULL )
@@ -88,7 +92,8 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         retval = __F_NAME(spawnve,_wspawnve)( mode, buffer, argv, envp );
         if( retval != -1 )
             break;
-        if(_RWD_errno != ENOENT && _RWD_errno != EINVAL)
+        if( _RWD_errno != ENOENT
+          && _RWD_errno != EINVAL )
             break;
         if( *end != STRING( ';' ) )
             break;

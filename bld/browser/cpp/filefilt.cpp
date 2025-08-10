@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,13 +134,13 @@ FFiltEntry & FFiltEntry::operator=( const FFiltEntry & o )
 int FFiltEntry::operator==( const FFiltEntry & o ) const
 //------------------------------------------------------
 {
-    return !stricmp( _name, o._name);
+    return( stricmp( _name, o._name ) == 0 );
 }
 
 int FFiltEntry::operator<( const FFiltEntry & o ) const
 //-----------------------------------------------------
 {
-    return (_name < o._name);
+    return( _name < o._name );
 }
 
 //------------------ FileFilter -------------------------------

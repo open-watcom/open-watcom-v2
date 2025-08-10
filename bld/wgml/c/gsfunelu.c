@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -26,9 +26,10 @@
 *
 * Description:  WGML single letter functions &e'    &l'     &u'     &w'
 *                                             exist, length, upper,  width
-*                           &s'        &S'
-*                            subscript, Superscript
+*                           &s'        &S'          &x'
+*                            subscript, Superscript hex-to-char
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -38,37 +39,32 @@
 /*              returns   0 or 1 in result                                 */
 /***************************************************************************/
 
-char    *scr_single_func_e( char * in, char * end, char * * result )
+static char *scr_single_func_e( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
 
-    /* unused parameters */ (void)end;
+    (void)end;
 
-    pchar = scan_sym( in + 3 + (*(in + 3) == '&'), &symvar_entry, &var_ind );
-
-    if( symvar_entry.flags & local_var ) {  // lookup var in dict
-        rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                            var_ind, &symsubval );
+    if( *args == '&' ) {            // a string operand is never a symbol
+        pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
     } else {
-        rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                          &symsubval );
+        pchar = scan_sym( args, &symvar_entry, &var_ind, NULL, false );
+        rc = 0;
     }
+
     if( rc == 2 ) {
-        **result = '1';                 // exists
+        *(*result)++ = '1';             // exists
     } else {
-        **result = '0';                 // does not exist
+        *(*result)++ = '0';             // does not exist
     }
-    *result  += 1;
     **result = '\0';
 
-    if( *pchar == '.' ) {
-        pchar++;                    // skip optional terminating dot
-    }
-    ProcFlags.substituted = true;       // something changed
+    SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
 }
 
@@ -78,46 +74,33 @@ char    *scr_single_func_e( char * in, char * end, char * * result )
 /*              returns   length of value or length of name in result      */
 /***************************************************************************/
 
-char    *scr_single_func_l( char * in, char * end, char * * result )
+static char *scr_single_func_l( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    int                 len;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    unsigned        len;
 
-    if( *(in + 3) == '&' ) {            // symbol name
-        pchar = scan_sym( in + 4, &symvar_entry, &var_ind );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+    if( *args == '&' ) {            // symbol name
+        pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
-            sprintf( *result, "%lu", (unsigned long)strlen( symsubval->value ) );
+            len = strlen( symsubval->value );
         } else {
-            sprintf( *result, "%lu", (unsigned long)strlen( symvar_entry.name ) );
+            len = strlen( symvar_entry.name );
         }
     } else {                            // string
-        pchar = in + 3;
         len = 0;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
             len++;
-            pchar++;
         }
-        sprintf( *result, "%d", len );
     }
-    *result  += strlen( *result );
-    **result = '\0';
 
-    if( *pchar == '.' ) {
-        pchar++;                    // skip optional terminating dot
-    }
-    ProcFlags.substituted = true;       // something changed
+    *result += sprintf( *result, "%d", len );
+
+    SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
 }
 
@@ -128,57 +111,47 @@ char    *scr_single_func_l( char * in, char * end, char * * result )
 /*                       subscript or superscript is coded in parm fun     */
 /***************************************************************************/
 
-static char    *scr_single_func_sS( char * in, char * end, char * * result, char fun )
+static char *scr_single_func_sS( char *args, char *end, char **result, bool super )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    char            *   pval;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    char            *pval;
 
+    *(*result)++ = FUNC_escape;         // insert function code in buffer
+    if( super ) {
+        *(*result)++ = FUNC_superscript_beg;// function superscript start
+    } else {
+        *(*result)++ = FUNC_subscript_beg;  // function subscript start
+    }
 
-    **result = function_escape;         // insert function code in buffer
-    *result += 1;
-    **result = fun;
-    *result += 1;
-
-    if( *(in + 3) == '&' ) {            // symbol name
-        pchar = scan_sym( in + 4, &symvar_entry, &var_ind );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+    if( *args == '&' ) {            // symbol name
+        pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             pval = symsubval->value;    // variable  found
         } else {
-            pval =  symvar_entry.name;  // not found use variable name
+            pval = symvar_entry.name;   // not found use variable name
         }
-        while( *pval ) {
-            **result = *pval++;
-            *result += 1;
+        for( ; *pval != '\0'; pval++ ) {
+            *(*result)++ = *pval;
         }
     } else {                            // string
-        pchar = in + 3;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
-            **result = *pchar++;
-            *result += 1;
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
+            *(*result)++ = *pchar;
         }
     }
-    **result = function_escape;         // insert function code in buffer
-    *result += 1;
-    **result = fun | 0x01;              // function end
-    *result += 1;
+    *(*result)++ = FUNC_escape;         // insert function code in buffer
+    if( super ) {
+        *(*result)++ = FUNC_superscript_end;    // function superscript end
+    } else {
+        *(*result)++ = FUNC_subscript_end;    // function subscript end
+    }
     **result = '\0';
 
-    if( *pchar == '.' ) {
-        pchar++;                    // skip optional terminating dot
-    }
-    ProcFlags.substituted = true;       // something changed
+    SkipDot( pchar );                   // skip optional terminating dot
     return( pchar );
 }
 
@@ -188,49 +161,35 @@ static char    *scr_single_func_sS( char * in, char * end, char * * result, char
 /*                                                                         */
 /***************************************************************************/
 
-char    *scr_single_func_u( char * in, char * end, char * * result )
+static char *scr_single_func_u( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    char            *   pval;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    char            *pval;
+    bool            sym_valid;
 
-    /* unused parameters */ (void)end;
-
-    if( *(in + 3) == '&' ) {            // symbol name
-        pchar = scan_sym( in + 4, &symvar_entry, &var_ind );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+    sym_valid = false;
+    if( *args == '&' ) {            // symbol name
+        pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
-            pval = symsubval->value;    // variable found
-        } else {
-            pval =  symvar_entry.name;  // not found use variable name
+            sym_valid = true;           // variable found
+            for( pval = symsubval->value; *pval != '\0'; pval++ ) {
+                *(*result)++ = my_toupper( *pval );
+            }
         }
-        while( *pval ) {
-            **result = toupper( *pval++ );
-            *result += 1;
-        }
-    } else {                            // string
-        pchar = in + 3;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
-            **result = toupper( *pchar++ );
-            *result += 1;
+    }
+    if( !sym_valid ) {                  // string or invalid symbol
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
+            *(*result)++ = my_toupper( *pchar );
         }
     }
     **result = '\0';
 
-    if( *pchar == '.' ) {
-        pchar++;                    // skip optional terminating dot
-    }
-    ProcFlags.substituted = true;       // something changed
+    SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
 }
 
@@ -242,84 +201,128 @@ char    *scr_single_func_u( char * in, char * end, char * * result )
 /*  some logic has to be in sync with scr_width() in gsfwidth.c            */
 /***************************************************************************/
 
-char    *scr_single_func_w( char * in, char * end, char * * result )
+static char *scr_single_func_w( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    int                 len;
-    uint32_t            width;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    unsigned        len;
+    unsigned        width;
 
-    if( *(in + 3) == '&' ) {            // symbol name
-        pchar = scan_sym( in + 4, &symvar_entry, &var_ind );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+    if( *args == '&' ) {            // symbol name
+        pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font );
         } else {
 
-        /*******************************************************************/
-        /* for undefined variable calc length of name, & and perhaps *     */
-        /*******************************************************************/
+            /*******************************************************************/
+            /* for undefined variable calc length of name, & and perhaps *     */
+            /*******************************************************************/
             width = cop_text_width( symvar_entry.name, strlen( symvar_entry.name ), g_curr_font )
                     + wgml_fonts[g_curr_font].width.table['&'];
 
-            if( symvar_entry.flags & local_var ) {  // add width of *
+            if( symvar_entry.flags & SF_local_var ) {  // add width of *
                 width += wgml_fonts[g_curr_font].width.table['*'];
             }
         }
     } else {                            // string
-        pchar = in + 3;
         len = 0;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
             len++;
-            pchar++;
         }
-        width = cop_text_width( in + 3, len, g_curr_font );
+        width = cop_text_width( args, len, g_curr_font );
     }
     len = width;
     width = (width * CPI + g_resh / 2) / g_resh;
-    sprintf( *result, "%d", width );
-#if 0                                   // perhaps as debug output
-    sprintf( *result + strlen( *result ), " %d", len );
-#endif
-    *result  += strlen( *result );
-    **result = '\0';
 
-    if( *pchar == '.' ) {
-        pchar++;                    // skip optional terminating dot
-    }
-    ProcFlags.substituted = true;       // something changed
+    *result  += sprintf( *result, "%d", width );
+
+    SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
 }
 
+
+/***************************************************************************/
+/*  script single letter function &x'         hex to char                  */
+/*              returns   character equivalent of hex pair                 */
+/*                                                                         */
+/*  Note: multiple concatenated pairs may be processed (sometimes)         */
+/*        this version always processes all concatenated pairs, or none    */
+/*        invalid operands result in the entire operand being displayed    */
+/***************************************************************************/
+
+static char *scr_single_func_x( char *args, char *end, char **result )
+{
+    bool            accept;
+    char            c;
+    char            *pchar;
+
+    accept = true;
+    if( *args != '&' ) {               // symbols/symbol values are not converted
+        if( ( end - args ) % 2 ) {      // odd number of characters?
+            accept = false;
+        } else {
+            for( pchar = args; pchar < end; pchar++ ) { // check for non-hex-digit in input
+                if( !my_isxdigit( *pchar ) ) {
+                    accept = false;
+                    break;
+                }
+            }
+        }
+        if( accept ) {                  // input is acceptable
+            for( pchar = args; pchar < end; pchar++ ) { // convert input from hex
+
+                c = 0;
+                if( my_isdigit( *pchar ) ) {
+                    c += *pchar - '0';
+                } else {
+                    c += my_toupper( *pchar ) - 'A' + 10;
+                }
+                c *= 16;
+                pchar++;
+                if( my_isdigit( *pchar ) ) {
+                    c += *pchar - '0';
+                } else {
+                    c += my_toupper( *pchar ) - 'A' + 10;
+                }
+
+                *(*result)++ = c;
+            }
+            **result = '\0';                    // final digit already skipped
+            SkipDot( pchar );                   // skip optional terminating dot
+        } else {
+            for( pchar = args; pchar < end; pchar++ )
+                *(*result)++ = *pchar;          // copy unrecognized input
+            SkipDot( pchar );                   // don't copy terminating dot
+            *(*result)++ = *pchar;              // copy possible whitespace
+            **result = '\0';
+        }
+    } else {
+        pchar = args;
+    }
+
+    return( pchar );
+}
 
 /***************************************************************************/
 /*  script single letter functions unsupported   process to comsume        */
 /*                                               variable for scanning     */
 /***************************************************************************/
 
-static  char    *scr_single_func_unsupport( char * in, char * * result )
+static char *scr_single_func_unsupport( const char *funcname, char *args, char *end, char **result )
 {
     char        charstr[2];
 
-    /* unused parameters */ (void)result;
+    (void)result; (void)end;
 
-    charstr[0] = *(in + 1);
+    charstr[0] = *funcname;
     charstr[1] = '\0';
-    g_warn( wng_func_unsupport, charstr );
-    g_info_inp_pos();
 
     // do nothing
-    return( in + 3 );
+    return( args );
 }
 
 
@@ -329,56 +332,54 @@ static  char    *scr_single_func_unsupport( char * in, char * * result )
 /*  functions used within the OW doc build system:                     */
 /*   &e'  existance of variable 0 or 1                                 */
 /*   &l'  length of variable content or if undefined length of name    */
-/*   &u'  upper                                                        */
+/*   &u'  upper case                                                   */
+/*   &w'  width for internal use                                       */
+/*   &x'  convert valid hex pairs to characters                        */
 /*                                                                     */
 /*   &s'  subscript                                                    */
 /*   &S'  superscript                                                  */
 /*                                                                     */
 /*   other single letter functions are not used AFAIK                  */
 /*                                                                     */
-/*   &w'  width for internal use                                       */
 /***********************************************************************/
 
-char    *scr_single_funcs( char * in, char * end, char * * result )
+char *scr_single_funcs( const char *funcname, char *args, char *end, char **result )
 {
-    char            *   pw;
+    char            *pw;
 
-    if( *(in + 2) == '\'' ) {
-        switch( *(in + 1) ) {
-        case  'E' :                     // exist function
-        case  'e' :                     // exist function
-            pw = scr_single_func_e( in, end, result );
-            break;
-        case  'L' :                     // length function
-        case  'l' :                     // length function
-            pw = scr_single_func_l( in, end, result );
-            break;
-        case  'S' :                     // superscript
-            pw = scr_single_func_sS( in, end, result, function_superscript );
-            break;
-        case  's' :                     // subscript
-            pw = scr_single_func_sS( in, end, result, function_subscript );
-            break;
-        case  'U' :                     // upper function
-        case  'u' :                     // upper function
-            pw = scr_single_func_u( in, end, result );
-            break;
-        case  'W' :                     // width function
-        case  'w' :                     // width function
-            pw = scr_single_func_w( in, end, result );
-            break;
-        default:
-            pw = scr_single_func_unsupport( in, result );
-            wng_count++;
-            break;
-        }
-    } else {
-        out_msg( "ERR_Logic error in gsfunelu.c\n" );
-        err_count++;
-        g_suicide();
+    ProcFlags.unresolved = false;
+    switch( *funcname ) {
+    case 'e':                       // exist function
+    case 'E':
+        pw = scr_single_func_e( args, end, result );
+        break;
+    case 'l':                       // length function
+    case 'L':
+        pw = scr_single_func_l( args, end, result );
+        break;
+    case 's':                       // subscript
+        pw = scr_single_func_sS( args, end, result, false );
+        break;
+    case 'S':                       // superscript
+        pw = scr_single_func_sS( args, end, result, true );
+        break;
+    case 'u':                       // upper function
+    case 'U':
+        pw = scr_single_func_u( args, end, result );
+        break;
+    case 'w':                       // width function
+    case 'W':
+        pw = scr_single_func_w( args, end, result );
+        break;
+    case 'x':                       // hex-to-char function
+    case 'X':
+        pw = scr_single_func_x( args, end, result );
+        break;
+    default:
+        pw = scr_single_func_unsupport( funcname, args, end, result );
+        ProcFlags.unresolved = true;
+        break;
     }
     ProcFlags.substituted = true;
     return( pw );
 }
-
-

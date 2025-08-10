@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +79,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
               remove the filename from the file system right away.
               This is allowed under POSIX. The file will be deleted
               as soon as it's closed */
-        _FP_TMPFCHAR(fp) = tmpfnext;
+        _FP_TMPFCHAR( fp ) = tmpfnext;
     } else {
         close( fd );
     }

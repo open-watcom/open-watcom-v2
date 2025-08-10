@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2484,7 +2484,8 @@ DECL_SPEC *PTypeStgClass( stg_class_t val )
 
     spec = makeDeclSpec();
 
-    if( CHECK_STD( >= , CXX0X ) && val == STG_AUTO ) {
+    if( CompVars.cxxstd >= STD_CXX11
+      && val == STG_AUTO ) {
         CErr1 ( ERR_CXX11_AUTO_STORAGE_SPECIFIER );
     }
     spec->stg_class = val;

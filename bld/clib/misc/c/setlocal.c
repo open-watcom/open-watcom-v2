@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
     register int i;
 
     _INITLOCALESETTING
-    if( category < LC_MIN  ||  category > LC_MAX ) {
+    if( category < LC_MIN
+      || category > LC_MAX ) {
         return( NULL );
     }
     if( locale == NULL ) {

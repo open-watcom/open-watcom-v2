@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'translate(                                    */
@@ -51,104 +53,79 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   ptaboa;
-    char            *   ptaboe;
-    char            *   ptabia;
-    char            *   ptabie;
-    char                padchar;
-    char                c;
-    char            *   iptr;
-    char            *   optr;
-    bool                ifound;
-    int                 offset;
-    bool                padchar_set;
+    tok_type        string;
+    tok_type        tableo;
+    tok_type        tablei;
+    char            padchar;
+    char            c;
+    char            *iptr;
+    int             tableo_len;
+    int             offset;
 
-    if( (parmcount < 1) || (parmcount > 4) ) {
-        return( neg );
-    }
+    if( parmcount < 1
+      || parmcount > 4 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
-    unquote_if_quoted( &pval, &pend );
-
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    ptaboa = parms[1].start;
-    ptaboe = parms[1].stop;
-    if( (parmcount > 1) && (ptaboe > ptaboa) ) {   // tableo is not empty
-        unquote_if_quoted( &ptaboa, &ptaboe );
-    } else {
-        ptaboa = NULL;
-        ptaboe = NULL;
-    }
-
-    ptabia = parms[2].start;
-    ptabie = parms[2].stop;
-    if( (parmcount > 2) && (ptabie > ptabia) ) {   // tablei is not empty
-        unquote_if_quoted( &ptabia, &ptabie );
-    } else {
-        ptabia = NULL;
-        ptabie = NULL;
-    }
-
-    if( parmcount > 3 ) {               // padchar specified
-        char *pa = parms[3].start;
-        char *pe = parms[3].stop;
-
-        unquote_if_quoted( &pa, &pe );
-        padchar = *pa;
-        padchar_set = true;
-    } else {
-        padchar = ' ';                  // padchar default is blank
-        padchar_set = false;
-    }
-
-    if( (ptabia == NULL) && (ptaboa == NULL) && !padchar_set ) {
-        while( (pval < pend) && (ressize > 0) ) {  // translate to upper
-            **result = toupper( *pval++ );
-            *result += 1;
-            ressize--;
+    string = parms[0].arg;
+    if( unquote_arg( &string ) > 0 ) {
+        tableo.s = NULL;
+        tableo.e = NULL;
+        tableo_len = 0;
+        if( parmcount > 1 ) {
+            tok_type table = parms[1].arg;
+            tableo_len = unquote_arg( &table );
+            if( tableo_len > 0 ) {    // tableo is not empty
+                tableo = table;
+            }
         }
-    } else {                   // translate as specified in tablei and tableo
-        for( ; pval < pend; pval++ ) {
-            c = *pval;
-            ifound = false;
-            if( ptabia == NULL ) {
-                c = padchar;
-            } else {
-                for( iptr = ptabia; iptr < ptabie; iptr++ ) {
-                    if( c == *iptr ) {
-                        ifound = true;  // char found in input table
-                        offset = iptr - ptabia;
-                        optr = ptaboa + offset;
-                        if( optr < ptaboe ) {
-                            **result = *optr;  // take char from output table
-                        } else {
-                            **result = padchar;// output table too short use padchar
+        tablei.s = NULL;
+        tablei.e = NULL;
+        if( parmcount > 2 ) {
+            tok_type table = parms[2].arg;
+            if( unquote_arg( &table ) > 0 ) {   // tableo is not empty
+                tablei = table;
+            }
+        }
+        padchar = ' ';                          // padchar default is blank
+        if( parmcount > 3 ) {
+            tok_type pad = parms[3].arg;
+            if( unquote_arg( &pad ) > 0 ) {     // padchar specified
+                padchar = *pad.s;
+            }
+        }
+
+        if( (tablei.s == NULL) && (tableo.s == NULL) && padchar == '\0' ) {
+            while( (string.s < string.e) && (ressize > 0) ) {  // translate to upper
+                *(*result)++ = my_toupper( *string.s++ );
+                ressize--;
+            }
+        } else {                   // translate as specified in tablei and tableo
+            while( string.s < string.e && ressize > 0 ) {
+                c = *string.s++;
+                if( tablei.s == NULL ) {
+                    c = padchar;
+                } else {
+                    for( iptr = tablei.s; iptr < tablei.e; iptr++ ) {
+                        if( c == *iptr ) {
+                            offset = iptr - tablei.s;
+                            if( offset < tableo_len ) {
+                                c = *(tableo.s + offset);  // take char from output table
+                            } else {
+                                c = padchar;    // output table too short use padchar
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
-            }
-            if( !ifound ) {
-                **result = c;           // not found, leave unchanged
-            }
-            *result += 1;
-            ressize--;
-            if( ressize <= 0 ) {
-                break;
+                *(*result)++ = c;
+                ressize--;
             }
         }
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

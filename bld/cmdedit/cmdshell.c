@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,8 +239,8 @@ void main( void )
     DosMakePipe( &StdoutRdHdl, &StdoutWrHdl, BUF_SIZE );
     stdinHdl = 0;
     stdoutHdl = 1;
-    saveStdinHdl = 0xFFFF;
-    saveStdoutHdl = 0xFFFF;
+    saveStdinHdl = (HFILE)-1;
+    saveStdoutHdl = (HFILE)-1;
 
     DosDupHandle( stdinHdl, &saveStdinHdl );
     DosDupHandle( stdoutHdl, &saveStdoutHdl );

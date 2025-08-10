@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,14 @@
 #include "fileacc.h"
 #include "defwin.h"
 
+
 enum {
     KS_EMPTY                    = 0,
     KS_HANDLE_FIRST_CALL        = 1,
     KS_HANDLE_SECOND_CALL       = 2,
 };
 
-static int do_getch( HANDLE console_in )
+static int do_getch( HANDLE conin )
 {
     INPUT_RECORD ir;
     DWORD n;
@@ -75,13 +77,14 @@ static int do_getch( HANDLE console_in )
         return( e );
     }
     for( ;; ) {
-        if( ! ReadConsoleInput( console_in, &ir, 1, &n ) )
+        if( ReadConsoleInput( conin, &ir, 1, &n ) == 0 )
             break;
         if( ! __NTRealKey( &ir ) )
             continue;
         repeat = ir.Event.KeyEvent.wRepeatCount - 1;
         c = (unsigned char)ir.Event.KeyEvent.uChar.AsciiChar;
-        if( (ir.Event.KeyEvent.dwControlKeyState & ENHANCED_KEY) != 0 || c == 0 ) {
+        if( (ir.Event.KeyEvent.dwControlKeyState & ENHANCED_KEY) != 0
+          || c == 0 ) {
             c = 0;
             e = ir.Event.KeyEvent.wVirtualScanCode;
             state = KS_HANDLE_SECOND_CALL;
@@ -98,7 +101,7 @@ static int do_getch( HANDLE console_in )
 _WCRTLINK int getch( void )
 {
     int         c;
-    HANDLE      h;
+    HANDLE      conin;
     DWORD       mode;
 
     if( (c = _RWD_cbyte) != 0 ) {
@@ -108,16 +111,16 @@ _WCRTLINK int getch( void )
 #ifdef DEFAULT_WINDOWING
     if( _WindowsGetch != NULL ) {
         LPWDATA res;
-        res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         c = _WindowsGetch( res );
     } else {
 #endif
         _AccessFileH( STDIN_FILENO );
-        h = __NTConsoleInput();
-        GetConsoleMode( h, &mode );
-        SetConsoleMode( h, 0 );
-        c = do_getch( h );
-        SetConsoleMode( h, mode );
+        conin = __NTConsoleInput();
+        GetConsoleMode( conin, &mode );
+        SetConsoleMode( conin, 0 );
+        c = do_getch( conin );
+        SetConsoleMode( conin, mode );
         _ReleaseFileH( STDIN_FILENO );
 #ifdef DEFAULT_WINDOWING
     }

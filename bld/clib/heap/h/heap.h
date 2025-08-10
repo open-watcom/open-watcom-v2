@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,20 +34,24 @@
  * Comments for heap implementation.
  */
 
+#if defined(__OS2_32BIT__)
+    #include <stdbool.h>
+#endif
 #ifdef _M_IX86
-#include <i86.h>
-#include "extender.h"
+    #include <i86.h>
+    #include "extender.h"
 #endif
 
 
-#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__CALL21__)
+#if !defined(__DOS_EXT__) \
+  && defined(__DOS_386__)
 #define __DOS_EXT__
 #endif
 
 #if defined( _M_I86 ) || defined( _M_IX86 )
 #define FAR2NEAR(t,f)   ((t __near *)(long)(f))
 #else
-#define FAR2NEAR(t,f) ((t*)(f))
+#define FAR2NEAR(t,f)   ((t*)(f))
 #endif
 
 #define BLK2CSTG(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
@@ -69,45 +73,39 @@
 #define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelist ), HEAP_ROUND_SIZE )
 
 #if defined( _M_IX86 )
- #define _DGroup()          _FP_SEG((&__nheapbeg))
+    #define _DGroup()           _FP_SEG((&__nheapbeg))
 #else
- #define _DGroup()          0
+    #define _DGroup()           0
 #endif
 
-#define __HM_SUCCESS        0
-#define __HM_FAIL           1
-#define __HM_TRYGROW        2
+#define __HM_SUCCESS            0
+#define __HM_FAIL               1
+#define __HM_TRYGROW            2
 
-#define PARAS_IN_64K        (0x1000)
-#define END_TAG             (/*0x....ffff*/ ~0U)
-#define OVERFLOW_64K(x)     ((x) > 0x10000)
+#define PARAS_IN_64K            (0x1000)
+#define END_TAG                 (/*0x....ffff*/ ~0U)
+#define OVERFLOW_64K(x)         ((x) > 0x10000)
 
-#define GET_BLK_SIZE(p)             ((p)->len & ~1U)
-#define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
-#define SET_BLK_SIZE_INUSE(p,s)     (p)->len = ((s) | 1)
-#define SET_BLK_INUSE(p)            (p)->len |= 1
-#define IS_BLK_END(p)               ((p)->len == END_TAG)
-#define SET_BLK_END(p)              (p)->len = END_TAG
+#define GET_BLK_SIZE(p)         ((p)->len & ~1U)
+#define IS_BLK_INUSE(p)         (((p)->len & 1) != 0)
+#define SET_BLK_SIZE_INUSE(p,s) (p)->len = ((s) | 1)
+#define SET_BLK_INUSE(p)        (p)->len |= 1
+#define IS_BLK_END(p)           ((p)->len == END_TAG)
+#define SET_BLK_END(p)          (p)->len = END_TAG
 
-#define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
-#define NEXT_BLK_A(p)               ((unsigned)(p) + GET_BLK_SIZE(p))
+#define NEXT_BLK(p)             ((unsigned)(p) + (p)->len)
+#define NEXT_BLK_A(p)           ((unsigned)(p) + GET_BLK_SIZE(p))
 
 #ifdef _M_I86
-#define BHEAP(s)            ((heapblk __based(s) *)0)
-#define FRLPTR(s)           freelist __based(s) *
+    #define BHEAP(s)            ((heapblk __based(s) *)0)
+    #define FRLPTR(s)           freelist __based(s) *
 #else
-#define FRLPTR(s)           freelist_nptr
+    #define FRLPTR(s)           freelist_nptr
 #endif
 
 #define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev.offs = 0
 
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
-
-#define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
-#define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
-
-#define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
-#define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
 
 /*
 ** NOTE: the size of these data structures is critical to the alignemnt
@@ -124,7 +122,7 @@ typedef freelist        _WCNEAR *freelist_nptr;
 typedef freelist        _WCFAR *freelist_fptr;
 
 typedef union heapptr {
-#if defined( _M_I86 ) || defined( _M_IX86 )
+#if defined( _M_I86 )
     __segment           segm;
 #endif
     heapblk_nptr        nptr;
@@ -151,7 +149,7 @@ struct heapblk {
     unsigned int        numalloc;           /* number of allocated blocks in heap */
     unsigned int        numfree;            /* number of free blocks in the heap */
     freelist            freehead;           /* listhead of free blocks in heap */
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
     unsigned int        used_obj_any :1;    /* allocated with OBJ_ANY - block may be in high memory */
 #endif
 };
@@ -200,9 +198,9 @@ extern heapblk_nptr     __MiniHeapRover;
 extern unsigned int     __LargestSizeB4MiniHeapRover;
 extern heapblk_nptr     __MiniHeapFreeRover;
 
-#if defined(__OS2__) && !defined(_M_I86)
-extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
-extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+#if defined(__OS2_32BIT__)
+extern bool             _os2_use_obj_any;           // Prefer high memory heap block
+extern bool             _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif
 
 extern size_t           __LastFree( void );
@@ -211,20 +209,28 @@ extern int              __ExpandDGROUP( unsigned int __amt );
 extern void             __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap );
 
 #if defined( _M_I86 )
+/*
+ * 16-bit target
+ */
 extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
-extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
-extern  void            __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
-#else
-extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
-extern  void_bptr       __MemAllocator( unsigned __size, heap_bptr __heap );
-extern  void            __MemFree( void_bptr __cstg, heap_bptr __heap );
-#endif
-#if defined( _M_I86 )
+extern void_bptr        __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
+extern void             __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
   #pragma aux __MemAllocator "*" __parm [__ax] [__dx] [__bx]
   #pragma aux __MemFree      "*" __parm [__ax] [__dx] [__bx]
-#elif defined( _M_IX86 )
+#else
+/*
+ * 32-bit target
+ */
+extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
+extern void_bptr        __MemAllocator( unsigned __size, heap_bptr __heap );
+extern void             __MemFree( void_bptr __cstg, heap_bptr __heap );
+# if defined( _M_IX86 )
+/*
+ * 32-bit Intel target
+ */
   #pragma aux __MemAllocator "*" __parm [__eax] [__edx]
   #pragma aux __MemFree      "*" __parm [__eax] [__edx]
+# endif
 #endif
 
 #if defined( _M_I86 )
@@ -242,8 +248,11 @@ extern void             *__ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size
 extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__) \
+  || defined(__DOS_EXT__)
 extern int              __nheapshrink( void );
 #endif
 

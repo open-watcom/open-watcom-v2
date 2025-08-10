@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "variety.h"
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/dev_msg.h>
 #include <sys/kernel.h>
@@ -38,6 +40,7 @@
 #include <conio.h>
 #include "rterrno.h"
 #include "rtdata.h"
+
 
 _WCRTLINK int (kbhit)( void )
 {
@@ -49,7 +52,7 @@ _WCRTLINK int (kbhit)( void )
     int     error;
 
     if( _RWD_cbyte != 0 )
-        return( 1 );
+        return( true );
     tcgetattr( STDIN_FILENO, &old );
     new = old;
     new.c_iflag &= ~(IXOFF | IXON);
@@ -64,8 +67,9 @@ _WCRTLINK int (kbhit)( void )
     error = Sendfd( msg.s.fd, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
     tcsetattr( STDIN_FILENO, TCSADRAIN, &old );
     if( error == -1 )
-        return( 0 );
-    if( msg.r.status != EOK || msg.r.nbytes == 0 )
-        return( 0 );
-    return( 1 );
+        return( false );
+    if( msg.r.status != EOK
+      || msg.r.nbytes == 0 )
+        return( false );
+    return( true );
 }

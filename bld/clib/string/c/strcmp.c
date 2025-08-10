@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,17 +42,19 @@
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- int __simple_wcscmp( const CHAR_TYPE *s, const CHAR_TYPE *t )
+ int __simple_wcscmp( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
 #else
- _WCRTLINK int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s, const CHAR_TYPE *t )
+ _WCRTLINK int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
 #endif
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_strcmp( s, t ) );
+    return( _inline_strcmp( s1, s2 ) );
 #else
-    for( ; *s == *t; s++, t++ )
-        if( *s == NULLCHAR )
+    for( ; *s1 == *s2; s1++, s2++ ) {
+        if( *s1 == NULLCHAR ) {
             return( 0 );
-    return( *s - *t );
+        }
+    }
+    return( *s1 - *s2 );
 #endif
 }

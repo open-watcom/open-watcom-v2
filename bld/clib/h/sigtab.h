@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#if !defined( __OS2_286__ ) && defined( __SW_BM )
+#if !defined( __OS2_16BIT__ ) && defined( __SW_BM )
     #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
 #else
     #include "sigdefn.h"

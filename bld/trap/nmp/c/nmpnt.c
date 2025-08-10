@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,34 +36,34 @@
 #include "bool.h"
 
 
-bhandle myopen( char *name )
+oshandle myopen( char *name )
 {
     return( CreateFile( name, GENERIC_READ+GENERIC_WRITE,
                         FILE_SHARE_READ+FILE_SHARE_WRITE, NULL,
                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL ) );
 }
 
-void myclose( bhandle handle )
+void myclose( oshandle handle )
 {
     CloseHandle( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( oshandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
-    if( !ReadFile( handle, buff, len, &bytes, NULL ) ) {
+    if( ReadFile( handle, buff, len, &bytes, NULL ) == 0 ) {
         bytes = 0;
     }
     return( bytes );
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( oshandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
-    if( !WriteFile( handle, buff, len, &bytes, NULL ) ) {
+    if( WriteFile( handle, buff, len, &bytes, NULL ) == 0 ) {
         bytes = 0;
     }
     return( bytes );

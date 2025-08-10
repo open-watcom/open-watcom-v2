@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#include <stdarg.h>
+#include <stdbool.h>
 #define NOAUTOPROCS
 #define NOCOVERSENDS
 #define NOCOVERRC
@@ -39,8 +41,8 @@
 #define INCLUDE_MMSYSTEM_H
 #define INCLUDE_TOOLHELP_H
 #define INCLUDE_PENWIN_H
-#include <stdarg.h>
 #include <windows.h>
+
 
 #define MAGICCOOKIE 0xdeadbeefL
 
@@ -61,7 +63,7 @@ struct wndprocs {
 extern void         *UserProcs[];
 
 extern void         *SetProc( FARPROC fp, int type );
-extern BOOL         TryAlias( HWND hwnd, WORD msg, LONG *lparam );
+extern bool         TryAlias( HWND hwnd, WORD msg, LONG *lparam );
 extern void         *RealProcAddr( FARPROC fp );
 extern DWORD _WCFAR *_DataSelectorSizeAddr;
 extern CALLBACKPTR  vGetCallbackRoutine( PROCPTR fn, va_list args );

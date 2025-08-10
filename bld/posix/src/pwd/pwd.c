@@ -33,13 +33,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#if defined(__QNX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
 #include <errno.h>
 #include <string.h>
+#include "wio.h"
+
 
 int main( void )
 /**************/

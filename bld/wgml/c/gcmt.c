@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 
@@ -40,11 +41,11 @@
 /* point in the GML source                                                 */
 /***************************************************************************/
 
-extern  void    gml_cmt( gml_tag gtag )
+extern  void    gml_cmt( const gmltag * entry )
 {
-    /* unused parameters */ (void)gtag;
+    (void)entry;
 
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ static char             MonoTab[4] = {
 gr_device _FARD         _GrEGA_EO;      // forward reference
 
 
-static short _EGAInit( short mode )
+static bool _EGAInit( short mode )
 /*=================================
 
     Initialize the video mode using BIOS interrupt 0x10. If the adapter
@@ -109,9 +109,21 @@ static short _EGAInit( short mode )
             }
         }
         outpw( SEQADDR, 0x0F00 + MAPMASK );         // set map mask register
-        return( TRUE );                             // to all planes
+        return( true );                             // to all planes
     }
-    return( FALSE );
+    return( false );
+}
+
+
+static bool _NoInit( short dummy )
+/*=======================
+
+    Dummy function that does nothing.   */
+
+{
+    (void)dummy;
+
+    return( true );
 }
 
 
@@ -269,7 +281,7 @@ gr_device _FARD         _GrEGA_16 = {
 };
 
 gr_device _FARD         _GrEGA_EO = {
-    (short (*)(short))_NoOp, _NoOp,     // init routine is never called
+    _NoInit, _NoOp,     // init routine is never called
     _EGASetEO, _EGAResetEO,
     _EGASetupMono,
     _EGAMoveUpHi,_EGAMoveLeft,_EGAMoveDownHi,_EGAMoveRight,

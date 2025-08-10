@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #ifndef __WINDOWS__
     #include "extender.h"
     #include "dpmi.h"
-    #include "dpmihost.h"
 #endif
 #include "grabfp87.h"
 
@@ -43,7 +43,7 @@ void __GrabFP87( void )
 #ifndef __WINDOWS__
     if( _RWD_FPE_handler_exit != __Fini_FPE_handler ) {
 #ifdef __DOS_386__
-        if( !_IsPharLap() && ( __DPMI_hosted() == 1 )) {
+        if( !_IsPharLap() && _DPMI ) {
             DPMILockLinearRegion((long)&__FPEHandlerStart_,
                 ((long)&__FPEHandlerEnd_ - (long)&__FPEHandlerStart_));
         }

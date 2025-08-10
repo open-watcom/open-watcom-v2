@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,8 @@
 #include "roundmac.h"
 #include "heap.h"
 #include "heapacc.h"
-#if defined(__WINDOWS_286__) || defined(__NT__)
+#if defined(__WINDOWS_286__) \
+  || defined(__NT__)
     #include <windows.h>
 #elif defined(__WINDOWS_386__)
     #include "windpmi.h"
@@ -48,6 +49,7 @@
     #include <rdos.h>
 #elif defined(__DOS__)
     #include "tinyio.h"
+    #include "dpmi.h"
 #endif
 
 
@@ -66,12 +68,15 @@ _WCRTLINK int _heapshrink( void )
 
 #endif
 
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__) \
+  || defined(__DOS_EXT__)
 
 static int __ReturnMemToSystem( heapblk_nptr heap )
 {
-  #if defined(__OS2__) && !defined(_M_I86)
+  #if defined(__OS2_32BIT__)
     if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
   #elif defined(__NT__)
@@ -84,14 +89,10 @@ static int __ReturnMemToSystem( heapblk_nptr heap )
   #elif defined(__WINDOWS_286__)
     if( LocalFree( (HLOCAL)heap ) != NULL )
         return( -1 );
-  #elif defined(__CALL21__)
-    // No way to free storage under OSI
-    if( heap != NULL )
-        return( -1 );
   #elif defined(__DOS_EXT__)
     dpmi_hdr    *dpmi = BLK2DPMI( heap );
     if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
-        TinyDPMIFree( dpmi->dpmi_handle );
+        DPMIFreeMemoryBlock( dpmi->dpmi_handle );
     } else {                            // else DOS block below 1MB
         TinyFreeBlock( dpmi->dos_seg_value );
     }
@@ -130,8 +131,10 @@ int __nheapshrink( void )
 _WCRTLINK int _nheapshrink( void )
 {
     int         rc;
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__)
 #else
     heapblk_nptr    heap;
     freelist_nptr   last_free;
@@ -142,12 +145,15 @@ _WCRTLINK int _nheapshrink( void )
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
-    defined(__CALL21__) || defined(__RDOS__)
+#if defined(__OS2_32BIT__) \
+  || defined(__WINDOWS__) \
+  || defined(__NT__) \
+  || defined(__RDOS__)
     rc = __nheapshrink();
 #else
   #if defined(__DOS_EXT__)
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( _IsRationalZeroBase()
+      || _IsCodeBuilder() ) {
         rc = __nheapshrink();
     } else {
   #endif

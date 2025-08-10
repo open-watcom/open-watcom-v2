@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,31 +41,31 @@
 
 
 _WCRTLINK char *cgets( char *s )
-    {
-        USHORT  len;
-        STRINGINBUF stringin_buf;
-        char    *p;
+{
+    int     len;
+    STRINGINBUF stringin_buf;
+    char    *p;
 
+    len = *(unsigned char *)s;
+    p = s + 2;
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsStdin != NULL ) {           // Default windowing
-            __qread( STDIN_FILENO, s + 2, *s - 1 );
-            len = *s;
-        } else {
+    if( _WindowsStdin != NULL ) {           // Default windowing
+        len = __qread( STDIN_FILENO, p, len - 1 );
+    } else {
 #endif
-            stringin_buf.cb = *s;
-            KbdStringIn( s + 2, &stringin_buf, IO_WAIT, 0 );
-            len = stringin_buf.cchIn + 1;       // Including null char
+        stringin_buf.cb = len;
+        KbdStringIn( p, &stringin_buf, IO_WAIT, 0 );
+        len = stringin_buf.cchIn;
 #ifdef DEFAULT_WINDOWING
-        }
-#endif
-        p = s + 2;
-        for(;;) {
-            if( len <= 1 ) break;
-            if( *p == '\r' || *p == '\0' ) break;
-            ++p;
-            --len;
-        }
-        *p = '\0';
-        s[1] = p - s - 2;
-        return( s + 2 );
     }
+#endif
+    for( ; len > 0; --len ) {
+        if( *p == '\r'
+          || *p == '\0' )
+            break;
+        ++p;
+    }
+    *p = '\0';
+    s[1] = p - ( s + 2 );
+    return( s + 2 );
+}

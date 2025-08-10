@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -258,7 +258,7 @@ static WORD             saveMode;
 static WORD             scanLines;
 static WORD             fontType;
 
-static rm_call_struct   rmRegs;
+static dpmi_regs_struct rmRegs;
 static int              screenX;
 static int              screenY;
 static HBITMAP          screen_hbitmap;
@@ -336,7 +336,7 @@ static void finiSwapperW( void )
  */
 static void setRegenClear( void )
 {
-    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) = (BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) & 0x7f) | (saveMode & 0x80);
+    BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) = (BIOSData( unsigned char, BDATA_VIDEO_INFO_0 ) & 0x7f) | (saveMode & 0x80);
 
 } /* setREgenClear */
 
@@ -359,8 +359,8 @@ static void setupEGA( void )
  */
 static void toGraphicalFast( void )
 {
-    rmRegs.eax = 0x1201;
-    rmRegs.ebx = 0x36;
+    rmRegs.r.x.eax = 0x1201;
+    rmRegs.r.x.ebx = 0x36;
     doAnInt10();
 
     setupEGA();
@@ -372,23 +372,23 @@ static void toGraphicalFast( void )
     _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
     MyMoveData( swapSeg, pageSize * 2, (WORD)_A000H, 0, FONT_SIZE );
 
-    rmRegs.eax = saveMode | 0x80;
+    rmRegs.r.x.eax = saveMode | 0x80;
     doAnInt10();
 
     setRegenClear();
 
-    rmRegs.eax = 0x1200;
-    rmRegs.ebx = 0x36;
+    rmRegs.r.x.eax = 0x1200;
+    rmRegs.r.x.ebx = 0x36;
     doAnInt10();
     rmRegs.es = HIWORD( dosMem );
-    rmRegs.ebx = 0;
-    rmRegs.ecx = VID_STATE;
-    rmRegs.eax = 0x1c02;                /* restore state info */
+    rmRegs.r.x.ebx = 0;
+    rmRegs.r.x.ecx = VID_STATE;
+    rmRegs.r.x.eax = 0x1c02;                /* restore state info */
     doAnInt10();
     rmRegs.es = HIWORD( dosMem );
-    rmRegs.ebx = 0;
-    rmRegs.ecx = VID_STATE;
-    rmRegs.eax = 0x1c01;                /* save state info */
+    rmRegs.r.x.ebx = 0;
+    rmRegs.r.x.ecx = VID_STATE;
+    rmRegs.r.x.eax = 0x1c01;                /* save state info */
     doAnInt10();
 
 } /* toGraphicalFast */
@@ -399,13 +399,13 @@ static void toGraphicalFast( void )
 static void toCharacterFast( void )
 {
     rmRegs.es = HIWORD( dosMem );
-    rmRegs.ebx = 0;
-    rmRegs.ecx = VID_STATE;
-    rmRegs.eax = 0x1c01;        /* copy state info */
+    rmRegs.r.x.ebx = 0;
+    rmRegs.r.x.ecx = VID_STATE;
+    rmRegs.r.x.eax = 0x1c01;        /* copy state info */
     doAnInt10();
 
-    rmRegs.eax = 0x1201;        /* ah=12,bl=36: video refresh ctl; al=01: disable */
-    rmRegs.ebx = 0x36;
+    rmRegs.r.x.eax = 0x1201;        /* ah=12,bl=36: video refresh ctl; al=01: disable */
+    rmRegs.r.x.ebx = 0x36;
     doAnInt10();
 
     setupEGA();
@@ -423,16 +423,16 @@ static void toCharacterFast( void )
     _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
     Fillb( (WORD)_A000H, 0, 0, pageSize );
 
-    rmRegs.eax = scanLines;
-    rmRegs.ebx= 0x30;
+    rmRegs.r.x.eax = scanLines;
+    rmRegs.r.x.ebx= 0x30;
     doAnInt10();
 
-    rmRegs.eax = 0x83;          /* ah=0: set video mode, al=83 */
+    rmRegs.r.x.eax = 0x83;          /* ah=0: set video mode, al=83 */
     doAnInt10();
     setRegenClear();
 
-    rmRegs.eax = fontType;
-    rmRegs.ebx = 0;
+    rmRegs.r.x.eax = fontType;
+    rmRegs.r.x.ebx = 0;
     doAnInt10();
 
 } /* toCharacterFast */
@@ -461,17 +461,17 @@ static void initSwapperFast( void )
 
     pageSize = 25 * ( 80 * 2 ) + 256;
 
-    rmRegs.eax = 0xf00;         /* get current video mode */
+    rmRegs.r.x.eax = 0xf00;         /* get current video mode */
     doAnInt10();
-    saveMode = rmRegs.eax & 0xff;
-    cols = ( rmRegs.eax >> 8 ) & 0xff;
-    disppage = rmRegs.ebx & 0xff;
+    saveMode = rmRegs.r.x.eax & 0xff;
+    cols = ( rmRegs.r.x.eax >> 8 ) & 0xff;
+    disppage = rmRegs.r.x.ebx & 0xff;
 
-    rmRegs.eax = 0x1c00;        /* get state buffer size */
-    rmRegs.ecx = VID_STATE;
+    rmRegs.r.x.eax = 0x1c00;        /* get state buffer size */
+    rmRegs.r.x.ecx = VID_STATE;
     doAnInt10();                /* bx contains number of 64 byte blocks */
 
-    bytes = 64 * (WORD)rmRegs.ebx;
+    bytes = 64 * (WORD)rmRegs.r.x.ebx;
     dosMem = GlobalDosAlloc( (DWORD)bytes );
     size = pageSize * 2 + FONT_SIZE;
     swapHandle = GlobalAlloc( GMEM_FIXED, size );
@@ -518,8 +518,8 @@ void ToGraphical( void )
 
 static void SetCharPattSet( unsigned char pattset )
 {
-    rmRegs.eax = 0x1100 + pattset;
-    rmRegs.ebx = 0;
+    rmRegs.r.x.eax = 0x1100 + pattset;
+    rmRegs.r.x.ebx = 0;
     doAnInt10();
 }
 
@@ -536,9 +536,9 @@ void ToCharacter( void )
     }
     isGraphical = false;
     if( SwapScrnLines() >=43 ) {
-        SetCharPattSet( DOUBLE_DOT_CHAR_PATTSET );
+        SetCharPattSet( PATTSET_DOUBLE_DOT_CHAR );
     } else if( SwapScrnLines() >= 28 ) {
-        SetCharPattSet( COMPRESSED_CHAR_PATTSET );
+        SetCharPattSet( PATTSET_COMPRESSED_CHAR );
     }
 }
 
@@ -556,7 +556,7 @@ void InitSwapper( bool wantfast )
 void FiniSwapper( void )
 {
     ToCharacter();
-    rmRegs.eax = 0x0003;
+    rmRegs.r.x.eax = 0x0003;
     doAnInt10();
     ToGraphical();
     if( isFast ) {

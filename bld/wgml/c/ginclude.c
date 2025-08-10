@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,6 +27,7 @@
 * Description:  GML :include   processing
 *
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -58,43 +59,49 @@
 /* list are searched for the file.  If the file is still not found, the    */
 /* directories specified by the DOS environment symbol PATH are searched.  */
 /*                                                                         */
+/* NOTE: The attribute turns out to not, in face, be needed: the token     */
+/*       after the tag is treated as a filename if it is not "file"        */
+/*                                                                         */
 /***************************************************************************/
 
-extern  void    gml_include( gml_tag gtag )
+extern  void    gml_include( const gmltag * entry )
 {
-    char    *   p;
+    char            *p;
+    char            *pa;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
-    /* unused parameters */ (void)gtag;
+    (void)entry;
 
-    p = scan_start;
-    p++;
-    while( *p == ' ' ) {
-        p++;
-    }
     *token_buf = '\0';
-    if( !strnicmp( "file=", p, 5 ) ) {
-        char    quote;
-        char    *fnstart;
-
-        p += 5;
-        if( *p == '"' || *p == '\'' ) {
-            quote = *p;
-            ++p;
-        } else {
-            quote = '.';                // error?? filename without quotes
+    p = g_scandata.s;
+    p++;
+    SkipSpaces( p );
+    if( *p == '.' ) {
+        /* already at tag end */
+    } else {
+        p = get_tag_att_name( p, &pa, &attr_name );
+        if( !ProcFlags.reprocess_line && !ProcFlags.tag_end_found ) {
+            if( strcmp( "file", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+            } else {
+                p = pa;                 // reset for possible file name
+                p = get_tag_value( p, &attr_val );
+            }
+            if( attr_val.tok.s != NULL ) {
+                if( attr_val.tok.l > _MAX_PATH - 1 )
+                    attr_val.tok.l = _MAX_PATH - 1;
+                strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
+                token_buf[attr_val.tok.l] = '\0';
+                ProcFlags.newLevelFile = 1;     // start new include level
+                g_scandata.s = g_scandata.e;         // .. and ignore remaining line
+            }
+        } else {                                // wgml 4.0 appears to mark "" as the filename
+            ProcFlags.newLevelFile = 1;         // start new include level
+            g_scandata.s = g_scandata.e;             // .. and ignore remaining line
         }
-        fnstart = p;
-        while( *p && *p != quote ) {
-            ++p;
-        }
-        *p = '\0';
-        strcpy( token_buf, fnstart );
-#if defined( __UNIX__ )
-        strlwr( token_buf );
-#endif
-        ProcFlags.newLevelFile = 1;     // start new include level
-        scan_start = scan_stop;         // .. and ignore remaining line
     }
+
     return;
 }
 

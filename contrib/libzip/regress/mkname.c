@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -53,25 +53,25 @@ mkname(const char *name)
     int nlen;
 
     if (!srcdir_done) {
-	srcdir = getenv("SRCDIR");
-	srcdir_done = 1;
+        srcdir = getenv("SRCDIR");
+        srcdir_done = 1;
     }
 
     if (!srcdir)
-	return name;
+        return name;
 
     nlen = strlen(srcdir) + strlen(name) + 2;
 
     if (nlen > len) {
-	if (len == 0)
-	    fullname = malloc(nlen);
-	else
-	    fullname = realloc(fullname, nlen);
+        if (len == 0)
+            fullname = ZIP_ALLOC(nlen);
+        else
+            fullname = ZIP_REALLOC(fullname, nlen);
 
-	if (fullname == NULL) {
-	    fprintf(stderr, "malloc failure\n");
-	    exit(2);
-	}
+        if (fullname == NULL) {
+            fprintf(stderr, "malloc failure\n");
+            exit(2);
+        }
     }
 
     sprintf(fullname, "%s/%s", srcdir, name);

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@
 
 _WCRTLINK int fputc( int c, FILE *fp )
 {
-    int flags;
+    unsigned    flags;
 
     _ValidFile( fp, EOF );
     _AccessFile( fp );
@@ -66,7 +66,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
     /*** Deal with stream orientation ***/
     ORIENT_STREAM( fp, EOF );
 
-    if( !(fp->_flag & _WRITE) ) {
+    if( (fp->_flag & _WRITE) == 0 ) {
         _RWD_errno = EBADF;
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
@@ -79,7 +79,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
     if( c == '\n' ) {
         flags = _IONBF | _IOLBF;
 #ifndef __UNIX__
-        if( !(fp->_flag & _BINARY) ) {
+        if( (fp->_flag & _BINARY) == 0 ) {
             fp->_flag |= _DIRTY;
             *fp->_ptr = '\r';   /* '\n' -> '\r''\n' */
             fp->_ptr++;
@@ -97,7 +97,8 @@ _WCRTLINK int fputc( int c, FILE *fp )
     *fp->_ptr = c;
     fp->_ptr++;
     fp->_cnt++;
-    if( (fp->_flag & flags) || (fp->_cnt == fp->_bufsize) ) {
+    if( (fp->_flag & flags)
+      || (fp->_cnt == fp->_bufsize) ) {
         if( __flush( fp ) ) {
             _ReleaseFile( fp );
             return( EOF );
@@ -142,7 +143,7 @@ _WCRTLINK wint_t fputwc( wint_t c, FILE *fp )
     ORIENT_STREAM( fp, WEOF );
 
     /*** Write the character ***/
-    if( !__write_wide_char( fp, c ) ) {
+    if( __write_wide_char( fp, c ) == 0 ) {
         _ReleaseFile( fp );
         return( WEOF );
     } else {

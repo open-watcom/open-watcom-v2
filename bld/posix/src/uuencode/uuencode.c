@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,18 +159,21 @@ int main( int argc, char **argv )
 
 #ifdef __WATCOMC__
     argc--;
-    if( argc > 3 || argc == 0 || !strcmp(argv[1], "?")
-         || !strcmp(argv[1], "-?") || !strcmp(argv[1], "-h") ) {
+    if( argc > 3
+      || argc == 0
+      || strcmp(argv[1], "?") == 0
+      || strcmp(argv[1], "-?") == 0
+      || strcmp(argv[1], "-h") == 0 ) {
         cnt = 0;
-        for(;;) {
+        for( ;; ) {
             if( usage_data[cnt] == NULL )
                 break;
-            fprintf(stderr, usage_data[cnt++] );
+            fprintf( stderr, usage_data[cnt++] );
         }
-        exit(2);
+        exit( 2 );
     }
 
-    if( !isatty(fileno(stdin)) ) {
+    if( !isatty( fileno( stdin ) ) ) {
         in = stdin;
         if( argc == 3 ) {
             argv++;
@@ -179,8 +182,8 @@ int main( int argc, char **argv )
     } else {
         in = fopen( argv[1], "r" );
         if( in == NULL ) {
-            perror(argv[1]);
-            exit(1);
+            perror( argv[1] );
+            exit( 1 );
         }
         if( argc > 1 ) {
             argv++;
@@ -188,7 +191,7 @@ int main( int argc, char **argv )
         }
     }
 
-    if( !isatty(fileno(stdout)) ) {
+    if( !isatty( fileno( stdout ) ) ) {
         out = stdout;
     } else {
         if( argc == 2 ) {
@@ -200,16 +203,16 @@ int main( int argc, char **argv )
         }
         out = fopen( file_name, "w" );
         if( out == NULL ) {
-            perror(file_name);
-            exit(4);
+            perror( file_name );
+            exit( 4 );
         }
     }
 #else
     /* optional 1st argument */
-    if (argc > NUM_ARGS) {
-        if ((in = fopen(argv[1], "r")) == NULL) {
-                perror(argv[1]);
-                exit(1);
+    if( argc > NUM_ARGS ) {
+        if( (in = fopen( argv[1], "r" )) == NULL ) {
+            perror( argv[1] );
+            exit( 1 );
         }
         argv++;
         argc--;
@@ -220,38 +223,39 @@ int main( int argc, char **argv )
 
 #ifdef MSDOS
     /* set input file mode to binary for MSDOS systems */
-    setmode(fileno(in), O_BINARY);
+    setmode( fileno( in ), O_BINARY );
 #endif
 
 #ifndef __WATCOMC__
-    if (argc != NUM_ARGS) {
-        fprintf(stderr, USAGE);
-        exit(2);
+    if( argc != NUM_ARGS ) {
+        fprintf( stderr, USAGE );
+        exit( 2 );
     }
 #endif
 
 #ifdef VMS   /* mandatory 3rd argument is name of uuencoded file */
-    if ((out = fopen(argv[2], "w")) == NULL) {
-        perror(argv[2]);
-        exit(4);
+    if( (out = fopen( argv[2], "w" )) == NULL ) {
+        perror( argv[2] );
+        exit( 4 );
     }
 #endif
 
 #ifdef __WATCOMC__
     /* figure out the input file mode */
-    if( fstat(fileno(in), &sbuf) < 0 || !isatty(fileno(in)) ) {
-        mode = 0666 & ~umask(0666);
+    if( fstat( fileno( in ), &sbuf ) < 0
+      || !isatty( fileno( in ) ) ) {
+        mode = 0666 & ~umask( 0666 );
     } else {
         mode = sbuf.st_mode & 0777;
     }
-    fprintf(OUT, "begin %o %s\n", mode, argv[1]);
+    fprintf( OUT, "begin %o %s\n", mode, argv[1] );
 #else
-    fprintf(OUT, "begin %s\n", argv[1]);
+    fprintf( OUT, "begin %s\n", argv[1] );
 #endif
 
-    encode(in, OUT);
+    encode( in, OUT );
 
-    fprintf(OUT, "end\n");
+    fprintf( OUT, "end\n" );
     return( 0 );
 }
 
@@ -288,8 +292,8 @@ void outdec( char *p, FILE *f )
     int c1, c2, c3, c4;
 
     c1 = *p >> 2;
-    c2 = (*p << 4) & 060 | (p[1] >> 4) & 017;
-    c3 = (p[1] << 2) & 074 | (p[2] >> 6) & 03;
+    c2 = ((*p << 4) & 060) | ((p[1] >> 4) & 017);
+    c3 = ((p[1] << 2) & 074) | ((p[2] >> 6) & 03);
     c4 = p[2] & 077;
     putc( ENC( c1 ), f );
     putc( ENC( c2 ), f );

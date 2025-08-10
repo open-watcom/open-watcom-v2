@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,6 @@
 #include "ring.h"
 #include "pcobj.h"
 #include "newmem.h"
-#include "msg.h"
-#include "alloc.h"
 #include "reloc.h"
 #include "exeos2.h"
 #include "exeflat.h"
@@ -48,7 +46,6 @@
 #include "exedos.h"
 #include "loadfile.h"
 #include "specials.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "objcalc.h"
 #include "fileio.h"

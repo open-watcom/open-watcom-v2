@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,26 +38,25 @@
 #include "osver.h"
 #include "seterrno.h"
 
+
 _WCRTLINK unsigned _dos_settime( struct dostime_t *time )
 {
-    int                 error;
+    int                 rc;
     SYSTEMTIME          st;
     HANDLE              htoken;
     TOKEN_PRIVILEGES    tp;
 
-    error = 0;
+    rc = 0;
     if( WIN32_IS_NT ) {
         if( !OpenProcessToken( GetCurrentProcess(),
                                TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
                                &htoken ) ) {
             return( __set_errno_nt_reterr() );
         }
-        LookupPrivilegeValue( NULL, SE_SYSTEMTIME_NAME,
-                              &tp.Privileges[0].Luid );
+        LookupPrivilegeValue( NULL, SE_SYSTEMTIME_NAME, &tp.Privileges[0].Luid );
         tp.PrivilegeCount = 1;
         tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-        AdjustTokenPrivileges( htoken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL,
-                               NULL );
+        AdjustTokenPrivileges( htoken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, NULL );
     }
 
     GetLocalTime( &st );
@@ -64,15 +64,14 @@ _WCRTLINK unsigned _dos_settime( struct dostime_t *time )
     st.wMinute = time->minute;
     st.wSecond = time->second;
     st.wMilliseconds = time->hsecond/10;
-    if( !SetLocalTime( &st ) ) {
-        error = __set_errno_nt_reterr();
+    if( SetLocalTime( &st ) == 0 ) {
+        rc = __set_errno_nt_reterr();
     }
 
     if( WIN32_IS_NT ) {
         tp.Privileges[0].Attributes = 0;
-        AdjustTokenPrivileges( htoken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL,
-                               NULL );
+        AdjustTokenPrivileges( htoken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, NULL );
     }
 
-    return( error );
+    return( rc );
 }

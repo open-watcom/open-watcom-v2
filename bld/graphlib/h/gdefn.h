@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
-#if defined( VERSION2 )
-#include "graph2.gh"
-#else
-#include "graph.gh"
+#if( defined( __WINDOWS__ ) || defined( __OS2__ ) )
+    #define _DEFAULT_WINDOWS
+    #if defined( __WINDOWS__ )
+        #include <windows.h>
+    #else
+        #define __OS2_PM__
+        #define INCL_WIN
+        #define INCL_GPI
+        #include <wos2.h>
+    #endif
+    #include "wpi.h"
+    #include "wingph.h"
 #endif
+#if defined( VERSION2 )
+    #include "graph2.gh"
+#else
+    #include "graph.gh"
+#endif
+#include "bool.h"
+#include "arcinfo.h"
+#include "fontdef.h"
+#include "scrdesc.h"
+#include "globals.h"
+#include "grdev.h"
+#include "lineent.h"
+#include "fpi.h"
+#include "entry.h"
+#include "svgapage.h"
+#include "asmrefs.h"
 
 
 #define COLOR_RED(c)    (((c) >> 0) & 0xFF)
@@ -78,65 +102,6 @@
 
 #endif
 
-// The page setting functions are defined as FARC pointers.
-// This is _WCI86FAR for 16-bit, and nothing for 32-bit flat model.
-// QNX 32-bit uses small model, and FARC is defined as _WCI86FAR.
-// For QNX 32-bit, we still want only near pointers in the table though,
-// to avoid segment relocations in the executable.
-// The assignment to _SetVGAPage provides the CS value at runtime.
-
-#if defined( _M_I86 )
-    #define _FARC       __far
-    #define QNXFAR2NEAR(t,f)    ((t *)(f))
-#elif defined( __QNX__ )
-    #define _FARC       __far
-    #define QNXFAR2NEAR(t,f)    ((t *)(unsigned)(f))
-#else
-    #define _FARC
-    #define QNXFAR2NEAR(t,f)    ((t *)(f))
-#endif
-
-#if defined( _M_I86 )
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__ax]
-#else
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__eax]
-#endif
-
-typedef void __pascal vgapage_fn( short );
-
-#pragma aux (VGAPAGE_FUNC) vgapage_fn;
-
-
-#pragma pack(__push, 1);
-typedef struct {
-    unsigned char       start_range;
-    unsigned char       end_range;
-} dbcs_pair;
-
-#include "arcinfo.h"
-#include "fontdef.h"
-#include "scrdesc.h"
-#include "globals.h"
-#include "asmrefs.h"
-#include "grdev.h"
-#include "lineent.h"
-#include "fpi.h"
-#include "entry.h"
-
-#if( defined( __WINDOWS__ ) || defined( __OS2__ ) )
-    #define _DEFAULT_WINDOWS
-    #if defined( __WINDOWS__ )
-        #include <windows.h>
-    #else
-        #define __OS2_PM__
-        #define INCL_WIN
-        #define INCL_GPI
-        #include <wos2.h>
-    #endif
-    #include "wpi.h"
-    #include "wingph.h"
-#endif
-
 #define MASK_LEN        8               /* length of fill mask  */
 
 struct clip_region {
@@ -148,6 +113,7 @@ struct clip_region {
 
 #if defined( VERSION2 )
 
+#pragma pack(__push, 1);
 struct VbeModeInfo
 {
   // Mandatory information for all VBE revisions:
@@ -207,11 +173,12 @@ struct VbeModeInfo
   unsigned char   RsvdFieldPositionL;    // bit position of lsb of reserved mask(linear)
   unsigned long   MaxPixelClock;         // Maximum pixel clock for graphics video mode (Hertz)
   char                  __Reserved[190];
-
 };
+#pragma pack (__pop);
 
 #endif
 
+#pragma pack(__push, 1);
 struct videoinfo {
     struct videoconfig      vc;
     gr_device _FARD         *deviceptr;
@@ -230,6 +197,7 @@ struct videoinfo {
     struct VbeModeInfo      mi;
 #endif
 };
+#pragma pack (__pop);
 
 #define PLANAR          0x0001      // videoinfo.misc_info bits
 #define NO_BIOS         0x0002
@@ -238,29 +206,21 @@ struct videoinfo {
 #define               IsTextMode      ( !_GrMode )
 
 struct window_def {
-    short           invert;
     float           xleft;
     float           ybottom;
     float           xright;
     float           ytop;
+    bool            invert;
 };
-#pragma pack (__pop);
 
 #if defined( _DEFAULT_WINDOWS )
     // This macro causes repaints to be done
-    #define _RefreshWindow()    _wpi_updatewindow( _CurrWin ); _MessageLoop( TRUE );
+    #define _RefreshWindow()    _wpi_updatewindow( _CurrWin ); _MessageLoop( true );
 #else
     #define _RefreshWindow()
-    enum {
-            FALSE, TRUE
-    };
 #endif
 
 #define SOLID_LINE      0xffff  /* linestyle for solid lines */
-
-enum {                          /* clipping indicator */
-        _GCLIPOFF, _GCLIPON
-};
 
 enum {                          /* font type indicator  */
         _BITMAPPED, _STROKE
@@ -300,22 +260,22 @@ extern short            _CharLen( char );
 extern short            _CnvColour( long );
 extern void             _CursorOff( void );
 extern void             _CursorOn( void );
-extern short            _FastMap( long _WCI86FAR *, short );
+extern bool             _FastMap( long _WCI86FAR *, short );
 extern void             _RemapNum( long _WCI86FAR *, short );
 extern void             _InitSegments( void );
 extern void             _InitState( void );
 extern void             _FiniDevice( void );
 extern unsigned         _GetStackLow( void );
-extern short            _GraphMode( void );
+extern bool             _GraphMode( void );
 extern void             _GrClear( short, short, short, short );
 extern void             _TxtClear( short, short, short, short );
 extern void             _GrInit( short, short, short, grcolor, short,
                                      short, short, int, short, short );
-extern short            _GrProlog( void );
+extern bool             _GrProlog( void );
 extern void             _GrEpilog( void );
 extern void             _GetState( void );
 extern void             _HershDraw( char, short, short, short, short, short, short );
-extern short            _InitDevice( short );
+extern bool             _InitDevice( short );
 extern short            _Line( short, short, short, short );
 extern void             _LineInit( short, short, short, short, struct line_entry * );
 extern void             _LineMove( struct line_entry * );
@@ -339,11 +299,11 @@ extern void             _EGASetEO( void );
 extern void             _EGAReset( void );
 extern void             _EGASetup80( short x, short y, grcolor colour );
 
-extern short            _L0BlockClip( short *, short *, short *, short * );
+extern bool             _L0BlockClip( short *, short *, short *, short * );
 extern void             _L0DrawLine( char __far *, grcolor, unsigned short, short,
                                          short, short, move_fn *, move_fn *, putdot_fn * );
 extern void             _L0Ellipse( short, short, short, short, void (*)( short, short, short ) );
-extern short            _L0LineClip( short *, short *, short *, short * );
+extern bool             _L0LineClip( short *, short *, short *, short * );
 
 extern void             _L1Arc( short, short, short, short, short,
                                     short, short, short, short );
@@ -351,12 +311,12 @@ extern void             _L1Block( short, short, short, short );
 extern void             _L1Ellipse( short, short, short, short, short );
 extern void             _L1Fill( short, short, short );
 extern void             _L1ClipFill( short, short, short );
-extern short            _L1FillArea( short, struct xycoord _WCI86FAR * );
+extern bool             _L1FillArea( short, struct xycoord _WCI86FAR * );
 extern grcolor          _L1GetDot( short, short );
 extern void             _L1GetPic( short, short, short, short, struct picture _WCI86HUGE * );
-extern short            _L1Line( short, short, short, short );
+extern bool             _L1Line( short, short, short, short );
 extern char             _L1OutCode( short, short );
-extern short            _L1Paint( grcolor, short, short );
+extern bool             _L1Paint( grcolor, short, short );
 extern grcolor          _L1PutDot( short, short );
 extern void             _L1PutPic( short, short, short, struct picture _WCI86HUGE * );
 extern void             _L1SLine( short, short, short, short );
@@ -364,18 +324,17 @@ extern void             _L1Text( short, short, char _WCI86FAR * );
 extern void             _L1TXX( short, short, char _WCI86FAR *,
                                     struct xycoord _WCI86FAR *, struct xycoord _WCI86FAR * );
 
-extern short            _WCI86FAR _L2arc( short, short, short, short, short, short, short, short );
+extern bool             _WCI86FAR _L2arc( short, short, short, short, short, short, short, short );
 extern void             _WCI86FAR _L2clearscreen( short );
-extern short            _WCI86FAR _L2ellipse( short, short, short, short, short );
-extern short            _WCI86FAR _L2floodfill( short, short, grcolor );
-extern short            _WCI86FAR _L2line( short, short, short, short );
-extern short            _WCI86FAR _L2pie( short, short, short, short, short, short, short, short, short );
-extern short            _WCI86FAR _L2polygon( short, short, struct xycoord _WCI86FAR * );
-extern short            _WCI86FAR _L2rectangle( short, short, short, short, short );
+extern bool             _WCI86FAR _L2ellipse( short, short, short, short, short );
+extern bool             _WCI86FAR _L2floodfill( short, short, grcolor );
+extern bool             _WCI86FAR _L2line( short, short, short, short );
+extern bool             _WCI86FAR _L2pie( short, short, short, short, short, short, short, short, short );
+extern bool             _WCI86FAR _L2polygon( short, short, struct xycoord _WCI86FAR * );
+extern bool             _WCI86FAR _L2rectangle( short, short, short, short, short );
 extern void             _WCI86FAR _L2getimage( short, short, short, short, char _WCI86HUGE * );
 extern void             _WCI86FAR _L2putimage( short, short, char _WCI86HUGE *, short );
 extern long             _WCI86FAR _L2imagesize( short, short, short, short );
-extern short            _WCI86FAR _L2grtext( short, short, char _WCI86FAR * );
+extern bool             _WCI86FAR _L2grtext( short, short, char _WCI86FAR * );
 extern void             _WCI86FAR _L2setcliprgn( short, short, short, short );
-extern short            _WCI86FAR _L2setclip( short );
 extern grcolor          _WCI86FAR _L2setcolor( grcolor );

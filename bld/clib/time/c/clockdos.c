@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ unsigned long   __ibm_biosint_get_ticks( void );
         "mov    cx,dx"              \
     __parm __caller             [] \
     __value                     [__ecx] \
-    __modify __exact __nomemory [__eax __ecx __edx] \
+    __modify __exact __nomemory [__eax __ecx __edx]
 
 
 static unsigned long __ibm_bios_get_ticks( void )

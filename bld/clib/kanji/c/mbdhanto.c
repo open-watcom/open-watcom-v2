@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,10 @@
 
 _WCRTLINK unsigned int _mbdhantozen( unsigned int ch )
 {
-    if( ch >= 0x20  &&  ch <= 0x7E ) {
-        return( __HanZen1[ch-0x20] );
-    } else if( ch >= 0xA1  &&  ch <= 0xDF ) {
-        return( __HanZen2[ch-0xA1] );
+    if( ch >= 0x20 && ch <= 0x7E ) {
+        return( __HanZen1[ch - 0x20] );
+    } else if( ch >= 0xA1 && ch <= 0xDF ) {
+        return( __HanZen2[ch - 0xA1] );
     } else {
         return( ch );
     }

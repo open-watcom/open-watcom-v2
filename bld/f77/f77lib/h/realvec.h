@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,9 @@
 ****************************************************************************/
 
 
-extern unsigned long    _dos_getrealvect( int intnum );
-extern void             _dos_setrealvect( int intnum, unsigned long func );
-extern void             _dos_setvectp( int intnum, void (__interrupt __far *func)(void) );
+#include "dpmi.h"
+
+
+extern intr_addr    _dos_getrealvect( int intno );
+extern void         _dos_setrealvect( int intno, intr_addr func );
+extern void         _dos_setvectp( int intno, intr_addr func );

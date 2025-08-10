@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'width(                                        */
@@ -54,73 +56,50 @@
 /*     &'width(AAA,X) ==> invalid 'type' operand                           */
 /***************************************************************************/
 
-condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   pa;
-    char            *   pe;
-    size_t              len;
-    char                type;
-    uint32_t            width;
+    tok_type        string;
+    int             string_len;
+    char            typechar;
+    unsigned        width;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
-    if( (parmcount < 1) || (parmcount > 2) ) {
-        return( neg );
-    }
+    if( parmcount < 1
+      || parmcount > 2 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    width = 0;                              // null string width 0
 
-    unquote_if_quoted( &pval, &pend );
+    string = parms[0].arg;
+    string_len = unquote_arg( &string );
 
-    if( pend == pval ) {                // null string width 0
-        **result = '0';
-        *result += 1;
-        **result = '\0';
-        return( pos );
-    }
-
-    len = pend - pval;
-
-    if( parmcount > 1 ) {               // evalute type
-        if( parms[1].stop > parms[1].start ) {// type
-            pa = parms[1].start;
-            pe = parms[1].stop;
-
-            unquote_if_quoted( &pa, &pe );
-
-            type = tolower( *pa );
-            switch( type ) {
-            case   'c':                 // CPI
-                width = cop_text_width( pval, len, g_curr_font );
-                width = (width * CPI + g_resh / 2) / g_resh;
-                break;
-            case   'u':                 // Device Units
-                width = cop_text_width( pval, len, g_curr_font );
-                break;
-            case   'n':                 // character count
-                width = len;
-                break;
-            default:
-                g_err( err_func_parm, "2 (type)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
-                return( neg );
-                break;
+    if( string_len > 0 ) {
+        typechar = 'C';                     // default type is 'c' (CPI)
+        if( parmcount > 1 ) {               // evalute typechar
+            tok_type type  = parms[1].arg;
+            if( unquote_arg( &type ) > 0 ) {
+                typechar = my_toupper( *type.s );
             }
         }
-    } else {                            // default type c processing
-        width = cop_text_width( pval, len, g_curr_font );
-        width = (width * CPI + g_resh / 2) / g_resh;
+        switch( typechar ) {
+        case 'C':                 // CPI
+            width = cop_text_width( string.s, string_len, g_curr_font );
+            width = (width * CPI + g_resh / 2) / g_resh;
+            break;
+        case 'U':                 // Device Units
+            width = cop_text_width( string.s, string_len, g_curr_font );
+            break;
+        case 'N':                 // character count
+            width = string_len;
+            break;
+        default:
+            xx_source_err_exit_c( ERR_FUNC_PARM, "2 (type)" );
+            /* never return */
+        }
     }
 
-    sprintf( *result, "%d", width );
+    *result  += sprintf( *result, "%d", width );
 
-    *result  += strlen( *result );
-    **result = '\0';
-
-    return( pos );
+    return( CC_pos );
 }

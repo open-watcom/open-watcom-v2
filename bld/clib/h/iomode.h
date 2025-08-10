@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,10 @@
 
 extern  void        __initPOSIXHandles( void );
 extern  unsigned    __growPOSIXHandles( unsigned num );
-extern  int         __allocPOSIXHandle( HANDLE hdl );
-extern  void        __freePOSIXHandle( int hid );
-extern  HANDLE      __getOSHandle( int hid );
-extern  int         __setOSHandle( unsigned hid, HANDLE hdl );
+extern  int         __allocPOSIXHandle( HANDLE osfh );
+extern  void        __freePOSIXHandle( int handle );
+extern  HANDLE      __getOSHandle( int handle );
+extern  int         __setOSHandle( int handle, HANDLE osfh );
 extern  HANDLE      __NTGetFakeHandle( void );
 
 #define __allocPOSIXHandleDummy()   __allocPOSIXHandle( DUMMY_HANDLE )
@@ -59,8 +59,8 @@ extern  unsigned    __NHandles;
 extern  unsigned    __NFiles;              /* maximum # of files we can open */
 
 extern  unsigned    __GetIOMode( int handle );
-extern  int         __SetIOMode( int handle, unsigned value );
-extern  void        __SetIOMode_nogrow( int handle, unsigned value );
+extern  void        __SetIOMode( int handle, unsigned value );
+extern  int         __SetIOMode_grow( int handle, unsigned value );
 extern  void        __ChkTTYIOMode( int handle );
 extern  int         __set_binary( int handle );
 

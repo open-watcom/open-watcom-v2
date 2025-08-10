@@ -33,13 +33,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_unchange_all(struct zip *za)

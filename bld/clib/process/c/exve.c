@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,17 +33,19 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <string.h>
 #include <conio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <dos.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include "roundmac.h"
 #include "rtdata.h"
-#include "psp.h"
+#include "dospsp.h"
+#include "dosmem.h"
 #include "msdos.h"
 #include "exe.h"
 #include "tinyio.h"
@@ -53,8 +55,6 @@
 #include "rterrno.h"
 
 
-#define TRUE            1
-#define FALSE           0
 #define MIN_COM_STACK   128             /* Minimum size stack for .COM file */
 #define PSP_SIZE        256             /* Size of PSP */
 
@@ -62,32 +62,22 @@
 
 #pragma on(check_stack);
 
-#pragma pack( __push, 1 )
-typedef struct a_memblk {
-    char                flag;           /* 'Z' if last; 'M' otherwise */
-    unsigned            owner;          /* segment of psp; 0 if free */
-    unsigned            size;           /* in paragraphs */
-    char                unknown[11];    /* rest of header */
-    char                data[1];        /* size paragraphs of data */
-} a_memblk;
-
 typedef struct a_blk {
     unsigned            next;
 } a_blk;
-#pragma pack( __pop )
 
 typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 
-#define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
-#define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
-#define _pspptr( seg )  ((a_psp    _WCFAR *)((long)(seg)<<16))
+#define _blkptr( seg )  ((a_blk      _WCFAR *)((long)(seg)<<16))
+#define _mcbptr( seg )  ((dosmem_blk _WCFAR *)((long)((seg)-1)<<16))
+#define _pspptr( seg )  ((dospsp     _WCFAR *)((long)(seg)<<16))
 
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 
 extern unsigned doslowblock( void );
 #pragma aux doslowblock = \
         _MOV_AH DOS_GET_LIST_OF_LIST \
-        "int 21h"           \
+        __INT_21            \
         "dec bx"            \
         "dec bx"            \
         "mov ax, es:[bx]"   \
@@ -106,7 +96,7 @@ static void dosexpand( unsigned block )
     unsigned num_of_paras;
 
     num_of_paras = TinyMaxSet( block );
-    TinySetBlock( num_of_paras, block );
+    TinySetBlock( block, num_of_paras );
 }
 
 static unsigned dosalloc( unsigned num_of_paras )
@@ -131,7 +121,7 @@ static unsigned doscalve( unsigned block, unsigned req_paras )
     if( block_num_of_paras < req_paras + 1 ) {
         return( 0 );
     } else {
-        TinySetBlock( block_num_of_paras - ( req_paras + 1 ), block );
+        TinySetBlock( block, block_num_of_paras - ( req_paras + 1 ) );
         return( dosalloc( req_paras ) );
     }
 }
@@ -142,7 +132,7 @@ static void resetints( void )
     (*__int23_exit)();
 }
 
-static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
+static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
     unsigned            p;
     unsigned            q;
@@ -155,7 +145,8 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
         _blkptr( p )->next = free;
     }
     if( _RWD_osmajor == 2 ) {
-        if( free == _NULLSEG || (dosseg = doscalve( free, DOS2SIZE )) == _NULLSEG ) {
+        if( free == _NULLSEG
+          || (dosseg = doscalve( free, DOS2SIZE )) == _NULLSEG ) {
             goto error;
         }
     }
@@ -179,7 +170,9 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
     resetints();
     for( ;; ) {
         for( p = doslowblock(); ; p = p + _mcbptr( p )->size + 1 ) {
-            if( _mcbptr( p )->owner == _RWD_psp && p != _RWD_psp && p != envseg ) {
+            if( _mcbptr( p )->owner == _RWD_psp
+              && p != _RWD_psp
+              && p != envseg ) {
                 TinyFreeBlock( p );
                 break;
             }
@@ -190,7 +183,7 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
                     puts( "Not enough memory on exec\r\n" );
                     TinyTerminateProcess( -1 );
                 }
-                return( TRUE );
+                return( true );
             }
         }
     }
@@ -203,7 +196,7 @@ error: /* if we get an error */
         q = _blkptr( p )->next;
         TinyFreeBlock( p );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void save_file_handles( void )
@@ -292,7 +285,7 @@ _WCRTLINK int execve( path, argv, envp )
         argvv[i] = argv[i];
     }
     argvv[0] = pgmname;         /* set program name */
-    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, TRUE );
+    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, true );
     if( envpara == -1 )
         goto error;
     para += __ROUND_DOWN_SIZE_TO_PARA( PSP_SIZE ) + __exec_para + __ROUND_UP_SIZE_TO_PARA( strlen( path ) );

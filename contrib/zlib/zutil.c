@@ -276,9 +276,6 @@ void  zcfree( voidpf opaque, voidpf ptr )
 
 #endif /* M_I86 */
 
-#endif /* SYS16BIT */
-
-
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
 #ifndef STDC
@@ -301,3 +298,35 @@ void  zcfree( voidpf opaque, voidpf ptr )
 }
 
 #endif /* MY_ZCALLOC */
+
+#else /* SYS16BIT */
+
+#ifndef MY_ZCALLOC /* Any system without a special alloc function */
+
+#ifndef ZCALLOC
+#define ZCALLOC malloc
+#endif
+#ifndef ZCFREE
+#define ZCFREE  free
+#endif
+
+#ifndef STDC
+extern voidp  ZCALLOC   OF((uInt size));
+extern void   ZCFREE    OF((voidpf ptr));
+#endif
+
+voidpf zcalloc( voidpf opaque, unsigned items, unsigned size )
+{
+    if (opaque) items += size - size; /* make compiler happy */
+    return (voidpf)ZCALLOC(items * size);
+}
+
+void  zcfree( voidpf opaque, voidpf ptr )
+{
+    ZCFREE(ptr);
+    if (opaque) return; /* make compiler happy */
+}
+
+#endif /* MY_ZCALLOC */
+
+#endif /* SYS16BIT */

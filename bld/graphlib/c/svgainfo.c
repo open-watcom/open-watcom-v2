@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,30 +35,14 @@
 #include "gdefn.h"
 #include "gbios.h"
 #include "svgadef.h"
-#if !defined( _M_I86 )
-  #include "rmalloc.h"
+#include "realmod.h"
+#include "dpmi.h"
+#if !defined( _M_I86 ) && !defined( __QNX__ )
+        #include "rmalloc.h"
 #endif
 
 
-#if defined( __QNX__ )
-extern unsigned LoadSegLimit( unsigned );
-  #if defined( _M_I86 )
-    #pragma aux LoadSegLimit = \
-            ".286p" \
-            "lsl  ax,dx" \
-        __parm __caller [__dx] \
-        __value         [__ax]
-  #else
-    #pragma aux LoadSegLimit = \
-            ".386p" \
-            "lsl eax,dx" \
-        __parm __caller [__edx] \
-        __value         [__eax]
-  #endif
-#endif
-
-
-static int TestForVESA( void )
+static bool TestForVESA( void )
 //======================
 {
     short               val;
@@ -66,31 +50,31 @@ static int TestForVESA( void )
     char                buf[256];
 #else
     char __far          *buf;
-    RM_ALLOC            mem;
-    int                 is_vesa;
+    dpmi_dos_mem_block  dos_mem;
+    bool                is_vesa;
 #endif
 
 #if defined( _M_I86 ) || defined( __QNX__ )
-    val = GetVESAInfo( 0x4f00, 0, buf );
+    val = VideoInt3( 0x4f00, 0, buf );
     if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                          buf[2] == 'S' && buf[3] == 'A' ) {
-        return( TRUE );
+        return( true );
     }
 #else
-    if( _RMAlloc( 256, &mem ) ) {
-        buf = mem.pm_ptr;
-        val = _RMInterrupt( 0x10, 0x4f00, 0, 0, 0, mem.rm_seg, 0 );
+    if( _RMAlloc( 256, &dos_mem ) ) {
+        buf = RealModeDataPtr( dos_mem.rm, 0 );
+        val = _RMVideoInt( 0x4f00, 0, 0, 0, dos_mem.rm, 0 );
         if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                              buf[2] == 'S' && buf[3] == 'A' ) {
-            is_vesa = TRUE;
+            is_vesa = true;
         } else {
-            is_vesa = FALSE;
+            is_vesa = false;
         }
-        _RMFree( &mem );
+        _RMFree( &dos_mem );
         return( is_vesa );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 
@@ -112,13 +96,13 @@ short _SuperVGAType( void )
         return _SVGAType;
     }
 
-    dcc = VideoInt( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
+    dcc = VideoInt1_ax( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc != 0x1a ) {
         return( _SV_NONE );
     }
 
 //  test for VESA standard compatible
-    if ((_SVGAType != -1) && TestForVESA()) {
+    if( (_SVGAType != -1) && TestForVESA() ) {
         return _SV_VESA;
     }
 
@@ -184,7 +168,7 @@ short _SuperVGAType( void )
     p = _MK_FP( _RomSeg, _RomOff + 0x0037 );
     val = *(short __far *)p;
 #if defined( __QNX__ )
-    seg_len = LoadSegLimit( _RomSeg );
+    seg_len = GetSelectorLimitB( _RomSeg );
     if( _RomOff + val <= seg_len - 3 ) {
 #endif
     p = _MK_FP( _RomSeg, _RomOff + val );
@@ -196,12 +180,12 @@ short _SuperVGAType( void )
 #endif
 
 //  test for Video-7
-    if( VideoInt_bx( 0x6f00, 0, 0, 0 ) == ( 'V' << 8 ) + '7' ) {
+    if( VideoInt1_bx( 0x6f00, 0, 0, 0 ) == ( 'V' << 8 ) + '7' ) {
         return( _SV_VIDEO7 );
     }
 
 //  test for Chips and Technologies
-    if( ( VideoInt( 0x5f00, 0, 0, 0 ) & 0x00ff ) == 0x5f ) {
+    if( ( VideoInt1_ax( 0x5f00, 0, 0, 0 ) & 0x00ff ) == 0x5f ) {
         return( _SV_CHIPS );
     }
 
@@ -250,7 +234,7 @@ short _SuperVGAType( void )
             return( _SV_CIRRUS );
         }
     }
-//  val = VideoInt( 0x12ff, 0x0080, 0, 0 );
+//  val = VideoInt1_ax( 0x12ff, 0x0080, 0, 0 );
 //  if( val >= 2 && val <= 0x31 ) {
 //      return( _SV_CIRRUS );
 //  }

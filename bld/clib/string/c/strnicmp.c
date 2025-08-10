@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,21 +49,18 @@
     UCHAR_TYPE      c2;
 
     for( ; n > 0; --n ) {
-        c1 = *s;
-        c2 = *t;
-        if( IS_ASCII_CHAR( c1 ) && IS_ASCII_CHAR( c2 ) ) {
-            if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
-                c1 += STRING( 'a' ) - STRING( 'A' );
-            if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
-                c2 += STRING( 'a' ) - STRING( 'A' );
-            }
+        c1 = *s++;
+        if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
+            c1 += STRING( 'a' ) - STRING( 'A' );
+        c2 = *t++;
+        if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
+            c2 += STRING( 'a' ) - STRING( 'A' );
         }
         if( c1 != c2 )
-            return( c1 - c2 );      /* less than or greater than */
-        if( c1 == NULLCHAR )
-            break;          /* equal */
-        ++s;
-        ++t;
+            break;      /* less than or greater than */
+        if( c1 == '\0' ) {
+            break;      /* equal */
+        }
     }
-    return( 0 );            /* equal */
+    return( c1 - c2 );
 }

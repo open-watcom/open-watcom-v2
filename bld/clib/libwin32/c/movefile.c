@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,12 +54,12 @@ BOOL __lib_MoveFileW( LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName )
         /*** Prepare to call the OS ***/
         mbExistingFileName = __lib_cvt_wcstombs( lpExistingFileName );
         if( mbExistingFileName == NULL ) {
-            return( FALSE );
+            return( 0 );
         }
         mbNewFileName = __lib_cvt_wcstombs( lpNewFileName );
         if( mbNewFileName == NULL ) {
             lib_free( mbExistingFileName );
-            return( FALSE );
+            return( 0 );
         }
 
         /*** Call the OS ***/

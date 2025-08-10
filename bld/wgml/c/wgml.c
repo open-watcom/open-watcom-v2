@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,22 +36,26 @@
 ****************************************************************************/
 
 
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include "wgml.h"
-#include "findfile.h"
 #include "banner.h"
-#include "pathgrp2.h"
+#include "jmpbuf.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
+
+static int      exit_rc = 0;
 
 /***************************************************************************/
 /*  Usage info and end program                                             */
 /***************************************************************************/
+
+NO_RETURN( static void usage( void ) );
 
 static void usage( void )
 {
@@ -61,12 +65,12 @@ static void usage( void )
     g_banner();
 
     kscreen = 0;
-    for( k = inf_use_start; k <= inf_use_end; k++ ) {
+    for( k = INF_USE_START; k <= INF_USE_END; k++ ) {
         g_info_lm( k );
         if( isatty( fileno( stdin ) ) ) {
             if( kscreen == 22 ) {
                 kscreen = 0;
-                g_info_lm( inf_pause );
+                g_info_lm( INF_PAUSE );
                 getchar();
             } else {
                 kscreen++;
@@ -74,10 +78,11 @@ static void usage( void )
         }
     }
     my_exit( 4 );
+    /* never return */
 }
 
 #if 0                                   // not used for the moment
-char *get_filename_full_path( char *buff, char const * name, size_t max )
+char *get_filename_full_path( char *buff, char const * name, unsigned max )
 {
     char    *   p;
 
@@ -108,14 +113,16 @@ char *get_filename_full_path( char *buff, char const * name, size_t max )
 
 static  void    set_default_extension( const char * masterfname )
 {
-    pgroup2     pg;
+    char        buff[_MAX_PATH];
+    char    *   ext;
 
-    _splitpath2( masterfname, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    if( pg.ext[0] != '\0' ) {
-        pg.ext++;   /* skip dot character */
-        if( def_ext != NULL )
+    _splitpath2( masterfname, buff, NULL, NULL, NULL, &ext );
+    if( strlen( ext ) > 0) {
+        if( strlen( ext ) > strlen( def_ext ) ) {
             mem_free( def_ext);
-        def_ext = mem_dupstr( pg.ext );
+            def_ext = mem_alloc( 1 + strlen( ext ) );
+        }
+        strcpy( def_ext, ext );
     }
     return;
 }
@@ -129,15 +136,15 @@ static  void    free_filenames( void )
 {
     fnstack * wk;
     fnstack * wk1;
-    int32_t cnt;
+    int cnt;
 
     wk = fn_stack;
-    if( GlobFlags.statistics ) {
+    if( GlobalFlags.statistics ) {
         cnt = 0;
         out_msg( "\nInput filenames:\n" );
     }
     while( wk != NULL ) {
-        if( GlobFlags.statistics ) {
+        if( GlobalFlags.statistics ) {
             out_msg( "    %s\n", wk->fn );
             cnt++;
         }
@@ -145,8 +152,8 @@ static  void    free_filenames( void )
         mem_free( wk );
         wk = wk1;
     }
-    if( GlobFlags.statistics ) {
-        out_msg( "Total files: %ld\n\n", cnt );
+    if( GlobalFlags.statistics ) {
+        out_msg( "Total files: %d\n\n", cnt );
     }
     fn_stack = NULL;
     return;
@@ -162,7 +169,7 @@ static  char    * reuse_filename( const char * fn )
     fnstack * fnwk;
 
     for( fnwk = fn_stack; fnwk != NULL; fnwk = fnwk->prev ) {
-        if( !strcmp( fnwk->fn, fn ) ) {
+        if( strcmp( fnwk->fn, fn ) == 0 ) {
             return( fnwk->fn );         // filename is known
         }
     }
@@ -180,25 +187,26 @@ static  char    * reuse_filename( const char * fn )
 /*  add info about file  to LIFO list                                      */
 /***************************************************************************/
 
-static  void    add_file_cb_entry( void )
+static  void    add_file_cb_entry( FILE *fp, const char *fname )
 {
     filecb  *   new;
     inputcb *   nip;
 
     new = mem_alloc( sizeof( filecb ) );
-    new->filename = reuse_filename( try_file_name );
-    mem_free( try_file_name );
-    try_file_name = NULL;
+    new->filename = reuse_filename( fname );
 
     nip = mem_alloc( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
     nip->if_cb       = mem_alloc( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
-    nip->pe_cb.line = NULL;
+    nip->pe_cb.line  = NULL;
     nip->pe_cb.count = 0;
-    nip->fmflags = II_file;
-    nip->s.f     = new;
+    nip->fmflags     = II_file;
+    nip->s.f         = new;
+    nip->fm_symbol   = false;
+    nip->hh_tag      = false;
+    nip->sym_space   = false;
     init_dict( &nip->local_dict );
 
     new->lineno   = 0;
@@ -206,13 +214,11 @@ static  void    add_file_cb_entry( void )
     new->linemax  = line_to;
     new->label_cb = NULL;
 
-    if( try_fp ) {
+    new->fp = fp;
+    if( fp != NULL ) {
         new->flags = FF_open;
-        new->fp    = try_fp;
-        try_fp     = NULL;
     } else {
         new->flags = FF_clear;
-        new->fp    = NULL;
     }
 
     nip->prev = input_cbs;
@@ -239,11 +245,11 @@ static  void    del_input_cb_entry( void )
     free_dict( &wk->local_dict );
     if( wk->if_cb != NULL ) {
 //      if( wk->if_cb->if_level > 0 ) {
-//          char linestr[MAX_L_AS_STR];
+//          char    linestr[NUM2STR_LENGTH + 1];
+//
 //          sprintf( linestr, "%d", wk->if_cb->if_level );
-//          g_err( err_if_level, linestr );
-//          show_include_stack();
-//          err_count++;
+//          xx_err_exit_c( ERR_IF_LEVEL, linestr );
+//          /* never return */
 //      }
         mem_free( wk->if_cb );
     }
@@ -262,7 +268,7 @@ static  void    del_input_cb_entry( void )
             fclose( wk->s.f->fp );
         }
         lw = wk->s.f->label_cb;
-        if( GlobFlags.research ) {
+        if( GlobalFlags.research ) {
             print_labels( lw, wk->s.f->filename );  // print labels
         }
         while( lw != NULL ) {
@@ -279,8 +285,14 @@ static  void    del_input_cb_entry( void )
 
 
 /***************************************************************************/
-/* remove leading  .  from input                                           */
+/* remove leading . from input                                             */
+/* remove leading .' from input                                            */
+/* set related flags                                                       */
 /* special processing for   .:tag  construct                               */
+/*   and for .  ; or .; or text                                            */
+/* Note: in constructs like                                                */
+/*       .  ., .  .', .'  ., and .' .'                                     */
+/*       only ".' .'" results in the separator being ignored               */
 /***************************************************************************/
 
 static void remove_indentation( void )
@@ -289,27 +301,46 @@ static void remove_indentation( void )
     char    *   pb;
     int         offset;
 
-    p = buff2;
-    while( *p == SCR_char && *(p + 1) == ' ' ) {
-        while( *++p == ' ' ) /* empty */ ;  // skip blanks
-    }
-    if( *p == SCR_char && *(p + 1) == GML_char ) {
-        p++;                            // skip SCR_char
-    }
-    if( p != buff2 ) {                  // found some blanks now copy buffer
+    ProcFlags.cw_force_sep = false;
+    ProcFlags.cw_sep_ignore = false;
+    ProcFlags.indented_text = false;
 
-        offset = p - buff2;
-        pb = buff2;
-        while( *p ) {
-            *pb++ = *p++;
+    p = buff2;
+    while( ((buff2_lg > 1) && (*p == SCR_char) && (is_space_tab_char(*(p + 1)))) ||
+            ((buff2_lg > 2) && (*p == SCR_char) && (((*(p + 1) == '\'') && (*(p + 2) == ' ')) ||
+            (*(p + 1) == cw_sep_char))) ) {
+        p++;                                        // over SCR_char
+        if( *p == ' ' ) {
+            ProcFlags.cw_force_sep = true;
+        } else {                                    // *p == '\''
+            p++;                                    // over ' or ;
         }
-        if( offset > 0 ) {
-            memset( pb, '\0', offset ); // clear rest
+        SkipSpaces( p );                            // skip blanks
+        if( *p == cw_sep_char ) {
+            if( ProcFlags.cw_force_sep && (cw_sep_char != '\0') ) { // only if valid
+                p++;                                // skip cw_sep_char
+            }
+        } else if( (*p == SCR_char) && (*(p + 1) == GML_char) ) {
+            p++;                                    // skip SCR_char
+        } else if( !ProcFlags.cw_force_sep && (*p != GML_char) ) {
+            ProcFlags.indented_text = true;         // .  text
         }
-//        buff2_lg = strlen( buff2 );
-//        if( GlobFlags.research && GlobFlags.firstpass ) {
-//            g_info( INF_INDENT_REM, buff2 );
-//        }
+        if( p != buff2 ) {                          // skipped indent now copy buffer
+
+            offset = p - buff2;
+            pb = buff2;
+            while( *p != '\0' ) {
+                *pb++ = *p++;
+            }
+            if( offset > 0 ) {
+                memset( pb, '\0', offset ); // clear rest
+            }
+            buff2_lg = strlen( buff2 );
+            p = buff2;
+//            if( GlobalFlags.research && GlobalFlags.firstpass ) {
+//                g_info( INF_INDENT_REM, buff2 );
+//            }
+        }
     }
 }
 
@@ -337,23 +368,17 @@ static bool test_macro_xxxx( char const * beginend )
         if( (*p == SCR_char)  || (*p == '\'') ) {
             p++;
         }
-        cw[0] = tolower( *p++ );
-        cw[1] = tolower( *p++ );
+        cw[0] = my_tolower( *p++ );
+        cw[1] = my_tolower( *p++ );
         c = *p++;
 
         cw[2] = '\0';
         if( c == '\0' || c == ' ' ) {
-            if( !strcmp( cw, "dm" ) ) {
-                while( *p && *p == ' ' ) {  // find macroname
-                    p++;
-                }
-                while( *p && *p != ' ' ) {
-                    p++;
-                }
-                while( *p && *p == ' ' ) {  // find begin end
-                    p++;
-                }
-                return(  !strnicmp( p, beginend, strlen( beginend ) ) );
+            if( strcmp( "dm", cw ) == 0 ) {
+                SkipSpaces( p );            // find macroname
+                SkipNonSpaces( p );
+                SkipSpaces( p );            // find begin end
+                return( strnicmp( p, beginend, strlen( beginend ) ) == 0 );
             }
         }
     }
@@ -362,42 +387,30 @@ static bool test_macro_xxxx( char const * beginend )
 
 
 /***************************************************************************/
-/*  test for comment     .cm :cmt                                          */
+/*  test for full-line comments     .* :cmt                                */
 /*  returns true if  comment found                                         */
-/*   .* comment returns false                                              */
+/*   .cm comment returns false                                             */
 /***************************************************************************/
 
 static  bool    test_comment( void )
 {
+    char    tagname[TAG_NAME_LENGTH + 1];
 
-    if( *buff2 == SCR_char ) {          // test for .*  .cm
-//      if( ( *(buff2 + 1) == '*') ||    TBD
-        if(
-                ( (tolower( *(buff2 + 1) ) == 'c') &&
-                  (tolower( *(buff2 + 2) ) == 'm') &&
-                  (*(buff2+3) == ' ')
-                )
-        ) {
+    if( buff2[0] == SCR_char ) {        // test for .*
+        // todo: This logic is imperfect, does not detect ..* .'* and similar
+        if( buff2[1] == '*' ) {
            return( true );
         }
-    } else {                            // test for :cmt
-        if( (*buff2 == GML_char) &&
-            (tolower( *(buff2 + 1) ) == 'c') &&
-            (tolower( *(buff2 + 2) ) == 'm') &&
-            (tolower( *(buff2 + 3) ) == 't')
-        ) {
-            if( (*(buff2 + 4) == ' ') ||
-                (*(buff2 + 4) == '.')  ) {
-
-                if( ProcFlags.literal ) {   // special
-                    if( li_cnt < LONG_MAX ) {// we decrement, do not wait for .li OFF
-                        if( li_cnt-- <= 0 ) {
-                            ProcFlags.literal = false;
-                        }
+    } else if( check_tagname( buff2, tagname ) != NULL ) {
+        if( strcmp( "CMT", tagname ) == 0 ) {
+            if( ProcFlags.literal ) {   // special
+                if( li_cnt < INT_MAX ) {// we decrement, do not wait for .li OFF
+                    if( li_cnt-- <= 0 ) {
+                        ProcFlags.literal = false;
                     }
                 }
-                return( true );
             }
+            return( true );
         }
     }
     return( false );
@@ -409,16 +422,21 @@ static  bool    test_comment( void )
 
 static  void    proc_input( char * filename )
 {
-    ifcb        *   ic;
-    filecb      *   cb;
-    laystack    *   curr_lay_file;
-    char            attrwork[32];
-    ifcb            ic_work;
+    char            attrwork[MAX_FILE_ATTR + 1];
     condcode        cc;
+    filecb          *cb;
+    ifcb            ic_work;
+    ifcb            *ic;
+    laystack        *cur_lay_file;
+    laystack        *tmp_lay_file;
+    FILE            *fp;
+
+    static inputcb  *save_cb;           // former input_cbs top entry
 
     ProcFlags.newLevelFile = 1;
     strcpy( token_buf, filename );
 
+    cur_lay_file = lay_files;           // start each pass with same list
     for( ; ; ) {                        // as long as there is input
         if( ProcFlags.newLevelFile ) {
             ProcFlags.newLevelFile = 0; // start a new include FILE level
@@ -426,55 +444,49 @@ static  void    proc_input( char * filename )
             /***************************************************************/
             /*  split off attribute  (f:xxxx)                              */
             /***************************************************************/
-            split_attr_file( token_buf, attrwork, sizeof( attrwork ) );
+            split_attr_file( token_buf, attrwork, sizeof( attrwork ) - 1 );
 
-            if( attrwork[0] ) {
-                g_warn( wng_fileattr_ignored, attrwork, token_buf );
-                wng_count++;
+            if( attrwork[0] != '\0' ) {
+                xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
             }
-            if( search_file_in_dirs( token_buf, def_ext, alt_ext, ds_doc_spec ) ) {
-
+            fp = search_file_in_dirs( token_buf, def_ext, alt_ext, DSEQ_doc_spec );
+            if( fp != NULL ) {
                 if( inc_level >= MAX_INC_DEPTH ) {
-                    g_err( err_max_input_nesting, token_buf );
-                    err_count++;
-                    show_include_stack();
-                    continue;           // don't start new include level
+                    xx_err_exit_c( ERR_MAX_INPUT_NESTING, token_buf );
+                    /* never return */
                 }
             } else {
-                g_err( err_input_file_not_found, token_buf );
-                err_count++;
-                if( inc_level > 0 ) {
-                    show_include_stack();
-                    continue;           // don't start new include level
-                } else {                // master file included from cmdline
-                    g_info( inf_included, "cmdline" );
-                    break;              // no input file leave loop
-                }
+                main_file_err_exit( token_buf );
+                /* never return */
             }
             inc_inc_level();            // record max include level
-            add_file_cb_entry();
+            add_file_cb_entry( fp, try_file_name );
+            if( new_file_parms != NULL ) {
+                add_macro_parms( new_file_parms );
+            }
             cb = input_cbs->s.f;
             cb->flags |= FF_crlf;       // delete crlf at end
-            if( attrwork[0] ) {
+            if( attrwork[0] != '\0' ) {
                 strcpy( cb->fileattr, attrwork );
             } else {
                 cb->fileattr[0] = '\0';
             }
-            if( GlobFlags.inclist ) {
-                g_info_lm( inf_curr_input, "file", cb->filename );
+            if( GlobalFlags.inclist ) {
+                g_info_lm( INF_CURR_FILE, cb->filename );
             }
+            save_cb = input_cbs;
 
-            /***************************************************************/
-            /*  If ( LAYOUT file option specified, then process            */
-            /*  layout file(s)   before master file                        */
-            /***************************************************************/
+            /****************************************************************/
+            /*  If ( LAYOUT file option specified, then process             */
+            /*  layout file(s) before master file                           */
+            /*  NOTE: this must be done on each pass in case the LAYOUT     */
+            /*        file contains symbol/macro/user tag definitions       */
+            /****************************************************************/
 
-//            if( (lay_files != NULL) && (inc_level == 1) && (cb->lineno == 0) ) {
-            if( (lay_files != NULL) && (inc_level == 1) ) {
-                curr_lay_file = lay_files;
-                strcpy( token_buf, lay_files->layfn );
-                lay_files = curr_lay_file->next;
-                mem_free( curr_lay_file );
+            if( (cur_lay_file != NULL) ) {
+                tmp_lay_file = cur_lay_file;
+                strcpy( token_buf, tmp_lay_file->layfn );
+                cur_lay_file = tmp_lay_file->next;
                 ProcFlags.newLevelFile = 1; // start a new include FILE level
                 continue;               // with cmdline    layout option file
             }
@@ -489,43 +501,33 @@ static  void    proc_input( char * filename )
         /*  process an input file / macro                                  */
         /*******************************************************************/
 
-        while( !(input_cbs->fmflags & II_eof) ) {
+        while( (input_cbs->fmflags & II_eof) == 0 ) {
 
             ic = input_cbs->if_cb;      // .if .th .el controlblock
 
-            if( GlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+            if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
                 show_ifcb( "procin 1", ic );
             }
 
             if( !get_line( true ) ) {
                 if( ProcFlags.goto_active ) {   // goto active at EOF
-                    char    linestr[MAX_L_AS_STR];
+                    char    linestr[NUM2STR_LENGTH + 1];
 
                     ProcFlags.goto_active = false;
-                    err_count++;
                     if( input_cbs->fmflags & II_tag_mac ) {
                         if( gotargetno > 0 ) {
-                            sprintf( linestr, "%lu", gotargetno );
-                            g_err( err_goto, linestr,
-                                   input_cbs->s.m->mac->name );
+                            sprintf( linestr, "%d", gotargetno );
+                            xx_err_exit_cc( ERR_GOTO, linestr, input_cbs->s.m->mac->name );
                         } else {
-                            g_err( err_goto, gotarget,
-                                   input_cbs->s.m->mac->name );
+                            xx_err_exit_cc( ERR_GOTO, gotarget, input_cbs->s.m->mac->name );
                         }
                     } else {
-                        g_err( err_goto, gotarget, input_cbs->s.f->filename );
+                        xx_err_exit_cc( ERR_GOTO, gotarget, input_cbs->s.f->filename );
                     }
-                    show_include_stack();
+                    /* never return */
                 }
                 break;                  // EOF
             }
-#if 0
-            if( (buff2_lg < 1) && !ProcFlags.concat) {
-                ProcFlags.empty_doc_el = true;
-                scr_process_break();
-                continue;               // minimal processing for empty line
-            }
-#endif
             remove_indentation();       // ".  .  .  .cw"  becomes ".cw"
 
             if( ProcFlags.goto_active ) {
@@ -545,8 +547,8 @@ static  void    proc_input( char * filename )
 
                         ic->if_level--; // pop .if stack one level
 
-                        if( GlobFlags.firstpass &&
-                            input_cbs->fmflags & II_research ) {
+                        if( GlobalFlags.firstpass &&
+                            (input_cbs->fmflags & II_research) ) {
                             show_ifcb( "procin -1", ic );
                         }
                     }
@@ -556,8 +558,8 @@ static  void    proc_input( char * filename )
                     ic->if_flags[ic->if_level].ifthen = false;// not in then
                     ic->if_flags[ic->if_level].ifelse = false;// not in else
 
-                    if( GlobFlags.firstpass &&
-                        input_cbs->fmflags & II_research ) {
+                    if( GlobalFlags.firstpass &&
+                        (input_cbs->fmflags & II_research) ) {
                         show_ifcb( "procin 2", ic );
                     }
                 }
@@ -581,21 +583,21 @@ static  void    proc_input( char * filename )
                     }
                 }
                 if( ProcFlags.in_macro_define ) {
-                    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                        g_info_lm( inf_skip_line );
+                    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+                        g_info_lm( INF_SKIP_LINE );
                     }
                     continue;           // skip processing
                 }
 
                 set_if_then_do( &ic_work );
                 cc = test_process( &ic_work );
-                if( cc != pos ) {
+                if( cc != CC_pos ) {
                     if( test_macro_xxxx( "begin" ) ) {
                         ProcFlags.in_macro_define = true;
                     }
-                    if( input_cbs->fmflags & II_research &&
-                        GlobFlags.firstpass ) {
-                        g_info_lm( inf_skip_line );
+                    if( (input_cbs->fmflags & II_research) &&
+                        GlobalFlags.firstpass ) {
+                        g_info_lm( INF_SKIP_LINE );
                     }
                     set_if_then_do( ic );
                     test_process( ic );
@@ -608,7 +610,7 @@ static  void    proc_input( char * filename )
             scan_line();
 
             if( ProcFlags.newLevelFile ) {
-                break;            // imbed and friends found, start new level
+                break;                  // imbed and friends found, start new level
             }
         }
         if( ProcFlags.newLevelFile ) {  // include / imbed new file
@@ -616,12 +618,16 @@ static  void    proc_input( char * filename )
         }
 
         if( inc_level == 1 ) {          // EOF for master file end
+            scr_process_break();        // flush any final text from this pass
             last_page_out();            // forces final page(s) out
+
             /***************************************************************/
             /*  Test for missing eXXX tag                                  */
             /***************************************************************/
-            if( (nest_cb != NULL) && (nest_cb->gtag != GML_TAG_NONE) ) {
-                g_err_tag_nest( nest_cb->gtag );    // eXXX expected
+
+            if( (nest_cb != NULL) && (nest_cb->gtag != T_NONE) ) {
+                g_tag_nest_err_exit( nest_cb->gtag );// eXXX expected
+                /* never return */
             }
         }
         del_input_cb_entry();           // one level finished
@@ -629,25 +635,22 @@ static  void    proc_input( char * filename )
         if( inc_level == 0 ) {          // EOF for master document file
             break;
         }
-        if( lay_files != NULL ) {   // any more  LAYfiles
-            curr_lay_file = lay_files;
-            strcpy( token_buf, lay_files->layfn );
-            lay_files = curr_lay_file->next;
-            mem_free( curr_lay_file );
+        if( cur_lay_file != NULL ) {    // any more  LAYfiles
+            tmp_lay_file = cur_lay_file;
+            strcpy( token_buf, tmp_lay_file->layfn );
+            cur_lay_file = tmp_lay_file->next;
             ProcFlags.newLevelFile = 1; // start a new include file level
             continue;                   // with cmdline layout option file
         }
         if( input_cbs->fmflags & II_file ) {
-            if( GlobFlags.inclist ) {
-                char    linestr[MAX_L_AS_STR];
-
-                cb = input_cbs->s.f;
-                sprintf( linestr, "%lu", cb->lineno );
-                g_info_lm( inf_curr_line, cb->filename, linestr );
+            if( GlobalFlags.inclist && (save_cb != input_cbs) ) {
+                g_info_lm( INF_CURR_FILE, input_cbs->s.f->filename );
+                save_cb = input_cbs;
             }
         } else {
-            if( GlobFlags.inclist ) {
-                g_info_lm( inf_curr_input, "macro", input_cbs->s.m->mac->name );
+            if( GlobalFlags.inclist && GlobalFlags.research ) {     // only when -r specified
+                g_info_lm( INF_CURR_MACRO, input_cbs->s.m->mac->name,
+                                           input_cbs->s.m->mac->mac_file_name  );
             }
         }
     }                                   // for loop
@@ -660,47 +663,46 @@ static  void    proc_input( char * filename )
 
 static  void    print_stats( clock_t duration_ticks )
 {
-    char            linestr[30];
+    char            linestr[NUM2STR_LENGTH + 1];
     char            linestr2[30];
     ldiv_t          hour_min;
     ldiv_t          sec_frac;
     unsigned long   peak;
 
-    g_info_lm( inf_stat_0 );
+    g_info_lm( INF_STAT_0 );
 
     sprintf( linestr, "%d", pass );
     if( pass == passes ) {
         linestr2[0] = '\0';
     } else {
-        strcpy( linestr2, "of " );
-        sprintf( linestr2 + 3, "%d", passes );
+        sprintf( linestr2, "of %d", passes );
     }
-    g_info_lm( inf_stat_1, linestr, linestr2 );
+    g_info_lm( INF_STAT_1, linestr, linestr2 );
 
-    sprintf( linestr, "%u", max_inc_level );
-    g_info_lm( inf_stat_2, linestr );
+    sprintf( linestr, "%d", max_inc_level );
+    g_info_lm( INF_STAT_2, linestr );
 
     sprintf( linestr, "%d", err_count );
-    g_info_lm( inf_stat_3, linestr );
+    g_info_lm( INF_STAT_3, linestr );
 
     sprintf( linestr, "%d", wng_count );
-    g_info_lm( inf_stat_4, linestr );
+    g_info_lm( INF_STAT_4, linestr );
 
-    sprintf( linestr, "%d", (err_count ? 8 : (wng_count ? 4 : 0)) );
-    g_info_lm( inf_stat_5, linestr );
+    sprintf( linestr, "%d", err_count ? 8 : wng_count ? 4 : 0 );
+    g_info_lm( INF_STAT_5, linestr );
 
     peak = mem_get_peak_usage();
     if( peak ) {
-        sprintf( linestr, "%lu", peak );
-        g_info_lm( inf_stat_6, linestr );
+        sprintf( linestr2, "%lu", peak );
+        g_info_lm( INF_STAT_6, linestr2 );
     }
 
     // convert duration from clock ticks to HH:MM:SS.hh
     hour_min = ldiv( duration_ticks / CLOCKS_PER_SEC / 60L, 60L );
     sec_frac  = ldiv( duration_ticks, CLOCKS_PER_SEC );
-    sprintf( linestr, "%02lu:%02lu:%02lu.%02lu",
-        hour_min.quot, hour_min.rem, sec_frac.quot % 60, sec_frac.rem / 10 );
-    g_info_lm( inf_stat_7, linestr );
+    sprintf( linestr2, "%02d:%02d:%02d.%02d",
+        (int)hour_min.quot, (int)hour_min.rem, (int)(sec_frac.quot % 60), (int)(sec_frac.rem / 10) );
+    g_info_lm( INF_STAT_7, linestr2 );
 }
 
 
@@ -712,7 +714,7 @@ static  void    init_pass( void )
 
     init_pass_data();                   // (re)set processing flags + vars
 
-    if( GlobFlags.research && (research_to > 0) ) {
+    if( GlobalFlags.research && (research_to > 0) ) {
         if( research_file_name[0] == '\0' ) {
             strcpy( research_file_name, master_fname );
         }
@@ -720,7 +722,7 @@ static  void    init_pass( void )
     }
 
     if( pass > 1 ) {
-        GlobFlags.firstpass = 0;
+        GlobalFlags.firstpass = 0;
 
 /*
  * design question: free dictionaries or not                            TBD
@@ -731,24 +733,23 @@ static  void    init_pass( void )
 
 //      free_dict( &global_dict );      // free dictionaries
 //      free_macro_dict( &macro_dict );
-        free_tag_dict( &tag_dict );
-        init_nest_cb( false );
+        free_tag_dict( &tags_dict );
+        init_nest_cb();
     } else {
-        GlobFlags.firstpass = 1;
+        GlobalFlags.firstpass = 1;
     }
     if( pass < passes ) {
-        GlobFlags.lastpass = 0;
+        GlobalFlags.lastpass = 0;
     } else {
-        GlobFlags.lastpass = 1;
+        GlobalFlags.lastpass = 1;
     }
 
-    line_from   = 1;                  // processing line range Masterdocument
-    line_to     = LINENO_MAX;
+    line_from           = FIRST_LINE;   // processing line range Masterdocument
+    line_to             = LAST_LINE;
 
-    apage               = 0;            // absolute pageno 1 - n
-    page                = 0;            // current pageno (in body 1 - n)
-    line                = 0;            // current output lineno on page
-    lc                  = 0;            // remaining lines on page
+    g_apage             = 0;            // absolute pageno 1 - n
+    g_page              = 0;            // current pageno (in body 1 - n)
+    g_line              = 0;            // current output lineno on page
     post_space          = 0;
 
     init_tag_att();                     // reset last defined GML tag
@@ -756,154 +757,182 @@ static  void    init_pass( void )
 }
 
 /***************************************************************************/
+/*  Program end                                                            */
+/***************************************************************************/
+
+void my_exit( int rc )
+{
+    exit_rc = rc;
+    if( environment != NULL ) {
+        longjmp( *environment, 1 );
+    }
+    exit( rc );
+    /* never return */
+}
+
+
+/***************************************************************************/
 /*  main WGML                                                              */
 /***************************************************************************/
 
 int main( int argc, char * argv[] )
 {
-    int         cmd_len;
-    char    *   cmd_line;
+    char    *   cmdline;
+    int         cmdlen;
     jmp_buf     env;
     int         tok_count;
     int         passcount;
     clock_t     start_time;
     clock_t     end_time;
 
-    /* unused parameters */ (void)argc; (void)argv;
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#else
+    (void)argc;
+    (void)argv;
+#endif
 
-    environment = &env;
-    if( setjmp( env ) ) {               // if fatal error has occurred
-        my_exit( 16 );
-    }
+//   #undef TRMEM                       // activate to disable TRMEM
 
+    environment = JMPBUF_PTR( env );
     start_time = clock();               // remember start time
-    passcount = 0;
     mem_init();                         // init memory tracker if necessary
+    if( setjmp( env ) == 0 ) {          // if fatal error has occurred
 
-    init_global_vars();
+        passcount = 0;
 
-    token_buf = mem_alloc( buf_size );
+        init_global_vars();
 
-    // out_msg( "define enum %d %d\n", INF_CMDLINE, inf_cmdline );
+        token_buf = mem_alloc( BUF_SIZE + 1 );
 
-    init_msgs();                        // init msg resources
+        // out_msg( "define enum %d %d\n", INF_CMDLINE, INF_CMDLINE );
 
-    ff_setup();                         // init findfile
+        init_msgs();                        // init msg resources
 
-    cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = mem_alloc( cmd_len );
-    _bgetcmd( cmd_line, cmd_len );
+        ff_setup();                         // init findfile
 
-    g_info_lm( INF_CMDLINE, cmd_line );
+        cmdlen = _bgetcmd( NULL, 0 ) + 1;
+        cmdline = mem_alloc( cmdlen );
+        _bgetcmd( cmdline, cmdlen );
 
-    tok_count = proc_options( cmd_line );
-    init_sysparm( cmd_line, banner1w( "Script/GML", _WGML_VERSION_ ) );
-    /* don't mem_free cmdline now as it is used for sysparm variable */
-    g_banner();
-    if( tok_count < 4 ) {               // file ( device xyz   is minimum
-        usage();                        // display usage and exit
-    }
-    cop_setup();                        // init copfiles
+        g_info_research( INF_CMDLINE, cmdline );
 
-    if( master_fname != NULL ) {        // filename specified
-        int     rc;
-        symsub  * passnoval;
-        symsub  * passofval;
+        tok_count = proc_options( cmdline );
+        init_sysparm( cmdline, banner1w( "Script/GML", _WGML_VERSION_ ) );
+        /* don't mem_free cmdline now as it is used for sysparm variable */
+        g_banner();
+        if( tok_count < 4 ) {               // file ( device xyz   is minimum
+            usage();                        // display usage and exit
+            /* never return */
+        }
+        cop_setup();                        // init copfiles
 
-        rc = find_symvar( &sys_dict, "$passof", no_subscript, &passofval );
-        rc = find_symvar( &sys_dict, "$passno", no_subscript, &passnoval );
-        sprintf( passofval->value, "%d", passes );   // fill no of passes
+        if( master_fname != NULL ) {        // filename specified
+            int     rc;
+            symsub  * passnoval;
+            symsub  * passofval;
 
-        set_default_extension( master_fname );// make this extension first choice
+            rc = find_symvar( sys_dict, "$passof", SI_no_subscript, &passofval );
+            rc = find_symvar( sys_dict, "$passno", SI_no_subscript, &passnoval );
+            sprintf( passofval->value, "%d", passes ); // fill no of passes
 
-        init_def_lay();                 // set default layout values
+            set_default_extension( master_fname );  // make this extension first choice
 
-        fb_start();                     // START :PAUSE & :INIT processing.
+            init_def_lay();                 // set default layout values
 
-        if( (GlobFlags.inclist || GlobFlags.statistics ||
-             GlobFlags.research ) && (lay_files != NULL) ) {
+            fb_start();                     // START :PAUSE & :INIT processing.
 
-            laystack *lwk = lay_files;
+            if( (GlobalFlags.inclist || GlobalFlags.statistics ||
+                 GlobalFlags.research ) && (lay_files != NULL) ) {
 
-            out_msg( "\nLAYOUT file(s) specified on cmdline:\n" );
-            while( lwk != NULL ) {
-                out_msg( "\t%s\n", lwk->layfn );
-                lwk = lwk->next;
+                laystack *lwk = lay_files;
+
+                out_msg_research( "\nLAYOUT file(s) specified on cmdline:\n" );
+                while( lwk != NULL ) {
+                    out_msg_research( "\t%s\n", lwk->layfn );
+                    lwk = lwk->next;
+                }
             }
+
+            for( pass = 1; pass <= passes; pass++ ) {
+
+                init_pass();
+                sprintf( passnoval->value, "%d", pass );    // fill current passno
+
+                if( passes > 1 ) {
+                    g_info_lm( INF_PASS_1, passnoval->value, passofval->value,
+                            GlobalFlags.research ? "research" : "normal" );
+                }
+    //          if( GlobalFlags.research ) {
+    //              mem_prt_curr_usage();
+    //          }
+
+                proc_input( master_fname );
+
+                while( nest_cb != NULL ) {
+                    tag_cb  *   cb = nest_cb->prev;
+
+                    add_tag_cb_to_pool( nest_cb );
+                    nest_cb = cb;
+                }
+                if( GlobalFlags.research && (pass < passes) ) {
+                    print_sym_dict( global_dict );
+                }
+                msg_indent = 0;
+                if( passes > 1 ) {
+                    g_info_lm( INF_PASS_2, passnoval->value, passofval->value,
+                            GlobalFlags.research ? "research" : "normal" );
+                }
+
+    //          if( GlobalFlags.research && (pass < passes) ) {
+    //              mem_prt_curr_usage();
+    //          }
+                passcount = pass;
+                if( !GlobalFlags.lastpass && (err_count > 0) ) {
+                    g_info_lm( INF_ERROR_STOP, passes - pass > 1 ? "es" : "" );
+                    break;                  // errors found stop now
+                }
+            }
+
+            fb_finish();                    // :FINISH block processing.
+
+        } else {
+            usage();
+            /* never return */
         }
 
-        for( pass = 1; pass <= passes; pass++ ) {
+        g_info_lm( INF_FMT_END );
 
-            init_pass();
-            sprintf( passnoval->value, "%d", pass ); // fill current passno
 
-            g_info_lm( INF_PASS_1, passnoval->value, passofval->value,
-                    GlobFlags.research ? "research" : "normal" );
-//          if( GlobFlags.research ) {
-//              mem_prt_curr_usage();
-//          }
+        if( GlobalFlags.research ) {
+            print_GML_tags_research();
+            free_GML_tags_research();
 
-            proc_input( master_fname );
+            print_SCR_tags_research();
+            free_SCR_tags_research();
 
-            while( nest_cb != NULL ) {
-                tag_cb  *   cb = nest_cb->prev;
+            print_macro_dict( macro_dict, true );
+            print_ref_dict( fig_ref_dict, "FIGREF" );
+            print_ref_dict( hd_ref_dict, "HDREF" );
+            print_ref_dict( fn_ref_dict, "FNREF" );
+            print_ref_dict( ix_ref_dict, "INDEX" );
 
-                add_tag_cb_to_pool( nest_cb );
-                nest_cb = cb;
+            if( tags_dict != NULL ) {
+                print_tag_dict( tags_dict );
             }
-            if( GlobFlags.research && (pass < passes) ) {
+            print_single_funcs_research();
+            free_single_funcs_research();
+
+            print_multi_funcs_research();
+            free_multi_funcs_research();
+
+            if( global_dict != NULL ) {
                 print_sym_dict( global_dict );
             }
-            msg_indent = 0;
-            g_info_lm( INF_PASS_2, passnoval->value, passofval->value,
-                    GlobFlags.research ? "research" : "normal" );
-
-//          if( GlobFlags.research && (pass < passes) ) {
-//              mem_prt_curr_usage();
-//          }
-            passcount = pass;
-            if( !GlobFlags.lastpass && (err_count > 0) ) {
-                g_info_lm( inf_error_stop, passes - pass > 1 ? "es" : "" );
-
-                ixdump( index_dict );   // test show unformatted index TBD
-
-                break;                  // errors found stop now
-            }
+            print_sym_dict( sys_dict );
         }
-
-        fb_finish();                    // :FINISH block processing.
-
     } else {
-        g_err( err_missing_mainfilename );
-        err_count++;
-        usage();
-    }
-    if( GlobFlags.research ) {
-        print_GML_tags_research();
-        free_GML_tags_research();
-
-        print_SCR_tags_research();
-        free_SCR_tags_research();
-
-        print_macro_dict( macro_dict, true );
-        print_ref_dict( ref_dict, "HDREF" );
-        print_ref_dict( fig_dict, "FIGREF" );
-        print_ref_dict( fn_dict, "FNREF" );
-        print_ref_dict( iref_dict, "INDEX" );
-
-        if( tag_dict != NULL ) {
-            print_tag_dict( tag_dict );
-        }
-        print_single_funcs_research();
-        free_single_funcs_research();
-
-        print_multi_funcs_research();
-        free_multi_funcs_research();
-
-        if( global_dict != NULL ) {
-            print_sym_dict( global_dict );
-        }
-        print_sym_dict( sys_dict );
     }
 
     close_all_pu_files();
@@ -911,23 +940,23 @@ int main( int argc, char * argv[] )
     ff_teardown();                      // free memory allocated in findfunc
     cop_teardown();                     // free memory allocated in copfiles
 
-    mem_free( cmd_line );
+    mem_free( cmdline );
     free_some_mem();
     free_filenames();
 
     end_time = clock();                 // get end time
     pass = passcount;
-    print_stats( end_time - start_time );
+
+    if( GlobalFlags.research ) {        // not the same as wgml stats
+        print_stats( end_time - start_time );
+    }
 
     fini_msgs();                        // end of msg resources, no more msgs built from
                                         // resources possible after this point
-    mem_fini();
+    mem_fini();                         // TRMEM final report
 
-/// test
-//    for( ; ; );
+    if( exit_rc != 0 )
+        return( exit_rc );
 
-/// test
-
-    my_exit( err_count ? 8 : wng_count ? 4 : 0 );
-    return( 0 );                    // never reached, but makes compiler happy
+    return( err_count ? 8 : wng_count ? 4 : 0 );
 }

@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,14 +33,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 struct zip_entry *
 _zip_entry_new(struct zip *za)
@@ -48,25 +48,25 @@ _zip_entry_new(struct zip *za)
     struct zip_entry *ze;
     int increment = 64;
     if (!za) {
-	ze = (struct zip_entry *)malloc(sizeof(struct zip_entry));
-	if (!ze) {
-	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	    return NULL;
-	}
+        ze = (struct zip_entry *)ZIP_ALLOC(sizeof(struct zip_entry));
+        if (!ze) {
+            _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+            return NULL;
+        }
     }
     else {
-	if (za->nentry >= za->nentry_alloc-1) {
-	    za->nentry_alloc += increment;
-	    increment *= 2;
-	    za->entry = (struct zip_entry *)realloc(za->entry,
-						    sizeof(struct zip_entry)
-						    * za->nentry_alloc);
-	    if (!za->entry) {
-		_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-		return NULL;
-	    }
-	}
-	ze = za->entry+za->nentry;
+        if (za->nentry >= za->nentry_alloc-1) {
+            za->nentry_alloc += increment;
+            increment *= 2;
+            za->entry = (struct zip_entry *)ZIP_REALLOC(za->entry,
+                                                    sizeof(struct zip_entry)
+                                                    * za->nentry_alloc);
+            if (!za->entry) {
+                _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+                return NULL;
+            }
+        }
+        ze = za->entry+za->nentry;
     }
 
     ze->state = ZIP_ST_UNCHANGED;
@@ -75,7 +75,7 @@ _zip_entry_new(struct zip *za)
     ze->source = NULL;
 
     if (za)
-	za->nentry++;
+        za->nentry++;
 
     return ze;
 }

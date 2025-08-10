@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +37,19 @@
 #include <wdefwin.h>
 #include "defwin.h"
 
+
 _WCRTLINK int   _dwDeleteOnClose( int handle )
 //============================================
 {
 #ifdef DEFAULT_WINDOWING
     LPWDATA     res;
 
-    if( _WindowsDestroyOnClose != NULL ) {
-        res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
-            return( _WindowsDestroyOnClose( res ) );
-        }
+    if( _WindowsDestroyOnClose != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsDestroyOnClose( res ) );
     }
 #else
-    handle = handle;
+    (void)handle;
 #endif
     return( 0 );
 }
@@ -59,13 +59,12 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text )
 //===================================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsSetAbout != NULL ) {
         return( _WindowsSetAbout( title, text ) );
     }
 #else
-    text = text;
-    title = title;
+    (void)text;
+    (void)title;
 #endif
     return( 0 );
 }
@@ -75,12 +74,11 @@ _WCRTLINK int   _dwSetAppTitle( const char *title )
 //=================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsSetAppTitle != NULL ) {
         return( _WindowsSetAppTitle( title ) );
     }
 #else
-    title = title;
+    (void)title;
 #endif
     return( 0 );
 }
@@ -90,18 +88,15 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title )
 //=============================================================
 {
 #ifdef DEFAULT_WINDOWING
-
     LPWDATA     res;
 
-    if( _WindowsSetAppTitle != NULL ) {
-        res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
-            return( _WindowsSetConTitle( res, title ) );
-        }
+    if( _WindowsSetConTitle != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsSetConTitle( res, title ) );
     }
 #else
-    handle = handle;
-    title = title;
+    (void)handle;
+    (void)title;
 #endif
     return( 0 );
 }
@@ -111,7 +106,6 @@ _WCRTLINK int   _dwYield( void )
 //==============================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsYieldControl != NULL ) {
         return( _WindowsYieldControl() );
     }
@@ -124,7 +118,6 @@ _WCRTLINK int   _dwShutDown( void )
 //=================================
 {
 #ifdef DEFAULT_WINDOWING
-
     if( _WindowsShutDown != NULL ) {
         return( _WindowsShutDown() );
     }

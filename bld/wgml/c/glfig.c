@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,16 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :FIG   attributes                                                     */
 /***************************************************************************/
-const   lay_att     fig_att[9] =
-    { e_left_adjust, e_right_adjust, e_pre_skip, e_post_skip, e_spacing,
-      e_font, e_default_place, e_default_frame, e_dummy_zero };
+static const lay_att    fig_att[] = {
+    e_left_adjust, e_right_adjust, e_pre_skip, e_post_skip, e_spacing,
+    e_font, e_default_place, e_default_frame
+};
 
 
 /**********************************************************************************/
@@ -109,89 +112,168 @@ const   lay_att     fig_att[9] =
 /*  lay_fig                                                                */
 /***************************************************************************/
 
-void    lay_fig( lay_tag ltag )
+void    lay_fig( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             k;
-    lay_att         curr;
-    att_args        l_args;
-    int             cvterr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = g_scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_fig ) {
-        ProcFlags.lay_xxx = el_fig;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get one with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = fig_att[k]; curr > 0; k++, curr = fig_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( fig_att ); k++ ) {
+            curr = fig_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_left_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.fig.left_adjust );
-                    break;
-                case   e_right_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.fig.right_adjust );
-                    break;
-                case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.fig.pre_skip );
-                    break;
-                case   e_post_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.fig.post_skip );
-                    break;
-                case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.fig.spacing );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.fig.font );
-                    if( layout_work.fig.font >= wgml_font_cnt ) {
-                        layout_work.fig.font = 0;
+                case e_left_adjust:
+                    if( AttrFlags.left_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.fig.left_adjust );
+                    AttrFlags.left_adjust = true;
                     break;
-                case   e_default_place:
-                    cvterr = i_place( p, curr,
+                case e_right_adjust:
+                    if( AttrFlags.right_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.fig.right_adjust );
+                    AttrFlags.right_adjust = true;
+                    break;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.fig.pre_skip );
+                    AttrFlags.pre_skip = true;
+                    break;
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.fig.post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                case e_spacing:
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_spacing( p, &attr_val, &layout_work.fig.spacing );
+                    AttrFlags.spacing = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.fig.font );
+                    AttrFlags.font = true;
+                    break;
+                case e_default_place:
+                    if( AttrFlags.default_place ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_place( p, &attr_val,
                                       &layout_work.fig.default_place );
+                    AttrFlags.default_place = true;
                     break;
-                case   e_default_frame:
-                    cvterr = i_default_frame( p, curr,
+                case e_default_frame:
+                    if( AttrFlags.default_frame ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_default_frame( p, &attr_val,
                                               &layout_work.fig.default_frame );
+                    AttrFlags.default_frame = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get one with value
     }
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :FIG       output figur attribute values                              */
+/***************************************************************************/
+void    put_lay_fig( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":FIG\n" );
+
+    for( k = 0; k < TABLE_SIZE( fig_att ); k++ ) {
+        curr = fig_att[k];
+        switch( curr ) {
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->fig.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->fig.right_adjust );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->fig.pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->fig.post_skip );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->fig.spacing );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->fig.font );
+            break;
+        case e_default_place:
+            o_place( fp, curr, &lay->fig.default_place );
+            break;
+        case e_default_frame:
+            o_default_frame( fp, curr, &lay->fig.default_frame );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

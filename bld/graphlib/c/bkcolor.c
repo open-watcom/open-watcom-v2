@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
 #else
     if( _GrMode ) {     // in graphics modes, remap colour 0
         if( _CurrState->vc.adapter == _CGA && _CurrState->vc.mode != _HRESBW ) {
-            VideoInt( VIDEOINT_SET_OVERSCAN, _CnvColour( pixval ), 0, 0 );
+            VideoInt1_ax( VIDEOINT_SET_OVERSCAN, _CnvColour( pixval ), 0, 0 );
         } else {
             _remappalette( 0, pixval );
         }

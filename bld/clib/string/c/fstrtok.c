@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,24 +47,27 @@
 _WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset, char _WCFAR **ptr )
 {
     char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
+    unsigned char   vector[CHARVECTOR_SIZE];
     char _WCFAR     *p1;
 
 
     if( str == NULL ) {
         str = *ptr;            /* use previous value   */
-        if( str == NULL ) return( NULL );
+        if( str == NULL ) {
+            return( NULL );
+        }
     }
     __fsetbits( vector, charset );
-    for( ; tc = *str; ++str ) {
+    for( ; (tc = *str) != '\0'; ++str ) {
         /* quit if we find any char not in charset */
-        if( GETCHARBIT( vector, tc ) == 0 )
+        if( GETCHARBIT( vector, tc ) == 0 ) {
             break;
+        }
     }
     if( tc == '\0' )
         return( NULL );
     p1 = str;
-    for( ; tc = *p1; ++p1 ) {
+    for( ; (tc = *p1) != '\0'; ++p1 ) {
         /* quit when we find any char in charset */
         if( GETCHARBIT( vector, tc ) != 0 ) {
             *p1 = '\0';             /* terminate the token  */
@@ -80,5 +83,5 @@ _WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset,
 _WCRTLINK char _WCFAR *_fstrtok( char _WCFAR *str, const char _WCFAR *charset )
 {
     _INITNEXTFTOK
-    return _fstrtok_r(str, charset, &_RWD_nextftok);
+    return( _fstrtok_r( str, charset, &_RWD_nextftok ) );
 }

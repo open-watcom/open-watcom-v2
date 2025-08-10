@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 // only needed for 16bit OS/2 DLL library
-#if defined(__OS2__) && defined(_M_I86) && defined(__SW_BD)
+#if defined(__OS2_16BIT__) && defined(__SW_BD)
 
 /*
  * Disallow the use of the near heap by the user, since he won't be

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,9 +32,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
-static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 
 /***************************************************************************/
 /*  script string functions &'vecpos(                                      */
@@ -47,7 +47,7 @@ static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 /*    tion returns the subscript number of  the first occurrence of 'nee-  */
 /*    dle' in 'haystack'  set symbol.   The search for a  match starts at  */
 /*    the first element  of 'haystack' but may be overridden  by adding a  */
-/*    'start'  subscript in  'haystack'.    The default  case  of 'M'  or  */
+/*    'start'  subscript in  'haystack'.    The default  case of 'M'  or  */
 /*    'Mixed' searches for  an element which matches exactly,   a case of  */
 /*    'U' or  'Upper' will match the  'needle' and 'haystack'  element in  */
 /*    uppercase.    If the  'needle'  string is  not  found,   a zero  is  */
@@ -83,86 +83,97 @@ static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 /*                                                                         */
 /***************************************************************************/
 
-static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
-                               char * * result, int32_t ressize )
+static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount,
+                               char **result, unsigned ressize, bool first )
 {
-    char            *   pneedle;
-    char            *   pneedlend;
-    char            *   phay;
-    char            *   phayend;
-    int                 rc;
-    int                 index;
-    size_t              hay_len;
-    size_t              needle_len;
-    char                c;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    symvar          *   psymvar;
-    bool                suppress_msg;
+    tok_type        needle;
+    tok_type        haystack;
+#if 0
+    int             start;
+    char                        casechar;
+#endif
+    int             rc;
+    int             index;
+    int             haystack_len;
+    int             needle_len;
+    char            c;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    symvar          *psymvar;
+    bool            suppress_msg;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
-    if( parmcount != 2 ) {
-        return( neg );
-    }
+    if( parmcount < 2
+      || parmcount > 4 )
+        return( CC_neg );
 
-    pneedle = parms[0].start;
-    pneedlend = parms[0].stop;
-
-    unquote_if_quoted( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle;   // needle length
-
-    phay = parms[1].start;
-    phayend = parms[1].stop;
-
-    unquote_if_quoted( &phay, &phayend );
-    hay_len = phayend - phay;           // haystack length
-
-    rc = 0;
-    scan_err = false;
     index = 0;
 
-    if( (hay_len > 0) ||                // not null string
-        (needle_len > 0) ) {            // needle not null
+    needle = parms[0].arg;
+    needle_len = unquote_arg( &needle );
 
+    /*
+     * haystack should be a symbol
+     * scan_sym need include quotes for correct symbol parsing
+     * don't use unquote_arg for haystack
+     */
+    haystack = parms[1].arg;
+    haystack_len = parms[1].arg.e - parms[1].arg.s;
+
+    if( (haystack_len > 0)              // not null string
+      || (needle_len > 0) ) {           // needle not null
+#if 0
+        start = 0;
+        if( parmcount > 2 ) {
+            if( parms[2].arg.s < parms[2].arg.e ) {
+                gn.arg = parms[2].arg;
+                gn.ignore_blanks = false;
+                cc = getnum( &gn );
+                if( (cc != CC_pos) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_exit_c( ERR_FUNC_PARM, "3 (startpos)" );
+                        /* never return */
+                    }
+                    return( cc );
+                }
+                start = gn.result;
+            }
+        }
+        casechar = 'M';
+        if( parmcount > 3 ) {
+            tok_type tmp = parms[3].arg;
+            if( unquote_arg( &tmp ) > 0 ) {
+                casechar = my_toupper( *tmp.s );
+            }
+        }
+#endif
+        g_scan_err = false;
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
-        scan_err = false;
-        c = *phayend;
-        *phayend = '\0';
-
-        scan_sym( phay, &symvar_entry, &var_ind );
-
-        *phayend = c;
+        scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
         ProcFlags.suppress_msg = suppress_msg;;
-
-        if( !scan_err ) {
-
-            if( symvar_entry.flags & local_var ) {  // lookup var in dict
-                rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
-                                    var_ind, &symsubval );
-            } else {
-                rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
-                                  &symsubval );
-            }
+        if( !g_scan_err ) {
+            rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
-                if( psymvar->flags & subscripted ) {
-//                    c = *pneedlend;
-//                    *pneedlend = '\0';   // make nul delimited
-                    for( symsubval = psymvar->subscripts;
-                         symsubval != NULL;
-                         symsubval = symsubval->next ) {
-
-                        if( strlen( symsubval->value ) == needle_len && !memcmp( symsubval->value, pneedle, needle_len ) ) {
+                if( psymvar->flags & SF_subscripted ) {
+                    c = *needle.e;
+                    *needle.e = '\0';   // make nul delimited
+                    for( symsubval = psymvar->subscripts; symsubval != NULL; symsubval = symsubval->next ) {
+                        if( strcmp( symsubval->value, needle.s ) == 0 ) {
                            index = symsubval->subscript;
-                           if( vec_pos ) {
-                               break;// finished for vec_pos, go for veclastpos
+                           /*
+                            * finished for first position search
+                            * go for last position search
+                            */
+                           if( first ) {
+                               break;
                            }
                         }
                     }
-//                    *pneedlend = c;
+                    *needle.e = c;
                 }
             }
         }
@@ -170,7 +181,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
 
     *result += sprintf( *result, "%d", index );
 
-    return( pos );
+    return( CC_pos );
 }
 
 
@@ -179,10 +190,9 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
  *
  */
 
-condcode    scr_vecpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_vecpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    vec_pos = true;
-    return( scr_veclp( parms, parmcount, result, ressize ) );
+    return( get_vector_pos( parms, parmcount, result, ressize, true ) );
 }
 
 
@@ -191,8 +201,7 @@ condcode    scr_vecpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
  *
  */
 
-condcode    scr_veclastpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_veclastpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    vec_pos = false;
-    return( scr_veclp( parms, parmcount, result, ressize ) );
+    return( get_vector_pos( parms, parmcount, result, ressize, false ) );
 }

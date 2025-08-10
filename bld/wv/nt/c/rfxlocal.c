@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ void LocalGetBuff( char *buff, unsigned size )
     HANDLE  hStdin;
 
     hStdin = GetStdHandle( STD_INPUT_HANDLE );
-    if( !ReadFile( hStdin, buff, size, &cRead, NULL ) ) {
+    if( ReadFile( hStdin, buff, size, &cRead, NULL ) == 0 ) {
         buff[0] = '\r';
         buff[1] = NULLCHAR;
         return;
@@ -186,7 +186,7 @@ long LocalGetFileAttr( const char *name )
 error_handle LocalSetFileAttr( const char *name, long dos_attrib )
 /****************************************************************/
 {
-    if( !SetFileAttributes( name, DOS2NTATTR( dos_attrib ) ) ) {
+    if( SetFileAttributes( name, DOS2NTATTR( dos_attrib ) ) == 0 ) {
         return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
     }
     return( 0 );
@@ -293,7 +293,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
     }
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attrib = DTARFX_ATTRIB_OF( info );
-    if( !__lib_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
+    if( __lib_FindNextFile( h, &ffd ) == 0 || !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );

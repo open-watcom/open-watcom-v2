@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,16 +41,13 @@
 #include "wio.h"
 #include "linkstd.h"
 #include "dbginfo.h"
-#include "alloc.h"
 #include "mapio.h"
-#include "msg.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "loadfile.h"
 #include "wreslang.h"
 #include "wressetr.h"
-#include "rcrtns.h"
-#include "wlnkmsg.h"
+#include "_rcrtns.h"
 #include "posixfp.h"
 #ifdef USE_WRESLIB
     #include "wresset2.h"

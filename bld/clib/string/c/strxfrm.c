@@ -44,12 +44,11 @@ _WCRTLINK size_t __F_NAME(strxfrm,wcsxfrm)( CHAR_TYPE *dst, const CHAR_TYPE *src
 
     len = 0;
     for( ;; ) {
-        if( len < n ) 
-            *dst = *src;
+        if( len < n )
+            *dst++ = *src;
         if( *src == NULLCHAR )
             break;
         ++src;
-        ++dst;
         ++len;
     }
     return( len );

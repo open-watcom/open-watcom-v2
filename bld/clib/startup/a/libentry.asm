@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -108,6 +108,9 @@ endif
         public  "C",_psp
         public  "C",_osmajor
         public  "C",_osminor
+        public  "C",_winmajor
+        public  "C",_winminor
+        public  "C",_winver
         public  "C",_osmode
         public  "C",_STACKLOW
         public  "C",_STACKTOP
@@ -125,6 +128,15 @@ _curbrk    dw 0                 ; top of usable memory
 _psp       dw 0                 ; segment addr of program segment prefix
 _osmajor   db 0                 ; major DOS version number
 _osminor   db 0                 ; minor DOS version number
+ifdef WINDOWS10
+_winmajor  db 1                 ; major Windows version number
+_winminor  db 0                 ; minor Windows version number
+_winver    dw 100h              ; Windows version number
+else
+_winmajor  db 0                 ; major Windows version number
+_winminor  db 0                 ; minor Windows version number
+_winver    dw 0                 ; Windows version number
+endif
 _osmode    db 0                 ; 0 => DOS real mode
 _HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
@@ -143,6 +155,10 @@ _DATA ends
 ;*
 _TEXT segment word public 'CODE'
 
+ifdef WINDOWS10
+else
+        extrn   GETVERSION  : far
+endif
         extrn   LIBMAIN     : far       ; startup code
         extrn   LOCALINIT   : far       ; Windows heap init routine
 
@@ -202,6 +218,14 @@ endif
         mov     al,1
         mov     _osmode,al              ; protected mode!
 notprot:
+ifdef WINDOWS10
+else
+        call    GETVERSION              ; get Windows version number
+        mov     _winmajor,al            ; ...
+        mov     _winminor,ah            ; ...
+        xchg    al,ah                   ; ...
+        mov     _winver,ax              ; ...
+endif
         mov     ax,offset __null_FPE_rtn; initialize floating-point exception
         mov     word ptr __FPE_handler,ax       ; ... handler address
         mov     word ptr __FPE_handler+2,cs     ; ...

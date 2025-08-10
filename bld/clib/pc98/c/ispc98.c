@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@
 
 unsigned char   __isPC98 = 0;   // 0 - IBM PC, 1 - NEC PC-98
 
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) && defined( _M_I86 )
+#if defined( __DOS__ ) || defined( __WINDOWS_286__ )
 
 static void init_on_startup( void )
 {
@@ -71,12 +71,8 @@ static void init_on_startup( void )
     extern char _WCFAR  _F000H[];
 
     p = MK_FP( _F000H, BIOS_CHK_OFFS );
-  #elif defined(__DOS__) && defined(__386__)
-    if( _ExtenderRealModeSelector == 0 )
-        return;
-    p = MK_FP( _ExtenderRealModeSelector, ( 0xf000 << 4 ) | BIOS_CHK_OFFS );
-  #elif defined(__DOS__)
-    p = MK_FP( 0xf000, BIOS_CHK_OFFS );
+  #else
+    p = RealModeDataPtr( 0xF000, BIOS_CHK_OFFS );
   #endif
     if( p[0] != '/' && p[3] != '/' ) {
         __isPC98 = 1;

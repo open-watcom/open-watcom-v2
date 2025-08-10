@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 _WCNORETURN extern void _keep( unsigned, unsigned );
 #pragma aux _keep = \
         _MOV_AH DOS_TERM_STAY_RESID \
-        "int 21h"   \
+        __INT_21    \
     __parm [__ax] [__dx]
 
 _WCRTLINK _WCNORETURN void _dos_keep( unsigned retcode, unsigned memsize )

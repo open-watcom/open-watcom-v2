@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         strcpy( outfilename, p );
         FreeMem( p );
     }
-    if( !strcmp( outfilename, "" ) ) {          /* based on input filename */
+    if( strcmp( outfilename, "" ) == 0 ) {          /* based on input filename */
         _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( outfilename, pg.drive, pg.dir, pg.fname, "obj" );
     }

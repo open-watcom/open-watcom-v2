@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    if( !strcmp( argv[argIndex], "/i" ) ) {
+    if( strcmp( argv[argIndex], "/i" ) == 0 ) {
         showInf = 1;
         argIndex++;
     }

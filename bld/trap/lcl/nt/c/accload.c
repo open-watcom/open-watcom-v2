@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,7 +226,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            exe_name[PATH_MAX];
     MYCONTEXT       con;
     thread_info     *ti;
-    HANDLE          handle;
+    HANDLE          h;
     prog_load_req   *acc;
     prog_load_ret   *ret;
     header_info     hi;
@@ -292,7 +292,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * get program to debug.  If the user has specified a pid, then
      * skip directly to doing a DebugActiveProcess
      */
-    handle = INVALID_HANDLE_VALUE;
+    h = INVALID_HANDLE_VALUE;
 #if MADARCH & MADARCH_X64
     IsWOW64 = false;
 #elif defined( WOW )
@@ -307,8 +307,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         /*
          * Get type of application
          */
-        handle = CreateFile( exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
-        if( handle == INVALID_HANDLE_VALUE ) {
+        h = CreateFile( exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+        if( h == INVALID_HANDLE_VALUE ) {
             goto error_exit;
         }
         GetFullPathName( exe_name, MAX_PATH, CurrEXEName, NULL );
@@ -334,7 +334,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 
-        if( !GetEXEHeader( handle, &hi, &stack ) ) {
+        if( !GetEXEHeader( h, &hi, &stack ) ) {
             goto error_exit;
         }
         if( hi.signature == EXESIGN_PE ) {
@@ -382,8 +382,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
             IsDOS = true;
 #endif
         }
-        CloseHandle( handle );
-        handle = INVALID_HANDLE_VALUE;
+        CloseHandle( h );
+        h = INVALID_HANDLE_VALUE;
     }
     /*
      * start the debugee
@@ -570,8 +570,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
 error_exit:
     if( ret->err == 0 )
         ret->err = GetLastError();
-    if( handle != INVALID_HANDLE_VALUE )
-        CloseHandle( handle );
+    if( h != INVALID_HANDLE_VALUE )
+        CloseHandle( h );
     if( buff != NULL ) {
         LocalFree( buff );
     }

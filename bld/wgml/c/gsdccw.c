@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,28 +25,29 @@
 *  ========================================================================
 *
 * Description: implement .dc define character
-*                            only CW, GML and TB options implemented
+*                            only CONT, CW, GML, STOP, and TB options implemented
 *                        .cw script control word separator
 *  comments are from script-tso.txt
 ****************************************************************************/
+
 
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /* DEFINE CHARACTER defines  characters of special meaning  when found in  */
 /* input and produced as output.                                           */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .DC  |    option <char ...|OFF>                         |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
-/* ! only CW, GML and (STOP) are used in OW documentation and only these   */
-/* ! are implemented                                                       */
-/*                                                                         */
+/* ! only CW, GML and (STOP) are used in OW documentation                  */
+/* ! LI and TB were implemented for use in testing                         */
 /*                                                                         */
 /* "Option" specifies  which special  character or  characters are  to be  */
 /* defined.  Any operands that follow specify the values of those charac-  */
@@ -224,11 +225,11 @@
 /* nize as  a "logical line  end" so that  multiple control words  may be  */
 /* entered on one physical input line.                                     */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .CW  |    <;|character>                                 |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.  All subsequent control-word  */
 /* input lines  are examined for the  control word separator.    If found  */
@@ -280,28 +281,25 @@
 
 void    scr_cw( void )
 {
-    char        *   pa;
-    char        *   p;
-    int             len;
+    char            *pa;
+    char            *p;
+    unsigned        len;
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len > 2 ) {
-        xx_line_err( err_inv_cw_sep, pa );
-        return;
-    } else if( len > 0 ) {             // 1 char or 2 hex characters
-        CW_sep_char = parse_char( pa, len );
-    } else {
-        CW_sep_char = '\0';
+        xx_line_err_exit_c( ERR_INV_CW_SEP, pa );
+        /* never return */
     }
-    add_to_sysdir( "$cw", CW_sep_char );
+    if( len > 0 ) {             // 1 char or 2 hex characters
+        cw_sep_char = parse_char( pa, len );
+    } else {
+        cw_sep_char = '\0';
+    }
+    add_to_sysdir( "$cw", cw_sep_char );
     scan_restart = pa + len;
     return;
 }
@@ -310,132 +308,243 @@ void    scr_cw( void )
 /*  scr_dc    implement .dc define character control word                  */
 /*              only some options are implemented                    TBD   */
 /*              the STOP option is accepted, but ignored                   */
+/*                this matches how wgml 4.0 treat it when WSCRIPT is used  */
 /***************************************************************************/
+
+static char *get_word_ucase( const char *p, char *word, unsigned maxlen )
+{
+    unsigned    i;
+
+    i = 0;
+    while( *p != ' ' && *p != '\0' ) {
+        if( i < maxlen ) {
+            word[i++] = my_toupper( *p );
+        }
+        p++;
+    }
+    word[i] = '\0';
+    return( (char *)p );
+}
+
+static int get_char_val( const char *p )
+{
+    int             c;
+
+    if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
+        if( my_isdigit( p[0] ) ) {
+            c = p[0] - '0';
+        } else {
+            c = p[0] - 'A' + 10;
+        }
+        if( my_isdigit( p[1] ) ) {
+            c = c * 16 + p[1] - '0';
+        } else {
+            c = c * 16 + p[1] - 'A' + 10;
+        }
+    } else {
+        c = -1;
+    }
+    return( c );
+}
 
 void    scr_dc( void )
 {
-    char        *   pa;
-    char        *   p;
-    char            c;
-    int             len;
-    int             k;
-    char    string[2] = { 0, 0 };
-    int             opt;
-    static const char   options[5] [5] = { "cw", "gml", "tb", "stop" };
-                                        // please add new options at end
-    int const   max_opt = sizeof( options) / sizeof( options[0] );
+    char            c;                  // character provided (or 0x00)
+    char            *opt_beg;           // option start point
+    char            *p;
+    char            *val_beg;           // value start point
+    char            char2string[2];
+    unsigned        opt_len;            // option length
+    unsigned        val_len;            // value length
+    char            option[6];          // option upper cased value
+    char            value[6];           // value upper cased value
 
-    p = scan_start;
-    while( *p && *p != ' ' ) {          // over dc
-        p++;
-    }
-    while( *p && *p == ' ' ) {          // next word start = option
-        p++;
-    }
-    pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
-    len = p - pa;
-    opt = 0;
-    if( len > 0 ) {
-        for( k = 0; k < max_opt; k++ ) {
-            if( !strnicmp( pa, options[k], len ) ) {
-                opt = k + 1;
-                break;
-            }
-        }
-    }
-    if( opt == 0 ) {                   // omitted / unknown / not implemented
-        dc_opt_warn_len( pa, len );
-        return;
-    }
-    while( *p && *p == ' ' ) {          // next word start = option value
-        p++;
-    }
-    pa = p;
-    c = '\0';
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
-    len = p - pa;
-    if( len == 1 ) {
-        c = *pa;
-    }
-    switch( opt ) {
-    case 1 :                            // CW option
-        if( len > 2 ) {
-            if( len == 3 ) {
-                if( strnicmp( pa, "OFF", len ) ) {
-                    xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
-                    return;
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start = option
+    opt_beg = p;
+    p = get_word_ucase( opt_beg, option, sizeof( option ) - 1 );
+    opt_len = p - opt_beg;
+    SkipSpaces( p );                    // next word start = option value
+    val_beg = p;
+    p = get_word_ucase( val_beg, value, sizeof( value ) - 1 );
+    val_len = p - val_beg;
+    scan_restart = p;
+
+    /* Process options first by length and then by option name */
+
+    if( opt_len == 0 ) {                    // no option entered
+        xx_line_err_exit_cc( ERR_PARM_MISSING, "DC", opt_beg );
+        /* never return */
+    } else if( opt_len == 1 ) {         // option malformed
+        xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );
+        /* never return */
+    } else if( opt_len == 2 ) {         // BS CW LB LI PS RB TB TI
+        if( strcmp( "BS", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "CW", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = ';';                // default is ;
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
+                    /* never return */
                 }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = '\0';               // OFF is 0
             } else {
-                xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
-                return;
+                xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
+                /* never return */
             }
-        } else {
-            c = parse_char( pa, len );
-        }
-        scan_restart = pa + len;
-        CW_sep_char = c;
-        add_to_sysdir( "$cw", CW_sep_char );
-        break;
-    case 2 :                            // GML option
-        if( len > 2 ) {
-            if( len == 3 ) {
-                if( strnicmp( pa, "OFF", len ) ) {
-                    xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
-                    return;
+            cw_sep_char = c;
+            add_to_sysdir( "$cw", cw_sep_char );
+        } else if( strcmp( "LB", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "LI", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "PS", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "RB", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "TB", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = '\t';               // default is '\t'
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
+                    /* never return */
                 }
-                c = ' ';                    // OFF is blank
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = '\t';               // OFF is '\t'
             } else {
-                xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
-                return;
+                xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
+                /* never return */
             }
+            tab_char = c;
+//            char2string[0] = c;
+//            char2string[1] = '\0';
+            add_to_sysdir( "$tb", tab_char );
+            add_to_sysdir( "$tab", tab_char );
+        } else if( strcmp( "TI", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
         } else {
-            c = parse_char( pa, len );
+            xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );  // option invalid
+            /* never return */
         }
-        scan_restart = pa + len;
-        GML_char = c;
-        string[0] = c;
-        add_symvar( &global_dict, "gml", string, no_subscript,
-                    predefined );
-        add_to_sysdir( "$gml", GML_char );
-        break;
-    case 3 :                            // TB option
-        if( len > 2 ) {
-            if( len == 3 ) {
-                if( strnicmp( pa, "OFF", len ) ) {
-                    xx_line_err_len( err_dc_not_off, pa, len );  // only OFF is valid
-                    return;
+    } else if( opt_len == 3 ) {           // GML IXB IXI IXJ MCS PIX SUB SUP
+        if( strcmp( "GML", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = ' ';                        // default is blank
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
+                    /* never return */
                 }
-                c = 0x09;               // OFF is 0x09
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = ' ';                // OFF is blank
             } else {
-                xx_line_err_len( err_dc_not_off, pa, len );  // only OFF is valid
-                return;
+                xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
+                /* never return */
             }
+            GML_char = c;
+            char2string[0] = c;
+            char2string[1] = '\0';
+            add_symvar( global_dict, "gml", char2string, 1, SI_no_subscript, SF_predefined );
+            add_to_sysdir( "$gml", GML_char );
+        } else if( strcmp( "IXB", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "IXI", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "IXJ", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "MCS", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "PIX", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "SUB", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "SUP", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
         } else {
-            c = parse_char( pa, len );
+            xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );  // option invalid
+            /* never return */
         }
-        scan_restart = pa + len;
-        tab_char = c;
-        string[0] = c;
-        add_to_sysdir( "$tb", tab_char );
-        add_to_sysdir( "$tab", tab_char );
-        break;
-    case 4 :                            // STOP option   DUMMY processing
-/***************************************************************************/
-/*  this is done to allow OW help processing to continue instead of exit   */
-/*  due to premature output of text '.dc stop off' from              TBD   */
-/*        docs\doc\whelp\whelp.gml line 765                                */
-/*                                                                         */
-/***************************************************************************/
-        scan_restart = pa + len;
-        /* fall through */
-    default:                            // unknown / unimplemented option
-        dc_opt_warn_len( pa, len );
-        break;
+    } else if( opt_len == 4 ) {           // CONT HYPH HYTR LINB PUNC STOP WORD
+        if( strcmp( "CONT", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = ' ';                        // default is blank
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
+                    /* never return */
+                }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = ' ';                // OFF is blank
+            } else {
+                xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
+                /* never return */
+            }
+            CONT_char = c;
+            add_to_sysdir( "$cont", CONT_char );
+        } else if( strcmp( "HYPH", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "HYTR", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "LINB", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "PUNC", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else if( strcmp( "STOP", option ) == 0 ) {
+
+            /***************************************************************************/
+            /*  when the documentation refers to "script", this may be quite literal:  */
+            /*  setting STOP to OFF has no effect when WSCRIPT is specificed           */
+            /*  whether ".dc stop" with a list of characters has any effect is unknown */
+            /*  so doing nothing is the appropriate implementation, at least for now   */
+            /*                                                                         */
+            /*  the only use is ".dc stop off" found in                                */
+            /*        docs\doc\whelp\whelp.gml line 765                                */
+            /***************************************************************************/
+
+        } else if( strcmp( "WORD", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else {
+            xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );  // option invalid
+            /* never return */
+        }
+    } else if( opt_len == 5 ) {           // XTEXT
+        if( strcmp( "XTEXT", option ) == 0 ) {
+            xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
+        } else {
+            xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );  // option invalid
+            /* never return */
+        }
+    } else {
+        xx_line_err_exit_cc( ERR_PARM_INVALID, opt_beg, opt_beg );      // option invalid
+        /* never return */
     }
     return;
 }

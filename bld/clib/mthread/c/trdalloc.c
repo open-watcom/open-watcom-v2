@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ void *__InitThreadProcessing( void )
 #endif
 
 
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
 // only needed by 16 bit OS/2
 void __SetupThreadProcessing( int i ) {
 /*************************************/

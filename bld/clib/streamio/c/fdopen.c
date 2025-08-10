@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,18 +56,19 @@
 
 #ifndef __NETWARE__
 
-static int __iomode( int handle, int amode )
+static int __iomode( int handle, unsigned amode )
 {
-    int flags;
-    int __errno;
-
+    int             __errno;
 #ifdef __UNIX__
+    int             flags;
+
     if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
         return( -1 );
     }
 
     __errno = EOK;
-    if( (flags & O_APPEND) && !(amode & _APPEND) ) {
+    if( (flags & O_APPEND)
+      && (amode & _APPEND) == 0 ) {
         __errno = EACCES;
     }
     if( (flags & O_ACCMODE) == O_RDONLY ) {
@@ -80,16 +81,20 @@ static int __iomode( int handle, int amode )
         }
     }
 #else
+    unsigned        iomode_flags;
+
     /* make sure the handle has the same text/binary mode */
-    flags = __GetIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
     __errno = 0;
-    if( (amode ^ flags) & (_BINARY | _APPEND) ) {
+    if( (amode ^ iomode_flags) & (_BINARY | _APPEND) ) {
         __errno = EACCES;
     }
-    if( ( amode & _READ )  && !(flags & _READ) ) {
+    if( (amode & _READ)
+      && (iomode_flags & _READ) == 0 ) {
         __errno = EACCES;
     }
-    if( ( amode & _WRITE ) && !(flags & _WRITE) ) {
+    if( (amode & _WRITE)
+      && (iomode_flags & _WRITE) == 0 ) {
         __errno = EACCES;
     }
 #endif
@@ -104,7 +109,7 @@ static int __iomode( int handle, int amode )
 
 _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_mode )
 {
-    int             file_flags;
+    unsigned        file_flags;
     FILE            *fp;
     int             extflags;
 
@@ -127,21 +132,21 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         fp->_flag |= file_flags;
         fp->_cnt = 0;
         _FP_BASE( fp ) = NULL;
-        fp->_bufsize = 0;                   /* was BUFSIZ JBS 91/05/31 */
+        fp->_bufsize = 0;                   /* was BUFSIZ */
 #ifndef __NETWARE__
-        _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
-        _FP_EXTFLAGS(fp) = extflags;
+        _FP_ORIENTATION( fp ) = _NOT_ORIENTED; /* initial orientation */
+        _FP_EXTFLAGS( fp ) = extflags;
 #endif
 #if defined( __NT__ ) || defined( __OS2__ ) || defined(__UNIX__)
-        _FP_PIPEDATA(fp).isPipe = 0;    /* not a pipe */
+        _FP_PIPEDATA( fp ).isPipe = 0;    /* not a pipe */
 #endif
-        fp->_handle = handle;               /* BJS 91-07-23 */
+        fp->_handle = handle;
         if( __F_NAME(tolower,towlower)( (UCHAR_TYPE)*access_mode ) == STRING( 'a' ) ) {
             fseek( fp, 0, SEEK_END );
         }
-        __chktty( fp );                     /* JBS 31-may-91 */
+        __chktty( fp );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        __SetIOMode( handle, file_flags );
+        __SetIOMode_grow( handle, file_flags );
 #endif
     }
     return( fp );

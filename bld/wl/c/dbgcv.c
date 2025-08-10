@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include <string.h>
 #include "linkstd.h"
 #include "exepe.h"
-#include "alloc.h"
 #include "cv4w.h"
 #include "virtmem.h"
 #include "objnode.h"
@@ -43,9 +42,8 @@
 #include "loadqnx.h"    // for ToQNXIndex
 #include "ring.h"
 #include "dbgcv.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "specials.h"
+
 
 typedef struct cvmodinfo {
     unsigned_32         pubsize;
@@ -259,7 +257,7 @@ void CVP1ModuleFinished( mod_entry *obj )
     namelen = strlen( obj->name.u.ptr );
     //  required alignment ???
     size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
-    size = __ROUND_UP_SIZE( size, 4 );
+    size = __ROUND_UP_SIZE_DWORD( size );
     SectAddrs[CVSECT_MODULE].u.vm_offs += size;
     //  required alignment ???
     AddSubSection( true );
@@ -271,9 +269,9 @@ void CVP1ModuleFinished( mod_entry *obj )
     if( obj->d.cv->numlines > 0 ) {
         AddSubSection( false );
         temp = sizeof( cheesy_module_header );
-        temp += __ROUND_UP_SIZE( sizeof( cheesy_file_table ) + namelen, 4 );
+        temp += __ROUND_UP_SIZE_DWORD( sizeof( cheesy_file_table ) + namelen );
         temp += sizeof( cheesy_mapping_table );
-        temp += __ROUND_UP_SIZE( obj->d.cv->numlines * ( sizeof( unsigned_32 ) + sizeof( unsigned_16 ) ), 4 );
+        temp += __ROUND_UP_SIZE_DWORD( obj->d.cv->numlines * ( sizeof( unsigned_32 ) + sizeof( unsigned_16 ) ) );
         SectAddrs[CVSECT_MISC].u.vm_offs += temp;
     }
 }
@@ -295,7 +293,7 @@ void CVAddModule( mod_entry *obj, section *sect )
     namelen = strlen( obj->name.u.ptr );
     size = sizeof( cv_sst_module ) + namelen + 1 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
     //  begin padding required ???
-    size = __ROUND_UP_SIZE( size, 4 );
+    size = __ROUND_UP_SIZE_DWORD( size );
     //  end padding required ???
     GenSubSection( sstModule, size );
     mod.ovlNumber = 0;
@@ -375,7 +373,7 @@ static void GenSrcModHeader( void )
     file_tbl.pad = 0;
     file_tbl.range[0] = LineInfo.range;
     file_tbl.name[0] = strlen( CurrMod->name.u.ptr );
-    file_tbl.baseSrcLn[0] = sizeof( mod_hdr ) + __ROUND_UP_SIZE( sizeof( file_tbl ) + file_tbl.name[0], 4 );
+    file_tbl.baseSrcLn[0] = sizeof( mod_hdr ) + __ROUND_UP_SIZE_DWORD( sizeof( file_tbl ) + file_tbl.name[0] );
     PutInfo( LineInfo.linestart, &file_tbl, sizeof( file_tbl ) );
     LineInfo.linestart += sizeof( file_tbl );
     PutInfo( LineInfo.linestart, CurrMod->name.u.ptr, file_tbl.name[0] );
@@ -424,7 +422,7 @@ void CVAddGlobal( symbol *sym )
         } else {
             size = sizeof( s_pub16 );
         }
-        size = __ROUND_UP_SIZE( size + strlen( sym->name.u.ptr ) + 1, 4 );
+        size = __ROUND_UP_SIZE_DWORD( size + strlen( sym->name.u.ptr ) + 1 );
         CurrMod->d.cv->pubsize += size;
         SectAddrs[CVSECT_MISC].u.vm_offs += size;
     }
@@ -451,7 +449,7 @@ void CVGenGlobal( symbol *sym, section *sect )
 
     if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || ( sym->p.seg->bits == BITS_32 ) ) {
         size += sizeof( s_pub32 );
-        pub32.common.length = __ROUND_UP_SIZE( size, 4 );
+        pub32.common.length = __ROUND_UP_SIZE_DWORD( size );
         pad = pub32.common.length - size;
         pub32.common.length -= 2;
         pub32.common.code = S_PUB32;
@@ -461,7 +459,7 @@ void CVGenGlobal( symbol *sym, section *sect )
         DumpInfo( CVSECT_MISC, &pub32, sizeof( s_pub32 ) );
     } else {
         size += sizeof( s_pub16 );
-        pub16.common.length = __ROUND_UP_SIZE( size, 4 );
+        pub16.common.length = __ROUND_UP_SIZE_DWORD( size );
         pad = pub16.common.length - size;
         pub16.common.length -= 2;
         pub16.common.code = S_PUB16;
@@ -500,11 +498,11 @@ void CVGenLines( lineinfo *info )
         LineInfo.seg = GetCVSegment( seg->u.leader );
         LineInfo.linestart = SectAddrs[CVSECT_MISC].u.vm_ptr;
         cvsize = sizeof( cheesy_module_header ) + sizeof( cheesy_mapping_table )
-            + __ROUND_UP_SIZE( sizeof( cheesy_file_table ) + strlen( CurrMod->name.u.ptr ), 4 );
+            + __ROUND_UP_SIZE_DWORD( sizeof( cheesy_file_table ) + strlen( CurrMod->name.u.ptr ) );
         LineInfo.offbase = SectAddrs[CVSECT_MISC].u.vm_ptr + cvsize;
         LineInfo.numbase = LineInfo.offbase + CurrMod->d.cv->numlines * sizeof( unsigned_32 );
         cvsize += CurrMod->d.cv->numlines * sizeof( unsigned_32 );
-        cvsize += __ROUND_UP_SIZE( CurrMod->d.cv->numlines * sizeof( unsigned_16 ), 4 );
+        cvsize += __ROUND_UP_SIZE_DWORD( CurrMod->d.cv->numlines * sizeof( unsigned_16 ) );
         GenSubSection( sstSrcModule, cvsize );
         SectAddrs[CVSECT_MISC].u.vm_ptr += cvsize;
         LineInfo.range.start = adjust;

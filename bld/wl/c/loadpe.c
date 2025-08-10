@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,6 @@
 #include "reloc.h"
 #include "specials.h"
 #include "pcobj.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "objnode.h"
 #include "loadfile.h"
@@ -63,7 +61,7 @@
 #include "toc.h"
 #include "objstrip.h"
 #include "wressetr.h"
-#include "rcrtns.h"
+#include "_rcrtns.h"
 #include "pass2l1.h"
 #include "exerespe.h"
 #include "sharedio.h"

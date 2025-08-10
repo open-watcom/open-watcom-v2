@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,7 @@
 #include "_rdos.h"
 
 
-typedef struct rdos_handle_type
-{
+typedef struct rdos_handle_type {
     int         rdos_handle;
     unsigned    mode;
     long long   pos;
@@ -116,10 +115,11 @@ static int AllocHandleEntry( rdos_handle_type *obj )
 
     RdosEnterKernelSection( &handle_section );
 
-    for( i = 0; i < handle_count; i++)
-        if( handle_ptr[i] == 0 )
+    for( i = 0; i < handle_count; i++ ) {
+        if( handle_ptr[i] == 0 ) {
             break;
-
+        }
+    }
     if( i == handle_count )
         GrowHandleArr();
 
@@ -136,7 +136,8 @@ static rdos_handle_type *FreeHandleEntry( int handle )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count ) {
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             obj = handle_ptr[handle];
             handle_ptr[handle] = 0;
@@ -155,7 +156,8 @@ static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count ) {
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] )
             obj = handle_ptr[handle];
 
@@ -177,7 +179,8 @@ static int GetHandle( int handle )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count ) {
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             rdos_handle = handle_ptr[handle]->rdos_handle;
         }
@@ -194,7 +197,8 @@ static long long GetHandlePos( int handle )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count ) {
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             pos = handle_ptr[handle]->pos;
         }
@@ -209,7 +213,8 @@ static void SetHandlePos( int handle, long long pos )
 {
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count ) {
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             handle_ptr[handle]->pos = pos;
         }
@@ -226,9 +231,9 @@ static void InitHandle( void )
     handle_count = 5;
     handle_ptr = ( rdos_handle_type ** )lib_malloc( handle_count * sizeof( rdos_handle_type * ) );
 
-    for( i = 0; i < handle_count; i++ )
+    for( i = 0; i < handle_count; i++ ) {
         handle_ptr[i] = 0;
-
+    }
 }
 
 _WCRTLINK int unlink( const CHAR_TYPE *filename )
@@ -237,9 +242,8 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
 
     if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 unsigned __GetIOMode( int handle )
@@ -248,37 +252,45 @@ unsigned __GetIOMode( int handle )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count )
-        if( handle_ptr[handle] )
+    if( handle >= 0
+      && handle < handle_count ) {
+        if( handle_ptr[handle] ) {
             mode = handle_ptr[handle]->mode;
+        }
+    }
 
     RdosLeaveKernelSection( &handle_section );
 
     return( mode );
 }
 
-void __SetIOMode_nogrow( int handle, unsigned value )
+void __SetIOMode( int handle, unsigned value )
 {
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count )
-        if( handle_ptr[handle] )
+    if( handle >= 0
+      && handle < handle_count ) {
+        if( handle_ptr[handle] ) {
             handle_ptr[handle]->mode = value;
+        }
+    }
 
     RdosLeaveKernelSection( &handle_section );
 }
 
-signed __SetIOMode( int handle, unsigned value )
+int __SetIOMode_grow( int handle, unsigned value )
 {
-    signed ret = -1;
+    int ret = -1;
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count )
+    if( handle >= 0
+      && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             handle_ptr[handle]->mode = value;
             ret = handle;
         }
+    }
 
     RdosLeaveKernelSection( &handle_section );
 
@@ -295,12 +307,19 @@ static int open_base( const CHAR_TYPE *name, int mode )
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
     iomode_flags = 0;
-    if( mode == O_RDWR )                iomode_flags |= _READ | _WRITE;
-    if( rwmode == O_RDONLY)             iomode_flags |= _READ;
-    if( rwmode == O_WRONLY)             iomode_flags |= _WRITE;
-    if( mode & O_APPEND )               iomode_flags |= _APPEND;
-    if( mode & (O_BINARY|O_TEXT) )
-        if( mode & O_BINARY )           iomode_flags |= _BINARY;
+    if( mode == O_RDWR )
+        iomode_flags |= _READ | _WRITE;
+    if( rwmode == O_RDONLY )
+        iomode_flags |= _READ;
+    if( rwmode == O_WRONLY )
+        iomode_flags |= _WRITE;
+    if( mode & O_APPEND )
+        iomode_flags |= _APPEND;
+    if( mode & (O_BINARY|O_TEXT) ) {
+        if( mode & O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
+    }
 
     rdos_handle = RdosOpenKernelHandle( name, mode );
     if( rdos_handle ) {
@@ -321,13 +340,14 @@ _WCRTLINK int creat( const CHAR_TYPE *name, mode_t pmode )
     unsigned mode;
 
     mode = O_CREAT | O_TRUNC;
-    if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
+    if( (pmode & S_IWRITE)
+      && (pmode & S_IREAD) ) {
         mode |= O_RDWR;
     } else if( pmode & S_IWRITE ) {
         mode |= O_WRONLY;
     } else if( pmode & S_IREAD ) {
         mode |= O_RDONLY;
-    } else if( !pmode ) {
+    } else if( pmode == 0 ) {
         mode |= O_RDWR;
     }
 
@@ -377,10 +397,12 @@ _WCRTLINK int dup( int handle )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle >= 0 && handle < handle_count )
-        if( handle_ptr[handle] )
+    if( handle >= 0
+      && handle < handle_count ) {
+        if( handle_ptr[handle] ) {
             obj = handle_ptr[handle];
-
+        }
+    }
     if( obj )
         obj->ref_count++;
 
@@ -388,9 +410,8 @@ _WCRTLINK int dup( int handle )
 
     if( obj ) {
         return( AllocHandleEntry( obj ) );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 _WCRTLINK int dup2( int handle1, int handle2 )
@@ -408,10 +429,12 @@ _WCRTLINK int dup2( int handle1, int handle2 )
 
     RdosEnterKernelSection( &handle_section );
 
-    if( handle1 >= 0 && handle1 < handle_count )
-        if( handle_ptr[handle1] )
+    if( handle1 >= 0
+      && handle1 < handle_count ) {
+        if( handle_ptr[handle1] ) {
             obj = handle_ptr[handle1];
-
+        }
+    }
     if( obj )
         obj->ref_count++;
 
@@ -438,12 +461,10 @@ _WCRTLINK int _eof( int handle )
         pos = GetHandlePos( handle );
         if( RdosGetKernelHandleSize( rdos_handle ) == pos ) {
             return( 1 );
-        } else {
-            return( 0 );
         }
-    } else {
-        return( -1 );
+        return( 0 );
     }
+    return( -1 );
 }
 
 _WCRTLINK long long _filelength( int handle )
@@ -453,9 +474,8 @@ _WCRTLINK long long _filelength( int handle )
     rdos_handle = GetHandle( handle );
     if( rdos_handle > 0 ) {
         return( RdosGetKernelHandleSize( rdos_handle ) );
-    } else {
-        return( -1 );
     }
+    return( -1 );
 }
 
 _WCRTLINK int _chsize( int handle, long long size )
@@ -466,8 +486,8 @@ _WCRTLINK int _chsize( int handle, long long size )
     if( rdos_handle > 0 ) {
         RdosSetKernelHandleSize( rdos_handle, size );
         return( size );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK int fstat( int handle, struct stat *buf )
@@ -523,8 +543,8 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         buf->st_mode |= S_IFREG;
         buf->st_btime = buf->st_mtime;
         return( 0 );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK int _setmode( int handle, int mode )
@@ -578,8 +598,8 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
             break;
         }
         return( GetHandlePos( handle ) );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK off_t _tell( int handle )
@@ -601,8 +621,8 @@ int __qread( int handle, void *buffer, unsigned len )
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 int __qwrite( int handle, const void *buffer, unsigned len )
@@ -619,8 +639,8 @@ int __qwrite( int handle, const void *buffer, unsigned len )
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
-    } else
-        return( -1 );
+    }
+    return( -1 );
 }
 
 _WCRTLINK int read( int handle, void *buffer, unsigned len )

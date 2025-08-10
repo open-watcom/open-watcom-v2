@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,8 +188,8 @@ long _fork( const char *cmd, size_t len )
     }
     *dst = NULLCHAR;
 
-    savestdin  = 0xffff;
-    savestdout = 0xffff;
+    savestdin  = (HFILE)-1;
+    savestdout = (HFILE)-1;
     DosDupHandle( 0, &savestdin );
     DosDupHandle( 1, &savestdout );
     if( DosOpen( "CON", &console, &act, 0,

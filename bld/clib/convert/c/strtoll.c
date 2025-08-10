@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
@@ -48,10 +49,10 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "bool.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "thread.h"
+
 
 /* This is heavily based on strtol() implementation; however this code needs
  * to use 64-bit arithmetic and there is little need to drag in all the
@@ -80,11 +81,11 @@ static int radix_value( CHAR_TYPE c )
     if( c >= STRING( '0' ) && c <= STRING( '9' ) )
         return( c - STRING( '0' ) );
     c = __F_NAME(tolower,towlower)( (UCHAR_TYPE)c );
-    if( c >= STRING( 'a' ) &&  c <= STRING( 'i' ) )
+    if( c >= STRING( 'a' ) && c <= STRING( 'i' ) )
         return( c - STRING( 'a' ) + 10 );
-    if( c >= STRING( 'j' ) &&  c <= STRING( 'r' ) )
+    if( c >= STRING( 'j' ) && c <= STRING( 'r' ) )
         return( c - STRING( 'j' ) + 19 );
-    if( c >= STRING( 's' ) &&  c <= STRING( 'z' ) )
+    if( c >= STRING( 's' ) && c <= STRING( 'z' ) )
         return( c - STRING( 's' ) + 28 );
     return( 37 );
 }

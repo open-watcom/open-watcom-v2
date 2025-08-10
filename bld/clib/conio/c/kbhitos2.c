@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,19 +32,21 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #include <conio.h>
 #define INCL_16
 #define INCL_SUB
 #include <wos2.h>
 #include "dosfuncx.h"
+#include "tinyio.h"
 #include "rtdata.h"
 #include "defwin.h"
 
 
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     extern unsigned char    _dos( unsigned char );
     #pragma aux _dos = \
-            "int 21h"      \
+            __INT_21    \
         __parm __caller [__ah] \
         __value         [__al]
 #endif
@@ -54,22 +56,19 @@ _WCRTLINK int kbhit( void )
     KBDKEYINFO  info;
 
     if( _RWD_cbyte != 0 )
-        return( 1 );
+        return( true );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {   // Default windowing
         LPWDATA     res;
-        res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
 #endif
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     if( _osmode_REALMODE() ) {
         return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
-    KbdPeek( &info, 0 );
-    return( ( info.fbStatus & 0xe0 ) != 0 );
-#else
-    KbdPeek( &info, 0 );
-    return( ( info.fbStatus & 0xe0 ) != 0 );
 #endif
+    KbdPeek( &info, 0 );
+    return( (info.fbStatus & 0xe0) != 0 );
 }

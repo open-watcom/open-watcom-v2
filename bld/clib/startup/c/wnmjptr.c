@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,11 @@
 #include "rtdata.h"
 
 
+#ifdef __WINDOWS__
+_WCRTLINK unsigned char (*__get_winmajor_ptr( void ))
+#else
 _WCRTLINK unsigned int (*__get_winmajor_ptr( void ))
+#endif
 {
     return( &_RWD_winmajor );
 }

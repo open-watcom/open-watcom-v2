@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ heapblk_nptr    _WCNEAR __nheapbeg = NULL;
 heapblk_nptr    __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
 
 /* OS/2 high memory heap support
  * malloc allocates from current heap
@@ -60,7 +60,7 @@ unsigned int    __LargestSizeB4MiniHeapRover = 0;
  * _os2lalloc always allocates from lower memory
  */
 
-unsigned char _os2_use_obj_any = 0;
+bool            _os2_use_obj_any = false;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
@@ -107,7 +107,7 @@ _WCRTLINK void *_os2hmalloc( size_t amount )
     return( cstg );
 }
 
-#endif /* defined(__OS2__) && !defined(_M_I86) */
+#endif /* defined(__OS2_32BIT__) */
 
 #if defined(__SMALL_DATA__)
 
@@ -143,8 +143,8 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     void_bptr       cstg;
     unsigned char   expanded;
     heapblk_nptr    heap;
-#if defined(__OS2__) && !defined(_M_I86)
-    unsigned char   use_obj_any;
+#if defined(__OS2_32BIT__)
+    bool            use_obj_any;
 #endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
@@ -162,7 +162,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     cstg = NULL;
     expanded = 0;
     for( ;; ) {
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
         // Need to update each pass in case 1st DosAllocMem determines OBJ_ANY not supported
         use_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
 #endif
@@ -181,7 +181,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
         for( ; heap != NULL; heap = heap->next.nptr ) {
             __MiniHeapRover = heap;
             largest = heap->largest_blk;
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
             if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif
                 if( largest >= amt ) {
@@ -194,7 +194,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
                         goto lbl_release_heap;
                     }
                 }
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
             }
 #endif
             if( __LargestSizeB4MiniHeapRover < largest ) {

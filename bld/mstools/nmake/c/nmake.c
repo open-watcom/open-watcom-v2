@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <direct.h>
+#include "wio.h"
 #include "bool.h"
 #include "watcom.h"
 #include "cmdline.h"
@@ -166,7 +166,7 @@ void main( int argc, char *argv[] )
     do_parsing( &cmdOpts );
     OptionsTranslate( &cmdOpts, cmdLine );
 
-    /*** Spawn the librarian ***/
+    /*** Spawn the make ***/
     nmake( &cmdOpts, cmdLine );
     FiniParse( &cmdOpts );
     exit( EXIT_SUCCESS );

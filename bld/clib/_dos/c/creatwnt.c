@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,35 +44,43 @@
 #include "openmode.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_creat( const char *name, unsigned attr, int *posix_handle )
+
+_WCRTLINK unsigned _dos_creat( const char *name, unsigned attr, int *phandle )
 {
-    HANDLE      handle;
+    HANDLE      osfh;
     DWORD       desired_access;
     DWORD       os_attr;
-    int         hid;
+    int         handle;
     unsigned    iomode_flags;
 
-    // First try to get the required slot.
-    // No point in creating a file only to not use it.  JBS 99/11/01
-    hid = __allocPOSIXHandleDummy();
-    if( hid == -1 ) {
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
+    handle = __allocPOSIXHandleDummy();
+    if( handle == -1 ) {
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
     __GetNTCreateAttr( attr, &desired_access, &os_attr );
-    handle = CreateFile( (LPTSTR)name, desired_access, 0, 0, CREATE_ALWAYS, os_attr, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __freePOSIXHandle( hid );
+    osfh = CreateFile( (LPTSTR)name, desired_access, 0, 0, CREATE_ALWAYS, os_attr, NULL );
+    if( osfh == INVALID_HANDLE_VALUE ) {
+        /*
+         * Give back the slot we got
+         */
+        __freePOSIXHandle( handle );
         return( __set_errno_nt_reterr() );
     }
-    // Now use the slot we got.
-    __setOSHandle( hid, handle );   // JBS 99/11/01
+    /*
+     * Now use the slot we got.
+     */
+    __setOSHandle( handle, osfh );
 
-    *posix_handle = hid;
+    *phandle = handle;
 
     iomode_flags = _READ;
-    if( !(attr & _A_RDONLY) )
+    if( (attr & _A_RDONLY) == 0 )
         iomode_flags |= _WRITE;
-    __SetIOMode( hid, iomode_flags );
+    __SetIOMode( handle, iomode_flags );
     return( 0 );
 }

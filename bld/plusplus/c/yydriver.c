@@ -930,7 +930,8 @@ static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
                 VstkPop( &(state->angle_stack) );
                 token = Y_GT_SPECIAL;
             }
-        } else if( CHECK_STD( >= , CXX0X ) && ( token == Y_RSHIFT ) ) {
+        } else if( ( CompVars.cxxstd >= STD_CXX11 )
+          && ( token == Y_RSHIFT ) ) {
             // see Right Angle Brackets (N1757/05-0017)
             if( angle_state->paren_depth == 0 ) {
                 VstkPop( &(state->angle_stack) );

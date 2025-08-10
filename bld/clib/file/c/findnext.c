@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,28 +51,26 @@
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
-  _WCRTLINK int _wfindnexti64( intptr_t handle, struct _wfinddatai64_t *fileinfo )
+  _WCRTLINK int _wfindnexti64( intptr_t osffh, struct _wfinddatai64_t *fileinfo )
  #else
-  _WCRTLINK int _wfindnext( intptr_t handle, struct _wfinddata_t *fileinfo )
+  _WCRTLINK int _wfindnext( intptr_t osffh, struct _wfinddata_t *fileinfo )
  #endif
 #else
  #ifdef __INT64__
-  _WCRTLINK int _findnexti64( intptr_t handle, struct _finddatai64_t *fileinfo )
+  _WCRTLINK int _findnexti64( intptr_t osffh, struct _finddatai64_t *fileinfo )
  #else
-  _WCRTLINK int _findnext( intptr_t handle, struct _finddata_t *fileinfo )
+  _WCRTLINK int _findnext( intptr_t osffh, struct _finddata_t *fileinfo )
  #endif
 #endif
 {
 #ifdef __NT__
     WIN32_FIND_DATA ffd;
-    BOOL            rc;
 
     /*** Try to find another matching file ***/
-    rc = __lib_FindNextFile( (HANDLE)handle, &ffd );
-    if( rc == FALSE ) {
+    if( __lib_FindNextFile( (HANDLE)osffh, &ffd ) == 0 ) {
         return( __set_errno_nt() );
     }
-    if( !__NTFindNextFileWithAttr( (HANDLE)handle, NT_FIND_ATTR, &ffd ) ) {
+    if( !__NTFindNextFileWithAttr( (HANDLE)osffh, NT_FIND_ATTR, &ffd ) ) {
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
     /*** Got one! ***/
@@ -86,7 +84,7 @@
     FF_BUFFER       ffb;
     OS_UINT         searchcount = 1;
 
-    rc = DosFindNext( (HDIR)handle, &ffb, sizeof( ffb ), &searchcount );
+    rc = DosFindNext( (HDIR)osffh, &ffb, sizeof( ffb ), &searchcount );
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }
@@ -98,10 +96,10 @@
   #endif
 
 #elif defined( __RDOS__ )
-    RDOSFINDTYPE    *findbuf = (RDOSFINDTYPE *)handle;
+    RDOSFINDTYPE    *findbuf;
 
+    findbuf = (RDOSFINDTYPE *)osffh;
     findbuf->entry++;
-
     if( __rdos_finddata_get( findbuf, fileinfo ) ) {
         return( 0 );
     } else {
@@ -109,13 +107,13 @@
     }
 
 #else   /* DOS */
-    if( __F_NAME(_dos_findnext,_wdos_findnext)( (DOSFINDTYPE *)handle ) ) {
+    if( __F_NAME(_dos_findnext,_wdos_findnext)( (DOSFINDTYPE *)osffh ) ) {
         return( -1 );
     }
   #ifdef __INT64__
-    __F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt)( (DOSFINDTYPE *)handle, fileinfo );
+    __F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt)( (DOSFINDTYPE *)osffh, fileinfo );
   #else
-    __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( (DOSFINDTYPE *)handle, fileinfo );
+    __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( (DOSFINDTYPE *)osffh, fileinfo );
   #endif
 #endif
     return( 0 );

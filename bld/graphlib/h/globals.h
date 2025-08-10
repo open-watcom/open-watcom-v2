@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,14 @@
 ****************************************************************************/
 
 
-extern char             _StartUp;                   // graphics startup flag
-extern char             _GrMode;                    // graphics mode flag
+extern bool             _StartUp;                   // graphics startup flag
+extern bool             _GrMode;                    // graphics mode flag
 extern short            _ErrorStatus;               // error status
 
 extern struct xycoord   _CurrPos;                   // current logical position
 extern struct xycoord   _LogOrg;                    // logical origin location
 
-extern char             _Clipping;                  // clipping indicator
+extern bool             _Clipping;                  // clipping indicator
 
 extern short            _Tx_Row_Min;                // upper left and lower right
 extern short            _Tx_Col_Min;                // corners of text window
@@ -49,10 +50,10 @@ extern grcolor          _CharAttr;                  // current text attribute
 #else
 extern char             _CharAttr;                  // current text attribute
 #endif
-extern short            _Wrap;                      // text wrap flag
-extern short            _CursState;                 // cursor state flag
+extern bool             _Wrap;                      // text wrap flag
+extern bool             _CursState;                 // cursor state flag
 extern short            _CursorShape;               // cursor shape
-extern short            _GrCursor;                  // graphics cursor
+extern bool             _GrCursor;                  // graphics cursor
 
 extern short            _CurrActivePage;            // current active page
 extern short            _CurrVisualPage;            // current display page
@@ -65,12 +66,12 @@ extern short            _Palette;                   // current palette number
 
 extern unsigned char    _FillMask[];                // current fill mask
 extern unsigned char    _DefMask[];                 // default fill mask
-extern char             _HaveMask;                  // is there a fill mask?
-extern short            _Transparent;               // fill transparency
+extern bool             _HaveMask;                  // is there a fill mask?
+extern bool             _Transparent;               // fill transparency
 extern short            _PaRf_x;                    // pattern reference x-coord
 extern short            _PaRf_y;                    // pattern reference y-coord
 extern unsigned short   _LineStyle;                 // current line style
-extern short            _StyleWrap;                 // flag for continuous style
+extern bool             _StyleWrap;                 // flag for continuous style
 extern short            _PlotAct;                   // plotting action
 
 extern struct textsettings _TextSettings;           // default text settings
@@ -92,16 +93,11 @@ extern long             _coltbl[ 16 ];              // EGA colors for TrueColor 
 extern unsigned char    _VGAPage;                   // SuperVGA page number
 extern unsigned char    _VGAGran;                   // SuperVGA page granularity
 extern short            _SVGAType;                  // type of SuperVGA
-extern vgapage_fn       _FARC *_SetVGAPage;         // function to set SVGA page
 extern short            _VGAStride;                 // SuperVGA mode stride
-#endif
-
-#if defined( VERSION2 ) && defined( _SUPERVGA )
+  #if defined( VERSION2 )
 extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
+  #endif
 #endif
-
-extern unsigned char    _IsDBCS;                    // is this a DBCS system
-extern dbcs_pair        _DBCSPairs[];               // range of DBCS chars
 
 extern unsigned short   _BiosSeg;                   // seg of BIOS data area
 extern unsigned short   _MonoSeg;                   // seg of MONO screen

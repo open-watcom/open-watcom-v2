@@ -4979,10 +4979,8 @@ NTKERNELAPI BOOLEAN     NTAPI CcPurgeCacheSection( PSECTION_OBJECT_POINTERS, PLA
 #endif
 
 /* Functions in HAL.DLL */
-#if (NTDDI_VERSION >= 0x05000000)
 #ifdef _X86_
 NTHALAPI KIRQL          FASTCALL KeAcquireSpinLockRaiseToSynch( PKSPIN_LOCK );
-#endif
 #endif
 #if (NTDDI_VERSION >= 0x05010000)
 #ifdef _X86_

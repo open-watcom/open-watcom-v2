@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,13 @@
 extern  int     DoBDosCall( unsigned ax, unsigned dx );
 #if defined(__386__)
     #pragma aux DoBDosCall =    \
-            _INT_21             \
+            __INT_21            \
         __parm __caller     [__eax] [__edx] \
         __value             [__eax] \
         __modify __exact    [__eax __ebx __ecx __edx __esi __edi]
 #else
     #pragma aux DoBDosCall =    \
-            "int 21h"           \
+            __INT_21            \
         __parm __caller     [__ax] [__dx] \
         __value             [__ax] \
         __modify __exact    [__ax __bx __cx __dx __si __di]

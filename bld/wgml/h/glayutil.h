@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,9 +29,7 @@
 *                    to be completed                                TBD
 ****************************************************************************/
 
-#ifndef pick
-    #error macro pick not defined
-#endif
+
 //      attribute                 routinename           result type
 //      name               input            output
 
@@ -41,7 +39,7 @@
   pick( align,             i_space_unit,    o_space_unit,    su              )
   pick( appendix_string,   i_xx_string,     o_xx_string,     xx_str          )
   pick( backm_string,      i_xx_string,     o_xx_string,     xx_str          )
-  pick( banner_place,      i_place,         o_place,         bf_place        )
+  pick( banner_place,      i_place,         o_place,         ban_place       )
   pick( binding,           i_space_unit,    o_space_unit,    su              )
   pick( body_string,       i_xx_string,     o_xx_string,     xx_str          )
   pick( bullet,            i_char,          o_char,          char            )
@@ -50,9 +48,9 @@
   pick( date_form,         i_date_form,     o_date_form,     xx_str          )
   pick( case,              i_case,          o_case,          case_t          )
   pick( columns,           i_int8,          o_int8,          int8_t          )
-  pick( contents,          i_content,       o_content,       content         )
+  pick( contents,          i_content,       o_content,       reg_content     )
   pick( default_frame,     i_default_frame, o_default_frame, def_frame       )
-  pick( default_place,     i_place,         o_place,         bf_place        )
+  pick( default_place,     i_place,         o_place,         ban_place       )
   pick( delim,             i_char,          o_char,          char            )
   pick( depth,             i_space_unit,    o_space_unit,    su              )
   pick( display_heading,   i_yes_no,        o_yes_no,        bool            )
@@ -90,7 +88,7 @@
   pick( page_position,     i_page_position, o_page_position, page_pos        )
   pick( page_reset,        i_yes_no,        o_yes_no,        bool            )
   pick( para_indent,       i_yes_no,        o_yes_no,        bool            )
-  pick( place,             i_place,         o_place,         bf_place        )
+  pick( place,             i_place,         o_place,         ban_place       )
   pick( preface_string,    i_xx_string,     o_xx_string,     xx_str          )
   pick( pre_lines,         i_space_unit,    o_space_unit,    su              )
   pick( pre_skip,          i_space_unit,    o_space_unit,    su              )
@@ -98,8 +96,8 @@
   pick( post_skip,         i_space_unit,    o_space_unit,    su              )
   pick( pouring,           i_pouring,       o_pouring,       reg_pour        )
   pick( refdoc,            i_docsect,       o_docsect,       ban_docsect     )
-  pick( refnum,            i_int8,          o_int8,          int8_t          )
-  pick( refplace,          i_place,         o_place,         bf_place        )
+  pick( refnum,            i_uint8,         o_uint8,         uint8_t         )
+  pick( refplace,          i_place,         o_place,         ban_place       )
   pick( region_position,   i_page_position, o_page_position, page_pos        )
   pick( right_adjust,      i_space_unit,    o_space_unit,    su              )
   pick( right_indent,      i_space_unit,    o_space_unit,    su              )
@@ -110,17 +108,19 @@
   pick( see_also_string,   i_xx_string,     o_xx_string,     xx_str          )
   pick( size,              i_space_unit,    o_space_unit,    su              )
   pick( skip,              i_space_unit,    o_space_unit,    su              )
-  pick( spacing,           i_spacing_line,  o_spacing_line,  spacing_line    )
+  pick( spacing,           i_spacing,       o_spacing,       text_space      )
   pick( stop_eject,        i_yes_no,        o_yes_no,        bool            )
   pick( string_font,       i_font_number,   o_font_number,   font_number     )
-  pick( threshold,         i_uint8,         o_uint8,         uint8_t         )
+  pick( threshold,         i_threshold,     o_threshold,     uint16_t        )
   pick( toc_levels,        i_int8,          o_int8,          int8_t          )
   pick( top_margin,        i_space_unit,    o_space_unit,    su              )
   pick( voffset,           i_space_unit,    o_space_unit,    su              )
   pick( width,             i_space_unit,    o_space_unit,    su              )
   pick( wrap_indent,       i_space_unit,    o_space_unit,    su              )
+  pick( int32,             i_int32,         o_int32,         int             )
+  pick( uint16,            i_uint16,        o_uint16,        uint16_t        )
+  pick( int8,              i_int8,          o_int8,          int8_t          )
+  pick( uint8,             i_uint8,         o_uint8,         uint8_t         )
 //pick( xx_string,         i_xx_string,     o_xx_string,     xx_str          )
 
 //pick( dummy_max,         NULL,            NULL,            int )// dummy entry
-
-#undef  pick

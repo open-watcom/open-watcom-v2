@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  16-bit code only
 ;*
 ;*****************************************************************************
 
@@ -34,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         xrefp   "C",__set_EINVAL
         modstart dosdisk
@@ -63,7 +64,7 @@ else
 endif
         mov     DX,AX           ; get drive number
         mov     AH,36h          ; get disk free space
-        int     21h             ; ...
+        int21h                  ; ...
         cmp     AX,0FFFFh       ; if valid drive number
         _if     ne              ; then
           mov   [DI],DX         ; - save total # of clusters

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,9 +87,9 @@ static void save_vects( unsigned *rmvtable, void __far **pmvtable )
     #endif
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
-            rmvtable[intnb] = TinyDPMIGetRealVect( intnb );
+            rmvtable[intnb] = DPMIGetRealModeInterruptVector( intnb );
         #endif
-        pmvtable[intnb] = TinyDPMIGetProtectVect( intnb );
+        pmvtable[intnb] = DPMIGetPMInterruptVector( intnb );
     }
 }
 
@@ -104,11 +104,9 @@ static void restore_vects( unsigned *rmvtable, void __far **pmvtable )
     #endif
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
-            TinyDPMISetRealVect( intnb,
-                                 ( (uint_16 *)&rmvtable[intnb] )[1],
-                                 (uint_16)rmvtable[intnb] );
+            DPMISetRealModeInterruptVector( intnb, ( (uint_16 *)&rmvtable[intnb] )[1], (uint_16)rmvtable[intnb] );
         #endif
-        TinyDPMISetProtectVect( intnb, pmvtable[intnb] );
+        DPMISetPMInterruptVector( intnb, pmvtable[intnb] );
     }
 }
 
@@ -134,7 +132,7 @@ static void dump_selec( uint_16 sel )
     descriptor          d;
     char                buff[100];
 
-    if( TinyDPMIGetDescriptor( sel, &d ) ) {
+    if( DPMIGetDescriptor( sel, &d ) ) {
         _debug( "error getting descriptor for selector" );
     } else {
         strcpy( buff, "selector=" );
@@ -156,37 +154,37 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
 {
     descriptor          d;
 
-    *pmcs = TinyDPMICreateSel( 1 );
-    *pmds = TinyDPMICreateSel( 1 );
+    *pmcs = DPMIAllocateLDTDescriptors( 1 );
+    *pmds = DPMIAllocateLDTDescriptors( 1 );
     if( !*pmcs || !*pmds ) {
         _debug( "error creating selectors" );
     }
-    if( TinyDPMIGetDescriptor( _FP_SEG( &setup_sel ), &d ) ) {
+    if( DPMIGetDescriptor( _FP_SEG( &setup_sel ), &d ) ) {
         _debug( "error obtaining descriptor for new cs selector" );
     }
     d.u2.flags.use32 = 0;
     d.u2.flags.page_granular = 0;
-    if( TinyDPMISetRights( *pmcs, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
+    if( DPMISetDescriptorAccessRights( *pmcs, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
         _debug( "error setting segment rights for new cs selector" );
     }
-    if( TinyDPMISetBase( *pmcs, (unsigned)cs << 4 ) ) {
+    if( DPMISetSegmentBaseAddress( *pmcs, (unsigned)cs << 4 ) ) {
         _debug( "error setting segment base for new cs selector" );
     }
-    if( TinyDPMISetLimit( *pmcs, 0xffff ) ) {
+    if( DPMISetSegmentLimit( *pmcs, 0xffff ) ) {
         _debug( "error setting segment limit for new cs selector" );
     }
-    if( TinyDPMIGetDescriptor( _FP_SEG( &SavePMVTable ), &d ) ) {
+    if( DPMIGetDescriptor( _FP_SEG( &SavePMVTable ), &d ) ) {
         _debug( "error obtaining descriptor for new ds selector" );
     }
     d.u2.flags.use32 = 0;
     d.u2.flags.page_granular = 0;
-    if( TinyDPMISetRights( *pmds, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
+    if( DPMISetDescriptorAccessRights( *pmds, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
         _debug( "error setting segment rights for new ds selector" );
     }
-    if( TinyDPMISetBase( *pmds, (unsigned)ds << 4 ) ) {
+    if( DPMISetSegmentBaseAddress( *pmds, (unsigned)ds << 4 ) ) {
         _debug( "error setting segment base for new ds selector" );
     }
-    if( TinyDPMISetLimit( *pmds, 0xffff ) ) {
+    if( DPMISetSegmentLimit( *pmds, 0xffff ) ) {
         _debug( "error setting segment limit for new ds selector" );
     }
 }
@@ -203,17 +201,12 @@ static void set_new_vects( unsigned *rmvtable, unsigned *pmvtable,
     #endif
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
-            TinyDPMISetRealVect( intnb,
-                                 ( (uint_16 *)&rmvtable[intnb] )[1],
-                                 (uint_16)rmvtable[intnb] );
+            DPMISetRealModeInterruptVector( intnb, ( (uint_16 *)&rmvtable[intnb] )[1], (uint_16)rmvtable[intnb] );
         #endif
         if( intnb == 0x66 ) {
-            TinyDPMISetProtectVect( intnb, _MK_FP( pmcs,
-                                           (uint_16)pmvtable[intnb] ) );
+            DPMISetPMInterruptVector( intnb, _MK_FP( pmcs, (uint_16)pmvtable[intnb] ) );
         } else {
-            TinyDPMISetProtectVect( intnb,
-                                _MK_FP( ( (uint_16 *)&pmvtable[intnb] )[1],
-                                       (uint_16)pmvtable[intnb] ) );
+            DPMISetPMInterruptVector( intnb, _MK_FP( ( (uint_16 *)&pmvtable[intnb] )[1], (uint_16)pmvtable[intnb] ) );
         }
     }
     _debug( "new vectors have been set" );

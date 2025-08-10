@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ extern unsigned __dos_create_sfn( const char *name, unsigned attrib, int *handle
         _SET_DSDX           \
         INIT_VALUE          \
         _MOV_AH DOS_CREAT   \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "jc short L1"       \
         SAVE_VALUE          \
@@ -82,7 +82,7 @@ extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *ha
         _SET_DSDX           \
         INIT_VALUE          \
         _MOV_AH DOS_CREATE_NEW \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "jc short L1"       \
         SAVE_VALUE          \

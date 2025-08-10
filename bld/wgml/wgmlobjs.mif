@@ -11,8 +11,6 @@ common_objs =  &
         gdeflay.obj  &
         gdocpage.obj &
         gdummy.obj   &
-        gerror.obj   &
-        gerrorxx.obj &
         getnum.obj   &
         gindexut.obj &
         gmacdict.obj &
@@ -28,8 +26,9 @@ common_objs =  &
         gsyssym.obj  &
         gtxtpool.obj &
         gutil.obj    &
+        messages.obj &
         wgmlmsg.obj
-
+ 
 #
 # output device related
 #
@@ -43,7 +42,7 @@ dev_objs =  &
         cophdr.obj   &
         devfuncs.obj &
         outbuff.obj
-
+ 
 #
 # gml tag related
 #
@@ -56,9 +55,12 @@ gml_objs =  &
         gdate.obj    &
         gdocnum.obj  &
         gdocsect.obj &
+        gfigtags.obj &
+        gfnefn.obj   &
         ggraphic.obj &
         ghx.obj      &
-        ghpxsf.obj   &
+        ginline.obj  &
+        glq.obj      &
         ginclude.obj &
         gixx.obj     &
         gnestut.obj  &
@@ -71,7 +73,7 @@ gml_objs =  &
         gxl.obj      &
         gxmp.obj     &
         gxxref.obj
-
+ 
 #
 # layout tag scanning related
 #
@@ -84,7 +86,6 @@ lay_objs =  &
         glayutil.obj &
         glbandef.obj &
         glbanner.obj &
-        glbanreg.obj &
         glbodbck.obj &
         glconvrt.obj &
         gldd.obj     &
@@ -116,19 +117,25 @@ lay_objs =  &
         glxl.obj     &
         glxmp.obj    &
         glxxfont.obj
-
+ 
 #
 # script control word or function related
 #
 scr_objs =  &
+        gsbdbius.obj &
         gsbr.obj     &
         gsbx.obj     &
+        gscd.obj     &
+        gscm.obj     &
         gscofoju.obj &
+        gscs.obj     &
         gsct.obj     &
         gsdccw.obj   &
         gsetvar.obj  &
+        gsfbfk.obj   &
         gsfc2d.obj   &
         gsfc2x.obj   &
+        gsfcmp.obj   &
         gsfd2c.obj   &
         gsfdelst.obj &
         gsfindex.obj &
@@ -149,20 +156,22 @@ scr_objs =  &
         gsga.obj     &
         gsgoto.obj   &
         gsgt.obj     &
+        gshy.obj     &
         gsifdoel.obj &
         gsimbed.obj  &
         gsin.obj     &
         gsix.obj     &
         gsli.obj     &
         gsmacro.obj  &
+        gsnl.obj     &
         gsoc.obj     &
-        gspacp.obj   &
+        gspacpcc.obj &
         gspe.obj     &
+        gspp.obj     &
         gspu.obj     &
-        gssk.obj     &
+        gssksp.obj   &
         gstb.obj     &
         gstitr.obj   &
         gsty.obj     &
-        gsus.obj
-
+ 
 objs = wgml.obj $(common_objs) $(scr_objs) $(gml_objs) $(lay_objs) $(dev_objs) $(trmem_objs)

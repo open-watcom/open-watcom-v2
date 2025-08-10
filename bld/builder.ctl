@@ -77,6 +77,7 @@ cdsay .
 [ INCLUDE "<OWROOT>/bld/win386/wbind/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/browser/dlgprs/builder.ctl" ]
 # Build help compilers and tools
+[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/hcdos/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/hcwin/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/wipfc/builder.ctl" ]
@@ -223,6 +224,7 @@ cdsay .
 # Build help viewer
 [ INCLUDE "<OWROOT>/bld/hlpview/builder.ctl" ]
 # Build help compilers
+[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/hcdos/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/hcwin/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/wipfc/builder.ctl" ]
@@ -234,9 +236,6 @@ cdsay .
 [ INCLUDE "<OWROOT>/bld/setupgui/builder.ctl" ]
 # Build text documents
 [ INCLUDE "<OWROOT>/bld/docstxt/builder.ctl" ]
-
-# only test build for now
-#[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
 
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]

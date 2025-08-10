@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 
 
 typedef struct lib_load_info {
-    HANDLE      file_handle;
+    HANDLE      h;
     LPBYTE      base;
     addr_off    code_size;
     LPVOID      except_base;
@@ -150,7 +150,8 @@ void RemoveModuleFromLibList( const char *module, const char *filename )
 
     prev = NULL;
     for( curr = listInfoHead; curr != NULL; curr = curr->next ) {
-        if( !stricmp( module, curr->modname ) && !stricmp( filename, curr->filename ) ) {
+        if( stricmp( module, curr->modname ) == 0
+          && stricmp( filename, curr->filename ) == 0 ) {
             if( prev == NULL ) {
                 listInfoHead = curr->next;
             } else {
@@ -244,7 +245,7 @@ void AddProcess16( header_info *hi )
     llo = moduleInfo;
 
     llo->is_16 = true;
-    llo->file_handle = 0;
+    llo->h = 0;
     llo->base = NULL;
     llo->has_real_filename = true;
     strcpy( llo->modname, hi->modname );
@@ -269,12 +270,12 @@ void AddProcess( header_info *hi )
 
     llo->has_real_filename = false;
     llo->is_16 = false;
-    llo->file_handle = DebugEvent.u.CreateProcessInfo.hFile;
+    llo->h = DebugEvent.u.CreateProcessInfo.hFile;
     /*
      * kludge - NT doesn't give us a handle sometimes
      */
-    if( llo->file_handle == INVALID_HANDLE_VALUE ) {
-        llo->file_handle = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+    if( llo->h == INVALID_HANDLE_VALUE ) {
+        llo->h = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
     }
     llo->base = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
     FillInExceptInfo( llo );
@@ -431,7 +432,7 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t buff_maxlen )
                  * Go to the next NULL character.
                  */
                 while( *p++ != '\0' ) {
-                    {}
+                    /* empty */;
                 }
             } while( *p != '\0' ); // end of string
         }
@@ -464,7 +465,7 @@ void AddLib16( IMAGE_NOTE *im )
 
     llo->is_16 = true;
     llo->has_real_filename = true;
-    llo->file_handle = 0;
+    llo->h = 0;
     llo->base = NULL;
     llo->newly_loaded = true;
     llo->newly_unloaded = false;
@@ -494,14 +495,14 @@ void AddLib( void )
      * when the debugger asks to open this fake name, we return the
      * saved file handle
      */
-    llo->file_handle = DebugEvent.u.LoadDll.hFile;
+    llo->h = DebugEvent.u.LoadDll.hFile;
     llo->base = DebugEvent.u.LoadDll.lpBaseOfDll;
     llo->modname[0] = '\0';
-    if ( NameFromHandle( llo->file_handle, llo->filename, sizeof( llo->filename ) ) ) {
+    if( NameFromHandle( llo->h, llo->filename, sizeof( llo->filename ) ) ) {
         llo->has_real_filename = true;
     } else if( NameFromProcess( llo, DebugeePid, llo->filename, sizeof( llo->filename ) ) ) {
         llo->has_real_filename = true;
-    } else if( !GetModuleName( llo->file_handle, llo->filename, sizeof( llo->filename ) ) ) {
+    } else if( GetModuleName( llo->h, llo->filename, sizeof( llo->filename ) ) == 0 ) {
         lastLib++;
         strcpy( llo->filename, libPrefix );
         ultoa( lastLib, &llo->filename[sizeof( libPrefix ) - 1], 16 );
@@ -521,9 +522,9 @@ void DelLib( void )
             moduleInfo[i].newly_unloaded = true;
             moduleInfo[i].base = NULL;
             moduleInfo[i].code_size = 0;
-            if( moduleInfo[i].file_handle != INVALID_HANDLE_VALUE ) {
-                CloseHandle( moduleInfo[i].file_handle );
-                moduleInfo[i].file_handle = INVALID_HANDLE_VALUE;
+            if( moduleInfo[i].h != INVALID_HANDLE_VALUE ) {
+                CloseHandle( moduleInfo[i].h );
+                moduleInfo[i].h = INVALID_HANDLE_VALUE;
             }
             break;
         }
@@ -536,8 +537,8 @@ void DelProcess( bool closeHandles )
 
     for( i = 0; i < ModuleTop; ++i ) {
         if( closeHandles ) {
-            CloseHandle( moduleInfo[i].file_handle );
-            moduleInfo[i].file_handle = INVALID_HANDLE_VALUE;
+            CloseHandle( moduleInfo[i].h );
+            moduleInfo[i].h = INVALID_HANDLE_VALUE;
         }
         moduleInfo[i].base = NULL;
         moduleInfo[i].code_size = 0;
@@ -590,7 +591,7 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
 trap_retval TRAP_CORE( Map_addr )( void )
 {
     int             i;
-    HANDLE          handle;
+    HANDLE          h;
     DWORD           bytes;
     pe_object       obj;
     WORD            seg;
@@ -647,9 +648,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
          * use that to assign the appropriate selector (either FlatCS
          * or FlatDS).
          */
-        handle = llo->file_handle;
+        h = llo->h;
 
-        if( !GetEXEHeader( handle, &hi, &stack ) ) {
+        if( !GetEXEHeader( h, &hi, &stack ) ) {
             return( 0 );
         }
         if( hi.signature != EXESIGN_PE ) {
@@ -662,7 +663,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         memset( &obj, 0, sizeof( obj ) );
         for( i = 0; i < num_objects; i++ ) {
-            ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
+            ReadFile( h, &obj, sizeof( obj ), &bytes, NULL );
             if( i == seg ) {
                 break;
             }
@@ -737,7 +738,7 @@ HANDLE GetMagicalFileHandle( const char *name )
             if( moduleInfo[i].has_real_filename ) {
                 return( NULL );
             } else {
-                return( moduleInfo[i].file_handle );
+                return( moduleInfo[i].h );
             }
         }
     }
@@ -752,7 +753,7 @@ bool IsMagicalFileHandle( HANDLE h )
     DWORD i;
 
     for( i = 0; i < ModuleTop; i++ ) {
-        if( moduleInfo[i].file_handle == h ) {
+        if( moduleInfo[i].h == h ) {
             return( true );
         }
     }

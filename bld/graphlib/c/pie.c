@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2
 /*====================*/ short x3, short y3, short x4, short y4 )
 
 {
-    short               success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2pie( fill, _VtoPhysX( x1 ), _VtoPhysY( y1 ),
@@ -47,7 +47,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2
                                 _VtoPhysX( x4 ), _VtoPhysY( y4 ) );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -55,7 +55,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2
 Entry1( _PIE, _pie ) // alternate entry-point
 
 
-short _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
+bool _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
 /*==============*/ short x3, short y3, short x4, short y4 )
 
 {
@@ -82,7 +82,7 @@ short _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
     clip2 = _L1OutCode( x2, y2 );
     if( clip1 & clip2 ) {
         _ErrorStatus = _GRNOOUTPUT;
-        return ( 0 );                         // trivially outside so quit
+        return( false );                         // trivially outside so quit
     }
 
     dc = _Mem_dc;
@@ -155,7 +155,7 @@ short _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
 // Check for a fillmask
     if( fill == _GFILLINTERIOR ) {
         pen = _wpi_createpen( PS_NULL, 0, color );
-        if( _HaveMask == 0 ) {
+        if( !_HaveMask ) {
             brush = _wpi_createsolidbrush( color );
         } else {
             // if a mask is defined, convert it to bitmap
@@ -190,7 +190,7 @@ short _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,
     _wpi_getoldpen( dc, old_pen );
     _wpi_deletepen( pen );
 
-    if( _HaveMask != 0 ) {
+    if( _HaveMask ) {
         _wpi_deletebitmap( bm );
     }
 #if defined( __WINDOWS__ )

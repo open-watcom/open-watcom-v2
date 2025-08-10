@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         _SET_ES             \
         _SET_DSDX           \
         _MOV_AH DOS_RENAME  \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         _RST_ES             \
         "call __doserror1_" \
@@ -85,7 +85,7 @@ extern lfn_ret_t __rename_lfn( const char *old, const char *new );
             "mov    ds,ax"      \
             "mov    ax,7156h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] [__es __di] \
@@ -98,7 +98,7 @@ extern lfn_ret_t __rename_lfn( const char *old, const char *new );
             "mov    es,ax"      \
             "mov    ax,7156h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    es"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx] [__di] \
@@ -113,17 +113,17 @@ static lfn_ret_t _rename_lfn( const char *old, const char *new )
 #ifdef _M_I86
     return( __rename_lfn( old, new ) );
 #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
     strcpy( RM_TB_PARM1_LINEAR, old );
     strcpy( RM_TB_PARM2_LINEAR, new );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.es  = RM_TB_PARM2_SEGM;
-    dpmi_rm.edi = RM_TB_PARM2_OFFS;
-    dpmi_rm.eax = 0x7156;
-    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.es  = RM_TB_PARM2_SEGM;
+    dr.r.x.edi = RM_TB_PARM2_OFFS;
+    dr.r.x.eax = 0x7156;
+    return( __dpmi_dos_call_lfn( &dr ) );
 #endif
 }
 

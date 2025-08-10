@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
     #define CLIB_USE_MBCS_TRANSLATION
 #endif
 #if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-    #define CLIB_USE_OTHER_ENV
+    #define CLIB_USE_ALT_ENV
 #endif
 #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #define CLIB_UPDATE_OS_ENV
@@ -102,12 +102,15 @@
     #if defined( _M_I86 )
         #define __REAL_MODE__
         #define __OS2_286__
+        #define __OS2_16BIT__
     #elif defined( _M_IX86 )
         #define __PROTECT_MODE__
         #define __OS2_386__
+        #define __OS2_32BIT__
     #elif defined(__PPC__)
         #define __PROTECT_MODE__
         #define __OS2_PPC__
+        #define __OS2_32BIT__
     #else
         #error unrecognized processor for OS2
     #endif

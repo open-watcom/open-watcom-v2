@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,20 +33,29 @@
 #include "variety.h"
 #include <stddef.h>
 #include <dos.h>
-
-
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
-    #include "tinyio.h"
-  #else
+#include "tinyio.h"
+#if !defined( _M_I86 )
     #include "extender.h"
+#endif
+
+
+#if defined( _M_I86 )
+    extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
+    #pragma aux _setvect = \
+            "push ds"           \
+            "mov ds,cx"         \
+            "mov ah,25h"        \
+            __INT_21            \
+            "pop ds"            \
+        __parm __caller [__ax] [__cx __dx]
+#else
     extern  void pharlap_setvect( unsigned, void (__interrupt _WCFAR *)());
     #pragma aux pharlap_setvect = \
             "push ds"           \
             "mov ds,ecx"        \
             "mov cl,al"         \
             "mov ax,2504h"      \
-            "int 21h"           \
+            __INT_21            \
             "pop ds"            \
         __parm __caller [__al] [__cx __edx]
 
@@ -54,32 +64,22 @@
             "push ds"           \
             "mov ds,ecx"        \
             "mov ah,25h"        \
-            "int 21h"           \
+            __INT_21            \
             "pop ds"            \
         __parm __caller [__al] [__cx __edx]
-    #endif
-#else
-    extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
-    #pragma aux _setvect = \
-            "push ds"           \
-            "mov ds,cx"         \
-            "mov ah,25h"        \
-            "int 21h"           \
-            "pop ds"            \
-        __parm __caller [__ax] [__cx __dx]
 #endif
 
-_WCRTLINK void _dos_setvect( unsigned intnum, void (__interrupt _WCFAR *func)() )
+_WCRTLINK void _dos_setvect( unsigned intno, void (__interrupt _WCFAR *func)() )
 {
-#if defined(__WINDOWS_386__)
-    TinySetVect( intnum, (void _WCNEAR *) func );
+#if defined( _M_I86 )
+    _setvect( intno, func );
+#elif defined(__WINDOWS_386__)
+    TinySetVect( intno, (void _WCNEAR *) func );
 #elif defined(__386__)
     if( _IsPharLap() ) {
-        pharlap_setvect( intnum, func );
+        pharlap_setvect( intno, func );
     } else {        /* DOS/4G style */
-        dos4g_setvect( intnum, func );
+        dos4g_setvect( intno, func );
     }
-#else
-    _setvect( intnum, func );
 #endif
 }

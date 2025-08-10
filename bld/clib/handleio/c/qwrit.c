@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,27 +66,23 @@
 
 static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    writamt;
     tiny_ret_t  rc;
 
+    total = 0;
+    writamt = MAXBUFF;
     while( len > 0 ) {
-
-        if( len > MAXBUFF ) {
-            writamt = MAXBUFF;
-        } else {
+        if( len < MAXBUFF )
             writamt = len;
-        }
         rc = TinyWrite( handle, buffer, writamt );
         if( TINY_ERROR( rc ) )
             return( rc );
-        total += TINY_LINFO( rc );
-        if( TINY_LINFO( rc ) != writamt )
-            return( total );
-
-        len -= writamt;
-        buffer = ((const char *)buffer) + writamt;
-
+        total += rc;
+        if( rc != writamt )
+            break;
+        len -= rc;
+        buffer = (const char *)buffer + rc;
     }
     return( total );
 }
@@ -97,8 +93,8 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     int             atomic;
 #if defined(__NT__)
     DWORD           len_written;
-    HANDLE          h;
-    int             error;
+    HANDLE          osfh;
+    DWORD           error;
 #elif defined(__OS2__)
     OS_UINT         len_written;
     APIRET          rc;
@@ -107,20 +103,26 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     unsigned        len_written;
     tiny_ret_t      rc;
 #endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA         res;
+    int             rt;
+#endif
 
     __handle_check( handle, -1 );
 #if defined(__NT__)
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 #endif
     atomic = 0;
     if( __GetIOMode( handle ) & _APPEND ) {
         _AccessFileH( handle );
         atomic = 1;
 #if defined(__NT__)
-        if( SetFilePointer( h, 0, NULL, FILE_END ) == -1 ) {
+        if( SetFilePointer( osfh, 0, NULL, FILE_END ) == INVALID_SET_FILE_POINTER ) {
             error = GetLastError();
-            _ReleaseFileH( handle );
-            return( __set_errno_dos( error ) );
+            if( error != NO_ERROR ) {
+                _ReleaseFileH( handle );
+                return( __set_errno_dos( error ) );
+            }
         }
 #elif defined(__OS2__)
         rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
@@ -137,22 +139,17 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 #endif
     }
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL ) {
-        LPWDATA res;
-
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            int rt;
-            rt = _WindowsStdout( res, buffer, len );
-            if( atomic == 1 ) {
-                _ReleaseFileH( handle );
-            }
-            return( rt );
+    if( _WindowsStdout != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        rt = _WindowsStdout( res, buffer, len );
+        if( atomic == 1 ) {
+            _ReleaseFileH( handle );
         }
+        return( rt );
     }
 #endif
 #if defined(__NT__)
-    if( !WriteFile( h, buffer, len, &len_written, NULL ) ) {
+    if( WriteFile( osfh, buffer, len, &len_written, NULL ) == 0 ) {
         error = GetLastError();
         if( atomic == 1 ) {
             _ReleaseFileH( handle );

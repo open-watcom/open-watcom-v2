@@ -87,17 +87,17 @@
 {
 #if defined( __NT__ )
     WIN32_FIND_DATA ffd;
-    HANDLE          h;
+    HANDLE          osffh;
 
     /*** Initialize the find ***/
-    h = __lib_FindFirstFile( filespec, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( filespec, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
 
     /*** Look for the first file ***/
-    if( !__NTFindNextFileWithAttr( h, NT_FIND_ATTR, &ffd ) ) {
-        FindClose( h );
+    if( !__NTFindNextFileWithAttr( osffh, NT_FIND_ATTR, &ffd ) ) {
+        FindClose( osffh );
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
 
@@ -107,10 +107,10 @@
   #else
     __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffd, fileinfo );
   #endif
-    return( (intptr_t)h );
+    return( (intptr_t)osffh );
 #elif defined( __OS2__ )
     APIRET          rc;
-    HDIR            h = HDIR_CREATE;
+    HDIR            osffh = HDIR_CREATE;
     FF_BUFFER       ffb;
     OS_UINT         searchcount = 1;
  #ifdef __WIDECHAR__
@@ -120,7 +120,7 @@
         mbFilespec[0] = '\0';
     }
  #endif
-    rc = DosFindFirst( (char*)__F_NAME(filespec,mbFilespec), &h, FIND_ATTR,
+    rc = DosFindFirst( (char*)__F_NAME(filespec,mbFilespec), &osffh, FIND_ATTR,
                                 &ffb, sizeof( ffb ), &searchcount, FF_LEVEL );
     if( rc != 0 ) {
         return( -1 );
@@ -131,7 +131,7 @@
  #else
     __F_NAME(__os2_finddata_cvt,__os2_wfinddata_cvt)( &ffb, fileinfo );
  #endif
-    return( (intptr_t)h );
+    return( (intptr_t)osffh );
 #elif defined( __RDOS__ )
     RDOSFINDTYPE       *findbuf;
     struct RdosDirInfo dinf;
@@ -147,10 +147,10 @@
     findbuf->chain = (char *)dinf.Entry;
 
     if( findbuf->handle ) {
-        if( __rdos_finddata_get( findbuf, fileinfo ) )
+        if( __rdos_finddata_get( findbuf, fileinfo ) ) {
             return( (intptr_t)findbuf );
-        else
-            RdosCloseDir( findbuf->handle );
+        }
+        RdosCloseDir( findbuf->handle );
     }
 
     lib_free( findbuf );
@@ -158,7 +158,7 @@
 
 #else   /* DOS */
     DOSFINDTYPE     *findbuf;
-    unsigned       rc;
+    unsigned        rc;
 
     /*** Start a new find using _dos_findfirst ***/
     findbuf = (DOSFINDTYPE*)lib_malloc( sizeof( DOSFINDTYPE ) );
@@ -182,7 +182,6 @@
 
 
 #ifdef __NT__
-
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
@@ -219,7 +218,6 @@
 }
 
 #elif defined( __OS2__ )
-
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
@@ -339,7 +337,6 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 }
 
 #else   /* DOS */
-
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__

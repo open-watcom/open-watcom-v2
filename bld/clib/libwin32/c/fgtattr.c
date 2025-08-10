@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +56,7 @@
 DWORD __fixed_GetFileAttributes( LPCTSTR lpFileName )
 /***************************************************/
 {
-    HANDLE              handle;
+    HANDLE              osffh;
     WIN32_FIND_DATA     finddata;
 
     if( WIN32_IS_NT4 ) {    /* >= NT4.0 */
@@ -70,11 +71,10 @@ DWORD __fixed_GetFileAttributes( LPCTSTR lpFileName )
     }
 
     /*** Ok, use FindFirstFile to get the file attribute ***/
-    handle = __lib_FindFirstFile( lpFileName, &finddata );
-    if( handle == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( lpFileName, &finddata );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         return( INVALID_FILE_ATTRIBUTES );
-    } else {
-        FindClose( handle );
     }
+    FindClose( osffh );
     return( finddata.dwFileAttributes );
 }

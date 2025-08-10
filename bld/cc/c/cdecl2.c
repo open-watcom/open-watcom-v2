@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -905,17 +905,17 @@ static type_modifiers GetModifiers( void )
 #endif
         case T___INTERRUPT: modifier |= FLAG_INTERRUPT; break;
         case T__CDECL:
-        case T___CDECL:     modifier |= LANG_CDECL;     break;
-        case T___FASTCALL:  modifier |= LANG_FASTCALL;  break;
-        case T___FORTRAN:   modifier |= LANG_FORTRAN;   break;
-        case T__OPTLINK:    modifier |= LANG_OPTLINK;   break;
+        case T___CDECL:     modifier |= FLAG_CDECL;     break;
+        case T___FASTCALL:  modifier |= FLAG_FASTCALL;  break;
+        case T___FORTRAN:   modifier |= FLAG_FORTRAN;   break;
+        case T__OPTLINK:    modifier |= FLAG_OPTLINK;   break;
         case T__PASCAL:
-        case T___PASCAL:    modifier |= LANG_PASCAL;    break;
-        case T___STDCALL:   modifier |= LANG_STDCALL;   break;
+        case T___PASCAL:    modifier |= FLAG_PASCAL;    break;
+        case T___STDCALL:   modifier |= FLAG_STDCALL;   break;
         case T__SYSCALL:
         case T___SYSCALL:
-        case T__SYSTEM:     modifier |= LANG_SYSCALL;   break;
-        case T___WATCALL:   modifier |= LANG_WATCALL;   break;
+        case T__SYSTEM:     modifier |= FLAG_SYSCALL;   break;
+        case T___WATCALL:   modifier |= FLAG_WATCALL;   break;
         case T__EXPORT:
         case T___EXPORT:    modifier |= FLAG_EXPORT;    break;
         case T___LOADDS:    modifier |= FLAG_LOADDS;    break;

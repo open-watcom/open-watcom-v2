@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +41,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setstylewrap( short wrap )
    style.   */
 
 {
-    short               prev;
+    bool            prev;
 
     prev = _StyleWrap;
-    _StyleWrap = wrap;
+    _StyleWrap = ( wrap != 0 );
     return( prev );
 }
 

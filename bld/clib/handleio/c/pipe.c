@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,15 +52,17 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 /****************************************************************/
 {
 #if defined(__NT__)
-    HANDLE              hRead, hWrite;
-//  HANDLE              osHandle;               // removed by JBS
-    BOOL                rc;
+    HANDLE              osfh_read;
+    HANDLE              osfh_write;
+//  HANDLE              osHandle;
     SECURITY_ATTRIBUTES sa;
 #elif defined(__OS2__)
-    HFILE               hRead, hWrite;
+    HFILE               osfh_read;
+    HFILE               osfh_write;
     APIRET              rc;
 #endif
-    int                 hReadPosix, hWritePosix;
+    int                 handle_read;
+    int                 handle_write;
 
 // removed by JBS - allow O_NOINHERIT
 //  /*** Sanity check ***/
@@ -73,17 +75,16 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
     sa.nLength = sizeof( SECURITY_ATTRIBUTES );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
-    rc = CreatePipe( &hRead, &hWrite, &sa, psize );
-    if( rc == FALSE ) {
+    if( CreatePipe( &osfh_read, &osfh_write, &sa, psize ) == 0 ) {
         return( __set_errno_nt() );
     }
 #elif defined(__OS2__)
     if( psize == 0 )
         psize = 4096;
   #ifdef _M_I86
-    rc = DosMakePipe( &hRead, &hWrite, psize );
+    rc = DosMakePipe( &osfh_read, &osfh_write, psize );
   #else
-    rc = DosCreatePipe( &hRead, &hWrite, psize );
+    rc = DosCreatePipe( &osfh_read, &osfh_write, psize );
   #endif
     if( rc != NO_ERROR ) {
         _RWD_errno = ENOMEM;
@@ -94,61 +95,62 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 // removed by JBS - used sa struct instead
 //    /*** Make read handle inheritable ***/
 //    #ifdef __NT__
-//        rc = DuplicateHandle( GetCurrentProcess(), hRead, GetCurrentProcess(),
+//        rc = DuplicateHandle( GetCurrentProcess(), osfh_read, GetCurrentProcess(),
 //                              &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
 //        if( rc == FALSE ) {
-//            CloseHandle( hRead );
-//            CloseHandle( hWrite );
+//            CloseHandle( osfh_read );
+//            CloseHandle( osfh_write );
 //            return( -1 );
 //        }
-//        CloseHandle( hRead );
-//        hRead = osHandle;
+//        CloseHandle( osfh_read );
+//        osfh_read = osHandle;
 //    #elif defined(__OS2__)
 //        /* Handle is inheritable by default */
 //    #endif
 //
 //    /*** Make write handle inheritable ***/
 //    #ifdef __NT__
-//        rc = DuplicateHandle( GetCurrentProcess(), hWrite, GetCurrentProcess(),
+//        rc = DuplicateHandle( GetCurrentProcess(), osfh_write, GetCurrentProcess(),
 //                              &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
 //        if( rc == FALSE ) {
-//            CloseHandle( hRead );
-//            CloseHandle( hWrite );
+//            CloseHandle( osfh_read );
+//            CloseHandle( osfh_write );
 //            return( -1 );
 //        }
-//        CloseHandle( hWrite );
-//        hWrite = osHandle;
+//        CloseHandle( osfh_write );
+//        osfh_write = osHandle;
 //    #elif defined(__OS2__)
 //        /* Handle is inheritable by default */
 //    #endif
 
     /*** Initialize the POSIX-level handles ***/
-    hReadPosix = _hdopen( (int)hRead, textmode|_O_RDONLY );
-    hWritePosix = _hdopen( (int)hWrite, textmode|_O_WRONLY );
-    if( hReadPosix == -1  ||  hWritePosix == -1 ) {
-        if( hReadPosix != -1 ) {
-            close( hReadPosix );
+    handle_read = _hdopen( (int)osfh_read, textmode | _O_RDONLY );
+    handle_write = _hdopen( (int)osfh_write, textmode | _O_WRONLY );
+    if( handle_read == -1
+      || handle_write == -1 ) {
+        if( handle_read != -1 ) {
+            close( handle_read );
         } else {
 #if defined(__NT__)
-            CloseHandle( hRead );
+            CloseHandle( osfh_read );
 #elif defined(__OS2__)
-            DosClose( hRead );
+            DosClose( osfh_read );
 #endif
         }
-        if( hWritePosix != -1 ) {
-            close( hWritePosix );
+        if( handle_write != -1 ) {
+            close( handle_write );
         } else {
 #if defined(__NT__)
-            CloseHandle( hWrite );
+            CloseHandle( osfh_write );
 #elif defined(__OS2__)
-            DosClose( hWrite );
+            DosClose( osfh_write );
 #endif
         }
         return( -1 );
     }
 
     /*** Store the new POSIX handles in return buffer ***/
-    phandles[0] = hReadPosix;
-    phandles[1] = hWritePosix;
+    phandles[0] = handle_read;
+    phandles[1] = handle_write;
     return( 0 );
 }

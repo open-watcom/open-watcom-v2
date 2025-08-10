@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   start-start:
-    if: github.repository == vars.OWREPO
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:
@@ -37,12 +37,12 @@ jobs:
         - name:  '1.9'
           id:    '1.9'
           os:    'nt'
-          image: 'windows-2022'
+          image: 'windows-2025'
         - name: '2.0'
           id:   '2.0'
           tag:  '2023-01-01-Build'
           os:   'nt'
-          image: 'windows-2022'
+          image: 'windows-2025'
     name: Bootstrap Test OW ${{ matrix.pre.name }} Windows
     runs-on: ${{ matrix.pre.image }}
     steps:
@@ -121,7 +121,7 @@ jobs:
         bld:
         - owtools: 'VISUALC'
           arch:    'x64'
-          image:   'windows-2022'
+          image:   'windows-2025'
           tools:   'vs2022'
     name: Windows ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldnt.yml"
@@ -179,7 +179,7 @@ jobs:
         hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
-    - if: github.event_name == 'PullRequest'
+    - if: github.event_name == 'pull_request'
       name: Upload Pull Request owsnapshot
       uses: actions/upload-artifact@v4
       with:
@@ -187,21 +187,21 @@ jobs:
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 14
         overwrite:      true
-    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'PullRequest'
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'pull_request'
       name: Call to delete Pull Request Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: github.event_name != 'PullRequest'
+    - if: github.event_name != 'pull_request'
       name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'PullRequest'
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'pull_request'
       name: Call to delete Last CI Build Artifacs
       uses: "./.github/actions/artfdelc"
       with:

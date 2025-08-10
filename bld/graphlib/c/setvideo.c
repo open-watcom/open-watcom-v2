@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,7 +183,7 @@ static void _InitVariables( void )
     _CurrPos_w.wx = 0.0;
     _CurrPos_w.wy = 0.0;
 
-    _Window.invert = TRUE;          /* window coordinates defaults  */
+    _Window.invert = true;              /* window coordinates defaults  */
     _Window.xleft = 0.0;
     _Window.ybottom = 0.0;
     _Window.xright = 1.0;
@@ -193,7 +193,7 @@ static void _InitVariables( void )
     _CurrState->clip_def.xmax = _CurrState->vc.numxpixels - 1;
     _CurrState->clip_def.ymin = 0;
     _CurrState->clip_def.ymax = _CurrState->vc.numypixels - 1;
-    _setclip( _GCLIPON );
+    _setclip( true );
 
     _TextPos.row = 0;                   /* BIOS text cursor position    */
     _TextPos.col = 0;
@@ -206,7 +206,7 @@ static void _InitVariables( void )
     }
 
     memcpy( _FillMask, _DefMask, MASK_LEN );    /* solid fill */
-    _HaveMask = 0;                              /* no fill mask set */
+    _HaveMask = false;                          /* no fill mask set */
     _PaRf_x = 0;                                /* fill pattern    */
     _PaRf_y = 0;                                /* reference point */
 
@@ -223,10 +223,10 @@ static void _InitVariables( void )
     _CurrState->screen_seg = _CurrState->screen_seg_base;/* pg 0 scrn segment */
     _CurrState->screen_off = _CurrState->screen_off_base;/* pg 0 scrn offset */
     _LineStyle = SOLID_LINE;                    /* solid line */
-    _StyleWrap = 0;                             /* line style continuation  */
+    _StyleWrap = false;                             /* line style continuation  */
     _PlotAct = 0;                               /* replace mode */
-    _Transparent = 1;                           /* transparent mode */
-    _Wrap = 1;                                  /* wrapping on */
+    _Transparent = true;                        /* transparent mode */
+    _Wrap = true;                               /* wrapping on */
 }
 
 
@@ -255,11 +255,11 @@ static void init_all( void )
     SetBkMode( _Mem_dc, TRANSPARENT );
     _wpi_setrop2( _Mem_dc, R2_COPYPEN );
 
-    _GrMode = 1;                /* must be graphics for windows */
+    _GrMode = true;             /* must be graphics for windows */
     _GetState();
-    _CursState = _GCURSOROFF;     /* cursor off in graphics mode  */
+    _CursState = false;   /* cursor off in graphics mode  */
     _GrCursor = _CursState;
-    _InitVariables();                       /* initialize globals       */
+    _InitVariables();           /* initialize globals       */
 }
 
 
@@ -289,23 +289,23 @@ static LPWDATA _NewGphWindow( HWND hwnd, ... )
     w->brush = CreateSolidBrush( _ColorMap[BLACK] );
   #endif
     w->LineHead = w->LineTail = NULL;
-    w->gphwin = TRUE;
+    w->gphwin = true;
 
     return( w );
 
 } /* _NewWindow */
 
-static short _registergphclass( WPI_INST inst )
+static bool _registergphclass( WPI_INST inst )
 /*=============================================
 
     This function registers the graphics windows' class.*/
 {
     WNDCLASS            wc;
     short               rc;
-    static short        _Startup = 1;
+    static bool         startup = true;
 
-    if( _Startup ) {
-        _Startup = 0;
+    if( startup ) {
+        startup = false;
 
         _wpi_setclassstyle( &wc, 0 );
         _wpi_setclassproc( &wc, GraphWndProc );
@@ -321,9 +321,11 @@ static short _registergphclass( WPI_INST inst )
     #endif
 
         rc = _wpi_registerclass( &wc );
-        if( !rc ) return( FALSE );
+        if( !rc ) {
+            return( false );
+        }
     }
-    return( TRUE );
+    return( true );
 }
 #else
 static short SelectMode( short req_mode )
@@ -506,7 +508,8 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     frame = WinCreateStdWindow( _MainWindow,
                 WS_VISIBLE | WS_CLIPSIBLINGS,
                 &winstyle, "GraphWndClass", dest, 0, NULL, 0, &Win );
-    if( frame == 0 ) return( FALSE );
+    if( frame == 0 )
+        return( 0 );
     WinSetOwner( Win, _MainWindow );
     _OldFrameProc = WinSubclassWindow( frame, GraphFrameProc );
   #else
@@ -519,7 +522,9 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
                         0,  0,
                         _MainWindow, NULL,
                         Inst, NULL );
-    if( !Win ) return( FALSE );
+    if( !Win ) {
+        return( 0 );
+    }
   #endif
 
     _CurrWin = Win;
@@ -612,7 +617,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     }
   #if defined( __OS2__ )
     WinSendMsg( frame, WM_SETICON,
-        MPFROMLONG( WinQuerySysPointer( HWND_DESKTOP, SPTR_APPICON, TRUE ) ), 0 );
+        MPFROMLONG( WinQuerySysPointer( HWND_DESKTOP, SPTR_APPICON, true ) ), 0 );
     WinSetWindowPos( frame,
                      HWND_TOP,
                      x1,
@@ -631,9 +636,9 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
   #else
     AppendMenu( hmenu, MF_ENABLED, MSG_WINDOWS+w->handles[0], dest );
-    MoveWindow( Win, x1, y1, x2, y2, TRUE );
+    MoveWindow( Win, x1, y1, x2, y2, true );
     ShowWindow( Win, SW_NORMAL );
-    ShowScrollBar( Win, SB_BOTH, TRUE );
+    ShowScrollBar( Win, SB_BOTH, true );
   #endif
     _MyGetOldFont( _Mem_dc, old_font );
 
@@ -679,11 +684,11 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         _ErrorStatus = _GRMODENOTSUPPORTED;
         return( 0 );
     } else {
-        _GrMode = _CurrState->vc.bitsperpixel != 0;
+        _GrMode = ( _CurrState->vc.bitsperpixel != 0 );
         if( IsTextMode ) {
-            _CursState = _GCURSORON;
+            _CursState = true;
         } else {
-            _CursState = _GCURSOROFF;       /* cursor off in graphics mode  */
+            _CursState = false;       /* cursor off in graphics mode  */
         }
         _GrCursor = _CursState;
         if( req_mode == _DEFAULTMODE ) {
@@ -841,10 +846,10 @@ void _PaletteInit( void )
     // reset the palette so the 1st 16 colors use the 1st 16 palette registers
     if( _CurrState->vc.adapter >= _MCGA &&
         ( _CurrState->vc.mode != 7 && _CurrState->vc.mode != 15 ) ) {
-        VideoInt( VIDEOINT_SET_PALETTE + 0x10, 16, 0, 0 ); // map 16 to black
-        VideoInt( VIDEOINT_SET_PALETTE + 0x01, 16 << 8, 0, 0 ); // overscan = 16
+        VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x10, 16, 0, 0 ); // map 16 to black
+        VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x01, 16 << 8, 0, 0 ); // overscan = 16
         for( i = 0; i < 16; ++i ) {
-            VideoInt( VIDEOINT_SET_PALETTE + 0x00, ( i << 8 ) | i, 0, 0 );
+            VideoInt1_ax( VIDEOINT_SET_PALETTE + 0x00, ( i << 8 ) | i, 0, 0 );
         }
         if( _CurrState->vc.numcolors == 2 ) {
             _remappalette( 0, _BLACK );

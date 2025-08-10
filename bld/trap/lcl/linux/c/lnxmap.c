@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,8 @@
 #include "mad.h"
 #include "lnxcomm.h"
 
-typedef struct lli {
+
+typedef struct lib_load_info {
     addr_off    offset;
     addr_off    dbg_dyn_sect;
     addr_off    code_size;
@@ -87,16 +88,16 @@ static struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off 
  */
 void AddProcess( void )
 {
-    lib_load_info       *lli;
+    lib_load_info       *llo;
 
     moduleInfo = malloc( sizeof( lib_load_info ) );
     memset( moduleInfo, 0, sizeof( lib_load_info ) );
     ModuleTop = 1;
 
-    lli = &moduleInfo[0];
+    llo = &moduleInfo[0];
 
-    lli->offset = 0;    /* Assume that main executable was not relocated */
-    lli->filename[0] = '\0';
+    llo->offset = 0;    /* Assume that main executable was not relocated */
+    llo->filename[0] = '\0';
 }
 
 /*
@@ -104,30 +105,30 @@ void AddProcess( void )
  */
 static void AddLib( struct link_map *lmap )
 {
-    lib_load_info       *lli;
+    lib_load_info       *llo;
 
     /* This code is not terribly efficient */
     ModuleTop++;
-    lli = malloc( ModuleTop * sizeof( lib_load_info ) );
-    memset( lli, 0, ModuleTop * sizeof( lib_load_info ) );
-    memcpy( lli, moduleInfo, (ModuleTop - 1) * sizeof( lib_load_info ) );
+    llo = malloc( ModuleTop * sizeof( lib_load_info ) );
+    memset( llo, 0, ModuleTop * sizeof( lib_load_info ) );
+    memcpy( llo, moduleInfo, (ModuleTop - 1) * sizeof( lib_load_info ) );
     free( moduleInfo );
-    moduleInfo = lli;
-    lli = &moduleInfo[ModuleTop - 1];
+    moduleInfo = llo;
+    llo = &moduleInfo[ModuleTop - 1];
 
-    lli->offset = lmap->l_addr;
-    lli->dbg_dyn_sect = (addr_off)lmap->l_ld;
-    dbg_strcpy( pid, lli->filename, lmap->l_name );
-    lli->newly_loaded = true;
-    lli->newly_unloaded = false;
-    lli->offset = lmap->l_addr;
+    llo->offset = lmap->l_addr;
+    llo->dbg_dyn_sect = (addr_off)lmap->l_ld;
+    dbg_strcpy( pid, llo->filename, lmap->l_name );
+    llo->newly_loaded = true;
+    llo->newly_unloaded = false;
+    llo->offset = lmap->l_addr;
 
     Out( "Added library: ofs/dyn = " );
     OutNum( lmap->l_addr );
     Out( "/" );
     OutNum( (addr_off)lmap->l_ld );
     Out( " " );
-    Out( lli->filename );
+    Out( llo->filename );
     Out( "\n" );
 }
 
@@ -192,14 +193,14 @@ int AddOneLib( struct link_map *first_lmap )
     struct link_map     lmap;
     struct link_map     *dbg_lmap;
     int                 count = 0;
-    lib_load_info       *lli;
+    lib_load_info       *llo;
 
     dbg_lmap = first_lmap;
     while( dbg_lmap != NULL ) {
         if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
             break;
-        lli = FindLib( (addr_off)lmap.l_ld );
-        if( lli == NULL ) {
+        llo = FindLib( (addr_off)lmap.l_ld );
+        if( llo == NULL ) {
             AddLib( &lmap );
             ++count;
         }
@@ -242,7 +243,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req    *acc;
     map_addr_ret    *ret;
     unsigned long   val;
-    lib_load_info   *lli;
+    lib_load_info   *llo;
 
     // Note: Info about the process address space is stored in the user register
     //       for GDB, so we can use that to find out what we need to convert these
@@ -272,7 +273,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         Out( "ReqMap_addr: Invalid handle passed!\n" );
         return( sizeof( *ret ) );
     } else {
-        lli = &moduleInfo[acc->mod_handle];
+        llo = &moduleInfo[acc->mod_handle];
     }
 
     Out( "ReqMap_addr: addr " );
@@ -294,7 +295,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     } else {
         ret->out_addr.segment = flatCS;
     }
-    ret->out_addr.offset += lli->offset;
+    ret->out_addr.offset += llo->offset;
     Out( " to " );
     OutNum( ret->out_addr.offset );
     Out( "\n" );

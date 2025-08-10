@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +41,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _displaycursor( short mode )
    at the end of a graphics routine.  It returns the previous setting. */
 
 {
-    short               prev;
+    bool            prev;
 
     prev = _CursState;
-    _CursState = mode;
+    _CursState = ( mode != 0 );
     return( prev );
 }
 

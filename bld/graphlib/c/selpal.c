@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,9 +62,9 @@ _WCRTLINK short _WCI86FAR _CGRAPH _selectpalette( short palnum )
     }
     _Palette = palnum;
     /* select either green-red-yellow or cyan-magenta-white */
-    VideoInt( VIDEOINT_SET_OVERSCAN, ( 1 << 8 ) + ( palnum & 1 ), 0, 0 );
+    VideoInt1_ax( VIDEOINT_SET_OVERSCAN, ( 1 << 8 ) + ( palnum & 1 ), 0, 0 );
     /* select either low or high intensity */
-    VideoInt( VIDEOINT_SET_OVERSCAN, ( palnum & 2 ) << 3, 0, 0 );
+    VideoInt1_ax( VIDEOINT_SET_OVERSCAN, ( palnum & 2 ) << 3, 0, 0 );
     return( prev );
 }
 

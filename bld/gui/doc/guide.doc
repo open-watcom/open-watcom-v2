@@ -1,54 +1,63 @@
-User Guide for GUI Library
-==========================
+﻿User Guide for Open Watcom GUI Library
+======================================
+
 
 Overview
 --------
 
-  The GUI library is a user interface library that is designed to provide
+The GUI library is a user interface library that is designed to provide
 a common API (Application Programmer's Interface) across several platforms.
 The API most closely resembles the API, messaging and callback structure
-used by Windows. This library is intended for internal WATCOM use.
+used by Windows. This library is intended for internal Open Watcom use.
+
 
 Platforms
 ---------
 
-    The operating systems currently supported are :
+The operating systems currently supported are :
 
 Character based :
+* DOS   (16-bit, Pharlap, DOS4G)
+* OS/2  (16- and 32-bit)
+* QNX   (16- and 32-bit)
+* WIN   (16-bit)
+* NT
+* RDOS  (32-bit)
+* LINUX
 
-DOS  (16-bit, Pharlap, DOS4G)
-OS/2 (16- and 32-bit)
-QNX  (16- and 32-bit)
-WIN  (16-bit)
-NT
-RDOS (32-bit)
 
 Graphical :
+* Windows
+* NT
+* PM-OS/2   (16- and 32-bit) (not yet completed)
 
-Windows
-NT
-PM-OS/2 (16- and 32-bit) (not yet completed)
 
 Operating systems that are intended to be supported are :
 
 Graphical :
+* Linux       (xcb based)
+* QNX/Windows (maybe, if demand and time exist)
 
-QNX/Windows (maybe, if demand and time exist)
-
-  There is another library, known as AUI, which can be used in conjunction
+There is another library, known as AUI, which can be used in conjunction
 with the GUI library.  It provides additional support for windows that
 implement text display and selection.
+
+The GUI library can also be used for a character based user interface.
+In that case, the GUI library uses the UI library.
+
 
 Location
 --------
 
-  The GUI library is found on the network under cproj/gui.  The AUI library
-  is found under /cproj/aui.
+  The GUI library is found under bld/gui.
+  The AUI library is found under bld/aui.
+  The UI library is found under bld/ui.
+
 
 Functionality Provided
 ----------------------
 
-  The GUI library allows the application program to create windows and process
+The GUI library allows the application program to create windows and process
 messages, including user input message, corresponding to those windows.
 The windows can display text, have menus, have floating popup menus,
 display messages in message boxes and create dialogs.  The GUI library also
@@ -63,22 +72,25 @@ putting a group box in a window will not give good results when painting.
 Functions not implemented for a certain mode will be politely stubbed out.
 Use the GUIIsGUI call to determine mode.
 
+
 General Information
 -------------------
 
-    Data passed in to GUI functions is not assumed to exist past when the
+Data passed in to GUI functions is not assumed to exist past when the
 function call returns.  The exception to this is the 'hinttext' field of
 the gui_menu_struct.  A copy of this char * is retained.  This is done to
 avoid wasting memory.  When GUISetHintText is called, that char * is retained
 and any previous hint text for that menu item is no longer assumed to exist.
 
-    When the GUI library returns a piece of text, it has been allocated using
-GUIAlloc and must be freed by the application.  When a buffer and length
-are passed in to the GUI function, the buffer will be filled, up to length
-characters, and the GUI library will not allocate any memory.  Examples
-of functions which allocation memory which must be freed by the application
-are : GUIGetText, GUIGetListItem, GUIGetFontInfo, GUIGetFontFromUser.  Text
-is written to an existing buffer in such calls as GUIGetWindowText.
+When the GUI library returns a piece of text, it has been allocated using
+GUIMemAlloc and must be freed by the application using GUIMemFree.  When
+a buffer and length are passed in to the GUI function, the buffer will be
+filled, up to length characters, and the GUI library will not allocate any
+memory.  Examples of functions which allocation memory which must be freed
+by the application are : GUIGetText, GUIGetListItem, GUIGetFontInfo,
+GUIGetFontFromUser.  Text is written to an existing buffer in such calls
+as GUIGetWindowText.
+
 
 API
 ===
@@ -86,14 +98,15 @@ API
 Getting Started
 ---------------
 
- The following are initialization functions :
 
+Initialization Functions
+------------------------
 GUIWndInit              -- must be called first to initialize the library
 GUIGMouseOn*            -- enable graphics mouse and character mapping (DOS only)
 GUIGMouseOff*           -- disable graphics mouse and character mapping (DOS only)
 GUIMDIInit              -- initialize MDI code***
 GUI3DDialogInit+        -- initialized 3D-look controls in dialogs in Windows**
-GUISetBetweenTitles*    -- set the number of characters between mail menu titles
+GUISetBetweenTitles*    -- set the number of characters between main menu titles
 GUIGetRoundScale        -- ask for information about choosing a good scale
 GUISetScale             -- allows the user to set the scale (screen coordinates)
 GUIGetScale             -- get the scale (as was set with GUISetScale)
@@ -104,9 +117,9 @@ GUIGetCharacter*        -- get a character used for drawing windows
 ** this function causes the app to need ctd3d.dll to be in the path when
    it is executing.  It is found in the /lang/binw directory.
 
-Window Creation
----------------
 
+Window Creation Functions
+-------------------------
 GUICreateWindow         -- create a window
 GUIAddControl           -- add a control to a window.  Do not add a group box
                            to a window in graphical systems
@@ -114,18 +127,18 @@ GUIDeleteControl        -- delete control from a window or dialog.
 GUISetExtra             -- set data associated with window.  For your use only.
 GUIGetExtra             -- get pointer to data associated with window
 
+
 Window Functions
 ----------------
-
 GUISetWindowText        -- reset the text which is the window title
 GUIGetWindowTextLength  -- gets the length of a windows title
 GUIGetWindowText        -- copies a windows title to a buffer supplied
-
 GUIDestroyWnd           -- destroy the window.  Passing NULL will destroy all
                            windows
 
-dirty functions :
 
+Dirty Functions
+---------------
 GUIWndDirty             -- tell library that a whole window is dirty
 GUIWndDirtyRow          -- tell library that a row of a window is dirty
 GUIWndDirtyRect         -- tell library that a rect in a window is dirty
@@ -134,16 +147,18 @@ GUIWndUpdate*           -- tell library to update a window
 GUISetBackgroundChar*   -- set the character user to draw the background of
                            the main window
 
-focus functions :
 
+Focus Functions
+---------------
 GUIBringToFront         -- bring the window to the top of all others
 GUIGetFront             -- returns window that is on top of all others
 GUIGetNextWindow        -- returns window that is below given window in z-order
 GUISetFocus             -- set input (keyboard) focus to a window
 GUIGetFocus             -- find out which window has the focus
 
-resize functions :
 
+Resize Functions
+----------------
 GUIResizeWindow         -- give a window a new size (and location)
 GUIMinimizeWindow       -- minimize a window
 GUIIsMinimized          -- returns TRUE if window is minimized
@@ -153,8 +168,9 @@ GUIRestoreWindow        -- restore a window to pre-minimize or maximize size
 GUIHideWindow           -- Hide a window
 GUIShowWindow           -- Show a window previously hidden
 
-drawing functions :
 
+Drawing Functions
+-----------------
 GUIDrawRect             -- draw the outline of a rectangle given a gui_attr
 GUIDrawRectRGB+         -- draw the outline of a rectangle given an RGB
 GUIFillRect             -- draw a filled in rectangle given a gui_attr
@@ -171,23 +187,22 @@ GUIDrawTextExtentPos    -- draw text at a point, blanking a portion of the
                            screen to the right of the text as if it were
                            spaces
 
-information functions :
 
+Information Functions
+---------------------
 GUIGetClientRect        -- get the size and location of the window's client
                            area in absolute user defined units
 GUIGetAbsRect           -- get the window's size and location in absolute
                            user defined units
 GUIGetRect              -- get the window's size and its location relative
-                           to its parent.  If there is no parent,
-                           GUIGetRect and GUIGetAbsRect will return the same
-                           value.
+                           to its parent.  If there is no parent, GUIGetRect
+                           and GUIGetAbsRect will return the same value
 GUIGetScrollStyle       -- get the scroll style (set on creation)
 GUIGetCreateStyle       -- get the creation style (set on creation)
 
 
 Colour Functions
 ----------------
-
 GUISetBackgroundColour* -- set the background colour of the main window
 GUISetDialogColours*    -- set the main and border colours of dialogs
 GUISetWindowColours     -- set the colours for a window
@@ -201,9 +216,9 @@ GUIGetRGBFromUser+      -- create dialog to ask user for colour, return it's RGB
 GUIGetColourFromUser    -- create dialog listing names of colour for user to
                            choose from
 
+
 Cursor Functions
 ----------------
-
 GUIGetCursorPos*                -- get the position of the window's cursor
 GUISetCursorPos*                -- set the position of the window's cursor
 GUIGetCursorType*               -- get cursor type (none, normal, insert)
@@ -212,9 +227,10 @@ GUISetMouseCursor+              -- set the type of mouse cursor
 GUIResetMouseCursor+            -- reset the type of mouse cursor
 GUIMouseCursorNeedsReset+       -- check if the type of mouse cursor needs to
                                    be reset
+
+
 Font Functions
 --------------
-
 GUIFontsSupported       -- returns TRUE if these font functions are supported
 GUIChangeFont+          -- gets font choice from user and changes the font of
                            the given window
@@ -223,9 +239,9 @@ GUISetFontInfo+         -- sets the font information for a window
 GUIGetFontFromUser+     -- gets font information from the user (using a dialog)
 GUISetSystemFont        -- set font to system font (fixed or proportional)
 
+
 General Information Functions
 -----------------------------
-
 GUIIsGUI                -- returns TRUE if on a graphical OS, FALSE otherwise
 GUIGetMousePosn         -- get the mouse position (in user coordinates)
 GUIGetKeyState          -- get the current shift state
@@ -236,24 +252,22 @@ GUIEnumChildWindows     -- enumerate child windows by calling given function
 GUIEnumControls         -- enumerate controls on a window by calling given
                            function with the id for each control
 
+
 Text Functions
 --------------
-
 GUIGetRow               -- return which text row is at the given mouse point
 GUIGetCol               -- find offset (in characters) of the given point
 GUIGetStringPos         -- find offset (in characters) of the given point if
                            string is offset from left by given amount
-
 GUIGetExtentX           -- find x extent of given string (in current font)
 GUIGetExtentY           -- find y extent of given string (in current font)
 GUIGetTextMetrics       -- get the metrics of the current font
 GUIGetDlgTextMetrics    -- get the metrics of the dialog font
-
 GUIGetPoint             -- return the point address of given text row and col
+
 
 Menu Functions
 --------------
-
 GUICreateFloatingPopup  -- create a floating popup menu
 GUITrackFloatingPopup   -- track a floating popup menu created using GUIAppendMenu
                            and GUIAppendMenuToPopup with floating set to TRUE
@@ -261,40 +275,37 @@ GUIEnableMenuItem       -- enable/disable a menu item
 GUICheckMenuItem        -- check/uncheck a menu item
 GUISetMenuText          -- change text of menu item
 GUISetHintText          -- set the hint text for a menu item
-
 GUIEnableMDIMenus       -- enable/disable a the MDI menus
 GUIEnableMenus          -- enable/disable all menus // NYI
 GUIDeleteMenuItem       -- delete a menu item from a pull down menu
-
 GUIResetMenus           -- reset the entire menu structure for a window
-
 GUIInsertMenu           -- insert menu item before given offset (top level)
 GUIInsertMenuByID       -- insert menu before given id
 GUIAppendMenu           -- append menu to top level menus
 GUIAppendMenuByOffset   -- append menu to submenu indicated by offset
 GUIAppendMenuToPopup    -- append menu to a popup menu indicated by id
 
+
 Toolbar Functions
 -----------------
-
 GUICreateToolBar        -- create a toolbar
 GUICloseToolBar         -- close the toolbar
 GUIHasToolBar           -- check if a window has a toolbar
 GUIChangeToolBar        -- change the toolbar (fixed->floating or floating->fixed)
 GUIToolBarFixed         -- returns TRUE if the toolbar is fixed
 
+
 Status Window Functions
 -----------------------
-
 GUICreateStatusWindow   -- create a status window
 GUICloseStatusWindow    -- close the status window
 GUIHasStatus            -- check if a window has a status window
 GUIDrawStatusText       -- draw text to the status window
 GUIResizeStatusWindow   -- resize the status window
 
+
 Scroll Functions
 ----------------
-
 In the name of the function, words have the following meanings :
 
 Init            - set value, don't draw anything
@@ -320,10 +331,12 @@ GUIDoVScroll            -- do vertical scrolling
 GUIDoHScrollClip        -- do horizontal scrolling, clipping to a region
 GUIDoVScrollClip        -- do vertical scrolling, clipping to a region
 
+
 These are Thumb functions.  They deal in percent of range :
 
 GUISetHScrollThumb      -- initializes the horizontal thumb position (percent)
 GUISetVScrollThumb      -- initializes the vertical thumb position (percent)
+
 
 These functions work in terms of the units of the user defined scale :
 
@@ -337,34 +350,32 @@ GUISetHScrollRange      -- set horizontal scrolling range
 GUISetVScrollRange      -- set vertical scrolling range
 GUIGetHScrollRange      -- get horizontal scrolling range
 GUIGetVScrollRange      -- get vertical scrolling range
+GUIGetNumRows           -- get number of text rows that will show in the window
 
-GUIGetNumRows           -- get number of text rows that will show in the
-                           window
 
 Sizzling Hot Spot Functions
 ---------------------------
-
 GUIInitHotSpots         -- set the character/bitmaps associated with user defined
                            hot spots
 GUIGetNumHotSpots       -- return the number of hot spots defined
 GUIGetHotSpotSize       -- get the size (in user coords) of a certain hot spot
 GUIDrawHotSpot          -- draw a hot spot at a given location
 
+
 Spawn Functions
 ---------------
-
 GUISpawnStart           -- start a spawn
 GUISpawnEnd             -- end a spawn
 
+
 Other Functions
 ---------------
-
 GUITruncToPixel         -- truncate location (in user coordinates) to nearest pixel
 GUIFlushKeys            -- flush the keyboard buffer
 
+
 High Level Interactions
 -----------------------
-
 GUIDisplayMessage       -- display message and get response (like Windows)
 GUIGetNewVal            -- display old value, ask user for new value
 GUIGetFileName          -- get file name using common file dialog.  See
@@ -372,9 +383,9 @@ GUIGetFileName          -- get file name using common file dialog.  See
 GUIDlgPick              -- display choices in list box, have user pick
 GUIDisplayHelp+         -- display windows help for a given topic
 
+
 Dialog Box Functions
 --------------------
-
 GUICreateDialog         -- create a dialog
 GUICreateSysModalDialog -- create a system modal dialog box ( same as
                            GUICreateDialog in char-based systems )
@@ -383,14 +394,15 @@ GUIDlgOpen              -- calls GUICreateDialog, formatting locations to
                            look good in every OS. Takes coordinates in
                            character units.  See guindlg.h for more information.
 
-The following functions work with controls in dialogs.  On Windows and NT,
-they also work with controls on windows.
 
-For all controls :
+The following functions work with controls in dialogs.
+On Windows and NT, they also work with controls on windows.
 
+
+For all controls
+----------------
 GUIGetControlRect       -- get location of control, relative to parent
-GUIResizeControl        -- set size and location of control (relative to
-                           parent)
+GUIResizeControl        -- set size and location of control (relative to parent)
 GUIGetControlClass      -- get the gui_control_class for the given control (by id)
 GUIIsControlEnabled+    -- returns TRUE if control is enabled
 GUIEnableControl+       -- set control enabled or not enabled
@@ -398,8 +410,9 @@ GUIHideControl+         -- hide a control
 GUIShowControl+         -- show a control
 GUIIsControlVisible+    -- returns TRUE if control is visible
 
-List box functions :
 
+List box Functions
+------------------
 GUIAddText              -- add a text item to list
 GUISetListItemData+     -- associate data with a list box item
 GUIGetListItemData+     -- get the data associated with a list box item
@@ -416,8 +429,9 @@ GUISetTopIndex          -- scroll list so given index is at top of list
 GUIGetTopIndex          -- get index of item at top of list (-1 if no items)
 GUISetHorizontalExtent+ -- set the width of the widest list box item
 
-Functions that work for all controls with text :
 
+Functions that work for all controls with text
+----------------------------------------------
 GUISetText              -- set the text
 GUIClearText            -- clear the text
 GUIGetText              -- get a copy of the text
@@ -428,15 +442,15 @@ GUIGetEditSelect+       -- find out the portion of text selected
                            (GUI_EDIT and GUI_EDIT_COMBOBOX)
 GUIDlgBuffGetText       -- get text from control into a buffer
 
-Check box and radio button functions :
 
+Check box and radio button functions
+------------------------------------
 GUIIsChecked            -- find of if button (on dialog) is checked or not
 GUISetChecked           -- set button (on dialog) as checked or not
 
 
 Memory routines
 ---------------
-
 - used to track memory.  Set environment variable TRMEMFILE to the file
   which will contain memory tracking information.
 - compile with TRMEM defined (default in GUI makefiles) (see notes for
@@ -452,7 +466,6 @@ GUIMemPrtUsage          -- print current memory usage
 
 Coordinate systems data types relation
 --------------------------------------
-
 Character mode coordinate systems
 
     SAREA (UI project coordinate system)
@@ -483,9 +496,10 @@ Graphic mode coordinate systems
     gui_rect (GUI API user coordinate system)
 
 
+
+
 Directory structure
 -------------------
-
 gui/h - gui.h, guitypes.h, guifdlg.h and guidlg.h are intended to be included
         by the user.
 
@@ -502,7 +516,9 @@ gui/h - gui.h, guitypes.h, guifdlg.h and guidlg.h are intended to be included
         - guidlg.h contains some macros and API to make creating dialogs
           easier
 
-gui/ui - contains libraries to be used for character based platforms
+
+
+gui/ui  - contains libraries to be used for character based platforms
           (DOS, QNX, OS2, WIN and NT character based).
         - libraries created are :
 
@@ -517,6 +533,9 @@ gui/ui - contains libraries to be used for character based platforms
         gui.lib         QNX             small           qnx386          32
         gui.lib         NT              flat            nt386           32
         gui.lib         Windows         large           wini86          16
+        gui.lib         Linux           flat            linux386        32
+
+
 
 gui/win - contains libraries to be used for graphical platforms (Windows, NT)
         - libraries created are :
@@ -530,29 +549,31 @@ gui/win - contains libraries to be used for graphical platforms (Windows, NT)
         gui.lib         PM-OS/2         large           os2i86          16
         gui.lib         PM-OS/2         flat            os2386          32
 
+
+
 gui/sample - contains sample code and directories to build it in
 
         - gui/sample/c/sample.c and sampdef.c create a sample program that
           uses a lot of the functionality of the GUI library.  It includes
           gui/sample/h/sample.h.
 
-        - gui/sample/<host_os><host_cpu>[.gui] directories are set up to compile the sample
-          for several operating systems :
+        - gui/sample/<host_os><host_cpu>[.gui] directories are set up
+          to compile the sample for several operating systems :
 
         DOS
         ---
-          dosi86 - DOS large memory model (16-bit)
-          dos386 - Pharlap/DOS4G flat memory model (32-bit)
+          dosi86     - DOS large memory model (16-bit)
+          dos386     - Pharlap/DOS4G flat memory model (32-bit)
 
         OS/2
         ----
-          os2i86 - OS2 large memory model (16-bit)
-          os2386 - OS2 flat memory model (32-bit)
+          os2i86     - OS2 large memory model (16-bit)
+          os2386     - OS2 flat memory model (32-bit)
 
         QNX
         ---
-          qnxi86 - QNX large memory model (16-bit)
-          qnx386 - QNX small memory model (32-bit)
+          qnxi86     - QNX large memory model (16-bit)
+          qnx386     - QNX small memory model (32-bit)
 
         Windows
         -------
@@ -562,29 +583,27 @@ gui/sample - contains sample code and directories to build it in
 
         NT
         --
-          nt386.gui - NT flat memory model
-          nt386     - NT character mode flat memory model
+          nt386.gui  - NT flat memory model
+          nt386      - NT character mode flat memory model
 
         PM-OS/2
-        --
+        -------
           os2i86.gui - PM large memory model (16-bit)
           os2386.gui - PM flat memory model (32-bit)
 
-Notes for compiling :
 
--- if you want to use the memory tracker, put the trmem project on your
-   machine (from n:\utils\trmem) and set the environment variable
-   trmem_dir to point to it.  Compile with TRMEM define (default).
--- set the guidir environment variable to point to the gui directory
-   before trying to compile
--- you must compile ui and have the environment variable uidir set to point
-   to it
--- to compile for graphics Windows or NT, set sdk_dir to point to the sdk
-   directory on you machine (from n:\cproj\sdk).
--- ***when using the GUIMDIInit function call, and compiling for a graphical
-   system, your app must have a .rc which include the gui.rc file found in
-   /gui/win/gui.rc.  The resource compiler must also have the directive
-   /i=$(sdk_dir)/misc so that it can find the bitmap indicated in gui.rc.
+        Linux
+        -----
+          linux386   - Linux character mode flat memory model (32 bit)
+          linuxx64   - Linux character mode flat memory model (64-bit)
+
+
+
+Notes for compiling
+-------------------
+-- The memory tracker in 'bld/trmem' can be used by many projects when
+   compiling Open Watcom. This requires the define TRMEM.
+
 
 
 Messages

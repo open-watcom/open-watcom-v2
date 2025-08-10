@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,18 +42,18 @@
 #include "seterrno.h"
 
 
-_WCRTLINK int dup( int handle )
+_WCRTLINK int dup( int old_handle )
 {
-    int new_handle;
-    tiny_ret_t rc;
+    int         handle;
+    tiny_ret_t  rc;
 
-    __handle_check( handle, -1 );
+    __handle_check( old_handle, -1 );
 
-    rc = TinyDup( handle );
-    if( TINY_ERROR(rc) ) {
-        return( __set_errno_dos( TINY_INFO(rc) ) );
+    rc = TinyDup( old_handle );
+    if( TINY_ERROR( rc ) ) {
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
-    new_handle = TINY_INFO(rc);
-    __SetIOMode( new_handle, __GetIOMode( handle ) );
-    return( new_handle );
+    handle = TINY_INFO( rc );
+    __SetIOMode_grow( handle, __GetIOMode( old_handle ) );
+    return( handle );
 }

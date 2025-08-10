@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,27 +36,29 @@
 #if defined(__NT__) || defined(__WINDOWS__) || defined(__OS2__)
 
 #include <unistd.h>
+#include <stdbool.h>
+
 
 struct window_data;
 typedef struct window_data _WCI86FAR *LPWDATA;
 
-extern unsigned (*_WindowsStdin)( LPWDATA, void *, unsigned );
-extern unsigned (*_WindowsStdout)( LPWDATA, const void *, unsigned );
-extern unsigned (*_WindowsKbhit)( LPWDATA );
-extern unsigned (*_WindowsGetch)( LPWDATA );
-extern unsigned (*_WindowsGetche)( LPWDATA );
-extern void     (*_WindowsPutch)( LPWDATA, unsigned );
+extern int      (*_WindowsStdin)( LPWDATA, void *, unsigned );
+extern int      (*_WindowsStdout)( LPWDATA, const void *, unsigned );
+extern bool     (*_WindowsKbhit)( LPWDATA );
+extern int      (*_WindowsGetch)( LPWDATA );
+extern int      (*_WindowsGetche)( LPWDATA );
+extern void     (*_WindowsPutch)( LPWDATA, int );
 extern void     (*_WindowsExitRtn)( void );
-extern unsigned (*_WindowsNewWindow)( const char *, ... );
-extern int      (*_WindowsCloseWindow)( LPWDATA );
+extern bool     (*_WindowsNewWindow)( const char *, ... );
+extern bool     (*_WindowsCloseWindow)( LPWDATA );
 extern LPWDATA  (*_WindowsIsWindowedHandle)( int );
 extern void     (*_WindowsRemoveWindowedHandle)( int );
-extern int      (*_WindowsSetAbout)( const char *, const char * );
-extern int      (*_WindowsSetAppTitle)( const char * );
-extern int      (*_WindowsSetConTitle)( LPWDATA, const char * );
-extern int      (*_WindowsDestroyOnClose)( LPWDATA );
-extern int      (*_WindowsYieldControl)( void );
-extern int      (*_WindowsShutDown)( void );
+extern bool     (*_WindowsSetAbout)( const char *, const char * );
+extern bool     (*_WindowsSetAppTitle)( const char * );
+extern bool     (*_WindowsSetConTitle)( LPWDATA, const char * );
+extern bool     (*_WindowsDestroyOnClose)( LPWDATA );
+extern bool     (*_WindowsYieldControl)( void );
+extern bool     (*_WindowsShutDown)( void );
 
 #endif
 #endif

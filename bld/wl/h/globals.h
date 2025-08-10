@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,8 @@
 
 #define SECTOR_SIZE     512
 #define MAX_HEADROOM    _4K
+
+#define __ROUND_UP_SIZE_SECTOR(x)   __ROUND_UP_SIZE( (x), SECTOR_SIZE )
 
 /* linker global variables */
 GLOB outfilelist    *OutFiles;      /* list of files which will be written to   */

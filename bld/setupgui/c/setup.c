@@ -47,6 +47,7 @@
 #include "guistats.h"
 #include "guiutils.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -56,6 +57,11 @@ typedef enum {
     Stack_IsEmpty
 } DIR_PARAM_STACK_OPS;
 
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
 
 static bool SetupOperations( void )
 /*********************************/
@@ -297,7 +303,7 @@ void GUImain( void )
 
     if( SetupPreInit( argc, argv ) ) {
         SetupInit();
-        InitGlobalVarList();
+        InitVarsList();
         VbufInit( &inf_name );
         VbufInit( &src_path );
         VbufInit( &arc_name );
@@ -354,7 +360,7 @@ void GUImain( void )
 
                 FreeDefaultDialogs();
                 FreeAllStructs();
-                FreeGlobalVarList( false );
+                FreeVarsList( false );
                 ConfigModified = false;
             } /* while */
             VbufFree( &dir );
@@ -370,7 +376,7 @@ void GUImain( void )
         VbufFree( &arc_name );
         VbufFree( &src_path );
         VbufFree( &inf_name );
-        FreeGlobalVarList( true );
+        FreeVarsList( true );
         SetupFini();
     }
 }

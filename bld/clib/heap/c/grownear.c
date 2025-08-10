@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,10 @@
   #include <rdos.h>
 #elif defined( __DOS__ )
   #include "tinyio.h"
+  #include "dpmi.h"
 #endif
 #include "rtdata.h"
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
   #include "rtinit.h"
 #endif
 #include "roundmac.h"
@@ -69,15 +70,18 @@
 #define FRLPTRADD(p,o)  (freelist_nptr)((PTR)(p)+(o))
 
 #if defined( __DOS_EXT__ )
-extern  int SegmentLimit( void );
-#pragma aux SegmentLimit = \
-        "xor    eax,eax"    \
-        "mov    ax,ds"      \
-        "lsl    eax,ax"     \
-        "inc    eax"        \
-    __parm              [] \
+
+extern void *CodeBuilderAlloc( unsigned );
+#pragma aux CodeBuilderAlloc = \
+        "mov  eax,80004800h" \
+        __INT_21        \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "and  eax,ebx"  \
+    __parm __caller     [__ebx] \
     __value             [__eax] \
-    __modify __exact    [__eax]
+    __modify __exact    [__eax __ebx]
+
 #endif
 
 static freelist_nptr __LinkUpNewNHeap( heapblk_nptr heap )
@@ -137,6 +141,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
         if( ((PTR)heap + sizeof( heapblk ) == (PTR)frl_old) && (heap->numalloc == 1) ) {
             heapblk_nptr    prev_heap;
             heapblk_nptr    next_heap;
+            dpmi_mem_block  dpmimem;
 
             // The mini-heap contains only this memblk
             dpmi = BLK2DPMI( heap );
@@ -146,11 +151,11 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
             next_heap = heap->next.nptr;
             size = __ROUND_UP_SIZE_4K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
 //            prev_dpmi = dpmi;
-            dpmi = TinyDPMIRealloc( dpmi, size );
-            if( dpmi == NULL ) {
-//                dpmi = prev_dpmi;
+            if( DPMIResizeMemoryBlock( &dpmimem, dpmi->dpmi_handle, size ) ) {
                 return( NULL );         // indicate resize failed
             }
+            dpmi = (dpmi_hdr *)dpmimem.linear;
+            dpmi->dpmi_handle = dpmimem.handle;
             dpmi->dos_seg_value = 0;
             __UnlinkNHeap( heap, prev_heap, next_heap );
             heap = DPMI2BLK( dpmi );
@@ -178,7 +183,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
 }
 #endif
 
-#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     freelist_nptr   frl_last;
@@ -191,7 +196,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimitB() + 1;
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
         return( frl_last->len );
@@ -205,13 +210,16 @@ static heapblk_nptr RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
     heapblk_nptr    heap;
-    tiny_ret_t      save_DOS_block;
-    tiny_ret_t      DOS_block;
+    tiny_ret_t      rc;
+    unsigned        save_DOS_block;
+    unsigned        DOS_block;
+    dpmi_mem_block  dpmimem;
 
     __nheapshrink();
     /* size is a multiple of 4k */
-    dpmi = TinyDPMIAlloc( size );
-    if( dpmi != NULL ) {
+    if( DPMIAllocateMemoryBlock( &dpmimem, size ) == 0 ) {
+        dpmi = (dpmi_hdr *)dpmimem.linear;
+        dpmi->dpmi_handle = dpmimem.handle;
         dpmi->dos_seg_value = 0;        // indicate DPMI block
         heap = DPMI2BLK( dpmi );
         heap->len = size - sizeof( dpmi_hdr );
@@ -225,12 +233,15 @@ static heapblk_nptr RationalAlloc( size_t size )
         /* cannot allocate more than 64k from DOS real memory */
         return( NULL );
     }
-    save_DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( __minreal ) | 1 );
-    if( TINY_OK( save_DOS_block ) ) {
-        DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
+    rc = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( __minreal ) | 1 );
+    if( TINY_OK( rc ) ) {
+        save_DOS_block = TINY_INFO( rc );
+        rc = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
         TinyFreeBlock( save_DOS_block );
-        if( TINY_OK( DOS_block ) ) {
-            dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
+        if( TINY_OK( rc ) ) {
+            DOS_block = TINY_INFO( rc );
+            dpmi = (dpmi_hdr *)DPMIGetSegmentBaseAddress( DOS_block );
+            dpmi->dpmi_handle = 0;
             dpmi->dos_seg_value = DOS_block;
             heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr );
@@ -250,7 +261,7 @@ static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount;
     unsigned amt;
-#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) )
     unsigned last_free_amt;
 #endif
 
@@ -259,7 +270,7 @@ static int __AdjustAmount( unsigned *amount )
     if( amt < old_amount ) {
         return( 0 );
     }
-#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) )
   #if defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         // Allocating extra to identify the dpmi block
@@ -301,14 +312,13 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = __ROUND_DOWN_SIZE_EVEN( _RWD_amblksiz );
     }
-#if defined(__OS2__) && !defined(_M_I86)
+#if defined(__OS2_32BIT__)
     /* make sure amount is a multiple of 64k */
     old_amount = amt;
     amt = __ROUND_UP_SIZE_64K( amt );
     if( amt < old_amount )
         return( 0 );
-#elif defined( __WINDOWS_386__ ) || defined( __NT__ ) || defined( __CALL21__ ) \
-        || defined( __DOS_EXT__ ) || defined( __RDOS__ )
+#elif defined( __WINDOWS_386__ ) || defined( __NT__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
     /* make sure amount is a multiple of 4k */
     old_amount = amt;
     amt = __ROUND_UP_SIZE_4K( amt );
@@ -319,8 +329,8 @@ static int __AdjustAmount( unsigned *amount )
     return( amt != 0 );
 }
 
-#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
+#if defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) \
+  || defined( __DOS_EXT__ ) || defined( __RDOS__ )
 
 static heapblk_nptr __GetMemFromSystem( unsigned *amount )
 {
@@ -330,7 +340,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
     brk_value = (unsigned)LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __WINDOWS_386__ )
     brk_value = (unsigned)DPMIAlloc( *amount );
-  #elif defined(__OS2__) && !defined(_M_I86)
+  #elif defined(__OS2_32BIT__)
     {
         PBYTE           p;
         ULONG           os2_alloc_flags;
@@ -346,14 +356,6 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
   #elif defined( __NT__ )
     brk_value = (unsigned)VirtualAlloc( NULL, *amount, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
     //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, *amount );
-  #elif defined( __CALL21__ )
-    brk_value = (unsigned)TinyMemAlloc( *amount );
-    if( brk_value != 0 ) {
-        /* make sure it will not look like the end of a heap */
-        *(tag _WCNEAR *)brk_value = !END_TAG;
-        brk_value += 2 * TAG_SIZE;
-        *amount -= 2 * TAG_SIZE;    // subtract extra tag
-    }
   #elif defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() ) {
         brk_value = (unsigned)RationalAlloc( *amount );
@@ -361,7 +363,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
             *amount = ((heapblk_nptr)brk_value)->len;
         }
     } else if( _IsCodeBuilder() ) {
-        brk_value = (unsigned)TinyCBAlloc( *amount );
+        brk_value = (unsigned)CodeBuilderAlloc( *amount );
         if( brk_value != 0 ) {
             *amount -= TAG_SIZE;
         }
@@ -387,7 +389,7 @@ static int __CreateNewNHeap( unsigned amount )
     }
     /* we've got a new heap block */
     heap->len = amount - TAG_SIZE;
-  #if defined(__OS2__) && !defined(_M_I86)
+  #if defined(__OS2_32BIT__)
     // Remeber if block was allocated with OBJ_ANY - may be in high memory
     heap->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
   #endif
@@ -404,8 +406,7 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __RDOS__ )
+#if defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) || defined( __RDOS__ )
 #else
     heapblk_nptr    heap;
     freelist_nptr   frl;
@@ -419,15 +420,14 @@ int __ExpandDGROUP( unsigned amount )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
-#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __RDOS__ )
+#if defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) || defined( __RDOS__ )
     return( __CreateNewNHeap( amount ) );
 #else
   #if defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         return( __CreateNewNHeap( amount ) );
     } else if( _IsPharLap() && !_IsFlashTek() ) {
-        _curbrk = SegmentLimit();
+        _curbrk = GetDataSelectorLimitB() + 1;
 //    } else {
         // Rational non-zero based system should go through.
     }
@@ -489,18 +489,18 @@ int __ExpandDGROUP( unsigned amount )
 #endif
 }
 
-#if defined(__OS2__) && !defined(_M_I86)
-unsigned char _os2_obj_any_supported = FALSE;
+#if defined(__OS2_32BIT__)
+bool _os2_obj_any_supported = false;
 
 static void _check_os2_obj_any_support( void )
 {
     PBYTE           p;
     APIRET          rc;
 
-    _os2_obj_any_supported = TRUE;
+    _os2_obj_any_supported = true;
     rc = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
     if( rc == ERROR_INVALID_PARAMETER ) {
-        _os2_obj_any_supported = FALSE;
+        _os2_obj_any_supported = false;
     } else if( rc == 0 ) {
         DosFreeMem( p );
     }

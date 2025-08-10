@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,10 +45,10 @@
 /*
  * _DoStdin - get stuff from stdin
  */
-unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
+int _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 {
     unsigned            rc;
-    char *              buff;
+    char                *buff;
 
     buff = (char *)in_buff;
 
@@ -63,13 +63,14 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
         }
     } else {
         if( (rc + 2) < size ) {
-            buff[rc++] = 0x0d;
-            buff[rc++] = 0x0a;
+            buff[rc++] = '\r';
+            buff[rc++] = '\n';
         } else if( ( rc == 0 ) && ( size == 1 ) ) {/* rc==0 ==> key was enter */
-            /* kludge to allow readers to get a single new line from the
+            /*
+             * kludge to allow readers to get a single new line from the
              * system
              */
-            buff[rc++] = 0x0a;
+            buff[rc++] = '\n';
         }
     }
     return( rc );
@@ -79,15 +80,14 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 /*
  * _DoStdout - put stuff to stdout
  */
-unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
+int _DoStdout( LPWDATA w, const void *buff, unsigned size )
 {
-
     if( w == NULL )
         return( 0 );
     if( !w->active )
         _MakeWindowActive( w );
     _AddLine( w, buff, size );
-    _MessageLoop( TRUE );
+    _MessageLoop( true );
     return( size );
 
 } /* _DoStdout */
@@ -95,28 +95,29 @@ unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
 /*
  * _DoKbhit - test if the keyboard has been pressed
  */
-unsigned _DoKbhit( LPWDATA w )
+bool _DoKbhit( LPWDATA w )
 {
     if( w == NULL )
-        return( FALSE );
+        return( false );
     if( !w->active )
         _MakeWindowActive( w );
-    return( _KeyboardHit( FALSE ) );
+    return( _KeyboardHit( false ) );
 
 } /* _DoKbhit */
 
 /*
  * _DoGetch - get a character
  */
-unsigned _DoGetch( LPWDATA w )
+int _DoGetch( LPWDATA w )
 {
-    unsigned    ci;
+    int     ci;
 
     if( w == NULL )
         return( 0 );
     if( !w->active )
         _MakeWindowActive( w );
-    while( !_KeyboardHit( TRUE ) );
+    while( !_KeyboardHit( true ) )
+        /* empty */;
     ci = _GetKeyboard( NULL );
     if( ci > 0x80 )
         ci -= 0x80;
@@ -127,10 +128,12 @@ unsigned _DoGetch( LPWDATA w )
 /*
  * _DoGetche - get a character and echo it
  */
-unsigned _DoGetche( LPWDATA w )
+int _DoGetche( LPWDATA w )
 {
-    unsigned    ci;
+    int     ci;
 
+    if( w == NULL )
+        return( 0 );
     ci = _DoGetch( w );
     if( ci == '\r' ) {
         _DoPutch( w, '\n' );
@@ -144,7 +147,7 @@ unsigned _DoGetche( LPWDATA w )
 /*
  * _DoPutch - put a character to stdout
  */
-void _DoPutch( LPWDATA w, unsigned ch )
+void _DoPutch( LPWDATA w, int ch )
 {
     char tmp[2];
 
@@ -155,6 +158,6 @@ void _DoPutch( LPWDATA w, unsigned ch )
     tmp[0] = ch;
     tmp[1] = 0;
     _AddLine( w, tmp, 1 );
-    _MessageLoop( TRUE );
+    _MessageLoop( true );
 
 } /* _DoPutch */

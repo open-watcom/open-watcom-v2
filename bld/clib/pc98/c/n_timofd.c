@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
+    #include "dpmi.h"
 #endif
 
 
@@ -59,65 +60,46 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
         case _TIME_GETCLOCK:
         case _TIME_SETCLOCK:
           {
-            union REGS      regs;
 #ifdef _M_I86
+            union REGS      regs;
             struct SREGS    segregs;
+#else
+            dpmi_dos_mem_block  dos_mem;
+            void                __far *p;
+#endif
 
+#ifdef _M_I86
             segregs.es = FP_SEG( __timeval );
             regs.x.bx = FP_OFF( __timeval );
             regs.h.ah = __cmd;
             int86x( 0x1c, &regs, &regs, &segregs );
 #else
-            unsigned long   psel;
-            unsigned long   rseg;
+            if( _IsPharLap() ) {
+                pharlap_regs_struct dp;
 
-            if( _IsRational() ) {
-                call_struct     dr;
-
-                memset( &dr, 0, sizeof( dr ) );
-                regs.x.ebx = 1;     /* paragraph */
-                regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                int386( 0x31, &regs, &regs );
-                psel = regs.w.dx;
-                rseg = regs.w.ax;
-                memmove( (void *)( rseg << 4 ), __timeval, 6 );
-
-                dr.es = rseg;
-                dr.ebx = 0;         /* Offset */
-                dr.ah = __cmd;
-                regs.x.ebx = 0x1c;  /* interrupt no */
-                regs.x.ecx = 0;     /* no stack for now */
-                regs.x.edi = (unsigned long)&dr;
-                regs.x.eax = 0x300;
-                int386( 0x31, &regs, &regs );
-                memmove( __timeval, (void *)( rseg << 4 ), 6 );
-
-                regs.x.edx = psel;
-                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
-                int386( 0x31, &regs, &regs );
-            } else if( _IsPharLap() ) {
-                rmi_struct      dp;
-
+                dos_mem.rm = PharlapAllocateDOSMemoryBlock( 1 );
+                dos_mem.pm = 0;
+                p = RealModeSegmPtr( dos_mem.rm );
+                _fmemmove( p, __timeval, 6 );
                 memset( &dp, 0, sizeof( dp ) );
-                regs.x.ebx = 1;
-                regs.x.eax = 0x25c0;
-                intdos( &regs, &regs );
-                psel = _ExtenderRealModeSelector;
-                rseg = regs.w.ax;
-                _fmemmove( MK_FP( psel, rseg << 4 ), __timeval, 6 );
+                dp.r.h.ah = __cmd;
+                dp.es = dos_mem.rm;
+                dp.intno = 0x1c;     /* interrupt no */
+                PharlapSimulateRealModeInterrupt( &dp, 0, 0, 0 );
+                _fmemmove( __timeval, p, 6 );
+                DPMIFreeDOSMemoryBlock( dos_mem.rm );
+            } else if( _DPMI || _IsRational() ) {
+                dpmi_regs_struct    dr;
 
-                dp.es = rseg;
-                regs.x.ebx = 0;     /* Offset */
-                dp.ah = __cmd;
-                dp.inum = 0x1c;     /* interrupt no */
-                regs.x.edx = (unsigned long)&dp;
-                regs.x.eax = 0x2511;
-                intdos( &regs, &regs );
-                _fmemmove( __timeval, MK_FP( psel, rseg << 4 ), 6 );
-
-                regs.x.ecx = rseg;
-                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                intdos( &regs, &regs );
+                dos_mem = DPMIAllocateDOSMemoryBlock( 1 );
+                p = RealModeSegmPtr( dos_mem.rm );
+                _fmemmove( p, __timeval, 6 );
+                memset( &dr, 0, sizeof( dr ) );
+                dr.r.h.ah = __cmd;
+                dr.es = dos_mem.rm;
+                DPMISimulateRealModeInterrupt( 0x1c, 0, 0, &dr );
+                _fmemmove( __timeval, p, 6 );
+                DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }
 #endif
             return( 0 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ typedef unsigned short __based(__segname("_STACK"))     *stk_ptr;
 extern  void    __fstcw( stk_ptr cw );
 extern  void    __fldcw( stk_ptr cw );
 
-#if defined(__WINDOWS__) && !defined(__WINDOWS_386__)
+#if defined(__WINDOWS_286__)
 
 extern void __far _fpmath( void );
 #pragma aux _fpmath "__fpmath";
@@ -110,7 +111,7 @@ _WCRTLINK unsigned _control87( unsigned new, unsigned mask )
 
     control_word = 0;
     if( _RWD_8087 ) {
-#if defined(__WINDOWS__) && !defined(__WINDOWS_386__)
+#if defined(__WINDOWS_286__)
         __fstcw( &control_word );
         control_word = __win87em_fstcw();
         if( mask != 0 ) {

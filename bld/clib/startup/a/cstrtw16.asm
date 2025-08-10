@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -25,7 +25,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Windows 16-bit executable (Win16, Windows 3.x) startup code.
+;* Description:  16-bit Windows executable (Win16, Windows 1.0, 2.x and 3.x)
+;*                   startup code.
 ;*
 ;*****************************************************************************
 
@@ -59,6 +60,7 @@ pStackBot       equ     000EH
         assume  nothing
 
         extrn   INITTASK            : far
+        extrn   GETVERSION          : far
         extrn   GETMODULEFILENAME   : far
         extrn   INITAPP             : far
         extrn   WAITEVENT           : far
@@ -136,6 +138,9 @@ _DATA   segment word public 'DATA'
         public  "C",_psp
         public  "C",_osmajor
         public  "C",_osminor
+        public  "C",_winmajor
+        public  "C",_winminor
+        public  "C",_winver
         public  "C",_osmode
         public  "C",_STACKLOW
         public  "C",_STACKTOP
@@ -154,6 +159,21 @@ _curbrk    dw 0                 ; top of usable memory
 _psp       dw 0                 ; segment addr of program segment prefix
 _osmajor   db 0                 ; major DOS version number
 _osminor   db 0                 ; minor DOS version number
+;
+; Windows GetVersion is supported for Windows 2.x and above
+; that we read it in startup code for these versions
+;
+; Windows 1.x version is hardcoded in startup code as 1.0
+;
+ifdef WINDOWS10
+_winmajor  db 1                 ; major Windows version number
+_winminor  db 0                 ; minor Windows version number
+_winver    dw 100h              ; Windows version number
+else
+_winmajor  db 0                 ; major Windows version number
+_winminor  db 0                 ; minor Windows version number
+_winver    dw 0                 ; Windows version number
+endif
 _osmode    db 0                 ; 0 => DOS real mode
 _HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
@@ -282,6 +302,14 @@ notprot:
         int     21h                     ; ...
         mov     _osmajor,al             ; ...
         mov     _osminor,ah             ; ...
+ifdef WINDOWS10
+else
+        call    GETVERSION              ; get Windows version number
+        mov     _winmajor,al            ; ...
+        mov     _winminor,ah            ; ...
+        xchg    al,ah                   ; ...
+        mov     _winver,ax              ; ...
+endif
         ; hinst is already on the stack
         push    ds
         mov     di, offset filename

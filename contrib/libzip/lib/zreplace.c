@@ -33,12 +33,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_replace(struct zip *za, int idx, struct zip_source *source)
@@ -52,7 +52,7 @@ zip_replace(struct zip *za, int idx, struct zip_source *source)
 }
 
 
-
+
 
 int
 _zip_replace(struct zip *za, int idx, const char *name,

@@ -67,12 +67,8 @@
  */
 #ifdef V7
 #include "dir.h"
-#else
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include "direct.h"
-#else
+#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
 #include "ndir.h"
-#endif /* __WATCOMC__ */
 #endif /* V7 */
 #endif /* !BSD42 */
 

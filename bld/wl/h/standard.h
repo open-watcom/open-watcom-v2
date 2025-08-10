@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,10 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <time.h>
-#include "watcom.h"
 #include "bool.h"
+#include "machtype.h"
 #include "roundmac.h"
+#include "alloc.h"
 #include "iopath.h"
 #include "wlinkcfg.h"
 
@@ -50,9 +51,6 @@
 #else
 #define CONSTU32(x)     x ## U
 #endif
-
-/* round up by a power of 2 */
-#define ROUND_SHIFT(x,r)    __ROUND_UP_SIZE(x, PWROF2((r)))
 
 // useful for stringizing tokens
 #define __str( m )      #m
@@ -85,7 +83,6 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
-typedef unsigned char   byte;
 typedef int             f_handle;
 
 #if defined( USE_VIRTMEM )

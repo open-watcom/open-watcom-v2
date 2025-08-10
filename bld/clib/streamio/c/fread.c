@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,10 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
     if( fp->_flag & _BINARY )
 #endif
     {
-        size_t bytes_left = n, bytes;
+        size_t bytes;
+        size_t bytes_left;
+
+        bytes_left = n;
         for( ;; ) {
             if( fp->_cnt != 0 ) {
                 bytes = fp->_cnt;
@@ -102,22 +105,24 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
                 bytes_left -= bytes;
                 len_read += bytes;
             }
-            if( bytes_left == 0 ) break;
+            if( bytes_left == 0 )
+                break;
 
             /* if user's buffer is larger than our buffer, OR
                _IONBF is set, then read directly into user's buffer. */
 
-            if( (bytes_left >= fp->_bufsize) || (fp->_flag & _IONBF) ) {
+            if( (bytes_left >= fp->_bufsize)
+              || (fp->_flag & _IONBF) ) {
                 bytes = bytes_left;
                 fp->_ptr = _FP_BASE( fp );
                 fp->_cnt = 0;
-                if( !(fp->_flag & _IONBF) ) {
+                if( (fp->_flag & _IONBF) == 0 ) {
                     /* if more than a sector, set to multiple of sector size*/
                     if( bytes > 512 ) {
                         bytes &= -512;
                     }
                 }
-                n = __qread( fileno(fp), buf, bytes );
+                n = __qread( fileno( fp ), buf, bytes );
                 if( n == -1 ) {
                     fp->_flag |= _SFERR;
                     break;
@@ -129,7 +134,9 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
                 bytes_left -= n;
                 len_read += n;
             } else {
-                if( __fill_buffer( fp ) == 0 )  break;
+                if( __fill_buffer( fp ) == 0 ) {
+                    break;
+                }
             }
         } /* end for */
 #if !defined(__UNIX__)
@@ -139,7 +146,9 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
 
             // ensure non-empty buffer
             if( fp->_cnt == 0 ) {
-                if( __fill_buffer( fp ) == 0 ) break;
+                if( __fill_buffer( fp ) == 0 ) {
+                    break;
+                }
             }
             // get character
             --fp->_cnt;
@@ -149,7 +158,9 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
             if( c == '\r' ) {
                 // ensure non-empty buffer
                 if( fp->_cnt == 0 ) {
-                    if( __fill_buffer( fp ) == 0 ) break;
+                    if( __fill_buffer( fp ) == 0 ) {
+                        break;
+                    }
                 }
                 // get character
                 --fp->_cnt;
@@ -164,7 +175,9 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
             // store chracter
             buf[len_read] = (char)c;
             ++len_read;
-            if( len_read == n ) break;
+            if( len_read == n ) {
+                break;
+            }
         }
 #endif
     }

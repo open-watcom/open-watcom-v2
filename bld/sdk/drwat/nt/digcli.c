@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +123,12 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
+    if( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( 1 );
+        }
+    }
+    return( 0 );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )
@@ -141,7 +146,7 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) )
+    if( ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) == 0 )
         return( (size_t)-1 );
     return( bytesread );
 }
@@ -153,7 +158,7 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) )
+    if( WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) == 0 )
         return( (size_t)-1 );
     return( byteswritten );
 }
@@ -184,24 +189,39 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fname[256];
     size_t      len;
+    bool        found;
+    char        *p;
+#ifdef BLDVER
+    char        buffer[_MAX_PATH];
+#endif
 
     /* unused parameters */ (void)ftype;
 
-    len = 0;
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+    _searchenv( fname, "WD_PATH" QSTR( BLDVER ), buffer );
+    if( *buffer != '\0' ) {
+        found = true;
+        p = buffer;
+    } else {
+        found = false;
+        p = fname;
+    }
+#else
+    found = true;
+    p = fname;
+#endif
+    len = strlen( p );
     if( filename_maxlen > 0 ) {
         filename_maxlen--;
-        if( base_name_len == 0 )
-            base_name_len = strlen( base_name );
-        strncpy( fname, base_name, base_name_len );
-        strcpy( fname + base_name_len, defext );
-#ifdef BLDVER
-        _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
-#endif
-        len = strlen( fname );
-        if( len > filename_maxlen )
-            len = filename_maxlen;
-        strncpy( filename, fname, len );
-        filename[len] = '\0';
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }

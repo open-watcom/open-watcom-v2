@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include <mbstring.h>
 #include "farfunc.h"
@@ -45,13 +47,15 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsdec,_fmbsdec)( const unsigned char _
 {
     unsigned char _FFAR *p;
 
-    if( str >= ch )  return( NULL );
+    if( str >= ch )
+        return( NULL );
 //    if( !__IsDBCS )  return( (unsigned char*)ch - 1 );
 
     p = (unsigned char _FFAR*)ch - 1;       /* address of previous byte */
-    if( _ismbblead( *p ) )  return( p - 1 );
+    if( _ismbblead( *p ) )
+        return( p - 1 );
 
-    while( str <= --p  &&  _ismbblead( *p ) )
-        ;
-    return( (unsigned char _FFAR*) ch - 1 - (ch-p)%2 );
+    while( str <= --p && _ismbblead( *p ) )
+        /* empty */;
+    return( (unsigned char _FFAR*)ch - 1 - ( ( ch - p ) % 2 ) );
 }

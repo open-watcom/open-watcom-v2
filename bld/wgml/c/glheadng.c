@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,16 +28,18 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :HEADING  attributes                                                  */
 /***************************************************************************/
-const   lay_att     heading_att[6] =
-    { e_delim, e_stop_eject, e_para_indent, e_threshold, e_max_group,
-      e_dummy_zero };
+static const lay_att    heading_att[] = {
+    e_delim, e_stop_eject, e_para_indent, e_threshold, e_max_group
+};
 
 
 /*********************************************************************************/
@@ -80,75 +82,130 @@ const   lay_att     heading_att[6] =
 /*  lay_heading                                                            */
 /***************************************************************************/
 
-void    lay_heading( lay_tag ltag )
+void    lay_heading( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             k;
-    lay_att         curr;
-    att_args        l_args;
-    int             cvterr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
+    p = g_scandata.s;
 
-    p = scan_start;
-
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
-    if( ProcFlags.lay_xxx != el_heading ) {
-        ProcFlags.lay_xxx = el_heading;
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = heading_att[k]; curr > 0; k++, curr = heading_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( heading_att ); k++ ) {
+            curr = heading_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_delim:
-                    cvterr = i_char( p, curr, &layout_work.heading.delim );
+                case e_delim:
+                    if( AttrFlags.delim ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_char( p, &attr_val, &layout_work.heading.delim );
+                    AttrFlags.delim = true;
                     break;
-                case   e_stop_eject:
-                    cvterr = i_yes_no( p, curr,
+                case e_stop_eject:
+                    if( AttrFlags.stop_eject ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.heading.stop_eject );
+                    AttrFlags.stop_eject = true;
                     break;
-                case   e_para_indent:
-                    cvterr = i_yes_no( p, curr,
+                case e_para_indent:
+                    if( AttrFlags.para_indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.heading.para_indent );
+                    AttrFlags.para_indent = true;
                     break;
-                case   e_threshold:
-                    cvterr = i_uint8( p, curr, &layout_work.heading.threshold );
+                case e_threshold:
+                    if( AttrFlags.threshold ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_threshold( p, &attr_val, &layout_work.heading.threshold );
+                    AttrFlags.threshold = true;
                     break;
-                case   e_max_group:
-                    cvterr = i_int8( p, curr, &layout_work.heading.max_group );
+                case e_max_group:
+                    if( AttrFlags.max_group ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_int8( p, &attr_val, &layout_work.heading.max_group );
+                    AttrFlags.max_group = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get one with value
     }
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :HEADING   output header attribute values                             */
+/***************************************************************************/
+void    put_lay_heading( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":HEADING\n" );
+
+    for( k = 0; k < TABLE_SIZE( heading_att ); k++ ) {
+        curr = heading_att[k];
+        switch( curr ) {
+        case e_delim:
+            o_char( fp, curr, &lay->heading.delim );
+            break;
+        case e_stop_eject:
+            o_yes_no( fp, curr, &lay->heading.stop_eject );
+            break;
+        case e_para_indent:
+            o_yes_no( fp, curr, &lay->heading.para_indent );
+            break;
+        case e_threshold:
+            o_threshold( fp, curr, &lay->heading.threshold );
+            break;
+        case e_max_group:
+            o_int8( fp, curr, &lay->heading.max_group );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,10 +49,11 @@ void *memchr( const void *buf, int c, size_t n )
     if( n == 0 )  return( NULL );
 
     /*** Scan any bytes up to a 4-byte alignment ***/
-    while( offset != 0  &&  n >= 1 ) {
-        if( *bufP == c )  return( bufP );
+    while( offset != 0 && n >= 1 ) {
+        if( *bufP == c )
+            return( bufP );
         bufP++;
-        offset = (offset+1) & 0x03;     /* offset = (offset+1) % 4 */
+        offset = (offset + 1) & 0x03;   /* offset = (offset+1) % 4 */
         n--;
         len++;
     }

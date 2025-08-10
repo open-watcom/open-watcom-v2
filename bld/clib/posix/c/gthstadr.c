@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
 #include "rtdata.h"
@@ -44,7 +45,7 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
 {
     struct hostent *ret;
     int i;
-    int cont;
+    bool cont;
 
     if(addr == NULL) {
         _RWD_errno = EINVAL;
@@ -53,12 +54,12 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
 
     sethostent( 1 );
 
-    cont = 1;
+    cont = true;
     while( cont && (ret = gethostent()) != NULL) {
         if( ret->h_addrtype == type && ret->h_length == (int)len && ret->h_addr_list != NULL ) {
             for( i = 0; ret->h_addr_list[i] != NULL; i++ ) {
                 if( memcmp( ret->h_addr_list[i], addr, len ) == 0 ) {
-                    cont = 0;
+                    cont = false;
                     break;
                 }
             }

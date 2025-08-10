@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,8 @@
 #include "omfobjre.h"
 #include "myassert.h"
 
+
+#define SEEK_POSBACK(p) (-(long)(p))
 
 #define OBJ_BUFFER_SIZE 0x1000      /* 4k (must be less than 64k) */
 
@@ -170,7 +172,7 @@ void ObjWEndRec( void )
     checksum = -checksum;
     safeWrite( &checksum, 1 );
         /* back up to length */
-    safeSeek( -(long)( pobjState->length + 2 ), SEEK_CUR );
+    safeSeek( SEEK_POSBACK( pobjState->length + 2 ), SEEK_CUR );
     safeWrite( buf, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
     pobjState->in_rec = false;

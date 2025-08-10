@@ -228,7 +228,8 @@ _WCRTLINK extern pid_t      fork( void );
 
 :include _pxexit.sp
 
-_WCRTLINK extern unsigned   sleep( unsigned int __seconds );
+:include sleep.sp
+:include swab.sp
 
 :include getpid.sp
 :include getcwd.sp

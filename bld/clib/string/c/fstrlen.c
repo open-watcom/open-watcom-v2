@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,8 @@ _WCRTLINK size_t _fstrlen( const char _WCFAR *s )       /* return length of stri
 #else
     const char _WCFAR   *p;
 
-    p = s;
-    while( *p != '\0' )
-        ++p;
+    for( p = s; *p != '\0'; ++p )
+        /* empty */;
     return( p - s );
 #endif
 }

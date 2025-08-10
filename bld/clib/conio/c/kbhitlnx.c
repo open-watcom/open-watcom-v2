@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,17 @@
 
 
 #include "variety.h"
+#include <stdbool.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <termios.h>
 #include <conio.h>
 #include "rtdata.h"
 
+
 _WCRTLINK int (kbhit)( void )
 {
-    int    rc;
+    bool   rc;
     fd_set s;
     struct timeval tv = { 0, 0 };
     struct termios      old, new;
@@ -52,9 +55,9 @@ _WCRTLINK int (kbhit)( void )
     new.c_cc[VTIME] = 0;
     tcsetattr( STDIN_FILENO, TCSADRAIN, &new );
 
-    FD_ZERO(&s);
-    FD_SET(STDIN_FILENO, &s);
-    rc = (select(STDIN_FILENO +1, &s, NULL, NULL, &tv) > 0);
+    FD_ZERO( &s );
+    FD_SET( STDIN_FILENO, &s );
+    rc = ( select( STDIN_FILENO + 1, &s, NULL, NULL, &tv ) > 0 );
 
     tcsetattr( STDIN_FILENO, TCSADRAIN, &old );
     return( rc );

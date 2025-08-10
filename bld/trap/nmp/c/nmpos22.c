@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,27 +36,27 @@
 #include <share.h>
 
 
-bhandle myopen( char *name )
+oshandle myopen( char *name )
 {
-    HFILE  hdl;
-    ULONG  action;
+    oshandle    handle;
+    ULONG       action;
 
-    if( DosOpen( name, &hdl, &action, 0,
+    if( DosOpen( name, &handle, &action, 0,
                 FILE_NORMAL,
                 OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
                 OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
                 0 ) == 0 ) {
-        return( hdl );
+        return( handle );
     }
-    return( BHANDLE_INVALID );
+    return( OSHANDLE_INVALID );
 }
 
-void myclose( bhandle handle )
+void myclose( oshandle handle )
 {
     DosClose( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( oshandle handle, void *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_read;
@@ -68,7 +68,7 @@ int myread( bhandle handle, void *buff, int len )
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( oshandle handle, void *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_written;

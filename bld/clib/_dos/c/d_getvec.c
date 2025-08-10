@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,45 +33,42 @@
 #include "variety.h"
 #include <stddef.h>
 #include <dos.h>
-
-
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
-    #include "tinyio.h"
-  #else
+#include "tinyio.h"
+#if !defined( _M_I86 )
     #include "extender.h"
+#endif
+
+
+#if defined( _M_I86 )
+    extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
+    #pragma aux _getvect = \
+            "mov ah,35h"    \
+            __INT_21        \
+        __parm      [__ax] \
+        __value     [__es __bx]
+#else
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax, unsigned char cl ))();
     #pragma aux _getvect = \
             "push es"       \
-            "int 21h"       \
+            __INT_21        \
             "mov dx,es"     \
             "pop es"        \
         __parm      [__ax] [__cl] \
         __value     [__dx __ebx] \
         __modify    [__edx]
-  #endif
-#else
-    extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
-    #pragma aux _getvect = \
-            "mov ah,35h"    \
-            "int 21h"       \
-        __parm      [__ax] \
-        __value     [__es __bx]
 #endif
 
-_WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intnum ))()
+_WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intno ))()
 {
-#if defined(__386__)
-  #if defined(__WINDOWS_386__)
-    return( TinyGetVect( intnum ) );
-  #else
-    if( _IsPharLap() ) {
-        return( _getvect( 0x2502, intnum ) );
-    } else {        /* DOS/4G style */
-        return( _getvect( 0x3500 | (intnum & 0xff), 0 ) );
-    }
-  #endif
+#if defined( _M_I86 )
+    return( _getvect( intno ) );
+#elif defined(__WINDOWS_386__)
+    return( TinyGetVect( intno ) );
 #else
-    return( _getvect( intnum ) );
+    if( _IsPharLap() ) {
+        return( _getvect( 0x2502, intno ) );
+    } else {        /* DOS/4G style */
+        return( _getvect( 0x3500 | (intno & 0xff), 0 ) );
+    }
 #endif
 }

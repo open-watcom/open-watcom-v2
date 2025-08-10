@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,10 +74,6 @@ extern void __FiniRtns( unsigned, unsigned );
 #if defined( _M_I86 )
   extern void __far __FFiniRtns( unsigned, unsigned );
   #pragma aux __FFiniRtns "*" __parm [PARM1REG] [PARM2REG]
-#endif
-
-#if defined(__OS2__) && defined(__386__)
-  #define EXIT_PRIORITY_CLIB              0x00009F00
 #endif
 
 #undef PARM1REG

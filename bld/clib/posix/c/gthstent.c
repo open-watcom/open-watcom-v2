@@ -71,6 +71,9 @@ _WCRTLINK struct hostent *gethostent( void )
 
     if( __hostFile == NULL )
         sethostent( 0 );
+    /* If no /etc/hosts, it remains NULL */
+    if( __hostFile == NULL )
+        return NULL;
 
     /* First pass */
     if( buf == NULL ) {

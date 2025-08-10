@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,19 +25,20 @@
 *  ========================================================================
 *
 * Description:  WGML tags :XMP and :eXMP and helper functions
-*               depth attribute is not supported   TBD
-*
 *
 ****************************************************************************/
+
 
 #include "wgml.h"
 
 #include "clibext.h"
 
-static  ju_enum     justify_save;           // for ProcFlags.justify
-static  bool        first_xline;            // special for first xmp LINE
-static  font_number font_save;              // save for font
 
+static  bool        concat_save;            // for ProcFlags.concat
+static  bool        first_xline;            // special for first xmp LINE
+static  font_number font_save;              // save for g_curr_font
+static  group_type  sav_group_type;         // save prior group type
+static  ju_enum     justify_save;           // for ProcFlags.justify
 
 /***************************************************************************/
 /*      :XMP [depth='vert-space-unit'].                                    */
@@ -61,96 +62,118 @@ static  font_number font_save;              // save for font
 /*                                                                         */
 /***************************************************************************/
 
-extern  void    gml_xmp( gml_tag gtag )
+void gml_xmp( const gmltag * entry )
 {
-    char    *   p;
-
-    /* unused parameters */ (void)gtag;
+    char            *p;
+    char            *pa;
+    su              cur_su;
+    unsigned        depth;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     start_doc_sect();
     scr_process_break();
-    scan_err = false;
-    p = scan_start;
+    g_scan_err = false;
+
+    g_keep_nest( "Example" );           // catch nesting errors
+
+    if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
+        /* never return */
+    }
+
+    ProcFlags.block_starting = true;    // to catch empty blocks
+
+    font_save = g_curr_font;
+    g_curr_font = layout_work.xmp.font;
+    depth = 0;                          // default value: depth will be depth of box contents
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
-        p++;
-        while( *p == ' ' ) {
-            p++;
-        }
-
-        if( !strnicmp( "depth=", p, 6 ) ) {
-            p += 6;
-           /***************************************************************/
-           /*  Although unsupported, scan depth='xxx'                     */
-           /***************************************************************/
-           g_warn( wng_unsupp_att, "depth" );
-           wng_count++;
-           file_mac_info();
-
-           while( *p && *p != '.' ) {   // ignore all up to tag end
-               p++;
-           }
-        }
-    }
-    if( ProcFlags.xmp_active ) {        // nested :XMP tag not supported
-        g_err_tag_nest( gtag );
-        scan_start = scan_stop;
-        return;
-    }
-
-    /******************************************************************/
-    /*  test for XMP within  :ADDRESS, :FIG , :FN                     */
-    /******************************************************************/
-    if( ProcFlags.address_active ) {
-        g_err_tag_x_in_y( "XMP", "ADDRESS" );
-        scan_start = scan_stop;
-        return;
-    } else {
-        if( ProcFlags.fig_active ) {
-            g_err_tag_x_in_y( "XMP", "FIG" );
-            scan_start = scan_stop;
-            return;
-        } else {
-            if( ProcFlags.fn_active ) {
-                g_err_tag_x_in_y( "XMP", "FN" );
-                scan_start = scan_stop;
-                return;
+        for( ;; ) {
+            p = get_tag_att_name( p, &pa, &attr_name );
+            if( ProcFlags.reprocess_line )
+                break;
+            if( ProcFlags.tag_end_found )
+                break;
+            if( strcmp( "depth", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.tok.s == NULL ) {
+                    break;
+                }
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
+                    break;
+                }
+                depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
+                if( ProcFlags.tag_end_found ) {
+                    break;
+                }
+            } else {
+                p = pa; // restore any spaces before non-attribute value
+                break;
             }
         }
     }
 
-    ProcFlags.xmp_active = true;
     first_xline = true;
-    font_save = g_curr_font;
-    g_curr_font = layout_work.xmp.font;
 
-    if( nest_cb->gtag == GML_TAG_NONE ) {
-        g_cur_left = g_page_left + conv_hor_unit( &layout_work.xmp.left_indent );
-    } else {
-        g_cur_left += conv_hor_unit( &layout_work.xmp.left_indent );
-    }
-    g_cur_h_start = g_cur_left;
+    init_nest_cb();
+    nest_cb->p_stack = copy_to_nest_stack();
+    nest_cb->left_indent = conv_hor_unit( &layout_work.xmp.left_indent, g_curr_font );
+    nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.xmp.right_indent, g_curr_font );
+    nest_cb->font = g_curr_font;
+    nest_cb->gtag = entry->u.tagid;
+
+    t_page.cur_left += nest_cb->left_indent;
+    t_page.max_width += nest_cb->right_indent;
+
+    t_page.cur_width = t_page.cur_left;
     ProcFlags.keep_left_margin = true;  // keep special indent
 
-    init_nest_cb( true );
+    g_text_spacing = layout_work.xmp.spacing;
 
-    nest_cb->gtag = gtag;
+    set_skip_vars( NULL, &layout_work.xmp.pre_skip, &layout_work.xmp.post_skip,
+                                                            g_text_spacing, g_curr_font );
 
-    g_spacing_ln = layout_work.xmp.spacing;
+    nest_cb->post_skip = g_post_skip;   // shift post_skip to follow eXMP
+    g_post_skip = 0;
 
-    set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, g_spacing_ln, g_curr_font );
+    sav_group_type = cur_group_type;
+    cur_group_type = GRT_xmp;
+    cur_doc_el_group = alloc_doc_el_group( GRT_xmp );
+    cur_doc_el_group->next = t_doc_el_group;
+    t_doc_el_group = cur_doc_el_group;
+    cur_doc_el_group = NULL;
 
-    ProcFlags.group_elements = true;
-
+    concat_save = ProcFlags.concat;
+    ProcFlags.concat = false;
     justify_save = ProcFlags.justify;
-    ProcFlags.justify = ju_off;         // TBD
+    ProcFlags.justify = JUST_off;
 
-    if( *p == '.' ) p++;                // possible tag end
-    if( *p ) {
-        process_text( p, g_curr_font ); // if text follows
+    if( depth > 0 ) {
+        g_blank_units_lines = depth;
+        scr_process_break();
     }
-    scan_start = scan_stop;
+
+    if( !ProcFlags.reprocess_line && *p != '\0' ) { // text after tag
+        SkipDot( p );                               // possible tag end
+        if( *p != '\0' ) {
+            if( (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+                /* placeholder */
+            } else {
+                process_text( p, g_curr_font);          // if text follows
+            }
+        }
+    }
+
+    /* Set up to skip first blank line if inside macro */
+
+    if( input_cbs->fmflags & II_macro ) {
+        ProcFlags.skip_blank_line = true;
+    }
+
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -163,50 +186,112 @@ extern  void    gml_xmp( gml_tag gtag )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_exmp( gml_tag gtag )
+void gml_exmp( const gmltag * entry )
 {
-    tag_cb  *   wk;
+    bool            list_top;
+    char        *   p;
+    doc_element *   cur_el;
+    tag_cb      *   wk;
 
-    /* unused parameters */ (void)gtag;
+    (void)entry;
+
+    if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag ); // end tag expected
+        /* never return */
+    }
+
+    /* Ensure blank lines at end of XMP use correct font */
+
+    if( (g_blank_units_lines == 0) && (g_blank_text_lines > 0) ) {
+        g_blank_units_lines = g_blank_text_lines * wgml_fonts[layout_work.xmp.font].line_height;
+    }
+    g_blank_text_lines = 0;
 
     scr_process_break();
-    if( !ProcFlags.xmp_active ) {       // no preceding :XMP tag
-        g_err_tag_prec( "XMP" );
-        scan_start = scan_stop;
-        return;
+    if( cur_group_type != GRT_xmp ) {       // no preceding :XMP tag
+        g_tag_prec_err_exit( T_XMP );
+        /* never return */
     }
-    g_curr_font = font_save;
-    ProcFlags.xmp_active = false;
+    g_curr_font = font_save;                // recover font in effect before XMP
+    ProcFlags.concat = concat_save;
     ProcFlags.justify = justify_save;
+    t_page.cur_left = nest_cb->lm;
+    t_page.max_width = nest_cb->rm;
+    g_post_skip = nest_cb->post_skip;       // shift post_skip to follow eXMP
+
+    if( ProcFlags.block_starting ) {        // block is empty
+        g_subs_skip += g_post_skip;
+        g_post_skip = 0;
+        ProcFlags.block_starting = false;
+    }
+
     wk = nest_cb;
     nest_cb = nest_cb->prev;
     add_tag_cb_to_pool( wk );
 
-    /*  place the accumulated xlines on the proper page */
+    /* Place the accumulated xlines on the proper page */
 
-    ProcFlags.group_elements = false;
-    if( t_doc_el_group.first != NULL ) {
-        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines + t_doc_el_group.first->subs_skip);
-    }
+    cur_group_type = sav_group_type;
+    if( t_doc_el_group != NULL) {
+        cur_doc_el_group = t_doc_el_group;      // detach current element group
+        t_doc_el_group = t_doc_el_group->next;  // processed doc_elements go to next group, if any
+        cur_doc_el_group->next = NULL;
 
-    if( (t_doc_el_group.depth + t_page.cur_depth) > t_page.max_depth ) {
-        /*  the block won't fit on this page */
+        if( cur_doc_el_group->first != NULL ) {
+            if( cur_doc_el_group->first->type == ELT_text ) {                    // only text has spacing
+                cur_doc_el_group->first->element.text.first->units_spacing = 0; // no spacing on first line
+            }
 
-        if( t_doc_el_group.depth  <= t_page.max_depth ) {
-            /*  the block will be on the next page */
-
-            do_page_out();
-            reset_t_page();
+            if( (cur_doc_el_group->depth + t_page.cur_depth) > t_page.max_depth ) {
+                next_column();  //  the block won't fit on this page (or in this column)
+            }
         }
+
+        list_top = true;
+        while( cur_doc_el_group->first != NULL ) {
+            cur_el = cur_doc_el_group->first;
+            if( list_top && (input_cbs->fmflags & II_macro) && (cur_el->type == ELT_vspace) ) {     // first element is vspace
+                if( cur_el->blank_lines > 0 ) {
+                    cur_el->blank_lines -= wgml_fonts[cur_el->element.vspace.font].line_height;
+                }
+            }
+            if( (cur_el->next != NULL) && (cur_el->type == ELT_text) &&
+                    (cur_el->next->type == ELT_vspace) ) {
+                cur_el->element.text.vspace_next = true;        // matches wgml 4.0
+            }
+            cur_doc_el_group->first = cur_doc_el_group->first->next;
+            cur_el->next = NULL;
+            insert_col_main( cur_el );
+            list_top = false;                                   // first element done
+        }
+
+        add_doc_el_group_to_pool( cur_doc_el_group );
+        cur_doc_el_group = NULL;
     }
 
-    while( t_doc_el_group.first != NULL ) {
-        insert_col_main( t_doc_el_group.first );
-        t_doc_el_group.first = t_doc_el_group.first->next;
+    ProcFlags.skips_valid = false;      // activate post_skip for next element
+    t_page.cur_width = t_page.cur_left;
+    g_scan_err = false;
+    p = g_scandata.s;
+    SkipDot( p );                       // over '.'
+    if( *p != '\0' ) {
+        if( (input_cbs->hidden_head != NULL) && !input_cbs->hidden_head->ip_start
+                && (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+            if( input_cbs->fmflags & II_macro ) {
+                /* placeholder */
+            } else {
+                if( input_cbs->hidden_head->hh_tag ) {
+                    g_post_skip = 0;
+                }
+            }
+        } else {
+            do_force_pc( p );
+        }
+    } else {
+        ProcFlags.force_pc = true;
     }
 
-    t_doc_el_group.depth    = 0;
-    t_doc_el_group.last     = NULL;
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
+

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,8 +130,8 @@ void _CopyAllLines( LPWDATA w )
         if( total + slen > MAX_BYTES )
             break;
         memcpy( &ptr[total], ld->data, slen - 2 );
-        ptr[total + slen - 2] = 0x0d;
-        ptr[total + slen - 1] = 0x0a;
+        ptr[total + slen - 2] = '\r';
+        ptr[total + slen - 1] = '\n';
         total += slen;
     }
     ptr[total] = 0;

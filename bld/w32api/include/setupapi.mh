@@ -13,6 +13,8 @@
 #include <commctrl.h>
 #include <devpropdef.h>
 
+:include pshpack1.sp
+
 :include cpluspro.sp
 
 /* Setup API version number */
@@ -2507,5 +2509,7 @@ WINSETUPAPI VOID WINAPI     SetupWriteTextLogInfLine( SP_LOG_TOKEN, DWORD, HINF,
 #endif
 
 :include cplusepi.sp
+
+:include poppack.sp
 
 #endif /* _INC_SETUPAPI */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -26,7 +26,7 @@
 *  ========================================================================
 *
 * Description:  Ctrl-Break, critical error and FPE hooking and handling.
-*                   (DOS and Windows 3.x code)
+*                   (16/32-bit DOS and 16-bit Windows 3.x code)
 *
 ****************************************************************************/
 

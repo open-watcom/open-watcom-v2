@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ _WCRTLINK wchar_t *wcstok( wchar_t *str, const wchar_t *charset, wchar_t **ptr )
 _WCRTLINK char *strtok_r( char *str, const char *charset, char **ptr )
 {
     char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
+    unsigned char   vector[CHARVECTOR_SIZE];
     char            *p1;
 
     /* if necessary, continue from where we left off */

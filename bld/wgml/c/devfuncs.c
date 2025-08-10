@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +45,7 @@
 *                   fb_absoluteaddress()
 *                   fb_new_section()
 *                   fb_position()
+*                   set_oc_pos()
 *               as well as a macro:
 *                   MAX_FUNC_INDEX
 *               some local typedefs and structs:
@@ -80,16 +80,14 @@
 *                   uline
 *                   uscore_char
 *                   uscore_chars
-*                   wgml_header
 *                   x_address
 *                   x_size
 *                   y_address
 *                   y_size
 *               and a large number of local functions:
-*                   char_convert()
 *                   char_literal()
 *                   df_add()
-*                   df_bad_code()
+*                   df_bad_code_err_exit()
 *                   df_binary()
 *                   df_cancel()
 *                   df_clearpc()
@@ -146,6 +144,7 @@
 *                   fb_first_text_chars()
 *                   fb_firstword()
 *                   fb_font_switch()
+*                   fb_fs_marker()
 *                   fb_htab()
 *                   fb_initial_horizontal_positioning()
 *                   fb_internal_horizontal_positioning()
@@ -172,11 +171,12 @@
 *               Wiki.
 ****************************************************************************/
 
+
 #include "wgml.h"
-#include "wio.h"
-#include "copfunc.h"
 #include "devfuncs.h"
 #include "outbuff.h"
+#include "cophdr.h"
+#include "copfunc.h"
 
 #include "clibext.h"
 
@@ -202,8 +202,8 @@ typedef struct {
 /* This is used to record the state of the current page. */
 
 typedef struct {
-    uint32_t    x_address;
-    uint32_t    y_address;
+    unsigned    x_address;
+    unsigned    y_address;
     font_number font;
     text_type   type;
 } page_state;
@@ -211,8 +211,8 @@ typedef struct {
 /* Holds the offsets to the parameter(s). */
 
 typedef struct {
-    uint16_t    first;
-    uint16_t    second;
+    unsigned    first;
+    unsigned    second;
 } parameters;
 
 /* Local typedef. */
@@ -225,47 +225,47 @@ typedef void *(*df_function)(void);
 
 /* These are set by device functions and for use in outputting text. */
 
-static bool             textpass                = false;
-static bool             uline                   = false;
+static bool             textpass;
+static bool             uline;
 
 /* These are used to control some aspects of device function operation. */
 
 static bool             at_start                = true;
-static bool             htab_done               = false;
-static bool             page_start              = false;
-static bool             shift_done              = false;
-static page_state       current_state           = { 0, 0, 0 };
-static page_state       desired_state           = { 0, 0, 0 };
-static uint32_t         line_pass_number        = 0;
+static bool             fs_marker;
+static bool             htab_done;
+static bool             page_start;
+static bool             shift_done;
+static page_state       current_state;
+static page_state       desired_state;
+static unsigned         line_pass_number;
 
 /* These are used to hold values returned by device functions. */
 
-static char             *date_val               = NULL;
-static char             *time_val               = NULL;
-static char             wgml_header[]           = "V4.0 PC/DOS";
-static font_number      df_font                 = 0;
-static uint32_t         tab_width               = 0;
-static uint32_t         thickness               = 0;
-static uint32_t         x_address               = 0;
-static uint32_t         x_size                  = 0;
-static uint32_t         y_address               = 0;
-static uint32_t         y_size                  = 0;
+static char             *date_val;
+static char             *time_val;
+static font_number      df_font;
+static unsigned         tab_width;
+static unsigned         thickness;
+static unsigned         x_address;
+static unsigned         x_size;
+static unsigned         y_address;
+static unsigned         y_size;
 
 /* These are used by the interpreter. */
-static bool             has_htab                = false;
-static bool             text_out_open           = false;
-static font_number      active_font             = 0;
+static bool             has_htab;
+static bool             text_out_open;
+static font_number      active_font;
 static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
-static df_function      *current_function_table = NULL;
-static const char       *current_function       = NULL;
+static df_function      *current_function_table;
+static const char       *current_function;
 
 /* These are used in outputting spaces and underscore characters. */
 
 static char             uscore_char;
-static record_buffer    space_chars     = { 0, 0, NULL };
-static record_buffer    uscore_chars    = { 0, 0, NULL };
+static record_buffer    space_chars;
+static record_buffer    uscore_chars;
 
 /* Local function definitions. */
 
@@ -281,8 +281,8 @@ static void fb_newline( void )
 {
     int             i;
     newline_block   *current_block   = NULL;
-    int16_t         desired_units;
-    int16_t         desired_lines;
+    uint16_t        desired_units;
+    uint16_t        desired_lines;
     uint16_t        remainder;
     uint16_t        max_advance;
 
@@ -292,25 +292,29 @@ static void fb_newline( void )
 
     /* desired_units holds the number of vertical base units to be moved. */
 
-    if( bin_driver->y_positive == 0x00 ) {
-
-        /* desired_state.y_address was formed by subtraction. */
-
-        desired_units = current_state.y_address - desired_state.y_address;
-    } else {
-
-        /* desired_state.y_address was formed by addition. */
-
-        desired_units = desired_state.y_address - current_state.y_address;
-    }
-
     /* Devices using :ABSOLUTEADDRESS may be able to move backwards, but
      * :NEWLINE blocks with negative values for advance are not accepted
      * by gendev and so negative values of lines must be an error.
      */
 
-    if( desired_units < 0 ) {
-        internal_err( __FILE__, __LINE__ );
+    if( bin_driver->y_positive == 0x00 ) {
+
+        /* desired_state.y_address was formed by subtraction. */
+
+        if( current_state.y_address < desired_state.y_address ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+        desired_units = current_state.y_address - desired_state.y_address;
+    } else {
+
+        /* desired_state.y_address was formed by addition. */
+
+        if( desired_state.y_address < current_state.y_address ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+        desired_units = desired_state.y_address - current_state.y_address;
     }
 
     /* desired_lines contains the number of lines, rounded up. Note: the
@@ -320,7 +324,7 @@ static void fb_newline( void )
 
     desired_lines = desired_units / wgml_fonts[active_font].line_height;
     remainder = desired_lines % wgml_fonts[active_font].line_height;
-    if( 2 * remainder >= wgml_fonts[active_font].line_height )
+    if( 2 * (unsigned)remainder >= wgml_fonts[active_font].line_height )
         desired_lines++;
 
     /* Devices using :ABSOLUTEADDRESS may be able to use partial line heights,
@@ -330,8 +334,9 @@ static void fb_newline( void )
      * which rely on :NEWLINE blocks.
      */
 
-    if( ( desired_units > 0 ) && ( desired_lines == 0 ) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (desired_units > 0 ) && (desired_lines == 0) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* lines might equal 0, in which case no action is needed. */
@@ -357,9 +362,9 @@ static void fb_newline( void )
      */
 
     if( at_start ) {
-        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
-            if( wgml_fonts[0].font_style->lineprocs[0].endvalue != NULL ) {
-                df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].endvalue->text );
+        if( wgml_fonts[FONT0].font_style->lineprocs != NULL ) {
+            if( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue != NULL ) {
+                df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue->text );
             }
         }
         at_start = false;
@@ -370,22 +375,6 @@ static void fb_newline( void )
     current_state.y_address = desired_state.y_address;
 
     return;
-}
-
-/* Function char_convert().
- * This function returns a dynamically-allocated copy of the parameter. If the
- * parameter is a NULL pointer, then it returns a pointer to an empty string.
- *
- * Parameter:
- *      a pointer to the alleged character value.
- *
- * Returns:
- *      a pointer to a dynamically-allocated string.
- */
-
-static char *char_convert( const char *in_val )
-{
-    return( mem_dupstr( ( in_val == NULL ) ? "" : in_val ) );
 }
 
 /* Function output_spaces().
@@ -401,26 +390,15 @@ static char *char_convert( const char *in_val )
  *          as an exact multiple of the width of a space character.
  */
 
-static void output_spaces( size_t count )
+static void output_spaces( int count )
 {
-    size_t  i;
-
-    if( space_chars.length < count ) {
-        space_chars.text = mem_realloc( space_chars.text, count );
-        space_chars.length = count;
-        for( i = 0; i < space_chars.length; i++ ) {
-            space_chars.text[i] = ' ';
-        }
-    }
-
     if( !text_out_open && ProcFlags.ps_device ) {
         ob_insert_ps_text_start();
         text_out_open = true;
     }
+    resize_record_buffer_fill( &space_chars, count, ' ' );
     ob_insert_block( space_chars.text, count, true, true, active_font );
     current_state.x_address = desired_state.x_address;
-
-    return;
 }
 
 /* Function output_uscores().
@@ -432,14 +410,14 @@ static void output_spaces( size_t count )
 
 static void output_uscores( text_chars *in_chars )
 {
-    int         i;
-    uint32_t    count;
-    uint32_t    uscore_width;
+    int         count;
+    unsigned    uscore_width;
 
     /* Undersore characters cannot be emitted "backwards". */
 
-    if( current_state.x_address > desired_state.x_address ) {
-        internal_err( __FILE__, __LINE__ );
+    if( current_state.x_address > desired_state.x_address) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* This is simplified: since no known device specifies a font for use
@@ -457,14 +435,7 @@ static void output_uscores( text_chars *in_chars )
     count += in_chars->width;
     count /= uscore_width;
 
-    if( uscore_chars.length < count ) {
-        uscore_chars.text = mem_realloc( uscore_chars.text, count );
-        uscore_chars.length = count;
-        for( i = 0; i < uscore_chars.length; i++ ) {
-            uscore_chars.text[i] = uscore_char;
-        }
-    }
-
+    resize_record_buffer_fill( &uscore_chars, count, uscore_char );
     ob_insert_block( uscore_chars.text, count, true, true, active_font );
     current_state.x_address = desired_state.x_address;
 
@@ -481,40 +452,38 @@ static void output_uscores( text_chars *in_chars )
 
 static void post_text_output( void )
 {
-    char    shift_neg[]     = " neg ";
-    char    shift_rmoveto[] = "0 exch rmoveto ";
-    char    shift_scale[]   = " 1 .7 div dup scale";
-    size_t  ps_size;
+    char        shift_neg[]     = " neg";
+    char        shift_rmoveto[] = " 0 exch rmoveto ";
+    char        shift_scale[]   = " 1 .7 div dup scale";
+    unsigned    ps_size;
 
     if( ProcFlags.ps_device ) {
         if( shift_done ) {
 
             /* Emit the appropriate post-subscript/superscript sequence. */
 
-            switch( current_state.type ) {
-            case sub:
+            if( current_state.type == TXT_norm ) {
+                /* Since shift_done was true, norm is not allowed. */
+            } else if( current_state.type & TXT_sub ) {
                 ps_size = strlen( shift_scale );
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
                 ps_size = strlen( shift_rmoveto );
                 ob_insert_block( shift_rmoveto, ps_size, false, false, active_font );
-                break;
-            case sup:
-                ps_size = strlen( shift_scale );
+            } else if( current_state.type & TXT_sup ) {
+                ps_size = strlen( shift_scale ) + 1;
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
-                ps_size = strlen( shift_neg );
+                ps_size = strlen( shift_neg ) + 1;
                 ob_insert_block( shift_neg, ps_size, false, false, active_font );
 
                 ps_size = strlen( shift_rmoveto );
                 ob_insert_block( shift_rmoveto, ps_size, false, false, active_font );
-                break;
-            case norm:
-                /* Since shift_done was true, norm is not allowed. */
-            default:
-                internal_err( __FILE__, __LINE__ );
+            } else {
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
-            current_state.type = norm;
+            current_state.type = TXT_norm;
         }
 
     }
@@ -535,10 +504,10 @@ static void post_text_output( void )
 
 static void pre_text_output( void )
 {
-    char    shift_neg[]     = " neg";
-    char    shift_rmoveto[] = " rmoveto";
-    char    shift_scale[]   = " .7 .7 scale ";
-    size_t  ps_size;
+    char        shift_neg[]     = " neg";
+    char        shift_rmoveto[] = " rmoveto";
+    char        shift_scale[]   = " .7 .7 scale ";
+    unsigned    ps_size;
 
     if( ProcFlags.ps_device ) {
 
@@ -546,11 +515,8 @@ static void pre_text_output( void )
 
             /* Emit the appropriate post-subscript/superscript sequence. */
 
-            switch( desired_state.type ) {
-            case norm:
-                shift_done = false;
-                break;
-            case sub:
+            shift_done = false;
+            if( desired_state.type & TXT_sub ) {
                 ob_insert_block( " ", 1, false, false, active_font );
 
                 ps_size = wgml_fonts[active_font].shift_count;
@@ -571,8 +537,7 @@ static void pre_text_output( void )
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
                 shift_done = true;
-                break;
-            case sup:
+            } else if( desired_state.type & TXT_sup ) {
                 ob_insert_block( " ", 1, false, false, active_font );
 
                 ps_size = wgml_fonts[active_font].shift_count;
@@ -583,16 +548,13 @@ static void pre_text_output( void )
                 ps_size = wgml_fonts[active_font].shift_count;
                 ob_insert_block( wgml_fonts[active_font].shift_height, ps_size, false, false, active_font );
 
-                ps_size = strlen( shift_rmoveto );
+                ps_size = strlen( shift_rmoveto ) + 1;
                 ob_insert_block( shift_rmoveto, ps_size, false, false, active_font );
 
                 ps_size = strlen( shift_scale );
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
                 shift_done = true;
-                break;
-            default:
-                internal_err( __FILE__, __LINE__ );
             }
         }
     }
@@ -609,7 +571,7 @@ static void pre_text_output( void )
 
 static void *df_do_nothing_char( void )
 {
-    return( (void *)char_convert( NULL ) );
+    return( (void *)mem_strdup( NULL ) );
 }
 
 /* Function df_do_nothing_num().
@@ -620,19 +582,20 @@ static void *df_do_nothing_char( void )
 
 static void *df_do_nothing_num( void )
 {
-    return( (void *)0 );
+    return( (void *)(uintptr_t)0 );
 }
 
-/* Function df_bad_code().
+/* Function df_bad_code_err_exit().
  * Reports byte codes not known to exist but nonetheless found. It never
  * returns to the caller. It should never actually run. Since it is used
  * in the function tables, it must conform to the function typedef.
  */
+NO_RETURN( static void df_bad_code_err_exit( void ) );
 
-static void *df_bad_code( void )
+static void df_bad_code_err_exit( void )
 {
-    internal_err( __FILE__, __LINE__ );
-    return( NULL );
+    internal_err_exit( __FILE__, __LINE__ );
+    /* never return */
 }
 
 /* These functions are for device functions which take no parameters. */
@@ -651,7 +614,8 @@ static void *df_bad_code( void )
 static void *df_clearpc( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
 #ifdef __UNIX__
@@ -670,18 +634,20 @@ static void *df_clearpc( void )
 
 static void *df_dotab( void )
 {
-    static  int         instance = 0;
-            size_t      spaces;
+    static int      instance = 0;
+    unsigned        spaces;
 
     /* Recursion is an error. */
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_c( err_rec_dev_func, "%dotab()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%dotab()" );
+        /* never return */
     }
 
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* desired_state.x_address must be greater than current_state.x_address
@@ -708,7 +674,8 @@ static void *df_dotab( void )
              */
 
             if( (tab_width % wgml_fonts[active_font].spc_width) > 0 ) {
-                internal_err( __FILE__, __LINE__ );
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
 
             /* Perform the %dotab() horizontal positioning. */
@@ -743,7 +710,8 @@ static void *df_dotab( void )
 static void *df_endif( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     return( NULL );
@@ -757,17 +725,19 @@ static void *df_flushpage( void )
 {
     static  int         instance    = 0;
             uint16_t    current_pages;
-            uint32_t    save_desired_y;
+            unsigned    save_desired_y;
 
     /* Recursion is an error. */
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_c( err_rec_dev_func, "%flushpage()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%flushpage()" );
+        /* never return */
     }
 
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Save the value of desired_state.y_address. */
@@ -824,9 +794,9 @@ static void *df_flushpage( void )
      */
 
     if( at_start ) {
-        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
-            if( wgml_fonts[0].font_style->lineprocs[0].endvalue != NULL ) {
-                df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].endvalue->text );
+        if( wgml_fonts[FONT0].font_style->lineprocs != NULL ) {
+            if( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue != NULL ) {
+                df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue->text );
             }
         }
         at_start = false;
@@ -853,7 +823,8 @@ static void *df_flushpage( void )
 static void *df_recordbreak_device( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     out_msg( "\n" );
@@ -867,7 +838,8 @@ static void *df_recordbreak_device( void )
 static void *df_recordbreak_driver( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     ob_flush();
@@ -881,7 +853,8 @@ static void *df_recordbreak_driver( void )
 static void *df_textpass( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     textpass = true;
@@ -895,7 +868,8 @@ static void *df_textpass( void )
 static void *df_ulineoff( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     uline = false;
@@ -909,7 +883,8 @@ static void *df_ulineoff( void )
 static void *df_ulineon( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     uline = true;
@@ -923,7 +898,8 @@ static void *df_ulineon( void )
 static void *df_wait( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     getchar();
@@ -938,7 +914,7 @@ static void *df_wait( void )
 
 static void *df_date( void )
 {
-    return( (void *)char_convert( date_val ) );
+    return( (void *)mem_strdup( date_val ) );
 }
 
 /* Function df_default_width().
@@ -976,7 +952,7 @@ static void *df_font_outname1( void )
 {
     char    *ret_val;
 
-    ret_val = char_convert( wgml_fonts[df_font].bin_font->font_out_name1 );
+    ret_val = mem_strdup( wgml_fonts[df_font].bin_font->font_out_name1 );
 
     return( (void *)ret_val );
 }
@@ -989,7 +965,7 @@ static void *df_font_outname2( void )
 {
     char    *ret_val;
 
-    ret_val = char_convert( wgml_fonts[df_font].bin_font->font_out_name2 );
+    ret_val = mem_strdup( wgml_fonts[df_font].bin_font->font_out_name2 );
 
     return( (void *)ret_val );
 }
@@ -1060,7 +1036,7 @@ static void *df_page_width( void )
 
 static void *df_pages( void )
 {
-    return( (void *)(uintptr_t)apage );
+    return( (void *)(uintptr_t)g_apage );
 }
 
 /* Function df_tab_width().
@@ -1087,7 +1063,7 @@ static void *df_thickness( void )
 
 static void *df_time( void )
 {
-    return( (void *)char_convert( time_val ) );
+    return( (void *)mem_strdup( time_val ) );
 }
 
 /* Function df_wgml_header().
@@ -1096,7 +1072,7 @@ static void *df_time( void )
 
 static void *df_wgml_header( void )
 {
-    return( (void *)char_convert( wgml_header ) );
+    return( (void *)mem_strdup( VERSION40_TEXT ) );
 }
 
 /* Function df_x_address().
@@ -1156,11 +1132,9 @@ static void *df_y_size( void )
 
 static void *get_parameters( parameters *in_parameters )
 {
-    uint16_t    offset;
-
     /* Skip the offset1 value. */
 
-    offset = get_u16( &current_df_data.current );
+    get_u16( &current_df_data.current );
 
     /* Get the first parameter offset (offset2). */
 
@@ -1172,7 +1146,7 @@ static void *get_parameters( parameters *in_parameters )
 
     /* Skip the offset4 value. */
 
-    offset = get_u16( &current_df_data.current );
+    get_u16( &current_df_data.current );
 
     return( NULL );
 }
@@ -1194,8 +1168,10 @@ static void *get_parameters( parameters *in_parameters )
  *      the value returned by the device function invoked.
 */
 
-static void *process_parameter( void )
+static void *process_parameter( unsigned param )
 {
+    current_df_data.current = current_df_data.base + param;
+
     /* Reset current_df_data for the parameter. */
 
     current_df_data.df_code = get_u8( &current_df_data.current );
@@ -1203,9 +1179,13 @@ static void *process_parameter( void )
     /* Invoke parameter function. */
 
     if( current_df_data.df_code > MAX_FUNC_INDEX ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
-
+    if( current_function_table[current_df_data.df_code] == NULL ) {
+        df_bad_code_err_exit();
+        /* never return */
+    }
     return( current_function_table[current_df_data.df_code]() );
 }
 
@@ -1237,9 +1217,9 @@ static void *df_out_text_device( void )
     char        *first;
     int         i;
     parameters  my_parameters;
-    uint16_t    count;
+    int         count;
 
-    switch( current_df_data.parameter_type ) {
+    switch( current_df_data.parameter_type) {
     case 0x00:
 
         /* Character literal parameter. */
@@ -1260,14 +1240,14 @@ static void *df_out_text_device( void )
         /* Ensure that this is either a ShortHeader or a LongHeader. */
 
         get_parameters( &my_parameters );
-        if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-            internal_err( __FILE__, __LINE__ );
+        if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Now get and emit the parameter. */
 
-        current_df_data.current = current_df_data.base + my_parameters.first;
-        first = process_parameter();
+        first = process_parameter( my_parameters.first );
         out_msg( first );
 
         /* Free the memory allocated to the parameter. */
@@ -1277,7 +1257,8 @@ static void *df_out_text_device( void )
         break;
 
     default:
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return( NULL );
 }
@@ -1290,9 +1271,9 @@ static void out_text_driver( bool out_trans, bool out_text )
 {
     char            *first;
     parameters      my_parameters;
-    uint16_t        count;
+    int             count;
 
-    switch( current_df_data.parameter_type ) {
+    switch( current_df_data.parameter_type) {
     case 0x00:
 
         /* Character literal parameter. */
@@ -1309,16 +1290,15 @@ static void out_text_driver( bool out_trans, bool out_text )
         /* Ensure that this is either a ShortHeader or a LongHeader. */
 
         get_parameters( &my_parameters );
-        if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-            internal_err( __FILE__, __LINE__ );
+        if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Now get and insert the parameter. */
 
-        current_df_data.current = current_df_data.base + my_parameters.first;
-        first = process_parameter();
-        count = strlen( first );
-        ob_insert_block( first, count, out_trans, out_text, active_font );
+        first = process_parameter( my_parameters.first );
+        ob_insert_block( first, strlen( first ), out_trans, out_text, active_font );
 
         /* Free the memory allocated to the parameter. */
 
@@ -1327,7 +1307,8 @@ static void out_text_driver( bool out_trans, bool out_text )
         break;
 
     default:
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return;
 }
@@ -1362,7 +1343,7 @@ static void *df_text_driver( void )
 static void *char_literal( void )
 {
     char        *ret_val = NULL;
-    uint16_t    count;
+    int         count;
 
     /* Skip the rest of the Directive. */
 
@@ -1374,7 +1355,7 @@ static void *char_literal( void )
 
     /* Convert the character literal into a char *. */
 
-    ret_val = char_convert( current_df_data.current );
+    ret_val = mem_strdup( current_df_data.current );
     current_df_data.current += count + 1;
 
     return( (void *)ret_val );
@@ -1386,7 +1367,7 @@ static void *char_literal( void )
 
 static void *numeric_literal( void )
 {
-    uint16_t    value;
+    unsigned    value;
 
     /* Skip the Offsets. */
 
@@ -1395,7 +1376,6 @@ static void *numeric_literal( void )
     /* Get and return the value. */
 
     value = get_u16( &current_df_data.current );
-
     return( (void *)(uintptr_t)value );
 }
 
@@ -1411,37 +1391,39 @@ static void *numeric_literal( void )
 
 static void *df_cancel( void )
 {
-            char        *first;
-    static  int         instance = 0;
-            parameters  my_parameters;
+    static int      instance = 0;
+    char            *first;
+    parameters      my_parameters;
 
     /* Recursion is an error. */
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_c( err_rec_dev_func, "%cancel()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%cancel()" );
+        /* never return */
     }
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now invoke the parameter's handler. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     if( wgml_fonts[df_font].font_style != NULL ) {
-        if( !stricmp( first, wgml_fonts[df_font].font_style->type ) ) {
+        if( stricmp( first, wgml_fonts[df_font].font_style->type ) == 0 ) {
             if( wgml_fonts[df_font].font_style->startvalue != NULL ) {
                 df_interpret_driver_functions( wgml_fonts[df_font].font_style->startvalue->text );
             }
@@ -1449,7 +1431,7 @@ static void *df_cancel( void )
     }
 
     if( wgml_fonts[df_font].font_switch != NULL ) {
-        if( !stricmp( first, wgml_fonts[df_font].font_switch->type ) ) {
+        if( stricmp( first, wgml_fonts[df_font].font_switch->type ) == 0 ) {
             if( wgml_fonts[df_font].font_switch->startvalue != NULL ) {
                 df_interpret_driver_functions( wgml_fonts[df_font].font_switch->startvalue->text );
             }
@@ -1476,7 +1458,8 @@ static void *df_enterfont( void )
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_c( err_rec_dev_func, "%enterfont()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%enterfont()" );
+        /* never return */
     }
 
     /* Device function %enterfont() ignores its parameter. */
@@ -1504,14 +1487,16 @@ static void *df_sleep( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Get the parameter. */
@@ -1523,8 +1508,7 @@ static void *df_sleep( void )
      * will be read as 0xFF, which exceeds the maximum value for the code.
      */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     sleep( (unsigned)first );
 
@@ -1544,29 +1528,29 @@ static void *df_setsymbol( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* Insert the symbol into the global symbol table. */
 
-    add_symvar( &global_dict, first, second, no_subscript, 0 );
+    add_symvar( global_dict, first, second, strlen( second ), SI_no_subscript, SF_none );
 
     /* Free the memory allocated to the parameters. */
 
@@ -1587,24 +1571,27 @@ static void *df_setsymbol( void )
 static void *df_binary( void )
 {
     parameters  my_parameters;
+    uintptr_t   first;
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now invoke the parameter's handler. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    ob_insert_byte( (uintptr_t)process_parameter() );
+    first = (uintptr_t)process_parameter( my_parameters.first );
+    ob_insert_byte( (unsigned char)first );
 
     return( NULL );
 }
@@ -1631,7 +1618,7 @@ static void *df_binary( void )
 
 static void skip_functions( void )
 {
-    uint16_t    current_offset;
+    unsigned    current_offset;
 
     /* current_df_data.base points at the binary code for the conditional
      * function. current_function needs to point to the next top-level
@@ -1704,25 +1691,25 @@ static void *df_ifeqn( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     /* if_eqn: skip the controlled functions if the values are not equal. */
 
@@ -1745,25 +1732,25 @@ static void *df_ifnen( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     /* if_nen: skip the controlled functions if the values are equal. */
 
@@ -1786,29 +1773,29 @@ static void *df_ifeqs( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* if_eqs: skip the controlled functions if the values are not equal. */
 
-    if( strcmp( first, second ) )
+    if( strcmp( first, second ) != 0 )
         skip_functions();
 
     /* Free the memory allocated to produce the parameters */
@@ -1832,29 +1819,30 @@ static void *df_ifnes( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
-        internal_err( __FILE__, __LINE__ );
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* if_nes: skip the controlled functions if the values are equal. */
 
-    if( !strcmp( first, second ) ) skip_functions();
+    if( strcmp( first, second ) == 0 )
+        skip_functions();
 
     /* Free the memory allocated to produce the parameters */
 
@@ -1884,13 +1872,11 @@ static void *df_add( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     return( (void *)(first + second) );
 }
@@ -1901,9 +1887,9 @@ static void *df_add( void )
 
 static void *df_decimal( void )
 {
-    char        *value = NULL;
-    parameters  my_parameters;
-    uintptr_t   first;
+    void            *value;
+    parameters      my_parameters;
+    intptr_t        first;
 
     /* Extract parameter offset. */
 
@@ -1911,14 +1897,13 @@ static void *df_decimal( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (intptr_t)process_parameter( my_parameters.first );
 
     /* Convert and return the value. */
 
-    value = mem_alloc( 12 );
-    sprintf( value, "%ld", (long)first );
-    return( (void *)value );
+    value = mem_alloc( NUM2STR_LENGTH + 1 );
+    sprintf( value, "%d", (int)first );
+    return( value );
 }
 
 /* Function df_divide().
@@ -1937,16 +1922,15 @@ static void *df_divide( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     if( second == 0 ) {
-        xx_simple_err_c( err_zero_divisor, "%divide()" );
+        xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%divide()" );
+        /* never return */
     }
 
     return( (void *)(first / second) );
@@ -1960,8 +1944,8 @@ static void *df_getnumsymbol( void )
 {
     char        *name    = NULL;
     parameters  my_parameters;
-    symsub      *sym_val = NULL;
-    uint32_t    ret_val = 0;
+    symsub      *sym_val;
+    unsigned    ret_val = 0;
 
     /* Extract parameter offset. */
 
@@ -1969,12 +1953,11 @@ static void *df_getnumsymbol( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    name = process_parameter();
+    name = process_parameter( my_parameters.first );
 
     /* Now get the symbol's value. */
 
-    find_symvar( &global_dict, name, no_subscript, &sym_val );
+    find_symvar( global_dict, name, SI_no_subscript, &sym_val );
     if( sym_val != NULL )
         ret_val = atol( sym_val->value );
 
@@ -1994,7 +1977,7 @@ static void *df_getstrsymbol( void )
     char        *name    = NULL;
     char        *ret_val = NULL;
     parameters  my_parameters;
-    symsub      *sym_val = NULL;
+    symsub      *sym_val;
 
     /* Extract parameter offset. */
 
@@ -2002,17 +1985,12 @@ static void *df_getstrsymbol( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    name = process_parameter();
+    name = process_parameter( my_parameters.first );
 
     /* Now get the symbol's value. */
 
-    find_symvar( &global_dict, name, no_subscript, &sym_val );
-    if( sym_val == NULL ) {
-        ret_val = char_convert( NULL );
-    } else {
-        ret_val = char_convert( sym_val->value );
-    }
+    find_symvar( global_dict, name, SI_no_subscript, &sym_val );
+    ret_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Free the memory allocated to the parameter. */
 
@@ -2027,9 +2005,9 @@ static void *df_getstrsymbol( void )
 
 static void *df_hex( void )
 {
-    char        *value = NULL;
-    parameters  my_parameters;
-    uintptr_t   first;
+    void            *value;
+    parameters      my_parameters;
+    uintptr_t       first;
 
     /* Extract parameter offset. */
 
@@ -2037,14 +2015,13 @@ static void *df_hex( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Convert and return a pointer to the parameter */
 
     value = mem_alloc( 9 );
-    sprintf( value, "%lx", (long)first );
-    return( (void *)value );
+    sprintf( value, "%x", (unsigned)first );
+    return( value );
 }
 
 /* Function df_lower().
@@ -2062,8 +2039,7 @@ static void *df_lower( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Convert and return the parameter. */
 
@@ -2086,16 +2062,15 @@ static void *df_remainder( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     if( second == 0 ) {
-        xx_simple_err_c( err_zero_divisor, "%remainder()" );
+        xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%remainder()" );
+        /* never return */
     }
 
     return( (void *)(first % second) );
@@ -2117,13 +2092,11 @@ static void *df_subtract( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     return( (void *)(first - second) );
 }
@@ -2137,13 +2110,13 @@ static void *df_subtract( void )
 static df_function device_function_table[MAX_FUNC_INDEX + 1] = {
     &char_literal,          // 0x00 (character parameter in parameter block)
     &df_recordbreak_device, // 0x01 %recordbreak()
-    &df_bad_code,           // 0x02 (none)
-    &df_bad_code,           // 0x03 (none)
-    &df_bad_code,           // 0x04 (none)
-    &df_bad_code,           // 0x05 (none)
+    NULL,                   // 0x02 (none)
+    NULL,                   // 0x03 (none)
+    NULL,                   // 0x04 (none)
+    NULL,                   // 0x05 (none)
     &df_do_nothing_num,     // 0x06 %enterfont()
-    &df_bad_code,           // 0x07 (none)
-    &df_bad_code,           // 0x08 (none)
+    NULL,                   // 0x07 (none)
+    NULL,                   // 0x08 (none)
     &df_do_nothing_num,     // 0x09 %binary() and %binary1()
     &df_do_nothing_num,     // 0x0A %binary2()
     &df_do_nothing_num,     // 0x0B %binary4()
@@ -2206,13 +2179,13 @@ static df_function device_function_table[MAX_FUNC_INDEX + 1] = {
 static df_function driver_function_table[MAX_FUNC_INDEX + 1] = {
     &char_literal,          // 0x00 (character parameter in parameter block)
     &df_recordbreak_driver, // 0x01 %recordbreak()
-    &df_bad_code,           // 0x02 (none)
-    &df_bad_code,           // 0x03 (none)
-    &df_bad_code,           // 0x04 (none)
-    &df_bad_code,           // 0x05 (none)
+    NULL,                   // 0x02 (none)
+    NULL,                   // 0x03 (none)
+    NULL,                   // 0x04 (none)
+    NULL,                   // 0x05 (none)
     &df_enterfont,          // 0x06 %enterfont()
-    &df_bad_code,           // 0x07 (none)
-    &df_bad_code,           // 0x08 (none)
+    NULL,                   // 0x07 (none)
+    NULL,                   // 0x08 (none)
     &df_binary,             // 0x09 %binary() and %binary1()
     &df_do_nothing_num,     // 0x0A %binary2()
     &df_do_nothing_num,     // 0x0B %binary4()
@@ -2303,15 +2276,15 @@ static void interpret_functions( const char *in_function )
     bool            old_last_done = false;
     df_function     *old_function_table = NULL;
     const char      *old_function = NULL;
-    uint16_t        current_offset;
+    unsigned        current_offset;
 
     /* An empty or missing block is not an error, but a warning is issued
      * in case the calling code needs adjustment.
      */
 
     if( in_function == NULL ) {
-        internal_err( __FILE__, __LINE__ );
-        return;
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Save the interpreter state. */
@@ -2359,11 +2332,14 @@ static void interpret_functions( const char *in_function )
         /* This is where the df_code processing occurs. */
 
         if( current_df_data.df_code > MAX_FUNC_INDEX ) {
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
-
+        if( current_function_table[current_df_data.df_code] == NULL ) {
+            df_bad_code_err_exit();
+            /* never return */
+        }
         current_function_table[current_df_data.df_code]();
-
     }
 
     /* Restore interpreter state. */
@@ -2452,7 +2428,7 @@ static void fb_font_switch( void )
     if( !do_now && (font_switch != NULL) )
         do_now = font_switch->do_always;
 
-    /* The third test: evaluate the :FONTSWITCH block (if it exits) as
+    /* The third test: evaluate the :FONTSWITCH block (if it exists) as
      * described in the Wiki. The trick here, of course, is to ensure that,
      * once set to "true", do_now is never reset to "false".
      */
@@ -2493,7 +2469,7 @@ static void fb_font_switch( void )
             df_font = desired_state.font;
             to_string = df_font_outname1();
             if( !do_now )
-                do_now = ( strcmp( from_string, to_string ) );
+                do_now = ( strcmp( from_string, to_string ) != 0 );
             mem_free( from_string );
             mem_free( to_string );
         }
@@ -2507,7 +2483,7 @@ static void fb_font_switch( void )
             df_font = desired_state.font;
             to_string = df_font_outname2();
             if( !do_now )
-                do_now = ( strcmp( from_string, to_string ) );
+                do_now = ( strcmp( from_string, to_string ) != 0 );
             mem_free( from_string );
             mem_free( to_string );
         }
@@ -2521,7 +2497,7 @@ static void fb_font_switch( void )
             df_font = desired_state.font;
             to_string = df_font_resident();
             if( !do_now )
-                do_now = ( strcmp( from_string, to_string ) );
+                do_now = ( strcmp( from_string, to_string ) != 0 );
             mem_free( from_string );
             mem_free( to_string );
         }
@@ -2611,6 +2587,59 @@ static void fb_font_switch( void )
     return;
 }
 
+/* Function fb_fs_marker().
+ * Processes FONTSWIRCH-related markers.
+ * Used with character devices.
+ */
+
+static void fb_fs_marker( text_chars *in_chars )
+{
+    wgml_font               *fs_font;
+
+    fs_font = &wgml_fonts[in_chars->font];
+    switch( in_chars->f_switch ) {
+    case FSW_full:
+        if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL) ) {
+            if( fs_font->font_style->lineprocs->startvalue != NULL ) {
+                df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
+            }
+            if( fs_font->font_style->lineprocs->endvalue != NULL ) {
+                df_interpret_driver_functions( fs_font->font_style->lineprocs->endvalue->text );
+            }
+        }
+        break;
+
+    case FSW_from:
+    case FSW_from2:
+        if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL)
+                && (fs_font->font_style->lineprocs->endvalue != NULL) ) {
+            df_interpret_driver_functions( fs_font->font_style->lineprocs->endvalue->text );
+            if( in_chars->f_switch == FSW_from2 ) {
+                df_interpret_driver_functions( fs_font->font_style->lineprocs->endvalue->text );
+            }
+        }
+        break;
+
+    case FSW_to:
+    case FSW_to2:
+        if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL)
+                && (fs_font->font_style->lineprocs->endvalue != NULL) ) {
+            df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
+            if( in_chars->f_switch == FSW_to2 ) {
+                df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
+            }
+        }
+        break;
+
+    default :
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
+    }
+
+    fs_marker = true;
+    return;
+}
+
 /* Function fb_htab().
  * Function fb_htab() inteprets the :HTAB block and sets htab_done to "true".
  *
@@ -2643,17 +2672,22 @@ static void fb_htab( void )
 
 static void fb_initial_horizontal_positioning( void )
 {
-    size_t      spaces;
+    unsigned        spaces;
 
     x_address = desired_state.x_address;
     if( ProcFlags.has_aa_block ) {
-        fb_absoluteaddress();
+        if( (current_state.y_address == desired_state.y_address) && !ProcFlags.overprint ) {
+            fb_htab();
+        } else {
+            fb_absoluteaddress();
+        }
     } else {
 
         /* Spaces cannot be emitted and tabs cannot be done "backwards". */
 
         if( current_state.x_address > desired_state.x_address ) {
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Perform the initial horizontal positioning. */
@@ -2685,23 +2719,41 @@ static void fb_initial_horizontal_positioning( void )
  * Performs the internal horizontal positioning as described in the Wiki.
  */
 
-static void fb_internal_horizontal_positioning( void )
+static void fb_internal_horizontal_positioning( text_chars * in_chars )
 {
-    size_t      spaces;
+    unsigned        spaces;
 
     /* Spaces cannot be emitted and tabs cannot be done "backwards". */
 
-    if( current_state.x_address > desired_state.x_address ) {
-        internal_err( __FILE__, __LINE__ );
+    if( current_state.x_address > desired_state.x_address) {
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Perform the internal horizontal positioning. */
 
-    /* Use :HTAB if tab_width is not an integral number of spaces. */
+    /****************************************************************/
+    /* Use :HTAB if:                                                */
+    /*   the device has defined an HTAB block                       */
+    /*   the tab_width is greater than 0 and either                 */
+    /*     the tab_width is not an integral number of spaces        */
+    /*     or the desired position was set by a tab                 */
+    /*        and the font has changed                              */
+    /*        and the spacing is from a tab stop                    */
+    /*   the spacing is not from a tab stop when the prior          */
+    /*   text_chars is a marker, which has already established the  */
+    /*   desired position, so any spacing required must be from     */
+    /*   the text itself                                            */
+    /****************************************************************/
 
     x_address = desired_state.x_address;
     tab_width = desired_state.x_address - current_state.x_address;
-    if( has_htab && (tab_width % wgml_fonts[active_font].spc_width > 0) ) {
+    if( has_htab
+      && (tab_width > 0)
+      && ((tab_width % wgml_fonts[active_font].spc_width > 0)
+      || ((in_chars->tab_pos != TAB_none)
+      && ((in_chars->prev->font != in_chars->font)
+      && (in_chars->prev->count != 0))) ) ) {
         fb_htab();
     } else {
 
@@ -2979,7 +3031,7 @@ static void fb_new_font_text_chars( text_chars *in_chars, line_proc *in_lineproc
      */
 
     if( textpass ) {
-        fb_internal_horizontal_positioning();
+        fb_internal_horizontal_positioning( in_chars );
         if( !text_out_open && ProcFlags.ps_device ) {
             ob_insert_ps_text_start();
             text_out_open = true;
@@ -3097,10 +3149,10 @@ static void fb_overprint_vertical_positioning( void )
 
 static void fb_normal_vertical_positioning( void )
 {
-    uint32_t    i;
-    uint32_t    current_pages;
-    uint32_t    desired_pages;
-    uint32_t    device_pages;
+    unsigned    i;
+    unsigned    current_pages;
+    unsigned    desired_pages;
+    unsigned    device_pages;
 
     /* A device using :ABSOLUTEADDRESS may be able to move upwards on a given
      * device page, but it cannot go back to a prior device page. A device
@@ -3112,14 +3164,16 @@ static void fb_normal_vertical_positioning( void )
         /* y_address is formed by subtraction. */
 
         if( current_state.y_address < desired_state.y_address ) {
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     } else {
 
         /* y_address is formed by addition. */
 
         if( current_state.y_address > desired_state.y_address ) {
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     }
 
@@ -3136,8 +3190,6 @@ static void fb_normal_vertical_positioning( void )
         if( page_start && !ProcFlags.force_op ) {
             page_start = false;
         } else {
-            current_state.x_address = bin_device->x_start;
-            x_address = current_state.x_address;
             fb_overprint_vertical_positioning();
         }
     } else {
@@ -3195,7 +3247,7 @@ static void fb_normal_vertical_positioning( void )
 
                 if( ProcFlags.has_aa_block ) {
                     if( at_start ) {
-                        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
+                        if( wgml_fonts[FONT0].font_style->lineprocs != NULL ) {
 
                             /* Set the value of current_state.y_address and the
                              * value returned by %y_address() to the last line
@@ -3205,8 +3257,8 @@ static void fb_normal_vertical_positioning( void )
                             current_state.y_address = (current_pages + i) * bin_device->page_depth;
                             y_address = current_state.y_address;
 
-                            if( wgml_fonts[0].font_style->lineprocs[0].endvalue != NULL ) {
-                                df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].endvalue->text );
+                            if( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue != NULL ) {
+                                df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue->text );
                             }
                         }
                         at_start = false;
@@ -3316,7 +3368,7 @@ static void fb_subsequent_text_chars( text_chars *in_chars, line_proc *in_linepr
 
     if( in_chars->next == NULL ) {
         undo_shift = true;
-    } else if( in_chars->type != in_chars->next->type ) {
+    } else if( (in_chars->type != in_chars->next->type) ) {
         undo_shift = true;
     } else {
         undo_shift = false;
@@ -3327,7 +3379,7 @@ static void fb_subsequent_text_chars( text_chars *in_chars, line_proc *in_linepr
      */
 
     if( textpass ) {
-        fb_internal_horizontal_positioning();
+        fb_internal_horizontal_positioning( in_chars );
         if( !text_out_open && ProcFlags.ps_device ) {
             ob_insert_ps_text_start();
             text_out_open = true;
@@ -3485,8 +3537,7 @@ void df_populate_driver_table( void )
 
 void df_setup( void )
 {
-    int         i;
-    symsub  *   sym_val = NULL;
+    symsub      *sym_val;
 
     /* When called, each of symbols "date" and "time" contains either of
      * -- the value set from the system clock; or
@@ -3494,20 +3545,11 @@ void df_setup( void )
      * but have not been affected by anything in the document specification.
      */
 
-    find_symvar( &global_dict, "date", no_subscript, &sym_val );
-    if( sym_val == NULL ) {
-        date_val = char_convert( NULL );
-    } else {
-        date_val = char_convert( sym_val->value );
-    }
+    find_symvar( global_dict, "date", SI_no_subscript, &sym_val );
+    date_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
-    sym_val = NULL;
-    find_symvar( &global_dict, "time", no_subscript, &sym_val );
-    if( sym_val == NULL ) {
-        time_val = char_convert( NULL );
-    } else {
-        time_val = char_convert( sym_val->value );
-    }
+    find_symvar( global_dict, "time", SI_no_subscript, &sym_val );
+    time_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Set has_htab to true if the device defined the :HTAB block. */
 
@@ -3516,22 +3558,12 @@ void df_setup( void )
 
     /* Initialize space_chars to hold 80 space characters. */
 
-    space_chars.text = mem_alloc( 80 );
-    space_chars.length = 80;
-    space_chars.current = 0;
-    for( i = 0; i < space_chars.length; i++ )
-        space_chars.text[i] = ' ';
+    init_record_buffer_fill( &space_chars, 80, ' ' );
 
     /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */
 
     uscore_char = bin_device->underscore.underscore_char;
-    uscore_chars.text = mem_alloc( 80 );
-    uscore_chars.length = 80;
-    uscore_chars.current = 0;
-    for( i = 0; i < uscore_chars.length; i++ ) {
-        uscore_chars.text[i] = uscore_char;
-    }
-    return;
+    init_record_buffer_fill( &uscore_chars, 80, uscore_char );
 }
 
 /* Function df_teardown().
@@ -3553,14 +3585,14 @@ void df_teardown( void )
     if( space_chars.text != NULL ) {
         mem_free( space_chars.text);
         space_chars.current = 0;
-        space_chars.length = 0;
+        space_chars.size = 0;
         space_chars.text = NULL;
     }
 
     if( uscore_chars.text != NULL ) {
         mem_free( uscore_chars.text);
         uscore_chars.current = 0;
-        uscore_chars.length = 0;
+        uscore_chars.size = 0;
         uscore_chars.text = NULL;
     }
 
@@ -3609,7 +3641,12 @@ void fb_binclude_support( binclude_element *in_el )
     }
     if( ProcFlags.ps_device ) {   // always do ABSOLUTEADDRESS block
         y_address = desired_state.y_address;
-        fb_initial_horizontal_positioning();
+        if( ProcFlags.has_aa_block ) {
+            x_address = desired_state.x_address;
+            fb_absoluteaddress();
+        } else {
+            fb_initial_horizontal_positioning();
+        }
     } else {
         if( in_el->depth > 0 ) {    // do nothing when depth == 0
             if( current_state.y_address == desired_state.y_address ) {
@@ -3634,7 +3671,7 @@ void fb_binclude_support( binclude_element *in_el )
  *          does have vertical positioning information.
  *
  * Note:
- *      This function is to be used only by fb_output_text() and is extremely
+ *      This function is to be used only by fb_output_textline() and is extremely
  *          specialized. The effect is that the vertical position specified
  *          is used to update the internal and device states.
  *      This function was added only when its need became clear while
@@ -3676,28 +3713,28 @@ void fb_enterfont( void )
 
     old_active_font = active_font;
     old_df_font = df_font;
-    active_font = 0;
-    df_font = 0;
+    active_font = FONT0;
+    df_font = FONT0;
 
-    if( wgml_fonts[0].font_pause != NULL ) {
-        df_interpret_device_functions( wgml_fonts[0].font_pause->text );
+    if( wgml_fonts[FONT0].font_pause != NULL ) {
+        df_interpret_device_functions( wgml_fonts[FONT0].font_pause->text );
     }
 
-    if( wgml_fonts[0].font_switch != NULL ) {
-        if( wgml_fonts[0].font_switch->startvalue != NULL ) {
-            df_interpret_driver_functions( wgml_fonts[0].font_switch->startvalue->text );
+    if( wgml_fonts[FONT0].font_switch != NULL ) {
+        if( wgml_fonts[FONT0].font_switch->startvalue != NULL ) {
+            df_interpret_driver_functions( wgml_fonts[FONT0].font_switch->startvalue->text );
         }
     }
 
-    if( wgml_fonts[0].font_style != NULL ) {
-        if( wgml_fonts[0].font_style->startvalue != NULL ) {
-            df_interpret_driver_functions( wgml_fonts[0].font_style->startvalue->text );
+    if( wgml_fonts[FONT0].font_style != NULL ) {
+        if( wgml_fonts[FONT0].font_style->startvalue != NULL ) {
+            df_interpret_driver_functions( wgml_fonts[FONT0].font_style->startvalue->text );
         }
-        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
-            if( wgml_fonts[0].font_style->lineprocs[0].startvalue != NULL ) {
-                df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].startvalue->text );
+        if( wgml_fonts[FONT0].font_style->lineprocs != NULL ) {
+            if( wgml_fonts[FONT0].font_style->lineprocs[0].startvalue != NULL ) {
+                df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].startvalue->text );
             }
-            fb_firstword( &wgml_fonts[0].font_style->lineprocs[0] );
+            fb_firstword( &wgml_fonts[FONT0].font_style->lineprocs[0] );
         }
     }
     active_font = old_active_font;
@@ -3714,11 +3751,9 @@ void fb_enterfont( void )
  *          sent to the device.
  *
  * Note:
- *      This function is to be used only by fb_output_text(), which includes
+ *      This function is to be used only by fb_output_textline(), which includes
  *          a test ensuring that out_line contains at least one text_chars
  *          instance (that is, that out_line->first is not NULL).
- *      Other functions are expected to be created for outputting lines
- *          created using :BOX characters.
  */
 
 void fb_first_text_line_pass( text_line *out_line )
@@ -3758,14 +3793,21 @@ void fb_first_text_line_pass( text_line *out_line )
         }
     }
     x_address = desired_state.x_address;
-    fb_first_text_chars( current, cur_lineproc );
+    if( current->f_switch == FSW_norm ) {
+        fb_first_text_chars( current, cur_lineproc );   // normal text_chars, not marker
+    } else {
+        fb_fs_marker( current );                        // character device marker
+    }
+    page_start = false;     // solves problem but putting it here may not be best place
 
     /* Now do the remaining text_chars instances. */
 
     for( current = current->next; current != NULL; current = current->next ) {
         desired_state.x_address = current->x_address;
         desired_state.type = current->type;
-        if( current_state.font != current->font ) {
+        if( current->f_switch != FSW_norm ) {
+            fb_fs_marker( current );                    // character device marker
+        } else if( (current_state.font != current->font) || (desired_state.type & TXT_figcap) ) {
             if( wgml_fonts[current->font].font_style != NULL ) {
                 if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {
                     cur_lineproc = NULL;
@@ -3774,9 +3816,18 @@ void fb_first_text_line_pass( text_line *out_line )
                 }
             }
             desired_state.font = current->font;
-            fb_new_font_text_chars( current, cur_lineproc );
+            fb_new_font_text_chars( current, cur_lineproc );    // normal text_chars, not marker
         } else {
-            fb_subsequent_text_chars( current, cur_lineproc );
+            if( wgml_fonts[current->font].font_style != NULL ) {
+                if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {
+                    cur_lineproc = NULL;
+                    textpass = true;
+                } else {
+                    cur_lineproc = &wgml_fonts[current->font].font_style->lineprocs[0];
+                }
+            }
+            desired_state.font = current->font;
+            fb_subsequent_text_chars( current, cur_lineproc );  // normal text_chars, not marker
         }
     }
 
@@ -3794,7 +3845,7 @@ void fb_first_text_line_pass( text_line *out_line )
 
 
 /* Function fb_graphic_support().
- * Sets the start position for GRAPHIC for the PS device.
+ * Sets the start position and font for GRAPHIC for the PS device.
  *
  * This function is extremely specialized.
  */
@@ -3807,8 +3858,14 @@ void fb_graphic_support( graphic_element *in_el )
         desired_state.y_address = in_el->y_address;
     }
     desired_state.x_address = in_el->cur_left;
+    df_font  = FONT0;             // matches wgml 4.0
     y_address = desired_state.y_address;
-    fb_initial_horizontal_positioning();
+    if( ProcFlags.has_aa_block ) {
+        x_address = desired_state.x_address;
+        fb_absoluteaddress();
+    } else {
+        fb_initial_horizontal_positioning();
+    }
 
     return;
 }
@@ -3892,8 +3949,8 @@ void fb_init( init_block *in_block )
  *          drawing code is needed.
  */
 
-void fb_line_block( line_block *in_line_block, uint32_t h_start, uint32_t v_start,
-                     uint32_t h_len, uint32_t v_len, bool twice )
+void fb_line_block( line_block *in_line_block, unsigned h_start, unsigned v_start,
+                     unsigned h_len, unsigned v_len, bool twice )
 {
     /* Set up for fb_absoluteaddress(). */
 
@@ -3950,9 +4007,13 @@ void fb_lineproc_endvalue( void )
             }
             post_text_output();
         }
-        if( wgml_fonts[df_font].font_style->lineprocs != NULL ) {
-            if( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue != NULL ) {
-                df_interpret_driver_functions( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue->text );
+        if( fs_marker ) {
+            fs_marker = false;  // char device marker done, don't do endvalue
+        } else {
+            if( wgml_fonts[df_font].font_style->lineprocs != NULL ) {
+                if( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue != NULL ) {
+                    df_interpret_driver_functions( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue->text );
+                }
             }
         }
     }
@@ -3976,7 +4037,7 @@ void fb_lineproc_endvalue( void )
  *      partially described in the Wiki.
  */
 
-void fb_new_section( uint32_t v_start )
+void fb_new_section( unsigned v_start )
 {
     font_number font_save;
 
@@ -3987,7 +4048,7 @@ void fb_new_section( uint32_t v_start )
     /* Save active_font and set it to 0 for the :NEWPAGE and :NEWLINE blocks. */
 
     font_save = active_font;
-    active_font = 0;
+    active_font = FONT0;
 
     /* Interpret the :NEWPAGE block. */
 
@@ -4045,7 +4106,7 @@ void fb_new_section( uint32_t v_start )
  *          blocks, or which function blocks, are interpreted.
  */
 
-void fb_position( uint32_t h_start, uint32_t v_start )
+void fb_position( unsigned h_start, unsigned v_start )
 {
     /* Set the desired state. */
 
@@ -4061,12 +4122,12 @@ void fb_position( uint32_t h_start, uint32_t v_start )
 
     /* If the :FONTSTYLE block exists, interpret the appropriate blocks. */
 
-    if( wgml_fonts[0].font_style != NULL ) {
-        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
-            df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].endvalue->text );
+    if( wgml_fonts[FONT0].font_style != NULL ) {
+        if( wgml_fonts[FONT0].font_style->lineprocs != NULL ) {
+            df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].endvalue->text );
             x_address = h_start;    // to match wgml 4.0
-            df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].startvalue->text );
-            fb_firstword( &wgml_fonts[0].font_style->lineprocs[0] );
+            df_interpret_driver_functions( wgml_fonts[FONT0].font_style->lineprocs[0].startvalue->text );
+            fb_firstword( &wgml_fonts[FONT0].font_style->lineprocs[0] );
         }
     }
     return;
@@ -4081,11 +4142,9 @@ void fb_position( uint32_t h_start, uint32_t v_start )
  *      line_pass contains the number of the current line_pass
  *
  * Note:
- *      This function is to be used only by fb_output_text(), which includes
+ *      This function is to be used only by fb_output_textline(), which includes
  *          a test ensuring that out_line contains at least one text_chars
  *          instance (that is, that out_line->first is not NULL).
- *      Other functions are expected to be created for outputting lines
- *          created using :BOX characters.
  */
 
 void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
@@ -4097,7 +4156,9 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
 
     /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
 
-    fb_lineproc_endvalue();
+    if( out_line->last->f_switch == FSW_norm ) {
+        fb_lineproc_endvalue();
+    }
     line_pass_number = line_pass;
 
     /* Update the internal state to the first text_chars that uses a
@@ -4118,8 +4179,8 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
     /* If current is NULL, this line does not have this pass. */
 
     if( current == NULL ) {
-        internal_err( __FILE__, __LINE__ );
-        return;
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     desired_state.x_address = current->x_address;
@@ -4173,7 +4234,7 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
                     df_interpret_driver_functions( cur_fontstyle->endvalue->text );
                 }
 
-                fb_internal_horizontal_positioning();
+                fb_internal_horizontal_positioning( current );
 
                 if( cur_fontstyle->startvalue != NULL ) {
                     df_interpret_driver_functions( cur_fontstyle->startvalue->text );
@@ -4200,3 +4261,22 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
         post_text_output();
     }
 }
+
+/* Function set_oc_pos().
+ * Set x_address to the value of g_oc_hpos.
+ *
+ * Note:
+ *      This function is to be used only by ob_oc.
+ */
+
+void set_oc_pos( void )
+{
+    unsigned sav_x_address;
+
+    sav_x_address = x_address;
+    x_address = g_oc_hpos;
+    df_interpret_driver_functions( bin_driver->absoluteaddress.text );
+    x_address = sav_x_address;
+    return;
+}
+

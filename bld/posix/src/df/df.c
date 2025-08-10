@@ -31,16 +31,16 @@
 ****************************************************************************/
 
 
-#if defined( __OS2__ )
-#include <os2.h>
-#elif defined( __NT__ )
-#include <windows.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <direct.h>
+#if defined( __OS2__ )
+	#include <os2.h>
+#elif defined( __NT__ )
+	#include <windows.h>
+#endif
 #include "misc.h"
 #include "getopt.h"
 #include "argvenv.h"

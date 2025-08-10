@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
         /*** Prepare to call the OS ***/
         mbName = __lib_cvt_wcstombs( lpName );
         if( mbName == NULL ) {
-            return( FALSE );
+            return( 0 );
         }
 
         if( lpValue == NULL ) {
@@ -63,7 +63,7 @@ BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
             mbValue = __lib_cvt_wcstombs( lpValue );
             if( mbValue == NULL ) {
                 lib_free( mbName );
-                return( FALSE );
+                return( 0 );
             }
         }
 

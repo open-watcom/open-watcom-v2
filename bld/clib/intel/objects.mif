@@ -40,6 +40,13 @@
 286_option_fpi87 =-fpi87
 386_option_fpi87 =-fpi87
 
+inp_opts    = -oi
+inpd_opts   = -oi
+inpw_opts   = -oi
+outp_opts   = -oi
+outpd_opts  = -oi
+outpw_opts  = -oi
+
 profilog_opts =-of
 p5prof2_opts  =-of
 dp5prof2_opts =-of

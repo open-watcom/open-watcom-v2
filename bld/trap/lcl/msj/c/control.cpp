@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,13 +237,13 @@ HANDLE FakeOpen( char *name )
 
 static int LastNameGiven;
 
-bool FakeRead( HANDLE h, void* buff, unsigned len, DWORD *amtRead )
+bool FakeRead( HANDLE osfh, void* buff, unsigned len, DWORD *amtRead )
 /*****************************************************************/
 {
     char *data;
 
-    if( h != FakeHandle )
-        return( FALSE );
+    if( osfh != FakeHandle )
+        return( false );
     data = "JAVAxxxx";
     *(int *)( data + 4 ) = LastNameGiven;
     if( len > 8 )
@@ -459,35 +459,37 @@ extern bool StartProc( char *procname, char *clname )
     Process.flags = 0;
     memset( &sinfo, 0, sizeof(sinfo) );
     sinfo.cb = sizeof(sinfo);
-    if( !CreateProcess( NULL, procname, NULL, NULL, FALSE,
+    if( CreateProcess( NULL, procname, NULL, NULL, FALSE,
                         CREATE_SUSPENDED | CREATE_NEW_CONSOLE, NULL, NULL,
-                        &sinfo, &pinfo) ) return FALSE;
+                        &sinfo, &pinfo ) == 0 ) {
+        return( FALSE );
+    }
     Process.prochdl = pinfo.hProcess;
     namelen = strlen(clname) + 1;
     wclname = (wchar_t *) alloca( namelen * sizeof(wchar_t) );
     if( wclname == NULL ) {
         EndProc();
-        return FALSE;
+        return( FALSE );
     }
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, clname, namelen, wclname,
                          namelen * sizeof(wchar_t) );
     if( !SUCCEEDED( DbgManager->RequestCreateEvent( wclname, pinfo.dwProcessId ) ) ) {
         EndProc();
-        return FALSE;
+        return( FALSE );
     }
     Process.termthread = CreateThread( NULL, 0, WaitForDeath, NULL, 0, &tid );
     if( Process.termthread == NULL ) {
         EndProc();
-        return FALSE;
+        return( FALSE );
     }
     Process.waiting = TRUE;
     if( ResumeThread( pinfo.hThread ) == 0xFFFFFFFF ) {
         EndProc();
-        return FALSE;
+        return( FALSE );
     }
     CloseHandle( pinfo.hThread );
     WaitForEvent();
-    return TRUE;
+    return( TRUE );
 }
 
 extern void EndProc( void )

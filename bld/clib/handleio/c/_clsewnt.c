@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <windows.h>
 #include "rterrno.h"
 #include "fileacc.h"
@@ -42,35 +44,35 @@
 #include "close.h"
 #include "thread.h"
 
-int __close( int hid )
+
+int __close( int handle )
 {
-    int         is_closed;
+    bool        is_closed;
     int         rc;
-    HANDLE      h;
+    HANDLE      osfh;
 #ifdef DEFAULT_WINDOWING
-    LPWDATA res;
+    LPWDATA     res;
 #endif
 
-    __handle_check( hid, -1 );
+    __handle_check( handle, -1 );
 
-    is_closed = 0;
+    is_closed = false;
     rc = 0;
-    h = __getOSHandle( hid );
+    osfh = __getOSHandle( handle );
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsCloseWindow != NULL ) {
-        res = _WindowsIsWindowedHandle( hid );
-        if( res != NULL ) {
-            _WindowsRemoveWindowedHandle( hid );
-            _WindowsCloseWindow( res );
-            is_closed = 1;
-        }
+    if( _WindowsCloseWindow != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        _WindowsRemoveWindowedHandle( handle );
+        _WindowsCloseWindow( res );
+        is_closed = true;
     }
 #endif
-    if( !is_closed && !CloseHandle( h ) ) {
+    if( !is_closed
+      && CloseHandle( osfh ) == 0 ) {
         rc = __set_errno_nt();
     }
-    __freePOSIXHandle( hid );
-    __SetIOMode_nogrow( hid, 0 );
+    __freePOSIXHandle( handle );
+    __SetIOMode( handle, 0 );
     return( rc );
 }

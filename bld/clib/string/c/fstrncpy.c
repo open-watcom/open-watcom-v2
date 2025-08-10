@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,26 +59,22 @@ extern char _WCFAR *fast_strncpy( char _WCFAR *, const char _WCFAR *, size_t );
 
 #endif
 
-_WCRTLINK char _WCFAR *_fstrncpy( char _WCFAR *dst, const char _WCFAR *src, size_t len )
+_WCRTLINK char _WCFAR *_fstrncpy( char _WCFAR *s, const char _WCFAR *t, size_t len )
 {
 #ifdef _M_I86
     if( len ) {
-        return( fast_strncpy( dst, src, len ) );
+        return( fast_strncpy( s, t, len ) );
     }
-    return( dst );
+    return( s );
 #else
-    char _WCFAR     *ret;
+    char _WCFAR     *p;
 
-    ret = dst;
-    for( ;len; --len ) {
-        if( *src == '\0' )
-            break;
-        *dst++ = *src++;
+    for( p = s; len != 0 && *t != '\0'; --len ) {
+        *p++ = *t++;
     }
-    while( len != 0 ) {
-        *dst++ = '\0';      /* pad destination string with null chars */
-        --len;
+    while( len-- != 0 ) {
+        *p++ = '\0';      /* pad destination string with null chars */
     }
-    return( ret );
+    return( s );
 #endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,9 @@
 #include "wfilenam.hpp"
 
 
-int WEXPORT WSystemService::sysExec( const char *cmd,
-                                     WWindowState state,
-                                     WWindowType typ ) {
-/******************************************************/
-
+int WEXPORT WSystemService::sysExec( const char *cmd, WWindowState state, WWindowType typ )
+/*****************************************************************************************/
+{
     WORD        show;
 
     /* unused parameters */ (void)typ;
@@ -75,21 +73,17 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     // set ShowWindow default value for nCmdShow parameter
     sinfo.dwFlags = STARTF_USESHOWWINDOW;
     sinfo.wShowWindow = show;
-    rc = CreateProcess( NULL,
-                        (char *)cmd,
-                        NULL,
-                        NULL,
-                        FALSE,
-                        0,
-                        NULL,
-                        NULL,
-                        &sinfo,
-                        &pinfo );
-    if( rc ) {
-        CloseHandle( pinfo.hThread );
-        CloseHandle( pinfo.hProcess );
-        rc = 33;
-    } else {
+    if( CreateProcess(
+            NULL,
+            (char *)cmd,
+            NULL,
+            NULL,
+            FALSE,
+            0,
+            NULL,
+            NULL,
+            &sinfo,
+            &pinfo ) == 0 ) {
         switch( GetLastError() ) {
         case ERROR_FILE_NOT_FOUND:
             rc = 2;
@@ -107,6 +101,10 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             rc = 0;
             break;
         }
+    } else {
+        CloseHandle( pinfo.hThread );
+        CloseHandle( pinfo.hProcess );
+        rc = 33;
     }
 #else
     int rc = WinExec( cmd, show );
@@ -116,9 +114,9 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
 }
 
 
-int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
-/****************************************************************/
-
+int WEXPORT WSystemService::sysExecBackground( const char *cmd )
+/**************************************************************/
+{
 #if defined( __NT__ )
     PROCESS_INFORMATION info;
     STARTUPINFO         start;
@@ -131,8 +129,7 @@ int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
     start.wShowWindow = SW_HIDE;
     create_flags = NORMAL_PRIORITY_CLASS;
     create_flags |= CREATE_NEW_CONSOLE;
-    if( !CreateProcess( NULL, (char *)cmd, NULL, NULL, TRUE, create_flags, NULL, NULL,
-                        &start, &info ) ) {
+    if( CreateProcess( NULL, (char *)cmd, NULL, NULL, TRUE, create_flags, NULL, NULL, &start, &info ) == 0 ) {
         info.dwProcessId = 0;
     }
     CloseHandle( info.hThread );
@@ -144,9 +141,9 @@ int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
 }
 
 
-void WEXPORT WSystemService::sysYield() {
-/***************************************/
-
+void WEXPORT WSystemService::sysYield()
+/*************************************/
+{
     MSG     msg;
 
     while( PeekMessage( (LPMSG)&msg, 0, 0, 0, PM_NOREMOVE ) ) {
@@ -157,9 +154,9 @@ void WEXPORT WSystemService::sysYield() {
 }
 
 
-void WEXPORT WSystemService::sysSleep( unsigned long interval ) {
-/***************************************************************/
-
+void WEXPORT WSystemService::sysSleep( unsigned long interval )
+/*************************************************************/
+{
 #if defined( __NT__ )
     Sleep( interval );
 #else
@@ -171,9 +168,9 @@ void WEXPORT WSystemService::sysSleep( unsigned long interval ) {
 
 #define BUFF_LEN 512
 
-WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name ) {
-/*************************************************************************/
-
+WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name )
+/***********************************************************************/
+{
     WModuleHandle      lib_handle;
 
     WFileName fn( lib_name );
@@ -191,16 +188,15 @@ WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name ) {
 }
 
 
-WProcAddr WEXPORT WSystemService::getProcAddr( WModuleHandle mod_handle,
-                                               const char *proc ) {
-/*****************************************************************/
-
-    return( (WProcAddr) GetProcAddress( mod_handle, proc ) );
+WProcAddr WEXPORT WSystemService::getProcAddr( WModuleHandle mod_handle, const char *proc )
+/*****************************************************************************************/
+{
+    return( (WProcAddr)GetProcAddress( mod_handle, proc ) );
 }
 
 
-void WEXPORT WSystemService::freeLibrary( WModuleHandle mod_handle ) {
-/********************************************************************/
-
+void WEXPORT WSystemService::freeLibrary( WModuleHandle mod_handle )
+/******************************************************************/
+{
     FreeLibrary( mod_handle );
 }

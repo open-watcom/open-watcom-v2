@@ -40,6 +40,9 @@ using std::raise;
 :segment QNX
 :include systypes.sp
 
+:elsesegment LINUX
+:include incdir.sp
+
 :endsegment
 :: Only need extern "C" in csignal
 :segment CNAME
@@ -88,8 +91,6 @@ typedef void _WCCALLBACK __sigfpe_func( int, int );
 :endsegment
 
 :segment LINUX
-:include incdir.sp
-
 #include _ARCH_INCLUDE(signal.h)
 
 :include extposix.sp

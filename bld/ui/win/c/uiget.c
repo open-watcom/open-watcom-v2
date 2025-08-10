@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ MOUSETIME UIAPI uiclock( void )
  * used for mouse & timer delays
  */
 {
-    return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned long ) );
+    return( BIOSData( unsigned long, BDATA_SYSTEM_CLOCK ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )

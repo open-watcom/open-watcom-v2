@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +39,15 @@
 #include "ntext.h"
 
 
-_WCRTLINK unsigned _dos_setftime( int hid, unsigned date, unsigned time )
+_WCRTLINK unsigned _dos_setftime( int handle, unsigned date, unsigned time )
 {
-    HANDLE      h;
+    HANDLE      osfh;
     FILETIME    ctime, atime, wtime;
 
-    h = __getOSHandle( hid );
-    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
+    osfh = __getOSHandle( handle );
+    if( GetFileTime( osfh, &ctime, &atime, &wtime ) ) {
         __FromDOSDT( date, time, &wtime );
-        if( SetFileTime( h, &ctime, &wtime, &wtime ) ) {
+        if( SetFileTime( osfh, &ctime, &wtime, &wtime ) ) {
             return( 0 );
         }
     }

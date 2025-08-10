@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
    per the documentation, using window coordinates. */
 
 {
-    short               success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2pie( fill, _WtoPhysX( x1 ), _WtoPhysY( y1 ),
@@ -51,7 +52,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
                                 _WtoPhysX( x4 ), _WtoPhysY( y4 ) );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }

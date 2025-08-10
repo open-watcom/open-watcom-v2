@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +41,14 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse( short fill, short x1, short y1, shor
    opposite corners are ( x1, y1 ) and ( x2, y2 ) in viewport coordinates.  */
 
 {
-    short               success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2ellipse( fill, _VtoPhysX( x1 ), _VtoPhysY( y1 ),
                                     _VtoPhysX( x2 ), _VtoPhysY( y2 ) );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -55,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse( short fill, short x1, short y1, shor
 Entry1( _ELLIPSE, _ellipse ) // alternate entry-point
 
 
-short _WCI86FAR _L2ellipse( short fill, short x1, short y1, short x2, short y2 )
+bool _WCI86FAR _L2ellipse( short fill, short x1, short y1, short x2, short y2 )
 /*=========================================================================
 
    This function draws or fills an ellipse defined by the rectangle

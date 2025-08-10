@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,36 +35,14 @@
 #include <string.h>
 #include <dos.h>
 #include <i86.h>
+#include "tinyio.h"
 #ifndef _M_I86
-    #include "dpmi.h"
     #include "extender.h"
-    #include "realmod.h"
+    #include "dpmi.h"
 #endif
+#include "realmod.h"
 #include "getltdos.h"
 
-
-#ifndef _M_I86
-#pragma pack(__push,1);
-typedef union {
-    unsigned long   x;
-    unsigned short  w;
-    struct {
-        unsigned char   l;
-        unsigned char   h;
-    }               b;
-} regx;
-
-typedef struct {
-    unsigned short  int_num;
-    unsigned short  real_ds;
-    unsigned short  real_es;
-    unsigned short  real_fs;
-    unsigned short  real_gs;
-    regx            real_eax;
-    regx            real_edx;
-} PHARLAP_block;
-#pragma pack(__pop);
-#endif
 
 /*
  * Note:
@@ -81,7 +59,7 @@ extern unsigned short __far *_dos_get_dbcs_lead_table( void );
         "xor ax,ax"     \
         "mov ds,ax"     \
         "mov ah,63h"    \
-        "int 21h"       \
+        __INT_21        \
         "mov di,ds"     \
         "jc short L1"   \
         "test al,al"    \
@@ -103,41 +81,36 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
     return( _dos_get_dbcs_lead_table() );
 #else
     if( _IsPharLap() ) {
-        PHARLAP_block   pblock;
-        union REGS      regs;
-        struct SREGS    segregs;
+        pharlap_regs_struct dp;
+        int                 cflag;
 
-        memset( &pblock, 0, sizeof( pblock ) );
-        memset( &regs, 0, sizeof( regs ) );
-        memset( &segregs, 0, sizeof( segregs ) );
-        pblock.real_eax.x = 0x6300;             /* get DBCS vector table */
-        pblock.int_num = 0x21;                  /* DOS call */
-        regs.x.eax = 0x2511;                    /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &pblock );        /* DS:EDX -> parameter block */
-        segregs.ds = _FP_SEG( &pblock );
-        intdosx( &regs, &regs, &segregs );
-        if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
+        memset( &dp, 0, sizeof( dp ) );
+        dp.r.x.eax = 0x6300;                 /* get DBCS vector table */
+        dp.intno = 0x21;                    /* DOS call */
+        cflag = PharlapSimulateRealModeInterruptExt( &dp );
+        if( cflag == 0 && dp.r.h.al == 0 ) {
             /*
              * check if DS not 0 or weird OS/2 value 0xFFFF
              * otherwise it is invalid
              */
-            if( pblock.real_ds && pblock.real_ds != 0xFFFF ) {
-                return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
+            if( dp.ds != 0 && dp.ds != 0xFFFF ) {
+                return( RealModeDataPtr( dp.ds, dp.r.x.esi ) );
             }
         }
-    } else if( _IsRational() ) {
-        rm_call_struct  dblock;
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_regs_struct    dr;
+        int                 cflag;
 
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0x6300;                /* get DBCS vector table */
-        DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & INTR_CF) == 0 && ((regx *)&dblock.eax)->b.l == 0 ) {
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = 0x6300;                /* get DBCS vector table */
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        if( cflag == 0 && dr.r.h.al == 0 ) {
             /*
              * check if DS not 0
              * otherwise it is invalid
              */
-            if( dblock.ds ) {
-                return( EXTENDER_RM2PM( dblock.ds, dblock.esi ) );
+            if( dr.ds != 0 && dr.ds != 0xFFFF ) {
+                return( RealModeDataPtr( dr.ds, dr.r.x.esi ) );
             }
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,9 +253,9 @@ extern bool             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
 extern bool             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
 
 /* peread.c */
-extern bool             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
-extern bool             GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
-extern bool             GetModuleName( HANDLE fhdl, char *buff, size_t maxlen );
+extern bool             SeekRead( HANDLE h, DWORD newpos, void *buff, WORD size );
+extern bool             GetEXEHeader( HANDLE h, header_info *hi, WORD *stack );
+extern bool             GetModuleName( HANDLE h, char *buff, size_t maxlen );
 
 /* thread.c */
 extern void             AddThread( DWORD tid, HANDLE th, FARPROC sa );

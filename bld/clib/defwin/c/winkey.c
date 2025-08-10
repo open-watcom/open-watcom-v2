@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #if defined( __OS2__ )
     #define INCL_WIN
@@ -58,10 +59,11 @@ static int              shiftState = 0;
 /*
  * _WindowsKeyUp - process a key up (for shift state)
  */
-void _WindowsKeyUp( WORD vk, WORD data )
+void _WindowsKeyUp( unsigned vk, unsigned data )
 {
+    (void)data;
+
     /* this routine does nothing useful anymore : JBS */
-    data = data;
     switch( vk ) {
     case VK_SHIFT:
         shiftState &= ~SS_SHIFT;
@@ -74,34 +76,33 @@ void _WindowsKeyUp( WORD vk, WORD data )
 } /* _WindowsKeyUp */
 
 
-
 /*
  * _WindowsKeyPush - handle the press of a key
 */
-void _WindowsKeyPush( WORD key, WORD data )
+void _WindowsKeyPush( unsigned key, unsigned data )
 {
-    char        scan;
-    int         ch;
-    BOOL        havekey = TRUE;
+    unsigned    scan;
+    unsigned    ch;
+    bool        havekey;
+#if defined(__NT__)
+    int         char_count;
+    WORD        trans_key[3];
+#elif defined(__WINDOWS__)
+    int         char_count;
+    DWORD       trans_key[3];
+#endif
 
+    havekey = true;
+    scan = data;
 #if defined( __OS2__ )
     ch = key;
-    scan = data;
 #else
-    int         char_count;
-    #if defined(__NT__)
-        WORD    trans_key[3];
-    #else
-        DWORD   trans_key[3];
-    #endif
-
-    scan = LOBYTE( data );
     char_count = 1;
     trans_key[0] = key;
 
     /* char_count can be -1, 0, 1 or 2 */
     if( char_count <= 0 ) {
-        havekey = FALSE;    /* error or no translation for key */
+        havekey = false;    /* error or no translation for key */
     } else {
         ch = trans_key[0];  /* 1 or 2 characters */
         if( char_count == 2 ) {
@@ -124,46 +125,48 @@ void _WindowsKeyPush( WORD key, WORD data )
 /*
  * _WindowsVirtualKeyPush - handle the press of a virtual key
 */
-void _WindowsVirtualKeyPush( WORD vk, WORD data )
+void _WindowsVirtualKeyPush( unsigned vk, unsigned data )
 {
-    char        scan;
-    int         ch;
-    BOOL        havekey = TRUE;
+    unsigned    scan;
+    unsigned    ch;
+    bool        havekey;
 
+    havekey = true;
 #if defined( __OS2__ )
     ch = vk;
 #else
     ch = 0;
 #endif
-    scan = (char) data;
+    scan = data;
 
     switch( vk ) {
-        case VK_HOME:
-        case VK_END:
-        case VK_RETURN:
-        case VK_LEFT:
-        case VK_RIGHT:
-        case VK_DELETE:
-        case VK_BACK:
-        case VK_INSERT:
-            ch = 0x80 + vk;
-            scan = (char)0xFF; /* set as a special editing key to _GetString below */
-            break;
+    case VK_HOME:
+    case VK_END:
+    case VK_RETURN:
+    case VK_LEFT:
+    case VK_RIGHT:
+    case VK_DELETE:
+    case VK_BACK:
+    case VK_INSERT:
+        ch = 0x80 + vk;
+        scan = 0xFF;    /* set as a special editing key to _GetString below */
+        break;
 #ifdef __OS2__
-        case VK_SHIFT:
-        case VK_CTRL:
-        case VK_ALT:
-        case VK_ALTGRAF:
-        case VK_PAUSE:
-        case VK_CAPSLOCK:
-        case VK_PRINTSCRN:
-        case VK_SCRLLOCK:
-        case VK_NUMLOCK:
-        case VK_SYSRQ:
-            havekey = FALSE;
+    case VK_SHIFT:
+    case VK_CTRL:
+    case VK_ALT:
+    case VK_ALTGRAF:
+    case VK_PAUSE:
+    case VK_CAPSLOCK:
+    case VK_PRINTSCRN:
+    case VK_SCRLLOCK:
+    case VK_NUMLOCK:
+    case VK_SYSRQ:
+        havekey = false;
+        break;
 #endif
-        default:
-            break;
+    default:
+        break;
     }
 
     if( havekey ) {
@@ -179,18 +182,18 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
 /*
  * _KeyboardHit - test for a waiting key
  */
-int _KeyboardHit( BOOL block )
+bool _KeyboardHit( bool block )
 {
     if( keyTop != keyBottom )
-        return( TRUE );
+        return( true );
     if( block ) {
-        _BlockingMessageLoop( TRUE );
+        _BlockingMessageLoop( true );
     } else {
-        _MessageLoop( TRUE );
+        _MessageLoop( true );
     }
     if( keyTop != keyBottom )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 
 } /* _KeyboardHit */
 
@@ -199,44 +202,43 @@ int _KeyboardHit( BOOL block )
  */
 int _GetKeyboard( int *scan )
 {
-    int ch;
+    int c;
 
-    ch = (int)charList[keyBottom];
+    c = charList[keyBottom];
     if( scan != NULL ) {
-        *scan = (int)scanList[keyBottom];
+        *scan = scanList[keyBottom];
     }
     keyBottom = ( keyBottom + 1 ) % KBFSIZE;
-    return( ch );
+    return( c );
 
 } /* _GetKeyboard */
 
 /*
  * _GetString - read in a string, return the length
  */
-int _GetString( LPWDATA w, char *str, int maxbuff )
+int _GetString( LPWDATA w, char *str, unsigned maxbuff )
 {
     HWND        hwnd;
-    int         buff_end = 0;
-    int         curr_pos = 0;
-    BOOL        escape = FALSE;
-    BOOL        insert_flag = FALSE;
-    int         maxlen = maxbuff;
+    unsigned    buff_end = 0;
+    unsigned    curr_pos = 0;
+    bool        escape;
+    bool        insert_flag;
+    unsigned    maxlen = maxbuff;
     LPSTR       res;
-    int         wt;
-    int         len;
-    int         i;
+    unsigned    wt;
+    unsigned    len;
+    unsigned    i;
     int         scan;
+    int         ci;
+    int         cx;
 #ifdef _MBCS
     unsigned char *p;
-    int         expectingTrailByte = 0;
-    int         overwrote = 0;
-    unsigned char   ci;
-    unsigned char   cx;
-#else
-    char        ci;
-    char        cx;
+    bool        expectingTrailByte;
+    bool        overwrote;
 #endif
 
+    escape = false;
+    insert_flag = false;
 #ifdef _MBCS
     res = FARmalloc( MB_CUR_MAX * ( maxbuff + 1 ) );
 #else
@@ -247,16 +249,23 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 
     hwnd = w->hwnd;
 
-    _MoveToLine( w, _GetLastLineNumber( w ), FALSE );
+    _MoveToLine( w, _GetLastLineNumber( w ), false );
     _NewCursor( w, SMALL_CURSOR );
-    _SetInputMode( w, TRUE );
-    _GotEOF = FALSE;
-    str[0] = 0;
+    _SetInputMode( w, true );
+
+#ifdef _MBCS
+    expectingTrailByte = false;
+    overwrote = false;
+#endif
+    _GotEOF = false;
+    str[0] = '\0';
+    res[0] = '\0';
 
     for( ;; ) {
         w->curr_pos = curr_pos;
         _DisplayCursor( w );
-        while( !_KeyboardHit( TRUE ) );
+        while( !_KeyboardHit( true ) )
+            /* empty */;
         ci = _GetKeyboard( &scan );
 #if defined( __OS2__ )
         WinShowCursor( hwnd, FALSE );
@@ -271,18 +280,20 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #else
             str[curr_pos++] = ci;
 #endif
-            escape = FALSE;
-        } else if( (ci == CTRL_V) || (scan != 0xFF) ) {
+            escape = false;
+        } else if( (ci == CTRL_V)
+          || (scan != 0xFF) ) {
             if( ci == CTRL_V ) {
-                escape = TRUE;      /* This is a VI thing - */
+                escape = true;      /* This is a VI thing - */
                 ci = '^';           /* it permits insertion of any key */
             }
             if( insert_flag ) {
-                if( buff_end < maxlen && !TOOWIDE( buff_end, w ) ) {
+                if( buff_end < maxlen
+                  && !TOOWIDE( buff_end, w ) ) {
 #ifdef _MBCS
                     if( !expectingTrailByte ) {     /* shift over two bytes */
                         if( _ismbblead( ci ) ) {
-                            expectingTrailByte = 1;
+                            expectingTrailByte = true;
                             p = __mbsninc( (unsigned char *)str, curr_pos );
                             for( i = strlen( (char *)p ) + 1; i-- > 0; )
                                 p[i + 2] = p[i];
@@ -294,11 +305,11 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                             p[0] = ci;
                         }
                     } else {
-                        expectingTrailByte = 0;
+                        expectingTrailByte = false;
                         p = __mbsninc( (unsigned char *)str, curr_pos );
                         p[1] = ci;
                     }
-                    overwrote = 0;
+                    overwrote = false;
 #else
                     for( i = buff_end; i >= curr_pos; i-- )
                         str[i + 1] = str[i];
@@ -313,7 +324,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #ifdef _MBCS
                     if( !expectingTrailByte ) {
                         if( _ismbblead( ci ) ) {
-                            expectingTrailByte = 1;
+                            expectingTrailByte = true;
                             p = __mbsninc( (unsigned char *)str, buff_end );
                         } else {
                             p = __mbsninc( (unsigned char *)str, buff_end );
@@ -321,15 +332,15 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                         p[0] = ci;
                         p[1] = p[2] = 0;
                     } else {
-                        expectingTrailByte = 0;
+                        expectingTrailByte = false;
                         p = __mbsninc( (unsigned char *)str, buff_end );
                         p[1] = ci;
                         p[2] = 0;
                     }
-                    overwrote = 0;
+                    overwrote = false;
 #else
                     str[buff_end++] = ci;
-                    str[buff_end] = 0;
+                    str[buff_end] = '\0';
 #endif
                 } else {
                     continue;
@@ -339,7 +350,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 p = __mbsninc( (unsigned char *)str, curr_pos );
                 if( !expectingTrailByte ) {
                     if( _ismbblead( ci ) ) {
-                        expectingTrailByte = 1;
+                        expectingTrailByte = true;
                         if( !_ismbblead( *p ) ) {
                             for( i = strlen( (char *)p ) + 1; i-- > 1; ) {
                                 p[i + 1] = p[i];    /* shift over one byte */
@@ -355,16 +366,17 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                         p[0] = ci;
                     }
                 } else {
-                    expectingTrailByte = 0;
+                    expectingTrailByte = false;
                     p[1] = ci;
                 }
-                overwrote = 1;
+                overwrote = true;
 #else
                 str[curr_pos] = ci;
 #endif
             }
 #ifdef _MBCS
-            if( !escape && !expectingTrailByte ) {
+            if( !escape
+              && !expectingTrailByte ) {
                 curr_pos++;
                 if( !overwrote ) {
                     buff_end++;
@@ -394,15 +406,15 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 p = __mbsninc( (unsigned char *)str, buff_end );
                 *p = '\0';
 #else
-                str[buff_end] = 0;
+                str[buff_end] = '\0';
 #endif
                 _NewCursor( w, ORIGINAL_CURSOR );
 #ifdef _MBCS
-                _UpdateInputLine( w, str, __mbslen( (unsigned char *)str ), TRUE );
+                _UpdateInputLine( w, str, __mbslen( (unsigned char *)str ), true );
 #else
-                _UpdateInputLine( w, str, strlen( str ), TRUE );
+                _UpdateInputLine( w, str, strlen( str ), true );
 #endif
-                _SetInputMode( w, FALSE );
+                _SetInputMode( w, false );
                 FARstrcat( res, str );
                 FARstrcpy( str, res );
                 FARfree( res );
@@ -441,10 +453,10 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 break;
             case VK_INSERT:
                 if( insert_flag ) {
-                    insert_flag = FALSE;
+                    insert_flag = false;
                     _NewCursor( w, SMALL_CURSOR );
                 } else {
-                    insert_flag = TRUE;
+                    insert_flag = true;
                     _NewCursor( w, FAT_CURSOR );
                 }
                 break;
@@ -452,36 +464,37 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 continue;
             }
         }
-
         /*
          * update line.  if line was split, then we must reset
          * the current line info.
          */
 #ifdef _MBCS
-        wt = _UpdateInputLine( w, str, expectingTrailByte ? __mbslen( (unsigned char *)str ) - 1 : __mbslen( (unsigned char *)str ), FALSE );
+        len = __mbslen( (unsigned char *)str );
+        wt = _UpdateInputLine( w, str, expectingTrailByte ? len - 1 : len, false );
 #else
-        wt = _UpdateInputLine( w, str, strlen( str ), FALSE );
+        len = strlen( str );
+        wt = _UpdateInputLine( w, str, len, false );
 #endif
+        if( (int)wt != -1 ) {
+            unsigned    len1;
+            unsigned    len2;
 
-        if( wt >= 0 ) {
+            /*
+             * len and wt is character count
+             * len1 and len2 is byte count
+             */
 #ifdef _MBCS
             len = __mbslen( (unsigned char *)str );
-            p = __mbsninc( (unsigned char *)str, len - wt );
-            ci = *p;
-            *p = '\0';
-            FARstrcat( res, str );
-            *p = ci;
-            for( i = 0; i <= wt; i++ )
-                str[i] = str[len - wt + i];
+            len2 = __mbsninc( (unsigned char *)str, len - wt ) - (unsigned char *)str;
 #else
             len = strlen( str );
-            ci = str[len - wt];
-            str[len - wt] = 0;
-            FARstrcat( res, str );
-            str[len - wt] = ci;
-            for( i = 0; i <= wt; i++ )
-                str[i] = str[len - wt + i];
+            len2 = len - wt;
 #endif
+            len1 = FARstrlen( res );
+            FARstrncpy( res + len1, str, len2 );
+            res[len1 + len2] = '\0';
+            strcpy( str, str + len2 );
+
             curr_pos = wt;
             buff_end = wt;
             maxlen -= len + 1;

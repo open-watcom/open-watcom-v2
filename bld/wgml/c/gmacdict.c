@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,17 +28,85 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
+
+/***************************************************************************/
+/*  Private symbol dictionary type                                         */
+/***************************************************************************/
+
+#define MAC_HASH_SIZE       241
+
+typedef struct macdict {
+    mac_entry           *htbl[MAC_HASH_SIZE];   // hash table
+    int                 lookups;                // lookup counter
+    int                 macros;                 // macro counter
+    int                 compares;               // strcmp counter
+} macdict;
+
+
+/* For macro name hashing, we must limit the number of characters
+ * that are considered for the name.
+ */
+static unsigned hashpjw_mac( const char *s, int max_len )
+{
+    unsigned    h;
+    int         count = 2;  // we only start checking after 2 chars
+    char        c;
+
+    h = *s++;
+    if( h != 0 ) {
+        c = *s++;
+        if( c != '\0' ) {
+            h = ( h << 4 ) + c;
+            for( ;; ) {
+                h &= 0x0fff;
+                c = *s++;
+                count++;
+                if( c == '\0' || count == max_len )
+                    break;
+                h = ( h << 4 ) + c;
+                h = ( h ^ (h >> 12) ) & 0x0fff;
+                c = *s++;
+                count++;
+                if( c == '\0' || count == max_len )
+                    break;
+                h = ( h << 4 ) + c;
+                h = h ^ (h >> 12);
+            }
+        }
+    }
+    return( h );
+}
+
+
+static int mac_hash( const char *name )
+{
+    unsigned    hash;
+
+    hash = hashpjw_mac( name, MAC_NAME_LENGTH );
+    hash %= MAC_HASH_SIZE;
+    return( hash );
+}
 
 
 /***************************************************************************/
 /*  init_macro_dict   initialize dictionary pointer                        */
 /***************************************************************************/
 
-void    init_macro_dict( mac_entry * * dict )
+void    init_macro_dict( mac_dict *pdict )
 {
-    *dict = NULL;
+    mac_dict    dict;
+
+    dict = mem_alloc( sizeof( *dict ) );
+    memset( dict->htbl, 0, sizeof( dict->htbl ) );
+    dict->lookups  = 0;
+    dict->macros   = 0;
+    dict->compares = 0;
+
+    *pdict = dict;
+
     return;
 }
 
@@ -47,19 +115,23 @@ void    init_macro_dict( mac_entry * * dict )
 /*  add_macro_entry   add macro entry to dictionary                        */
 /***************************************************************************/
 
-void    add_macro_entry( mac_entry * * dict, mac_entry * me )
+void    add_macro_entry( mac_dict dict, mac_entry * me )
 {
     mac_entry   *   wk;
+    int             hash;
 
-    if( *dict == NULL ) {           // empty dictionary
-        *dict = me;
-    } else {
-        wk = *dict;
-        while( wk->next != NULL ) { // search last entry in dictionary
+    hash = mac_hash( me->name );
+    wk = dict->htbl[hash];          // find the hash chain
+
+    if( wk ) {
+        while( wk->next != NULL ) { // find last entry in chain
             wk = wk->next;
         }
         wk->next = me;
+    } else {
+        dict->htbl[hash] = me;      // set first entry in chain
     }
+    dict->macros++;
 }
 
 
@@ -76,7 +148,7 @@ static  void    free_macro_entry_short( mac_entry * me )
 
     if( me != NULL ) {
         cb = me->label_cb;
-        if( GlobFlags.research ) {
+        if( GlobalFlags.research ) {
             print_labels( cb, me->name );   // print label info
         }
         while( cb != NULL ) {
@@ -98,17 +170,18 @@ static  void    free_macro_entry_short( mac_entry * me )
 /***************************************************************************/
 /*  free_macro_entry  delete single macroentry with chain update           */
 /***************************************************************************/
-void    free_macro_entry( mac_entry * * dict, mac_entry * me )
+void    free_macro_entry( mac_dict dict, mac_entry * me )
 {
     inp_line    *   ml;
     inp_line    *   mln;
     mac_entry   *   wk;
     mac_entry   *   wkn;
     labelcb     *   cb;
+    int             hash;
 
     if( me != NULL ) {
         cb = me->label_cb;
-        if( GlobFlags.research ) {
+        if( GlobalFlags.research ) {
             print_labels( cb, me->name );// print label info
         }
         while( cb != NULL ) {
@@ -122,11 +195,14 @@ void    free_macro_entry( mac_entry * * dict, mac_entry * me )
              mem_free( ml );
              ml = mln;
         }
-        if( *dict == me ) {                // delete first entry
-            *dict = me->next;
+
+        hash = mac_hash( me->name );
+        wk = dict->htbl[hash];          // find the hash chain
+
+        if( wk == me ) {                // first entry in the chain?
+            dict->htbl[hash] = wk->next;
         } else {
-            wk = *dict;
-            while( wk != NULL ) {     // search the entry in macro dictionary
+            while( wk != NULL ) {       // search the entry in macro dictionary
                 wkn = wk->next;
                 if( wkn == me ) {
                     wk->next = me->next;// chain update
@@ -144,21 +220,29 @@ void    free_macro_entry( mac_entry * * dict, mac_entry * me )
 /*  free_macro_dict   free all macro dictionary entries                    */
 /***************************************************************************/
 
-void    free_macro_dict( mac_entry * * dict )
+void    free_macro_dict( mac_dict *pdict )
 {
-    mac_entry   *   wk;
-    mac_entry   *   wkn;
+    int             i;
+    mac_entry       *wk;
+    mac_entry       *wkn;
+    mac_dict        dict = *pdict;
 
-    wk = *dict;
-    while( wk != NULL ) {
-        wkn = wk->next;
-        free_macro_entry_short( wk );
-        wk = wkn;
+    for ( i = 0; i < MAC_HASH_SIZE; ++i ) {
+        wk = dict->htbl[i];
+        while( wk != NULL ) {
+            wkn = wk->next;
+            free_macro_entry_short( wk );
+            wk = wkn;
+        }
     }
-    *dict = NULL;                       // dictionary is empty
+#if 0
+    printf( "macro lookups   : %d\n", dict->lookups );
+    printf( "macro compares  : %d\n", dict->compares );
+#endif
+    mem_free( dict );
+    *pdict = NULL;          // dictionary is empty
     return;
 }
-
 
 
 /***************************************************************************/
@@ -166,21 +250,20 @@ void    free_macro_dict( mac_entry * * dict )
 /*  returns ptr to macro or NULL if not found                              */
 /***************************************************************************/
 
-mac_entry   * find_macro( mac_entry * dict, const char * name )
+mac_entry   *find_macro( mac_dict dict, const char *macname )
 {
-    mac_entry   *   wk;
-    mac_entry   *   curr;
+    int             hash;
+    mac_entry       *curr;
 
-    wk   = NULL;
-    curr = dict;
-    while( curr != NULL) {
-        if( !strcmp( curr->name, name ) ) {
-            wk = curr;
+    dict->lookups++;
+    hash = mac_hash( macname );
+    for( curr = dict->htbl[hash]; curr != NULL; curr = curr->next ) {       // find the hash chain
+        dict->compares++;
+        if( strcmp( curr->name, macname ) == 0 ) {
             break;
         }
-        curr = curr->next;
     }
-    return( wk );
+    return( curr );
 }
 
 
@@ -188,29 +271,30 @@ mac_entry   * find_macro( mac_entry * dict, const char * name )
 /*  print_macro_dict  output all of the macro dictionary                   */
 /***************************************************************************/
 
-void    print_macro_dict( mac_entry * dict, bool with_mac_lines )
+void    print_macro_dict( mac_dict dict, bool with_mac_lines )
 {
-    mac_entry           *   wk;
-    int                     cnt;
-    int                     len;
-    inp_line            *   ml;
-    int                     lc;
-    static  const   char    fill[10] = "         ";
+    mac_entry           *wk;
+    int                 cnt;
+    unsigned            len;
+    inp_line            *ml;
+    int                 lc;
+    int                 i;
+    static const char   fill[10] = "         ";
 
     cnt = 0;
-    wk = dict;
     out_msg( "\nList of defined macros:\n\n" );
-    for( wk = dict; wk != NULL; wk = wk->next ) {
-
-        len =  strlen( wk->name );
-        out_msg( "Macro='%s'%sdefined line %d file '%s'\n", wk->name,
-                &fill[len], wk->lineno, wk->mac_file_name );
-        if( with_mac_lines ) {
-            for( ml = wk->macline, lc = 1; ml != NULL; ml = ml->next, lc++ ) {
-                out_msg("%+.3d %s\n", lc, ml->value );
+    for( i = 0; i < MAC_HASH_SIZE; ++i ) {
+        for( wk = dict->htbl[i]; wk != NULL; wk = wk->next ) {
+            len =  strlen( wk->name );
+            out_msg( "Macro='%s'%sdefined line %d file '%s'\n", wk->name,
+                    &fill[len], wk->lineno, wk->mac_file_name );
+            if( with_mac_lines ) {
+                for( ml = wk->macline, lc = 1; ml != NULL; ml = ml->next, lc++ ) {
+                    out_msg("%+.3d %s\n", lc, ml->value );
+                }
             }
+            cnt++;
         }
-        cnt++;
     }
     out_msg( "\nTotal macros defined: %d\n", cnt );
     return;

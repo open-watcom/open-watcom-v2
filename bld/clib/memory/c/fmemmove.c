@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 
 #if defined(__SMALL_DATA__)
 
-extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movebwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movebwd = \
         "std"           \
         "push ds"       \
@@ -59,7 +60,7 @@ extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __value             \
     __modify __exact    [__di __si __cx __ax]
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push ds"       \
         "xchg si,ax"    \
@@ -75,7 +76,7 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 
 #else
 
-extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern  void    movebwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux     movebwd =  \
         "std"           \
         "push ds"       \
@@ -95,7 +96,7 @@ extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __value             \
     __modify __exact    [__di __si __cx __ax]
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push ds"       \
         "xchg si,ax"    \
@@ -115,7 +116,7 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 
 #if defined(__FLAT__)
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push es"       \
         "mov  es,edx"   \
@@ -134,7 +135,7 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 
 #else
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push ds"       \
         "xchg esi,eax"  \
@@ -157,29 +158,30 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 #endif
 
 
-_WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *t, const void _WCFAR *f, size_t len )
+_WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *vd, const void _WCFAR *vs, size_t len )
 {
-    char _WCFAR *to = t;
-    const char _WCFAR *from = f;
-    if( from == to ) {
-        return( to );
+    char _WCFAR *d = vd;
+    const char _WCFAR *s = vs;
+    if( s == d
+      || len == 0 ) {
+        return( d );
     }
-    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
+    if( s < d
+      && s + len > d ) {  /* if buffers are overlapped*/
 #if defined(__HUGE__) || defined(__386__)
-        to += len;
-        from += len;
+        d += len;
+        s += len;
         while( len != 0 ) {
-            to--;
-            from--;
-            *to = *from;
+            d--;
+            s--;
+            *d = *s;
             len--;
         }
 #else
-        movebwd( ( to + len ) - 1, ( from + len ) - 1, len );
+        movebwd( ( d + len ) - 1, ( s + len ) - 1, len );
 #endif
     } else {
-        movefwd( to, from, len );
+        movefwd( d, s, len );
     }
-    return( to );
+    return( d );
 }
-

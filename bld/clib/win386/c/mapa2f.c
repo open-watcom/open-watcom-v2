@@ -34,26 +34,19 @@
 #include "variety.h"
 #include <string.h>
 #include <dos.h>
+#include "dpmi.h"
 #include "cover.h"
 
 
+extern unsigned __get_ds( void );
+#pragma aux __get_ds = \
+        "mov ebx,ds" \
+    __parm              [] \
+    __value             [__ebx] \
+    __modify __exact    [__ebx]
+
 void *MapAliasToFlat( DWORD alias )
 {
-    union REGPACK       regs;
-    DWORD               base_32;
-    DWORD               base_16;
-    DWORD               res;
-
-    memset( &regs, 0, sizeof( regs ) );
-    regs.x.ax = 0x06;
-    regs.x.bx = _FP_SEG( (void __far *)&regs );
-    intr( 0x31, &regs );
-    base_32 = ( regs.x.cx << 16L ) + (DWORD)regs.x.dx;
-    regs.x.ax = 0x06;
-    regs.x.bx = alias >> 16;
-    intr( 0x31, &regs );
-    base_16 = ( regs.x.cx << 16L ) + (DWORD)regs.x.dx;
-    res = base_16 - base_32 + (DWORD)((WORD)alias);
-    return( (void *)res );
+    return( (void *)( DPMIGetSegmentBaseAddress( alias >> 16 ) - DPMIGetSegmentBaseAddress( __get_ds() ) + (DWORD)((WORD)alias) ) );
 
 } /* MapAliasToFlat */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ HANDLE __lib_CreateFileW( LPCWSTR lpFileName,
                              dwFlagsAndAttributes, hTemplateFile ) );
     } else {                                            /* Win95 or Win32s */
         char *          mbFileName;
-        HANDLE          osrc;
+        HANDLE          osfh;
 
         /*** Prepare to call the OS ***/
         mbFileName = __lib_cvt_wcstombs( lpFileName );
@@ -65,10 +65,10 @@ HANDLE __lib_CreateFileW( LPCWSTR lpFileName,
         }
 
         /*** Call the OS ***/
-        osrc = CreateFileA( mbFileName, dwDesiredAccess, dwShareMode,
+        osfh = CreateFileA( mbFileName, dwDesiredAccess, dwShareMode,
                             lpSecurityAttributes, dwCreationDisposition,
                             dwFlagsAndAttributes, hTemplateFile );
         lib_free( mbFileName );
-        return( osrc );
+        return( osfh );
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ _WCRTLINK _WCNORETURN void exit( int status )
         _exit( status );
         // never return
     }
-#elif defined(__NT__) || defined(__OS2__) && !defined(_M_I86)
+#elif defined(__NT__) || defined(__OS2_32BIT__)
     (*__int23_exit)();
     if( __Is_DLL ) {
         if( __process_fini != NULL ) {
@@ -88,7 +88,7 @@ _WCRTLINK _WCNORETURN void exit( int status )
         _exit( status );
         // never return
     }
-#elif defined(__DOS__) || defined(__OS2_286__) || defined(__WINDOWS_286__)
+#elif defined(__DOS__) || defined(__OS2_16BIT__) || defined(__WINDOWS_286__)
     (*__int23_exit)();
 #endif
 #ifndef __RDOSDEV__
@@ -99,7 +99,7 @@ _WCRTLINK _WCNORETURN void exit( int status )
 }
 
 
-#if defined(__OS2_286__) && defined(__SW_BD)
+#if defined(__OS2_16BIT__) && defined(__SW_BD)
 _WCRTLINK void _UnloadCLib( void )
 {
     (*__int23_exit)();

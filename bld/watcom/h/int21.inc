@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,10 +31,10 @@
 ;*****************************************************************************
 
 
-;  This file supports the Windows 32 bit supervisor and the O/S independent
-;  supervisor.
 ;
-ifdef  __CALL21__
+;  This file supports the Windows 3.x 32 bit supervisor
+;
+ifdef  __WINDOWS_386__
         extrn   __Int21 : near
 int21h  macro
         call    __Int21

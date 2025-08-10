@@ -40,9 +40,6 @@
 #include <limits.h>
 #include <stdio.h>
 #include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "fileio.h"
 #include "objio.h"
 #include "objcache.h"
@@ -253,7 +250,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
         result = cache[startnum] + offset;
     } else {
         if( len > TokSize ) {
-            TokSize = __ROUND_UP_SIZE( len, SECTOR_SIZE );
+            TokSize = __ROUND_UP_SIZE_SECTOR( len );
             _LnkRealloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;

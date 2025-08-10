@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ typedef struct os2_exe_header {
 #define RAT_SIGNATURE_WORD          EXESIGN_LE
 #define OS2_SIGNATURE_WORD          EXESIGN_NE
 
-#define NE_HEADER_OFFSET            0x003c
+#define NE_HEADER_OFFSET            0x003cL
 #define OS2_EXE_HEADER_FOLLOWS(x)   ((x) >= 0x0040) /* reloc table offset 0x40 */
 
 /******************************************************************************

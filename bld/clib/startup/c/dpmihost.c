@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,28 +33,26 @@
 #include "variety.h"
 #include "extender.h"
 #include "dpmi.h"
-#include "dpmihost.h"
+#include "rtdata.h"
+#include "rtinit.h"
 
-int __DPMI_hosted( void )
+extern short _CheckDPMIVersion( void );
+#pragma aux _CheckDPMIVersion = \
+        _MOV_AX_W DPMI_0400 \
+        _INT_31         \
+    __parm   [] \
+    __value  [__ax] \
+    __modify [__bx __cx __dx]
+
+unsigned char   _DPMI = 0;
+
+static void dpmi_check( void )
 {
-    static signed int _mode = 0;
-
-    if( _mode == 0 ) {
-        if( _IsRational() || DPMIModeDetect() == 0 ) {
-            version_info vi;
-            vi.major_version = 0;
-            vi.minor_version = 0;
-            vi.flags = 0;
-            vi.processor_type = 0;
-            DPMIGetVersion( &vi );
-            if( (vi.major_version + vi.minor_version) > 0 ) {
-                _mode = 1;
-            } else {
-                _mode = -1;
-            }
-        } else {
-            _mode = -1;
+    if( DPMIModeDetect() == 0 || _IsRational() ) {
+        if( _CheckDPMIVersion() ) {
+            _DPMI = 1;
         }
     }
-    return( _mode );
 }
+
+AXI( dpmi_check, INIT_PRIORITY_THREAD )

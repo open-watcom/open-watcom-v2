@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,15 +59,17 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     DWORD               os_attr, fileattr;
     DWORD               desired_access, share_mode;
     SECURITY_ATTRIBUTES security;
-    HANDLE              handle;
-    int                 hid;
+    HANDLE              osfh;
+    int                 handle;
     unsigned            rwmode;
     unsigned            iomode_flags;
 
-    // First try to get the required slot.
-    // No point in creating a file only to not use it.  JBS 99/10/26
-    hid = __allocPOSIXHandleDummy();
-    if( hid == -1 ) {
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
+    handle = __allocPOSIXHandleDummy();
+    if( handle == -1 ) {
         return( -1 );
     }
 
@@ -81,21 +83,23 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     security.bInheritHandle = ( mode & O_NOINHERIT ) ? FALSE : TRUE;
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsNewWindow != NULL && !__F_NAME(_stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
-    {
-        handle = __NTGetFakeHandle();
-
-        // Now use the slot we got.
-        __setOSHandle( hid, handle );   // JBS 99/11/01
-        _WindowsNewWindow( NULL, hid, -1 );
+    if( _WindowsNewWindow != NULL
+      && __F_NAME(_stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) == 0 ) {
+        osfh = __NTGetFakeHandle();
+        /*
+         * Now use the slot we got.
+         */
+        __setOSHandle( handle, osfh );
+        _WindowsNewWindow( NULL, handle, -1 );
 
         iomode_flags = _ISTTY;
     } else {
 #endif
         if( mode & O_CREAT ) {
             perm = va_arg( args, int );
-            perm &= ~_RWD_umaskval;             /* 05-jan-95 */
-            if( ( perm & S_IREAD ) && !( perm & S_IWRITE ) ) {
+            perm &= ~_RWD_umaskval;
+            if( (perm & S_IREAD)
+              && (perm & S_IWRITE) == 0 ) {
                 fileattr = FILE_ATTRIBUTE_READONLY;
             }
             if( mode & O_EXCL ) {
@@ -115,42 +119,55 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         }
 
         /*** Open the file ***/
-        handle = __lib_CreateFile( name, desired_access, share_mode, &security,
+        osfh = __lib_CreateFile( name, desired_access, share_mode, &security,
                                         exists_disp, fileattr, NULL );
-        if( handle == INVALID_HANDLE_VALUE ) {
+        if( osfh == INVALID_HANDLE_VALUE ) {
             if( mode & O_CREAT ) {
-                handle = __lib_CreateFile( name, desired_access, share_mode, NULL,
+                osfh = __lib_CreateFile( name, desired_access, share_mode, NULL,
                                             create_disp, fileattr, NULL );
             }
-            if( handle == INVALID_HANDLE_VALUE ) {
-                __freePOSIXHandle( hid );
+            if( osfh == INVALID_HANDLE_VALUE ) {
+                /*
+                 * Give back the slot we got
+                 */
+                __freePOSIXHandle( handle );
                 return( __set_errno_nt() );
             }
         }
-
-        // Now use the slot we got.
-        __setOSHandle( hid, handle );   // JBS 99/11/01
+        /*
+         * Now use the slot we got.
+         */
+        __setOSHandle( handle, osfh );
 
         iomode_flags = 0;
 
-        if( isatty( hid ) ) {
+        if( isatty( handle ) ) {
             iomode_flags = _ISTTY;
         }
 #ifdef DEFAULT_WINDOWING
     }
 #endif
 
-    if( rwmode == O_RDWR )       iomode_flags |= _READ | _WRITE;
-    else if( rwmode == O_RDONLY) iomode_flags |= _READ;
-    else if( rwmode == O_WRONLY) iomode_flags |= _WRITE;
-    if( mode & O_APPEND )        iomode_flags |= _APPEND;
-    if( mode & (O_BINARY|O_TEXT) ) {
-        if( mode & O_BINARY )    iomode_flags |= _BINARY;
-    } else {
-        if( _RWD_fmode == O_BINARY ) iomode_flags |= _BINARY;
+    if( rwmode == O_RDWR ) {
+        iomode_flags |= _READ | _WRITE;
+    } else if( rwmode == O_RDONLY ) {
+        iomode_flags |= _READ;
+    } else if( rwmode == O_WRONLY ) {
+        iomode_flags |= _WRITE;
     }
-    __SetIOMode( hid, iomode_flags );
-    return( hid );
+    if( mode & O_APPEND )
+        iomode_flags |= _APPEND;
+    if( mode & (O_BINARY | O_TEXT) ) {
+        if( mode & O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
+    } else {
+        if( _RWD_fmode == O_BINARY ) {
+            iomode_flags |= _BINARY;
+        }
+    }
+    __SetIOMode( handle, iomode_flags );
+    return( handle );
 }
 
 

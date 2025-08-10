@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,25 +28,55 @@
 *                         PB is not documented, so this is guessing
 ****************************************************************************/
 
-#include "wgml.h"
+
+#include    "wgml.h"
 
 
 /***************************************************************************/
 /*  :PB.                                                                   */
 /*                                                                         */
-/*    try to process as .br                                                */
+/*  not documented in Reference Manual                                     */
+/*  Probable full name: Paragraph Break                                    */
+/*  when used after P, PB, PC, or LP: passess g_post_skip on to next       */
+/*    document element                                                     */
+/*  otherwise, uses the g_post_skip as a pre_skip                          */
 /*                                                                         */
+/*  NOTE: this works when concatenation is ON, at least at present         */
+/*        it also works when PB follows P and conatenation is OFF          */
+/*        but fails otherwise when concatenation is OFF                    */
 /***************************************************************************/
-extern  void    gml_pb( gml_tag gtag )
-{
-    /* unused parameters */ (void)gtag;
 
-    scan_err = false;
+extern  void    gml_pb( const gmltag * entry )
+{
+    bool        has_text;   // will be true if following P, PB, PC, or LP
+    char    *   p;
+
+    (void)entry;
+
+    g_scan_err = false;
+    p = g_scandata.s;
 
     start_doc_sect();                   // if not already done
+    if( ProcFlags.concat ) {
+        ProcFlags.para_starting = false;// avoid set_skip_vars in scr_process_break()
+    }
+    has_text = ProcFlags.para_has_text; // save value
+    scr_process_break();                // clears ProcFlags.para_has_text
 
-    scr_process_break();
+    if( ProcFlags.concat ) {
+        if( has_text ) {
+            ProcFlags.skips_valid = true;       // keep existing skips inside paragraph
+        }
+        ProcFlags.para_has_text = has_text; // reset flag
+    }
 
-    scan_start = scan_stop;
+    SkipDot( p );                       // over '.'
+    post_space = 0;
+    if( *p != '\0' ) {
+        process_text( p, g_curr_font );
+    }
+
+    g_scandata.s = g_scandata.e;
     return;
 }
+

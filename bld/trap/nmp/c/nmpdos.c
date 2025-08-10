@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,24 +34,24 @@
 #include "tinyio.h"
 #include "nmp.h"
 
-bhandle myopen( char *name )
+oshandle myopen( char *name )
 {
     tiny_ret_t  rc;
 
     rc = TinyOpen( name, TIO_READ_WRITE );
     if( TINY_ERROR( rc ) ) {
-        return( BHANDLE_INVALID );
+        return( OSHANDLE_INVALID );
     } else {
         return( TINY_INFO( rc ) );
     }
 }
 
-void myclose( bhandle handle )
+void myclose( oshandle handle )
 {
     TinyClose( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( oshandle handle, void *buff, int len )
 {
     tiny_ret_t  rc;
 
@@ -63,7 +64,7 @@ int myread( bhandle handle, void *buff, int len )
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( oshandle handle, void *buff, int len )
 {
     tiny_ret_t  rc;
 

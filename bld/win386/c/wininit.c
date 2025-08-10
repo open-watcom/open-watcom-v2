@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Win386 Supervisor 32-bit DPMI mode startup code (16-bit).
+* Description:  Win386 Supervisor 32-bit DPMI mode startup code (16-bit code).
 *
 ****************************************************************************/
 
@@ -167,7 +167,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * verify that we are running on a 32-bit DPMI
      */
-    _fDPMIGetVersion( &vi );
+    DPMIGetVersion( &vi );
     if( (vi.flags & VERSION_80386) == 0 ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
@@ -178,15 +178,15 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      * get exe to load
      */
     GetModuleFileName( thisInstance, file, 128 );
-    rc = _fTinyOpen( file, TIO_READ );
+    rc = TinyFarOpen( file, TIO_READ );
     if( TINY_ERROR( rc ) ) {
-        return( Fini( 2, (char _FAR *)"Error opening file", (char _FAR *)file ) );
+        return( Fini32BitTask( 2, (char _FAR *)"Error opening file", (char _FAR *)file ) );
     }
     handle = TINY_INFO( rc );
 
-    _TinySeek( handle, 0x38, TIO_SEEK_SET );
-    _fTinyRead( handle, &exelen, sizeof( DWORD ) );
-    _TinySeek( handle, exelen, TIO_SEEK_SET );
+    TinySeek( handle, 0x38L, TIO_SEEK_SET );
+    TinyFarRead( handle, &exelen, sizeof( DWORD ) );
+    TinySeek( handle, exelen, TIO_SEEK_SET );
 
     /*
      * check if we are being run by the debugger.  When the debugger
@@ -208,10 +208,10 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * validate header signature
      */
-    _fTinyRead( handle, &exe, sizeof( rex_exe ) );
+    TinyFarRead( handle, &exe, sizeof( rex_exe ) );
 //    BreakPoint();
     if( !(exe.sig[0] == 'M' && exe.sig[1] == 'Q') ) {
-        return( Fini( 1, (char _FAR *)"Invalid EXE" ) );
+        return( Fini32BitTask( 1, (char _FAR *)"Invalid EXE" ) );
     }
     file_header_size = (DWORD)exe.file_header * 16L;
     /*
@@ -225,8 +225,8 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * get exe data - data start and stack start
      */
-    _TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_SET );
-    _fTinyRead( handle, &exedat, sizeof( exe_data ) );
+    TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_SET );
+    TinyFarRead( handle, &exedat, sizeof( exe_data ) );
     /*
      * get file size
      */
@@ -265,10 +265,10 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     tried_global_compact = false;
     save_maxmem = maxmem;
-    while( (i = _DPMIGet32( &adata, maxmem )) != 0 ) {
+    while( (i = _DPMI_Get32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
-                return( Fini( 3,
+                return( Fini32BitTask( 3,
                   (char _FAR *)"Not enough memory for application\n(minimum ",
                   dwordToStr( minmem ), (char _FAR *)" required)" ) );
             }
@@ -299,7 +299,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     BaseAddr = 0L;
     if( i ) {
         DPMIFreeMemoryBlock( DataHandle );
-        return( Fini( 2, (char _FAR *)"Allocation error ", dwordToStr( i ) ) );
+        return( Fini32BitTask( 2, (char _FAR *)"Allocation error ", dwordToStr( i ) ) );
     }
     SaveSP = BaseAddr + StackSize;
     CodeLoadAddr = SaveSP;
@@ -311,18 +311,18 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      * this builds a collection of LDT selectors that are ready for
      * allocation
      */
-    if( InitSelectorCache() != 0 ) {
-        return( Fini( 1, (char _FAR *)outOfSelectors ) );
+    if( InitSelectorCache() ) {
+        return( Fini32BitTask( 1, (char _FAR *)outOfSelectors ) );
     }
 
     /*
      * read the exe into memory
      */
     currsize = size - file_header_size;
-    _TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
-    i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
+    TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
+    i = _DPMI_GetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
-        return( Fini( 3, (char _FAR *)"Error ",
+        return( Fini32BitTask( 3, (char _FAR *)"Error ",
                 dwordToStr( i ),
                 (char _FAR *)" getting alias for read" ) );
     }
@@ -335,10 +335,10 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         } else {
             amount = (WORD)currsize;
         }
-        rc = _fTinyRead( handle, dataptr, amount );
+        rc = TinyFarRead( handle, dataptr, amount );
         bytes_read = TINY_INFO( rc );
         if( bytes_read != amount ) {
-            return( Fini( 1, (char _FAR *)"Read error" ) );
+            return( Fini32BitTask( 1, (char _FAR *)"Read error" ) );
         }
         currsize -= (DWORD)amount;
         curroff += (DWORD)amount;
@@ -361,7 +361,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         relsize += kcnt * ( 0x10000L * sizeof( DWORD ) );
     }
     if( relsize != 0 ) {
-        _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_SET );
+        TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_SET );
         if( StackSize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {
@@ -371,17 +371,17 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
             if( relsize < (DWORD)amount ) {
                 amount = (WORD)relsize;
             }
-            rc = _fTinyRead( handle, relptr, amount );
+            rc = TinyFarRead( handle, relptr, amount );
             bytes_read = TINY_INFO( rc );
             if( bytes_read != amount ) {
-                return( Fini( 1, (char _FAR *)"Relocation read error" ) );
+                return( Fini32BitTask( 1, (char _FAR *)"Relocation read error" ) );
             }
             CodeRelocate( relptr, amount / sizeof( DWORD ) );
             relsize -= (DWORD)amount;
         }
     }
 
-    _TinyClose( handle );
+    TinyClose( handle );
 
     /* initialize emulator 8087 save area 20-oct-94 */
 
@@ -445,7 +445,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * free alias selector
      */
-    _DPMIFreeAlias( sel );
+    _DPMI_FreeAlias( sel );
 
     /*
      * check for FPU and WGod
@@ -523,7 +523,7 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
-        _DPMIFree32( DataHandle );
+        _DPMI_Free32( DataHandle );
     }
 
     /*
@@ -539,9 +539,9 @@ void Cleanup( void )
 static bool doneFini = false;
 
 /*
- * Fini - clean up after an error
+ * Fini32BitTask - clean up after an error
  */
-int Fini( int strcnt, ... )
+int Fini32BitTask( int strcnt, ... )
 {
 #ifdef DLL32
     /* unused parameters */ (void)strcnt;
@@ -570,4 +570,4 @@ int Fini( int strcnt, ... )
     Cleanup();
     return( false );
 
-} /* Fini */
+} /* Fini32BitTask */

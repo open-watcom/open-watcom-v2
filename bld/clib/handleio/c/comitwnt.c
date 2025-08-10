@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 _WCRTLINK int _commit( int handle )
 {
     unsigned iomode_flags;
@@ -48,7 +49,7 @@ _WCRTLINK int _commit( int handle )
         _RWD_errno = EBADF;
         return( 0 );
     }
-    if( !FlushFileBuffers( __getOSHandle( handle ) ) ) {
+    if( FlushFileBuffers( __getOSHandle( handle ) ) == 0 ) {
         __set_errno_nt();
         return( 0 );
     }

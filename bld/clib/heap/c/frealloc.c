@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,24 +39,6 @@
 #include "heap.h"
 
 
-extern void _mymemcpy( void_fptr, void_fptr, size_t );
-#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
-#pragma aux _mymemcpy = \
-        "push ds"       \
-        "mov ds,dx"     \
-        memcpy_i86      \
-        "pop ds"        \
-    __parm __caller     [__es __di] [__dx __si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#else
-#pragma aux _mymemcpy = \
-        memcpy_i86      \
-    __parm __caller     [__es __di] [__ds __si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#endif
-
 #if defined(__BIG_DATA__)
 
 _WCRTLINK void *realloc( void *cstg, size_t amount )
@@ -91,7 +73,7 @@ _WCRTLINK void_fptr _frealloc( void_fptr cstg_old, size_t req_size )
     if( cstg_new == NULL ) {        /* couldn't be expanded inline */
         cstg_new = _fmalloc( req_size );
         if( cstg_new != NULL ) {
-            _mymemcpy( cstg_new, cstg_old, old_size );
+            _fmemcpy( cstg_new, cstg_old, old_size );
             _ffree( cstg_old );
         } else {
             if( _FP_SEG( cstg_old ) == _DGroup() ) {

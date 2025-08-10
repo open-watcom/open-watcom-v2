@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,12 +30,13 @@
 
 
 #include "variety.h"
-#include <fnmatch.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include "bool.h"
+#include <fnmatch.h>
 #include "pathmac.h"
 #include "intwctyp.h"
+#include "xstring.h"
 
 
 /* Implementation note: On non-UNIX systems, backslashes in the string
@@ -43,12 +44,12 @@
  * identical to forward slashes when FNM_PATHNAME is set.
  */
 
-static char icase( char ch, int flags )
+static int icase( int c, int flags )
 {
     if( flags & FNM_IGNORECASE ) {
-        return( tolower( (unsigned char)ch ) );
+        return( tolower( c ) );
     } else {
-        return( ch );
+        return( c );
     }
 }
 
@@ -60,18 +61,18 @@ static char icase( char ch, int flags )
 /* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
-static int sub_bracket( const char *p, int c )
+static int sub_bracket( const unsigned char *p, int c )
 {
-    const char      *s = p;
-    char            sname[CCL_NAME_MAX + 1];
-    int             i;
-    int             type;
+    const unsigned char *s = p;
+    char                sname[CCL_NAME_MAX + 1];
+    int                 i;
+    int                 type;
 
     switch( *++p ) {
     case ':':
         ++p;
         for( i = 0; i < CCL_NAME_MAX; i++ ) {
-            if( !isalpha( (unsigned char)*p ) )
+            if( !isalpha( *p ) )
                 break;
             sname[i] = *p++;
         }
@@ -112,7 +113,7 @@ static int sub_bracket( const char *p, int c )
 }
 
 
-static const char *cclass_match( const char *patt, int c )
+static const char *cclass_match( const unsigned char *patt, int c )
 {
     bool        ok;
     int         lc;
@@ -129,9 +130,9 @@ static const char *cclass_match( const char *patt, int c )
     lc = 0;
     state = 0;
     ok = false;
-    while( *patt ) {
+    while( *patt != NULLCHAR ) {
         if( *patt == ']' )
-            return( ( ok ^ invert ) ? patt + 1 : NULL );
+            return( ( ok ^ invert ) ? (const char *)( patt + 1 ) : NULL );
 
         if( *patt == '[' ) {
              sb = sub_bracket( patt, c );
@@ -150,9 +151,9 @@ static const char *cclass_match( const char *patt, int c )
         case 0:
             if( *patt == DIR_SEP )
                 ++patt;
-            if( (unsigned char)*patt == c )
+            if( *patt == c )
                 ok = true;
-            lc = (unsigned char)*patt++;
+            lc = *patt++;
             state = 1;
             break;
         case 1:
@@ -162,7 +163,7 @@ static const char *cclass_match( const char *patt, int c )
         case 2:
             if( *patt == DIR_SEP )
                 ++patt;
-            if( lc <= c && c <= (unsigned char)*patt )
+            if( lc <= c && c <= *patt )
                 ok = true;
             ++patt;
             state = 0;
@@ -178,42 +179,47 @@ static const char *cclass_match( const char *patt, int c )
 _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
 /*******************************************************************/
 {
-    char        c, cl;
+    int         cp;
+    int         cs;
+    int         cl;
     const char  *start = s;
 
     for( ;; ) {
-        c = icase( *patt++, flags );
-        switch( c ) {
+        cp = icase( CHAR2INT( *patt++ ), flags );
+        cs = CHAR2INT( *s );
+        switch( cp ) {
         case NULLCHAR:
-            if( (flags & FNM_LEADING_DIR) && IS_DIR_SEP( *s ) )
+            if( (flags & FNM_LEADING_DIR) && IS_DIR_SEP( cs ) )
                 return( 0 );
-            return( ( *s != NULLCHAR ) ? FNM_NOMATCH : 0 );
+            return( ( cs != NULLCHAR ) ? FNM_NOMATCH : 0 );
         case '?':
-            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( cs ) )
                 return( FNM_NOMATCH );
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && cs == '.' && s == start )
                 return( FNM_NOMATCH );
             ++s;
             break;
         case '[':
-            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( cs ) )
                 return( FNM_NOMATCH );
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && cs == '.' && s == start )
                 return( FNM_NOMATCH );
-            patt = cclass_match( patt, (unsigned char)*s );
+            patt = cclass_match( (unsigned char *)patt, cs );
             if( patt == NULL )
                 return( FNM_NOMATCH );
             ++s;
             break;
         case '*':
-            if( *s == NULLCHAR )
+            if( cs == NULLCHAR )
                 return( 0 );
-            if( (flags & FNM_PATHNAME) && ( *patt == '/' ) ) {
-                while( *s != NULLCHAR && !IS_DIR_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && ( CHAR2INT( *patt ) == '/' ) ) {
+                while( cs != NULLCHAR && !IS_DIR_SEP( cs ) ) {
                     ++s;
+                    cs = CHAR2INT( *s );
+                }
                 break;
             }
-            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && cs == '.' && s == start )
                 return( FNM_NOMATCH );
             if( *patt == NULLCHAR ) {
                 /* Shortcut - don't examine every remaining character. */
@@ -227,7 +233,7 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
                     return( 0 );
                 }
             }
-            while( (cl = icase( *s, flags )) != NULLCHAR ) {
+            while( (cl = icase( cs, flags )) != NULLCHAR ) {
                 if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
                     return( 0 );
                 if( (flags & FNM_PATHNAME) && IS_DIR_SEP( cl ) ) {
@@ -235,22 +241,24 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
                     break;
                 }
                 ++s;
+                cs = CHAR2INT( *s );
             }
             return( FNM_NOMATCH );
         case '\\':
             if( (flags & FNM_NOESCAPE) == 0 ) {
-                c = icase( *patt++, flags );
+                cp = icase( CHAR2INT( *patt++ ), flags );
             }
             /* Fall through */
         default:
-            if( IS_DIR_SEP( *s ) )
+            if( IS_DIR_SEP( cs ) )
                 start = s + 1;
-            cl = icase( *s++, flags );
+            cl = icase( cs, flags );
+            ++s;
 #ifndef __UNIX__
             if( (flags & FNM_PATHNAME) && cl == DIR_SEP )
                 cl = ALT_DIR_SEP;
 #endif
-            if( c != cl ) {
+            if( cp != cl ) {
                 return( FNM_NOMATCH );
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ static void *neutrino_init( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr )
     note.n_type = QNT_CORE_INFO;
     note_name = find_note( fd, ehdr, phdr, swap, &note );
     if( note_name ) {
-        if( !strcmp( note_name, QNX_NOTE_NAME ) ) {
+        if( strcmp( note_name, QNX_NOTE_NAME ) == 0 ) {
             free( note_name );
             ctx = malloc( sizeof( ctx_neutrino ) );
             if( ctx ) {

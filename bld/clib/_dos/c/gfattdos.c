@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         _SET_DSDX           \
         INIT_VALUE          \
         _MOV_AX_W   _GET_ DOS_CHMOD \
-        _INT_21             \
+        __INT_21            \
         _RST_DS             \
         "jc short L1"       \
         SAVE_VALUE          \
@@ -90,7 +90,7 @@ extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
             "xor    bl,bl"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "sbb    dx,dx"      \
             "jnz short L2"      \
@@ -108,7 +108,7 @@ extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
             "xor    bl,bl"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "sbb    dx,dx"      \
             "jnz short L2"      \
             "cmp    ax,7100h"   \
@@ -129,16 +129,16 @@ static lfn_ret_t _dos_getfileattr_lfn( const char *path )
   #ifdef _M_I86
     return( __dos_getfileattr_lfn( path ) );
   #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.eax = 0x7143;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
-        return( dpmi_rm.cx );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.r.x.eax = 0x7143;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
+        return( dr.r.w.cx );
     }
     return( rc );
   #endif

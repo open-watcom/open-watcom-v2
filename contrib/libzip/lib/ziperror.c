@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,14 +33,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 void
 _zip_error_copy(struct zip_error *dst, struct zip_error *src)
@@ -49,31 +49,31 @@ _zip_error_copy(struct zip_error *dst, struct zip_error *src)
     dst->sys_err = src->sys_err;
 }
 
-
+
 
 void
 _zip_error_fini(struct zip_error *err)
 {
-    free(err->str);
+    ZIP_FREE(err->str);
     err->str = NULL;
 }
 
-
+
 
 void
 _zip_error_get(struct zip_error *err, int *zep, int *sep)
 {
     if (zep)
-	*zep = err->zip_err;
+        *zep = err->zip_err;
     if (sep) {
-	if (zip_error_get_sys_type(err->zip_err) != ZIP_ET_NONE)
-	    *sep = err->sys_err;
-	else
-	    *sep = 0;
+        if (zip_error_get_sys_type(err->zip_err) != ZIP_ET_NONE)
+            *sep = err->sys_err;
+        else
+            *sep = 0;
     }
 }
 
-
+
 
 void
 _zip_error_init(struct zip_error *err)
@@ -83,13 +83,13 @@ _zip_error_init(struct zip_error *err)
     err->str = NULL;
 }
 
-
+
 
 void
 _zip_error_set(struct zip_error *err, int ze, int se)
 {
     if (err) {
-	err->zip_err = ze;
-	err->sys_err = se;
+        err->zip_err = ze;
+        err->sys_err = se;
     }
 }

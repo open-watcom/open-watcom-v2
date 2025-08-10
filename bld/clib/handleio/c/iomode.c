@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  io_mode handle information array manipulation
+* Description:  __io_mode handle information array manipulation
 *
 ****************************************************************************/
 
@@ -56,24 +56,26 @@ unsigned __NFiles   = _NFILES;          /* maximum # of files we can open */
 #if !defined(__UNIX__)
 
 unsigned _HUGEDATA __init_mode[_NFILES] = { /* file mode information (flags) */
-        _READ,          /* stdin */
-        _WRITE,         /* stdout */
-        _WRITE,         /* stderr */
-        _READ|_WRITE,   /* stdaux */
-        _WRITE          /* stdprn */
+    _READ,          /* stdin */
+    _WRITE,         /* stdout */
+    _WRITE,         /* stderr */
+#if defined(__DOS__) || defined(__WINDOWS__)
+    _READ|_WRITE,   /* stdaux */
+    _WRITE          /* stdprn */
+#endif
 };
 
 unsigned *__io_mode = __init_mode;      /* initially points to static array */
 
 unsigned __GetIOMode( int handle )
 {
-    if( handle >= __NFiles ) {
-        return( 0 );
+    if( handle < __NFiles ) {
+        return( __io_mode[handle] );
     }
-    return( __io_mode[handle] );
+    return( 0 );
 }
 
-void __SetIOMode_nogrow( int handle, unsigned value )
+void __SetIOMode( int handle, unsigned value )
 {
     if( handle < __NFiles ) {
         __io_mode[handle] = value;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,13 +126,13 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 
 void ProcSysOptInit( void )
 {
-    char                *ptr;
+    unsigned char   *ptr;
 
     CheckSize = 0;
     MemSize = 2L*1024*1024;
-    ptr = (char *)( (unsigned_8 *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF );
-    ptr[*(unsigned_8 *)ptr + 1] = NULLCHAR;
-    cmdStart = (char *)( (unsigned_8 *)ptr + 1 );
+    ptr = (unsigned char *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF;
+    ptr[*ptr + 1] = NULLCHAR;
+    cmdStart = (char *)ptr + 1;
 }
 
 

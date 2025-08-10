@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include <mbctype.h>
 #include <mbstring.h>
@@ -43,15 +45,24 @@ _WCRTLINK int _mbbtype( unsigned char c, int type )
     if( __IsDBCS ) {
         if( __MBCodePage == 932 ) {
             if( type != _MBC_LEAD ) {
-                if( (c>=0x81 && c<=0x9F)  ||  (c>=0xE0 && c<=0xFC) ) {
+                if( (c >= 0x81
+                  && c <= 0x9F)
+                  || (c >= 0xE0
+                  && c <= 0xFC) ) {
                     return( _MBC_LEAD );
-                } else if( (c>=0x20 && c<=0x7E)  ||  (c>=0xA1 && c<=0xDF) ) {
+                } else if( (c >= 0x20
+                  && c <= 0x7E)
+                  || (c >= 0xA1
+                  && c <= 0xDF) ) {
                     return( _MBC_SINGLE );
                 } else {
                     return( _MBC_ILLEGAL );
                 }
             } else {
-                if( (c>=0x40 && c<=0x7E)  ||  (c>=0x80 && c<=0xFC) ) {
+                if( (c >= 0x40
+                  && c <= 0x7E)
+                  || (c >= 0x80
+                  && c <= 0xFC) ) {
                     return( _MBC_TRAIL );
                 } else {
                     return( _MBC_ILLEGAL );

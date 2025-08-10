@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,12 @@
 #include "walloca.h"
 #include "gbios.h"
 #include "stkavail.h"
+#if !defined( _M_I86 ) && !defined( __QNX__ )
+    #include "extender.h"
+    #include "roundmac.h"
+    #include "realmod.h"
+    #include "rmalloc.h"
+#endif
 
 
 struct rgb {
@@ -46,27 +52,7 @@ struct rgb {
 
 #if defined( _M_I86 ) || defined( __QNX__ )
 
-extern void VideoIntDAC( short, short, short, void __far * );
-#if defined( _M_I86 )
-#pragma aux VideoIntDAC = \
-        "push bp"   \
-        "int 10h"   \
-        "pop  bp"   \
-    __parm __caller [__ax] [__bx] [__cx] [__es __dx] \
-    __value         \
-    __modify        []
-#else
-#pragma aux VideoIntDAC = \
-        "push bp"   \
-        "int 10h"   \
-        "pop  bp"   \
-    __parm __caller [__ax] [__bx] [__cx] [__es __edx] \
-    __value         \
-    __modify        []
-#endif
-
-
-short _FastMap( long _WCI86FAR *colours, short num )
+bool _FastMap( long _WCI86FAR *colours, short num )
 //=============================================
 
 {
@@ -76,7 +62,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 
     i = _RoundUp( sizeof( struct rgb ) * num );
     if( _stackavail() - i <= 0x100 ) {
-        return( FALSE );
+        return( false );
     } else {
         rgb = __alloca( i );
     }
@@ -87,29 +73,25 @@ short _FastMap( long _WCI86FAR *colours, short num )
         rgb[i].red = COLOR_RED( colour );
         ++colours;
     }
-    VideoIntDAC( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
-    return( TRUE );
+    VideoInt2( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
+    return( true );
 }
 
 
 #else
 
 
-#include "extender.h"
-#include "rmalloc.h"
-
-
-short _FastMap( long _WCI86FAR *colours, short num )
-//=============================================
+bool _FastMap( long _WCI86FAR *colours, short num )
+//==================================================
 
 {
     short               i;
     unsigned long       colour;
     struct rgb __far    *rgb;
-    RM_ALLOC            mem;
+    dpmi_dos_mem_block  dos_mem;
 
-    if( _RMAlloc( num * sizeof( struct rgb ), &mem ) ) {
-        rgb = mem.pm_ptr;
+    if( _RMAlloc( num * sizeof( struct rgb ), &dos_mem ) ) {
+        rgb = RealModeSegmPtr( dos_mem.rm );
         for( i = 0; i < num; ++i ) {
             colour = *colours;
             rgb[i].blue = COLOR_BLUE( colour );
@@ -117,178 +99,80 @@ short _FastMap( long _WCI86FAR *colours, short num )
             rgb[i].red = COLOR_RED( colour );
             ++colours;
         }
-        _RMInterrupt( 0x10, VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
-        _RMFree( &mem );
-        return( TRUE );
-    } else {
-        return( FALSE );
+        _RMVideoInt( VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, dos_mem.rm, 0 );
+        _RMFree( &dos_mem );
+        return( true );
     }
+    return( false );
 }
 
 
-typedef struct {
-    unsigned long       edi;
-    unsigned long       esi;
-    unsigned long       ebp;
-    unsigned long       reserved;
-    unsigned long       ebx;
-    unsigned long       edx;
-    unsigned long       ecx;
-    unsigned long       eax;
-    unsigned short      flags;
-    unsigned short      es;
-    unsigned short      ds;
-    unsigned short      fs;
-    unsigned short      gs;
-    unsigned short      ip;
-    unsigned short      cs;
-    unsigned short      sp;
-    unsigned short      ss;
-} RMI;
+bool _RMAlloc( int size, dpmi_dos_mem_block *dos_mem )
+//=================================================
+{
+    int             size_para;
 
-extern long DPMIAllocDOSMemory( short para );
-#pragma aux DPMIAllocDOSMemory = \
-        "mov  ax,100h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "sub  ax,ax"    \
-        "sub  dx,dx"    \
-    "L1: shl  eax,16"   \
-        "mov  ax,dx"    \
-    __parm      [__bx] \
-    __value     [__eax] \
-    __modify    [__dx]
-
-extern void DPMIFreeDOSMemory( short sel );
-#pragma aux DPMIFreeDOSMemory = \
-        "mov  ax,101h"  \
-        "int 31h"       \
-    __parm      [__bx] \
-    __value     \
-    __modify    [__ax]
-
-extern void DPMIRealModeInterrupt( char interrupt, char flags,
-                            short words_to_copy, RMI __far *call_st );
-#pragma aux DPMIRealModeInterrupt = \
-        "mov  ax,300h"  \
-        "int 31h"       \
-    __parm      [__bl] [__bh] [__cx] [__es __edi] \
-    __value     \
-    __modify    [__ax]
-
-typedef struct {
-    short               intnum;
-    short               ds;
-    short               es;
-    short               fs;
-    short               gs;
-    long                eax;
-    long                edx;
-} PARM_BLOCK;
-
-extern short PharlapAlloc( short );
-#pragma aux PharlapAlloc = \
-        "mov  ax,25c0h" \
-        "int 21h"       \
-        "jnc short L1"  \
-        "sub  ax,ax"    \
-    "L1:"               \
-    __parm      [__bx] \
-    __value     [__ax] \
-    __modify    []
-
-extern void PharlapFree( short );
-#pragma aux PharlapFree = \
-        "mov  ax,25c1h" \
-        "int 21h"       \
-    __parm      [__cx] \
-    __value     \
-    __modify    [__ax]
-
-extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
-#pragma aux PharlapRMI = \
-        "push ds"       \
-        "push fs"       \
-        "pop  ds"       \
-        "mov  ax,2511h" \
-        "int 21h"       \
-        "pop  ds"       \
-    __parm __caller     [__fs __edx] [__ebx] [__ecx] [__edi] \
-    __value             [__ax] \
-    __modify            []
+    size_para = __ROUND_UP_SIZE_TO_PARA( size );
+    if( _IsPharLap() ) {
+        dos_mem->pm = 0;
+        dos_mem->rm = PharlapAllocateDOSMemoryBlock( size_para );
+        if( dos_mem->rm != 0 ) {
+            return( true );
+        }
+    } else if( _DPMI || _IsRational() ) {
+        *dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+        if( dos_mem->rm != 0 ) {
+            return( true );
+        }
+    }
+    return( false );
+}
 
 
-short _RMAlloc( int size, RM_ALLOC *stg )
-//=======================================
+void _RMFree( dpmi_dos_mem_block *dos_mem )
+//=====================================
 
 {
-    unsigned short      seg;
-    unsigned long       mem;
-    int                 paragraphs;
-
-    paragraphs = ( size + 15 ) / 16;
-    if( _IsRational() ) {
-        mem = DPMIAllocDOSMemory( paragraphs );
-        if( mem == 0 ) {
-            return( FALSE );
-        } else {
-            stg->rm_seg = mem >> 16L;
-            stg->pm_ptr = _MK_FP( (unsigned short)( mem & 0x0000ffffL ), 0 );
-            return( TRUE );
+    if( dos_mem->rm ) {
+        if( _IsPharLap() ) {
+            PharlapFreeDOSMemoryBlock( dos_mem->rm );
+        } else if( _DPMI || _IsRational() ) {
+            DPMIFreeDOSMemoryBlock( dos_mem->pm );
         }
-    } else if( _IsPharLap() ) {
-        seg = PharlapAlloc( paragraphs );
-        if( seg == 0 ) {
-            return( FALSE );
-        } else {
-            stg->rm_seg = seg;
-            stg->pm_ptr = _MK_FP( 0x34, seg << 4 );
-            return( TRUE );
-        }
-    } else {
-        return( FALSE );
+        dos_mem->pm = 0;
+        dos_mem->rm = 0;
     }
 }
 
 
-void _RMFree( RM_ALLOC *stg )
-//===========================
-
-{
-    if( _IsRational() ) {
-        DPMIFreeDOSMemory( _FP_SEG( stg->pm_ptr ) );
-    } else {
-        PharlapFree( stg->rm_seg );
-    }
-}
-
-
-short _RMInterrupt( short intnum, short ax, short bx, short cx,
-                                  short dx, short es, short di )
+short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
 //==============================================================
 
 {
-    RMI                 rmi;
-    PARM_BLOCK          parms;
+    if( _IsPharLap() ) {
+        pharlap_regs_struct dp;
 
-    if( _IsRational() ) {
-        memset( &rmi, 0, sizeof( RMI ) );
-        rmi.eax = ax;
-        rmi.ebx = bx;
-        rmi.ecx = cx;
-        rmi.edx = dx;
-        rmi.es = es;
-        rmi.edi = di;
-        DPMIRealModeInterrupt( intnum, 0, 0, &rmi );
-        return( rmi.eax );
-    } else {
-        memset( &parms, 0, sizeof( PARM_BLOCK ) );
-        parms.intnum = intnum;
-        parms.eax = ax;
-        parms.edx = dx;
-        parms.es = es;
-        return( PharlapRMI( &parms, bx, cx, di ) );
+        memset( &dp, 0, sizeof( dp ) );
+        dp.intno = 0x10;
+        dp.r.x.eax = ax;
+        dp.r.x.edx = dx;
+        dp.es = es;
+        PharlapSimulateRealModeInterrupt( &dp, bx, cx, di );
+        return( dp.r.w.ax );
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_regs_struct    dr;
+
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = ax;
+        dr.r.x.ebx = bx;
+        dr.r.x.ecx = cx;
+        dr.r.x.edx = dx;
+        dr.es = es;
+        dr.r.x.edi = di;
+        DPMISimulateRealModeInterrupt( 0x10, 0, 0, &dr );
+        return( dr.r.w.ax );
     }
+    return( 0 );
 }
 
 #endif

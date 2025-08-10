@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-typedef _Packed struct font_entry {
+#pragma __pack(__push, 1)
+typedef struct font_entry {
     short                   type;       // 0 == bitmap, 1 == vector
     short                   ascent;     // distance from top to baseline (in pixels)
     short                   width;      // character width in pixels, 0 == proportional
@@ -50,6 +51,7 @@ typedef _Packed struct font_entry {
     unsigned short          bitmap_size;
     struct font_entry _WCI86FAR  *link;
 } FONT_ENTRY;
+#pragma __pack(__pop)
 
 extern char         _WCI86FAR _8x8Font[];
 #pragma aux _8x8Font "_*"

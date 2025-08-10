@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,21 +45,21 @@
 
 
 #ifdef DEBUG
-    #define dbg(a) mywrite(BHANDLE_STDERR,a,strlen(a))
+    #define dbg(a) mywrite(OSHANDLE_STDERR,a,strlen(a))
 #else
     #define dbg(x)
 #endif
 
-bhandle ConnHdl;
-bhandle ReadHdl;
-bhandle WriteHdl;
-bhandle BindHdl;
+oshandle ConnHandle;
+oshandle ReadHandle;
+oshandle WriteHandle;
+oshandle BindHandle;
 
 static char     MachBuff[MACH_NAME + 1];
 static char     NameBuff[MAX_PIPE_NAME + 1];
 static char     *NameEnd;
 
-static bhandle PipeOpen( char *name )
+static oshandle PipeOpen( char *name )
 {
     char        buff[MAX_PIPE_NAME + 1];
     char        *end;
@@ -80,30 +80,30 @@ static const char *OpenRequest( void )
 {
     trap_elen  bytes;
 
-    BindHdl = PipeOpen( BINDERY );
-    if( BindHdl == BHANDLE_INVALID )
+    BindHandle = PipeOpen( BINDERY );
+    if( BindHandle == OSHANDLE_INVALID )
         return( TRP_ERR_NMPBIND_not_found );
     NameBuff[0] = OPEN_REQUEST;
-    bytes = mywrite( BindHdl, NameBuff, strlen( NameBuff ) + 1 );
+    bytes = mywrite( BindHandle, NameBuff, strlen( NameBuff ) + 1 );
     if( bytes == 0 )
         return( TRP_ERR_NMPBIND_not_found );
-    bytes = myread( BindHdl, NameBuff, 1 );
+    bytes = myread( BindHandle, NameBuff, 1 );
     if( bytes == 0 )
         return( TRP_ERR_NMPBIND_not_found );
-    myclose( BindHdl );
+    myclose( BindHandle );
     return( NULL );
 }
 
 
-static void DoOpen( bhandle *phdl, char *suff )
+static void DoOpen( oshandle *phandle, char *suff )
 {
     strcpy( NameEnd, suff );
     dbg( "DoOpen " );
     dbg( NameBuff + 1 );
     dbg( "\r\n" );
     for( ;; ) {
-        *phdl = PipeOpen( NameBuff + 1 );
-        if( *phdl != BHANDLE_INVALID )
+        *phandle = PipeOpen( NameBuff + 1 );
+        if( *phandle != OSHANDLE_INVALID )
             break;
         mysnooze();
     }
@@ -187,7 +187,7 @@ const char *RemoteLink( const char *parms, bool server )
                 err = TRP_ERR_server_not_found;
 #endif
             } else {
-                DoOpen( &ConnHdl, CONN_SUFF );
+                DoOpen( &ConnHandle, CONN_SUFF );
             }
         }
     }
@@ -200,16 +200,16 @@ static void ConnRequest( char request )
     int         bytes;
 
     NameBuff[0] = request;
-    bytes = mywrite( ConnHdl, NameBuff, strlen( NameBuff ) + 1 );
-    bytes = myread( ConnHdl, NameBuff, 1 );
+    bytes = mywrite( ConnHandle, NameBuff, strlen( NameBuff ) + 1 );
+    bytes = myread( ConnHandle, NameBuff, 1 );
 }
 
 bool RemoteConnect( void )
 {
     ConnRequest( CONNECT_REQUEST );
     if( NameBuff[0] == BIND_ACK ) {
-        DoOpen( &ReadHdl, READ_SUFF );
-        DoOpen( &WriteHdl, WRITE_SUFF );
+        DoOpen( &ReadHandle, READ_SUFF );
+        DoOpen( &WriteHandle, WRITE_SUFF );
         ConnRequest( CONNECT_DONE );
         return( true );
     }
@@ -222,12 +222,12 @@ trap_retval RemoteGet( void *data, trap_elen len )
     trap_elen      bytes_read;
     trap_elen      tmp;
 
-    bytes_read = myread( ReadHdl, data, len );
+    bytes_read = myread( ReadHandle, data, len );
     switch( bytes_read ) {
     case 0:
         return( REQUEST_FAILED );
     case 1:
-        tmp = myread( ReadHdl, &bytes_read, sizeof( trap_elen ) );
+        tmp = myread( ReadHandle, &bytes_read, sizeof( trap_elen ) );
         if( tmp != sizeof( trap_elen ) )
             return( REQUEST_FAILED );
         break;
@@ -244,12 +244,12 @@ trap_retval RemotePut( void *data, trap_elen len )
     real_len = len;
     if( len == 0 )
         len = 1;       /* Can't write zero bytes */
-    bytes_written = mywrite( WriteHdl, data, len );
+    bytes_written = mywrite( WriteHandle, data, len );
     if( bytes_written != len )
         return( REQUEST_FAILED );
     if( len == 1 ) {
         /* Send true length through */
-        bytes_written = mywrite( WriteHdl, &real_len, sizeof( trap_elen ) );
+        bytes_written = mywrite( WriteHandle, &real_len, sizeof( trap_elen ) );
         if( bytes_written != sizeof( trap_elen ) ) {
             return( REQUEST_FAILED );
         }
@@ -261,12 +261,12 @@ trap_retval RemotePut( void *data, trap_elen len )
 void RemoteDisco( void )
 {
     ConnRequest( DISCO_REQUEST );
-    myclose( ReadHdl );
-    myclose( WriteHdl );
+    myclose( ReadHandle );
+    myclose( WriteHandle );
 }
 
 
 void RemoteUnLink( void )
 {
-    myclose( ConnHdl );
+    myclose( ConnHandle );
 }

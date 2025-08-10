@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,6 @@ _WCRTLINK int dup2( int handle1, int handle2 )
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }
-    __SetIOMode( handle2, __GetIOMode( handle1 ) );
+    __SetIOMode_grow( handle2, __GetIOMode( handle1 ) );
     return( 0 );    /* indicate success */
 }

@@ -31,9 +31,6 @@
 
 #include <string.h>
 #include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "pcobj.h"
 #include "library.h"
 #include "ar.h"
@@ -608,15 +605,21 @@ char *IdentifyObject( const file_list *list, unsigned long *loc, unsigned long *
         *size = GetARValue( ar_hdr->size, AR_SIZE_LEN );
         *loc = ar_loc;
     }
-    if( !IsORL( list, *loc ) ) {
-        if( IsOMF( list, *loc ) ) {
-            ObjFormat |= FMT_OMF;
-            _LnkFree( name );
+    switch( FileTypeORL( list, *loc ) ) {
+    case ORL_ELF:
+        ObjFormat |= FMT_ELF;
+        break;
+    case ORL_COFF:
+        ObjFormat |= FMT_COFF;
+        break;
+    case ORL_OMF:
+        ObjFormat |= FMT_OMF;
+        if( (list->flags & STAT_IS_LIB) == STAT_OMF_LIB ) {
             name = GetOMFName( list, loc );
-            if( list->flags & STAT_AR_LIB ) {
-                *loc = ar_loc;          /* Restore the location. */
-            }
         }
+        break;
+    default:
+        break;
     }
     return( name );
 }

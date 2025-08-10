@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'d2c(                                          */
@@ -43,61 +45,66 @@
 /*      "&'d2c(129,1)" ==> "a"                                             */
 /*      "&'d2c(129,2)" ==> " a"                                            */
 /*      "&'d2c(-127,1)" ==> "a"                                            */
-/*      "&'d2c(-127,2)" ==> "ÿa"                                           */
+/*      "&'d2c(-127,2)" ==> " a"                                           */
 /*      "&'d2c(12,0)" ==> ""                                               */
-/*                                                                         */
-/*  ! The optional second parm is NOT implemented                          */
 /*                                                                         */
 /***************************************************************************/
 
 
-condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
+condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 n;
-    getnum_block        gn;
+    tok_type        number;
+    int             n;
+    condcode        cc;
+    int             number_val;
+    getnum_block    gn;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
-    if( parmcount != 1 ) {
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 1
+      || parmcount > 2 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    number_val = 0;
 
-    unquote_if_quoted( &pval, &pend );
-
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    n   = 0;
-    gn.ignore_blanks = false;
-
-    if( parms[1].stop > parms[1].start ) {
-        gn.argstart = pval;
-        gn.argstop  = pend;
+    number = parms[0].arg;
+    if( unquote_arg( &number ) > 0 ) {
+        gn.arg = number;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );
-        if( (cc != pos) ) {
+        if( cc != CC_pos ) {
             if( !ProcFlags.suppress_msg ) {
-                g_err( err_func_parm, "1 (number)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
+                xx_source_err_exit_c( ERR_FUNC_PARM, "1 (number)" );
+                /* never return */
             }
             return( cc );
         }
-        n = gn.result;
+        number_val = gn.result;
+        n = 1;
+        if( parmcount > 1 ) {                       // evalute length
+            gn.arg = parms[1].arg;
+            cc = getnum( &gn );
+            if( cc != CC_pos ) {
+                if( !ProcFlags.suppress_msg ) {
+                    xx_source_err_exit_c( ERR_FUNC_PARM, "2 (n)" );
+                    /* never return */
+                }
+                return( cc );
+            }
+            n = gn.result;
+        }
+        while( n > 1 && ressize > 0 ) {
+            *(*result)++ = ' ';
+            n--;
+            ressize--;
+        }
+        if( n > 0 && ressize > 0 ) {
+            *(*result)++ = number_val;
+            ressize--;
+        }
     }
 
-    **result = gn.result;
-    *result += 1;
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

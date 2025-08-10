@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ void _L1Fill( short x, short y, short length )
     }
     dev_ptr = _CurrState->deviceptr;
     ( *dev_ptr->setup )( x, y, _CurrColor );
-    if( _HaveMask == 0 ) {
+    if( !_HaveMask ) {
         fill = dev_ptr->zap;
         ( *fill )( _Screen.mem, _CurrColor, 0,
                    length, _Screen.bit_pos << 8 );

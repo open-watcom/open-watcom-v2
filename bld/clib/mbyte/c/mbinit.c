@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,6 @@ int __mbinit( int codepage )
 {
 #if defined( __NT__ )
     CPINFO                  cpInfo;
-    BOOL                    rc;
 #elif defined( __OS2__ )
     COUNTRYCODE             countryInfo;
     unsigned short          leadBytes[6];
@@ -155,8 +154,7 @@ int __mbinit( int codepage )
     /*** Initialize the __MBCSIsTable values ***/
     if( codepage == 0 )
         codepage = CP_OEMCP;
-    rc = GetCPInfo( codepage, &cpInfo );    /* get code page info */
-    if( rc == FALSE )
+    if( GetCPInfo( codepage, &cpInfo ) == 0 )   /* get code page info */
         return( 1 );
     set_dbcs_table( (unsigned short *)cpInfo.LeadByte );
     /*** Update __MBCodePage ***/

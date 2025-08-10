@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             "mov    ds,ax"      \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
         __parm __caller     [__dx __ax] [__cx] [__di] [__bx] \
@@ -88,7 +88,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
     #pragma aux __dos_utime_lfn = \
             "mov    ax,7143h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__dx] [__cx] [__di] [__bx] \
         __value             [__dx __ax] \
@@ -102,17 +102,17 @@ static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date
   #ifdef _M_I86
     return( __dos_utime_lfn( fname, time, date, mode ) );
   #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
     strcpy( RM_TB_PARM1_LINEAR, fname );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.ecx = time;
-    dpmi_rm.ebx = mode;
-    dpmi_rm.edi = date;
-    dpmi_rm.eax = 0x7143;
-    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.edx = RM_TB_PARM1_OFFS;
+    dr.r.x.ecx = time;
+    dr.r.x.ebx = mode;
+    dr.r.x.edi = date;
+    dr.r.x.eax = 0x7143;
+    return( __dpmi_dos_call_lfn( &dr ) );
   #endif
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,6 @@ _WCRTLINK int putch( int c )
 {
     char    ch;
 
-    ch = c;
 #ifdef DEFAULT_WINDOWING
     if( _WindowsPutch != NULL ) {      // Default windowing
         LPWDATA     res;
@@ -49,6 +49,7 @@ _WCRTLINK int putch( int c )
         _WindowsPutch( res, c );
     } else {
 #endif
+        ch = c;
         VioWrtTTY( &ch, 1, 0 );
 #ifdef DEFAULT_WINDOWING
     }

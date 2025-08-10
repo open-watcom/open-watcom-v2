@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +112,7 @@ void __MkTmpFile( char *buf, int num )
     char        *ptr;
 
     pid = getuniqueid();
-//  JBS on Win32 pid's range from 0 to n where n is not very large for
+//  On Win32 pid's range from 0 to n where n is not very large for
 //  most systems (e.g. 500 would indicate many, many processes are active).
 //  #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
 //      // try to use more of the 32bit pid bits
@@ -121,7 +122,7 @@ void __MkTmpFile( char *buf, int num )
     i = __GetTmpPath( buf );
     ptr = buf + i;
     ptr[0] = 't';
-    for( i = 7; i != 0; i-- ) {     // JBS use 7 hex digits instead of 4
+    for( i = 7; i != 0; i-- ) {     // use 7 hex digits instead of 4
         ptr[i] = __hex( pid & 0x000F );
         pid = pid >> 4;
     }
@@ -134,8 +135,8 @@ void __MkTmpFile( char *buf, int num )
 
 void __RmTmpFile( FILE *fp )
 {
-    char    name[PATH_MAX + _TMPFNAME_LENGTH + 1]; /* 02-aug-90 */
+    char    name[PATH_MAX + _TMPFNAME_LENGTH + 1];
 
-    __MkTmpFile( name, _FP_TMPFCHAR(fp) );
+    __MkTmpFile( name, _FP_TMPFCHAR( fp ) );
     remove( name );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,5 +31,5 @@
 ****************************************************************************/
 
 
-extern short _flood_is_visited( short x, short y );
+extern bool _flood_is_visited( short x, short y );
 extern void _flood_visit( short x, short y, short len );

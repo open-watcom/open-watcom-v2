@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ static char buf[sizeof( message_prefix ) + _MAX_PATH + sizeof( message_suffix )]
 static char dllname[_MAX_PATH];
 static char pgmname[_MAX_PATH];
 
-BOOL __disallow_single_dgroup( HANDLE hdll )
+bool __disallow_single_dgroup( HANDLE hdll )
 {
     GetModuleFileName( 0, pgmname, sizeof( pgmname ) );
     GetModuleFileName( hdll, dllname, sizeof( dllname ) );
@@ -56,5 +57,5 @@ BOOL __disallow_single_dgroup( HANDLE hdll )
     strcat( buf, pgmname );
     strcat( buf, message_suffix );
     MessageBox( NULL, buf, dllname, MB_OK );
-    return( 1 );
+    return( true );
 }

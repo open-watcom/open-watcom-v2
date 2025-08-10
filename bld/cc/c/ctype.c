@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -502,33 +502,33 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                 modifier = 0;
                 switch( CurToken ) {
                 case T___WATCALL:
-                    modifier = LANG_WATCALL;
+                    modifier = FLAG_WATCALL;
                     break;
                 case T__CDECL:
                 case T___CDECL:
-                    modifier = LANG_CDECL;
+                    modifier = FLAG_CDECL;
                     break;
                 case T__PASCAL:
                 case T___PASCAL:
-                    modifier = LANG_PASCAL;
+                    modifier = FLAG_PASCAL;
                     break;
                 case T___FORTRAN:
-                    modifier = LANG_FORTRAN;
+                    modifier = FLAG_FORTRAN;
                     break;
                 case T__SYSCALL:
                 case T___SYSCALL:
                 case T__SYSTEM:
-                    modifier = LANG_SYSCALL;
+                    modifier = FLAG_SYSCALL;
                     break;
                 case T___STDCALL:
-                    modifier = LANG_STDCALL;
+                    modifier = FLAG_STDCALL;
                     break;
                 case T__FASTCALL:
                 case T___FASTCALL:
-                    modifier = LANG_FASTCALL;
+                    modifier = FLAG_FASTCALL;
                     break;
                 case T__OPTLINK:
-                    modifier = LANG_OPTLINK;
+                    modifier = FLAG_OPTLINK;
                     break;
                 case T_ID:
                     decl = DECLSPEC_NONE;

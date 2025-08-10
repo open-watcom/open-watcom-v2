@@ -1,0 +1,18 @@
+/****************************************************************************
+*
+*                           Open Watcom Project
+*
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+*
+*  ========================================================================
+*
+* Description:  Declares language resources data
+*
+****************************************************************************/
+
+
+#define MSG_LANG_SPACING    13000
+
+#define MSG_RC_BASE         0
+
+#include "wgmlmsgs.grh"

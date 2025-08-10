@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,7 +216,7 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
         }
     }
 #else
-    hdl = hdl;
+    (void)hdl;
 #endif
 #if defined( _M_I86LM ) || defined( _M_I86HM ) || defined( _M_I86MM )
     return formFarPtr( ptr, who );

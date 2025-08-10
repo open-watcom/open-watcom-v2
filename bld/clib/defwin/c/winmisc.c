@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,10 +53,10 @@ HFONT _SetMyDC( HDC dc, DWORD bkclr, DWORD txtclr )
 /*
  * _MessageLoop
 */
-int _MessageLoop( BOOL doexit )
+int _MessageLoop( bool doexit )
 {
     MSG         msg;
-    WORD        rc=1;
+    WORD        rc = 1;
 
     while( PeekMessage( &msg, (HWND)NULL, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
         rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
@@ -84,7 +84,7 @@ int _MessageLoop( BOOL doexit )
 /*
  * _BlockingMessageLoop
 */
-int _BlockingMessageLoop( BOOL doexit )
+int _BlockingMessageLoop( bool doexit )
 {
     MSG         msg;
     WORD        rc;
@@ -123,37 +123,37 @@ void _ExecutionComplete( void )
 
 } /* _ExecutionComplete */
 
-int     _SetConTitle( LPWDATA w, const char *title )
+bool    _SetConTitle( LPWDATA w, const char *title )
 //==================================================
 {
     SetWindowText( w->hwnd, title );
-    return( 1 );
+    return( true );
 }
 
-int     _SetAppTitle( const char *title )
+bool    _SetAppTitle( const char *title )
 //=======================================
 {
     SetWindowText( _MainWindow, title );
-    return( 1 );
+    return( true );
 }
 
-int     _ShutDown( void )
+bool    _ShutDown( void )
 //=======================
 {
     flushall();
     DestroyWindow( _MainWindow );
     _MainWindowDestroyed = 1;
-    return( 0 );
+    return( false );
 }
 
 
-int     _CloseWindow( LPWDATA w )
+bool    _CloseWindow( LPWDATA w )
 //===============================
 {
     if( w->destroy ) {
         DestroyWindow( w->hwnd );
     }
-    return( 0 );
+    return( false );
 }
 
 
@@ -164,7 +164,7 @@ void _NewCursor( LPWDATA w, cursors type )
 {
     if( w->hascursor ) {
         DestroyCaret();
-        w->hascursor = FALSE;
+        w->hascursor = false;
     }
     if( type == KILL_CURSOR )
         return;
@@ -172,11 +172,11 @@ void _NewCursor( LPWDATA w, cursors type )
     switch( type ) {
     case SMALL_CURSOR:
         CreateCaret( w->hwnd, (HBITMAP)NULL, 0, w->ychar );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case FAT_CURSOR:
         CreateCaret( w->hwnd, (HBITMAP)NULL, 4, w->ychar );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case ORIGINAL_CURSOR:
         break;
@@ -218,11 +218,11 @@ void _DisplayCursor( LPWDATA w )
 /*
  * _SetInputMode - set whether or not we are in input mode
  */
-void _SetInputMode( LPWDATA w, int val  )
+void _SetInputMode( LPWDATA w, bool inpmode  )
 {
     WORD cmd;
 
-    w->InputMode = val;
+    w->InputMode = inpmode;
     if( w->InputMode ) {
         cmd = MF_GRAYED;
     } else {

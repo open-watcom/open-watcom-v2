@@ -63,6 +63,7 @@
 #include <direct.h>
 #endif
 #include "bool.h"
+#include "wdirent.h"
 #include "getopt.h"
 #include "argvenv.h"
 #include "misc.h"

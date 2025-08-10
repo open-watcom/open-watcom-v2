@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ void _CalcNumPages( void )
         pg_size += 512;
     }
     /* Multiply by 2 to get closest K-byte boundary.*/
-    BIOSData( BDATA_REGEN_LEN, unsigned short ) = pg_size << 1;
+    BIOSData( unsigned short, BDATA_REGEN_LEN ) = pg_size << 1;
     /* Adjust # of video pages for the given memory.*/
     if( _CurrState->vc.memory == 64 ) {
         buf_size = 16;                      /* in K bytes   */
@@ -176,11 +176,11 @@ void _GetState( void )
     _CurrState->vc.numcolors = NumColors;
     _CurrState->vc.numvideopages = 1;
 #else
-    rows = BIOSData( BDATA_VIDEO_ROWS, unsigned char ) + 1;     // 0 for Hercules
+    rows = BIOSData( unsigned char, BDATA_VIDEO_ROWS ) + 1;     // 0 for Hercules
     if( rows == 1 )
         rows = 25;
     _CurrState->vc.numtextrows = rows;
-    _CurrState->vc.numtextcols = BIOSData( BDATA_VIDEO_COLUMNS, unsigned short );
+    _CurrState->vc.numtextcols = BIOSData( unsigned short, BDATA_VIDEO_COLUMNS );
     _CurrState->vc.numcolors = 32;
     _CurrState->vc.mode = GetVideoMode();
     display = _SysMonitor();
@@ -195,7 +195,7 @@ void _GetState( void )
     } else {
         _CalcNumPages();
     }
-    _CursorShape = BIOSData( BDATA_CURSOR_MODE, unsigned short );
+    _CursorShape = BIOSData( unsigned short, BDATA_CURSOR_MODE );
 #endif
 }
 
@@ -212,7 +212,7 @@ void _InitState( void )
 #endif
 
     if( _StartUp ) {        // if first time through
-        _StartUp = 0;
+        _StartUp = false;
 #if defined( _DEFAULT_WINDOWS )
         _CurrState->vc.mode = 0;
 #else
@@ -225,7 +225,7 @@ void _InitState( void )
 #else
         _DefMode = _CurrState->vc.mode;
         _DefTextRows = _CurrState->vc.numtextrows;
-        pos = BIOSData( BDATA_CURSOR_POS, unsigned short );
+        pos = BIOSData( unsigned short, BDATA_CURSOR_POS );
         _TextPos.row = pos >> 8;        /* default cursor position  */
         _TextPos.col = pos & 0xFF;
 #endif
@@ -247,7 +247,7 @@ void _GrInit( short x, short y, short stride, grcolor col, short bpp,
 #if defined( VERSION2 )
     int i;
 #endif
-    _GrMode = TRUE;
+    _GrMode = true;
     _GetState();    // initialize text mode fields
     _CurrState->vc.numxpixels    = x;
     _CurrState->vc.numypixels    = y;

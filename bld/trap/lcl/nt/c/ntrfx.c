@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,8 @@ static int nt_get_drive( void )
     char        dir[MAX_PATH];
 
     if( GetCurrentDirectory( sizeof( dir ), dir ) ) {
-        if( dir[0] != '\0' && dir[1] == ':' ) {
+        if( dir[0] != '\0'
+          && dir[1] == ':' ) {
             return( CHARLOW( dir[0] ) - 'a' );
         }
     }
@@ -328,7 +329,8 @@ trap_retval TRAP_RFX( findfirst )( void )
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
     h = __lib_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
-    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    if( h == INVALID_HANDLE_VALUE
+      || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
             FindClose( h );
@@ -358,7 +360,8 @@ trap_retval TRAP_RFX( findnext )( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( !__lib_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    if( __lib_FindNextFile( h, &ffd ) == 0
+      || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
@@ -414,7 +417,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     if( *name != '\\' ) {
         nt_getdcwd( drive, tmp, sizeof( tmp ) );
         p = tmp;
-        if( p[0] != '\0' && p[1] == ':' )
+        if( p[0] != '\0'
+          && p[1] == ':' )
             p += 2;
         strncpy( fullname, p, fullname_maxlen );
         fullname[fullname_maxlen] = '\0';

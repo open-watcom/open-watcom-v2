@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsi
             "mov    ds,ax"      \
             "mov    ax,716Ch"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    ds"         \
             "call __lfnerror_ax" \
         __parm __caller     [__si __ax] [__bx] [__cx] [__dx] \
@@ -57,7 +57,7 @@ extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsi
     #pragma aux __dos_create_open_ex_lfn = \
             "mov    ax,716Ch"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_ax" \
         __parm __caller     [__si] [__bx] [__cx] [__dx] \
         __value             [__dx __ax] \
@@ -72,16 +72,16 @@ lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned att
 #ifdef _M_I86
     return( __dos_create_open_ex_lfn( path, mode, attrib, action ) );
 #else
-    call_struct     dpmi_rm;
+    dpmi_regs_struct    dr;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = action;
-    dpmi_rm.ecx = attrib;
-    dpmi_rm.ebx = mode;
-    dpmi_rm.eax = 0x716C;
-    return( __dpmi_dos_call_lfn_ax( &dpmi_rm ) );
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.esi = RM_TB_PARM1_OFFS;
+    dr.r.x.edx = action;
+    dr.r.x.ecx = attrib;
+    dr.r.x.ebx = mode;
+    dr.r.x.eax = 0x716C;
+    return( __dpmi_dos_call_lfn_ax( &dr ) );
 #endif
 }

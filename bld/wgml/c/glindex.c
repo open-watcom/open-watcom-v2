@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,17 +28,20 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :INDEX attributes                                                     */
 /***************************************************************************/
-const   lay_att     index_att[14] =
-    { e_post_skip, e_pre_top_skip, e_left_adjust, e_right_adjust,
-      e_spacing, e_columns, e_see_string, e_see_also_string, e_header,
-      e_index_string, e_page_eject, e_page_reset, e_font, e_dummy_zero };
+static const lay_att    index_att[] = {
+    e_post_skip, e_pre_top_skip, e_left_adjust, e_right_adjust,
+    e_spacing, e_columns, e_see_string, e_see_also_string, e_header,
+    e_index_string, e_page_eject, e_page_reset, e_font
+};
 
 /***********************************************************************************/
 /*Define the characteristics of the index section.                                 */
@@ -141,100 +144,228 @@ const   lay_att     index_att[14] =
 /*  lay_index      for :INDEX                                              */
 /***************************************************************************/
 
-void    lay_index( lay_tag ltag )
+void    lay_index( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = g_scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_index ) {
-        ProcFlags.lay_xxx = el_index;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = index_att[k]; curr > 0; k++, curr = index_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( index_att ); k++ ) {
+            curr = index_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_post_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.index.post_skip );
-                    break;
-                case   e_pre_top_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.index.pre_top_skip );
-                    break;
-                case   e_left_adjust:
-                    cvterr = i_space_unit( p, curr, &layout_work.index.left_adjust );
-                    break;
-                case   e_right_adjust:
-                    cvterr = i_space_unit( p, curr, &layout_work.index.right_adjust );
-                    break;
-                case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.index.spacing );
-                    break;
-                case   e_columns:
-                    cvterr = i_int8( p, curr, &layout_work.index.columns );
-                    break;
-                case   e_see_string:
-                    cvterr = i_xx_string( p, curr, layout_work.index.see_string );
-                    break;
-                case   e_see_also_string:
-                    cvterr = i_xx_string( p, curr, layout_work.index.see_also_string );
-                    break;
-                case   e_header:
-                    cvterr = i_yes_no( p, curr, &layout_work.index.header );
-                    break;
-                case   e_index_string:
-                    cvterr = i_xx_string( p, curr, layout_work.index.index_string );
-                    break;
-                case   e_page_eject:
-                    cvterr = i_page_eject( p, curr, &layout_work.index.page_eject );
-                    break;
-                case   e_page_reset:
-                    cvterr = i_yes_no( p, curr, &layout_work.index.page_reset );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.index.font );
-                    if( layout_work.index.font >= wgml_font_cnt ) {
-                        layout_work.index.font = 0;
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                    &layout_work.hx.hx_sect[HDS_index].post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                case e_pre_top_skip:
+                    if( AttrFlags.pre_top_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                    &layout_work.hx.hx_sect[HDS_index].pre_top_skip );
+                    AttrFlags.pre_top_skip = true;
+                    break;
+                case e_left_adjust:
+                    if( AttrFlags.left_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.index.left_adjust );
+                    AttrFlags.left_adjust = true;
+                    break;
+                case e_right_adjust:
+                    if( AttrFlags.right_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.index.right_adjust );
+                    AttrFlags.right_adjust = true;
+                    break;
+                case e_spacing:
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[HDS_index].spacing );
+                    AttrFlags.spacing = true;
+                    break;
+                case e_columns:
+                    if( AttrFlags.columns ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_int8( p, &attr_val, &layout_work.index.columns );
+                    AttrFlags.columns = true;
+                    break;
+                case e_see_string:
+                    if( AttrFlags.see_string ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_xx_string( p, &attr_val, layout_work.index.see_string );
+                    AttrFlags.see_string = true;
+                    break;
+                case e_see_also_string:
+                    if( AttrFlags.see_also_string ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_xx_string( p, &attr_val, layout_work.index.see_also_string );
+                    AttrFlags.see_also_string = true;
+                    break;
+                case e_header:
+                    if( AttrFlags.header ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
+                                        &layout_work.hx.hx_sect[HDS_index].header );
+                    AttrFlags.header = true;
+                    break;
+                case e_index_string:
+                    if( AttrFlags.index_string ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_xx_string( p, &attr_val, layout_work.index.index_string );
+                    AttrFlags.index_string = true;
+                    break;
+                case e_page_eject:
+                    if( AttrFlags.page_eject ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_page_eject( p, &attr_val,
+                                    &layout_work.index.page_eject );
+                    AttrFlags.page_eject = true;
+                    break;
+                case e_page_reset:
+                    if( AttrFlags.page_reset ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.index.page_reset );
+                    AttrFlags.page_reset = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[HDS_index].text_font );
+                    AttrFlags.font = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :INDEX     output index attribute values                              */
+/***************************************************************************/
+void    put_lay_index( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":INDEX\n" );
+
+    for( k = 0; k < TABLE_SIZE( index_att ); k++ ) {
+        curr = index_att[k];
+        switch( curr ) {
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].post_skip );
+            break;
+        case e_pre_top_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].pre_top_skip );
+            break;
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->index.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->index.right_adjust );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->hx.hx_sect[HDS_index].spacing );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->index.columns );
+            break;
+        case e_see_string:
+            o_xx_string( fp, curr, lay->index.see_string );
+            break;
+        case e_see_also_string:
+            o_xx_string( fp, curr, lay->index.see_also_string );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &lay->hx.hx_sect[HDS_index].header );
+            break;
+        case e_index_string:
+            o_xx_string( fp, curr, lay->index.index_string );
+            break;
+        case e_page_eject:
+            o_page_eject( fp, curr, &lay->index.page_eject );
+            break;
+        case e_page_reset:
+            o_yes_no( fp, curr, &lay->index.page_reset );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->hx.hx_sect[HDS_index].text_font );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

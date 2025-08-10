@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -388,9 +388,7 @@ static int match( const char *p, const char *criterion )
     return( result );
 }
 
-void ParseServiceStuff( char *name,
-    char **pdll_name, char **pservice_name,
-    char **pdll_destination, char **pservice_parm )
+void ParseServiceStuff( char *name, char **pdll_name, char **pservice_name, char **pdll_destination, char **pservice_parm )
 {
     char        *p;
 
@@ -439,7 +437,6 @@ static bool StartDebuggee( void )
 {
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
-    bool                rc;
     DWORD               oldErrorMode;
     HMODULE             mod;
     SELECTPROCESS       select;
@@ -455,7 +452,6 @@ static bool StartDebuggee( void )
     pgroup2             pg;
 
     oldErrorMode = SetErrorMode( 0 );
-    rc = false;
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
     service_manager = NULL;
@@ -514,11 +510,11 @@ static bool StartDebuggee( void )
         }
     done:
         service = OpenService( service_manager, service_name, SERVICE_ALL_ACCESS );
+        LocalFree( eenum );
         if( service == NULL ) {
             AddMessagePrefix( "Unable to open the specified service", 0 );
             goto failed;
         }
-        LocalFree( eenum );
     }
 
     if( service != NULL ) {
@@ -623,7 +619,8 @@ static bool StartDebuggee( void )
         CloseHandle( mod );
     }
     if( Shared.pid != 0 && Shared.pid != -1 ) {
-        rc = MyDebugActiveProcess( Shared.pid );
+        if( !MyDebugActiveProcess( Shared.pid ) )
+            goto failed;
 #if MADARCH & MADARCH_X64
 #elif defined( WOW )
         if( IsWOW ) {
@@ -641,28 +638,32 @@ static bool StartDebuggee( void )
              */
             sinfo.dwFlags = STARTF_USESHOWWINDOW;
             sinfo.wShowWindow = SW_SHOWNORMAL;
-            rc = ( CreateProcess( NULL,         /* application name */
-                                "wowdeb.exe",   /* command line */
-                                NULL,           /* process attributes */
-                                NULL,           /* thread attributes */
-                                TRUE,           /* inherit handles */
-                                0,              /* creation flags */
-                                NULL,           /* environment block */
-                                NULL,           /* starting directory */
-                                &sinfo,         /* startup info */
-                                &pinfo          /* process info */
-                                ) != 0 );
-            rc = ( CreateProcess( NULL,         /* application name */
-                                Shared.name,    /* command line */
-                                NULL,           /* process attributes */
-                                NULL,           /* thread attributes */
-                                TRUE,           /* inherit handles */
-                                0,              /* creation flags */
-                                NULL,           /* environment block */
-                                NULL,           /* starting directory */
-                                &sinfo,         /* startup info */
-                                &pinfo          /* process info */
-                                ) != 0 );
+            if( CreateProcess(
+                    NULL,               /* application name */
+                    "wowdeb.exe",       /* command line */
+                    NULL,               /* process attributes */
+                    NULL,               /* thread attributes */
+                    TRUE,               /* inherit handles */
+                    0,                  /* creation flags */
+                    NULL,               /* environment block */
+                    NULL,               /* starting directory */
+                    &sinfo,             /* startup info */
+                    &pinfo ) == 0 ) {   /* process info */
+                goto failed;
+            }
+            if( CreateProcess(
+                    NULL,               /* application name */
+                    Shared.name,        /* command line */
+                    NULL,               /* process attributes */
+                    NULL,               /* thread attributes */
+                    TRUE,               /* inherit handles */
+                    0,                  /* creation flags */
+                    NULL,               /* environment block */
+                    NULL,               /* starting directory */
+                    &sinfo,             /* startup info */
+                    &pinfo ) == 0 ) {   /* process info */
+                goto failed;
+            }
         }
 #endif
         pinfo.dwProcessId = Shared.pid;
@@ -674,22 +675,27 @@ static bool StartDebuggee( void )
          */
         sinfo.dwFlags = STARTF_USESHOWWINDOW;
         sinfo.wShowWindow = SW_SHOWNORMAL;
-        rc = ( CreateProcess( NULL,             /* application name */
-                            Shared.name,        /* command line */
-                            NULL,               /* process attributes */
-                            NULL,               /* thread attributes */
-                            TRUE,               /* inherit handles */
-                            Shared.flags,       /* creation flags */
-                            NULL,               /* environment block */
-                            NULL,               /* starting directory */
-                            &sinfo,             /* startup info */
-                            &pinfo              /* process info */
-                            ) != 0 );
+        if( CreateProcess(
+                NULL,               /* application name */
+                Shared.name,        /* command line */
+                NULL,               /* process attributes */
+                NULL,               /* thread attributes */
+                TRUE,               /* inherit handles */
+                Shared.flags,       /* creation flags */
+                NULL,               /* environment block */
+                NULL,               /* starting directory */
+                &sinfo,             /* startup info */
+                &pinfo ) == 0 ) {   /* process info */
+            goto failed;
+        }
     }
     Shared.pid = pinfo.dwProcessId;
+    SetErrorMode( oldErrorMode );
+    return( true );
+
 failed:
     SetErrorMode( oldErrorMode );
-    return( rc );
+    return( false );
 }
 
 static bool DoWaitForDebugEvent( void )

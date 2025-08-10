@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
+#if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
   #if defined( _M_I86 )
@@ -66,7 +66,7 @@
  */
 void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
 {
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ )
     #ifdef __WIDECHAR__
         char    outhdr[ MB_CUR_MAX * STR_SIZE ];
         char    outmsg[ MB_CUR_MAX * STR_SIZE ];
@@ -87,30 +87,29 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
     if( (rc == EOF) && (_RWD_errno == EBADF) ) {
         MessageBox( NULL, msg, hdr, MB_OK | MB_TASKMODAL );
     }
-#elif defined( __OS2__ ) && defined( __386__ )
+#elif defined( __OS2_32BIT__ )
     TIB     *ptib;
     PIB     *ppib;
     ULONG   (APIENTRY *pfnWinMessageBox)( HWND, HWND, PCSZ, PCSZ, ULONG, ULONG );
     HMODULE hmodPMWIN;
 
     DosGetInfoBlocks( &ptib, &ppib );
-    if( (ppib->pib_ultype == PT_PM) &&
-    #ifdef DEFAULT_WINDOWING
-        (_WindowsStdout == NULL) &&
-    #endif
-        (DosLoadModule( NULL, 0, "PMWIN", &hmodPMWIN ) == NO_ERROR) &&
-        (DosQueryProcAddr( hmodPMWIN, ORD_WIN32MESSAGEBOX, NULL, (PFN*)&pfnWinMessageBox ) == NO_ERROR)
-    ) {
-    #ifdef __WIDECHAR__
+    if( (ppib->pib_ultype == PT_PM)
+  #ifdef DEFAULT_WINDOWING
+      && (_WindowsStdout == NULL)
+  #endif
+      && (DosLoadModule( NULL, 0, "PMWIN", &hmodPMWIN ) == NO_ERROR)
+      && (DosQueryProcAddr( hmodPMWIN, ORD_WIN32MESSAGEBOX, NULL, (PFN*)&pfnWinMessageBox ) == NO_ERROR) ) {
+  #ifdef __WIDECHAR__
         char    outhdr[ MB_CUR_MAX * STR_SIZE ];
         char    outmsg[ MB_CUR_MAX * STR_SIZE ];
 
         wcstombs( outhdr, hdr, sizeof( outhdr ) );
         wcstombs( outmsg, msg, sizeof( outmsg ) );
-    #else
+  #else
         const char  *outhdr = hdr;
         const char  *outmsg = msg;
-    #endif
+  #endif
         pfnWinMessageBox( HWND_DESKTOP, NULLHANDLE, outmsg, outhdr, 0, MB_SYSTEMMODAL | MB_OK );
         DosFreeModule( hmodPMWIN );
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include "cover.h"
+
 
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512
@@ -147,7 +148,7 @@ static void emitADD_ESP_const( long con )
  * emitCode - generate callback code for a specified argument list
  */
 static int emitCode( int argcnt, int bytecnt, char *array,
-                DWORD fn, int is_cdecl )
+                DWORD fn, bool is_cdecl )
 {
     int         i;
     int         offset;
@@ -199,7 +200,7 @@ static int emitCode( int argcnt, int bytecnt, char *array,
  * DoEmitCode - build callback routine thunk
  */
 static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
-                               DWORD fn, int is_cdecl )
+                               DWORD fn, bool is_cdecl )
 {
     int codesize;
     int i;
@@ -242,11 +243,12 @@ CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list args )
     int         bytecnt = 0;
     int         argcnt = 0;
     char        array[MAX_CB_PARMS];
-    int         is_cdecl = FALSE;
+    bool        is_cdecl;
 
+    is_cdecl = false;
     while( (type = va_arg( args, int ) ) != GCB_ENDLIST ) {
         if( type == GCB_CDECL ) {
-            is_cdecl = TRUE;
+            is_cdecl = true;
             continue;
         }
         array[argcnt] = type;

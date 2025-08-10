@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,7 +280,7 @@ HPEN _MyCreatePen( WPI_COLOUR color )
 }
 
 
-short _CreateSysMonoFnt( WPI_PRES dc )
+bool _CreateSysMonoFnt( WPI_PRES dc )
 /*====================================
   This function create the system monospaced font. */
 {
@@ -302,11 +302,14 @@ short _CreateSysMonoFnt( WPI_PRES dc )
 
     GpiSetCharSet( dc, LCID_DEFAULT );
     rc = GpiCreateLogFont( dc, NULL, _SysMonoFnt, &fat );
-    if( rc == FONT_MATCH ) return TRUE;
-    else return FALSE;
+    if( rc == FONT_MATCH ) {
+        return( true );
+    } else {
+        return( false );
+    }
 #else
    dc = dc;
-   return TRUE;
+   return( true );
 #endif
 }
 

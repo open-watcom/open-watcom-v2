@@ -40,6 +40,7 @@
 #include "sigfunc.h"
 #include "_int23.h"
 
+
 static PFNSIGHANDLER handler = 0;
 static USHORT        action;
 

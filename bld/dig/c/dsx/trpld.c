@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,11 +81,11 @@ typedef enum {
     IS_RATIONAL
 } intr_state;
 
-static dpmi_dos_block   TrapMem;
+static dpmi_dos_mem_block   TrapDOSMem;
 
-static void             __far *RawPMtoRMSwitchAddr;
+static void                 __far *RawPMtoRMSwitchAddr;
 
-char                    DPMICheck = 0;
+char                        DPMICheck = 0;
 
 //#define FULL_SAVE
 
@@ -399,12 +399,12 @@ static digld_error ReadInTrap( FILE *fp )
 
     hdr_size = hdr.hdr_size * 16;
     image_size = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdr_size;
-    TrapMem = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) + hdr.min_16 );
-    if( TrapMem.pm == 0 ) {
+    TrapDOSMem = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) + hdr.min_16 );
+    if( TrapDOSMem.pm == 0 ) {
         return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
-    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), image_size ) ) {
+    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapDOSMem.pm ), image_size ) ) {
         return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
@@ -415,7 +415,7 @@ static digld_error ReadInTrap( FILE *fp )
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)EXTENDER_RM2PM( TrapMem.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.rm;
+        *(addr_seg __far *)EXTENDER_RM2PM( TrapDOSMem.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapDOSMem.rm;
     }
     return( DIGS_OK );
 }
@@ -516,14 +516,14 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( (err = SetTrapHandler()) == DIGS_OK
       && (err = CopyEnv()) == DIGS_OK ) {
         err = DIGS_ERR_BAD_MODULE_FILE;
-        head = EXTENDER_RM2PM( TrapMem.rm, 0 );
+        head = EXTENDER_RM2PM( TrapDOSMem.rm, 0 );
         if( head->sig == TRAP_SIGNATURE ) {
             PMData->initfunc.s.offset = head->init;
             PMData->reqfunc.s.offset  = head->req;
             PMData->finifunc.s.offset = head->fini;
-            PMData->initfunc.s.segment = TrapMem.rm;
-            PMData->reqfunc.s.segment  = TrapMem.rm;
-            PMData->finifunc.s.segment = TrapMem.rm;
+            PMData->initfunc.s.segment = TrapDOSMem.rm;
+            PMData->reqfunc.s.segment  = TrapDOSMem.rm;
+            PMData->finifunc.s.segment = TrapDOSMem.rm;
             *trap_ver = CallTrapInit( parms, buff, trap_ver );
             err = DIGS_ERR_BUF;
             if( buff[0] == '\0' ) {
@@ -546,8 +546,8 @@ void UnLoadTrap( void )
         GoToRealMode( RMTrapFini );
         IntrState = IS_NONE;
     }
-    if( TrapMem.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( TrapMem.pm );
+    if( TrapDOSMem.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( TrapDOSMem.pm );
     }
     if( PMData->envseg.pm != 0 ) {
         DPMIFreeDOSMemoryBlock( PMData->envseg.pm );

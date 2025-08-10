@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,14 +71,13 @@ typedef void    __near __pascal move_fn( void );
 
 /* C code device functions calling convention declarations */
 
-typedef short   init_fn( short );
+typedef bool    init_fn( short );
 typedef void    finish_fn( void );
 typedef void    set_fn( void );
 typedef void    reset_fn( void );
 typedef void    setup_fn( short, short, grcolor );
 
 
-#pragma pack(__push, 1);
 typedef struct graphics_device {
     init_fn         *init;          // initialization
     finish_fn       *finish;        // finish up device
@@ -97,4 +97,3 @@ typedef struct graphics_device {
     scan_fn         *scanleft;      // left scan in paint
     scan_fn         *scanright;     // right scan in paint
 } gr_device;
-#pragma pack (__pop);

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,11 @@
 #include "rtdata.h"
 #include "fileacc.h"
 
+
 static HANDLE console_in = INVALID_HANDLE_VALUE;
 static HANDLE console_out = INVALID_HANDLE_VALUE;
 
-int __NTRealKey( INPUT_RECORD *k )
+bool __NTRealKey( INPUT_RECORD *k )
 {
     if( k->EventType == KEY_EVENT ) {
         if( k->Event.KeyEvent.bKeyDown ) {
@@ -49,12 +51,12 @@ int __NTRealKey( INPUT_RECORD *k )
             case VK_SHIFT:
             case VK_CONTROL:
             case VK_MENU:       /* Alt */
-                return( 0 );
+                return( false );
             }
-            return( 1 );
+            return( true );
         }
     }
-    return( 0 );
+    return( false );
 }
 
 static void initConsoleHandles( void )

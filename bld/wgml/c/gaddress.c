@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,38 +29,38 @@
 *
 ****************************************************************************/
 
-#include "wgml.h"
+
+#include    "wgml.h"
+
 
 static  bool            first_aline;    // special for first :ALINE
-static  spacing_line    a_spacing_ln;   // spacing between adr lines
 static  font_number     font_save;      // save for font
-
+static  group_type      sav_group_type; // save prior group type
+static  page_pos        old_line_pos;   // save prior line position
 
 /***************************************************************************/
 /*  :ADDRESS                                                               */
 /***************************************************************************/
 
-extern  void    gml_address( gml_tag gtag )
+void gml_address( const gmltag * entry )
 {
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
-        err_count++;
-        show_include_stack();
-        scan_start = scan_stop;
-        return;
+    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
+          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
+        xx_nest_err_exit_cc( ERR_TAG_WRONG_SECT, entry->tagname, ":TITLEP section" );
+        /* never return */
     }
-    ProcFlags.address_active = true;
     first_aline = true;
     font_save = g_curr_font;
     g_curr_font = layout_work.address.font;
-    rs_loc = address_tag;
+    rs_loc = TLOC_address;
 
-    init_nest_cb( true );
+    init_nest_cb();
+    nest_cb->p_stack = copy_to_nest_stack();
+    nest_cb->gtag = entry->u.tagid;
+    nest_cb->left_indent = nest_cb->prev->left_indent + conv_hor_unit( &layout_work.address.left_adjust, g_curr_font );
+    nest_cb->right_indent = nest_cb->prev->right_indent - conv_hor_unit( &layout_work.address.right_adjust, g_curr_font );
 
-    nest_cb->gtag = gtag;
-
-    g_spacing_ln = layout_work.titlep.spacing;
+    g_text_spacing = layout_work.titlep.spacing;
 
     /************************************************************/
     /*  pre_skip is treated as pre_top_skip because             */
@@ -68,11 +68,17 @@ extern  void    gml_address( gml_tag gtag )
     /*  this is not what the docs say                           */
     /************************************************************/
 
-    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, g_spacing_ln, g_curr_font );
+    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, g_text_spacing, g_curr_font );
 
-    ProcFlags.group_elements = true;
+    old_line_pos = line_position;
+    sav_group_type = cur_group_type;
+    cur_group_type = GRT_address;
+    cur_doc_el_group = alloc_doc_el_group( GRT_address );
+    cur_doc_el_group->next = t_doc_el_group;
+    t_doc_el_group = cur_doc_el_group;
+    cur_doc_el_group = NULL;
 
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -81,86 +87,77 @@ extern  void    gml_address( gml_tag gtag )
 /*  :eADDRESS                                                              */
 /***************************************************************************/
 
-extern  void    gml_eaddress( gml_tag gtag )
+void gml_eaddress( const gmltag * entry )
 {
-    tag_cb  *   wk;
+    doc_element *   cur_el;
+    tag_cb      *   wk;
 
-    if( !ProcFlags.address_active ) {   // no preceding :ADDRESS tag
-        g_err_tag_prec( gml_tagname( gtag ) );
-        scan_start = scan_stop;
-        return;
+    (void)entry;
+
+    if( cur_group_type != GRT_address ) {   // no preceding :ADDRESS tag
+        g_tag_prec_err_exit( T_ADDRESS );
+        /* never return */
     }
     g_curr_font = font_save;
-    ProcFlags.address_active = false;
-    rs_loc = titlep_tag;
+    rs_loc = TLOC_titlep;
+    t_page.cur_left = nest_cb->lm;
+    t_page.max_width = nest_cb->rm;
     wk = nest_cb;
     nest_cb = nest_cb->prev;
     add_tag_cb_to_pool( wk );
 
-    /*  place the accumulated ALINES on the proper page */
+    /* Place the accumulated ALINES on the proper page */
 
-    ProcFlags.group_elements = false;
-    if( t_doc_el_group.first != NULL ) {
-        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines + t_doc_el_group.first->subs_skip);
-    }
+    cur_group_type = sav_group_type;
+    if( t_doc_el_group != NULL ) {
+        cur_doc_el_group = t_doc_el_group;      // detach current element group
+        t_doc_el_group = t_doc_el_group->next;  // processed doc_elements go to next group, if any
+        cur_doc_el_group->next = NULL;
 
-    if( (t_doc_el_group.depth + t_page.cur_depth) > t_page.max_depth ) {
-        /*  the block won't fit on this page */
-
-        if( t_doc_el_group.depth  <= t_page.max_depth ) {
-            /*  the block will on the next page */
-
-            do_page_out();
-            reset_t_page();
+        scr_process_break();                    // commit any existing text
+        if( first_aline ) {                     // empty ADDRESS block: no ALINEs
+            set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
+            g_subs_skip = 0;                    // matches wgml 4.0
+            t_element = init_doc_el( ELT_text, wgml_fonts[g_curr_font].line_height );
+            t_element->element.text.first = alloc_text_line();
+            t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
+            t_element->element.text.first->first = NULL;
+            insert_col_main( t_element );
+            t_element = NULL;
+            t_el_last = NULL;
         }
-    }
 
-    while( t_doc_el_group.first != NULL ) {
-        insert_col_main( t_doc_el_group.first );
-        t_doc_el_group.first = t_doc_el_group.first->next;
-    }
-
-    t_doc_el_group.depth    = 0;
-    t_doc_el_group.last     = NULL;
-    scan_start = scan_stop;
-    return;
-}
-
-
-/***************************************************************************/
-/*  prepare address line for output                                        */
-/***************************************************************************/
-
-static void prep_aline( text_line *p_line, const char *p )
-{
-    text_chars  *   curr_t;
-    uint32_t        h_left;
-    uint32_t        h_right;
-
-    h_left = g_page_left + conv_hor_unit( &layout_work.address.left_adjust );
-    h_right = g_page_right - conv_hor_unit( &layout_work.address.right_adjust );
-
-    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
-    curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
-    curr_t->count = intrans( curr_t->text, curr_t->count, g_curr_font );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
-    while( curr_t->width > (h_right - h_left) ) {   // too long for line
-        if( curr_t->count < 2) {        // sanity check
-            break;
+        if( cur_doc_el_group->first != NULL ) {
+            cur_doc_el_group->depth += (cur_doc_el_group->first->blank_lines +
+                                cur_doc_el_group->first->subs_skip);
         }
-        curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
-    }
-    p_line->first = curr_t;
-    curr_t->x_address = h_left;
-    if( layout_work.address.page_position == pos_center ) {
-        if( h_left + curr_t->width < h_right ) {
-            curr_t->x_address = h_left + (h_right - h_left - curr_t->width) / 2;
+
+        if( (cur_doc_el_group->depth + t_page.cur_depth) > t_page.max_depth ) {
+
+            /*  the block won't fit on this column */
+
+            if( cur_doc_el_group->depth <= t_page.max_depth ) {
+
+                /*  the block will on the next column */
+
+                next_column();
+            }
         }
-    } else if( layout_work.address.page_position == pos_right ) {
-        curr_t->x_address = h_right - curr_t->width;
+
+        while( cur_doc_el_group->first != NULL ) {
+            cur_el = cur_doc_el_group->first;
+            cur_doc_el_group->first = cur_doc_el_group->first->next;
+            cur_el->next = NULL;
+            insert_col_main( cur_el );
+        }
+
+        add_doc_el_group_to_pool( cur_doc_el_group );
+        cur_doc_el_group = NULL;
     }
 
+    scr_process_break();                // commit last address line
+    line_position = old_line_pos;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -169,27 +166,27 @@ static void prep_aline( text_line *p_line, const char *p )
 /*  :ALINE tag                                                             */
 /***************************************************************************/
 
-void    gml_aline( gml_tag gtag )
+void gml_aline( const gmltag * entry )
 {
     char        *   p;
-    doc_element *   cur_el;
-    text_line   *   ad_line;
 
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
-        err_count++;
-        show_include_stack();
+    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
+          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
+        xx_nest_err_exit_cc( ERR_TAG_WRONG_SECT, entry->tagname, ":TITLEP section" );
+        /* never return */
     }
-    if( !ProcFlags.address_active ) {   // no preceding :ADDRESS tag
-        g_err_tag_prec( "ADDRESS" );
+    if( cur_group_type != GRT_address ) {    // no preceding :ADDRESS tag
+        g_tag_prec_err_exit( T_ADDRESS );
     }
-    p = scan_start;
-    if( *p == '.' ) p++;                // over '.'
+    p = g_scandata.s;
+    SkipDot( p );                           // over '.'
+    SkipSpaces( p );                        // over WS to <text line>
 
-    start_doc_sect();               // if not already done
-    a_spacing_ln = layout_work.titlep.spacing;
+    scr_process_break();
+    start_doc_sect();                       // if not already done
+
     g_curr_font = layout_work.address.font;
+    g_text_spacing = layout_work.titlep.spacing;
     if( !first_aline ) {
 
         /************************************************************/
@@ -198,31 +195,27 @@ void    gml_aline( gml_tag gtag )
         /*  this is not what the docs say                           */
         /************************************************************/
 
-        set_skip_vars( NULL, &layout_work.aline.skip, NULL, a_spacing_ln, g_curr_font );
+        set_skip_vars( NULL, &layout_work.aline.skip, NULL, g_text_spacing, g_curr_font );
     }
 
-    ad_line = alloc_text_line();
-    ad_line->line_height = wgml_fonts[g_curr_font].line_height;
-
-    if( *p ) {
-        prep_aline( ad_line, p );
+    t_page.cur_left += nest_cb->left_indent;
+    t_page.cur_width = t_page.cur_left;
+    if( t_page.max_width < -1 * nest_cb->right_indent ) {
+        xx_line_err_exit_c( ERR_PAGE_WIDTH_TOO_SMALL, g_scandata.s );
+        /* never return */
     }
-
-    cur_el = alloc_doc_el( el_text );
-    cur_el->blank_lines = g_blank_lines;
-    g_blank_lines = 0;
-    cur_el->depth = ad_line->line_height + g_spacing;
-    cur_el->subs_skip = g_subs_skip;
-    cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = ProcFlags.overprint;
-    ProcFlags.overprint = false;
-    cur_el->element.text.spacing = g_spacing;
-    cur_el->element.text.first = ad_line;
-    ProcFlags.skips_valid = false;
-    ad_line = NULL;
-    insert_col_main( cur_el );
+    t_page.max_width += nest_cb->right_indent;
+    ProcFlags.keep_left_margin = true;  // keep special indent
+    line_position = layout_work.address.page_position;
+    ProcFlags.as_text_line = true;
+    if( *p != '\0' ) {
+        process_text( p, g_curr_font );
+    } else {
+        ProcFlags.titlep_starting = true;
+    }
+    scr_process_break();                // commit address line (or blank line)
 
     first_aline = false;
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
 }
 

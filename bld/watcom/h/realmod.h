@@ -37,6 +37,8 @@
  */
 #define BDATA_PRINTER_BASE      0x08
 #define BDATA_EQUIP_LIST        0x10
+#define BDATA_KEYB_FLAG_0       0x17
+#define BDATA_KEYB_FLAG_1       0x18
 #define BDATA_CURR_VIDEO_MODE   0x49    /* current video mode (byte) */
 #define BDATA_VIDEO_COLUMNS     0x4a    /* number of columns on screen (word) */
 #define BDATA_REGEN_LEN         0x4c    /* size of current video buffer in bytes (word) */
@@ -57,12 +59,14 @@
 #define RealModeDataPtr( segm, off )    _MK_FP( segm, off )
 #define RealModeSegmPtr( segm )         _MK_FP( segm, 0 )
 #else
-#define RealModeDataPtr( segm, off )    EXTENDER_RM2PM( segm, off )
-#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
+#define RealModeDataPtr( segm, off )    _MK_FP( _ExtenderRealModeSelector, (((unsigned)(segm)) << 4) + (off) )
+#define RealModeSegmPtr( segm )         _MK_FP( _ExtenderRealModeSelector, (((unsigned)(segm)) << 4) )
 #endif
-#define RealModeData( segm, off, type ) *(type __far *)RealModeDataPtr( segm, off )
+#define RealModeData( type, segm, off ) *(type __far *)RealModeDataPtr( segm, off )
 
-#define BIOSData( off, type )           RealModeData( BDATA_SEG, off, type )
-#define VIDEOData( segm, off )          RealModeData( segm, off, unsigned char )
+#define BIOSDataPtr( off )              RealModeDataPtr( BDATA_SEG, off )
+#define BIOSData( type, off )           RealModeData( type, BDATA_SEG, off )
+#define VIDEODataPtr( segm, off )       RealModeDataPtr( segm, off )
+#define VIDEOData( segm, off )          RealModeData( unsigned char, segm, off )
 
 extern  unsigned short  _ExtenderRealModeSelector;

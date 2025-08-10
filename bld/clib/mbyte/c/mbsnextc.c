@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include <mbstring.h>
 #include "farfunc.h"
@@ -37,7 +39,7 @@
 _WCRTLINK unsigned int _NEARFAR(_mbsnextc,_fmbsnextc)( const unsigned char _FFAR *string )
 {
     unsigned int retval = string[0];
-    if( _ismbblead(retval) )
-        retval = (retval << 8)  |  string[1];
+    if( _ismbblead( retval ) )
+        retval = (retval << 8) | string[1];
     return( retval );
 }

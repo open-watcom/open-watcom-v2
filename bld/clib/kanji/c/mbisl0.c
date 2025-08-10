@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,5 +42,5 @@
 
 _WCRTLINK int _ismbcl0( unsigned int ch )
 {
-    return( _ismbclegal(ch)  &&  ch <= 0x889E );
+    return( _ismbclegal( ch ) && ch <= 0x889E );
 }

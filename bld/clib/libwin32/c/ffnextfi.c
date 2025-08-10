@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,16 +37,17 @@
 #include "osver.h"
 
 
-BOOL __fixed_FindNextFile( HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData )
-/*****************************************************************************/
+BOOL __fixed_FindNextFile( HANDLE osffh, LPWIN32_FIND_DATA lpFindFileData )
+/*************************************************************************/
 {
-    BOOL            rc;
+    BOOL            osrc;
 
-    rc = FindNextFile( hFindFile, lpFindFileData );
-    if( !WIN32_IS_NT ) {    /* Win95 or Win32s */
-        if( rc && lpFindFileData->dwFileAttributes == 0 ) {
+    osrc = FindNextFile( osffh, lpFindFileData );
+    if( !WIN32_IS_NT ) {
+        /* Win95 or Win32s */
+        if( osrc && lpFindFileData->dwFileAttributes == 0 ) {
             lpFindFileData->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
     }
-    return( rc );
+    return( osrc );
 }

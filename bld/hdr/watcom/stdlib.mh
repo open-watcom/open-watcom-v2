@@ -306,7 +306,7 @@ _WCRTLINK extern int        need_usage( char **__argv );
 _WCRTLINK extern int        print_usage( char **__argv );
 _WCRTLINK extern void       searchenv( const char *__name, const char *__env_var, char *__buf );
 :endsegment
-_WCRTLINK extern void       swab( char *__src, char *__dest, int __num );
+:include swab.sp
 _WCRTLINK extern char       *ultoa( unsigned long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *ulltoa( unsigned long long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *_ultoa( unsigned long __value, char *__buf, int __radix );
@@ -442,37 +442,21 @@ _WCRTLINK extern unsigned   *__get_psp_ptr( void );
 _WCRTLINK extern unsigned char *__get_osmode_ptr( void );
 _WCRTLINK extern int        *__get_fmode_ptr( void );
 _WCRTLINK extern unsigned   *__get_minreal_ptr( void );
-:segment DOS
-_WCRTLINK extern unsigned long *__get_win_alloc_flags_ptr( void );
-_WCRTLINK extern unsigned long *__get_win_realloc_flags_ptr( void );
-:endsegment
 #ifdef __FUNCTION_DATA_ACCESS
  #define _psp               (*__get_psp_ptr())
  #define _osmode            (*__get_osmode_ptr())
  #define _fmode             (*__get_fmode_ptr())
  #define __minreal          (*__get_minreal_ptr())
-:segment DOS
- #define __win_alloc_flags  (*__get_win_alloc_flags_ptr())
- #define __win_realloc_flags (*__get_win_realloc_flags_ptr())
-:endsegment
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define _psp               _psp_br
  #define _osmode            _osmode_br
  #define _fmode             _fmode_br
  #define __minreal          __minreal_br
-:segment DOS
- #define __win_alloc_flags  __win_alloc_flags_br
- #define __win_realloc_flags __win_realloc_flags_br
-:endsegment
 #endif
 _WCRTDATA extern unsigned   _WCDATA _psp;                /* Program Segment Prefix */
-_WCRTDATA extern unsigned char _WCDATA _osmode;             /* DOS_MODE or OS2_MODE */
+_WCRTDATA extern unsigned char _WCDATA _osmode;          /* DOS_MODE or OS2_MODE */
 _WCRTDATA extern int        _WCDATA _fmode;              /* default file translation mode */
 _WCRTDATA extern unsigned   _WCDATA __minreal;           /* DOS4GW var for WLINK MINREAL option*/
-:segment DOS
-_WCRTDATA extern unsigned long _WCDATA __win_alloc_flags;   /* Windows allocation flags */
-_WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocation flags */
-:endsegment
 
 #define DOS_MODE 0  /* Real Address Mode */
 #define OS2_MODE 1  /* Protected Address Mode */
@@ -519,7 +503,25 @@ _WCRTDATA extern unsigned char _WCDATA _osmajor;    /*  O/S major version # */
 _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 
 :segment DOS
-#ifdef __NT__
+#if defined( __WINDOWS__ )
+ _WCRTLINK extern unsigned char  *__get_winmajor_ptr( void );
+ _WCRTLINK extern unsigned char  *__get_winminor_ptr( void );
+ _WCRTLINK extern unsigned int   *__get_winver_ptr( void );
+ _WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
+ _WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
+ #ifdef __FUNCTION_DATA_ACCESS
+  #define _winmajor           (*__get_winmajor_ptr())
+  #define _winminor           (*__get_winminor_ptr())
+  #define _winver             (*__get_winver_ptr())
+  #define __win_alloc_flags   (*__get_win_alloc_flags_ptr())
+  #define __win_realloc_flags (*__get_win_realloc_flags_ptr())
+ #endif
+ _WCRTDATA extern unsigned char  _WCDATA _winmajor; /* Windows major version # */
+ _WCRTDATA extern unsigned char  _WCDATA _winminor; /* Windows minor version # */
+ _WCRTDATA extern unsigned int   _WCDATA _winver;   /* Windows version #       */
+ _WCRTDATA extern unsigned long  _WCDATA __win_alloc_flags;   /* Windows allocation flags */
+ _WCRTDATA extern unsigned long  _WCDATA __win_realloc_flags; /* Windows reallocation flags */
+#elif defined( __NT__ )
  _WCRTLINK extern unsigned short *__get_osbuild_ptr( void );
  _WCRTLINK extern unsigned int   *__get_osver_ptr( void );
  _WCRTLINK extern unsigned int   *__get_winmajor_ptr( void );

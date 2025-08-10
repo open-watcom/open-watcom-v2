@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,15 +28,18 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :P and :PC    attributes                                              */
 /***************************************************************************/
-const   lay_att     p_att[4] =
-    { e_line_indent, e_pre_skip, e_post_skip, e_dummy_zero };
+static const lay_att    p_att[] = {
+    e_line_indent, e_pre_skip, e_post_skip
+};
 
 
 /********************************************************************************/
@@ -99,47 +102,68 @@ const   lay_att     p_att[4] =
 /*over to the next output page.                                                 */
 /********************************************************************************/
 
-static  int     process_arg( att_args * aa, p_lay_tag * p_or_pc )
+static void process_arg( p_lay_tag *p_or_pc )
 {
+    char            *p;
+    int             cvterr;
     int             k;
-    char        *   p;
     lay_att         curr;
-    int             cvterr = -1;
+    condcode        cc;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
-    for( k = 0, curr = p_att[k]; curr > 0; k++, curr = p_att[k] ) {
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
 
-        if( !strnicmp( att_names[curr], aa->start[0], aa->len[0] ) ) {
-            p = aa->start[1];
-
-            switch( curr ) {
-            case   e_line_indent:
-                cvterr = i_space_unit( p, curr, &p_or_pc->line_indent );
-                break;
-            case   e_pre_skip:
-                cvterr = i_space_unit( p, curr, &p_or_pc->pre_skip );
-                break;
-            case   e_post_skip:
-                cvterr = i_space_unit( p, curr, &p_or_pc->post_skip );
-                break;
-            default:
-                out_msg( "WGML logic error.\n");
-                cvterr = true;
-                break;
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
+        cvterr = -1;
+        for( k = 0; k < TABLE_SIZE( p_att ); k++ ) {
+            curr = p_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
+                switch( curr ) {
+                case e_line_indent:
+                    if( AttrFlags.line_indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->line_indent );
+                    AttrFlags.line_indent = true;
+                    break;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->pre_skip );
+                    AttrFlags.pre_skip = true;
+                    break;
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                default:
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
+                }
+                if( cvterr ) {              // there was an error
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
+                }
+                break;                      // break out of for loop
             }
-            if( cvterr ) {              // there was an error
-                err_count++;
-                g_err( err_att_val_inv );
-                file_mac_info();
-            }
-            break;                      // break out of for loop
+        }
+        if( cvterr < 0 ) {
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
     }
-    if( cvterr < 0 ) {
-        err_count++;
-        g_err( err_att_name_inv );
-        file_mac_info();
-    }
-    return( cvterr );
 }
 
 
@@ -147,30 +171,13 @@ static  int     process_arg( att_args * aa, p_lay_tag * p_or_pc )
 /*  lay_p                                                                  */
 /***************************************************************************/
 
-void    lay_p( lay_tag ltag )
+void    lay_p( const gmltag * entry )
 {
-    condcode        cc;
-    att_args        l_args;
-//    int             cvterr;
-
-    /* unused parameters */ (void)ltag;
-
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_p ) {
-        ProcFlags.lay_xxx = el_p;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get attribute and value
-    while( cc == pos ) {
-//        cvterr = process_arg( &l_args, &layout_work.p );
-        process_arg( &l_args, &layout_work.p );
-        cc = get_lay_sub_and_value( &l_args );  // get attribute and value
-    }
-    scan_start = scan_stop;
-    return;
+    process_arg( &layout_work.p );
+    g_scandata.s = g_scandata.e;
 }
 
 
@@ -178,29 +185,52 @@ void    lay_p( lay_tag ltag )
 /*  lay_pc                                                                 */
 /***************************************************************************/
 
-void    lay_pc( lay_tag ltag )
+void    lay_pc( const gmltag * entry )
 {
-    condcode        cc;
-    att_args        l_args;
-//    bool            cvterr;
-
-    /* unused parameters */ (void)ltag;
-
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_pc ) {
-        ProcFlags.lay_xxx = el_pc;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get attribute and value
-    while( cc == pos ) {
-//        cvterr = process_arg( &l_args, &layout_work.pc );
-        process_arg( &l_args, &layout_work.pc );
-        cc = get_lay_sub_and_value( &l_args );  // get attribute and value
-    }
-    scan_start = scan_stop;
-    return;
+    process_arg( &layout_work.pc );
+    g_scandata.s = g_scandata.e;
 }
 
+
+/***************************************************************************/
+/*   :P         output paragraph attribute values                          */
+/*   :PC        output paragraph continue attribute values                 */
+/***************************************************************************/
+static  void    put_lay_p_pc( FILE *fp, p_lay_tag * ap, char * name )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":%s\n", name );
+
+    for( k = 0; k < TABLE_SIZE( p_att ); k++ ) {
+        curr = p_att[k];
+        switch( curr ) {
+        case e_line_indent:
+            o_space_unit( fp, curr, &ap->line_indent );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &ap->pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &ap->post_skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}
+
+void    put_lay_p( FILE *fp, layout_data * lay )
+{
+    put_lay_p_pc( fp, &(lay->p), "P" );
+}
+
+void    put_lay_pc( FILE *fp, layout_data * lay )
+{
+    put_lay_p_pc( fp, &(lay->pc), "PC" );
+}

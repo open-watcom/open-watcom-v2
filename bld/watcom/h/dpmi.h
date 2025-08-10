@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,39 +25,198 @@
 *
 *  ========================================================================
 *
-* Description:  DPMI API int 31h wrappers.
+* Description:  DPMI API (int 31h) in-line assembly wrappers.
 *
 ****************************************************************************/
 
 
-#ifndef __DPMI_H
-#define __DPMI_H
+#ifndef _DPMI_H_INCLUDED
+#define _DPMI_H_INCLUDED
 
 #include "watcom.h"
+#include "dosfuncx.h"
 #include "descript.h"
+#include "asmbytes.h"
 
 
-#define VECTOR_DPMI     0x31
+#if defined( _M_I86 )
+    #define _DPMI_AX    __ax
+    #define _DPMI_BX    __bx
+    #define _DPMI_CX    __cx
+    #define _DPMI_DX    __dx
+    #define _DPMI_SI    __si
+    #define _DPMI_DI    __di
+#else
+    #define _DPMI_AX    __eax
+    #define _DPMI_BX    __ebx
+    #define _DPMI_CX    __ecx
+    #define _DPMI_DX    __edx
+    #define _DPMI_SI    __esi
+    #define _DPMI_DI    __edi
+#endif
 
+#define DPMI_ERROR(rc)  ((int_32)(rc) < 0)
+#define DPMI_OK(rc)     ((int_32)(rc) >= 0)
+#define DPMI_INFO(rc)   ((uint_16)(rc))
+#define DPMI_LINFO(rc)  ((uint_32)(rc))
+
+#define DPMISetWatch(a,b,c)                     _DPMISetWatch( (a) >> 16, (a), (b), (c) )
+#define DPMIClearWatch                          _DPMIClearWatch
+#define DPMITestWatch                           _DPMITestWatch
+#define DPMIResetWatch                          _DPMIResetWatch
+#define DPMILockLinearRegion(a,b)               _DPMILockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
+#define DPMIUnlockLinearRegion(a,b)             _DPMIUnlockLinearRegion( (a) >> 16, (a), (b) >> 16, (b) )
+#define DPMIGetDescriptor                       _DPMIGetDescriptor
+#define DPMISetDescriptor                       _DPMISetDescriptor
+#define DPMICreateCodeSegmentAliasDescriptor    _DPMICreateCodeSegmentAliasDescriptor
+#define DPMIAllocateLDTDescriptors              _DPMIAllocateLDTDescriptors
+#define DPMISegmentToDescriptor                 _DPMISegmentToDescriptor
+#define DPMIFreeLDTDescriptor                   _DPMIFreeLDTDescriptor
+#define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
+#define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
+#define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
+#define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
+#define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
+#define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
+#define DPMICallRealModeProcedureWithIRETFrame  _DPMICallRealModeProcedureWithIRETFrame
+#define DPMIGetNextSelectorIncrementValue       _DPMIGetNextSelectorIncrementValue
+#define DPMIGetRealModeInterruptVector          _DPMIGetRealModeInterruptVector
+#define DPMISetRealModeInterruptVector          _DPMISetRealModeInterruptVector
+#define DPMIAllocateRealModeCallBackAddress     _DPMIAllocateRealModeCallBackAddress
+#define DPMIFreeRealModeCallBackAddress         _DPMIFreeRealModeCallBackAddress
+#define DPMIGetPMInterruptVector                _DPMIGetPMInterruptVector
+#define DPMISetPMInterruptVector                _DPMISetPMInterruptVector
+#define DPMISetPMExceptionVector                _DPMISetPMExceptionVector
+#define DPMIGetPMExceptionVector                _DPMIGetPMExceptionVector
+
+#define DPMIAllocateMemoryBlock(a,b)            _DPMIAllocateMemoryBlock( (a), (b) >> 16, (b) )
+#define DPMIFreeMemoryBlock(a)                  _DPMIFreeMemoryBlock( (a) >> 16, (a) )
+#define DPMIResizeMemoryBlock(a,b,c)            _DPMIResizeMemoryBlock( (a), (b) >> 16, (b), (c) >> 16, (c) )
+#define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
+#define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
+#define DPMIIdle                                _DPMIIdle
+#define DPMIModeDetect                          _DPMIModeDetect
+#define DPMIRawRMtoPMAddr                       _DPMIRawRMtoPMAddr
+#define DPMIRawPMtoRMAddr                       _DPMIRawPMtoRMAddr
+#define DPMISaveRMStateAddr                     _DPMISaveRMStateAddr
+#define DPMISavePMStateAddr                     _DPMISavePMStateAddr
+#define DPMISaveStateSize                       _DPMISaveStateSize
+#define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
+#define DPMIGetVersion                          _DPMIGetVersion
+#define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
+
+#define PharlapAllocateDOSMemoryBlock           _PharlapAllocateDOSMemoryBlock
+#define PharlapFreeDOSMemoryBlock               _PharlapFreeDOSMemoryBlock
+#define PharlapGetPMInterruptVector             _PharlapGetPMInterruptVector
+#define PharlapGetRealModeInterruptVector       _PharlapGetRealModeInterruptVector
+#define PharlapSetPMInterruptVector             _PharlapSetPMInterruptVector
+#define PharlapSetPMInterruptVector_passup      _PharlapSetPMInterruptVector_passup
+#define PharlapSetBothInterruptVectors          _PharlapSetBothInterruptVectors
+#define PharlapSetRealModeInterruptVector       _PharlapSetRealModeInterruptVector
+#define PharlapCallRealModeProcedureNoRegs      _PharlapCallRealModeProcedureNoRegs
+#define PharlapSimulateRealModeInterrupt        _PharlapSimulateRealModeInterrupt
+#define PharlapSimulateRealModeInterruptExt     _PharlapSimulateRealModeInterruptExt
+#define PharlapGetSegmentBaseAddress            _PharlapGetSegmentBaseAddress
+
+#define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
+#define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
+
+#define GetSelectorLimitB                       _GetSelectorLimitB
+#define GetDataSelectorLimitB                   _GetDataSelectorLimitB
+#define IsReadSelectorB                         _IsReadSelectorB
+#define IsWriteSelectorB                        _IsWriteSelectorB
+
+/*
+ * DPMI registers structure definition for DPMI SimulateRealInt
+ */
 typedef struct {
-    uint_32     edi;
-    uint_32     esi;
-    uint_32     ebp;
-    uint_32     reserved;
-    uint_32     ebx;
-    uint_32     edx;
-    uint_32     ecx;
-    uint_32     eax;
-    uint_16     flags;
-    uint_16     es;
-    uint_16     ds;
-    uint_16     fs;
-    uint_16     gs;
-    uint_16     ip;
-    uint_16     cs;
-    uint_16     sp;
-    uint_16     ss;
-} rm_call_struct;
+    union dpmi_general_regs {
+        struct dpmi_dwordregs {
+            unsigned long   edi;
+            unsigned long   esi;
+            unsigned long   ebp;
+            unsigned long   __reserved;
+            unsigned long   ebx;
+            unsigned long   edx;
+            unsigned long   ecx;
+            unsigned long   eax;
+        } x;
+        struct dpmi_wordregs {
+            unsigned short  di, __filler1;
+            unsigned short  si, __filler2;
+            unsigned short  bp, __filler3;
+            unsigned long   __reserved;
+            unsigned short  bx, __filler4;
+            unsigned short  dx, __filler5;
+            unsigned short  cx, __filler6;
+            unsigned short  ax, __filler7;
+        } w;
+        struct dpmi_byteregs {
+            unsigned long   __filler1;
+            unsigned long   __filler2;
+            unsigned long   __filler3;
+            unsigned long   __reserved;
+            unsigned char   bl, bh; unsigned short __filler4;
+            unsigned char   dl, dh; unsigned short __filler5;
+            unsigned char   cl, ch; unsigned short __filler6;
+            unsigned char   al, ah; unsigned short __filler7;
+        } h;
+    } r;
+    unsigned short  flags;
+    unsigned short  es;
+    unsigned short  ds;
+    unsigned short  fs;
+    unsigned short  gs;
+    unsigned short  ip;
+    unsigned short  cs;
+    unsigned short  sp;
+    unsigned short  ss;
+} dpmi_regs_struct;
+
+/*
+ * Pharlap registers structure definition for Pharlap SimulateRealInt
+ */
+#pragma pack( __push, 1 )
+typedef struct {
+    unsigned short  intno;  /* Interrupt number */
+    unsigned short  ds;     /* DS register */
+    unsigned short  es;     /* ES register */
+    unsigned short  fs;     /* FS register */
+    unsigned short  gs;     /* GS register */
+    union pharlap_general_regs {
+        /*
+         * original Pharlap structure contains only EAX and EDX registers
+         * to simplify handling in OW we add remaining registers to the end of structure
+         * after EAX and EDX registers
+         * it is used for inline code to save input/output value of all registers
+         */
+        struct pharlap_dwordregs {
+            unsigned long   eax;
+            unsigned long   edx;
+            unsigned long   ebx;
+            unsigned long   ecx;
+            unsigned long   edi;
+            unsigned long   esi;
+            unsigned long   ebp;
+        } x;
+        struct pharlap_wordregs {
+            unsigned short  ax, __filler1;
+            unsigned short  dx, __filler2;
+            unsigned short  bx, __filler3;
+            unsigned short  cx, __filler4;
+            unsigned short  di, __filler5;
+            unsigned short  si, __filler6;
+            unsigned short  bp, __filler7;
+        } w;
+        struct pharlap_byteregs {
+            unsigned char   al, ah; unsigned short __filler1;
+            unsigned char   dl, dh; unsigned short __filler2;
+            unsigned char   bl, bh; unsigned short __filler3;
+            unsigned char   cl, ch; unsigned short __filler4;
+        } h;
+    } r;
+} pharlap_regs_struct;
+#pragma pack( __pop )
 
 typedef struct {
     uint_32     largest_free;
@@ -96,900 +255,978 @@ typedef struct {
 typedef struct {
     uint_16     rm;
     uint_16     pm;
-} dpmi_dos_block;
+} dpmi_dos_mem_block;
 
-#define DPMISetWatch                            _DPMISetWatch
-#define DPMIClearWatch                          _DPMIClearWatch
-#define DPMITestWatch                           _DPMITestWatch
-#define DPMIResetWatch                          _DPMIResetWatch
-#define DPMIFreeMemoryBlock                     _DPMIFreeMemoryBlock
-#define DPMILockLinearRegion                    _DPMILockLinearRegion
-#define DPMIUnlockLinearRegion                  _DPMIUnlockLinearRegion
-#define DPMIGetDescriptor                       _DPMIGetDescriptor
-#define DPMISetDescriptor                       _DPMISetDescriptor
-#define DPMICreateCodeSegmentAliasDescriptor    _DPMICreateCodeSegmentAliasDescriptor
-#define DPMIAllocateLDTDescriptors              _DPMIAllocateLDTDescriptors
-#define DPMISegmentToDescriptor                 _DPMISegmentToDescriptor
-#define DPMIFreeLDTDescriptor                   _DPMIFreeLDTDescriptor
-#define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
-#define DPMISetSegmentBaseAddress               _DPMISetSegmentBaseAddress
-#define DPMISetSegmentLimit                     _DPMISetSegmentLimit
-#define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
-#define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
-#define DPMIGetNextSelectorIncrementValue       _DPMIGetNextSelectorIncrementValue
-#define DPMIGetRealModeInterruptVector          _DPMIGetRealModeInterruptVector
-#define DPMISetRealModeInterruptVector          _DPMISetRealModeInterruptVector
-#define DPMIAllocateRealModeCallBackAddress     _DPMIAllocateRealModeCallBackAddress
-#define DPMIFreeRealModeCallBackAddress         _DPMIFreeRealModeCallBackAddress
-#define DPMIGetPMInterruptVector                _DPMIGetPMInterruptVector
-#define DPMISetPMInterruptVector                _DPMISetPMInterruptVector
-#define DPMISetPMExceptionVector                _DPMISetPMExceptionVector
-#define DPMIGetPMExceptionVector                _DPMIGetPMExceptionVector
+typedef uint_32     dpmi_ret;
 
-#define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
-#define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
-#define DPMIIdle                                _DPMIIdle
-#define DPMIModeDetect                          _DPMIModeDetect
-#define DPMIRawRMtoPMAddr                       _DPMIRawRMtoPMAddr
-#define DPMIRawPMtoRMAddr                       _DPMIRawPMtoRMAddr
-#define DPMISaveRMStateAddr                     _DPMISaveRMStateAddr
-#define DPMISavePMStateAddr                     _DPMISavePMStateAddr
-#define DPMISaveStateSize                       _DPMISaveStateSize
-#define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
+typedef void __far  *intr_addr;
+typedef void __far  *proc_addr;
 
-#if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
-#if defined(__386__)
-#define DPMIGetVersion                          _DPMIGetVersion
-#else
-#define DPMIGetVersion                          _nDPMIGetVersion
-#endif
-#define DPMIAllocateMemoryBlock                 _nDPMIAllocateMemoryBlock
-#define DPMIGetFreeMemoryInformation            _nDPMIGetFreeMemoryInformation
-#define DPMIResizeMemoryBlock                   _nDPMIResizeMemoryBlock
-#else
-#define DPMIGetVersion                          _fDPMIGetVersion
-#define DPMIAllocateMemoryBlock                 _fDPMIAllocateMemoryBlock
-#define DPMIGetFreeMemoryInformation            _fDPMIGetFreeMemoryInformation
-#define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
-#endif
+/*
+ * C run-time library flag indicating that DPMI services (host) is available
+ */
+extern unsigned char _DPMI;
 
-extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
-extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
-extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
-extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far * ptr );
-extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far * ptr );
-extern void     __far *_DPMIGetPMExceptionVector( uint_8 iv );
-extern void     __far *_DPMIGetPMInterruptVector( uint_8 iv );
-extern int      _DPMISetRealModeInterruptVector( uint_8 iv, void __far * ptr );
+extern int      _DPMIFreeRealModeCallBackAddress( proc_addr proc );
+extern proc_addr _DPMIAllocateRealModeCallBackAddress( proc_addr proc, dpmi_regs_struct ESDATA *dr );
+extern intr_addr _DPMIGetRealModeInterruptVector( uint_8 iv );
+extern int      _DPMISetPMInterruptVector( uint_8 iv, intr_addr intr );
+extern int      _DPMISetPMExceptionVector( uint_8 iv, proc_addr proc );
+extern proc_addr _DPMIGetPMExceptionVector( uint_8 iv );
+extern intr_addr _DPMIGetPMInterruptVector( uint_8 iv );
+extern void     _DPMISetRealModeInterruptVector( uint_8 iv, intr_addr intr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
-extern void     _DPMIGetVersion( version_info __far * );
-extern void     _fDPMIGetVersion( version_info __far * );
-extern void     _nDPMIGetVersion( version_info * );
+extern void     _DPMIGetVersion( version_info _WCI86FAR * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
 extern int_32   _DPMISegmentToDescriptor( uint_16 );
 extern int      _DPMIFreeLDTDescriptor( uint_16 );
 extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
-extern int      _DPMISetSegmentBaseAddress( uint_16, uint_32 );
-extern int      _DPMISetSegmentLimit( uint_16, uint_32 );
+extern int      _DPMISetSegmentBaseAddress( uint_16, uint_16 hiw, uint_16 low );
+extern int      _DPMISetSegmentLimit( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
-extern int_16   _fDPMIAllocateMemoryBlock( dpmi_mem_block __far *, uint_32 );
-extern int_16   _nDPMIAllocateMemoryBlock( dpmi_mem_block *, uint_32 );
-extern int_16   _fDPMIResizeMemoryBlock( dpmi_mem_block __far *, uint_32, uint_32 );
-extern int_16   _nDPMIResizeMemoryBlock( dpmi_mem_block *, uint_32, uint_32 );
-extern int      _DPMIFreeMemoryBlock( uint_32 );
-extern int      _DPMILockLinearRegion( uint_32, uint_32 );
-extern int      _DPMIUnlockLinearRegion( uint_32, uint_32 );
-extern int      _DPMIGetDescriptor( uint_16, descriptor __far * );
-extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
-extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
-extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
-extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
-extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
-                        uint_16 words_to_copy, rm_call_struct __far *call_st );
-extern dpmi_dos_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
+extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw, uint_16 low );
+extern int      _DPMIResizeMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
+extern int      _DPMIFreeMemoryBlock( uint_16 hiw, uint_16 low );
+extern int      _DPMILockLinearRegion( uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
+extern int      _DPMIUnlockLinearRegion( uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
+extern int      _DPMIGetDescriptor( uint_16, descriptor ESDATA * );
+extern int      _DPMISetDescriptor( uint_16, descriptor ESDATA * );
+extern dpmi_ret _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
+extern int      _DPMIGetFreeMemoryInformation( dpmi_mem ESDATA * );
+extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
+extern int      _DPMICallRealModeProcedureWithFarReturnFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
+extern int      _DPMICallRealModeProcedureWithIRETFrame( uint_8 flags, uint_16 words_to_copy, dpmi_regs_struct ESDATA *dr );
+extern dpmi_dos_mem_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
 extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
-extern void     __far *_DPMIRawPMtoRMAddr( void );
+extern proc_addr _DPMIRawPMtoRMAddr( void );
 extern uint_32  _DPMIRawRMtoPMAddr( void );
-extern void     __far *_DPMISaveRMStateAddr( void );
+extern proc_addr _DPMISaveRMStateAddr( void );
 extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
-extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
+extern proc_addr _DPMIGetVendorSpecificAPI( char * );
 
-extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, uint_8 type );
-extern int      _DPMIClearWatch( uint_16 handle );
-extern int      _DPMITestWatch( uint_16 handle );
-extern int      _DPMIResetWatch( uint_16 handle );
+extern dpmi_ret _DPMISetWatch( uint_16 hiw, uint_16 low, uint_8 len, uint_8 type );
+extern dpmi_ret _DPMIClearWatch( uint_16 handle );
+extern dpmi_ret _DPMITestWatch( uint_16 handle );
+extern dpmi_ret _DPMIResetWatch( uint_16 handle );
+
+extern uint_16  _PharlapAllocateDOSMemoryBlock( uint_16 para );
+extern uint_16  _PharlapFreeDOSMemoryBlock( uint_16 seg );
+extern intr_addr _PharlapGetPMInterruptVector( uint_8 iv );
+extern intr_addr _PharlapGetRealModeInterruptVector( uint_8 iv );
+extern void     _PharlapSetPMInterruptVector( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetRealModeInterruptVector( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
+extern void     _PharlapSetBothInterruptVectors( uint_8 iv, intr_addr pm, intr_addr rm );
+extern int      _PharlapCallRealModeProcedureNoRegs( uint_32 proc_addr );
+extern int      _PharlapSimulateRealModeInterrupt( pharlap_regs_struct *dp, unsigned bx, unsigned cx, unsigned di );
+extern int      _PharlapSimulateRealModeInterruptExt( pharlap_regs_struct *dp );
+extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
+
+extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
+extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
+
+extern unsigned _GetSelectorLimitB( unsigned short sel );
+extern unsigned _GetDataSelectorLimitB( void );
+extern uint_8   _IsReadSelectorB( unsigned short sel );
+extern uint_8   _IsWriteSelectorB( unsigned short sel );
+
+#define MULTIPLEX_1680  0x80 0x16
+#define MULTIPLEX_1686  0x86 0x16
 
 #pragma aux _DPMIIdle = \
-        "mov  ax,1680h" \
-        "int 2fh"       \
-    __parm [] \
-    __value \
+        _MOV_AX_W MULTIPLEX_1680 \
+        _INT_2F         \
+    __parm __caller [] \
+    __value         \
     __modify __exact [__ax]
 
 #pragma aux _DPMIModeDetect = \
-        "mov  ax,1686h" \
-        "int 2fh"       \
-    __parm [] \
-    __value [__ax] \
+        _MOV_AX_W MULTIPLEX_1686 \
+        _INT_2F         \
+    __parm __caller [] \
+    __value         [__ax] \
     __modify __exact [__ax]
 
-#if defined(__386__)
-#pragma aux _DPMISetWatch = \
-        "mov  ax,0b00h" \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-        "mov  ax,bx"    \
-    __parm [__ebx] [__dl] [__dh] \
-    __value [__eax] \
-    __modify __exact [__eax __ebx __ecx]
+
+#define DPMI_0000       0x00 0x00
+#define DPMI_0001       0x01 0x00
+#define DPMI_0002       0x02 0x00
+#define DPMI_0003       0x03 0x00
+#define DPMI_0006       0x06 0x00
+#define DPMI_0007       0x07 0x00
+#define DPMI_0008       0x08 0x00
+#define DPMI_0009       0x09 0x00
+#define DPMI_000A       0x0A 0x00
+#define DPMI_000B       0x0B 0x00
+#define DPMI_000C       0x0C 0x00
+#define DPMI_0100       0x00 0x01
+#define DPMI_0101       0x01 0x01
+#define DPMI_0200       0x00 0x02
+#define DPMI_0201       0x01 0x02
+#define DPMI_0202       0x02 0x02
+#define DPMI_0203       0x03 0x02
+#define DPMI_0204       0x04 0x02
+#define DPMI_0205       0x05 0x02
+#define DPMI_0300       0x00 0x03
+#define DPMI_0301       0x01 0x03   /* not in DOS/4GW */
+#define DPMI_0302       0x02 0x03   /* not in DOS/4GW */
+#define DPMI_0303       0x03 0x03   /* not in DOS/4GW */
+#define DPMI_0304       0x04 0x03   /* not in DOS/4GW */
+#define DPMI_0305       0x05 0x03   /* not in DOS/4GW */
+#define DPMI_0306       0x06 0x03   /* not in DOS/4GW */
+#define DPMI_0400       0x00 0x04
+#define DPMI_0500       0x00 0x05
+#define DPMI_0501       0x01 0x05
+#define DPMI_0502       0x02 0x05
+#define DPMI_0503       0x03 0x05
+#define DPMI_0600       0x00 0x06
+#define DPMI_0601       0x01 0x06
+#define DPMI_0A00       0x00 0x0A
+#define DPMI_0B00       0x00 0x0B
+#define DPMI_0B01       0x01 0x0B
+#define DPMI_0B02       0x02 0x0B
+#define DPMI_0B03       0x03 0x0B
+
+
+#ifdef _M_I86
+#pragma aux _DPMIAllocateLDTDescriptors = \
+        _MOV_AX_W DPMI_0000 \
+        _INT_31         \
+        _SBB_CX_CX      \
+    __parm __caller [__cx] \
+    __value         [__cx __ax] \
+    __modify __exact [__ax __cx]
 #else
-#pragma aux _DPMISetWatch = \
-        "mov  ax,0b00h" \
-        "xchg bx,cx"    \
-        "int 31h"       \
-        "sbb  cx,cx"    \
-    __parm [__bx __cx] [__dl] [__dh] \
-    __value [__cx __bx] \
-    __modify __exact [__ax __bx __cx]
+#pragma aux _DPMIAllocateLDTDescriptors = \
+        _MOV_AX_W DPMI_0000 \
+        _INT_31         \
+        _SBB_CX_CX      \
+        _USE16 _MOV_CX_AX \
+    __parm __caller [__cx] \
+    __value         [__ecx] \
+    __modify __exact [__eax __ecx]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMIClearWatch = \
-        "mov  ax,0b01h" \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] \
-    __value [__eax] \
-    __modify __exact [__eax]
-#else
-#pragma aux _DPMIClearWatch = \
-        "mov  ax,0b01h" \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] \
-    __value [__ax] \
-    __modify __exact [__ax]
-#endif
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#if defined(__386__)
-#pragma aux _DPMITestWatch = \
-        "mov  ax,0b02h" \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "and  eax,1"    \
-        "or   ebx,eax"  \
-    __parm [__bx] \
-    __value [__ebx] \
-    __modify __exact [__eax __ebx]
-#else
-#pragma aux _DPMITestWatch = \
-        "mov  ax,0b02h" \
-        "int 31h"       \
-        "sbb  bx,bx"    \
-        "and  ax,1"     \
-        "or   bx,ax"    \
-    __parm [__bx] \
-    __value [__bx] \
+#ifdef _M_I86
+#pragma aux _DPMISegmentToDescriptor = \
+        _MOV_AX_W DPMI_0002 \
+        _INT_31         \
+        _SBB_BX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
     __modify __exact [__ax __bx]
+#else
+#pragma aux _DPMISegmentToDescriptor = \
+        _MOV_AX_W DPMI_0002 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
+    __parm __caller [__bx] \
+    __value         [__ebx]\
+    __modify __exact [__ax __ebx]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMIResetWatch = \
-        "mov  ax,0b03h" \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] \
-    __value [__eax] \
-    __modify __exact [__eax]
-#else
-#pragma aux _DPMIResetWatch = \
-        "mov  ax,0b03h" \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] \
-    __value [__ax] \
+#pragma aux _DPMIGetNextSelectorIncrementValue = \
+        _MOV_AX_W DPMI_0003 \
+        _INT_31         \
+    __parm __caller [__bx] \
+    __value         [__ax] \
     __modify __exact [__ax]
+
+/*
+ * if failed then return (uint_32)-1
+ */
+#ifdef _M_I86
+#pragma aux _DPMIGetSegmentBaseAddress = \
+        _MOV_AX_W DPMI_0006 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _OR_CX_AX       \
+        _OR_DX_AX       \
+    __parm __caller [__bx] \
+    __value         [__cx __dx] \
+    __modify __exact [__ax __cx __dx]
+#else
+#pragma aux _DPMIGetSegmentBaseAddress = \
+        _MOV_AX_W DPMI_0006 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _SHL_ECX_16     \
+        _USE16 _MOV_CX_DX \
+        _OR_CX_AX       \
+    __parm __caller [__bx] \
+    __value         [__ecx] \
+    __modify __exact [__eax __ecx __edx]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMIGetVersion = \
-        "push ds"       \
-        "mov  ds,edx"   \
-        "mov  ax,400h"  \
-        "int 31h"       \
-        "mov  byte ptr [esi],ah"    \
-        "mov  byte ptr [esi+1],al"  \
-        "mov  word ptr [esi+2],bx"  \
-        "mov  byte ptr [esi+4],cl"  \
-        "mov  byte ptr [esi+5],dh"  \
-        "mov  byte ptr [esi+6],dl"  \
-        "pop  ds"         \
-    __parm [__dx __esi] \
-    __value \
-    __modify[__ax __bx __cl __dx]
-#else
-#pragma aux _nDPMIGetVersion = \
-        "mov  ax,400h"  \
-        "int 31h"       \
-        "mov  byte ptr [si],ah"     \
-        "mov  byte ptr [si+1],al"   \
-        "mov  word ptr [si+2],bx"   \
-        "mov  byte ptr [si+4],cl"   \
-        "mov  byte ptr [si+5],dh"   \
-        "mov  byte ptr [si+6],dl"   \
-    __parm [__si] \
-    __value \
-    __modify[__ax __bx __cl __dx]
+#pragma aux _DPMISetSegmentBaseAddress = \
+        _MOV_AX_W DPMI_0007 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [__cx] [__dx] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#pragma aux _fDPMIGetVersion = \
-        "mov  ax,400h"  \
-        "int 31h"       \
+#pragma aux _DPMISetSegmentLimit = \
+        _MOV_AX_W DPMI_0008 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [__cx] [__dx] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMISetDescriptorAccessRights = \
+        _MOV_AX_W DPMI_0009 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [__cx] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
+        _MOV_AX_W DPMI_000A \
+        _INT_31         \
+        _SBB_BX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
+#else
+#pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
+        _MOV_AX_W DPMI_000A \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
+    __parm __caller [__bx] \
+    __value         [__ebx] \
+    __modify __exact [__eax __ebx]
+#endif
+
+#pragma aux _DPMIGetDescriptor = \
+        _MOV_AX_W DPMI_000B \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMISetDescriptor = \
+        _MOV_AX_W DPMI_000C \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#pragma aux _DPMIAllocateDOSMemoryBlock = \
+        _MOV_AX_W DPMI_0100 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _AND_AX_BX      \
+        _AND_DX_BX      \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __bx __dx]
+#else
+#pragma aux _DPMIAllocateDOSMemoryBlock = \
+        _MOV_AX_W DPMI_0100 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _SHL_EDX_16     \
+        _USE16 _MOV_DX_AX \
+        _AND_DX_BX      \
+    __parm __caller [__bx] \
+    __value         [__edx] \
+    __modify __exact [__eax __ebx __edx]
+#endif
+
+#pragma aux _DPMIFreeDOSMemoryBlock = \
+        _MOV_AX_W DPMI_0101 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__dx] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMIGetRealModeInterruptVector = \
+        _MOV_AX_W DPMI_0200 \
+        _XOR_DX_DX      \
+        _INT_31         \
+    __parm __caller [__bl] \
+    __value         [__cx _DPMI_DX] \
+    __modify __exact [__ax __cx _DPMI_DX]
+
+#pragma aux _DPMISetRealModeInterruptVector = \
+        _MOV_AX_W DPMI_0201 \
+        _INT_31         \
+    __parm __caller [__bl] [__cx _DPMI_DX] \
+    __value         \
+    __modify __exact [__ax]
+
+#pragma aux _DPMIGetPMExceptionVector = \
+        _MOV_AX_W DPMI_0202 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _AND_CX_AX      \
+        _AND_DX_AX      \
+    __parm __caller [__bl] \
+    __value         [__cx _DPMI_DX] \
+    __modify __exact [_DPMI_AX _DPMI_CX _DPMI_DX]
+
+#pragma aux _DPMISetPMExceptionVector = \
+        _MOV_AX_W DPMI_0203 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bl] [__cx _DPMI_DX] \
+    __value         [_DPMI_AX]\
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMIGetPMInterruptVector = \
+        _MOV_AX_W DPMI_0204 \
+        _INT_31         \
+    __parm __caller [__bl] \
+    __value         [__cx _DPMI_DX] \
+    __modify __exact [__ax __cx _DPMI_DX]
+
+#pragma aux _DPMISetPMInterruptVector = \
+        _MOV_AX_W DPMI_0205 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bl] [__cx _DPMI_DX] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMISimulateRealModeInterrupt = \
+        _MOV_AX_W DPMI_0300 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bl] [__bh] [__cx] [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
+#pragma aux _DPMICallRealModeProcedureWithFarReturnFrame = \
+        _STC /* for missing service check */\
+        _MOV_AX_W DPMI_0301 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bh] [__cx] [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
+#pragma aux _DPMICallRealModeProcedureWithIRETFrame = \
+        _STC /* for missing service check */\
+        _MOV_AX_W DPMI_0302 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bh] [__cx] [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
+#pragma aux _DPMIAllocateRealModeCallBackAddress = \
+        _SAVE_DSDX      \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0303 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _AND_CX_AX      \
+        _AND_DX_AX      \
+        _REST_DS         \
+    __parm __caller [__dx _DPMI_SI] [ESDATAREG _DPMI_DI] \
+    __value         [__cx _DPMI_DX] \
+    __modify __exact [_DPMI_AX _DPMI_CX _DPMI_DX _MODIF_DS]
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      yes         yes
+ */
+#pragma aux _DPMIFreeRealModeCallBackAddress = \
+        _STC /* for missing service check */\
+        _MOV_AX_W DPMI_0304 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__cx _DPMI_DX] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
+#ifdef _M_I86
+#else
+#pragma aux _DPMISaveRMStateAddr = \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0305 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _MOV_CX_SI      \
+        _AND_CX_AX      \
+        _AND_DI_AX      \
+    __parm __caller [] \
+    __value         [__cx __edi] \
+    __modify __exact [__eax __bx __ecx __si __edi]
+#endif
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
+#ifdef _M_I86
+#else
+#pragma aux _DPMISavePMStateAddr = \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0305 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _SHL_EBX_16     \
+        _USE16 _MOV_BX_CX \
+        _AND_BX_AX      \
+    __parm __caller [] \
+    __value         [__ebx] \
+    __modify __exact [__eax __ebx __cx __si __edi]
+#endif
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
+#ifdef _M_I86
+#else
+#pragma aux _DPMISaveStateSize = \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0305 \
+        _INT_31         \
+        _SBB_DI_DI      \
+        _NOT_DI         \
+        _AND_AX_DI      \
+    __parm __caller [] \
+    __value         [__ax] \
+    __modify __exact [__eax __bx __cx __si __edi]
+#endif
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
+#ifdef _M_I86
+#else
+#pragma aux _DPMIRawPMtoRMAddr = \
+        _XOR_DI_DI      \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0306 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _MOV_CX_SI      \
+        _AND_CX_AX      \
+        _AND_DI_AX      \
+    __parm __caller [] \
+    __value         [__cx __edi] \
+    __modify __exact [__eax __bx __ecx __si __edi]
+#endif
+
+/*
+ *  DOS/4GW DOS/4GW Pro DOS/4G
+ *  no      no          yes
+ */
+#ifdef _M_I86
+#else
+#pragma aux _DPMIRawRMtoPMAddr = \
+        _STC /* missing service check */\
+        _MOV_AX_W DPMI_0306 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _SHL_EBX_16     \
+        _USE16 _MOV_BX_CX \
+        _AND_BX_AX      \
+    __parm __caller [] \
+    __value         [__ebx] \
+    __modify __exact [__eax __ebx __cx __si __edi]
+#endif
+
+#ifdef _M_I86
+#pragma aux _DPMIGetVersion = \
+        _MOV_AX_W DPMI_0400 \
+        _INT_31         \
         "mov  byte ptr es:[si],ah"      \
         "mov  byte ptr es:[si+1],al"    \
         "mov  word ptr es:[si+2],bx"    \
         "mov  byte ptr es:[si+4],cl"    \
         "mov  byte ptr es:[si+5],dh"    \
         "mov  byte ptr es:[si+6],dl"    \
-    __parm [__es __si]  \
-    __value \
-    __modify[__ax __bx __cl __dx]
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor  eax,eax"  \
-        "int 31h"       \
-        "sbb  ecx,ecx"  \
-        "mov  cx,ax"    \
-    __parm [__cx] \
-    __value [__ecx] \
-    __modify __exact [__eax __ecx]
+    __parm __caller [__es __si]  \
+    __value         \
+    __modify __exact [__ax __bx __cx __dx]
 #else
-#pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor  ax,ax"    \
-        "int 31h"       \
-        "sbb  cx,cx"    \
-    __parm [__cx] \
-    __value [__cx __ax] \
-    __modify __exact [__ax __cx]
+#pragma aux _DPMIGetVersion = \
+        _MOV_AX_W DPMI_0400 \
+        _INT_31         \
+        "mov  byte ptr [esi],ah"    \
+        "mov  byte ptr [esi+1],al"  \
+        "mov  word ptr [esi+2],bx"  \
+        "mov  byte ptr [esi+4],cl"  \
+        "mov  byte ptr [esi+5],dh"  \
+        "mov  byte ptr [esi+6],dl"  \
+    __parm __caller [__esi] \
+    __value         \
+    __modify __exact [__ax __bx __cx __dx]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMIFreeLDTDescriptor = \
-        "mov  ax,1"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] \
-    __value [__eax] \
-    __modify __exact [__eax]
+#pragma aux _DPMIGetFreeMemoryInformation = \
+        _MOV_AX_W DPMI_0500 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [ESDATAREG _DPMI_DI] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#pragma aux _DPMIAllocateMemoryBlock =  \
+        _MOV_AX_W DPMI_0501 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _XCHG_BX_DX      \
+        "mov  es:[bx],cx" \
+        "mov  es:[bx+2],dx" \
+        "mov  es:[bx+4],di" \
+        "mov  es:[bx+6],si" \
+    __parm __caller [__es __dx] [__bx] [__cx] \
+    __value         [__ax] \
+    __modify __exact [__ax __bx __cx __dx __di __si]
 #else
-#pragma aux _DPMIFreeLDTDescriptor = \
-        "mov  ax,1"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] \
-    __value [__ax] \
-    __modify __exact [__ax]
+#pragma aux _DPMIAllocateMemoryBlock =  \
+        _MOV_AX_W DPMI_0501 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        "mov  [edx],cx" \
+        "mov  [edx+2],bx" \
+        "mov  [edx+4],di" \
+        "mov  [edx+6],si" \
+    __parm __caller [__edx] [__bx] [__cx] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __cx __di __si]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMISegmentToDescriptor = \
-        "mov  ax,2"     \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "mov  bx,ax"    \
-    __parm [__bx] \
-    __value [__ebx]\
-    __modify __exact [__ax __ebx]
+#pragma aux _DPMIFreeMemoryBlock =  \
+        _MOV_AX_W DPMI_0502 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__si] [__di] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#pragma aux _DPMIResizeMemoryBlock =  \
+        _MOV_AX_W DPMI_0503 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _XCHG_BX_DX      \
+        "mov  es:[bx],cx" \
+        "mov  es:[bx+2],dx" \
+        "mov  es:[bx+4],di" \
+        "mov  es:[bx+6],si" \
+    __parm __caller [__es __dx] [__bx] [__cx] [__si] [__di] \
+    __value         [__ax] \
+    __modify __exact [__ax __bx __cx __dx __di __si]
 #else
-#pragma aux _DPMISegmentToDescriptor = \
-        "mov  ax,2"     \
-        "int 31h"       \
-        "sbb  bx,bx"    \
-    __parm [__bx] \
-    __value [__bx __ax] \
-    __modify __exact [__ax __bx]
+#pragma aux _DPMIResizeMemoryBlock =  \
+        _MOV_AX_W DPMI_0503 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        "mov  [edx],cx" \
+        "mov  [edx+2],bx" \
+        "mov  [edx+4],di" \
+        "mov  [edx+6],si" \
+    __parm __caller [__edx] [__bx] [__cx] [__si] [__di] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __cx __di __si]
 #endif
 
-#pragma aux _DPMIGetNextSelectorIncrementValue = \
-        "mov  ax,3"     \
-        "int 31h"       \
-    __parm [__bx] \
-    __value [__ax] \
-    __modify __exact [__ax]
+#pragma aux _DPMILockLinearRegion = \
+        _MOV_AX_W DPMI_0600 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [__cx] [__si] [__di] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#if defined(__386__)
-#pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov  ax,6"     \
-        "int 31h"       \
-        "shl  ecx,16"   \
-        "mov  cx,dx"    \
+#pragma aux _DPMIUnlockLinearRegion = \
+        _MOV_AX_W DPMI_0601 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] [__cx] [__si] [__di] \
+    __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#else
+#pragma aux _DPMIGetVendorSpecificAPI = \
+        _PUSH_DS        \
+        _PUSH_ES        \
+        _PUSH_FS        \
+        _PUSH_GS        \
+        _PUSH_BP        \
+        _MOV_AX_W DPMI_0A00 \
+        _INT_31         \
+        _MOV_CX_ES      \
+        _SBB_AX_AX      \
+        _NOT_AX         \
+        _AND_CX_AX      \
+        _AND_DI_AX      \
+        _POP_BP         \
+        _POP_GS         \
+        _POP_FS         \
+        _POP_ES         \
+        _POP_DS         \
+    __parm __caller [__esi] \
+    __value         [__cx __edi] \
+    __modify __exact [__eax __ebx __ecx __edx __esi]
+#endif
+
+#ifdef _M_I86
+#pragma aux _DPMISetWatch = \
+        _MOV_AX_W DPMI_0B00 \
+        _INT_31         \
+        _SBB_CX_CX      \
+    __parm __caller [__bx] [__cx] [__dl] [__dh] \
+    __value         [__cx __bx] \
+    __modify __exact [__ax __bx __cx]
+#else
+#pragma aux _DPMISetWatch = \
+        _MOV_AX_W DPMI_0B00 \
+        _INT_31         \
+        _SBB_AX_AX      \
+        _USE16 _MOV_AX_BX \
+    __parm __caller [__bx] [__cx] [__dl] [__dh] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx]
+#endif
+
+#ifdef _M_I86
+#pragma aux _DPMIClearWatch = \
+        _MOV_AX_W DPMI_0B01 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _AND_AX_BX      \
     __parm __caller [__bx] \
-    __value [__ecx] \
-    __modify __exact [__ax __ecx __edx]
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
 #else
-#pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov  ax,6"     \
-        "int 31h"       \
-    __parm [__bx] \
-    __value[__cx __dx] \
-    __modify __exact [__ax __cx __dx]
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMISetSegmentBaseAddress = \
-        "mov  ax,7"     \
-        "mov  dx,cx"    \
-        "shr  ecx,16"   \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] [__ecx] \
-    __value [__eax] \
-    __modify __exact [__eax __ecx __dx]
-#else
-#pragma aux _DPMISetSegmentBaseAddress = \
-        "mov  ax,7"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] [__cx __dx] \
-    __value [__ax] \
-    __modify __exact [__ax]
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMISetSegmentLimit = \
-        "mov  dx,cx"    \
-        "shr  ecx,16"   \
-        "mov  ax,8"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] [__ecx] \
-    __value [__eax] \
-    __modify __exact [__eax __ecx __dx]
-#else
-#pragma aux _DPMISetSegmentLimit = \
-        "mov  ax,8"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] [__cx __dx] \
-    __value [__ax] \
-    __modify __exact [__ax]
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMISetDescriptorAccessRights = \
-        "mov  ax,9"     \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] [__cx] \
-    __value [__eax] \
+#pragma aux _DPMIClearWatch = \
+        _MOV_AX_W DPMI_0B01 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _AND_BX_AX \
+    __parm __caller [__bx] \
+    __value         [__ebx] \
     __modify __exact [__eax]
-#else
-#pragma aux _DPMISetDescriptorAccessRights = \
-        "mov  ax,9"     \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] [__cx] \
-    __value [__ax] \
-    __modify __exact [__ax]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMIFreeMemoryBlock =  \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  ax,502h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__esi] \
-    __value [__eax] \
-    __modify __exact [__eax __di __esi]
+#ifdef _M_I86
+#pragma aux _DPMITestWatch = \
+        _MOV_AX_W DPMI_0B02 \
+        _INT_31         \
+        _SBB_BX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
 #else
-#pragma aux _DPMIFreeMemoryBlock =  \
-        "xchg si,di"    \
-        "mov  ax,502h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__di __si] \
-    __value [__ax] \
-    __modify __exact [__ax __di __si]
+#pragma aux _DPMITestWatch = \
+        _MOV_AX_W DPMI_0B02 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _MOV_BX_AX \
+    __parm __caller [__bx] \
+    __value         [__ebx] \
+    __modify __exact [__ax __ebx]
 #endif
 
-#if defined(__386__)
-#pragma aux _DPMILockLinearRegion = \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "mov  ax,600h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__ebx] [__esi] \
-    __value [__eax] \
-    __modify __exact [__eax __ebx __cx __esi __di]
-
-#pragma aux _DPMIUnlockLinearRegion = \
-        "mov  di,si"    \
-        "shr  esi,16"   \
-        "mov  cx,bx"    \
-        "shr  ebx,16"   \
-        "mov  ax,601h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__ebx] [__esi] \
-    __value [__eax] \
-    __modify __exact [__eax __ebx __cx __esi __di]
+#ifdef _M_I86
+#pragma aux _DPMIResetWatch = \
+        _MOV_AX_W DPMI_0B03 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _AND_AX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
 #else
-#pragma aux _DPMILockLinearRegion = \
-        "mov  ax,600h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__cx __bx] [__si __di] \
-    __value[__ax] \
-    __modify __exact [__ax]
-
-#pragma aux _DPMIUnlockLinearRegion = \
-        "mov  ax,601h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__cx __bx] [__si __di] \
-    __value [__ax] \
-    __modify __exact [__ax]
-#endif
-
-#if defined(__386__)
-
-#pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov  ax,100h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "xor  ax,ax"    \
-        "xor  dx,dx"    \
-    "L1: shl  edx,16"   \
-        "mov  dx,ax"    \
-    __parm [__bx] \
-    __value [__edx] \
-    __modify [__ax __bx __edx]
-
-#pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov  ax,101h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__dx] \
-    __value [__eax] \
+#pragma aux _DPMIResetWatch = \
+        _MOV_AX_W DPMI_0B03 \
+        _INT_31         \
+        _SBB_BX_BX      \
+        _USE16 _AND_BX_AX \
+    __parm __caller [__bx] \
+    __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
-#pragma aux _DPMISimulateRealModeInterrupt = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,300h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
-    __parm [__bl] [__bh] [__cx] [__dx __edi] \
-    __value [__eax] \
-    __modify []
 
-#pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov  ax,0ah"   \
-        "int 31h"       \
-        "sbb  ebx,ebx"  \
-        "mov  bx,ax"    \
-    __parm [__bx] \
-    __value [__ebx] \
+/*************************************
+ * only 80386 version pragmas
+ *************************************/
+
+#ifndef _M_I86
+
+/*************************************
+ * Pharlap specific pragmas
+ *************************************/
+
+#define PHARLAP_2502    0x02 0x25
+#define PHARLAP_2503    0x03 0x25
+#define PHARLAP_2504    0x04 0x25
+#define PHARLAP_2505    0x05 0x25
+#define PHARLAP_2506    0x06 0x25
+#define PHARLAP_2507    0x07 0x25
+#define PHARLAP_2508    0x08 0x25
+#define PHARLAP_250E    0x0e 0x25
+#define PHARLAP_2511    0x11 0x25
+#define PHARLAP_25C0    0xC0 0x25
+#define PHARLAP_25C1    0xC1 0x25
+
+/*
+ * if failed then return zero value
+ * if OK then return allocated segment value
+ */
+#pragma aux _PharlapAllocateDOSMemoryBlock = \
+        _MOV_AX_W PHARLAP_25C0 \
+        _INT_21         \
+        _SBB_BX_BX      \
+        _NOT_BX         \
+        _AND_AX_BX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
     __modify __exact [__eax __ebx]
 
-#pragma aux _DPMIGetDescriptor = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,0bh"   \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] [__dx __edi] \
-    __value [__eax] \
-    __modify []
+/*
+ * if OK then return zero value
+ * if failed then return non-zero value
+ */
+#pragma aux _PharlapFreeDOSMemoryBlock = \
+        _MOV_AX_W PHARLAP_25C1 \
+        _INT_21         \
+        _SBB_CX_CX      \
+        _AND_AX_CX      \
+    __parm __caller [__cx] \
+    __value         [__ax] \
+    __modify __exact [__eax __ecx]
 
-#pragma aux _DPMISetDescriptor = \
-        "push es"       \
-        "mov  es,edx"   \
-        "mov  ax,0ch"   \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
-    __parm [__bx] [__dx __edi] \
-    __value [__eax] \
-    __modify []
-#else
+#pragma aux  _PharlapGetPMInterruptVector = \
+        _SAVE_ES        \
+        _MOV_AX_W PHARLAP_2502 \
+        _INT_21         \
+        _REST_ESCX      \
+    __parm __caller [__cl] \
+    __value         [__cx __ebx] \
+    __modify __exact [__ax __ebx __cx _MODIF_ES]
 
-#pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov  ax,100h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "xor  ax,ax"    \
-        "xor  dx,dx"    \
-    "L1: "              \
-    __parm [__bx] \
-    __value [__dx __ax] \
-    __modify __exact [__ax __bx __dx]
+#pragma aux _PharlapGetRealModeInterruptVector = \
+        _MOV_AX_W PHARLAP_2503 \
+        _INT_21         \
+        _MOV_CX_BX      \
+        _XOR_BX_BX      \
+        _USE16 _MOV_BX_CX \
+        _SHR_ECX_16     \
+    __parm __caller [__cl] \
+    __value         [__cx __ebx] \
+    __modify __exact [__ax __ebx __ecx]
 
-#pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov ax,101h"   \
-        "int 31h"       \
-        "sbb ax,ax"     \
-    __parm [__dx] \
-    __value [__ax] \
-    __modify __exact [__ax]
+#pragma aux  _PharlapSetPMInterruptVector = \
+        _SAVE_DSDX      \
+        _MOV_DX_AX      \
+        _MOV_AX_W PHARLAP_2504 \
+        _INT_21         \
+        _REST_DS        \
+    __parm __caller [__cl] [__dx __eax] \
+    __value         \
+    __modify __exact [__eax __edx _MODIF_DS]
 
-#pragma aux _DPMISimulateRealModeInterrupt = \
-        "mov ax,300h"   \
-        "int 31h"       \
-        "sbb ax,ax"     \
-    __parm [__bl] [__bh] [__cx] [__es __di] \
-    __value [__ax] \
-    __modify []
+#pragma aux _PharlapSetRealModeInterruptVector = \
+        _SHL_EBX_16     \
+        _USE16 _MOV_BX_AX \
+        _MOV_AX_W PHARLAP_2505 \
+        _INT_21         \
+    __parm __caller [__cl] [__bx __eax] \
+    __value         \
+    __modify __exact [__eax __ebx]
 
-#pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov ax,0ah"    \
-        "int 31h"       \
-        "sbb bx,bx"     \
-    __parm [__bx] \
-    __value [__bx __ax] \
-    __modify __exact[__ax __bx]
+#pragma aux  _PharlapSetPMInterruptVector_passup = \
+        _SAVE_DSCX      \
+        _MOV_CL_AL      \
+        _MOV_AX_W PHARLAP_2506 \
+        _INT_21         \
+        _REST_DS         \
+    __parm __caller [__al] [__cx __edx] \
+    __value         \
+    __modify __exact [__eax __ecx _MODIF_DS]
 
-#pragma aux _DPMIGetDescriptor = \
-        "mov  ax,0bh"   \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] [__es __di] \
-    __value [__ax] \
-    __modify []
+#pragma aux  _PharlapSetBothInterruptVectors = \
+        _SAVE_DSCX      \
+        _SHL_ESI_16     \
+        _USE16 _MOV_SI_BX \
+        _MOV_BX_SI      \
+        _MOV_CL_AL      \
+        _MOV_AX_W PHARLAP_2507 \
+        _INT_21         \
+        _REST_DS         \
+    __parm __caller [__al] [__cx __edx] [__si __ebx] \
+    __value         \
+    __modify __exact [__eax __ebx __ecx __esi _MODIF_DS]
 
-#pragma aux _DPMISetDescriptor = \
-        "mov  ax,0ch"   \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bx] [__es __di] \
-    __value [__ax] \
-    __modify []
+/*
+ * if failed then return (uint_32)-1
+ */
+#pragma aux _PharlapGetSegmentBaseAddress = \
+        _MOV_AX_W PHARLAP_2508 \
+        _INT_21         \
+        _SBB_AX_AX      \
+        _OR_CX_AX       \
+    __parm __caller [__bx] \
+    __value         [__ecx] \
+    __modify __exact [__eax __bx __ecx]
+
+#pragma aux _PharlapCallRealModeProcedureNoRegs = \
+        _XOR_CX_CX      \
+        _MOV_AX_W PHARLAP_250E \
+        _INT_21         \
+        _SBB_AX_AX      \
+    __parm __caller [__ebx] \
+    __value         [__eax] \
+    __modify __exact [__eax __ecx]
+
+#pragma aux _PharlapSimulateRealModeInterrupt = \
+        _PUSH_BP        \
+        _PUSH_SI        \
+        _MOV_AX_W PHARLAP_2511 \
+        _INT_21         \
+        _SBB_AX_AX      \
+        _POP_SI         \
+        _POP_BP         \
+    __parm __caller [__edx] [__ebx] [__ecx] [__edi] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __ecx __edi]
+
+#pragma aux _PharlapSimulateRealModeInterruptExt = \
+        _PUSH_BP        \
+        _PUSH_SI        \
+        "mov ebx,[edx+18]" \
+        "mov ecx,[edx+22]" \
+        "mov edi,[edx+26]" \
+        "mov esi,[edx+30]" \
+        "mov ebp,[edx+34]" \
+        _MOV_AX_W PHARLAP_2511 \
+        _INT_21         \
+        "mov [edx+34],ebp" \
+        "mov [edx+30],esi" \
+        "mov [edx+26],edi" \
+        "mov [edx+22],ecx" \
+        "mov [edx+18],ebx" \
+        _SBB_AX_AX      \
+        _POP_SI         \
+        _POP_BP         \
+    __parm __caller [__edx] \
+    __value         [__eax] \
+    __modify __exact [__eax __ebx __ecx __edi]
+
+
+/*************************************
+ * Rational DOS/4G specific pragmas
+ *************************************/
+
+/*
+ * only interrupt 0x08-0x2e is auto-passup
+ * others need to create appropriate callback
+ */
+#pragma aux _DOS4GSetPMInterruptVector_passup = \
+        _SAVE_DSCX      \
+        _MOV_AH DOS_SET_INT \
+        _INT_21         \
+        _REST_DS        \
+    __parm __caller [__al] [__cx __edx] \
+    __value         \
+    __modify __exact [__ah _MODIF_DS]
+
+#pragma aux _DOS4GGetPMInterruptVector = \
+        _SAVE_ES        \
+        _MOV_AH DOS_GET_INT \
+        _INT_21         \
+        _MOV_AX_BX      \
+        _REST_ESDX      \
+    __parm __caller [__al] \
+    __value         [__dx __eax] \
+    __modify __exact [__eax __ebx __edx _MODIF_ES]
 
 #endif
 
-#pragma aux _fDPMIAllocateMemoryBlock =  \
-        "push es"       \
-        "push ax"       \
-        "push dx"       \
-        "xchg bx,cx"    \
-        "mov  ax,501H"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  es"       \
-        "pop  bx"       \
-        "mov  es:[bx],cx"       \
-        "mov  es:+2H[bx],dx"    \
-        "mov  es:+4H[bx],di"    \
-        "mov  es:+6H[bx],si"    \
-        "pop  es"               \
-    __parm [__ax __dx] [__bx __cx] \
-    __value [__ax] \
-    __modify [__bx __cx __dx __di __si]
+#pragma aux _GetSelectorLimitB = \
+        _PROTECTED \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
+    __parm      [__ax] \
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#pragma aux _nDPMIAllocateMemoryBlock =  \
-        "push ax"       \
-        "xchg bx,cx"    \
-        "mov  ax,501H"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  bx"       \
-        "mov  ds:[bx],cx"       \
-        "mov  ds:+2H[bx],dx"    \
-        "mov  ds:+4H[bx],di"    \
-        "mov  ds:+6H[bx],si"    \
-    __parm [__ax] [__bx __cx] \
-    __value [__ax] \
-    __modify [__bx __cx __dx __di __si]
+#pragma aux _GetDataSelectorLimitB = \
+        _PROTECTED \
+        _MOV_AX_DS \
+        _LSL_AX_AX \
+        _JZ 2 \
+        _XOR_AX_AX  \
+    __parm      [] \
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
 
-#pragma aux _fDPMIResizeMemoryBlock =  \
-        "push es"       \
-        "push ax"       \
-        "push dx"       \
-        "xchg si,di"    \
-        "xchg bx,cx"    \
-        "mov  ax,503h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  es"       \
-        "pop  bx"       \
-        "mov  es:[bx],cx"       \
-        "mov  es:+2H[bx],dx"    \
-        "mov  es:+4H[bx],di"    \
-        "mov  es:+6H[bx],si"    \
-        "pop  es"               \
-    __parm [__dx __ax] [__bx __cx] [__di __si] \
-    __value [__ax] \
-    __modify [__di __si __bx __cx __dx]
+#pragma aux _IsReadSelectorB = \
+        _PROTECTED \
+        _VERR_AX \
+        _MOV_AL 0 \
+        _JNZ 2    \
+        _MOV_AL 1 \
+    __parm      [__ax] \
+    __value     [__al] \
+    __modify    []
 
-#pragma aux _nDPMIResizeMemoryBlock =  \
-        "push ax"       \
-        "xchg si,di"    \
-        "xchg bx,cx"    \
-        "mov  ax,503h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-        "mov  dx,bx"    \
-        "pop  bx"       \
-        "mov  ds:[bx],cx"       \
-        "mov  ds:+2H[bx],dx"    \
-        "mov  ds:+4H[bx],di"    \
-        "mov  ds:+6H[bx],si"    \
-    __parm [__ax] [__bx __cx] [__di __si] \
-    __value [__ax] \
-    __modify [__di __si __bx __cx __dx]
-
-#if defined(__386__)
-#pragma aux _nDPMIGetFreeMemoryInformation = \
-        "push es"       \
-        "push ds"       \
-        "pop  es"       \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  eax,eax"  \
-    __parm [__edi] \
-    __value [__eax] \
-    __modify __exact [__eax]
-#else
-#pragma aux _fDPMIGetFreeMemoryInformation = \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__es __di] \
-    __value [__ax] \
-    __modify __exact [__ax]
-
-#pragma aux _nDPMIGetFreeMemoryInformation = \
-        "push es"       \
-        "push ds"       \
-        "pop  es"       \
-        "mov  ax,500h"  \
-        "int 31h"       \
-        "pop  es"       \
-        "sbb  ax,ax"    \
-    __parm [__di] \
-    __value [__ax] \
-    __modify __exact [__ax]
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMIGetRealModeInterruptVector = \
-        "mov  ax,200h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __edx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetRealModeInterruptVector = \
-        "mov  ax,201h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bl] [__cx __edx] \
-    __value [__eax] \
-    __modify []
-#else
-#pragma aux _DPMIGetRealModeInterruptVector = \
-        "mov  ax,200h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __dx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetRealModeInterruptVector = \
-        "mov  ax,201h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bl] [__cx __dx] \
-    __value [__ax] \
-    __modify []
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMIGetPMExceptionVector = \
-        "mov  ax,202h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __edx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetPMExceptionVector = \
-        "mov  ax,203h"  \
-        "int 31h"       \
-    __parm [__bl] [__cx __edx] \
-    __value \
-    __modify [__ax]
-
-#pragma aux _DPMIGetPMInterruptVector = \
-        "mov  ax,204h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __edx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetPMInterruptVector = \
-        "mov  ax,205h"  \
-        "int 31h"       \
-        "sbb  eax,eax"  \
-    __parm [__bl] [__cx __edx] \
-    __value [__eax] \
-    __modify []
-#else
-#pragma aux _DPMIGetPMExceptionVector = \
-        "mov  ax,202h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __dx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetPMExceptionVector = \
-        "mov  ax,203h"  \
-        "int 31h"       \
-    __parm [__bl] [__cx __dx] \
-    __value \
-    __modify [__ax]
-
-#pragma aux _DPMIGetPMInterruptVector = \
-        "mov  ax,204h"  \
-        "int 31h"       \
-    __parm [__bl] \
-    __value [__cx __dx] \
-    __modify [__ax]
-
-#pragma aux _DPMISetPMInterruptVector = \
-        "mov  ax,205h"  \
-        "int 31h"       \
-        "sbb  ax,ax"    \
-    __parm [__bl] [__cx __dx] \
-    __value [__ax] \
-    __modify []
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push es"       \
-        "push ds"       \
-        "mov  ds,edx"   \
-        "mov  esi,eax"  \
-        "mov  es,ecx"   \
-        "mov  edi,ebx"  \
-        "mov  ax,303h"  \
-        "int 31h"       \
-        "pop  ds"       \
-        "pop  es"       \
-    __parm [__dx __eax] [__cx __ebx] \
-    __value [__cx __edx] \
-    __modify [__edi __esi]
-
-#pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov  ax,304h"  \
-        "int 31h"       \
-    __parm [__cx __edx] \
-    __value \
-    __modify []
-#else
-#pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push ds"       \
-        "mov  ds,dx"    \
-        "mov  si,ax"    \
-        "mov  ax,303h"  \
-        "int 31h"       \
-        "pop  ds"       \
-    __parm [__dx __ax] [__es __di] \
-    __value [__cx __dx] \
-    __modify [__si]
-
-#pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov  ax,304h"  \
-        "int 31h"       \
-    __parm [__cx __dx] \
-    __value \
-    __modify []
-#endif
-
-#if defined(__386__)
-#pragma aux _DPMIRawPMtoRMAddr = \
-        "mov  ax,306h"  \
-        "xor  edi,edi"  \
-        "stc"           \
-        "int 31h"       \
-        "mov  cx,si"    \
-        "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  edi,edi"  \
-    "L1: "              \
-    __parm [] \
-    __value [__cx __edi] \
-    __modify __exact [__eax __cx __si __edi]
-
-#pragma aux _DPMIRawRMtoPMAddr = \
-        "mov  ax,306h"  \
-        "stc"           \
-        "int 31h"       \
-        "jnc short L1"  \
-        "xor  ebx,ebx"  \
-        "jmp short L2"  \
-    "L1: shl  ebx,16"   \
-        "mov  bx,cx"    \
-    "L2: "              \
-    __parm [] \
-    __value [__ebx] \
-    __modify __exact [__eax __cx __si __edi]
-
-#pragma aux _DPMISaveRMStateAddr = \
-        "mov  ax,305h"  \
-        "stc"           \
-        "int 31h"       \
-        "mov  cx,si"    \
-        "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  edi,edi"  \
-    "L1: "              \
-    __parm [] \
-    __value [__cx __edi] \
-    __modify __exact [__ax __bx __cx __si __edi]
-
-#pragma aux _DPMISavePMStateAddr = \
-        "mov  ax,305h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "xor  cx,cx"    \
-        "xor  ebx,ebx"  \
-        "jmp short L2"  \
-    "L1: shl  ebx,16"   \
-        "mov  bx,cx"    \
-    "L2: "              \
-    __parm [] \
-    __value [__ebx] \
-    __modify __exact [__ax __bx __cx __si __edi]
-
-#pragma aux _DPMISaveStateSize = \
-        "mov  ax,305h"  \
-        "int 31h"       \
-        "jnc short L1"  \
-        "xor  eax,eax"  \
-    "L1:"               \
-    __parm [] \
-    __value [__ax] \
-    __modify __exact [__eax __bx __cx __si __edi]
-
-#pragma aux _DPMIGetVendorSpecificAPI = \
-        "push ds"       \
-        "push es"       \
-        "push fs"       \
-        "push gs"       \
-        "push ebp"      \
-        "mov  ds,ecx"   \
-        "xor  eax,eax"  \
-        "mov  ah,0ah"   \
-        "int 31h"       \
-        "mov  ecx,es"   \
-        "jnc short L1"  \
-        "xor  ecx,ecx"  \
-        "xor  edi,edi"  \
-    "L1: pop  ebp"      \
-        "pop  gs"       \
-        "pop  fs"       \
-        "pop  es"       \
-        "pop  ds"       \
-    __parm [__cx __esi] \
-    __value [__cx __edi] \
-    __modify [__eax __ebx __ecx __edx __esi]
-#endif
+#pragma aux _IsWriteSelectorB = \
+        _PROTECTED \
+        _VERW_AX \
+        _MOV_AL 0 \
+        _JNZ 2    \
+        _MOV_AL 1 \
+    __parm      [__ax] \
+    __value     [__al] \
+    __modify    []
 
 #endif

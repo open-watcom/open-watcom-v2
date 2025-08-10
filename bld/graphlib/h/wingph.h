@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,9 +81,9 @@ extern WPI_MRESULT CALLBACK GraphWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 
 extern WPI_MRESULT CALLBACK GraphFrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 extern void             _MyInvalidate( WPI_RECTDIM x1, WPI_RECTDIM y1, WPI_RECTDIM x2, WPI_RECTDIM y2 );
 extern HPEN             _MyCreatePen( WPI_COLOUR );
-extern short            _CreateSysMonoFnt( WPI_PRES );
+extern bool             _CreateSysMonoFnt( WPI_PRES );
 extern HFONT            _GetSysMonoFnt( void );
-extern short            _IsStockFont( void );
+extern bool             _IsStockFont( void );
 extern long             _GetPresHeight( void );
 extern void             _SetPresHeight( long );
 extern void             _SetInst( WPI_INST* );

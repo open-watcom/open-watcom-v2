@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,27 +42,30 @@
 #include "fileacc.h"
 #include "defwin.h"
 
+
 _WCRTLINK int kbhit( void )
 {
     DWORD n;
-    HANDLE h;
+    HANDLE conin;
     INPUT_RECORD r;
 
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {
         LPWDATA res;
-        res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
 #endif
     _AccessFileH( STDIN_FILENO );
-    h = __NTConsoleInput();
-    for(;;) {
-        PeekConsoleInput( h, &r, 1, &n );
-        if( n == 0 ) break;
-        if( __NTRealKey( &r ) ) break;
+    conin = __NTConsoleInput();
+    for( ;; ) {
+        PeekConsoleInput( conin, &r, 1, &n );
+        if( n == 0 )
+            break;
+        if( __NTRealKey( &r ) )
+            break;
         // flush out mouse, window, and key up events
-        ReadConsoleInput( h, &r, 1, &n );
+        ReadConsoleInput( conin, &r, 1, &n );
     }
     // n != 0 if there is a key waiting
     _ReleaseFileH( STDIN_FILENO );

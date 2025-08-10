@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -445,7 +445,7 @@ trap_conditions DebugExecute( state_type state, bool *retflag, bool stop_on_modu
                     DebugeeTid = DebugEvent.dwThreadId;
                     getImageNote( &imgnote );
                     RemoveModuleFromLibList( imgnote.Module, imgnote.FileName );
-                    if( !stricmp( imgnote.FileName, CurrEXEName ) ) {
+                    if( stricmp( imgnote.FileName, CurrEXEName ) == 0 ) {
                         DebugeeEnded = true;
                         conditions = COND_TERMINATE;
                         goto done;

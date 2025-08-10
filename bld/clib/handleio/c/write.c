@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,63 +105,65 @@ typedef union {
     long                _32[2];
 } __i64;
 
-static int zero_pad( int handle )           /* 09-jan-95 */
+static int zero_pad( int handle )
 /*******************************/
 {
 #if defined(__NT__)
-    HANDLE      h;
-    DWORD       dw_ptr;
-    DWORD       dw_error;
+    HANDLE      osfh;
+    DWORD       pos;
     DWORD       number_of_bytes_written;
     unsigned    write_amt;
     __i64       cur_ptr;
     __i64       end_ptr;
-    BOOL        rc;
     char        zeroBuf[PAD_SIZE];
 
-    h = __getOSHandle( handle );
-    dw_error = NO_ERROR;
+    osfh = __getOSHandle( handle );
 
     cur_ptr._64 = 0;
-    dw_ptr = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
-    if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-        dw_error = GetLastError() ;
+    pos = SetFilePointer( osfh, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
+    if( pos == INVALID_SET_FILE_POINTER ) {
+        // this might be OK so need check error
+        if( GetLastError() != NO_ERROR ) {
+            return( -1 );
+        }
     }
-    if( dw_error != NO_ERROR )
-        return( -1 );
-    cur_ptr._32[0] = dw_ptr;
+    cur_ptr._32[0] = pos;
 
     end_ptr._64 = 0;
-    dw_ptr = SetFilePointer( h, end_ptr._32[0], &end_ptr._32[1], FILE_END );
-    if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-        dw_error = GetLastError() ;
-    }
-    if( dw_error != NO_ERROR )
-        return( -1 );
-    end_ptr._32[0] = dw_ptr;
-
-    memset( zeroBuf, 0, PAD_SIZE );
-
-    while( end_ptr._64 < cur_ptr._64 ) {
-        if( (end_ptr._64 + PAD_SIZE) < cur_ptr._64 ) {
-            write_amt = PAD_SIZE;
-        } else {
-            write_amt = cur_ptr._64 - end_ptr._64;
-        }
-        rc = WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL );
-        dw_error = GetLastError() ;
-        if( rc == 0 )
+    pos = SetFilePointer( osfh, end_ptr._32[0], &end_ptr._32[1], FILE_END );
+    if( pos == INVALID_SET_FILE_POINTER ) {
+        // this might be OK so need check error
+        if( GetLastError() != NO_ERROR ) {
             return( -1 );
-        end_ptr._64 = end_ptr._64 + write_amt;
+        }
+    }
+    end_ptr._32[0] = pos;
+
+    if( end_ptr._64 < cur_ptr._64 ) {
+        unsigned long long  len;
+
+        memset( zeroBuf, 0, PAD_SIZE );
+        len = end_ptr._64 - cur_ptr._64;
+        write_amt = PAD_SIZE;
+        while( len > 0 ) {
+            if( len < PAD_SIZE ) {
+                write_amt = len;
+            }
+            if( WriteFile( osfh, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
+                return( -1 );
+            }
+            end_ptr._64 += write_amt;
+            len -= write_amt;
+        }
     }
 
     if( cur_ptr._64 != end_ptr._64 ) {
-        dw_ptr = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
-        if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-            dw_error = GetLastError() ;
-        }
-        if( dw_error != NO_ERROR ) {
-            return( -1 );
+        pos = SetFilePointer( osfh, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
+        if( pos == INVALID_SET_FILE_POINTER ) {
+            // this might be OK so need check error
+            if( GetLastError() != NO_ERROR ) {
+                return( -1 );
+            }
         }
     }
     return( 0 );
@@ -180,20 +182,17 @@ static int zero_pad( int handle )           /* 09-jan-95 */
     if( eodPos == -1 )
         return( -1 );
 
-    if( curPos > eodPos ) {
+    if( curPos > eodPos ) {                     /* only write if needed */
+        memset( zeroBuf, 0, PAD_SIZE );         /* zero out a buffer */
+        writeAmt = PAD_SIZE;
         bytesToWrite = curPos - eodPos;         /* amount to pad by */
-        if( bytesToWrite > 0 ) {                /* only write if needed */
-            memset( zeroBuf, 0, PAD_SIZE );  /* zero out a buffer */
-            do {                                /* loop until done */
-                if( bytesToWrite > PAD_SIZE )
-                    writeAmt = 512;
-                else
-                    writeAmt = (unsigned)bytesToWrite;
-                rc = write( handle, zeroBuf, writeAmt );
-                if( rc < 0 )
-                    return( rc );
-                bytesToWrite -= writeAmt;       /* more bytes written */
-            } while( bytesToWrite != 0 );
+        while( bytesToWrite > 0 ) {             /* loop until done */
+            if( bytesToWrite < PAD_SIZE )
+                writeAmt = (unsigned)bytesToWrite;
+            rc = write( handle, zeroBuf, writeAmt );
+            if( rc < 0 )
+                return( rc );
+            bytesToWrite -= writeAmt;           /* more bytes written */
         }
     } else {
         curPos = __lseek( handle, curPos, SEEK_SET );
@@ -215,27 +214,25 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 /********************************************************************************/
 {
     int         rc;
-#ifdef DEFAULT_WINDOWING
-    LPWDATA     res;
-#endif
 #if defined(__NT__)
-    HANDLE      h;
 #elif defined(__OS2__)
     APIRET      rc1;
 #else
     tiny_ret_t  rc1;
 #endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA     res;
+#endif
 
     rc = 0;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+    if( _WindowsStdout != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
         *amt = _WindowsStdout( res, buffer, len );
-    } else
+    } else {
 #endif
-    {
 #if defined(__NT__)
-        h = __getOSHandle( handle );
-        if( !WriteFile( h, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) ) {
+        if( WriteFile( __getOSHandle( handle ), (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
             return( __set_errno_nt() );
         }
 #elif defined(__OS2__)
@@ -250,7 +247,9 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         }
         *amt = TINY_LINFO( rc1 );
 #endif
+#ifdef DEFAULT_WINDOWING
     }
+#endif
     if( *amt != len ) {
         rc = ENOSPC;
         _RWD_errno = rc;
@@ -271,10 +270,10 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     unsigned        len_written, i, j;
     int             rc;
 #if defined(__NT__)
-    HANDLE          h;
+    HANDLE          osfh;
     LONG            cur_ptr_low;
     LONG            cur_ptr_high;
-    DWORD           rc1;
+    DWORD           error;
 #elif defined(__OS2__)
     unsigned long   dummy;
     APIRET          rc1;
@@ -285,7 +284,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     __handle_check( handle, -1 );
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
+#if defined(__WINDOWS__)
         // How can we write to the handle if we never opened it? JBS
         return( _lwrite( handle, buffer, len ) );
 #else
@@ -299,22 +298,24 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     }
 
 #if defined(__NT__)
-    h = __getOSHandle( handle );
+    osfh = __getOSHandle( handle );
 #endif
 
     // put a semaphore around our writes
 
     _AccessFileH( handle );
-    if( (iomode_flags & _APPEND) && (iomode_flags & _ISTTY) == 0 ) {
+    if( (iomode_flags & _APPEND)
+      && (iomode_flags & _ISTTY) == 0 ) {
 #if defined(__NT__)
-        if( GetFileType( h ) == FILE_TYPE_DISK ) {
+        if( GetFileType( osfh ) == FILE_TYPE_DISK ) {
             cur_ptr_low = 0;
             cur_ptr_high = 0;
-            rc1 = SetFilePointer( h, cur_ptr_low, &cur_ptr_high, FILE_END );
-            if( rc1 == INVALID_SET_FILE_POINTER ) { // this might be OK so
-                if( GetLastError() != NO_ERROR ) {
+            if( SetFilePointer( osfh, cur_ptr_low, &cur_ptr_high, FILE_END ) == INVALID_SET_FILE_POINTER ) {
+                // this might be OK so need check error
+                error = GetLastError() ;
+                if( error != NO_ERROR ) {
                     _ReleaseFileH( handle );
-                    return( __set_errno_nt() );
+                    return( __set_errno_dos( error ) );
                 }
             }
         }
@@ -340,10 +341,10 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     // Pad the file with zeros if necessary
     if( iomode_flags & _FILEEXT ) {
         // turn off file extended flag
-        __SetIOMode_nogrow( handle, iomode_flags & (~_FILEEXT) );
+        __SetIOMode( handle, iomode_flags & (~_FILEEXT) );
 
         // It is not required to pad a file with zeroes on an NTFS file system;
-        // unfortunately it is required on FAT (and probably FAT32). (JBS)
+        // unfortunately it is required on FAT (and probably FAT32).
         rc = zero_pad( handle );
     }
 
@@ -418,13 +419,15 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
 
 #if defined(__WINDOWS_386__)
+
 #define MAXBUFF 0x8000
+
 _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 /*****************************************************************/
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    writeamt;
-    int         rc;
+    unsigned    rc;
 
     __handle_check( handle, -1 );
 
@@ -432,19 +435,17 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
     if( len == 0 )
         return( __write( handle, buffer, 0 ) );
 
+    total = 0;
+    writeamt = MAXBUFF;
     while( len > 0 ) {
-        if( len > MAXBUFF ) {
-            writeamt = MAXBUFF;
-        } else {
+        if( len < MAXBUFF )
             writeamt = len;
-        }
         rc = __write( handle, buffer, writeamt );
-        if( rc == -1 )
-            return( rc );
-        total += (unsigned)rc;
+        if( (int)rc == -1 )
+            return( -1 );
+        total += rc;
         if( rc != writeamt )
-            return( total );
-
+            break;
         len -= writeamt;
         buffer = ((const char *)buffer) + writeamt;
     }

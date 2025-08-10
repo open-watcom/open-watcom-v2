@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,6 +27,7 @@
 * Description: WGML implement :LAYOUT and :eLAYOUT tags
 *
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -53,52 +54,42 @@
 /***************************************************************************/
 
 /***************************************************************************/
-/*  gml_layout                                                             */
+/*  lay_layout                                                             */
 /***************************************************************************/
 
-void    gml_layout( gml_tag gtag )
+void    lay_layout( const gmltag * entry )
 {
-    char        *   p;
+    char            *p;
 
-    p = scan_start;
-    scan_start = scan_stop;
+    p = g_scandata.s;
+    g_scandata.s = g_scandata.e;
 
-    if( !GlobFlags.firstpass ) {
+    if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = true;
-
-        /*******************************************************************/
-        /*  read and ignore all lines up to :eLAYOUT                       */
-        /*******************************************************************/
-
-        while( !ProcFlags.reprocess_line  ) {
-            eat_lay_sub_tag();
-            if( strnicmp( ":elayout", buff2, 8 ) ) {
-                ProcFlags.reprocess_line = false;   // not :elayout, go on
-            }
-        }
+        eat_lay_sub_tag();
         return;
+    }
+
+    if( ProcFlags.fb_document_done ) {
+        xx_err_exit( ERR_LAY_TOO_LATE );
+        /* never return */
     }
 
     if( !ProcFlags.lay_specified ) {
         ProcFlags.lay_specified = true;
-        out_msg( "Processing layout\n" );
+        g_info_lm( INF_PROC_LAY );
     }
 
     if( *p == '\0' || *p == '.' ) {
         if( ProcFlags.layout ) {        // nested layout
-            err_count++;
-            g_err( err_nested_tag, gml_tagname( gtag ) );
-            file_mac_info();
-            return;
+            xx_err_exit_c( ERR_NESTED_TAG, entry->tagname );
+            /* never return */
         }
         ProcFlags.layout = true;
-        return;
     } else {
-        err_count++;
-        g_err( err_extra_ignored, tok_start, p );
-        file_mac_info();
+        xx_err_exit_cc( ERR_EXTRA_IGNORED, g_tok_start, p );
+        /* never return */
     }
-    return;
 }
 
 
@@ -106,33 +97,28 @@ void    gml_layout( gml_tag gtag )
 /*  lay_elayout     end of layout processing                               */
 /***************************************************************************/
 
-void    lay_elayout( lay_tag ltag )
+void    lay_elayout( const gmltag * entry )
 {
-    char        *   p;
+    char            *p;
 
-    p = scan_start;
-    scan_start = scan_stop;
+    p = g_scandata.s;
+    g_scandata.s = g_scandata.e;
 
-    if( !GlobFlags.firstpass ) {
+    if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = false;
+        eat_lay_sub_tag();
         return;                         // process during first pass only
     }
 
     if( *p == '\0' || *p == '.' ) {
         if( !ProcFlags.layout ) {       // not in layout processing
-            err_count++;
-            g_err( err_no_lay, &(lay_tagname( ltag )[1]), lay_tagname( ltag ) );
-            file_mac_info();
-            return;
+            xx_err_exit_cc( ERR_NO_LAY, &(entry->tagname[1]), entry->tagname );
+            /* never return */
         }
         ProcFlags.layout = false;
-        ProcFlags.lay_xxx = el_zero;
-
-        return;
+        ProcFlags.lay_xxx = TL_NONE;
     } else {
-        err_count++;
-        g_err( err_extra_ignored, tok_start, p );
-        file_mac_info();
+        xx_err_exit_cc( ERR_EXTRA_IGNORED, g_tok_start, p );
+        /* never return */
     }
-    return;
 }

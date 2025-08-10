@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <stdio.h>
 #include "riscstr.h"
 #include "xstring.h"
+
 #undef  strlen
 
 
@@ -49,9 +51,8 @@
 #else
     const CHAR_TYPE *p;
 
-    p = s;
-    while( *p != NULLCHAR )
-        ++p;
+    for( p = s; *p != NULLCHAR; ++p )
+        /* empty */;
     return( p - s );
 #endif
 }

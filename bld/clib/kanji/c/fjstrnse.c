@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,8 @@ _WCRTLINK FJSTRING _fjstrnset( JCHAR _WCFAR *str, JMOJI c, size_t n )
     JMOJI c2;
     size_t byte, count, len;
 
-    if( !n ) return str;
+    if( n == 0 )
+        return( str );
     byte = n * ( jiszen( c ) ? 2 : 1 );
     len = _fstrlen( (char _WCFAR *)str );
     if( len <= byte ) {
@@ -104,10 +105,10 @@ _WCRTLINK FJSTRING _fjstrnset( JCHAR _WCFAR *str, JMOJI c, size_t n )
             for( count = 0; count < len/2; count++ ) {
                 str = _fjputmoji( str, c );
             }
-            if( len & 1 )
+            if( len & 1 ) {
                 *str = ' ';
             }
-        else {
+        } else {
             _fmemset( str, c, len );
         }
     } else {
@@ -115,8 +116,9 @@ _WCRTLINK FJSTRING _fjstrnset( JCHAR _WCFAR *str, JMOJI c, size_t n )
             dest = _fjgetmoji( dest, (JMOJI _WCFAR *)&c2 );
         }
         _fjgetmoji( dest, (JMOJI _WCFAR *)&c2 );
-        if( dest - str != byte  &&  jiszen( c2 ) ) {
-            *( dest+1 ) = ' ';
+        if( dest - str != byte
+          && jiszen( c2 ) ) {
+            *( dest + 1 ) = ' ';
         }
         if( jiszen( c ) ) {
             for( count = 0; count < n; count++ ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ void _L1PutPic( short px, short py, short line_len,
     y1 = py;
     x2 = x1 + image->picwidth - 1;
     y2 = y1 + image->picheight - 1;
-    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) != 0 ) { /* clip rectangle to vp */
+    if( _L0BlockClip( &x1, &y1, &x2, &y2 ) ) {      /* clip rectangle to vp */
         _ErrorStatus = _GRNOOUTPUT;                 /* image is completely  */
         return;                                     /* outside view port    */
     }

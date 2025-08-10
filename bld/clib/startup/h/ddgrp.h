@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +29,12 @@
 ****************************************************************************/
 
 
+#if defined( __OS2__ ) || defined( __NT__ )
+#include <stdbool.h>
+#endif
+
 #if defined( __OS2__ )
-extern int  __disallow_single_dgroup( unsigned );
+extern bool __disallow_single_dgroup( unsigned );
 #elif defined( __NT__ )
-extern BOOL __disallow_single_dgroup( HANDLE );
+extern bool __disallow_single_dgroup( HANDLE );
 #endif

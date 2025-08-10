@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,25 +31,23 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#include <errno.h>
+
 #include "wgml.h"
 
-static FILE * workfile[9] =           // support for 9 workfiles sysusr0n.gml
+
+static FILE * workfile[9] =           // support for 9 workfiles SYSUSR0x.GML
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 /***************************************************************************/
-/*  get workfile n file name                                               */
+/*  get workfile n name                                                    */
 /***************************************************************************/
 
-char    *get_pu_file_name( char *buf, size_t buf_size, int n )
+char *get_workfile_name( int n )
 {
-    char    filename[] = "sysusr00" "." GML_EXT;
+    static char     workfile_name[20] = "sysusr0x.gml";
 
-    /* unused parameters */ (void)buf_size;
-
-    filename[7] = '0' + n;
-    strcpy( buf, filename );
-    return( token_buf );
+    workfile_name[7] = '0' + n;
+    return( workfile_name );
 }
 
 /***************************************************************************/
@@ -58,11 +56,11 @@ char    *get_pu_file_name( char *buf, size_t buf_size, int n )
 
 void    close_pu_file( int n )
 {
-    if( n > 0 && n < 10 ) {
-        if( workfile[n - 1] != NULL ) {
-            fclose( workfile[n - 1] );
-            workfile[n - 1] = NULL;
-        }
+    FILE    *fp;
+
+    fp = workfile[n - 1];
+    if( fp != NULL ) {
+        fclose( fp );
     }
 }
 
@@ -85,21 +83,16 @@ void    close_all_pu_files( void )
 /*  open  workfile n if not yet done                                       */
 /***************************************************************************/
 
-static  int open_pu_file( int n )
+static FILE     *open_pu_file( int n )
 {
-    int         erc = 0;
-    char        filename[13];
+    FILE            *fp;
 
-    if( n > 0 && n < 10 ) {
-        if( workfile[n - 1] == NULL ) {   // not yet open
-            get_pu_file_name( filename, sizeof( filename ), n );
-            workfile[n - 1] = fopen( filename, "wt" );
-            if( workfile[n - 1] == NULL ) {
-                erc = errno;
-            }
-        }
+    fp = workfile[n - 1];
+    if( fp == NULL ) {   // not yet open
+        fp = fopen( get_workfile_name( n ), "wt" );
+        workfile[n - 1] = fp;
     }
-    return( erc );
+    return( fp );
 }
 
 
@@ -107,11 +100,11 @@ static  int open_pu_file( int n )
 /* PUT WORKFILE writes a line of  information (control or text)  into the  */
 /* specified file.                                                         */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .PU  |    <1|n> <line>                                  |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.  The first operand specifies  */
 /* which workfile is to be used (from 1 to 9);  if not specified,  "1" is  */
@@ -138,45 +131,57 @@ static  int open_pu_file( int n )
 /*                                                                         */
 /***************************************************************************/
 
-
 /***************************************************************************/
 /*  scr_pu    implement .pu control word                                   */
 /***************************************************************************/
 
 void    scr_pu( void )
 {
-    int             workn;
-    condcode        cc;
-    char        *   p;
+    char            *p;
+    char            *pa;
+    condcode        cc;                 // result code
+    getnum_block    gn;
+    int             len;
+    int             fno;
+    FILE            *fp;
 
-    garginit();                         // find end of CW
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
+    pa = p;
+    SkipNonSpaces( p );                 // end of word
+    len = p - pa;
 
-    cc = getarg();                      // workfile number
+    if( len == 0 ) {                    // omitted
+        fno = 1;                        // "1" is default
+    } else {
 
-    if( cc == omit ) {
-        numb_err();                     // we need workfile number
+        gn.arg.s = pa;
+        gn.arg.e = p;
+        gn.ignore_blanks = false;
+        cc = getnum( &gn );
+
+        if( cc != CC_notnum ) {            // number found
+            if( (len > 1) || (cc != CC_pos)  || (*pa < '1') || (*pa > '9') ) {
+                numb_err_exit();
+                /* never return */
+            }
+            fno = *pa - '0';            // workfile specified
+            pa++;
+            SkipSpaces( pa );           // next word start
+        } else {
+            fno = 1;                    // workfile not given, "1" is default
+        }
+    }
+    scan_restart = g_scandata.e;           // do here because returns below all need it
+
+    if( *pa == '\0' ) {                 // no text follows
+        close_pu_file( fno );
         return;
     }
-
-    p = tok_start;
-
-    if( (arg_flen > 1) || (*p < '1') || (*p > '9') ) {
-        numb_err();
-        return;
+    fp = open_pu_file( fno );           // get or open if not already done
+    if( fp != NULL ) {
+        fputs( pa, fp );
+        fputc( '\n', fp );
     }
-    workn = *p - '0';
-    scan_restart = scan_stop;
-
-    cc = getarg();                      // text follows
-
-    if( cc == omit ) {                  // no then close workfile
-        close_pu_file( workn );
-        return;
-    }
-
-    open_pu_file( workn );              // open if not already done
-    fputs( tok_start, workfile[workn - 1] );
-    fputc( '\n', workfile[workn - 1] );
-
-    return;
 }
+

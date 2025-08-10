@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,27 +47,27 @@
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct find_t *findt )
 {
-    HANDLE              h;
-    int                 error;
+    HANDLE              osffh;
+    int                 rc;
     WIN32_FIND_DATA     ffd;
     unsigned            nt_attrib;
 
-    h = __lib_FindFirstFile( (LPTSTR)path, &ffd );
+    osffh = __lib_FindFirstFile( (LPTSTR)path, &ffd );
 //  if( dos_attrib == _A_NORMAL ) {
-//      dos_attrib = ~(_A_SUBDIR|_A_VOLID);
+//      dos_attrib = ~(_A_SUBDIR | _A_VOLID);
 //  }
     nt_attrib = DOS2NTATTR( dos_attrib );
-    if( h == INVALID_HANDLE_VALUE ) {
+    if( osffh == INVALID_HANDLE_VALUE ) {
         DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
     }
-    if( !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
-        error = GetLastError();
+    if( !__NTFindNextFileWithAttr( osffh, nt_attrib, &ffd ) ) {
+        rc = __set_errno_nt_reterr();
         DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
-        FindClose( h );
-        return( __set_errno_dos_reterr( error ) );
+        FindClose( osffh );
+        return( rc );
     }
-    DTAXXX_HANDLE_OF( findt->reserved ) = h;
+    DTAXXX_HANDLE_OF( findt->reserved ) = osffh;
     DTAXXX_ATTR_OF( findt->reserved ) = nt_attrib;
     __GetNTFindInfo( findt, &ffd );
 
@@ -78,7 +78,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *findt )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( !__fixed_FindNextFile( DTAXXX_HANDLE_OF( findt->reserved ), &ffd ) ) {
+    if( __fixed_FindNextFile( DTAXXX_HANDLE_OF( findt->reserved ), &ffd ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( findt->reserved ), DTAXXX_ATTR_OF( findt->reserved ), &ffd ) ) {
@@ -92,7 +92,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *findt )
 _WCRTLINK unsigned _dos_findclose( struct find_t *findt )
 {
     if( DTAXXX_HANDLE_OF( findt->reserved ) != DTAXXX_INVALID_HANDLE ) {
-        if( !FindClose( DTAXXX_HANDLE_OF( findt->reserved ) ) ) {
+        if( FindClose( DTAXXX_HANDLE_OF( findt->reserved ) ) == 0 ) {
             return( __set_errno_nt_reterr() );
         }
     }

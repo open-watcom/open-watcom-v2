@@ -111,7 +111,7 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
-    if( !CreatePipe( pipe_input, &pipe_output, &sa, 0 ) ) {
+    if( CreatePipe( pipe_input, &pipe_output, &sa, 0 ) == 0 ) {
         return( GetLastError() );
     }
     cp = GetCurrentProcess();
@@ -126,7 +126,7 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
             memset( &sinfo, 0, sizeof( sinfo ) );
             sinfo.cb = sizeof( sinfo );
             rc = 0;
-            if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
+            if( CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) == 0 ) {
                 rc = GetLastError();
             }
             SetStdHandle( STD_OUTPUT_HANDLE, parent_std_output );

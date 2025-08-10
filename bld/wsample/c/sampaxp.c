@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,6 +262,7 @@ static void internalError( char *str )
 {
     OutputMsgParmNL( MSG_SAMPLE_2, str );
     _exit( -1 );
+    // never return
 }
 #endif
 
@@ -269,6 +270,7 @@ static void internalErrorMsg( int msg )
 {
     OutputMsgParmNL( MSG_SAMPLE_2, GET_MESSAGE( msg ) );
     _exit( -1 );
+    // never return
 }
 
 /*
@@ -276,14 +278,14 @@ static void internalErrorMsg( int msg )
  */
 static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 {
-    int         rc;
-    DWORD       bytes;
+    DWORD   bytes;
 
-    if( SetFilePointer( handle, newpos, 0, SEEK_SET ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+    if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
-    rc = ReadFile( handle, buff, size, &bytes, NULL );
-    if( !rc ) {
+    if( ReadFile( handle, buff, size, &bytes, NULL ) == 0 ) {
         return( false );
     }
     if( bytes != size ) {
@@ -403,24 +405,25 @@ static void loadProg( const char *exe, char *cmdline )
     // set ShowWindow default value for nCmdShow parameter
     sinfo.dwFlags = STARTF_USESHOWWINDOW;
     sinfo.wShowWindow = SW_SHOWNORMAL;
-    rc = CreateProcess( NULL,           /* application name */
-                        cmdline,        /* command line */
-                        NULL,           /* process attributes */
-                        NULL,           /* thread attributes */
-                        FALSE,          /* inherit handles */
-                        DEBUG_PROCESS,//DEBUG_ONLY_THIS_PROCESS, /* creation flags */
-                        NULL,           /* environment block */
-                        NULL,           /* starting directory */
-                        &sinfo,         /* startup info */
-                        &pinfo          /* process info */
-                    );
-    if( !rc ) {
+    if( CreateProcess(
+            NULL,               /* application name */
+            cmdline,            /* command line */
+            NULL,               /* process attributes */
+            NULL,               /* thread attributes */
+            FALSE,              /* inherit handles */
+            DEBUG_PROCESS,//DEBUG_ONLY_THIS_PROCESS, /* creation flags */
+            NULL,               /* environment block */
+            NULL,               /* starting directory */
+            &sinfo,             /* startup info */
+            &pinfo ) == 0 ) {   /* process info */
         internalErrorMsg( MSG_SAMPLE_3 );
+        // never return
     }
     rc = WaitForDebugEvent( &debugEvent, INFINITE );
     if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT) ||
                 (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
         internalErrorMsg( MSG_SAMPLE_3 );
+        // never return
     }
     taskPid = debugEvent.dwProcessId;
     processHandle = debugEvent.u.CreateProcessInfo.hProcess;
@@ -602,6 +605,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     tth = CreateThread( NULL, 2048, TimerThread, NULL, 0, &ttid );
     if( tth == NULL ) {
         internalErrorMsg( MSG_SAMPLE_3 );
+        // never return
     }
     /* Attempt to ensure that we can record our samples in one shot */
     SetThreadPriority( tth, THREAD_PRIORITY_TIME_CRITICAL );

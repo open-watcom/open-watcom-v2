@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ struct obj_section {
     owl_alignment       alignment;
 };
 
-static obj_section_handle   sectionHashTable[ HASH_TABLE_SIZE ];
+static obj_section_handle   sectionHashTable[HASH_TABLE_SIZE];
 
 static void sectionFields( obj_section_handle section, char *name, owl_section_type type, owl_alignment align ) {
 //***************************************************************************************************************
@@ -70,7 +70,7 @@ static obj_section_handle sectionCreate( char *name, owl_section_type type, owl_
     section = MemAlloc( sizeof( *section ) );
     sectionFields( section, name, type, align );
 
-    bucket = &sectionHashTable[ AsHashVal( name, HASH_TABLE_SIZE ) ];
+    bucket = &sectionHashTable[AsHashVal( name, HASH_TABLE_SIZE )];
     section->next = *bucket;
     *bucket = section;
 
@@ -97,9 +97,10 @@ obj_section_handle SectionLookup( char *name )
 {
     obj_section_handle  section;
 
-    section = sectionHashTable[ AsHashVal( name, HASH_TABLE_SIZE ) ];
+    section = sectionHashTable[AsHashVal( name, HASH_TABLE_SIZE )];
     while( section ) {
-        if( !strcmp( section->name, name ) ) break;
+        if( strcmp( section->name, name ) == 0 )
+            break;
         section = section->next;
     }
     return( section );
@@ -122,14 +123,14 @@ void SectionFini( void )
 
     n = sizeof( sectionHashTable ) / sizeof( *sectionHashTable );
     for( ctr = 0; ctr < n; ctr++ ) {
-        section = sectionHashTable[ ctr ];
+        section = sectionHashTable[ctr];
         while( section ) {
             next = section->next;
             MemFree( section->name );
             MemFree( section );
             section = next;
         }
-        sectionHashTable[ ctr ] = NULL;
+        sectionHashTable[ctr] = NULL;
     }
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdbool.h>
 #include <malloc.h>
 
 
@@ -56,11 +57,11 @@ extern execveaddr_type __execaddr( void );
 extern execveaddr_type  __Exec_addr;
 #endif
 #ifdef __WIDECHAR__
-extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, int );
+extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, bool );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
 extern wchar_t *__wSlash_C( wchar_t *switch_c, unsigned char use_slash );
 #else
-extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, int );
+extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, bool );
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
 #endif

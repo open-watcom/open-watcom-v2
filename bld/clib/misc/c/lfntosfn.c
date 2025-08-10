@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
             "mov    cx,1"      \
             "mov    ax,7160h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "call __lfnerror_0" \
         __parm __caller     [__ds __si] [__es __di] \
         __value             [__dx __ax] \
@@ -62,7 +62,7 @@ extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
             "mov    cx,1"       \
             "mov    ax,7160h"   \
             "stc"               \
-            "int 21h"           \
+            __INT_21            \
             "pop    es"         \
             "call __lfnerror_0" \
         __parm __caller     [__si] [__di] \
@@ -75,18 +75,18 @@ static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
   #ifdef _M_I86
     return( __lfntosfn_lfn( orgname, shortname ) );
   #else
-    call_struct     dpmi_rm;
-    lfn_ret_t       rc;
+    dpmi_regs_struct    dr;
+    lfn_ret_t           rc;
 
     strcpy( RM_TB_PARM1_LINEAR, orgname );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.es  = RM_TB_PARM2_SEGM;
-    dpmi_rm.edi = RM_TB_PARM2_OFFS;
-    dpmi_rm.ecx = 1;
-    dpmi_rm.eax = 0x7160;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    memset( &dr, 0, sizeof( dr ) );
+    dr.ds  = RM_TB_PARM1_SEGM;
+    dr.r.x.esi = RM_TB_PARM1_OFFS;
+    dr.es  = RM_TB_PARM2_SEGM;
+    dr.r.x.edi = RM_TB_PARM2_OFFS;
+    dr.r.x.ecx = 1;
+    dr.r.x.eax = 0x7160;
+    if( (rc = __dpmi_dos_call_lfn( &dr )) == 0 ) {
         strcpy( shortname, RM_TB_PARM2_LINEAR );
     }
     return( rc );

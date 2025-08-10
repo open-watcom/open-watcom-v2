@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )
     oflag = stdin->_flag & (_SFERR | _EOF);
     stdin->_flag &= ~(_SFERR | _EOF);
     cs = s;
-    while( (c = __F_NAME((getc),(getwc))( stdin )) != INTCHAR_EOF && (CHAR_TYPE)c != STRING( '\n' ) ) {
+    while( (c = __F_NAME((getc),(getwc))( stdin )) != INTCHAR_EOF && c != STRING( '\n' ) ) {
         *cs++ = (CHAR_TYPE)c;
     }
     if( c == INTCHAR_EOF && (cs == s || ferror( stdin )) ) {

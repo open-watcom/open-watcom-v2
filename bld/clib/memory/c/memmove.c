@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,9 @@
 
 #if defined(__SMALL_DATA__)
 
-extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#define HAVE_INLINE_MOVE
+
+extern void     movebwd( char _WCFAR *d, const char _WCNEAR *s, size_t len);
 #pragma aux movebwd = \
         "std"           \
         "dec  si"       \
@@ -54,7 +57,7 @@ extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
     __value             \
     __modify __exact    [__di __si __cx]
 
-extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCNEAR *s, size_t len);
 #pragma aux movefwd = \
         "shr  cx,1"     \
         "rep  movsw"    \
@@ -63,11 +66,12 @@ extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
     __parm              [__es __di] [__si] [__cx] \
     __value             \
     __modify __exact    [__di __si __cx]
-#define HAVE_MOVEFWBW
 
 #else
 
-extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#define HAVE_INLINE_MOVE
+
+extern void     movebwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movebwd = \
         "std"           \
         "push ds"       \
@@ -86,7 +90,7 @@ extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __value             \
     __modify __exact    [__di __si __cx]
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push ds"       \
         "mov  ds,dx"    \
@@ -98,7 +102,6 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __parm              [__es __di] [__dx __si] [__cx] \
     __value             \
     __modify __exact    [__di __si __cx]
-#define HAVE_MOVEFWBW
 
 #endif
 
@@ -106,7 +109,9 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 
 #if defined(__SMALL_DATA__)
 
-extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#define HAVE_INLINE_MOVE
+
+extern void     movefwd( char _WCFAR *d, const char _WCNEAR *s, size_t len);
 #pragma aux movefwd = \
         "push es"       \
         "mov  es,edx"   \
@@ -120,7 +125,7 @@ extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
     __parm              [__dx __edi] [__esi] [__ecx] \
     __value             \
     __modify __exact    [__edi __esi __ecx]
-extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+extern void     movebwd( char _WCFAR *d, const char _WCNEAR *s, size_t len);
 #pragma aux movebwd = \
         "std"           \
         "push es"       \
@@ -138,11 +143,12 @@ extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
     __parm              [__dx __edi] [__esi] [__ecx] \
     __value             \
     __modify __exact    [__edi __esi __ecx]
-#define HAVE_MOVEFWBW
 
 #else
 
-extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#define HAVE_INLINE_MOVE
+
+extern void     movefwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movefwd = \
         "push ds"       \
         "mov  ds,edx"   \
@@ -156,7 +162,7 @@ extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __parm              [__es __edi] [__dx __esi] [__ecx] \
     __value             \
     __modify __exact    [__edi __esi __ecx]
-extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+extern void     movebwd( char _WCFAR *d, const char _WCFAR *s, size_t len);
 #pragma aux movebwd = \
         "std"           \
         "push ds"       \
@@ -174,7 +180,6 @@ extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
     __parm              [__es __edi] [__dx __esi] [__ecx] \
     __value             \
     __modify __exact    [__edi __esi __ecx]
-#define HAVE_MOVEFWBW
 
 #endif
 
@@ -185,39 +190,39 @@ extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
 #endif
 
 
-_WCRTLINK void *memmove( void *toStart, const void *fromStart, size_t len )
+_WCRTLINK void *memmove( void *vd, const void *vs, size_t len )
 {
-    const char      *from = fromStart;
-    char            *to = toStart;
+    const char      *s = vs;
+    char            *d = vd;
 
-    if( from == to ) {
-        return( to );
+    if( s == d || len == 0 ) {
+        return( d );
     }
-    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped */
-#if defined( __HUGE__ ) || !defined( HAVE_MOVEFWBW )
-        to += len;
-        from += len;
+    if( s < d && s + len > d ) {  /* if buffers are overlapped */
+#if defined( __HUGE__ ) || !defined( HAVE_INLINE_MOVE )
+        d += len;
+        s += len;
         while( len != 0 ) {
-            *--to = *--from;
+            *--d = *--s;
             len--;
         }
 #else
-        movebwd(( to + len ) - 1, ( from + len ) - 1, len );
+        movebwd(( d + len ) - 1, ( s + len ) - 1, len );
 #endif
     } else {
-#if !defined( HAVE_MOVEFWBW )
+#if !defined( HAVE_INLINE_MOVE )
         while( len != 0 ) {
-            *to++ = *from++;
+            *d++ = *s++;
             len--;
         }
 #else
-        movefwd( to, from, len );
+        movefwd( d, s, len );
 #endif
     }
 
-#if defined(__HUGE__) || !defined( HAVE_MOVEFWBW )
-    return( toStart );
+#if defined(__HUGE__) || !defined( HAVE_INLINE_MOVE )
+    return( vd );
 #else
-    return( to );
+    return( d );
 #endif
 }

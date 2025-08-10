@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,24 +28,29 @@
 *                        only used options are implemented
 *                        i.e.   n ON DELETE
 *               not implemented 0 OFF       nested perform
+*               OFF was implemented to act as DELETE
+*               neither is fully implemented, nor (I suppose) is ON,
+*               since PE nesting is not supported
 *
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /**************************************************************************/
 /* PERFORM processes the remainder of the current physical input line (if */
 /* any) or the next physical input line (if none) the specified number of */
 /* times.                                                                 */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .PE  |    <1|n|ON|OFF|DELETE>                           |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control  word does not  cause a  break,  although the  line being */
 /* performed may.    Perform provides a  primitive facility  for one-line */
@@ -91,15 +96,14 @@
 static  void    init_pe_line( int pe_count )
 {
     if( input_cbs->pe_cb.count > 0) {   // count >0 is switch for .pe active
-        xx_err( err_nested_pe );
-        reset_pe_cb();                  // terminate active .pe
-    } else {
-        if( get_line( true ) ) {
-            input_cbs->pe_cb.count = pe_count;
-            input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
-            input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
-            strcpy( input_cbs->pe_cb.line, buff2 );
-        }
+        xx_err_exit( ERR_NESTED_PE );
+        /* never return */
+    }
+    if( get_line( true ) ) {
+        input_cbs->pe_cb.count = pe_count;
+        input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
+        input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
+        strcpy( input_cbs->pe_cb.line, buff2 );
     }
     return;
 }
@@ -122,9 +126,9 @@ void    reset_pe_cb( void )
 
 void    scr_pe( void )
 {
-    char        *   pa;
-    char        *   p;
-    int             len;
+    char            *pa;
+    char            *p;
+    unsigned        len;
     getnum_block    gn;
     condcode        cc;
     char            cwcurr[4];
@@ -134,54 +138,58 @@ void    scr_pe( void )
     cwcurr[2] = 'e';
     cwcurr[3] = '\0';
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
     pa = p;
-
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len == 0 ) {                    // omitted means ON
         init_pe_line( INT_MAX );
     } else {
-        gn.argstart = pa;
-        gn.argstop = scan_stop;
-        gn.ignore_blanks = 0;
-
+        gn.arg.s = pa;
+        gn.arg.e = g_scandata.e;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
-        if( cc == notnum ) {
+        if( cc == CC_notnum ) {
             switch( len ) {
             case 2 :
-                if( !strnicmp( "ON", pa, 2 ) ) {
-                    init_pe_line( INT_MAX );
+                if( strnicmp( "ON", pa, 2 ) == 0 ) {
+                    init_pe_line( INT_MAX );    // partial implementation (no nesting)
                 } else {
-                    xx_opt_err( cwcurr, pa );
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
+                    /* never return */
+                }
+                break;
+            case 3 :
+                if( strnicmp( "OFF", pa, 3 ) == 0 ) {
+                    reset_pe_cb();              // partial implementation (no nesting)
+                } else {
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
+                    /* never return */
                 }
                 break;
             case 6 :
-                if( !strnicmp( "DELETE", pa, 6 ) ) {
-                    reset_pe_cb();
+                if( strnicmp( "DELETE", pa, 6 ) == 0 ) {
+                    reset_pe_cb();              // partial implementation (no nesting)
                 } else {
-                    xx_opt_err( cwcurr, pa );
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
+                    /* never return */
                 }
                 break;
             default:
-                xx_opt_err( cwcurr, pa );
-                break;
+                xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
+                /* never return */
             }
         } else {
-            scan_start = gn.argstart;
-            if( gn.result < 1 ) {
-                xx_opt_err( cwcurr, pa );
-            } else {
-                init_pe_line( gn.result );
+            g_scandata.s = gn.arg.s;
+            if( gn.result < 0 ) {
+                xx_line_err_exit_c( ERR_VAL_NEG, pa );
+                /* never return */
             }
+            init_pe_line( gn.result );
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = g_scandata.e;
     return;
 }
 

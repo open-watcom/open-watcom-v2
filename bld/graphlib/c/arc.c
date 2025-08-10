@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc( short x1, short y1, short x2, short y2,
    where the arc is drawn in a counter clockwise direction. */
 
 {
-    short           success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2arc( _VtoPhysX( x1 ), _VtoPhysY( y1 ),
@@ -56,7 +57,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc( short x1, short y1, short x2, short y2,
         }
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -78,7 +79,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getarcinfo( struct xycoord _WCI86FAR *start,
    routine for pie slices.  */
 
 {
-    short               success;
+    bool                success;
     short               x1, y1;
     short               x2, y2;
     short               x3, y3;
@@ -116,7 +117,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getarcinfo( struct xycoord _WCI86FAR *start,
 Entry1( _GETARCINFO, _getarcinfo ) // alternate entry-point
 
 
-short _WCI86FAR _L2arc( short x1, short y1, short x2, short y2,
+bool _WCI86FAR _L2arc( short x1, short y1, short x2, short y2,
 /*==============*/ short x3, short y3, short x4, short y4 )
 
 /* This function draws an elliptical arc.  The virtual ellipse is defined by

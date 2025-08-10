@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -572,9 +572,9 @@ void RegisterEvent( char *event ) {
 
     assert( event );
 
-    if( !stricmp( event, CONSTRUCTOR_EVENT ) ) {
+    if( stricmp( event, CONSTRUCTOR_EVENT ) == 0 ) {
         SRU.flags |= CONSTRUCTOR_DEFINED;
-    } else if( !stricmp( event, DESTRUCTOR_EVENT ) ) {
+    } else if( stricmp( event, DESTRUCTOR_EVENT ) == 0 ) {
         SRU.flags |= DESTRUCTOR_DEFINED;
     }
 }

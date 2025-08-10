@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -34,6 +35,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         xrefp   "C",__set_EINVAL
         modstart dosstime
@@ -62,7 +64,7 @@ endif
         mov     DL,[BX]         ; get the day
         mov     AL,4[BX]        ; get the day of the week
         mov     AH,2Bh          ; set date
-        int     21h             ; ...
+        int21h                  ; ...
         mov     AH,AL           ; set return code
         cmp     AL,0FFh         ; if error
         _if     e               ; then
@@ -101,7 +103,7 @@ endif
         mov     DH,2[BX]        ; get the second
         mov     DL,3[BX]        ; get the hundredths of seconds
         mov     AH,2Dh          ; set time
-        int     21h             ; ...
+        int21h                  ; ...
         mov     AH,AL           ; set return code
         cmp     AL,0FFh         ; if error
         _if     e               ; then

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +54,9 @@ int CheckForError(char const *fileName, char const *errCode)
             token=strtok(buffer," :!");
             token=strtok(NULL," :!");
             // check if the token equals either "Error" or "Warning"
-            if( (token!=NULL) && ( (!strcmp(token,"Warning")) || (!strcmp(token,"Error")) )  ) {
+            if( (token!=NULL) && ( ( strcmp(token,"Warning") == 0 ) || ( strcmp(token,"Error") == 0 ) )  ) {
                 token=strtok(NULL," :!");
-                if( ! strcmp(token, errCode) ) {
+                if( strcmp(token, errCode) == 0 ) {
                     found=1;
                     break;
                 }

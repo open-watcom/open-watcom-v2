@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,116 +28,139 @@
 *
 ****************************************************************************/
 
-#include "wgml.h"
+
+#include    "wgml.h"
+
+
+/***************************************************************************/
+/*  Setup for both proc_p_pc() and do_force_pc()                           */
+/***************************************************************************/
+
+static void p_pc_setup( p_lay_tag * p_pc )
+{
+    ProcFlags.keep_left_margin = true;  // special Note indent
+    if( ProcFlags.overprint && ProcFlags.cc_cp_done ) {
+        ProcFlags.overprint = false;    // cancel overprint
+    }
+    ProcFlags.cc_cp_done = false;       // cancel CC/CP notification
+    start_doc_sect();                   // if not already done
+
+    if( g_line_indent == 0 ) {
+        ProcFlags.para_starting = false;    // clear for this tag's break
+    }
+    scr_process_break();
+
+    g_line_indent = conv_hor_unit( &(p_pc->line_indent), g_curr_font );
+
+    t_page.cur_width = t_page.cur_left + g_line_indent; // possibly indent first line
+
+    g_cur_threshold = layout_work.widow.threshold; // standard threshold
+
+    set_skip_vars( &(p_pc->pre_skip), NULL, &(p_pc->post_skip), g_text_spacing, g_curr_font );
+
+    ProcFlags.para_starting = true;     // for next break, not this tag's break
+
+    post_space = 0;
+
+    return;
+}
 
 /***************************************************************************/
 /*  :P. :PC common routine                                                 */
 /***************************************************************************/
-void    proc_p_pc( p_lay_tag * p_pc )
+
+static void proc_p_pc( p_lay_tag *p_pc, g_tags t )
 {
-    char        *   p;
+    char    *   p;
 
-    scan_err = false;
-    p = scan_start;
+    p_pc_setup( p_pc );
 
-    ProcFlags.keep_left_margin = true;  //    special Note indent
-    start_doc_sect();                   // if not already done
+    ProcFlags.block_starting = true;    // to catch empty paragraphs
 
-    scr_process_break();
-    if( nest_cb->gtag == GML_TAG_NONE ) {
-        g_cur_left = g_page_left + g_indent;// left start    TBD
+    g_scan_err = false;
+    p = g_scandata.s;
+
+    SkipDot( p );                       // over '.'
+    if( *p != '\0' ) {
+        if( (t == T_P) && !ProcFlags.concat ) {
+            if( input_cbs->fmflags & II_tag ) {
+                g_post_skip = 0;
+            } else {
+                g_subs_skip = g_post_skip;
+                g_post_skip = 0;
+            }
+        }
+        process_text( p, g_curr_font );
+    } else if( (t == T_P) && !ProcFlags.concat ) {
+        g_post_skip = 0;
     }
-                                        // possibly indent first line
-    g_cur_h_start = g_cur_left + conv_hor_unit( &(p_pc->line_indent) );
 
-    g_cur_threshold = layout_work.widow.threshold; // standard threshold
-
-    if( *p == '.' ) p++;                // over '.'
-
-    set_skip_vars( &(p_pc->pre_skip), NULL, &(p_pc->post_skip), g_spacing_ln, g_curr_font );
-
-    post_space = 0;
-
-    process_text( p, g_curr_font );
-
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
 /***************************************************************************/
 /*  :P.perhaps paragraph elements                                          */
 /***************************************************************************/
-extern  void    gml_p( gml_tag gtag )
-{
-    /* unused parameters */ (void)gtag;
 
-    proc_p_pc( &layout_work.p );
-    ProcFlags.empty_doc_el = true;  // for next break, not this tag's break
+extern void gml_p( const gmltag * entry )
+{
+    proc_p_pc( &layout_work.p, entry->u.tagid );
 }
 
 /***************************************************************************/
 /*  :PC.perhaps paragraph elements                                         */
 /***************************************************************************/
-extern  void    gml_pc( gml_tag gtag )
-{
-    /* unused parameters */ (void)gtag;
 
-    proc_p_pc( &layout_work.pc );
+extern void gml_pc( const gmltag * entry )
+{
+    proc_p_pc( &layout_work.pc, entry->u.tagid );
 }
 
 /***************************************************************************/
 /*  :NOTE.perhaps paragraph elements                                       */
 /***************************************************************************/
-extern  void    gml_note( gml_tag gtag )
+
+extern void gml_note( const gmltag * entry )
 {
-    char            *p;
+    char        *   p;
     font_number     font_save;
-    text_chars      *marker;
-    uint32_t        spc_cnt;
+    text_chars  *   marker;
 
-    /* unused parameters */ (void)gtag;
+    (void)entry;
 
-    scan_err = false;
-    p = scan_start;
+    g_scan_err = false;
+    p = g_scandata.s;
 
     start_doc_sect();                   // if not already done
 
     scr_process_break();
 
+    note_lm = t_page.cur_left;
     font_save = g_curr_font;
-    g_curr_font = layout_work.note.font;
-    set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip, g_spacing_ln, g_curr_font );
-    post_space = 0;
+    set_skip_vars( &layout_work.note.pre_skip, NULL, NULL,
+                    g_text_spacing, layout_work.note.font );
 
-    if( nest_cb->gtag == GML_TAG_NONE ) {
-        g_cur_left = g_page_left + conv_hor_unit( &layout_work.note.left_indent );
-    } else {
-        g_cur_left += conv_hor_unit( &layout_work.note.left_indent );
-    }
-    g_cur_h_start = g_cur_left;
+    t_page.cur_left += conv_hor_unit( &layout_work.note.left_indent, layout_work.note.font );
+    t_page.cur_width = t_page.cur_left;
+    ju_x_start = t_page.cur_width;
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
-    start_line_with_string( layout_work.note.string, layout_work.note.font, false );
-
-    /* the value of post_space after start_line_with_string() is wrong for  */
-    /* two reasons: 1) it uses the wrong font; 2) it is at most "1" even if */
-    /* more than one space appears at the end of the note_string.           */
-
-    spc_cnt = post_space / wgml_fonts[g_curr_font].spc_width;
-    post_space = spc_cnt * wgml_fonts[font_save].spc_width;
-    if( (t_line != NULL)  && (t_line->last != NULL) ) {
-        g_cur_left += t_line->last->width + post_space;
+    if( strlen( layout_work.note.string ) > 0 ) {
+        process_text( layout_work.note.text, layout_work.note.font );
     }
-    g_cur_h_start = g_cur_left;
-    ju_x_start = g_cur_h_start;
+    insert_hard_spaces( layout_work.note.spaces, strlen( layout_work.note.spaces ), FONT0 );
+    t_page.cur_left = t_page.cur_width; // set indent for following text
+    ProcFlags.note_starting = true;
+    ProcFlags.zsp = true;
 
-    g_spacing_ln = layout_work.note.spacing;
+    g_text_spacing = layout_work.note.spacing;
     g_curr_font = layout_work.defaults.font;
 
-    set_skip_vars( NULL, NULL, NULL, g_spacing_ln, g_curr_font );
-    if( *p == '.' ) p++;                // over '.'
-    while( *p == ' ' ) p++;             // skip initial space
-    if( *p ) {                          // if text follows
+    set_skip_vars( NULL, NULL, &layout_work.note.post_skip, g_text_spacing, g_curr_font );
+    SkipDot( p );                       // over '.'
+    SkipSpaces( p );                    // skip initial space
+    if( *p != '\0' ) {                  // if text follows
         post_space = 0;
         process_text( p, g_curr_font );
     } else if( !ProcFlags.concat && ProcFlags.has_aa_block &&
@@ -147,7 +170,7 @@ extern  void    gml_note( gml_tag gtag )
         /* :NOTE note_string is not nullstring and ends in at least 1 space */
 
         marker = alloc_text_chars( NULL, 0, font_save );
-        marker->x_address = g_cur_h_start;
+        marker->x_address = t_page.cur_width;
         if( t_line->first == NULL ) {
             t_line->first = marker;
             t_line->last = t_line->first;
@@ -158,7 +181,27 @@ extern  void    gml_note( gml_tag gtag )
         }
         post_space = 0;
     }
+
+    ProcFlags.block_starting = true;    // to catch empty paragraphs
+
     g_curr_font = font_save;
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
+    return;
+}
+
+/***************************************************************************/
+/*  Force PC on text line following certain blocks                         */
+/*  Note: only called with text, so ProcFlags.block_starting is not set    */ 
+/***************************************************************************/
+
+extern void do_force_pc( char * p )
+{
+    p_pc_setup( &layout_work.pc );
+
+    /* Inline tags use NULL because the text font is different from the font needed by PC */
+    if( (p != NULL) && (*p != '\0') ) {
+        process_text( p, g_curr_font );
+    }
+
     return;
 }

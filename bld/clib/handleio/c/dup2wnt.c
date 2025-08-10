@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,42 +42,43 @@
 #include "seterrno.h"
 #include "thread.h"
 
-_WCRTLINK int dup2( int hid1, int hid2 )
+
+_WCRTLINK int dup2( int handle1, int handle2 )
 {
-    HANDLE      ph;
-    HANDLE      fh;
-    HANDLE      fh2;
+    HANDLE      osph;
+    HANDLE      osfh1;
+    HANDLE      osfh2;
 
-    __handle_check( hid1, -1 );
+    __handle_check( handle1, -1 );
 
-    if( hid1 == hid2 ) {
-        return( hid2 );
+    if( handle1 == handle2 ) {
+        return( handle2 );
     }
     // This is required for Win32.
     // if 2nd handle is out of range then try to grow the handle/iomode arrays
-    if( hid2 >= __NHandles )  {
-        __growPOSIXHandles( hid2 );
+    if( handle2 >= __NHandles )  {
+        __growPOSIXHandles( handle2 );
     }
     // if 2nd handle is still out of range then no more memory
-    if( hid2 >= __NHandles )  {
+    if( handle2 >= __NHandles )  {
         return( -1 );
     }
 
-    ph = GetCurrentProcess();
-    fh = __getOSHandle( hid1 );
+    osph = GetCurrentProcess();
+    osfh1 = __getOSHandle( handle1 );
 
-    _AccessFileH( hid1 );
+    _AccessFileH( handle1 );
 
-    if( !DuplicateHandle( ph, fh, ph, &fh2, 0, TRUE, DUPLICATE_SAME_ACCESS ) ) {
-        _ReleaseFileH( hid1 );
+    if( DuplicateHandle( osph, osfh1, osph, &osfh2, 0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
+        _ReleaseFileH( handle1 );
         return( __set_errno_nt() );
     }
 
-    close( hid2 );
+    close( handle2 );
 
-    __setOSHandle( hid2, fh2 );
-    __SetIOMode( hid2, __GetIOMode( hid1 ) );
+    __setOSHandle( handle2, osfh2 );
+    __SetIOMode( handle2, __GetIOMode( handle1 ) );
 
-    _ReleaseFileH( hid1 );
+    _ReleaseFileH( handle1 );
     return( 0 );
 }

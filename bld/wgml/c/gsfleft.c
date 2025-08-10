@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'left(                                         */
@@ -48,67 +50,63 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 len;
-    getnum_block        gn;
+    tok_type        string;
+    int             length;
+    char            padchar;
+    condcode        cc;
+    int             k;
+    getnum_block    gn;
 
-    if( parmcount != 2 ) {
-        cc = neg;
+    if( parmcount < 2
+      || parmcount > 3 )
+        return( CC_neg );
+
+    string = parms[0].arg;
+    unquote_arg( &string );
+
+    gn.arg = parms[1].arg;
+    gn.ignore_blanks = false;
+    cc = getnum( &gn );
+    if( cc != CC_pos ) {
+        if( !ProcFlags.suppress_msg ) {
+            xx_source_err_exit_c( ERR_FUNC_PARM, "2 (length)" );
+            /* never return */
+        }
         return( cc );
     }
+    length = gn.result;
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
-
-    unquote_if_quoted( &pval, &pend );
-
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    len = pend - pval;                  // default length
-
-    if( parms[1].stop > parms[1].start ) {// length specified
-        gn.argstart = parms[1].start;
-        gn.argstop  = parms[1].stop;
-        cc = getnum( &gn );
-        if( cc != pos ) {
-            if( !ProcFlags.suppress_msg ) {
-                g_err( err_func_parm, "2 (length)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
+    if( length > 0 ) {
+        padchar = ' ';          // default padchar
+        if( parmcount > 2 ) {   // evaluate padchar
+            tok_type pad = parms[2].arg;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
             }
-            return( cc );
         }
-        len = gn.result;
-    }
 
-    for( k = 0; k < len; k++ ) {        // copy from start
-        if( (pval >= pend) || (ressize <= 0) ) {
-            break;
+        k = 0;
+        /*
+         * copy from string start
+         */
+        while( k < length && string.s < string.e && ressize > 0 ) {
+            *(*result)++ = *string.s++;
+            k++;
+            ressize--;
         }
-        **result = *pval++;
-        *result += 1;
-        ressize--;
-    }
-
-    for( ; k < len; k++ ) {             // pad to length
-        if( ressize <= 0 ) {
-            break;
+        /*
+         * pad to length (if necessary)
+         */
+        while( k < length && ressize > 0 ) {
+            *(*result)++ = padchar;
+            k++;
+            ressize--;
         }
-        **result = ' ';
-        *result += 1;
-        ressize--;
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

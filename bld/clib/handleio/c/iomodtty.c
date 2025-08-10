@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,11 +41,13 @@
 #include "handleio.h"
 #include "iomode.h"
 
+
 #define _INITIALIZED    _DYNAMIC
 
 void __ChkTTYIOMode( int handle )
 {
-    if( handle < NUM_STD_STREAMS && !(__io_mode[handle] & _INITIALIZED) ) {
+    if( handle < NUM_STD_STREAMS
+      && (__io_mode[handle] & _INITIALIZED) == 0 ) {
         __io_mode[handle] |= _INITIALIZED;
         if( isatty( handle ) ) {
             __io_mode[handle] |= _ISTTY;

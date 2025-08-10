@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,8 +77,10 @@ static void fmt_hex( char *buf, char *fmt, void *hex ) {
      */
     for( ;; ) {
         *buf = *fmt;
-        if( *fmt == '\0' ) break;
-        if( *fmt == '0' && *(fmt+1) == 'x' ) {
+        if( *fmt == '\0' )
+            break;
+        if( *fmt == '0'
+          && *( fmt + 1 ) == 'x' ) {
             /* memorize the location of the hex field */
             ptr = buf+9;
         }
@@ -224,18 +226,18 @@ int __ReportException( EXCEPTION_POINTERS *rec )
     sp = (long *)context->Esp;
     fmt_hex( buff, "Stack dump (SS:ESP)\r\n", 0 );
     for( i = 1; i <= 72; i++) {
-        if(( (long)sp & 0x0000FFFF ) == 0 ) {
+        if( ((long)sp & 0x0000FFFF) == 0 ) {
             fmt_hex( buff, "-stack end\r\n", 0 );
         } else {
             fmt_hex( buff, "0x00000000 ", GetFromSS( sp ) );
         }
-        if(( i % 6 ) == 0 ) {
+        if( ( i % 6 ) == 0 ) {
             fmt_hex( buff, "\r\n", 0 );
         }
         RdosWriteString( buff );
 
         buff[0] = '\0';
-        if(( (long)sp & 0x0000FFFF ) == 0 )
+        if( ((long)sp & 0x0000FFFF) == 0 )
             break;
         sp++;
     }
@@ -248,11 +250,11 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
                                CONTEXT *context,
                                void *dispatch_context )
 {
-    int          sig;
-    int          fpe_type;
-    char        *eip;
-    status_word  fp_sw;
-    long         fp_tw;
+    int             sig;
+    int             fpe_type;
+    unsigned char   *eip;
+    status_word     fp_sw;
+    long            fp_tw;
     EXCEPTION_POINTERS rec;
 
     /* unused parameters */ (void)dispatch_context; (void)establisher_frame;
@@ -291,7 +293,7 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
         break;
     case STATUS_FLOAT_INVALID_OPERATION:
         fpe_type = FPE_INVALID;
-        eip = (char *)context->FloatSave.ErrorOffset;
+        eip = (unsigned char *)context->FloatSave.ErrorOffset;
 
         if( *(unsigned short *)eip == 0xfad9 ) {        // caused by "fsqrt"
             fpe_type = FPE_SQRTNEG;
@@ -302,13 +304,13 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
         } else if( *(unsigned short *)eip == 0xf5d9 ) { // caused by "fprem1"
             fpe_type = FPE_MODERR;
         } else {
-            if(( eip[0] == (char)0xdb ) || ( eip[0] == (char)0xdf )) {
-                if(( eip[1] & 0x30 ) == 0x10 ) {        // caused by "fist(p)"
+            if(( eip[0] == 0xdb ) || ( eip[0] == 0xdf )) {
+                if( (eip[1] & 0x30) == 0x10 ) {        // caused by "fist(p)"
                     fpe_type = FPE_IOVERFLOW;
                 }
             }
-            if( !( eip[0] & 0x01 ) ) {
-                if(( eip[1] & 0x30 ) == 0x30 ) {        // "fdiv" or "fidiv"
+            if( (eip[0] & 0x01) == 0 ) {
+                if( (eip[1] & 0x30) == 0x30 ) {        // "fdiv" or "fidiv"
                     fp_tw    = context->FloatSave.TagWord & 0x0000ffff;
                     fp_sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
 
@@ -349,7 +351,9 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
         for( sig = 1; sig <= __SIGLAST; sig++ ) {
             func = __oscode_check_func( sig, ex->ExceptionCode );
             if( func != NULL ) {
-                if(( func == SIG_IGN ) || ( func == SIG_DFL ) || ( func == SIG_ERR )) {
+                if( ( func == SIG_IGN )
+                  || ( func == SIG_DFL )
+                  || ( func == SIG_ERR ) ) {
                     break;
                 }
                 __ExceptionHandled = 1;

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  16-bit code only
 ;*
 ;*****************************************************************************
 
@@ -34,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         modstart dosgtime
 
@@ -57,7 +58,7 @@ if _MODEL and (_BIG_DATA or _HUGE_DATA)
 endif
         mov     BX,AX           ; get address of dosdate_t structure
         mov     AH,2Ah          ; get date
-        int     21h             ; ...
+        int21h                  ; ...
         mov     2[BX],CX        ; store the year
         mov     1[BX],DH        ; store the month
         mov     [BX],DL         ; store the day
@@ -92,7 +93,7 @@ if _MODEL and (_BIG_DATA or _HUGE_DATA)
 endif
         mov     BX,AX           ; get address of dostime_t structure
         mov     AH,2Ch          ; get time
-        int     21h             ; ...
+        int21h                  ; ...
         mov     [BX],CH         ; store the hour
         mov     1[BX],CL        ; store the minute
         mov     2[BX],DH        ; store the second

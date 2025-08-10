@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,12 @@
 #include "linkstd.h"
 #include "pcobj.h"
 #include "newmem.h"
-#include "msg.h"
-#include "alloc.h"
 #include "specials.h"
 #include "loados2.h"
 #include "loadpe.h"
 #include "loadqnx.h"
 #include "loadelf.h"
 #include "loadfile.h"
-#include "wlnkmsg.h"
 #include "overlays.h"
 #include "dbgall.h"
 #include "objcalc.h"
@@ -705,7 +702,7 @@ static void setDefBase( void )
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX_FLAT ) {
-        FmtData.base = __ROUND_UP_SIZE( StackSize + QNX_DEFAULT_BASE, _4K );
+        FmtData.base = __ROUND_UP_SIZE_4K( StackSize + QNX_DEFAULT_BASE );
         return;
     }
 #endif

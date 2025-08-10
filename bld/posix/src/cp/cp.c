@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,7 +156,7 @@ int main( int argc, char *argv[] )
         Quit( usageMsg, "No filename specified\n" );
     }
     if( argc == 2 ) {
-        if( !strcmp( argv[1], "?" ) ) {
+        if( strcmp( argv[1], "?" ) == 0 ) {
             Quit( usageMsg, NULL );
         }
         strcpy( destination,"." );

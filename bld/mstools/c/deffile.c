@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -853,51 +854,51 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
     /*** Determine what the token is ***/
     if( gotEof ) {
         retcode = STATE_EOF;
-    } else if( !stricmp( curToken, "BASE" ) ) {
+    } else if( stricmp( curToken, "BASE" ) == 0 ) {
         retcode = STATE_BASE;
-    } else if( !stricmp( curToken, "DESCRIPTION" ) ) {
+    } else if( stricmp( curToken, "DESCRIPTION" ) == 0 ) {
         retcode = STATE_DESCRIPTION;
-    } else if( !stricmp( curToken, "EXETYPE" ) ) {
+    } else if( stricmp( curToken, "EXETYPE" ) == 0 ) {
         retcode = STATE_EXETYPE;
-    } else if( !stricmp( curToken, "EXPORT" ) ) {   /* synonym for EXPORTS */
+    } else if( stricmp( curToken, "EXPORT" ) == 0 ) {   /* synonym for EXPORTS */
         retcode = STATE_EXPORTS;
-    } else if( !stricmp( curToken, "EXPORTS" ) ) {
+    } else if( stricmp( curToken, "EXPORTS" ) == 0 ) {
         retcode = STATE_EXPORTS;
-    } else if( !stricmp( curToken, "HEAPSIZE" ) ) {
+    } else if( stricmp( curToken, "HEAPSIZE" ) == 0 ) {
         retcode = STATE_HEAPSIZE;
-    } else if( !stricmp( curToken, "LIBRARY" ) ) {
+    } else if( stricmp( curToken, "LIBRARY" ) == 0 ) {
         retcode = STATE_LIBRARY;
-    } else if( !stricmp( curToken, "NAME" ) ) {
+    } else if( stricmp( curToken, "NAME" ) == 0 ) {
         retcode = STATE_NAME;
-    } else if( !stricmp( curToken, "SECTIONS" ) ) {
+    } else if( stricmp( curToken, "SECTIONS" ) == 0 ) {
         retcode = STATE_SECTIONS;
-    } else if( !stricmp( curToken, "SEGMENTS" ) ) { /* synonym for SECTIONS */
+    } else if( stricmp( curToken, "SEGMENTS" ) == 0 ) { /* synonym for SECTIONS */
         retcode = STATE_SECTIONS;
-    } else if( !stricmp( curToken, "STACKSIZE" ) ) {
+    } else if( stricmp( curToken, "STACKSIZE" ) == 0 ) {
         retcode = STATE_STACKSIZE;
-    } else if( !stricmp( curToken, "STUB" ) ) {
+    } else if( stricmp( curToken, "STUB" ) == 0 ) {
         retcode = STATE_STUB;
-    } else if( !stricmp( curToken, "VERSION" ) ) {
+    } else if( stricmp( curToken, "VERSION" ) == 0 ) {
         retcode = STATE_VERSION;
-    } else if( !stricmp( curToken, "PROTMODE" ) ) {
+    } else if( stricmp( curToken, "PROTMODE" ) == 0 ) {
         retcode = STATE_PROTMODE;
-    } else if( !stricmp( curToken, "CODE" ) ) {
+    } else if( stricmp( curToken, "CODE" ) == 0 ) {
         retcode = STATE_CODE;
-    } else if( !stricmp( curToken, "DATA" ) ) {
+    } else if( stricmp( curToken, "DATA" ) == 0 ) {
         retcode = STATE_DATA;
-    } else if( !stricmp( curToken, "NONAME" ) ) {
+    } else if( stricmp( curToken, "NONAME" ) == 0 ) {
         retcode = STATE_NONAME;
-    } else if( !stricmp( curToken, "RESIDENTNAME" ) ) {
+    } else if( stricmp( curToken, "RESIDENTNAME" ) == 0 ) {
         retcode = STATE_RESIDENTNAME;
-    } else if( !stricmp( curToken, "PRIVATE" ) ) {
+    } else if( stricmp( curToken, "PRIVATE" ) == 0 ) {
         retcode = STATE_PRIVATE;
-    } else if( !stricmp( curToken, "@" ) ) {
+    } else if( stricmp( curToken, "@" ) == 0 ) {
         retcode = STATE_AT;
-    } else if( !stricmp( curToken, "," ) ) {
+    } else if( stricmp( curToken, "," ) == 0 ) {
         retcode = STATE_COMMA;
-    } else if( !stricmp( curToken, "=" ) ) {
+    } else if( stricmp( curToken, "=" ) == 0 ) {
         retcode = STATE_EQUAL;
-    } else if( !stricmp( curToken, "." ) ) {
+    } else if( stricmp( curToken, "." ) == 0 ) {
         retcode = STATE_PERIOD;
     } else {
         retcode = STATE_STRING;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ static char  *AboutMsg = DefaultAboutMsg;
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-int     _SetAboutDlg( const char *title, const char *text )
+bool    _SetAboutDlg( const char *title, const char *text )
 //=========================================================
 {
     if( title != NULL ) {
@@ -77,7 +77,7 @@ int     _SetAboutDlg( const char *title, const char *text )
             _OutOfMemoryExit();
         strcpy( AboutMsg, text );
     }
-    return( 1 );
+    return( true );
 }
 
 static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
@@ -98,14 +98,17 @@ static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
         } else {                                /* single-byte char */
             vk = CHAR1FROMMP( mp2 );
             /* Check for control characters and map them appropriately */
-            if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+            if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+              && iscntrl( toupper( vk ) - CTRL_CONST ) ) {
                 vk = toupper( vk ) - CTRL_CONST;
+            }
         }
         return( vk );
 #else
         vk = CHAR1FROMMP( mp2 );
         /* Check for control characters and map them appropriately */
-        if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+        if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+          && iscntrl( toupper( vk ) - CTRL_CONST ) )
             vk = toupper( vk ) - CTRL_CONST;
         return( vk );
 #endif
@@ -118,12 +121,12 @@ static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
 static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 {
     LPWDATA     w;
-    USHORT      vk;
+    unsigned    vk;
+    unsigned    scan;
     HPS         hps;
     RECTL       rcl;
     USHORT      dlg_id;
     SWP         swps;
-    char        scan;
 
     switch( msg ) {
     case WM_PAINT:
@@ -167,16 +170,17 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             break;
         case DID_EDIT_CLEAR:
             w = _GetActiveWindowData();
-            if( w != NULL && w->InputMode == 0 ) {
-                if( w != NULL && !w->gphwin ) {
-                    _FreeAllLines( w );
-                    _ClearWindow( w );
-                }
+            if( w != NULL
+              && !w->InputMode
+              && !w->gphwin ) {
+                _FreeAllLines( w );
+                _ClearWindow( w );
             }
             break;
         case DID_EDIT_COPY:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->gphwin ) {
+            if( w != NULL
+              && !w->gphwin ) {
                 _CopyAllLines( w );
             }
             break;
@@ -193,58 +197,62 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         if( SHORT1FROMMP( mp1 ) & KC_KEYUP ) {
             _WindowsKeyUp( vk, 0 );
         } else {
-            if( (SHORT1FROMMP(mp1) & KC_VIRTUALKEY) && (SHORT2FROMMP(mp2) != VK_SPACE) ) {
-                scan = '\xff';
+            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY)
+              && (SHORT2FROMMP( mp2 ) != VK_SPACE) ) {
+                scan = 0xff;
                 if( SHORT2FROMMP( mp2 ) == VK_BREAK ) {
                     raise( SIGBREAK );
                     break;
                 }
             } else {
                 scan = CHAR4FROMMP( mp1 );
-                if( (SHORT1FROMMP( mp1 ) & KC_CTRL) && ( vk == CTRL_C ) ) {
+                if( (SHORT1FROMMP( mp1 ) & KC_CTRL)
+                  && ( vk == CTRL_C ) ) {
                     raise( SIGINT );
                     break;
                 }
             }
 
-            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY) == 0 && (w == NULL || w->InputMode) ) {
+            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY) == 0
+              && (w == NULL
+              || w->InputMode) ) {
 #ifdef _MBCS
                 if( vk & 0xFF00 ) {             /* double-byte char */
                     _WindowsKeyPush( vk & 0x00FF, scan );
-                    _WindowsKeyPush( (vk & 0xFF00) >> 8, scan );
-                } else                          /* single-byte char */
+                    _WindowsKeyPush( (vk >> 8) & 0x00FF, scan );
+                } else {                        /* single-byte char */
                     _WindowsKeyPush( vk, scan );
+                }
 #else
                 _WindowsKeyPush( vk, scan );
 #endif
                 break;
-            } else {
-                WinShowPointer( HWND_DESKTOP, FALSE );
-                switch( SHORT2FROMMP( mp2 ) ) {
-                case VK_DOWN:
-                    _MoveLineDown( w );
-                    break;
-                case VK_UP:
-                    _MoveLineUp( w );
-                    break;
-                case VK_PAGEUP:
-                    _MovePageUp( w );
-                    break;
-                case VK_PAGEDOWN:
-                    _MovePageDown( w );
-                    break;
-                case VK_HOME:
-                    _MoveToLine( w, 1, TRUE );
-                    break;
-                case VK_END:
-                    _MoveToLine( w, _GetLastLineNumber( w ), TRUE );
-                    break;
-                default:
-                    _WindowsVirtualKeyPush( vk, scan );
-                    break;
-                }
-                WinShowPointer( HWND_DESKTOP, TRUE );
             }
+            WinShowPointer( HWND_DESKTOP, FALSE );
+            switch( SHORT2FROMMP( mp2 ) ) {
+            case VK_DOWN:
+                _MoveLineDown( w );
+                break;
+            case VK_UP:
+                _MoveLineUp( w );
+                break;
+            case VK_PAGEUP:
+                _MovePageUp( w );
+                break;
+            case VK_PAGEDOWN:
+                _MovePageDown( w );
+                break;
+            case VK_HOME:
+                _MoveToLine( w, 1, true );
+                break;
+            case VK_END:
+                _MoveToLine( w, _GetLastLineNumber( w ), true );
+                break;
+            default:
+                _WindowsVirtualKeyPush( vk, scan );
+                break;
+            }
+            WinShowPointer( HWND_DESKTOP, TRUE );
         }
         return( (MRESULT)TRUE );
 
@@ -315,21 +323,21 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 
     case WM_SIZE:
         if( w->resizing ) {
-            w->resizing = FALSE;
+            w->resizing = false;
             break;
         }
         WinQueryWindowRect( hwnd, &rcl );
         width = SHORT1FROMMP( mp2 );
         height = SHORT2FROMMP( mp2 );
         _ResizeWin( w, rcl.xLeft, rcl.yTop, rcl.xLeft + width, rcl.yTop + height );
-        _DisplayAllLines( w, FALSE );
+        _DisplayAllLines( w, false );
         break;
 
     case WM_VSCROLL:
         WinShowPointer( HWND_DESKTOP, FALSE );
         switch( SHORT2FROMMP( mp2 ) ) {
         case SB_SLIDERPOSITION:
-            _MoveToLine( w, _GetLineFromThumbPosition( w, SHORT1FROMMP( mp2 ) ), TRUE  );
+            _MoveToLine( w, _GetLineFromThumbPosition( w, SHORT1FROMMP( mp2 ) ), true );
             break;
         case SB_PAGEDOWN:
             _MovePageDown( w );

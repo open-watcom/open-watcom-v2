@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,55 +46,37 @@
 #include "_doslfn.h"
 
 
-extern unsigned __alloc_dos_tb( unsigned short size, unsigned short *segm );
-#pragma aux __alloc_dos_tb = \
-        "mov    ax,100h"    \
-        "int 31h"           \
-        "jc short L1"       \
-        "mov    [ecx],ax"   \
-        "xor    eax,eax"    \
-        "mov    ax,dx"      \
-        "jmp short L2"      \
-    "L1: xor    eax,eax"    \
-    "L2:"                   \
-    __parm __caller     [__bx] [__ecx] \
-    __value             [__eax] \
-    __modify __exact    [__eax __bx __dx]
-
-extern unsigned __free_dos_tb( unsigned short );
-#pragma aux __free_dos_tb = \
-        "mov    ax,101h"    \
-        "int 31h"           \
-        "sbb    eax,eax"    \
-    __parm __caller     [__dx] \
-    __value             [__eax] \
-    __modify __exact    [__eax]
+#define TOTAL_RM_TB_SIZE_PARA   __ROUND_UP_SIZE_TO_PARA( RM_TB_PARM1_SIZE + RM_TB_PARM2_SIZE )
 
 char                    * __lfn_rm_tb_linear = 0;
 unsigned short          __lfn_rm_tb_segment = 0;
 
 static unsigned short   __lfn_rm_tb_selector = 0;
 
-#define TOTAL_RM_TB_SIZE_PARA   __ROUND_UP_SIZE_TO_PARA( RM_TB_PARM1_SIZE + RM_TB_PARM2_SIZE )
-
 static void init( void )
 /**********************/
 {
-    __lfn_rm_tb_selector = __alloc_dos_tb( TOTAL_RM_TB_SIZE_PARA,
-                                      (unsigned short *)&__lfn_rm_tb_segment );
+    dpmi_dos_mem_block  dos_mem;
+
+    if( _DPMI ) {
+        dos_mem = DPMIAllocateDOSMemoryBlock( TOTAL_RM_TB_SIZE_PARA );
+        __lfn_rm_tb_segment = dos_mem.rm;
+        __lfn_rm_tb_selector = dos_mem.pm;
+    }
     if( __lfn_rm_tb_selector == 0 ) {
         __fatal_runtime_error( "Unable to allocate LFN real mode transfer buffer", -1 );
         // never return
     }
-    *(long *)&__lfn_rm_tb_linear = TinyDPMIBase( __lfn_rm_tb_selector );
+    __lfn_rm_tb_linear = (char *)DPMIGetSegmentBaseAddress( __lfn_rm_tb_selector );
 }
 
 static void fini( void )
 /**********************/
 {
-    __free_dos_tb( __lfn_rm_tb_selector );
+    if( _DPMI ) {
+        DPMIFreeDOSMemoryBlock( __lfn_rm_tb_selector );
+    }
 }
 
 AXI( init, INIT_PRIORITY_RUNTIME )
 AYI( fini, INIT_PRIORITY_RUNTIME )
-

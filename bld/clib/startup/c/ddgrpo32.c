@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,14 +72,12 @@ static char *my_strcat( char *p, char *msg )
 
 static HAB     (APIENTRY *pfnWinInitialize)( ULONG );
 static HMQ     (APIENTRY *pfnWinCreateMsgQueue)( HAB, ULONG );
-static ULONG   (APIENTRY *pfnWinGetLastError)( HAB );
 static ERRORID (APIENTRY *pfnWinGetLastError)( HAB );
 static BOOL    (APIENTRY *pfnWinDestroyMsgQueue)( HMQ );
 static BOOL    (APIENTRY *pfnWinTerminate)( HAB );
-static BOOL    (APIENTRY *pfnWinTerminate)( HAB );
 static ULONG   (APIENTRY *pfnWinMessageBox)( HWND, HWND, PCSZ, PCSZ, ULONG, ULONG );
 
-int __disallow_single_dgroup( unsigned hmod )
+bool __disallow_single_dgroup( unsigned hmod )
 {
     int         use_pm = 0;
     HMQ         hMessageQueue = 0;
@@ -144,5 +142,5 @@ int __disallow_single_dgroup( unsigned hmod )
     if( AnchorBlock != 0 ) {
         pfnWinTerminate( AnchorBlock );
     }
-    return( 1 );
+    return( true );
 }

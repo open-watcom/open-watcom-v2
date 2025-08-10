@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,32 +36,29 @@
 #include <string.h>
 #include "riscstr.h"
 
-/* return <0 if s<t, 0 if s==t, >0 if s>t */
+/* return <0 if s<s2, 0 if s==s2, >0 if s>s2 */
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- int __simple__wcsicmp( const CHAR_TYPE *s, const CHAR_TYPE *t ) {
+ int __simple__wcsicmp( const CHAR_TYPE *s1, const CHAR_TYPE *s2 ) {
 #else
- _WCRTLINK int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s, const CHAR_TYPE *t ) {
+ _WCRTLINK int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 ) {
 #endif
     UCHAR_TYPE c1;
     UCHAR_TYPE c2;
 
     for( ;; ) {
-        c1 = *s;
-        c2 = *t;
-        if( IS_ASCII_CHAR( c1 ) && IS_ASCII_CHAR( c2 ) ) {
-            if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
-                c1 += STRING( 'a' ) - STRING( 'A' );
-            if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
-                c2 += STRING( 'a' ) - STRING( 'A' );
-            }
+        c1 = *s1++;
+        if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
+            c1 += STRING( 'a' ) - STRING( 'A' );
+        c2 = *s2++;
+        if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
+            c2 += STRING( 'a' ) - STRING( 'A' );
         }
         if( c1 != c2 )
             break;
-        if( c1 == NULLCHAR )
+        if( c1 == NULLCHAR ) {
             break;
-        ++s;
-        ++t;
+        }
     }
     return( c1 - c2 );
 }

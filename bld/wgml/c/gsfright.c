@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'right(                                        */
@@ -47,87 +49,65 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
-    char                padchar;
+    tok_type        string;
+    int             length;
+    char            padchar;
+    condcode        cc;
+    int             k;
+    int             string_len;
+    getnum_block    gn;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 2
+      || parmcount > 3 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    string = parms[0].arg;
+    string_len = unquote_arg( &string );
 
-    unquote_if_quoted( &pval, &pend );
-
+    gn.arg = parms[1].arg;
     gn.ignore_blanks = false;
-
-    gn.argstart = parms[1].start;
-    gn.argstop  = parms[1].stop;
     cc = getnum( &gn );
-    if( cc != pos ) {
+    if( cc != CC_pos ) {
         if( !ProcFlags.suppress_msg ) {
-            g_err( err_func_parm, "2 (length)" );
-            g_info_inp_pos();
-            err_count++;
-            show_include_stack();
+            xx_source_err_exit_c( ERR_FUNC_PARM, "2 (length)" );
+            /* never return */
         }
         return( cc );
     }
-    n = gn.result;
+    length = gn.result;
 
-    len = pend - pval;                  // total length
-
-    if( n > 0 ) {                       // result not nullstring
-        if( n > len ) {                 // padding needed
-            padchar = ' ';              // default padchar
-            if( parmcount > 2 ) {       // pad character specified
-                if( parms[2].stop > parms[2].start ) {
-                    char *pa = parms[2].start;
-                    char *pe = parms[2].stop;
-
-                    unquote_if_quoted( &pa, &pe);
-                    padchar = *pa;
-                }
-            }
-            for( k = n - len; k > 0; k-- ) {
-                if( ressize <= 0 ) {
-                    break;
-                }
-                **result = padchar;
-                *result += 1;
-                ressize--;
-            }
-            for( ; pval < pend; pval++ ) {
-                if( ressize <= 0 ) {
-                    break;
-                }
-                **result = *pval;
-                *result += 1;
-                ressize--;
-            }
-        } else {                        // no padding
-
-            pval += len - n;
-            for( ; pval < pend; pval++ ) {
-                if( ressize <= 0 ) {
-                    break;
-                }
-                **result = *pval;
-                *result += 1;
-                ressize--;
+    if( length > 0 ) {
+        padchar = ' ';              // default padchar
+        if( parmcount > 2 ) {       // pad character specified
+            tok_type pad = parms[2].arg;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
             }
         }
+        /*
+         * output pad characters (if necessary)
+         */
+        k = string_len;
+        while( k < length && ressize > 0 ) {
+            *(*result)++ = padchar;
+            k++;
+            ressize--;
+        }
+        /*
+         * output string from start position
+         */
+        if( length < string_len ) {
+            string.s += string_len - length;
+        }
+        while( string.s < string.e && ressize > 0 ) {
+            *(*result)++ = *string.s++;
+            ressize--;
+        }
     }
+
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

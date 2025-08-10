@@ -26,7 +26,7 @@
 *  ========================================================================
 *
 * Description:  Functions controlling the abstract type "a_variable".
-*               The only reference to the GlobalVarList is through these
+*               The only reference to the Variables List is through these
 *               functions.
 *
 ****************************************************************************/
@@ -60,70 +60,75 @@ typedef struct  a_variable {
     void        (*hook)( vhandle );
 } a_variable;
 
-            //only reference to this Structure is through functions.
-static a_variable   *GlobalVarList = NULL;
-static array_info   GlobalVarArray;
-static hash_table   *GlobalVarHash = NULL;
+//only reference to this Structure is through functions.
+struct {
+    a_variable   *list;
+    array_info   array;
+    hash_handle  hash;
+} Vars = {
+    NULL, { 0 }, NULL
+};
 
 
-vhandle NextGlobalVar( vhandle var_handle )
-/*****************************************/
+vhandle NextVar( vhandle var_handle )
+/***********************************/
 {
     if( var_handle == NO_VAR )
         return( 0 );
-    if( ++var_handle >= GlobalVarArray.num )
+    if( ++var_handle >= Vars.array.num )
         return( NO_VAR );
     return( var_handle );
 }
 
-void InitGlobalVarList( void )
-/****************************/
-/* must be called before any other reference to GlobalVarList is made */
+void InitVarsList( void )
+/****************************
+ * must be called before any other reference to Variables List is made
+ */
 {
-    GlobalVarArray.num = 0;
-    GlobalVarArray.alloc = 20;
-    GlobalVarArray.increment = 20;
-    InitArray( (void **)&GlobalVarList, sizeof( a_variable ), &GlobalVarArray );
-    GlobalVarHash = HashInit( HASH_SIZE, &stricmp );
+    Vars.array.num = 0;
+    Vars.array.alloc = 20;
+    Vars.array.increment = 20;
+    InitArray( (void **)&Vars.list, sizeof( a_variable ), &Vars.array );
+    Vars.hash = HashInit( HASH_SIZE, &stricmp );
 }
 
 
 void VarSetAutoSetCond( vhandle var_handle, const char *cond )
 /************************************************************/
 {
-    GlobalVarList[var_handle].autoset = GUIStrDup( cond );
+    Vars.list[var_handle].autoset = GUIStrDup( cond );
 }
 
 
 void VarSetAutoSetRestriction( vhandle var_handle, const char *cond )
 /*******************************************************************/
 {
-    GlobalVarList[var_handle].restriction = cond[0]; // 't' or 'f'
+    Vars.list[var_handle].restriction = cond[0]; // 't' or 'f'
 }
 
 
 bool VarIsRestrictedFalse( vhandle var_handle )
 /*********************************************/
 {
-    return( GlobalVarList[var_handle].restriction == 'f' );
+    return( Vars.list[var_handle].restriction == 'f' );
 }
 
 
 bool VarIsRestrictedTrue( vhandle var_handle )
 /********************************************/
 {
-    return( GlobalVarList[var_handle].restriction == 't' );
+    return( Vars.list[var_handle].restriction == 't' );
 }
 
 
 const char *VarGetAutoSetCond( vhandle var_handle )
 /*************************************************/
 {
-    if( GlobalVarList[var_handle].restriction == 't' )
+    if( Vars.list[var_handle].restriction == 't' )
         return( "true" );
-    if( GlobalVarList[var_handle].restriction == 'f' )
+    if( Vars.list[var_handle].restriction == 'f' )
         return( "false" );
-    return( GlobalVarList[var_handle].autoset );
+    return( Vars.list[var_handle].autoset );
 }
 
 vhandle GetVariableByName( const char *vbl_name )
@@ -131,11 +136,11 @@ vhandle GetVariableByName( const char *vbl_name )
 {
     vhandle     var_handle;
 
-    if( GlobalVarHash != NULL ) {
-        return( HashFind( GlobalVarHash, vbl_name ) );
+    if( Vars.hash != NULL ) {
+        return( HashFind( Vars.hash, vbl_name ) );
     } else {
-        for( var_handle = 0; var_handle < GlobalVarArray.num; var_handle++ ) {
-            if( stricmp( GlobalVarList[var_handle].name, vbl_name ) == 0 ) {
+        for( var_handle = 0; var_handle < Vars.array.num; var_handle++ ) {
+            if( stricmp( Vars.list[var_handle].name, vbl_name ) == 0 ) {
                 return( var_handle );
             }
         }
@@ -146,7 +151,7 @@ vhandle GetVariableByName( const char *vbl_name )
 vhandle GetVariableById( gui_ctl_id id )
 /**************************************/
 {
-    if( id < FIRST_UNUSED_ID || ID2VH( id ) >= GlobalVarArray.num )
+    if( id < FIRST_UNUSED_ID || ID2VH( id ) >= Vars.array.num )
         return( NO_VAR );
     return( ID2VH( id ) );
 }
@@ -157,7 +162,7 @@ const char *VarGetName( vhandle var_handle )
 {
     if( var_handle == NO_VAR )
         return( "" );
-    return( GlobalVarList[var_handle].name );
+    return( Vars.list[var_handle].name );
 }
 
 
@@ -175,9 +180,9 @@ const char *VarGetStrVal( vhandle var_handle )
 {
     if( var_handle == NO_VAR )
         return( "" );
-    if( !GlobalVarList[var_handle].has_value )
+    if( !Vars.list[var_handle].has_value )
         return( "" );
-    return( GlobalVarList[var_handle].strval );
+    return( Vars.list[var_handle].strval );
 }
 
 bool VarGetBoolVal( vhandle var_handle )
@@ -197,7 +202,7 @@ bool VarHasValue( vhandle var_handle )
 {
     if( var_handle == NO_VAR )
         return( false );
-    return( GlobalVarList[var_handle].has_value );
+    return( Vars.list[var_handle].has_value );
 }
 
 void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
@@ -205,7 +210,7 @@ void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
 {
     if( var_handle == NO_VAR )
         return;
-    GlobalVarList[var_handle].hook = hook;
+    Vars.list[var_handle].hook = hook;
 }
 
 bool GetVariableBoolVal( const char *vbl_name )
@@ -232,17 +237,17 @@ static vhandle NewVariable( const char *vbl_name )
     a_variable  *tmp_variable;
     vhandle     var_handle;
 
-    var_handle = GlobalVarArray.num;
-    BumpArray( &GlobalVarArray );
-    tmp_variable = &GlobalVarList[var_handle];
+    var_handle = Vars.array.num;
+    BumpArray( &Vars.array );
+    tmp_variable = &Vars.list[var_handle];
     tmp_variable->name = GUIStrDup( vbl_name );
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
     tmp_variable->hook = NULL;
     tmp_variable->strval = NULL;
-    if( GlobalVarHash != NULL ) {
-        HashInsert( GlobalVarHash, vbl_name, var_handle );
+    if( Vars.hash != NULL ) {
+        HashInsert( Vars.hash, vbl_name, var_handle );
     }
     return( var_handle );
 }
@@ -267,7 +272,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
         strval = "";
     }
     if( var_handle != NO_VAR ) {
-        tmp_variable = &GlobalVarList[var_handle];
+        tmp_variable = &Vars.list[var_handle];
         if( tmp_variable->has_value ) {
             if( strcmp( tmp_variable->strval, strval ) == 0 ) {
                 if( tmp_variable->hook ) {
@@ -280,7 +285,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
     } else {
         var_handle = NewVariable( vbl_name );
     }
-    tmp_variable = &GlobalVarList[var_handle];
+    tmp_variable = &Vars.list[var_handle];
     tmp_variable->strval = GUIStrDup( strval );
     tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
@@ -317,8 +322,8 @@ vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
     return( DoSetVariable( var_handle, strval, NULL ) );
 }
 
-void SetDefaultGlobalVarList( void )
-/**********************************/
+void SetDefaultVarsList( void )
+/*****************************/
 {
     char    szBuf[_MAX_PATH];
 #if defined( __NT__ )
@@ -451,53 +456,67 @@ void SetDefaultGlobalVarList( void )
 }
 
 
-void FreeGlobalVarList( bool including_real_globals )
-/***************************************************/
+void FreeVarsList( bool delete_all_vars )
+/****************************************
+ * This destroys the concept that a handle to a variable
+ * will always point to the same variable.
+ * Between script launches, variable ids will change.
+ */
 {
     array_idx   i;
+    array_idx   j;
 
-    if( GlobalVarList == NULL )
+    if( Vars.list == NULL )
         return;
 
-    if( including_real_globals ) {
-        for( i = 0; i < GlobalVarArray.num; i++ ) {
-            GUIMemFree( GlobalVarList[i].name );
-            GUIMemFree( GlobalVarList[i].strval );
-            GUIMemFree( GlobalVarList[i].autoset );
-        }
-        GlobalVarArray.num = 0;
-        GUIMemFree( GlobalVarList );
-        if( GlobalVarHash != NULL ) {
-            HashFini( GlobalVarHash );
-            GlobalVarHash = NULL;
+    /*
+     * free Hash table
+     */
+    if( Vars.hash != NULL ) {
+        HashFini( Vars.hash );
+        Vars.hash = NULL;
+    }
+    /*
+     * free list
+     */
+    j = 0;
+    if( delete_all_vars ) {
+        for( i = 0; i < Vars.array.num; i++ ) {
+            GUIMemFree( Vars.list[i].name );
+            GUIMemFree( Vars.list[i].strval );
+            GUIMemFree( Vars.list[i].autoset );
         }
     } else {
-        for( i = 0; i < GlobalVarArray.num; ) {
-            if( GlobalVarList[i].name[0] != '$' ) {
-                GUIMemFree( GlobalVarList[i].name );
-                GUIMemFree( GlobalVarList[i].strval );
-                GUIMemFree( GlobalVarList[i].autoset );
-
-                GlobalVarArray.num -= 1;
-                if( i < GlobalVarArray.num ) {
-                    memcpy( &GlobalVarList[i], &GlobalVarList[i + 1], sizeof( a_variable ) * ( GlobalVarArray.num - i ) );
-                    // This destroys the concept that a handle to a variable
-                    // will always point to the same variable.  Between
-                    // script launches, variable ids will change.
+        for( i = 0; i < Vars.array.num; i++ ) {
+            if( Vars.list[i].name[0] == '$' ) {
+                /*
+                 * hold all system variables
+                 */
+                if( i != j ) {
+                    memcpy( &Vars.list[j], &Vars.list[i], sizeof( a_variable ) );
                 }
-                BumpDownArray( &GlobalVarArray );
+                j++;
             } else {
-                i++;
-            }
-        }
-        // We have to rebuild the hash table
-        if( GlobalVarHash != NULL ) {
-            HashFini( GlobalVarHash );
-            GlobalVarHash = HashInit( HASH_SIZE, &stricmp );
-            for( i = 0; i < GlobalVarArray.num; i++ ) {
-                HashInsert( GlobalVarHash, GlobalVarList[i].name, i );
+                GUIMemFree( Vars.list[i].name );
+                GUIMemFree( Vars.list[i].strval );
+                GUIMemFree( Vars.list[i].autoset );
             }
         }
     }
+    Vars.array.num = j;
+    if( j ) {
+        /*
+         * reduce variables array to minimum size
+         */
+        BumpDownArray( &Vars.array );
+        /*
+         * We have to rebuild the hash table for system variables
+         */
+        Vars.hash = HashInit( HASH_SIZE, &stricmp );
+        for( i = 0; i < Vars.array.num; i++ ) {
+            HashInsert( Vars.hash, Vars.list[i].name, i );
+        }
+    } else {
+        GUIMemFree( Vars.list );
+    }
 }
-

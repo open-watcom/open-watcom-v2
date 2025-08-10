@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,27 +29,119 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  round indent to get whole characters                                   */
 /*  can be relative i.e. negative                                          */
 /***************************************************************************/
 
-static  int32_t round_indent( su * work )
+static  int round_indent( su * work )
 {
-    return( conv_hor_unit( work ) * CPI / g_resh * g_resh / CPI );
+    return( conv_hor_unit( work, g_curr_font ) * CPI / g_resh * g_resh / CPI );
+}
+
+/***************************************************************************/
+/* INDENT RIGHT  indents the end of  the output line the  specified hori-  */
+/* zontal position with respect to the line-length (.LL) value (or .CL in  */
+/* multiple-column mode).                                                  */
+/*                                                                         */
+/*      +-------+--------------------------------------------------+       */
+/*      |       |                                                  |       */
+/*      |  .IR  |    <0|h|+h|-h>                                   |       */
+/*      |       |                                                  |       */
+/*      +-------+--------------------------------------------------+       */
+/*                                                                         */
+/* This control word causes a break.    The initial Right Indent value is  */
+/* zero.   If the operand is omitted zero is assumed.   An operand of the  */
+/* form "+h" adds to the current Right Indent and "-h" subtracts from it.  */
+/* This indentation  remains in  effect for  all subsequent  output lines  */
+/* until another .IR or .IN is encountered.  ".IR" or ".IR 0" will cancel  */
+/* the right indentation and cause output to be formatted to the original  */
+/* right margin.                                                           */
+/*                                                                         */
+/* EXAMPLES                                                                */
+/* (1) .in 4                                                               */
+/*     The first paragraph demonstrates the normal width                   */
+/*     of formatted text.                                                  */
+/*     It extends to the current Line Length.                              */
+/*     .ir 4                                                               */
+/*     The second paragraph demonstrates the width of formatted            */
+/*     text with a Right Indent specified.                                 */
+/*     Note that the Left Indent is unchanged.                             */
+/*     .ir;The third paragraph again demonstrates the normal               */
+/*     width of formatted text to the full Line Length.                    */
+/*                                                                         */
+/* This example produces the following output:                             */
+/*                                                                         */
+/*     The first  paragraph demonstrates  the normal  width of  formatted  */
+/*     text.  It extends to the current Line Length.                       */
+/*     The second paragraph demonstrates the  width of formatted text      */
+/*     with a Right Indent specified.   Note  that the Left Indent is      */
+/*     unchanged.                                                          */
+/*     The  third  paragraph  again  demonstrates  the  normal  width  of  */
+/*     formatted text to the full Line Length.                             */
+/*                                                                         */
+/***************************************************************************/
+
+void    scr_ir( void )
+{
+    const char      *pa;
+    const char      *p;
+    int             len;
+    char            cwcurr[4];
+    bool            scanerr;
+    su              indentwork;
+    int             newindent;
+
+    cwcurr[0] = SCR_char;
+    cwcurr[1] = 'i';
+    cwcurr[2] = 'r';
+    cwcurr[3] = '\0';
+
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
+    pa = p;
+    SkipNonSpaces( p );                 // end of word
+    len = p - pa;
+    newindent = 0;                      // omitted means reset to default
+    if( len > 0 ) {
+        p = pa;
+        scanerr = cw_val_to_su( &p, &indentwork );
+        if( scanerr ) {
+            xx_line_err_exit_c( ERR_SPC_NOT_VALID, pa );
+            // never return
+        } else {
+            newindent = round_indent( &indentwork );
+            if( indentwork.su_relative ) {
+                newindent += (int)g_indentr;
+                if( newindent < 0 ) {
+                    newindent = 0;
+                }
+            }
+        }
+    }
+    g_indentr = newindent;
+    /*
+     * Reset margin to reflect the current IR offset
+     */
+    t_page.max_width = t_page.last_pane->col_width + g_indentr;
+
+    scan_restart = (char *)p;
+    return;
 }
 
 /***************************************************************************/
 /* INDENT causes  text to  be indented  with respect  to the  left and/or  */
 /* right ends of the output line.                                          */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .IN  |    <0|h|+h|-h|*> <0|i|+i|-i|*>                   |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* These indents remain in effect for all subsequent output lines,         */
 /*   Including new paragraphs, new footnotes, and new pages.   It remains  */
@@ -80,93 +172,103 @@ static  int32_t round_indent( su * work )
 /* ! .of .il .un are not used in OW documentation                          */
 /* ! a right indent value of the form "0-i" is not used / implemented      */
 /*                                                                         */
-/*                                                                         */
 /***************************************************************************/
 
 void    scr_in( void )
 {
-    char        *   pa;
-    char        *   p;
+    const char      *pa;
+    const char      *p;
     int             len;
     char            cwcurr[4];
     bool            scanerr;
     su              indentwork;
-    int32_t         newindent;
-    int32_t         newindentr;
+    int             newindentl;
+    int             newindentr;
+    bool            su_relative;
+
+    static int      oldindent;
 
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'i';
     cwcurr[2] = 'n';
     cwcurr[3] = '\0';
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    su_relative = false;
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
+    newindentl = 0;
+    newindentr = 0;
     len = p - pa;
-    if( len == 0 ) {                    // omitted means reset to default
-        newindent = 0;
-        newindentr = 0;
-    } else {
-        newindent  = g_indent;          // prepare keeping old values
-        newindentr = g_indentr;
+    if( len > 0 ) {
         if( *pa == '*' ) {              // keep old indent value
+            newindentl = g_indentl;     // get old values
             p = pa + 1;
         } else {
-
             p = pa;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                g_err( err_miss_inv_opt_value, cwcurr, pa );
-                err_count++;
-                show_include_stack();
+                xx_line_err_exit_c( ERR_SPC_NOT_VALID, pa );
             } else {
-                newindent = round_indent( &indentwork );
-                if( indentwork.su_relative ) {
-                    newindent += g_indent;
-                }
-                if( newindent < 0 ) {
-                    newindent = 0;      // minimum value
+                su_relative = indentwork.su_relative;
+                newindentl = round_indent( &indentwork );
+                if( su_relative ) {
+printf(".in relative left\n");
+                    newindentl += (int)g_indentl;
+                    if( newindentl < 0 ) {
+                        newindentl = 0;
+                    }
                 }
             }
         }
-        while( *p == ' ' ) {
-            p++;
-        }
-        if( *p == '*' ) {               // keep old indentr value
+        SkipSpaces( p );
+        if( *p == '\0' ) {              // zero right indent, newindentr already set
+        } else if( *p == '*' ) {        // keep old indentr value
+            newindentr = g_indentr;     // get old values
             p++;
         } else {
+printf("!!! .in right !!!\n");
             pa = p;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                g_err( err_miss_inv_opt_value, cwcurr, pa );
-                err_count++;
-                show_include_stack();
+                xx_line_err_exit_cc( ERR_MISS_INV_OPT_VALUE, cwcurr, pa );
             } else {
-
-            /***************************************************************/
-            /*  indent right is always relative or 0 for reset to default  */
-            /***************************************************************/
-
-                if( indentwork.su_whole + indentwork.su_dec != 0) {
-                    newindentr = g_indentr + round_indent( &indentwork );
-                } else {
-                    newindentr = 0;
+printf(".in relative right\n");
+                /*
+                 *  indent right is always relative or 0 for reset to default
+                 */
+                if( newindentr != 0 || indentwork.su_relative ) {
+                    newindentr += (int)g_indentr;
+                    if( newindentr < 0 ) {
+                        newindentr = 0;
+                    }
                 }
             }
         }
     }
-    g_indent = newindent;
+    g_indentl = newindentl;
     g_indentr = newindentr;
+    /*
+     * Reset margin(s) to reflect the current IN offsets
+     */
+    if( su_relative && ProcFlags.in_reduced ) {
+        t_page.cur_left = oldindent;
+    } else {
+        t_page.cur_left = g_indentl;
+    }
+    t_page.max_width = t_page.last_pane->col_width + g_indentr;
+    /*
+     * Reduce t_page.cur_left to 0 if g_indentl made it negative
+     */
+    ProcFlags.in_reduced = false;       // flag, if on, is active until next IN
+    if( ( (int)t_page.page_left + t_page.cur_left ) < 0 ) {
+        oldindent = t_page.cur_left;
+        t_page.cur_left = 0;
+        ProcFlags.in_reduced = true;    // set flag to record virtual reduction of in value
+    }
+    t_page.cur_width = t_page.cur_left;
 
-    g_page_right = g_page_right_org + g_indentr;
-    ProcFlags.keep_left_margin = false;
-    set_h_start();                      // apply new values
-    scan_restart = p;
+    scan_restart = (char *)p;
     return;
 }
-

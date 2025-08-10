@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,18 +25,28 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcsetpgrp() for Linux.
+* Description:  Implementation for POSIX tcsetpgrp
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <termios.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
-_WCRTLINK  int   tcsetpgrp( int __fildes, pid_t __pgrp_id )
+
+_WCRTLINK  int   tcsetpgrp( int fd, pid_t pgrp_id )
 {
-    return( ioctl( __fildes, TIOCSPGRP, &__pgrp_id ) );
+#ifdef __LINUX__
+    return( ioctl( fd, TIOCSPGRP, &pgrp_id ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }
 

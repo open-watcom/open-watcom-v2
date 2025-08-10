@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,14 +91,14 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_INTERRUPT  = (FLAG_NEAR+FLAG_FAR), /* interrupt function */
     /* FLAG_NEAR + FLAG_FAR both on ==> interrupt far */
 
-    LANG_CDECL      = 0x00040,      /* Y0040         Y0040 */
-    LANG_PASCAL     = 0x00080,      /* Y0080         Y0080 */
-    LANG_FORTRAN    = 0x000C0,      /* Y00C0         Y00C0 */
-    LANG_SYSCALL    = 0x00100,      /* Y0100         Y0100 */
-    LANG_STDCALL    = 0x00140,      /* Y0140         Y0140 */
-    LANG_OPTLINK    = 0x00180,      /* Y0180         Y0180 */
-    LANG_FASTCALL   = 0x001C0,      /* Y01C0         Y01C0 */
-    LANG_WATCALL    = 0x00200,      /* Y0200         Y0200 */
+    FLAG_CDECL      = 0x00040,      /* Y0040         Y0040 */
+    FLAG_PASCAL     = 0x00080,      /* Y0080         Y0080 */
+    FLAG_FORTRAN    = 0x000C0,      /* Y00C0         Y00C0 */
+    FLAG_SYSCALL    = 0x00100,      /* Y0100         Y0100 */
+    FLAG_STDCALL    = 0x00140,      /* Y0140         Y0140 */
+    FLAG_OPTLINK    = 0x00180,      /* Y0180         Y0180 */
+    FLAG_FASTCALL   = 0x001C0,      /* Y01C0         Y01C0 */
+    FLAG_WATCALL    = 0x00200,      /* Y0200         Y0200 */
 
     FLAG_SAVEREGS   = 0x00400,      /* Y0400         Y0400 */
     FLAG_LOADDS     = 0x00800,      /* Y0800         Y0800 */
@@ -117,7 +117,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
 #define MASK_CV_QUALIFIERS  (FLAG_CONST|FLAG_VOLATILE)
 #define MASK_QUALIFIERS     (MASK_CV_QUALIFIERS|FLAG_UNALIGNED|FLAG_RESTRICT)
 #define MASK_MEM_MODEL      (FLAG_NEAR|FLAG_FAR|FLAG_HUGE|FLAG_FAR16)
-#define MASK_LANGUAGES      (LANG_CDECL|LANG_PASCAL|LANG_FORTRAN|LANG_SYSCALL|LANG_STDCALL|LANG_OPTLINK|LANG_FASTCALL|LANG_WATCALL)
+#define MASK_LANGUAGES      (FLAG_CDECL|FLAG_PASCAL|FLAG_FORTRAN|FLAG_SYSCALL|FLAG_STDCALL|FLAG_OPTLINK|FLAG_FASTCALL|FLAG_WATCALL)
 
 #define MASK_ALL_MEM_MODELS (MASK_MEM_MODEL|FLAG_BASED)
 #define MASK_PTR            (MASK_QUALIFIERS|MASK_ALL_MEM_MODELS)
@@ -363,7 +363,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     } u;
     textsegment         *seginfo;       /* also used by pre-compiled header */
     dw_handle           dwarf_handle;   /* used for browsing info; could be perhaps stored in 'info' union. */
-    type_modifiers      mods;           /* LANG_CDECL, _PASCAL, _FORTRAN */
+    type_modifiers      mods;           /* FLAG_CDECL, FLAG_PASCAL, FLAG_FORTRAN */
     sym_flags           flags;
     id_level_type       level;
     struct {
@@ -386,7 +386,7 @@ typedef struct field_entry {
     TYPEPTR             field_type;     /* also used by pre-compiled header */
     XREFPTR             xref;
     target_size         offset;
-    type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
+    type_modifiers      attrib;         /* FLAG_CDECL, FLAG_PASCAL, FLAG_FORTRAN */
     field_level_stype   level;
     id_hash_idx         hash;
     struct field_entry  *next_field_same_hash; /* also used by PCH for length */

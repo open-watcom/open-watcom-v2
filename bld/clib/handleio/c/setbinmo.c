@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ int __set_binary( int handle )
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }
-        rc = TinySetDeviceInfo( handle, TINY_INFO(rc) | TIO_CTL_RAW );
+        rc = TinySetDeviceInfo( handle, TINY_INFO( rc ) | TIO_CTL_RAW );
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }

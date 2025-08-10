@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,8 @@ int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
     INT             tmpchar, shr1, shr2, shl1, shl2;
 
 #ifdef __WIDECHAR__
-    if( OFFSET(s1) % 2  ||  OFFSET(s2) % 2 )
+    if( OFFSET(s1) % 2
+      || OFFSET(s2) % 2 )
         return( __simple_wcscmp( s1, s2 ) );
 #endif
 

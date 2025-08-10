@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stdbool.h>
 #include <unistd.h>
 #include <wos2.h>
 #include "rterrno.h"
@@ -47,10 +48,9 @@ _WCRTLINK int isatty( int handle )
 
     __handle_check( handle, 0 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( handle ) ) {
-            return( 1 );
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        return( true );
     }
 #endif
     rc = DosQHandType( handle, &handtype, &flagword );

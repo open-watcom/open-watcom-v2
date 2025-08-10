@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -396,10 +396,12 @@ void main( int argc, char *argv[] )
     hdl = InitHelpSearch( fp );
     for( ;; ) {
         gets( name );
-        if( !strcmp( name, "bob" ) ) break;
+        if( strcmp( name, "bob" ) == 0 )
+            break;
         cur = HelpFindFirst( hdl, name, &cursor );
         for( i = 0; i < 5; i++ ) {
-            if( cur == NULL ) break;
+            if( cur == NULL )
+                break;
             printf( "     %s\n", cur );
             HelpMemFree( cur );
             cur = HelpFindNext( &cursor );

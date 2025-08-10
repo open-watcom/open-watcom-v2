@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -18,7 +18,7 @@
 #include <dos.h>
 #define DOS16LIB_INCLUDED
 #include <dos16.h>
-#include <dpmi.h>
+#include "dpmi.h"
 #include "bool.h"
 #include "machtype.h"
 #include "brkptcpu.h"

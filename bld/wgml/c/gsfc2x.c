@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,11 +27,13 @@
 * Description:  WGML implement multi letter function &'c2x( )
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 static unsigned char hex( unsigned char c )
 {
-    static const unsigned char htab[16] = "0123456789ABCDEF";
+    static const unsigned char htab[] = "0123456789ABCDEF";
 
     if( c < 16 ) {
         return( htab[c] );
@@ -56,28 +58,27 @@ static unsigned char hex( unsigned char c )
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_c2x( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
+    tok_type        string;
+    unsigned char   c;
 
-    if( parmcount != 1 ) {              // only 1 parm valid
-        return( neg );
+    if( parmcount < 1
+      || parmcount > 1 )
+        return( CC_neg );
+
+    string = parms[0].arg;
+    unquote_arg( &string );
+
+    while( ( string.s < string.e ) && ( ressize > 0 ) ) {
+        c = *string.s++;
+        *(*result)++ = hex( c >> 4 );
+        ressize--;
+        if( ressize > 0 ) {
+            *(*result)++ = hex( c & 0x0f );
+            ressize--;
+        }
     }
-
-    pval = parms[0].start;
-    pend = parms[0].stop;
-
-    unquote_if_quoted( &pval, &pend );
-
-    while( (pval < pend) && (ressize > 1) ) {
-        **result = hex( (unsigned)*pval >> 4 );
-        *result += 1;
-        **result = hex( (unsigned)*pval & 0x0f );
-        *result += 1;
-        **result = 0;
-        ressize -= 2;
-        pval++;
-    }
-    return( pos );
+    **result = '\0';
+    return( CC_pos );
 }

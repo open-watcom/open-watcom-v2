@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*   :SET symbol='symbol-name'                                             */
@@ -47,152 +49,96 @@
 /* the symbol referred to by the symbol name is deleted.                   */
 /***************************************************************************/
 
-extern  void    gml_set( gml_tag gtag )
+extern  void    gml_set( const gmltag * entry )
 {
-    char        *   p;
-    char        *   symstart;
-    char        *   valstart;
-    char            c;
-    bool            symbolthere = false;
-    bool            valuethere = false;
+    bool            symbol_found;
+    bool            value_found;
+    char            *p;
+    char            *pa;
+    int             rc;
     symvar          sym;
     sub_index       subscript;
-    int             rc;
-    symvar      * * working_dict;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
-    /* unused parameters */ (void)gtag;
+    (void)entry;
 
-    subscript = no_subscript;           // not subscripted
-    scan_err = false;
+    symbol_found = false;
+    value_found = false;
+    subscript = SI_no_subscript;           // not subscripted
+    g_scan_err = false;
+    sym.flags = SF_none;
 
-    p = scan_start;
-    p++;
+    p = g_scandata.s;
+    if( *p == '.' ) {
+        /* already at tag end */
+    } else {
+        for( ;;) {
+            p = get_tag_att_name( p, &pa, &attr_name );
+            if( ProcFlags.reprocess_line )
+                break;
+            if( ProcFlags.tag_end_found )
+                break;
+            if( strcmp( "symbol", attr_name.attname.t ) == 0 ) {
 
-    for( ;;) {
-        while( *p == ' ' ) {            // over WS to attribute
-            p++;
-        }
+                /* both get_att_value() and scan_sym() must be used */
 
-        if( !strnicmp( "symbol", p, 6 ) ) {
-
-            p += 6;
-            while( *p == ' ' ) {        // over WS to attribute
-                p++;
-            }
-            if( *p == '=' ) {
-                p++;
-                while( *p == ' ' ) {    // over WS to attribute
-                    p++;
+                p = get_att_value( p, &attr_val );
+                if( attr_val.tok.s == NULL ) {
+                    break;
                 }
-            } else {
-                continue;
-            }
-            symstart = p;
-
-            p = scan_sym( symstart, &sym, &subscript );
-            if( scan_err ) {
-                return;
-            }
-            if( *p == '"' || *p == '\'' ) {
-                p++;                    // skip terminating quote
-            }
-            if( sym.flags & local_var ) {
-                working_dict = &input_cbs->local_dict;
-            } else {
-                working_dict = &global_dict;
-            }
-            symbolthere = true;
-
-            while( *p == ' ' ) {
-                p++;
-            }
-        } else {
-
-            if( !strnicmp( "value", p, 5 ) ) {
-                char    quote;
-
-                p += 5;
-                while( *p == ' ' ) {    // over WS to attribute
-                    p++;
+                if( attr_val.quoted != ' ' )
+                    attr_val.tok.s--;
+                scan_sym( attr_val.tok.s, &sym, &subscript, NULL, false );
+                if( g_scan_err ) {
+                    break;
                 }
-                if( *p == '=' ) {
-                    p++;
-                    while( *p == ' ' ) {// over WS to attribute
-                        p++;
-                    }
+                symbol_found = true;
+                if( ProcFlags.tag_end_found ) {
+                    break;
+                }
+            } else if( strcmp( "value", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.tok.s == NULL ) {
+                    break;
+                }
+                value_found = true;
+                if( strcmp( "delete", attr_val.specval ) == 0 && attr_val.quoted == ' ' ) {
+                    sym.flags |= SF_deleted;
                 } else {
-                    continue;
-                }
-                if( *p == '"' || *p == '\'' ) {
-                    quote = *p;
-                    ++p;
-                } else {
-                    quote = ' ';
-                }
-                valstart = p;
-                while( *p && *p != quote ) {
-                    ++p;
-                }
-                c = *p;
-                *p = '\0';
-                strcpy( token_buf, valstart );
-                *p = c;
-                if( c == '"' || c == '\'' ) {
-                    p++;
-                }
-                valuethere = true;
-            } else {
-                err_count++;
-                g_err( err_att_name_inv );
-                g_info_inp_pos();
-                if( inc_level > 1 ) {
-                    show_include_stack();
+                    sym.flags &= ~SF_deleted;
+                    if( attr_val.tok.l > BUF_SIZE )
+                        attr_val.tok.l = BUF_SIZE;
+                    strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
+                    token_buf[attr_val.tok.l] = '\0';
                 }
                 break;
-
+            } else {    // no match = end-of-tag in wgml 4.0
+                ProcFlags.tag_end_found = true;
+                p = pa; // restore spaces before text
+                break;
             }
-        }
-        if( symbolthere && valuethere ) {   // both attributes
-
-            if( !strnicmp( token_buf, "delete", 6 ) ) {
-                sym.flags |= deleted;
-            }
-            rc = add_symvar( working_dict, sym.name, token_buf, subscript,
-                             sym.flags );
-            break;                          // tag complete with attributes
-        }
-
-        c = *p;
-        if( p >= scan_stop ) {
-            c = '.';                    // simulate end of tag if EOF
-
-            if( !(input_cbs->fmflags & II_eof) ) {
-                if( get_line( true ) ) {      // next line for missing attribute
-                    process_line();
-                    if( (*scan_start == SCR_char) ||
-                        (*scan_start == GML_char) ) {
-                                        //  missing attribute not supplied error
-
-                    } else {
-                        p = scan_start;
-                        continue;       // scanning
-                    }
-                }
-            }
-        }
-        if( c == '.' ) {                // end of tag found
-            err_count++;
-            // AT-001 Required attribute not found
-
-            g_err( err_att_missing );
-            g_info_inp_pos();
-            if( inc_level > 1 ) {
-                show_include_stack();
-            }
-            break;
         }
     }
-    scan_start = scan_stop;
+
+    if( symbol_found && value_found ) {   // both attributes
+        if( (sym.flags & SF_deleted) == 0 ) {
+            rc = add_symvar_sym( &sym, token_buf, strlen( token_buf ), subscript, sym.flags );
+        }
+    } else {
+        xx_err_exit( ERR_ATT_MISSING );
+        /* never return */
+    }
+
+    if( !ProcFlags.reprocess_line && *p != '\0' ) {
+        SkipDot( p );                       // possible tag end
+        if( *p != '\0' ) {
+            post_space = 0;
+            ProcFlags.ct = true;
+            process_text( p, g_curr_font);  // if text follows
+        }
+    }
+    g_scandata.s = g_scandata.e;
     return;
 }
 

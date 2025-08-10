@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +41,14 @@ _WCRTLINK short _WCI86FAR _CGRAPH _rectangle( short fill, short x1, short y1,
    defined by ( x1, y1 ) and ( x2, y2 ), in viewport coordinates.   */
 
 {
-    short           success;
+    bool            success;
 
     if( _GrProlog() ) {
         success = _L2rectangle( fill, _VtoPhysX( x1 ), _VtoPhysY( y1 ),
                                       _VtoPhysX( x2 ), _VtoPhysY( y2 ) );
         _GrEpilog();
     } else {
-        success = 0;
+        success = false;
     }
     return( success );
 }
@@ -55,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _rectangle( short fill, short x1, short y1,
 Entry1( _RECTANGLE, _rectangle ) // alternate entry-point
 
 
-short _WCI86FAR _L2rectangle( short fill, short x1, short y1,
+bool _WCI86FAR _L2rectangle( short fill, short x1, short y1,
 /*====================*/ short x2, short y2 )
 
 /* This routine draws or fills a rectangle whose opposite corners are
@@ -65,19 +66,36 @@ short _WCI86FAR _L2rectangle( short fill, short x1, short y1,
     int count;
 
     if( fill == _GBORDER ) {
+        count = 0;
         if (_PlotAct == 1) {
-            count  = _L2line( x1, y1, x1, y2 );
+            if( _L2line( x1, y1, x1, y2 ) ) {
+                count++;
+            }
             x1 = (x1 < x2) ? (x1 + 1) : (x1 - 1);
-            count += _L2line( x1, y2, x2, y2 );
+            if( _L2line( x1, y2, x2, y2 ) ) {
+                count++;
+            }
             y2 = (y2 < y1) ? (y2 + 1) : (y2 - 1);
-            count += _L2line( x2, y2, x2, y1 );
+            if( _L2line( x2, y2, x2, y1 ) ) {
+                count++;
+            }
             x2 = (x2 < x1) ? (x2 + 1) : (x2 - 1);
-            count += _L2line( x2, y1, x1, y1 );
+            if( _L2line( x2, y1, x1, y1 ) ) {
+                count++;
+            }
         } else {
-            count  = _L2line( x1, y1, x1, y2 );
-            count += _L2line( x1, y2, x2, y2 );
-            count += _L2line( x2, y2, x2, y1 );
-            count += _L2line( x2, y1, x1, y1 );
+            if( _L2line( x1, y1, x1, y2 ) ) {
+                count++;
+            }
+            if( _L2line( x1, y2, x2, y2 ) ) {
+                count++;
+            }
+            if( _L2line( x2, y2, x2, y1 ) ) {
+                count++;
+            }
+            if( _L2line( x2, y1, x1, y1 ) ) {
+                count++;
+            }
         }
         _RefreshWindow();
         /*
@@ -89,11 +107,11 @@ short _WCI86FAR _L2rectangle( short fill, short x1, short y1,
     } else {
 //      _PaRf_x = x1;               /* should make sure first that  */
 //      _PaRf_y = y1;               /* x1 < x2 and y1 < y2          */
-        if( _L0BlockClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+        if( !_L0BlockClip( &x1, &y1, &x2, &y2 ) ) {
             _L1Block( x1, y1, x2, y2 );
         } else {
             _ErrorStatus = _GRNOOUTPUT;
         }
     }
-    return( TRUE );
+    return( true );
 }

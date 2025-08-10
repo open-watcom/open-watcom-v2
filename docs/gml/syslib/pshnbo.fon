@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Helvetica-Narrow-BoldOblique font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -142 -241 823 936
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSHNBO                          helvetica-narrow-boldoblique
+:CMT.eoc
+
+:FONT
+  defined_name     = 'helvetica-narrow-boldoblique'
+  member_name      = 'PSHNBO'
+  font_out_name1   = 'Helvetica-Narrow-BoldOblique'
+  line_height      = 1000
+  line_space       = 177
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 228
+
+
+:WIDTH.
+$20 228
+! 274
+" 389
+# 456
+$ 456
+% 729
+& 593
+' 228
+( 274
+) 274
+* 319
++ 479
+, 228
+- 274
+. 228
+/ 228
+0 456
+1 456
+2 456
+3 456
+4 456
+5 456
+6 456
+7 456
+8 456
+9 456
+: 274
+; 274
+< 479
+= 479
+> 479
+? 502
+@ 800
+A 593
+B 593
+C 593
+D 593
+E 547
+F 502
+G 638
+H 593
+I 228
+J 456
+K 593
+L 502
+M 684
+N 593
+O 638
+P 547
+Q 638
+R 593
+S 547
+T 502
+U 593
+V 547
+W 775
+X 547
+Y 547
+Z 502
+$5D 274
+\ 228
+$5B 274
+$5E 479
+_ 456
+` 228
+a 456
+b 502
+c 456
+d 502
+e 456
+f 274
+g 502
+h 502
+i 228
+j 228
+k 456
+l 228
+m 729
+n 502
+o 502
+p 502
+q 502
+r 319
+s 456
+t 274
+u 502
+v 456
+w 638
+x 456
+y 456
+z 410
+{ 319
+| 230
+} 319
+$7E 479
+$AF 287
+$BF 820
+:eWIDTH.
+
+:eFONT.

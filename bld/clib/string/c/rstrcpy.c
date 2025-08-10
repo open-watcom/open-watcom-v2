@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,8 @@ CHAR_TYPE *__F_NAME(strcpy,wcscpy)( CHAR_TYPE *dest, const CHAR_TYPE *src )
     int                 offset = OFFSET(dest);
 
 #ifdef __WIDECHAR__
-    if( offset % 2  ||  OFFSET(src) % 2 )
+    if( offset % 2
+      || OFFSET(src) % 2 )
         return( __simple_wcscpy( dest, src ) );
 #endif
 

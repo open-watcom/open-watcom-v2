@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +50,10 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 /*
-//  take fsync from LIBC import file
-*/
+ *  take fsync from LIBC import file
+ */
 #if !defined (_NETWARE_LIBC)
 
 _WCRTLINK int fsync( int handle )
@@ -62,31 +63,26 @@ _WCRTLINK int fsync( int handle )
 
     __handle_check( handle, -1 );
 
-    #if defined(__DOS__) || defined(__WINDOWS__)
+  #if defined(__DOS__) || defined(__WINDOWS__)
     ret = _dos_commit( handle );
-    #elif defined(__NT__)
-    if( !FlushFileBuffers( __getOSHandle( handle ) ) )
-    {
+  #elif defined(__NT__)
+    if( FlushFileBuffers( __getOSHandle( handle ) ) == 0 ) {
         __set_errno_nt();
         ret = -1;
     }
-    #elif defined(__OS2__)
-    if( DosBufReset( handle ) != 0 )
-    {
+  #elif defined(__OS2__)
+    if( DosBufReset( handle ) != 0 ) {
         _RWD_errno = EBADF;
         ret = -1;
     }
-    #elif defined(__NETWARE__)
-
-    if( FEFlushWrite( handle ) != 0 )
-    {
+  #elif defined(__NETWARE__)
+    if( FEFlushWrite( handle ) != 0 ) {
         _RWD_errno = EBADF;
         ret = -1;
     }
-    #else
-        #error Unknown target system
-    #endif
-
+  #else
+    #error Unknown target system
+  #endif
     return( ret );
 }
 

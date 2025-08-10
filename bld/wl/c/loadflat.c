@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "loados2.h"
 #include "loadfile.h"
 #include "specials.h"
-#include "alloc.h"
 #include "virtmem.h"
 #include "fileio.h"
 #include "impexp.h"
@@ -83,7 +82,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf
                 buf->lx.data_size = OSF_DEF_PAGE_SIZE;
                 limit -= OSF_DEF_PAGE_SIZE;
             } else {
-                buf->lx.data_size = ROUND_SHIFT( limit, shift );
+                buf->lx.data_size = __ROUND_UP_SIZE_PWROF2( limit, shift );
                 limit = 0;
             }
             *start += buf->lx.data_size;
@@ -399,20 +398,20 @@ static unsigned WriteDataPages( unsigned long loc )
                 if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
-                    size = ROUND_SHIFT(last_page, FmtData.u.os2fam.segment_shift) - last_page;
+                    size = __ROUND_UP_SIZE_PWROF2( last_page, FmtData.u.os2fam.segment_shift ) - last_page;
                 }
                 PadLoad( size );
                 loc += size;
             }
             WriteGroupLoad( group, false );
             loc += group->size;
-            last_page = group->size & (OSF_DEF_PAGE_SIZE-1);
+            last_page = group->size & (OSF_DEF_PAGE_SIZE - 1);
         }
     }
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
     } else if( (FmtData.type & (MK_OS2_LE | MK_WIN_VXD)) == 0 ) {
-        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2fam.segment_shift ) - last_page );
+        PadLoad( __ROUND_UP_SIZE_PWROF2( last_page, FmtData.u.os2fam.segment_shift ) - last_page );
     }
     return( last_page );
 }

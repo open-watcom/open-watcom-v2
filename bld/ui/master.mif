@@ -2,6 +2,8 @@ tree_depth = 4
 
 proj_name = ui
 
+ui_nofpu = 1
+
 ui_nodoslfn = 1
 
 ui_trmem = 1

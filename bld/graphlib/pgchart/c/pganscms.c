@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +74,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzescatter( chartenv _WCI86FAR *env,
     short               error;
 
     oldlegend = env->legend.legend;
-    env->legend.legend = FALSE;
+    env->legend.legend = false;
 
     error = _pg_analyzescatterms( env, xvalues, yvalues, 1, n, n, NULL );
 

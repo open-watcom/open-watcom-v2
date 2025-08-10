@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +37,13 @@
 #include "dbgcomm.h"
 #include "dbgall.h"
 #include "carve.h"
-#include "alloc.h"
 #include "reloc.h"
 #include "fileio.h"
 #include "virtmem.h"
 #include "impexp.h"
 #include "loadfile.h"
-#include "msg.h"
 #include "objio.h"
 #include "ring.h"
-#include "wlnkmsg.h"
 #include "objcalc.h"
 #include "permdata.h"
 
@@ -77,7 +74,7 @@ static void             *AltDefData;
 static char             *IncStrTab;
 
 #define SEG_CARVE_SIZE          _2K
-#define MOD_CARVE_SIZE          _5K
+#define MOD_CARVE_SIZE          (_4K + _1K)
 #define SDATA_CARVE_SIZE        _16K
 #define SYM_CARVE_SIZE          _32K
 
@@ -432,7 +429,7 @@ static void FiniStringBlock( stringtable *strtab, size_t *size, void *info,
     size_t      rawsize;
 
     rawsize = GetStringTableSize( strtab );
-    *size = __ROUND_UP_SIZE( rawsize, SECTOR_SIZE );
+    *size = __ROUND_UP_SIZE_SECTOR( rawsize );
     if( *size != rawsize ) {
         ZeroStringTable( strtab, *size - rawsize );
     }

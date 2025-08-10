@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  16-bit code only
 ;*
 ;*****************************************************************************
 
@@ -34,6 +34,7 @@
 ;
 include mdef.inc
 include struct.inc
+include int21.inc
 
         modstart dosdrive
 
@@ -49,7 +50,7 @@ if _MODEL and (_BIG_DATA or _HUGE_DATA)
 endif
         mov     BX,AX           ; get address of drive
         mov     AH,19h          ; get current drive
-        int     21h             ; ...
+        int21h                  ; ...
         inc     AX              ; increment drive #
         xor     AH,AH           ; zero high part
         mov     [BX],AX         ; store drive #
@@ -77,7 +78,7 @@ endif
         mov     DX,AX           ; get drive number
         dec     DX              ; ...
         mov     AH,0Eh          ; set current drive
-        int     21h             ; ...
+        int21h                  ; ...
         xor     AH,AH           ; zero high part of return
         mov     [BX],AX         ; store total # of drives
         sub     AX,AX           ; set return code

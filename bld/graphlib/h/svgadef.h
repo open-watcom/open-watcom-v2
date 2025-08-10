@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,22 +50,3 @@ enum {
     _SV_VIPER,              // Diamond Viper
     _SV_MAX
 };
-
-
-#if defined( _M_I86 )
-extern short GetVESAInfo( short, short, void __far * );
-#pragma aux GetVESAInfo = \
-        "push bp" \
-        "int 10h"  \
-        "pop bp"  \
-    __parm __caller [__ax] [__cx] [__es __di] \
-    __value         [__ax]
-#elif defined( __QNX__ )
-extern short GetVESAInfo( short, short, void __far * );
-#pragma aux GetVESAInfo = \
-        "push bp" \
-        "int 10h"  \
-        "pop bp"  \
-    __parm __caller [__ax] [__cx] [__es __edi] \
-    __value         [__ax]
-#endif

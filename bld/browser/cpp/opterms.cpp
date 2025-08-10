@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,8 +105,8 @@ char * EndComments = "\n";
 extern void terminalSetup( void )
 /*******************************/
 {
-    for( int i = 0; TokenTables[ i ].table != NULL; i += 1 ) {
-        setupTokenTable( &TokenTables[ i ] );
+    for( int i = 0; TokenTables[i].table != NULL; i += 1 ) {
+        setupTokenTable( &TokenTables[i] );
     }
 }
 
@@ -117,15 +117,15 @@ extern int tryToken( LookForType lf, char * buf )
     tokenInfo * fnd = NULL;
     int         count = strlen( buf );
 
-    for( int cnt = 0; TokenTables[ cnt ].table != NULL; cnt += 1 ) {
-        tokenTable * table = &TokenTables[ cnt ];
+    for( int cnt = 0; TokenTables[cnt].table != NULL; cnt += 1 ) {
+        tokenTable * table = &TokenTables[cnt];
 
         if( table->type & lf ) {
             for( i = 0; i < table->num_elem; i += 1 ) {
-                if( !strnicmp( table->table[ i ].name, buf, count ) &&
-                    count >= table->table[ i ].unique ) {
-                        fnd = &table->table[ i ];
-                        break;
+                if( strnicmp( table->table[i].name, buf, count ) == 0
+                  && count >= table->table[i].unique ) {
+                    fnd = &table->table[i];
+                    break;
                 }
             }
         }
@@ -145,23 +145,24 @@ extern char * tryAmbig( LookForType lf, char * buf )
     int          count = strlen( buf );
     tokenTable * table;
 
-    for( int cnt = 0; TokenTables[ cnt ].table != NULL; cnt += 1 ) {
-         table = &TokenTables[ cnt ];
+    for( int cnt = 0; TokenTables[cnt].table != NULL; cnt += 1 ) {
+         table = &TokenTables[cnt];
 
         if( table->type & lf ) {
             for( i = 0; i < table->num_elem; i += 1 ) {
-                if( !strnicmp( table->table[ i ].name, buf, count ) ) break;
+                if( strnicmp( table->table[i].name, buf, count ) == 0 ) {
+                    break;
+                }
             }
 
             if( i < table->num_elem ) {
                 WString ambigs;
 
-                ambigs.concat( table->table[ i ].name );
+                ambigs.concat( table->table[i].name );
                 i += 1;
-                while( i < table->num_elem
-                         && !strnicmp( table->table[ i ].name, buf, count ) ) {
+                while( i < table->num_elem && strnicmp( table->table[i].name, buf, count ) == 0 ) {
                     ambigs.concat( " or " );
-                    ambigs.concat( table->table[ i ].name );
+                    ambigs.concat( table->table[i].name );
                     i += 1;
                 }
 
@@ -178,15 +179,15 @@ extern char * findTokenString( int token )
 {
     int i;
 
-    for( i = 0; Options[ i ].name != NULL; i += 1 ) {
-        if( Options[ i ].token == token ) {
-            return( Options[ i ].name );
+    for( i = 0; Options[i].name != NULL; i += 1 ) {
+        if( Options[i].token == token ) {
+            return( Options[i].name );
         }
     }
 
-    for( i = 0; Directives[ i ].name != NULL; i += 1 ) {
-        if( Directives[ i ].token == token ) {
-            return( Directives[ i ].name );
+    for( i = 0; Directives[i].name != NULL; i += 1 ) {
+        if( Directives[i].token == token ) {
+            return( Directives[i].name );
         }
     }
 
@@ -206,7 +207,7 @@ static void showUnique( char * name, int unique )
     strlwr( name );
     while( unique > 0 ) {
         unique -= 1;
-        name[ unique ] = (char) toupper( name[ unique ] );
+        name[unique] = (char) toupper( name[unique] );
     }
 }
 
@@ -268,11 +269,11 @@ static void setupTokenTable( tokenTable * table )
 
         unique = maxi( unique, next );
 
-        table->table[ i ].unique = mini( unique + 1,
-                                        strlen( table->table[ i ].name ));
+        table->table[i].unique = mini( unique + 1,
+                                        strlen( table->table[i].name ));
 
-        #if 0   // this modifies a static string, and doesn't work with /zc
-        showUnique( table->table[ i ].name, table->table[ i ].unique );
-        #endif
+#if 0   // this modifies a static string, and doesn't work with /zc
+        showUnique( table->table[i].name, table->table[i].unique );
+#endif
     }
 }

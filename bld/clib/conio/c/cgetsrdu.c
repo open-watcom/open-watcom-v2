@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,40 +35,41 @@
 #include <conio.h>
 #include <unistd.h>
 
-#define BACKSPACE       8
-#define SPACE           ' '
-#define CRLF            13
-
 
 _WCRTLINK char *cgets( char *buff )
 {
     char *p;
-    char len;
+    int  len;
     char ch;
 
-    for( p = buff + 2, len = *buff; ; ) {
+    len = *(unsigned char *)buff;
+    p = buff + 2;
+    for( ;; ) {
         ch = (char)RdosReadKeyboard();
-        if( ch ) {       // Only interested in real keys
-            if ( ch == CRLF ) {
-                *p = '\0';
-                break;
+        if( ch == 0 )       // Only interested in real keys
+            continue;
+        if( ch == '\r' ) {
+            break;
+        }
+        if( ch == '\b' ) {
+            if( p > buff + 2 ) {
+                putch( '\b' );
+                putch( ' ' );
+                putch( '\b' );
+                --p;
+                ++len;
             }
-            if( ch == BACKSPACE ) {
-                if( p > buff + 2 ) {
-                    putch( BACKSPACE );
-                    putch( SPACE );
-                    putch( BACKSPACE );
-                    --p;
-                    ++len;
-                }
-            } else if( len > 1 ) { // Other real chars...
-                *p = ch;
-                putch( ch );
-                ++p;
-                --len;
-            } // Otherwise: len <= 1, can't type more.
+        } else if( len > 1 ) { // Other real chars...
+            *p = ch;
+            putch( ch );
+            ++p;
+            --len;
+        } else {
+            // Otherwise: len <= 1, can't type more.
+            break;
         }
     }
-    buff[1] = p - buff - 2;
+    *p = '\0';
+    buff[1] = p - ( buff + 2 );
     return( buff + 2 );
 }

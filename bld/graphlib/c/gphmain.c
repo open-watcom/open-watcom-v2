@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -359,7 +359,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
             }
 #if defined( __OS2__ )
             WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_DELETEITEM,
-                MPFROM2SHORT( ( w->handles[0] + DID_WIND_STDIO ), FALSE ), 0 );
+                MPFROM2SHORT( ( w->handles[0] + DID_WIND_STDIO ), false ), 0 );
 #endif
             _FreeWindowData( w );
         }
@@ -372,10 +372,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
         // Make sure we have to refresh first
         if( _BitBlt_Coord.ycoord != y ) {
             _BitBlt_Coord.ycoord = y;
-            _wpi_setscrollpos( frame,
-                          SB_VERT,
-                          v_currpos,
-                          TRUE );
+            _wpi_setscrollpos( frame, SB_VERT, v_currpos, true );
             _wpi_invalidaterect( Wnd, NULL, 0 );
             _wpi_updatewindow( Wnd );
         }
@@ -388,10 +385,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
         // make sure we need to refresh first
         if( _BitBlt_Coord.xcoord != x ) {
             _BitBlt_Coord.xcoord = x;
-            _wpi_setscrollpos(  frame,
-                                SB_HORZ,
-                                h_currpos,
-                                TRUE );
+            _wpi_setscrollpos( frame, SB_HORZ, h_currpos, true );
             _wpi_invalidaterect( Wnd, NULL, 0 );
             _wpi_updatewindow( Wnd );
         }
@@ -411,10 +405,9 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
         if( width >= x ) {
             // hide the scroll bar
 #if defined( __OS2__ )
-            WinShowWindow( WinWindowFromID( frame, FID_HORZSCROLL ),
-                           FALSE );
+            WinShowWindow( WinWindowFromID( frame, FID_HORZSCROLL ), false );
 #else
-            ShowScrollBar( Wnd, SB_HORZ, FALSE );
+            ShowScrollBar( Wnd, SB_HORZ, false );
 #endif
             _BitBlt_Coord.xcoord = 0;
             h_currpos = 0;
@@ -433,20 +426,18 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
                                       x, width );
             }
 #if defined( __OS2__ )
-            WinShowWindow( WinWindowFromID( frame, FID_HORZSCROLL ),
-                           TRUE );
+            WinShowWindow( WinWindowFromID( frame, FID_HORZSCROLL ), true );
 #else
-            ShowScrollBar( Wnd, SB_HORZ, 1 );
+            ShowScrollBar( Wnd, SB_HORZ, true );
 #endif
         }
 
         if( height >= y ) {
             // hide the scroll bar
 #if defined( __OS2__ )
-            WinShowWindow( WinWindowFromID( frame, FID_VERTSCROLL ),
-                           FALSE );
+            WinShowWindow( WinWindowFromID( frame, FID_VERTSCROLL ), false );
 #else
-            ShowScrollBar( Wnd, SB_VERT, 0 );
+            ShowScrollBar( Wnd, SB_VERT, false );
 #endif
             _BitBlt_Coord.ycoord = 0;
             v_currpos = 0;
@@ -465,17 +456,16 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
                                           y, height );
             }
 #if defined( __OS2__ )
-            WinShowWindow( WinWindowFromID( frame, FID_VERTSCROLL ),
-                           TRUE );
+            WinShowWindow( WinWindowFromID( frame, FID_VERTSCROLL ), true );
 #else
-            ShowScrollBar( Wnd, SB_VERT, 1 );
+            ShowScrollBar( Wnd, SB_VERT, true );
 #endif
         }
 
 
         // Adjust the scroll bar thumbs' positions
-        _wpi_setscrollpos( frame, SB_HORZ, h_currpos, TRUE );
-        _wpi_setscrollpos( frame, SB_VERT, v_currpos, TRUE );
+        _wpi_setscrollpos( frame, SB_HORZ, h_currpos, true );
+        _wpi_setscrollpos( frame, SB_VERT, v_currpos, true );
 #if defined( __OS2__ )
         Win_dc = WinBeginPaint( Wnd, NULL, &rect );
         WinFillRect( Win_dc, &rect, CLR_BLACK );

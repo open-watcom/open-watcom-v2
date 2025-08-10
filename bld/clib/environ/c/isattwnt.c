@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,13 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <windows.h>
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"
+
 
 /*
     DWORD GetFileType(
@@ -46,17 +49,13 @@
                     typically an LPT device or a console
  */
 
-_WCRTLINK int isatty( int hid )
+_WCRTLINK int isatty( int handle )
 {
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( hid ) ) {
-            return( 1 );
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        return( true );
     }
 #endif
-    if( GetFileType( __getOSHandle( hid ) ) == FILE_TYPE_CHAR ) {
-        return( 1 );
-    }
-    return( 0 );
+    return( GetFileType( __getOSHandle( handle ) ) == FILE_TYPE_CHAR );
 }

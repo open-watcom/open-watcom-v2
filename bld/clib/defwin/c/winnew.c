@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 /*
  * _NewWindow - create a new window
  */
-unsigned _NewWindow( const char *name, ... )
+bool _NewWindow( const char *name, ... )
 {
     HWND        hwnd;
     LPWDATA     w;
@@ -72,7 +72,7 @@ unsigned _NewWindow( const char *name, ... )
     );
 
     if( !hwnd )
-        return( FALSE );
+        return( false );
     /*
      * allocate window data area
      */
@@ -103,7 +103,7 @@ unsigned _NewWindow( const char *name, ... )
     ShowWindow( hwnd, SW_NORMAL );
     UpdateWindow( hwnd );
     _MakeWindowActive( w );
-    return( TRUE );
+    return( true );
 
 } /* _NewWindow */
 

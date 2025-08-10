@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +39,15 @@
 #include <wos2.h>
 #include <conio.h>
 #include "dosfuncx.h"
+#include "tinyio.h"
 #include "rtdata.h"
 #include "defwin.h"
 
 
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     extern unsigned char    _dos( char );
     #pragma aux _dos = \
-            "int 21h" \
+            __INT_21    \
         __parm __caller [__ah] \
         __value         [__al]
 #endif
@@ -64,11 +65,11 @@ _WCRTLINK int getch( void )
 #ifdef DEFAULT_WINDOWING
     if( _WindowsGetch != NULL ) {   // Default windowing
         LPWDATA     res;
-        res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsGetch( res ) );
     }
 #endif
-#if defined(__OS2_286__)
+#if defined(__OS2_16BIT__)
     if( _osmode_REALMODE() ) {
         return( _dos( DOS_GET_CHAR_NO_ECHO_CHECK ) );
     }
@@ -80,7 +81,8 @@ _WCRTLINK int getch( void )
     rc = KbdCharIn( &info, 0, 0 );
     if( rc == ERROR_KBD_DETACHED )
         return( EOF );
-    if( info.chChar == 0 || info.chChar == 0xe0 ) {
+    if( info.chChar == 0
+      || info.chChar == 0xe0 ) {
         _RWD_cbyte2 = info.chScan;
     }
     return( info.chChar );

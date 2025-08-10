@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,20 +56,19 @@ _WCRTLINK int setvbuf( FILE *fp, char *buf, int mode, size_t size )
     default:
         return( -1 );
     }
-    if( buf != NULL && size == 0 ) {                /* JBS 27-aug-90 */
+    if( buf != NULL && size == 0 ) {
         return( -1 );
     }
     _ValidFile( fp, -1 );
     _AccessFile( fp );
-    __chktty( fp );                                 /* JBS 28-aug-90 */
+    __chktty( fp );
     if( size != 0 ) {
-        fp->_bufsize = size;                        /* JBS 27-aug-90 */
+        fp->_bufsize = size;
     }
     _FP_BASE( fp ) = (unsigned char *)buf;
     fp->_ptr = (unsigned char *)buf;
-    fp->_flag &= ~(_IONBF | _IOLBF | _IOFBF);       /* FWC 14-jul-87 */
-    fp->_flag |= mode;
-    if( buf == NULL ) {                             /* FWC 16-mar-93 */
+    fp->_flag = (fp->_flag & ~(_IONBF | _IOLBF | _IOFBF)) | (unsigned)mode;
+    if( buf == NULL ) {
         __ioalloc( fp );
     }
     _ReleaseFile( fp );

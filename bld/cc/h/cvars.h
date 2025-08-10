@@ -91,7 +91,7 @@ typedef enum {
     SEGTYPE_CODE       = 1,             /* #pragma code_seg("segname","class") */
     SEGTYPE_DATA       = 2,             /* #pragma data_seg("segname","class") */
     SEGTYPE_BASED      = 3,             /* __based(__segname("segname")) */
-    SEGTYPE_INITFINI   = 4,             /* "XI" or "YI" segment */
+    SEGTYPE_INITFINI   = 4,             /* "TI", "XI" or "YI" segment */
     SEGTYPE_INITFINITR = 5,             /* thread data */
 } seg_type;
 

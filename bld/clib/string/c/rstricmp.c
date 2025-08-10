@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,8 @@ int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
     INT             shr1, shr2, shl1, shl2;
 
 #ifdef __WIDECHAR__
-    if( OFFSET(s1) % 2  ||  OFFSET(s2) % 2 )
+    if( OFFSET(s1) % 2
+      || OFFSET(s2) % 2 )
         return( __simple__wcsicmp( s1, s2 ) );
 #endif
 
@@ -56,10 +57,10 @@ int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
     shl1 = INT_SIZE - shr1; // shift left = 32 - shift right
     shl2 = INT_SIZE - shr2;
 
-    if (shr1 != 0) {
+    if( shr1 != 0 ) {
         dword1 = *dw1++;
     }
-    if (shr2 != 0) {
+    if( shr2 != 0 ) {
         dword2 = *dw2++;
     }
 

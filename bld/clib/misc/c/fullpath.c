@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #else
     #include <ctype.h>
 #endif
-#if defined(__WIDECHAR__) || defined(__OS2__) && !defined(_M_I86)
+#if defined(__WIDECHAR__) || defined(__OS2_32BIT__)
     #include <mbstring.h>
 #endif
 #if defined(__UNIX__)
@@ -139,7 +139,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     }
 
     return( buff );
-#elif defined(__OS2__) && !defined(_M_I86)
+#elif defined(__OS2_32BIT__)
     APIRET      rc;
     char        root[4];      /* SBCS: room for drive, ':', '\\', and null */
   #ifdef __WIDECHAR__

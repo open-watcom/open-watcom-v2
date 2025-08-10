@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,6 +171,11 @@ extern unsigned char            __isPC98;   /* is NEC PC-98 hardware */
 #if !defined( __NETWARE__ )
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
+#endif
+#if defined( __WINDOWS__ )
+    #define _RWD_winmajor       _winmajor
+    #define _RWD_winminor       _winminor
+    #define _RWD_winver         _winver
 #endif
 #if defined( __NT__ )
     #define _RWD_osbuild        _osbuild

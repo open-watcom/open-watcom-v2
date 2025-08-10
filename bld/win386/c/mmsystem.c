@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include <dos.h>
 #define INCLUDE_MMSYSTEM_H
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "_windpmi.h"
 #include "winstubs.h"
@@ -317,7 +318,7 @@ HMMIO FAR PASCAL __mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
     alias = NULL;
     if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP)) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            _DPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
+            _DPMI_GetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
             lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
     }
@@ -363,7 +364,7 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
     prev = NULL;
     for( curr = mminfoListHead; curr != NULL; curr = curr->next ) {
         if( curr->handle == hmmio ) {
-            _DPMIFreeHugeAlias( curr->alias, curr->size );
+            _DPMI_FreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
                 mminfoListHead = curr->next;
             } else {
@@ -430,9 +431,9 @@ LONG FAR PASCAL __mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
             return( 0 );
         }
     }
-    _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
+    _DPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioRead( hmmio, (HPSTR) alias, cch );
-    _DPMIFreeHugeAlias( alias, cch );
+    _DPMI_FreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioRead */
@@ -451,9 +452,9 @@ LONG FAR PASCAL __mmioWrite( HMMIO hmmio, HPSTR pch, LONG cch )
             return( 0 );
         }
     }
-    _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
+    _DPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioWrite( hmmio, (HPSTR) alias, cch );
-    _DPMIFreeHugeAlias( alias, cch );
+    _DPMI_FreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioWrite */

@@ -40,13 +40,13 @@
 HANDLE __fixed_FindFirstFile( LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData )
 /**********************************************************************************/
 {
-    HANDLE              h;
+    HANDLE              osffh;
 
-    h = FindFirstFile( lpFileName, lpFindFileData );
+    osffh = FindFirstFile( lpFileName, lpFindFileData );
     if( !WIN32_IS_NT ) {    /* Win95 or Win32s */
-        if( h != INVALID_HANDLE_VALUE && lpFindFileData->dwFileAttributes == 0 ) {
+        if( osffh != INVALID_HANDLE_VALUE && lpFindFileData->dwFileAttributes == 0 ) {
             lpFindFileData->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
     }
-    return( h );
+    return( osffh );
 }

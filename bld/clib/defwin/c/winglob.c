@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,4 +90,4 @@ int             _MainWindowDestroyed = 0;
 LPMWDATA        _MainWindowData;
 char            *_ClassName;
 DWORD           _AutoClearLines = DEFAULT_CLEAR_INTERVAL;
-BOOL            _GotEOF=FALSE;
+bool            _GotEOF = false;

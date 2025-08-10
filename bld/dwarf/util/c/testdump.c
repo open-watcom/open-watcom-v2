@@ -1115,15 +1115,15 @@ static void dumpARanges( const uint_8 *input, uint length )
          */
         tuple_size = arange_segment_size + 2 * arange_offset_size;
         i = p - cu_ar_end;
-        padding = __ROUND_UP_SIZE( sizeof( arange_prolog ), tuple_size ) - sizeof( arange_prolog );
+        padding = __ROUND_UP_SIZE_ANY( sizeof( arange_prolog ), tuple_size ) - sizeof( arange_prolog );
 
         /* check if padding contains non-zero data */
         for( i = 0; i < padding; i++ ) {
-            if( p[i] ) {
+            if( p[i] != 0 ) {
                 /* padding by zero bytes is missing! */
                 padding = 0;
                 break;
-           	}
+            }
         }
 
         p += padding;

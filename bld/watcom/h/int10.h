@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,9 +58,9 @@
 #define _INT_10_FN_xBP(n)   "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
 #endif
 
-#define DOUBLE_DOT_CHAR_PATTSET 0x12
-#define COMPRESSED_CHAR_PATTSET 0x11
-#define USER_CHAR_PATTSET       0
+#define PATTSET_DOUBLE_DOT_CHAR 0x12
+#define PATTSET_COMPRESSED_CHAR 0x11
+#define PATTSET_USER_CHAR       0
 
 #define VIDMONOINDXREG      0x03B4
 #define VIDCOLORINDXREG     0x03D4

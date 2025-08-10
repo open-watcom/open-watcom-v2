@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
     DWORD               rc;
-    BOOL                osrc;
+    DWORD               error;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -70,17 +71,14 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
      * page to use when translating to MBCS in spawned program's startup
      * code.  Result: Possible corruption of Unicode environment variables.
      */
-    osrc = __lib_CreateProcess( cmdline, (mode != P_DETACH), envp, &sinfo, &pinfo );
-
-    if( osrc == FALSE ) {
-        DWORD err;
-        err = GetLastError();
-        if( (err == ERROR_ACCESS_DENIED)
-         || (err == ERROR_BAD_EXE_FORMAT)
-         || (err == ERROR_BAD_PATHNAME) ) {
-            err = ERROR_FILE_NOT_FOUND;
+    if( __lib_CreateProcess( cmdline, (mode != P_DETACH), envp, &sinfo, &pinfo ) == 0 ) {
+        error = GetLastError();
+        if( (error == ERROR_ACCESS_DENIED)
+          || (error == ERROR_BAD_EXE_FORMAT)
+          || (error == ERROR_BAD_PATHNAME) ) {
+            error = ERROR_FILE_NOT_FOUND;
         }
-        return( __set_errno_dos( err ) );
+        return( __set_errno_dos( error ) );
     }
 
     if( mode == P_WAIT ) {

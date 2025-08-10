@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 
@@ -37,13 +38,13 @@
 /* TRANSLATE ON INPUT allows the user  to specify an escape character and */
 /* a translate table to be used on input lines.                           */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       |    <SET <char>>                                  |      */
 /*      |  .TI  |    <s <s|t>>                                     |      */
 /*      |       |    <<s1 t1> <s2 t2> ...>                         |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break.                              */
 /*                                                                        */
@@ -84,12 +85,12 @@
 /* TRANSLATE allows the user to specify a  translate table to be used for */
 /* output.                                                                */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .TR  |    <<s1 t1> <s2 t2> ...>                         |      */
 /*      |       |    <s <s|t>>                                     |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break.  Unless the TRANSLATE option */
 /* was specified when SCRIPT was invoked, no output translation will take */
@@ -145,15 +146,13 @@ void    scr_ti( void )
 {
     char        *   p;
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    p = g_scandata.s;
+    SkipSpaces( p );                    // next word start
 
     cop_ti_table( p );
     add_to_sysdir( "$tiset", in_esc );  // put in dictionary
 
-    scan_restart = scan_stop;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -162,13 +161,12 @@ void    scr_tr( void )
 {
     char        *   p;
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    p = g_scandata.s;
+
+    SkipSpaces( p );                    // next word start
     cop_tr_table( p );
 
-    scan_restart = scan_stop;
+    scan_restart = g_scandata.e;
     return;
 }
 

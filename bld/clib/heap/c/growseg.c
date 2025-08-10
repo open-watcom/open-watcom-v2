@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
 #else   /* __DOS__ */
     if( num_of_paras > PARAS_IN_64K )
         num_of_paras = PARAS_IN_64K;
-    if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) )
+    if( TINY_ERROR( TinySetBlock( seg, num_of_paras ) ) )
         return( 0 );
 #endif
     new_heaplen = num_of_paras << 4;

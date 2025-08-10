@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +33,14 @@
 
 #include "variety.h"
 #include <stddef.h>
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__) || defined(__NT__)
+#if defined(__WINDOWS__) || defined(__NT__)
     #include <windows.h>
     #include "osver.h"
 #endif
 #include "hostos.h"
 
 
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__) || defined(__NT__)
+#if defined(__WINDOWS__) || defined(__NT__)
 
 static int win_nt( void )
 /***********************/
@@ -91,7 +92,7 @@ static int win_32s( void )
 static int win_3x( void )
 /************************/
 {
-    #if defined(__WINDOWS__) || defined(__WINDOWS_386__)
+    #if defined(__WINDOWS__)
         if( !win_nt() && !win_95() ) {
             return( 1 );
         } else {
@@ -110,21 +111,21 @@ _WCRTLINK int _host_os_id( void )
 {
     int                 id;
 
-    #if defined(__WINDOWS__) || defined(__WINDOWS_386__) || defined(__NT__)
-        if( win_nt() ) {
-            id = HOST_OS_WINNT;
-        } else if( win_95() ) {
-            id = HOST_OS_WIN95;
-        } else if( win_32s() ) {
-            id = HOST_OS_WIN32S;
-        } else if( win_3x() ) {
-            id = HOST_OS_WIN3X;
-        } else {
-            id = HOST_OS_WIN_UNKNOWN;
-        }
-    #else
-        #error Unknown system.
-    #endif
+#if defined(__WINDOWS__) || defined(__NT__)
+    if( win_nt() ) {
+        id = HOST_OS_WINNT;
+    } else if( win_95() ) {
+        id = HOST_OS_WIN95;
+    } else if( win_32s() ) {
+        id = HOST_OS_WIN32S;
+    } else if( win_3x() ) {
+        id = HOST_OS_WIN3X;
+    } else {
+        id = HOST_OS_WIN_UNKNOWN;
+    }
+#else
+    #error Unknown system.
+#endif
 
     return( id );
 }
@@ -136,21 +137,21 @@ _WCRTLINK const char *_host_os_name( void )
     const char *        osname;
     int                 id = _host_os_id();
 
-    #if defined(__WINDOWS__) || defined(__WINDOWS_386__) || defined(__NT__)
-        if( id == HOST_OS_WINNT ) {
-            osname = "Windows NT";
-        } else if( id == HOST_OS_WIN95 ) {
-            osname = "Windows 95";
-        } else if( id == HOST_OS_WIN32S ) {
-            osname = "Win32s under Windows 3.x";
-        } else if( id == HOST_OS_WIN3X ) {
-            osname = "Windows 3.x";
-        } else {
-            osname = "Unknown Windows version";
-        }
-    #else
-        #error Unknown system.
-    #endif
+#if defined(__WINDOWS__) || defined(__NT__)
+    if( id == HOST_OS_WINNT ) {
+        osname = "Windows NT";
+    } else if( id == HOST_OS_WIN95 ) {
+        osname = "Windows 95";
+    } else if( id == HOST_OS_WIN32S ) {
+        osname = "Win32s under Windows 3.x";
+    } else if( id == HOST_OS_WIN3X ) {
+        osname = "Windows 3.x";
+    } else {
+        osname = "Unknown Windows version";
+    }
+#else
+    #error Unknown system.
+#endif
 
     return( osname );
 }

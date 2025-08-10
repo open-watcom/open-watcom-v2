@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static HWND menuHandle;
 /*
  * _NewWindow - create a new window
  */
-unsigned _NewWindow( const char *name, ... )
+bool _NewWindow( const char *name, ... )
 {
     LPWDATA     w;
     MENUITEM    menus;
@@ -63,7 +63,7 @@ unsigned _NewWindow( const char *name, ... )
                 WS_VISIBLE | WS_CLIPSIBLINGS,
                 &style, _ClassName, str, 0, NULLHANDLE, 0, &hwnd );
     if( frame == 0 )
-        return( FALSE );
+        return( false );
     WinSetOwner( hwnd, _MainWindow );
 
     va_start( args, name );
@@ -100,7 +100,7 @@ unsigned _NewWindow( const char *name, ... )
     WinSendMsg( menus.hwndSubMenu, MM_DELETEITEM, MPFROM2SHORT( SC_CLOSE, TRUE ), 0 );
     WinUpdateWindow( hwnd );
     WinSetFocus( HWND_DESKTOP, hwnd );
-    return( TRUE );
+    return( true );
 
 } /* _NewWindow */
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include "bool.h"
-#include "tinyio.h"
+#include "dpmi.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "packet.h"
@@ -72,32 +72,11 @@ typedef struct watch_point {
     word        dregs;
 } watch_point;
 
-static dword    SegLimit( dword sel );
-#pragma aux SegLimit = \
-        "lsl eax,eax" \
-        "jz short L1" \
-        "xor eax,eax" \
-    "L1: " \
-    __parm [__eax] \
-    __value [__eax]
-
 static dword SegBase( dword sel );
 #pragma aux SegBase = \
         "mov ax,2508H" \
         "int 21h" \
     __parm [__ebx] __value [__ecx] __modify [__eax]
-
-static bool     WriteOK( word sel );
-#pragma aux WriteOK = \
-        "verw ax" /* if ok for write */\
-        "sete al" /* then return true */\
-    __parm [__ax] __value [__al]
-
-static bool     ReadOK( word sel );
-#pragma aux ReadOK = \
-        "verr ax" /* if ok for read */\
-        "sete al" /* then return true */\
-    __parm [__ax] __value [__al]
 
 static void     DoReadBytes( word sel, dword offs, void *data, size_t len );
 #pragma aux DoReadBytes = \
@@ -274,7 +253,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
     dword       linear;
     word        otherseg;
 
-    sdtlim = SegLimit( sdtseg );
+    sdtlim = GetSelectorLimitB( sdtseg );
     linear = GET_LINEAR( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
@@ -284,7 +263,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
         } else {
             otherseg = sdtoff + 4;
         }
-        if( !WriteOK( otherseg ) )
+        if( !IsWriteSelectorB( otherseg ) )
             continue;
         if( GET_LINEAR( otherseg, 0 ) != linear )
             continue;
@@ -336,10 +315,10 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     addr_seg    segment;
 
     segment = addr->segment;
-    if( !ReadOK( segment ) ) {
+    if( !IsReadSelectorB( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
         DoReadBytes( segment, addr->offset, data, len );
         return( false );
     }
@@ -353,10 +332,10 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     segment = addr->segment;
     if( segment == Regs.CS )
         segment = Regs.DS; // hack, ack
-    if( !WriteOK( segment ) ) {
+    if( !IsWriteSelectorB( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
         DoWriteBytes( segment, addr->offset, data, len );
         return( false );
     }

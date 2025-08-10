@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,12 +47,12 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
     h = __lib_FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
+    ret->err = 0;
     FindClose( h );
     FileTimeToDosDateTime( &ffd.ftLastWriteTime, &md, &mt );
     ret->date = ( md << 16 ) + mt;
@@ -72,16 +72,16 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
-    md = ( req->date >> 16 ) & 0xffff;
-    mt = req->date;
-    DosDateTimeToFileTime( md, mt, &ft );
     h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
     }
-    if( !SetFileTime( h, &ft, &ft, &ft ) ) {
+    md = ( req->date >> 16 ) & 0xffff;
+    mt = req->date;
+    DosDateTimeToFileTime( md, mt, &ft );
+    ret->err = 0;
+    if( SetFileTime( h, &ft, &ft, &ft ) == 0 ) {
         ret->err = GetLastError();
     }
     CloseHandle( h );

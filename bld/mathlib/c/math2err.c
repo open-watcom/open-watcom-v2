@@ -65,5 +65,6 @@ _WMRTLINK double __math2err( unsigned int err_info, double *arg1, double *arg2 )
     else if( err_info & V_HUGEVAL     ) { exc.retval = HUGE_VAL;   }
     else  /* PLOSS from sin,cos,tan */  { exc.retval = *arg2;      }
 
-    return __reporterror(why, exc.name, exc.arg1, exc.arg2, exc.retval);
+    __reporterror(why, exc.name, exc.arg1, exc.arg2, exc.retval);
+    return exc.retval;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string functions  &'lower() and &'upper()                       */
@@ -71,117 +73,96 @@
 /*                                                                         */
 /***************************************************************************/
 
-static condcode scr_lowup( parm parms[MAX_FUN_PARMS], size_t parmcount,
-                           char * * result, int32_t ressize, bool upper )
+static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
+                           char **result, unsigned ressize, bool upper )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
+    tok_type        string;
+    int             n;
+    int             length;
+    condcode        cc;
+    int             k;
+    int             string_len;
+    getnum_block    gn;
 
-    if( (parmcount < 1) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 1
+      || parmcount > 3 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    string = parms[0].arg;
+    string_len = unquote_arg( &string );
 
-    unquote_if_quoted( &pval, &pend );
-
-    if( pend == pval ) {                // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    gn.ignore_blanks = false;
-
-    n = 0;                              // default start pos
-
-    if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].stop > parms[1].start ) {// start pos specified
-            gn.argstart = parms[1].start;
-            gn.argstop  = parms[1].stop;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result > len) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "2 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+    if( string_len > 0 ) {                          // null string nothing to do
+        gn.ignore_blanks = false;
+        n = 0;                                      // default start pos
+        if( parmcount > 1 ) {                       // evalute start pos
+            if( parms[1].arg.s < parms[1].arg.e ) {// start pos specified
+                gn.arg = parms[1].arg;
+                cc = getnum( &gn );
+                if( (cc != CC_pos) || (gn.result > string_len) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_exit_c( ERR_FUNC_PARM, "2 (startpos)" );
+                        /* never return */
+                    }
+                    return( cc );
                 }
-                return( cc );
+                n = gn.result - 1;
             }
-            n = gn.result - 1;
         }
-    }
 
-    len = pend - pval;                  // default length
-
-    if( parmcount > 2 ) {               // evalute length for upper
-        if( parms[2].stop > parms[2].start ) {// length specified
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (length)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+        length = string_len;                        // default length
+        if( parmcount > 2 ) {                       // evalute length
+            if( parms[2].arg.s < parms[2].arg.e ) {// length specified
+                gn.arg = parms[2].arg;
+                cc = getnum( &gn );
+                if( (cc != CC_pos) || (gn.result == 0) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_exit_c( ERR_FUNC_PARM, "3 (length)" );
+                        /* never return */
+                    }
+                    return( cc );
                 }
-                return( cc );
+                length = gn.result;
             }
-            len = gn.result;
         }
-    }
-
-    for( k = 0; k < n; k++ ) {          // copy unchanged before startpos
-        if( (pval >= pend) || (ressize <= 0) ) {
-            break;
+        /*
+         * copy unchanged string to start position
+         */
+        for( k = 0; k < n && string.s < string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
+            *(*result)++ = *string.s++;
+            ressize--;
         }
-        **result = *pval++;
-        *result += 1;
-        ressize--;
-    }
-
-    for( k = 0; k < len; k++ ) {        // translate
-        if( (pval >= pend) || (ressize <= 0) ) {
-            break;
+        /*
+         * change length of characters to lower/upper case
+         */
+        for( k = 0; k < length && string.s < string.e && ressize > 0; k++ ) {        // translate
+            if( upper ) {
+               *(*result)++ = my_toupper( *string.s++ );
+            } else {
+               *(*result)++ = my_tolower( *string.s++ );
+            }
+            ressize--;
         }
-        if( upper ) {
-           **result = toupper( *pval++ );
-        } else {
-           **result = tolower( *pval++ );
+        /*
+         * copy rest of string (if any)
+         */
+        for( ; string.s < string.e && ressize > 0; string.s++ ) {
+            *(*result)++ = *string.s;
+            ressize--;
         }
-        *result += 1;
-        ressize--;
-    }
-
-    for( ; pval < pend; pval++ ) {     // copy unchanged
-        if( ressize <= 0 ) {
-            break;
-        }
-        **result = *pval;
-        *result += 1;
-        ressize--;
     }
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }
 
 
-condcode    scr_lower( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_lower( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    return( scr_lowup( parms, parmcount, result, ressize, 0 ) );
+    return( scr_lowup( parms, parmcount, result, ressize, false ) );
 }
 
-condcode    scr_upper( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_upper( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    return( scr_lowup( parms, parmcount, result, ressize, 1 ) );
+    return( scr_lowup( parms, parmcount, result, ressize, true ) );
 }

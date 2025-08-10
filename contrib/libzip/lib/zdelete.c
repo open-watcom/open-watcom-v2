@@ -33,12 +33,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_delete(struct zip *za, int idx)
@@ -58,4 +58,4 @@ zip_delete(struct zip *za, int idx)
     return 0;
 }
 
-
+

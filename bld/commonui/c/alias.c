@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +193,7 @@ static AnAlias *findAliasFromText( AliasHdl hdl, char *alias )
     AnAlias     *cur;
 
     for( cur = hdl->data; cur != NULL; cur = cur->next ) {
-        if( !strcmp( alias, cur->name ) ) {
+        if( strcmp( alias, cur->name ) == 0 ) {
             break;
         }
     }

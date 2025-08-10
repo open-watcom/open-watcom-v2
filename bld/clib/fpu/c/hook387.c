@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,10 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <dos16.h>
+#include "tinyio.h"
 #include "wdebug.h"
 #include "hook387.h"
+
 
 extern void __int7( void );
 #pragma aux __int7 "*";
@@ -42,7 +44,7 @@ extern void __int7( void );
 extern unsigned short gorealmode( void );
 #pragma aux gorealmode = \
         "mov ah,30h" \
-        "int 21h" \
+        __INT_21    \
     __value [__ax]
 
 extern int DPMICheckVendorSpecificAPI( char __far * );
@@ -80,7 +82,7 @@ void __set_dos_vector( unsigned, void __far * );
         "push ds" \
         "mov ds,cx" \
         "mov ah,25h" \
-        "int 21h" \
+        __INT_21 \
         "pop ds" \
     __parm __caller [__al] [__cx __edx]
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ static void p5_profile_init( void )
             curr->hi_cycle = 0;
         }
         len = strlen( curr->name ) + 1;
-        len = __ROUND_UP_SIZE( len, 4 );
+        len = __ROUND_UP_SIZE_DWORD( len );
         curr = (void *)( (char *)curr + ( offsetof( P5_timing_info, name ) + len ) );
     }
 }
@@ -162,7 +162,7 @@ static void p5_profile_fini( void )
         curr->lo_cycle = 0;
         curr->hi_cycle = 0;
         len = strlen( curr->name ) + 1;
-        len = __ROUND_UP_SIZE( len, 4 );
+        len = __ROUND_UP_SIZE_DWORD( len );
         curr = (void *)( (char *)curr + ( offsetof( P5_timing_info, name ) + len ) );
     }
     fclose( out );

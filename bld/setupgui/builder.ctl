@@ -31,4 +31,3 @@ set PROJDIR=<CWD>
 [ BLOCK . . ]
 
 [ INCLUDE "<OWROOT>/build/epilog.ctl" ]
-

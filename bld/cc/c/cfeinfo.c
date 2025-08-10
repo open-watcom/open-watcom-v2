@@ -283,21 +283,21 @@ static const inline_funcs *IF_Lookup( const char *name )
 aux_info *GetLangInfo( type_modifiers flags )
 {
     switch( flags & MASK_LANGUAGES ) {
-    case LANG_WATCALL:
+    case FLAG_WATCALL:
         return( &WatcallInfo );
-    case LANG_CDECL:
+    case FLAG_CDECL:
         return( &CdeclInfo );
-    case LANG_PASCAL:
+    case FLAG_PASCAL:
         return( &PascalInfo );
-    case LANG_FORTRAN:
+    case FLAG_FORTRAN:
         return( &FortranInfo );
-    case LANG_SYSCALL:
+    case FLAG_SYSCALL:
         return( &SyscallInfo );
-    case LANG_STDCALL:
+    case FLAG_STDCALL:
         return( &StdcallInfo );
-    case LANG_FASTCALL:
+    case FLAG_FASTCALL:
         return( &FastcallInfo );
-    case LANG_OPTLINK:
+    case FLAG_OPTLINK:
         return( &OptlinkInfo );
     default:
         return( &DefaultInfo );
@@ -447,7 +447,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 #if _CPU == 386
     if( (inf->flags & AUX_FLAG_FAR16)
       || (sym->mods & FLAG_FAR16) ) {
-        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL
+        if( (sym->mods & MASK_LANGUAGES) == FLAG_PASCAL
           || (inf->cclass & FECALL_GEN_REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {

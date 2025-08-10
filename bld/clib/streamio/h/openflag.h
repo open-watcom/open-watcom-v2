@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags );
+extern unsigned __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags );

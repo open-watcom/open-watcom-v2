@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +33,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#if !defined( __UNIX__ ) || defined(__WATCOMC__)
+    #include <process.h>
+#endif
 #include "walloca.h"
 #include "linkstd.h"
-#if !defined( __UNIX__ ) || defined(__WATCOMC__)
-#include <process.h>
-#endif
 #include "ring.h"
 #include "pcobj.h"
 #include "newmem.h"
-#include "msg.h"
-#include "alloc.h"
 #include "specials.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "fileio.h"
 #include "mapio.h"

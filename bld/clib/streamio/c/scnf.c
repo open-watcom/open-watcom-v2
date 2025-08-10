@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_SCANF
@@ -37,13 +38,14 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
 #endif
-#include <stdarg.h>
 #ifdef __QNX__
     #include "slibqnx.h"
 #endif
@@ -108,14 +110,29 @@ static void uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 
 
 /*
+ * cgetw -- cget which keeps track of field width.
+ *          returns INTCHAR_EOF on end of field or end of file.
+ */
+static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
+{
+    INTCHAR_TYPE    c;
+
+    if( specs->width-- == 0 )
+        return( INTCHAR_EOF );
+    c = cget( specs );
+    return( !( specs->eoinp ) ? c : INTCHAR_EOF );
+}
+
+
+/*
  * get_opt -- get option string for current conversion directive
  *            and fills in the SCNF_SPECS structure.
  *            returns advanced format string pointer.
  */
-static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs )
+static const UCHAR_TYPE *get_opt( const UCHAR_TYPE *opt_str, PTR_SCNF_SPECS specs )
 {
-    CHAR_TYPE   c;
-    int         width;
+    INTCHAR_TYPE        c;
+    int                 width;
 
     specs->assign           = TRUE;
     specs->far_ptr          = 0;
@@ -132,12 +149,12 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         ++opt_str;
     }
     c = *opt_str;
-    if( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)c ) ) {
+    if( __F_NAME(isdigit,iswdigit)( c ) ) {
         width = 0;
         do {
             width = width * 10 + ( c - STRING( '0' ) );
             c = *++opt_str;
-        } while( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)c ) );
+        } while( __F_NAME(isdigit,iswdigit)( c ) );
         specs->width = width;
     }
     switch( *opt_str ) {
@@ -188,7 +205,8 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         ++opt_str;
         break;
     case STRING( 'I' ):
-        if( opt_str[1] == STRING( '6' ) && opt_str[2] == STRING( '4' ) ) {
+        if( opt_str[1] == STRING( '6' )
+          && opt_str[2] == STRING( '4' ) ) {
             specs->long_long_var = 1;
             opt_str += 3;
         }
@@ -200,7 +218,7 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         break;
 #endif
     }
-    return( opt_str );
+    return( (const UCHAR_TYPE *)opt_str );
 }
 
 
@@ -315,21 +333,6 @@ static int scan_char( PTR_SCNF_SPECS specs, va_list *pargs )
 
 
 /*
- * cgetw -- cget which keeps track of field width.
- *          returns INTCHAR_EOF on end of field or end of file.
- */
-static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
-{
-    INTCHAR_TYPE    c;
-
-    if( specs->width-- == 0 )
-        return( INTCHAR_EOF );
-    c = cget( specs );
-    return( !( specs->eoinp ) ? c : INTCHAR_EOF );
-}
-
-
-/*
  * scan_string -- handles %s and %S
  */
 static int scan_string( PTR_SCNF_SPECS specs, va_list *pargs )
@@ -429,7 +432,8 @@ static int scan_string( PTR_SCNF_SPECS specs, va_list *pargs )
 ugdone:
     uncget( c, specs );
 done:
-    if( specs->assign && len > 0 ) {
+    if( specs->assign
+      && len > 0 ) {
         CHECK_ELEMS( maxelem, nelem, -1 );
         if( chsize == 1 ) {
             *str = '\0';
@@ -480,17 +484,17 @@ static void report_scan( PTR_SCNF_SPECS specs, va_list *pargs, int match )
  * makelist -- create scanset for %[ directive.
  *             scanset is stored as 256 bit flags in a 32 byte array.
  */
-static const char *makelist( const char *format, unsigned char *scanset )
+static const unsigned char *makelist( const unsigned char *format, unsigned char *scanset )
 {
-    char    lst_chr;
+    int     c;
 
     memset( scanset, 0, CHARVECTOR_SIZE );
-    while( (lst_chr = *format) != '\0' ) {
+    while( (c = *format) != '\0' ) {
         ++format;
-        if( lst_chr == ']' ) {
+        if( c == ']' ) {
             break;
         }
-        SETCHARBIT( scanset, lst_chr );
+        SETCHARBIT( scanset, c );
     }
     return( format );
 }
@@ -501,22 +505,23 @@ static const char *makelist( const char *format, unsigned char *scanset )
 /*
  * scan_arb -- handles %[
  */
-static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const CHAR_TYPE **format )
+static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const UCHAR_TYPE **format )
 {
     unsigned            width;
     FAR_STRING          str;
-    int                 len, not_flag;
+    int                 len;
+    bool                not_flag;
     INTCHAR_TYPE        c;
 #if defined( __WIDECHAR__ )
-    const CHAR_TYPE     *list;
-    CHAR_TYPE           ch;
-    char                in_list;
+    const UCHAR_TYPE    *list;
+    INTCHAR_TYPE        ch;
+    bool                in_list;
 #else
-    unsigned char       scanset[ CHARVECTOR_SIZE ];
+    unsigned char       scanset[CHARVECTOR_SIZE];
 #endif
     DEFINE_VARS( maxelem, nelem );
-
-    if( not_flag = (**format == STRING( '^' )) ) {
+    not_flag = (**format == STRING( '^' ));
+    if( not_flag ) {
         ++(*format);
     }
 #if !defined( __WIDECHAR__ )
@@ -544,12 +549,12 @@ static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const CHAR_TYPE **for
 #if defined( __WIDECHAR__ )
         list = *format;
         ch = *list;
-        in_list = TRUE;
-        while( (CHAR_TYPE)c != ch ) {
+        in_list = true;
+        while( c != ch ) {
             list++;
             ch = *list;
             if( ch == STRING( ']' ) ) {
-                in_list = FALSE;
+                in_list = false;
                 break;
             }
         }
@@ -565,17 +570,18 @@ static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const CHAR_TYPE **for
 #endif
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
-            *str++ = (CHAR_TYPE)c;
+            *str++ = c;
         }
         ++len;
     }
-    if( specs->assign && len > 0 ) {
+    if( specs->assign
+      && len > 0 ) {
         CHECK_ELEMS( maxelem, nelem, -1 );
         *str = NULLCHAR;
     }
 #if defined( __WIDECHAR__ )
-    while( *(*format)++ != STRING( ']' ) )  /* skip past format specifier */
-        ;
+    while( (c = *(*format)++) != STRING( ']' ) )  /* skip past format specifier */
+        /* empty */;
 #endif
     return( len );
 }
@@ -592,7 +598,7 @@ static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
     int             len;
     int             pref_len;
     INTCHAR_TYPE    c;
-    int             digit_found;
+    bool            digit_found;
     FAR_FLOAT       fptr;
     char            *p;
     T32             at;
@@ -611,19 +617,21 @@ static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
         goto done;
     if( specs->width-- == 0 )
         goto ugdone;
-    if( c == STRING( '+' ) || c == STRING( '-' ) ) {
+    if( c == STRING( '+' )
+      || c == STRING( '-' ) ) {
         *num_str++ = TO_ASCII( c );
         ++pref_len;
         if( (c = cgetw( specs )) == INTCHAR_EOF ) {
             goto done;
         }
     }
-    if( !__F_NAME(isdigit,iswdigit)( c ) && c != STRING( '.' ) )
+    if( !__F_NAME(isdigit,iswdigit)( c )
+      && c != STRING( '.' ) )
         goto ugdone;
     at.uWhole = 0;
-    digit_found = FALSE;
+    digit_found = false;
     if( __F_NAME(isdigit,iswdigit)( c ) ) {
-        digit_found = TRUE;
+        digit_found = true;
         do {
             *num_str++ = TO_ASCII( c );
             if( specs->short_var )
@@ -639,7 +647,8 @@ static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
         ++len;              /* account for the '.' */
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
-        if( !digit_found && !__F_NAME(isdigit,iswdigit)( c ) )
+        if( !digit_found
+          && !__F_NAME(isdigit,iswdigit)( c ) )
             goto ugdone;
         while( __F_NAME(isdigit,iswdigit)( c ) ) {
             *num_str++ = TO_ASCII( c );
@@ -648,7 +657,7 @@ static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
                 break;
             }
         }
-        if( specs->short_var ) {    /* %hf fixed-point format 05-feb-92 */
+        if( specs->short_var ) {    /* %hf fixed-point format */
             ft.uWhole = 0;
             p = num_str;
             for( ;; ) {
@@ -664,12 +673,15 @@ static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
             goto done;
         }
     }
-    if( specs->short_var == 0  &&  (c == STRING( 'e' ) || c == STRING( 'E' )) ) {
+    if( specs->short_var == 0
+      && (c == STRING( 'e' )
+      || c == STRING( 'E' )) ) {
         *num_str++ = TO_ASCII( c );
         ++len;
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
-        if( c == STRING( '+' ) || c == STRING( '-' ) ) {
+        if( c == STRING( '+' )
+          || c == STRING( '-' ) ) {
             *num_str++ = TO_ASCII( c );
             ++len;
             if( (c = cgetw( specs )) == INTCHAR_EOF ) {
@@ -716,8 +728,9 @@ done:
 #endif
             if( specs->short_var ) {
                 *((FAR_LONG) fptr) = at.uWhole;
-            } else if( specs->long_var || specs->long_double_var ) {
-                *((FAR_DOUBLE) fptr) = value;
+            } else if( specs->long_var
+              || specs->long_double_var ) {
+                *((FAR_DOUBLE)fptr) = value;
             } else {
                 *fptr = value;
             }
@@ -729,10 +742,12 @@ done:
 
 static int radix_value( INTCHAR_TYPE c )
 {
-    if( c >= STRING( '0' ) && c <= STRING( '9' ) )
+    if( c >= STRING( '0' )
+      && c <= STRING( '9' ) )
         return( c - STRING( '0' ) );
     c = __F_NAME(tolower,towlower)( c );
-    if( c >= STRING( 'a' ) && c <= STRING( 'f' ) )
+    if( c >= STRING( 'a' )
+      && c <= STRING( 'f' ) )
         return( c - STRING( 'a' ) + 10 );
     return( 16 );
 }
@@ -741,13 +756,13 @@ static int radix_value( INTCHAR_TYPE c )
 /*
  * scan_int -- handles integer numeric conversion
  */
-static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_flag )
+static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, bool sign_flag )
 {
     long                value;
     int                 len;
     int                 pref_len;
     INTCHAR_TYPE        c;
-    int                 minus;
+    bool                minus;
     int                 digit;
     FAR_INT             iptr;
     unsigned long long  long_value;
@@ -766,11 +781,11 @@ static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_fl
         goto done;
     if( specs->width-- == 0 )
         goto ugdone;
-    minus = FALSE;
+    minus = false;
     if( sign_flag ) {
         switch( c ) {
         case STRING( '-' ):
-            minus = TRUE;
+            minus = true;
             // fall down
         case STRING( '+' ):
             ++pref_len;
@@ -785,7 +800,8 @@ static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_fl
             len = 1;
             if( (c = cgetw( specs )) == INTCHAR_EOF )
                 goto done;
-            if( c == STRING( 'x' ) || c == STRING( 'X' ) ) {
+            if( c == STRING( 'x' )
+              || c == STRING( 'X' ) ) {
                 len = 0;
                 ++pref_len;         /* for the '0' */
                 ++pref_len;         /* for the 'x' */
@@ -803,7 +819,8 @@ static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_fl
             len = 1;
             if( (c = cgetw( specs )) == INTCHAR_EOF )
                 goto done;
-            if( c == STRING( 'x' ) || c == STRING( 'X' ) ) {
+            if( c == STRING( 'x' )
+              || c == STRING( 'X' ) ) {
                 len = 0;
                 ++pref_len;         /* for the '0' */
                 ++pref_len;         /* for the 'x' */
@@ -824,7 +841,8 @@ static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_fl
                 goto done;
             }
         }
-        if( c == STRING( ':' ) && specs->p_format ) {
+        if( c == STRING( ':' )
+          && specs->p_format ) {
             for( ;; ) {
                 ++len;
                 if( (c = cgetw( specs )) == INTCHAR_EOF )
@@ -846,7 +864,8 @@ static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, int sign_fl
                 goto done;
             }
         }
-        if( c == STRING( ':' ) && specs->p_format ) {
+        if( c == STRING( ':' )
+          && specs->p_format ) {
             for( ;; ) {
                 ++len;
                 if( (c = cgetw( specs )) == INTCHAR_EOF )
@@ -971,58 +990,60 @@ static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 
 
 #ifdef __STDC_WANT_LIB_EXT1__
-int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, const char **msg, va_list args )
+int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
 #else
-int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, va_list args )
+int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
 #endif
 {
-    int             char_match;
-    int             items_converted;
-    int             items_assigned;
-    int             match_len;
-    INTCHAR_TYPE    c;
-    CHAR_TYPE       fmt_chr;
+    int                 char_match;
+    int                 items_converted;
+    int                 items_assigned;
+    int                 match_len;
+    INTCHAR_TYPE        c;
+    INTCHAR_TYPE        fmt_c;
+    const UCHAR_TYPE    *format = (const UCHAR_TYPE *)_format;
 
     char_match = items_assigned = items_converted = 0;
     specs->eoinp = FALSE;
 
-    for( fmt_chr = *format++; fmt_chr != NULLCHAR; fmt_chr = *format++ ) {
-        if( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)fmt_chr ) ) {
+    while( (fmt_c = *format++) != NULLCHAR ) {
+        if( __F_NAME(isspace,iswspace)( fmt_c ) ) {
             char_match += scan_white( specs );
-        } else if( fmt_chr != STRING( '%' ) ) {
+        } else if( fmt_c != STRING( '%' ) ) {
             c = cget( specs );
-            if( (CHAR_TYPE)c != fmt_chr ) {
+            if( c != fmt_c ) {
                 if( !specs->eoinp )
                     uncget( c, specs );
                 break;
             }
             ++char_match;                           /* 27-oct-88 */
-        } else {            /* fmt_chr == '%' */
+        } else {            /* fmt_c == '%' */
             format = get_opt( format, specs );
-            fmt_chr = *format;
-            if( fmt_chr != NULLCHAR )
+            fmt_c = *format;
+            if( fmt_c != NULLCHAR )
                 ++format;
 #ifdef __STDC_WANT_LIB_EXT1__
-            if( fmt_chr != STRING( '%' ) ) {
+            if( fmt_c != STRING( '%' ) ) {
                 /* The '%' specifier is the only one not expecting pointer arg */
-                if( specs->assign && null_arg( specs, &args ) ) {
+                if( specs->assign
+                  && null_arg( specs, &args ) ) {
                     *msg = "%ptr -> NULL";
                     return( EOF );
                 }
             }
 #endif
-            switch( fmt_chr ) {
+            switch( fmt_c ) {
             case STRING( 'd' ):
-                match_len = scan_int( specs, &args, 10, TRUE );
+                match_len = scan_int( specs, &args, 10, true );
                 goto check_match;
             case STRING( 'i' ):
-                match_len = scan_int( specs, &args, 0, TRUE );
+                match_len = scan_int( specs, &args, 0, true );
                 goto check_match;
             case STRING( 'o' ):
-                match_len = scan_int( specs, &args, 8, TRUE );
+                match_len = scan_int( specs, &args, 8, true );
                 goto check_match;
             case STRING( 'u' ):
-                match_len = scan_int( specs, &args, 10, TRUE );
+                match_len = scan_int( specs, &args, 10, true );
                 goto check_match;
             case STRING( 'p' ):
 #if defined( __BIG_DATA__ )
@@ -1032,7 +1053,7 @@ int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, va_
                 // fall through
             case STRING( 'x' ):
             case STRING( 'X' ):
-                match_len = scan_int( specs, &args, 16, TRUE );
+                match_len = scan_int( specs, &args, 16, true );
                 goto check_match;
             case STRING( 'e' ):
             case STRING( 'E' ):
@@ -1102,7 +1123,8 @@ check_match:
                 if( *format == STRING( 'n' ) ) {
                     ++format;
 #ifdef __STDC_WANT_LIB_EXT1__
-                    if( specs->assign && null_arg( specs, &args ) ) {
+                    if( specs->assign
+                      && null_arg( specs, &args ) ) {
                         *msg = "%ptr -> NULL";
                         return( EOF );
                     }
@@ -1117,7 +1139,8 @@ check_match:
     }
 
 fail:
-    if( items_converted == 0 && specs->eoinp )
+    if( items_converted == 0
+      && specs->eoinp )
         return( EOF );
     return( items_assigned );
 }

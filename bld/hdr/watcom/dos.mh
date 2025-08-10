@@ -146,7 +146,7 @@ _WCRTLINK extern void     _hardretn( int __error );
 _WCRTLINK extern int      intdos( const union REGS *, union REGS * );
 _WCRTLINK extern int      intdosx( const union REGS *, union REGS *, struct SREGS * );
 #endif
-_WCRTLINK extern unsigned sleep( unsigned __seconds );
+:include sleep.sp
 
 _WCRTLINK extern unsigned _wdos_findfirst( const wchar_t *__path, unsigned __attr, struct _wfind_t *__buf );
 _WCRTLINK extern unsigned _wdos_findnext( struct _wfind_t *__buf );

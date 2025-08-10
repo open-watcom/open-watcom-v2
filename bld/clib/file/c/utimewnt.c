@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,35 +53,35 @@
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
 /***************************************************************************************/
 {
-    HANDLE              h;
+    HANDLE              osfh;
     time_t              curr_time;
     struct utimbuf      time_buf;
     FILETIME            fctime;
     FILETIME            fatime;
     FILETIME            fwtime;
+    int                 rc;
 
-    h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osfh = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+    if( osfh == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
-    if( !GetFileTime( h, &fctime, &fatime, &fwtime ) ) {
-        CloseHandle( h );
-        return( __set_errno_nt() );
-    }
-    if( times == NULL ) {
-        curr_time = time( NULL );
-        time_buf.modtime = curr_time;
-        time_buf.actime = curr_time;
-        times = &time_buf;
-    }
-    __NT_timet_to_filetime( times->modtime, &fwtime );
-    __NT_timet_to_filetime( times->actime, &fatime );
+    if( GetFileTime( osfh, &fctime, &fatime, &fwtime ) == 0 ) {
+        rc = __set_errno_nt();
+    } else {
+        if( times == NULL ) {
+            curr_time = time( NULL );
+            time_buf.modtime = curr_time;
+            time_buf.actime = curr_time;
+            times = &time_buf;
+        }
+        __NT_timet_to_filetime( times->modtime, &fwtime );
+        __NT_timet_to_filetime( times->actime, &fatime );
 
-    if( !SetFileTime( h, &fctime, &fatime, &fwtime ) ) {
-        CloseHandle( h );
-        return( __set_errno_nt() );
+        rc = 0;
+        if( SetFileTime( osfh, &fctime, &fatime, &fwtime ) == 0 ) {
+            rc = __set_errno_nt();
+        }
     }
-
-    CloseHandle( h );
-    return( 0 );
+    CloseHandle( osfh );
+    return( rc );
 }

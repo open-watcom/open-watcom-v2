@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -25,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS 32-bit code only
 ;*
 ;*****************************************************************************
 
@@ -36,6 +35,7 @@
 include mdef.inc
 include struct.inc
 include extender.inc
+include int21.inc
 
         name    harderr
 
@@ -99,11 +99,11 @@ endif
           push  ECX             ; - save ECX
           mov   CL,24H          ; - critical error interrupt number
           mov   AX,2506H        ; - set interrupt to always gain control in protected mode
-          int   21H             ; - ...
+          int21h                ; - ...
           pop   ECX             ; - restore ECX
         _admit                  ; assume: DOS/4GW or Ergo OS386
           mov   AX,2524h        ; - set interrupt vector / critical error interrupt number
-          int   21h             ; - ...
+          int21h                ; - ...
         _endguess               ; endguess
         sub     EAX,EAX         ; set success
         pop     DS              ; restore DS

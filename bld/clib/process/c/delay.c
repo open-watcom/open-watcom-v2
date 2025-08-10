@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <i86.h>
+#include "tinyio.h"
 
 /*
  * Using interupt 21 service 2C, we get the time from DOS
@@ -58,27 +59,27 @@
  *      DH = seconds
  *      DL = seconds / 100 (but not hundredths accuracy!)
  */
-#ifdef __386__
+#ifdef _M_I86
+    extern unsigned long GetDosTime( void );
+    #pragma aux GetDosTime =    \
+            "mov    ah,2ch"     \
+            __INT_21            \
+            "mov    ax,cx"      \
+        __parm __caller     [] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx]
+#else
     extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
             "mov    ah,2ch"     \
             "xor    edx,edx"    \
-            "int 21h"           \
+            __INT_21            \
             "mov    eax,edx"    \
             "sal    eax,16"     \
             "or     ax,cx"      \
         __parm __caller     [] \
         __value             [__eax] \
         __modify __exact    [__eax __ecx __edx]
-#else
-    extern unsigned long GetDosTime( void );
-    #pragma aux GetDosTime =    \
-            "mov    ah,2ch"     \
-            "int 21h"           \
-            "mov    ax,cx"      \
-        __parm __caller     [] \
-        __value             [__dx __ax] \
-        __modify __exact    [__ax __cx __dx]
 #endif
 
 

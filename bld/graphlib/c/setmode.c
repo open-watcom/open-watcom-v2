@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,10 +86,10 @@ static long ModeTable[18] = {
 };
 
 
-short                   _NoClear = 0;       // allow user to control whether
+bool                _NoClear = false;       // allow user to control whether
                                             // SetMode clears the screen
 
-static short _ValidMode( short mode )
+static bool _ValidMode( short mode )
 /*===================================
  *
  * Check if desired mode is valid
@@ -107,9 +107,9 @@ static short _ValidMode( short mode )
     mode_test = 1L << mode;
     if( ModeTable[monitor] & mode_test ||       // check active
         ModeTable[alternate] & mode_test ) {    // check alternate
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -122,15 +122,15 @@ short _SetMode( short mode )
 {
     if( _ValidMode( mode ) ) {
         if( mode == 7 || mode == 15 ) {
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x30;        // monochrome
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) |= 0x30;        // monochrome
         } else {
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) &= ~0x30;       // remove previous settings
-            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x20;        // colour
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) &= ~0x30;       // remove previous settings
+            BIOSData( unsigned char, BDATA_EQUIP_LIST ) |= 0x20;        // colour
         }
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared
         }
-        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
+        VideoInt1_ax( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
     }
     return( GetVideoMode() );
 }

@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Bookman-LightItalic font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -228 -222 1269 893
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSBLI                           bookman-lightitalic
+:CMT.eoc
+
+:FONT
+  defined_name     = 'bookman-lightitalic'
+  member_name      = 'PSBLI'
+  font_out_name1   = 'Bookman-LightItalic'
+  line_height      = 1000
+  line_space       = 115
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 300
+
+
+:WIDTH.
+$20 300
+! 320
+" 360
+# 600
+$ 620
+% 800
+& 820
+' 280
+( 280
+) 280
+* 440
++ 600
+, 300
+- 320
+. 300
+/ 600
+0 620
+1 620
+2 620
+3 620
+4 620
+5 620
+6 620
+7 620
+8 620
+9 620
+: 300
+; 300
+< 600
+= 600
+> 600
+? 540
+@ 780
+A 700
+B 720
+C 720
+D 740
+E 680
+F 620
+G 760
+H 800
+I 320
+J 560
+K 720
+L 580
+M 860
+N 720
+O 760
+P 600
+Q 780
+R 700
+S 640
+T 600
+U 720
+V 680
+W 960
+X 700
+Y 660
+Z 580
+$5D 260
+\ 600
+$5B 260
+$5E 600
+_ 500
+` 280
+a 620
+b 600
+c 480
+d 640
+e 540
+f 340
+g 560
+h 620
+i 280
+j 280
+k 600
+l 280
+m 880
+n 620
+o 540
+p 600
+q 560
+r 400
+s 540
+t 340
+u 620
+v 540
+w 880
+x 540
+y 600
+z 520
+{ 360
+| 600
+} 380
+$7E 600
+$AF 460
+$BF 1000
+:eWIDTH.
+
+:eFONT.

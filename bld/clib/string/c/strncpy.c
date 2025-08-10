@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,29 +85,25 @@ extern char *fast_strncpy( char _WCFAR *, const char *, size_t );
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- CHAR_TYPE *__simple_wcsncpy( CHAR_TYPE *dst, const CHAR_TYPE *src, size_t len )
+ CHAR_TYPE *__simple_wcsncpy( CHAR_TYPE *s, const CHAR_TYPE *t, size_t len )
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strncpy,wcsncpy)( CHAR_TYPE *dst, const CHAR_TYPE *src, size_t len )
+ _WCRTLINK CHAR_TYPE *__F_NAME(strncpy,wcsncpy)( CHAR_TYPE *s, const CHAR_TYPE *t, size_t len )
 #endif
 {
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
     if( len )
-        return( fast_strncpy( dst, src, len ) );
+        return( fast_strncpy( s, t, len ) );
 
-    return( dst );
+    return( s );
 #else
-    CHAR_TYPE   *ret;
+    CHAR_TYPE   *p;
 
-    ret = dst;
-    for( ;len; --len ) {
-        if( *src == NULLCHAR )
-            break;
-        *dst++ = *src++;
+    for( p = s; len != 0 && *t != NULLCHAR; --len ) {
+        *p++ = *t++;
     }
-    while( len != 0 ) {
-        *dst++ = NULLCHAR;      /* pad destination string with null chars */
-        --len;
+    while( len-- != 0 ) {
+        *p++ = NULLCHAR;      /* pad destination string with null chars */
     }
-    return( ret );
+    return( s );
 #endif
 }

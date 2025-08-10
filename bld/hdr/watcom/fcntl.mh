@@ -10,14 +10,19 @@
 
 :include owrtlink.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :include cpluspro.sp
 
 :segment LINUX
 :include lnxkpack.sp
+
 :elsesegment DOS | QNX | RDOS
 :include pshpackl.sp
-:endsegment
 
+:endsegment
 /*
  *  ISO C types
  */
@@ -40,8 +45,6 @@
 :include ext.sp
 :include loff_t.sp
 :include extepi.sp
-
-:include incdir.sp
 
 #include _ARCH_INCLUDE(fcntl.h)
 

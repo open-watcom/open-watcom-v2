@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,13 +42,15 @@
    the current locale.  We only support the "C" locale, so this code
    is identical to strcmp.
 */
-/* return <0 if s<t, 0 if s==t, >0 if s>t */
+/* return <0 if s1<s2, 0 if s1==s2, >0 if s1>s2 */
 
 
-_WCRTLINK int __F_NAME(strcoll,wcscoll)( const CHAR_TYPE *s, const CHAR_TYPE *t )
+_WCRTLINK int __F_NAME(strcoll,wcscoll)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
 {
-    for( ; *s == *t; s++, t++ )
-        if( *s == NULLCHAR )
+    for( ; *s1 == *s2; s1++, s2++ ) {
+        if( *s1 == NULLCHAR ) {
             return( 0 );
-    return( *s - *t );
+        }
+    }
+    return( *s1 - *s2 );
 }

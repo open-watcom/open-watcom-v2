@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,16 +42,6 @@
 #include "realmod.h"
 #include "int10.h"
 
-
-typedef struct {
-    unsigned short  int_num;
-    unsigned short  real_ds;
-    unsigned short  real_es;
-    unsigned short  real_fs;
-    unsigned short  real_gs;
-    long            real_eax;
-    long            real_edx;
-} PHARLAP_block;
 
 static unsigned     BIOSVidPage;
 
@@ -110,15 +100,15 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
             /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
-    } else if( _IsRational() ) {
-        rm_call_struct  dblock;
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_regs_struct    dr;
 
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0xfe00;                /* get video buffer addr */
-        dblock.es = _FP_OFF( vbuff ) >> 4;
-        dblock.edi = (_FP_OFF( vbuff ) & 0x0f);
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
-        vbuff = RealModeDataPtr( dblock.es, dblock.edi );
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.x.eax = 0xfe00;                /* get video buffer addr */
+        dr.es = _FP_OFF( vbuff ) >> 4;
+        dr.r.x.edi = (_FP_OFF( vbuff ) & 0x0f);
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+        vbuff = RealModeDataPtr( dr.es, dr.r.x.edi );
     }
     return( vbuff );
 #endif
@@ -268,7 +258,7 @@ bool intern initbios( void )
         UIData->desqview = desqview_present();
         UIData->f10menus = true;
         UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
-                                        BIOSData( BDATA_SCREEN_OFFSET, unsigned short ) );
+                                        BIOSData( unsigned short, BDATA_SCREEN_OFFSET ) );
         if( UIData->desqview ) {
             UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
@@ -313,29 +303,22 @@ static void desqview_update( unsigned short offset, unsigned short count )
     _BIOSVideo_desqview_update( UIData->screen.origin + offset, count );
 #else
     if( _IsPharLap() ) {
-        PHARLAP_block   pblock;
-        union REGPACK   regs;
+        pharlap_regs_struct dp;
 
-        memset( &pblock, 0, sizeof( pblock ) );
-        memset( &regs, 0, sizeof( regs ) );
-        pblock.int_num = VECTOR_VIDEO;      /* VIDEO call */
-        pblock.real_eax = 0xff00;           /* update from v-screen */
-        pblock.real_es = _FP_OFF( UIData->screen.origin ) >> 4;
-        regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        regs.w.cx = count;
-        regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-        regs.x.edx = _FP_OFF( &pblock );    /* DS:EDX -> parameter block */
-        regs.w.ds = _FP_SEG( &pblock );
-        intr( 0x21, &regs );
-    } else if( _IsRational() ) {
-        rm_call_struct  dblock;
+        memset( &dp, 0, sizeof( dp ) );
+        dp.r.h.ah = 0xff;            /* update from v-screen */
+        dp.es = _FP_OFF( UIData->screen.origin ) >> 4;
+        dp.intno = VECTOR_VIDEO;       /* VIDEO call */
+        PharlapSimulateRealModeInterrupt( &dp, 0, count, (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset );
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_regs_struct    dr;
 
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0xff00;                /* update from v-screen */
-        dblock.es = _FP_OFF( UIData->screen.origin ) >> 4;
-        dblock.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        dblock.ecx = count;
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.h.ah = 0xff;                /* update from v-screen */
+        dr.es = _FP_OFF( UIData->screen.origin ) >> 4;
+        dr.r.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        dr.r.x.ecx = count;
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
     }
 #endif
 }

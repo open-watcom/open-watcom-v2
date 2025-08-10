@@ -17,7 +17,7 @@ ziplib_nodoslfn = 1
 #
 .c: $(libzip_dir)/lib
 
-inc_dirs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
+inc_dirs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(setupgui_dir)/h" $(incl_file_opts)ziplsupp.h
 
 # explicit rules
 #################

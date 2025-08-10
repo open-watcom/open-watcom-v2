@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 fp = fopen( name2, "wb+" );
                 if( fp != NULL ) {
                     fp->_flag |= _TMPFIL;
-                    _FP_TMPFCHAR(fp) = suffix2;
+                    _FP_TMPFCHAR( fp ) = suffix2;
                     _RWD_errno = old_errno;
                     return( fp );
                 }

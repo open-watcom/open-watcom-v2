@@ -138,6 +138,7 @@ trap_retval TRAP_FILE( open )( void )
 trap_retval TRAP_FILE( seek )( void )
 {
     DWORD               rc;
+    DWORD               error;
     file_seek_req       *acc;
     file_seek_ret       *ret;
 
@@ -147,7 +148,10 @@ trap_retval TRAP_FILE( seek )( void )
     rc = SetFilePointer( TRPH2LH( acc ), acc->pos, NULL, local_seek_method[acc->mode] );
     ret->pos = rc;
     if( rc == INVALID_SET_FILE_POINTER ) {
-        ret->err = GetLastError();
+        error = GetLastError();
+        if( error != NO_ERROR ) {
+            ret->err = error;
+        }
     }
     return( sizeof( *ret ) );
 }
@@ -179,7 +183,7 @@ trap_retval TRAP_FILE( write_console )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
-                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) ) {
+                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
     }
     ret->len = bytes;
@@ -198,7 +202,6 @@ trap_retval TRAP_FILE( read )( void )
     acc = GetInPtr( 0 );
     h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
     buff = GetOutPtr( sizeof( *ret ) );
     if( FakeRead( h, buff, acc->len, &bytes ) == 0 ) {
         if( ReadFile( h, buff, acc->len, &bytes, NULL ) == 0 ) {
@@ -206,6 +209,7 @@ trap_retval TRAP_FILE( read )( void )
             return( sizeof( *ret ) );
         }
     }
+    ret->err = 0;
     return( sizeof( *ret ) + bytes );
 }
 
@@ -320,7 +324,8 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     static WIN32_FIND_DATA      ffd;
     char                *name;
     HANDLE              h;
-    WORD                md,mt;
+    WORD                md;
+    WORD                mt;
 
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
@@ -344,24 +349,24 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
     file_info_set_date_ret      *ret;
     char                *name;
     HANDLE              h;
-    WORD                md,mt;
+    WORD                md;
+    WORD                mt;
     FILETIME            ft;
 
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
-    md = ( req->date >> 16 ) & 0xffff;
-    mt = req->date;
-    DosDateTimeToFileTime( md, mt, &ft );
     h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
     }
-    if( !SetFileTime( h, &ft, &ft, &ft ) ) {
+    md = ( req->date >> 16 ) & 0xffff;
+    mt = req->date;
+    DosDateTimeToFileTime( md, mt, &ft );
+    ret->err = 0;
+    if( SetFileTime( h, &ft, &ft, &ft ) == 0 ) {
         ret->err = GetLastError();
-        return( sizeof( *ret ) );
     }
     CloseHandle( h );
     return( sizeof( *ret ) );

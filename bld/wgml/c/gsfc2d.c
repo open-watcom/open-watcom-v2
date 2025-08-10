@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,9 @@
 *                    2. parm not implemented
 ****************************************************************************/
 
+
 #include "wgml.h"
 
-#include "clibext.h"
 
 /***************************************************************************/
 /*  script string function &'c2d()                                         */
@@ -55,38 +55,31 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_c2d( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    uint32_t            n;
-    char                linestr[MAX_L_AS_STR];
-    char            *   p;
+    tok_type        string;
+    unsigned        n;
+    char            linestr[NUM2STR_LENGTH + 1];
+    char            *p;
 
-    if( (parmcount < 1) || (parmcount > 2) ) {// accept 2. parm, but ignore it
-        cc = neg;
-        return( cc );
-    }
+    if( parmcount < 1
+      || parmcount > 2 )
+        return( CC_neg );
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
-
-    unquote_if_quoted( &pval, &pend );
-
+    string = parms[0].arg;
+    unquote_arg( &string );
 
     n = 0;
-    while( pval < pend ) {
+    while( string.s < string.e ) {
         n *= 256;                      // ignore overflow, let it wrap around
-        n += (unsigned char)*pval;
-        pval++;
+        n += (unsigned char)*string.s;
+        string.s++;
     }
-    sprintf( linestr, "%lu", (unsigned long)n );
+    sprintf( linestr, "%d", n );
     p = linestr;
-    while( *p && ressize > 0) {
-        **result = *p++;
-        *result += 1;
+    while( *p != '\0' && ressize > 0 ) {
+        *(*result)++ = *p++;
         ressize--;
     }
-    return( pos );
+    return( CC_pos );
 }

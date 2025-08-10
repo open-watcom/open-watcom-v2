@@ -6,6 +6,8 @@ memset
 memset_
 dos_get_dbcs_lead_table
 dos_get_dbcs_lead_table_
+_DPMI
+__DPMI
 _Extender
 __Extender
 _ExtenderRealModeSelector

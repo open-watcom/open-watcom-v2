@@ -108,7 +108,11 @@ void dbg_outp( int port, char x )
 }
 #endif
 
+#ifdef _WIN64
+#include "parpro64.c"
+#else
 #include "parproc.c"
+#endif
 
 trap_retval RemoteGet( void *data, trap_elen len )
 {

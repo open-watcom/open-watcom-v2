@@ -444,41 +444,53 @@ char *qstring( const char *s, int delim )
 
     if( (buf = (char *)malloc( strlen( s ) + 3 )) == NULL )
         FATAL( "out of space in qstring(%s)", s );
-    for( bp = buf; (c = (uschar)*s++) != delim; ) {
+    for( bp = buf; (c = *(uschar *)s++) != delim; ) {
         if( c == '\n' ) {
             SYNTAX( "newline in string %.20s...", os );
+        } else if( c == '\0' ) {
+        	break;
         } else if( c != '\\' ) {
             *bp++ = c;
         } else {  /* \something */
-            c = (uschar)*s++;
+            c = *(uschar *)s++;
             if( c == '\0' ) {   /* \ at end */
                 *bp++ = '\\';
                 break;  /* for loop */
             }
             switch( c ) {
-            case '\\':  *bp++ = '\\'; break;
             case 'n':   *bp++ = '\n'; break;
             case 't':   *bp++ = '\t'; break;
             case 'b':   *bp++ = '\b'; break;
             case 'f':   *bp++ = '\f'; break;
             case 'r':   *bp++ = '\r'; break;
-            default:
-                if( !isdigit( c ) ) {
-                    *bp++ = c;
-                    break;
-                }
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
                 n = c - '0';
-                if( isdigit( (uschar)*s ) ) {
-                    n = 8 * n + (uschar)*s++ - '0';
-                    if( isdigit( (uschar)*s ) ) {
-                        n = 8 * n + (uschar)*s++ - '0';
+                c = *(uschar *)s;
+                if( isdigit( c ) ) {
+                    n = 8 * n + c - '0';
+                    s++;
+                    c = *(uschar *)s;
+                    if( isdigit( c ) ) {
+                        n = 8 * n + c - '0';
+                        s++;
                     }
                 }
                 *bp++ = n;
                 break;
+            case '\\':
+            default:
+                *bp++ = c;
+                break;
             }
         }
     }
-    *bp++ = '\0';
+    *bp = '\0';
     return( buf );
 }

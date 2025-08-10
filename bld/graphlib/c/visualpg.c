@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvisualpage( short pagenum )
         }
     }
     pagenum %= _CurrState->vc.numvideopages;
-    VideoInt( VIDEOINT_VIDEO_PAGE + pagenum, 0, 0, 0 );
+    VideoInt1_ax( VIDEOINT_VIDEO_PAGE + pagenum, 0, 0, 0 );
     prev = _CurrVisualPage;
     _CurrVisualPage = pagenum;
     return( prev );

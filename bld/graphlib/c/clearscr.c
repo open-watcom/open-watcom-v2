@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
         seg = _CgaSeg;
         offset = _CgaOff;
     }
-    offset += 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) + _CurrActivePage * BIOSData( BDATA_REGEN_LEN, unsigned short );
+    offset += 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) + _CurrActivePage * BIOSData( unsigned short, BDATA_REGEN_LEN );
     len = c2 - c1 + 1;
     blank = ( _CharAttr << 8 ) + ' ';
     for( ; r1 <= r2; ++r1 ) {

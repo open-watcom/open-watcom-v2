@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,19 +50,23 @@
 #include "seterrno.h"
 #include "thread.h"
 
-_WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle )
+
+_WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *phandle )
 {
-    HANDLE      handle;
+    HANDLE      osfh;
     unsigned    rwmode;
     DWORD       share_mode;
-    DWORD       desired_access, os_attr;
+    DWORD       desired_access;
+    DWORD       os_attr;
     unsigned    iomode_flags;
-    int         hid;
+    int         handle;
 
-    // First try to get the required slot.
-    // No point in creating a file only to not use it.
-    hid = __allocPOSIXHandleDummy();
-    if( hid == -1 ) {
+    /*
+     * First try to get the required slot.
+     * No point in creating a file only to not use it.
+     */
+    handle = __allocPOSIXHandleDummy();
+    if( handle == -1 ) {
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
@@ -69,15 +74,20 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
 
     __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
     __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK | OPENMODE_ACCESS_MASK), &share_mode );
-    handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, os_attr, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __freePOSIXHandle( hid );
+    osfh = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, os_attr, NULL );
+    if( osfh == INVALID_HANDLE_VALUE ) {
+        /*
+         * Give back the slot we got
+         */
+        __freePOSIXHandle( handle );
         return( __set_errno_nt_reterr() );
     }
-    // Now use the slot we got.
-    __setOSHandle( hid, handle );
+    /*
+     * Now use the slot we got.
+     */
+    __setOSHandle( handle, osfh );
 
-    *posix_handle = hid;
+    *phandle = handle;
     iomode_flags = 0;
     if( rwmode == O_RDWR )
         iomode_flags = _READ | _WRITE;
@@ -85,28 +95,28 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
         iomode_flags = _READ;
     if( rwmode == O_WRONLY )
         iomode_flags = _WRITE;
-    __SetIOMode( hid, iomode_flags );
+    __SetIOMode( handle, iomode_flags );
     return( 0 );
 }
 
-_WCRTLINK unsigned _dos_close( int hid )
+_WCRTLINK unsigned _dos_close( int handle )
 {
-    HANDLE  h;
+    HANDLE  osfh;
 
-    h = __getOSHandle( hid );
-    __SetIOMode_nogrow( hid, 0 );
-    __freePOSIXHandle( hid );
-    if( !CloseHandle( h ) ) {
+    osfh = __getOSHandle( handle );
+    __SetIOMode( handle, 0 );
+    __freePOSIXHandle( handle );
+    if( CloseHandle( osfh ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );
 }
 
-_WCRTLINK unsigned _dos_commit( int hid )
+_WCRTLINK unsigned _dos_commit( int handle )
 {
-    __handle_check( hid, ERROR_INVALID_HANDLE );
+    __handle_check( handle, ERROR_INVALID_HANDLE );
 
-    if( !FlushFileBuffers( __getOSHandle( hid ) ) ) {
+    if( FlushFileBuffers( __getOSHandle( handle ) ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

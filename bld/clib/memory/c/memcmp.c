@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +36,18 @@
 #include "xstring.h"
 
 
-_WCRTLINK int __F_NAME(memcmp,wmemcmp)( const VOID_WC_TYPE *in_s1, const VOID_WC_TYPE *in_s2, size_t len )
+_WCRTLINK int __F_NAME(memcmp,wmemcmp)( const VOID_WC_TYPE *vs1, const VOID_WC_TYPE *vs2, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_memcmp( in_s1, in_s2, len ) );
+    return( _inline_memcmp( vs1, vs2, len ) );
 #else
-    const CHAR_TYPE *s1 = in_s1;
-    const CHAR_TYPE *s2 = in_s2;
+    const CHAR_TYPE *s1;
+    const CHAR_TYPE *s2;
 
-    for( ; len; --len )  {
+    for( s1 = vs1, s2 = vs2; len != 0; ++s1, ++s2, --len )  {
         if( *s1 != *s2 ) {
             return( *s1 - *s2 );
         }
-        ++s1;
-        ++s2;
     }
     return( 0 );    /* both operands are equal */
 #endif

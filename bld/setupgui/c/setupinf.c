@@ -57,18 +57,21 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "watcom.h"
+#include "infcomm.h"
 
 #include "clibext.h"
 
 
-#define decode36( x )       strtol( x, NULL, 36 )
+#define decode36s( x )      strtol( x, NULL, 36 )
+#define decode36u( x )      strtoul( x, NULL, 36 )
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 #define IS_WS(c)            ((c) == ' ' || (c) == '\t')
 #define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
 
-#define RoundUp( v, r )     (((v) + (r) - 1) & ~(unsigned long)((r)-1))
+#define __ROUND_UP_SIZE_TEXTBUF(x)      __ROUND_UP_SIZE((x), TEXTBUF_SIZE)
+#define __ROUND_UP_SIZE_BLOCK(x)        __ROUND_UP_SIZE((x), block_size)
 
 #define MAX_WINDOW_WIDTH    90
 
@@ -94,9 +97,9 @@
 typedef struct a_file_info {
     VBUF                name;
     vhandle             dst_var;
-    unsigned long       disk_size;
+    unsigned            disk_size;
     time_t              disk_date;
-    unsigned long       size;
+    unsigned            size;
     time_t              date;
     boolbit             in_old_dir  : 1;
     boolbit             in_new_dir  : 1;
@@ -566,10 +569,10 @@ static bool EvalExprTree( tree_node *tree )
 
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->left.u.node ) & EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) && EvalExprTree( tree->right );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->left.u.node ) | EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) || EvalExprTree( tree->right );
         break;
     case OP_NOT:
         value = !EvalExprTree( tree->left.u.node );
@@ -849,8 +852,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
     for( e = text;; ) {
         if( *e == '\0' )
             return( text );
-        if( *e == '\\'
-          && *( e + 1 ) == 'n' )
+        if( e[0] == '\\'
+          && e[1] == 'n' )
             return( e );
         n = e + GUICharLen( UCHAR_VALUE( *e ) );
         width = GUIGetExtentX( MainWnd, text, n - text );
@@ -947,33 +950,33 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
          */
         new_index = text;
         orig_index = text;
-        for( ; *orig_index != '\0';  ) {
-            if( *orig_index == '\r' ) {
-                if( *(orig_index + 1) == '\n' ) {
-                    if( *(orig_index + 2) == '\r' ) {
+        for( ; orig_index[0] != '\0';  ) {
+            if( orig_index[0] == '\r' ) {
+                if( orig_index[1] == '\n' ) {
+                    if( orig_index[2] == '\r' ) {
                         do {
                             *new_index++ = *orig_index++;
                             *new_index++ = *orig_index++;
-                        } while( *orig_index == '\r' && *(orig_index + 1) == '\n' );
+                        } while( orig_index[0] == '\r' && orig_index[1] == '\n' );
                     } else {
                         orig_index += 2;
                         *new_index++ = ' ';
                     }
-                } else if( *(orig_index + 1) == '\r' ) {
+                } else if( orig_index[1] == '\r' ) {
                     do {
                         *new_index++ = *orig_index++;
-                    } while( *orig_index == '\r' );
+                    } while( orig_index[0] == '\r' );
                 } else {
                     orig_index++;
                     *new_index++ = ' ';
                 }
                 continue;
             }
-            if( *orig_index == '\n' ) {
-                if( *(orig_index + 1) == '\n' ) {
+            if( orig_index[0] == '\n' ) {
+                if( orig_index[1] == '\n' ) {
                     do {
                         *new_index++ = *orig_index++;
-                    } while( *orig_index == '\n' );
+                    } while( orig_index[0] == '\n' );
                 } else {
                     orig_index++;
                     *new_index++ = ' ';
@@ -987,22 +990,22 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     orig_index = text;
     new_index = big_buffer;
     break_candidate = find_break( orig_index, parse_dlg, &chwidth );
-    for( ; *orig_index != '\0'; orig_index++ ) {
+    for( ; orig_index[0] != '\0'; orig_index++ ) {
         if( new_line ) {
             SKIP_WS( orig_index );
         }
 
         if( convert_newline
-          && *orig_index == '\\'
-          && *(orig_index + 1) == 'n' ) {
+          && orig_index[0] == '\\'
+          && orig_index[1] == 'n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             orig_index++;
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
         } else if( !convert_newline
-          && *orig_index == '\r' ) {
+          && orig_index[0] == '\r' ) {
         } else if( !convert_newline
-          && *orig_index == '\n' ) {
+          && orig_index[0] == '\n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
@@ -1014,7 +1017,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
             new_line = true;
             continue;
-        } else if( *orig_index == '\t' ) {
+        } else if( orig_index[0] == '\t' ) {
             *(new_index++) = ' ';
         } else {
             *(new_index++) = *orig_index;
@@ -1867,17 +1870,12 @@ static bool ProcLine( char *line, pass_type pass )
             }
             SetupInfo.pm_group_iconfile = GUIStrDup( next );
         } else {
-            if( line[0] == '$' ) {
-                /*
-                 * global variables start with '$'
-                 */
-                if( GetVariableByName( line ) == NO_VAR ) {
-                    /*
-                     * if variable already is set, do not change it
-                     */
-                    SetVariableByName( line, next );
-                }
-            } else {
+            /*
+             * system variables start with '$'
+             * if system variable already exists, do not change it
+             */
+            if( line[0] != '$'
+              || GetVariableByName( line ) == NO_VAR ) {
                 SetVariableByName( line, next );
             }
         }
@@ -1909,10 +1907,10 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].filename = GUIStrDup( line );
             line = next; next = NextToken( line, ',' );
             /*
-                Multiple files in archive. First number is number of files,
-                followed by a list of file sizes in 512 byte blocks.
-            */
-            num_files = decode36( line );
+             * Multiple files in archive. First number is number of files,
+             * followed by a list of file sizes in INF_BLOCK_SIZE blocks.
+             */
+            num_files = decode36s( line );
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
@@ -1935,11 +1933,11 @@ static bool ProcLine( char *line, pass_type pass )
                 file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
                 file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
-                file->size = decode36( line ) * 512UL;
+                file->size = INFBLK2SIZE( decode36u( line ) );
                 if( p != NULL
                   && *p != '\0'
                   && *p != '!' ) {
-                    file->date = decode36( p );
+                    file->date = decode36u( p );
                 } else {
                     file->date = SetupInfo.stamp;
                 }
@@ -1973,9 +1971,9 @@ static bool ProcLine( char *line, pass_type pass )
             }
             VbufFree( &buff );
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].dir_index = decode36( line ) - 1;
+            FileInfo[num].dir_index = decode36s( line ) - 1;
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].old_dir_index = decode36( line );
+            FileInfo[num].old_dir_index = decode36s( line );
             if( FileInfo[num].old_dir_index != -1 ) {
                 FileInfo[num].old_dir_index--;
             }
@@ -2228,7 +2226,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 }
                 PropagateValue( FileInfo[i].condition.p->cond, true );
                 if( file->in_new_dir
-                  && RoundUp( file->disk_size, 512 ) == file->size
+                  && __ROUND_UP_SIZE_INF( file->disk_size ) == file->size
                   && file->date == file->disk_date ) {
                     FileInfo[i].condition.p->one_uptodate = true;
                 }
@@ -2244,8 +2242,8 @@ static bool GetDiskSizes( void )
 {
     array_idx   i;
     int         j;
-    long        status_amount;
-    long        status_curr;
+    int         status_amount;
+    int         status_curr;
     bool        zeroed;
     bool        rc = true;
     bool        asked;
@@ -2323,6 +2321,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     char                *buffer;
     size_t              bufsize;
     char                readbuf[1024 + 1];
+    size_t              bytes_read;
 
     bufsize = TEXTBUF_SIZE;
     buffer = GUIMemAlloc( bufsize );
@@ -2343,22 +2342,29 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( (int)FileRead( afh, readbuf, 1024 ) <= 0 ) {
+            bytes_read = FileRead( afh, readbuf, 1024 );
+            if( (int)bytes_read <= 0 ) {
                 done = true;
                 break;
             }
+            readbuf[bytes_read] = '\0';
             /*
              * Eliminate leading blanks on lines
              */
             p = readbuf;
             SKIP_WS( p );
+            bytes_read = len + bytes_read - ( p - readbuf );
+            if( bytes_read > bufsize ) {
+                bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
+                buffer = GUIMemRealloc( buffer, bufsize + 1 );
+            }
             strcpy( buffer + len, p );
-            len = strlen( buffer );
-            if( len == 0 )
+            if( bytes_read == 0 )
                 break;
             /*
              * Manually convert CR/LF if needed
              */
+            len = bytes_read;
             if( (len > 1)
               && (buffer[len - 1] == '\n') ) {
                 if( buffer[len - 2] == '\r' ) {
@@ -2374,10 +2380,6 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
                 if( buffer[len - 2] != '\\' )
                     break;
                 len -= 2;
-            }
-            if( bufsize - len < TEXTBUF_SIZE / 2 ) {
-                bufsize += TEXTBUF_SIZE;
-                buffer = GUIMemRealloc( buffer, bufsize );
             }
         }
         if( done )
@@ -2412,10 +2414,10 @@ bool CheckForceDLLInstall( const VBUF *name )
     return( false );
 }
 
-long SimInit( const VBUF *inf_name )
-/**********************************/
+int SimInit( const VBUF *inf_name )
+/*********************************/
 {
-    long                result;
+    int                 result;
     file_handle         afh;
     struct stat         statbuf;
     array_idx           i;
@@ -2430,7 +2432,7 @@ long SimInit( const VBUF *inf_name )
     NONMAGICVARS( setvar, 0 )
 #undef setvar
 
-    SetDefaultGlobalVarList();
+    SetDefaultVarsList();
     afh = FileOpen( inf_name, DATA_TEXT );
     if( afh == NULL ) {
         return( SIM_INIT_NOFILE );
@@ -2667,10 +2669,10 @@ void SimGetFileName( int parm, VBUF *buff )
     VbufSetStr( buff, FileInfo[parm].filename );
 }
 
-long SimFileSize( int parm )
-/**************************/
+unsigned SimFileSize( int parm )
+/******************************/
 {
-    long        size;
+    unsigned    size;
     int         i;
 
     size = 0;
@@ -2682,8 +2684,8 @@ long SimFileSize( int parm )
 }
 
 
-long SimSubFileSize( int parm, int subfile )
-/******************************************/
+unsigned SimSubFileSize( int parm, int subfile )
+/**********************************************/
 {
     return( FileInfo[parm].files[subfile].size );
 }
@@ -2806,7 +2808,7 @@ bool SimFileUpToDate( int parm )
             return( true );
         if( info->files[i].date > info->files[i].disk_date )
             return( false );
-        if( RoundUp( info->files[i].disk_size, 512 ) != info->files[i].size )
+        if( __ROUND_UP_SIZE_INF( info->files[i].disk_size ) != info->files[i].size )
             return( false );
     }
     return( true );
@@ -3407,17 +3409,17 @@ static void CalcAddRemove( void )
 #endif
 
             if( add ) {
-                TargetInfo[target_index].space_needed += RoundUp( file->size, block_size );
+                TargetInfo[target_index].space_needed += __ROUND_UP_SIZE_BLOCK( file->size );
 #if 0   // I don't think this logic is right...
                 if( !file->is_nlm ) {
-                    TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
+                    TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( file->disk_size );
                 }
 #else
-                TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
+                TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( file->disk_size );
 #endif
                 TargetInfo[target_index].needs_update = true;
             } else if( remove ) {
-                TargetInfo[target_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, block_size );
+                TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( FileInfo[i].files[k].disk_size );
                 TargetInfo[target_index].needs_update = true;
             }
         }
@@ -3434,7 +3436,7 @@ static void CalcAddRemove( void )
                         continue;
                     if( DirInfo[j].num_files <= DirInfo[j].num_existing )
                         continue;
-                    TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, block_size);
+                    TargetInfo[i].space_needed += __ROUND_UP_SIZE_BLOCK( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL );
                 }
             }
         }
@@ -3839,7 +3841,7 @@ static void ZeroAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
+    for( var_handle = NextVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextVar( var_handle ) ) {
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
             SetBoolVariableByHandle( var_handle, VarIsRestrictedTrue( var_handle ) );
         }
@@ -3863,7 +3865,7 @@ static void InitAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
+    for( var_handle = NextVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextVar( var_handle ) ) {
         SetDefaultAutoSetValue( var_handle );
     }
     NeedInitAutoSetValues = false;

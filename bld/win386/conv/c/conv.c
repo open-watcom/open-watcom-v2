@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,13 +165,13 @@ static void *_fmyrealloc( void *ptr, size_t size )
 
 static int IsWord( char *str )
 {
-    if( !stricmp( str,"int" ) ||
-        !stricmp( str,"char" ) ||
-        !stricmp( str,"unsigned char" ) ||
-        !stricmp( str,"short" ) ||
-        !stricmp( str,"unsigned" ) ||
-        !stricmp( str,"unsigned short" ) ||
-        !stricmp( str,"unsigned int" ) ) {
+    if( stricmp( str, "int" ) == 0
+      || stricmp( str, "char" ) == 0
+      || stricmp( str, "unsigned char" ) == 0
+      || stricmp( str, "short" ) == 0
+      || stricmp( str, "unsigned" ) == 0
+      || stricmp( str, "unsigned short" ) == 0
+      || stricmp( str, "unsigned int" ) == 0 ) {
         return( 1 );
     }
     return( 0 );
@@ -206,7 +206,8 @@ static return_types ClassifyReturnType( char *buff )
     size_t  i;
 
     STRIP_TRAIL_WS( i, buff );
-    if( stricmp( buff, "int" ) == 0 || stricmp( buff, "short" ) == 0 ) {
+    if( stricmp( buff, "int" ) == 0
+      || stricmp( buff, "short" ) == 0 ) {
         return( RETURN_INT );
     } else if( stricmp( buff, "void" ) == 0 ) {
         return( RETURN_VOID );
@@ -237,7 +238,8 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
     param_count = 0;
     for( ;; ) {
         c = plist[i];
-        if( c == '\0' || c == ',' ) {
+        if( c == '\0'
+          || c == ',' ) {
             char *t;
 
             plist[i] = '\0';
@@ -258,7 +260,8 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
             for( ;; ) {
                 i++;
                 c = plist[i];
-                if( c == ';' || c == ']' ) {
+                if( c == ';'
+                  || c == ']' ) {
                     plist[i] = '\0';
                     sub_parm = myalloc( sizeof( subparm ) );
                     sub_parm->next = tmpf->subparms;
@@ -274,7 +277,8 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
         }
         i++;
     }
-    if( param_count == 1 && param_type_list[0] == PARM_VOID ) {
+    if( param_count == 1
+      && param_type_list[0] == PARM_VOID ) {
         tmpf->param_count = 0;
         tmpf->alias_count = 0;
         tmpf->param_type_list = NULL;
@@ -321,7 +325,8 @@ static void ProcessDefFile( FILE *f )
 
     while( (buff = fgets( buffer, sizeof( buffer ), f )) != NULL ) {
         SKIP_LEAD_WS( buff );
-        if( buff[0] == '#' || buff[0] == '\0' ) {
+        if( buff[0] == '#'
+          || buff[0] == '\0' ) {
             continue;
         }
         STRIP_TRAIL_WS( i, buff );
@@ -423,7 +428,7 @@ static void ProcessDefFile( FILE *f )
         tmpf->fn = myalloc( strlen( fn ) + 1 );
         strcpy( tmpf->fn, fn );
         tmpf->noregfor_16 = 0;
-        if( !strncmp( fn, "_16", 3 ) ) {
+        if( strncmp( fn, "_16", 3 ) == 0 ) {
             tmpf->is_16 = 1;
         } else {
             tmpf->is_16 = 0;
@@ -515,7 +520,8 @@ static void ClosingComments( void )
     fcn         *tmpf;
 
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->fn[0] == '_' && tmpf->fn[1] == '_' ) {
+        if( tmpf->fn[0] == '_'
+          && tmpf->fn[1] == '_' ) {
             if( !quiet ) {
                 printf("stub for '%s' requires intervention\n", tmpf->fn );
             }
@@ -1028,7 +1034,8 @@ static void emitOBJECT( int modindex, const char *proc, fcn *tmpf, int index )
     emitTHEADR( modindex );
     emitCOMMENT();
     emitLNAMES();
-    if( tmpf->alias_count == 0 && tmpf->param_count < 6 ) {
+    if( tmpf->alias_count == 0
+      && tmpf->param_count < 6 ) {
         emitspecialThunk( proc, tmpf, index );
     } else {
         emitnormalThunk( proc, tmpf, index );
@@ -1066,7 +1073,8 @@ static void GenerateCStubs( void )
             fn2[0] = '_';
             fn2[1] = '_';
             strcpy( &fn2[2], tmpf->fn );
-        } else if( tmpf->fn[0] == '_' && tmpf->fn[1] == '_' ) {
+        } else if( tmpf->fn[0] == '_'
+          && tmpf->fn[1] == '_' ) {
             strcpy( fn2, &tmpf->fn[2] );
         } else {
             strcpy( fn2, tmpf->fn );
@@ -1508,19 +1516,22 @@ static void FunctionHeader( FILE *f )
     fprintf( f, "extrn        __DLLPatch:far\n" );
     index = 0;
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->is_16 && tmpf->noregfor_16 ) {
+        if( tmpf->is_16
+          && tmpf->noregfor_16 ) {
             fn_name = &tmpf->fn[3];
         } else {
             fn_name = tmpf->fn;
         }
         if( tmpf->thunk ) {
-            if( !tmpf->is_16 || tmpf->noregfor_16 ) {
+            if( !tmpf->is_16
+              || tmpf->noregfor_16 ) {
                 fprintf( f, ";extrn PASCAL %s:FAR ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunk_index], index );
             } else {
                 fprintf( f, ";      PASCAL %s ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunk_index], index );
             }
         } else {
-            if( !tmpf->is_16 || tmpf->noregfor_16 ) {
+            if( !tmpf->is_16
+              || tmpf->noregfor_16 ) {
                 fprintf( f, "extrn PASCAL %s:FAR ; t=%d i=%d\n", fn_name, tmpf->class, index );
             } else {
                 fprintf( f, ";      PASCAL %s ; t=%d i=%d\n", fn_name, tmpf->class, index );
@@ -1547,17 +1558,20 @@ static void FunctionData( FILE *f )
     fprintf( f, "public \"C\", FunctionTable\n" );
     fprintf( f, "FunctionTable LABEL DWORD\n" );
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->is_16 && tmpf->noregfor_16 ) {
+        if( tmpf->is_16
+          && tmpf->noregfor_16 ) {
             fn_name = &tmpf->fn[3];
         } else {
             fn_name = tmpf->fn;
         }
         if( tmpf->thunk ) {
-            if( !tmpf->is_16 || tmpf->noregfor_16 ) {
+            if( !tmpf->is_16
+              || tmpf->noregfor_16 ) {
                 fprintf( f, "\tdd\t__DLLPatch ; (%s) %s\n", ThunkStrs[tmpf->thunk_index], fn_name );
             }
         } else {
-            if( !tmpf->is_16 || tmpf->noregfor_16 ) {
+            if( !tmpf->is_16
+              || tmpf->noregfor_16 ) {
                 fprintf( f, "\tdd\t%s\n", fn_name );
             }
         }
@@ -1764,7 +1778,8 @@ int main( int argc, char *argv[] )
 
     while( (fname = fgets( buffer, sizeof( buffer ), pf )) != NULL ) {
         SKIP_LEAD_WS( fname );
-        if( fname[0] == '#' || fname[0] == '\0' ) {
+        if( fname[0] == '#'
+          || fname[0] == '\0' ) {
             continue;
         }
         STRIP_TRAIL_WS( i, fname );

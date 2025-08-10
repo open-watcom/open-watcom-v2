@@ -147,10 +147,24 @@ _WCRTLINK extern int        _pipe( int *__phandles, unsigned __psize, int __text
 :: Wide character version
 :elsesegment ANSINAME
 :: ANSI name version
+::
+:: -----------------------------------
+:: two OS file handles exist
+:: unclear why
+:: -----------------------------------
+:: int  __oshandle
+:: long __osfhandle
+::
+:: __posixhandle _open_osfhandle( __osfhandle, __flags )
+:: __osfhandle   _get_osfhandle( __posixhandle )
+::
+:: __posixhandle _hdopen( __oshandle, __mode )
+:: __oshandle    _os_handle( __posixhandle )
+::
 _WCRTLINK extern long       _get_osfhandle( int __posixhandle );
-_WCRTLINK extern int        _hdopen( int __handle,int __mode );
+_WCRTLINK extern int        _hdopen( int __oshandle, int __mode );
 _WCRTLINK extern int        _open_osfhandle( long __osfhandle, int __flags );
-_WCRTLINK extern int        _os_handle( int __handle );
+_WCRTLINK extern int        _os_handle( int __posixhandle );
 :elsesegment
 :: OW
 :endsegment

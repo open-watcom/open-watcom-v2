@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,24 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  functions for allocating real-mode DOS memory
+*               from protected mode
 *
 ****************************************************************************/
 
 
-// functions for allocating real-mode DOS memory from protected mode
-
-#pragma pack(__push, 1);
-
-typedef struct rm_alloc {
-    unsigned short      rm_seg;
-    void                __far *pm_ptr;
-} RM_ALLOC;
+#include "dpmi.h"
 
 
-short                   _RMAlloc( int, RM_ALLOC * );
-void                    _RMFree( RM_ALLOC * );
-short                   _RMInterrupt( short, short, short, short, short, short, short );
-
-#pragma pack (__pop);
+extern bool     _RMAlloc( int, dpmi_dos_mem_block *dos_mem );
+extern void     _RMFree( dpmi_dos_mem_block *dos_mem );
+extern short    _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di );

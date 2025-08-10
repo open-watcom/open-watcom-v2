@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -316,8 +316,8 @@ static void addAllFiles95( HWND hwnd )
     char            folder[_MAX_PATH];
     char            path[_MAX_PATH];
     WIN32_FIND_DATA wfd;
-    HANDLE          find_handle;
-    BOOL            found;
+    HANDLE          osffh;
+    bool            found;
     char            *fname;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
@@ -329,9 +329,9 @@ static void addAllFiles95( HWND hwnd )
     }
     SendMessage( GetParent( hwnd ), CDM_GETFOLDERPATH, _MAX_PATH, (LPARAM)folder );
     _makepath( path, NULL, folder, ext, NULL );
-    find_handle = FindFirstFile( path, &wfd );
-    if( find_handle != INVALID_HANDLE_VALUE ) {
-        found = TRUE;
+    osffh = FindFirstFile( path, &wfd );
+    if( osffh != INVALID_HANDLE_VALUE ) {
+        found = true;
         while( found ) {
             if( !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
                 fname = strrchr( wfd.cFileName, '\\' );
@@ -342,9 +342,9 @@ static void addAllFiles95( HWND hwnd )
                 }
                 addFileToList( hwnd, fname );
             }
-            found = FindNextFile( find_handle, &wfd );
+            found = ( FindNextFile( osffh, &wfd ) != 0 );
         }
-        FindClose( find_handle );
+        FindClose( osffh );
     }
 }
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,12 +46,12 @@
 
 typedef void WRITERTN( file_handle, const char * );
 
-static void WriteFile( file_handle fh, const char *buff )
+static void DumpFile( file_handle fh, const char *buff )
 {
     WriteText( fh, buff, strlen( buff ) );
 }
 
-static void WriteLog( file_handle fh, const char *buff )
+static void DumpLog( file_handle fh, const char *buff )
 {
     /* unused parameters */ (void)fh;
 
@@ -133,7 +133,7 @@ static void DoWndDumpFile( const char *name, a_window wnd )
     if( fh == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), name );
     }
-    DoWndDump( wnd, WriteFile, fh );
+    DoWndDump( wnd, DumpFile, fh );
     FileClose( fh );
 }
 
@@ -166,5 +166,5 @@ void WndDumpFile( a_window wnd )
 
 void WndDumpLog( a_window wnd )
 {
-    DoWndDump( wnd, WriteLog, 0 );
+    DoWndDump( wnd, DumpLog, 0 );
 }

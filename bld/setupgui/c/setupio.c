@@ -64,7 +64,7 @@ typedef struct file_handle_t {
     char                *textbuf;
     char                *textpos;
     char                *textend;
-} *file_handle;
+} file_handle_t;
 
 static ds_type          srcType;
 
@@ -236,6 +236,8 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
 #endif
     if( afh->type == DS_FILE
       && afh->u.fp == NULL ) {
+        if( afh->textbuf != NULL )
+            free( afh->textbuf );
         free( afh );
         afh = NULL;
     }
@@ -302,21 +304,23 @@ static size_t read_line( file_handle afh, char *buffer, size_t length )
  */
 {
     char            *start;
+    size_t          read_bytes;
     size_t          len;
     bool            done;
 
+    len = 0;
     done = false;
     do {
         /*
          * Read data into text buffer if it's empty
          */
         if( afh->textpos == NULL ) {
-            len = file_read( afh, afh->textbuf, TEXTBUF_SIZE );
-            if( (int)len <= 0 ) {
-                return( len );
+            read_bytes = file_read( afh, afh->textbuf, TEXTBUF_SIZE );
+            if( (int)read_bytes <= 0 ) {
+                return( read_bytes );
             }
             afh->textpos = afh->textbuf;
-            afh->textend = afh->textbuf + len;
+            afh->textend = afh->textbuf + read_bytes;
         }
         /*
          * Look for a newline
@@ -339,10 +343,11 @@ static size_t read_line( file_handle afh, char *buffer, size_t length )
              * We're at the end of the buffer
              * copy what we have to output buffer
              */
-            len = afh->textpos - start;
-            memcpy( buffer, start, len );
-            length -= len;
-            buffer += len;
+            read_bytes = afh->textpos - start;
+            memcpy( buffer, start, read_bytes );
+            length -= read_bytes;
+            buffer += read_bytes;
+            len += read_bytes;
             /*
              * Force read of more data into buffer
              */
@@ -355,9 +360,10 @@ static size_t read_line( file_handle afh, char *buffer, size_t length )
         }
     } while( !done );
 
-    len = afh->textpos - start;
-    memcpy( buffer, start, len );
-    buffer[len] = '\0';
+    read_bytes = afh->textpos - start;
+    memcpy( buffer, start, read_bytes );
+    buffer[read_bytes] = '\0';
+    len += read_bytes;
     return( len );
 }
 

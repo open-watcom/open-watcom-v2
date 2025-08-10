@@ -17,9 +17,9 @@ inc_dirs = -I"../h"
 
 !ifdef __WATCOM_TOOLS__
 !ifndef bootstrap
-extra_c_flags_f_ytab = -wcd=C118 -wcd=C202
+extra_c_flags_f_ytab = -wcd=C118 -wcd=C202 -pil
 !else
-extra_c_flags_f_ytab = -wcd=118 -wcd=202
+extra_c_flags_f_ytab = -wcd=118 -wcd=202 -pil
 !endif
 !endif
 
@@ -29,7 +29,11 @@ extra_c_flags_f_ytab = -wcd=118 -wcd=202
 #
 # EXE
 #
+!ifndef __UNIX__
+extra_objs = missin95.obj
+!endif
 exetarg_objs = &
+    $(extra_objs) &
     b.obj &
     main.obj &
     parse.obj &
@@ -38,18 +42,33 @@ exetarg_objs = &
     lib.obj &
     run.obj &
     lex.obj &
-    ytab.obj &
-    missin95.obj
+    ytab.obj
 !include exetarg.mif
 
 #
 # rc and others
 #
-proctab.c : ./maketab.exe ../h/ytab.h
-    $(noecho)%copy $]@ ytab.h
-    @%make echo_execute
-    $(noecho)$[@ > proctab.c
+updateproctab : ./maketab.exe ../h/ytab.h .SYMBOLIC
+    $< >tmp.tmp
+    %copy tmp.tmp ../c/proctab.c
+    @rm -f tmp.tmp
+    @rm -f maketab.*
 
-./maketab.exe : ../c/maketab.c
+./maketab.exe : ../c/maketab.c ../h/ytab.h
     @%make echo_bldcl
     $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
+
+#
+# update yacc generated file 
+# and update appropriate awk source files
+#
+updateytab: .SYMBOLIC
+#    bison -o ytab.c -d ../h/awkgram.y
+#    yacc -d -dd -db -de ../h/awkgram.y ../c/yydriver.c >awk.out
+    @%make echo_yacc
+    $(yacc) -d -db -de ../h/awkgram.y ../c/yydriver.c >awk.out
+    %copy ytab.c ../c/ytab.c
+    %copy ytab.h ../h/ytab.h
+    @rm -f ytab.c
+    @rm -f ytab.h
+    @%make updateproctab

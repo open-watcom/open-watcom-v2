@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,35 +39,32 @@
 #include "qread.h"
 #include "tinyio.h"
 
+
 _WCRTLINK char *cgets( char *s )
 {
     int len;
     char *p;
 
+    len = *(unsigned char *)s;
+    p = s + 2;
 #ifdef DEFAULT_WINDOWING
     if( _WindowsStdin != NULL ) {   // Default windowing
-        __qread( STDIN_FILENO, s + 2, *s - 1 );
-        p = s + 2;
-        len = *s;
-        for(;;) {
-            if( len <= 1 ) break;
-            if( *p == '\r' || *p == '\0' ) break;
+        for( len = __qread( STDIN_FILENO, p, len - 1 ); len > 0; --len ) {
+            if( *p == '\r'
+              || *p == '\0' )
+                break;
             ++p;
-            --len;
         }
         *p = '\0';
-        s[1] = p - s - 2;
+        s[1] = p - ( s + 2 );
         return( s + 2 );
     }
 #endif
     TinyBufferedInput( s );
-    len = *s;
-    p = s + 2;
-    for(;;) {
-        if( len <= 1 ) break;
-        if( *p == '\r' ) break;
+    for( ; len > 1; --len ) {
+        if( *p == '\r' )
+            break;
         ++p;
-        --len;
     }
     *p = '\0';
     return( s + 2 );

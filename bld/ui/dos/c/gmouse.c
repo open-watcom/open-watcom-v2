@@ -234,7 +234,7 @@ static bool MouInit( void )
     unsigned short  s2;
     unsigned short  ret;
 
-    Points = BIOSData( BDATA_POINT_HEIGHT, unsigned char );
+    Points = BIOSData( unsigned char, BDATA_POINT_HEIGHT );
 
     /*
      * MASSIVE KLUDGE: It turns out that the DOS debugger ends up
@@ -247,10 +247,10 @@ static bool MouInit( void )
      */
     if( first_time ) {
         first_time = false;
-        savedmode = BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
-        BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
+        savedmode = BIOSData( unsigned char, BDATA_CURR_VIDEO_MODE );    /* Save video mode         */
+        BIOSData( unsigned char, BDATA_CURR_VIDEO_MODE ) = 6;            /* Set magic mode          */
         ret = _BIOSMouseDriverReset();                                   /* Reset driver for change */
-        BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
+        BIOSData( unsigned char, BDATA_CURR_VIDEO_MODE ) = savedmode;    /* Put the old mode back   */
         if( ret != MOUSE_DRIVER_OK ) {
             return( false );
         }
@@ -324,7 +324,7 @@ bool UIAPI uiinitgmouse( init_mode install )
         if( install == INIT_MOUSE_INITIALIZED ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
-                    UIData->mouse_yscale = BIOSData( BDATA_POINT_HEIGHT, unsigned char );
+                    UIData->mouse_yscale = BIOSData( unsigned char, BDATA_POINT_HEIGHT );
                     UIData->mouse_xscale = 8;
                 } else {
                     install = INIT_MOUSELESS;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,12 @@
 
 LONG PASCAL _Cover_SendMessage(HWND hwnd, WORD msg, WORD wp, LONG lp)
 {
-    BOOL                alias;
-    LONG                rc,olp;
+    bool                alias;
+    LONG                rc;
+    LONG                olp;
     MDICREATESTRUCT     *mcs;
-    LPSTR               oldclass,oldtitle;
+    LPSTR               oldclass;
+    LPSTR               oldtitle;
 
 
     if( msg == WM_MDICREATE ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__OS2__) && !defined(_M_I86)
+#if defined(__NT__) || defined(__OS2_32BIT__)
 _WCRTDATA extern void (*__process_fini)( unsigned, unsigned );
 #endif

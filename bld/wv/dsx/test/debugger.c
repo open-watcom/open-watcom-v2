@@ -139,8 +139,8 @@ static void save_vects( void __far **rmvtable, void __far **pmvtable )
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        rmvtable[intnb] = (void __far *)TinyDPMIGetRealVect( intnb );
-        pmvtable[intnb] = TinyDPMIGetProtectVect( intnb );
+        rmvtable[intnb] = DPMIGetRealModeInterruptVector( intnb );
+        pmvtable[intnb] = DPMIGetPMInterruptVector( intnb );
     }
     fhandle = open( "vtable", O_BINARY | O_CREAT | O_TRUNC | O_WRONLY, PMODE_RW );
     if( fhandle <= 0 ) {
@@ -159,9 +159,8 @@ static void restore_vects( void __far **rmvtable, void __far **pmvtable )
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        TinyDPMISetRealVect( intnb, _FP_SEG( rmvtable[intnb] ),
-                             _FP_OFF( rmvtable[intnb] ) );
-        TinyDPMISetProtectVect( intnb, pmvtable[intnb] );
+        DPMISetRealModeInterruptVector( intnb, rmvtable[intnb] );
+        DPMISetPMInterruptVector( intnb, pmvtable[intnb] );
     }
 }
 
@@ -189,15 +188,15 @@ static void hook_vects( void __far *pmaddr, void __far *rmaddr,
                         void __far **oldpmaddr, void __far **oldrmaddr )
 {
     if( oldpmaddr ) {
-        *oldpmaddr = TinyDPMIGetProtectVect( 0x66 );
+        *oldpmaddr = DPMIGetPMInterruptVector( 0x66 );
     }
-    if( TinyDPMISetProtectVect( 0x66, pmaddr ) ) {
+    if( DPMISetPMInterruptVector( 0x66, pmaddr ) ) {
         _debug( "error hooking protected mode vector 0x66" );
     }
     if( oldrmaddr ) {
-        *oldrmaddr = (void __far *)TinyDPMIGetRealVect( 0x66 );
+        *oldrmaddr = (void __far *)DPMIGetRealModeInterruptVector( 0x66 );
     }
-    if( TinyDPMISetRealVect( 0x66, _FP_SEG( rmaddr ), _FP_OFF( rmaddr ) ) ) {
+    if( DPMISetRealModeInterruptVector( 0x66, rmaddr ) ) {
         _debug( "error hooking real mode vector 0x66" );
     }
 }
@@ -217,10 +216,10 @@ static void start_shell( void )
 
 static int getaddrs( void )
 {
-    RawPMtoRMAddr = TinyDPMIRawPMtoRMAddr();
-    RawRMtoPMAddr = (void __far *)TinyDPMIRawRMtoPMAddr();
-    SavePMState = (void __far *)TinyDPMISavePMStateAddr();
-    StateSize = TinyDPMISaveStateSize();
+    RawPMtoRMAddr = DPMIRawPMtoRMAddr();
+    RawRMtoPMAddr = (void __far *)DPMIRawRMtoPMAddr();
+    SavePMState = (void __far *)DPMISavePMStateAddr();
+    StateSize = DPMISaveStateSize();
     return( ( RawPMtoRMAddr != NULLFAR ) && ( RawRMtoPMAddr != NULLFAR ) &&
             ( SavePMState != NULLFAR ) );
 }

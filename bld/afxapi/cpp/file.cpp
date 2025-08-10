@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -160,9 +160,14 @@ ULONGLONG CFile::GetPosition() const
 {
     DWORD   dwLowOff;
     DWORD   dwHighOff = 0L;
-    if( (dwLowOff = ::SetFilePointer( m_hFile, 0L, (PLONG)&dwHighOff,
-                                      FILE_CURRENT )) == INVALID_SET_FILE_POINTER ) {
-        CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
+    DWORD   error;
+
+    dwLowOff = ::SetFilePointer( m_hFile, 0L, (PLONG)&dwHighOff, FILE_CURRENT );
+    if( dwLowOff == INVALID_SET_FILE_POINTER ) {
+        error = ::GetLastError();
+        if( error != NO_ERROR ) {
+            CFileException::ThrowOsError( error, m_strFileName );
+        }
     }
     return( ((ULONGLONG)dwHighOff << 32) | dwLowOff );
 }
@@ -214,12 +219,11 @@ BOOL CFile::GetStatus( CFileStatus &rStatus ) const
     _tcscpy( rStatus.m_szFullName, szFullName );
     return( TRUE );
 }
-    
+
 void CFile::LockRange( ULONGLONG dwPos, ULONGLONG dwCount )
 /*********************************************************/
 {
-    if( !::LockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount,
-                     (DWORD)(dwCount >> 32) ) ) {
+    if( ::LockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount, (DWORD)(dwCount >> 32) ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }
@@ -321,7 +325,7 @@ UINT CFile::Read( void *lpBuf, UINT nCount )
 /******************************************/
 {
     DWORD   dwBytesRead;
-    if( !::ReadFile( m_hFile, lpBuf, nCount, &dwBytesRead, NULL ) ) {
+    if( ::ReadFile( m_hFile, lpBuf, nCount, &dwBytesRead, NULL ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
     return( (UINT)dwBytesRead );
@@ -333,6 +337,8 @@ ULONGLONG CFile::Seek( LONGLONG lOff, UINT nFrom )
     DWORD   dwMoveMethod;
     DWORD   dwHighOff = (DWORD)(lOff >> 32);
     DWORD   dwLowOff;
+    DWORD   error;
+
     switch( nFrom ) {
     case begin:
         dwMoveMethod = FILE_BEGIN;
@@ -344,9 +350,12 @@ ULONGLONG CFile::Seek( LONGLONG lOff, UINT nFrom )
         dwMoveMethod = FILE_CURRENT;
         break;
     }
-    if( (dwLowOff = ::SetFilePointer( m_hFile, (DWORD)lOff, (PLONG)&dwHighOff,
-                                      dwMoveMethod )) == INVALID_SET_FILE_POINTER ) {
-        CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
+    dwLowOff = ::SetFilePointer( m_hFile, (DWORD)lOff, (PLONG)&dwHighOff, dwMoveMethod );
+    if( dwLowOff == INVALID_SET_FILE_POINTER ) {
+        error = ::GetLastError();
+        if( error != NO_ERROR ) {
+            CFileException::ThrowOsError( error, m_strFileName );
+        }
     }
     return( ((ULONGLONG)dwHighOff << 32) | dwLowOff );
 }
@@ -363,8 +372,7 @@ void CFile::SetLength( ULONGLONG dwNewLen )
 void CFile::UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount )
 /***********************************************************/
 {
-    if( !::UnlockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount,
-                       (DWORD)(dwCount >> 32) ) ) {
+    if( ::UnlockFile( m_hFile, (DWORD)dwPos, (DWORD)(dwPos >> 32), (DWORD)dwCount, (DWORD)(dwCount >> 32) ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }
@@ -373,7 +381,7 @@ void CFile::Write( const void *lpBuf, UINT nCount )
 /*************************************************/
 {
     DWORD   dwBytesWritten;
-    if( !::WriteFile( m_hFile, lpBuf, nCount, &dwBytesWritten, NULL ) ) {
+    if( ::WriteFile( m_hFile, lpBuf, nCount, &dwBytesWritten, NULL ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }
@@ -463,7 +471,7 @@ void PASCAL CFile::SetStatus( LPCTSTR lpszFileName, const CFileStatus &rStatus )
     }
     if( dwOldAttributes & FILE_ATTRIBUTE_READONLY ) {
         dwOldAttributes &= ~FILE_ATTRIBUTE_READONLY;
-        if( !::SetFileAttributes( lpszFileName, dwOldAttributes ) ) {
+        if( ::SetFileAttributes( lpszFileName, dwOldAttributes ) == 0 ) {
             CFileException::ThrowOsError( ::GetLastError(), lpszFileName );
         }
     }
@@ -501,7 +509,7 @@ void PASCAL CFile::SetStatus( LPCTSTR lpszFileName, const CFileStatus &rStatus )
         dwNewAttributes |= FILE_ATTRIBUTE_ARCHIVE;
     }
     if( dwNewAttributes != dwOldAttributes ) {
-        if( !::SetFileAttributes( lpszFileName, dwNewAttributes ) ) {
+        if( ::SetFileAttributes( lpszFileName, dwNewAttributes ) == 0 ) {
             CFileException::ThrowOsError( ::GetLastError(), lpszFileName );
         }
     }

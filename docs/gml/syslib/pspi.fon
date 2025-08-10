@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Palatino-Italic font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -166 -302 1020 946
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSPI                            palatino-italic
+:CMT.eoc
+
+:FONT
+  defined_name     = 'palatino-italic'
+  member_name      = 'PSPI'
+  font_out_name1   = 'Palatino-Italic'
+  line_height      = 1000
+  line_space       = 248
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 250
+
+
+:WIDTH.
+$20 250
+! 333
+" 500
+# 606
+$ 500
+% 889
+& 778
+' 278
+( 333
+) 333
+* 389
++ 606
+, 250
+- 333
+. 250
+/ 296
+0 500
+1 500
+2 500
+3 500
+4 500
+5 500
+6 500
+7 500
+8 500
+9 500
+: 250
+; 250
+< 606
+= 606
+> 606
+? 500
+@ 747
+A 722
+B 611
+C 667
+D 778
+E 611
+F 556
+G 722
+H 778
+I 333
+J 333
+K 667
+L 556
+M 944
+N 778
+O 778
+P 611
+Q 778
+R 667
+S 556
+T 611
+U 778
+V 722
+W 944
+X 722
+Y 667
+Z 667
+$5D 333
+\ 606
+$5B 333
+$5E 606
+_ 500
+` 278
+a 444
+b 463
+c 407
+d 500
+e 389
+f 278
+g 500
+h 500
+i 278
+j 278
+k 444
+l 278
+m 778
+n 556
+o 444
+p 500
+q 463
+r 389
+s 389
+t 333
+u 556
+v 500
+w 722
+x 500
+y 500
+z 444
+{ 333
+| 606
+} 333
+$7E 606
+$AF 501
+$BF 1000
+:eWIDTH.
+
+:eFONT.

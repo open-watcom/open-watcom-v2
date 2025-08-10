@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void _MovePageUp( LPWDATA w )
         w->TopLineNumber = 1;
     }
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MovePageUp */
 
@@ -81,7 +81,7 @@ void _MovePageDown( LPWDATA w )
         }
     }
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MovePageDown */
 
@@ -132,7 +132,7 @@ void _MoveLineDown( LPWDATA w )
 /*
  * _MoveToLine - move to a line, given a thumb position
  */
-void _MoveToLine( LPWDATA w, DWORD line, BOOL center )
+void _MoveToLine( LPWDATA w, DWORD line, bool center )
 {
     int         height;
     DWORD       bottom;
@@ -156,6 +156,6 @@ void _MoveToLine( LPWDATA w, DWORD line, BOOL center )
         w->TopLineNumber = 1;
     w->CurrentLineNumber = line;
     _PositionScrollThumb( w );
-    _DisplayAllLines( w, TRUE );
+    _DisplayAllLines( w, true );
 
 } /* _MoveToLine */

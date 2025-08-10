@@ -10,17 +10,17 @@
 
 :include owrtlink.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :include cpluspro.sp
 
 :segment LINUX
 :include lnxkpack.sp
-:endsegment
 
+:endsegment
 :include unistd.sp
-
-:segment LINUX
-:include incdir.sp
-:endsegment
 
 :include safamilt.sp
 

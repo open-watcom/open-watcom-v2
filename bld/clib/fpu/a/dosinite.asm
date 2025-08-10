@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -31,6 +32,7 @@
 
 include struct.inc
 include extender.inc
+include int21.inc
 
 .386p
 .387
@@ -155,7 +157,7 @@ if 0
       xor   ECX,ECX                     ; - read IDT
       lea   EDX,oldidt                  ; - point to save area
       mov   AX,253Dh                    ; - code to read/write IDT
-      int   21h                         ; - read old value
+      int21h                            ; - ...
       _quif c                           ; - quit if error
       call  create_IDT_entry            ; - create entry for IDT
       push  ECX                         ; - push new IDT onto stack
@@ -163,7 +165,7 @@ if 0
       mov   EDX,ESP                     ; - point to new IDT
       mov   ECX,1                       ; - write IDT
       mov   AX,253Dh                    ; - code to read/write IDT
-      int   21h                         ; - write new value
+      int21h                            ; - write new value
       pop   ECX                         ; - clean up stack
       pop   ECX                         ; - ...
       _quif c                           ; - quit if error
@@ -172,7 +174,7 @@ if 0
 endif
       mov   cl,7                        ; - get old int7 handler
       mov   ax,2502h                    ; - ...
-      int   21H                         ; - ...
+      int21h                            ; - ...
       mov   old7off,ebx                 ; - save it
       mov   old7seg,es                  ; - ...
       cmp   byte ptr _Extender,X_PHARLAP_V3 ; - chk for v3 or higher
@@ -183,12 +185,12 @@ endif
       pop   ds                          ; - ...
       _quif l                           ; - quit if not version 3 or higher
       lea   edx,__int7_pl3              ; - set new int7 handler
-      int   21H                         ; - ...
+      int21h                            ; - ...
       pop   ds                          ; - restore ds
       call  _set_EM_MP_bits             ; - set EM and MP bits
     _admit                              ; admit: Phar Lap version <= 2
       lea   edx,__int7                  ; - set new int7 handler
-      int   21H                         ; - ...
+      int21h                            ; - ...
       pop   ds                          ; - restore ds
       mov   ecx,cr0                     ; - get cr0
       or    ecx,EM                      ; - flip on the EM bit
@@ -202,11 +204,11 @@ _set_EM_MP_bits proc near
     xor ebx,ebx                         ; read system registers
     lea edx,sysregs                     ; ...
     mov ax,2535H                        ; ...
-    int 21h                             ; ...
+    int21h                              ; ...
     or  sysregs,EM                      ; flip on the EM bit
     and sysregs,not MP                  ; don't want WAIT instructions
     inc ebx                             ; write back system registers
-    int 21h                             ; ...
+    int21h                              ; ...
     ret                                 ; return
 _set_EM_MP_bits endp
 
@@ -258,7 +260,7 @@ if 0
       mov   ecx,1                       ; - write IDT
       lea   edx,oldidt                  ; - point to save area
       mov   ax,253Dh                    ; - code to read/write IDT
-      int   21h                         ; - restore old value
+      int21h                            ; - restore old value
       _quif c                           ; - quit if error
       call  _reset_EM_MP_bits           ; - reset EM and MP bits
     _admit                              ; admit: not version 4
@@ -268,7 +270,7 @@ endif
       mov   edx,old7off                 ; - ...
       push  ds                          ; - save ds
       mov   ds,old7seg                  ; - ...
-      int   21H                         ; - ...
+      int21h                            ; - ...
       pop   ds                          ; - restore ds
       cmp   byte ptr _Extender,X_PHARLAP_V3 ; - quit if version < 3
       _quif l                           ; - ...
@@ -287,12 +289,12 @@ _reset_EM_MP_bits proc near
     xor ebx,ebx                         ; read system registers
     lea edx,sysregs                     ; ...
     mov ax,2535H                        ; ...
-    int 21h                             ; ...
+    int21h                              ; ...
     xor ecx,ecx                         ; restore EM and MP bits
     mov cx,msw                          ; ...
     mov sysregs,ecx                     ; ...
     inc ebx                             ; write back system registers
-    int 21h                             ; ...
+    int21h                              ; ...
     ret                                 ; return
 _reset_EM_MP_bits endp
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,10 @@
 #include "iomode.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_read( int hid, void *buffer, unsigned count,
-                    unsigned *bytes )
+
+_WCRTLINK unsigned _dos_read( int handle, void *buffer, unsigned count, unsigned *bytes )
 {
-    if( !ReadFile( __getOSHandle( hid ), buffer, count, (LPDWORD) bytes, NULL ) ) {
+    if( ReadFile( __getOSHandle( handle ), buffer, count, (LPDWORD)bytes, NULL ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

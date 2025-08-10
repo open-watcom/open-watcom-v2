@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,8 +158,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fname[_MAX_PATH2];
     char        buffer[_MAX_PATH2];
-    char        *p;
     size_t      len;
+    bool        found;
+    char        *p;
 
     /* unused parameters */ (void)ftype;
 
@@ -170,9 +171,12 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     p = findFile( buffer, fname, FilePathList );
     if( p == NULL ) {
         p = findFile( buffer, fname, DipExePathList );
-        if( p == NULL ) {
-            p = "";
-        }
+    }
+    if( p != NULL && *p != '\0' ) {
+        found = true;
+    } else {
+        found = false;
+        p = fname;
     }
     len = strlen( p );
     if( filename_maxlen > 0 ) {
@@ -183,7 +187,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
             strncpy( filename, p, filename_maxlen );
         filename[filename_maxlen] = '\0';
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
@@ -290,7 +294,7 @@ void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    _BIOSVideoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
+    _BIOSVideoRingBell( BIOSData( unsigned char, BDATA_ACTIVE_VIDEO_PAGE ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )

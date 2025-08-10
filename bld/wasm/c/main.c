@@ -57,6 +57,11 @@
 extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
 
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
+
 File_Info               AsmFiles;       // files information
 char                    *ModuleName = NULL;
 

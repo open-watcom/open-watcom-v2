@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ int __HeapMin( __segment seg, __segment one_heap )
         } else {
             num_of_paras = __ROUND_DOWN_SIZE_TO_PARA( new_heap_len );
         }
-        rc = TinySetBlock( num_of_paras, seg );
+        rc = TinySetBlock( seg, num_of_paras );
         if( TINY_ERROR( rc ) ) {
             _ReleaseFHeap();
             return( __set_errno_dos( TINY_INFO( rc ) ) );

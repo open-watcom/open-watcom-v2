@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "tinyio.h"
@@ -43,16 +45,15 @@
 
 _WCRTLINK int isatty( int handle )
 {
-    tiny_ret_t rc;
+    tiny_ret_t      rc;
 
     __handle_check( handle, 0 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
-        if( _WindowsIsWindowedHandle( handle ) ) {
-            return( 1 );
-        }
+    if( _WindowsIsWindowedHandle != NULL
+      && _WindowsIsWindowedHandle( handle ) != NULL ) {
+        return( true );
     }
 #endif
     rc = TinyGetDeviceInfo( handle );
-    return( ( TINY_INFO( rc ) & TIO_CTL_DEVICE ) != 0 );
+    return( TINY_OK( rc ) && (TINY_INFO( rc ) & TIO_CTL_DEVICE) );
 }

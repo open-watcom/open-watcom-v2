@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,27 +55,24 @@
 
 static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 {
-    unsigned    total = 0;
+    unsigned    total;
     unsigned    readamt;
     tiny_ret_t  rc;
 
+    total = 0;
+    readamt = MAXBUFF;
     while( len > 0 ) {
-
-        if( len > MAXBUFF ) {
-            readamt = MAXBUFF;
-        } else {
+        if( len < MAXBUFF ) {
             readamt = len;
         }
         rc = TinyRead( handle, buffer, readamt );
         if( TINY_ERROR( rc ) )
             return( rc );
-        total += TINY_LINFO( rc );
-        if( TINY_LINFO( rc ) != readamt )
-            return( total );
-
-        len -= readamt;
-        buffer += readamt;
-
+        total += rc;
+        if( rc != readamt )
+            break;
+        len -= rc;
+        buffer += rc;
     }
     return( total );
 }
@@ -87,6 +84,7 @@ int __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;
+    DWORD           error;
 #elif defined(__OS2__)
     OS_UINT         amount_read;
     APIRET          rc;
@@ -94,26 +92,23 @@ int __qread( int handle, void *buffer, unsigned len )
     unsigned        amount_read;
     tiny_ret_t      rc;
 #endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA         res;
+#endif
 
     __handle_check( handle, -1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdin != NULL ) {
-        LPWDATA res;
-
-        res = _WindowsIsWindowedHandle( handle );
-        if( res != NULL ) {
-            int rt;
-            rt = _WindowsStdin( res, buffer, len );
-            return( rt );
-        }
+    if( _WindowsStdin != NULL
+      && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
+        return( _WindowsStdin( res, buffer, len ) );
     }
 #endif
 #if defined(__NT__)
-    if( !ReadFile( __getOSHandle( handle ), buffer, len, &amount_read, NULL ) ) {
-        DWORD       err;
-        err = GetLastError();
-        __set_errno_dos( err );
-        if( err != ERROR_BROKEN_PIPE || amount_read != 0 ) {
+    if( ReadFile( __getOSHandle( handle ), buffer, len, &amount_read, NULL ) == 0 ) {
+        error = GetLastError();
+        __set_errno_dos( error );
+        if( error != ERROR_BROKEN_PIPE
+          || amount_read != 0 ) {
             return( -1 );
         }
     }

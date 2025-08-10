@@ -34,7 +34,7 @@ extern void __fsetbits( unsigned char _WCFAR *vector, const char _WCFAR *charset
 
 extern const unsigned char _HUGEDATA _Bits[8];
 
-#define GETCHARBIT(vector,c) (vector[ (unsigned char)c >> 3 ] & _Bits[ c & 0x07 ])
-#define SETCHARBIT(vector,c) vector[ (unsigned char)c >> 3 ] |= _Bits[ c & 0x07 ]
+#define GETCHARBIT(vector,c) (vector[(unsigned char)c >> 3] & _Bits[(unsigned char)c & 0x07])
+#define SETCHARBIT(vector,c) vector[(unsigned char)c >> 3] |= _Bits[(unsigned char)c & 0x07]
 
 #define CHARVECTOR_SIZE (256/8)

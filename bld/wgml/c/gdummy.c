@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +29,10 @@
 *                    gml_dummy()
 *                    lay_dummy()
 *                    scr_dummy()
+*   NOTE:   output modified to list only the item name, not the context
 *
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -43,15 +45,13 @@ void    scr_dummy( void )
     char            cwcurr[4];          // control word string for msg
 
     cwcurr[0] = SCR_char;
-    cwcurr[1] = *(token_buf);
-    cwcurr[2] = *(token_buf + 1);
+    cwcurr[1] = token_buf[0];
+    cwcurr[2] = token_buf[1];
     cwcurr[3] = '\0';
 
-    scan_restart = scan_stop;
+    scan_restart = g_scandata.e;
 
-    g_warn( wng_unsupp_cw, cwcurr );
-    wng_count++;
-    file_mac_info();
+    xx_warn_c( WNG_UNSUPP_CW, cwcurr );
 }
 
 
@@ -59,29 +59,33 @@ void    scr_dummy( void )
 /*  gml_dummy        processing                                            */
 /***************************************************************************/
 
-void    gml_dummy( gml_tag gtag )
+void    gml_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
 
-    g_warn( wng_unsupp_tag, gml_tagname( gtag ) );
-    wng_count++;
-    file_mac_info();
+    xx_warn_c( WNG_UNSUPP_TAG, entry->tagname );
 }
 
 /***************************************************************************/
 /*  lay_dummy        processing                                            */
 /***************************************************************************/
 
-void    lay_dummy( lay_tag ltag )
+void    lay_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop;
+    g_scandata.s = g_scandata.e;
 
-    if( GlobFlags.firstpass ) {       // layout msg only in pass 1
-        g_warn( wng_unsupp_lay, lay_tagname( ltag ) );
-        wng_count++;
-        show_include_stack();
-    }
+    xx_warn_c( WNG_UNSUPP_LAY, entry->tagname );
     eat_lay_sub_tag();                  // ignore any attribute / value
+}
+
+
+/***************************************************************************/
+/*  put_lay_dummy    processing                                            */
+/***************************************************************************/
+
+void    put_lay_dummy( FILE *fp, layout_data *lay )
+{
+    (void)fp; (void)lay;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,11 +47,11 @@
 #include "seterrno.h"
 
 
-_WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
+_WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *phandle )
 {
     APIRET      rc;
     OS_UINT     actiontaken;
-    HFILE       fhandle;
+    HFILE       handle;
     OS_UINT     rwmode, share, openmode;
     unsigned    iomode_flags;
 
@@ -69,7 +69,7 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
         share = OPEN_SHARE_DENYNONE;
     }
     openmode = share | rwmode;
-    rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0,
+    rc = DosOpen( (PSZ)name, &handle, &actiontaken, 0,
                     FILE_NORMAL,
                     OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS ,
                     openmode,
@@ -77,15 +77,15 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }
-    *handle = fhandle;
+    *phandle = handle;
     iomode_flags = 0;
     if( rwmode == O_RDWR )
         iomode_flags = _READ | _WRITE;
-    if( rwmode == O_RDONLY)
+    if( rwmode == O_RDONLY )
         iomode_flags = _READ;
-    if( rwmode == O_WRONLY)
+    if( rwmode == O_WRONLY )
         iomode_flags = _WRITE;
-    __SetIOMode( fhandle, iomode_flags );
+    __SetIOMode_grow( handle, iomode_flags );
     return( 0 );
 }
 
@@ -93,7 +93,7 @@ unsigned _dos_close( int handle )
 {
     APIRET  rc;
 
-    __SetIOMode_nogrow( handle, 0 );
+    __SetIOMode( handle, 0 );
     rc = DosClose( handle );
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );

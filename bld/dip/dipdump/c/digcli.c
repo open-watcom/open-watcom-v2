@@ -201,10 +201,11 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fullname[_MAX_PATH2];
     char        fname[_MAX_PATH2];
-    char        *p;
     char        c;
     size_t      len;
     const char  *path_list;
+    bool        found;
+    char        *p;
 
     /* unused parameters */ (void)ftype;
 
@@ -213,7 +214,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         base_name_len = strlen( base_name );
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
+    found = false;
     if( access( fname, F_OK ) == 0 ) {
+        found = true;
         p = fname;
     } else if( path_list != NULL ) {
         strcpy( fullname, fname );
@@ -231,16 +234,14 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
             }
             strcpy( p, fname );
             if( access( fullname, F_OK ) == 0 ) {
+                found = true;
                 p = fullname;
                 break;
             }
         }
-        if( *path_list == '\0' ) {
-            p = "";
-        }
-    } else {
-        p = "";
     }
+    if( !found )
+        p = fname;
     len = strlen( p );
     if( filename_maxlen > 0 ) {
         filename_maxlen--;
@@ -250,7 +251,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
             strncpy( filename, p, filename_maxlen );
         filename[filename_maxlen] = '\0';
     }
-    return( len );
+    return( ( found ) ? len : 0 );
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )

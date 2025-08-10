@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,8 @@ static int is_directory( const CHAR_TYPE *name )
         curr_ch = _mbsnextc( (unsigned char *)name );
 #endif
         if( curr_ch == NULLCHAR ) {
-            if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ) {
+            if( IS_DIR_SEP( prev_ch )
+              || prev_ch == DRV_SEP ) {
                 /* directory, need add "*.*" */
                 return( 2 );
             }
@@ -96,18 +97,18 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
 /*******************************************************************************************/
 {
     WIN32_FIND_DATA     ffd;
-    HANDLE              h;
+    HANDLE              osffh;
 
     if( dirp->d_first != _DIR_CLOSED ) {
         FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = __lib_FindFirstFile( dirname, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
+    osffh = __lib_FindFirstFile( dirname, &ffd );
+    if( osffh == INVALID_HANDLE_VALUE ) {
         __set_errno_nt();
         return( NULL );
     }
-    DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
+    DTAXXX_HANDLE_OF( dirp->d_dta ) = osffh;
     __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
@@ -130,7 +131,8 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
             return( NULL );
         }
     }
-    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+    if( i >= 0
+      && (tmp.d_attr & _A_SUBDIR) ) {
         size_t          len;
 
         /* directory, add wildcard */
@@ -168,12 +170,13 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     WIN32_FIND_DATA     ffd;
     DWORD               err;
 
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !__lib_FindNextFile( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
+        if( __lib_FindNextFile( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) == 0 ) {
             err = GetLastError();
             if( err != ERROR_NO_MORE_FILES ) {
                 __set_errno_dos( err );
@@ -189,11 +192,11 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
 /***********************************************************/
 {
-
-    if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
+    if( dirp == NULL
+      || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno_dos( ERROR_INVALID_HANDLE ) );
     }
-    if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
+    if( FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) == 0 ) {
         return( __set_errno_nt() );
     }
     dirp->d_first = _DIR_CLOSED;
@@ -206,7 +209,8 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
 _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 /**************************************************************/
 {
-    if( dirp == NULL || dirp->d_openpath == NULL )
+    if( dirp == NULL
+      || dirp->d_openpath == NULL )
         return;
     __F_NAME(___opendir,___wopendir)( dirp->d_openpath, dirp );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -26,27 +26,16 @@
 *
 * Description:  some WGML utility functions
 *
-*               att_val_to_su
-*               conv_hor_unit
-*               conv_vert_unit
-*               cw_val_to_su
-*               format_num
-*               get_att_value
-*               greater_su
-*               int_to_roman
-*               internal_to_su
-*               lay_init_su
-*               len_to_trail_space
-*               skip_to_quote
-*               start_line_with_string
-*               su_expression
-*               su_layout_special
-*
 ****************************************************************************/
 
+
 #include "wgml.h"
+#include <errno.h>
 
 #include "clibext.h"
+
+
+#define CHECK_WS(c,t)   (((c) == ' ') || (t) && ((c) == '\t'))
 
 /***************************************************************************/
 /*  parses in_su->su_txt to complete initialization of in_su               */
@@ -89,31 +78,21 @@
 
 static const bool internal_to_su( su *in_su, bool tag, const char *base )
 {
-    bool        cvterr  = true;
-    bool        is_cp   = false;
-    char    *   pd      = NULL; // ptr to decimal point
-    char    *   pd1     = NULL; // ptr to first decimal digit
-    char    *   pdn     = NULL; // ptr to last digit +1
-    char    *   ps      = NULL; // destination for value text
-    char    *   pu      = NULL; // ptr to trailing unit
-    char        sign;
-    char        unit[4];
-    int         i;
-    ldiv_t      div;
-    long        k;
-    long        wh;
-    long        wd;
-    su      *   s;
+    bool            cvterr  = true;
+    bool            is_cp   = false;
+    char            *pd     = NULL;     // ptr to decimal point
+    char            *pd1    = NULL;     // ptr to first decimal digit
+    char            *pdn    = NULL;     // ptr to last digit +1
+    char            *ps;                // destination for value text
+    char            sign;
+    char            unit[4];
+    int             i;
+    ldiv_t          div;
+    int             k;
+    int             wh;
+    int             wd;
 
-    unit[3] = '\0';
-    unit[2] = '\0';
-    unit[1] = '\0';
-    unit[0] = '\0';
-    s = in_su;
-    wh = 0;
-    wd = 0;
-
-    ps = s->su_txt;
+    ps = in_su->su_txt;
 
     /********************************************************************/
     /* extract and skip the sign, if present                            */
@@ -123,195 +102,164 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     /* lay_init_su() presupposes that the value has no initial sign     */
     /********************************************************************/
 
-    if( (*ps == '+') || (*ps == '-') ) {
+    if( (*ps == '+')
+      || (*ps == '-') ) {
         sign = *ps;
         ps++;
     } else {
         sign = '+';
     }
 
-    for( i = 0; i < 4; i++ ) {              // max four digits in whole part
-        if( (*ps >= '0') && (*ps <= '9') ) {
-            wh = (10 * wh) + (*ps - '0');
-            ps++;
-        } else {
-            break;
-        }
-        if( !*ps ) {                           // value end reached
-            break;
-        }
+    wh = 0;
+    for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) { // max four digits in whole part
+        wh = (10 * wh) + (*ps - '0');
+        ps++;
     }
-    if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits in whole part
-        val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop;
-        return( cvterr );
+    if( my_isdigit( *ps ) ) {           // too many digits in whole part
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+        /* never return */
     }
 
-    if( *ps && *ps == '.' ) {   // check for decimal point
-        pd = ps;
-        ps++;
-        pd1 = ps;                            // remember start of decimals
-        for( i = 0; i < 2; i++ ) {          // max two digits in decimals
-            if( (*ps >= '0') && (*ps <= '9') ) {
-                wd = 10 * wd + *ps - '0';
-                ps++;
-            } else {
-                break;
-            }
-            if( !*ps ) {                     // value end reached
-                break;
-            }
+    wd = 0;
+    if( *ps == '.' ) {                  // check for decimal point
+        pd = ps++;
+        pd1 = ps;                       // remember start of decimals
+        for( i = 0; i < 2 && my_isdigit( *ps ); i++ ) { // max two digits in decimals
+            wd = 10 * wd + *ps - '0';
+            ps++;
+        }
+        if( my_isdigit( *ps ) ) {       // too many digits in decimals
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+            /* never return */
         }
         pdn = ps;
-        if( pd1 == ps ) {                        // no decimals
+        if( pd1 == ps ) {               // no decimals
             pd1 = NULL;
             pdn = NULL;
         }
-        if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits in decimals
-            val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop;
-            return( cvterr );
-        }
     }
 
-    k = 0;
-    pu = ps;
-    for( i = 0; i < 2; i++ ) {                  // max two characters in unit
-        if( *ps && isalpha( *ps ) ) {
-            unit[k++] = tolower( *ps );          // save Unit
-            ps++;
-        } else {
-            break;
-        }
-        if( !*ps ) {                            // value end reached
-            break;
-        }
-    }
-    if( *ps && isalpha( *ps ) ) {             // too many characters in unit
-        val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop;
-        return( cvterr );
+    /***********************************************************************/
+    /*  get max two characters in unit                                     */
+    /***********************************************************************/
+
+    unit[3] = '\0';
+    unit[2] = '\0';
+    unit[1] = '\0';
+    unit[0] = '\0';
+    if( my_isalpha( *ps ) )             // check first
+        unit[0] = *ps++;                // save Unit
+    if( my_isalpha( *ps ) )             // check second
+        unit[1] = *ps++;                // save Unit
+    if( my_isalpha( *ps ) ) {           // too many characters in unit
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+        /* never return */
     }
 
     /***********************************************************************/
     /*  check for valid unit                                               */
     /***********************************************************************/
-    if( unit[1] == '\0' ) {           // single letter unit
+
+    if( unit[1] == '\0' ) {             // single letter unit
         switch( unit[0] ) {
         case 'i' :
-            s->su_u = SU_inch;
+            in_su->su_u = SU_inch;
             break;
         case 'm' :
-            s->su_u = SU_ems;
+            in_su->su_u = SU_ems;
             if( pd != NULL ) {          // no decimals with "M"
-                val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop;
-                return( cvterr );
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+                /* never return */
             }
             break;
         case 'c' :
-            s->su_u = SU_cicero;
+            in_su->su_u = SU_cicero;
             is_cp = true;
             break;
         case 'p' :
-            s->su_u = SU_pica;
+            in_su->su_u = SU_pica;
             is_cp = true;
             break;
         case '\0' :                     // no unit is characters or lines
-            s->su_u = SU_chars_lines;
+            in_su->su_u = SU_chars_lines;
             break;
         default:
-            val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop;
-            return( cvterr );
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+            /* never return */
         }
     } else {                            // two letter unit
         if( unit[1] == 'm' ) {          // cm, mm ?
             if( unit[0] == 'c' ) {
-                s->su_u = SU_cm;
+                in_su->su_u = SU_cm;
             } else if( unit[0] == 'm' ) {
-                s->su_u = SU_mm;
+                in_su->su_u = SU_mm;
             } else {                    // invalid unit
-                val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop;
-                return( cvterr );
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+                /* never return */
             }
         } else if( unit[0] == 'd' ) {   // dv ?
             if( unit[1] == 'v' ) {
-                s->su_u = SU_dv;
+                in_su->su_u = SU_dv;
             } else {                    // invalid unit
-                val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop;
-                return( cvterr );
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+                /* never return */
             }
         } else {                        // invalid unit
-            val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop;
-            return( cvterr );
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+            /* never return */
         }
     }
 
-    if( is_cp ) {       // "C" and "P" can be followed by max four digits
-        for( i = 0; i < 4; i++ ) {
-            if( (*ps >= '0') && (*ps <= '9') ) {
-                wd = (10 * wd) + (*ps - '0');
-                ps++;
-            }
-            if( *ps ) {    // value end reached
-                break;
-            }
+    if( is_cp ) {                       // "c" and "p" can be followed by max four digits
+        for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) {
+            wd = (10 * wd) + (*ps - '0');
+            ps++;
+        }
+        if( my_isdigit( *ps ) ) {       // too many digits after "c" or "p"
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+            /* never return */
         }
     }
-    if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits after "C" or "P"
-        val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop;
-        return( cvterr );
-    }
 
-    if( *ps ) {                             // value continues on: it shouldn't
-        val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop;
-        return( cvterr );
+    if( *ps != '\0' ) {                 // value continues on: it shouldn't
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+        /* never return */
     }
-    s->su_whole = wh;
-    s->su_dec   = wd;
+    in_su->su_whole = wh;
+    in_su->su_dec   = wd;
 
-    if( k == 0 ) {                      // no trailing unit
-        pu = NULL;
-    }
     if( pd != NULL ) {                  // dec point found
-        if( pu == NULL ) {              // need trailing unit
-            val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop;
-            return( cvterr );
+        if( unit[0] == '\0' ) {         // need trailing unit
+            val_parse_err_exit( base + (ps - in_su->su_txt - 1), tag );
+            /* never return */
         }
     }
 
-    s->su_inch = 0;
-    s->su_mm   = 0;
+    in_su->su_inch = 0;
+    in_su->su_mm   = 0;
     k = 1;
     if( pd1 != NULL ) {
         if( pdn - pd1 == 1 ) {
-            k = 10;                 // only 0.1 digit
+            k = 10;                     // only 0.1 digit
         }
     }
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     // the relative units are only stored, not converted
     case SU_chars_lines :
     case SU_ems :
     case SU_dv :
         break;
     case SU_inch :                      // inch, cm, mm valid with decimals
-        s->su_mm   = (wh * 100L + wd * k) * 2540L;
-        s->su_inch = (wh * 100L + wd * k) *  100L;
+        in_su->su_mm   = (wh * 100L + wd * k) * 2540L;
+        in_su->su_inch = (wh * 100L + wd * k) *  100L;
         break;
     case SU_cm :
-        s->su_mm   = (wh * 100L + wd * k) * 1000L;
-        s->su_inch = s->su_mm * 10L / 254L;
+        in_su->su_mm   = (wh * 100L + wd * k) * 1000L;
+        in_su->su_inch = in_su->su_mm * 10L / 254L;
         break;
     case SU_mm :
-        s->su_mm   = (wh * 100L + wd * k) *  100L;
-        s->su_inch = s->su_mm * 10L / 254L;
+        in_su->su_mm   = (wh * 100L + wd * k) *  100L;
+        in_su->su_inch = in_su->su_mm * 10L / 254L;
         break;
     case SU_cicero :                    // cicero
         if( wd > 11 ) {
@@ -319,9 +267,9 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             wh += div.quot;
             wd = div.rem;
         }
-        s->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
-        s->su_inch = (int64_t)s->su_inch * 10656L / 10000L;
-        s->su_mm = s->su_inch * 254L / 10L;
+        in_su->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
+        in_su->su_inch = (int64_t)in_su->su_inch * 10656L / 10000L;
+        in_su->su_mm = in_su->su_inch * 254L / 10L;
         break;
     case SU_pica :                      // pica
         if( wd > 11 ) {
@@ -329,17 +277,17 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             wh += div.quot;
             wd = div.rem;
         }
-        s->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
-        s->su_inch = (int64_t)s->su_inch * 9978L / 10000L;
-        s->su_mm = s->su_inch * 254L / 10L;
+        in_su->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
+        in_su->su_inch = (int64_t)in_su->su_inch * 9978L / 10000L;
+        in_su->su_mm = in_su->su_inch * 254L / 10L;
         break;
     default:
         break;
     }
     if( sign == '-' ) {
-        s->su_inch  = -s->su_inch;
-        s->su_mm    = -s->su_mm;
-        s->su_whole = -s->su_whole;
+        in_su->su_inch  = -in_su->su_inch;
+        in_su->su_mm    = -in_su->su_mm;
+        in_su->su_whole = -in_su->su_whole;
     }
 
     cvterr = false;
@@ -353,26 +301,23 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
 /*          false otherwise (not necessarily an error)                     */
 /***************************************************************************/
 
-static bool su_expression( su * in_su )
+static bool su_expression( su *in_su )
 {
     bool                retval  = true;
-    char            *   p       = in_su->su_txt;
     condcode            cc;
-    getnum_block        value;
+    getnum_block        gn;
 
-    value.ignore_blanks = false;
-    value.argstart = p;
-    while( *p ) {
-        p++;
-    }
-    value.argstop = p;
-    cc = getnum( &value );
+    gn.arg.e = gn.arg.s = in_su->su_txt;
+    while( *gn.arg.e != '\0' )
+        gn.arg.e++;
+    gn.ignore_blanks = false;
+    cc = getnum( &gn );
 
-    if( cc == notnum ) {
+    if( cc == CC_notnum ) {
         retval = false;
     } else {
         in_su->su_u = SU_chars_lines;
-        in_su->su_whole = value.result;
+        in_su->su_whole = gn.result;
         in_su->su_dec = 0;
         in_su->su_inch = 0;
         in_su->su_mm = 0;
@@ -381,13 +326,91 @@ static bool su_expression( su * in_su )
     return( retval );
 }
 
+/***************************************************************************/
+/*  insert space characters into t_element as if they were text            */
+/*  when concatenation is on, this is done at the end of the last          */
+/*    text_line, in case of wrapping                                       */
+/*    t_element must be a text element                                     */
+/*  when concatenation is off, a new doc_element must be created           */
+/*  NOTE: invoked by add_dt_space()                                        */
+/*        used with items affected by DT/DD used inside a macro            */
+/***************************************************************************/
+
+static void add_spaces_t_element( char * spaces )
+{
+    font_number     font;
+    unsigned        spc_cnt;
+    text_chars  *   sav_chars;
+    text_line   *   line;
+    unsigned        start;
+
+    spc_cnt = strlen( spaces );
+    if( spc_cnt > 0 ) {                                 // must have something to add
+        if( t_element != NULL ) {                       // t_element exists
+            if( t_element->type != ELT_text ) {          // must be text
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+            for( line = t_element->element.text.first; line->next != NULL; line = line->next )
+                /* empty */;
+            font = line->last->font;
+            start = line->last->x_address + line->last->width;
+            sav_chars = line->last;
+            line->last->next = process_word( layout_work.note.spaces, spc_cnt, font, false );
+            line->last = line->last->next;
+            line->last->prev = sav_chars;
+            line->last->type = TXT_norm;
+            line->last->x_address = start;
+
+            if( wgml_fonts[font].line_height > line->line_height ) {
+                line->line_height = wgml_fonts[font].line_height;
+            }
+        } else {                                        // too complicated
+            xx_line_warn_c( WNG_HDREF_CO_OFF, buff2 );
+        }
+    }
+    return;
+}
+
+/***************************************************************************/
+/* add space to DT text and re-evaluate DD text start position             */
+/* Note: only called when DT/DD were used in a macro, and then only by     */
+/*       those items that react to that event                              */
+/***************************************************************************/
+
+void add_dt_space( void )
+{
+    if( t_line == NULL ) {
+        add_spaces_t_element( " " );            // DD text will be on new line
+    } else {                                    // will need to re-evaluate DD text position
+        ProcFlags.dd_space = false;             // reset context
+        t_page.cur_width = t_line->last->x_address + t_line->last->width;
+        insert_hard_spaces( " ", 1, t_line->last->font );
+        if( t_page.cur_width + wgml_fonts[layout_work.dd.font].spc_width < t_page.cur_left ) {  // set for current line
+            t_page.cur_width = t_page.cur_left;
+            ProcFlags.zsp = true;
+        } else if( nest_cb->dl_break ) {
+            if( t_line != NULL ) {      // break not previously applied because only needed now
+                process_line_full( t_line, ((ProcFlags.justify != JUST_off) &&
+                    (ProcFlags.justify != JUST_on) && (ProcFlags.justify != JUST_half)) );
+                t_line = NULL;              // commit term but as part of same doc_element as definition
+                t_page.cur_width = t_page.cur_left;
+                post_space = 0;
+            }
+        } else {                        // cur_width > cur_left and no break
+            ProcFlags.dd_space = true;
+            ProcFlags.zsp = false;
+        }
+    }
+    return;
+}
 
 /***************************************************************************/
 /* return length of string without trailing spaces                         */
 /* return 1 for all blank string                                           */
 /***************************************************************************/
 
-size_t  len_to_trail_space( const char *p , size_t len )
+unsigned len_to_trail_space( const char *p , unsigned len )
 {
     while( (len > 0) && (p[--len] == ' ') )
         /* empty */;
@@ -397,16 +420,18 @@ size_t  len_to_trail_space( const char *p , size_t len )
     return( len );
 }
 
-#if 0
-char    *skip_to_quote( char * p, char quote )
+/***************************************************************************/
+/* find matching quote char, if present                                    */
+/* will point to \0 if quote char not found                                */
+/***************************************************************************/
+
+char * skip_to_quote( char * p, char quote )
 {
-    while( *p && quote != *p ) {
+    while( *p != '\0' && quote != *p ) {
         p++;
     }
     return( p + 1 );
 }
-#endif
-
 
 /***************************************************************************/
 /*  extension for layout :BANREGION indent, hoffset and width attributes:  */
@@ -414,60 +439,30 @@ char    *skip_to_quote( char * p, char quote )
 /*  returns true if an extended attribute value was found                  */
 /*          false otherwise (not necessarily an error)                     */
 /***************************************************************************/
-static  bool    su_layout_special( su * in_su )
+static bool su_layout_special( su *in_su )
 {
-    bool        retval = true;
-    char    *   ps;
-    su      *   s;
-    long        wh;
-    long        wd;
-    char        quote;
-
-    s = in_su;
-    ps = s->su_txt;
-    wh = 0;
-    wd = 0;
-    quote = '\0';
-
-    /********************************************************************/
-    /* val_start will be NULL when called from lay_val_to_su().         */
-    /* val_start will not be NULL when called from att_val_to_su().     */
-    /* when not NULL, *(val_start - 1) should be a whitespace or "="    */
-    /********************************************************************/
-
-    if( (val_start != NULL) && ((*(val_start - 1) == '\'') || (*(val_start - 1) == '"' ) ||
-        (*ps == '+') || (*ps == '-' )) ) {   // values must not be quoted or signed
-        retval = false;
-    } else if( !strnicmp( "left", ps, 4 ) ) {
-        s->su_u = SU_lay_left;
-        strcpy( ps, "left" );
-    } else if( !strnicmp( "right", ps, 5 ) ) {
-        s->su_u = SU_lay_right;
-        strcpy( ps, "right" );
-    } else if( !(strnicmp( "center", ps, 6 )) && (strnicmp( "centre", ps, 6 )) ) {
-        s->su_u = SU_lay_centre;
-        strcpy( ps, "centre" );
-    } else if( !strnicmp( "extend", ps, 6 ) ) {
-        s->su_u = SU_lay_extend;
-        strcpy( ps, "extend" );
+    if( strcmp( "left", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_left;
+    } else if( strcmp( "right", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_right;
+    } else if( strcmp( "center", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_centre;
+    } else if( strcmp( "centre", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_centre;
+    } else if( strcmp( "extend", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_extend;
     } else {
-        retval = false;
+        return( false );
     }
-
-    if( retval ) {
-        s->su_whole = 0;
-        s->su_dec   = 0;
-        s->su_inch  = 0;
-        s->su_mm    = 0;
-        s->su_relative = false;
-    }
-
-    return( retval );
+    in_su->su_whole    = 0;
+    in_su->su_dec      = 0;
+    in_su->su_inch     = 0;
+    in_su->su_mm       = 0;
+    return( true );
 }
 
-
 /***************************************************************************/
-/*  initializes in_su->su_txt using val_start/val_len                      */
+/*  initializes in_su->su_txt using attr_val->name/attr_val->len   */
 /*  converts in_su->su_txt using su_layout_special() or internal_to_su()   */
 /*  for use with tag attribute values, not control word operands           */
 /*                                                                         */
@@ -482,59 +477,49 @@ static  bool    su_layout_special( su * in_su )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool att_val_to_su( su * in_su, bool pos )
+bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
 {
-    bool        cvterr  = true;
-    char    *   ps      = NULL; // destination for value text
+    char        *ps;        // destination for value text
     char        sign;
-    su      *   s;
 
-    s = in_su;
-    ps = s->su_txt;
-    *ps = '\0';
-
-    if( (val_len + 1) > MAX_SU_CHAR ) {             // won't fit
-        xx_line_err( err_inv_att_val, val_start );
-        scan_start = scan_stop;
-        return( cvterr );
+    if( attr_val->tok.l > MAX_SU_LENGTH ) {     // won't fit
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
+        /* never return */
     }
-    memcpy( ps, val_start, val_len );
-    ps[val_len] = '\0';
+    /* attr_val->specval is lowercased already */
+    strcpy( in_su->su_txt, attr_val->specval );
 
-    s->su_u = SU_undefined;
-    if( *ps == '+' ) {                   // not allowed with tags
-        xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop;
-        return( cvterr );
-    } else if( *ps == '-' ) {            // not relative, just negative
-        if( pos ) {                     // value must be positive
-            xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop;
-            return( cvterr );
+    in_su->su_u = SU_undefined;
+    in_su->su_relative = false;
+
+    ps = in_su->su_txt;
+    if( *ps == '+' ) {                      // not allowed with tags
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
+        /* never return */
+    }
+    if( *ps == '-' ) {               // not relative, just negative
+        if( pos ) {                         // value must be positive
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
+            /* never return */
         }
         sign = *ps;
-        if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop;
-            return( cvterr );
+        if( *(ps + 1) == '+'
+          || *(ps + 1) == '-' ) {  // only one sign is allowed
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
+            /* never return */
         }
     } else {
         sign = '+';
     }
-    if( !*ps ) {                          // value end reached, not valid
-        xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop;
-        return( cvterr );
-    }
-    s->su_relative = false;             // no relative positioning with tags
-
-    if( su_layout_special( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, true, val_start );
+    if( *ps == '\0' ) {                     // value end reached, not valid
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
+        /* never return */
     }
 
-    return( cvterr );
+    if( specval && su_layout_special( in_su ) )
+        return( false );
+
+    return( internal_to_su( in_su, true, attr_val->tok.s ) );
 }
 
 /***************************************************************************/
@@ -551,55 +536,51 @@ bool att_val_to_su( su * in_su, bool pos )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool cw_val_to_su( char * * scanp, su * in_su )
+bool cw_val_to_su( const char **scanp, su *in_su )
 {
-    bool        cvterr  = true;
-    char    *   p       = NULL; // source of value text
-    char    *   pa      = NULL; // start of value text
-    char    *   ps      = NULL; // destination for value text
+    const char  *p;     // source of value text
+    const char  *pa;    // start of value text
+    const char  *pb;    // start of value text
+    char        *ps;    // destination for value text
     char        sign;
-    size_t      len;
-    su      *   s;
+    unsigned    len;
+    unsigned    i;
 
-    s = in_su;
-    p = *scanp;;
-    pa = p;
-    ps = s->su_txt;
+    ps = in_su->su_txt;
     *ps = '\0';
-    while( *p && (*p == ' ' ) ) {   // just in case
-        p++;
-    }
-    while( *p && (*p != ' ' ) ) {
-        p++;
-    }
-    len = p - pa;
-    *scanp = p;                     // report back value of p
-    if( (len + 1) > MAX_SU_CHAR ) {
-        xx_line_err( err_inv_cw_op_val, val_start );
-        scan_start = scan_stop;
-        return( cvterr );
-    }
-    memcpy( ps, pa, len );
-    ps[len] = '\0';
 
-    s->su_u = SU_undefined;
-    if( *ps == '+' || *ps == '-' ) {
+    p = *scanp;
+    pa = p;
+    SkipSpaces( p );            // just in case
+    pb = p;
+    SkipNonSpaces( p );
+    len = p - pb;
+    *scanp = p;                 // report back value of p
+    if( len > MAX_SU_LENGTH ) {
+        xx_line_err_exit_c( ERR_INV_CW_OP_VAL, pa );
+        /* never return */
+    }
+    /* lowercase input string */
+    for( i = 0; i < len; i++ ) {
+        ps[i] = my_tolower( pb[i] );
+    }
+    ps[i] = '\0';
+
+    in_su->su_u = SU_undefined;
+    if( *ps == '+'
+      || *ps == '-' ) {
         sign = *ps;
-        s->su_relative = true;  // value is added / subtracted from old value
+        in_su->su_relative = true;  // value is added / subtracted from old value
     } else {
         sign = '+';
-        s->su_relative = false;         // value replaces old value
+        in_su->su_relative = false;         // value replaces old value
     }
 
-    if( su_expression( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, false, pa );
-    }
+    if( su_expression( in_su ) )
+        return( false );
 
-    return( cvterr );
+    return( internal_to_su( in_su, false, pa ) );
 }
-
 
 /***************************************************************************/
 /*  initializes in_su->su_txt using p                                      */
@@ -621,92 +602,85 @@ bool cw_val_to_su( char * * scanp, su * in_su )
 
 bool lay_init_su( const char *p, su *in_su )
 {
-    bool        cvterr  = true;
-    const char  *pa = NULL;     // start of value text
-    char        *ps = NULL;     // destination for value text
-    char        sign;
-    size_t      len;
-    su          *s;
+    const char      *pa;    // start of value text
+    const char      *pb;
+    char            *ps;    // destination for value text
+    char            sign;
+    int             len;
+    int             i;
 
-    s = in_su;
-    pa = p;
-    ps = s->su_txt;
+    ps = in_su->su_txt;
     *ps = '\0';
 
-    while( *p && (*p == ' ' ) ) {   // just in case
-        p++;
-    }
-    while( *p && (*p != ' ' ) ) {
-        p++;
-    }
-    len = p - pa;
+    pa = p;
+    SkipSpaces( p );                // just in case
+    pb = p;
+    SkipNonSpaces( p );
+    len = p - pb;
 
-    if( (len + 1) > MAX_SU_CHAR ) {                 // won't fit
-        xx_line_err( err_inv_att_val, val_start );
-        scan_start = scan_stop;
-        return( cvterr );
+    if( len > MAX_SU_LENGTH ) {     // won't fit
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
+        /* never return */
     }
-    memcpy( ps, pa, len );
-    ps[len] = '\0';
+    /* lowercase input string */
+    for( i = 0; i < len; i++ ) {
+        ps[i] = my_tolower( pb[i] );
+    }
+    ps[i] = '\0';
 
-    s->su_u = SU_undefined;
-    if( *ps == '+' ) {                   // not allowed with tags
-        xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop;
-        return( cvterr );
-    } else if( *ps == '-' ) {            // not relative, just negative
+    in_su->su_u = SU_undefined;
+    in_su->su_relative = false;
+
+    if( *ps == '+' ) {              // not allowed with tags
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
+        /* never return */
+    }
+    if( *ps == '-' ) {       // not relative, just negative
         sign = *ps;
-        if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop;
-            return( cvterr );
+        if( *(ps + 1) == '+'
+          || *(ps + 1) == '-' ) {   // only one sign is allowed
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
+            /* never return */
         }
     } else {
         sign = '+';
     }
-    if( !*ps ) {                          // value end reached, not valid
-        xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop;
-        return( cvterr );
-    }
-    s->su_relative = false;             // no relative positioning with tags
-
-    if( su_layout_special( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, true, pa );
+    if( *ps == '\0' ) {             // value end reached, not valid
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
+        /* never return */
     }
 
-    return( cvterr );
+    if( su_layout_special( in_su ) )
+        return( false );
+
+    return( internal_to_su( in_su, true, pa ) );
 }
-
 
 /***************************************************************************/
 /*  convert internal space units to device space units                     */
-/*   use font 0 or current font???                              TBD        */
 /*  return value is signed as space unit can be relative (+ -)             */
 /***************************************************************************/
 
-int32_t conv_hor_unit( const su *s )
+int conv_hor_unit( su *in_su, font_number font )
 {
-    int32_t     ds;
+    int             ds;
 
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     case SU_chars_lines :
-        ds = s->su_whole * (int32_t)bin_device->horizontal_base_units / CPI;
+        ds = in_su->su_whole * (int)bin_device->horizontal_base_units / CPI;
         break;
     case SU_dv :
-        ds = s->su_whole;
+        ds = in_su->su_whole;
         break;
     case SU_ems :
-        ds = s->su_whole * wgml_fonts[g_curr_font].em_base;
+        ds = in_su->su_whole * wgml_fonts[font].em_base;
         break;
     case SU_inch :
     case SU_cm :
     case SU_mm :
     case SU_cicero :
     case SU_pica :
-        ds = (int64_t)s->su_inch * bin_device->horizontal_base_units / 10000L;
+        ds = (int64_t)in_su->su_inch * bin_device->horizontal_base_units / 10000L;
         break;
     default:
         ds = 0;
@@ -715,26 +689,26 @@ int32_t conv_hor_unit( const su *s )
     return( ds );
 }
 
-int32_t conv_vert_unit( const su *s, spacing_line spacing_ln )
+int conv_vert_unit( su *in_su, text_space text_spacing, font_number font )
 {
-    int32_t         ds;
-    int32_t         fp;
+    int             ds;
+    int             fp;
 
-    if( !( spacing_ln > 0 ) ) {         // if spacing is not valid
-        spacing_ln = g_spacing_ln;      // use default
+    if( !( text_spacing > 0 ) ) {       // if spacing valid use it
+        text_spacing = g_text_spacing;  // else default
     }
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     case SU_chars_lines :
     case SU_ems :
         // no decimals, use spacing, round negative values down
-        ds = spacing_ln * s->su_whole * wgml_fonts[g_curr_font].line_height;
+        ds = text_spacing * in_su->su_whole * wgml_fonts[font].line_height;
         if( ds < 0 ) {
             ds++;
         }
         break;
     case SU_dv :
         // no decimals, no spacing, round negative values down
-        ds = s->su_whole;
+        ds = in_su->su_whole;
         if( ds < 0 ) {
             ds++;
         }
@@ -744,13 +718,13 @@ int32_t conv_vert_unit( const su *s, spacing_line spacing_ln )
     case SU_mm :
     case SU_cicero :
     case SU_pica :
-        if ( s->su_inch == 0 ) {    // if the value is "0", ds is "0"
+        if ( in_su->su_inch == 0 ) {    // if the value is "0", ds is "0"
             ds = 0;
             break;
         }
-        ds = (int64_t)s->su_inch * bin_device->vertical_base_units / 10000L;
-        fp = (int64_t)s->su_inch * bin_device->vertical_base_units % 10000L;
-        if( s->su_inch > 0 ) {
+        ds = (int64_t)in_su->su_inch * bin_device->vertical_base_units / 10000L;
+        fp = (int64_t)in_su->su_inch * bin_device->vertical_base_units % 10000L;
+        if( in_su->su_inch > 0 ) {
             if ( fp > 5000 ) {
                 ds++;
             }
@@ -767,19 +741,19 @@ int32_t conv_vert_unit( const su *s, spacing_line spacing_ln )
     return( ds );
 }
 
-
 /***************************************************************************/
 /*  format a number according to the num_style                             */
 /*                                                                         */
 /*  returns ptr to string or NULL if error                                 */
 /***************************************************************************/
-char *  format_num( uint32_t n, char * r, size_t rsize, num_style ns )
+
+char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
 {
-    size_t      pos;
-    size_t      pos1;
-    char    *   p;
-    char    *   rp;
-    char        temp[MAX_L_AS_STR + 3]; // +3 for () and decimal point
+    unsigned    pos;
+    unsigned    pos1;
+    char        *p;
+    char        *rp;
+    char        temp[NUM2STR_LENGTH + 3 + 1]; // +3 for () and decimal point
     char        a1;
     char        a2;
     char        charbase;
@@ -787,65 +761,65 @@ char *  format_num( uint32_t n, char * r, size_t rsize, num_style ns )
 
     p = temp;
     pos = 0;
-    if( ns & xpa_style ) {
+    if( ns & STYLE_xpa ) {
         *p++ = '(';                     // start number with left paren
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
-    if( ns & (a_style | b_style) ) {    // alphabetic limit 2 'digits'
-    /************************************************************************/
-    /*  Arbitrary limit Value 728 = 2 characters    extend if needed    TBD */
-    /************************************************************************/
-        if( n >= 27*27 || (n < 1) ) {   // only 2 letters supported
+    if( ns & (STYLE_a | STYLE_b) ) {    // alphabetic limit 2 'digits'
+        /************************************************************************/
+        /*  Arbitrary limit Value 728 = 2 characters    extend if needed    TBD */
+        /************************************************************************/
+        if( n >= 27 * 27
+          || (n < 1) ) {                // only 2 letters supported
             return( NULL );             // and numbers > zero
         }
-        if( ns & a_style ) {
+        if( ns & STYLE_a ) {
             charbase = 'a' - 1;
         } else {
             charbase = 'A' - 1;
         }
     }
-    switch( ns & char1_style ) {
-    case a_style :                      // lower case alphabetic
-    case b_style :                      // UPPER case alphabetic
+    switch( ns & STYLE_char1 ) {
+    case STYLE_a:                      // lower case alphabetic
+    case STYLE_b:                      // UPPER case alphabetic
         a1 = n / 27;
         a2 = n % 27;
         if( a1 > 0 ) {
             *p++ = charbase + a1;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             *p++ = charbase + 1 + a2;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
         } else {
             *p++ = charbase + a2;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
         }
         break;
-    case h_style :                      // arabic
-        sprintf( p, "%lu", (unsigned long)n );
-        pos1 = strlen( p );
+    case STYLE_h:                      // arabic
+        pos1 = sprintf( p, "%u", n );
         pos += pos1;
-        if( pos >= rsize ) {
+        if( pos >= ressize ) {
             return( NULL );             // result field overflow
         }
         p += pos1;
         break;
-    case r_style :                      // lower case roman
-        rp = int_to_roman( n, p, rsize - pos );
+    case STYLE_r:                      // lower case roman
+        rp = int_to_roman( n, p, ressize - pos, false );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
         pos1 = strlen( rp );
         p += pos1;
         break;
-    case c_style :                      // UPPER case roman
-        rp = int_to_roman( n, p, rsize - pos );
+    case STYLE_c:                      // UPPER case roman
+        rp = int_to_roman( n, p, ressize - pos, true );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
@@ -854,161 +828,280 @@ char *  format_num( uint32_t n, char * r, size_t rsize, num_style ns )
         p += pos1;
         break;
     default:
-        out_msg( "Logic error in gutil.c int_to_roman()\n" );
-        err_count++;
-        g_suicide();
-        break;
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
-    if( ns & xd_style ) {
+    if( ns & STYLE_xd ) {
         *p++ = '.';                     // decimalpoint follows
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
-    if( ns & xpb_style ) {
+    if( ns & STYLE_xpb ) {
         *p++ = ')';                     // right paren follows
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
     *p = '\0';                          // terminate string
-    strcpy( r, temp );                  // copy temp string to result
-    return( r );
+    strcpy( res, temp );                  // copy temp string to result
+    return( res );
 }
 
+/***************************************************************************/
+/* get the start of the next potential attribute                           */
+/* returns the start of the part of the line on which that potential       */
+/*   attribute was found, thus preserving any preceding spaces in case it  */
+/*   turns out that it is not an attribute at all but rather text          */
+/***************************************************************************/
+
+char *get_tag_attname( const char *p, char *attname )
+{
+    int     i;
+
+    i = 0;
+    while( is_tag_att_char( *p ) ) {
+        if( i < TAG_ATT_NAME_LENGTH ) {
+            attname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    attname[i] = '\0';
+    return( (char *)p );
+}
+
+static char *get_name_start( char *p, char **orig, bool layout )
+{
+    *orig = p;                      // save initial location
+    while( CHECK_WS( *p, layout ) ) // over WS to attribute
+        p++;
+    return( p );
+}
+
+char *get_att_name_start( char *p, char **orig, bool layout )
+{
+    while( *(p = get_name_start( p, orig, layout )) == '\0' ) {
+        if( input_cbs->fmflags & II_eof ) {
+            return( p );
+        }
+        if( !get_line( true ) ) {       // next line for missing attribute
+            return( p );
+        }
+        process_line();
+        if( (*g_scandata.s == SCR_char)      // cw found: end-of-tag
+          || (*g_scandata.s == GML_char) ) { // tag found: end-of-tag
+            ProcFlags.reprocess_line = true;
+            return( p );
+        }
+        p = g_scandata.s;                 // new line is part of current tag
+    }
+    if( *p == '.' ) {                   // end of tag
+        ProcFlags.tag_end_found = true;
+        p++;
+        *orig = p;
+    }
+    return( p );
+}
+
+char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
+{
+    p = get_att_name_start( p, orig, false );
+    if( ProcFlags.reprocess_line )
+        return( p );
+    if( ProcFlags.tag_end_found )
+        return( p );
+    attr_name->tok.s = p;
+    p = get_tag_attname( p, attr_name->attname.t );
+    attr_name->tok.l = p - attr_name->tok.s;
+    if( attr_name->tok.l < 2
+      || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
+        xx_line_err_exit_c( ERR_ATT_NAME_INV, *orig );
+        /* never return */
+    }
+    return( p );
+}
 
 /***************************************************************************/
 /* get the attribute value and report tag-end ('.') if found               */
 /*     [<white space>]=[<white space>]<value>                              */
 /***************************************************************************/
 
-char * get_att_value( char * p )
+void get_att_specval( att_val_type *attr_val )
 {
-    char        quote;
+    unsigned    i;
+    unsigned    len;
 
-    ProcFlags.tag_end_found = false;
-    quote_char = '\0';
-    val_start = NULL;
-    val_len = 0;
-    while( *p == ' ' ) {                // over WS to '='
-        p++;
+    len = attr_val->tok.l;
+    if( len > SPECVAL_LENGTH )
+        len = SPECVAL_LENGTH;
+    for( i = 0; i < len && is_su_char( attr_val->tok.s[i] ); i++) {
+        attr_val->specval[i] = my_tolower( attr_val->tok.s[i] );
     }
-    if( *p == '=' ) {
+    attr_val->specval[i] = '\0';
+}
+
+static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
+{
+    while( CHECK_WS( *p, layout ) )
         p++;
-        while( *p == ' ' ) {            // over WS to value
+    if( equ ) {
+        if( *p == '=' ) {
             p++;
-        }
-    } else {
-        if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
-        }
-        xx_line_err( err_eq_missing, p );
-        scan_start = scan_stop;
-        return( p );
-    }
-    if( (*p == '\0') || (*p == '.') ) { // value is missing
-        if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
-        }
-        xx_line_err( err_att_val_missing, p );
-        scan_start = scan_stop;
-        return( p );
-    }
-    if( *p == '"' || *p == '\'' ) {
-        quote = *p;
-        quote_char = *p;
-        ++p;
-        val_start = p;
-        while( *p ) {
-            if( *p == quote ) {
-                if( *(p + 1) != quote ) {
-                    break;
-                }
-                { // this should almost never be used
-                    char    *   q;
-                    char    *   r;
-                    q = p;
-                    r = p + 1;
-                    while( *r ) {
-                        *q = *r;
-                        q++;
-                        r++;
-                    }
-                }
+            while( CHECK_WS( *p, layout ) ) {
+                p++;
             }
-            ++p;
+        } else {
+            xx_line_err_exit_c( ERR_EQ_MISSING, p );
+            /* never return */
         }
-        val_len = p - val_start;    // up to (not including) final quote
-        if( *p != quote ) {         // terminating quote not found
-            xx_line_err( err_att_val_open, val_start - 1 );
-            scan_start = scan_stop;
-            return( p );
+    }
+    if( (*p == '\0')
+      || (*p == '.') ) { // value is missing
+        if( *p == '.' ) {
+            ProcFlags.tag_end_found = true;
         }
-        ++p;                        // over final quote
+        xx_line_err_exit_c( ERR_ATT_VAL_MISSING, p );
+        /* never return */
+    }
+    attr_val->tok.s = p;
+    if( layout
+      && is_quote_char( *p )
+      || !layout
+      && is_base_quote_char( *p ) ) {
+        attr_val->quoted = *p++;        // over open quote
     } else {
-        val_start = p;
-        while( *p && *p != ' ' && *p != '.' ) {
-            ++p;
+        attr_val->quoted = ' ';
+    }
+    while( *p != '\0' && *p != attr_val->quoted && ( attr_val->quoted != ' ' || *p != '.' )) {
+        p++;
+    }
+    attr_val->tok.l = p - attr_val->tok.s; // up to (not including) final quote
+    if( attr_val->tok.l == 0 ) {
+        attr_val->tok.s = NULL;
+        attr_val->specval[0] = '\0';
+    } else {
+        if( attr_val->quoted != ' ' ) {
+            if( *p != attr_val->quoted ) {  // terminating quote not found
+                xx_line_err_exit_c( ERR_ATT_VAL_OPEN, attr_val->tok.s );
+                /* never return */
+            }
+            p++;                        // over terminating quote
+            attr_val->tok.s++;          // remove quotes from value info
+            attr_val->tok.l--;
         }
-        val_len = p - val_start;
+        get_att_specval( attr_val );
     }
     if( *p == '.' ) {
         ProcFlags.tag_end_found = true;
+        p++;                            // over ending '.'
     }
     return( p );
 }
 
-/***************************************************************************/
-/*  return the parameter which has the larger value                        */
-/*  initially for LP, should also be needed for FIGCAP                     */
-/*  these are intended to be vertical values                               */
-/***************************************************************************/
-
-su *greater_su( su *su_a, su *su_b, spacing_line spacing_ln )
+char *get_tag_value( char *p, att_val_type *attr_val )
 {
-    uint32_t    val_a;
-    uint32_t    val_b;
-
-    val_a = conv_vert_unit( su_a, spacing_ln );
-    val_b = conv_vert_unit( su_b, spacing_ln );
-
-    if( val_a > val_b ) {
-        return( su_a );
-    } else {
-        return( su_b );
-    }
+    return( get_value( p, attr_val, false, false ) );
 }
 
+char *get_lay_value( char *p, att_val_type *attr_val )
+{
+    return( get_value( p, attr_val, true, true ) );
+}
+
+char *get_att_value( char *p, att_val_type *attr_val )
+{
+    return( get_value( p, attr_val, true, false ) );
+}
+
+
+/***************************************************************************/
+/* report error involving improperly nested blocks                         */
+/* placed here because it must return to the caller, which should probably */
+/* be looked at at some point                                              */
+/***************************************************************************/
+
+void g_keep_nest( const char * cw_tag ) {
+    switch( cur_group_type ) {
+    case GRT_fb :
+        keep_nest_err_exit( cw_tag, "a floating block" );
+        /* never return */
+    case GRT_fig :
+        keep_nest_err_exit( cw_tag, "a figure" );
+        /* never return */
+    case GRT_fk :
+        keep_nest_err_exit( cw_tag, "a floating keep" );
+        /* never return */
+    case GRT_fn :
+        keep_nest_err_exit( cw_tag, "a footnote" );
+        /* never return */
+    case GRT_xmp :
+        keep_nest_err_exit( cw_tag, "an example" );
+        /* never return */
+    }
+    return;
+}
+
+/***************************************************************************/
+/* parse and return a font number value                                    */
+/***************************************************************************/
+
+font_number get_font_number( const char *value, unsigned len )
+{
+    const char      *p;
+    const char      *pb;
+    unsigned long   wk;
+
+    p = value;
+    pb = p + len;
+
+    while( my_isdigit( *p ) ) {                 // ensure entire token consists of decimal digits
+        p++;
+    }
+
+    if( p != pb ) {                             // badly-formed token
+        xx_line_err_exit_c( ERR_NUM_TOO_LARGE, value );
+        /* never return */
+    }
+
+    wk = strtoul( value, NULL, 10 );
+    if( errno == ERANGE
+      || wk > 255 ) {
+        wk = 0;
+    }
+    return( wk );
+}
 
 /***************************************************************************/
 /*  convert integer to roman digits                                        */
 /***************************************************************************/
 
-char * int_to_roman( uint32_t n, char * r, size_t rsize )
+char *int_to_roman( unsigned n, char *res, unsigned ressize, bool ucase )
 {
     static const struct {
-        uint32_t    val;
-        uint32_t    val49;
+        unsigned    val;
+        unsigned    val49;
         char        ch;
         char        ch49;
-    } i_2_r[] =
-                {
-                    { 1000, 900, 'm', 'c' },
-                    {  500, 400, 'd', 'c' },
-                    {  100,  90, 'd', 'x' },
-                    {   50,  40, 'l', 'x' },
-                    {   10,   9, 'x', 'i' },
-                    {    5,   4, 'v', 'i' },
-                    {    1,   1, 'i', 'i' }
-                };
+    } i_2_r[] = {
+        { 1000, 900, 'm', 'c' },
+        {  500, 400, 'd', 'c' },
+        {  100,  90, 'd', 'x' },
+        {   50,  40, 'l', 'x' },
+        {   10,   9, 'x', 'i' },
+        {    5,   4, 'v', 'i' },
+        {    1,   1, 'i', 'i' }
+    };
 
-    size_t digit;
-    size_t pos;
-    char    * p = r;
+    unsigned    digit;
+    unsigned    pos;
+    char        *p;
+    char        c;
 
+    p = res;
     *p = '\0';
-    if( (n < 1) || (n > 3999) ) {       // invalid out of range
+    if( (n < 1)
+      || (n > 3999) ) {       // invalid out of range
         return( NULL );
     }
 
@@ -1016,19 +1109,22 @@ char * int_to_roman( uint32_t n, char * r, size_t rsize )
     pos = 0;
     do {
         while( n >= i_2_r[digit].val ) {
-            *p++ = i_2_r[digit].ch;
-            if( ++pos >= rsize ) {
+            c = i_2_r[digit].ch;
+            *p++ = c;
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             n -= i_2_r[digit].val;
         }
         if( n >= i_2_r[digit].val49 ) {
-            *p++ = i_2_r[digit].ch49;
-            if( ++pos >= rsize ) {
+            c = i_2_r[digit].ch49;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
-            *p++ = i_2_r[digit].ch;
-            if( ++pos >= rsize ) {
+            c = i_2_r[digit].ch;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             n -= i_2_r[digit].val49;
@@ -1036,102 +1132,209 @@ char * int_to_roman( uint32_t n, char * r, size_t rsize )
         digit++;
     } while( n > 0 );
     *p = '\0';
-    return( r );
+    return( res );
+}
+
+
+/****************************************************************************/
+/* return the page style for the current section                            */
+/* used with both ff_entry and ix_e_blk                                     */
+/****************************************************************************/
+
+num_style find_pgnum_style( void )
+{
+    num_style   retval;
+
+    /****************************************************/
+    /* first restrict processing to those document      */
+    /* sections that can have a page number style       */
+    /* then use conditionals to set identify the entry  */
+    /* in pgnum_style to copy to curr->style            */
+    /****************************************************/
+
+    switch( ProcFlags.doc_sect ) {
+    case DSECT_abstract :
+    case DSECT_preface :
+    case DSECT_body :
+    case DSECT_appendix :
+    case DSECT_backm :
+    case DSECT_index :
+        if( ProcFlags.doc_sect == DSECT_abstract ) {
+            retval = pgnum_style[PGNST_abstract];
+        } else if( ProcFlags.doc_sect == DSECT_appendix ) {
+            retval = pgnum_style[PGNST_appendix];
+        } else if( ProcFlags.doc_sect == DSECT_backm ) {
+            retval = pgnum_style[PGNST_backm];
+        } else if( ProcFlags.doc_sect == DSECT_body ) {
+            retval = pgnum_style[PGNST_body];
+        } else if( ProcFlags.doc_sect == DSECT_index ) {
+            retval = pgnum_style[PGNST_index];
+        } else if( ProcFlags.doc_sect == DSECT_preface ) {
+            retval = pgnum_style[PGNST_preface];
+        }
+        break;
+    default :
+        internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
+    }
+
+    return( retval );
+}
+
+
+/***************************************************************************/
+/*  initalize an ffh_entry instance and append insert to the ffh_list      */
+/*  Note: calling function must initialize ffh_list if it is NULL when the */
+/*        function returns by setting it to point to the return value      */
+/*  Note: function should be called immediately before use, so that the    */
+/*        style field is set from correct and current information          */
+/***************************************************************************/
+
+ffh_entry * init_ffh_entry( ffh_entry * ffh_list, ffhflags flags )
+{
+    ffh_entry   *   curr;
+
+    curr = ffh_list;
+    if( curr == NULL ) {            // first entry
+        curr = (ffh_entry *)mem_alloc( sizeof( ffh_entry ) );
+    } else {
+        while( curr->next != NULL ) {
+            curr = curr->next;
+        }
+        curr->next = (ffh_entry *)mem_alloc( sizeof( ffh_entry ) );
+        curr = curr->next;
+    }
+    curr->next = NULL;
+    curr->pageno = 0;
+    curr->number = 0;
+    curr->prefix = NULL;
+    curr->text = NULL;
+    curr->flags = flags;
+    curr->abs_pre = false;
+    curr->style = find_pgnum_style();
+
+    return( curr );
 }
 
 /***************************************************************************/
-/* for :NOTE :OL, ... tags                                                 */
-/* trailing spaces are stripped                                            */
-/* influencing the left margin for the paragraph                           */
+/*  initalize a fwd_ref instance and insert it (if new) in alpha order     */
 /***************************************************************************/
 
-void    start_line_with_string( const char *text, font_number font, bool leave_1space )
+fwd_ref *init_fwd_ref( fwd_ref *dict, const char *refid )
 {
-    text_chars      *n_char;     // new text char
-    size_t          count;
-    unsigned        space_count;
+    fwd_ref *   curr;
+    fwd_ref *   local;
+    fwd_ref *   prev;
 
-    count = strlen( text );
-    if( count == 0 ) {
-        return;
-    }
-    space_count = 0;
-    while( *(text + count - 1) == ' ' ) {   // strip trailing spaces
-        space_count++;
-        if( --count == 0 ) {
+    prev = NULL;
+    for( local = dict; local != NULL; local = local->next ) {
+        if( strcmp( local->refid, refid ) >= 0 ) {
             break;
         }
+        prev = local;
     }
-    if( leave_1space && space_count > 0 ) {// for ordered :LI keep 1 trailing space
-        space_count--;
-        count++;
-    }
-
-    n_char = alloc_text_chars( text, count, font );
-
-    n_char->x_address = g_cur_h_start;
-    ju_x_start = g_cur_h_start;
-    input_cbs->fmflags &= ~II_sol;      // no longer start of line
-
-    n_char->width = cop_text_width( n_char->text, n_char->count, font );
-    /***********************************************************/
-    /*  Test if word hits right margin                         */
-    /***********************************************************/
-
-    if( n_char->x_address + n_char->width > g_page_right ) {
-        process_line_full( t_line, ProcFlags.concat );
-        t_line = alloc_text_line();
-        n_char->x_address = g_cur_h_start;
-    }
-
-    if( t_line == NULL ) {
-        t_line = alloc_text_line();
-    }
-
-    if( t_line->first == NULL ) {        // first element in output line
-        t_line->first = n_char;
-        t_line->line_height = wgml_fonts[font].line_height;
-        ju_x_start = n_char->x_address;
-        ProcFlags.line_started = true;
+    curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
+    curr->next = NULL;
+    strcpy( curr->refid, refid );
+    if( dict == NULL ) {
+        dict = curr;           // first entry
+    } else if( local == NULL ) {
+        prev->next = curr;     // curr goes at end of list
     } else {
-        t_line->last->next = n_char;
-        n_char->prev = t_line->last;
+        if( prev == NULL ) {   // curr goes at start of list
+            dict = curr;
+        } else {
+            prev->next = curr; // curr goes between two existing entries
+        }
+        curr->next = local;
     }
-    t_line->last  = n_char;
-
-    g_cur_h_start = n_char->x_address + n_char->width;
-    post_space = space_count * wgml_fonts[layout_work.defaults.font].spc_width;
+    return( dict );
 }
 
+/***************************************************************************/
+/*  free the memory controlled by fig_list, fn_list, or hd_list            */
+/***************************************************************************/
 
-#if 0
-int main( int argc, char *argv[] )      // standalone test routine
+void free_ffh_list( ffh_entry * ffh_list )
 {
-    bool    error;
-    su      aus;
-    char    ein1[] = "1.5I";
-//  char    ein1[] = "3.81cm";
-//  char    ein1[] = "38.1mm";
-//  char    *ein1 = "'6p11'";
-//  char    *ein1 = "'1C'";
-//  char    *ein2 = "'1C12'";
-    char    *ein2 = "'5C12'";
-    char    *ein3 = "'0P73'";
-    char    *ein4 = "'5P6'";
+    ffh_entry   *   curr;
 
-    char   *p = ein1;
-    error = to_internal_SU( &p, &aus );
-
-    p = ein2;
-    error = to_internal_SU( &p, &aus );
-
-    p = ein3;
-    error = to_internal_SU( &p, &aus );
-
-    p = ein4;
-    error = to_internal_SU( &p, &aus );
-
-    return(0);
+    while( ffh_list != NULL ) {
+        if( ffh_list->prefix != NULL ) {
+            mem_free( ffh_list->prefix );
+        }
+        if ( ffh_list->text != NULL ) {
+            mem_free( ffh_list->text );
+        }
+        curr = ffh_list;
+        ffh_list = ffh_list->next;
+        mem_free( curr );
+    }
+    return;
 }
-#endif
 
+/***************************************************************************/
+/*  free the memory controlled by fig_fwd_refs, fn_fwd_refs or hd_fwd_refs */
+/***************************************************************************/
+
+void free_fwd_refs( fwd_ref * fwd_refs )
+{
+    fwd_ref *   curr;
+
+    while( fwd_refs != NULL ) {
+        curr = fwd_refs;
+        fwd_refs = fwd_refs->next;
+        mem_free( curr );
+    }
+    return;
+}
+
+
+char *get_macro_name( const char *p, char *macname )
+{
+    int     i;
+
+    i = 0;
+    while( is_macro_char( *p ) ) {
+        if( i < MAC_NAME_LENGTH ) {
+            macname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    macname[i] = '\0';
+    return( (char *)p );
+}
+
+g_tags get_topn( g_tags tclo )
+{
+    g_tags      topn;
+
+    switch( tclo ) {
+    #define pick1(n,l,r,g,o,c)
+    #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2)  case T_##n2: topn = T_##n1; break;
+    #include "gtags.h"
+    #undef pick2
+    #undef pick1
+    default:
+        topn = tclo;
+        break;
+    }
+    return( topn );
+}
+
+g_tags get_tclo( g_tags topn )
+{
+    g_tags      tclo;
+
+    switch( topn ) {
+    #define pick1(n,l,r,g,o,c)
+    #define pick2(n1,l1,r1,g1,o1,c1,n2,l2,r2,g2,o2,c2)  case T_##n1: tclo = T_##n2; break;
+    #include "gtags.h"
+    #undef pick2
+    #undef pick1
+    default:
+        tclo = topn;
+        break;
+    }
+    return( tclo );
+}

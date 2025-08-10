@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,9 @@
 #include "wzipcdir.h"
 
 
-#define BUFFER_SIZE 65536
+#define BUFFER_SIZE 		65536
+
+#define SEEK_POSBACK(p)     (-(long)(p))
 
 static const char   usage[] = "%s <target exe> <source zip> <source exe>\n";
 
@@ -212,7 +214,7 @@ int main( int argc, char *argv[] )
             if( length > BUFFER_SIZE ) {
                 length = BUFFER_SIZE;
             }
-            fseek( ftarget, -length, SEEK_END );
+            fseek( ftarget, SEEK_POSBACK( length ), SEEK_END );
             n = fread( buffer, 1, length, ftarget );
             rc = 1;
             if( n == 0 ) {
