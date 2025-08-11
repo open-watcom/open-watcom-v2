@@ -504,11 +504,11 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 
 :segment DOS
 #if defined( __WINDOWS__ )
- _WCRTLINK extern unsigned char  *__get_winmajor_ptr( void );
- _WCRTLINK extern unsigned char  *__get_winminor_ptr( void );
- _WCRTLINK extern unsigned int   *__get_winver_ptr( void );
- _WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
- _WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
+ _WCRTLINK extern unsigned char *__get_winmajor_ptr( void );
+ _WCRTLINK extern unsigned char *__get_winminor_ptr( void );
+ _WCRTLINK extern unsigned int  *__get_winver_ptr( void );
+ _WCRTLINK extern unsigned long *__get_win_alloc_flags_ptr( void );
+ _WCRTLINK extern unsigned long *__get_win_realloc_flags_ptr( void );
  #ifdef __FUNCTION_DATA_ACCESS
   #define _winmajor           (*__get_winmajor_ptr())
   #define _winminor           (*__get_winminor_ptr())
@@ -516,11 +516,11 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
   #define __win_alloc_flags   (*__get_win_alloc_flags_ptr())
   #define __win_realloc_flags (*__get_win_realloc_flags_ptr())
  #endif
- _WCRTDATA extern unsigned char  _WCDATA _winmajor; /* Windows major version # */
- _WCRTDATA extern unsigned char  _WCDATA _winminor; /* Windows minor version # */
- _WCRTDATA extern unsigned int   _WCDATA _winver;   /* Windows version #       */
- _WCRTDATA extern unsigned long  _WCDATA __win_alloc_flags;   /* Windows allocation flags */
- _WCRTDATA extern unsigned long  _WCDATA __win_realloc_flags; /* Windows reallocation flags */
+ _WCRTDATA extern unsigned char _WCDATA _winmajor; /* Windows major version # */
+ _WCRTDATA extern unsigned char _WCDATA _winminor; /* Windows minor version # */
+ _WCRTDATA extern unsigned int  _WCDATA _winver;   /* Windows version #       */
+ _WCRTDATA extern unsigned long _WCDATA __win_alloc_flags;   /* Windows allocation flags */
+ _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocation flags */
 #elif defined( __NT__ )
  _WCRTLINK extern unsigned short *__get_osbuild_ptr( void );
  _WCRTLINK extern unsigned int   *__get_osver_ptr( void );

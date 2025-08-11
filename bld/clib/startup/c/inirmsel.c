@@ -45,7 +45,8 @@ extern short __get_ds( void );
     __value             [__ax] \
     __modify __exact    [__ax]
 
-unsigned short  _ExtenderRealModeSelector;
+unsigned short          _ExtenderRealModeSelector;
+static unsigned char    dpmi_sel = 0;
 
 static void init( void )
 {
@@ -66,6 +67,10 @@ static void init( void )
             __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
             // never return
         }
+        /*
+         * allocated selector has zero base and limit
+         */
+        dpmi_sel = 1;
         _ExtenderRealModeSelector = sel;
         if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
             __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
@@ -80,13 +85,9 @@ static void init( void )
 
 static void fini( void )
 {
-#ifdef __DOS__
-    if( _DPMI || _IsRationalNonZeroBase() ) {
-#endif
+    if( dpmi_sel ) {
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
-#ifdef __DOS__
     }
-#endif
 }
 
 AXI( init, INIT_PRIORITY_FPU )

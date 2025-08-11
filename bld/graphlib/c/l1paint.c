@@ -374,7 +374,7 @@ static bool StackCompare( struct frame * stack, unsigned *stack_count )
                 }
             }
         }
-    } while ( startover );
+    } while( startover );
 
     /* Check entries with same direction and same y */
     count = *stack_count;
@@ -426,7 +426,7 @@ bool _L1Paint( grcolor stop_color, short x, short y )
     short               cutoff;             /* stopping pixel in scanning   */
     bool                success;            /* flag for success     */
     char                border_flag;        /* 0 - until; 1 - while */
-    struct frame *      stack;              /* ptr to list of frames*/
+    struct frame        *stack;             /* ptr to list of frames*/
 #endif
 
     if( _L1OutCode( x, y ) ) {              /* starting point is outside    */
@@ -487,8 +487,8 @@ bool _L1Paint( grcolor stop_color, short x, short y )
     stack[1].left = left_edge;
     stack[1].direction = 1;
     success = false;                                /* assume success at first  */
-    for( ;; ) {                                 /* process all the frames   */
-        do {                                /* process frame row per row    */
+    for( ;; ) {                                     /* process all the frames   */
+        do {                                        /* process frame row per row */
             direction = stack[0].direction;         /* load active frame    */
             left_edge = stack[0].left;              /* ( frame may change ) */
             right_edge = stack[0].right;

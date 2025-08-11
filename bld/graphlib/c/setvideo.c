@@ -255,11 +255,11 @@ static void init_all( void )
     SetBkMode( _Mem_dc, TRANSPARENT );
     _wpi_setrop2( _Mem_dc, R2_COPYPEN );
 
-    _GrMode = true;             /* must be graphics for windows */
+    _GrMode = true;                 /* must be graphics for windows */
     _GetState();
-    _CursState = false;   /* cursor off in graphics mode  */
+    _CursState = false;             /* cursor off in graphics mode  */
     _GrCursor = _CursState;
-    _InitVariables();           /* initialize globals       */
+    _InitVariables();               /* initialize globals       */
 }
 
 
@@ -688,7 +688,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( IsTextMode ) {
             _CursState = true;
         } else {
-            _CursState = false;       /* cursor off in graphics mode  */
+            _CursState = false;         /* cursor off in graphics mode  */
         }
         _GrCursor = _CursState;
         if( req_mode == _DEFAULTMODE ) {

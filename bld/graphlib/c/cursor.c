@@ -38,14 +38,14 @@
 
 
 #if !defined( _DEFAULT_WINDOWS )
-static void TextCursor( bool turning_on )
-//=======================================
+static void TextCursor( bool cursor_on )
+//======================================
 
 {
     short               cursor;
 
     cursor = _CursorShape;
-    if( !turning_on ) {
+    if( !cursor_on ) {
         cursor |= 0x2000;       // set blank cursor bit
     }
     VideoInt1_ax( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );

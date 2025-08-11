@@ -47,13 +47,9 @@
     #define _FARC
 #endif
 
-#if defined( _M_I86 )
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__ax]
-#else
-    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__eax]
-#endif
+#pragma aux VGAPAGE_FUNC "*" __parm __caller [__al]
 
-typedef void __pascal vgapage_fn( short );
+typedef void __pascal vgapage_fn( unsigned char );
 
 #pragma aux (VGAPAGE_FUNC) vgapage_fn;
 
