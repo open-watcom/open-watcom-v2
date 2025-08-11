@@ -444,7 +444,7 @@ static void _Setup128( short x, short y, grcolor colour )
     position (x,y) in 1024 x 768, 16 colour mode. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + ( x >> 3 );
@@ -466,7 +466,7 @@ static void _Setup640( short x, short y, grcolor colour )
     position (x,y) in 640 x ???, 256 colour mode. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + x;
@@ -486,7 +486,7 @@ static void _Setup800( short x, short y, grcolor colour )
     position (x,y) in 800 x 600, 256 colour mode. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + x;
@@ -507,7 +507,7 @@ static void _Setup1024( short x, short y, grcolor colour )
     position (x,y) in 1byte modes. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + x;
@@ -529,7 +529,7 @@ static void _Setup1280( short x, short y, grcolor colour )
     position (x,y) in 2byte modes. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + (x << 1);
@@ -550,7 +550,7 @@ static void _SetupVESA( short x, short y, grcolor colour )
     position (x,y) in arbitrary byte modes modes. */
 
 {
-    short               page_num;
+    unsigned char       page_num;
     unsigned long       pixel_offset;
 
     pixel_offset = (long) y * _CurrState->stride + x * _CurrState->bytes_per_pixel;

@@ -308,8 +308,9 @@ bool _CreateSysMonoFnt( WPI_PRES dc )
         return( false );
     }
 #else
-   dc = dc;
-   return( true );
+    (void)dc;
+
+    return( true );
 #endif
 }
 
