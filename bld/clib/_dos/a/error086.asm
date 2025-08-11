@@ -40,7 +40,11 @@ include struct.inc
 
         xdefp   __doserror_
 ;
+ifdef __WINDOWS__
+        defpnear __doserror_
+else
         defp    __doserror_
+endif
         _if     c               ; if error
           push  AX              ; - save return code
           call  __set_errno_dos ; - set errno
@@ -53,7 +57,11 @@ include struct.inc
 
         xdefp   __doserror1_
 ;
+ifdef __WINDOWS__
+        defpnear __doserror1_
+else
         defp    __doserror1_
+endif
         _if     c               ; if error
           call  __set_errno_dos ; - set errno, return -1
         _else                   ; else
