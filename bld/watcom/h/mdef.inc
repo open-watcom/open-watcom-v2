@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -188,6 +188,14 @@ xrefp           macro   p1,p2
                 endif
                 endm
 
+xrefn           macro   p1,p2
+                ifb <p2>
+                extrn `p1` : near
+                else
+                extrn "&p1",`p2` : near
+                endif
+                endm
+
 lcall           macro   dest
                 push    cs
                 call    near ptr dest
@@ -280,6 +288,14 @@ xdefp           macro   p1,p2
                 endm
 
 xrefp           macro   p1,p2
+                ifb <p2>
+                extrn `p1` : near
+                else
+                extrn "&p1",`p2` : near
+                endif
+                endm
+
+xrefn           macro   p1,p2
                 ifb <p2>
                 extrn `p1` : near
                 else
