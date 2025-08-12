@@ -68,7 +68,6 @@
 
 extern unsigned __dos_find_first_dta( const char *path, unsigned attrib, struct find_t *fdta );
 extern unsigned __dos_find_next_dta( struct find_t *fdta );
-extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
 #if defined( _M_I86 )
   #ifdef __BIG_DATA__
@@ -100,12 +99,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __value             [__ax] \
         __modify __exact    [__ax __dx]
 
-    #pragma aux __dos_find_close_dta = \
-            "xor    ax,ax"      \
-        __parm __caller     [__dx __ax] \
-        __value             [__ax] \
-        __modify __exact    [__ax]
-
   #else                 // 16-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
@@ -124,12 +117,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             _MOV_AH DOS_FIND_NEXT \
             __INT_21            \
             "call __doserror_"  \
-        __parm __caller     [__dx] \
-        __value             [__ax] \
-        __modify __exact    [__ax]
-
-    #pragma aux __dos_find_close_dta = \
-            "xor    ax,ax"      \
         __parm __caller     [__dx] \
         __value             [__ax] \
         __modify __exact    [__ax]
@@ -153,12 +140,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             _MOV_AH DOS_FIND_NEXT \
             __INT_21            \
             "call __doserror_"  \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
-    #pragma aux __dos_find_close_dta = \
-            "xor    eax,eax"    \
         __parm __caller     [__edx] \
         __value             [__eax] \
         __modify __exact    [__eax]
@@ -210,12 +191,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __parm __caller     [__edx] \
         __value             [__eax] \
         __modify __exact    [__eax __ebx __ecx __edi __esi]
-
-    #pragma aux __dos_find_close_dta = \
-            "xor    eax,eax"    \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
 
 #endif
 
