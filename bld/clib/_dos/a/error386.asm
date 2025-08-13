@@ -40,7 +40,7 @@ include struct.inc
 
         xdefp   __doserror_
 ;
-        defp    __doserror_
+        defn    __doserror_
         _if     c               ; if error
           and   EAX,0000FFFFh   ; - get rid of any garbage bits
           push  EAX             ; - save return code
@@ -54,7 +54,7 @@ include struct.inc
 
         xdefp   __doserror1_
 ;
-        defp    __doserror1_
+        defn    __doserror1_
         _if     c               ; if error
           and   EAX,0000FFFFh   ; - get rid of any garbage bits
 ifdef __STACK__
