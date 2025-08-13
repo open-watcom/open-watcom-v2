@@ -133,10 +133,6 @@ defp            macro   dsym,exp
          dsym   proc    far exp
                 endm
 
-defpnear        macro   dsym,exp
-         dsym   proc    near exp
-                endm
-
 defpe           macro   dsym
                 ifdef _EXPORT
          dsym   proc    far export
@@ -181,6 +177,14 @@ xdefp           macro   p1,p2
                 public p1
                 else
                 public "&p1",p2
+                endif
+                endm
+
+xrefn           macro   p1,p2
+                ifb <p2>
+                extrn `p1` : near
+                else
+                extrn "&p1",`p2` : near
                 endif
                 endm
 
@@ -245,10 +249,6 @@ defp            macro   dsym,exp
          dsym   proc    near exp
                 endm
 
-defpnear        macro   dsym,exp
-         dsym   proc    near exp
-                endm
-
 defpe           macro   dsym
                 ifdef _EXPORT
          dsym       proc    near export
@@ -292,6 +292,14 @@ xdefp           macro   p1,p2
                 public p1
                 else
                 public "&p1",p2
+                endif
+                endm
+
+xrefn           macro   p1,p2
+                ifb <p2>
+                extrn `p1` : near
+                else
+                extrn "&p1",`p2` : near
                 endif
                 endm
 
