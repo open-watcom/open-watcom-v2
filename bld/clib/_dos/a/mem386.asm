@@ -36,7 +36,7 @@ include mdef.inc
 include struct.inc
 include int21.inc
 
-        xrefp   __doserror_
+        xrefn   __doserror_
         modstart dosmem
 
         defp    _dos_allocmem
