@@ -622,12 +622,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
  * DOS functions related pragmas (INT 21h)
  ********************************************************/
 
-#if defined( __386__ )
-
-/***************************
- * 80386 version of pragmas
- ***************************/
-
+#ifdef _M_I86
 #pragma aux _TinyCreatePSP = \
         _PUSHF          \
         _MOV_AH DOS_CREATE_PSP \
@@ -636,7 +631,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__dx] \
     __value         \
     __modify __exact [__ax]
+#else
+#pragma aux _TinyCreatePSP = \
+        _PUSHF          \
+        _MOV_AH DOS_CREATE_PSP \
+        __INT_21        \
+        _POPF           \
+    __parm __caller [__dx] \
+    __value         \
+    __modify __exact [__ax]
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinySetPSP = \
         _PUSHF          \
         _MOV_AH DOS_SET_PSP \
@@ -645,7 +651,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         \
     __modify __exact [__ah]
+#else
+#pragma aux _TinySetPSP = \
+        _PUSHF          \
+        _MOV_AH DOS_SET_PSP \
+        __INT_21        \
+        _POPF           \
+    __parm __caller [__bx] \
+    __value         \
+    __modify __exact [__ah]
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyGetPSP = \
         _PUSHF          \
         _MOV_AH DOS_GET_PSP \
@@ -654,7 +671,26 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__bx] \
     __modify __exact [__ax __bx]
+#else
+#pragma aux _TinyGetPSP = \
+        _PUSHF          \
+        _MOV_AH DOS_GET_PSP \
+        __INT_21        \
+        _POPF           \
+    __parm __caller [] \
+    __value         [__bx] \
+    __modify __exact [__ax __bx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetMaxHandleCount = \
+        _MOV_AH DOS_SET_HCOUNT \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
         __INT_21        \
@@ -663,14 +699,54 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__ebx] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyBufferedInput = \
+        _MOV_AH DOS_BUFF_INPUT \
+        __INT_21        \
+    __parm __caller [__dx] \
+    __value         \
+    __modify __exact [__ah]
+
+#pragma aux _fTinyBufferedInput = \
+        _SET_DS_SREG_SAFE \
+        _MOV_AH DOS_BUFF_INPUT \
+        __INT_21        \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] \
+    __value         \
+    __modify __exact [__ax]
+#else
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \
         __INT_21        \
     __parm __caller [__edx] \
     __value         \
     __modify __exact [__ah]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyOpen = \
+        _SET_DS_DGROUP_SAFE \
+        _MOV_AH DOS_OPEN \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__al] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyOpen = \
+        _SET_DS_SREG_SAFE \
+        _MOV_AH DOS_OPEN \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] [__al] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyOpen = \
         _MOV_AH DOS_OPEN \
         __INT_21        \
@@ -679,7 +755,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [__al] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyCreate = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_CREAT \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyCreate = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_CREAT    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyCreate = \
         _MOV_AH DOS_CREAT \
         __INT_21        \
@@ -688,7 +786,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [__ecx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyCreateEx = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_EXT_CREATE \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__si] [__bx] [__cx] [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __cx __dx]
+
+#pragma aux _fTinyCreateEx = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_EXT_CREATE \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __si] [__bx] [__cx] [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __cx __dx]
+#else
 #pragma aux _nTinyCreateEx = \
         _MOV_AX_W 0 DOS_EXT_CREATE \
         __INT_21        \
@@ -697,7 +817,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__esi] [__ebx] [__ecx] [__edx] \
     __value         [__eax] \
     __modify __exact [__eax __ecx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyCreateNew = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_CREATE_NEW \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyCreateNew = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_CREATE_NEW \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyCreateNew = \
         _MOV_AH DOS_CREATE_NEW \
         __INT_21        \
@@ -706,7 +848,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [__ecx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyCreateTemp = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_CREATE_TMP \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyCreateTemp = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_CREATE_TMP \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyCreateTemp = \
         _MOV_AH DOS_CREATE_TMP \
         __INT_21        \
@@ -715,7 +879,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [__ecx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyClose = \
+        _MOV_AH DOS_CLOSE    \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyClose = \
         _MOV_AH DOS_CLOSE \
         __INT_21        \
@@ -724,7 +898,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyCommitFile = \
+        _CLC            \
+        _MOV_AH DOS_COMMIT_FILE    \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyCommitFile = \
         _CLC            \
         _MOV_AH DOS_COMMIT_FILE \
@@ -734,7 +919,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyWrite = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_WRITE    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__bx] [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyWrite = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_WRITE    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [__bx] [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyWrite = \
         _MOV_AH DOS_WRITE \
         __INT_21        \
@@ -754,7 +961,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__dx __eax] [__ecx] \
     __value         [__eax] \
     __modify __exact [__eax __edx _MODIF_DS]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyRead = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_READ    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__bx] [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyRead = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_READ    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [__bx] [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyRead = \
         _MOV_AH DOS_READ \
         __INT_21        \
@@ -774,7 +1003,20 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__dx __eax] [__ecx] \
     __value         [__eax] \
     __modify __exact [__eax __edx _MODIF_DS]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyLSeek = \
+        _MOV_AH DOS_LSEEK \
+        __INT_21        \
+        "mov  ss:[di],ax" \
+        "mov  ss:2[di],dx" \
+        _RCL_DX_1       \
+        _ROR_DX_1       \
+    __parm __caller [__bx] [__cx] [__dx] [__al] [__di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
         __INT_21        \
@@ -785,7 +1027,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] [__dx] [__al] [__edi] \
     __value         [__eax] \
     __modify __exact [__eax __dx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySeek = \
+        _MOV_AH DOS_LSEEK \
+        __INT_21        \
+        _RCL_DX_1       \
+        _ROR_DX_1       \
+    __parm __caller [__bx] [__cx] [__dx] [__al] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinySeek = \
         _MOV_AH DOS_LSEEK \
         __INT_21        \
@@ -796,7 +1049,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] [__dx] [__al] \
     __value         [__edx] \
     __modify __exact [__eax __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyDelete = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_UNLINK \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyDelete = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_UNLINK \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyDelete = \
         _MOV_AH DOS_UNLINK \
         __INT_21        \
@@ -805,12 +1080,47 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
-// 06/22/95 T. Schiller
-//
-// The only reason we save/restore ebx is that in win386 the high word of
-// ebx sometimes (one known cause is that the File Manager is running) gets
-// trashed.
+#ifdef _M_I86
+#pragma aux _nTinyRename = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_RENAME \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [ESDATAREG __di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#if defined( _M_I86MM ) || defined( _M_I86SM ) || defined(__SW_ZDP)
+#pragma aux _fTinyRename = \
+        _PUSH_DS        \
+        _MOV_DS_CX      \
+        _MOV_AH DOS_RENAME \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _POP_DS         \
+    __parm __caller [__cx __dx] [ESDATAREG __di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _fTinyRename = \
+        _MOV_AH DOS_RENAME \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__ds __dx] [ESDATAREG __di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#endif
+#else
+/*
+ * 06/22/95 T. Schiller
+ *
+ * The only reason we save/restore ebx is that in win386 the high word of
+ * ebx sometimes (one known cause is that the File Manager is running) gets
+ * trashed.
+ */
 #pragma aux _nTinyRename = \
         _PUSH_BX        \
         _MOV_AH DOS_RENAME \
@@ -821,7 +1131,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [ESDATAREG __edi] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyMakeDir = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_MKDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyMakeDir = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_MKDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyMakeDir = \
         _MOV_AH DOS_MKDIR \
         __INT_21        \
@@ -830,7 +1162,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyRemoveDir = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_RMDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyRemoveDir = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_RMDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyRemoveDir = \
         _MOV_AH DOS_RMDIR \
         __INT_21        \
@@ -839,7 +1193,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyChangeDir = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_CHDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyChangeDir = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_CHDIR \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyChangeDir = \
         _MOV_AH DOS_CHDIR \
         __INT_21        \
@@ -848,7 +1224,29 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyGetCWDir = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_GETCWD \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__si] [__dl] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+#pragma aux _fTinyGetCWDir = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_GETCWD \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __si] [__dl] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx __si]
+#else
 #pragma aux _nTinyGetCWDir = \
         _MOV_AH DOS_GETCWD \
         __INT_21        \
@@ -869,16 +1267,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__cx __esi] [__dl] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
-#pragma aux _TinyDup = \
-        _MOV_AH DOS_DUP \
+#ifdef _M_I86
+#pragma aux _TinyDup2 = \
+        _MOV_AH DOS_DUP2    \
         __INT_21        \
-        _RCL_AX_1       \
-        _ROR_AX_1       \
-    __parm __caller [__bx] \
-    __value         [__eax] \
-    __modify __exact [__eax]
-
+        _SBB_BX_BX      \
+    __parm __caller [__bx] [__cx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
+#else
 #pragma aux _TinyDup2 = \
         _MOV_AH DOS_DUP2 \
         __INT_21        \
@@ -887,7 +1286,36 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyDup = \
+        _MOV_AH DOS_DUP \
+        __INT_21        \
+        _SBB_BX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
+#else
+#pragma aux _TinyDup = \
+        _MOV_AH DOS_DUP \
+        __INT_21        \
+        _RCL_AX_1       \
+        _ROR_AX_1       \
+    __parm __caller [__bx] \
+    __value         [__eax] \
+    __modify __exact [__eax]
+#endif
+
+#ifdef _M_I86
+#pragma aux _TinyAllocBlock = \
+        _MOV_AH DOS_ALLOC_SEG    \
+        __INT_21        \
+        _SBB_BX_BX      \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
+#else
 #pragma aux _TinyAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
         __INT_21        \
@@ -896,7 +1324,20 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__ebx] \
     __modify __exact [__eax __ebx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyTestAllocBlock = \
+        _MOV_AH DOS_ALLOC_SEG    \
+        __INT_21        \
+        _SBB_DX_DX      \
+        "jz short L1"   \
+        _MOV_AX_BX      \
+    "L1:"               \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __bx __dx]
+#else
 #pragma aux _TinyTestAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
         __INT_21        \
@@ -908,7 +1349,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__edx] \
     __modify __exact [__eax __ebx __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyMaxAlloc = \
+        _XOR_BX_BX      \
+        _DEC_BX         \
+        _MOV_AH DOS_ALLOC_SEG \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__bx] \
+    __modify __exact [__ax __bx]
+#else
 #pragma aux _TinyMaxAlloc = \
         _XOR_BX_BX      \
         _DEC_BX         \
@@ -917,7 +1369,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__bx] \
     __modify __exact [__eax __ebx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyFreeBlock = \
+        _MOV_AH DOS_FREE_SEG \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__es] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #ifdef __FLAT__
 #pragma aux _TinyFreeBlock = \
         _SAVE_ESAX      \
@@ -939,7 +1401,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__eax] \
     __modify __exact [__eax]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetBlock = \
+        _MOV_AH DOS_MODIFY_SEG \
+        __INT_21        \
+        _SBB_BX_BX      \
+    __parm __caller [__es] [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx]
+#else
 #ifdef __FLAT__
 #pragma aux _TinySetBlock = \
         _SAVE_ESAX      \
@@ -961,7 +1433,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__ebx] \
     __modify __exact [__eax __ebx]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyMaxSet = \
+        _XOR_BX_BX      \
+        _DEC_BX         \
+        _MOV_AH DOS_MODIFY_SEG    \
+        __INT_21        \
+    __parm __caller [__es] \
+    __value         [__bx] \
+    __modify __exact [__ax __bx]
+#else
 #ifdef __FLAT__
 #pragma aux _TinyMaxSet = \
         _SAVE_ESAX      \
@@ -983,7 +1466,20 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__bx] \
     __modify __exact [__eax __ebx]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetDeviceInfo = \
+        _MOV_AX_W _GET_ DOS_IOCTL \
+        __INT_21        \
+        _SBB_BX_BX      \
+        "jnz short L1"  \
+        _MOV_AX_DX      \
+    "L1:"               \
+    __parm __caller [__bx] \
+    __value         [__bx __ax] \
+    __modify __exact [__ax __bx __dx]
+#else
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
         __INT_21        \
@@ -995,7 +1491,19 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__ebx] \
     __modify __exact [__eax __ebx __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetDeviceInfo = \
+        _XOR_DH_DH      \
+        _MOV_AX_W _SET_ DOS_IOCTL \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _AND_AX_DX      \
+    __parm __caller [__bx] [__dl] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
         _MOV_AX_W _SET_ DOS_IOCTL \
@@ -1005,27 +1513,64 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__dl] \
     __value         [__edx] \
     __modify __exact [__eax __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetCtrlBreak = \
+        _MOV_AX_W _GET_ DOS_CTRL_BREAK \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__dl] \
+    __modify __exact [__ax __dl]
+#else
 #pragma aux _TinyGetCtrlBreak = \
         _MOV_AX_W _GET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [] \
     __value         [__dl] \
     __modify __exact [__eax __dl]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetCtrlBreak = \
+        _MOV_AX_W _SET_ DOS_CTRL_BREAK \
+        __INT_21        \
+    __parm __caller [__dl] \
+    __value         \
+    __modify __exact [__ax __dl]
+#else
 #pragma aux _TinySetCtrlBreak = \
         _MOV_AX_W _SET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [__dl] \
     __value         \
     __modify __exact [__eax __dl]
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyTerminateProcess = \
         _MOV_AH DOS_EXIT \
         __INT_21        \
     __parm __caller [__al] \
     __aborts
+#else
+#pragma aux _TinyTerminateProcess = \
+        _MOV_AH DOS_EXIT \
+        __INT_21        \
+    __parm __caller [__al] \
+    __aborts
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetDate = \
+        _MOV_AH DOS_GET_DATE    \
+        __INT_21        \
+        _SUB_CX_N 0x6c 0x07 /* 1900 */ \
+        _MOV_CH_AL      \
+    __parm __caller [] \
+    __value         [__cx __dx] \
+    __modify __exact [__ax __cx __dx]
+#else
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE \
         __INT_21        \
@@ -1036,7 +1581,16 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__ecx] \
     __modify __exact [__eax __ecx __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetTime = \
+        _MOV_AH DOS_GET_TIME \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__cx __dx] \
+    __modify __exact [__ax __cx __dx]
+#else
 #pragma aux _TinyGetTime = \
         _MOV_AH DOS_GET_TIME \
         __INT_21        \
@@ -1045,21 +1599,48 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__ecx] \
     __modify __exact [__eax __ecx __edx]
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyGetCurrDrive = \
         _MOV_AH DOS_CUR_DISK \
         __INT_21        \
     __parm __caller [] \
     __value         [__al] \
     __modify __exact [__ax]
+#else
+#pragma aux _TinyGetCurrDrive = \
+        _MOV_AH DOS_CUR_DISK \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__al] \
+    __modify __exact [__ax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetCurrDrive = \
+        _MOV_AH DOS_SET_DRIVE \
+        __INT_21        \
+    __parm __caller [__dl] \
+    __value         \
+    __modify __exact [__ax __dl]
+#else
 #pragma aux _TinySetCurrDrive = \
         _MOV_AH DOS_SET_DRIVE \
         __INT_21        \
     __parm __caller [__dl] \
     __value         \
     __modify __exact [__ax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetDTA = \
+        _MOV_AH DOS_GET_DTA \
+        __INT_21        \
+    __parm __caller [] \
+    __value         [__es __bx] \
+    __modify __exact [__ah __bx __es]
+#else
 #ifdef __FLAT__
 #pragma aux _TinyGetDTA = \
         _SAVE_ES        \
@@ -1077,7 +1658,20 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__es __ebx] \
     __modify __exact [__ah __ebx __es]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyChangeDTA = \
+        _MOV_AH DOS_GET_DTA \
+        __INT_21        \
+        _SAVE_DSCX      \
+        _MOV_AH DOS_SET_DTA \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__cx __dx] \
+    __value         [__es __bx] \
+    __modify __exact [__ah __bx __es]
+#else
 #ifdef __FLAT__
 #pragma aux _TinyChangeDTA = \
         _SAVE_ES        \
@@ -1103,14 +1697,55 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__es __ebx] \
     __modify __exact [__ah __ebx __ecx __es]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinySetDTA = \
+        _MOV_AH DOS_SET_DTA \
+        __INT_21        \
+    __parm __caller [__dx] \
+    __value         \
+    __modify __exact [__ah]
+
+#pragma aux _fTinySetDTA = \
+        _SAVE_DSCX      \
+        _MOV_AH DOS_SET_DTA \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__cx __dx] \
+    __value         \
+    __modify __exact [__ah]
+#else
 #pragma aux _nTinySetDTA = \
         _MOV_AH DOS_SET_DTA \
         __INT_21        \
     __parm __caller [__edx] \
     __value         \
     __modify __exact [__ah]
+#endif
 
+#ifdef _M_I86
+#pragma aux _nTinyFindFirst = \
+        _SET_DS_DGROUP  \
+        _MOV_AH DOS_FIND_FIRST \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
+
+#pragma aux _fTinyFindFirst = \
+        _SET_DS_SREG    \
+        _MOV_AH DOS_FIND_FIRST \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_SREG    \
+    __parm __caller [_SREG __dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _nTinyFindFirst = \
         _MOV_AH DOS_FIND_FIRST \
         __INT_21        \
@@ -1119,7 +1754,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__edx] [__cx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyFindNext = \
+        _MOV_AH DOS_FIND_NEXT \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyFindNext = \
         _MOV_AH DOS_FIND_NEXT \
         __INT_21        \
@@ -1128,7 +1773,19 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetFileStamp = \
+        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        __INT_21        \
+        _SBB_BX_BX      \
+        _OR_DX_BX       \
+        _MOV_AX_CX      \
+    __parm __caller [__bx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __bx __cx __dx]
+#else
 #pragma aux _TinyGetFileStamp = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
         __INT_21        \
@@ -1139,7 +1796,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__edx] \
     __modify __exact [__eax __ecx __edx]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetFileStamp = \
+        _MOV_AX_W _SET_ DOS_FILE_DATE \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] [__cx] [__dx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinySetFileStamp = \
         _MOV_AX_W _SET_ DOS_FILE_DATE \
         __INT_21        \
@@ -1148,7 +1815,18 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] [__dx] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinySetVect = \
+        _SAVE_DSCX      \
+        _MOV_AH DOS_SET_INT \
+        __INT_21        \
+        _REST_DS        \
+    __parm __caller [__al] [__cx __dx] \
+    __value         \
+    __modify __exact [__ah _MODIF_DS]
+#else
 #pragma aux _TinySetVect = \
         _SAVE_DSCX      \
         _MOV_AH DOS_SET_INT \
@@ -1157,7 +1835,16 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__al] [__cx __edx] \
     __value         \
     __modify __exact [__ah _MODIF_DS]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyGetVect = \
+        _MOV_AH DOS_GET_INT \
+        __INT_21        \
+    __parm __caller [__al] \
+    __value         [__es __bx] \
+    __modify __exact [__ah __bx __es]
+#else
 #ifdef __FLAT__
 #pragma aux _TinyGetVect = \
         _SAVE_ES        \
@@ -1175,7 +1862,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__es __ebx] \
     __modify __exact [__eax __ebx __es]
 #endif
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyLock = \
+        _MOV_AX_W 0 DOS_RECORD_LOCK \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyLock = \
         _MOV_AX_W 0 DOS_RECORD_LOCK \
         __INT_21        \
@@ -1184,7 +1881,17 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
+#ifdef _M_I86
+#pragma aux _TinyUnlock = \
+        _MOV_AX_W 1 DOS_RECORD_LOCK \
+        __INT_21        \
+        _SBB_DX_DX      \
+    __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
 #pragma aux _TinyUnlock = \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
         __INT_21        \
@@ -1193,206 +1900,9 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
     __value         [__eax] \
     __modify __exact [__eax]
+#endif
 
-#elif defined( _M_I86 )
-
-/**************************
- * 8086 version of pragmas
- **************************/
-
-#pragma aux _nTinyBufferedInput = \
-        _MOV_AH DOS_BUFF_INPUT \
-        __INT_21        \
-    __parm __caller [__dx] \
-    __value         \
-    __modify __exact [__ah]
-
-#pragma aux _fTinyBufferedInput = \
-        _SET_DS_SREG_SAFE \
-        _MOV_AH DOS_BUFF_INPUT \
-        __INT_21        \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
-    __value         \
-    __modify __exact [__ax]
-
-#pragma aux _nTinyOpen = \
-        _SET_DS_DGROUP_SAFE \
-        _MOV_AH DOS_OPEN \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__al] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyOpen = \
-        _SET_DS_SREG_SAFE \
-        _MOV_AH DOS_OPEN \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__al] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyCreate = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_CREAT \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyCreate = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_CREAT    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyCreateEx = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_EXT_CREATE \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__si] [__bx] [__cx] [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __cx __dx]
-
-#pragma aux _fTinyCreateEx = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_EXT_CREATE \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __si] [__bx] [__cx] [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __cx __dx]
-
-#pragma aux _nTinyCreateNew = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_CREATE_NEW \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyCreateNew = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_CREATE_NEW \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyCreateTemp = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_CREATE_TMP \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyCreateTemp = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_CREATE_TMP \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyClose = \
-        _MOV_AH DOS_CLOSE    \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyCommitFile = \
-        _CLC            \
-        _MOV_AH DOS_COMMIT_FILE    \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyWrite = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_WRITE    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__bx] [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyRead = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_READ    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__bx] [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyWrite = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_WRITE    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [__bx] [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyRead = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_READ    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [__bx] [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyLSeek = \
-        _MOV_AH DOS_LSEEK \
-        __INT_21        \
-        "mov  ss:[di],ax" \
-        "mov  ss:2[di],dx" \
-        _RCL_DX_1       \
-        _ROR_DX_1       \
-    __parm __caller [__bx] [__cx] [__dx] [__al] [__di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinySeek = \
-        _MOV_AH DOS_LSEEK \
-        __INT_21        \
-        _RCL_DX_1       \
-        _ROR_DX_1       \
-    __parm __caller [__bx] [__cx] [__dx] [__al] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
+#ifdef _M_I86
 #pragma aux _nTinyGetFileAttr = \
         _SET_DS_DGROUP  \
         _MOV_AX_W _GET_ DOS_CHMOD \
@@ -1404,16 +1914,6 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__dx __ax] \
     __modify __exact [__ax __cx __dx]
 
-#pragma aux _nTinySetFileAttr = \
-        _SET_DS_DGROUP  \
-        _MOV_AX_W _SET_ DOS_CHMOD \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
 #pragma aux _fTinyGetFileAttr = \
         _SET_DS_SREG    \
         _MOV_AX_W _GET_ DOS_CHMOD \
@@ -1424,6 +1924,20 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [_SREG __dx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __cx __dx]
+#else
+#endif
+
+#ifdef _M_I86
+#pragma aux _nTinySetFileAttr = \
+        _SET_DS_DGROUP  \
+        _MOV_AX_W _SET_ DOS_CHMOD \
+        __INT_21        \
+        _SBB_DX_DX      \
+        _RST_DS_DGROUP  \
+    __parm __caller [__dx] [__cx] \
+    __value         [__dx __ax] \
+    __modify __exact [__ax __dx]
+
 
 #pragma aux _fTinySetFileAttr = \
         _SET_DS_SREG    \
@@ -1434,358 +1948,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [_SREG __dx] [__cx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __dx]
-
-#pragma aux _nTinyDelete = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_UNLINK \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyRename = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_RENAME \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [ESDATAREG __di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyDelete = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_UNLINK \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#if defined( _M_I86MM ) || defined( _M_I86SM ) || defined(__SW_ZDP)
-#pragma aux _fTinyRename = \
-        _PUSH_DS        \
-        _MOV_DS_CX      \
-        _MOV_AH DOS_RENAME \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _POP_DS         \
-    __parm __caller [__cx __dx] [ESDATAREG __di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
 #else
-#pragma aux _fTinyRename = \
-        _MOV_AH DOS_RENAME \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__ds __dx] [ESDATAREG __di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
 #endif
 
-#pragma aux _nTinyMakeDir = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_MKDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyRemoveDir = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_RMDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyChangeDir = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_CHDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _nTinyGetCWDir = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_GETCWD \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__si] [__dl] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyMakeDir = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_MKDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyRemoveDir = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_RMDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyChangeDir = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_CHDIR \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _fTinyGetCWDir = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_GETCWD \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __si] [__dl] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx __si]
-
-#pragma aux _TinyDup = \
-        _MOV_AH DOS_DUP \
-        __INT_21        \
-        _SBB_BX_BX      \
-    __parm __caller [__bx] \
-    __value         [__bx __ax] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyDup2 = \
-        _MOV_AH DOS_DUP2    \
-        __INT_21        \
-        _SBB_BX_BX      \
-    __parm __caller [__bx] [__cx] \
-    __value         [__bx __ax] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyAllocBlock = \
-        _MOV_AH DOS_ALLOC_SEG    \
-        __INT_21        \
-        _SBB_BX_BX      \
-    __parm __caller [__bx] \
-    __value         [__bx __ax] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyTestAllocBlock = \
-        _MOV_AH DOS_ALLOC_SEG    \
-        __INT_21        \
-        _SBB_DX_DX      \
-        "jz short L1"   \
-        _MOV_AX_BX      \
-    "L1:"               \
-    __parm __caller [__bx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __bx __dx]
-
-#pragma aux _TinyMaxAlloc = \
-        _XOR_BX_BX      \
-        _DEC_BX         \
-        _MOV_AH DOS_ALLOC_SEG \
-        __INT_21        \
-    __parm __caller [] \
-    __value         [__bx] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyFreeBlock = \
-        _MOV_AH DOS_FREE_SEG \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__es] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinySetBlock = \
-        _MOV_AH DOS_MODIFY_SEG \
-        __INT_21        \
-        _SBB_BX_BX      \
-    __parm __caller [__es] [__bx] \
-    __value         [__bx __ax] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyMaxSet = \
-        _XOR_BX_BX      \
-        _DEC_BX         \
-        _MOV_AH DOS_MODIFY_SEG    \
-        __INT_21        \
-    __parm __caller [__es] \
-    __value         [__bx] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinyGetDeviceInfo = \
-        _MOV_AX_W _GET_ DOS_IOCTL \
-        __INT_21        \
-        _SBB_BX_BX      \
-        "jnz short L1"  \
-        _MOV_AX_DX      \
-    "L1:"               \
-    __parm __caller [__bx] \
-    __value         [__bx __ax] \
-    __modify __exact [__ax __bx __dx]
-
-#pragma aux _TinySetDeviceInfo = \
-        _XOR_DH_DH      \
-        _MOV_AX_W _SET_ DOS_IOCTL \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _AND_AX_DX      \
-    __parm __caller [__bx] [__dl] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyGetCtrlBreak = \
-        _MOV_AX_W _GET_ DOS_CTRL_BREAK \
-        __INT_21        \
-    __parm __caller [] \
-    __value         [__dl] \
-    __modify __exact [__ax __dl]
-
-#pragma aux _TinySetCtrlBreak = \
-        _MOV_AX_W _SET_ DOS_CTRL_BREAK \
-        __INT_21        \
-    __parm __caller [__dl] \
-    __value         \
-    __modify __exact [__ax __dl]
-
-#pragma aux _TinyTerminateProcess = \
-        _MOV_AH DOS_EXIT \
-        __INT_21        \
-    __parm __caller [__al] \
-    __aborts
-
-#pragma aux _TinyGetDate = \
-        _MOV_AH DOS_GET_DATE    \
-        __INT_21        \
-        _SUB_CX_N 0x6c 0x07 /* 1900 */ \
-        _MOV_CH_AL      \
-    __parm __caller [] \
-    __value         [__cx __dx] \
-    __modify __exact [__ax __cx __dx]
-
-#pragma aux _TinyGetTime = \
-        _MOV_AH DOS_GET_TIME \
-        __INT_21        \
-    __parm __caller [] \
-    __value         [__cx __dx] \
-    __modify __exact [__ax __cx __dx]
-
-#pragma aux _TinyGetCurrDrive = \
-        _MOV_AH DOS_CUR_DISK \
-        __INT_21        \
-    __parm __caller [] \
-    __value         [__al] \
-    __modify __exact [__ax]
-
-#pragma aux _TinySetCurrDrive = \
-        _MOV_AH DOS_SET_DRIVE \
-        __INT_21        \
-    __parm __caller [__dl] \
-    __value         \
-    __modify __exact [__ax __dl]
-
-#pragma aux _nTinySetDTA = \
-        _MOV_AH DOS_SET_DTA \
-        __INT_21        \
-    __parm __caller [__dx] \
-    __value         \
-    __modify __exact [__ah]
-
-#pragma aux _nTinyFindFirst = \
-        _SET_DS_DGROUP  \
-        _MOV_AH DOS_FIND_FIRST \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller [__dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyGetDTA = \
-        _MOV_AH DOS_GET_DTA \
-        __INT_21        \
-    __parm __caller [] \
-    __value         [__es __bx] \
-    __modify __exact [__ah __bx __es]
-
-#pragma aux _TinyChangeDTA = \
-        _MOV_AH DOS_GET_DTA \
-        __INT_21        \
-        _SAVE_DSCX      \
-        _MOV_AH DOS_SET_DTA \
-        __INT_21        \
-        _REST_DS        \
-    __parm __caller [__cx __dx] \
-    __value         [__es __bx] \
-    __modify __exact [__ah __bx __es]
-
-#pragma aux _fTinySetDTA = \
-        _SAVE_DSCX      \
-        _MOV_AH DOS_SET_DTA \
-        __INT_21        \
-        _REST_DS        \
-    __parm __caller [__cx __dx] \
-    __value         \
-    __modify __exact [__ah]
-
-#pragma aux _fTinyFindFirst = \
-        _SET_DS_SREG    \
-        _MOV_AH DOS_FIND_FIRST \
-        __INT_21        \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller [_SREG __dx] [__cx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyFindNext = \
-        _MOV_AH DOS_FIND_NEXT \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyGetFileStamp = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
-        __INT_21        \
-        _SBB_BX_BX      \
-        _OR_DX_BX       \
-        _MOV_AX_CX      \
-    __parm __caller [__bx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __bx __cx __dx]
-
-#pragma aux _TinySetFileStamp = \
-        _MOV_AX_W _SET_ DOS_FILE_DATE \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] [__cx] [__dx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
+#ifdef _M_I86
 #pragma aux _TinySetIntr = \
         _SAVE_DSCS      \
         _MOV_AH DOS_SET_INT \
@@ -1794,58 +1960,60 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__al] [__dx] \
     __value         \
     __modify __exact [__ah _MODIF_DS]
+#else
+#endif
 
-#pragma aux _TinySetVect = \
-        _SAVE_DSCX      \
-        _MOV_AH DOS_SET_INT \
-        __INT_21        \
-        _REST_DS        \
-    __parm __caller [__al] [__cx __dx] \
-    __value         \
-    __modify __exact [__ah _MODIF_DS]
-
-#pragma aux _TinyGetVect = \
-        _MOV_AH DOS_GET_INT \
-        __INT_21        \
-    __parm __caller [__al] \
-    __value         [__es __bx] \
-    __modify __exact [__ah __bx __es]
-
+#ifdef _M_I86
 #pragma aux _TinyDOSVersion = \
         _MOV_AH DOS_GET_VERSION    \
         __INT_21        \
     __parm __caller [] \
     __value         [__ax] \
     __modify __exact [__ax __bx __cx]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyGetCH = \
         _MOV_AH DOS_GET_CHAR_NO_ECHO_CHECK \
         __INT_21        \
     __parm __caller [] \
     __value         [__al] \
     __modify __exact [__ax]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyGetCHE = \
         _MOV_AH DOS_GET_CHAR_ECHO_CHECK \
         __INT_21        \
     __parm __caller [] \
     __value         [__al] \
     __modify __exact [__ax]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyGetSwitchChar = \
         _MOV_AX_W _GET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [] \
     __value         [__dl] \
     __modify __exact [__ax __dl]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinySetSwitchChar = \
         _MOV_AX_W _SET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [__dl] \
     __value         \
     __modify __exact [__ax __dl]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinyFreeSpace = \
         _MOV_AH DOS_DRIVE_FREE_SPACE \
         __INT_21        \
@@ -1854,7 +2022,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__dl] \
     __value         [__dx __ax] \
     __modify __exact [__ax __bx __cx __dx]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _nTinyGetCountry = \
         _SET_DS_DGROUP  \
         _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
@@ -1874,7 +2045,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [_SREG __dx] \
     __value         [__cx __bx] \
     __modify __exact [__ax __bx __cx]     /* note _SREG dx not modified */
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _TinySetCountry = \
         _XOR_DX_DX      \
         _DEC_DX         \
@@ -1888,7 +2062,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __bx __dx]
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _nTinyFCBPrsFname = \
         _SET_DS_DGROUP_SAFE \
         _MOV_AH DOS_PARSE_FCB \
@@ -1922,7 +2099,10 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __value         [__dx __ax] \
     __modify __exact [__ax __dx __si]     /* note es di, ds not modified */
 #endif
+#else
+#endif
 
+#ifdef _M_I86
 #pragma aux _nTinyFCBDeleteFile = \
         _SET_DS_DGROUP  \
         _MOV_AH DOS_DELETE_FCB \
@@ -1944,58 +2124,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [_SREG __dx] \
     __value         [__dx __ax] \
     __modify __exact [__ax __dx]
-
-#pragma aux _TinyLock = \
-        _MOV_AX_W 0 DOS_RECORD_LOCK \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyUnlock = \
-        _MOV_AX_W 1 DOS_RECORD_LOCK \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
-#pragma aux _TinyCreatePSP = \
-        _PUSHF          \
-        _MOV_AH DOS_CREATE_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [__dx] \
-    __value         \
-    __modify __exact [__ax]
-
-#pragma aux _TinySetPSP = \
-        _PUSHF          \
-        _MOV_AH DOS_SET_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [__bx] \
-    __value         \
-    __modify __exact [__ah]
-
-#pragma aux _TinyGetPSP = \
-        _PUSHF          \
-        _MOV_AH DOS_GET_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [] \
-    __value         [__bx] \
-    __modify __exact [__ax __bx]
-
-#pragma aux _TinySetMaxHandleCount = \
-        _MOV_AH DOS_SET_HCOUNT \
-        __INT_21        \
-        _SBB_DX_DX      \
-    __parm __caller [__bx] \
-    __value         [__dx __ax] \
-    __modify __exact [__ax __dx]
-
+#else
 #endif
 
 
