@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,9 @@
 #define _DOSERROR_H_INCLUDED
 
 extern unsigned __near __doserror_( unsigned );
-#pragma aux __doserror_ "*" __parm __caller __near
+#pragma aux __doserror_ "*" __parm __caller
 
 extern unsigned __near __doserror1_( unsigned );
-#pragma aux __doserror1_ "*" __parm __caller __near
+#pragma aux __doserror1_ "*" __parm __caller
 
 #endif
