@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -254,7 +254,7 @@ unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __
 
 void WINDPMIFN( DPMIFreeAlias )( unsigned long desc )
 {
-    _DPMI_FreeAlias( desc );
+    _DPMI_FreeAlias( desc >> 16 );
 }
 
 unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *res, unsigned long size )
