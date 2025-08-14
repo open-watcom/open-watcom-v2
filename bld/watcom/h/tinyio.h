@@ -622,7 +622,6 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
  * DOS functions related pragmas (INT 21h)
  ********************************************************/
 
-#ifdef _M_I86
 #pragma aux _TinyCreatePSP = \
         _PUSHF          \
         _MOV_AH DOS_CREATE_PSP \
@@ -631,18 +630,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__dx] \
     __value         \
     __modify __exact [__ax]
-#else
-#pragma aux _TinyCreatePSP = \
-        _PUSHF          \
-        _MOV_AH DOS_CREATE_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [__dx] \
-    __value         \
-    __modify __exact [__ax]
-#endif
 
-#ifdef _M_I86
 #pragma aux _TinySetPSP = \
         _PUSHF          \
         _MOV_AH DOS_SET_PSP \
@@ -651,18 +639,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [__bx] \
     __value         \
     __modify __exact [__ah]
-#else
-#pragma aux _TinySetPSP = \
-        _PUSHF          \
-        _MOV_AH DOS_SET_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [__bx] \
-    __value         \
-    __modify __exact [__ah]
-#endif
 
-#ifdef _M_I86
 #pragma aux _TinyGetPSP = \
         _PUSHF          \
         _MOV_AH DOS_GET_PSP \
@@ -671,16 +648,6 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __parm __caller [] \
     __value         [__bx] \
     __modify __exact [__ax __bx]
-#else
-#pragma aux _TinyGetPSP = \
-        _PUSHF          \
-        _MOV_AH DOS_GET_PSP \
-        __INT_21        \
-        _POPF           \
-    __parm __caller [] \
-    __value         [__bx] \
-    __modify __exact [__ax __bx]
-#endif
 
 #ifdef _M_I86
 #pragma aux _TinySetMaxHandleCount = \
