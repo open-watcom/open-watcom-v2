@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Covers for bitmap manipulation routines.
+* Description:  Covers for bitmap manipulation routines (16-bit code).
 *
 ****************************************************************************/
 
