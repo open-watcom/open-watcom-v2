@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DPMI function wrappers for Win386.
+* Description:  DPMI function wrappers for Win386 (16-bit code).
 *
 ****************************************************************************/
 

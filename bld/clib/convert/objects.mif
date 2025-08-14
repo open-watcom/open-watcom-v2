@@ -29,15 +29,3 @@
 
 
 !include ../../../../objlist.mif
-
-086_option_zc =-zc
-286_option_zc =-zc
-386_option_zc =-zc
-
-alphabet_opts =$($(processor)_option_zc)
-itoa_opts     =$($(processor)_option_zc)
-lltoa_opts    =$($(processor)_option_zc)
-ltoa_opts     =$($(processor)_option_zc)
-uitoa_opts    =$($(processor)_option_zc)
-ulltoa_opts   =$($(processor)_option_zc)
-ultoa_opts    =$($(processor)_option_zc)

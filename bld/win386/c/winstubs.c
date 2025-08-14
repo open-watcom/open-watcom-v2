@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Covers for several base Windows API functions.
+* Description:  Covers for several base Windows API functions (16-bit code).
 *
 ****************************************************************************/
 

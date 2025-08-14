@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor WinMain code (16-bit).
+* Description:  Windows 386 Supervisor WinMain code (16-bit code).
 *
 ****************************************************************************/
 
