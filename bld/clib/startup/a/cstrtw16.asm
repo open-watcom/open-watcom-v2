@@ -331,18 +331,18 @@ _wstart_ endp
 ifdef WINDOWS10
 
 ; Empty stub for IsDBCSLeadByte, which does not exist in Windows 1.x.
-public ISDBCSLEADBYTE
-ISDBCSLEADBYTE proc far
+public WIN10ISDBCSLEADBYTE
+WIN10ISDBCSLEADBYTE proc far
 	xor	ax,ax
 	retf
-ISDBCSLEADBYTE endp
+WIN10ISDBCSLEADBYTE endp
 
 ; Empty stub for GetKBCodePage, which does not exist in any KEYBOARD driver in Windows 1.x.
-public GETKBCODEPAGE
-GETKBCODEPAGE proc far
+public WIN10GETKBCODEPAGE
+WIN10GETKBCODEPAGE proc far
 	xor	ax,ax
 	retf
-GETKBCODEPAGE endp
+WIN10GETKBCODEPAGE endp
 
 endif
 
