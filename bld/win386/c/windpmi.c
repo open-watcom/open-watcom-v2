@@ -213,6 +213,19 @@ void _DPMI_FreeAlias( WORD sel )
         return;
     }
     removeFromSelList( sel );
+
+    /* Strange Windows 3.0 "386 enhanced mode" DPMI bug:
+     * If ES, FS, or GS contain the selector being freed,
+     * it will crash dump to DOS within the DPMI call to free an LDT descriptor.
+     * The best way to avoid that crash dump is to zero those specific segment registers before the DPMI call.
+     * --J,C. 2025/08/14 */
+    __asm {
+        xor ax,ax
+        mov es,ax
+        mov fs,ax
+        mov gs,ax
+    }
+
     DPMIFreeLDTDescriptor( sel );
 
 } /* _DPMI_FreeAlias */
