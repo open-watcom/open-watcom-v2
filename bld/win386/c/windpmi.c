@@ -91,7 +91,7 @@ static void removeFromSelList( WORD sel )
 /*
  * _DPMI_GetAliases - get alias descriptors for some memory
  */
-WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
+WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
 {
     WORD                sel;
     WORD                i;
@@ -100,7 +100,7 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
     dpmi_ret            dpmirc;
 
     if( offset == 0L ) {
-        *res = 0L;
+        *alias = 0L;
         return( 0 );
     }
 
@@ -115,7 +115,7 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
      */
     if( cnt == 1 ) {
         if( offset < StackBase_64K && offset >= StackBase ) {
-            *res = (((DWORD)StackCacheSel) << 16) + offset - StackBase;
+            *alias = (((DWORD)StackCacheSel) << 16) + offset - StackBase;
             return( 0 );
         }
         if( cacheUseCount < MAX_CACHE ) {
@@ -127,7 +127,7 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
                         ace->base = base;
                         DPMISetSegmentBaseAddress( ace->sel, base );
                     }
-                    *res = ((DWORD)ace->sel) << 16;
+                    *alias = ((DWORD)ace->sel) << 16;
                     ace->in_use = true;
                     cacheUseCount++;
                     return( 0 );
@@ -143,13 +143,13 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
     /*
      * get a descriptor
      */
-    *res = 0L;
+    *alias = 0L;
     dpmirc = DPMIAllocateLDTDescriptors( cnt );
     if( DPMI_ERROR( dpmirc ) ) {
         return( 666 );
     }
     sel = DPMI_INFO( dpmirc );
-    *res = (DWORD)sel << 16;
+    *alias = (DWORD)sel << 16;
     limit = cnt * 0x10000 - 1;
 
     for( i = 0; i < cnt; i++ ) {
@@ -188,19 +188,21 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 /*
  * _DPMI_GetAlias - get alias descriptor for some memory
  */
-WORD _DPMI_GetAlias( DWORD offset, DWORD __far *res )
+WORD _DPMI_GetAlias( DWORD offset, DWORD __far *alias )
 {
-    return( _DPMI_GetAliases( offset, res, 1 ) );
+    return( _DPMI_GetAliases( offset, alias, 1 ) );
 
 } /* _DPMI_GetAlias */
 
 /*
  * _DPMI_FreeAlias - free alias descriptor
  */
-void _DPMI_FreeAlias( WORD sel )
+void _DPMI_FreeAlias( DWORD alias )
 {
     alias_cache_entry   *ace;
+    WORD                sel;
 
+    sel = alias >> 16;
     if( sel == 0 || sel == StackCacheSel ) {
         return;
     }
@@ -217,20 +219,20 @@ void _DPMI_FreeAlias( WORD sel )
 
 } /* _DPMI_FreeAlias */
 
-WORD _DPMI_GetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
+WORD _DPMI_GetHugeAlias( DWORD offset, DWORD __far *alias, DWORD size )
 {
     DWORD       no64k;
 
     no64k = Align64K( size );
-    return( _DPMI_GetAliases( offset, res, 1 + (WORD)( no64k / 0x10000L ) ) );
+    return( _DPMI_GetAliases( offset, alias, 1 + (WORD)( no64k / 0x10000L ) ) );
 }
 
-void _DPMI_FreeHugeAlias( DWORD desc, DWORD size )
+void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
 {
     DWORD       no64k;
     WORD        cnt,sel,i;
 
-    sel = desc >> 16;
+    sel = alias >> 16;
     if( sel == 0 ) {
         return;
     }
@@ -247,24 +249,24 @@ void _DPMI_FreeHugeAlias( DWORD desc, DWORD size )
  * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
 
-unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *res )
+unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *alias )
 {
-    return( _DPMI_GetAlias( offset, res ) );
+    return( _DPMI_GetAlias( offset, alias ) );
 }
 
-void WINDPMIFN( DPMIFreeAlias )( unsigned long desc )
+void WINDPMIFN( DPMIFreeAlias )( unsigned long alias )
 {
-    _DPMI_FreeAlias( desc >> 16 );
+    _DPMI_FreeAlias( alias );
 }
 
-unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *res, unsigned long size )
+unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *alias, unsigned long size )
 {
-    return( _DPMI_GetHugeAlias( offset, res, size ) );
+    return( _DPMI_GetHugeAlias( offset, alias, size ) );
 }
 
-void WINDPMIFN( DPMIFreeHugeAlias )( unsigned long desc, unsigned long size )
+void WINDPMIFN( DPMIFreeHugeAlias )( unsigned long alias, unsigned long size )
 {
-    _DPMI_FreeHugeAlias( desc, size );
+    _DPMI_FreeHugeAlias( alias, size );
 }
 
 /*

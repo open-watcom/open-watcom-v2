@@ -103,7 +103,8 @@ L0c:    pop     eax                     ; get aliased pointer
         pop     edx                     ; get original pointer
         cmp     eax,edx                 ; compare them
         je      short L0d               ; if different, then
-        shr     eax,16                  ; - get selector
+        mov     edx,eax                 ; - get alias pointer to DX:AX
+        shr     edx,16                  ; - ...
         call    _DPMI_FreeAlias_        ; - free it
 L0d:                                    ; endif
         cmp     sp,bp                   ; are we done?
@@ -270,7 +271,8 @@ nest2:; _loop                           ; loop
           mov   es:[edx],ebx            ; - restore old value
           cmp   eax,ebx                 ; - compare them
           je    short nest3             ; - if different, then
-            shr   eax,16                ; - - get selector
+            mov   edx,eax               ; - - get alias pointer to DX:AX
+            shr   edx,16                ; - - ...
             call  _DPMI_FreeAlias_      ; - - free it
             mov   es,_DataSelector      ; - - load 32-bit data segment
 nest3:                                  ; - endif

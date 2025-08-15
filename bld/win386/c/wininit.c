@@ -150,7 +150,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     DWORD               size,currsize,curroff,minmem,maxmem;
     DWORD               relsize,exelen;
     struct wstart_vars  __far *dataptr;
-    void                __far *aliasptr;
+    DWORD               alias;
     DWORD               __far *relptr;
     struct fpu_area     __far *fpuptr;
     rex_exe             exe;
@@ -320,14 +320,14 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     currsize = size - file_header_size;
     TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
-    i = _DPMI_GetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
+    i = _DPMI_GetAliases( CodeLoadAddr, &alias, 0 );
     if( i ) {
         return( Fini32BitTask( 3, (char _FAR *)"Error ",
                 dwordToStr( i ),
                 (char _FAR *)" getting alias for read" ) );
     }
-    dataptr = aliasptr;
-    sel = ((DWORD)dataptr) >> 16;
+    dataptr = (struct wstart_vars __far *)alias;
+    sel = alias >> 16;
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
         if( currsize >= (DWORD)READSIZE ) {
@@ -347,7 +347,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     EDataAddr = curroff;                        // 03-jan-95
 
     DPMISetSegmentBaseAddress( sel, DataSelectorBase );
-    relptr = (DWORD __far *)aliasptr;             // point to 32-bit stack area
+    relptr = (DWORD __far *)alias;              // point to 32-bit stack area
     /*
      * get and apply relocation table
      */
@@ -385,7 +385,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
 
     /* initialize emulator 8087 save area 20-oct-94 */
 
-    fpuptr = (struct fpu_area __far *)((char __far *)aliasptr + FPU_AREA);
+    fpuptr = (struct fpu_area __far *)((char __far *)alias + FPU_AREA);
     _fmemset( fpuptr, 0, sizeof( struct fpu_area ) );
     fpuptr->control_word = 0x033F;
     fpuptr->tag_word = 0xFFFF;
@@ -445,7 +445,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * free alias selector
      */
-    _DPMI_FreeAlias( sel );
+    _DPMI_FreeAlias( alias );
 
     /*
      * check for FPU and WGod

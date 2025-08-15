@@ -33,13 +33,13 @@
 #include "dpmi.h"
 
 
-extern WORD     _DPMI_GetAliases( DWORD offset, DWORD __far *desc, WORD cnt);
-extern WORD     _DPMI_GetAlias( DWORD offset, DWORD __far *desc);
+extern WORD     _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt);
+extern WORD     _DPMI_GetAlias( DWORD offset, DWORD __far *alias);
 #pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si] __value [__ax]
-extern void     _DPMI_FreeAlias( WORD sel );
-#pragma aux _DPMI_FreeAlias __parm [__ax]
-extern WORD     _DPMI_GetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
-extern void     _DPMI_FreeHugeAlias( DWORD desc, DWORD size );
+extern void     _DPMI_FreeAlias( DWORD alias );
+#pragma aux _DPMI_FreeAlias __parm [__dx __ax]
+extern WORD     _DPMI_GetHugeAlias( DWORD offset, DWORD __far *alias, DWORD size );
+extern void     _DPMI_FreeHugeAlias( DWORD alias, DWORD size );
 extern WORD     _DPMI_Get32( dpmi_mem_block _FAR *addr_data, DWORD len );
 extern void     _DPMI_Free32( DWORD handle );
 extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
