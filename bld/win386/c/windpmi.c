@@ -95,7 +95,8 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
 {
     WORD                sel;
     WORD                i;
-    DWORD               limit,base;
+    DWORD               limit;
+    DWORD               base;
     alias_cache_entry   *ace;
     dpmi_ret            dpmirc;
 

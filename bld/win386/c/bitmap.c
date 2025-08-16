@@ -43,7 +43,8 @@
 HBITMAP FAR PASCAL __CreateBitmap(int height, int width, BYTE nplanes,
                         BYTE bitcount, DWORD lpbits )
 {
-    DWORD       alias,size;
+    DWORD       alias;
+    DWORD       size;
     HBITMAP     rc;
 
     size = (DWORD)nplanes * (DWORD)height * (DWORD)width * (DWORD)bitcount;
@@ -61,7 +62,8 @@ HBITMAP FAR PASCAL __CreateBitmap(int height, int width, BYTE nplanes,
 HBITMAP FAR PASCAL __CreateBitmapIndirect( LPBITMAP bm )
 {
     HBITMAP     rc;
-    DWORD       alias,size;
+    DWORD       alias;
+    DWORD       size;
     LPSTR       old;
 
     size = (DWORD)bm->bmHeight * (DWORD)bm->bmWidthBytes;
