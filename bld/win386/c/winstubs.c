@@ -66,12 +66,12 @@ void GetAlias( LPLPVOID name )
 /*
  * ReleaseAlias - give back a 16 bit alias to 32 bit memory
  */
-void ReleaseAlias( LPVOID orig, LPVOID ptr )
+void ReleaseAlias( LPVOID orig_alias, LPVOID alias )
 {
-    if( orig == ptr ) {
+    if( orig_alias == alias ) {
         return;
     }
-    _DPMI_FreeAlias( ((DWORD)ptr) >> 16 );
+    _DPMI_FreeAlias( (DWORD)alias );
 
 } /* ReleaseAlias */
 
@@ -133,13 +133,13 @@ BOOL  FAR PASCAL __RegisterClass( LPWNDCLASS wc )
  */
 BOOL FAR PASCAL __ModifyMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z )
 {
-    DWORD       tmp;
+    DWORD       alias;
     BOOL        rc;
 
     if( !( ( (fl & MF_OWNERDRAW) != 0 ) || ( (fl & MF_BITMAP) != 0 ) ) && z != NULL ) {
-        _DPMI_GetAlias( (DWORD)z, &tmp );
-        rc = ModifyMenu( a, b, fl, d, (LPSTR)tmp );
-        _DPMI_FreeAlias( tmp >> 16 );
+        _DPMI_GetAlias( (DWORD)z, &alias );
+        rc = ModifyMenu( a, b, fl, d, (LPSTR)alias );
+        _DPMI_FreeAlias( alias );
     } else {
         rc = ModifyMenu( a, b, fl, d, z );
     }
@@ -152,13 +152,13 @@ BOOL FAR PASCAL __ModifyMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z )
  */
 BOOL  FAR PASCAL __InsertMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z )
 {
-    DWORD       tmp;
+    DWORD       alias;
     BOOL        rc;
 
     if( !( ( (fl & MF_OWNERDRAW) != 0 ) || ( (fl & MF_BITMAP) != 0 ) ) && z != NULL ) {
-        _DPMI_GetAlias( (DWORD)z, &tmp );
-        rc = InsertMenu( a, b, fl, d, (LPSTR)tmp );
-        _DPMI_FreeAlias( tmp >> 16 );
+        _DPMI_GetAlias( (DWORD)z, &alias );
+        rc = InsertMenu( a, b, fl, d, (LPSTR)alias );
+        _DPMI_FreeAlias( alias );
     } else {
         rc = InsertMenu( a, b, fl, d, z );
     }
@@ -171,13 +171,13 @@ BOOL  FAR PASCAL __InsertMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z )
  */
 BOOL  FAR PASCAL __AppendMenu( HMENU a, WORD fl, WORD c, LPSTR z )
 {
-    DWORD       tmp;
+    DWORD       alias;
     BOOL        rc;
 
     if( !( ( (fl & MF_OWNERDRAW) != 0 ) || ( (fl & MF_BITMAP) != 0 ) ) && z != NULL ) {
-        _DPMI_GetAlias( (DWORD)z, &tmp );
-        rc = AppendMenu( a, fl, c, (LPSTR)tmp );
-        _DPMI_FreeAlias( tmp >> 16 );
+        _DPMI_GetAlias( (DWORD)z, &alias );
+        rc = AppendMenu( a, fl, c, (LPSTR)alias );
+        _DPMI_FreeAlias( alias );
     } else {
         rc = AppendMenu( a, fl, c, z );
     }
@@ -272,14 +272,15 @@ int FAR PASCAL __GetInstanceData( HANDLE a, DWORD offset, int len )
  */
 LPSTR FAR PASCAL __AnsiPrev( LPSTR a, LPSTR b )
 {
-    LPSTR       res,b2;
+    LPSTR       b2;
+    LPSTR       res;
     DWORD       alias;
 
     _DPMI_GetAlias( (DWORD)a, &alias );
     b2 = (LPSTR)( alias + ( (DWORD)b - (DWORD)a ) );
     res = AnsiPrev( (LPSTR)alias, b2 );
-    res = a + ( (DWORD)res - (DWORD)alias );
-    _DPMI_FreeAlias( alias >> 16 );
+    res = a + ( (DWORD)res - alias );
+    _DPMI_FreeAlias( alias );
     return( res );
 
 } /* __AnsiPrev */
@@ -296,8 +297,8 @@ LPSTR FAR PASCAL __AnsiNext( LPSTR a )
 
     _DPMI_GetAlias( (DWORD)a, &alias );
     res = AnsiNext( (LPSTR)alias );
-    res = (LPSTR)( (DWORD)a + ( (DWORD)res - (DWORD)alias ) );
-    _DPMI_FreeAlias( alias >> 16 );
+    res = (LPSTR)( (DWORD)a + ( (DWORD)res - alias ) );
+    _DPMI_FreeAlias( alias );
     return( res );
 
 } /* __AnsiNext */

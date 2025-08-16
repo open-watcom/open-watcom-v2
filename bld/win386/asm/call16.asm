@@ -25,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  __Call16 function implementation (16-bit code)
 ;*
 ;*****************************************************************************
 
@@ -188,7 +187,8 @@ docall: call    dword ptr _funcptr[bp]  ; invoke 16-bit function
           mov   edx,es:[esi]            ; - get original pointer
           cmp   eax,edx                 ; - if they are different
           _if   ne                      ; - then
-            shr   eax,16                ; - - get selector
+            mov   edx,eax               ; - - get alias pointer to DX:AX
+            shr   edx,16                ; - - ...
             call  _DPMI_FreeAlias_      ; - - free it
           _endif                        ; - endif
           add   esi,8                   ; - advance 32-bit stack pointer
