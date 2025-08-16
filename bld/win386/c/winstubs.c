@@ -51,7 +51,7 @@ DWORD GetAlias( LPDWORD ptr )
 
     orig = *ptr;
     if( orig >= 0xFFFF0000 ) {
-            *ptr = orig & 0xFFFFL;
+        *ptr = orig & 0xFFFFL;
 //    } else if( orig >= DataSelectorSize ) {
     } else if( orig ) {
         _DPMI_GetAlias( orig, &alias );
@@ -278,7 +278,7 @@ LPSTR FAR PASCAL __AnsiPrev( LPSTR a, LPSTR b )
     _DPMI_GetAlias( (DWORD)a, &alias );
     b2 = (LPSTR)( alias + ( (DWORD)b - (DWORD)a ) );
     res = AnsiPrev( (LPSTR)alias, b2 );
-    res = a + ( (DWORD)res - alias );
+    res = a + ( (DWORD)res - (DWORD)alias );
     _DPMI_FreeAlias( alias );
     return( res );
 
@@ -296,7 +296,7 @@ LPSTR FAR PASCAL __AnsiNext( LPSTR a )
 
     _DPMI_GetAlias( (DWORD)a, &alias );
     res = AnsiNext( (LPSTR)alias );
-    res = (LPSTR)( (DWORD)a + ( (DWORD)res - alias ) );
+    res = (LPSTR)( (DWORD)a + ( (DWORD)res - (DWORD)alias ) );
     _DPMI_FreeAlias( alias );
     return( res );
 
