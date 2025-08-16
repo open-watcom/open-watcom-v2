@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,19 +30,19 @@
 ****************************************************************************/
 
 
-extern HBITMAP  FAR PASCAL __CreateBitmap(int height, int width, BYTE nplanes,
-                        BYTE bitcount, DWORD lpbits );
+extern HBITMAP  FAR PASCAL __CreateBitmap(int height, int width, WORD nplanes,
+                        WORD bitcount, DWORD lpbits );
 extern HBITMAP  FAR PASCAL __CreateBitmapIndirect( LPBITMAP bm );
 extern LONG     FAR PASCAL __SetBitmapBits( HBITMAP bm, DWORD dw, LPSTR bits );
 extern LONG     FAR PASCAL __GetBitmapBits( HBITMAP bm, DWORD dw, LPSTR bits );
 extern int      FAR PASCAL __SetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
-                                    LPSTR lpbits ,LPBITMAPINFO bmi,WORD usage);
+                                    LPVOID lpbits ,LPBITMAPINFO bmi,WORD usage);
 extern int      FAR PASCAL __GetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
-                                    LPSTR lpbits ,LPBITMAPINFO bmi,WORD usage);
+                                    LPVOID lpbits ,LPBITMAPINFO bmi,WORD usage);
 extern int      FAR PASCAL __SetDIBitsToDevice(HDC hdc,WORD destx,WORD desty,
                                         WORD width,WORD height,
                                         WORD srcx,WORD srcy,WORD start,
-                                        WORD num, LPSTR lpbits,
+                                        WORD num, LPVOID lpbits,
                                         LPBITMAPINFO bmi,WORD usage );
 extern HBITMAP  FAR PASCAL __CreateDIBitmap( HDC hDC, LPBITMAPINFOHEADER lpInfoHeader,
                         DWORD dwUsage,DWORD lpInitBits,

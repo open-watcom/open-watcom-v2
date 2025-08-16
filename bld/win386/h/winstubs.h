@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,8 @@
 ****************************************************************************/
 
 
-#ifdef DLL32
-typedef LPVOID __far *LPLPVOID;
-#else
-typedef LPVOID *LPLPVOID;
-#endif
-
-extern void     GetAlias( LPLPVOID name );
-extern void     ReleaseAlias( LPVOID orig, LPVOID ptr );
+extern DWORD    GetAlias( LPDWORD ptr );
+extern void     ReleaseAlias( DWORD orig, LPDWORD ptr );
 extern BOOL     FAR PASCAL __GetMessage( LPMSG msg, HWND a, WORD b, WORD c );
 extern BOOL     FAR PASCAL __PeekMessage( LPMSG msg, HWND a, WORD b, WORD c, WORD d );
 #if 0
