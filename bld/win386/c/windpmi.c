@@ -56,6 +56,15 @@ typedef struct memblk {
     DWORD       size;
 } memblk;
 
+extern int  WINDPMI_FreeLDTDescriptor( WORD );
+#pragma aux WINDPMI_FreeLDTDescriptor = \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
+    __modify __exact [__ax]
+
 static bool                     WrapAround;
 static WORD                     hugeIncrement;
 static WORD                     firstCacheSel,lastCacheSel;
@@ -216,7 +225,7 @@ void _DPMI_FreeAlias( DWORD alias )
         return;
     }
     removeFromSelList( sel );
-    DPMIFreeLDTDescriptor( sel );
+    WINDPMI_FreeLDTDescriptor( sel );
 
 } /* _DPMI_FreeAlias */
 
@@ -241,7 +250,7 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
     cnt = 1 + (WORD)( no64k / 0x10000L );
     for( i = 0; i < cnt; i++ ) {
         removeFromSelList( sel );
-        DPMIFreeLDTDescriptor( sel );
+        WINDPMI_FreeLDTDescriptor( sel );
         sel += hugeIncrement;
     }
 }
@@ -320,7 +329,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      */
     dpmirc = DPMIAllocateLDTDescriptors( 2 );
     if( DPMI_ERROR( dpmirc ) ) {
-        DPMIFreeLDTDescriptor( CodeEntry.seg );
+        WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
         return( 4 );
     }
     DataSelector = DPMI_INFO( dpmirc );
@@ -371,9 +380,9 @@ WORD _DPMI_Get32( dpmi_mem_block _FAR *adata, DWORD len )
  */
 void _DPMI_Free32( DWORD handle )
 {
-    DPMIFreeLDTDescriptor( DataSelector );
-    DPMIFreeLDTDescriptor( StackSelector );
-    DPMIFreeLDTDescriptor( CodeEntry.seg );
+    WINDPMI_FreeLDTDescriptor( DataSelector );
+    WINDPMI_FreeLDTDescriptor( StackSelector );
+    WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
     DPMIFreeMemoryBlock( handle );
 
 } /* _DPMI_Free32 */
@@ -523,11 +532,11 @@ void FiniSelectorCache( void )
 
     for( i = 0; i < MAX_CACHE; i++ ) {
         if( aliasCache[i].sel != NULL ) {
-            DPMIFreeLDTDescriptor( aliasCache[i].sel );
+            WINDPMI_FreeLDTDescriptor( aliasCache[i].sel );
         }
     }
-    DPMIFreeLDTDescriptor( StackCacheSel );
-    DPMIFreeLDTDescriptor( Int21Selector );
+    WINDPMI_FreeLDTDescriptor( StackCacheSel );
+    WINDPMI_FreeLDTDescriptor( Int21Selector );
 
 } /* FiniSelectorCache */
 
@@ -550,7 +559,7 @@ void FiniSelList( void )
             sel = (j << (3 + 3)) | (firstCacheSel & 7);
             while( mask != 0 ) {
                 if( mask & 1 ) {
-                    DPMIFreeLDTDescriptor( sel );
+                    WINDPMI_FreeLDTDescriptor( sel );
                     --i;
                     if( i == 0 ) {
                         return;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,11 @@ extern void ClearFS_GS( void );
 
 DWORD AllocHugeAlias16( void *offset, DWORD size )
 {
-    DWORD       ptr;
+    DWORD       alias;
 
-    if( DPMIGetHugeAlias( (DWORD)offset, &ptr, size ) )
+    if( DPMIGetHugeAlias( (DWORD)offset, &alias, size ) )
         return( 0 );
-    return( ptr );
+    return( alias );
 
 } /* AllocHugeAlias16 */
 
