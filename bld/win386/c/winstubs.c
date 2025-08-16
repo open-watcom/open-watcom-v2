@@ -44,34 +44,35 @@
 /*
  * GetAlias - get a 16 bit alias to 32 bit memory
  */
-void GetAlias( LPLPVOID name )
+DWORD GetAlias( LPDWORD ptr )
 {
     DWORD       alias;
+    DWORD       orig;
 
-    if( *name == NULL ) {
-        return;
+    orig = *ptr;
+    if( orig >= 0xFFFF0000 ) {
+        *ptr = orig & 0xFFFFL;
+//    } else if( orig >= DataSelectorSize ) {
+    } else if( orig ) {
+        _DPMI_GetAlias( orig, &alias );
+        *ptr = alias;
     }
-    if( (DWORD)( *name ) >= 0xFFFF0000 ) {
-        *name = (LPVOID)(DWORD)((DWORD)( *name ) & 0xFFFFL);
-        return;
-    }
-//    if( (DWORD) (*name) >= DataSelectorSize )
-//        return;
-
-    _DPMI_GetAlias( (DWORD)*name, &alias );
-    *name = (LPSTR)alias;
+    return( orig );
 
 } /* GetAlias */
 
 /*
  * ReleaseAlias - give back a 16 bit alias to 32 bit memory
  */
-void ReleaseAlias( LPVOID orig_alias, LPVOID alias )
+void ReleaseAlias( DWORD orig, LPDWORD ptr )
 {
-    if( orig_alias == alias ) {
-        return;
+    DWORD   alias;
+
+    alias = *ptr;
+    if( orig != alias ) {
+        *ptr = orig;
+        _DPMI_FreeAlias( alias );
     }
-    _DPMI_FreeAlias( (DWORD)alias );
 
 } /* ReleaseAlias */
 
@@ -191,27 +192,25 @@ BOOL  FAR PASCAL __AppendMenu( HMENU a, WORD fl, WORD c, LPSTR z )
 int FAR PASCAL __Escape( HDC a, int b, int c, LPSTR d, LPSTR e )
 {
     int         rc;
-    LPSTR       od;
+    DWORD       odata;
 
     /*
      * no alias for d yet, since sometimes it is a function pointer
      * (bloody microsoft weenies)
      */
-    if( b != SETABORTPROC ) {
-        od = d;
-        GetAlias( (LPLPVOID)&d );
-    }
     if( b == NEXTBAND ) {
         RECT    r;
 
         r = *(LPRECT)e;
         rc = Escape( a, b, c, NULL, &r );
         *(LPRECT)e = r;
-    }  else {
+    } else if( b == SETABORTPROC ) {
         rc = Escape( a, b, c, d, e );
+    } else {
+        odata = GetAlias( (LPDWORD)&d );
+        rc = Escape( a, b, c, d, e );
+        ReleaseAlias( odata, (LPDWORD)&d );
     }
-    if( b != SETABORTPROC )
-        ReleaseAlias( od, d );
     return( rc );
 
 } /* __Escape */
@@ -279,7 +278,7 @@ LPSTR FAR PASCAL __AnsiPrev( LPSTR a, LPSTR b )
     _DPMI_GetAlias( (DWORD)a, &alias );
     b2 = (LPSTR)( alias + ( (DWORD)b - (DWORD)a ) );
     res = AnsiPrev( (LPSTR)alias, b2 );
-    res = a + ( (DWORD)res - alias );
+    res = a + ( (DWORD)res - (DWORD)alias );
     _DPMI_FreeAlias( alias );
     return( res );
 
@@ -297,7 +296,7 @@ LPSTR FAR PASCAL __AnsiNext( LPSTR a )
 
     _DPMI_GetAlias( (DWORD)a, &alias );
     res = AnsiNext( (LPSTR)alias );
-    res = (LPSTR)( (DWORD)a + ( (DWORD)res - alias ) );
+    res = (LPSTR)( (DWORD)a + ( (DWORD)res - (DWORD)alias ) );
     _DPMI_FreeAlias( alias );
     return( res );
 
@@ -308,15 +307,15 @@ LPSTR FAR PASCAL __AnsiNext( LPSTR a )
  */
 int FAR PASCAL __StartDoc( HDC hdc, DOCINFO FAR *di )
 {
-    DOCINFO     ldi;
     int         rc;
+    DWORD       odata1;
+    DWORD       odata2;
 
-    ldi = *di;
-    GetAlias( (LPLPVOID)&ldi.lpszDocName );
-    GetAlias( (LPLPVOID)&ldi.lpszOutput );
-    rc = StartDoc( hdc, &ldi );
-    ReleaseAlias( (LPVOID)di->lpszDocName, (LPVOID)ldi.lpszDocName );
-    ReleaseAlias( (LPVOID)di->lpszOutput,  (LPVOID)ldi.lpszOutput );
+    odata1 = GetAlias( (LPDWORD)&di->lpszDocName );
+    odata2 = GetAlias( (LPDWORD)&di->lpszOutput );
+    rc = StartDoc( hdc, di );
+    ReleaseAlias( odata1, (LPDWORD)&di->lpszDocName );
+    ReleaseAlias( odata2, (LPDWORD)&di->lpszOutput );
     return( rc );
 
 } /* __StartDoc */
@@ -329,18 +328,20 @@ BOOL FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data )
     DWORD       odata;
     BOOL        rc;
 
-    odata = data;
     switch( cmd ) {
     case HELP_KEY:
     case HELP_PARTIALKEY:
     case HELP_MULTIKEY:
     case HELP_COMMAND:
     case HELP_SETWINPOS:
-        GetAlias( (LPLPVOID)&data );
+        odata = GetAlias( (LPDWORD)&data );
+        rc = WinHelp( hwnd, hfile, cmd, data );
+        ReleaseAlias( odata, (LPDWORD)&data );
+        break;
+    default:
+        rc = WinHelp( hwnd, hfile, cmd, data );
         break;
     }
-    rc = WinHelp( hwnd, hfile, cmd, data );
-    ReleaseAlias( (LPVOID)odata, (LPVOID)data );
     return( rc );
 
 } /* __WinHelp */

@@ -40,10 +40,11 @@
 /*
  * __CreateBitmap - cover for CreateBitmap, makes sure lpbits are ok
  */
-HBITMAP FAR PASCAL __CreateBitmap(int height, int width, BYTE nplanes,
-                        BYTE bitcount, DWORD lpbits )
+HBITMAP FAR PASCAL __CreateBitmap(int height, int width, WORD nplanes,
+                        WORD bitcount, DWORD lpbits )
 {
-    DWORD       alias,size;
+    DWORD       alias;
+    DWORD       size;
     HBITMAP     rc;
 
     size = (DWORD)nplanes * (DWORD)height * (DWORD)width * (DWORD)bitcount;
@@ -61,19 +62,20 @@ HBITMAP FAR PASCAL __CreateBitmap(int height, int width, BYTE nplanes,
 HBITMAP FAR PASCAL __CreateBitmapIndirect( LPBITMAP bm )
 {
     HBITMAP     rc;
-    DWORD       alias,size;
-    LPSTR       old;
+    DWORD       alias;
+    DWORD       size;
+    DWORD       odata;
 
     size = (DWORD)bm->bmHeight * (DWORD)bm->bmWidthBytes;
     size *= (DWORD)bm->bmPlanes;
-    _DPMI_GetHugeAlias( (DWORD)bm->bmBits, &alias, size );
-    old = bm->bmBits;
-    bm->bmBits = (LPSTR)alias;
+    odata = (DWORD)bm->bmBits;
+    _DPMI_GetHugeAlias( odata, &alias, size );
+    bm->bmBits = (LPVOID)alias;
 
     rc = CreateBitmapIndirect( bm );
 
     _DPMI_FreeHugeAlias( alias, size );
-    bm->bmBits = old;
+    bm->bmBits = (LPVOID)odata;
 
     return( rc );
 
@@ -136,8 +138,8 @@ static DWORD getScanLineSize( LPBITMAPINFOHEADER bmh )
 /*
  * __SetDIBits - make sure the right alias gets in for lpbits
  */
-int FAR PASCAL __SetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
-                LPSTR lpbits ,LPBITMAPINFO bmi,WORD usage)
+int FAR PASCAL __SetDIBits( HDC hdc, HANDLE hbitmap, WORD start, WORD num,
+                LPVOID lpbits, LPBITMAPINFO bmi, WORD usage)
 {
     DWORD       size;
     DWORD       alias;
@@ -145,7 +147,7 @@ int FAR PASCAL __SetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
 
     size = (DWORD)num * getScanLineSize( &bmi->bmiHeader );
     _DPMI_GetHugeAlias( (DWORD)lpbits, &alias, size );
-    rc = SetDIBits( hdc, hbitmap, start, num, (LPSTR)alias, bmi, usage );
+    rc = SetDIBits( hdc, hbitmap, start, num, (LPVOID)alias, bmi, usage );
     _DPMI_FreeHugeAlias( alias, size );
     return( rc );
 
@@ -155,7 +157,7 @@ int FAR PASCAL __SetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
  * __GetDIBits - make sure the right alias gets in for lpbits
  */
 int FAR PASCAL __GetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
-                LPSTR lpbits ,LPBITMAPINFO bmi,WORD usage)
+                LPVOID lpbits ,LPBITMAPINFO bmi,WORD usage)
 {
     DWORD       size;
     DWORD       alias;
@@ -163,7 +165,7 @@ int FAR PASCAL __GetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
 
     size = (DWORD)num * getScanLineSize( &bmi->bmiHeader );
     _DPMI_GetHugeAlias( (DWORD)lpbits, &alias, size );
-    rc = GetDIBits( hdc, hbitmap, start, num, (LPSTR)alias, bmi, usage );
+    rc = GetDIBits( hdc, hbitmap, start, num, (LPVOID)alias, bmi, usage );
     _DPMI_FreeHugeAlias( alias, size );
     return( rc );
 
@@ -175,7 +177,7 @@ int FAR PASCAL __GetDIBits(HDC hdc,HANDLE hbitmap,WORD start,WORD num,
 int FAR PASCAL __SetDIBitsToDevice(HDC hdc,WORD destx,WORD desty,
                                         WORD width,WORD height,
                                         WORD srcx,WORD srcy,WORD start,
-                                        WORD num, LPSTR lpbits,
+                                        WORD num, LPVOID lpbits,
                                         LPBITMAPINFO bmi,WORD usage )
 {
     DWORD       size;
@@ -185,7 +187,7 @@ int FAR PASCAL __SetDIBitsToDevice(HDC hdc,WORD destx,WORD desty,
     size = (DWORD)num * getScanLineSize( &bmi->bmiHeader );
     _DPMI_GetHugeAlias( (DWORD)lpbits, &alias, size );
     rc = SetDIBitsToDevice( hdc, destx, desty, width, height, srcx, srcy,
-                start, num, (LPSTR)alias, bmi, usage );
+                start, num, (LPVOID)alias, bmi, usage );
     _DPMI_FreeHugeAlias( alias, size );
     return( rc );
 
@@ -231,7 +233,7 @@ int FAR PASCAL __StretchDIBits( HDC hdc, WORD destx, WORD desty,
 
 //    size = (DWORD)srcheight * getScanLineSize( &lpbitsinfo->bmiHeader );
     size = (DWORD)lpbitsinfo->bmiHeader.biHeight * getScanLineSize( &lpbitsinfo->bmiHeader );
-    _DPMI_GetHugeAlias( (DWORD)lpbits, &alias, size );
+    _DPMI_GetHugeAlias( lpbits, &alias, size );
 
     rc = StretchDIBits( hdc, destx, desty, destwidth, destheight, srcx,
           srcy, srcwidth, srcheight, (LPVOID)alias, lpbitsinfo, usage, rop );

@@ -68,6 +68,15 @@ typedef struct memblk {
     DWORD       size;
 } memblk;
 
+extern int  WINDPMI_FreeLDTDescriptor( WORD );
+#pragma aux WINDPMI_FreeLDTDescriptor = \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
+    __modify __exact [__ax]
+
 static bool                     WrapAround;
 static WORD                     hugeIncrement;
 static WORD                     firstCacheSel,lastCacheSel;
@@ -103,16 +112,17 @@ static void removeFromSelList( WORD sel )
 /*
  * _DPMI_GetAliases - get alias descriptors for some memory
  */
-WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
+WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
 {
     WORD                sel;
     WORD                i;
-    DWORD               limit,base;
+    DWORD               limit;
+    DWORD               base;
     alias_cache_entry   *ace;
     dpmi_ret            dpmirc;
 
+    *palias = 0L;
     if( offset == 0L ) {
-        *alias = 0L;
         return( 0 );
     }
 
@@ -127,7 +137,8 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
      */
     if( cnt == 1 ) {
         if( offset < StackBase_64K && offset >= StackBase ) {
-            *alias = (((DWORD)StackCacheSel) << 16) + offset - StackBase;
+            ALIAS_OFFS( palias ) = offset - StackBase;
+            ALIAS_SEL( palias ) = StackCacheSel;
             return( 0 );
         }
         if( cacheUseCount < MAX_CACHE ) {
@@ -139,7 +150,7 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
                         ace->base = base;
                         DPMISetSegmentBaseAddress( ace->sel, base );
                     }
-                    *alias = ((DWORD)ace->sel) << 16;
+                    ALIAS_SEL( palias ) = ace->sel;
                     ace->in_use = true;
                     cacheUseCount++;
                     return( 0 );
@@ -155,13 +166,12 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
     /*
      * get a descriptor
      */
-    *alias = 0L;
     dpmirc = DPMIAllocateLDTDescriptors( cnt );
     if( DPMI_ERROR( dpmirc ) ) {
         return( 666 );
     }
     sel = DPMI_INFO( dpmirc );
-    *alias = (DWORD)sel << 16;
+    ALIAS_SEL( palias ) = sel;
     limit = cnt * 0x10000 - 1;
 
     for( i = 0; i < cnt; i++ ) {
@@ -200,9 +210,9 @@ WORD _DPMI_GetAliases( DWORD offset, DWORD __far *alias, WORD cnt)
 /*
  * _DPMI_GetAlias - get alias descriptor for some memory
  */
-WORD _DPMI_GetAlias( DWORD offset, DWORD __far *alias )
+WORD _DPMI_GetAlias( DWORD offset, LPDWORD palias )
 {
-    return( _DPMI_GetAliases( offset, alias, 1 ) );
+    return( _DPMI_GetAliases( offset, palias, 1 ) );
 
 } /* _DPMI_GetAlias */
 
@@ -214,7 +224,7 @@ void _DPMI_FreeAlias( DWORD alias )
     alias_cache_entry   *ace;
     WORD                sel;
 
-    sel = alias >> 16;
+    sel = ALIAS_SEL( &alias );
     if( sel == 0 || sel == StackCacheSel ) {
         return;
     }
@@ -229,16 +239,16 @@ void _DPMI_FreeAlias( DWORD alias )
     removeFromSelList( sel );
 
     Clear_ES_FS_GS();
-    DPMIFreeLDTDescriptor( sel );
+    WINDPMI_FreeLDTDescriptor( sel );
 
 } /* _DPMI_FreeAlias */
 
-WORD _DPMI_GetHugeAlias( DWORD offset, DWORD __far *alias, DWORD size )
+WORD _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size )
 {
     DWORD       no64k;
 
     no64k = Align64K( size );
-    return( _DPMI_GetAliases( offset, alias, 1 + (WORD)( no64k / 0x10000L ) ) );
+    return( _DPMI_GetAliases( offset, palias, 1 + (WORD)( no64k / 0x10000L ) ) );
 }
 
 void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
@@ -246,7 +256,7 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
     DWORD       no64k;
     WORD        cnt,sel,i;
 
-    sel = alias >> 16;
+    sel = ALIAS_SEL( &alias );
     if( sel == 0 ) {
         return;
     }
@@ -254,7 +264,7 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
     cnt = 1 + (WORD)( no64k / 0x10000L );
     for( i = 0; i < cnt; i++ ) {
         removeFromSelList( sel );
-        DPMIFreeLDTDescriptor( sel );
+        WINDPMI_FreeLDTDescriptor( sel );
         sel += hugeIncrement;
     }
 }
@@ -263,9 +273,9 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
  * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
 
-unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *alias )
+unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *palias )
 {
-    return( _DPMI_GetAlias( offset, alias ) );
+    return( _DPMI_GetAlias( offset, palias ) );
 }
 
 void WINDPMIFN( DPMIFreeAlias )( unsigned long alias )
@@ -273,9 +283,9 @@ void WINDPMIFN( DPMIFreeAlias )( unsigned long alias )
     _DPMI_FreeAlias( alias );
 }
 
-unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *alias, unsigned long size )
+unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *palias, unsigned long size )
 {
-    return( _DPMI_GetHugeAlias( offset, alias, size ) );
+    return( _DPMI_GetHugeAlias( offset, palias, size ) );
 }
 
 void WINDPMIFN( DPMIFreeHugeAlias )( unsigned long alias, unsigned long size )
@@ -333,7 +343,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      */
     dpmirc = DPMIAllocateLDTDescriptors( 2 );
     if( DPMI_ERROR( dpmirc ) ) {
-        DPMIFreeLDTDescriptor( CodeEntry.seg );
+        WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
         return( 4 );
     }
     DataSelector = DPMI_INFO( dpmirc );
@@ -384,9 +394,9 @@ WORD _DPMI_Get32( dpmi_mem_block _FAR *adata, DWORD len )
  */
 void _DPMI_Free32( DWORD handle )
 {
-    DPMIFreeLDTDescriptor( DataSelector );
-    DPMIFreeLDTDescriptor( StackSelector );
-    DPMIFreeLDTDescriptor( CodeEntry.seg );
+    WINDPMI_FreeLDTDescriptor( DataSelector );
+    WINDPMI_FreeLDTDescriptor( StackSelector );
+    WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
     DPMIFreeMemoryBlock( handle );
 
 } /* _DPMI_Free32 */
@@ -536,11 +546,11 @@ void FiniSelectorCache( void )
 
     for( i = 0; i < MAX_CACHE; i++ ) {
         if( aliasCache[i].sel != NULL ) {
-            DPMIFreeLDTDescriptor( aliasCache[i].sel );
+            WINDPMI_FreeLDTDescriptor( aliasCache[i].sel );
         }
     }
-    DPMIFreeLDTDescriptor( StackCacheSel );
-    DPMIFreeLDTDescriptor( Int21Selector );
+    WINDPMI_FreeLDTDescriptor( StackCacheSel );
+    WINDPMI_FreeLDTDescriptor( Int21Selector );
 
 } /* FiniSelectorCache */
 
@@ -563,7 +573,7 @@ void FiniSelList( void )
             sel = (j << (3 + 3)) | (firstCacheSel & 7);
             while( mask != 0 ) {
                 if( mask & 1 ) {
-                    DPMIFreeLDTDescriptor( sel );
+                    WINDPMI_FreeLDTDescriptor( sel );
                     --i;
                     if( i == 0 ) {
                         return;

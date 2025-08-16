@@ -327,7 +327,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
                 (char _FAR *)" getting alias for read" ) );
     }
     dataptr = (struct wstart_vars __far *)alias;
-    sel = alias >> 16;
+    sel = ALIAS_SEL( &alias );
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
         if( currsize >= (DWORD)READSIZE ) {

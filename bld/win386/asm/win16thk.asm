@@ -84,7 +84,7 @@ Get16Alias:
         sub     sp,4                    ; allocate space for aliased pointer
         mov     si,sp                   ; point es:si at allocated space
         push    cx                      ; push return address
-        call    _DPMI_GetAlias_         ; get alias
+        call    _DPMI_GetAlias_         ; get alias - DX:AX, ES:SI
         mov     es, _DataSelector       ; reload es
         ret                             ; return
 
@@ -105,7 +105,7 @@ L0c:    pop     eax                     ; get aliased pointer
         je      short L0d               ; if different, then
         mov     edx,eax                 ; - get alias pointer to DX:AX
         shr     edx,16                  ; - ...
-        call    _DPMI_FreeAlias_        ; - free it
+        call    _DPMI_FreeAlias_        ; - free it - DX:AX
 L0d:                                    ; endif
         cmp     sp,bp                   ; are we done?
         jne     L0c                     ; jump if not done
@@ -273,7 +273,7 @@ nest2:; _loop                           ; loop
           je    short nest3             ; - if different, then
             mov   edx,eax               ; - - get alias pointer to DX:AX
             shr   edx,16                ; - - ...
-            call  _DPMI_FreeAlias_      ; - - free it
+            call  _DPMI_FreeAlias_      ; - - free it - DX:AX
             mov   es,_DataSelector      ; - - load 32-bit data segment
 nest3:                                  ; - endif
           dec   cx                      ; - decrement count
