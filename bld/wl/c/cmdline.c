@@ -81,10 +81,33 @@ typedef struct {
 
 file_list               **CurrFList;
 tok                     Token;
+parserflag              ParserFlags;
 commandflag             CmdFlags;
 char                    *Name;
 sysblock                *SysBlocks;
 sysblock                *LinkCommands;
+
+/* wlink.lnk is a linker script not a programming language.
+ * you get a maximum depth of 4 if statements. */
+#define MAX_PF_STACK    4
+parserflag              ParserFlagStack[MAX_PF_STACK];
+unsigned int            ParserFlagStackPos = 0;
+
+bool ParserFlagStackPush( void ) {
+    if (ParserFlagStackPos >= MAX_PF_STACK)
+        return( false );
+
+    ParserFlagStack[ParserFlagStackPos++] = ParserFlags;
+    return( true );
+}
+
+bool ParserFlagStackPop( void ) {
+    if (ParserFlagStackPos == 0)
+        return( false );
+
+    ParserFlags = ParserFlagStack[--ParserFlagStackPos];
+    return( true );
+}
 
 static sysblock         *PrevCommand;
 
@@ -147,6 +170,7 @@ static void ResetCmdFile( void )
     FmtData.def_ext = E_LOAD;
     Name = NULL;
     CmdFlags = CF_UNNAMED;
+    ParserFlags = 0;
     ObjPath = NULL;
     FmtData.base = NO_BASE_SPEC;
     FmtData.objalign = NO_BASE_SPEC;

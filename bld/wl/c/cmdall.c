@@ -84,6 +84,14 @@ void ResetCmdAll( void )
     UsrLibPath = NULL;
 }
 
+bool IfBlockTrue( void )
+{
+    if( ParserFlags & PF_IF )
+        return !!(ParserFlags & PF_IF_COND);
+
+    return( true );
+}
+
 static bool ProcDosSeg( void )
 /*****************************
  * process DOSSEG option
@@ -205,7 +213,9 @@ static bool AddAlias( void )
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    MakeSymAlias( name, namelen, Token.this, Token.len );
+    if( IfBlockTrue() ) {
+      MakeSymAlias( name, namelen, Token.this, Token.len );
+    }
     return( true );
 }
 
@@ -329,15 +339,17 @@ static bool AddLibFile( void )
         _LnkFree( ptr );
         return( true );
     }
-    entry = AllocNewFile( NULL );
-    entry->infile = AllocFileEntry( ptr, UsrLibPath );
-    entry->next_file = *LastLibFile;
-    *LastLibFile = entry;
-    LastLibFile = &entry->next_file;
-    if( *LastLibFile == NULL ) {    // no file directives found yet
-        CurrFList = LastLibFile;
+    if( IfBlockTrue() ) {
+      entry = AllocNewFile( NULL );
+      entry->infile = AllocFileEntry( ptr, UsrLibPath );
+      entry->next_file = *LastLibFile;
+      *LastLibFile = entry;
+      LastLibFile = &entry->next_file;
+      if( *LastLibFile == NULL ) {    // no file directives found yet
+          CurrFList = LastLibFile;
+      }
+      entry->infile->status |= INSTAT_USE_LIBPATH;
     }
-    entry->infile->status |= INSTAT_USE_LIBPATH;
     _LnkFree( ptr );
     return( true );
 }
@@ -347,11 +359,13 @@ static bool ProcLibFile( void )
  * process LIBFILE command
  */
 {
-    if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
-        CmdFlags |= CF_FILES_BEFORE_DBI;
-    }
-    if( LastLibFile == NULL ) {
-        LastLibFile = &Root->files;
+    if( IfBlockTrue() ) {
+      if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
+          CmdFlags |= CF_FILES_BEFORE_DBI;
+      }
+      if( LastLibFile == NULL ) {
+          LastLibFile = &Root->files;
+      }
     }
     return( ProcArgList( AddLibFile, TOK_IS_FILENAME ) );
 }
@@ -480,7 +494,9 @@ static bool ProcLibPath( void )
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
         return( true );
     }
-    AddLibPaths( Token.this, Token.len, true );  // true == add to front.
+    if( IfBlockTrue() ) {
+      AddLibPaths( Token.this, Token.len, true );  // true == add to front.
+    }
     return( true );
 }
 
@@ -1567,6 +1583,125 @@ static bool ProcModule( void )
 }
 #endif
 
+static bool ifcond = false;
+
+static bool ProcIfDefaultLibs( void )
+{
+    ifcond = !(CmdFlags & CF_NO_DEF_LIBS);
+    return( true );
+}
+
+static bool ProcIfTrue( void )
+{
+    ifcond = true;
+    return( true );
+}
+
+static bool ProcIfFalse( void )
+{
+    ifcond = false;
+    return( true );
+}
+
+static parse_entry  IfConditions[] = {
+    "DEFAULTLIBS",         ProcIfDefaultLibs,          MK_ALL,             0,
+    "FALSE",               ProcIfFalse,                MK_ALL,             0,
+    "TRUE",                ProcIfTrue,                 MK_ALL,             0,
+    NULL
+};
+
+static bool ProcIf( void )
+{
+    bool negate = false;
+    bool parent_if = true;
+
+    if( ParserFlags & PF_IF ) {
+        if( !(ParserFlags & PF_IF_COND) )
+            parent_if = false;
+    }
+
+    if( !ParserFlagStackPush() )
+        return( false );
+
+    EatWhite();
+    if( *Token.next == '!' ) {
+        Token.next++;
+        negate = true;
+        EatWhite();
+    }
+
+    ifcond = false;
+    if( !ProcOne( IfConditions, SEP_NO ) )
+        return( false );
+
+    if( negate )
+	ifcond = !ifcond;
+
+    ParserFlags |= PF_IF;
+    if( !parent_if )
+        ParserFlags |= PF_IF_IGNORE;
+    else if( ifcond )
+        ParserFlags |= PF_IF_COND;
+
+    return( true );
+}
+
+static bool ProcElseIf( void )
+{
+    bool negate = false;
+
+    if( !(ParserFlags & PF_IF) )
+        return( false );
+    if( ParserFlags & PF_IF_ELSE )
+        return( false );
+    if( ParserFlags & PF_IF_COND )
+        ParserFlags = (ParserFlags & (~PF_IF_COND)) | PF_IF_IGNORE;
+
+    EatWhite();
+    if( *Token.next == '!' ) {
+        negate = true;
+        EatWhite();
+    }
+
+    ifcond = false;
+    if( !ProcOne( IfConditions, SEP_NO ) )
+        return( false );
+
+    if( negate )
+	ifcond = !ifcond;
+
+    if( !(ParserFlags & PF_IF_IGNORE) && ifcond )
+        ParserFlags |= PF_IF_COND;
+
+    return( true );
+}
+
+static bool ProcElse( void )
+{
+    if( !(ParserFlags & PF_IF) )
+        return( false );
+    if( ParserFlags & PF_IF_ELSE )
+        return( false );
+    if( ParserFlags & PF_IF_COND )
+        ParserFlags = (ParserFlags & (~PF_IF_COND)) | PF_IF_IGNORE;
+
+    ParserFlags |= PF_IF_ELSE;
+    if( !(ParserFlags & PF_IF_IGNORE) ) /* if none of the IF statements were true, then ELSE is true */
+        ParserFlags |= PF_IF_COND;
+
+    return( true );
+}
+
+static bool ProcEndIf( void )
+{
+    if( !(ParserFlags & PF_IF) )
+        return( false );
+    if( !ParserFlagStackPop() )
+        return( false );
+
+    return( true );
+}
+
 #ifdef DEVBUILD
 static bool ProcXDbg( void )
 /***************************
@@ -2150,6 +2285,10 @@ static parse_entry  Directives[] = {
     "Xdbg",         ProcXDbg,           MK_ALL,             0,
     "INTDBG",       ProcIntDbg,         MK_ALL,             0,
 #endif
+    "IF",           ProcIf,             MK_ALL,             0,
+    "ELSEIF",       ProcElseIf,         MK_ALL,             0,
+    "ELSE",         ProcElse,           MK_ALL,             0,
+    "ENDIF",        ProcEndIf,          MK_ALL,             0,
     NULL
 };
 

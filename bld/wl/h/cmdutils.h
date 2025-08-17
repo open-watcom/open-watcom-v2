@@ -90,6 +90,13 @@ typedef enum {
     CF_SUBSET               = CONSTU32( 0x00020000 ),
 } commandflag;
 
+typedef enum {
+    PF_IF                   = CONSTU32( 0x00000001 ),   // IF statement in effect
+    PF_IF_COND              = CONSTU32( 0x00000002 ),   // IF condition true
+    PF_IF_IGNORE            = CONSTU32( 0x00000004 ),   // ignore IF statements, set after true condition
+    PF_IF_ELSE              = CONSTU32( 0x00000008 ),   // ELSE block was encountered, to allow only one
+} parserflag;
+
 #define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)
 
 typedef enum {
@@ -146,6 +153,7 @@ typedef struct {
 
 extern file_list        **CurrFList;
 extern tok              Token;
+extern parserflag       ParserFlags;
 extern commandflag      CmdFlags;
 extern char             *Name;
 extern cmdfilelist      *CmdFile;
@@ -176,3 +184,6 @@ extern void             BurnUtils( void );
 extern outfilelist      *NewOutFile( char * );
 extern char             *GetFileName( char ** );
 extern version_state    GetGenVersion( version_block *vb, version_state enq, bool novell_revision );
+extern bool             ParserFlagStackPush( void );
+extern bool             ParserFlagStackPop( void );
+

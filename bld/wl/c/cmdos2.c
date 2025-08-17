@@ -144,7 +144,9 @@ static bool GetWlibImports( void )
 
     fname = FileName( Token.this, Token.len, E_LBC, false );
     handle = QOpenR( fname );
-    SetCommandFile( handle, fname );
+    if( IfBlockTrue() ) {
+      SetCommandFile( handle, fname );
+    }
     _LnkFree( fname );
     Token.locked = true;      /* make sure only this file parsed */
     while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
@@ -167,7 +169,9 @@ static bool GetWlibImports( void )
                 RestoreCmdLine();       /* get rid of this file */
                 return( true );
             }
-            AddToExportList( exp );
+            if( IfBlockTrue() ) {
+              AddToExportList( exp );
+            }
         }
     }
     Token.locked = false;
@@ -544,37 +548,46 @@ static bool getexport( void )
     unsigned_16     val16;
     unsigned_32     val32;
 
-    exp = AllocExport( Token.this, Token.len );
-    if( CmdFlags & CF_ANON_EXPORT )
+    if( IfBlockTrue() )
+      exp = AllocExport( Token.this, Token.len );
+    else
+      exp = NULL;
+
+    if( CmdFlags & CF_ANON_EXPORT && exp )
         exp->isanonymous = true;
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
-            _LnkFree( exp );
+            if( exp ) _LnkFree( exp );
             GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
             return( true );
         }
-        exp->ordinal = val32;
+        if( exp )
+          exp->ordinal = val32;
     }
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        exp->sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
+        if( exp ) exp->sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
         if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-            exp->impname = tostring();
+            if( exp ) exp->impname = tostring();
         }
     } else {
-        exp->sym = RefISymbol( exp->name.u.ptr );
+        if( exp ) exp->sym = RefISymbol( exp->name.u.ptr );
     }
-    exp->sym->info |= SYM_DCE_REF;          //make sure it is not removed
-    if( exp->ordinal == 0 ) {
-        exp->isresident = true;             // no ordinal spec'd so must be kept resident
+    if( exp ) {
+      exp->sym->info |= SYM_DCE_REF;          //make sure it is not removed
+      if( exp->ordinal == 0 ) {
+          exp->isresident = true;             // no ordinal spec'd so must be kept resident
+      }
+      exp->next = FmtData.u.os2fam.exports;   // put in the front of the list for
+      FmtData.u.os2fam.exports = exp;         // now so ProcResidant can get to it.
     }
-    exp->next = FmtData.u.os2fam.exports;   // put in the front of the list for
-    FmtData.u.os2fam.exports = exp;         // now so ProcResidant can get to it.
     while( ProcOne( Exp_Keywords, SEP_NO ) ) {
         // handle misc options
     }
-    FmtData.u.os2fam.exports = exp->next;   // take it off the list
-    exp->iopl_words = 0;
+    if( exp ) {
+      FmtData.u.os2fam.exports = exp->next;   // take it off the list
+      exp->iopl_words = 0;
+    }
     if( (FmtData.type & (MK_WIN_NE | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
@@ -584,13 +597,13 @@ static bool getexport( void )
                     LnkMsg( LOC+LINE+WRN+MSG_IOPL_BYTES_ODD, NULL );
                 }
                 // The linker takes bytes as input!
-                exp->iopl_words = val16 / 2;
+                if( exp ) exp->iopl_words = val16 / 2;
             }
         } else {
             Token.thumb = true;     // reprocess the token.
         }
     }
-    AddToExportList( exp );
+    if( exp ) AddToExportList( exp );
     return( true );
 }
 

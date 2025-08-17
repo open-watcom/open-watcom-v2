@@ -182,8 +182,10 @@ system begin windows1
     library windows
     option nocaseexact
     option stack=8k, heapsize=1k
-    alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
-    alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
+    if defaultlibs
+      alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
+      alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
+    endif
     format windows ^
 :endsegment
 end
@@ -228,9 +230,11 @@ system begin windows1_dll
     library windows
     option nocaseexact
     option stack=8k, heapsize=1k
-    libfile libent10.obj
-    alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
-    alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
+    if defaultlibs
+      libfile libent10.obj
+      alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
+      alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
+    endif
     format windows dll ^
 :endsegment
 end

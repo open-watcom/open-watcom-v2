@@ -34,6 +34,7 @@
 /* parse tables used in CMDALL.C */
 
 extern void     ResetCmdAll( void );
+extern bool     IfBlockTrue( void );
 
 extern bool     ProcLibrary( void );
 extern void     ChkBase( offset align );
