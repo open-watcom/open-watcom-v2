@@ -103,7 +103,7 @@ static void removeFromSelList( WORD sel )
 /*
  * _DPMI_GetAliases - get alias descriptors for some memory
  */
-WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
+bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
 {
     WORD                sel;
     WORD                i;
@@ -114,7 +114,7 @@ WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
 
     *palias = 0L;
     if( offset == 0L ) {
-        return( 0 );
+        return( false );
     }
 
     /*
@@ -126,11 +126,11 @@ WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
      * happens when we are aliasing a chunk in the last 64K of the
      * 32-bit segment).
      */
-    if( cnt == 1 ) {
+    if( count == 1 ) {
         if( offset < StackBase_64K && offset >= StackBase ) {
             ALIAS_OFFS( palias ) = offset - StackBase;
             ALIAS_SEL( palias ) = StackCacheSel;
-            return( 0 );
+            return( false );
         }
         if( cacheUseCount < MAX_CACHE ) {
             ace = &aliasCache[0];
@@ -144,28 +144,28 @@ WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
                     ALIAS_SEL( palias ) = ace->sel;
                     ace->in_use = true;
                     cacheUseCount++;
-                    return( 0 );
+                    return( false );
                 }
                 ace += 1;
             }
         }
     }
-    if( cnt == 0 ) {
-        cnt = 1;
+    if( count == 0 ) {
+        count = 1;
     }
 
     /*
      * get a descriptor
      */
-    dpmirc = DPMIAllocateLDTDescriptors( cnt );
+    dpmirc = DPMIAllocateLDTDescriptors( count );
     if( DPMI_ERROR( dpmirc ) ) {
-        return( 666 );
+        return( true );
     }
     sel = DPMI_INFO( dpmirc );
     ALIAS_SEL( palias ) = sel;
-    limit = cnt * 0x10000 - 1;
+    limit = count * 0x10000 - 1;
 
-    for( i = 0; i < cnt; i++ ) {
+    for( i = 0; i < count; i++ ) {
 
 #if 0
         /*
@@ -194,14 +194,14 @@ WORD _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt)
         limit  -= 0x10000;
     }
 
-    return( 0 );
+    return( false );
 
 } /* _DPMI_GetAliases */
 
 /*
  * _DPMI_GetAlias - get alias descriptor for some memory
  */
-WORD _DPMI_GetAlias( DWORD offset, LPDWORD palias )
+bool _DPMI_GetAlias( DWORD offset, LPDWORD palias )
 {
     return( _DPMI_GetAliases( offset, palias, 1 ) );
 
@@ -234,7 +234,7 @@ void _DPMI_FreeAlias( DWORD alias )
 
 } /* _DPMI_FreeAlias */
 
-WORD _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size )
+bool _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size )
 {
     DWORD       no64k;
 
@@ -245,15 +245,17 @@ WORD _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size )
 void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
 {
     DWORD       no64k;
-    WORD        cnt,sel,i;
+    WORD        count;
+    WORD        sel;
+    WORD        i;
 
     sel = ALIAS_SEL( &alias );
     if( sel == 0 ) {
         return;
     }
     no64k = Align64K( size );
-    cnt = 1 + (WORD)( no64k / 0x10000L );
-    for( i = 0; i < cnt; i++ ) {
+    count = 1 + (WORD)( no64k / 0x10000L );
+    for( i = 0; i < count; i++ ) {
         removeFromSelList( sel );
         WINDPMI_FreeLDTDescriptor( sel );
         sel += hugeIncrement;
@@ -264,22 +266,22 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
  * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
 
-unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *palias )
+bool WINDPMIFN( DPMIGetAlias )( DWORD offset, LPDWORD palias )
 {
     return( _DPMI_GetAlias( offset, palias ) );
 }
 
-void WINDPMIFN( DPMIFreeAlias )( unsigned long alias )
+void WINDPMIFN( DPMIFreeAlias )( DWORD alias )
 {
     _DPMI_FreeAlias( alias );
 }
 
-unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *palias, unsigned long size )
+bool WINDPMIFN( DPMIGetHugeAlias )( DWORD offset, LPDWORD palias, DWORD size )
 {
     return( _DPMI_GetHugeAlias( offset, palias, size ) );
 }
 
-void WINDPMIFN( DPMIFreeHugeAlias )( unsigned long alias, unsigned long size )
+void WINDPMIFN( DPMIFreeHugeAlias )( DWORD alias, DWORD size )
 {
     _DPMI_FreeHugeAlias( alias, size );
 }
@@ -312,7 +314,7 @@ static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
 /*
  * InitFlatAddrSpace - initialize flat address space
  */
-WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
+bool InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 {
     descriptor  desc;
     dpmi_ret    dpmirc;
@@ -323,7 +325,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      */
     dpmirc = DPMIAllocateLDTDescriptors( 1 );
     if( DPMI_ERROR( dpmirc ) ) {
-        return( 4 );
+        return( true );
     }
     CodeEntry.seg = DPMI_INFO( dpmirc );
     setLimitAndAddr( CodeEntry.seg, baseaddr, len, DESC_ACCESS_CODE );
@@ -335,15 +337,16 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
     dpmirc = DPMIAllocateLDTDescriptors( 2 );
     if( DPMI_ERROR( dpmirc ) ) {
         WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
-        return( 4 );
+        return( true );
     }
     DataSelector = DPMI_INFO( dpmirc );
-    setLimitAndAddr( DataSelector, baseaddr, len, DESC_ACCESS_DATA );
     StackSelector = DataSelector + hugeIncrement;
-//    setLimitAndAddr( StackSelector, baseaddr, StackSize, DESC_ACCESS_DATA );
-//      The code generator sometimes uses EBP as general purpose
-//      register for accessing data that is not in the STACK segment
-//      so we must access the same space as DS
+    /*
+     *  The code generator sometimes uses EBP as general purpose
+     *  register for accessing data that is not in the STACK segment
+     *  so we must access the same space as DATA segment
+     */
+    setLimitAndAddr( DataSelector, baseaddr, len, DESC_ACCESS_DATA );
     setLimitAndAddr( StackSelector, baseaddr, len, DESC_ACCESS_DATA );
     WrapAround = false;
     if( DPMIGetDescriptor( DataSelector, &desc ) == 0 ) {
@@ -353,30 +356,16 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
             WrapAround = false;
         }
     }
-    return( 0 );
+    return( false );
 
 } /* InitFlatAddrSpace */
 
 /*
  * _DPMI_Get32 - get a 32-bit segment
  */
-WORD _DPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
+bool _DPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
 {
-    int         rc;
-
-    /*
-     * the return codes 4 and 5 are the same as WINMEM32.DLL's return
-     * codes.  Hysterical raisins.
-     */
-
-    /*
-     * get memory region
-     */
-    rc = DPMIAllocateMemoryBlock( adata, len );
-    if( rc ) {
-        return( 5 );
-    }
-    return( 0 );
+    return( DPMIAllocateMemoryBlock( adata, len ) != 0 );
 
 } /* _DPMI_Get32 */
 
@@ -393,7 +382,7 @@ void _DPMI_Free32( DWORD handle )
  * WINDPMIFN( DPMIAlloc ) function - allocate a new block of memory
  * called by the 32-bit application
  */
-unsigned long WINDPMIFN( DPMIAlloc )( unsigned long size )
+DWORD WINDPMIFN( DPMIAlloc )( DWORD size )
 {
     dpmi_mem_block  adata;
     memblk          *p;
@@ -443,7 +432,7 @@ unsigned long WINDPMIFN( DPMIAlloc )( unsigned long size )
  * WINDPMIFN( DPMIFree ) function - free a block of memory allocated by WINDPMIFN( DPMIAlloc )
  * called by the 32-bit application
  */
-unsigned short WINDPMIFN( DPMIFree )( unsigned long addr )
+bool WINDPMIFN( DPMIFree )( DWORD addr )
 {
     memblk      *p;
     memblk      *prev;
@@ -459,11 +448,11 @@ unsigned short WINDPMIFN( DPMIFree )( unsigned long addr )
                 prev->next = p->next;
             }
             LocalFree( (HLOCAL)p );
-            return( 0 );                // indicate success
+            return( false );            // indicate success
         }
         prev = p;
     }
-    return( -1 );                       // indicate error
+    return( true );                     // indicate error
 }
 
 void FreeDPMIMemBlocks( void )

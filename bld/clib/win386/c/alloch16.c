@@ -36,8 +36,8 @@
 #include "windpmi.h"
 
 
-extern void ClearFS_GS( void );
-#pragma aux ClearFS_GS = \
+extern void Clear_FS_GS( void );
+#pragma aux Clear_FS_GS = \
         "xor eax,eax"   \
         "mov fs,eax"    \
         "mov gs,eax"    \
@@ -58,7 +58,7 @@ DWORD AllocHugeAlias16( void *offset, DWORD size )
 void FreeHugeAlias16( DWORD alias, DWORD size )
 {
 
-    ClearFS_GS();
+    Clear_FS_GS();
     DPMIFreeHugeAlias( alias, size );
 
 } /* FreeAlias16 */

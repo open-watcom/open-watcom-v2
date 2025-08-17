@@ -32,4 +32,4 @@
 
 extern bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdline, int cmdshow );
 extern void Cleanup( void );
-extern bool Fini32BitTask( int strcnt, ... );
+extern bool Fini32BitTask( int strcount, ... );
