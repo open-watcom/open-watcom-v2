@@ -38,11 +38,12 @@
 #include "roundmac.h"
 #include "heap.h"
 #include "heapacc.h"
-#if defined(__WINDOWS_286__) \
+#if defined(__WINDOWS__) \
   || defined(__NT__)
     #include <windows.h>
-#elif defined(__WINDOWS_386__)
+  #if defined(__WINDOWS_386__)
     #include "windpmi.h"
+  #endif
 #elif defined(__OS2__)
     #include <wos2.h>
 #elif defined(__RDOS__)

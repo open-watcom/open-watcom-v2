@@ -32,10 +32,11 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#if defined(__WINDOWS_386__)
-    #include "windpmi.h"
-#elif defined(__WINDOWS_286__)
+#if defined(__WINDOWS__)
     #include <windows.h>
+  #if defined(__WINDOWS_386__)
+    #include "windpmi.h"
+  #endif
 #elif defined(__DOS__)
     #include <dos.h>
     #include "tinyio.h"
