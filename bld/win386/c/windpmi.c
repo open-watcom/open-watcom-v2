@@ -369,7 +369,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 /*
  * _DPMI_Get32 - get a 32-bit segment
  */
-WORD _DPMI_Get32( dpmi_mem_block _FAR *adata, DWORD len )
+WORD _DPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
 {
     int         rc;
 

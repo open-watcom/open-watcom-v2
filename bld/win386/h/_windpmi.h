@@ -43,7 +43,7 @@ extern void     _DPMI_FreeAlias( DWORD alias );
 #pragma aux _DPMI_FreeAlias __parm [__dx __ax]
 extern WORD     _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size );
 extern void     _DPMI_FreeHugeAlias( DWORD alias, DWORD size );
-extern WORD     _DPMI_Get32( dpmi_mem_block _FAR *addr_data, DWORD len );
+extern WORD     _DPMI_Get32( dpmi_mem_block _DLLFAR *addr_data, DWORD len );
 extern void     _DPMI_Free32( DWORD handle );
 extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     FreeDPMIMemBlocks( void );

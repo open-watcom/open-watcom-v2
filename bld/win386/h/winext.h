@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,10 @@
 ****************************************************************************/
 
 
-#undef _FAR
 #ifdef DLL32
-    #define _FAR __far
+    #define _DLLFAR __far
 #else
-    #define _FAR
+    #define _DLLFAR
 #endif
 
 #define Align4K( x )  (((x) + 0xfffL) & ~0xfffL)
