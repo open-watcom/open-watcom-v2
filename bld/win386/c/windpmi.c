@@ -68,15 +68,6 @@ typedef struct memblk {
     DWORD       size;
 } memblk;
 
-extern int  WINDPMI_FreeLDTDescriptor( WORD );
-#pragma aux WINDPMI_FreeLDTDescriptor = \
-        _MOV_AX_W DPMI_0001 \
-        _INT_31         \
-        _SBB_AX_AX      \
-    __parm __caller [__bx] \
-    __value         [__ax] \
-    __modify __exact [__ax]
-
 static bool                     WrapAround;
 static WORD                     hugeIncrement;
 static WORD                     firstCacheSel,lastCacheSel;
@@ -394,9 +385,6 @@ WORD _DPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
  */
 void _DPMI_Free32( DWORD handle )
 {
-    WINDPMI_FreeLDTDescriptor( DataSelector );
-    WINDPMI_FreeLDTDescriptor( StackSelector );
-    WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
     DPMIFreeMemoryBlock( handle );
 
 } /* _DPMI_Free32 */
@@ -417,7 +405,7 @@ unsigned long WINDPMIFN( DPMIAlloc )( unsigned long size )
         }
         p = (memblk *)LocalAlloc( LMEM_FIXED, sizeof( memblk ) );
         if( p == NULL ) {
-            DPMIFreeMemoryBlock( adata.handle );
+            _DPMI_Free32( adata.handle );
             adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }
@@ -437,13 +425,13 @@ unsigned long WINDPMIFN( DPMIAlloc )( unsigned long size )
         while( (p = MemBlkList->next) != NULL ) {
             if( p->addr >= DataSelectorBase )
                 break;
-            DPMIFreeMemoryBlock( p->handle );
+            _DPMI_Free32( p->handle );
             MemBlkList->next = p->next;
             LocalFree( (HLOCAL)p );
         }
         p = MemBlkList;
         if( p->addr < DataSelectorBase ) {
-            DPMIFreeMemoryBlock( p->handle );
+            _DPMI_Free32( p->handle );
             MemBlkList = p->next;
             LocalFree( (HLOCAL)p );
         }
@@ -464,7 +452,7 @@ unsigned short WINDPMIFN( DPMIFree )( unsigned long addr )
     prev = NULL;
     for( p = MemBlkList; p != NULL; p = p->next ) {
         if( p->addr == addr ) {
-            DPMIFreeMemoryBlock( p->handle );
+            _DPMI_Free32( p->handle );
             if( prev == NULL ) {
                 MemBlkList = p->next;
             } else {
@@ -484,7 +472,7 @@ void FreeDPMIMemBlocks( void )
 
     while( (p = MemBlkList) != NULL ) {
         MemBlkList = p->next;
-        DPMIFreeMemoryBlock( p->handle );
+        _DPMI_Free32( p->handle );
         LocalFree( (HLOCAL)p );
     }
 }

@@ -36,6 +36,16 @@
 #define ALIAS_OFFS(x)   ((WORD __far *)(x))[0]
 #define ALIAS_SEL(x)    ((WORD __far *)(x))[1]
 
+extern int  WINDPMI_FreeLDTDescriptor( WORD );
+#pragma aux WINDPMI_FreeLDTDescriptor = \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
+    __modify __exact [__ax]
+
+
 extern WORD     _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD cnt);
 extern WORD     _DPMI_GetAlias( DWORD offset, LPDWORD palias );
 #pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si] __value [__ax]

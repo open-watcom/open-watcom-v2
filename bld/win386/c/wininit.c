@@ -117,8 +117,6 @@ extern void     FAR __CallBack( void );
 
 static void     CodeRelocate( DWORD __far *reloc, WORD cnt );
 
-static char     outOfSelectors[] = "Out of selectors";
-
 /*
  * dwordToStr - convert a DWORD to a string (base 10)
  */
@@ -312,7 +310,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
 #endif
     BaseAddr = 0L;
     if( i ) {
-        DPMIFreeMemoryBlock( DataHandle );
+        _DPMI_Free32( DataHandle );
 #ifdef DLL32
         return( Fini32BitTask( 0 ) );
 #else
@@ -333,7 +331,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
 #ifdef DLL32
         return( Fini32BitTask( 0 ) );
 #else
-        return( Fini32BitTask( 1, outOfSelectors ) );
+        return( Fini32BitTask( 1, "Out of selectors" ) );
 #endif
     }
 
@@ -555,6 +553,9 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
+        WINDPMI_FreeLDTDescriptor( DataSelector );
+        WINDPMI_FreeLDTDescriptor( StackSelector );
+        WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
         _DPMI_Free32( DataHandle );
     }
 
