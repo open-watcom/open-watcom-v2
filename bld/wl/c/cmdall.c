@@ -1635,7 +1635,7 @@ static bool ProcIf( void )
         return( false );
 
     if( negate )
-	ifcond = !ifcond;
+        ifcond = !ifcond;
 
     ParserFlags |= PF_IF;
     if( !parent_if )
@@ -1668,7 +1668,7 @@ static bool ProcElseIf( void )
         return( false );
 
     if( negate )
-	ifcond = !ifcond;
+        ifcond = !ifcond;
 
     if( !(ParserFlags & PF_IF_IGNORE) && ifcond )
         ParserFlags |= PF_IF_COND;
