@@ -30,19 +30,23 @@
 ****************************************************************************/
 
 
+#define GETALIAS(a)         GetAlias((LPDWORD)(a))
+#define RELEASEALIAS(a,b)   ReleaseAlias((a),(LPDWORD)(b))
+
 extern DWORD    GetAlias( LPDWORD ptr );
 extern void     ReleaseAlias( DWORD orig, LPDWORD ptr );
+
 extern BOOL     FAR PASCAL __GetMessage( LPMSG msg, HWND a, WORD b, WORD c );
 extern BOOL     FAR PASCAL __PeekMessage( LPMSG msg, HWND a, WORD b, WORD c, WORD d );
 #if 0
-extern BOOL     FAR PASCAL __RegisterClass(LPWNDCLASS wc);
+extern BOOL     FAR PASCAL __RegisterClass( LPWNDCLASS wc );
 #endif
-extern BOOL     FAR PASCAL __ModifyMenu(HMENU a, WORD b, WORD fl, WORD d, LPSTR z);
-extern BOOL     FAR PASCAL __InsertMenu(HMENU a, WORD b, WORD fl, WORD d, LPSTR z);
-extern BOOL     FAR PASCAL __AppendMenu(HMENU a, WORD fl, WORD c, LPSTR z);
-extern int      FAR PASCAL __Escape(HDC a, int b, int c, LPSTR d, LPSTR e);
+extern BOOL     FAR PASCAL __ModifyMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z );
+extern BOOL     FAR PASCAL __InsertMenu( HMENU a, WORD b, WORD fl, WORD d, LPSTR z );
+extern BOOL     FAR PASCAL __AppendMenu( HMENU a, WORD fl, WORD c, LPSTR z );
+extern int      FAR PASCAL __Escape( HDC a, int b, int c, LPSTR d, LPSTR e );
 extern int      FAR PASCAL __GetInstanceData( HANDLE a, DWORD offset, int len );
-extern LPSTR    FAR PASCAL __AnsiPrev(LPSTR a, LPSTR b);
-extern LPSTR    FAR PASCAL __AnsiNext(LPSTR a);
-extern int      FAR PASCAL __StartDoc( HDC hdc, DOCINFO FAR *di);
+extern LPSTR    FAR PASCAL __AnsiPrev( LPSTR a, LPSTR b );
+extern LPSTR    FAR PASCAL __AnsiNext( LPSTR a );
+extern int      FAR PASCAL __StartDoc( HDC hdc, LPDOCINFO di) ;
 extern BOOL     FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data );

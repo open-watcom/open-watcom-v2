@@ -70,10 +70,12 @@ typedef struct memblk {
 
 static bool                     WrapAround;
 static WORD                     hugeIncrement;
-static WORD                     firstCacheSel,lastCacheSel;
+static WORD                     firstCacheSel;
+static WORD                     lastCacheSel;
 static WORD                     cacheUseCount;
 static WORD                     StackCacheSel;
-static DWORD                    StackBase, StackBase_64K;
+static DWORD                    StackBase;
+static DWORD                    StackBase_64K;
 static alias_cache_entry        aliasCache[MAX_CACHE];
 static WORD                     currSelCount;
 static BYTE                     SelBitArray[MAX_SELECTORS / 8];
@@ -103,7 +105,7 @@ static void removeFromSelList( WORD sel )
 /*
  * _DPMI_GetAliases - get alias descriptors for some memory
  */
-bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
+bool _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count )
 {
     WORD                sel;
     WORD                i;
@@ -113,7 +115,7 @@ bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
     dpmi_ret            dpmirc;
 
     *palias = 0L;
-    if( offset == 0L ) {
+    if( offs32 == 0L ) {
         return( false );
     }
 
@@ -127,8 +129,8 @@ bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
      * 32-bit segment).
      */
     if( count == 1 ) {
-        if( offset < StackBase_64K && offset >= StackBase ) {
-            ALIAS_OFFS( palias ) = offset - StackBase;
+        if( offs32 < StackBase_64K && offs32 >= StackBase ) {
+            ALIAS_OFFS( palias ) = offs32 - StackBase;
             ALIAS_SEL( palias ) = StackCacheSel;
             return( false );
         }
@@ -136,7 +138,7 @@ bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
             ace = &aliasCache[0];
             for( i = 0; i < MAX_CACHE; i++ ) {
                 if( !ace->in_use ) {
-                    base = DataSelectorBase + offset;
+                    base = DataSelectorBase + offs32;
                     if( base != ace->base ) {
                         ace->base = base;
                         DPMISetSegmentBaseAddress( ace->sel, base );
@@ -186,11 +188,11 @@ bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
         } else {
             DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16 );
         }
-        DPMISetSegmentBaseAddress( sel, DataSelectorBase + offset );
+        DPMISetSegmentBaseAddress( sel, DataSelectorBase + offs32 );
         DPMISetSegmentLimit( sel, limit );
         addToSelList( sel );
         sel += hugeIncrement;
-        offset += 0x10000;
+        offs32 += 0x10000;
         limit  -= 0x10000;
     }
 
@@ -201,9 +203,9 @@ bool _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count )
 /*
  * _DPMI_GetAlias - get alias descriptor for some memory
  */
-bool _DPMI_GetAlias( DWORD offset, LPDWORD palias )
+bool _DPMI_GetAlias( DWORD offs32, LPDWORD palias )
 {
-    return( _DPMI_GetAliases( offset, palias, 1 ) );
+    return( _DPMI_GetAliases( offs32, palias, 1 ) );
 
 } /* _DPMI_GetAlias */
 
@@ -234,12 +236,12 @@ void _DPMI_FreeAlias( DWORD alias )
 
 } /* _DPMI_FreeAlias */
 
-bool _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size )
+bool _DPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size )
 {
     DWORD       no64k;
 
     no64k = Align64K( size );
-    return( _DPMI_GetAliases( offset, palias, 1 + (WORD)( no64k / 0x10000L ) ) );
+    return( _DPMI_GetAliases( offs32, palias, 1 + (WORD)( no64k / 0x10000L ) ) );
 }
 
 void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
@@ -266,9 +268,9 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
  * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
 
-bool WINDPMIFN( DPMIGetAlias )( DWORD offset, LPDWORD palias )
+bool WINDPMIFN( DPMIGetAlias )( DWORD offs32, LPDWORD palias )
 {
-    return( _DPMI_GetAlias( offset, palias ) );
+    return( _DPMI_GetAlias( offs32, palias ) );
 }
 
 void WINDPMIFN( DPMIFreeAlias )( DWORD alias )
@@ -276,9 +278,9 @@ void WINDPMIFN( DPMIFreeAlias )( DWORD alias )
     _DPMI_FreeAlias( alias );
 }
 
-bool WINDPMIFN( DPMIGetHugeAlias )( DWORD offset, LPDWORD palias, DWORD size )
+bool WINDPMIFN( DPMIGetHugeAlias )( DWORD offs32, LPDWORD palias, DWORD size )
 {
-    return( _DPMI_GetHugeAlias( offset, palias, size ) );
+    return( _DPMI_GetHugeAlias( offs32, palias, size ) );
 }
 
 void WINDPMIFN( DPMIFreeHugeAlias )( DWORD alias, DWORD size )
@@ -330,7 +332,6 @@ bool InitFlatAddrSpace( DWORD baseaddr, DWORD len )
     CodeEntry.seg = DPMI_INFO( dpmirc );
     setLimitAndAddr( CodeEntry.seg, baseaddr, len, DESC_ACCESS_CODE );
     CodeSelectorBase = baseaddr;
-
     /*
      * get a data and stack selector pointing to the memory
      */
@@ -403,14 +404,18 @@ DWORD WINDPMIFN( DPMIAlloc )( DWORD size )
         p->addr   = adata.linear;
         p->size   = size;
         MemBlkList = p;
+        /*
+         * if we are on NT or OS/2, try again until we get a memory
+         * block with address higher than our DataSelectorBase
+         */
         if( WrapAround || adata.linear >= DataSelectorBase ) {
             break;
         }
-        // if we are on NT or OS/2, try again until we get a memory
-        // block with address higher than our DataSelectorBase
     }
     if( !WrapAround && MemBlkList != NULL ) {
-        /* free up any memory allocated that is below DataSelectorBase */
+        /*
+         * free up any memory allocated that is below DataSelectorBase
+         */
         while( (p = MemBlkList->next) != NULL ) {
             if( p->addr >= DataSelectorBase )
                 break;
@@ -480,7 +485,7 @@ void GetDataSelectorInfo( void )
  */
 bool InitSelectorCache( void )
 {
-    long        sel;
+    WORD        sel;
     int         i;
     dpmi_ret    dpmirc;
 
@@ -537,8 +542,8 @@ void FiniSelectorCache( void )
  */
 void FiniSelList( void )
 {
-    int             i;
-    int             j;
+    WORD            i;
+    WORD            j;
     WORD            sel;
     BYTE            mask;
 

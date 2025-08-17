@@ -41,6 +41,25 @@
 #include "winstubs.h"
 #include "windata.h"
 
+
+extern void PutByte( char, WORD, DWORD );
+#pragma aux PutByte = \
+        "shl  edx,16"       \
+        "mov  dx,ax"        \
+        "mov  es:[edx],bl"  \
+    __parm      [__bl] [__es] [__dx __ax] \
+    __value     \
+    __modify    [__dx]
+
+extern char GetByte( WORD, DWORD );
+#pragma aux GetByte = \
+        "shl  edx,16"       \
+        "mov  dx,ax"        \
+        "mov  al,es:[edx]"  \
+    __parm      [__es] [__dx __ax] \
+    __value     [__al] \
+    __modify    [__dx]
+
 /*
  * GetAlias - get a 16 bit alias to 32 bit memory
  */
@@ -111,18 +130,15 @@ BOOL FAR PASCAL __PeekMessage( LPMSG msg, HWND a, WORD b, WORD c, WORD d )
  */
 BOOL  FAR PASCAL __RegisterClass( LPWNDCLASS wc )
 {
-    WNDCLASS    nwc;
     BOOL        rc;
+    DWORD       odata1;
+    DWORD       odata2;
 
-    nwc = *wc;
-
-    GetAlias( &nwc.lpszMenuName );
-    GetAlias( &nwc.lpszClassName );
-
-    rc = RegisterClass( &nwc );
-
-    ReleaseAlias( wc->lpszMenuName, nwc.lpszMenuName );
-    ReleaseAlias( wc->lpszClassName, nwc.lpszClassName );
+    odata1 = GETALIAS( &wc->lpszMenuName );
+    odata2 = GETALIAS( &wc->lpszClassName );
+    rc = RegisterClass( wc );
+    RELEASEALIAS( odata2, &wc->lpszClassName );
+    RELEASEALIAS( odata1, &wc->lpszMenuName );
 
     return( rc );
 
@@ -207,31 +223,13 @@ int FAR PASCAL __Escape( HDC a, int b, int c, LPSTR d, LPSTR e )
     } else if( b == SETABORTPROC ) {
         rc = Escape( a, b, c, d, e );
     } else {
-        odata = GetAlias( (LPDWORD)&d );
+        odata = GETALIAS( &d );
         rc = Escape( a, b, c, d, e );
-        ReleaseAlias( odata, (LPDWORD)&d );
+        RELEASEALIAS( odata, &d );
     }
     return( rc );
 
 } /* __Escape */
-
-extern void PutByte( char, WORD, DWORD );
-#pragma aux PutByte = \
-        "shl  edx,16"       \
-        "mov  dx,ax"        \
-        "mov  es:[edx],bl"  \
-    __parm      [__bl] [__es] [__dx __ax] \
-    __value     \
-    __modify    [__dx]
-
-extern char GetByte( WORD, DWORD );
-#pragma aux GetByte = \
-        "shl  edx,16"       \
-        "mov  dx,ax"        \
-        "mov  al,es:[edx]"  \
-    __parm      [__es] [__dx __ax] \
-    __value     [__al] \
-    __modify    [__dx]
 
 /*
  * __GetInstanceData - cover for get instance data.
@@ -305,17 +303,17 @@ LPSTR FAR PASCAL __AnsiNext( LPSTR a )
 /*
  * __StartDoc - cover function for StartDoc
  */
-int FAR PASCAL __StartDoc( HDC hdc, DOCINFO FAR *di )
+int FAR PASCAL __StartDoc( HDC hdc, LPDOCINFO di )
 {
     int         rc;
     DWORD       odata1;
     DWORD       odata2;
 
-    odata1 = GetAlias( (LPDWORD)&di->lpszDocName );
-    odata2 = GetAlias( (LPDWORD)&di->lpszOutput );
+    odata1 = GETALIAS( &di->lpszDocName );
+    odata2 = GETALIAS( &di->lpszOutput );
     rc = StartDoc( hdc, di );
-    ReleaseAlias( odata1, (LPDWORD)&di->lpszDocName );
-    ReleaseAlias( odata2, (LPDWORD)&di->lpszOutput );
+    RELEASEALIAS( odata2, &di->lpszOutput );
+    RELEASEALIAS( odata1, &di->lpszDocName );
     return( rc );
 
 } /* __StartDoc */
@@ -334,9 +332,9 @@ BOOL FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data )
     case HELP_MULTIKEY:
     case HELP_COMMAND:
     case HELP_SETWINPOS:
-        odata = GetAlias( (LPDWORD)&data );
+        odata = GETALIAS( &data );
         rc = WinHelp( hwnd, hfile, cmd, data );
-        ReleaseAlias( odata, (LPDWORD)&data );
+        RELEASEALIAS( odata, &data );
         break;
     default:
         rc = WinHelp( hwnd, hfile, cmd, data );

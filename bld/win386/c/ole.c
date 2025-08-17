@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 #include <dos.h>
 #include <windows.h>
 #include <ole.h>
@@ -95,71 +96,18 @@ static OLESTATUS (FAR PASCAL *olesvrOleRegisterServerDoc)( LHSERVER, LPCSTR, LPO
 static OLESTATUS (FAR PASCAL *olesvrOleRevokeObject)( LPOLECLIENT );
 
 
-static void aliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL _DLLFAR *olpvtbl )
-{
-    LPOLEOBJECTVTBL     nlpvtbl;
-
-    nlpvtbl = (*olpvtbl) = lpobject->lpvtbl;
-    GetAlias( (LPVOID *)&nlpvtbl );
-    lpobject->lpvtbl = nlpvtbl;
-
-} /* aliasOleObject */
-
-static void releaseAliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL olpvtbl )
-{
-    ReleaseAlias( olpvtbl, lpobject->lpvtbl );
-    lpobject->lpvtbl = olpvtbl;
-
-} /* releaseAliasOleObject */
-
 static void permAliasOleClient( LPOLECLIENT _DLLFAR *lpclient )
 {
-    LPOLECLIENT         new;
-    LPOLECLIENTVTBL     nlpvtbl;
+    LPOLECLIENT     new;
+    DWORD           odata;
 
-    new = _fmalloc( sizeof( OLEOBJECT ) );
+    new = _fmalloc( sizeof( OLECLIENT ) );
     new->lpvtbl = _fmalloc( sizeof( OLECLIENTVTBL ) );
-    nlpvtbl = (*lpclient)->lpvtbl;
-    GetAlias( (LPVOID *)&nlpvtbl );
-    _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLECLIENTVTBL ) );
-    ReleaseAlias( (*lpclient)->lpvtbl, nlpvtbl );
-
+    odata = GETALIAS( &(*lpclient)->lpvtbl );
+    _fmemcpy( new->lpvtbl, (*lpclient)->lpvtbl, sizeof( OLECLIENTVTBL ) );
+    RELEASEALIAS( odata, &(*lpclient)->lpvtbl );
     *lpclient = new;
 }
-
-static void aliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL _DLLFAR *olpvtbl )
-{
-    LPOLECLIENTVTBL     nlpvtbl;
-
-    nlpvtbl = (*olpvtbl) = lpclient->lpvtbl;
-    GetAlias( (LPVOID *)&nlpvtbl );
-    lpclient->lpvtbl = nlpvtbl;
-
-} /* aliasOleClient */
-
-static void releaseAliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL olpvtbl )
-{
-    ReleaseAlias( olpvtbl, lpclient->lpvtbl );
-    lpclient->lpvtbl = olpvtbl;
-
-} /* releaseAliasOleClient */
-
-static void aliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL _DLLFAR *olpstbl )
-{
-    LPOLESTREAMVTBL     nlpstbl;
-
-    nlpstbl = (*olpstbl) = lpstream->lpstbl;
-    GetAlias( (LPVOID *)&nlpstbl );
-    lpstream->lpstbl = nlpstbl;
-
-} /* aliasOleStream */
-
-static void releaseAliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL olpstbl )
-{
-    ReleaseAlias( olpstbl, lpstream->lpstbl );
-    lpstream->lpstbl = olpstbl;
-
-} /* releaseAliasOleStream */
 
 /*
  * __OleActivate - cover function for olecli function OleActivate
@@ -167,8 +115,8 @@ static void releaseAliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL olpstbl
 OLESTATUS FAR PASCAL __OleActivate(LPOLEOBJECT lpobject, UINT verb, BOOL show,
                 BOOL takefocus, HWND hwnd, const LPRECT bound )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleActivate == NULL ) {
         olecliOleActivate = BackPatch_olecli( "OleActivate" );
@@ -176,9 +124,9 @@ OLESTATUS FAR PASCAL __OleActivate(LPOLEOBJECT lpobject, UINT verb, BOOL show,
             return( 0 );
         }
     }
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleActivate( lpobject, verb, show, takefocus, hwnd, bound );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -190,9 +138,9 @@ OLESTATUS FAR PASCAL __OleActivate(LPOLEOBJECT lpobject, UINT verb, BOOL show,
 OLESTATUS FAR PASCAL __OleClone( LPOLEOBJECT lpobject, LPOLECLIENT lpclient,
                 LHCLIENTDOC cdoc, LPCSTR objname, LPOLEOBJECT FAR *lplpobj )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
-    LPOLECLIENTVTBL     olpvtblc;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleClone == NULL ) {
         olecliOleClone = BackPatch_olecli( "OleClone" );
@@ -200,13 +148,11 @@ OLESTATUS FAR PASCAL __OleClone( LPOLEOBJECT lpobject, LPOLECLIENT lpclient,
             return( 0 );
         }
     }
-    aliasOleObject( lpobject, &olpvtbl );
-    aliasOleClient( lpclient, &olpvtblc );
-
+    odata1 = GETALIAS( &lpobject->lpvtbl );
+    odata2 = GETALIAS( &lpclient->lpvtbl );
     rc = olecliOleClone( lpobject, lpclient, cdoc, objname, lplpobj );
-
-    releaseAliasOleObject( lpobject, olpvtbl );
-    releaseAliasOleClient( lpclient, olpvtblc );
+    RELEASEALIAS( odata2, &lpclient->lpvtbl );
+    RELEASEALIAS( odata1, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -217,8 +163,8 @@ OLESTATUS FAR PASCAL __OleClone( LPOLEOBJECT lpobject, LPOLECLIENT lpclient,
  */
 OLESTATUS FAR PASCAL __OleClose( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleClose == NULL ) {
         olecliOleClose = BackPatch_olecli( "OleClose" );
@@ -226,9 +172,9 @@ OLESTATUS FAR PASCAL __OleClose( LPOLEOBJECT lpobject )
             return( 0 );
         }
     }
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleClose( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -241,9 +187,9 @@ OLESTATUS FAR PASCAL __OleCopyFromLink( LPOLEOBJECT lpobject, LPCSTR protocol,
                 LPOLECLIENT lpclient, LHCLIENTDOC cdoc, LPCSTR objname,
                 LPOLEOBJECT FAR *lplpobj )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
-    LPOLECLIENTVTBL     olpvtblc;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleCopyFromLink == NULL ) {
         olecliOleCopyFromLink = BackPatch_olecli( "OleCopyFromLink" );
@@ -251,12 +197,11 @@ OLESTATUS FAR PASCAL __OleCopyFromLink( LPOLEOBJECT lpobject, LPCSTR protocol,
             return( 0 );
         }
     }
-    aliasOleObject( lpobject, &olpvtbl );
-    aliasOleClient( lpclient, &olpvtblc );
-    rc = olecliOleCopyFromLink( lpobject, protocol, lpclient, cdoc, objname,
-                                lplpobj );
-    releaseAliasOleObject( lpobject, olpvtbl );
-    releaseAliasOleClient( lpclient, olpvtblc );
+    odata1 = GETALIAS( &lpobject->lpvtbl );
+    odata2 = GETALIAS( &lpclient->lpvtbl );
+    rc = olecliOleCopyFromLink( lpobject, protocol, lpclient, cdoc, objname, lplpobj );
+    RELEASEALIAS( odata2, &lpclient->lpvtbl );
+    RELEASEALIAS( odata1, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -267,8 +212,8 @@ OLESTATUS FAR PASCAL __OleCopyFromLink( LPOLEOBJECT lpobject, LPCSTR protocol,
  */
 OLESTATUS FAR PASCAL __OleCopyToClipboard( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleCopyToClipboard == NULL ) {
         olecliOleCopyToClipboard = BackPatch_olecli( "OleCopyToClipboard" );
@@ -277,9 +222,9 @@ OLESTATUS FAR PASCAL __OleCopyToClipboard( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleCopyToClipboard( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -462,8 +407,8 @@ OLESTATUS FAR PASCAL __OleCreateLinkFromFile( LPCSTR protocol, LPOLECLIENT lpcli
  */
 OLESTATUS FAR PASCAL __OleDelete( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleDelete == NULL ) {
         olecliOleDelete = BackPatch_olecli( "OleDelete" );
@@ -472,9 +417,9 @@ OLESTATUS FAR PASCAL __OleDelete( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleDelete( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -487,8 +432,8 @@ OLESTATUS FAR PASCAL __OleDraw( LPOLEOBJECT lpobject, HDC hdc,
                                 const RECT FAR *bounds, const RECT FAR *wbounds,
                                 HDC hdcformat )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleDraw == NULL ) {
         olecliOleDraw = BackPatch_olecli( "OleDraw" );
@@ -497,9 +442,9 @@ OLESTATUS FAR PASCAL __OleDraw( LPOLEOBJECT lpobject, HDC hdc,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleDraw( lpobject, hdc, bounds, wbounds, hdcformat );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -511,8 +456,8 @@ OLESTATUS FAR PASCAL __OleDraw( LPOLEOBJECT lpobject, HDC hdc,
 OLECLIPFORMAT FAR PASCAL __OleEnumFormats( LPOLEOBJECT lpobject,
                                                 OLECLIPFORMAT cfmt )
 {
-    OLECLIPFORMAT       rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLECLIPFORMAT   rc;
+    DWORD           odata;
 
     if( olecliOleEnumFormats == NULL ) {
         olecliOleEnumFormats = BackPatch_olecli( "OleEnumFormats" );
@@ -521,9 +466,9 @@ OLECLIPFORMAT FAR PASCAL __OleEnumFormats( LPOLEOBJECT lpobject,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleEnumFormats( lpobject, cfmt );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -534,8 +479,9 @@ OLECLIPFORMAT FAR PASCAL __OleEnumFormats( LPOLEOBJECT lpobject,
  */
 OLESTATUS FAR PASCAL __OleEqual( LPOLEOBJECT lpobject1, LPOLEOBJECT lpobject2 )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl1,olpvtbl2;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleEqual == NULL ) {
         olecliOleEqual = BackPatch_olecli( "OleEqual" );
@@ -544,11 +490,11 @@ OLESTATUS FAR PASCAL __OleEqual( LPOLEOBJECT lpobject1, LPOLEOBJECT lpobject2 )
         }
     }
 
-    aliasOleObject( lpobject1, &olpvtbl1 );
-    aliasOleObject( lpobject2, &olpvtbl2 );
+    odata1 = GETALIAS( &lpobject1->lpvtbl );
+    odata2 = GETALIAS( &lpobject2->lpvtbl );
     rc = olecliOleEqual( lpobject1, lpobject2 );
-    releaseAliasOleObject( lpobject1, olpvtbl1 );
-    releaseAliasOleObject( lpobject2, olpvtbl2 );
+    RELEASEALIAS( odata1, &lpobject1->lpvtbl );
+    RELEASEALIAS( odata2, &lpobject2->lpvtbl );
 
     return( rc );
 
@@ -559,8 +505,8 @@ OLESTATUS FAR PASCAL __OleEqual( LPOLEOBJECT lpobject1, LPOLEOBJECT lpobject2 )
  */
 OLESTATUS FAR PASCAL __OleExecute( LPOLEOBJECT lpobject, HGLOBAL cmds, UINT r )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleExecute == NULL ) {
         olecliOleExecute = BackPatch_olecli( "OleExecute" );
@@ -569,9 +515,9 @@ OLESTATUS FAR PASCAL __OleExecute( LPOLEOBJECT lpobject, HGLOBAL cmds, UINT r )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleExecute( lpobject, cmds, r );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -583,8 +529,8 @@ OLESTATUS FAR PASCAL __OleExecute( LPOLEOBJECT lpobject, HGLOBAL cmds, UINT r )
 OLESTATUS FAR PASCAL __OleGetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
                         HANDLE FAR *res )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleGetData == NULL ) {
         olecliOleGetData = BackPatch_olecli( "OleGetData" );
@@ -593,9 +539,9 @@ OLESTATUS FAR PASCAL __OleGetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleGetData( lpobject, cfmt, res );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -607,8 +553,8 @@ OLESTATUS FAR PASCAL __OleGetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
 OLESTATUS FAR PASCAL __OleGetLinkUpdateOptions( LPOLEOBJECT lpobject,
                                 OLEOPT_UPDATE FAR *updateopt )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleGetLinkUpdateOptions == NULL ) {
         olecliOleGetLinkUpdateOptions = BackPatch_olecli( "OleGetLinkUpdateOptions" );
@@ -617,9 +563,9 @@ OLESTATUS FAR PASCAL __OleGetLinkUpdateOptions( LPOLEOBJECT lpobject,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleGetLinkUpdateOptions( lpobject, updateopt );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -632,9 +578,9 @@ OLESTATUS FAR PASCAL __OleLoadFromStream( LPOLESTREAM lpstream, LPCSTR protocol,
                 LPOLECLIENT lpclient, LHCLIENTDOC cdoc, LPCSTR objname,
                 LPOLEOBJECT FAR *lplpobj )
 {
-    OLESTATUS           rc;
-    LPOLECLIENTVTBL     olpvtblc;
-    LPOLESTREAMVTBL     olpstbl;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleLoadFromStream == NULL ) {
         olecliOleLoadFromStream = BackPatch_olecli( "OleLoadFromStream" );
@@ -643,12 +589,11 @@ OLESTATUS FAR PASCAL __OleLoadFromStream( LPOLESTREAM lpstream, LPCSTR protocol,
         }
     }
 
-    aliasOleClient( lpclient, &olpvtblc );
-    aliasOleStream( lpstream, &olpstbl );
-    rc = olecliOleLoadFromStream( lpstream, protocol, lpclient, cdoc, objname,
-                                        lplpobj );
-    releaseAliasOleClient( lpclient, olpvtblc );
-    releaseAliasOleStream( lpstream, olpstbl );
+    odata1 = GETALIAS( &lpclient->lpvtbl );
+    odata2 = GETALIAS( &lpstream->lpstbl );
+    rc = olecliOleLoadFromStream( lpstream, protocol, lpclient, cdoc, objname, lplpobj );
+    RELEASEALIAS( odata2, &lpstream->lpstbl );
+    RELEASEALIAS( odata1, &lpclient->lpvtbl );
 
     return( rc );
 
@@ -659,8 +604,8 @@ OLESTATUS FAR PASCAL __OleLoadFromStream( LPOLESTREAM lpstream, LPCSTR protocol,
  */
 OLESTATUS FAR PASCAL __OleLockServer( LPOLEOBJECT lpobject, LHSERVER FAR *hsrv )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleLockServer == NULL ) {
         olecliOleLockServer = BackPatch_olecli( "OleLockServer" );
@@ -669,9 +614,9 @@ OLESTATUS FAR PASCAL __OleLockServer( LPOLEOBJECT lpobject, LHSERVER FAR *hsrv )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleLockServer( lpobject, hsrv );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -684,9 +629,9 @@ OLESTATUS FAR PASCAL __OleObjectConvert( LPOLEOBJECT lpobject, LPCSTR protocol,
                         LPOLECLIENT lpclient, LHCLIENTDOC cdoc, LPCSTR objname,
                         LPOLEOBJECT FAR *lplpobj )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
-    LPOLECLIENTVTBL     olpvtblc;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleObjectConvert == NULL ) {
         olecliOleObjectConvert = BackPatch_olecli( "OleObjectConvert" );
@@ -695,11 +640,11 @@ OLESTATUS FAR PASCAL __OleObjectConvert( LPOLEOBJECT lpobject, LPCSTR protocol,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
-    aliasOleClient( lpclient, &olpvtblc );
+    odata1 = GETALIAS( &lpobject->lpvtbl );
+    odata2 = GETALIAS( &lpclient->lpvtbl );
     rc = olecliOleObjectConvert( lpobject, protocol, lpclient, cdoc, objname, lplpobj );
-    releaseAliasOleObject( lpobject, olpvtbl );
-    releaseAliasOleClient( lpclient, olpvtblc );
+    RELEASEALIAS( odata2, &lpclient->lpvtbl );
+    RELEASEALIAS( odata1, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -710,8 +655,8 @@ OLESTATUS FAR PASCAL __OleObjectConvert( LPOLEOBJECT lpobject, LPCSTR protocol,
  */
 OLESTATUS FAR PASCAL __OleQueryBounds( LPOLEOBJECT lpobject, RECT FAR *bounds )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryBounds == NULL ) {
         olecliOleQueryBounds = BackPatch_olecli( "OleQueryBounds" );
@@ -720,9 +665,9 @@ OLESTATUS FAR PASCAL __OleQueryBounds( LPOLEOBJECT lpobject, RECT FAR *bounds )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryBounds( lpobject, bounds );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -734,8 +679,8 @@ OLESTATUS FAR PASCAL __OleQueryBounds( LPOLEOBJECT lpobject, RECT FAR *bounds )
 OLESTATUS FAR PASCAL __OleQueryName( LPOLEOBJECT lpobject, LPSTR object,
                                 UINT FAR *buffsize )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryName == NULL ) {
         olecliOleQueryName = BackPatch_olecli( "OleQueryName" );
@@ -744,9 +689,9 @@ OLESTATUS FAR PASCAL __OleQueryName( LPOLEOBJECT lpobject, LPSTR object,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryName( lpobject, object, buffsize );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -757,8 +702,8 @@ OLESTATUS FAR PASCAL __OleQueryName( LPOLEOBJECT lpobject, LPSTR object,
  */
 OLESTATUS FAR PASCAL __OleQueryOpen( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryOpen == NULL ) {
         olecliOleQueryOpen = BackPatch_olecli( "OleQueryOpen" );
@@ -767,9 +712,9 @@ OLESTATUS FAR PASCAL __OleQueryOpen( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryOpen( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -780,8 +725,8 @@ OLESTATUS FAR PASCAL __OleQueryOpen( LPOLEOBJECT lpobject )
  */
 OLESTATUS FAR PASCAL __OleQueryOutOfDate( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryOutOfDate == NULL ) {
         olecliOleQueryOutOfDate = BackPatch_olecli( "OleQueryOutOfDate" );
@@ -790,9 +735,9 @@ OLESTATUS FAR PASCAL __OleQueryOutOfDate( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryOutOfDate( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -803,8 +748,8 @@ OLESTATUS FAR PASCAL __OleQueryOutOfDate( LPOLEOBJECT lpobject )
  */
 LPVOID FAR PASCAL __OleQueryProtocol( LPOLEOBJECT lpobject, LPCSTR protocol )
 {
-    LPVOID              rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    LPVOID          rc;
+    DWORD           odata;
 
     if( olecliOleQueryProtocol == NULL ) {
         olecliOleQueryProtocol = BackPatch_olecli( "OleQueryProtocol" );
@@ -813,9 +758,9 @@ LPVOID FAR PASCAL __OleQueryProtocol( LPOLEOBJECT lpobject, LPCSTR protocol )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryProtocol( lpobject, protocol );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -826,8 +771,8 @@ LPVOID FAR PASCAL __OleQueryProtocol( LPOLEOBJECT lpobject, LPCSTR protocol )
  */
 OLESTATUS FAR PASCAL __OleQueryReleaseError( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryReleaseError == NULL ) {
         olecliOleQueryReleaseError = BackPatch_olecli( "OleQueryReleaseError" );
@@ -836,9 +781,9 @@ OLESTATUS FAR PASCAL __OleQueryReleaseError( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryReleaseError( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -850,7 +795,7 @@ OLESTATUS FAR PASCAL __OleQueryReleaseError( LPOLEOBJECT lpobject )
 OLE_RELEASE_METHOD FAR PASCAL __OleQueryReleaseMethod( LPOLEOBJECT lpobject )
 {
     OLE_RELEASE_METHOD  rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    DWORD               odata;
 
     if( olecliOleQueryReleaseMethod == NULL ) {
         olecliOleQueryReleaseMethod = BackPatch_olecli( "OleQueryReleaseMethod" );
@@ -859,9 +804,9 @@ OLE_RELEASE_METHOD FAR PASCAL __OleQueryReleaseMethod( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryReleaseMethod( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -872,8 +817,8 @@ OLE_RELEASE_METHOD FAR PASCAL __OleQueryReleaseMethod( LPOLEOBJECT lpobject )
  */
 OLESTATUS FAR PASCAL __OleQueryReleaseStatus( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryReleaseStatus == NULL ) {
         olecliOleQueryReleaseStatus = BackPatch_olecli( "OleQueryReleaseStatus" );
@@ -882,9 +827,9 @@ OLESTATUS FAR PASCAL __OleQueryReleaseStatus( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryReleaseStatus( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -895,8 +840,8 @@ OLESTATUS FAR PASCAL __OleQueryReleaseStatus( LPOLEOBJECT lpobject )
  */
 OLESTATUS FAR PASCAL __OleQuerySize( LPOLEOBJECT lpobject, DWORD FAR *size )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQuerySize == NULL ) {
         olecliOleQuerySize = BackPatch_olecli( "OleQuerySize" );
@@ -905,9 +850,9 @@ OLESTATUS FAR PASCAL __OleQuerySize( LPOLEOBJECT lpobject, DWORD FAR *size )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQuerySize( lpobject, size );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -918,8 +863,8 @@ OLESTATUS FAR PASCAL __OleQuerySize( LPOLEOBJECT lpobject, DWORD FAR *size )
  */
 OLESTATUS FAR PASCAL __OleQueryType( LPOLEOBJECT lpobject, LONG FAR *type )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleQueryType == NULL ) {
         olecliOleQueryType = BackPatch_olecli( "OleQueryType" );
@@ -928,9 +873,9 @@ OLESTATUS FAR PASCAL __OleQueryType( LPOLEOBJECT lpobject, LONG FAR *type )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleQueryType( lpobject, type );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -941,8 +886,8 @@ OLESTATUS FAR PASCAL __OleQueryType( LPOLEOBJECT lpobject, LONG FAR *type )
  */
 OLESTATUS FAR PASCAL __OleReconnect( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleReconnect == NULL ) {
         olecliOleReconnect = BackPatch_olecli( "OleReconnect" );
@@ -951,9 +896,9 @@ OLESTATUS FAR PASCAL __OleReconnect( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleReconnect( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -964,8 +909,8 @@ OLESTATUS FAR PASCAL __OleReconnect( LPOLEOBJECT lpobject )
  */
 OLESTATUS FAR PASCAL __OleRelease( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleRelease == NULL ) {
         olecliOleRelease = BackPatch_olecli( "OleRelease" );
@@ -974,9 +919,9 @@ OLESTATUS FAR PASCAL __OleRelease( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleRelease( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -987,8 +932,8 @@ OLESTATUS FAR PASCAL __OleRelease( LPOLEOBJECT lpobject )
  */
 OLESTATUS FAR PASCAL __OleRename( LPOLEOBJECT lpobject, LPCSTR newname )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleRename == NULL ) {
         olecliOleRename = BackPatch_olecli( "OleRename" );
@@ -997,9 +942,9 @@ OLESTATUS FAR PASCAL __OleRename( LPOLEOBJECT lpobject, LPCSTR newname )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleRename( lpobject, newname );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1010,8 +955,8 @@ OLESTATUS FAR PASCAL __OleRename( LPOLEOBJECT lpobject, LPCSTR newname )
  */
 OLESTATUS FAR PASCAL __OleRequestData( LPOLEOBJECT lpobject , OLECLIPFORMAT cfmt )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleRequestData == NULL ) {
         olecliOleRequestData = BackPatch_olecli( "OleRequestData" );
@@ -1020,9 +965,9 @@ OLESTATUS FAR PASCAL __OleRequestData( LPOLEOBJECT lpobject , OLECLIPFORMAT cfmt
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleRequestData( lpobject, cfmt );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1033,9 +978,9 @@ OLESTATUS FAR PASCAL __OleRequestData( LPOLEOBJECT lpobject , OLECLIPFORMAT cfmt
  */
 OLESTATUS FAR PASCAL __OleSaveToStream( LPOLEOBJECT lpobject, LPOLESTREAM lpstream )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
-    LPOLESTREAMVTBL     olpstbl;
+    OLESTATUS       rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( olecliOleSaveToStream == NULL ) {
         olecliOleSaveToStream = BackPatch_olecli( "OleSaveToStream" );
@@ -1044,11 +989,11 @@ OLESTATUS FAR PASCAL __OleSaveToStream( LPOLEOBJECT lpobject, LPOLESTREAM lpstre
         }
     }
 
-    aliasOleStream( lpstream, &olpstbl );
-    aliasOleObject( lpobject, &olpvtbl );
+    odata1 = GETALIAS( &lpstream->lpstbl );
+    odata2 = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSaveToStream( lpobject, lpstream );
-    releaseAliasOleObject( lpobject, olpvtbl );
-    releaseAliasOleStream( lpstream, olpstbl );
+    RELEASEALIAS( odata2, &lpobject->lpvtbl );
+    RELEASEALIAS( odata1, &lpstream->lpstbl );
 
     return( rc );
 
@@ -1059,8 +1004,8 @@ OLESTATUS FAR PASCAL __OleSaveToStream( LPOLEOBJECT lpobject, LPOLESTREAM lpstre
  */
 OLESTATUS FAR PASCAL __OleSetBounds( LPOLEOBJECT lpobject, const RECT FAR *bound )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetBounds == NULL ) {
         olecliOleSetBounds = BackPatch_olecli( "OleSetBounds" );
@@ -1069,9 +1014,9 @@ OLESTATUS FAR PASCAL __OleSetBounds( LPOLEOBJECT lpobject, const RECT FAR *bound
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetBounds( lpobject, bound );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1083,8 +1028,8 @@ OLESTATUS FAR PASCAL __OleSetBounds( LPOLEOBJECT lpobject, const RECT FAR *bound
 OLESTATUS FAR PASCAL __OleSetColorScheme( LPOLEOBJECT lpobject,
                                         const LOGPALETTE FAR *pal )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetColorScheme == NULL ) {
         olecliOleSetColorScheme = BackPatch_olecli( "OleSetColorScheme" );
@@ -1093,9 +1038,9 @@ OLESTATUS FAR PASCAL __OleSetColorScheme( LPOLEOBJECT lpobject,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetColorScheme( lpobject, pal);
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1107,8 +1052,8 @@ OLESTATUS FAR PASCAL __OleSetColorScheme( LPOLEOBJECT lpobject,
 OLESTATUS FAR PASCAL __OleSetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
                                         HANDLE hdata )
 {
-    OLESTATUS   rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetData == NULL ) {
         olecliOleSetData = BackPatch_olecli( "OleSetData" );
@@ -1117,9 +1062,9 @@ OLESTATUS FAR PASCAL __OleSetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetData( lpobject, cfmt, hdata );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1131,8 +1076,8 @@ OLESTATUS FAR PASCAL __OleSetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
 OLESTATUS FAR PASCAL __OleSetHostNames( LPOLEOBJECT lpobject, LPCSTR client,
                                 LPCSTR clientobj )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetHostNames == NULL ) {
         olecliOleSetHostNames = BackPatch_olecli( "OleSetHostNames" );
@@ -1141,9 +1086,9 @@ OLESTATUS FAR PASCAL __OleSetHostNames( LPOLEOBJECT lpobject, LPCSTR client,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetHostNames( lpobject, client, clientobj );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1155,8 +1100,8 @@ OLESTATUS FAR PASCAL __OleSetHostNames( LPOLEOBJECT lpobject, LPCSTR client,
 OLESTATUS FAR PASCAL __OleSetLinkUpdateOptions( LPOLEOBJECT lpobject,
                                         OLEOPT_UPDATE updateopt )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetLinkUpdateOptions == NULL ) {
         olecliOleSetLinkUpdateOptions = BackPatch_olecli( "OleSetLinkUpdateOptions" );
@@ -1165,9 +1110,9 @@ OLESTATUS FAR PASCAL __OleSetLinkUpdateOptions( LPOLEOBJECT lpobject,
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetLinkUpdateOptions( lpobject, updateopt );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1178,8 +1123,8 @@ OLESTATUS FAR PASCAL __OleSetLinkUpdateOptions( LPOLEOBJECT lpobject,
  */
 OLESTATUS FAR PASCAL __OleSetTargetDevice( LPOLEOBJECT lpobject, HGLOBAL hotd )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleSetTargetDevice == NULL ) {
         olecliOleSetTargetDevice = BackPatch_olecli( "OleSetTargetDevice" );
@@ -1188,9 +1133,9 @@ OLESTATUS FAR PASCAL __OleSetTargetDevice( LPOLEOBJECT lpobject, HGLOBAL hotd )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleSetTargetDevice( lpobject, hotd );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1201,8 +1146,8 @@ OLESTATUS FAR PASCAL __OleSetTargetDevice( LPOLEOBJECT lpobject, HGLOBAL hotd )
  */
 OLESTATUS FAR PASCAL __OleUpdate( LPOLEOBJECT lpobject )
 {
-    OLESTATUS           rc;
-    LPOLEOBJECTVTBL     olpvtbl;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olecliOleUpdate == NULL ) {
         olecliOleUpdate = BackPatch_olecli( "OleUpdate" );
@@ -1211,9 +1156,9 @@ OLESTATUS FAR PASCAL __OleUpdate( LPOLEOBJECT lpobject )
         }
     }
 
-    aliasOleObject( lpobject, &olpvtbl );
+    odata = GETALIAS( &lpobject->lpvtbl );
     rc = olecliOleUpdate( lpobject );
-    releaseAliasOleObject( lpobject, olpvtbl );
+    RELEASEALIAS( odata, &lpobject->lpvtbl );
 
     return( rc );
 
@@ -1226,7 +1171,7 @@ OLESTATUS FAR PASCAL __OleRegisterServer( LPCSTR class, LPOLESERVER lpserver,
                         LHSERVER FAR *handle, HINSTANCE inst, OLE_SERVER_USE suse )
 {
     OLESTATUS           rc;
-    LPOLESERVERVTBL     nlpvtbl;
+    DWORD               odata;
     LPOLESERVER         new;
 
     if( olesvrOleRegisterServer == NULL ) {
@@ -1238,11 +1183,9 @@ OLESTATUS FAR PASCAL __OleRegisterServer( LPCSTR class, LPOLESERVER lpserver,
 
     new = _fmalloc( sizeof( OLESERVER ) );
     new->lpvtbl = _fmalloc( sizeof( OLESERVERVTBL ) );
-
-    nlpvtbl = lpserver->lpvtbl;
-    GetAlias( (LPVOID *)&nlpvtbl );
-    _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLESERVERVTBL ) );
-    ReleaseAlias( lpserver->lpvtbl, nlpvtbl );
+    odata = GETALIAS( &lpserver->lpvtbl );
+    _fmemcpy( new->lpvtbl, lpserver->lpvtbl, sizeof( OLESERVERVTBL ) );
+    RELEASEALIAS( odata, &lpserver->lpvtbl );
 
     rc = olesvrOleRegisterServer( class, new, handle, inst, suse );
 
@@ -1250,15 +1193,16 @@ OLESTATUS FAR PASCAL __OleRegisterServer( LPCSTR class, LPOLESERVER lpserver,
 
 } /* __OleRegisterServer */
 
+
 /*
  * __OleRegisterServerDoc - cover function for olesvr function OleRegisterServerDoc
  */
 OLESTATUS FAR PASCAL __OleRegisterServerDoc( LHSERVER hsrvr, LPCSTR docname,
                         LPOLESERVERDOC lpdoc, LHSERVERDOC FAR *lphdoc )
 {
-    OLESTATUS           rc;
-    LPOLESERVERDOCVTBL  nlpvtbl;
-    LPOLESERVERDOC      new;
+    OLESTATUS       rc;
+    DWORD           odata;
+    LPOLESERVERDOC  new;
 
     if( olesvrOleRegisterServerDoc == NULL ) {
         olesvrOleRegisterServerDoc = BackPatch_olesvr( "OleRegisterServerDoc" );
@@ -1269,11 +1213,9 @@ OLESTATUS FAR PASCAL __OleRegisterServerDoc( LHSERVER hsrvr, LPCSTR docname,
 
     new = _fmalloc( sizeof( OLESERVERDOC ) );
     new->lpvtbl = _fmalloc( sizeof( OLESERVERDOCVTBL ) );
-
-    nlpvtbl = lpdoc->lpvtbl;
-    GetAlias( (LPVOID *)&nlpvtbl );
-    _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLESERVERDOCVTBL ) );
-    ReleaseAlias( lpdoc->lpvtbl, nlpvtbl );
+    odata = GETALIAS( &lpdoc->lpvtbl );
+    _fmemcpy( new->lpvtbl, lpdoc->lpvtbl, sizeof( OLESERVERDOCVTBL ) );
+    RELEASEALIAS( odata, &lpdoc->lpvtbl );
 
     rc = olesvrOleRegisterServerDoc( hsrvr, docname, new, lphdoc );
 
@@ -1286,8 +1228,8 @@ OLESTATUS FAR PASCAL __OleRegisterServerDoc( LHSERVER hsrvr, LPCSTR docname,
  */
 OLESTATUS FAR PASCAL __OleRevokeObject( LPOLECLIENT lpclient )
 {
-    OLESTATUS           rc;
-    LPOLECLIENTVTBL     olpvtblc;
+    OLESTATUS       rc;
+    DWORD           odata;
 
     if( olesvrOleRevokeObject == NULL ) {
         olesvrOleRevokeObject = BackPatch_olesvr( "OleRevokeObject" );
@@ -1296,9 +1238,9 @@ OLESTATUS FAR PASCAL __OleRevokeObject( LPOLECLIENT lpclient )
         }
     }
 
-    aliasOleClient( lpclient, &olpvtblc );
+    odata = GETALIAS( &lpclient->lpvtbl );
     rc = olesvrOleRevokeObject( lpclient );
-    releaseAliasOleClient( lpclient, olpvtblc );
+    RELEASEALIAS( odata, &lpclient->lpvtbl );
 
     return( rc );
 

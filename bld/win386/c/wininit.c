@@ -185,7 +185,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * verify that we are running on a 32-bit DPMI
      */
-    if( WDPMI_Check386Version() == 0 ) {
+    if( !WDPMI_Check386Version() ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
         return( false );
@@ -586,7 +586,9 @@ void Cleanup( void )
 static bool doneFini = false;
 
 /*
- * Fini32BitTask - clean up after an error
+ * Fini32BitTask
+ *      error messages handling
+ *      32-bit clean up
  */
 bool Fini32BitTask( int strcount, ... )
 {

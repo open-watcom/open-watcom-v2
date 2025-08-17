@@ -39,6 +39,7 @@
 #include "penwoem.h"
 #include "winext.h"
 
+
 extern LPVOID FAR BackPatch_penwin( char *str );
 #pragma aux BackPatch_penwin __parm [__ax]
 
@@ -50,70 +51,13 @@ static int  (FAR PASCAL *penwinGetSymbolMaxLength)(LPSYG);
 static BOOL (FAR PASCAL *penwinTrainContext)(LPRCRESULT, LPSYE, int, LPSYC, int);
 
 /*
- * GetSYGAlias - alias pointer fields in an SYG structure
- */
-static void GetSYGAlias( LPSYG orig, SYG _DLLFAR *save )
-{
-    LPVOID      pdata1,pdata2;
-
-    pdata1 = save->lpsye = orig->lpsye;
-    pdata2 = save->lpsyc = orig->lpsyc;
-    GetAlias( &pdata1 );
-    GetAlias( &pdata2 );
-    orig->lpsye = pdata1;
-    orig->lpsyc = pdata2;
-
-} /* GetSYGAlias */
-
-/*
- * ReleaseSYGAlias - release aliased fields in an SYG structure
- */
-static void ReleaseSYGAlias( LPSYG orig, SYG _DLLFAR *save )
-{
-    ReleaseAlias( save->lpsye, orig->lpsye );
-    ReleaseAlias( save->lpsyc, orig->lpsyc );
-    orig->lpsye = save->lpsye;
-    orig->lpsyc = save->lpsyc;
-
-} /* ReleaseSYGAlias */
-
-/*
- * GetRCRESULTAlias - alias pointer fields in an RCRESULT structure
- */
-static void GetRCRESULTAlias( LPRCRESULT orig, RCRESULT _DLLFAR *save )
-{
-    LPVOID      pdata1,pdata2;
-
-    pdata1 = save->lpsyv = orig->lpsyv;
-    pdata2 = save->lprc = orig->lprc;
-    GetAlias( &pdata1 );
-    GetAlias( &pdata2 );
-    orig->lpsyv = pdata1;
-    orig->lprc = pdata2;
-    GetSYGAlias( &orig->syg, &save->syg );
-
-} /* GetRCRESULTAlias */
-
-/*
- * ReleaseRCRESULTAlias - release aliased fields in an RCRESULT structure
- */
-static void ReleaseRCRESULTAlias( LPRCRESULT orig, RCRESULT _DLLFAR *save )
-{
-    ReleaseAlias( orig->lpsyv, save->lpsyv );
-    ReleaseAlias( orig->lprc, save->lprc );
-    ReleaseSYGAlias( &orig->syg, &save->syg );
-    orig->lpsyv = save->lpsyv;
-    orig->lprc = save->lprc;
-
-} /* ReleaseRCRESULTAlias */
-
-/*
  * __EnumSymbols - cover for penwin function EnumSymbols
  */
 UINT FAR PASCAL __EnumSymbols(LPSYG lpsyg, WORD max, ENUMPROC proc, LPVOID d)
 {
-    UINT        rc;
-    SYG         syg;
+    UINT            rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( penwinEnumSymbols == NULL ) {
         penwinEnumSymbols = BackPatch_penwin( "EnumSymbols" );
@@ -122,9 +66,11 @@ UINT FAR PASCAL __EnumSymbols(LPSYG lpsyg, WORD max, ENUMPROC proc, LPVOID d)
         }
     }
 
-    GetSYGAlias( lpsyg, &syg );
+    odata1 = GETALIAS( &lpsyg->lpsye );
+    odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinEnumSymbols( lpsyg, max, proc, d );
-    ReleaseSYGAlias( lpsyg, &syg );
+    RELEASEALIAS( odata2, &lpsyg->lpsyc );
+    RELEASEALIAS( odata1, &lpsyg->lpsye );
 
     return( rc );
 
@@ -135,8 +81,11 @@ UINT FAR PASCAL __EnumSymbols(LPSYG lpsyg, WORD max, ENUMPROC proc, LPVOID d)
  */
 BOOL FAR PASCAL __ExecuteGesture(HWND hwnd, SYV syv, LPRCRESULT lprcresult )
 {
-    BOOL        rc;
-    RCRESULT    rcr;
+    BOOL            rc;
+    DWORD           odata1;
+    DWORD           odata2;
+    DWORD           odata3;
+    DWORD           odata4;
 
     if( penwinExecuteGesture == NULL ) {
         penwinExecuteGesture = BackPatch_penwin( "ExecuteGesture" );
@@ -144,10 +93,15 @@ BOOL FAR PASCAL __ExecuteGesture(HWND hwnd, SYV syv, LPRCRESULT lprcresult )
             return( 0 );
         }
     }
-
-    GetRCRESULTAlias( lprcresult, &rcr );
+    odata1 = GETALIAS( &lprcresult->lpsyv );
+    odata2 = GETALIAS( &lprcresult->lprc );
+    odata3 = GETALIAS( &lprcresult->syg->lpsye );
+    odata4 = GETALIAS( &lprcresult->syg->lpsyc );
     rc = penwinExecuteGesture( hwnd, syv, lprcresult );
-    ReleaseRCRESULTAlias( lprcresult, &rcr );
+    RELEASEALIAS( odata4, &lprcresult->syg->lpsyc );
+    RELEASEALIAS( odata3, &lprcresult->syg->lpsye );
+    RELEASEALIAS( odata2, &lprcresult->lprc );
+    RELEASEALIAS( odata1, &lprcresult->lpsyv );
 
     return( rc );
 
@@ -156,10 +110,10 @@ BOOL FAR PASCAL __ExecuteGesture(HWND hwnd, SYV syv, LPRCRESULT lprcresult )
 /*
  * __FirstSymbolFromGraph - cover for penwin function FirstSymbolFromGraph
  */
-VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max,
-                        int FAR *lpcsyv )
+VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max, int FAR *lpcsyv )
 {
-    SYG syg;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( penwinFirstSymbolFromGraph == NULL ) {
         penwinFirstSymbolFromGraph = BackPatch_penwin( "FirstSymbolFromGraph" );
@@ -168,9 +122,11 @@ VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max,
         }
     }
 
-    GetSYGAlias( lpsyg, &syg );
+    odata1 = GETALIAS( &lpsyg->lpsye );
+    odata2 = GETALIAS( &lpsyg->lpsyc );
     penwinFirstSymbolFromGraph( lpsyg, lpsyv, max, lpcsyv );
-    ReleaseSYGAlias( lpsyg, &syg );
+    RELEASEALIAS( odata2, &lpsyg->lpsyc );
+    RELEASEALIAS( odata1, &lpsyg->lpsye );
 
 } /* __FirstSymbolFromGraph */
 
@@ -179,8 +135,9 @@ VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max,
  */
 int FAR PASCAL __GetSymbolCount( LPSYG lpsyg )
 {
-    SYG syg;
-    int rc;
+    int             rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( penwinGetSymbolCount == NULL ) {
         penwinGetSymbolCount = BackPatch_penwin( "GetSymbolCount" );
@@ -189,9 +146,11 @@ int FAR PASCAL __GetSymbolCount( LPSYG lpsyg )
         }
     }
 
-    GetSYGAlias( lpsyg, &syg );
+    odata1 = GETALIAS( &lpsyg->lpsye );
+    odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinGetSymbolCount( lpsyg );
-    ReleaseSYGAlias( lpsyg, &syg );
+    RELEASEALIAS( odata2, &lpsyg->lpsyc );
+    RELEASEALIAS( odata1, &lpsyg->lpsye );
 
     return( rc );
 
@@ -202,8 +161,9 @@ int FAR PASCAL __GetSymbolCount( LPSYG lpsyg )
  */
 int FAR PASCAL __GetSymbolMaxLength( LPSYG lpsyg )
 {
-    int rc;
-    SYG syg;
+    int             rc;
+    DWORD           odata1;
+    DWORD           odata2;
 
     if( penwinGetSymbolMaxLength == NULL ) {
         penwinGetSymbolMaxLength = BackPatch_penwin( "GetSymbolMaxLength" );
@@ -212,9 +172,11 @@ int FAR PASCAL __GetSymbolMaxLength( LPSYG lpsyg )
         }
     }
 
-    GetSYGAlias( lpsyg, &syg );
+    odata1 = GETALIAS( &lpsyg->lpsye );
+    odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinGetSymbolMaxLength( lpsyg );
-    ReleaseSYGAlias( lpsyg, &syg );
+    RELEASEALIAS( odata2, &lpsyg->lpsyc );
+    RELEASEALIAS( odata1, &lpsyg->lpsye );
 
     return( rc );
 
@@ -223,11 +185,13 @@ int FAR PASCAL __GetSymbolMaxLength( LPSYG lpsyg )
 /*
  * __TrainContext - cover for penwin function TrainContext
  */
-BOOL FAR PASCAL __TrainContext( LPRCRESULT lprcresult, LPSYE lpsye, int csye,
-                LPSYC lpsyc, int csyc )
+BOOL FAR PASCAL __TrainContext( LPRCRESULT lprcresult, LPSYE lpsye, int csye, LPSYC lpsyc, int csyc )
 {
-    BOOL        rc;
-    RCRESULT    rcr;
+    BOOL            rc;
+    DWORD           odata1;
+    DWORD           odata2;
+    DWORD           odata3;
+    DWORD           odata4;
 
     if( penwinTrainContext == NULL ) {
         penwinTrainContext = BackPatch_penwin( "TrainContext" );
@@ -236,9 +200,15 @@ BOOL FAR PASCAL __TrainContext( LPRCRESULT lprcresult, LPSYE lpsye, int csye,
         }
     }
 
-    GetRCRESULTAlias( lprcresult, &rcr );
+    odata1 = GETALIAS( &lprcresult->lpsyv );
+    odata2 = GETALIAS( &lprcresult->lprc );
+    odata3 = GETALIAS( &lprcresult->syg->lpsye );
+    odata4 = GETALIAS( &lprcresult->syg->lpsyc );
     rc = penwinTrainContext( lprcresult, lpsye, csye, lpsyc, csyc );
-    ReleaseRCRESULTAlias( lprcresult, &rcr );
+    RELEASEALIAS( odata4, &lprcresult->syg->lpsyc );
+    RELEASEALIAS( odata3, &lprcresult->syg->lpsye );
+    RELEASEALIAS( odata2, &lprcresult->lprc );
+    RELEASEALIAS( odata1, &lprcresult->lpsyv );
 
     return( rc );
 

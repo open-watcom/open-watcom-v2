@@ -46,12 +46,12 @@ extern int  WINDPMI_FreeLDTDescriptor( WORD );
     __modify __exact [__ax]
 
 
-extern bool     _DPMI_GetAliases( DWORD offset, LPDWORD palias, WORD count);
-extern bool     _DPMI_GetAlias( DWORD offset, LPDWORD palias );
+extern bool     _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);
+extern bool     _DPMI_GetAlias( DWORD offs32, LPDWORD palias );
 #pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si]
 extern void     _DPMI_FreeAlias( DWORD alias );
 #pragma aux _DPMI_FreeAlias __parm [__dx __ax]
-extern bool     _DPMI_GetHugeAlias( DWORD offset, LPDWORD palias, DWORD size );
+extern bool     _DPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size );
 extern void     _DPMI_FreeHugeAlias( DWORD alias, DWORD size );
 extern bool     _DPMI_Get32( dpmi_mem_block _DLLFAR *addr_data, DWORD len );
 extern void     _DPMI_Free32( DWORD handle );

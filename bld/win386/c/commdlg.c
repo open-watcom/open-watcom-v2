@@ -57,8 +57,7 @@ static BOOL  (FAR PASCAL *commdlgPrintDlg)( LPPRINTDLG );
 BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
 {
     BOOL        rc;
-    LPVOID      psave;
-    LPVOID      pnew;
+    DWORD       odata;
 
     if( commdlgChooseColor == NULL ) {
         commdlgChooseColor = BackPatch_commdlg( "ChooseColor" );
@@ -66,12 +65,9 @@ BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
             return( 0 );
         }
     }
-    pnew = psave = pcc->lpCustColors;
-    GetAlias( &pnew );
-    pcc->lpCustColors = pnew;
+    odata = GETALIAS( &pcc->lpCustColors );
     rc = commdlgChooseColor( pcc );
-    ReleaseAlias( psave, pnew );
-    pcc->lpCustColors = psave;
+    RELEASEALIAS( odata, &pcc->lpCustColors );
 
     return( rc );
 
@@ -83,12 +79,9 @@ BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
 HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
 {
     HWND        rc;
-    LPVOID      psave1;
-    LPVOID      psave2;
-    LPVOID      psave3;
-    LPVOID      pnew1;
-    LPVOID      pnew2;
-    LPVOID      pnew3;
+    DWORD       odata1;
+    DWORD       odata2;
+    DWORD       odata3;
 
     if( commdlgReplaceText == NULL ) {
         commdlgReplaceText = BackPatch_commdlg( "ReplaceText" );
@@ -96,24 +89,13 @@ HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
             return( 0 );
         }
     }
-    pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
-    pnew2 = psave2 = (LPVOID)pfr->lpstrReplaceWith;
-    pnew3 = psave3 = (LPVOID)pfr->lpTemplateName;
-    GetAlias( &pnew1 );
-    GetAlias( &pnew2 );
-    GetAlias( &pnew3 );
-    pfr->lpstrFindWhat = pnew1;
-    pfr->lpstrReplaceWith = pnew2;
-    pfr->lpTemplateName = pnew3;
-
+    odata1 = GETALIAS( &pfr->lpstrFindWhat );
+    odata2 = GETALIAS( &pfr->lpstrReplaceWith );
+    odata3 = GETALIAS( &pfr->lpTemplateName );
     rc = commdlgReplaceText( pfr );
-
-    ReleaseAlias( psave1, pnew1 );
-    ReleaseAlias( psave2, pnew2 );
-    ReleaseAlias( psave3, pnew3 );
-    pfr->lpstrFindWhat = psave1;
-    pfr->lpstrReplaceWith = psave2;
-    pfr->lpTemplateName = psave3;
+    RELEASEALIAS( odata3, &pfr->lpTemplateName );
+    RELEASEALIAS( odata2, &pfr->lpstrReplaceWith );
+    RELEASEALIAS( odata1, &pfr->lpstrFindWhat );
     return( rc );
 
 } /* __ReplaceText */
@@ -124,11 +106,8 @@ HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
 HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
 {
     HWND        rc;
-    LPVOID      psave1;
-    LPVOID      psave2;
-    LPVOID      pnew1;
-    LPVOID      pnew2;
-
+    DWORD       odata1;
+    DWORD       odata2;
 
     if( commdlgFindText == NULL ) {
         commdlgFindText = BackPatch_commdlg( "FindText" );
@@ -136,19 +115,11 @@ HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
             return( 0 );
         }
     }
-    pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
-    pnew2 = psave2 = (LPVOID)pfr->lpTemplateName;
-    GetAlias( &pnew1 );
-    GetAlias( &pnew2 );
-    pfr->lpstrFindWhat = pnew1;
-    pfr->lpTemplateName = pnew2;
-
+    odata1 = GETALIAS( &pfr->lpstrFindWhat );
+    odata2 = GETALIAS( &pfr->lpTemplateName );
     rc = commdlgFindText( pfr );
-
-    ReleaseAlias( psave1, pnew1 );
-    ReleaseAlias( psave2, pnew2 );
-    pfr->lpstrFindWhat = psave1;
-    pfr->lpTemplateName = psave2;
+    RELEASEALIAS( odata2, &pfr->lpTemplateName );
+    RELEASEALIAS( odata1, &pfr->lpstrFindWhat );
     return( rc );
 
 } /* __FindText */
@@ -159,12 +130,9 @@ HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
 BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
 {
     BOOL        rc;
-    LPVOID      psave1;
-    LPVOID      psave2;
-    LPVOID      psave3;
-    LPVOID      pnew1;
-    LPVOID      pnew2;
-    LPVOID      pnew3;
+    DWORD       odata1;
+    DWORD       odata2;
+    DWORD       odata3;
 
     if( commdlgChooseFont == NULL ) {
         commdlgChooseFont = BackPatch_commdlg( "ChooseFont" );
@@ -172,24 +140,13 @@ BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
             return( 0 );
         }
     }
-    pnew1 = psave1 = (LPVOID)pcf->lpLogFont;
-    pnew2 = psave2 = (LPVOID)pcf->lpTemplateName;
-    pnew3 = psave3 = (LPVOID)pcf->lpszStyle;
-    GetAlias( &pnew1 );
-    GetAlias( &pnew2 );
-    GetAlias( &pnew3 );
-    pcf->lpLogFont = pnew1;
-    pcf->lpTemplateName = pnew2;
-    pcf->lpszStyle = pnew3;
-
+    odata1 = GETALIAS( &pcf->lpLogFont );
+    odata2 = GETALIAS( &pcf->lpTemplateName );
+    odata3 = GETALIAS( &pcf->lpszStyle );
     rc = commdlgChooseFont( pcf );
-
-    ReleaseAlias( psave1, pnew1 );
-    ReleaseAlias( psave2, pnew2 );
-    ReleaseAlias( psave3, pnew3 );
-    pcf->lpLogFont = psave1;
-    pcf->lpTemplateName = psave2;
-    pcf->lpszStyle = psave3;
+    RELEASEALIAS( odata3, &pcf->lpszStyle );
+    RELEASEALIAS( odata2, &pcf->lpTemplateName );
+    RELEASEALIAS( odata1, &pcf->lpLogFont );
     return( rc );
 
 } /* __ChooseFont */
@@ -200,67 +157,32 @@ BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
 static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
 {
     BOOL        rc;
-    LPVOID      psave1;
-    LPVOID      psave2;
-    LPVOID      psave3;
-    LPVOID      psave4;
-    LPVOID      psave5;
-    LPVOID      psave6;
-    LPVOID      psave7;
-    LPVOID      psave8;
-    LPVOID      pnew1;
-    LPVOID      pnew2;
-    LPVOID      pnew3;
-    LPVOID      pnew4;
-    LPVOID      pnew5;
-    LPVOID      pnew6;
-    LPVOID      pnew7;
-    LPVOID      pnew8;
+    DWORD       odata1;
+    DWORD       odata2;
+    DWORD       odata3;
+    DWORD       odata4;
+    DWORD       odata5;
+    DWORD       odata6;
+    DWORD       odata7;
+    DWORD       odata8;
 
-    pnew1 = psave1 = (LPVOID)pofn->lpstrFilter;
-    pnew2 = psave2 = (LPVOID)pofn->lpstrCustomFilter;
-    pnew3 = psave3 = (LPVOID)pofn->lpstrFile;
-    pnew4 = psave4 = (LPVOID)pofn->lpstrFileTitle;
-    pnew5 = psave5 = (LPVOID)pofn->lpstrInitialDir;
-    pnew6 = psave6 = (LPVOID)pofn->lpstrTitle;
-    pnew7 = psave7 = (LPVOID)pofn->lpstrDefExt;
-    pnew8 = psave8 = (LPVOID)pofn->lpTemplateName;
-
-    GetAlias( &pnew1 );
-    GetAlias( &pnew2 );
-    GetAlias( &pnew3 );
-    GetAlias( &pnew4 );
-    GetAlias( &pnew5 );
-    GetAlias( &pnew6 );
-    GetAlias( &pnew7 );
-    GetAlias( &pnew8 );
-    pofn->lpstrFilter = pnew1;
-    pofn->lpstrCustomFilter = pnew2;
-    pofn->lpstrFile = pnew3;
-    pofn->lpstrFileTitle = pnew4;
-    pofn->lpstrInitialDir = pnew5;
-    pofn->lpstrTitle = pnew6;
-    pofn->lpstrDefExt = pnew7;
-    pofn->lpTemplateName = pnew8;
-
+    odata1 = GETALIAS( &pofn->lpstrFilter );
+    odata2 = GETALIAS( &pofn->lpstrCustomFilter );
+    odata3 = GETALIAS( &pofn->lpstrFile );
+    odata4 = GETALIAS( &pofn->lpstrFileTitle );
+    odata5 = GETALIAS( &pofn->lpstrInitialDir );
+    odata6 = GETALIAS( &pofn->lpstrTitle );
+    odata7 = GETALIAS( &pofn->lpstrDefExt );
+    odata8 = GETALIAS( &pofn->lpTemplateName );
     rc = ((BOOL(FAR PASCAL *)(LPOPENFILENAME))fp)( (LPOPENFILENAME)pofn );
-
-    ReleaseAlias( psave1, pnew1 );
-    ReleaseAlias( psave2, pnew2 );
-    ReleaseAlias( psave3, pnew3 );
-    ReleaseAlias( psave4, pnew4 );
-    ReleaseAlias( psave5, pnew5 );
-    ReleaseAlias( psave6, pnew6 );
-    ReleaseAlias( psave7, pnew7 );
-    ReleaseAlias( psave8, pnew8 );
-    pofn->lpstrFilter = psave1;
-    pofn->lpstrCustomFilter = psave2;
-    pofn->lpstrFile = psave3;
-    pofn->lpstrFileTitle = psave4;
-    pofn->lpstrInitialDir = psave5;
-    pofn->lpstrTitle = psave6;
-    pofn->lpstrDefExt = psave7;
-    pofn->lpTemplateName = psave8;
+    RELEASEALIAS( odata8, &pofn->lpTemplateName );
+    RELEASEALIAS( odata7, &pofn->lpstrDefExt );
+    RELEASEALIAS( odata6, &pofn->lpstrTitle );
+    RELEASEALIAS( odata5, &pofn->lpstrInitialDir );
+    RELEASEALIAS( odata4, &pofn->lpstrFileTitle );
+    RELEASEALIAS( odata3, &pofn->lpstrFile );
+    RELEASEALIAS( odata2, &pofn->lpstrCustomFilter );
+    RELEASEALIAS( odata1, &pofn->lpstrFilter );
     return( rc );
 
 } /* GetSaveOrOpenFileName */
@@ -301,10 +223,8 @@ BOOL FAR PASCAL __GetSaveFileName( LPOPENFILENAME pofn )
 BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd )
 {
     BOOL        rc;
-    LPVOID      psave1;
-    LPVOID      psave2;
-    LPVOID      pnew1;
-    LPVOID      pnew2;
+    DWORD       odata1;
+    DWORD       odata2;
 
     if( commdlgPrintDlg == NULL ) {
         commdlgPrintDlg = BackPatch_commdlg( "PrintDlg" );
@@ -312,19 +232,11 @@ BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd )
             return( 0 );
         }
     }
-    pnew1 = psave1 = (LPVOID)ppd->lpPrintTemplateName;
-    pnew2 = psave2 = (LPVOID)ppd->lpSetupTemplateName;
-    GetAlias( &pnew1 );
-    GetAlias( &pnew2 );
-    ppd->lpPrintTemplateName = pnew1;
-    ppd->lpSetupTemplateName = pnew2;
-
+    odata1 = GETALIAS( &ppd->lpPrintTemplateName );
+    odata2 = GETALIAS( &ppd->lpSetupTemplateName );
     rc = commdlgPrintDlg( ppd );
-
-    ReleaseAlias( psave1, pnew1 );
-    ReleaseAlias( psave2, pnew2 );
-    ppd->lpPrintTemplateName = psave1;
-    ppd->lpSetupTemplateName = psave1;
+    RELEASEALIAS( odata2, &ppd->lpSetupTemplateName );
+    RELEASEALIAS( odata1, &ppd->lpPrintTemplateName );
     return( rc );
 
 } /* __PrintDlg */
