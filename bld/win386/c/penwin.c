@@ -52,7 +52,7 @@ static BOOL (FAR PASCAL *penwinTrainContext)(LPRCRESULT, LPSYE, int, LPSYC, int)
 /*
  * GetSYGAlias - alias pointer fields in an SYG structure
  */
-static void GetSYGAlias( LPSYG orig, SYG _FAR *save )
+static void GetSYGAlias( LPSYG orig, SYG _DLLFAR *save )
 {
     LPVOID      pdata1,pdata2;
 
@@ -68,7 +68,7 @@ static void GetSYGAlias( LPSYG orig, SYG _FAR *save )
 /*
  * ReleaseSYGAlias - release aliased fields in an SYG structure
  */
-static void ReleaseSYGAlias( LPSYG orig, SYG _FAR *save )
+static void ReleaseSYGAlias( LPSYG orig, SYG _DLLFAR *save )
 {
     ReleaseAlias( save->lpsye, orig->lpsye );
     ReleaseAlias( save->lpsyc, orig->lpsyc );
@@ -80,7 +80,7 @@ static void ReleaseSYGAlias( LPSYG orig, SYG _FAR *save )
 /*
  * GetRCRESULTAlias - alias pointer fields in an RCRESULT structure
  */
-static void GetRCRESULTAlias( LPRCRESULT orig, RCRESULT _FAR *save )
+static void GetRCRESULTAlias( LPRCRESULT orig, RCRESULT _DLLFAR *save )
 {
     LPVOID      pdata1,pdata2;
 
@@ -97,7 +97,7 @@ static void GetRCRESULTAlias( LPRCRESULT orig, RCRESULT _FAR *save )
 /*
  * ReleaseRCRESULTAlias - release aliased fields in an RCRESULT structure
  */
-static void ReleaseRCRESULTAlias( LPRCRESULT orig, RCRESULT _FAR *save )
+static void ReleaseRCRESULTAlias( LPRCRESULT orig, RCRESULT _DLLFAR *save )
 {
     ReleaseAlias( orig->lpsyv, save->lpsyv );
     ReleaseAlias( orig->lprc, save->lprc );

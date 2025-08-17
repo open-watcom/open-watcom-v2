@@ -76,10 +76,10 @@ static WORD                     StackCacheSel;
 static DWORD                    StackBase, StackBase_64K;
 static alias_cache_entry        aliasCache[MAX_CACHE];
 static WORD                     currSelCount;
-static char                     SelBitArray[MAX_SELECTORS / 8];
+static BYTE                     SelBitArray[MAX_SELECTORS / 8];
 static memblk                   *MemBlkList;
 
-static unsigned char BitMask[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+static BYTE         BitMask[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 /*
  * addToSelList - add selector to list of non-cached selectors
  */
@@ -540,7 +540,7 @@ void FiniSelList( void )
     int             i;
     int             j;
     WORD            sel;
-    unsigned char   mask;
+    BYTE            mask;
 
     i = currSelCount;
     j = 0;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,9 @@
 ****************************************************************************/
 
 
-extern void     GetMIDIHDRAlias( LPSTR _FAR *orig, LPMIDIHDR ptr );
+extern void     GetMIDIHDRAlias( LPSTR _DLLFAR *orig, LPMIDIHDR ptr );
 extern void     ReleaseMIDIHDRAlias( LPSTR orig, LPMIDIHDR ptr );
-extern void     GetWAVEHDRAlias( LPSTR _FAR *orig, LPWAVEHDR ptr );
+extern void     GetWAVEHDRAlias( LPSTR _DLLFAR *orig, LPWAVEHDR ptr );
 extern void     ReleaseWAVEHDRAlias( LPSTR orig, LPWAVEHDR ptr );
 extern UINT     FAR PASCAL __midiInAddBuffer( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize );
 extern UINT     FAR PASCAL __midiInPrepareHeader( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize );

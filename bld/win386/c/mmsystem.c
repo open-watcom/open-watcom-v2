@@ -82,7 +82,7 @@ static LPMMINFOLIST     mminfoListTail;
 /*
  * GetMIDIHDRAlias - alias members of MIDIHDR struct
  */
-void GetMIDIHDRAlias( LPSTR _FAR *orig, LPMIDIHDR ptr )
+void GetMIDIHDRAlias( LPSTR _DLLFAR *orig, LPMIDIHDR ptr )
 {
     LPSTR       new;
 
@@ -107,7 +107,7 @@ void ReleaseMIDIHDRAlias( LPSTR orig, LPMIDIHDR ptr )
 /*
  * GetWAVEHDRAlias - alias members of WAVEHDR struct
  */
-void GetWAVEHDRAlias( LPSTR _FAR *orig, LPWAVEHDR ptr )
+void GetWAVEHDRAlias( LPSTR _DLLFAR *orig, LPWAVEHDR ptr )
 {
     LPSTR       new;
 

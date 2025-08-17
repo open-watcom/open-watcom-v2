@@ -40,11 +40,11 @@
 #include "winstubs.h"
 #include "_ole.h"
 
-extern LPVOID FAR Backpatch_olecli( char *str );
-#pragma aux Backpatch_olecli __parm [__ax]
+extern LPVOID FAR BackPatch_olecli( char *str );
+#pragma aux BackPatch_olecli __parm [__ax]
 
-extern LPVOID FAR Backpatch_olesvr( char *str );
-#pragma aux Backpatch_olesvr __parm [__ax]
+extern LPVOID FAR BackPatch_olesvr( char *str );
+#pragma aux BackPatch_olesvr __parm [__ax]
 
 static OLESTATUS (FAR PASCAL *olecliOleActivate)( LPOLEOBJECT, UINT, BOOL, BOOL, HWND, const RECT FAR * );
 static OLESTATUS (FAR PASCAL *olecliOleClone)( LPOLEOBJECT, LPOLECLIENT, LHCLIENTDOC, LPCSTR, LPOLEOBJECT FAR * );
@@ -95,7 +95,7 @@ static OLESTATUS (FAR PASCAL *olesvrOleRegisterServerDoc)( LHSERVER, LPCSTR, LPO
 static OLESTATUS (FAR PASCAL *olesvrOleRevokeObject)( LPOLECLIENT );
 
 
-static void aliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL _FAR *olpvtbl )
+static void aliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL _DLLFAR *olpvtbl )
 {
     LPOLEOBJECTVTBL     nlpvtbl;
 
@@ -112,7 +112,7 @@ static void releaseAliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL olpvtbl
 
 } /* releaseAliasOleObject */
 
-static void permAliasOleClient( LPOLECLIENT _FAR *lpclient )
+static void permAliasOleClient( LPOLECLIENT _DLLFAR *lpclient )
 {
     LPOLECLIENT         new;
     LPOLECLIENTVTBL     nlpvtbl;
@@ -127,7 +127,7 @@ static void permAliasOleClient( LPOLECLIENT _FAR *lpclient )
     *lpclient = new;
 }
 
-static void aliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL _FAR *olpvtbl )
+static void aliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL _DLLFAR *olpvtbl )
 {
     LPOLECLIENTVTBL     nlpvtbl;
 
@@ -144,7 +144,7 @@ static void releaseAliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL olpvtbl
 
 } /* releaseAliasOleClient */
 
-static void aliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL _FAR *olpstbl )
+static void aliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL _DLLFAR *olpstbl )
 {
     LPOLESTREAMVTBL     nlpstbl;
 
@@ -171,7 +171,7 @@ OLESTATUS FAR PASCAL __OleActivate(LPOLEOBJECT lpobject, UINT verb, BOOL show,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleActivate == NULL ) {
-        olecliOleActivate = Backpatch_olecli( "OleActivate" );
+        olecliOleActivate = BackPatch_olecli( "OleActivate" );
         if( olecliOleActivate == NULL ) {
             return( 0 );
         }
@@ -195,7 +195,7 @@ OLESTATUS FAR PASCAL __OleClone( LPOLEOBJECT lpobject, LPOLECLIENT lpclient,
     LPOLECLIENTVTBL     olpvtblc;
 
     if( olecliOleClone == NULL ) {
-        olecliOleClone = Backpatch_olecli( "OleClone" );
+        olecliOleClone = BackPatch_olecli( "OleClone" );
         if( olecliOleClone == NULL ) {
             return( 0 );
         }
@@ -221,7 +221,7 @@ OLESTATUS FAR PASCAL __OleClose( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleClose == NULL ) {
-        olecliOleClose = Backpatch_olecli( "OleClose" );
+        olecliOleClose = BackPatch_olecli( "OleClose" );
         if( olecliOleClose == NULL ) {
             return( 0 );
         }
@@ -246,7 +246,7 @@ OLESTATUS FAR PASCAL __OleCopyFromLink( LPOLEOBJECT lpobject, LPCSTR protocol,
     LPOLECLIENTVTBL     olpvtblc;
 
     if( olecliOleCopyFromLink == NULL ) {
-        olecliOleCopyFromLink = Backpatch_olecli( "OleCopyFromLink" );
+        olecliOleCopyFromLink = BackPatch_olecli( "OleCopyFromLink" );
         if( olecliOleCopyFromLink == NULL ) {
             return( 0 );
         }
@@ -271,7 +271,7 @@ OLESTATUS FAR PASCAL __OleCopyToClipboard( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleCopyToClipboard == NULL ) {
-        olecliOleCopyToClipboard = Backpatch_olecli( "OleCopyToClipboard" );
+        olecliOleCopyToClipboard = BackPatch_olecli( "OleCopyToClipboard" );
         if( olecliOleCopyToClipboard == NULL ) {
             return( 0 );
         }
@@ -296,7 +296,7 @@ OLESTATUS FAR PASCAL __OleCreate( LPCSTR protocol, LPOLECLIENT lpclient,
     OLESTATUS           rc;
 
     if( olecliOleCreate == NULL ) {
-        olecliOleCreate = Backpatch_olecli( "OleCreate" );
+        olecliOleCreate = BackPatch_olecli( "OleCreate" );
         if( olecliOleCreate == NULL ) {
             return( 0 );
         }
@@ -320,7 +320,7 @@ OLESTATUS FAR PASCAL __OleCreateFromClip( LPCSTR protocol, LPOLECLIENT lpclient,
     OLESTATUS           rc;
 
     if( olecliOleCreateFromClip == NULL ) {
-        olecliOleCreateFromClip = Backpatch_olecli( "OleCreateFromClip" );
+        olecliOleCreateFromClip = BackPatch_olecli( "OleCreateFromClip" );
         if( olecliOleCreateFromClip == NULL ) {
             return( 0 );
         }
@@ -345,7 +345,7 @@ OLESTATUS FAR PASCAL __OleCreateFromFile( LPCSTR protocol, LPOLECLIENT lpclient,
     OLESTATUS           rc;
 
     if( olecliOleCreateFromFile == NULL ) {
-        olecliOleCreateFromFile = Backpatch_olecli( "OleCreateFromFile" );
+        olecliOleCreateFromFile = BackPatch_olecli( "OleCreateFromFile" );
         if( olecliOleCreateFromFile == NULL ) {
             return( 0 );
         }
@@ -370,7 +370,7 @@ OLESTATUS FAR PASCAL __OleCreateFromTemplate( LPCSTR protocol,
     OLESTATUS           rc;
 
     if( olecliOleCreateFromTemplate == NULL ) {
-        olecliOleCreateFromTemplate = Backpatch_olecli( "OleCreateFromTemplate" );
+        olecliOleCreateFromTemplate = BackPatch_olecli( "OleCreateFromTemplate" );
         if( olecliOleCreateFromTemplate == NULL ) {
             return( 0 );
         }
@@ -393,7 +393,7 @@ OLESTATUS FAR PASCAL __OleCreateInvisible( LPCSTR protocol, LPOLECLIENT lpclient
     OLESTATUS           rc;
 
     if( olecliOleCreateInvisible == NULL ) {
-        olecliOleCreateInvisible = Backpatch_olecli( "OleCreateInvisible" );
+        olecliOleCreateInvisible = BackPatch_olecli( "OleCreateInvisible" );
         if( olecliOleCreateInvisible == NULL ) {
             return( 0 );
         }
@@ -418,7 +418,7 @@ OLESTATUS FAR PASCAL __OleCreateLinkFromClip( LPCSTR protocol,
     OLESTATUS           rc;
 
     if( olecliOleCreateLinkFromClip == NULL ) {
-        olecliOleCreateLinkFromClip = Backpatch_olecli( "OleCreateLinkFromClip" );
+        olecliOleCreateLinkFromClip = BackPatch_olecli( "OleCreateLinkFromClip" );
         if( olecliOleCreateLinkFromClip == NULL ) {
             return( 0 );
         }
@@ -443,7 +443,7 @@ OLESTATUS FAR PASCAL __OleCreateLinkFromFile( LPCSTR protocol, LPOLECLIENT lpcli
     OLESTATUS           rc;
 
     if( olecliOleCreateLinkFromFile == NULL ) {
-        olecliOleCreateLinkFromFile = Backpatch_olecli( "OleCreateLinkFromFile" );
+        olecliOleCreateLinkFromFile = BackPatch_olecli( "OleCreateLinkFromFile" );
         if( olecliOleCreateLinkFromFile == NULL ) {
             return( 0 );
         }
@@ -466,7 +466,7 @@ OLESTATUS FAR PASCAL __OleDelete( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleDelete == NULL ) {
-        olecliOleDelete = Backpatch_olecli( "OleDelete" );
+        olecliOleDelete = BackPatch_olecli( "OleDelete" );
         if( olecliOleDelete == NULL ) {
             return( 0 );
         }
@@ -491,7 +491,7 @@ OLESTATUS FAR PASCAL __OleDraw( LPOLEOBJECT lpobject, HDC hdc,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleDraw == NULL ) {
-        olecliOleDraw = Backpatch_olecli( "OleDraw" );
+        olecliOleDraw = BackPatch_olecli( "OleDraw" );
         if( olecliOleDraw == NULL ) {
             return( 0 );
         }
@@ -515,7 +515,7 @@ OLECLIPFORMAT FAR PASCAL __OleEnumFormats( LPOLEOBJECT lpobject,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleEnumFormats == NULL ) {
-        olecliOleEnumFormats = Backpatch_olecli( "OleEnumFormats" );
+        olecliOleEnumFormats = BackPatch_olecli( "OleEnumFormats" );
         if( olecliOleEnumFormats == NULL ) {
             return( 0 );
         }
@@ -538,7 +538,7 @@ OLESTATUS FAR PASCAL __OleEqual( LPOLEOBJECT lpobject1, LPOLEOBJECT lpobject2 )
     LPOLEOBJECTVTBL     olpvtbl1,olpvtbl2;
 
     if( olecliOleEqual == NULL ) {
-        olecliOleEqual = Backpatch_olecli( "OleEqual" );
+        olecliOleEqual = BackPatch_olecli( "OleEqual" );
         if( olecliOleEqual == NULL ) {
             return( 0 );
         }
@@ -563,7 +563,7 @@ OLESTATUS FAR PASCAL __OleExecute( LPOLEOBJECT lpobject, HGLOBAL cmds, UINT r )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleExecute == NULL ) {
-        olecliOleExecute = Backpatch_olecli( "OleExecute" );
+        olecliOleExecute = BackPatch_olecli( "OleExecute" );
         if( olecliOleExecute == NULL ) {
             return( 0 );
         }
@@ -587,7 +587,7 @@ OLESTATUS FAR PASCAL __OleGetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleGetData == NULL ) {
-        olecliOleGetData = Backpatch_olecli( "OleGetData" );
+        olecliOleGetData = BackPatch_olecli( "OleGetData" );
         if( olecliOleGetData == NULL ) {
             return( 0 );
         }
@@ -611,7 +611,7 @@ OLESTATUS FAR PASCAL __OleGetLinkUpdateOptions( LPOLEOBJECT lpobject,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleGetLinkUpdateOptions == NULL ) {
-        olecliOleGetLinkUpdateOptions = Backpatch_olecli( "OleGetLinkUpdateOptions" );
+        olecliOleGetLinkUpdateOptions = BackPatch_olecli( "OleGetLinkUpdateOptions" );
         if( olecliOleGetLinkUpdateOptions == NULL ) {
             return( 0 );
         }
@@ -637,7 +637,7 @@ OLESTATUS FAR PASCAL __OleLoadFromStream( LPOLESTREAM lpstream, LPCSTR protocol,
     LPOLESTREAMVTBL     olpstbl;
 
     if( olecliOleLoadFromStream == NULL ) {
-        olecliOleLoadFromStream = Backpatch_olecli( "OleLoadFromStream" );
+        olecliOleLoadFromStream = BackPatch_olecli( "OleLoadFromStream" );
         if( olecliOleLoadFromStream == NULL ) {
             return( 0 );
         }
@@ -663,7 +663,7 @@ OLESTATUS FAR PASCAL __OleLockServer( LPOLEOBJECT lpobject, LHSERVER FAR *hsrv )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleLockServer == NULL ) {
-        olecliOleLockServer = Backpatch_olecli( "OleLockServer" );
+        olecliOleLockServer = BackPatch_olecli( "OleLockServer" );
         if( olecliOleLockServer == NULL ) {
             return( 0 );
         }
@@ -689,7 +689,7 @@ OLESTATUS FAR PASCAL __OleObjectConvert( LPOLEOBJECT lpobject, LPCSTR protocol,
     LPOLECLIENTVTBL     olpvtblc;
 
     if( olecliOleObjectConvert == NULL ) {
-        olecliOleObjectConvert = Backpatch_olecli( "OleObjectConvert" );
+        olecliOleObjectConvert = BackPatch_olecli( "OleObjectConvert" );
         if( olecliOleObjectConvert == NULL ) {
             return( 0 );
         }
@@ -714,7 +714,7 @@ OLESTATUS FAR PASCAL __OleQueryBounds( LPOLEOBJECT lpobject, RECT FAR *bounds )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryBounds == NULL ) {
-        olecliOleQueryBounds = Backpatch_olecli( "OleQueryBounds" );
+        olecliOleQueryBounds = BackPatch_olecli( "OleQueryBounds" );
         if( olecliOleQueryBounds == NULL ) {
             return( 0 );
         }
@@ -738,7 +738,7 @@ OLESTATUS FAR PASCAL __OleQueryName( LPOLEOBJECT lpobject, LPSTR object,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryName == NULL ) {
-        olecliOleQueryName = Backpatch_olecli( "OleQueryName" );
+        olecliOleQueryName = BackPatch_olecli( "OleQueryName" );
         if( olecliOleQueryName == NULL ) {
             return( 0 );
         }
@@ -761,7 +761,7 @@ OLESTATUS FAR PASCAL __OleQueryOpen( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryOpen == NULL ) {
-        olecliOleQueryOpen = Backpatch_olecli( "OleQueryOpen" );
+        olecliOleQueryOpen = BackPatch_olecli( "OleQueryOpen" );
         if( olecliOleQueryOpen == NULL ) {
             return( 0 );
         }
@@ -784,7 +784,7 @@ OLESTATUS FAR PASCAL __OleQueryOutOfDate( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryOutOfDate == NULL ) {
-        olecliOleQueryOutOfDate = Backpatch_olecli( "OleQueryOutOfDate" );
+        olecliOleQueryOutOfDate = BackPatch_olecli( "OleQueryOutOfDate" );
         if( olecliOleQueryOutOfDate == NULL ) {
             return( 0 );
         }
@@ -807,7 +807,7 @@ LPVOID FAR PASCAL __OleQueryProtocol( LPOLEOBJECT lpobject, LPCSTR protocol )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryProtocol == NULL ) {
-        olecliOleQueryProtocol = Backpatch_olecli( "OleQueryProtocol" );
+        olecliOleQueryProtocol = BackPatch_olecli( "OleQueryProtocol" );
         if( olecliOleQueryProtocol == NULL ) {
             return( 0 );
         }
@@ -830,7 +830,7 @@ OLESTATUS FAR PASCAL __OleQueryReleaseError( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryReleaseError == NULL ) {
-        olecliOleQueryReleaseError = Backpatch_olecli( "OleQueryReleaseError" );
+        olecliOleQueryReleaseError = BackPatch_olecli( "OleQueryReleaseError" );
         if( olecliOleQueryReleaseError == NULL ) {
             return( 0 );
         }
@@ -853,7 +853,7 @@ OLE_RELEASE_METHOD FAR PASCAL __OleQueryReleaseMethod( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryReleaseMethod == NULL ) {
-        olecliOleQueryReleaseMethod = Backpatch_olecli( "OleQueryReleaseMethod" );
+        olecliOleQueryReleaseMethod = BackPatch_olecli( "OleQueryReleaseMethod" );
         if( olecliOleQueryReleaseMethod == NULL ) {
             return( 0 );
         }
@@ -876,7 +876,7 @@ OLESTATUS FAR PASCAL __OleQueryReleaseStatus( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryReleaseStatus == NULL ) {
-        olecliOleQueryReleaseStatus = Backpatch_olecli( "OleQueryReleaseStatus" );
+        olecliOleQueryReleaseStatus = BackPatch_olecli( "OleQueryReleaseStatus" );
         if( olecliOleQueryReleaseStatus == NULL ) {
             return( 0 );
         }
@@ -899,7 +899,7 @@ OLESTATUS FAR PASCAL __OleQuerySize( LPOLEOBJECT lpobject, DWORD FAR *size )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQuerySize == NULL ) {
-        olecliOleQuerySize = Backpatch_olecli( "OleQuerySize" );
+        olecliOleQuerySize = BackPatch_olecli( "OleQuerySize" );
         if( olecliOleQuerySize == NULL ) {
             return( 0 );
         }
@@ -922,7 +922,7 @@ OLESTATUS FAR PASCAL __OleQueryType( LPOLEOBJECT lpobject, LONG FAR *type )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleQueryType == NULL ) {
-        olecliOleQueryType = Backpatch_olecli( "OleQueryType" );
+        olecliOleQueryType = BackPatch_olecli( "OleQueryType" );
         if( olecliOleQueryType == NULL ) {
             return( 0 );
         }
@@ -945,7 +945,7 @@ OLESTATUS FAR PASCAL __OleReconnect( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleReconnect == NULL ) {
-        olecliOleReconnect = Backpatch_olecli( "OleReconnect" );
+        olecliOleReconnect = BackPatch_olecli( "OleReconnect" );
         if( olecliOleReconnect == NULL ) {
             return( 0 );
         }
@@ -968,7 +968,7 @@ OLESTATUS FAR PASCAL __OleRelease( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleRelease == NULL ) {
-        olecliOleRelease = Backpatch_olecli( "OleRelease" );
+        olecliOleRelease = BackPatch_olecli( "OleRelease" );
         if( olecliOleRelease == NULL ) {
             return( 0 );
         }
@@ -991,7 +991,7 @@ OLESTATUS FAR PASCAL __OleRename( LPOLEOBJECT lpobject, LPCSTR newname )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleRename == NULL ) {
-        olecliOleRename = Backpatch_olecli( "OleRename" );
+        olecliOleRename = BackPatch_olecli( "OleRename" );
         if( olecliOleRename == NULL ) {
             return( 0 );
         }
@@ -1014,7 +1014,7 @@ OLESTATUS FAR PASCAL __OleRequestData( LPOLEOBJECT lpobject , OLECLIPFORMAT cfmt
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleRequestData == NULL ) {
-        olecliOleRequestData = Backpatch_olecli( "OleRequestData" );
+        olecliOleRequestData = BackPatch_olecli( "OleRequestData" );
         if( olecliOleRequestData == NULL ) {
             return( 0 );
         }
@@ -1038,7 +1038,7 @@ OLESTATUS FAR PASCAL __OleSaveToStream( LPOLEOBJECT lpobject, LPOLESTREAM lpstre
     LPOLESTREAMVTBL     olpstbl;
 
     if( olecliOleSaveToStream == NULL ) {
-        olecliOleSaveToStream = Backpatch_olecli( "OleSaveToStream" );
+        olecliOleSaveToStream = BackPatch_olecli( "OleSaveToStream" );
         if( olecliOleSaveToStream == NULL ) {
             return( 0 );
         }
@@ -1063,7 +1063,7 @@ OLESTATUS FAR PASCAL __OleSetBounds( LPOLEOBJECT lpobject, const RECT FAR *bound
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetBounds == NULL ) {
-        olecliOleSetBounds = Backpatch_olecli( "OleSetBounds" );
+        olecliOleSetBounds = BackPatch_olecli( "OleSetBounds" );
         if( olecliOleSetBounds == NULL ) {
             return( 0 );
         }
@@ -1087,7 +1087,7 @@ OLESTATUS FAR PASCAL __OleSetColorScheme( LPOLEOBJECT lpobject,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetColorScheme == NULL ) {
-        olecliOleSetColorScheme = Backpatch_olecli( "OleSetColorScheme" );
+        olecliOleSetColorScheme = BackPatch_olecli( "OleSetColorScheme" );
         if( olecliOleSetColorScheme == NULL ) {
             return( 0 );
         }
@@ -1111,7 +1111,7 @@ OLESTATUS FAR PASCAL __OleSetData( LPOLEOBJECT lpobject, OLECLIPFORMAT cfmt,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetData == NULL ) {
-        olecliOleSetData = Backpatch_olecli( "OleSetData" );
+        olecliOleSetData = BackPatch_olecli( "OleSetData" );
         if( olecliOleSetData == NULL ) {
             return( 0 );
         }
@@ -1135,7 +1135,7 @@ OLESTATUS FAR PASCAL __OleSetHostNames( LPOLEOBJECT lpobject, LPCSTR client,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetHostNames == NULL ) {
-        olecliOleSetHostNames = Backpatch_olecli( "OleSetHostNames" );
+        olecliOleSetHostNames = BackPatch_olecli( "OleSetHostNames" );
         if( olecliOleSetHostNames == NULL ) {
             return( 0 );
         }
@@ -1159,7 +1159,7 @@ OLESTATUS FAR PASCAL __OleSetLinkUpdateOptions( LPOLEOBJECT lpobject,
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetLinkUpdateOptions == NULL ) {
-        olecliOleSetLinkUpdateOptions = Backpatch_olecli( "OleSetLinkUpdateOptions" );
+        olecliOleSetLinkUpdateOptions = BackPatch_olecli( "OleSetLinkUpdateOptions" );
         if( olecliOleSetLinkUpdateOptions == NULL ) {
             return( 0 );
         }
@@ -1182,7 +1182,7 @@ OLESTATUS FAR PASCAL __OleSetTargetDevice( LPOLEOBJECT lpobject, HGLOBAL hotd )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleSetTargetDevice == NULL ) {
-        olecliOleSetTargetDevice = Backpatch_olecli( "OleSetTargetDevice" );
+        olecliOleSetTargetDevice = BackPatch_olecli( "OleSetTargetDevice" );
         if( olecliOleSetTargetDevice == NULL ) {
             return( 0 );
         }
@@ -1205,7 +1205,7 @@ OLESTATUS FAR PASCAL __OleUpdate( LPOLEOBJECT lpobject )
     LPOLEOBJECTVTBL     olpvtbl;
 
     if( olecliOleUpdate == NULL ) {
-        olecliOleUpdate = Backpatch_olecli( "OleUpdate" );
+        olecliOleUpdate = BackPatch_olecli( "OleUpdate" );
         if( olecliOleUpdate == NULL ) {
             return( 0 );
         }
@@ -1230,7 +1230,7 @@ OLESTATUS FAR PASCAL __OleRegisterServer( LPCSTR class, LPOLESERVER lpserver,
     LPOLESERVER         new;
 
     if( olesvrOleRegisterServer == NULL ) {
-        olesvrOleRegisterServer = Backpatch_olesvr( "OleRegisterServer" );
+        olesvrOleRegisterServer = BackPatch_olesvr( "OleRegisterServer" );
         if( olesvrOleRegisterServer == NULL ) {
             return( 0 );
         }
@@ -1261,7 +1261,7 @@ OLESTATUS FAR PASCAL __OleRegisterServerDoc( LHSERVER hsrvr, LPCSTR docname,
     LPOLESERVERDOC      new;
 
     if( olesvrOleRegisterServerDoc == NULL ) {
-        olesvrOleRegisterServerDoc = Backpatch_olesvr( "OleRegisterServerDoc" );
+        olesvrOleRegisterServerDoc = BackPatch_olesvr( "OleRegisterServerDoc" );
         if( olesvrOleRegisterServerDoc == NULL ) {
             return( 0 );
         }
@@ -1290,7 +1290,7 @@ OLESTATUS FAR PASCAL __OleRevokeObject( LPOLECLIENT lpclient )
     LPOLECLIENTVTBL     olpvtblc;
 
     if( olesvrOleRevokeObject == NULL ) {
-        olesvrOleRevokeObject = Backpatch_olesvr( "OleRevokeObject" );
+        olesvrOleRevokeObject = BackPatch_olesvr( "OleRevokeObject" );
         if( olesvrOleRevokeObject == NULL ) {
             return( 0 );
         }
