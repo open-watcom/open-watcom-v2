@@ -192,6 +192,15 @@
 #define _AND_DH         0x80 0xe6
 #define _AND_BH         0x80 0xe7
 
+#define _OR_AL          0x0c
+#define _OR_CL          0x80 0xc9
+#define _OR_DL          0x80 0xca
+#define _OR_BL          0x80 0xcb
+#define _OR_AH          0x80 0xcc
+#define _OR_CH          0x80 0xcd
+#define _OR_DH          0x80 0xce
+#define _OR_BH          0x80 0xcf
+
 #define _XCHG_AX_DX     0x92
 #define _XCHG_AX_SI     0x96
 #define _XCHG_SI_DI     0x87 0xf7
