@@ -72,6 +72,8 @@ _WCRTLINK struct protoent *getprotoent( void )
 
     if( __protFile == NULL )
         setprotoent( 0 );
+    if( __protFile == NULL )
+        return NULL;
 
     /* First pass */
     if( buf == NULL ) {

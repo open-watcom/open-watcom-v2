@@ -66,6 +66,8 @@ _WCRTLINK struct netent *getnetent( void )
 
     if( __netFile == NULL )
         setnetent( 0 );
+    if( __netFile == NULL )
+        return NULL;
 
     /* First pass */
     if( buf == NULL ) {

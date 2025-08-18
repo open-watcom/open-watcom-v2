@@ -336,6 +336,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
             lptr = (struct in_addr *)answers[i].rdata;
 
             res->h_addr_list = _add_address_to_list( res->h_addr_list, lptr );
+            answers[i].rdata = NULL;
             ret = 1;
         } else {
             /* Answer should just be a string */
