@@ -36,14 +36,49 @@
 #define ALIAS_OFFS(x)   ((WORD __far *)(x))[0]
 #define ALIAS_SEL(x)    ((WORD __far *)(x))[1]
 
-extern int  WINDPMI_FreeLDTDescriptor( WORD );
-#pragma aux WINDPMI_FreeLDTDescriptor = \
+/*
+ * Segment registers ES, FS and GS in 16-bit and GS in 32-bit Windows code are volatile.
+ * It means code generator don't cleanup these registers and content is last
+ * assigned value.
+ *
+ * Strange Windows 3.0 "386 enhanced mode" probably has DPMI bug:
+ *      If ES, FS, or GS contain the selector being freed, it will crash dump
+ *      to DOS within the DPMI call to free an LDT descriptor.
+ *
+ * A way to work around this problem is to clear any of these registers before
+ * calling DPMI if the register contains a selector for the descriptor being freed.
+ */
+extern int  WDPMI_FreeLDTDescriptor( WORD );
+#pragma aux WDPMI_FreeLDTDescriptor = \
+        /* fix CPL bits */ \
+        _MOV_CX_BX      \
+        _OR_CL 3        \
+        _XOR_DX_DX      \
+        /* reset ES register if necessary */ \
+        _MOV_AX_ES      \
+        _OR_AL 3        \
+        _CMP_AX_CX      \
+        _JNZ 2          \
+        _MOV_ES_DX      \
+        /* reset FS register if necessary */ \
+        _MOV_AX_FS      \
+        _OR_AL 3        \
+        _CMP_AX_CX      \
+        _JNZ 2          \
+        _MOV_FS_DX      \
+        /* reset GS register if necessary */ \
+        _MOV_AX_GS      \
+        _OR_AL 3        \
+        _CMP_AX_CX      \
+        _JNZ 2          \
+        _MOV_GS_DX      \
+        /* call DPMI service */ \
         _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] \
     __value         [__ax] \
-    __modify __exact [__ax]
+    __modify __exact [__ax __cx __dx __es __fs __gs]
 
 
 extern bool     _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);

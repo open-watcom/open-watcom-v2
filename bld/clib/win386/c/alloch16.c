@@ -36,20 +36,11 @@
 #include "windpmi.h"
 
 
-extern void Clear_FS_GS( void );
-#pragma aux Clear_FS_GS = \
-        "xor eax,eax"   \
-        "mov fs,eax"    \
-        "mov gs,eax"    \
-    __parm              [] \
-    __value             \
-    __modify __exact    [__eax __fs __gs]
-
-DWORD AllocHugeAlias16( void *offset, DWORD size )
+DWORD AllocHugeAlias16( void *offs32, DWORD size )
 {
     DWORD       alias;
 
-    if( DPMIGetHugeAlias( (DWORD)offset, &alias, size ) )
+    if( DPMIGetHugeAlias( (DWORD)offs32, &alias, size ) )
         return( 0 );
     return( alias );
 
@@ -57,8 +48,6 @@ DWORD AllocHugeAlias16( void *offset, DWORD size )
 
 void FreeHugeAlias16( DWORD alias, DWORD size )
 {
-
-    Clear_FS_GS();
     DPMIFreeHugeAlias( alias, size );
 
 } /* FreeAlias16 */

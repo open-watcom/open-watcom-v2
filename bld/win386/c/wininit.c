@@ -487,7 +487,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     }
 
     /*
-     * free alias selector
+     * free alias pointer descriptor
      */
     _DPMI_FreeAlias( alias );
 
@@ -567,9 +567,9 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
-        WINDPMI_FreeLDTDescriptor( DataSelector );
-        WINDPMI_FreeLDTDescriptor( StackSelector );
-        WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
+        WDPMI_FreeLDTDescriptor( DataSelector );
+        WDPMI_FreeLDTDescriptor( StackSelector );
+        WDPMI_FreeLDTDescriptor( CodeEntry.seg );
         _DPMI_Free32( DataHandle );
     }
 

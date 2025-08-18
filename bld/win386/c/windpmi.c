@@ -38,18 +38,6 @@
 #include "windpmi.h"
 #include "windata.h"
 
-/* Strange Windows 3.0 "386 enhanced mode" DPMI bug:
- * If ES, FS, or GS contain the selector being freed,
- * it will crash dump to DOS within the DPMI call to free an LDT descriptor.
- * The best way to avoid that crash dump is to zero those specific segment registers before the DPMI call.
- * --J,C. 2025/08/14 */
-extern void Clear_ES_FS_GS( void );
-#pragma aux Clear_ES_FS_GS = \
-    "xor ax,ax" \
-    "mov es,ax" \
-    "mov fs,ax" \
-    "mov gs,ax" \
-__modify __exact [__ax __es __fs __gs]
 
 #define MAX_CACHE       48
 #define MAX_SELECTORS   8192
@@ -183,11 +171,7 @@ bool _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count )
         /*
          * set new limit, address, and access rights
          */
-        if( limit > 1024L * 1024L ) {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16BIG );
-        } else {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16 );
-        }
+        DPMISetDescriptorAccessRights( sel, DPL + (( limit > 1024L * 1024L ) ? DESC_ACCESS_DATA16BIG : DESC_ACCESS_DATA16) );
         DPMISetSegmentBaseAddress( sel, DataSelectorBase + offs32 );
         DPMISetSegmentLimit( sel, limit );
         addToSelList( sel );
@@ -230,9 +214,7 @@ void _DPMI_FreeAlias( DWORD alias )
         return;
     }
     removeFromSelList( sel );
-
-    Clear_ES_FS_GS();
-    WINDPMI_FreeLDTDescriptor( sel );
+    WDPMI_FreeLDTDescriptor( sel );
 
 } /* _DPMI_FreeAlias */
 
@@ -259,7 +241,7 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
     count = 1 + (WORD)( no64k / 0x10000L );
     for( i = 0; i < count; i++ ) {
         removeFromSelList( sel );
-        WINDPMI_FreeLDTDescriptor( sel );
+        WDPMI_FreeLDTDescriptor( sel );
         sel += hugeIncrement;
     }
 }
@@ -293,22 +275,14 @@ void WINDPMIFN( DPMIFreeHugeAlias )( DWORD alias, DWORD size )
  */
 static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
 {
+    WORD    rights;
 
     DPMISetSegmentBaseAddress( sel, addr );
     --len;
-    if( len >= 1024L * 1024L ) {
-        if( type == DESC_ACCESS_CODE ) {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_CODE32BIG );
-        } else {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA32BIG );
-        }
-    } else {
-        if( type == DESC_ACCESS_CODE ) {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_CODE32SMALL );
-        } else {
-            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA32SMALL );
-        }
-    }
+    rights = ( len >= 1024L * 1024L )
+        ? (( type == DESC_ACCESS_CODE ) ? DESC_ACCESS_CODE32BIG : DESC_ACCESS_DATA32BIG )
+        : (( type == DESC_ACCESS_CODE ) ? DESC_ACCESS_CODE32SMALL : DESC_ACCESS_DATA32SMALL );
+    DPMISetDescriptorAccessRights( sel, DPL + rights );
     DPMISetSegmentLimit( sel, len );
 
 } /* setLimitAndAddr */
@@ -337,7 +311,7 @@ bool InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      */
     dpmirc = DPMIAllocateLDTDescriptors( 2 );
     if( DPMI_ERROR( dpmirc ) ) {
-        WINDPMI_FreeLDTDescriptor( CodeEntry.seg );
+        WDPMI_FreeLDTDescriptor( CodeEntry.seg );
         return( true );
     }
     DataSelector = DPMI_INFO( dpmirc );
@@ -528,11 +502,11 @@ void FiniSelectorCache( void )
 
     for( i = 0; i < MAX_CACHE; i++ ) {
         if( aliasCache[i].sel != NULL ) {
-            WINDPMI_FreeLDTDescriptor( aliasCache[i].sel );
+            WDPMI_FreeLDTDescriptor( aliasCache[i].sel );
         }
     }
-    WINDPMI_FreeLDTDescriptor( StackCacheSel );
-    WINDPMI_FreeLDTDescriptor( Int21Selector );
+    WDPMI_FreeLDTDescriptor( StackCacheSel );
+    WDPMI_FreeLDTDescriptor( Int21Selector );
 
 } /* FiniSelectorCache */
 
@@ -555,7 +529,7 @@ void FiniSelList( void )
             sel = (j << (3 + 3)) | (firstCacheSel & 7);
             while( mask != 0 ) {
                 if( mask & 1 ) {
-                    WINDPMI_FreeLDTDescriptor( sel );
+                    WDPMI_FreeLDTDescriptor( sel );
                     --i;
                     if( i == 0 ) {
                         return;
