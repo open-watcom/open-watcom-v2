@@ -48,5 +48,5 @@ extern int      FAR PASCAL __Escape( HDC a, int b, int c, LPSTR d, LPSTR e );
 extern int      FAR PASCAL __GetInstanceData( HANDLE a, DWORD offset, int len );
 extern LPSTR    FAR PASCAL __AnsiPrev( LPSTR a, LPSTR b );
 extern LPSTR    FAR PASCAL __AnsiNext( LPSTR a );
-extern int      FAR PASCAL __StartDoc( HDC hdc, LPDOCINFO di) ;
+extern int      FAR PASCAL __StartDoc( HDC hdc, LPDOCINFO di ) ;
 extern BOOL     FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data );

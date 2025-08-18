@@ -197,22 +197,21 @@ int FAR PASCAL __SetDIBitsToDevice(HDC hdc,WORD destx,WORD desty,
  * __CreateDIBitmap - make sure to get alias right for lpInitBits
  */
 HBITMAP FAR PASCAL __CreateDIBitmap( HDC hDC, LPBITMAPINFOHEADER lpInfoHeader,
-                        DWORD dwUsage,DWORD lpInitBits,
+                        DWORD dwUsage, DWORD lpInitBits,
                         LPBITMAPINFO lpInitInfo, WORD wUsage )
 {
     DWORD       size;
     DWORD       alias;
     HBITMAP     rc;
 
-    if( lpInitBits != 0L ) {
+    alias = lpInitBits;
+    if( alias ) {
         size = (DWORD)lpInitInfo->bmiHeader.biHeight *
                         getScanLineSize( &lpInitInfo->bmiHeader );
         _DPMI_GetHugeAlias( (DWORD)lpInitBits, &alias, size );
-    } else {
-        alias = 0;
     }
     rc = CreateDIBitmap( hDC, lpInfoHeader, dwUsage, (LPSTR)alias, lpInitInfo, wUsage );
-    if( alias != 0 ) {
+    if( alias ) {
         _DPMI_FreeHugeAlias( alias, size );
     }
     return( rc );
