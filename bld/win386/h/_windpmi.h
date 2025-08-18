@@ -37,48 +37,44 @@
 #define ALIAS_SEL(x)    ((WORD __far *)(x))[1]
 
 /*
- * Segment registers ES, FS and GS in 16-bit and GS in 32-bit Windows code are volatile.
- * It means code generator don't cleanup these registers and content is last
- * assigned value.
+ * If any segment register contains invalid selector then issue happen when
+ * segment register is accessed.
  *
- * Strange Windows 3.0 "386 enhanced mode" probably has DPMI bug:
- *      If ES, FS, or GS contain the selector being freed, it will crash dump
- *      to DOS within the DPMI call to free an LDT descriptor.
+ * it looks like DPMI service for free LDT descriptor access all segment registers.
+ * On Windows 3.0 "386 enhanced mode" if ES, FS, or GS contain an invalid selector
+ * or the selector being freed, it will crash dump to DOS within the DPMI call
+ * to free an LDT descriptor.
  *
- * A way to work around this problem is to clear any of these registers before
- * calling DPMI if the register contains a selector for the descriptor being freed.
+ * Little info how segment registers are used in Windows 32-bit Extender.
+ *
+ * Use of segment registers in 16-bit and 32-bit code is different.
+ * In 16-bit code segment registers ES, FS and GS are always volatile and DS
+ * register is volatile for big data memory models (not used in extender code).
+ * In 32-bit code only FS and GS are volatile and DS and ES registers
+ * are fixed to flat memory selector.
+ * If code return from 16-bit code then ES and DS registers are restored in
+ * thunk code to flat memory selector.
+ *
+ * A way to work around this problem is to reset (set to null selector) volatile
+ * segment registers before calling DPMI service for free LDT descriptor.
+ * - in 32-bit code reset FS and GS registers
+ * - in 16-bit code reset ES, FS and GS registers
+ *
  */
 extern int  WDPMI_FreeLDTDescriptor( WORD );
 #pragma aux WDPMI_FreeLDTDescriptor = \
-        /* fix CPL bits */ \
-        _MOV_CX_BX      \
-        _OR_CL 3        \
-        _XOR_DX_DX      \
-        /* reset ES register if necessary */ \
-        _MOV_AX_ES      \
-        _OR_AL 3        \
-        _CMP_AX_CX      \
-        _JNZ 2          \
-        _MOV_ES_DX      \
-        /* reset FS register if necessary */ \
-        _MOV_AX_FS      \
-        _OR_AL 3        \
-        _CMP_AX_CX      \
-        _JNZ 2          \
-        _MOV_FS_DX      \
-        /* reset GS register if necessary */ \
-        _MOV_AX_GS      \
-        _OR_AL 3        \
-        _CMP_AX_CX      \
-        _JNZ 2          \
-        _MOV_GS_DX      \
+        /* reset segment registers */ \
+        _XOR_AX_AX      \
+        _MOV_ES_AX      \
+        _MOV_FS_AX      \
+        _MOV_GS_AX      \
         /* call DPMI service */ \
         _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] \
     __value         [__ax] \
-    __modify __exact [__ax __cx __dx __es __fs __gs]
+    __modify __exact [__ax __es __fs __gs]
 
 
 extern bool     _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);
