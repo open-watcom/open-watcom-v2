@@ -1,13 +1,13 @@
 #                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #==============================================================================================================
 !inject cstrtw10.obj                                                                w16
-!inject win1stub.obj                                                                w16
 
 !include ../../../../objlist.mif
 
 #                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #==============================================================================================================
 !inject libent10.obj                                                                w16
+!inject win1stub.obj                                                                w16
 
 
 objsuffix=files
@@ -17,3 +17,4 @@ objsuffix=
 cstrtw10_opts = -I"$(clib_dir)/startup/a" -I"$(clib_dir)/startup/h"
 libent10_opts = -I"$(clib_dir)/startup/a" -I"$(clib_dir)/startup/h"
 libent10_postopts =-zld
+win1stub_postopts =-zld

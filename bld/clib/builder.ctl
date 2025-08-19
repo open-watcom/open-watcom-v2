@@ -106,6 +106,7 @@ set PROJDIR=<CWD>
     <CCCMD> startup/library/windows.086/ml/libentry.obj     "<OWRELROOT>/lib286/win/"
     <CCCMD> startup/library/windows.086/ms/commode.obj      "<OWRELROOT>/lib286/win/"
     <CCCMD> win10/library/windows.086/ml/libent10.obj       "<OWRELROOT>/lib286/win/"
+    <CCCMD> win10/library/windows.086/ml/win1stub.obj       "<OWRELROOT>/lib286/win/"
 
     <CCCMD> library/windows.386/mf_r/clib3r.lib             "<OWRELROOT>/lib386/win/"
     <CCCMD> library/windows.386/mf_s/clib3s.lib             "<OWRELROOT>/lib386/win/"

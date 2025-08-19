@@ -70,6 +70,7 @@ type="l"    usr="win10l.lib"    cond+="ml"
 type="l"    usr="win10m.lib"    cond+="mm"
 type="l"    usr="win10s.lib"    cond+="ms"  where="c jc"
 type="s"    usr="libent10.obj"
+type="s"    usr="win1stub.obj"
 
 ###################
 # 32-bit Libraries
