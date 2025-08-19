@@ -40,7 +40,7 @@ DWORD AllocAlias16( void *offs32 )
 {
     DWORD       alias;
 
-    if( DPMIGetAlias( (DWORD)offs32, &alias ) )
+    if( WDPMIGetAlias( (DWORD)offs32, &alias ) )
         return( 0 );
     return( alias );
 
@@ -48,6 +48,6 @@ DWORD AllocAlias16( void *offs32 )
 
 void FreeAlias16( DWORD alias )
 {
-    DPMIFreeAlias( alias );
+    WDPMIFreeAlias( alias );
 
 } /* FreeAlias16 */

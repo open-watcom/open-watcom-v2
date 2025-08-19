@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 int __pascal Win32Realloc( DWORD newsize )
 {
-    if( DPMIResizeDS( newsize ) )
+    if( WDPMIResizeDS( newsize ) )
         return( 5 );                       /* out of memory */
     return( 0 );
 

@@ -42,13 +42,13 @@
     #define WINDPMIFN(x)    __pascal x
   #endif
 
-extern DWORD    WINDPMIFN( DPMIAlloc )( DWORD size );
-extern bool     WINDPMIFN( DPMIFree )( DWORD ptr );
-extern bool     WINDPMIFN( DPMIGetAlias )( DWORD offs32, DWORD WINFAR16 *palias );
-extern void     WINDPMIFN( DPMIFreeAlias )( DWORD alias );
-extern bool     WINDPMIFN( DPMIGetHugeAlias )( DWORD offs32, DWORD WINFAR16 *palias, DWORD size );
-extern void     WINDPMIFN( DPMIFreeHugeAlias )( DWORD alias, DWORD size );
+extern DWORD    WINDPMIFN( WDPMIAlloc )( DWORD size );
+extern bool     WINDPMIFN( WDPMIFree )( DWORD ptr );
+extern bool     WINDPMIFN( WDPMIGetAlias )( DWORD offs32, DWORD WINFAR16 *palias );
+extern void     WINDPMIFN( WDPMIFreeAlias )( DWORD alias );
+extern bool     WINDPMIFN( WDPMIGetHugeAlias )( DWORD offs32, DWORD WINFAR16 *palias, DWORD size );
+extern void     WINDPMIFN( WDPMIFreeHugeAlias )( DWORD alias, DWORD size );
 // not implemented functions
-extern bool     WINDPMIFN( DPMIResizeDS )( DWORD size );
+extern bool     WINDPMIFN( WDPMIResizeDS )( DWORD size );
 
 #endif

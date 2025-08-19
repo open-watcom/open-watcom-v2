@@ -290,7 +290,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     tried_global_compact = false;
     save_maxmem = maxmem;
-    while( _DPMI_Get32( &adata, maxmem ) ) {
+    while( _WDPMI_Get32( &adata, maxmem ) ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
 #ifdef DLL32
@@ -326,7 +326,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
 #endif
     BaseAddr = 0L;
     if( err ) {
-        _DPMI_Free32( DataHandle );
+        _WDPMI_Free32( DataHandle );
 #ifdef DLL32
         return( Fini32BitTask( 0 ) );
 #else
@@ -355,7 +355,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      */
     currsize = size - file_header_size;
     TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
-    if( _DPMI_GetAliases( CodeLoadAddr, &alias, 0 ) ) {
+    if( _WDPMI_GetAliases( CodeLoadAddr, &alias, 0 ) ) {
 #ifdef DLL32
         return( Fini32BitTask( 0 ) );
 #else
@@ -489,7 +489,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * free alias pointer descriptor
      */
-    _DPMI_FreeAlias( alias );
+    _WDPMI_FreeAlias( alias );
 
     /*
      * check for FPU and WGod
@@ -570,7 +570,7 @@ void Cleanup( void )
         WDPMI_FreeLDTDescriptor( DataSelector );
         WDPMI_FreeLDTDescriptor( StackSelector );
         WDPMI_FreeLDTDescriptor( CodeEntry.seg );
-        _DPMI_Free32( DataHandle );
+        _WDPMI_Free32( DataHandle );
     }
 
     /*

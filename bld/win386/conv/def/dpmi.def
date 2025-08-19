@@ -1,6 +1,6 @@
-void __DPMIFreeAlias(long);
-void __DPMIFreeHugeAlias(long,long);
-char __DPMIGetAlias(long,void *);
-char __DPMIGetHugeAlias(long,void *,long);
-long __DPMIAlloc(long);
-char __DPMIFree(long);
+void __WDPMIFreeAlias(long);
+void __WDPMIFreeHugeAlias(long,long);
+char __WDPMIGetAlias(long,void *);
+char __WDPMIGetHugeAlias(long,void *,long);
+long __WDPMIAlloc(long);
+char __WDPMIFree(long);

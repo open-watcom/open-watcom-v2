@@ -40,7 +40,7 @@ DWORD AllocHugeAlias16( void *offs32, DWORD size )
 {
     DWORD       alias;
 
-    if( DPMIGetHugeAlias( (DWORD)offs32, &alias, size ) )
+    if( WDPMIGetHugeAlias( (DWORD)offs32, &alias, size ) )
         return( 0 );
     return( alias );
 
@@ -48,6 +48,6 @@ DWORD AllocHugeAlias16( void *offs32, DWORD size )
 
 void FreeHugeAlias16( DWORD alias, DWORD size )
 {
-    DPMIFreeHugeAlias( alias, size );
+    WDPMIFreeHugeAlias( alias, size );
 
 } /* FreeAlias16 */

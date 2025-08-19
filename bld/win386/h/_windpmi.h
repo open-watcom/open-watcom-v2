@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "dpmi.h"
+//#include "dpmi.h"
 
 
 #define ALIAS_OFFS(x)   ((WORD __far *)(x))[0]
@@ -77,15 +77,15 @@ extern int  WDPMI_FreeLDTDescriptor( WORD );
     __modify __exact [__ax __es __fs __gs]
 
 
-extern bool     _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);
-extern bool     _DPMI_GetAlias( DWORD offs32, LPDWORD palias );
-#pragma aux _DPMI_GetAlias __parm [__dx __ax] [__es __si]
-extern void     _DPMI_FreeAlias( DWORD alias );
-#pragma aux _DPMI_FreeAlias __parm [__dx __ax]
-extern bool     _DPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size );
-extern void     _DPMI_FreeHugeAlias( DWORD alias, DWORD size );
-extern bool     _DPMI_Get32( dpmi_mem_block _DLLFAR *addr_data, DWORD len );
-extern void     _DPMI_Free32( DWORD handle );
+extern bool     _WDPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);
+extern bool     _WDPMI_GetAlias( DWORD offs32, LPDWORD palias );
+#pragma aux _WDPMI_GetAlias __parm [__dx __ax] [__es __si]
+extern void     _WDPMI_FreeAlias( DWORD alias );
+#pragma aux _WDPMI_FreeAlias __parm [__dx __ax]
+extern bool     _WDPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size );
+extern void     _WDPMI_FreeHugeAlias( DWORD alias, DWORD size );
+extern bool     _WDPMI_Get32( dpmi_mem_block _DLLFAR *addr_data, DWORD len );
+extern void     _WDPMI_Free32( DWORD handle );
 extern bool     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     FreeDPMIMemBlocks( void );
 extern void     GetDataSelectorInfo( void );

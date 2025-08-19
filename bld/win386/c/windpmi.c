@@ -91,9 +91,9 @@ static void removeFromSelList( WORD sel )
 } /* removeFromSelList */
 
 /*
- * _DPMI_GetAliases - get alias descriptors for some memory
+ * _WDPMI_GetAliases - get alias descriptors for some memory
  */
-bool _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count )
+bool _WDPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count )
 {
     WORD                sel;
     WORD                i;
@@ -182,21 +182,21 @@ bool _DPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count )
 
     return( false );
 
-} /* _DPMI_GetAliases */
+} /* _WDPMI_GetAliases */
 
 /*
- * _DPMI_GetAlias - get alias descriptor for some memory
+ * _WDPMI_GetAlias - get alias descriptor for some memory
  */
-bool _DPMI_GetAlias( DWORD offs32, LPDWORD palias )
+bool _WDPMI_GetAlias( DWORD offs32, LPDWORD palias )
 {
-    return( _DPMI_GetAliases( offs32, palias, 1 ) );
+    return( _WDPMI_GetAliases( offs32, palias, 1 ) );
 
-} /* _DPMI_GetAlias */
+} /* _WDPMI_GetAlias */
 
 /*
- * _DPMI_FreeAlias - free alias descriptor
+ * _WDPMI_FreeAlias - free alias descriptor
  */
-void _DPMI_FreeAlias( DWORD alias )
+void _WDPMI_FreeAlias( DWORD alias )
 {
     alias_cache_entry   *ace;
     WORD                sel;
@@ -216,17 +216,17 @@ void _DPMI_FreeAlias( DWORD alias )
     removeFromSelList( sel );
     WDPMI_FreeLDTDescriptor( sel );
 
-} /* _DPMI_FreeAlias */
+} /* _WDPMI_FreeAlias */
 
-bool _DPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size )
+bool _WDPMI_GetHugeAlias( DWORD offs32, LPDWORD palias, DWORD size )
 {
     DWORD       no64k;
 
     no64k = Align64K( size );
-    return( _DPMI_GetAliases( offs32, palias, 1 + (WORD)( no64k / 0x10000L ) ) );
+    return( _WDPMI_GetAliases( offs32, palias, 1 + (WORD)( no64k / 0x10000L ) ) );
 }
 
-void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
+void _WDPMI_FreeHugeAlias( DWORD alias, DWORD size )
 {
     DWORD       no64k;
     WORD        count;
@@ -250,24 +250,24 @@ void _DPMI_FreeHugeAlias( DWORD alias, DWORD size )
  * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
 
-bool WINDPMIFN( DPMIGetAlias )( DWORD offs32, LPDWORD palias )
+bool WINDPMIFN( WDPMIGetAlias )( DWORD offs32, LPDWORD palias )
 {
-    return( _DPMI_GetAlias( offs32, palias ) );
+    return( _WDPMI_GetAlias( offs32, palias ) );
 }
 
-void WINDPMIFN( DPMIFreeAlias )( DWORD alias )
+void WINDPMIFN( WDPMIFreeAlias )( DWORD alias )
 {
-    _DPMI_FreeAlias( alias );
+    _WDPMI_FreeAlias( alias );
 }
 
-bool WINDPMIFN( DPMIGetHugeAlias )( DWORD offs32, LPDWORD palias, DWORD size )
+bool WINDPMIFN( WDPMIGetHugeAlias )( DWORD offs32, LPDWORD palias, DWORD size )
 {
-    return( _DPMI_GetHugeAlias( offs32, palias, size ) );
+    return( _WDPMI_GetHugeAlias( offs32, palias, size ) );
 }
 
-void WINDPMIFN( DPMIFreeHugeAlias )( DWORD alias, DWORD size )
+void WINDPMIFN( WDPMIFreeHugeAlias )( DWORD alias, DWORD size )
 {
-    _DPMI_FreeHugeAlias( alias, size );
+    _WDPMI_FreeHugeAlias( alias, size );
 }
 
 /*
@@ -336,40 +336,40 @@ bool InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 } /* InitFlatAddrSpace */
 
 /*
- * _DPMI_Get32 - get a 32-bit segment
+ * _WDPMI_Get32 - get a 32-bit segment
  */
-bool _DPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
+bool _WDPMI_Get32( dpmi_mem_block _DLLFAR *adata, DWORD len )
 {
     return( DPMIAllocateMemoryBlock( adata, len ) != 0 );
 
-} /* _DPMI_Get32 */
+} /* _WDPMI_Get32 */
 
 /*
- * _DPMI_Free32 - free a 32-bit handle
+ * _WDPMI_Free32 - free a 32-bit handle
  */
-void _DPMI_Free32( DWORD handle )
+void _WDPMI_Free32( DWORD handle )
 {
     DPMIFreeMemoryBlock( handle );
 
-} /* _DPMI_Free32 */
+} /* _WDPMI_Free32 */
 
 /*
- * WINDPMIFN( DPMIAlloc ) function - allocate a new block of memory
+ * allocate a new block of memory
  * called by the 32-bit application
  */
-DWORD WINDPMIFN( DPMIAlloc )( DWORD size )
+DWORD WINDPMIFN( WDPMIAlloc )( DWORD size )
 {
     dpmi_mem_block  adata;
     memblk          *p;
 
     for( ;; ) {
-        if( _DPMI_Get32( &adata, size ) ) {
+        if( _WDPMI_Get32( &adata, size ) ) {
             adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }
         p = (memblk *)LocalAlloc( LMEM_FIXED, sizeof( memblk ) );
         if( p == NULL ) {
-            _DPMI_Free32( adata.handle );
+            _WDPMI_Free32( adata.handle );
             adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }
@@ -393,13 +393,13 @@ DWORD WINDPMIFN( DPMIAlloc )( DWORD size )
         while( (p = MemBlkList->next) != NULL ) {
             if( p->addr >= DataSelectorBase )
                 break;
-            _DPMI_Free32( p->handle );
+            _WDPMI_Free32( p->handle );
             MemBlkList->next = p->next;
             LocalFree( (HLOCAL)p );
         }
         p = MemBlkList;
         if( p->addr < DataSelectorBase ) {
-            _DPMI_Free32( p->handle );
+            _WDPMI_Free32( p->handle );
             MemBlkList = p->next;
             LocalFree( (HLOCAL)p );
         }
@@ -408,10 +408,9 @@ DWORD WINDPMIFN( DPMIAlloc )( DWORD size )
 }
 
 /*
- * WINDPMIFN( DPMIFree ) function - free a block of memory allocated by WINDPMIFN( DPMIAlloc )
- * called by the 32-bit application
+ * free a block of memory allocated by the 32-bit application
  */
-bool WINDPMIFN( DPMIFree )( DWORD addr )
+bool WINDPMIFN( WDPMIFree )( DWORD addr )
 {
     memblk      *p;
     memblk      *prev;
@@ -420,7 +419,7 @@ bool WINDPMIFN( DPMIFree )( DWORD addr )
     prev = NULL;
     for( p = MemBlkList; p != NULL; p = p->next ) {
         if( p->addr == addr ) {
-            _DPMI_Free32( p->handle );
+            _WDPMI_Free32( p->handle );
             if( prev == NULL ) {
                 MemBlkList = p->next;
             } else {
@@ -440,7 +439,7 @@ void FreeDPMIMemBlocks( void )
 
     while( (p = MemBlkList) != NULL ) {
         MemBlkList = p->next;
-        _DPMI_Free32( p->handle );
+        _WDPMI_Free32( p->handle );
         LocalFree( (HLOCAL)p );
     }
 }

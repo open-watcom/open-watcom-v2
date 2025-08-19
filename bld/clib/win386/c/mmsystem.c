@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlag
     alias = 0;
     if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP) ) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            DPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
+            WDPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
             lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
     }
@@ -102,7 +103,7 @@ UINT PASCAL mmioClose( HMMIO hmmio, UINT flags )
     prev = NULL;
     while( curr != NULL ) {
         if( curr->handle == hmmio ) {
-            DPMIFreeHugeAlias( curr->alias, curr->size );
+            WDPMIFreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
                 mminfoListHead = curr->next;
             } else {
@@ -126,9 +127,9 @@ LONG PASCAL mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
     LONG        rc;
     DWORD       alias;
 
-    DPMIGetHugeAlias( (DWORD)pch, &alias, cch );
+    WDPMIGetHugeAlias( (DWORD)pch, &alias, cch );
     rc = __mmioRead( hmmio, (HPSTR)alias, cch );
-    DPMIFreeHugeAlias( alias, cch );
+    WDPMIFreeHugeAlias( alias, cch );
     return( rc );
 
 } /* mmioRead */
@@ -141,9 +142,9 @@ LONG PASCAL mmioWrite( HMMIO hmmio, const char *pch, LONG cch )
     LONG        rc;
     DWORD       alias;
 
-    DPMIGetHugeAlias( (DWORD)pch, &alias, cch );
+    WDPMIGetHugeAlias( (DWORD)pch, &alias, cch );
     rc = __mmioWrite( hmmio, (HPSTR)alias, cch );
-    DPMIFreeHugeAlias( alias, cch );
+    WDPMIFreeHugeAlias( alias, cch );
     return( rc );
 
 } /* mmioWrite */

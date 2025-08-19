@@ -268,7 +268,7 @@ HMMIO FAR PASCAL __mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
     alias = 0;
     if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP)) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            _DPMI_GetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
+            _WDPMI_GetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
             lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
     }
@@ -314,7 +314,7 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
     prev = NULL;
     for( curr = mminfoListHead; curr != NULL; curr = curr->next ) {
         if( curr->handle == hmmio ) {
-            _DPMI_FreeHugeAlias( curr->alias, curr->size );
+            _WDPMI_FreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
                 mminfoListHead = curr->next;
             } else {
@@ -381,9 +381,9 @@ LONG FAR PASCAL __mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
             return( 0 );
         }
     }
-    _DPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
+    _WDPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioRead( hmmio, (HPSTR) alias, cch );
-    _DPMI_FreeHugeAlias( alias, cch );
+    _WDPMI_FreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioRead */
@@ -402,9 +402,9 @@ LONG FAR PASCAL __mmioWrite( HMMIO hmmio, HPSTR pch, LONG cch )
             return( 0 );
         }
     }
-    _DPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
+    _WDPMI_GetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioWrite( hmmio, (HPSTR) alias, cch );
-    _DPMI_FreeHugeAlias( alias, cch );
+    _WDPMI_FreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioWrite */
