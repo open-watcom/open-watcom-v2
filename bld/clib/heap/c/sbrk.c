@@ -113,7 +113,7 @@ _WCRTLINK void_nptr sbrk( int increment )
     return( (void_nptr)-1 );
   #else
     increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void_nptr)DPMIAlloc( increment ) );
+    return( (void_nptr)WDPMIAlloc( increment ) );
   #endif
 }
 

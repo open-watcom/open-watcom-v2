@@ -85,7 +85,7 @@ static int __ReturnMemToSystem( heapblk_nptr heap )
     if( !VirtualFree( (LPVOID)heap, 0, MEM_RELEASE ) )
         return -1;
   #elif defined(__WINDOWS_386__)
-    if( DPMIFree( (unsigned long)heap ) )
+    if( WDPMIFree( (unsigned long)heap ) )
         return( -1 );
   #elif defined(__WINDOWS_286__)
     if( LocalFree( (HLOCAL)heap ) != NULL )

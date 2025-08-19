@@ -340,7 +340,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
   #if defined( __WINDOWS_286__ )
     brk_value = (unsigned)LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __WINDOWS_386__ )
-    brk_value = (unsigned)DPMIAlloc( *amount );
+    brk_value = (unsigned)WDPMIAlloc( *amount );
   #elif defined(__OS2_32BIT__)
     {
         PBYTE           p;
