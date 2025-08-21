@@ -34,20 +34,20 @@ _TEXT   segment word public 'CODE'
 ;
 ; Empty stub for IsDBCSLeadByte, which does not exist in Windows 1.x.
 ;
-public WIN10ISDBCSLEADBYTE
-WIN10ISDBCSLEADBYTE proc far
+public ISDBCSLEADBYTE
+ISDBCSLEADBYTE proc far
         xor ax,ax
         retf
-WIN10ISDBCSLEADBYTE endp
+ISDBCSLEADBYTE endp
 
 ;
 ; Empty stub for GetKBCodePage, which does not exist in any KEYBOARD driver in Windows 1.x.
 ;
-public WIN10GETKBCODEPAGE
-WIN10GETKBCODEPAGE proc far
+public GETKBCODEPAGE
+GETKBCODEPAGE proc far
         xor ax,ax
         retf
-WIN10GETKBCODEPAGE endp
+GETKBCODEPAGE endp
 
 _TEXT   ends
 

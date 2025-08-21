@@ -180,11 +180,9 @@ system begin windows1
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
-    file win1stub.obj
+    libfile win1stub.obj
     option nocaseexact
     option stack=8k, heapsize=1k
-    alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
-    alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
     format windows ^
 :endsegment
 end
@@ -227,12 +225,10 @@ system begin windows1_dll
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
-    file win1stub.obj
+    libfile win1stub.obj
     option nocaseexact
     option stack=8k, heapsize=1k
     libfile libent10.obj
-    alias ISDBCSLEADBYTE=WIN10ISDBCSLEADBYTE
-    alias GETKBCODEPAGE=WIN10GETKBCODEPAGE
     format windows dll ^
 :endsegment
 end
