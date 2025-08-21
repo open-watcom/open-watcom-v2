@@ -104,6 +104,7 @@
 #define _MOV_DX_ES      0x8c 0xc2
 #define _MOV_AX_SS      0x8c 0xd0
 #define _MOV_AX_DS      0x8c 0xd8
+#define _MOV_BX_DS      0x8c 0xdb
 #define _MOV_AX_FS      0x8c 0xe0
 #define _MOV_AX_GS      0x8c 0xe8
 
@@ -145,7 +146,10 @@
 #define _DEC_CX         0x49
 #define _DEC_DX         0x4a
 #define _DEC_BX         0x4b
-#define _SUB_CX_N       0x81 0xe9
+
+#define _ADD_DI_CX      0x01 0xcf
+#define _SUB_DI_CX      0x29 0xcf
+
 #define _SBB_DX_DX      0x19 0xd2
 #define _SBB_CX_CX      0x19 0xc9
 #define _SBB_BX_BX      0x19 0xdb
@@ -174,7 +178,15 @@
 #define _XOR_DX_DX      0x31 0xd2
 #define _XOR_DI_DI      0x31 0xff
 
+#define _XCHG_AX_DX     0x92
+#define _XCHG_AX_SI     0x96
+#define _XCHG_SI_DI     0x87 0xf7
+#define _XCHG_BX_CX     0x87 0xd9
+#define _XCHG_BX_DX     0x87 0xda
+
 #define _CMP_AX_CX      0x39 0xc8
+
+#define _SUB_CX_N       0x81 0xe9
 
 #define _ADD_SP         0x83 0xc4
 
@@ -200,12 +212,6 @@
 #define _OR_CH          0x80 0xcd
 #define _OR_DH          0x80 0xce
 #define _OR_BH          0x80 0xcf
-
-#define _XCHG_AX_DX     0x92
-#define _XCHG_AX_SI     0x96
-#define _XCHG_SI_DI     0x87 0xf7
-#define _XCHG_BX_CX     0x87 0xd9
-#define _XCHG_BX_DX     0x87 0xda
 
 #define _MUL_BX         0xf7 0xe3
 #define _MUL_CX         0xf7 0xe1
