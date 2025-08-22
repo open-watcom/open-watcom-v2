@@ -309,6 +309,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
 
     /* We only support IPv4 right now. */
     res->h_addrtype = AF_INET;
+    res->h_length = sizeof(struct in_addr);
 
     for( i = 0; i < n_answers; i++ ) {
         int     rdata_length;
