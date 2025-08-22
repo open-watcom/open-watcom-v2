@@ -88,7 +88,6 @@ extern bool     _WDPMI_Get32( dpmi_mem_block _DLLFAR *addr_data, DWORD len );
 extern void     _WDPMI_Free32( DWORD handle );
 extern bool     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     FreeDPMIMemBlocks( void );
-extern void     GetDataSelectorInfo( void );
 extern bool     InitSelectorCache( void );
 extern void     FiniSelectorCache( void );
 extern void     FiniSelList( void );

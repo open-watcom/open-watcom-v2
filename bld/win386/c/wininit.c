@@ -336,7 +336,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     SaveSP = BaseAddr + StackSize;
     CodeLoadAddr = SaveSP;
     MyDataSelector = DataSelector;
-    GetDataSelectorInfo();
+    DataSelectorBase = DPMIGetSegmentBaseAddress( DataSelector );
     CodeEntry.off = exe.initial_eip + CodeLoadAddr + sizeof( exe_data );
     /*
      * this builds a collection of LDT selectors that are ready for

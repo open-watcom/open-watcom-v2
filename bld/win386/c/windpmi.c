@@ -445,15 +445,6 @@ void FreeDPMIMemBlocks( void )
 }
 
 /*
- * GetDataSelectorInfo - collect data about current 32-bit data segment
- */
-void GetDataSelectorInfo( void )
-{
-    DataSelectorBase = DPMIGetSegmentBaseAddress( DataSelector );
-
-} /* GetDataSelectorInfo */
-
-/*
  * InitSelectorCache - allocate the selector cache
  */
 bool InitSelectorCache( void )
