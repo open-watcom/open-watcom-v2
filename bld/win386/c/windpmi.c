@@ -433,6 +433,11 @@ bool WINDPMIFN( WDPMIFree )( DWORD addr )
     return( true );                     // indicate error
 }
 
+DWORD WINDPMIFN( WDPMIAliasToFlat )( DWORD alias )
+{
+    return( DPMIGetSegmentBaseAddress( ALIAS_SEL( alias ) ) - DataSelectorBase + ALIAS_OFFS( alias ) );
+}
+
 void FreeDPMIMemBlocks( void )
 {
     memblk      *p;

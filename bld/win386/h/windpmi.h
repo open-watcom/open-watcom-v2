@@ -48,6 +48,7 @@ extern bool     WINDPMIFN( WDPMIGetAlias )( DWORD offs32, DWORD WINFAR16 *palias
 extern void     WINDPMIFN( WDPMIFreeAlias )( DWORD alias );
 extern bool     WINDPMIFN( WDPMIGetHugeAlias )( DWORD offs32, DWORD WINFAR16 *palias, DWORD size );
 extern void     WINDPMIFN( WDPMIFreeHugeAlias )( DWORD alias, DWORD size );
+extern DWORD    WINDPMIFN( WDPMIAliasToFlat )( DWORD alias );
 // not implemented functions
 extern bool     WINDPMIFN( WDPMIResizeDS )( DWORD size );
 

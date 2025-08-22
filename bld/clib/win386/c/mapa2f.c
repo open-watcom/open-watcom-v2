@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,21 +32,12 @@
 
 
 #include "variety.h"
-#include <string.h>
-#include <dos.h>
-#include "dpmi.h"
 #include "cover.h"
+#include "windpmi.h"
 
-
-extern unsigned __get_ds( void );
-#pragma aux __get_ds = \
-        "mov ebx,ds" \
-    __parm              [] \
-    __value             [__ebx] \
-    __modify __exact    [__ebx]
 
 void *MapAliasToFlat( DWORD alias )
 {
-    return( (void *)( DPMIGetSegmentBaseAddress( alias >> 16 ) - DPMIGetSegmentBaseAddress( __get_ds() ) + (DWORD)((WORD)alias) ) );
+    return( (void *)WDPMIAliasToFlat( alias ) );
 
 } /* MapAliasToFlat */

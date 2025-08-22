@@ -69,4 +69,5 @@
 
 alloc16_opts = -I"$(win386_dir)/h"
 alloch16_opts = -I"$(win386_dir)/h"
+mapa2f_opts = -I"$(win386_dir)/h"
 mmsystem_opts = -I"$(win386_dir)/h"

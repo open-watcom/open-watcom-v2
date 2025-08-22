@@ -4,3 +4,4 @@ char __WDPMIGetAlias(long,void *);
 char __WDPMIGetHugeAlias(long,void *,long);
 long __WDPMIAlloc(long);
 char __WDPMIFree(long);
+long __WDPMIAliasToFlat(long);
