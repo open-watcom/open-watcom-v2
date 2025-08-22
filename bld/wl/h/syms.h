@@ -96,6 +96,7 @@ typedef enum {
     SYM_LINK_GEN        = CONSTU32( 0x00400000 ),   // is a linker generated symbol
     SYM_HAS_DATA        = CONSTU32( 0x00800000 ),   // only used for altdefs
     SYM_NAME_XLATED     = CONSTU32( 0x01000000 ),   // only used during permdata writing
+    SYM_ALIAS_TARGET    = CONSTU32( 0x02000000 ),   // only used for alias targets
     SYM_IS_FREE         = CONSTU32( 0x10000000 ),   // only used during permdata writing.
 
 // the top three bits are used for the floating point patch type during pass 2
