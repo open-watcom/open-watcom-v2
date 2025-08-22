@@ -178,7 +178,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     DWORD               file_header_size;
     bool                tried_global_compact;
     DWORD               save_maxmem;
-    dpmi_mem_block      adata;
+    wdpmi_mem_block     adata;
     bool                err;
 
     flags = GetWinFlags();
@@ -336,7 +336,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     SaveSP = BaseAddr + StackSize;
     CodeLoadAddr = SaveSP;
     MyDataSelector = DataSelector;
-    DataSelectorBase = DPMIGetSegmentBaseAddress( DataSelector );
+    DataSelectorBase = WDPMI_GetSegmentBaseAddress( DataSelector );
     CodeEntry.off = exe.initial_eip + CodeLoadAddr + sizeof( exe_data );
     /*
      * this builds a collection of LDT selectors that are ready for
@@ -382,11 +382,11 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         }
         currsize -= (DWORD)amount;
         curroff += (DWORD)amount;
-        DPMISetSegmentBaseAddress( sel, DataSelectorBase + curroff );
+        WDPMI_SetSegmentBaseAddress( sel, DataSelectorBase + curroff );
     }
     EDataAddr = curroff;                        // 03-jan-95
 
-    DPMISetSegmentBaseAddress( sel, DataSelectorBase );
+    WDPMI_SetSegmentBaseAddress( sel, DataSelectorBase );
     relptr = (DWORD __far *)alias;              // point to 32-bit stack area
     /*
      * get and apply relocation table
@@ -440,7 +440,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     curroff = exedat.datastart;
     if( exe.reloc_cnt != 0 )
         curroff += CodeLoadAddr;
-    DPMISetSegmentBaseAddress( sel, DataSelectorBase + curroff );
+    WDPMI_SetSegmentBaseAddress( sel, DataSelectorBase + curroff );
 
     /*
      * insert command line parms
