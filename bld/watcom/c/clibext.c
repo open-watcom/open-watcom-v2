@@ -39,19 +39,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#if defined(__UNIX__)
-  #if defined(__QNX__)
-    #include <sys/io_msg.h>
-  #endif
-#elif defined( _MSC_VER )
+#if defined( _MSC_VER )
     #include <windows.h>
     #include "_dtaxxx.h"
+    #include "ntext.h"
 #endif
 #include "wio.h"
 #include "wreslang.h"
-#if defined( _MSC_VER )
-    #include "ntext.h"
-#endif
 
 #include "clibint.h"
 #include "clibext.h"
