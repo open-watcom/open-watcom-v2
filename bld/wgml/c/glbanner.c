@@ -226,6 +226,15 @@ void    lay_banner( const gmltag * entry )
     region_lay_tag  *regwkprev;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    left_adjust     :1;
+        unsigned    right_adjust    :1;
+        unsigned    depth           :1;
+        unsigned    place           :1;
+        unsigned    docsect         :1;
+        unsigned    refplace        :1;
+        unsigned    refdoc          :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     rs_loc = TLOC_banner;
@@ -831,6 +840,19 @@ void    lay_banregion( const gmltag *entry )
     region_lay_tag  *reg;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    indent          :1;
+        unsigned    hoffset         :1;
+        unsigned    width           :1;
+        unsigned    voffset         :1;
+        unsigned    depth           :1;
+        unsigned    font            :1;
+        unsigned    refnum          :1;
+        unsigned    region_position :1;
+        unsigned    pouring         :1;
+        unsigned    script_format   :1;
+        unsigned    contents        :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     rs_loc = TLOC_banreg;

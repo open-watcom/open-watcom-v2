@@ -536,6 +536,17 @@ void    lay_dl( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    level           :1;
+        unsigned    left_indent     :1;
+        unsigned    right_indent    :1;
+        unsigned    pre_skip        :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    post_skip       :1;
+        unsigned    align           :1;
+        unsigned    line_break      :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 
@@ -730,6 +741,17 @@ void    lay_gl( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    level           :1;
+        unsigned    left_indent     :1;
+        unsigned    right_indent    :1;
+        unsigned    pre_skip        :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    post_skip       :1;
+        unsigned    align           :1;
+        unsigned    delim           :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 
@@ -924,6 +946,19 @@ void    lay_ol( const gmltag * entry )
     ol_lay_level    *   ol_layout   = NULL;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    level           :1;
+        unsigned    left_indent     :1;
+        unsigned    right_indent    :1;
+        unsigned    pre_skip        :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    post_skip       :1;
+        unsigned    font            :1;
+        unsigned    align           :1;
+        unsigned    number_style    :1;
+        unsigned    number_font     :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 
@@ -1144,6 +1179,16 @@ void    lay_sl( const gmltag * entry )
     sl_lay_level    *   sl_layout   = NULL;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    level           :1;
+        unsigned    left_indent     :1;
+        unsigned    right_indent    :1;
+        unsigned    pre_skip        :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    post_skip       :1;
+        unsigned    font            :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 
@@ -1324,6 +1369,20 @@ void    lay_ul( const gmltag * entry )
     ul_lay_level    *   ul_layout   = NULL;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    level               :1;
+        unsigned    left_indent         :1;
+        unsigned    right_indent        :1;
+        unsigned    pre_skip            :1;
+        unsigned    skip                :1;
+        unsigned    spacing             :1;
+        unsigned    post_skip           :1;
+        unsigned    font                :1;
+        unsigned    align               :1;
+        unsigned    bullet              :1;
+        unsigned    bullet_translate    :1;
+        unsigned    bullet_font         :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

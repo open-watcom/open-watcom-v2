@@ -127,6 +127,16 @@ void    lay_ix( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    pre_skip        :1;
+        unsigned    post_skip       :1;
+        unsigned    skip            :1;
+        unsigned    font            :1;
+        unsigned    indent          :1;
+        unsigned    wrap_indent     :1;
+        unsigned    index_delim     :1;
+        unsigned    string_font     :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

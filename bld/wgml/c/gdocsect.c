@@ -1755,6 +1755,9 @@ extern void gml_gdoc( const gmltag *entry )
     char            *pa;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    sec :1;
+    } AttrFlags;
 
     (void)entry;
 

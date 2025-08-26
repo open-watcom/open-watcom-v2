@@ -111,6 +111,11 @@ static void process_arg( p_lay_tag *p_or_pc )
     condcode        cc;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    line_indent     :1;
+        unsigned    pre_skip        :1;
+        unsigned    post_skip       :1;
+    } AttrFlags;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
 

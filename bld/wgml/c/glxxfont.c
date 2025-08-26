@@ -57,6 +57,9 @@ void    lay_xx( const gmltag * entry )
     l_tags              ltag;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    font            :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

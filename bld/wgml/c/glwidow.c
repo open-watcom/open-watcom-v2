@@ -64,6 +64,9 @@ void    lay_widow( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    threshold       :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

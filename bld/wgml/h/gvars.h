@@ -133,8 +133,6 @@ global global_flags GlobalFlags;        // global flags
 
 global proc_flags   ProcFlags;          // processing flags
 
-global attr_flags   AttrFlags;          // attribute flags
-
 global char         *token_buf;
 
 global char         *workbuf;           // work for input buffer

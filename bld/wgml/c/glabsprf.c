@@ -138,6 +138,18 @@ void    lay_abspref( const gmltag * entry )
     l_tags              ltag;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    post_skip       :1;
+        unsigned    pre_top_skip    :1;
+        unsigned    font            :1;
+        unsigned    spacing         :1;
+        unsigned    header          :1;
+        unsigned    abstract_string :1;
+        unsigned    preface_string  :1;
+        unsigned    page_eject      :1;
+        unsigned    page_reset      :1;
+        unsigned    columns         :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

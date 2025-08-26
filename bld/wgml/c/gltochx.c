@@ -122,6 +122,16 @@ void    lay_tochx( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    group           :1;
+        unsigned    indent          :1;
+        unsigned    skip            :1;
+        unsigned    pre_skip        :1;
+        unsigned    post_skip       :1;
+        unsigned    font            :1;
+        unsigned    align           :1;
+        unsigned    display_in_toc  :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

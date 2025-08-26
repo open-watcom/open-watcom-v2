@@ -117,6 +117,13 @@ void    lay_address( const gmltag * entry )
     int             cvterr;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    left_adjust     :1;
+        unsigned    right_adjust    :1;
+        unsigned    page_position   :1;
+        unsigned    font            :1;
+        unsigned    pre_skip         :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;
@@ -214,6 +221,9 @@ void    lay_aline( const gmltag *entry )
     bool            cvterr;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    struct {
+        unsigned    skip        :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;
