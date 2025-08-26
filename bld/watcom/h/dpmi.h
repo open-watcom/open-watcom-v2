@@ -410,13 +410,50 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __modify __exact [__eax __ecx]
 #endif
 
+#if defined( _M_I86 ) && ( _M_IX86 < 300 )
 #pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_ES_AX      \
         _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] \
-    __value         [_DPMI_AX] \
-    __modify __exact [_DPMI_AX]
+    __value         [__ax] \
+    __modify __exact [__ax __es]
+#elif defined( _M_I86 )
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_ES_AX      \
+        _MOV_FS_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
+    __modify __exact [__ax __es __fs __gs]
+#elif defined( __WINDOWS_386__ )
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_FS_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__eax] \
+    __modify __exact [__eax __fs __gs]
+#else
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__eax] \
+    __modify __exact [__eax __gs]
+#endif
 
 #ifdef _M_I86
 #pragma aux _DPMISegmentToDescriptor = \
