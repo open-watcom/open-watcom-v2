@@ -205,12 +205,12 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-! ifeq bld_cpu x64
-cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-! else
+! ifdef bootstrap
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else ifeq bld $(host)
+cl_extra_libs_gen = $(watcom_dir)/$(host)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host)/clibexts.lib
 ! endif
 
 ! ifdef sys_dll
@@ -240,8 +240,13 @@ bld_ppflags_sys = $(common_ppflags)
 # extra objects for linking via cl
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
+! ifdef bootstrap
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bld)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bld)/clibexts.lib
+!endif
 
 ! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
@@ -477,12 +482,12 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-! ifeq bld_cpu x64
-cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-! else
+! ifdef bootstrap
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else ifeq bld $(host)
+cl_extra_libs_gen = $(watcom_dir)/$(host)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host)/clibexts.lib
 ! endif
 
 ! ifdef sys_dll
@@ -531,8 +536,13 @@ bld_ppflags_sys = $(common_ppflags)
 
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
+! ifdef bootstrap
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bld)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bld)/clibexts.lib
+! endif
 
 ! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
