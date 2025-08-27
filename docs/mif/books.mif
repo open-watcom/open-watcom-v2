@@ -2749,6 +2749,7 @@ gml_objs = &
 ../doc/gml/defs.gml      &
 ../doc/gml/disclaim.gml  &
 ../doc/gml/doctitle.gml  &
+../doc/gml/dpmiinfo.gml  &
 ../doc/gml/dup.ps        &
 ../doc/gml/enlarge.ps    &
 ../doc/gml/eoj.ps        &

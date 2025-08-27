@@ -11,7 +11,7 @@ For those who do not desire a lecture on the preparation and maintenance of
 makefiles, feel free to skip straight to the Executive Summary at the end.
 .np
 Every development and build machine must have the mif project (
-.us build\mif
+.us build/mif
 ) installed. That is taken care of by uncompressing the Open Watcom source
 archive and/or syncing up with Perforce.
 .*
@@ -156,7 +156,7 @@ set correctly
 all depended upon projects have been built
 .bull
 any required executables from under
-.us build/binbuild
+.us build/<OWOBJDIR>
 are in the path
 .endbull
 .np
@@ -224,13 +224,13 @@ important future consideration will be the ability to build on a different
 architecture. Please try and avoid weirdo tools that have no hope of running
 on an Alpha or PPC running NT or on Linux. These tools should be referenced
 from the makefile as
-.id $(bld_dir)\tool
+.id $(bld_dir)/tool
 .period
 If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
 More general tools (yacc, re2c) that are likely to be used by several
-projects should be copied up into the build/binbuild directory.
+projects should be copied up into the build/<OWOBJDIR> directory.
 .*
 .section The Runtime DLL Libraries
 .*
@@ -256,7 +256,7 @@ of the release mode, it is suggested that you enable it if
 is set to 1, and disable it otherwise.
 .np
 The source to the memory tracker can be found in
-.us bld\trmem.
+.us bld/trmem.
 .*
 .section The Clean Target
 .*
