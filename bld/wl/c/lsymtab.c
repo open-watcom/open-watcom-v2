@@ -901,10 +901,10 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
         return;                 // <--------- NOTE: premature return!!!!
     }
     sym->info |= SYM_FREE_ALIAS;
-/*
- * need to defined aliased symbol as well, so aliases in .obj files can be
- * hauled in from libraries
-*/
+    /*
+     * need to defined aliased symbol as well, so aliases in .obj files can be
+     * hauled in from libraries
+     */
     targ = SymOp( ST_CREATE, target, targetlen );
     SetSymAlias( sym, targ->name.u.ptr, targetlen );
 }
