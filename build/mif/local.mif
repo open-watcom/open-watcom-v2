@@ -141,6 +141,7 @@ common_flags = $(common_flags_dbg)
 # C4214 "bit field types other than int"
 # C4244 "conversion ....., possible loss of data"
 # C4306 "type cast: conversion ...... of greater size"
+# C4514 "'???': unreferenced inline function has been removed"
 # C4574	"'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
 # C4702 "unreachable code"
 # C4710	"'function': function not inlined"
@@ -166,6 +167,7 @@ common_cflags_wng = -Wall &
     -we4133 &
     -wd4214 &
     -wd4306 &
+    -wd4514 &
     -wd4574 &
     -wd4710 &
     -wd4711 &
