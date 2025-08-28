@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,11 +42,26 @@
 #include "clibext.h"
 
 
-#if defined( __LINUX__ ) && defined( _M_X64 )
+#if defined( __LINUX_X64__ )
     #define PRIMARY_PATH    "binl64"
     #define SECONDARY_PATH  "binl"
-#elif defined( __LINUX__ )
+#elif defined( __LINUX_386__ )
     #define PRIMARY_PATH    "binl"
+#elif defined( __LINUX_ARM64__ )
+    #define PRIMARY_PATH    "arml64"
+    #define SECONDARY_PATH  "arml"
+#elif defined( __LINUX_ARM__ )
+    #define PRIMARY_PATH    "arml"
+#elif defined( __OSX_X64__ )
+    #define PRIMARY_PATH    "bino64"
+    #define SECONDARY_PATH  "bino"
+#elif defined( __OSX_386__ )
+    #define PRIMARY_PATH    "bino"
+#elif defined( __OSX_ARM64__ )
+    #define PRIMARY_PATH    "armo64"
+    #define SECONDARY_PATH  "armo"
+#elif defined( __OSX_ARM__ )
+    #define PRIMARY_PATH    "armo"
 #elif defined( __OS2__ )
     #define PRIMARY_PATH    "binp"
     #define SECONDARY_PATH  "binw"
