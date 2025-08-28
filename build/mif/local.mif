@@ -124,14 +124,14 @@ common_flags = $(common_flags_rel)
 common_flags = $(common_flags_dbg)
 ! endif
 
-# C4013	"'???' undefined; assuming extern returning int"
+# C4013 "'???' undefined; assuming extern returning int"
 # C4020 "'???': too many actual parameters"
 # C4024 "'???': different types for formal and actual parameter"
 # C4028 "formal parameter ?? different from declaration"
 # C4047 "'???': 'type1' differs in levels of indirection from 'type2'"
-# C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
-# C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
-# C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
+# C4061 "enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
+# C4062 "enumerator 'identifier' in switch of enum 'enumeration' is not handled"
+# C4063 "case 'identifier' is not a valid value for switch of enum 'enumeration'"
 # C4068 "unknown pragma"
 # C4090 "different 'const' qualifiers"
 # C4101 "'???': unreferenced local variable"
@@ -142,13 +142,13 @@ common_flags = $(common_flags_dbg)
 # C4244 "conversion ....., possible loss of data"
 # C4306 "type cast: conversion ...... of greater size"
 # C4514 "'???': unreferenced inline function has been removed"
-# C4574	"'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
+# C4574 "'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
 # C4702 "unreachable code"
-# C4710	"'function': function not inlined"
-# C4711	"function 'function' selected for automatic inline expansion"
-# C4774	"'string' : format string expected in argument number is not a string literal"
-# C4820	"'bytes' bytes padding added after construct 'member_name'"
-# C5045	"Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
+# C4710 "'function': function not inlined"
+# C4711 "function 'function' selected for automatic inline expansion"
+# C4774 "'string' : format string expected in argument number is not a string literal"
+# C4820 "'bytes' bytes padding added after construct 'member_name'"
+# C5045 "Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
 #
 !ifeq proj_name builder
 common_cflags_wng = -W4 -wd4214
