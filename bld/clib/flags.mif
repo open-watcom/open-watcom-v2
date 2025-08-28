@@ -22,9 +22,9 @@ clib_cpp_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 
 clib_cpp_flags_windows     = -DSTRICT $(def_windowing)
 clib_cpp_flags_winnt       = $(cppflags_win32ver) $(def_windowing)
-clib_cpp_flags_winnt_axp   = -DWIN32 -D_WIN32
-clib_cpp_flags_winnt_mps   = -DWIN32 -D_WIN32
-clib_cpp_flags_winnt_ppc   = -DWIN32 -D_WIN32
+clib_cpp_flags_winnt_axp   = -DWIN32
+clib_cpp_flags_winnt_mps   = -DWIN32
+clib_cpp_flags_winnt_ppc   = -DWIN32
 clib_cpp_flags_os2         = $(def_windowing)
 clib_cpp_flags_nw_clib     = -D_NETWARE_CLIB
 clib_cpp_flags_nw_clibl    = -D_NETWARE_CLIB -D_THIN_LIB
@@ -78,8 +78,10 @@ sw_c_common += -s
 sw_c_common += -oabelmr
 !else ifeq processor 286
 sw_c_common += -oabelmr
-!else
+!else ifeq processor 386
 sw_c_common += -oabelmrt
+!else
+sw_c_common += -oabelrt
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj

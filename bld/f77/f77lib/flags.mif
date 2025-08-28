@@ -14,8 +14,8 @@ f77lib_cpp_msdos       = -D__WATCOM_LFN__
 f77lib_cpp_netware     = -D_NETWARE_CLIB
 f77lib_cpp_windows     = -DSTRICT
 f77lib_cpp_winnt       = $(cppflags_win32ver)
-f77lib_cpp_winnt_axp   = -DWIN32 -D_WIN32
-f77lib_cpp_winnt_ppc   = -DWIN32 -D_WIN32
+f77lib_cpp_winnt_axp   = -DWIN32
+f77lib_cpp_winnt_ppc   = -DWIN32
 
 f77lib_cpp_flags += $(f77lib_cpp_$(system)) $(f77lib_cpp_$(system)_$(processor))
 
@@ -47,14 +47,14 @@ sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-zl-x-xx-zam-wpx
 !else
 sw_c_common += -s
 !endif
-sw_c_optimization_086 = -oax
-sw_c_optimization_087 = -oax
-sw_c_optimization_286 = -oax
-sw_c_optimization_287 = -oax
-!ifdef sw_c_optimization_$(processor)
-sw_c_common += $(sw_c_optimization_$(processor))
+!ifeq processor 086
+sw_c_common += -oabelmr
+!else ifeq processor 286
+sw_c_common += -oabelmr
+!else ifeq processor 386
+sw_c_common += -oabelmrt
 !else
-sw_c_common += -oaxt
+sw_c_common += -oabelrt
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
