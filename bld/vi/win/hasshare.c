@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,9 @@ static bool lockFileRegion( int handle )
 {
     union REGS  r;
 
+    memset( &r, 0, sizeof( r ) );
     r.w.ax = 0x5c00;
     r.w.bx = handle;
-    r.w.cx = 0;
-    r.w.dx = 0;
-    r.w.si = 0;
     r.w.di = 1;
     intdos( &r, &r );
     if( r.w.cflag ) {
@@ -58,11 +57,9 @@ static void unlockFileRegion( int handle )
 {
     union REGS  r;
 
+    memset( &r, 0, sizeof( r ) );
     r.w.ax = 0x5c01;
     r.w.bx = handle;
-    r.w.cx = 0;
-    r.w.dx = 0;
-    r.w.si = 0;
     r.w.di = 1;
     intdos( &r, &r );
 
