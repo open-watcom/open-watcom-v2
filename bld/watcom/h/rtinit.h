@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +53,10 @@
     #define   __TGT_SYS     __TGT_SYS_X86
     typedef unsigned char   __type_rtp;
     typedef unsigned short  __type_pad;
-  #if defined( __386__ )
-    typedef void __near(    *__type_rtn ) ( void );
-  #else
+  #if defined( _M_I86 )
     typedef void(           *__type_rtn ) ( void );
+  #else
+    typedef void __near(    *__type_rtn ) ( void );
   #endif
 #endif
 #include "langenv.h"
