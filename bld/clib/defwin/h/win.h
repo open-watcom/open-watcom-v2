@@ -94,10 +94,6 @@ extern void _ReleaseWinLines( void );
   #define FARmalloc malloc
   #define FARrealloc realloc
   #define FARfree free
-  #ifdef __NT__
-    #define AllocAlias16( a ) a
-    #define FreeAlias16( a )
-  #endif
 #endif
 
 #if defined( __OS2__ )
