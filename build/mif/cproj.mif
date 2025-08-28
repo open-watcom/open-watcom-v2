@@ -794,6 +794,8 @@ rc_cpp_i86      = -D_M_I86
 rc_cpp_mps      = -D__MIPS__
 rc_cpp_ppc      = -D__PPC__
 rc_cpp_x64      = -D_M_X64
+rc_cpp_arm      = -D_M_ARM
+rc_cpp_a64      = -D_M_ARM64
 
 rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
