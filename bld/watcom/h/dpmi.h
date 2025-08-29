@@ -123,6 +123,8 @@
 
 #define GetSelectorLimitB                       _GetSelectorLimitB
 #define GetDataSelectorLimitB                   _GetDataSelectorLimitB
+#define GetSelectorSize                         _GetSelectorSize
+#define GetDataSelectorSize                     _GetDataSelectorSize
 #define IsReadSelectorB                         _IsReadSelectorB
 #define IsWriteSelectorB                        _IsWriteSelectorB
 
@@ -330,6 +332,8 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 extern unsigned _GetSelectorLimitB( unsigned short sel );
 extern unsigned _GetDataSelectorLimitB( void );
+extern unsigned _GetSelectorSize( unsigned short sel );
+extern unsigned _GetDataSelectorSize( void );
 extern uint_8   _IsReadSelectorB( unsigned short sel );
 extern uint_8   _IsWriteSelectorB( unsigned short sel );
 
@@ -1245,6 +1249,27 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __parm      [] \
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
+
+#pragma aux _GetSelectorSize = \
+        _PROTECTED  \
+        _XOR_DX_DX  \
+        _LSL_DX_AX  \
+        _JNZ 2      \
+        _INC_DX     \
+    __parm      [__ax] \
+    __value     [_DPMI_DX] \
+    __modify __exact [_DPMI_DX]
+
+#pragma aux _GetDataSelectorSize = \
+        _PROTECTED  \
+        _XOR_DX_DX  \
+        _MOV_AX_DS  \
+        _LSL_DX_AX  \
+        _JNZ 2      \
+        _INC_DX     \
+    __parm      [] \
+    __value     [_DPMI_DX] \
+    __modify __exact [_DPMI_DX]
 
 #pragma aux _IsReadSelectorB = \
         _PROTECTED \
