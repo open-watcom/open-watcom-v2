@@ -205,7 +205,7 @@ _WCRTLINK void_nptr sbrk( int increment )
         }
         return( cstg );
     } else if( _IsPharLap() ) {
-        _curbrk = GetDataSelectorLimitB() + 1;
+        _curbrk = GetDataSelectorSize();
     }
   #endif
     return( __brk( _curbrk + increment ) );
