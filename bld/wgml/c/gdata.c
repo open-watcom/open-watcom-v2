@@ -72,7 +72,6 @@ void init_global_vars( void )
     out_file            = NULL;         // output file name
     out_file_attr       = NULL;         // output file name attributes
 
-    switch_char         = _dos_switch_char();
     alt_ext             = mem_alloc( 5 );   // alternate extension   .xxx
     *alt_ext            = '\0';
     def_ext             = mem_alloc( sizeof( GML_EXT ) );

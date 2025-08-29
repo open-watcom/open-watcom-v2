@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +53,6 @@
 #ifndef global
     #define global  extern
 #endif
-
-/* Either '\', '/', or whatever DOS is using. */
-
-global char         dos_switch_char;
 
 /* Reset so can be reused with other headers. */
 

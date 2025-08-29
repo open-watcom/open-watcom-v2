@@ -61,7 +61,6 @@ global char         *g_tok_start;       // start of scanned token
 global unsigned     arg_flen;           // arg length
 global locflags     rs_loc;             // restricted location
 
-global int          switch_char;        // DOS switch character
 global char         *alt_ext;           // alternate extension
 global char         *def_ext;           // default extension
 global char         ampchar;            // symbol substitution/attribute/function marker

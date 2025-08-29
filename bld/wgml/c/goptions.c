@@ -160,6 +160,15 @@ static int split_tokens( char *str )
 }
 
 
+static bool CmdScanSwitchChar( char c )
+{
+#ifdef __UNIX__
+    return( c == '-' );
+#else
+    return( c == '-' || c == '/' );
+#endif
+}
+
 /***************************************************************************/
 /*  Format error in cmdline                                                */
 /***************************************************************************/
@@ -179,9 +188,7 @@ static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n )
         if( *str == '\n' )
             break;
         *p++ = *str++;
-        if( *str == '-' )
-            break;
-        if( *str == switch_char )
+        if( CmdScanSwitchChar( *str ) )
             break;
         if( *str == n ) {
             break;         // for additional stop char '(' or ' '
@@ -1429,7 +1436,7 @@ void split_attr_file( char *filename , char *attr, unsigned attrlen )
 
 static bool option_delimiter( char c )
 {
-    return( c == ' ' || c == '-' || c == '\t' || c == '(' || c == switch_char || c == '\n' );
+    return( c == ' ' || c == '\t' || c == '(' || CmdScanSwitchChar( c ) || c == '\n' );
 }
 
 
@@ -1578,13 +1585,11 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
                     pa++;
                 opt_parm = pa;
                 for( ; (c = *pa) != '\0'; pa++ ) {
-                    if( c == '-' )
-                        break;
                     if( c == '(' )
                         break;
                     if( c == ' ' )
                         break;
-                    if( c == switch_char )
+                    if( CmdScanSwitchChar( c ) )
                         break;
                     if( c == '\n' ) {
                         *pa = ' ';
@@ -1610,7 +1615,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
                     for( ; (c = *pa) != '\0'; pa++ ) {
                         if( is_space_tab_char( c ) )
                             break;
-                        if( c == switch_char )
+                        if( CmdScanSwitchChar( c ) )
                             break;
                         if( c == '\n' ) {
                             *pa = ' ';
@@ -1809,8 +1814,7 @@ int proc_options( char * string )
             sol = tok->bol;
             c = tok->token[0];
 
-            if( c == '-'
-              || c == switch_char ) {
+            if( CmdScanSwitchChar( c ) ) {
                 /***************************************************************/
                 /*  process 'new' options -x or /x                             */
                 /***************************************************************/
