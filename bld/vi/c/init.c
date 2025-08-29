@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,6 +109,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
     int         len;
 #endif
 
+    AltOptChar = '+';
     for( ;; ) {
 #ifdef __WIN__
         ch = GetOpt( argc, argv, "#-ndvqzirIP:c:k:p:s:t:", NULL );
