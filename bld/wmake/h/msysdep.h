@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,6 @@ typedef struct EnvTracker {
     char                name[1];
 } ENV_TRACKER;
 
-extern int          SwitchChar( void );
 extern int          OSCorrupted( void );
 extern bool         TouchFile( const char *name );
 extern bool         IdenticalAutoDepTimes( time_t, time_t, auto_dep_type );

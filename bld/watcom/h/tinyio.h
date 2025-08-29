@@ -579,7 +579,7 @@ tiny_dos_version  tiny_call _TinyDOSVersion( void );
 uint_8      tiny_call   _TinyGetCH( void );
 uint_8      tiny_call   _TinyGetCHE( void );
 uint_8      tiny_call   _TinyGetSwitchChar( void );
-void        tiny_call   _TinySetSwitchChar( char );
+void        tiny_call   _TinySetSwitchChar( uint_8 );
 uint_32     tiny_call   _TinyFreeSpace( uint_8 );
 tiny_ret_t  tiny_call   _nTinyGetCountry( const tiny_country_info __near * );
 tiny_ret_t              _fTinyGetCountry( const tiny_country_info __far * );
@@ -1960,25 +1960,19 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #else
 #endif
 
-#ifdef _M_I86
 #pragma aux _TinyGetSwitchChar = \
         _MOV_AX_W _GET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [] \
     __value         [__dl] \
     __modify __exact [__ax __dl]
-#else
-#endif
 
-#ifdef _M_I86
 #pragma aux _TinySetSwitchChar = \
         _MOV_AX_W _SET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [__dl] \
     __value         \
     __modify __exact [__ax __dl]
-#else
-#endif
 
 #ifdef _M_I86
 #pragma aux _TinyFreeSpace = \

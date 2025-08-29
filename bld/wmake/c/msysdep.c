@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,7 @@
 
 #if defined( __DOS__ )
 
-extern char DOSSwitchChar( void );
-#pragma aux DOSSwitchChar = \
-        "mov ax,3700h"  \
-        "int 21h"       \
-    __parm __caller [] \
-    __value         [__dl] \
-    __modify        [__ax __dx]
-
 #if defined ( _M_I86 )
-
 /* see page 90-91 of "Undocumented DOS" */
 extern void __far *_DOS_list_of_lists( void );
 #pragma aux _DOS_list_of_lists = \
@@ -103,18 +94,6 @@ void InitHardErr( void )
 }
 
 #endif
-
-int SwitchChar( void )
-/***************************/
-{
-#if defined( __DOS__ )
-    return( DOSSwitchChar() );
-#elif   defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
-    return( '/' );
-#elif   defined( __UNIX__ )
-    return( '-' );
-#endif
-}
 
 int OSCorrupted( void )
 /*********************/

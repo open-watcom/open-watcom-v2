@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,8 @@
 #define VECSTR_ALLOC_VECSTR     5
 
 struct Glob {
-    char        swchar;                 /* the 'switch' character (ie: '-' or '/' )      */
+    char        swchar;                 /* the 'switch' character ('-' or '/')      */
+    char        shell_swchar;           /* the shell 'switch' character ('-' or '/')     */
 
     boolbit     all             : 1;    /* make all targets                              */
     boolbit     block           : 1;    /* block the use of implicit rules               */

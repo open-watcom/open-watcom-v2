@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 
 extern unsigned char    _dos_switch_char( void );
 
-#if defined( __DOS__ ) && defined( __WATCOMC__ )
+#if defined( __DOS__ )
 
 #pragma aux _dos_switch_char = \
         "mov ax,3700h"  \
@@ -48,6 +49,15 @@ extern unsigned char    _dos_switch_char( void );
     #define _dos_switch_char() '-'
 #else
     #define _dos_switch_char() '/'
+#endif
+
+#define SWITCH_CHAR             (unsigned char)'-'
+#if defined( __UNIX__ )
+    #define SHELL_SWITCH_CHAR   (unsigned char)'-'
+#elif defined( __DOS__ )
+    #define SHELL_SWITCH_CHAR   _dos_switch_char()
+#else
+    #define SHELL_SWITCH_CHAR   (unsigned char)'/'
 #endif
 
 #endif

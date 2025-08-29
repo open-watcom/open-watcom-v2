@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,17 +48,18 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+#include "swchar.h"
 
 #include "clibint.h"
 #include "clibext.h"
 
 
 #ifdef __UNIX__
-#define CHECK_OPTION(p)         ( p[0] == '-' )
+#define CHECK_OPTION(p)         ( p[0] == Glob.swchar )
 #else
-#define CHECK_OPTION(p)         ( p[0] == '-' || p[0] == Glob.swchar )
+#define CHECK_OPTION(p)         ( p[0] == Glob.swchar || p[0] == Glob.shell_swchar )
 #endif
-#define CHECK_STDIN(p)          ( p[0] == '-' && p[1] == NULLCHAR )
+#define CHECK_STDIN(p)          ( p[0] == Glob.swchar && p[1] == NULLCHAR )
 
 STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
@@ -595,7 +596,8 @@ STATIC bool doMusts( void )
 STATIC void globInit( void )
 /**************************/
 {
-    Glob.swchar = (char)SwitchChar();
+    Glob.swchar = SWITCH_CHAR;
+    Glob.shell_swchar = SHELL_SWITCH_CHAR;
 }
 
 

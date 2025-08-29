@@ -2165,7 +2165,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     for( arg = cmd; *arg != NULLCHAR; arg++ ) {
         if( !dquote ) {
             if( cisws( *arg )
-              || *arg == Glob.swchar
+              || *arg == Glob.shell_swchar
               || *arg == '+'
               || *arg == '=' ) {
                 break;
