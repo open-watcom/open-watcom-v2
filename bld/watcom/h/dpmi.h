@@ -75,6 +75,8 @@
 #define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
 #define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
 #define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
+#define DPMIGetSegmentLimit                     _DPMIGetSegmentLimit
+#define DPMIGetSegmentSize                      _DPMIGetSegmentSize
 #define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
 #define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
 #define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
@@ -287,6 +289,8 @@ extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetSegmentLimit( uint_16, uint_16 hiw, uint_16 low );
+extern unsigned _DPMIGetSegmentLimit( uint_16 );
+extern unsigned _DPMIGetSegmentSize( uint_16 );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
 extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw, uint_16 low );
 extern int      _DPMIResizeMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
@@ -525,6 +529,24 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
         _SBB_AX_AX      \
     __parm __caller [__bx] [__cx] [__dx] \
     __value         [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMIGetSegmentLimit = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+    __parm      [__dx] \
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMIGetSegmentSize = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+        _JNZ 2      \
+        _INC_AX     \
+    __parm      [__dx] \
+    __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
 
 #pragma aux _DPMISetDescriptorAccessRights = \
