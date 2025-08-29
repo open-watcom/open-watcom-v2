@@ -32,6 +32,7 @@
 
 
 #include "cvars.h"
+#include "cmdscan.h"
 #include "scan.h"
 #include "pdefn2.h"
 #include <ctype.h>
@@ -64,9 +65,7 @@ static size_t get_namelen( const char *start )
             break;
         if( c == ' ' )
             break;
-        if( c == '-' )
-            break;
-        if( c == SwitchChar ) {
+        if( CmdScanSwitchChar( c ) ) {
             break;
         }
     }

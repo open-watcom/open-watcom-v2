@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +36,6 @@
 
 #include <stdlib.h>
 
-
-#ifdef __UNIX__
-#define _IS_SWITCH_CHAR(c)  ((c) == '-')
-#else
-#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -113,6 +107,9 @@ char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
 ;
 void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
+;
+bool CmdScanSwitchChar(
+    char )
 ;
 
 #ifdef __cplusplus

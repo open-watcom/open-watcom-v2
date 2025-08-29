@@ -930,7 +930,7 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
                 level--;
                 continue;
             }
-            if( _IS_SWITCH_CHAR( ch ) ) {
+            if( CmdScanSwitchChar( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
                 OPT_PROCESS( data );
             } else {  /* collect  file name */
