@@ -80,12 +80,12 @@ bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg )
         if( seg == 1 ) {
             ge->hBlock = (HGLOBAL)Win32CS;
             ge->dwSize = 1;
-            ge->dwBlockSize = GetASelectorLimit( Win32CS );
+            ge->dwBlockSize = DPMIGetSegmentSize( Win32CS );
             return( true );
         } else if( seg == 2 ) {
             ge->hBlock = (HGLOBAL)Win32DS;
             ge->dwSize = 1;
-            ge->dwBlockSize = GetASelectorLimit( Win32DS );
+            ge->dwBlockSize = DPMIGetSegmentSize( Win32DS );
             return( true );
         }
         ge->hBlock = 0;
