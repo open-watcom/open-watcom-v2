@@ -111,7 +111,6 @@ global  char        *ForcePreInclude;
 global  char        *SrcFName;          /* source file name without suffix */
 global  char        *WholeFName;        /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */
-global  int         SwitchChar;         // DOS switch character
 
 // token buffer, dynamicaly allocated
 global  char        *Buffer;

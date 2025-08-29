@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,6 @@
 #include <time.h>
 #include "target.h"
 
-#ifdef __UNIX__
-#define SysSwitchChar( dummy )          '-'
-#else
-extern char SysSwitchChar( void );
-#endif
 
 extern size_t           SysRead( int fh, void *, size_t );
 extern unsigned long    SysTell( int fh );
