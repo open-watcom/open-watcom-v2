@@ -108,7 +108,7 @@ char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
 void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
 ;
-bool CmdScanSwitchChar(
+bool CmdScanSwitchChar(         // TEST IF SWITCH CHAR
     char )
 ;
 
