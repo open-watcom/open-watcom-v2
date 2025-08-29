@@ -546,7 +546,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     } else if( str != NULL ) {
         ++indirectionLevel;
         CtxSetSwitchAddr( str );
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for(;;) {
             CmdScanSkipWhiteSpace();
             c = CmdScanChar();

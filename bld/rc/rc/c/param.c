@@ -794,7 +794,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
 
     if( str != NULL ) {
         level = -1;
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for( ;; ) {
             CmdScanSkipWhiteSpace();
             ch = CmdScanChar();
@@ -813,7 +813,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
                             penv = ptr;
                         }
                         if( penv != NULL ) {
-                            save[level] = CmdScanInit( penv );
+                            save[level] = CmdScanLineInit( penv );
                             buffers[level] = ptr;
                         }
                     }
@@ -828,7 +828,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
                 if( level < 0 )
                     break;
                 RcMemFree( buffers[level] );
-                CmdScanInit( save[level] );
+                CmdScanLineInit( save[level] );
                 level--;
                 continue;
             }

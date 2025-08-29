@@ -211,7 +211,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str, OPT_STRING **files )
 
     if( str != NULL ) {
         level = -1;
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for( ;; ) {
             CmdScanSkipWhiteSpace();
             ch = CmdScanChar();
@@ -230,7 +230,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str, OPT_STRING **files )
                             penv = ptr;
                         }
                         if( penv != NULL ) {
-                            save[level] = CmdScanInit( penv );
+                            save[level] = CmdScanLineInit( penv );
                             buffers[level] = ptr;
                         }
                     }
@@ -245,7 +245,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str, OPT_STRING **files )
                 if( level < 0 )
                     break;
                 MemFree( buffers[level] );
-                CmdScanInit( save[level] );
+                CmdScanLineInit( save[level] );
                 level--;
                 continue;
             }

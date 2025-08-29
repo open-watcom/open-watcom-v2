@@ -44,7 +44,7 @@ typedef struct cmd_scan_ctl {
 
 static cmd_scan_ctl cmd;
 
-char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+char const *CmdScanLineInit(    // INITIALIZE FOR COMMAND SCANNING
     char const *cmd_line )      // - new command line
 {                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
     char const *old;

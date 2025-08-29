@@ -83,7 +83,7 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
 ;
-char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+char const *CmdScanLineInit(    // INITIALIZE FOR COMMAND SCANNING
     char const *cmd_line )      // - new command line
 ;                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE

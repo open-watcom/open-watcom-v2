@@ -186,7 +186,7 @@ void CmdLnCtxPop( void )
         CMemFree( (void*)entry->env.var );
     }
     if( CTX_CLTYPE_PGM != entry->base.ctx_type ) {
-        CmdScanInit( entry->base.cmd_line );
+        CmdScanLineInit( entry->base.cmd_line );
         CtxSetSwitchAddr( entry->base.cmd_scan );
     }
 }
@@ -226,11 +226,11 @@ void CmdLnCtxInfo( void )
             char const *not_used;
             bool quoted;
             char const *old = CmdScanAddr();
-            CmdScanInit( entry->base.sw_ptr );
+            CmdScanLineInit( entry->base.sw_ptr );
             CmdScanChar();
             CmdScanOption( &not_used, &quoted );
             size = CmdScanAddr() - entry->base.sw_ptr;
-            CmdScanInit( old );
+            CmdScanLineInit( old );
             VbufConcStr( &buf, ", switch: " );
             VbufConcVector( &buf, size, entry->base.sw_ptr );
         }
