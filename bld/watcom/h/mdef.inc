@@ -233,10 +233,6 @@ codeptr         macro   p1,p2
                 endif
                 endm
 
-defn            macro   dsym
-         dsym   proc    near
-                endm
-
 defp            macro   dsym,exp
          dsym   proc    near exp
                 endm
@@ -247,6 +243,10 @@ defpe           macro   dsym
                 else
          dsym       proc    near
                 endif
+                endm
+
+defn            macro   dsym
+         dsym   proc    near
                 endm
 
 docall          macro   dest
