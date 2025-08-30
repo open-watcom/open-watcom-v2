@@ -81,14 +81,14 @@ DWORD GetAlias( LPDWORD ptr )
 } /* GetAlias */
 
 /*
- * ReleaseAlias - give back a 16 bit alias to 32 bit memory
+ * ReleaseAlias - give back a orig data to 32 bit memory
  */
 void ReleaseAlias( LPDWORD ptr, DWORD orig )
 {
     DWORD   alias;
 
     alias = *ptr;
-    if( orig != alias ) {
+    if( alias != orig ) {
         *ptr = orig;
         _WDPMI_FreeAlias( alias );
     }

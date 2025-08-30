@@ -493,8 +493,8 @@ OLESTATUS FAR PASCAL __OleEqual( LPOLEOBJECT lpobject1, LPOLEOBJECT lpobject2 )
     odata1 = GETALIAS( &lpobject1->lpvtbl );
     odata2 = GETALIAS( &lpobject2->lpvtbl );
     rc = olecliOleEqual( lpobject1, lpobject2 );
-    RELEASEALIAS( &lpobject1->lpvtbl, odata2 );
-    RELEASEALIAS( &lpobject2->lpvtbl, odata1 );
+    RELEASEALIAS( &lpobject2->lpvtbl, odata2 );
+    RELEASEALIAS( &lpobject1->lpvtbl, odata1 );
 
     return( rc );
 
