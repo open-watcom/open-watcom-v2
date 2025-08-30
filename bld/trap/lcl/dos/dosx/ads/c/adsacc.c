@@ -263,7 +263,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
         } else {
             otherseg = sdtoff + 4;
         }
-        if( !IsWriteSelectorB( otherseg ) )
+        if( !IsWriteSelector( otherseg ) )
             continue;
         if( GET_LINEAR( otherseg, 0 ) != linear )
             continue;
@@ -315,7 +315,7 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     addr_seg    segment;
 
     segment = addr->segment;
-    if( !IsReadSelectorB( segment ) ) {
+    if( !IsReadSelector( segment ) ) {
         segment = AltSegment( segment );
     }
     if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
@@ -332,7 +332,7 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     segment = addr->segment;
     if( segment == Regs.CS )
         segment = Regs.DS; // hack, ack
-    if( !IsWriteSelectorB( segment ) ) {
+    if( !IsWriteSelector( segment ) ) {
         segment = AltSegment( segment );
     }
     if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {

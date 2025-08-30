@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,14 +118,14 @@ static DWORD    CurBase;
 
 
 /*
- * GetASelectorLimit
+ * GetASelectorSize
  */
-DWORD GetASelectorLimit( WORD sel )
+DWORD GetASelectorSize( WORD sel )
 {
     sel = sel;
     return( CurLimit );
 
-} /* GetASelectorLimit */
+} /* GetASelectorSize */
 
 /*
  * ReadMem
@@ -1311,7 +1311,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
         return( NULLHANDLE );
     }
     info->sel = seg;
-    info->limit = GetASelectorLimit( seg );
+    info->limit = GetASelectorSize( seg );
     info->lastline = 0;
     info->bytesdisp = 1;
     info->ins_cnt = 0;

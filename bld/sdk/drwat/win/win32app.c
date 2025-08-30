@@ -32,6 +32,7 @@
 
 #include "drwatcom.h"
 #include <dos.h>
+#include "dpmi.h"
 
 /*
  * CheckIsWin32App - check if task is a win 32 app
