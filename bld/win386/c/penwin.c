@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,8 +69,8 @@ UINT FAR PASCAL __EnumSymbols(LPSYG lpsyg, WORD max, ENUMPROC proc, LPVOID d)
     odata1 = GETALIAS( &lpsyg->lpsye );
     odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinEnumSymbols( lpsyg, max, proc, d );
-    RELEASEALIAS( odata2, &lpsyg->lpsyc );
-    RELEASEALIAS( odata1, &lpsyg->lpsye );
+    RELEASEALIAS( &lpsyg->lpsyc, odata2 );
+    RELEASEALIAS( &lpsyg->lpsye, odata1 );
 
     return( rc );
 
@@ -98,10 +98,10 @@ BOOL FAR PASCAL __ExecuteGesture(HWND hwnd, SYV syv, LPRCRESULT lprcresult )
     odata3 = GETALIAS( &lprcresult->syg->lpsye );
     odata4 = GETALIAS( &lprcresult->syg->lpsyc );
     rc = penwinExecuteGesture( hwnd, syv, lprcresult );
-    RELEASEALIAS( odata4, &lprcresult->syg->lpsyc );
-    RELEASEALIAS( odata3, &lprcresult->syg->lpsye );
-    RELEASEALIAS( odata2, &lprcresult->lprc );
-    RELEASEALIAS( odata1, &lprcresult->lpsyv );
+    RELEASEALIAS( &lprcresult->syg->lpsyc, odata4 );
+    RELEASEALIAS( &lprcresult->syg->lpsye, odata3 );
+    RELEASEALIAS( &lprcresult->lprc, odata2 );
+    RELEASEALIAS( &lprcresult->lpsyv, odata1 );
 
     return( rc );
 
@@ -125,8 +125,8 @@ VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max, int FA
     odata1 = GETALIAS( &lpsyg->lpsye );
     odata2 = GETALIAS( &lpsyg->lpsyc );
     penwinFirstSymbolFromGraph( lpsyg, lpsyv, max, lpcsyv );
-    RELEASEALIAS( odata2, &lpsyg->lpsyc );
-    RELEASEALIAS( odata1, &lpsyg->lpsye );
+    RELEASEALIAS( &lpsyg->lpsyc, odata2 );
+    RELEASEALIAS( &lpsyg->lpsye, odata1 );
 
 } /* __FirstSymbolFromGraph */
 
@@ -149,8 +149,8 @@ int FAR PASCAL __GetSymbolCount( LPSYG lpsyg )
     odata1 = GETALIAS( &lpsyg->lpsye );
     odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinGetSymbolCount( lpsyg );
-    RELEASEALIAS( odata2, &lpsyg->lpsyc );
-    RELEASEALIAS( odata1, &lpsyg->lpsye );
+    RELEASEALIAS( &lpsyg->lpsyc, odata2 );
+    RELEASEALIAS( &lpsyg->lpsye, odata1 );
 
     return( rc );
 
@@ -175,8 +175,8 @@ int FAR PASCAL __GetSymbolMaxLength( LPSYG lpsyg )
     odata1 = GETALIAS( &lpsyg->lpsye );
     odata2 = GETALIAS( &lpsyg->lpsyc );
     rc = penwinGetSymbolMaxLength( lpsyg );
-    RELEASEALIAS( odata2, &lpsyg->lpsyc );
-    RELEASEALIAS( odata1, &lpsyg->lpsye );
+    RELEASEALIAS( &lpsyg->lpsyc, odata2 );
+    RELEASEALIAS( &lpsyg->lpsye, odata1 );
 
     return( rc );
 
@@ -205,10 +205,10 @@ BOOL FAR PASCAL __TrainContext( LPRCRESULT lprcresult, LPSYE lpsye, int csye, LP
     odata3 = GETALIAS( &lprcresult->syg->lpsye );
     odata4 = GETALIAS( &lprcresult->syg->lpsyc );
     rc = penwinTrainContext( lprcresult, lpsye, csye, lpsyc, csyc );
-    RELEASEALIAS( odata4, &lprcresult->syg->lpsyc );
-    RELEASEALIAS( odata3, &lprcresult->syg->lpsye );
-    RELEASEALIAS( odata2, &lprcresult->lprc );
-    RELEASEALIAS( odata1, &lprcresult->lpsyv );
+    RELEASEALIAS( &lprcresult->syg->lpsyc, odata4 );
+    RELEASEALIAS( &lprcresult->syg->lpsye, odata3 );
+    RELEASEALIAS( &lprcresult->lprc, odata2 );
+    RELEASEALIAS( &lprcresult->lpsyv, odata1 );
 
     return( rc );
 

@@ -31,10 +31,10 @@
 
 
 #define GETALIAS(a)         GetAlias((LPDWORD)(a))
-#define RELEASEALIAS(a,b)   ReleaseAlias((a),(LPDWORD)(b))
+#define RELEASEALIAS(a,b)   ReleaseAlias((LPDWORD)(a),(b))
 
 extern DWORD    GetAlias( LPDWORD ptr );
-extern void     ReleaseAlias( DWORD orig, LPDWORD ptr );
+extern void     ReleaseAlias( LPDWORD ptr, DWORD orig );
 
 extern BOOL     FAR PASCAL __GetMessage( LPMSG msg, HWND a, WORD b, WORD c );
 extern BOOL     FAR PASCAL __PeekMessage( LPMSG msg, HWND a, WORD b, WORD c, WORD d );

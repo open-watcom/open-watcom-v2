@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
     }
     odata = GETALIAS( &pcc->lpCustColors );
     rc = commdlgChooseColor( pcc );
-    RELEASEALIAS( odata, &pcc->lpCustColors );
+    RELEASEALIAS( &pcc->lpCustColors, odata );
 
     return( rc );
 
@@ -93,9 +93,9 @@ HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
     odata2 = GETALIAS( &pfr->lpstrReplaceWith );
     odata3 = GETALIAS( &pfr->lpTemplateName );
     rc = commdlgReplaceText( pfr );
-    RELEASEALIAS( odata3, &pfr->lpTemplateName );
-    RELEASEALIAS( odata2, &pfr->lpstrReplaceWith );
-    RELEASEALIAS( odata1, &pfr->lpstrFindWhat );
+    RELEASEALIAS( &pfr->lpTemplateName, odata3 );
+    RELEASEALIAS( &pfr->lpstrReplaceWith, odata2 );
+    RELEASEALIAS( &pfr->lpstrFindWhat, odata1 );
     return( rc );
 
 } /* __ReplaceText */
@@ -118,8 +118,8 @@ HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
     odata1 = GETALIAS( &pfr->lpstrFindWhat );
     odata2 = GETALIAS( &pfr->lpTemplateName );
     rc = commdlgFindText( pfr );
-    RELEASEALIAS( odata2, &pfr->lpTemplateName );
-    RELEASEALIAS( odata1, &pfr->lpstrFindWhat );
+    RELEASEALIAS( &pfr->lpTemplateName, odata2 );
+    RELEASEALIAS( &pfr->lpstrFindWhat, odata1 );
     return( rc );
 
 } /* __FindText */
@@ -144,9 +144,9 @@ BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
     odata2 = GETALIAS( &pcf->lpTemplateName );
     odata3 = GETALIAS( &pcf->lpszStyle );
     rc = commdlgChooseFont( pcf );
-    RELEASEALIAS( odata3, &pcf->lpszStyle );
-    RELEASEALIAS( odata2, &pcf->lpTemplateName );
-    RELEASEALIAS( odata1, &pcf->lpLogFont );
+    RELEASEALIAS( &pcf->lpszStyle, odata3 );
+    RELEASEALIAS( &pcf->lpTemplateName, odata2 );
+    RELEASEALIAS( &pcf->lpLogFont, odata1 );
     return( rc );
 
 } /* __ChooseFont */
@@ -175,14 +175,14 @@ static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
     odata7 = GETALIAS( &pofn->lpstrDefExt );
     odata8 = GETALIAS( &pofn->lpTemplateName );
     rc = ((BOOL(FAR PASCAL *)(LPOPENFILENAME))fp)( (LPOPENFILENAME)pofn );
-    RELEASEALIAS( odata8, &pofn->lpTemplateName );
-    RELEASEALIAS( odata7, &pofn->lpstrDefExt );
-    RELEASEALIAS( odata6, &pofn->lpstrTitle );
-    RELEASEALIAS( odata5, &pofn->lpstrInitialDir );
-    RELEASEALIAS( odata4, &pofn->lpstrFileTitle );
-    RELEASEALIAS( odata3, &pofn->lpstrFile );
-    RELEASEALIAS( odata2, &pofn->lpstrCustomFilter );
-    RELEASEALIAS( odata1, &pofn->lpstrFilter );
+    RELEASEALIAS( &pofn->lpTemplateName, odata8 );
+    RELEASEALIAS( &pofn->lpstrDefExt, odata7 );
+    RELEASEALIAS( &pofn->lpstrTitle, odata6 );
+    RELEASEALIAS( &pofn->lpstrInitialDir, odata5 );
+    RELEASEALIAS( &pofn->lpstrFileTitle, odata4 );
+    RELEASEALIAS( &pofn->lpstrFile, odata3 );
+    RELEASEALIAS( &pofn->lpstrCustomFilter, odata2 );
+    RELEASEALIAS( &pofn->lpstrFilter, odata1 );
     return( rc );
 
 } /* GetSaveOrOpenFileName */
@@ -235,8 +235,8 @@ BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd )
     odata1 = GETALIAS( &ppd->lpPrintTemplateName );
     odata2 = GETALIAS( &ppd->lpSetupTemplateName );
     rc = commdlgPrintDlg( ppd );
-    RELEASEALIAS( odata2, &ppd->lpSetupTemplateName );
-    RELEASEALIAS( odata1, &ppd->lpPrintTemplateName );
+    RELEASEALIAS( &ppd->lpSetupTemplateName, odata2 );
+    RELEASEALIAS( &ppd->lpPrintTemplateName, odata1 );
     return( rc );
 
 } /* __PrintDlg */
