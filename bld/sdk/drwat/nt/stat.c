@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,13 +83,13 @@ mad_registers * StatGetMadRegisters( HWND stat )
  */
 static void DisplayAsmLines( HWND hwnd, address *paddr )
 {
-    int         i;
-    address     addr;
-    address     flagaddr;
-    char        buff[256];
-    HWND        hscrl;
-    DWORD       max;
-    int         curr;
+    int             i;
+    address         addr;
+    address         flagaddr;
+    char            buff[256];
+    HWND            hscrl;
+    DWORD           max;
+    int             curr;
     mad_registers   *regs;
 
     addr = *paddr;
@@ -102,7 +102,7 @@ static void DisplayAsmLines( HWND hwnd, address *paddr )
             buff[0] = '*';
         }
 
-        Disassemble( &addr, buff+1, FALSE, 255 );
+        Disassemble( &addr, buff + 1, FALSE, 255 );
         SetDlgItemText( hwnd, i, buff );
     }
 
@@ -121,7 +121,7 @@ static void DisplayAsmLines( HWND hwnd, address *paddr )
         curr = paddr->mach.offset;
     }
     hscrl = GetDlgItem( hwnd, STAT_SCROLL );
-    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE );
     SetScrollPos( hscrl, SB_CTL, curr, TRUE );
 #endif
 } /* DisplayAsmLines */

@@ -103,18 +103,18 @@ void DisplayAsmLines( HWND hwnd, ADDRESS *paddr, ADDRESS *flagaddr, int idlo,
     max = max;
     curr = curr;
     hscrl = GetDlgItem( hwnd, sbid );
-    SetScrollRange( hscrl, SB_CTL, 0, 2, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, 2, FALSE );
     SetScrollPos( hscrl, SB_CTL, 1, TRUE );
 #else
     max = GetASelectorSize( paddr->seg );
     if( max > MAXRANGE ) {
-        curr = (MAXRANGE*paddr->offset)/max;
+        curr = ( MAXRANGE * paddr->offset ) / max;
         max = MAXRANGE;
     } else {
         curr = paddr->offset;
     }
     hscrl = GetDlgItem( hwnd, sbid );
-    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE );
     SetScrollPos( hscrl, SB_CTL, curr, TRUE );
 #endif
 } /* DisplayAsmLines */

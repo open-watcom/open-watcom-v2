@@ -83,11 +83,11 @@ void DisplayAsmLines( HWND hwnd, ADDRESS *paddr, ADDRESS *flagaddr, int idlo,
     addr = *paddr;
     for( i = idlo; i <= idhi; i++ ) {
         markit = FALSE;
-        if( (addr.seg == flagaddr->seg )
-          && (addr.offset == flagaddr->offset )) {
+        if( ( addr.seg == flagaddr->seg )
+          && ( addr.offset == flagaddr->offset ) ) {
             markit = TRUE;
         }
-        addr.offset += Disassemble( &addr, buff+1, FALSE );
+        addr.offset += Disassemble( &addr, buff + 1, FALSE );
         if( markit ) {
             buff[0] = '*';
         } else {
@@ -105,7 +105,7 @@ void DisplayAsmLines( HWND hwnd, ADDRESS *paddr, ADDRESS *flagaddr, int idlo,
 #else
     max = GetASelectorSize( paddr->seg );
     if( max > MAXRANGE ) {
-        curr = (MAXRANGE*paddr->offset)/max;
+        curr = ( MAXRANGE * paddr->offset ) / max;
         max = MAXRANGE;
     } else {
         curr = paddr->offset;
