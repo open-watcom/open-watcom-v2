@@ -70,7 +70,7 @@ typedef struct {
 #if defined( __WATCOM_LFN__ )
 
 #ifdef _M_I86
-extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
+extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned date, unsigned time, unsigned mode );
   #ifdef __BIG_DATA__
     #pragma aux __dos_utime_lfn = \
             "push   ds"         \
@@ -81,7 +81,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
-        __parm __caller     [__dx __ax] [__cx] [__di] [__bx] \
+        __parm __caller     [__dx __ax] [__di] [__cx] [__bx] \
         __value             [__dx __ax] \
         __modify __exact    [__ax __dx]
   #else
@@ -90,17 +90,17 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             "stc"               \
             __INT_21            \
             "call __lfnerror_0" \
-        __parm __caller     [__dx] [__cx] [__di] [__bx] \
+        __parm __caller     [__dx] [__di] [__cx] [__bx] \
         __value             [__dx __ax] \
         __modify __exact    [__ax __dx]
   #endif
 #endif
 
-static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date, unsigned mode )
+static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned date, unsigned time, unsigned mode )
 /***********************************************************************************************/
 {
   #ifdef _M_I86
-    return( __dos_utime_lfn( fname, time, date, mode ) );
+    return( __dos_utime_lfn( fname, date, time, mode ) );
   #else
     dpmi_regs_struct    dr;
 
@@ -239,12 +239,12 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, struct utimbuf co
     if( _RWD_uselfn ) {
         lfn_ret_t   rc;
 
-        rc = _dos_utime_lfn( fname, dostms.wr_time, dostms.wr_date, 3 );
+        rc = _dos_utime_lfn( fname, dostms.wr_date, dostms.wr_time, 3 );
         if( LFN_ERROR( rc ) ) {
             return( __set_errno_dos( LFN_INFO( rc ) ) );
         }
         if( LFN_OK( rc ) ) {
-            rc = _dos_utime_lfn( fname, dostms.ac_time, dostms.ac_date, 5 );
+            rc = _dos_utime_lfn( fname, dostms.ac_date, dostms.ac_time, 5 );
             if( LFN_ERROR( rc ) ) {
                 return( __set_errno_dos( LFN_INFO( rc ) ) );
             }
