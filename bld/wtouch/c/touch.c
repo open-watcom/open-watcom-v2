@@ -51,11 +51,13 @@
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
-#include "d2ttime.h"
 #include "pathgrp2.h"
-#if defined(__NT__)
+#if defined( __UNIX__ )
+#elif defined(__NT__)
     #include <windows.h>
     #include "_dtaxxx.h"
+#else
+    #include "d2ttime.h"
 #endif
 
 #include "clibint.h"
