@@ -33,9 +33,10 @@
 #include "variety.h"
 #include "_process.h"
 
+
 execveaddr_type  __Exec_addr = NULL;
 
-execveaddr_type __execaddr( void )
+execveaddr_type _WCNEAR __execaddr( void )
 {
     return( __Exec_addr );
 }

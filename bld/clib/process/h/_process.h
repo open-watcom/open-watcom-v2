@@ -50,22 +50,20 @@
 
 #define ARGS_NEXT_VA(ap)    va_arg((ap), ARGS_TYPE)
 
-typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
-
-extern execveaddr_type __execaddr( void );
-#ifdef __DOS__
-extern execveaddr_type  __Exec_addr;
-#endif
 #ifdef __WIDECHAR__
 extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, bool );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
-extern wchar_t *__wSlash_C( wchar_t *switch_c, unsigned char use_slash );
+extern wchar_t *__wSlash_C( wchar_t *switch_c, bool use_slash );
 #else
 extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, bool );
 extern void __ccmdline( char *, const char * const *, char *, int );
-extern char *__Slash_C( char *switch_c, unsigned char use_slash );
+extern char *__Slash_C( char *switch_c, bool use_slash );
 #endif
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __DOS__ )
+typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
+extern execveaddr_type  _WCNEAR __execaddr( void );
+extern execveaddr_type  __Exec_addr;
+#elif defined( __OS2__ ) || defined( __NT__ )
 #ifdef __WIDECHAR__
 extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
 #else

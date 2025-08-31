@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of execve().
-*               (16-bit code only)
+* Description:  DOS implementation of execve() (16-bit code only)
 *
 ****************************************************************************/
 
@@ -86,9 +85,8 @@ extern unsigned doslowblock( void );
     __value             [__ax] \
     __modify __nomemory [__bx __es]
 
-extern void         __cdecl __far _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
-extern void         __init_execve( void );
-
+extern void         __cdecl _WCFAR _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
+extern void         _WCNEAR __init_execve( void );
 extern unsigned     __exec_para;
 
 static void dosexpand( unsigned block )
@@ -300,7 +298,7 @@ error: /* Clean up after error */
     return( -1 );
 }
 
-void __init_execve( void )              /* called from initializer segment */
+void _WCNEAR __init_execve( void )      /* called from initializer segment */
 {
     __Exec_addr = execve;
 }
