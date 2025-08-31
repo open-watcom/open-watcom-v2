@@ -60,7 +60,7 @@ __RMAddr        dd      0
         enddata
 
         xdefp   "C",__Init_FPE_handler
-defp    __Init_FPE_handler
+defn    __Init_FPE_handler
         _guess                          ; guess initialization required
           cmp   word ptr __PMSeg,0      ; - quit if already initialized
           _quif ne                      ; - ...
@@ -93,7 +93,7 @@ endproc __Init_FPE_handler
 
 
         xdefp   "C",__Fini_FPE_handler
-defp    __Fini_FPE_handler
+defn    __Fini_FPE_handler
         cmp     word ptr __PMSeg,0      ; if not initialized
         _if     e                       ; - then
           ret                           ; - return
