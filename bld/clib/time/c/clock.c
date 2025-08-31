@@ -61,15 +61,15 @@ _WCRTLINK clock_t clock( void )
 
     save_errno = _RWD_errno;
     times( &buf );
-    clk = (buf.tms_utime + buf.tms_stime) * (CLOCKS_PER_SEC / SYS_CLK_TCK);
+    clk = ( buf.tms_utime + buf.tms_stime ) * ( CLOCKS_PER_SEC / SYS_CLK_TCK );
     _RWD_errno = save_errno;
     return clk;
 }
 
 #else
 
-#define MAX_CLOCK_T   ~( ( clock_t ) 0 )
-#define MAX_SECONDS   ( ( time_t ) ( MAX_CLOCK_T / CLOCKS_PER_SEC ) - 1 )
+#define MAX_CLOCK_T   ~((clock_t)0)
+#define MAX_SECONDS   ((time_t)( MAX_CLOCK_T / CLOCKS_PER_SEC ) - 1)
 
 static clock_t init_milliseconds;
 static time_t  init_seconds;
@@ -80,12 +80,12 @@ static void get_clock_time( time_t *secs, clock_t *milliseconds )
     struct timespec     timer;
 
     getclock( TIMEOFDAY, &timer );
-    *secs = ( time_t ) timer.tv_sec;
-    *milliseconds = ( clock_t ) ( timer.tv_nsec / ( 1000000000 / CLOCKS_PER_SEC ) );
+    *secs = (time_t)timer.tv_sec;
+    *milliseconds = (clock_t)( timer.tv_nsec / ( 1000000000 / CLOCKS_PER_SEC ) );
 #else
     struct tm t;
 
-    *milliseconds = ( clock_t ) __getctime( &t );
+    *milliseconds = (clock_t)__getctime( &t );
     *secs = __local_mktime( &t, NULL, NULL );
 #endif
 } /* get_clock_time() */
@@ -106,14 +106,14 @@ _WCRTLINK clock_t clock( void )
      * Make sure we won't overflow.
      */
     if( new_seconds > MAX_SECONDS )
-        return( ( clock_t ) -1 );
+        return( (clock_t)-1 );
 
     /*
      * `ticks' right now contains the number of milliseconds of seconds since
      * startup.  We still need to account for the number of full seconds that
      * may have passed.
      */
-    ticks += ( clock_t ) ( new_seconds * CLOCKS_PER_SEC );
+    ticks += (clock_t)( new_seconds * CLOCKS_PER_SEC );
 
     return( ticks );
 }
