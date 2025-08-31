@@ -69,32 +69,32 @@ _CRT_REPORT_HOOK        __DbgReportHook = NULL;
 static int _WCNEAR is_windowed_app( void )
 /****************************************/
 {
-    #ifdef __NT__
-        return( GetActiveWindow() != NULL );
-    #elif defined(__OS2__)
-        int             retval = 0;
-        int             rc;
-        HMQ             hMessageQueue = 0;
-        HAB             AnchorBlock = 0;
+  #ifdef __NT__
+    return( GetActiveWindow() != NULL );
+  #elif defined(__OS2__)
+    int             retval = 0;
+    int             rc;
+    HMQ             hMessageQueue = 0;
+    HAB             AnchorBlock = 0;
 
-        AnchorBlock = WinInitialize( 0 );
-        if( AnchorBlock != 0 ) {
-            hMessageQueue = WinCreateMsgQueue( AnchorBlock, 0 );
-            if( hMessageQueue == 0 ) {
-                rc = WinGetLastError( AnchorBlock );
-                if( (rc & 0xFFFF) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
-                    retval = 1;
-                }
+    AnchorBlock = WinInitialize( 0 );
+    if( AnchorBlock != 0 ) {
+        hMessageQueue = WinCreateMsgQueue( AnchorBlock, 0 );
+        if( hMessageQueue == 0 ) {
+            rc = WinGetLastError( AnchorBlock );
+            if( (rc & 0xFFFF) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
+                retval = 1;
             }
         }
-        if( hMessageQueue != 0 ) {
-            WinDestroyMsgQueue( hMessageQueue );
-        }
-        if( AnchorBlock != 0 ) {
-            WinTerminate( AnchorBlock );
-        }
-        return( retval );
-    #endif
+    }
+    if( hMessageQueue != 0 ) {
+        WinDestroyMsgQueue( hMessageQueue );
+    }
+    if( AnchorBlock != 0 ) {
+        WinTerminate( AnchorBlock );
+    }
+    return( retval );
+  #endif
 }
 
 #endif  /* defined(__NT__) || defined(__OS2__) */
