@@ -35,6 +35,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <io.h>
 #include <string.h>
 #include <process.h>
@@ -144,8 +145,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     char_type_stk_ptr       cmdline_mem;
     char_type_stk_ptr       cmdline;
     CHAR_TYPE               switch_c[4];
-    unsigned char           prot_mode286;
-    unsigned char           use_cmd;
+    bool                    prot_mode286;
+    bool                    use_cmd;
 #if defined( __DOS__ )
     _87state                _87save;
 #endif
@@ -198,7 +199,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         return( rc );
     }
  #else      /* __DOS_086__ */
-    prot_mode286 = FALSE;
+    prot_mode286 = false;
     if( mode == OLD_P_OVERLAY ) {
         execveaddr_type    execve;
         execve = __execaddr();
@@ -214,10 +215,10 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #endif
     use_cmd = prot_mode286;
 #else   // 32-bit
-    prot_mode286 = FALSE;
+    prot_mode286 = false;
 
  #if defined(__DOS__)
-    use_cmd = 0;
+    use_cmd = false;
     if( mode >= OLD_P_OVERLAY ) {
         _RWD_errno = EINVAL;
         rc = -1;
@@ -225,7 +226,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         return( rc );
     }
  #else      /* __OS2__, __NT__ */
-    use_cmd = 1;
+    use_cmd = true;
     if( mode == OLD_P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
