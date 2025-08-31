@@ -18,9 +18,6 @@
 !inject dospnos2.obj                                        o16 o32
 !inject dospnrdu.obj                                                                            rdu
 !inject dospnwnt.obj                nt  nta ntp ntm
-!inject exaddos2.obj                                        o16 o32
-!inject exaddrdu.obj                                                                            rdu
-!inject exaddwnt.obj                nt  nta ntp ntm
 !inject excptrdu.obj                                                                            rdu
 !inject excptwnt.obj                nt  nta ntp ntm
 !inject execaddr.obj    d16 d32
