@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,6 +29,8 @@
 *
 ****************************************************************************/
 
+
+extern int          _commode;
 
 /* see note in commode.c */
 _WCRTLINK extern void _WCI86FAR   __set_commode( void );

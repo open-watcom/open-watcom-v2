@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include "rtdata.h"
 #include "commode.h"
 
 
@@ -42,5 +44,5 @@ int     _commode = 0;
  */
 _WCRTLINK void _WCI86FAR __set_commode( void )
 {
-    _commode = _COMMIT;
+    _RWD_commode = _COMMIT;
 }

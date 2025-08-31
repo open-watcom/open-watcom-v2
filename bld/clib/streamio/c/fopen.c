@@ -51,6 +51,7 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "fileacc.h"
+#include "commode.h"
 #include "openmode.h"
 #include "defwin.h"
 #include "streamio.h"
@@ -79,7 +80,7 @@ unsigned __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *ex
 #ifdef __NETWARE__
         *extflags = 0;
 #else
-        if( _commode == _COMMIT ) {
+        if( _RWD_commode == _COMMIT ) {
             *extflags = _COMMIT;
         } else {
             *extflags = 0;
