@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "_environ.h"
 
 
-int __F_NAME(__os_env_update_narrow,__os_env_update_wide)( const CHAR_TYPE *name, const CHAR_TYPE *value )
+int _WCNEAR __F_NAME(__os_env_update_narrow,__os_env_update_wide)( const CHAR_TYPE *name, const CHAR_TYPE *value )
 {
 #ifdef __NT__
     /*** Update the process environment if using Win32 ***/

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #define min( x )        ((x >> 5) & 0x003f)
 #define hour( x )       ((x >> 11) & 0x001f)
 
-time_t _d2ttime( unsigned short date, unsigned short time )
+time_t _WCNEAR _d2ttime( unsigned short date, unsigned short time )
 {
     struct tm t;
 

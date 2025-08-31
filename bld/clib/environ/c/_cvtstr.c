@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 #include "_cvtstr.h"
 
 
-__F_NAME(wchar_t,char) *__F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( const CHAR_TYPE *in_string )
+__F_NAME(wchar_t,char) * _WCNEAR __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( const CHAR_TYPE *in_string )
 {
     __F_NAME(wchar_t,char)  *string;
     size_t                  len;

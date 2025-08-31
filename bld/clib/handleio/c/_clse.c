@@ -43,7 +43,8 @@
 #include "close.h"
 #include "thread.h"
 
-int __close( int handle )
+
+int _WCNEAR __close( int handle )
 {
     tiny_ret_t rc;
     int     rv;

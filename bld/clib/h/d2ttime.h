@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,4 +35,4 @@
 #define TODDATE(d) (*(unsigned short *)&d)
 #define TODTIME(t) (*(unsigned short *)&t)
 
-extern time_t _d2ttime( unsigned short date, unsigned short time );
+extern time_t _WCNEAR _d2ttime( unsigned short date, unsigned short time );

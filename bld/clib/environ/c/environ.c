@@ -41,11 +41,11 @@ _WCRTDATA char      ** _WCDATA environ;     /* pointer to environment table */
 _WCRTDATA wchar_t   ** _WCDATA _wenviron;   /* pointer to wide char environment */
 char                * _WCNEAR __env_mask;   /* ptr to char array of flags */
 
-AXI( __setenvp, INIT_PRIORITY_LIBRARY )
+AXIN( __setenvp, INIT_PRIORITY_LIBRARY )
 
 #if !defined(__NETWARE__)
 /* Environment needs to be freed after files are shut down; __MkTmpFile()
  * is used to delete temp files and needs access to environment.
  */
-AYI( __freeenvp, INIT_PRIORITY_LIBRARY - 1 )
+AYIN( __freeenvp, INIT_PRIORITY_LIBRARY - 1 )
 #endif
