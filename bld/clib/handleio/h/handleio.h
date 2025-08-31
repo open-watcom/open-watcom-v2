@@ -32,6 +32,5 @@
 extern unsigned     __IOMode( int handle );
 extern void         __set_handles( int num );
 extern void         __grow_iomode( int num );
-extern void         __shrink_iomode( void );
 
 extern unsigned     *__io_mode;

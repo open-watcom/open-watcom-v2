@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,12 +179,12 @@ XI( __fthread_data_size, __InitThreadDataSize, INIT_PRIORITY_THREAD )
 
 #define F77_ALT_STACK_SIZE      8 * 1024
 
-static void     __InitAlternateStack( void ) {
-//======================================
-
+static void     _WCNEAR __InitAlternateStack( void )
+//==================================================
+{
         __ASTACKSIZ = F77_ALT_STACK_SIZE;
 }
 
-AXI( __InitAlternateStack, INIT_PRIORITY_LIBRARY );
+AXIN( __InitAlternateStack, INIT_PRIORITY_LIBRARY );
 
 #endif

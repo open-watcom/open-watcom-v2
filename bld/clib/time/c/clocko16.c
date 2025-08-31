@@ -57,7 +57,7 @@ _WCRTLINK clock_t clock( void )
         return( (clock_t)-1 );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     APIRET  rc;
     SEL     sglobal;
@@ -72,4 +72,4 @@ static void __clock_init( void )
     }
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

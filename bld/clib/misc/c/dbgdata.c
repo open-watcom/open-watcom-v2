@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +66,8 @@ _CRT_REPORT_HOOK        __DbgReportHook = NULL;
 
 #if defined(__NT__) || defined(__OS2__)
 
-static int is_windowed_app( void )
-/********************************/
+static int _WCNEAR is_windowed_app( void )
+/****************************************/
 {
     #ifdef __NT__
         return( GetActiveWindow() != NULL );
@@ -99,27 +100,27 @@ static int is_windowed_app( void )
 #endif  /* defined(__NT__) || defined(__OS2__) */
 
 
-static void do_it( void )
-/***********************/
+static void _WCNEAR do_it( void )
+/*******************************/
 {
-    #ifdef __NT__
-        if( is_windowed_app() ) {
-            __DbgReportModes[_CRT_WARN] = _CRTDBG_MODE_DEBUG;
-        } else {
-            __DbgReportFiles[_CRT_WARN] = GetStdHandle( STD_ERROR_HANDLE );
-        }
-    #elif defined(__WINDOWS__)
+#ifdef __NT__
+    if( is_windowed_app() ) {
         __DbgReportModes[_CRT_WARN] = _CRTDBG_MODE_DEBUG;
-    #elif defined(__OS2__)
-        if( is_windowed_app() ) {
-            __DbgReportModes[_CRT_WARN] = _CRTDBG_MODE_DEBUG;
-        } else {
-            __DbgReportFiles[_CRT_WARN] = STDERR_FILENO;
-        }
-    #else
+    } else {
+        __DbgReportFiles[_CRT_WARN] = GetStdHandle( STD_ERROR_HANDLE );
+    }
+#elif defined(__WINDOWS__)
+    __DbgReportModes[_CRT_WARN] = _CRTDBG_MODE_DEBUG;
+#elif defined(__OS2__)
+    if( is_windowed_app() ) {
+        __DbgReportModes[_CRT_WARN] = _CRTDBG_MODE_DEBUG;
+    } else {
         __DbgReportFiles[_CRT_WARN] = STDERR_FILENO;
-    #endif
+    }
+#else
+    __DbgReportFiles[_CRT_WARN] = STDERR_FILENO;
+#endif
 }
 
-AXI( do_it, INIT_PRIORITY_LIBRARY )
+AXIN( do_it, INIT_PRIORITY_LIBRARY )
 

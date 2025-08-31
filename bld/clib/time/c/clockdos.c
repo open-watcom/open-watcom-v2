@@ -117,9 +117,9 @@ _WCRTLINK clock_t clock( void )
     return( (clock_t)(__get_tick() - init_milliseconds) );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     init_milliseconds = __get_tick();
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

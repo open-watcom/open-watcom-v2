@@ -170,10 +170,10 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 /* files. Since we know that temporary files can _only_ be created through */
 /* tmpfile(), we can have a dummy __RmTmpFile() by default and use the     */
 /* real thing only if tmpfil() was called.                                 */
-static void __Init_Tmpfl( void )
+static void _WCNEAR __Init_Tmpfl( void )
 {
     // Just assign the function address
     __RmTmpFileFn = __RmTmpFile;
 }
 
-AXI( __Init_Tmpfl, INIT_PRIORITY_RUNTIME )
+AXIN( __Init_Tmpfl, INIT_PRIORITY_RUNTIME )

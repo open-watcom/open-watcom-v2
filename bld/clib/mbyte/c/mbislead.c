@@ -52,9 +52,9 @@ _WCRTLINK int (_ismbblead)( const unsigned int ch )
  * which will initialize the default multibyte code page.
  */
 
-static void __mbInitOnStartup( void )
+static void _WCNEAR __mbInitOnStartup( void )
 {
     __mbinit( 0 );
 }
 
-AXI( __mbInitOnStartup, INIT_PRIORITY_LIBRARY )
+AXIN( __mbInitOnStartup, INIT_PRIORITY_LIBRARY )

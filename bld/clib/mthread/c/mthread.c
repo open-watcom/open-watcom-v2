@@ -932,8 +932,8 @@ void __InitMultipleThread( void )
 }
 #endif
 
-static void __FiniSema4s( void )              // called from finalizer
-/******************************/
+static void _WCNEAR __FiniSema4s( void )              // called from finalizer
+/**************************************/
 {
     int         i;
 
@@ -987,4 +987,4 @@ static void __FiniSema4s( void )              // called from finalizer
 #endif
 }
 
-AYI( __FiniSema4s, INIT_PRIORITY_RUNTIME )
+AYIN( __FiniSema4s, INIT_PRIORITY_RUNTIME )

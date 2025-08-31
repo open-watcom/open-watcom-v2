@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +53,9 @@ _WCRTLINK clock_t clock( void )
     return( (clock_t)(GetTickCount() - init_milliseconds) );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     init_milliseconds = GetTickCount();
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

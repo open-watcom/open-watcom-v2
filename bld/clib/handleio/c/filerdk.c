@@ -223,7 +223,7 @@ static void SetHandlePos( int handle, long long pos )
     RdosLeaveKernelSection( &handle_section );
 }
 
-static void InitHandle( void )
+static void _WCNEAR InitHandle( void )
 {
     int i;
 
@@ -653,4 +653,4 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
     return( __qwrite( handle, buffer, len ) );
 }
 
-AXI(InitHandle,INIT_PRIORITY_LIBRARY);
+AXIN(InitHandle,INIT_PRIORITY_LIBRARY);

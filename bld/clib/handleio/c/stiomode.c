@@ -82,7 +82,7 @@ void __grow_iomode( int num )
     _ReleaseIOB();
 }
 
-void __shrink_iomode( void )
+static void _WCNEAR __shrink_iomode( void )
 {
     _AccessIOB();
     // free any malloc'd iomode array
@@ -94,7 +94,7 @@ void __shrink_iomode( void )
     _ReleaseIOB();
 }
 
-AYI(__shrink_iomode,INIT_PRIORITY_IOSTREAM);
+AYIN( __shrink_iomode, INIT_PRIORITY_IOSTREAM );
 
 
 #if defined(__OS2_32BIT__)
