@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -254,8 +254,8 @@ static void __sigabort( void )
 }
 
 
-static  void    restore_handler( void )
-/*************************************/
+static void _WCNEAR restore_handler( void )
+/*****************************************/
 {
 
     __SigFini();

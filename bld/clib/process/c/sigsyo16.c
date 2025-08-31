@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static void _WCFAR __pascal break_handler( USHORT sigarg, USHORT signum )
     }
 }
 
-static void restore_handler( void )
+static void _WCNEAR restore_handler( void )
 {
     DosSetSigHandler( handler, &handler, &action, action, SIG_CTRLC );
     handler = 0;
@@ -61,7 +61,7 @@ static void restore_handler( void )
 }
 
 
-void __grab_int23( void )
+void _WCNEAR __grab_int23( void )
 {
     USHORT          action;
 

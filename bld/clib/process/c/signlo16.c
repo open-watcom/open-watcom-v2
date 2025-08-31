@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ static void __sigabort( void )
 
 static FPEhandler   *__old_FPE_handler = NULL;
 
-static void __restore_FPE_handler( void )
+static void _WCNEAR __restore_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
         return;
@@ -81,7 +81,7 @@ static void __restore_FPE_handler( void )
     __old_FPE_handler = NULL;
 }
 
-static void __grab_FPE_handler( void )
+static void _WCNEAR __grab_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
         __old_FPE_handler = _RWD_FPE_handler;
@@ -116,7 +116,7 @@ static void _WCFAR __pascal break_handler( USHORT sigarg, USHORT signum )
 }
 
 
-static void restore_handler( void )
+static void _WCNEAR restore_handler( void )
 {
     int sig;
 

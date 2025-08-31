@@ -61,8 +61,8 @@
 */
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
-void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
-void    (*__int23_exit)( void ) = __null_int23_exit;
+void    _WCNEAR __null_int23_exit( void ) {}              /* SIGNAL needs it */
+void    _WCNEAR (*__int23_exit)( void ) = __null_int23_exit;
 static void _WCNEAR _null_exit_rtn( void ) {}
 void    _WCNEAR (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
