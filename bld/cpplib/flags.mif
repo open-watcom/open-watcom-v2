@@ -8,14 +8,15 @@ sw_c_common += -xr
 !else
 sw_c_common += -s
 !endif
+sw_c_common += -oabelr
 !ifeq processor 086
-sw_c_common += -oabelmr
+sw_c_common += -om
 !else ifeq processor 286
-sw_c_common += -oabelmr
+sw_c_common += -om
 !else ifeq processor 386
-sw_c_common += -oabelmrt
+sw_c_common += -omt
 !else
-sw_c_common += -oabelrt
+sw_c_common += -ot
 !endif
 !ifdef mthreaded
 sw_c_common += -bm
