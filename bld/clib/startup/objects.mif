@@ -86,6 +86,7 @@
 !inject lgjpxaxp.obj                    nta
 !inject lgjmpmps.obj                            ntm                                                 lmp
 !inject liballoc.obj    d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject libexit.obj     d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject libmno16.obj                                                o16
 !inject libmno32.obj                                                    o32
 !inject libterm.obj                                                     o32

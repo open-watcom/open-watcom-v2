@@ -44,6 +44,8 @@
 extern _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *, int );
 extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *, int );
 extern _WCRTLINK _WCNORETURN void __exit( int );
+extern _WCRTLINK _WCNORETURN void _plib_fatal( char _WCI86FAR *, int );
+extern _WCRTLINK _WCNORETURN void _plib_exit( int );
 
 // Watcom Debugger interface
 // - this function should be called before __exit_with_msg()

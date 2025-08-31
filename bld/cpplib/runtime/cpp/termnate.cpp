@@ -52,7 +52,7 @@ namespace std {
             thr = PgmThread();
             msg = thr->abort_msg;
             if( msg == NULL ) {
-                __exit( 1 );
+                _plib_exit( 1 );
                 // never return
             }
         } else {

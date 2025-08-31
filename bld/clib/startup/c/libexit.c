@@ -25,59 +25,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  exit wrappers for the C++ runtime library.
 *
 ****************************************************************************/
 
-#ifdef __SW_FH
-#include "iost.h"
-#else
+
 #include "variety.h"
-#include <iostream>
-#endif
-#include "ioutil.h"
-#include "liballoc.h"
+#include "exitwmsg.h"
 
-void *__WATCOM_ios::find_user_word( std::ios *pios, int index ) {
 
-    ios_word_values *wptr;
-    ios_word_values *last_wptr;
-    ipvalue         *user_word_ptr;
+_WCRTLINK _WCNORETURN void _plib_fatal( char _WCI86FAR *msg, int ret_code )
+{
+    __fatal_runtime_error( msg, ret_code );
+    /* never return */
+}
 
-    if( (index < 0) || (index >= std::ios::__xalloc_index) ) {
-        return( NULL );
-    }
-    last_wptr = NULL;
-    wptr = (ios_word_values *) pios->__xalloc_list;
-    for( ; wptr != NULL; wptr = wptr->next ) {
-        if( wptr->count > index ) {
-            return( &(wptr->values[index]) );
-        }
-        index    -= wptr->count;
-        last_wptr = wptr;
-    }
-
-// "index" now contains 1 less than the number of (long) or (void *)
-// values we need.
-// "last_wptr" points at the last group of values.
-
-    wptr = (ios_word_values *)_plib_malloc( sizeof( ios_word_values )
-                                   + index * sizeof( ipvalue ) );
-    if( wptr == NULL ) {
-        return( NULL );
-    }
-    if( last_wptr == NULL ) {
-        pios->__xalloc_list = wptr;
-    }  else {
-        last_wptr->next = wptr;
-    }
-    wptr->next  = NULL;
-    wptr->count = (short)(index + 1);
-    user_word_ptr = &(wptr->values[0]);
-    for( int i = 0 ; i <= index ; i++ ) {
-        user_word_ptr->iword = 0L;
-        user_word_ptr++;
-    }
-    return( &(wptr->values[index]) );
+_WCRTLINK _WCNORETURN void _plib_exit( int ret_code )
+{
+    __exit( ret_code );
+    /* never return */
 }
