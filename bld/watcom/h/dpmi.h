@@ -390,8 +390,19 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
 #define DPMI_0501       0x01 0x05
 #define DPMI_0502       0x02 0x05
 #define DPMI_0503       0x03 0x05
+//#define DPMI_0504       0x04 0x05   /* not in DOS/4GW */
+//#define DPMI_0505       0x05 0x05   /* not in DOS/4GW */
+//#define DPMI_0506       0x06 0x05   /* not in DOS/4GW */
+//#define DPMI_0507       0x07 0x05   /* not in DOS/4GW */
+//#define DPMI_0508       0x08 0x05   /* not in DOS/4GW */
+//#define DPMI_0509       0x09 0x05   /* not in DOS/4GW */
+//#define DPMI_050A       0x0A 0x05   /* not in DOS/4GW */
 #define DPMI_0600       0x00 0x06
 #define DPMI_0601       0x01 0x06
+//#define DPMI_0700       0x00 0x07
+//#define DPMI_0701       0x01 0x07
+//#define DPMI_0702       0x02 0x07   /* not in DOS/4GW */
+//#define DPMI_0703       0x03 0x07   /* not in DOS/4GW */
 #define DPMI_0A00       0x00 0x0A
 #define DPMI_0B00       0x00 0x0B
 #define DPMI_0B01       0x01 0x0B
