@@ -38,7 +38,7 @@
 #endif
 #include "grabfp87.h"
 
-void __GrabFP87( void )
+void _WCNEAR __GrabFP87( void )
 {
 #ifndef __WINDOWS__
     if( _RWD_FPE_handler_exit != __Fini_FPE_handler ) {
