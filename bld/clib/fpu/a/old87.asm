@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -49,7 +50,7 @@ endif
 enddata
 
         xdefp    __old_8087
-        defp     __old_8087
+        defn     __old_8087
 ifdef __DOS_086__
         cmp     __dos87real,0
         jz      l1
@@ -72,6 +73,6 @@ endif
 
 include xinit.inc
 
-        xinit   __old_8087,INIT_PRIORITY_FPU + 4
+        xinitn  __old_8087, INIT_PRIORITY_FPU + 4
 
         end
