@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -464,7 +464,7 @@ __exit  proc  far
 ;       DX:AX - far pointer to message to print
 ;       BX    - exit code
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg
@@ -508,6 +508,8 @@ no_ovl:                                 ; endif
         pop     ax                      ; restore return code
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

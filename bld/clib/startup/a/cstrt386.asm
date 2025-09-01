@@ -377,7 +377,7 @@ endif
 ;       EAX - pointer to message to print
 ;       EDX - exit code
 
-__do_exit_with_msg_:                    ; never return
+__do_exit_with_msg_ proc near           ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -406,6 +406,8 @@ L7:
         pop     eax                     ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

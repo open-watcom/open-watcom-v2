@@ -356,7 +356,7 @@ error_exit:
 ; may be only called from startup code, after that there is
 ; nowhere to exit to!
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -393,6 +393,8 @@ do_exit:
         lss     esp,caller_stack
         mov     caller_ss,0             ; caller_ss is used as a flag if do_exit can be jumped to
         ret
+__do_exit_with_msg_ endp
+
 __DLLstart_ endp
 
 __exit  proc    far

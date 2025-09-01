@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -15,7 +15,7 @@
 // - always uses register calling convention
 // - this function is only called from the C implementation for DOS
 //   of __exit_with_msg
-extern _WCNORETURN void __do_exit_with_msg( char _WCI86FAR *, int );
+extern _WCNORETURN void _WCNEAR __do_exit_with_msg( char _WCI86FAR *, int );
 #if defined( _M_I86 )
     #pragma aux __do_exit_with_msg "*_" __parm __caller [__ax __dx] [__bx]
 #elif defined( _M_IX86 )
