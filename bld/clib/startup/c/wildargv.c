@@ -235,7 +235,7 @@ static int _make_argv( TCHAR *p, TCHAR ***argv )
     return( argc );
 }
 
-void __INIT_ARGV( void )
+void _WCNEAR __INIT_ARGV( void )
 {
     TCHAR *cln;
 
@@ -251,7 +251,7 @@ void __INIT_ARGV( void )
     __targv = ___ARGV;      /* from stdlib.h */
 }
 
-void __FINI_ARGV( void )
+void _WCNEAR __FINI_ARGV( void )
 {
     if( _ARGV != NULL ) {
         if( (_ARGC > 1) && (_ARGV[1] != NULL) ) {

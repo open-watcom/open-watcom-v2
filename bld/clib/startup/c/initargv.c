@@ -36,8 +36,9 @@
 #include <stddef.h>
 #include "initarg.h"
 
-    void __Init_Argv( void ) { }
-    void __Fini_Argv( void ) { }
+void _WCNEAR __Init_Argv( void ) {}
+void _WCNEAR __Fini_Argv( void ) {}
+
 #else
 
 #include "dll.h"        // needs to be first
@@ -220,7 +221,7 @@ static void *__F_NAME( _getargv, _wgetargv )(
     return( cmdline );
 }
 
-void __F_NAME(__Init_Argv,__wInit_Argv)( void )
+void _WCNEAR __F_NAME(__Init_Argv,__wInit_Argv)( void )
 {
     __F_NAME( __CmdLine, __wCmdLine ) = __F_NAME( _getargv, _wgetargv )(
         __historical_splitparms,
@@ -233,7 +234,7 @@ void __F_NAME(__Init_Argv,__wInit_Argv)( void )
     __F_NAME( ___Argv, ___wArgv ) = __F_NAME( _argv, _wargv );
 }
 
-void __F_NAME(__Fini_Argv,__wFini_Argv)( void )
+void _WCNEAR __F_NAME(__Fini_Argv,__wFini_Argv)( void )
 {
     if( __F_NAME(__CmdLine,__wCmdLine) != NULL ) {
         lib_free( __F_NAME(__CmdLine,__wCmdLine) );

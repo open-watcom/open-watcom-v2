@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,9 @@ int         __F_NAME(__argc,__wargc);
 CHAR_TYPE** __F_NAME(__argv,__wargv);
 
 #if defined( _M_I86 )
-AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_THREAD )
-AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_THREAD )
+AXIN( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_THREAD )
+AYIN( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_THREAD )
 #else
-AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_RUNTIME )
-AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_LIBRARY )
+AXIN( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_RUNTIME )
+AYIN( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_LIBRARY )
 #endif
