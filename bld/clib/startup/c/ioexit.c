@@ -82,7 +82,7 @@ _WCRTLINK int fcloseall( void )
     return( docloseall( NUM_STD_STREAMS ) );
 }
 
-void __full_io_exit( void )
+void _WCNEAR __full_io_exit( void )
 {
     docloseall( 0 );
     __purgefp();
