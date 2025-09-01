@@ -386,6 +386,7 @@ exit_code_eax2:
         push    eax                     ; don't destroy error code
         call    __CommonTerm            ; terminate the runtime
         pop     eax
+__do_exit_with_msg_ endp
 
 do_exit:
         mov     si,DGROUP
@@ -393,7 +394,6 @@ do_exit:
         lss     esp,caller_stack
         mov     caller_ss,0             ; caller_ss is used as a flag if do_exit can be jumped to
         ret
-__do_exit_with_msg_ endp
 
 __DLLstart_ endp
 

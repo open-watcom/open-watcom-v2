@@ -75,7 +75,7 @@ __declspec(aborts) void __near __exit_with_msg( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }
-__declspec(aborts) void __fatal_runtime_error( char __FAR *msg, int rc )
+__declspec(aborts) void __near __fatal_runtime_error( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }

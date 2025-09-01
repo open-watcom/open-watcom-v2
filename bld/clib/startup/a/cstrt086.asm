@@ -502,6 +502,7 @@ endif
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

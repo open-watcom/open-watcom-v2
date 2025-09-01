@@ -189,7 +189,7 @@ _WCRTLINK _WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *msg, int ret
 #endif
 }
 
-_WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
+_WCRTLINK _WCNORETURN void _WCNEAR __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
 {
     if( __EnterWVIDEO( msg ) )
         EXIT( retcode );
