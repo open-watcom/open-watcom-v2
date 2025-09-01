@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@
     extern      int     wmain( int, wchar_t ** );
 #endif
 
-void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
+_WCNORETURN void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
                                      char *env, char *cmd )
 /********************************************************************/
 {
@@ -89,5 +89,6 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     __InitThreadData( tdata );
     __OS2MainInit( &xcpt, tdata, hmod, env, cmd );
     __F_NAME(__CMain,__wCMain)();
+    // never return
 #endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #ifdef __WIDECHAR__
     extern      int     wmain( int, wchar_t ** );
 
-    void __wCMain( void )
+    _WCNORETURN void __wCMain( void )
     {
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
@@ -55,7 +55,7 @@
 #else
     extern      int     main( int, char ** );
 
-    void __CMain( void )
+    _WCNORETURN void __CMain( void )
     {
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;

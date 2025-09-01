@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +34,10 @@
 #include "osmain.h"
 
 
-void mainCRTStartup( void )
+_WCNORETURN void mainCRTStartup( void )
 {
     __NTMain();
+    // never return
 }
 
 const char _cstart_CopyRight[] = {

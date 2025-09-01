@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,8 @@
     extern      int     main( int, char ** );
 #endif
 
-void __F_NAME(__NTMain,__wNTMain)( void )
-/***************************************/
+_WCNORETURN void __F_NAME(__NTMain,__wNTMain)( void )
+/***************************************************/
 {
 #if defined(__SW_BR)
   #if defined(_M_IX86)
@@ -81,5 +81,6 @@ void __F_NAME(__NTMain,__wNTMain)( void )
     __InitThreadData( tdata );
     __NTMainInit( &rr, tdata );
     __F_NAME(__CMain,__wCMain)();
+    // never return
 #endif
 }

@@ -108,9 +108,13 @@ static void __far __null_FPE_handler( int fpe_type )
 
 FPEhandler  *__FPE_handler = __null_FPE_handler;
 
-int _OS2Main( char __far *stklow, char __far *stktop,
-                        unsigned envseg, unsigned cmdoff )
-/***********************************************************/
+#if defined(__SW_BD)
+int
+#else
+_WCNORETURN void
+#endif
+_OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
+/**********************************************************************************/
 {
     USHORT      shftval;
 
@@ -214,8 +218,8 @@ int _OS2Main( char __far *stklow, char __far *stktop,
         return( RetCode );
     }
 #else
-    _CMain();   // this doesn't return, following line quiet compiler only
-    return( EXIT_FAILURE );
+    _CMain();
+    // never return
 #endif
 }
 

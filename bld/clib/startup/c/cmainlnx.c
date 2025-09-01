@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ char    **_argv;                    /* argument vector */
 
 extern int main( int, char **, char ** );
 
-void __cdecl _LinuxMain( int argc, char **argv, char **arge )
+_WCNORETURN void __cdecl _LinuxMain( int argc, char **argv, char **arge )
 {
     thread_data *tdata;
 

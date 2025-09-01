@@ -80,16 +80,17 @@ pid_t                   _my_pid;        /* some sort of POSIX dodad */
 struct  _proc_spawn     *__cmd;         /* address of spawn msg */
 int (__far * (__far *__f))();           /* Shared library jump table    */
 extern  void __user_init( void );
-#define __user_init() ((int(__far *)(void)) __f[1])()
+#define __user_init() ((int(__far *)(void))__f[1])()
 
 #endif
 
 static void _WCI86FAR __null_FPE_rtn( int fpe_type )
 {
-    fpe_type = fpe_type;
+    (void)fpe_type;
 }
 
 #if defined( _M_I86 )
+
 static _WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
@@ -231,7 +232,7 @@ static void setup_slib( void )
     __MAGIC.dgroup = _FP_SEG( &_STACKLOW );
 }
 
-void _CMain( free, n, cmd, stk_bot, pid )
+_WCNORETURN void _CMain( free, n, cmd, stk_bot, pid )
     void                __near *free;       /* start of free space                  */
     short unsigned      n;                  /* number of bytes                      */
     struct _proc_spawn  __near *cmd;        /* pointer to spawn msg                 */
@@ -270,7 +271,8 @@ void _CMain( free, n, cmd, stk_bot, pid )
     exit( main( _argc, _argv, environ ) );    /* 02-jan-91 */
     // never return
 }
-#else
+
+#else   /* !defined( _M_I86 ) */
 
 #pragma aux _s_EFG_printf __far __parm [__eax] [__edx] [__ebx]
 static char *_s_EFG_printf(
@@ -290,7 +292,7 @@ extern void setup_es( void );
         "pop es"    \
     __modify __exact __nomemory [__es]
 
-void _CMain( int argc, char **argv, char **arge )
+_WCNORETURN void _CMain( int argc, char **argv, char **arge )
 {
     union {
         void            *p;
@@ -321,4 +323,5 @@ void _CMain( int argc, char **argv, char **arge )
     exit( main( argc, argv, arge ) );
     // never return
 }
-#endif
+
+#endif  /* defined( _M_I86 ) */

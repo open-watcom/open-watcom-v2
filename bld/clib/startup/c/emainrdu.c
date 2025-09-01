@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,11 @@
 #include "cinit.h"
 
 
-void __RdosMain( void )
+_WCNORETURN void __RdosMain( void )
 {
     thread_data             *tdata;
     REGISTRATION_RECORD     rr;
- 
+
     __InitRtns( INIT_PRIORITY_THREAD );
     tdata = ( thread_data* )RdosAllocateMem( __ThreadDataSize );
     memset( tdata, 0, __ThreadDataSize );
@@ -65,4 +66,5 @@ void __RdosMain( void )
     __sig_init_rtn();
     __InitRtns( 255 );
     __CMain();
+    // never return
 }

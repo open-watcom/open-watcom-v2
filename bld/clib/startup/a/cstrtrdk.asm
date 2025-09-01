@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -89,7 +89,7 @@ _cstart_ proc  near
 
     sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
     call __RdosMain
-    jmp _cexit_
+    ; never return
 _cstart_ endp
 
     dd ___begtext               ; make sure dead code elimination
