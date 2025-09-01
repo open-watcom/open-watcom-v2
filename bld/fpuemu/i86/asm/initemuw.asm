@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -74,7 +75,7 @@ _TEXT segment word public 'CODE'
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 public  __init_87_emulator
-__init_87_emulator proc
+__init_87_emulator proc near
         push    ds                      ; save ds
         push    dx                      ; save dx
         push    cx                      ; save cx
@@ -116,7 +117,7 @@ __init_87_emulator endp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 public __fini_87_emulator
-__fini_87_emulator proc
+__fini_87_emulator proc near
         push    dx                      ; save dx
         push    cx                      ; save cx
         push    bx                      ; save bx
@@ -149,7 +150,7 @@ _TEXT   ends
 
 include xinit.inc
 
-        xinit   __init_87_emulator,INIT_PRIORITY_FPU
-        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
+        xinitn  __init_87_emulator, INIT_PRIORITY_FPU
+        xfinin  __fini_87_emulator, INIT_PRIORITY_FPU
 
         end
