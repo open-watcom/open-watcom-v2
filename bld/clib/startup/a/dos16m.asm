@@ -439,8 +439,8 @@ _startup_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc  far
         public  "C",__exit
+__exit  proc  near
         push    ax                      ; save return code on stack
         mov     dx,DGROUP
         mov     ds,dx

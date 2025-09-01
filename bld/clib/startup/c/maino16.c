@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,8 +220,8 @@ int _OS2Main( char __far *stklow, char __far *stktop,
 }
 
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
-/***********************************************/
+_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
+/*******************************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD

@@ -243,7 +243,7 @@ __DLLstart_ endp
 LibEntry    endp
 
         public  "C",__exit
-__exit  proc
+__exit  proc near
         push    ax                      ; save return code
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit

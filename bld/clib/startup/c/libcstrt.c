@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,7 +223,7 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-_WCRTLINK _WCNORETURN void __exit( int rc )
+_WCRTLINK _WCNORETURN void _WCNEAR __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*

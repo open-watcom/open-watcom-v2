@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,7 +299,7 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {

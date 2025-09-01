@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     return( 1 );
 }
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     thread_data         *tdata;
 

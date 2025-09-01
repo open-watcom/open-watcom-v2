@@ -426,8 +426,8 @@ _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc
         public  "C",__exit
+__exit  proc near
         push    ax                      ; save return code on stack
 if _MODEL and _TINY
         jmp short L7

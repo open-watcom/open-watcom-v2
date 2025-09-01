@@ -397,8 +397,8 @@ do_exit:
 
 __DLLstart_ endp
 
-__exit  proc    far
         public  "C",__exit
+__exit  proc    near
 ifdef __STACK__
         pop     eax                     ; get return code into eax
 endif
@@ -410,7 +410,6 @@ endif
 ;--- optionally display an error msg here?
         mov     ah,4Ch
         int     21h
-
 __exit  endp
 
         public  __GETDS

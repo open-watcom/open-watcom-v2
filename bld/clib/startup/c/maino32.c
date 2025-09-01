@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ void __OS2Fini( void )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
