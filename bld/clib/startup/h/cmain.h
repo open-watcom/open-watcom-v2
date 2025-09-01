@@ -31,7 +31,7 @@
 
 #if defined( __QNX__ )
   #if defined( _M_I86 )
-    extern _WCNORETURN void _CMain(
+    extern _WCNORETURN void _WCNEAR _CMain(
         void __near                     *free,      /* [bx] start of free space    */
         unsigned short                  n,          /* [cx] number of bytes        */
         struct _proc_spawn __near       *cmd,       /* [di] pointer to spawn msg   */
@@ -45,9 +45,9 @@
 #else
   #if defined( _M_I86 )
     #if defined(__SW_BD)
-    extern int _CMain( void );
+    extern int _WCNEAR _CMain( void );
     #else
-    extern _WCNORETURN void _CMain( void );
+    extern _WCNORETURN void _WCNEAR _CMain( void );
     #endif
     #pragma aux _CMain  "_*"
   #else

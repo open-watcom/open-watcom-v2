@@ -232,7 +232,7 @@ static void setup_slib( void )
     __MAGIC.dgroup = _FP_SEG( &_STACKLOW );
 }
 
-_WCNORETURN void _CMain( free, n, cmd, stk_bot, pid )
+_WCNORETURN void _WCNEAR _CMain( free, n, cmd, stk_bot, pid )
     void                __near *free;       /* start of free space                  */
     short unsigned      n;                  /* number of bytes                      */
     struct _proc_spawn  __near *cmd;        /* pointer to spawn msg                 */

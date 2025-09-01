@@ -94,7 +94,7 @@ endif
 
 _TEXT   segment word public 'CODE'
 
-        extrn   __CMain                 : proc
+        extrn   __CMain                 : near
         extrn   __InitRtns              : near
         extrn   __FiniRtns              : near
 

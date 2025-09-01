@@ -45,14 +45,14 @@
 */
 
 #if defined(__SW_BD)
-int _CMain( void )
+int _WCNEAR _CMain( void )
 {
     return( __dll_initialize() );
 }
 #else
 extern int     main( int, char ** );
 
-_WCNORETURN void _CMain( void )
+_WCNORETURN void _WCNEAR _CMain( void )
 {
     exit( main( ___Argc, ___Argv ) );
     // never return

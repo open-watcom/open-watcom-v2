@@ -47,7 +47,7 @@ include exitwmsg.inc
 
         assume  nothing
 
-        extrn   __CMain                 : proc
+        extrn   __CMain                 : near
         extrn   __qnx_exit_             : proc
 
         extrn   _edata                  : byte  ; end of DATA (start of BSS)

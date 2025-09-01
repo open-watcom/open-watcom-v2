@@ -44,7 +44,7 @@ include xinit.inc
 
         assume  nothing
 
-        extrn   __CMain                 : far
+        extrn   __CMain                 : near
         extrn   __InitRtns              : near
         extrn   __FiniRtns              : near
         extrn   stackavail_             : far
