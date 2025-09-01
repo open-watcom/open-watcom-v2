@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -32,7 +33,7 @@
 include langenv.inc
 include mdef.inc
 
-        xrefp   "C",__DetOSInfo
+        xrefn   "C",__DetOSInfo
 
         name    osinf
 
@@ -52,6 +53,6 @@ _BSS   ends
 
 include xinit.inc
         ; Has to get run *before* 80(x)87 initialization
-        xinit   __DetOSInfo,1
+        xinitn  __DetOSInfo, 1
 
         end
