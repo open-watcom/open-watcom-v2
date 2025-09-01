@@ -198,7 +198,7 @@ void __OS2Fini( void )
     __FirstThreadData = NULL;
 }
 
-_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
+_WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
 
 _WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {

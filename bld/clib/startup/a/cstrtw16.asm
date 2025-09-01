@@ -108,8 +108,8 @@ endif
 _TEXT   segment word public 'CODE'
 
         extrn   "C",exit            : proc
-        extrn   __InitRtns          : proc
-        extrn   __FiniRtns          : proc
+        extrn   __InitRtns          : near
+        extrn   __FiniRtns          : near
         extrn   WINMAIN             : proc
 
 FAR_DATA segment byte public 'FAR_DATA'

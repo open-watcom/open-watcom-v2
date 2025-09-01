@@ -297,7 +297,7 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
     __InitRtns( 255 );
 }
 
-_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
+_WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
 
 _WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {

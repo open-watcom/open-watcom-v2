@@ -45,8 +45,8 @@ include xinit.inc
         assume  nothing
 
         extrn   __CMain                 : far
-        extrn   __FInitRtns             : far
-        extrn   __FFiniRtns             : far
+        extrn   __InitRtns              : near
+        extrn   __FiniRtns              : near
         extrn   stackavail_             : far
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
         extrn   _end                    : byte  ; end of BSS (start of STACK)
@@ -432,7 +432,7 @@ _is_ovl:                                ; endif
         mov     word ptr __FPE_handler+2,cs     ; ...
 
         mov     ax,0ffh                 ; run all initializers
-        call    __FInitRtns             ; call initializer routines
+        call    __InitRtns              ; call initializer routines
         call    __CMain
 _cstart_ endp
 _startup_ endp
@@ -504,7 +504,7 @@ L4:
 no_ovl:                                 ; endif
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
-        call    __FFiniRtns             ; call finalizer routines
+        call    __FiniRtns              ; call finalizer routines
         pop     ax                      ; restore return code
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
