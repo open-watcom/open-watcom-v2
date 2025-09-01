@@ -197,9 +197,10 @@ exit:
         retf
 
         public  __exit_with_msg_
-__exit_with_msg_:
+__exit_with_msg_ proc near
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__exit_with_msg_ endp
 
         public  __STK
 __STK:

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ static struct RdosThreadState state;
 static char FatalErrorStr[256];
 #endif
 
-_WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, int retcode )
+_WCRTLINK _WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *msg, int retcode )
 {
 #if defined( __DOS__ )
     __do_exit_with_msg( msg, retcode );

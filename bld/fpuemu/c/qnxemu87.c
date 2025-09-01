@@ -71,7 +71,7 @@ void __FiniRtns() {}
 #endif
 
 //void __Null_Argv() {} /* to satisfy main_entry */
-__declspec(aborts) void __exit_with_msg( char __FAR *msg, int rc )
+__declspec(aborts) void __near __exit_with_msg( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }
