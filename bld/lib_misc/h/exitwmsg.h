@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ extern _WCRTLINK _WCNORETURN void _plib_exit( int );
 // - this function should be called before __exit_with_msg()
 // - to allow Watcom Debugger to trap runtime errors.
 // - this really needs to be far!!!
-extern _WCRTLINK int __EnterWVIDEO( char _WCFAR *string );
+extern _WCRTLINK int _WCNEAR __EnterWVIDEO( char _WCFAR *string );
 
 #ifdef __cplusplus
     };

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 
 _WCRTDATA char volatile DEBUG_PRESENT_NAME = 0;
 
-_WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
+_WCRTLINK int _WCNEAR __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
 {
 #ifdef __AXP__
     /* unused parameters */ (void)string;
