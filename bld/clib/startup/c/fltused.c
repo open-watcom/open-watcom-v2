@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,4 @@ unsigned _fltused_ = 0;
   #pragma aux _fltused_ "*";
 #endif
 
-extern void __setEFGfmt( void );
-
-AXI( __setEFGfmt, INIT_PRIORITY_LIBRARY )
+AXIN( __setEFGfmt, INIT_PRIORITY_LIBRARY )
