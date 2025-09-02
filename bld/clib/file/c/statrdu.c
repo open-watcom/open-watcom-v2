@@ -44,10 +44,31 @@
 #include <time.h>
 #include "rtdata.h"
 #include "pathmac.h"
+#include "find.h"
 
 
-static unsigned short at2mode();
-extern time_t   __rdos_filetime_cvt( unsigned long long tics );
+static unsigned short at2mode( int attr, char *fname )
+{
+    register unsigned short mode;
+    register char           *ext;
+
+    if( attr & _A_SUBDIR )
+        mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
+    else {
+        mode = S_IFREG;
+        /* determine if file is executable, very PC specific */
+        if( (ext = strchr( fname, '.' )) != NULL ) {
+            ++ext;
+            if( strcmp( ext, "EXE" ) == 0 || strcmp( ext, "COM" ) == 0 ) {
+                mode |= S_IXUSR | S_IXGRP | S_IXOTH;
+            }
+        }
+    }
+    mode |= S_IRUSR | S_IRGRP | S_IROTH;
+    if( (attr & _A_RDONLY) == 0 )               /* if file is not read-only */
+        mode |= S_IWUSR | S_IWGRP | S_IWOTH;    /* - indicate writeable     */
+    return( mode );
+}
 
 _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 {
@@ -205,28 +226,4 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     buf->st_originatingNameSpace = 0;
 
     return( 0 );
-}
-
-
-static unsigned short at2mode( int attr, char *fname )
-{
-    register unsigned short mode;
-    register char           *ext;
-
-    if( attr & _A_SUBDIR )
-        mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
-    else {
-        mode = S_IFREG;
-        /* determine if file is executable, very PC specific */
-        if( (ext = strchr( fname, '.' )) != NULL ) {
-            ++ext;
-            if( strcmp( ext, "EXE" ) == 0 || strcmp( ext, "COM" ) == 0 ) {
-                mode |= S_IXUSR | S_IXGRP | S_IXOTH;
-            }
-        }
-    }
-    mode |= S_IRUSR | S_IRGRP | S_IROTH;
-    if( (attr & _A_RDONLY) == 0 )               /* if file is not read-only */
-        mode |= S_IWUSR | S_IWGRP | S_IWOTH;    /* - indicate writeable     */
-    return( mode );
 }

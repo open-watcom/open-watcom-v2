@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@
                                           struct _finddatai64_t *fileinfo );
     extern void     __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
                                            struct _wfinddatai64_t *fileinfo );
-#elif defined( __RDOS__ )
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
     struct _rdos_find_t {
         int handle;
