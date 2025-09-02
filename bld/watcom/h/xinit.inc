@@ -69,9 +69,7 @@ if COMP_CFG_COFF EQ 1
 endif
 else
         dw      rtn
-if _MODEL and _BIG_CODE
         dw      0
-endif
 endif
 XI      ends
         endm
@@ -111,9 +109,7 @@ if COMP_CFG_COFF EQ 1
 endif
 else
         dw      rtn
-if _MODEL and _BIG_CODE
         dw      0
-endif
 endif
 YI      ends
         endm
