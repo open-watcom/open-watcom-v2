@@ -43,7 +43,7 @@
 #ifdef __WIDECHAR__
     extern      int     wmain( int, wchar_t ** );
 
-    _WCNORETURN void __wCMain( void )
+    _WCNORETURN void _WCNEAR __wCMain( void )
     {
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
@@ -55,7 +55,7 @@
 #else
     extern      int     main( int, char ** );
 
-    _WCNORETURN void __CMain( void )
+    _WCNORETURN void _WCNEAR __CMain( void )
     {
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;

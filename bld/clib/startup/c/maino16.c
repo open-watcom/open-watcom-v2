@@ -113,8 +113,8 @@ int
 #else
 _WCNORETURN void
 #endif
-_OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
-/**********************************************************************************/
+_WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
+/******************************************************************************************/
 {
     USHORT      shftval;
 

@@ -292,7 +292,7 @@ extern void setup_es( void );
         "pop es"    \
     __modify __exact __nomemory [__es]
 
-_WCNORETURN void _CMain( int argc, char **argv, char **arge )
+_WCNORETURN void _WCNEAR _CMain( int argc, char **argv, char **arge )
 {
     union {
         void            *p;

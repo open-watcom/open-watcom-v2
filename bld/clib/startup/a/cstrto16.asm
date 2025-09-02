@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -50,7 +50,7 @@ include xinit.inc
         assume  nothing
 
 
-        xrefp   __OS2Main
+        xrefn   __OS2Main
         extrn   __DOSseg__      : byte
 
 

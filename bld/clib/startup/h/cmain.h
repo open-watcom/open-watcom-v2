@@ -39,7 +39,7 @@
         pid_t                           pid );      /* [ax] process id             */
     #pragma aux _CMain "_*" __parm [__bx] [__cx] [__di] [__dx] [__ax]
   #else
-    extern _WCNORETURN void _CMain( int argc, char **argv, char **arge );
+    extern _WCNORETURN void _WCNEAR _CMain( int argc, char **argv, char **arge );
     #pragma aux _CMain "_*" __parm [__eax] [__edx] [__ebx]
   #endif
 #else
@@ -51,8 +51,8 @@
     #endif
     #pragma aux _CMain  "_*"
   #else
-    extern _WCNORETURN void  __CMain( void );
-    extern _WCNORETURN void  __wCMain( void );
+    extern _WCNORETURN void  _WCNEAR __CMain( void );
+    extern _WCNORETURN void  _WCNEAR __wCMain( void );
     #if defined( _M_IX86 )
       #pragma aux __CMain  "*"
       #pragma aux __wCMain "*"
