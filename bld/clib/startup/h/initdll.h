@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DllMain function delcaration.
+* Description:  DllMain function declaration.
 *
 ****************************************************************************/
 
