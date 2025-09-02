@@ -78,7 +78,7 @@ _start proc near
         push    eax             ; Push arge (pointer to environment)
         push    esi             ; Push argv
         push    ecx             ; Push argc
-        call    __LinuxMain
+        jmp     __LinuxMain
         ; never return
 _start endp
 _cstart_ endp
