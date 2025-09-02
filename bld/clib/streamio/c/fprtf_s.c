@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +42,14 @@
 #include "fprtf_s.h"
 #include "orient.h"
 #include "clibsupp.h"
+#include "streamio.h"
 
-
-extern  void    __ioalloc( FILE * );
 
 /*
  * file_putc -- write a character to a file
  */
 static prtf_callback_t file_putc; // setup calling convention
-static void file_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
+static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
 {
     __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPECS_DEST( FILE, specs ) );
     specs->_output_count++;
