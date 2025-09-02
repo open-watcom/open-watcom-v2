@@ -421,7 +421,7 @@ endif
 
         mov     ax,0FFh                 ; run all initalizers
         call    __InitRtns              ; call initializer routines
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code

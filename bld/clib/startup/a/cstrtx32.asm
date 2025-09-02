@@ -350,7 +350,7 @@ stack_okay:
         call    __InitRtns              ; call initializer routines
         mov     eax,_LpCmdLine          ; cmd buffer pointed at by EAX
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
-        call    __CMain
+        jmp     __CMain                 ; never return
 __x386_init endp
 
 insuf_mem:

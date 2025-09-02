@@ -88,8 +88,7 @@ _cstart_ proc  near
     mov ds:ExitEsp,esp
 
     sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
-    call __RdosMain
-    ; never return
+    jmp __RdosMain              ; never return
 _cstart_ endp
 
     dd ___begtext               ; make sure dead code elimination

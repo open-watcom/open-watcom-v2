@@ -516,7 +516,7 @@ noi3:   pop     es
 endif
 
         sub     ebp,ebp                 ; ebp=0 indicates end of ebp chain
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 
 

@@ -433,7 +433,7 @@ _is_ovl:                                ; endif
 
         mov     ax,0ffh                 ; run all initializers
         call    __InitRtns              ; call initializer routines
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 _startup_ endp
 
