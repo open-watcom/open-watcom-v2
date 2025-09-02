@@ -221,15 +221,15 @@
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
   #else
-   void __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
   #else
-   void __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
+   void _WCNEAR __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
@@ -340,15 +340,15 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
   #else
-   void __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
   #else
-   void __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
+   void _WCNEAR __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/

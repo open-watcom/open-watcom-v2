@@ -65,7 +65,7 @@
 
 #ifndef __WIDECHAR__
 
-int __fill_buffer( FILE *fp )
+int _WCNEAR __fill_buffer( FILE *fp )
 {
     if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );
@@ -106,7 +106,7 @@ int __fill_buffer( FILE *fp )
     return( fp->_cnt );
 }
 
-static int __filbuf( FILE *fp )
+static int _WCNEAR __filbuf( FILE *fp )
 {
     if( __fill_buffer( fp ) == 0 ) {
         return( EOF );
@@ -167,8 +167,8 @@ _WCRTLINK int fgetc( FILE *fp )
 
 #else
 
-static int __read_wide_char( FILE *fp, wchar_t *wc )
-/**************************************************/
+static int _WCNEAR __read_wide_char( FILE *fp, wchar_t *wc )
+/**********************************************************/
 {
     if( fp->_flag & _BINARY ) {
         /*** Read a wide character ***/

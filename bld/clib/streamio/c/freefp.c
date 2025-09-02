@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
     to actually release the storage.
 */
 
-void __freefp( FILE * fp )
+void _WCNEAR __freefp( FILE * fp )
 {
     __stream_link       **owner;
     __stream_link       *link;
@@ -62,7 +63,7 @@ void __freefp( FILE * fp )
 }
 
 
-void __purgefp( void )
+void _WCNEAR __purgefp( void )
 {
     __stream_link       *curr;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,10 @@
 #include "rterrno.h"
 #include "qwrite.h"
 
+
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)
 
-int __qwrite( int file, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int file, const void *buffer, unsigned len )
 {
     unsigned    total;
     int         h;

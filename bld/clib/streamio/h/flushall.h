@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern int              __flushall( int );
+extern int          _WCNEAR __flushall( int );

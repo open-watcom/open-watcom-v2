@@ -44,10 +44,10 @@
 #include "thread.h"
 
 
-#define PAD_SIZE	512
+#define PAD_SIZE        512
 
 // pad with zero bytes
-void static __padfile( int handle, long offset, long diff )
+void static _WCNEAR __padfile( int handle, long offset, long diff )
 {
     int rc;
     unsigned amount;

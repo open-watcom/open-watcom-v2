@@ -62,8 +62,8 @@
 #endif
 
 
-static unsigned short attr2mode( OS_UINT attr )
-/*********************************************/
+static unsigned short _WCNEAR attr2mode( OS_UINT attr )
+/*****************************************************/
 {
     register unsigned short         mode;
 

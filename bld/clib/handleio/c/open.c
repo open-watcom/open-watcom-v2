@@ -48,13 +48,12 @@
 #include "rtumask.h"
 #include "tinyio.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "extender.h"
 #include "msdos.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                                        unsigned shflag, va_list args )
 {
     unsigned    rwmode;

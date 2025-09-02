@@ -614,7 +614,7 @@ static int vfs_write( int handle, const void *buffer, unsigned len )
     return( ret );
 }
 
-int __qread( int handle, void *buffer, unsigned len )
+int _WCNEAR __qread( int handle, void *buffer, unsigned len )
 {
     if( handle >= 0
       && handle < MapCount ) {
@@ -625,7 +625,7 @@ int __qread( int handle, void *buffer, unsigned len )
     return( RdosReadHandle( handle, buffer, len ) );
 }
 
-int __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     if( handle >= 0
       && handle < MapCount ) {

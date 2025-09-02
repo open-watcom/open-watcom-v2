@@ -607,7 +607,7 @@ _WCRTLINK off_t _tell( int handle )
     return( GetHandlePos( handle ) );
 }
 
-int __qread( int handle, void *buffer, unsigned len )
+int _WCNEAR __qread( int handle, void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;
@@ -625,7 +625,7 @@ int __qread( int handle, void *buffer, unsigned len )
     return( -1 );
 }
 
-int __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;

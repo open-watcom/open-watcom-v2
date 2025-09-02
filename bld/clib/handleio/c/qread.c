@@ -53,7 +53,7 @@
 
 #define MAXBUFF 0x8000
 
-static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
+static tiny_ret_t _WCNEAR __TinyRead( int handle, char *buffer, unsigned len )
 {
     unsigned    total;
     unsigned    readamt;
@@ -80,7 +80,7 @@ static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 
 
 
-int __qread( int handle, void *buffer, unsigned len )
+int _WCNEAR __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;

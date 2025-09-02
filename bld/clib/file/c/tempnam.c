@@ -47,7 +47,7 @@
 
 #define UNIQUE                  5
 
-static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
+static CHAR_TYPE * _WCNEAR try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 {
     CHAR_TYPE *         buf;
     size_t              numchars;

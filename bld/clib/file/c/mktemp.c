@@ -42,7 +42,7 @@
 #endif
 
 
-static int is_valid_template( CHAR_TYPE *template, CHAR_TYPE **xs )
+static int _WCNEAR is_valid_template( CHAR_TYPE *template, CHAR_TYPE **xs )
 {
     int                 len;
     CHAR_TYPE           *p;

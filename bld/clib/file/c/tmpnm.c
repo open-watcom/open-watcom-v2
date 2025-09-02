@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@
     extern char *__tmpdir( char * );
 #endif
 
-static CHAR_TYPE *__F_NAME(putbits,_wputbits)( CHAR_TYPE *p, unsigned val )
+static CHAR_TYPE * _WCNEAR __F_NAME(putbits,_wputbits)( CHAR_TYPE *p, unsigned val )
 {
     if( val > 0x1f ) {
         p = __F_NAME(putbits,_wputbits)( p, val >> 5 );
@@ -87,7 +87,7 @@ static CHAR_TYPE *__F_NAME(putbits,_wputbits)( CHAR_TYPE *p, unsigned val )
     return( p + 1 );
 }
 
-static size_t init_name( void )
+static size_t _WCNEAR init_name( void )
 {
     CHAR_TYPE   *p;
 

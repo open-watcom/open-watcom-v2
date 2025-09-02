@@ -105,8 +105,8 @@ typedef union {
     long                _32[2];
 } __i64;
 
-static int zero_pad( int handle )
-/*******************************/
+static int _WCNEAR zero_pad( int handle )
+/***************************************/
 {
 #if defined(__NT__)
     HANDLE      osfh;
@@ -210,8 +210,8 @@ static int zero_pad( int handle )
     ENOSPC meaning no space left on device.
 */
 
-static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt )
-/********************************************************************************/
+static int _WCNEAR os_write( int handle, const void *buffer, unsigned len, unsigned *amt )
+/****************************************************************************************/
 {
     int         rc;
 #if defined(__NT__)
@@ -258,7 +258,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 }
 
 #if defined(__WINDOWS_386__)
-  static int __write( int handle, const void *buffer, unsigned len )
+  static int _WCNEAR __write( int handle, const void *buffer, unsigned len )
 #else
   _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 #endif

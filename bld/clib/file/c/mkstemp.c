@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@
 
 /* Note: This code is similar to _mktemp() but intended for POSIX usage */
 
-static int is_valid_template( char *template, char **xs )
+static int _WCNEAR is_valid_template( char *template, char **xs )
 {
     int                 len;
     char                *p;

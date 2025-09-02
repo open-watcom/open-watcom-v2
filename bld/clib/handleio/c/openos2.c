@@ -57,7 +57,7 @@
 #include "thread.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     OS_UINT     error, actiontaken;
     OS_UINT     fileattr, openflag, openmode;

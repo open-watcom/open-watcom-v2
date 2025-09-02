@@ -47,7 +47,7 @@
 #include "find.h"
 
 
-static unsigned short at2mode( int attr, char *fname )
+static unsigned short _WCNEAR at2mode( int attr, char *fname )
 {
     register unsigned short mode;
     register char           *ext;

@@ -39,7 +39,7 @@
 #include "streamio.h"
 
 
-void __chktty( FILE  *fp )
+void _WCNEAR __chktty( FILE  *fp )
 {
     /* if we have not determined that we've got a tty then check for one */
     if( (fp->_flag & _ISTTY) == 0 ) {

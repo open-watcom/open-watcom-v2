@@ -58,7 +58,7 @@ extern  unsigned _HUGEDATA __init_mode[_NFILES];
 
 static  unsigned _init_NFiles;          // original __NFiles value;
 
-void __grow_iomode( int num )
+void _WCNEAR __grow_iomode( int num )
 {
     unsigned    *new;
 

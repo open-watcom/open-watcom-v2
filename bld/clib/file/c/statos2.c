@@ -59,7 +59,7 @@
 #include "pathmac.h"
 
 
-static unsigned short at2mode( OS_UINT attr, char *fname ) {
+static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 
     register unsigned short mode;
     register unsigned char  *ext;

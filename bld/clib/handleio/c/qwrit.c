@@ -64,7 +64,7 @@
 
 #define MAXBUFF 0x8000
 
-static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
+static tiny_ret_t _WCNEAR __TinyWrite( int handle, const void *buffer, unsigned len )
 {
     unsigned    total;
     unsigned    writamt;
@@ -88,7 +88,7 @@ static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
 }
 #endif
 
-int __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     int             atomic;
 #if defined(__NT__)

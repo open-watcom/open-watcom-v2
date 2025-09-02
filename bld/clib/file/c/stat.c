@@ -97,8 +97,8 @@
 
 #else
 
-static unsigned short at2mode( int attr, char *fname )
-/****************************************************/
+static unsigned short _WCNEAR at2mode( int attr, char *fname )
+/************************************************************/
 {
     unsigned short  mode;
     unsigned char   *ext;

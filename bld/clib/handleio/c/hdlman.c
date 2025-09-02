@@ -229,7 +229,7 @@ AYI( __finiPOSIXHandles, INIT_PRIORITY_LIBRARY-1 )
 #endif
 
 
-void __set_handles( int num )
+void _WCNEAR __set_handles( int num )
 {
     __NHandles = num;
 }

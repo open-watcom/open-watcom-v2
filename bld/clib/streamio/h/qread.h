@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,5 +33,5 @@
 #ifdef __NETWARE__
     #define __qread( h, b, l ) read( h, b, l )
 #else
-    extern int __qread( int handle, void *buffer, unsigned len );
+    extern int _WCNEAR __qread( int handle, void *buffer, unsigned len );
 #endif

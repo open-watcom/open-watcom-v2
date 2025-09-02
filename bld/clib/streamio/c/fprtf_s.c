@@ -56,7 +56,7 @@ static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
 }
 
 
-int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
+int _WCNEAR __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
                          const CHAR_TYPE * __restrict format, va_list args )
 {
     int             not_buffered;

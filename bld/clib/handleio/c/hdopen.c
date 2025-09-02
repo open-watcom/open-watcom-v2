@@ -52,8 +52,8 @@
 
 #if !defined(__NETWARE__)
 
-static int check_mode( int handle, int mode )
-/*******************************************/
+static int _WCNEAR check_mode( int handle, int mode )
+/***************************************************/
 {
   #if defined(__UNIX__)
     int     __errno;

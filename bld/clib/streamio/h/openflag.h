@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern unsigned __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags );
+extern unsigned _WCNEAR __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags );
