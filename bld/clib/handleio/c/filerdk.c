@@ -246,7 +246,7 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     return( -1 );
 }
 
-unsigned __GetIOMode( int handle )
+unsigned _WCNEAR __GetIOMode( int handle )
 {
     unsigned mode = 0;
 
@@ -264,7 +264,7 @@ unsigned __GetIOMode( int handle )
     return( mode );
 }
 
-void __SetIOMode( int handle, unsigned value )
+void _WCNEAR __SetIOMode( int handle, unsigned value )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -278,7 +278,7 @@ void __SetIOMode( int handle, unsigned value )
     RdosLeaveKernelSection( &handle_section );
 }
 
-int __SetIOMode_grow( int handle, unsigned value )
+int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
 {
     int ret = -1;
 

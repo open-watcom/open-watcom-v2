@@ -34,14 +34,14 @@
 #define _SETERNO_H_INCLUDED
 
 // defined in _dos\c\dosret.c
-extern int __set_errno_dos( unsigned int );
-extern int __set_errno_dos_reterr( unsigned int );
+extern int _WCNEAR __set_errno_dos( unsigned int );
+extern int _WCNEAR __set_errno_dos_reterr( unsigned int );
 #if defined( __NT__ )
     extern int __set_errno_nt( void );
     extern int __set_errno_nt_reterr( void );
 #endif
 
 // defined in startup\c\seterrno.c
-extern int  __set_EINVAL( void );
+extern int  _WCNEAR __set_EINVAL( void );
 
 #endif

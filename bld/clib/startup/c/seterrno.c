@@ -55,7 +55,7 @@ _WCRTLINK void __set_ERANGE( void )
     _RWD_errno = ERANGE;
 }
 
-int __set_EINVAL( void )
+int _WCNEAR __set_EINVAL( void )
 {
     _RWD_errno = EINVAL;
     return( -1 );

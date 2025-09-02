@@ -134,17 +134,17 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     return( -1 );
 }
 
-unsigned __GetIOMode( int handle )
+unsigned _WCNEAR __GetIOMode( int handle )
 {
     return( RdosGetHandleMode( handle ) );
 }
 
-void __SetIOMode( int handle, unsigned value )
+void _WCNEAR __SetIOMode( int handle, unsigned value )
 {
     RdosSetHandleMode( handle, value );
 }
 
-int __SetIOMode_grow( int handle, unsigned value )
+int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
 {
     return( RdosSetHandleMode( handle, value ) );
 }

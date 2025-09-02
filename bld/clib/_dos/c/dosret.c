@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -353,7 +353,7 @@ static signed char xlat[] = {
 #define E_MAXERR        19      /* unknown error, DOS 2.0 */
 #endif
 
-int __set_errno_dos( unsigned int err )
+int _WCNEAR __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
     _RWD_doserrno = err;
@@ -386,7 +386,7 @@ int __set_errno_dos( unsigned int err )
     return( -1 );
 }
 
-int __set_errno_dos_reterr( unsigned int err )
+int _WCNEAR __set_errno_dos_reterr( unsigned int err )
 {
     __set_errno_dos( err );
     return( err );

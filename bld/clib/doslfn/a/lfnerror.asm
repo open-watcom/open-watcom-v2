@@ -36,7 +36,7 @@
 include mdef.inc
 include struct.inc
 
-        xrefp   "C",__set_errno_dos
+        xrefn   "C",__set_errno_dos
         modstart lfnerror
 
         xdefp   "C", __lfnerror_0

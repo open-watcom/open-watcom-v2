@@ -44,7 +44,7 @@
 
 #define _INITIALIZED    _DYNAMIC
 
-void __ChkTTYIOMode( int handle )
+void _WCNEAR __ChkTTYIOMode( int handle )
 {
     if( handle < NUM_STD_STREAMS
       && (__io_mode[handle] & _INITIALIZED) == 0 ) {

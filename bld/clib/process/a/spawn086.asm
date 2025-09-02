@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -36,7 +36,7 @@ include msdos.inc
 include struct.inc
 
         name    dospawn
-        xrefp   "C",__set_errno_dos
+        xrefn   "C",__set_errno_dos
         extrn   __close_ovl_file    :dword
 if _MODEL eq _SMALL
         extrn   __GETDS         :near

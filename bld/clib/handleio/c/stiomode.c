@@ -120,7 +120,7 @@ AXI( __preinit_iomode_os2, INIT_PRIORITY_RUNTIME );
 
 #define _INITIALIZED    _DYNAMIC
 
-int __SetIOMode_grow( int handle, unsigned value )
+int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
 {
     int         i;
 

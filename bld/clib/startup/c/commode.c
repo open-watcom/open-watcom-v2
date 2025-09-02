@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,10 +48,10 @@
  * file will work in any 16-bit memory model.
  */
 
-static void do_it( void )
+static void _WCNEAR do_it( void )
 {
     __set_commode();
 }
 
 
-AXI( do_it, INIT_PRIORITY_LIBRARY )
+AXIN( do_it, INIT_PRIORITY_LIBRARY )
