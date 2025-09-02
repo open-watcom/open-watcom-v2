@@ -36,12 +36,12 @@ static __rt_flag    __rt_control = RTFLG_NONE;
 
 #ifdef _M_IX86
 
-_WCRTLINK void _SetLD64bit( void )
+void _WCNEAR _SetLD64bit( void )
 {
     __rt_control &= ~RTFLG_LD_80BIT;
 }
 
-_WCRTLINK void _SetLD80bit( void )
+void _WCNEAR _SetLD80bit( void )
 {
     __rt_control |= RTFLG_LD_80BIT;
 }

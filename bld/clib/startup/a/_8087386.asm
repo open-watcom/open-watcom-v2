@@ -35,7 +35,7 @@ include mdef.inc
 
         modstart    _8087
 
-        xrefn   "C",__chk8087
+        xrefp   "C",__chk8087
 
 datasegment
         public  __8087
@@ -49,6 +49,6 @@ enddata
 
 include xinit.inc
 
-        xinitn  __chk8087, INIT_PRIORITY_FPU + 3
+        xinit   __chk8087, INIT_PRIORITY_FPU + 3
 
         end

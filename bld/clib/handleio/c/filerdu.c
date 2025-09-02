@@ -662,8 +662,9 @@ static void init( void )
 {
     int i;
 
-    for( i = 0; i < 3; i++ )
+    for( i = 0; i < 3; i++ ) {
         CreateMap( i );
+    }
 }
 
 AXI( init, INIT_PRIORITY_RUNTIME )

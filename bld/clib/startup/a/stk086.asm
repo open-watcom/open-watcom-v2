@@ -47,7 +47,7 @@ enddata
         xdefp   __STK
         xdefp   "C",__STKOVERFLOW
 
-        defp    _init_stk
+        defn    _init_stk
         mov     SS_seg,SS               ; save original SS value
         ret                             ; return
 _init_stk endp
@@ -94,6 +94,6 @@ msg     db      "Stack Overflow!", 0
 
 include xinit.inc
 
-        xinit   _init_stk,DEF_PRIORITY
+        xinitn  _init_stk, DEF_PRIORITY
 
         end

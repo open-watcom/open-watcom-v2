@@ -32,7 +32,7 @@
 include langenv.inc
 include mdef.inc
 
-        xrefn   "C",__DetOSInfo
+        xrefp   "C",__DetOSInfo
 
         name    osinf386
 
@@ -50,6 +50,6 @@ _BSS   ends
 
 include xinit.inc
         ; Has to get run *before* 80(x)87 initialization
-        xinitn  __DetOSInfo, 1
+        xinit   __DetOSInfo, 1
 
         end

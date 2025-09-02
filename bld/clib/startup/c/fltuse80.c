@@ -48,5 +48,5 @@ unsigned _fltused_ = 0;
 
 #pragma alias ( "_fltused_80bit_" , "_fltused_" )
 
-AXI( _SetLD80bit, INIT_PRIORITY_LIBRARY )
+AXIN( _SetLD80bit, INIT_PRIORITY_LIBRARY )
 AXIN( __setEFGfmt, INIT_PRIORITY_LIBRARY )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ typedef enum {
 } __rt_flag;
 
 #ifdef _M_IX86
-extern void _SetLD64bit( void );
-extern void _SetLD80bit( void );
+extern void _WCNEAR _SetLD64bit( void );
+extern void _WCNEAR _SetLD80bit( void );
 #endif
 extern int  _LDisDouble( void );
