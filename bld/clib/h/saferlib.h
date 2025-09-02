@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 
 extern  constraint_handler_t    __runtime_constraint_handler;
 
-extern  void    __rtct_fail( const char *fn, const char *reason, void *reserved );
+extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *reserved );
 
 // Runtime-constraint validation macros. Call the handler and return zero if check
 // failed, return non-zero value if check succeeded.
