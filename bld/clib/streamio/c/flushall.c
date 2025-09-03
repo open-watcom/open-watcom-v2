@@ -35,8 +35,7 @@
 #include <stdio.h>
 #include "rtdata.h"
 #include "fileacc.h"
-#include "clibsupp.h"
-#include "flushall.h"
+#include "_flush.h"
 
 
 int _WCNEAR __flushall( int mask )

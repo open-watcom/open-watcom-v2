@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ _WCRTLINK extern void   __set_ERANGE( void );
 _WCRTLINK extern FILE   *__get_std_stream( unsigned handle );
 
 /* used by C++ run-time library */
-_WCRTLINK extern int    __flush( FILE * );
+_WCRTLINK extern int    __plusplus_flush( FILE * );
 _WCRTLINK extern int    __plusplus_fstat( int handle, int *pios_mode );
 _WCRTLINK extern int    __plusplus_open( const char *name, int *pios_mode, int prot );
 

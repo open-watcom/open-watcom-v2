@@ -55,7 +55,7 @@
 #include "fileacc.h"
 #include "qread.h"
 #include "orient.h"
-#include "flushall.h"
+#include "_flush.h"
 #include "streamio.h"
 #include "thread.h"
 #include "fillbuf.h"

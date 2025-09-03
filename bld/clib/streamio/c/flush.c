@@ -47,6 +47,7 @@
 #include "fileacc.h"
 #include "qwrite.h"
 #include "lseek.h"
+#include "_flush.h"
 #include "clibsupp.h"
 #include "thread.h"
 
@@ -54,14 +55,14 @@
 #if defined( __NETWARE__ ) && defined( _THIN_LIB )
 
 /* Take flush from LibC */
-_WCRTLINK int __flush( FILE *fp )
+int _WCNEAR __flush( FILE *fp )
 {
     return( fflush( fp ) );
 }
 
 #else
 
-_WCRTLINK int __flush( FILE *fp )
+int _WCNEAR __flush( FILE *fp )
 {
     int             len;
     long            offset;
@@ -119,6 +120,11 @@ _WCRTLINK int __flush( FILE *fp )
 #endif
     _ReleaseFile( fp );
     return( ret );
+}
+
+_WCRTLINK int __plusplus_flush( FILE *fp )
+{
+    return( __flush( fp ) );
 }
 
 #endif

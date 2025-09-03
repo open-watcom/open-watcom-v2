@@ -41,7 +41,7 @@
 #include "lseek.h"
 #include "streamio.h"
 #include "close.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "tmpfile.h"
 
 

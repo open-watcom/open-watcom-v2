@@ -49,7 +49,7 @@
 #include "rterrno.h"
 #include "fileacc.h"
 #include "orient.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "streamio.h"
 #include "thread.h"
 

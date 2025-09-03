@@ -43,7 +43,7 @@
 #include "printf.h"
 #include "fprtf.h"
 #include "orient.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "streamio.h"
 
 
