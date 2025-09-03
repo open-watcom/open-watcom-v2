@@ -1,12 +1,12 @@
 #                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #===============================================================================================================
-!inject 64lseek.obj     d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject 64_lseek.obj    d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject 64fillen.obj    d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject 64lseek.obj     d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject 64_lseek.obj    d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject 64fillen.obj    d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject 64fstat.obj     d16 d32                                                     w16 w32
 !inject 64fstos2.obj                                                o16 o32
 !inject 64fstwnt.obj                nt  nta ntp ntm
-!inject 64tell.obj      d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject 64tell.obj      d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject chsiz.obj       d16 d32                                                     w16 w32
 !inject chsizos2.obj                                                o16 o32
 !inject chsizqnx.obj                                                        q16 q32
@@ -32,7 +32,7 @@
 !inject finfoptr.obj                nt  nta ntp ntm
 !inject fileinfo.obj                nt  nta ntp ntm
 !inject filelen.obj     d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject fileno.obj      d16 d32     nt  nta ntp ntm nvc ncl nvl nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject fileno.obj      d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject filerdk.obj                                                                                         rdk
 !inject filerdu.obj                                                                                     rdu
 !inject fmdptr.obj      d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32         w16 w32             rdu rdk

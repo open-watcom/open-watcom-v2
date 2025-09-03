@@ -51,9 +51,9 @@ _WCRTLINK int _chsize( int handle, long size )
 
     __handle_check( handle, -1 );
 
-    current_offset = lseek( handle, 0L, SEEK_CUR ); /* remember current */
+    current_offset = __lseek( handle, 0L, SEEK_CUR ); /* remember current */
     if( current_offset == -1 ) return( -1 );
-    diff = size - lseek( handle, 0L, SEEK_END );
+    diff = size - __lseek( handle, 0L, SEEK_END );
     if( diff > 0 ) {
         /* pad file */
         if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
@@ -74,7 +74,7 @@ _WCRTLINK int _chsize( int handle, long size )
             }
             amount = diff;
         } else {
-            if( lseek( handle, (size-1), SEEK_SET ) != (size-1) ) {
+            if( __lseek( handle, (size-1), SEEK_SET ) != (size-1) ) {
                 return( -1 );
             }
             buff[0] = 0;
@@ -86,6 +86,6 @@ _WCRTLINK int _chsize( int handle, long size )
         if( ltrunc( handle, size, SEEK_SET ) != size ) return( -1 );
         if( current_offset > size ) current_offset = size;
     }
-    lseek( handle, current_offset, SEEK_SET );
+    __lseek( handle, current_offset, SEEK_SET );
     return( 0 );
 }

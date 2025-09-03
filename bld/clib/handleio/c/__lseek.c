@@ -41,6 +41,8 @@
     #include "os2fil64.h"
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
 #endif
 #include "rterrno.h"
 #include "i64.h"
@@ -57,16 +59,15 @@
 
 #ifdef __INT64__
 
-_WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
+__int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
 {
-#if defined( __NT__ ) || defined( __OS2__ ) || defined( __LINUX__ )
+#if defined( __NT__ ) || defined( __OS2_32BIT__ ) || defined( __LINUX__ )
     __int64         pos;
 
     __handle_check( handle, -1 );
 
   #if defined( __OS2__ )
     {
-    #if !defined( _M_I86 )
         APIRET          rc;
 
         if( __os2_DosSetFilePtrL != NULL ) {
@@ -75,7 +76,6 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
                 return( __set_errno_dos( rc ) );
             }
         } else {
-    #endif
             if( offset > LONG_MAX || offset < LONG_MIN ) {
                 _RWD_errno = EINVAL;
                 return( -1LL );
@@ -84,9 +84,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
             if( (long)pos == -1L ) {
                 return( -1LL );
             }
-    #if !defined( _M_I86 )
         }
-    #endif
     }
   #elif defined( __NT__ )
     {
@@ -128,7 +126,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
 
 #else
 
-_WCRTLINK long __lseek( int handle, long offset, int origin )
+long _WCNEAR __lseek( int handle, long offset, int origin )
 {
 #if defined( __NT__ )
     DWORD               pos;

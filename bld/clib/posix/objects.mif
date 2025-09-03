@@ -78,13 +78,13 @@
 !inject sigismem.obj                                                                l32 lpc lmp
 !inject socket.obj                                                                  l32 lpc lmp rdu
 !inject stsckopt.obj                                                                l32 lpc lmp rdu
-!inject tcdrain.obj								    l32 lpc lmp
-!inject tcflow.obj								    l32 lpc lmp
+!inject tcdrain.obj                                                                 l32 lpc lmp
+!inject tcflow.obj                                                                  l32 lpc lmp
 !inject tcflush.obj                                                                 l32 lpc lmp
-!inject tcgetsid.obj								    l32 lpc lmp
+!inject tcgetsid.obj                                                                l32 lpc lmp
 !inject tcgtattr.obj                                                                l32 lpc lmp
 !inject tcgtpgrp.obj                                                                l32 lpc lmp
-!inject tcsendbr.obj								    l32 lpc lmp
+!inject tcsendbr.obj                                                                l32 lpc lmp
 !inject tcstattr.obj                                                                l32 lpc lmp
 !inject tcstpgrp.obj                                                                l32 lpc lmp
 

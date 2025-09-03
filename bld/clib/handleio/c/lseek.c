@@ -49,7 +49,9 @@
 
 _WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
 {
-#if !defined( __LINUX__ )
+#if defined( __LINUX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ ) || defined( __QNX__ ) || defined( __NETWARE__ )
+    return( __lseeki64( handle, offset, origin ) );
+#else
     unsigned        iomode_flags;
 
     __handle_check( handle, -1 );
@@ -60,8 +62,8 @@ _WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
     if( offset >= 0 && (iomode_flags & _APPEND) == 0 ) {
         __SetIOMode( handle, iomode_flags | _FILEEXT );
     }
-#endif
     return( __lseeki64( handle, offset, origin ) );
+#endif
 }
 
 #else
