@@ -31,12 +31,13 @@
 
 #include "variety.h"
 #include <time.h>
-#include "rtdata.h"
-#include "timedata.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include "rtdata.h"
+#include "timedata.h"
+#include "lseek.h"
 
 
 #define TZif 0x545A6966
