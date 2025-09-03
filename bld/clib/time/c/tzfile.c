@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #define TZif 0x545A6966
 
@@ -203,11 +204,11 @@ int __read_tzfile( const char *tz )
     if( filename != NULL ) {
         fd = open( filename, O_RDONLY );
         if( fd != -1 ) {
-            fsize = lseek( fd, 0, SEEK_END );
+            fsize = __lseek( fd, 0, SEEK_END );
             if( fsize != -1 ) {
                 tzdata = malloc( (size_t)fsize );
                 if( tzdata != NULL ) {
-                    lseek( fd, 0, SEEK_SET );
+                    __lseek( fd, 0, SEEK_SET );
                     *tzdata = '\0';
                     read( fd, tzdata, (size_t)fsize );
                     if( pntohl( tzdata ) == TZif ) {
