@@ -31,27 +31,15 @@
 
 
 #include "variety.h"
+#include <stdio.h>
 #include "rtdata.h"
 #include "rtinit.h"
 #include "commode.h"
 
-/*
- * __set_commode function is actually a _WCRTLINK function. It's prototyped
- * incorrectly so that this module will work correctly with both dynamic
- * and static versions of the C library.
- *
- * The pragma is there so that this module will work with both stack and
- * register calling conventions, eliminating the need to have a separate
- * object file for each.
- *
- * Similarly, __set_commode is declared _WCI86FAR so that the same object
- * file will work in any 16-bit memory model.
- */
 
 static void _WCNEAR do_it( void )
 {
-    __set_commode();
+    _RWD_commode = _COMMIT;
 }
-
 
 AXIN( do_it, INIT_PRIORITY_LIBRARY )

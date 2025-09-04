@@ -37,12 +37,3 @@
 
 
 int     _commode = 0;
-
-
-/*
- * Before changing any of this, check startup/c/commode.c!
- */
-_WCRTLINK void _WCI86FAR __set_commode( void )
-{
-    _RWD_commode = _COMMIT;
-}
