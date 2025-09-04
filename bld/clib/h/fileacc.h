@@ -32,7 +32,7 @@
 #define _ValidFile( fp, retval )        /* make sure fp is a valid pointer */
 #define SetupTGCSandNCS( x )            /* initialization for Netware/386 */
 
-#ifdef __SW_BM
+#ifdef __MT__
     #define _AccessFile( fp )       _AccessFileH( (fp)->_handle )
     #define _ReleaseFile( fp )      _ReleaseFileH( (fp)->_handle )
   #if defined( _M_I86 )

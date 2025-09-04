@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 
 extern "C" {
 
-#ifdef __SW_BM
+#ifdef __MT__
     // this is hack, to prevent to call constructor for static __lock
     char    _wint_static_init_sema[sizeof( __lock )] = { 0 };
 #endif

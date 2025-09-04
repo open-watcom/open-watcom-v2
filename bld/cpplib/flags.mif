@@ -127,6 +127,9 @@ sw_a_linux   = -bt=linux
 ######
 # Include system headers in dependency lists
 plib_cpp_flags =
+!ifdef mthreaded
+plib_cpp_flags += -D__MT__
+!endif
 !ifeq debug 0
 plib_cpp_flags += -D__OBSCURE_STREAM_INTERNALS
 !endif

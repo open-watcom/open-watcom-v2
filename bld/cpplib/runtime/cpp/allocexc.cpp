@@ -44,7 +44,7 @@ struct free_area                // FREE_AREA -- freed area in exception area
     FREE_AREA *next;            // - next free block -- MUST BE FIRST FIELD
     std::size_t size;           // - size of free area
 #if 0   // removed since it is never used
-#ifdef __SW_BM
+#ifdef __MT__
     __lock _semaphore;          // - semaphore for area
 #endif
 #endif
@@ -56,7 +56,7 @@ struct exc_area                 // ENTIRE AREA
 {
     std::size_t size;           // - size of area
     FREE_AREA *freed;           // - freed blocks - NULL only at start
-#ifdef __SW_BM
+#ifdef __MT__
     __lock semaphore;           // - semaphore for area
 #endif
 };
@@ -81,7 +81,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
     unsigned size;              // - size required
     THREAD_CTL *thr;            // - thread control
 
-#ifdef __SW_BM
+#ifdef __MT__
     __EXC_AREA.semaphore.p();
 #endif
     if( __EXC_AREA.freed == NULL ) {
@@ -121,7 +121,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
             break;
         }
     }
-#ifdef __SW_BM
+#ifdef __MT__
     __EXC_AREA.semaphore.v();
 #endif
     *(std::size_t *)active = size;
@@ -181,7 +181,7 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
     for( pred = &thr->excepts; active != *pred; pred = &(*pred)->prev );
     *pred = active->prev;
     exc_area = (EXC_AREA*)active->exc_area;
-#ifdef __SW_BM
+#ifdef __MT__
     exc_area->semaphore.p();
 #endif
     done = (FREE_AREA*)( (char *)active - sizeof( std::size_t ) );
@@ -197,7 +197,7 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
             break;
         }
     }
-#ifdef __SW_BM
+#ifdef __MT__
     exc_area->semaphore.v();
 #endif
 }

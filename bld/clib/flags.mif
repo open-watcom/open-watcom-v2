@@ -10,6 +10,11 @@ def_windowing = -DDEFWIN
 ######
 # Include system headers in dependency lists
 clib_cpp_flags =
+!ifdef dll16
+clib_cpp_flags += -D__MT__
+!else ifdef mthreaded
+clib_cpp_flags += -D__MT__
+!endif
 !ifneq debug 0
 clib_cpp_flags += -D__RUNTIME_HANDLE_CHECKS__
 !endif

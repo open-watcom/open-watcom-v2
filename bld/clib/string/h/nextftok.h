@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 #define _INITNEXTFTOK
-#ifdef __SW_BM
+#ifdef __MT__
     #define _NEXTFTOK       (__THREADDATAPTR->__nextftokP)
 #else
     static char _WCFAR      *nextftok = NULL;

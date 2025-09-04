@@ -48,7 +48,7 @@
 #include "cinit.h"
 #include "mthread.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 sem_t *__tls_sem;
 
 _WCRTLINK int *__threadid( void )
@@ -78,7 +78,7 @@ void __LinuxInit( struct thread_data *ptr )
 {
     unsigned    *tmp;
 
-#ifdef __SW_BM
+#ifdef __MT__
     __tls_sem = (sem_t *)malloc(sizeof(sem_t));
     if(__tls_sem != NULL)
         sem_init( __tls_sem, 0, 1 );
@@ -95,7 +95,7 @@ void __LinuxInit( struct thread_data *ptr )
 
 _WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
 {
-#ifdef __SW_BM
+#ifdef __MT__
     if( __FirstThreadData != NULL && gettid( ) == __FirstThreadData->thread_id ) {
         __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         _sys_exit_group( ret_code );

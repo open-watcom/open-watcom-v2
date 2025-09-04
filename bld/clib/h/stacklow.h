@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@
     extern void         __init_stack_limits( unsigned *stacklow, unsigned *stacktop );
 #endif
 
-#ifdef __SW_BM
+#ifdef __MT__
     #define _STACKLOW   (__THREADDATAPTR->__stklowP)
 #endif
 

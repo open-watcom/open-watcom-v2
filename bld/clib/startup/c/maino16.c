@@ -61,7 +61,7 @@
 
 #include "exitwmsg.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 
 /* semaphore control for file handles */
 
@@ -94,7 +94,7 @@ unsigned char   _WCDATA _osmode;
 jmp_buf         JmpBuff;
 int             RetCode;
 #endif
-#ifndef __SW_BM
+#ifndef __MT__
 int             _nothread;
 #endif
 
@@ -169,7 +169,7 @@ _WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsig
     }
 #endif
 
-#ifdef __SW_BM
+#ifdef __MT__
     {
         SEL             globalseg;
         SEL             localseg;

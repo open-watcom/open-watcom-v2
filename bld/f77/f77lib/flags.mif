@@ -3,6 +3,11 @@
 ######
 # Include system headers in dependency lists
 f77lib_cpp_flags = -D__RT__
+!ifdef dll16
+f77lib_cpp_flags += -D__MT__
+!else ifdef mthreaded
+f77lib_cpp_flags += -D__MT__
+!endif
 !ifeq linkage dynamic
 f77lib_cpp_flags += -D__DLL__
 !endif

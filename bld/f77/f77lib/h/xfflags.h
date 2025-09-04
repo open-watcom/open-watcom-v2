@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 #define XF_IO_INTERRUPTED       0x0080  // user interrupt during I/O
 #define XF_IO_INTERRUPTABLE     0x0100  // allow interrupts in I/O system
 
-#ifdef __SW_BM
+#ifdef __MT__
 
     #define _XCPTFLAGS          (__FTHREADDATAPTR->__XceptionFlags)
 

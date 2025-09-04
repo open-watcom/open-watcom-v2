@@ -64,7 +64,7 @@ extern  unsigned    __WinSetWindowPos(unsigned);
 #define GetPtrGlobalLock(data) GlobalLock( data )
 #endif
 
-#if defined( __SW_BM ) && defined( __NT__ )
+#if defined( __MT__ ) && defined( __NT__ )
 extern void _AccessWinLines( void );
 extern void _ReleaseWinLines( void );
 #else

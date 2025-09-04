@@ -33,7 +33,7 @@
 #ifndef __NETWARE__
 
 #define _INITRESULT
-#ifdef __SW_BM
+#ifdef __MT__
     #define _RESULT     (__THREADDATAPTR->__asctimeP)
 #else
     static CHAR_TYPE    result[26];

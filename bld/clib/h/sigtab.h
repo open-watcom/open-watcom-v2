@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if !defined( __OS2_16BIT__ ) && defined( __SW_BM )
+#if !defined( __OS2_16BIT__ ) && defined( __MT__ )
     #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
 #else
     #include "sigdefn.h"

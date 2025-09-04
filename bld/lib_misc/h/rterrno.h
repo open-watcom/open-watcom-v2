@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
   #else
     #define _RWD_errno      errno
   #endif
-#elif defined( __SW_BM ) && !defined( __RDOSDEV__ )
+#elif defined( __MT__ ) && !defined( __RDOSDEV__ )
     #undef errno
     #define _RWD_errno      (__THREADDATAPTR->__errnoP)
 #else
@@ -52,7 +53,7 @@
 
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-  #if defined( __SW_BM ) && !defined( __RDOSDEV__ )
+  #if defined( __MT__ ) && !defined( __RDOSDEV__ )
     #undef _doserrno
     #define _RWD_doserrno   (__THREADDATAPTR->__doserrnoP)
   #else

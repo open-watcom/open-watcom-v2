@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 #include "lock.h"
 #include "stfhdr.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 __lock *__get_next_streambuf_lock( void ) {
     #define         MAX_LOCKS   16
     static __lock   streambuf_lock[MAX_LOCKS];

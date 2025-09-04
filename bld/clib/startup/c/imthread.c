@@ -45,7 +45,7 @@
 
 
 #if defined(__OS2_16BIT__) || defined(__NETWARE__)
-  #ifdef __SW_BM
+  #ifdef __MT__
         int __imthread;
   #endif
 #else

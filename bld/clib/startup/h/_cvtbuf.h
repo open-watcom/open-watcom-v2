@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifdef __SW_BM
+#ifdef __MT__
     #define _CVTBUF         __THREADDATAPTR->__cvt_buffer
 #else
     #include "maxchtyp.h"

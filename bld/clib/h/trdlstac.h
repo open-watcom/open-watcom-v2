@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef _TDLSTACC_H_INCLUDED
 #define _TDLSTACC_H_INCLUDED
 
-#ifdef __SW_BM
+#ifdef __MT__
   #if !defined( _M_I86 )
     extern void (*_AccessTDList)( void );
     extern void (*_ReleaseTDList)( void );

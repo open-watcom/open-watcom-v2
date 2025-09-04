@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +196,7 @@ _WCRTLINK int raise( int sig )
 
 static void __SigInit( void )
 {
-#ifdef __SW_BM
+#ifdef __MT__
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {
