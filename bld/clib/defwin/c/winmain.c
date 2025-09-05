@@ -65,14 +65,16 @@ static void windowsFini( void );
 
 _WCRTLINK void  __InitDefaultWin( void )
 {
-    char        *str;
+//    char        *str;
     HANDLE      inst;
 
-    str = __clib_strdup( GetCommandLine() );
+#if 0
+    str = lib_strdup( GetCommandLine() );
     while( !isspace( (unsigned char)*str ) && *str != '\0' )
         str++;
     while( isspace( (unsigned char)*str ) )
         str++;
+#endif
     inst = GetModuleHandle( NULL );
     if( !firstInstance( inst ) )
 //        return( FALSE );
