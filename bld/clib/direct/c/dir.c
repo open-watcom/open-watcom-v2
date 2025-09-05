@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,7 +170,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
         __set_errno_dos( E_nomem );
         return( NULL );
     }
-    tmp.d_openpath = __F_NAME(__clib_strdup,__clib_wcsdup)( dirname );
+    tmp.d_openpath = __F_NAME(lib_strdup,lib_wcsdup)( dirname );
     *dirp = tmp;
     return( dirp );
 }
@@ -213,7 +214,7 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
     }
     dirp->d_first = _DIR_CLOSED;
     if( dirp->d_openpath != NULL )
-        free( dirp->d_openpath );
+        lib_free( dirp->d_openpath );
     lib_free( dirp );
     return( 0 );
 }

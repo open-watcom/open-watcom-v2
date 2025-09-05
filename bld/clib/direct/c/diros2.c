@@ -244,7 +244,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
         __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
         return( NULL );
     }
-    tmp.d_openpath = __F_NAME(__clib_strdup,__clib_wcsdup)( dirname );
+    tmp.d_openpath = __F_NAME(lib_strdup,lib_wcsdup)( dirname );
     *dirp = tmp;
     return( dirp );
 }
@@ -320,7 +320,7 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
         return( __set_errno_dos( rc ) );
     dirp->d_first = _DIR_CLOSED;
     if( dirp->d_openpath != NULL )
-        free( dirp->d_openpath );
+        lib_free( dirp->d_openpath );
     lib_free( dirp );
     return( 0 );
 }

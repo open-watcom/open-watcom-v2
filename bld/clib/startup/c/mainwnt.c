@@ -198,7 +198,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
 
     {
         char    *cmd;
-        _cmd_ptr = cmd = __clib_strdup( GetCommandLineA() );
+        _cmd_ptr = cmd = lib_strdup( GetCommandLineA() );
         if( *cmd == '"' ) {
             cmd++;
             while( *cmd != '"' && *cmd != '\0' ) {
@@ -219,7 +219,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
         wchar_t *wcmd;
         wcmd = GetCommandLineW();       /* Win95 supports GetCommandLineW */
         if( wcmd != NULL ) {
-            _wcmd_ptr = wcmd = __clib_wcsdup( wcmd );
+            _wcmd_ptr = wcmd = lib_wcsdup( wcmd );
             if( *wcmd == L'"' ) {
                 wcmd++;
                 while( *wcmd != L'"' && *wcmd != L'\0' ) {
