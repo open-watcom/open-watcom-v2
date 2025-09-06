@@ -1,4 +1,4 @@
-#pmake: nobuild target_386 rtdll 386 nt cpu_386 os_nt
+#pmake: build target_386 rtdll 386 nt cpu_386 os_nt
 
 host_os  = nt
 host_cpu = 386
