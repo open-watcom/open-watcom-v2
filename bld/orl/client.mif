@@ -8,6 +8,11 @@ cli_orl_libs = $(orl_dir)/$(bin_subdir)/orl.lib
 #
 # ORL run-time DLL used
 #
+cli_orl_libs = $(orl_dir)/$(host).rtd/orl.lib
+!else ifdef $(proj_name)_dll
+#
+# ORL DLL used
+#
 cli_orl_libs = $(orl_dir)/$(host).dll/orl.lib
 !else
 #
