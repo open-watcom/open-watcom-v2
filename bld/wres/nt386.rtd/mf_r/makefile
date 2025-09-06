@@ -5,5 +5,6 @@ host_cpu = 386
 model = f
 
 wres_dll = 1
+wres_rtdll = 1
 
 !include ../../master.mif

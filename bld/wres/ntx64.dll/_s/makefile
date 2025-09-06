@@ -1,8 +1,6 @@
-#pmake: build os_nt cpu_386
+#pmake: build os_nt cpu_x64
 host_os  = nt
-host_cpu = 386
-
-model = f
+host_cpu = x64
 
 wres_dll = 1
 
