@@ -1,6 +1,6 @@
-#pmake: build os_nt cpu_386 dll
+#pmake: build os_os2 cpu_386 dll
 
-host_os  = nt
+host_os  = os2
 host_cpu = 386
 
 wlink_dll   = 1
