@@ -44,7 +44,7 @@ int _fltused_80bit_ = 0;
 
 static void _WCNEAR _SetLD80bit( void )
 {
-    __rt_control |= RTFLG_LD_80BIT;
+    *__get_rt_control_ptr() |= RTFLG_LD_80BIT;
 }
 
 AXIN( _SetLD80bit, INIT_PRIORITY_LIBRARY )
