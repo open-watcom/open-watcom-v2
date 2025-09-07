@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,24 +160,6 @@ bool TBreak( void )
     BrkPending = false;
     return( ret );
 }
-
-#if 0
-void __assert( int value, char *expr, char *fn, int line_num )
-{
-    value=value;expr=expr;fn=fn;line_num=line_num;
-}
-
-void exit( int code )
-{
-    KillDebugger( code );
-}
-
-void __exit_with_msg( const char *msg )
-{
-    PopErrBox( msg );
-    exit( 1 );
-}
-#endif
 
 void PopErrBox( const char *buff )
 {
