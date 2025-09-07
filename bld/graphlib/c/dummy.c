@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,22 +33,27 @@
 
 #include "gdefn.h"
 #include "dummy.h"
+#include "clibint.h"
+
 
 // This file contains definitions used to create the
 // standalone graphics library GRAPH.LIB and GRAPH386.LIB
 
-short           _small_code_;
-short           _fltused_;
+int         _fltused_;
+int         _fltused_80bit_;
 
-#pragma aux     _small_code_    "_small_code_";
-#pragma aux     _fltused_       "_fltused_";
-#pragma aux     F4DivZero       "F4DivZero";
-#pragma aux     F4OverFlow      "F4OverFlow";
-#pragma aux     F4UnderFlow     "F4UnderFlow";
+short       _small_code_;
+
+#pragma aux nomangle "*"
+
+#pragma aux (nomangle) _small_code_
+#pragma aux (nomangle) F4DivZero
+#pragma aux (nomangle) F4OverFlow
+#pragma aux (nomangle) F4UnderFlow
 #if 0
-#pragma aux     F8DivZero       "F8DivZero";
-#pragma aux     F8OverFlow      "F8OverFlow";
-#pragma aux     F8UnderFlow     "F8UnderFlow";
+#pragma aux (nomangle) F8DivZero
+#pragma aux (nomangle) F8OverFlow
+#pragma aux (nomangle) F8UnderFlow
 #endif
 
 extern float F4RetInf( float );
