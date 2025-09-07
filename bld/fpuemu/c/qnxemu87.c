@@ -11,7 +11,7 @@
 #include <i86.h>
 #include "initfini.h"
 #include "cmain.h"
-#include "exitwmsg.h"
+//#include "exitwmsg.h"
 #include "owqnx.h"
 
 

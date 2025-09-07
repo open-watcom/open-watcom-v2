@@ -40,7 +40,7 @@
 #ifdef __QNX__
     #include "slibqnx.h"
 #endif
-#include "exitwmsg.h"
+#include "clibsupp.h"
 #include "iofhdr.h"
 #include "fltsupp.h"
 

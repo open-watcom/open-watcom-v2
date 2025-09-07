@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@
 #include "posdat.h"
 #include "errutil.h"
 #include "variety.h"
-#include "exitwmsg.h"
+#include "clibsupp.h"
 
 
 #define ERR_PREF_SIZE   5

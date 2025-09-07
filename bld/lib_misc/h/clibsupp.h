@@ -52,6 +52,17 @@ _WCRTLINK extern int    __plusplus_flush( FILE * );
 _WCRTLINK extern int    __plusplus_fstat( int handle, int *pios_mode );
 _WCRTLINK extern int    __plusplus_open( const char *name, int *pios_mode, int prot );
 
+_WCRTLINK extern _WCNORETURN void _plib_fatal( char _WCI86FAR *, int );
+_WCRTLINK extern _WCNORETURN void _plib_exit( int );
+_WCRTLINK extern void             _plib_free( void *ptr );
+_WCRTLINK extern void             *_plib_malloc( size_t size );
+
+// Watcom Debugger interface
+// - this function should be called before __exit_with_msg()
+// - to allow Watcom Debugger to trap runtime errors.
+// - this really needs to be far!!!
+_WCRTLINK extern int    __EnterWVIDEO( char _WCFAR *string );
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
