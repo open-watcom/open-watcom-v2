@@ -35,8 +35,4 @@ typedef enum {
     RTFLG_LD_80BIT  = 0x0001,     // 80-bit long double supported
 } __rt_flag;
 
-#ifdef _M_IX86
-extern void _WCNEAR _SetLD64bit( void );
-extern void _WCNEAR _SetLD80bit( void );
-#endif
-extern int  _LDisDouble( void );
+_WCRTLINK extern __rt_flag *__get_rt_control_ptr( void );
