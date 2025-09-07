@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
         cvt.flags |= FPCVT_F_DOT;
     }
     if( (specs->_flags & SPF_LONG_DOUBLE)
-      && !_LDisDouble() ) {
+      && (*__get_rt_control_ptr() & RTFLG_LD_80BIT) == 0 ) {
         ld = va_arg( *pargs, long_double );
         cvt.flags |= FPCVT_LONG_DOUBLE;
     } else {
