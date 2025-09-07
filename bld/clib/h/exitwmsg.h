@@ -33,10 +33,6 @@
 #ifndef _EXITWMSG_H_INCLUDED
 #define _EXITWMSG_H_INCLUDED
 
-#ifdef __cplusplus
-    extern "C" {
-#endif
-
 // C interface
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
@@ -44,16 +40,5 @@
 extern _WCRTLINK _WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *, int );
 extern _WCRTLINK _WCNORETURN void _WCNEAR __fatal_runtime_error( char _WCI86FAR *, int );
 extern _WCRTLINK _WCNORETURN void _WCNEAR __exit( int );
-extern _WCRTLINK _WCNORETURN void _plib_fatal( char _WCI86FAR *, int );
-extern _WCRTLINK _WCNORETURN void _plib_exit( int );
 
-// Watcom Debugger interface
-// - this function should be called before __exit_with_msg()
-// - to allow Watcom Debugger to trap runtime errors.
-// - this really needs to be far!!!
-extern _WCRTLINK int _WCNEAR __EnterWVIDEO( char _WCFAR *string );
-
-#ifdef __cplusplus
-    };
-#endif
 #endif

@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
-#include "exitwmsg.h"
+#include "clibsupp.h"
 #include "enterdb.h"
 
 _WCRTDATA char volatile DEBUG_PRESENT_NAME = 0;
 
-_WCRTLINK int _WCNEAR __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
+_WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
 {
 #ifdef __AXP__
     /* unused parameters */ (void)string;

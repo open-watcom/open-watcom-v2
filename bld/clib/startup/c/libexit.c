@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "exitwmsg.h"
+#include "clibsupp.h"
 
 
 _WCRTLINK _WCNORETURN void _plib_fatal( char _WCI86FAR *msg, int ret_code )

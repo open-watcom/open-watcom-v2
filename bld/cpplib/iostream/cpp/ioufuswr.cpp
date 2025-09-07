@@ -37,7 +37,8 @@
 #include <iostream>
 #endif
 #include "ioutil.h"
-#include "liballoc.h"
+#include "clibsupp.h"
+
 
 void *__WATCOM_ios::find_user_word( std::ios *pios, int index ) {
 

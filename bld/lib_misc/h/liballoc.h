@@ -91,16 +91,4 @@
     #define lib_wcsdup( x )         __clib_wcsdup( x )
 #endif
 
-// these are used by the C++ library
-// they are real routines so that the C++ library
-// remains platform independent.
-#ifdef __cplusplus
-extern "C" {
-#endif
-_WCRTLINK extern void _plib_free( void *ptr );
-_WCRTLINK extern void *_plib_malloc( size_t size );
-#ifdef __cplusplus
-}
-#endif
-
 #endif

@@ -33,7 +33,7 @@
 
 #include "cpplib.h"
 #include <cstdlib>
-#include "exitwmsg.h"
+#include "clibsupp.h"
 
 
 extern "C"
