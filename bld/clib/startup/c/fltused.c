@@ -33,16 +33,13 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "setefg.h"
+#include "clibint.h"
 
 
 #ifdef _M_I86
-unsigned _fltused_ = 1;
+int _fltused_ = 1;
 #else
-unsigned _fltused_ = 0;
-#endif
-
-#if defined(_M_IX86)
-  #pragma aux _fltused_ "*";
+int _fltused_ = 0;
 #endif
 
 AXIN( __setEFGfmt, INIT_PRIORITY_LIBRARY )

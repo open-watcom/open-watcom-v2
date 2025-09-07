@@ -33,20 +33,18 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "rtcntrl.h"
-#include "setefg.h"
+#include "clibint.h"
 
 
 #ifdef _M_I86
-unsigned _fltused_ = 1;
+int _fltused_80bit_ = 1;
 #else
-unsigned _fltused_ = 0;
+int _fltused_80bit_ = 0;
 #endif
 
-#if defined(_M_IX86)
-  #pragma aux _fltused_ "*";
-#endif
-
-#pragma alias ( "_fltused_80bit_" , "_fltused_" )
+static void _WCNEAR _SetLD80bit( void )
+{
+    __rt_control |= RTFLG_LD_80BIT;
+}
 
 AXIN( _SetLD80bit, INIT_PRIORITY_LIBRARY )
-AXIN( __setEFGfmt, INIT_PRIORITY_LIBRARY )

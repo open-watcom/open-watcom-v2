@@ -10,7 +10,6 @@ static_objs = $+ &
     $(clib_dir)/intel/library/$(__cifx__)/dp5prof2.obj &
     $(clib_dir)/intel/library/$(__cifx__)/dprfallo.obj &
     $(clib_dir)/intel/library/$(__cifx__)/p5psegs.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/fltuse80.obj &
     $(clib_dir)/startup/library/$(__cifx__)/getdsint.obj &
     $(clib_dir)/startup/library/$(__cifx__)/seg386.obj &
     $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
@@ -21,6 +20,7 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/dcinit.obj &
     $(clib_dir)/startup/library/$(__cifx__)/dinitarg.obj &
     $(clib_dir)/startup/library/$(__cifx__)/diniwarg.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/fltuse80.obj &
     $(clib_dir)/startup/library/$(__cifx__)/fltused.obj &
     $(clib_dir)/startup/library/$(__cifx__)/histsplt.obj &
     $(clib_dir)/startup/library/$(__cifx__)/initrtns.obj &
