@@ -883,9 +883,8 @@ static void addDefaultImports( void )
         if( CompFlags.float_used ) {
             if( CompFlags.use_long_double ) {
                 AddExtRefN( "_fltused_80bit_" );
-            } else {
-                AddExtRefN( "_fltused_" );
             }
+            AddExtRefN( "_fltused_" );
         }
   #if _CPU == 8086
         if( FirstStmt != 0 ) {
