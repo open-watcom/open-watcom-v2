@@ -53,8 +53,8 @@ namespace std {
       tie()->flush();
     }
     if( flags() & ios::stdio ) {
-      ::__plusplus_flush( __get_std_stream( STDOUT_FILENO ) );
-      ::__plusplus_flush( __get_std_stream( STDERR_FILENO ) );
+      ::__clib_flush( __get_std_stream( STDOUT_FILENO ) );
+      ::__clib_flush( __get_std_stream( STDERR_FILENO ) );
     }
     return( good() );
   }

@@ -122,7 +122,7 @@ int _WCNEAR __flush( FILE *fp )
     return( ret );
 }
 
-_WCRTLINK int __plusplus_flush( FILE *fp )
+_WCRTLINK int __clib_flush( FILE *fp )
 {
     return( __flush( fp ) );
 }

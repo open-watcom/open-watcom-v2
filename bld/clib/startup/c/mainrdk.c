@@ -120,7 +120,7 @@ _WCNORETURN void __RdosMain( void )
     // never return
 }
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
     // never return

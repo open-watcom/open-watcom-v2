@@ -50,7 +50,7 @@ namespace std {
 
     __lock_it( __b_lock );
     if( __delete_reserve ) {
-        _plib_free( __reserve_base );
+        __clib_free( __reserve_base );
     }
     if( (buf == NULL) || (ebuf <= buf) ) {
         __reserve_base     = NULL;

@@ -52,7 +52,7 @@ namespace std {
     char *buf;
 
     __lock_it( __b_lock );
-    buf = (char *)_plib_malloc( DEFAULT_BUF_SIZE );
+    buf = (char *)__clib_malloc( DEFAULT_BUF_SIZE );
     if( buf == NULL ) {
         return( EOF );
     }

@@ -34,9 +34,16 @@
 #include "clibsupp.h"
 #include "enterdb.h"
 
+
 _WCRTDATA char volatile DEBUG_PRESENT_NAME = 0;
 
-_WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
+/*
+ * Watcom Debugger interface
+ * - this function should be called before __exit_with_msg()
+ * - to allow Watcom Debugger to trap runtime errors.
+ * - this really needs string argument to be far!!!
+ */
+_WCRTLINK int   __EnterWVIDEO( char _WCFAR *string )
 {
 #ifdef __AXP__
     /* unused parameters */ (void)string;

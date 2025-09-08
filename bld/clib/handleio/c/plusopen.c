@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@
 #define __sh_write    0x2000    // - allow others to write
 #define __sh_none     0x4000    // - do not allow others to read or write
 
-_WCRTLINK int __plusplus_open( const char *name, int *pios_mode, int prot )
+_WCRTLINK int __clib_open( const char *name, int *pios_mode, int prot )
 {
     int ios_mode = *pios_mode;
     int mode;

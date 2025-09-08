@@ -200,7 +200,7 @@ void __OS2Fini( void )
 
 _WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {

@@ -45,7 +45,7 @@ namespace std {
 
   streambuf::~streambuf() {
     if( __delete_reserve ) {
-        _plib_free( __reserve_base );
+        __clib_free( __reserve_base );
     }
   }
 

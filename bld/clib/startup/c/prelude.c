@@ -322,7 +322,7 @@ void __VersionEnforcement( void )
 }
 #endif
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int rc )
+_WCNORETURN void _WCNEAR __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     /*

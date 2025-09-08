@@ -48,7 +48,7 @@ extern "C" {
 
 static void _no_support_loaded( void )
 {
-    _plib_fatal( "C++ floating-point support not loaded", 1 );
+    __clib_fatal( "C++ floating-point support not loaded", 1 );
     // never return
 }
 

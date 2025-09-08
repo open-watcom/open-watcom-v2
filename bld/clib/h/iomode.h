@@ -62,7 +62,6 @@ extern  unsigned    _WCNEAR __GetIOMode( int handle );
 extern  void        _WCNEAR __SetIOMode( int handle, unsigned value );
 extern  int         _WCNEAR __SetIOMode_grow( int handle, unsigned value );
 extern  void        _WCNEAR __ChkTTYIOMode( int handle );
-extern  int         __set_binary( int handle );
 
 #endif
 

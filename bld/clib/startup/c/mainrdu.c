@@ -131,7 +131,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     return( 1 );
 }
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     thread_data         *tdata;
 

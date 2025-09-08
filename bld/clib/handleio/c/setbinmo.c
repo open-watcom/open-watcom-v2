@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Set handle to binary mode __set_binary function prototype
+* Description:  Set handle to binary mode __clib_set_binary function prototype
 *                (used by Fortran)
 *
 ****************************************************************************/
@@ -36,6 +36,7 @@
 #if defined(__NT__)
     #include <windows.h>
 #endif
+#include "clibsupp.h"
 #include "iomode.h"
 #if defined( __DOS__ )
     #include "tinyio.h"
@@ -43,7 +44,7 @@
 #endif
 
 
-int __set_binary( int handle )
+_WCRTLINK int __clib_set_binary( int handle )
 {
     unsigned        iomode_flags;
 

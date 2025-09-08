@@ -56,7 +56,7 @@
 #define __text        0x0080    // - open as text file
 #define __binary      0x0100    // - open as binary file
 
-_WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
+_WCRTLINK int __clib_fstat( int handle, int *pios_mode )
 {
     int ios_mode;
 

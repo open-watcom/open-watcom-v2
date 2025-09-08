@@ -93,7 +93,7 @@ void __LinuxInit( struct thread_data *ptr )
     *tmp = _STACKLOW;
 }
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
 #ifdef __MT__
     if( __FirstThreadData != NULL && gettid( ) == __FirstThreadData->thread_id ) {

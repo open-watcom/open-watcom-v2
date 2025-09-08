@@ -224,8 +224,8 @@ _WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsig
 }
 
 
-_WCRTLINK _WCNORETURN void _WCNEAR __exit( int ret_code )
-/*******************************************************/
+_WCNORETURN void _WCNEAR __exit( int ret_code )
+/*********************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD

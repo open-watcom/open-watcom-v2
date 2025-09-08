@@ -48,7 +48,7 @@ void __WATCOM_ios::free_xalloc_storage( std::ios *pios ) {
     wptr = (ios_word_values *)pios->__xalloc_list;
     while( wptr != NULL ) {
         next_wptr = wptr->next;
-        _plib_free( wptr );
+        __clib_free( wptr );
         wptr = next_wptr;
     }
 }

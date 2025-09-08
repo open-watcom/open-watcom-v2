@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "posput.h"
 #include "poserr.h"
 #include "posflush.h"
-#include "iomode.h"
+#include "clibsupp.h"
 #include "posdat.h"
 #include "runmain.h"
 #include "rmemmgr.h"
@@ -71,9 +71,9 @@ void    InitStd( void )
      * don't call setmode() since we don't want to affect higher level
      * i/o so that if C function gets called, printf() works ok
      */
-    __set_binary( STDIN_FILENO );
-    __set_binary( STDOUT_FILENO );
-    __set_binary( STDERR_FILENO );
+    __clib_set_binary( STDIN_FILENO );
+    __clib_set_binary( STDOUT_FILENO );
+    __clib_set_binary( STDERR_FILENO );
 #endif
     ChkRedirection( FStdIn );
     ChkRedirection( FStdOut );

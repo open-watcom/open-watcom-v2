@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ namespace std {
     }
 
     // Go ahead and try to open the file:
-    __file_handle = ::__plusplus_open( name, &p_mode, prot );
+    __file_handle = ::__clib_open( name, &p_mode, prot );
     if( __file_handle < 0 ) {
         __file_handle = EOF;
         return( NULL );

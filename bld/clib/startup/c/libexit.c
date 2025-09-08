@@ -35,13 +35,13 @@
 #include "clibsupp.h"
 
 
-_WCRTLINK _WCNORETURN void _plib_fatal( char _WCI86FAR *msg, int ret_code )
+_WCRTLINK _WCNORETURN void __clib_fatal( char _WCI86FAR *msg, int ret_code )
 {
     __fatal_runtime_error( msg, ret_code );
     /* never return */
 }
 
-_WCRTLINK _WCNORETURN void _plib_exit( int ret_code )
+_WCRTLINK _WCNORETURN void __clib_exit( int ret_code )
 {
     __exit( ret_code );
     /* never return */
