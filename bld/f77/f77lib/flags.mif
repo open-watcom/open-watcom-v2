@@ -2,7 +2,7 @@
 # C PREPROCESSOR SETINGS
 ######
 # Include system headers in dependency lists
-f77lib_cpp_flags = -D__RT__
+f77lib_cpp_flags =
 !ifdef dll16
 f77lib_cpp_flags += -D__MT__
 !else ifdef mthreaded
@@ -27,7 +27,7 @@ f77lib_cpp_flags += $(f77lib_cpp_$(system)) $(f77lib_cpp_$(system)_$(processor))
 ###########################
 # ASM PREPROCESSOR SETINGS
 ######
-f77lib_app_flags = -d__RT__
+f77lib_app_flags =
 !ifdef dll16
 f77lib_app_flags += -d__MT__
 !else ifdef mthreaded

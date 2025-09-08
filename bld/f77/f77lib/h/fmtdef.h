@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,8 @@
 // Format code structure definitions -- used at runtime
 //
 
-#ifdef __RT__           // Data is packed in the executable
-  #include "pushpck1.h"
-#endif
+// Data is packed in the executable
+#include "pushpck1.h"
 
 typedef struct fmt {    //  used for: S, SP, SS, BN, BZ, /, :,
     byte        code;   //            (, and ) format codes
@@ -75,9 +74,8 @@ typedef struct fmtstring {
     char        str[1];
 } fmtstring;
 
-#ifdef __RT__           // Return packing to normal
-  #include "poppck.h"
-#endif
+// Return packing to normal
+#include "poppck.h"
 
 typedef union fmt_desc {
     struct fmt          fmt;
