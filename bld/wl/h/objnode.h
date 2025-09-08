@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,17 @@
 ****************************************************************************/
 
 
-typedef struct nodearray        nodearray;
+typedef struct nodearray        *nodearray_handle;
 
 extern void             InitNodes( void );
-extern void             *FindNode( nodearray *, unsigned );
-extern unsigned         GetNumNodes( nodearray * );
-extern void             *AllocNode( nodearray * );
-extern void             *AllocNodeIdx( nodearray *, unsigned );
+extern void             *FindNode( nodearray_handle , unsigned );
+extern unsigned         GetNumNodes( nodearray_handle );
+extern void             *AllocNode( nodearray_handle );
+extern void             *AllocNodeIdx( nodearray_handle, unsigned );
 extern mod_entry        *NewModEntry( void );
 extern void             FreeModEntry( mod_entry * );
-extern void             FreeNodes( nodearray * );
-extern void             IterateNodelist( nodearray *, void (*)(void *,void *), void *);
+extern void             FreeNodes( nodearray_handle );
+extern void             IterateNodelist( nodearray_handle, void (*)(void *,void *), void *);
 extern void             BurnNodes( void );
 extern void             ReleaseNames( void );
 extern void             CollapseLazyExtdefs( void );
@@ -51,7 +52,7 @@ extern void             FreeSegData( void * );
 extern list_of_names    *MakeListName( char *, size_t );
 extern unsigned long    BadObjFormat( void );
 
-extern nodearray        *ExtNodes;           // ptr to obj file import list
-extern nodearray        *SegNodes;           // ptr to obj file segment list
-extern nodearray        *GrpNodes;           // ptr to obj file group list
-extern nodearray        *NameNodes;          // ptr to obj file lname list
+extern nodearray_handle ExtNodes;           // ptr to obj file import list
+extern nodearray_handle SegNodes;           // ptr to obj file segment list
+extern nodearray_handle GrpNodes;           // ptr to obj file group list
+extern nodearray_handle NameNodes;          // ptr to obj file lname list
