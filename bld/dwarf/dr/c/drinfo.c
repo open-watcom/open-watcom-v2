@@ -298,7 +298,7 @@ char * DRENTRY DRGetFileName( drmem_hdl entry )
 void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 /**************************************************************/
 {
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
     dr_fileidx          fileidx;
     filetab_idx         ftidx;
     char                *name;
@@ -321,7 +321,7 @@ void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 char * DRENTRY DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
 /******************************************************************/
 {
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
     char                *name;
     filetab_idx         ftidx;
 

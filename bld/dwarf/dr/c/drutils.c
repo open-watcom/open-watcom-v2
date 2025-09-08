@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -562,7 +562,7 @@ dw_tagnum DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 {
     dw_tagnum       tag;
     dr_abbrev_idx   abbrev_idx;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     abbrev_idx = DR_VMReadULEB128( entry );
     cu = DR_FindCompileInfo( *entry );
@@ -598,7 +598,7 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
@@ -663,7 +663,7 @@ void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
 
     compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
@@ -716,7 +716,7 @@ char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
 void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 /*******************************************************************/
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = &DR_CurrNode->compunit;
     do {
@@ -737,7 +737,7 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
 
     if( startingCtxt == NULL ) {
         ctxt.compunit = &DR_CurrNode->compunit;
-        ctxt.start = ((compunit_info *)ctxt.compunit)->start;
+        ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
         ctxt.start += sizeof( compuhdr_prologue );
         ctxt.classhdl = DRMEM_HDL_NULL;
@@ -758,9 +758,9 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
     do {
         cont = DR_ScanCompileUnit( &ctxt, fn, tagarray, depth, data );
 
-        ctxt.compunit = ((compunit_info *) ctxt.compunit)->next;
+        ctxt.compunit = ((dr_cu_handle)ctxt.compunit)->next;
         if( ctxt.compunit ) {
-            ctxt.start = ((compunit_info *) ctxt.compunit)->start;
+            ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
             ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
             ctxt.start += sizeof( compuhdr_prologue );
         }
@@ -777,7 +777,7 @@ bool DR_WalkCompileUnit( drmem_hdl mod, DR_CUWLK fn,
 {
     bool                cont;
     dr_search_context   ctxt;
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
 
     compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
@@ -809,7 +809,7 @@ bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     dw_children     haschild;
     int             index;
     DRWLKBLK        wlk;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     cu = DR_FindCompileInfo( mod );
     abbrev_idx = DR_VMReadULEB128( &mod );
@@ -1004,8 +1004,8 @@ bool DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
-/******************************************************************************/
+static dr_cu_handle FindCompileInfo( dr_cu_handle compunit, drmem_hdl addr )
+/**************************************************************************/
 {
     for( ;; ) {
         if( (addr >= compunit->start) && (addr <= compunit->end) )
@@ -1021,11 +1021,11 @@ static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
     return( compunit );
 }
 
-compunit_info * DR_FindCompileInfo( drmem_hdl addr )
-/**************************************************/
+dr_cu_handle DR_FindCompileInfo( drmem_hdl addr )
+/***********************************************/
 /* gets the drmem_hdl of the module that addr is in */
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = DR_CurrNode->last_ccu;
     if( addr < compunit->start ) {  // start at begining
@@ -1039,7 +1039,7 @@ compunit_info * DR_FindCompileInfo( drmem_hdl addr )
 drmem_hdl DR_FindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = DR_FindCompileInfo( addr );
     return( compunit->start );

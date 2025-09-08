@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,12 @@
 #include "drgettab.h"
 
 
-struct dr_dbg_info  *DR_CurrNode = NULL;
+dr_dbg_handle   DR_CurrNode = NULL;
 
 /* function prototypes */
 
-static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit )
-/*******************************************************************************/
+static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
+/***********************************************************************/
 /* this reads in the abbrev. table for a compilation unit, and fills in an
  * array of pointers to it.
  */
@@ -53,7 +53,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     drmem_hdl       finish;
     drmem_hdl       *abbrevs;
     dr_abbrev_idx   code;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     // if a previous compilation unit shares the same table, reuse it
     for( cu = &(dbg->compunit); cu != compunit; cu = cu->next ) {
@@ -114,7 +114,7 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
     int                 i;
     unsigned long       size;
 
-    dbg = DR_ALLOC( sizeof( struct dr_dbg_info ) );
+    dbg = DR_ALLOC( sizeof( *dbg ) );
     DR_CurrNode = dbg;    /* must be set for DR_VMAlloc in virtstub.c */
     if( dbg == NULL )
         return( NULL );
@@ -173,11 +173,11 @@ void DRENTRY DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
     dbg->wat_producer_ver = wat_producer_ver;
 }
 
-static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
-/*****************************************************************/
+static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
+/***********************************************************/
 {
-    compunit_info       *compunit;
-    compunit_info       *next;
+    dr_cu_handle        compunit;
+    dr_cu_handle        next;
     drmem_hdl           start;
     drmem_hdl           finish;
     unsigned_16         version;
@@ -211,7 +211,7 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
         if( compunit->end >= finish )
             break;
         start = compunit->end;
-        next = DR_ALLOC( sizeof( compunit_info ) );
+        next = DR_ALLOC( sizeof( *next ) );
         compunit->next = next;
         compunit = next;
     }
@@ -248,8 +248,8 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
  * pages that are allocated to this module will eventually be swapped out
  */
 {
-    compunit_info       *compunit;
-    compunit_info       *next;
+    dr_cu_handle        compunit;
+    dr_cu_handle        next;
 
     compunit = dbg->compunit.next;
     while( compunit != NULL ) {

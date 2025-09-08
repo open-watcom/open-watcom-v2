@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ extern void         DR_SkipChildren( drmem_hdl *, drmem_hdl * );
 extern void         DR_SkipAttribs( drmem_hdl, drmem_hdl * );
 extern void         DR_SkipRest( drmem_hdl, drmem_hdl * );
 extern drmem_hdl    DR_FindCompileUnit( drmem_hdl );
-extern compunit_info *DR_FindCompileInfo( drmem_hdl );
+extern dr_cu_handle DR_FindCompileInfo( drmem_hdl );
 extern bool         DR_ScanAllCompileUnits( dr_search_context *, DR_CUWLK, const dw_tagnum *, dr_depth, void * );
 extern bool         DR_WalkCompileUnit( drmem_hdl, DR_CUWLK, const dw_tagnum *, dr_depth , void * );
 
