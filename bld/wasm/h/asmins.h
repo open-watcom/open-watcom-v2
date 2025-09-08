@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ extern const char           *const regs[3][4];
 
 #if defined( _STANDALONE_ )
 
-extern void     find_frame( asm_sym *sym );
+extern void     find_frame( asm_sym_handle sym );
 extern int      GetInsString( asm_token, char * );
 
 #endif

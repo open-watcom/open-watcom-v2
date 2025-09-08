@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 
 static lifix_list   lifList;
 
-static int writeMisc( obj_rec *objr )
+static int writeMisc( obj_rec_handle objr )
 /*
     For 16-bit records which are the same under Intel, PharLap, and MS OMFs
 */
@@ -65,7 +65,7 @@ static int writeMisc( obj_rec *objr )
     return( 0 );
 }
 
-static int writeMisc32( obj_rec *objr )
+static int writeMisc32( obj_rec_handle objr )
 /*
     For 32-bit records which are the same under Intel, PharLap, and MS OMFs
 */
@@ -90,7 +90,7 @@ static int writeMisc32( obj_rec *objr )
     return( 0 );
 }
 
-static int writeComent( obj_rec *objr )
+static int writeComent( obj_rec_handle objr )
 {
     uint_8  *ptr;
     uint_16 len;
@@ -110,7 +110,7 @@ static int writeComent( obj_rec *objr )
     return( 0 );
 }
 
-static int writeSegdef( obj_rec *objr )
+static int writeSegdef( obj_rec_handle objr )
 {
     int         is32;
     uint_8      acbp;
@@ -161,7 +161,7 @@ static int writeSegdef( obj_rec *objr )
     return( 0 );
 }
 
-static int writeFixup( obj_rec *objr )
+static int writeFixup( obj_rec_handle objr )
 {
     int         is32;
     fixuprec    *walk;
@@ -198,7 +198,7 @@ static int writeFixup( obj_rec *objr )
     return( 0 );
 }
 
-static int writeLedata( obj_rec *objr )
+static int writeLedata( obj_rec_handle objr )
 {
     uint_16     save;
     uint_8      *ptr;
@@ -228,7 +228,7 @@ static int writeLedata( obj_rec *objr )
 }
 
 #if 0
-static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset )
+static void id32Block( obj_rec_handle objr, int_16 *delta, uint_16 first_block_offset )
 /*
     Since LIDATAs are different under PharLap and MicroSoft 386 formats,
     we have to do some magic.
@@ -258,7 +258,7 @@ static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset 
 }
 #endif
 
-static int writeLidata( obj_rec *objr )
+static int writeLidata( obj_rec_handle objr )
 {
     uint_16     save;
     uint_8      *ptr;
@@ -287,7 +287,7 @@ static int writeLidata( obj_rec *objr )
     return( 0 );
 }
 
-static int writeTheadr( obj_rec *objr )
+static int writeTheadr( obj_rec_handle objr )
 {
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_THEADR );
@@ -297,7 +297,7 @@ static int writeTheadr( obj_rec *objr )
     return( writeMisc( objr ) );
 }
 
-static int writeModend( obj_rec *objr )
+static int writeModend( obj_rec_handle objr )
 {
     uint_16 len;
     int     is32;
@@ -327,7 +327,7 @@ static int writeModend( obj_rec *objr )
     return( 0 );
 }
 
-static void writeBase( obj_rec *objr )
+static void writeBase( obj_rec_handle objr )
 {
     uint_16 grp_idx;
     uint_16 seg_idx;
@@ -341,7 +341,7 @@ static void writeBase( obj_rec *objr )
     }
 }
 
-static int writeComdat( obj_rec *objr )
+static int writeComdat( obj_rec_handle objr )
 {
     uint_8      *ptr;
     uint_16     len;
@@ -379,7 +379,7 @@ static int writeComdat( obj_rec *objr )
     return( 0 );
 }
 
-static int writePubdef( obj_rec *objr )
+static int writePubdef( obj_rec_handle objr )
 {
     int         is32;
     const char  *name;
@@ -418,7 +418,7 @@ static int writePubdef( obj_rec *objr )
     return( 0 );
 }
 
-static void writeLinnumData( obj_rec *objr )
+static void writeLinnumData( obj_rec_handle objr )
 {
     int  is32;
     linnum_data *cur;
@@ -440,7 +440,7 @@ static void writeLinnumData( obj_rec *objr )
     }
 }
 
-static int writeLinnum( obj_rec *objr )
+static int writeLinnum( obj_rec_handle objr )
 {
     int         is32;
 
@@ -454,7 +454,7 @@ static int writeLinnum( obj_rec *objr )
     return( 0 );
 }
 
-static int writeLinsym( obj_rec *objr )
+static int writeLinsym( obj_rec_handle objr )
 {
     int         is32;
 
@@ -469,8 +469,8 @@ static int writeLinsym( obj_rec *objr )
     return( 0 );
 }
 
-void write_record( obj_rec *objr, bool kill )
-/*******************************************/
+void write_record( obj_rec_handle objr, bool kill )
+/*************************************************/
 {
     /**/myassert( objr != NULL );
     ObjRSeek( objr, 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ typedef enum {
     WASM_LANG_WATCOM_C
 } lang_type;
 
-typedef char        *(*mangle_func)( struct asm_sym * );
+typedef char        *(*mangle_func)( asm_sym_handle sym );
 #endif
 
 typedef struct asm_sym {
@@ -99,17 +99,17 @@ typedef struct asm_sym {
     asmfixup        *fixup;
 } asm_sym;
 
-extern asm_sym      *AsmLookup( const char *name );
-extern asm_sym      *AsmGetSymbol( const char *name );
-extern void         FreeASym( asm_sym *sym );
+extern asm_sym_handle   AsmLookup( const char *name );
+extern asm_sym_handle   AsmGetSymbol( const char *name );
+extern void             FreeASym( asm_sym_handle sym );
 
 #if defined( _STANDALONE_ )
 
-extern void         AsmTakeOut( const char *name );
-extern bool         AsmChangeName( const char *old, const char *new );
-extern void         WriteListing( void );
+extern void             AsmTakeOut( const char *name );
+extern bool             AsmChangeName( const char *old, const char *new );
+extern void             WriteListing( void );
 
-extern asm_sym      *AllocDSym( const char * );
+extern asm_sym_handle   AllocDSym( const char * );
 
 #define IS_SYM_COUNTER( x ) ( ( x[0] == '$' ) && ( x[1] == 0 ) )
 

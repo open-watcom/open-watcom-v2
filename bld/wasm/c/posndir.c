@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ bool ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
 bool OrgDirective( token_buffer *tokbuf, token_idx i )
 /****************************************************/
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
     int_32          value = 0;
 
     if( tokbuf->tokens[i+1].class == TC_NUM ) {

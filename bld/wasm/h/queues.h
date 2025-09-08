@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +38,13 @@ typedef struct line_num_info {
     const FNAME *srcfile;
 } line_num_info;
 
-extern void     AddPublicData( dir_node *data );
-extern void     AddPublicProc( dir_node *data );
-extern void     AddLnameData( dir_node *data );
+extern void     AddPublicData( dir_node_handle data );
+extern void     AddPublicProc( dir_node_handle data );
+extern void     AddLnameData( dir_node_handle data );
 extern void     AddAliasData( char *data );
 extern void     AddLinnumData( line_num_info *data );
 
-extern bool     GetLnameData( obj_rec * );
+extern bool     GetLnameData( obj_rec_handle );
 extern char     *GetAliasData( bool );
 extern bool     GetPublicData( void );
 extern int      GetLinnumData( int limit, linnum_data **ldata, bool *need32 );

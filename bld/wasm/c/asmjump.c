@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,8 @@ bool ptr_operator( memtype mem_type, bool fix_mem_type );
 
 #if defined( _STANDALONE_ )
 
-extern void             check_assume( asm_sym *sym, prefix_reg default_reg );
-extern void             find_frame( asm_sym *sym );
+extern void             check_assume( asm_sym_handle sym, prefix_reg default_reg );
+extern void             find_frame( asm_sym_handle sym );
 
 static int getJumpNegation( asm_token tok, char *buffer )
 /*******************************************************/
@@ -203,9 +203,9 @@ bool jmp( token_buffer *tokbuf, expr_list *opndx, int *flags )
     fixup_types     fixup_type;
     fixup_options   fixup_option;
     enum sym_state  state;
-    asm_sym         *sym;
+    asm_sym_handle  sym;
 #if defined( _STANDALONE_ )
-    dir_node        *seg;
+    dir_node_handle seg;
 #endif
 
 #if !defined( _STANDALONE_ )
