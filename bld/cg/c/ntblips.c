@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,9 +59,9 @@ bool                    BlipsOn;
 // static file_mapping  *fileMapping;
 
 
-void    InitBlip() {
-/******************/
-
+void    InitBlip( void )
+/**********************/
+{
 #if 0
     char        *src_name;
 
@@ -82,9 +82,9 @@ void    InitBlip() {
 #endif
 }
 
-void    FiniBlip() {
-/******************/
-
+void    FiniBlip( void )
+/**********************/
+{
 #if 0
     if( fileMapping != NULL ) {
         UnmapViewOfFile( fileMapping );
@@ -117,53 +117,65 @@ void    PGBlip( const char *name )
 }
 
 
-void    TGBlip() {
-/****************/
+void    TGBlip( void )
+/********************/
+{
 }
 
-void    LPBlip() {
-/****************/
+void    LPBlip( void )
+/********************/
+{
 }
 
-void    URBlip() {
-/****************/
+void    URBlip( void )
+/********************/
+{
 }
 
-void    SXBlip() {
-/****************/
+void    SXBlip( void )
+/********************/
+{
 }
 
-void    EXBlip() {
-/****************/
+void    EXBlip( void )
+/********************/
+{
 }
 
-void    GRBlip() {
-/****************/
+void    GRBlip( void )
+/********************/
+{
 }
 
-void    IMBlip() {
-/****************/
+void    IMBlip( void )
+/********************/
+{
 }
 
-void    SCBlip() {
-/****************/
+void    SCBlip( void )
+/********************/
+{
 }
 
-void    PSBlip() {
-/****************/
+void    PSBlip( void )
+/********************/
+{
 }
 
-void    PLBlip() {
-/****************/
+void    PLBlip( void )
+/********************/
+{
 }
 
-void    DGBlip() {
-/****************/
+void    DGBlip( void )
+/********************/
+{
 }
 
 #if 0
-static  void    CheckEvents() {
-/*****************************/
+static  void    CheckEvents( void )
+/*********************************/
+{
     if( TBreak() ) {
         FatalError( "Program interrupted from keyboard" );
     }
