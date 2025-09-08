@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,15 +95,15 @@ const char *NameGet( uint_16 hdl )
     return( NameArray[hdl] );
 }
 
-void AddPublicData( dir_node *dir )
-/*********************************/
+void AddPublicData( dir_node_handle dir )
+/***************************************/
 {
     dir->sym.public = true;
     QAddItem( &PubQueue, dir );
 }
 
-void AddPublicProc( dir_node *dir )
-/*********************************/
+void AddPublicProc( dir_node_handle dir )
+/***************************************/
 {
     QAddItem( &PubQueue, dir );
 }
@@ -111,12 +111,12 @@ void AddPublicProc( dir_node *dir )
 bool GetPublicData( void )
 /************************/
 {
-    obj_rec         *objr;
+    obj_rec_handle  objr;
     queuenode       *start;
     queuenode       *curr;
     queuenode       *last;
-    dir_node        *curr_seg;
-    dir_node        *dir;
+    dir_node_handle curr_seg;
+    dir_node_handle dir;
     pubdef_data     *d;
     unsigned char   cmd;
     name_handle     i;
@@ -125,7 +125,7 @@ bool GetPublicData( void )
         return( false );
 
     for( start = PubQueue->head; start != NULL; start = last ) {
-        dir = (dir_node *)start->data;
+        dir = (dir_node_handle)start->data;
         cmd = ( dir->sym.public ) ? CMD_PUBDEF : CMD_STATIC_PUBDEF;
         objr = ObjNewRec( cmd );
         objr->is_32 = 0;
@@ -134,18 +134,18 @@ bool GetPublicData( void )
         objr->u.pubdef.base.frame = 0;
         objr->u.pubdef.base.grp_idx = 0;
         objr->u.pubdef.base.seg_idx = 0;
-        curr_seg = (dir_node *)dir->sym.segment;
+        curr_seg = (dir_node_handle)dir->sym.segment;
         if( curr_seg != NULL ) {
             objr->u.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
             if( curr_seg->e.seginfo->group != NULL ) {
-                objr->u.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
+                objr->u.pubdef.base.grp_idx = ((dir_node_handle)curr_seg->e.seginfo->group)->e.grpinfo->idx;
             }
         }
         for( curr = start; curr != NULL; curr = curr->next ) {
             if( objr->u.pubdef.num_pubs > MAX_PUB_SIZE )
                 break;
-            dir = (dir_node *)curr->data;
-            if( (dir_node *)dir->sym.segment != curr_seg )
+            dir = (dir_node_handle)curr->data;
+            if( (dir_node_handle)dir->sym.segment != curr_seg )
                 break;
             if( dir->sym.state == SYM_PROC ) {
                 if( dir->sym.public ) {
@@ -173,7 +173,7 @@ bool GetPublicData( void )
         objr->u.pubdef.pubs = d;
         NameArray = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
-            dir = (dir_node *)curr->data;
+            dir = (dir_node_handle)curr->data;
             NameArray[i] = Mangle( &dir->sym );
             d->name = i;
             if( dir->sym.state != SYM_CONST ) {
@@ -248,17 +248,17 @@ static void FreeAliasQueue( void )
     }
 }
 
-void AddLnameData( dir_node *dir )
-/********************************/
+void AddLnameData( dir_node_handle dir )
+/**************************************/
 {
     QAddItem( &LnameQueue, dir );
 }
 
-bool GetLnameData( obj_rec *objr )
-/********************************/
+bool GetLnameData( obj_rec_handle objr )
+/**************************************/
 {
     queuenode       *curr;
-    dir_node        *dir;
+    dir_node_handle dir;
     size_t          len;
 
     if( LnameQueue == NULL )
@@ -266,12 +266,12 @@ bool GetLnameData( obj_rec *objr )
 
     len = 0;
     for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
-        dir = (dir_node *)(curr->data);
+        dir = (dir_node_handle)(curr->data);
         len += strlen( dir->sym.name ) + 1;
     }
     ObjAllocData( objr, (uint_16)len );
     for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
-        dir = (dir_node *)curr->data;
+        dir = (dir_node_handle)curr->data;
         len = strlen( dir->sym.name );
         ObjPutName( objr, dir->sym.name, (uint_8)len );
         objr->u.lnames.num_names++;
@@ -293,13 +293,13 @@ bool GetLnameData( obj_rec *objr )
 static void FreeLnameQueue( void )
 /********************************/
 {
-    dir_node *dir;
-    queuenode *node;
+    dir_node_handle dir;
+    queuenode       *node;
 
     if( LnameQueue != NULL ) {
         while( LnameQueue->head != NULL ) {
             node = QDequeue( LnameQueue );
-            dir = (dir_node *)node->data;
+            dir = (dir_node_handle)node->data;
             if( dir->sym.state == SYM_CLASS_LNAME ) {
                 AsmFree( dir->e.lnameinfo );
                 AsmFree( dir->sym.name );

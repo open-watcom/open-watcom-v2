@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -363,12 +363,12 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
                   && ( op_sq_bracket_level ) ) {
                     Definition.struct_depth++;
                     if( new->mbr->state == SYM_STRUCT ) {
-                        Definition.curr_struct = (dir_node *)new->mbr;
+                        Definition.curr_struct = (dir_node_handle)new->mbr;
                         (*start)++; /* Skip structure override and process next token */
                         return( get_operand( new, tokbuf, start, end, is_expr ) );
                     } else {
                         new->indirect = true;
-                        Definition.curr_struct = (dir_node *)new->mbr->structure;
+                        Definition.curr_struct = (dir_node_handle)new->mbr->structure;
                     }
                 }
                 break;
@@ -602,7 +602,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
  * Perform the operation between token_1 and token_2
  */
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
     asm_token       reg_token;
 
     token_1->string = NULL;
@@ -1254,7 +1254,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                     token_1->value = sym->total_size;
                 } else if( sym->mem_type == MT_NEAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
+                        if( ((dir_node_handle)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF04;
                         } else {
                             token_1->value = 0xFF02;
@@ -1264,7 +1264,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                     }
                 } else if( sym->mem_type == MT_FAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
+                        if( ((dir_node_handle)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF06;
                         } else {
                             token_1->value = 0xFF05;

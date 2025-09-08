@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,18 +48,18 @@
 #if defined( _STANDALONE_ )
 
 #ifdef DEBUG_OUT
-void                DumpASym( void );   /* Forward declaration */
+void                    DumpASym( void );   /* Forward declaration */
 #endif
 
-static asm_sym      *sym_table[ HASH_TABLE_SIZE ] = { NULL };
+static asm_sym_handle   sym_table[ HASH_TABLE_SIZE ] = { NULL };
 /* initialize the whole table to null pointers */
-static unsigned     AsmSymCount;    /* Number of symbols in table */
+static unsigned         AsmSymCount;    /* Number of symbols in table */
 
-static char         const dots[] = " . . . . . . . . . . . . . . . .";
+static char             const dots[] = " . . . . . . . . . . . . . . . .";
 
 #else
 
-static asm_sym      *AsmSymHead;
+static asm_sym_handle   AsmSymHead;
 
 static unsigned short CvtTable[] = {
     #define ASM_TYPE(c,a)   a,
@@ -69,8 +69,8 @@ static unsigned short CvtTable[] = {
 
 #endif
 
-static char *InitAsmSym( asm_sym *sym, const char *name )
-/*******************************************************/
+static char *InitAsmSym( asm_sym_handle sym, const char *name )
+/*************************************************************/
 {
 #if !defined( _STANDALONE_ )
     void        *handle;
@@ -108,15 +108,15 @@ static char *InitAsmSym( asm_sym *sym, const char *name )
     return( sym->name );
 }
 
-static asm_sym *AllocASym( const char *name )
-/*******************************************/
+static asm_sym_handle AllocASym( const char *name )
+/*************************************************/
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
 
 #if defined( _STANDALONE_ )
     sym = AsmAlloc( sizeof( dir_node ) );
 #else
-    sym = AsmAlloc( sizeof( asm_sym ) );
+    sym = AsmAlloc( sizeof( *sym ) );
 #endif
     if( sym != NULL ) {
         if( InitAsmSym( sym, name ) == NULL ) {
@@ -124,21 +124,21 @@ static asm_sym *AllocASym( const char *name )
             return( NULL );
         }
 #if defined( _STANDALONE_ )
-        ((dir_node *)sym)->next = NULL;
-        ((dir_node *)sym)->prev = NULL;
-        ((dir_node *)sym)->line_num = 0;
-        ((dir_node *)sym)->e.seginfo = NULL;
+        ((dir_node_handle)sym)->next = NULL;
+        ((dir_node_handle)sym)->prev = NULL;
+        ((dir_node_handle)sym)->line_num = 0;
+        ((dir_node_handle)sym)->e.seginfo = NULL;
 #endif
     }
     return sym;
 }
 
-static asm_sym **AsmFind( const char *name )
-/*******************************************
+static asm_sym_handle *AsmFind( const char *name )
+/*************************************************
  * find a symbol in the symbol table, return NULL if not found
  */
 {
-    asm_sym         **sym;
+    asm_sym_handle  *sym;
 
 #if defined( _STANDALONE_ )
     sym = &sym_table[hashpjw( name )];
@@ -168,8 +168,8 @@ static asm_sym **AsmFind( const char *name )
 }
 
 #if defined( _STANDALONE_ )
-static asm_sym *FindLocalLabel( const char *name )
-/************************************************/
+static asm_sym_handle FindLocalLabel( const char *name )
+/******************************************************/
 {
     label_list  *curr;
 
@@ -181,8 +181,8 @@ static asm_sym *FindLocalLabel( const char *name )
     return( NULL );
 }
 
-static bool AddLocalLabel( asm_sym *sym )
-/***************************************/
+static bool AddLocalLabel( asm_sym_handle sym )
+/*********************************************/
 {
     label_list  *label;
     proc_info   *info;
@@ -218,13 +218,13 @@ static bool AddLocalLabel( asm_sym *sym )
 }
 #endif
 
-asm_sym *AsmLookup( const char *name )
-/************************************/
+asm_sym_handle AsmLookup( const char *name )
+/******************************************/
 {
-    asm_sym         **sym_ptr;
-    asm_sym         *sym;
+    asm_sym_handle  *sym_ptr;
+    asm_sym_handle  sym;
 #if defined( _STANDALONE_ )
-    asm_sym         *structure;
+    asm_sym_handle  structure;
 #endif
 
     if( strlen( name ) > MAX_ID_LEN ) {
@@ -296,8 +296,8 @@ asm_sym *AsmLookup( const char *name )
     return( sym );
 }
 
-void FreeASym( asm_sym *sym )
-/***************************/
+void FreeASym( asm_sym_handle sym )
+/*********************************/
 {
 #if defined( _STANDALONE_ )
     asmfixup    *fixup;
@@ -317,8 +317,8 @@ void FreeASym( asm_sym *sym )
 bool AsmChangeName( const char *old, const char *new )
 /****************************************************/
 {
-    asm_sym         **sym_ptr;
-    asm_sym         *sym;
+    asm_sym_handle  *sym_ptr;
+    asm_sym_handle  sym;
 
     sym_ptr = AsmFind( old );
     if( *sym_ptr != NULL ) {
@@ -339,24 +339,24 @@ bool AsmChangeName( const char *old, const char *new )
 void AsmTakeOut( const char *name )
 /*********************************/
 {
-    asm_sym         *sym;
-    asm_sym         **sym_ptr;
+    asm_sym_handle  sym;
+    asm_sym_handle  *sym_ptr;
 
     sym_ptr = AsmFind( name );
     if( *sym_ptr != NULL ) {
         /* found it -- so take it out */
         sym = *sym_ptr;
         *sym_ptr = sym->next;
-        FreeInfo( (dir_node *)sym );
+        FreeInfo( (dir_node_handle)sym );
         FreeASym( sym );
     }
     return;
 }
 
-static asm_sym *AsmSymAdd( asm_sym *sym )
-/***************************************/
+static asm_sym_handle AsmSymAdd( asm_sym_handle sym )
+/***************************************************/
 {
-    asm_sym         **location;
+    asm_sym_handle  *location;
 
     location = AsmFind( sym->name );
 
@@ -372,26 +372,26 @@ static asm_sym *AsmSymAdd( asm_sym *sym )
     return( sym );
 }
 
-dir_node *AllocD( const char *name )
-/***********************************
+dir_node_handle AllocD( const char *name )
+/*****************************************
  * Create directive symbol
  */
 {
-    dir_node    *dir;
+    dir_node_handle dir;
 
-    dir = (dir_node *)AllocASym( name );
+    dir = (dir_node_handle)AllocASym( name );
     if( dir == NULL )
         AsmError( NO_MEMORY );
     return( dir );
 }
 
-asm_sym *AllocDSym( const char *name )
-/*************************************
+asm_sym_handle AllocDSym( const char *name )
+/*******************************************
  * Create directive symbol and insert it into
  * the global symbol table
  */
 {
-    asm_sym         *new;
+    asm_sym_handle  new;
 
     new = AllocASym( name );
     if( new != NULL ) {
@@ -404,11 +404,11 @@ asm_sym *AllocDSym( const char *name )
     return( new );
 }
 
-asm_sym *AsmGetSymbol( const char *name )
-/***************************************/
+asm_sym_handle AsmGetSymbol( const char *name )
+/*********************************************/
 {
-    asm_sym         **sym_ptr;
-    asm_sym         *structure;
+    asm_sym_handle  *sym_ptr;
+    asm_sym_handle  structure;
 
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_IDEAL ) {
@@ -448,10 +448,10 @@ void AsmSymInit( void )
 void AsmSymFini( void )
 /*********************/
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
 #if defined( _STANDALONE_ )
     unsigned        i;
-    asm_sym         *next;
+    asm_sym_handle  next;
 
 #if defined( DEBUG_OUT )
     DumpASym();
@@ -463,7 +463,7 @@ void AsmSymFini( void )
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {
         for( sym = sym_table[i]; sym != NULL; sym = next ) {
             next = sym->next;
-            FreeInfo( (dir_node *)sym );
+            FreeInfo( (dir_node_handle)sym );
             FreeASym( sym );
         }
     }
@@ -482,17 +482,17 @@ void AsmSymFini( void )
 static int compare_fn( const void *p1, const void *p2 )
 /*****************************************************/
 {
-    const asm_sym *sym1 = *(const asm_sym **)p1;
-    const asm_sym *sym2 = *(const asm_sym **)p2;
+    const asm_sym_handle    sym1 = *(const asm_sym_handle *)p1;
+    const asm_sym_handle    sym2 = *(const asm_sym_handle *)p2;
 
     return( strcmp( sym1->name, sym2->name ) );
 }
 
-static asm_sym **SortAsmSyms( void )
-/**********************************/
+static asm_sym_handle *SortAsmSyms( void )
+/****************************************/
 {
-    asm_sym         **syms;
-    asm_sym         *sym;
+    asm_sym_handle  *syms;
+    asm_sym_handle  sym;
     unsigned        i;
     unsigned        j;
 
@@ -547,12 +547,12 @@ static const char *get_seg_combine( seg_info *seg )
     }
 }
 
-static void log_segment( asm_sym *sym, asm_sym *group )
-/*****************************************************/
+static void log_segment( asm_sym_handle sym, asm_sym_handle group )
+/*****************************************************************/
 {
     if( sym->state == SYM_SEG ) {
-        dir_node    *dir = (dir_node *)sym;
-        seg_info    *seg = dir->e.seginfo;
+        dir_node_handle dir = (dir_node_handle)sym;
+        seg_info        *seg = dir->e.seginfo;
 
         if( seg->group == group ) {
             LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
@@ -567,8 +567,8 @@ static void log_segment( asm_sym *sym, asm_sym *group )
     }
 }
 
-static void log_group( asm_sym **syms, asm_sym *sym )
-/***************************************************/
+static void log_group( asm_sym_handle *syms, asm_sym_handle sym )
+/***************************************************************/
 {
     unsigned        i;
 
@@ -581,8 +581,8 @@ static void log_group( asm_sym **syms, asm_sym *sym )
     }
 }
 
-static const char *get_sym_type( asm_sym *sym )
-/*********************************************/
+static const char *get_sym_type( asm_sym_handle sym )
+/***************************************************/
 {
     switch( sym->mem_type ) {
     case MT_BYTE:
@@ -604,8 +604,8 @@ static const char *get_sym_type( asm_sym *sym )
     }
 }
 
-static const char *get_proc_type( asm_sym *sym )
-/**********************************************/
+static const char *get_proc_type( asm_sym_handle sym )
+/****************************************************/
 {
     switch( sym->mem_type ) {
     case MT_NEAR:
@@ -617,8 +617,8 @@ static const char *get_proc_type( asm_sym *sym )
     }
 }
 
-static const char *get_sym_lang( asm_sym *sym )
-/*********************************************/
+static const char *get_sym_lang( asm_sym_handle sym )
+/***************************************************/
 {
     switch( sym->langtype ) {
     case WASM_LANG_C:
@@ -640,8 +640,8 @@ static const char *get_sym_lang( asm_sym *sym )
     }
 }
 
-static const char *get_sym_seg_name( asm_sym *sym )
-/*************************************************/
+static const char *get_sym_seg_name( asm_sym_handle sym )
+/*******************************************************/
 {
     if( sym->segment != NULL ) {
         return( sym->segment->name );
@@ -650,12 +650,12 @@ static const char *get_sym_seg_name( asm_sym *sym )
     }
 }
 
-static void log_symbol( asm_sym *sym )
-/************************************/
+static void log_symbol( asm_sym_handle sym )
+/******************************************/
 {
     if( sym->state == SYM_CONST ) {
-        dir_node    *dir = (dir_node *)sym;
-        const_info  *cst = dir->e.constinfo;
+        dir_node_handle dir = (dir_node_handle)sym;
+        const_info      *cst = dir->e.constinfo;
 
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
         if( cst->count
@@ -684,8 +684,8 @@ static void log_symbol( asm_sym *sym )
     }
 }
 
-static void log_proc( asm_sym *sym )
-/**********************************/
+static void log_proc( asm_sym_handle sym )
+/****************************************/
 {
     if( sym->state == SYM_PROC ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
@@ -705,7 +705,7 @@ static void log_proc( asm_sym *sym )
 void WriteListing( void )
 /***********************/
 {
-    asm_sym         **syms;
+    asm_sym_handle  *syms;
     unsigned        i;
 
     if( AsmFiles.file[LST] == NULL ) {
@@ -752,16 +752,16 @@ void WriteListing( void )
 
 #if defined( DEBUG_OUT )
 
-static void DumpSymbol( asm_sym *sym )
-/************************************/
+static void DumpSymbol( asm_sym_handle sym )
+/******************************************/
 {
-//    dir_node    *dir;
+//    dir_node_handle dir;
     char        *type;
     char        value[512];
     const char  *langtype;
     char        *public;
 
-//    dir = (dir_node *)sym;
+//    dir = (dir_node_handle)sym;
     *value = 0;
     switch( sym->state ) {
     case SYM_SEG:
@@ -855,7 +855,7 @@ static void DumpSymbol( asm_sym *sym )
 void DumpASym( void )
 /*******************/
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
     unsigned        i;
 
     LstMsg( "\n" );

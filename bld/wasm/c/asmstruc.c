@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +40,12 @@
 
 a_definition_struct Definition = { 0, NULL, NULL };
 
-asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
+asm_sym_handle FindStructureMember( asm_sym_handle symbol, const char *name )
 {
     field_list      *field;
-    asm_sym         *sym;
+    asm_sym_handle  sym;
 
-    for( field = ((dir_node *)symbol)->e.structinfo->fields.head; field != NULL; field = field->next ) {
+    for( field = ((dir_node_handle)symbol)->e.structinfo->fields.head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
             if( strcmp( name, sym->name ) == 0 ) {
                 return( sym );
@@ -58,9 +58,9 @@ asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 bool StructDef( token_buffer *tokbuf, token_idx i )
 /*************************************************/
 {
-    char        *name;
-    dir_node    *dir;
-    token_idx   n;
+    char            *name;
+    dir_node_handle dir;
+    token_idx       n;
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
@@ -85,7 +85,7 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
     switch( tokbuf->tokens[i].u.token ) {
     case T_STRUC:
     case T_STRUCT:
-        dir = (dir_node *)AsmGetSymbol( name );
+        dir = (dir_node_handle)AsmGetSymbol( name );
         if( Parse_Pass == PASS_1 ) {
             if( dir == NULL ) {
                 dir = dir_insert( name, TAB_STRUCT );
@@ -132,7 +132,7 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
     return( RC_OK );
 }
 
-bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *tokbuf, token_idx i )
+bool InitializeStructure( asm_sym_handle sym, asm_sym_handle struct_symbol, token_buffer *tokbuf, token_idx i )
 /**************************************************************************************************
  * input: a line that looks like : sym_name struct_name { init. values }
  * where i marks the struct_name
@@ -142,12 +142,12 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *to
     const char      *ptr;
     const char      *ptr1;
     const char      *ptr2;
-    dir_node        *dir;
+    dir_node_handle dir;
     field_list      *f;
     char            *p;
     size_t          len;
 
-    dir = (dir_node *)struct_symbol;
+    dir = (dir_node_handle)struct_symbol;
 
     PushLineQueue();
     if( tokbuf->tokens[i].class != TC_STRING ) {
@@ -200,7 +200,7 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *to
     return( RC_OK );
 }
 
-int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
+int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
 /***********************************************************************/
 {
     int         offset;
@@ -273,8 +273,8 @@ int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
     return( offset );
 }
 
-int GetStructSize( asm_sym *struct_sym )
+int GetStructSize( asm_sym_handle struct_sym )
 /**************************************/
 {
-    return( ((dir_node *)struct_sym)->e.structinfo->size );
+    return( ((dir_node_handle)struct_sym)->e.structinfo->size );
 }

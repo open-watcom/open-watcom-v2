@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +47,14 @@ enum changes {
 
 #define USCORE "_"
 
-static char *AsmMangler( asm_sym *sym )
-/*************************************/
+static char *AsmMangler( asm_sym_handle sym )
+/*******************************************/
 {
     return( AsmStrDup( sym->name ) );
 }
 
-static char *UCaseMangler( asm_sym *sym )
-/***************************************/
+static char *UCaseMangler( asm_sym_handle sym )
+/*********************************************/
 {
     char        *name;
 
@@ -62,8 +62,8 @@ static char *UCaseMangler( asm_sym *sym )
     return( strupr( name ) );
 }
 
-static char *UScoreMangler( asm_sym *sym )
-/****************************************/
+static char *UScoreMangler( asm_sym_handle sym )
+/**********************************************/
 {
     char        *name;
 
@@ -73,8 +73,8 @@ static char *UScoreMangler( asm_sym *sym )
     return( name );
 }
 
-static char *StdUScoreMangler( asm_sym *sym )
-/*******************************************/
+static char *StdUScoreMangler( asm_sym_handle sym )
+/*************************************************/
 {
     if( !Options.mangle_stdcall )
         return( AsmMangler( sym ) );
@@ -85,19 +85,19 @@ static char *StdUScoreMangler( asm_sym *sym )
         char    *name;
         int     count;
 
-        parasize = ((dir_node *)sym)->e.procinfo->parasize;
+        parasize = ((dir_node_handle)sym)->e.procinfo->parasize;
         for( count = 2; parasize > 9; count++ )
             parasize /= 10;
         name = AsmAlloc( strlen( sym->name ) + 1 + 1 + count + 1 );
-        parasize = ((dir_node *)sym)->e.procinfo->parasize;
+        parasize = ((dir_node_handle)sym)->e.procinfo->parasize;
         sprintf( name, "_%s@%d", sym->name, parasize );
         return( name );
     }
     return( UScoreMangler( sym ) );
 }
 
-static char *WatcomCMangler( asm_sym *sym )
-/*****************************************/
+static char *WatcomCMangler( asm_sym_handle sym )
+/***********************************************/
 {
     char            *name;
     char            *ptr = sym->name;
@@ -137,8 +137,8 @@ static char *WatcomCMangler( asm_sym *sym )
     return( name );
 }
 
-static char *CMangler( asm_sym *sym )
-/***********************************/
+static char *CMangler( asm_sym_handle sym )
+/*****************************************/
 {
     return( UScoreMangler( sym ) );
 }
@@ -161,8 +161,8 @@ static mangle_func GetMangler( const char *mangle_type )
     return( mangler );
 }
 
-char *Mangle( asm_sym *sym )
-/**************************/
+char *Mangle( asm_sym_handle sym )
+/********************************/
 {
     mangle_func mangler;
 
@@ -197,8 +197,8 @@ char *Mangle( asm_sym *sym )
     return( mangler( sym ) );
 }
 
-void SetMangler( asm_sym *sym, const char *mangle_type, int langtype )
-/********************************************************************/
+void SetMangler( asm_sym_handle sym, const char *mangle_type, int langtype )
+/**************************************************************************/
 {
     mangle_func mangler;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,11 +76,11 @@ static bool             segm_override_jumps( token_buffer *tokbuf, expr_list *op
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 
-static void             check_assume( asm_sym *, prefix_reg );
+static void             check_assume( asm_sym_handle sym, prefix_reg );
 
 bool                    CheckSeg;       // if checking of opened segment is needed
-asm_sym                 *Frame;         // Frame of current fixup
-asm_sym                 *SegOverride;
+asm_sym_handle          Frame;         // Frame of current fixup
+asm_sym_handle          SegOverride;
 
 #else
 
@@ -92,12 +92,12 @@ extern void             make_inst_hash_table( void );
 
 static bool             ConstantOnly;
 
-static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
+static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym_handle sym );
 
 #if defined( _STANDALONE_ )
 
-void find_frame( asm_sym *sym )
-/*****************************/
+void find_frame( asm_sym_handle sym )
+/***********************************/
 {
     if( SegOverride != NULL ) {
         sym = SegOverride;
@@ -195,8 +195,8 @@ static bool comp_mem( asm_token reg1, asm_token reg2, unsigned char *rm_field )
     return( RC_ERROR );
 }
 
-static void seg_override( asm_token seg_reg, asm_sym *sym )
-/*********************************************************/
+static void seg_override( asm_token seg_reg, asm_sym_handle sym )
+/***************************************************************/
 /*
 - determine if segment override is necessary with the current address mode;
 */
@@ -277,8 +277,8 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 
 #if defined( _STANDALONE_ )
 
-static void check_assume( asm_sym *sym, prefix_reg default_reg )
-/***************************************************************
+static void check_assume( asm_sym_handle sym, prefix_reg default_reg )
+/*********************************************************************
  * Check if an assumed register is found, and prefix a register if necessary
  */
 {
@@ -420,8 +420,8 @@ bool InRange( unsigned long val, unsigned bytes )
 
 }
 
-static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym *sym )
-/*************************************************************************************/
+static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym_handle sym )
+/*******************************************************************************************/
 /*
   encode the memory operand to machine code
 */
@@ -1791,7 +1791,7 @@ static bool memory_operand( token_buffer *tokbuf, expr_list *opndx )
     unsigned char   ss = SCALE_FACTOR_1;
     asm_token       index = T_NULL;
     asm_token       base = T_NULL;
-    asm_sym         *sym;
+    asm_sym_handle  sym;
     bool            base_lock = false;
     fixup_types     fixup_type;
 #if defined( _STANDALONE_ )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 #ifndef _MANGLE_H_
 #define _MANGLE_H_
 
-extern char *Mangle( asm_sym * );
-extern void SetMangler( asm_sym *, const char *, int );
+extern char *Mangle( asm_sym_handle sym );
+extern void SetMangler( asm_sym_handle sym, const char *, int );
 
 #endif

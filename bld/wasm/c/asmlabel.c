@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,8 @@ static unsigned   AnonymousCounter = 0;
 void PrepAnonLabels( void )
 /*************************/
 {
-    asm_sym     *sym;
-    char        buffer[20];
+    asm_sym_handle  sym;
+    char            buffer[20];
 
     sprintf( buffer, "L&_%d", AnonymousCounter );
     AsmChangeName( "@B", buffer  );
@@ -64,7 +64,7 @@ void PrepAnonLabels( void )
 bool IsLabelStruct( const char *name )
 /************************************/
 {
-    asm_sym *sym;
+    asm_sym_handle  sym;
 
     sym = AsmGetSymbol( name );
     return( ( sym != NULL && sym->state == SYM_STRUCT ) );
@@ -74,12 +74,12 @@ bool IsLabelStruct( const char *name )
 bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
 /*******************************************************************/
 {
-    asm_sym         *sym;
+    asm_sym_handle  sym;
     char            *symbol_name;
 #if defined( _STANDALONE_ )
     uint_32         addr = 0;
     char            buffer[20];
-    asm_sym         *newsym;
+    asm_sym_handle  newsym;
 //    proc_info       *info;
 #endif
 
@@ -137,9 +137,9 @@ bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
     if( sym == NULL )
         return( RC_ERROR );
     if( Parse_Pass == PASS_1 ) {
-        if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
-            dir_to_sym( (dir_node *)sym );
-            AddPublicData( (dir_node *)sym );
+        if( sym->state == SYM_EXTERNAL && ((dir_node_handle)sym)->e.extinfo->global ) {
+            dir_to_sym( (dir_node_handle)sym );
+            AddPublicData( (dir_node_handle)sym );
             if( sym->mem_type != mem_type ) {
                 AsmErr( SYMBOL_TYPE_DIFF, sym->name );
                 return( RC_ERROR );

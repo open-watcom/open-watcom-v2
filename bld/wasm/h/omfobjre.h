@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,8 @@
 #include "omfrec.h"
 
 
-extern void         ObjRecInit( void );
-extern void         ObjRecFini( void );
+extern void             ObjRecInit( void );
+extern void             ObjRecFini( void );
 /*
     ObjRecInit must be called before any of the other routines in this
     module.  ObjRecFini free's all existing object records, and any
@@ -45,7 +45,7 @@ extern void         ObjRecFini( void );
 */
 
 
-extern obj_rec      *ObjNewRec( uint_8 command );
+extern obj_rec_handle   ObjNewRec( uint_8 command );
 /*
     Create an object record of type 'command'.  Does not allocate or attach
     any data to the record, or fill in any of the specific fields for each
@@ -53,7 +53,7 @@ extern obj_rec      *ObjNewRec( uint_8 command );
 */
 
 
-extern void         ObjKillRec( obj_rec *objr );
+extern void             ObjKillRec( obj_rec_handle objr );
 /*
     Free's the memory used by an object record.  If the record had data
     allocated for it (ObjAllocData) or ObjCanFree was called on the record,
@@ -63,7 +63,7 @@ extern void         ObjKillRec( obj_rec *objr );
 */
 
 
-extern void         ObjAllocData( obj_rec *objr, uint_16 len );
+extern void         ObjAllocData( obj_rec_handle objr, uint_16 len );
 /*
     Allocate a piece of memory of length len, attach it to the object
     record, and set the can_free bit.  This is the most common way to
@@ -72,7 +72,7 @@ extern void         ObjAllocData( obj_rec *objr, uint_16 len );
 */
 
 
-extern void         ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len );
+extern void         ObjAttachData( obj_rec_handle objr, uint_8 *data, uint_16 len );
 /*
     This is useful for attaching constants to an object record.  For example,
     when creating the 80386 comment record for pharlap OMF, you could do the
@@ -87,14 +87,14 @@ extern void         ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len );
 */
 
 
-extern void         ObjDetachData( obj_rec *objr );
+extern void         ObjDetachData( obj_rec_handle objr );
 /*
     Free's the data associated with an object record, but does not free
     the actual object record itself.  Called as part of ObjKillRec().
 */
 
 
-extern void         ObjCanFree( obj_rec *objr );
+extern void         ObjCanFree( obj_rec_handle objr );
 /*
     Indicates that ObjDetachData or ObjKillRec can free the data associated
     with this record.  Not necessary if the data was allocated with
@@ -102,23 +102,23 @@ extern void         ObjCanFree( obj_rec *objr );
 */
 
 
-extern uint_8       ObjGet8( obj_rec *objr );
-extern uint_16      ObjGet16( obj_rec *objr );
-extern uint_32      ObjGet32( obj_rec *objr );
-extern uint_32      ObjGetEither( obj_rec *objr );
-extern uint_16      ObjGetIndex( obj_rec *objr );
-extern uint_8       *ObjGet( obj_rec *objr, uint_16 len );
-extern int          ObjEOR( obj_rec *objr );
-extern uint_16      ObjRTell( obj_rec *objr );
-extern void         ObjRSeek( obj_rec *objr, uint_16 set );
-extern uint_16      ObjRemain( obj_rec *objr );
-extern void         ObjPut8( obj_rec *objr, uint_8 byte );
-extern void         ObjPut16( obj_rec *objr, uint_16 word );
-extern void         ObjPut32( obj_rec *objr, uint_32 dword );
-extern void         ObjPutIndex( obj_rec *objr, uint_16 idx );
-extern void         ObjPutEither( obj_rec *objr, uint_32 val );
-extern void         ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len );
-extern void         ObjPutName( obj_rec *objr, const char *name, uint_8 len );
+extern uint_8       ObjGet8( obj_rec_handle objr );
+extern uint_16      ObjGet16( obj_rec_handle objr );
+extern uint_32      ObjGet32( obj_rec_handle objr );
+extern uint_32      ObjGetEither( obj_rec_handle objr );
+extern uint_16      ObjGetIndex( obj_rec_handle objr );
+extern uint_8       *ObjGet( obj_rec_handle objr, uint_16 len );
+extern int          ObjEOR( obj_rec_handle objr );
+extern uint_16      ObjRTell( obj_rec_handle objr );
+extern void         ObjRSeek( obj_rec_handle objr, uint_16 set );
+extern uint_16      ObjRemain( obj_rec_handle objr );
+extern void         ObjPut8( obj_rec_handle objr, uint_8 byte );
+extern void         ObjPut16( obj_rec_handle objr, uint_16 word );
+extern void         ObjPut32( obj_rec_handle objr, uint_32 dword );
+extern void         ObjPutIndex( obj_rec_handle objr, uint_16 idx );
+extern void         ObjPutEither( obj_rec_handle objr, uint_32 val );
+extern void         ObjPut( obj_rec_handle objr, const uint_8 *data, uint_16 len );
+extern void         ObjPutName( obj_rec_handle objr, const char *name, uint_8 len );
 /*
     Notes:
 
@@ -149,7 +149,7 @@ extern void         ObjPutName( obj_rec *objr, const char *name, uint_8 len );
 */
 
 
-extern void         ObjTruncRec( obj_rec *objr );
+extern void         ObjTruncRec( obj_rec_handle objr );
 /*
     The generator filters (genmsomf.c, genphar.c) write data starting from
     the "file" pointer up to the point where ObjTruncRec was called.  For

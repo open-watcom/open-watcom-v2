@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,8 +91,8 @@ static void append_to_fixup_list_end( asmfixup *fixup )
 }
 #endif
 
-asmfixup *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option )
-/*************************************************************************************
+asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fixup_option )
+/*******************************************************************************************
  * put the correct target offset into the link list when forward reference of
  * relocatable is resolved;
  */
@@ -167,14 +167,14 @@ static void PatchCodeBuffer( asmfixup *fixup, unsigned size )
 
 #endif
 
-static bool DoPatch( asm_sym *sym, asmfixup *fixup )
-/**************************************************/
+static bool DoPatch( asm_sym_handle sym, asmfixup *fixup )
+/********************************************************/
 {
     long                disp;
     long                max_disp;
     unsigned            size;
 #if defined( _STANDALONE_ )
-    dir_node            *seg;
+    dir_node_handle     seg;
 
     /*
      * all relative fixups should occure only at first pass and they signal
@@ -283,7 +283,7 @@ static bool DoPatch( asm_sym *sym, asmfixup *fixup )
     return( RC_OK );
 }
 
-bool BackPatch( asm_sym *sym )
+bool BackPatch( asm_sym_handle sym )
 /*****************************
  * patching for forward reference labels in Jmp/Call instructions;
  * call only when a new label appears;
@@ -386,8 +386,8 @@ bool store_fixup( operand_idx index )
 static bool MakeFpFixup( const char *patch_name )
 /***********************************************/
 {
-    dir_node    *dir;
-    asmfixup    *fixup;
+    dir_node_handle dir;
+    asmfixup        *fixup;
 
     for( dir = Tables[TAB_FPPATCH].head; dir != NULL; dir = dir->next ) {
         if( strcmp( dir->sym.name, patch_name ) == 0 ) {
