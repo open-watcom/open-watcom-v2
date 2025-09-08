@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,7 +270,7 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
 {
     Loc_T           loc;
     dr_language     lang;
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
     const char      *label;
     drmem_hdl       tmp_abbrev;
     drmem_hdl       tmp_entry;
@@ -385,7 +385,7 @@ static BrokenName_T BuildList( drmem_hdl die, drmem_hdl parent )
 {
     Loc_T           loc;
     BrokenName_T    decstruct = Empty_Broken_Name;
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
     dr_language     lang;
 
     FillLoc( &loc, die );
@@ -2292,7 +2292,7 @@ static void FillLoc( Loc_T *loc, drmem_hdl die )
 /**********************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     loc->entry_start = die;
     loc->entry_current = die;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,29 +72,29 @@ typedef struct {
 
 typedef unsigned        dr_abbrev_idx;
 
-typedef struct COMPUNIT_INFO {
-    struct COMPUNIT_INFO        *next;
-    drmem_hdl                   start;
-    drmem_hdl                   end;
-    file_table                  filetab;
-    dr_abbrev_idx               numabbrevs;
-    unsigned_32                 abbrev_start;   // offset into abbrev section
-    drmem_hdl                   *abbrevs;       // variable length array
-    unsigned                    *abbrev_refs;   // abbrevs reference counter
-} compunit_info;
+typedef struct dr_cu_info {
+    struct dr_cu_info   *next;
+    drmem_hdl           start;
+    drmem_hdl           end;
+    file_table          filetab;
+    dr_abbrev_idx       numabbrevs;
+    unsigned_32         abbrev_start;   // offset into abbrev section
+    drmem_hdl           *abbrevs;       // variable length array
+    unsigned            *abbrev_refs;   // abbrevs reference counter
+} dr_cu_info;
 
-struct dr_dbg_info {
+typedef struct dr_dbg_info {
     struct dr_dbg_info *next;
     void *              file;   // task's file information.
     sect_info           sections[DR_DEBUG_NUM_SECTS];
-    compunit_info       compunit;
-    compunit_info       *last_ccu;
+    dr_cu_info          compunit;
+    dr_cu_handle        last_ccu;
     df_ver              wat_producer_ver;
     unsigned_8          addr_size;
     bool                byte_swap;
-};
+} dr_dbg_info;
 
-extern struct dr_dbg_info * DR_CurrNode;
+extern dr_dbg_handle    DR_CurrNode;
 
 #define ABBREV_TABLE_GUESS 500
 #define ABBREV_TABLE_INCREMENT 100

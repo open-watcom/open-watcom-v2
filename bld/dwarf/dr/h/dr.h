@@ -282,8 +282,7 @@ typedef struct {
     bool        is_start;
 } dr_pubname_data;
 
-typedef struct COMPUNIT_INFO    compunit_info;
-typedef compunit_info   *dr_cu_handle;
+typedef struct dr_cu_info   *dr_cu_handle;
 
 typedef struct {
     uint_32     addr;

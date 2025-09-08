@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -249,7 +249,7 @@ void DR_ScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
 char * DR_FindFileName( dr_fileidx fileidx, drmem_hdl entry )
 /***********************************************************/
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
     filetab_idx     ftidx;
 
     if( fileidx != 0 ) {
