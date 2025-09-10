@@ -36,10 +36,13 @@
 #include "rtinit.h"
 #include "initarg.h"
 
+#include "clibint.h"
+
+
 int         __F_NAME(_argc,_wargc);
 CHAR_TYPE** __F_NAME(_argv,_wargv);
-int         __F_NAME(__argc,__wargc);
-CHAR_TYPE** __F_NAME(__argv,__wargv);
+_WCRTDATA int         __F_NAME(__argc,__wargc);
+_WCRTDATA CHAR_TYPE** __F_NAME(__argv,__wargv);
 
 #if defined( _M_I86 )
 AXIN( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_THREAD )

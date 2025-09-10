@@ -33,6 +33,9 @@
 #ifndef _INITARG_H_INCLUDED
 #define _INITARG_H_INCLUDED
 
+#include "clibint.h"
+
+
 extern int         __F_NAME(_argc,_wargc);    /* argument count  */
 extern CHAR_TYPE **__F_NAME(_argv,_wargv);    /* argument vector */
 
