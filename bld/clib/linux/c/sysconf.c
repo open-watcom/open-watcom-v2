@@ -37,6 +37,7 @@
 #include <limits.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
+#include "seterrno.h"
 #include "linuxsys.h"
 
 
@@ -151,8 +152,7 @@ static int __sysconf_pages( int name )
 #ifdef PAGE_SIZE
     return( (int)( quantity / PAGE_SIZE ) );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( __set_EINVAL() );
 #endif
 }
 
@@ -217,11 +217,10 @@ _WCRTLINK long sysconf( int name )
         /* Also used for _SC_PAGE_SIZE */
 #ifdef PAGE_SIZE
         ret = PAGE_SIZE;
-#else
-        _RWD_errno = EINVAL;
-        ret = -1;
-#endif
         break;
+#else
+        return( __set_EINVAL() );
+#endif
     case _SC_PHYS_PAGES:
     case _SC_AVPHYS_PAGES:
         ret = __sysconf_pages( name );
@@ -251,8 +250,7 @@ _WCRTLINK long sysconf( int name )
         ret = (long)0;
         break;
     default:
-        _RWD_errno = EINVAL;
-        break;
+        return( __set_EINVAL() );
     }
 
     return( ret );

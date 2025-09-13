@@ -45,6 +45,7 @@
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
@@ -88,8 +89,7 @@ _WCRTLINK int _setmode( int handle, int mode )
             }
             _ReleaseFileH( handle );
         } else {
-            _RWD_errno = EINVAL;
-            old_mode = -1;
+            return( __set_EINVAL() );
         }
     }
     return( old_mode );

@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include "thread.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "_ptint.h"
 #ifdef __LINUX__
 #include "tgkill.h"
@@ -62,9 +63,6 @@ _WCRTLINK int pthread_kill(pthread_t thread, int sig)
         return( -1 );
 #endif
     }
-
-    _RWD_errno = EINVAL;
-
-    return( -1 );
+    return( __set_EINVAL() );
 }
 

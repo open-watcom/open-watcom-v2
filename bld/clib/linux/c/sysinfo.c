@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <sys/sysinfo.h>
+#include "seterrno.h"
 #include "linuxsys.h"
 
 
@@ -40,8 +41,7 @@ _WCRTLINK int sysinfo( struct sysinfo *__info )
     syscall_res res;
 
     if( __info == 0 ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     res = sys_call1( SYS_sysinfo, (u_long)__info );

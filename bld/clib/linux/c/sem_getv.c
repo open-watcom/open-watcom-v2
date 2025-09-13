@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,14 +35,14 @@
 #include "futex.h"
 #include "atomic.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 
 _WCRTLINK int sem_getvalue( sem_t *sem, int *value )
 {
     if( value == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
     *value = sem->value;
     return( 0 );

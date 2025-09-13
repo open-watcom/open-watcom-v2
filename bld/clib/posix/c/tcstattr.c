@@ -37,6 +37,7 @@
 #else
 #endif
 #include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 
@@ -46,8 +47,7 @@ _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *termios_p )
     int cmd;
 
     if( termios_p == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     switch( actions ) {
@@ -61,13 +61,11 @@ _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *termios_p )
         cmd = TCSETSF;
         break;
     default:
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     return( ioctl( fd, cmd, termios_p ) );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( __set_EINVAL() );
 #endif
 }

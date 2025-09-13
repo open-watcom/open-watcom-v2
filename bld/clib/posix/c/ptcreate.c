@@ -38,9 +38,12 @@
 #include <string.h>
 #include "_ptint.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
-/* By default, allow OpenWatcom's thread library
+
+/*
+ * By default, allow OpenWatcom's thread library
  * to handle this...
  */
 #define STACK_SIZE  0
@@ -92,8 +95,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
     struct __thread_pass    *passed;
 
     if( thread == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     stack_size = STACK_SIZE;

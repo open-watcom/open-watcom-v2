@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,6 +35,7 @@
 #include <sched.h>
 #include "futex.h"
 #include "atomic.h"
+#include "seterrno.h"
 #include "thread.h"
 #include "linuxsys.h"
 
@@ -56,8 +57,7 @@ int res;
 struct timespec timer;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     timer.tv_sec = 0;
@@ -82,8 +82,7 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
     struct timespec reltime;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     while( !__decrement_if_positive( &sem->value ) ) {
@@ -119,8 +118,7 @@ _WCRTLINK int sem_trywait( sem_t *sem )
     int             ret;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
     timer.tv_sec = 0;
     timer.tv_nsec = 0;
