@@ -32,16 +32,14 @@
 
 #include "variety.h"
 #include <stddef.h>
+#if defined( __NETWARE__ )
+    #include <io.h>
+#endif
 #include "clibsupp.h"
 #include "rtdata.h"
 
 
 #if defined( __NETWARE__ )
-  #if !defined( _THIN_LIB ) || defined( _NETWARE_CLIB )
-    extern FILE   **__get_stdin ( void );
-    extern FILE   **__get_stdout( void );
-    extern FILE   **__get_stderr( void );
-  #endif
   #if defined( _THIN_LIB ) && defined( _NETWARE_LIBC )
     extern FILE   **___stdin ( void );
     extern FILE   **___stdout( void );
@@ -73,8 +71,6 @@ _WCRTLINK FILE *__get_std_file( unsigned handle )
 }
 
 #else
-
-#include <io.h>
 
 #if defined( _NETWARE_LIBC )
     _WCRTLINK FILE *__get_std_stream( unsigned handle )
@@ -127,8 +123,6 @@ _WCRTLINK FILE *__get_std_file( unsigned handle )
  *  This code is for fat netware libraries. We are using the Watcom FILE *'s
  *  so this will be calling __get_std_stream from the top of this file.
  */
-
-#include <io.h>
 
 FILE **__get_stdin( void )
 {
