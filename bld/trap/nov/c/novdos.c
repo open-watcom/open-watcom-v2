@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,15 +198,7 @@ static void IpxWait( void )
     //        how clears out a condition in IPX where IPXRelinquishControl
     //        won't return.
     //*******************************************************************
-    extern void clock( void );
-    #pragma aux clock = \
-            "mov  ah,2ch"   \
-            "int 21h"       \
-        __parm      [] \
-        __value     \
-        __modify    [__cx __dx]
-
-    clock();
+    TinyGetTime();
 
     _IPXRelinquishControl();
 }
