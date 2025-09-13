@@ -547,13 +547,13 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
  _WCRTDATA extern unsigned int   _WCDATA _winver;   /*  O/S version #       */
 #endif
 :endsegment
-_WCRTDATA extern int        __argc;     /* number of cmd line args */
-_WCRTDATA extern char       **__argv;   /* vector of cmd line args */
+_WRTLDCONV extern int       __argc;     /* number of cmd line args */
+_WRTLDCONV extern char      **__argv;   /* vector of cmd line args */
 :: Wide character version
 :segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
-_WCRTDATA extern int        __wargc;    /* number of wide cmd line args */
-_WCRTDATA extern wchar_t    **__wargv;  /* vector of wide cmd line args */
+_WRTLDCONV extern int       __wargc;    /* number of wide cmd line args */
+_WRTLDCONV extern wchar_t   **__wargv;  /* vector of wide cmd line args */
 #endif
 :endsegment
 
