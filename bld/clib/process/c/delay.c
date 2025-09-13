@@ -50,56 +50,6 @@
 #include <i86.h>
 #include "tinyio.h"
 
-/*
- * Using interupt 21 service 2C, we get the time from DOS
- * in CX and DX as follows:
- *
- *      CH = hours
- *      CL = minutes
- *      DH = seconds
- *      DL = seconds / 100 (but not hundredths accuracy!)
- */
-#ifdef _M_I86
-    extern unsigned long GetDosTime( void );
-    #pragma aux GetDosTime =    \
-            "mov    ah,2ch"     \
-            __INT_21            \
-            "mov    ax,cx"      \
-        __parm __caller     [] \
-        __value             [__dx __ax] \
-        __modify __exact    [__ax __cx __dx]
-#else
-    extern unsigned long GetDosTime( void );
-    #pragma aux GetDosTime =    \
-            "mov    ah,2ch"     \
-            "xor    edx,edx"    \
-            __INT_21            \
-            "mov    eax,edx"    \
-            "sal    eax,16"     \
-            "or     ax,cx"      \
-        __parm __caller     [] \
-        __value             [__eax] \
-        __modify __exact    [__eax __ecx __edx]
-#endif
-
-
-struct dos_clock_b {
-    unsigned char min;      /* minutes (0-59) */
-    unsigned char hour;     /* hours (0-23) */
-    unsigned char hsec;     /* hundredths (0-99) but resolution is less */
-    unsigned char sec;      /* seconds (0-59) */
-};
-
-struct dos_clock_w {
-    unsigned short h_m;
-    unsigned short s_h;
-};
-
-union dos_clock {
-    struct dos_clock_b h;
-    struct dos_clock_w w;
-};
-
 
 /*
     Under DOS, the resolution of the clock seems to be about 5/100 to
@@ -137,40 +87,35 @@ union dos_clock {
 
 _WCRTLINK void delay( unsigned milliseconds )
 {
-    union dos_clock clk;
-    unsigned long time;
-    long start;
-    long next;
-    short res;
-    unsigned char o_hsec;
+    tiny_time_t     clk;
+    long            start;
+    long            next;
+    short           res;
+    unsigned char   o_hsec;
 
     if( milliseconds == 0 )
         return;
 
-    time = GetDosTime();
-    clk.w.h_m = time;
-    clk.w.s_h = time >> 16;
+    clk = TinyGetTime();
 
-    start = ( (clk.h.hour * 60L * 60) +
-              (clk.h.min * 60) +
-               clk.h.sec ) * 1000 +
-               clk.h.hsec * 10;
+    start = ( (clk.hour * 60L * 60L) +
+              (clk.minutes * 60L) +
+               clk.seconds ) * 1000L +
+               clk.hundredths * 10L;
 
-//  printf( "clk.h.hour=%u, clk.h.min=%u, clk.h.sec=%u, clk.h.hsec=%u, start=%lu\n",
-//           clk.h.hour, clk.h.min, clk.h.sec, clk.h.hsec, start );
+//    printf( "hour=%u, min=%u, sec=%u, hsec=%u, start=%lu\n",
+//             (unsigned)clk.hour, (unsigned)clk.minutes, (unsigned)clk.seconds, (unsigned)clk.hundredths, start );
 
     res = 0;
     next = start;
     while( next < (start + milliseconds - res) ) {
-        o_hsec = clk.h.hsec;
-        time = GetDosTime();
-        clk.w.h_m = time;
-        clk.w.s_h = time >> 16;
-        res = clk.h.hsec - o_hsec;  /* often this evaluates to 0 which is OK */
+        o_hsec = clk.hundredths;
+        clk = TinyGetTime();
+        res = clk.hundredths - o_hsec;  /* often this evaluates to 0 which is OK */
         /* if we wrapped past 99 add 100 e.g., 2 - 98 + 100 = 4 */
         if( res < 0 ) {
             res += 100;
-        };
+        }
         /* cancel any wacky variation in resolution due to OS scheduling delays */
         if( res > 10 ) {
             res = 0;
@@ -180,15 +125,17 @@ _WCRTLINK void delay( unsigned milliseconds )
         } else if( res > 0 ) {  /* 1/100 goes to 0/100 */
             res = 0;
         }
-        next = ( (clk.h.hour * 60L * 60) +
-                 (clk.h.min * 60) +
-                  clk.h.sec ) * 1000 +
-                  clk.h.hsec * 10;
+        next = ( (clk.hour * 60L * 60L) +
+                 (clk.minutes * 60L) +
+                  clk.seconds ) * 1000L +
+                  clk.hundredths * 10L;
         /* check for midnight roll-over */
-        if( next < start ) next += 24 * 60L * 60 * 1000;
+        if( next < start ) {
+            next += 24L * 60L * 60L * 1000L;
+        }
     }
-//  printf( "clk.h.hour=%u, clk.h.min=%u, clk.h.sec=%u, clk.h.hsec=%u, next=%lu, res=%d\n\n",
-//           clk.h.hour, clk.h.min, clk.h.sec, clk.h.hsec, next, res );
+//    printf( "hour=%u, min=%u, sec=%u, hsec=%u, next=%lu, res=%d\n\n",
+//             (unsigned)clk.hour, (unsigned)clk.minutes, (unsigned)clk.seconds, (unsigned)clk.hundredths, next, (int)res );
 }
 
 /*
@@ -198,25 +145,18 @@ _WCRTLINK void delay( unsigned milliseconds )
 /********************************
 void delay_tst( unsigned amount )
 {
-    unsigned long t_1;
-    unsigned long t_2;
-    union dos_clock clk;
+    tiny_time_t     clk_1;
+    tiny_time_t     clk_2;
 
-    t_1 = GetDosTime();
+    clk_1 = TinyGetTime();
     delay( amount );
-    t_2 = GetDosTime();
+    clk_2 = TinyGetTime();
 
-    clk.w.h_m = t_1;
-    clk.w.s_h = t_1 >> 16;
+    printf( "hour=%u, min=%u, sec=%u, hsec=%u, amount=%u\n",
+             (unsigned)clk1.hour, (unsigned)clk1.minutes, (unsigned)clk1.seconds, (unsigned)clk1.hundredths, amount );
 
-    printf( "clk.h.hour=%u, clk.h.min=%u, clk.h.sec=%u, clk.h.hsec=%u, amount=%u\n",
-             clk.h.hour, clk.h.min, clk.h.sec, clk.h.hsec, amount );
-
-    clk.w.h_m = t_2;
-    clk.w.s_h = t_2 >> 16;
-
-    printf( "clk.h.hour=%u, clk.h.min=%u, clk.h.sec=%u, clk.h.hsec=%u, amount=%u\n\n",
-             clk.h.hour, clk.h.min, clk.h.sec, clk.h.hsec, amount );
+    printf( "hour=%u, min=%u, sec=%u, hsec=%u, amount=%u\n\n",
+             (unsigned)clk2.hour, (unsigned)clk2.minutes, (unsigned)clk2.seconds, (unsigned)clk2.hundredths, amount );
 }
 void main()
 {
