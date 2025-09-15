@@ -52,6 +52,7 @@
 #include "_process.h"
 #include "_int23.h"
 #include "rterrno.h"
+#include "doserrno.h"
 
 
 #define MIN_COM_STACK   128             /* Minimum size stack for .COM file */
@@ -263,7 +264,7 @@ _WCRTLINK int execve( path, argv, envp )
     if( read( file, (char *)&exe, sizeof( exe ) ) == -1 ) {
         close( file );
         _RWD_errno = ENOEXEC;
-        _RWD_doserrno = E_badfmt;
+        __set_doserrno( E_badfmt );
         goto error;
     }
     isexe = exe.id == EXE_ID || exe.id == _swap( EXE_ID );

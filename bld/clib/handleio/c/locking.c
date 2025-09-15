@@ -47,6 +47,7 @@
     #include <windows.h>
 #endif
 #include "rterrno.h"
+#include "doserrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
@@ -134,7 +135,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         }
         sleep( 1 );                             /* wait 1 second */
     }
-    _RWD_doserrno = rc;
+    __set_doserrno( rc );
     _RWD_errno = EDEADLOCK;
     return( -1 );
 }

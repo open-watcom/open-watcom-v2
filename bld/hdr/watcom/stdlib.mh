@@ -431,7 +431,6 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :segment DOS
 #ifndef __NETWARE__
 :endsegment
- _WCRTDATA extern int       _doserrno;
  _WCRTLINK extern int       *__get_doserrno_ptr( void );
  #define _doserrno          (*__get_doserrno_ptr())     /* DOS system error code value */
 :segment DOS
@@ -471,15 +470,15 @@ _WCRTDATA extern unsigned   _WCDATA __minreal;           /* DOS4GW var for WLINK
 :segment DOS
 #endif
 :endsegment
-_WCRTLINK extern char       **__get_sys_errlist_ptr( void );
-_WCRTLINK extern int        *__get_sys_nerr_ptr( void );
+_WCRTLINK extern char   **__get_sys_errlist_ptr( void );
+_WCRTLINK extern int    *__get_sys_nerr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
- #define _sys_errlist       (*__get_sys_errlist_ptr())
- #define _sys_nerr          (*__get_sys_nerr_ptr())
+ #define _sys_errlist   (*__get_sys_errlist_ptr())
+ #define _sys_nerr      (*__get_sys_nerr_ptr())
 :segment DOS | RDOS
 #elif defined(__SW_BR) || defined(_RTDLL)
- #define _sys_errlist       _sys_errlist_br
- #define _sys_nerr          _sys_nerr_br
+ #define _sys_errlist   _sys_errlist_br
+ #define _sys_nerr      _sys_nerr_br
 :endsegment
 #endif
 _WCRTDATA extern char * _WCDATA _sys_errlist[]; /* strerror error message table */

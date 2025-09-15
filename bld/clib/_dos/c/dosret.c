@@ -42,6 +42,7 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "seterrno.h"
+#include "doserrno.h"
 #include "thread.h"
 
 #if defined(__NT__) || defined(__OS2__)
@@ -356,7 +357,7 @@ static signed char xlat[] = {
 int _WCNEAR __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
-    _RWD_doserrno = err;
+    __set_doserrno( err );
     // if we  can't map the Error code, use default EIO entry
     if( err > E_MAXERR )
         err = E_MAXERR;
@@ -365,7 +366,7 @@ int _WCNEAR __set_errno_dos( unsigned int err )
     register unsigned char index;
 
     index = err & 0xff;
-    _RWD_doserrno = index;
+    __set_doserrno( index );
     if( err < 0x100 ) {
         if( _RWD_osmajor >= 3 ) {
             if( index == DOS_EXIST ) {

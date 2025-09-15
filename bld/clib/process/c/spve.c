@@ -48,6 +48,7 @@
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
+#include "doserrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "msdos.h"
@@ -279,7 +280,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         if( cmdline == NULL ) {
             retval = -1;
             _RWD_errno = E2BIG;
-            _RWD_doserrno = E_badenv;
+            __set_doserrno( E_badenv );
         }
     } else {
         cmdline = cmdline_mem;

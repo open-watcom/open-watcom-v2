@@ -43,9 +43,11 @@
     #include <wos2.h>
 #endif
 #include "rterrno.h"
+#include "doserrno.h"
 #include "msdos.h"
 #include "thread.h"
 #include "pathmac.h"
+
 
 #pragma on(check_stack);
 
@@ -80,7 +82,7 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         }
         if( end - p > _MAX_PATH - file_len ) {
             _RWD_errno = E2BIG;
-            _RWD_doserrno = E_badenv;
+            __set_doserrno( E_badenv );
             return( -1 );
         }
         memcpy( buffer, p, (end - p) * sizeof( CHAR_TYPE ) );

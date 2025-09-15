@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,10 @@
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "doserrno.h"
 #include "lseek.h"
 #include "msdos.h"
+
 
 _WCRTLINK int _chsize( int handle, long size )
 {
@@ -68,7 +70,7 @@ _WCRTLINK int _chsize( int handle, long size )
                 amount = diff;
             rc = write( handle, buff, amount );
             if( rc != amount ) {
-                if( _RWD_doserrno == E_access )
+                if( __get_doserrno() == E_access )
                     _RWD_errno = ENOSPC;
                 rc = -1;
                 break;

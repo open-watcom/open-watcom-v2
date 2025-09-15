@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
     #include <wos2.h>
 #endif
 #include "rterrno.h"
+#include "doserrno.h"
 #include "msdos.h"
 #include "_process.h"
 #include "thread.h"
@@ -77,7 +78,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
         }
         if( end - p > _MAX_PATH - file_len ) {
             _RWD_errno = E2BIG;
-            _RWD_doserrno = E_badenv;
+            __set_doserrno( E_badenv );
             return( -1 );
         }
         memcpy( buffer, p, ( end - p ) * sizeof( CHAR_TYPE ) );
