@@ -47,12 +47,11 @@
 #include <wos2.h>
 #include "os2fil64.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtumask.h"
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "thread.h"
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,6 @@
  * To fix this 64-bit value is used for returning from sys_call.. routines.
  * High 32-bit contains value/error flag and low 32-bit contains value.
  */
-
-#include "rterrno.h"
 
 typedef unsigned long long      syscall_res;
 

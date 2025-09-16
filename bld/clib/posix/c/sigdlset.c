@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <signal.h>
-#include "rterrno.h"
 #include "seterrno.h"
 #include "thread.h"
 

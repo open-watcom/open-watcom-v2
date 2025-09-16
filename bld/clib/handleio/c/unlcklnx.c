@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
+#include "seterrno.h"
 
 // TODO: Need Linux POSIX library!
 #if 0

@@ -37,7 +37,6 @@
 #include <sched.h>
 #include <string.h>
 #include "_ptint.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "thread.h"
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +31,9 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
 #include <sys/kernel.h>
 #include <sys/proc_msg.h>
+#include "seterrno.h"
 
 
 _WCRTLINK int  kill( pid_t pid, int signum )

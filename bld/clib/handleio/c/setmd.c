@@ -44,12 +44,12 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
 #include "thread.h"
+
 
 _WCRTLINK int _setmode( int handle, int mode )
 {

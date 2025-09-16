@@ -41,7 +41,7 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"

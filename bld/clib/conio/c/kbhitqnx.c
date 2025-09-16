@@ -38,7 +38,7 @@
 #include <sys/kernel.h>
 #include <termios.h>
 #include <conio.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtdata.h"
 
 

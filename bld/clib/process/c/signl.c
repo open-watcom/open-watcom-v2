@@ -35,7 +35,7 @@
 #include <signal.h>
 #include <float.h>
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
 #include "sigtab.h"

@@ -63,7 +63,6 @@
     #include "nw_lib.h"
   #endif
 #endif
-#include "rterrno.h"
 #include "seterrno.h"
 #if defined(__UNIX__)
 #elif defined(__OS2__)

@@ -30,7 +30,7 @@
 
 #include "variety.h"
 #include <pthread.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

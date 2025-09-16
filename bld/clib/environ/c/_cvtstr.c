@@ -42,7 +42,7 @@
 #endif
 #include "thread.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "liballoc.h"
 #include "_tcsstr.h"
 #include "_cvtstr.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,26 @@
 
 #ifndef _SETERNO_H_INCLUDED
 #define _SETERNO_H_INCLUDED
+
+#include <errno.h>
+
+#if defined( __QNX__ )
+    // QNX errno is magically multithread aware
+    #define _RWD_errno      errno
+#elif defined( __NETWARE__ )
+    // What does NETWARE do?
+  #if defined( _NETWARE_LIBC )
+    #undef errno
+    #define _RWD_errno      (*___errno())       /* get LibC errno */
+  #else
+    #define _RWD_errno      errno
+  #endif
+#elif defined( __MT__ ) && !defined( __RDOSDEV__ )
+    #undef errno
+    #define _RWD_errno      (__THREADDATAPTR->__errnoP)
+#else
+    #define _RWD_errno      errno
+#endif
 
 // defined in _dos\c\dosret.c
 extern int _WCNEAR __set_errno_dos( unsigned int );

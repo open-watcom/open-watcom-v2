@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,7 +33,7 @@
 #include <sys/kernel.h>
 #include <sys/proc_msg.h>
 #include <sys/fd.h>
-#include "rterrno.h"
+#include "seterrno.h"
 
 
 int (qnx_fd_detach)( int fd )

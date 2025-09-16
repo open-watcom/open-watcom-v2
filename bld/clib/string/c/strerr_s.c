@@ -43,7 +43,7 @@
     #include "nw_lib.h"
 #endif
 #include "errstr.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

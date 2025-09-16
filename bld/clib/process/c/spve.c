@@ -47,7 +47,7 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "doserrno.h"
 #include "liballoc.h"
 #include "filestr.h"

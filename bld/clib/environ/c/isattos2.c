@@ -34,7 +34,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <wos2.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "rtcheck.h"

@@ -48,7 +48,7 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "doserrno.h"
 #include "liballoc.h"
 #include "msdos.h"

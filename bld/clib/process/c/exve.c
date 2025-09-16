@@ -51,7 +51,7 @@
 #include "lseek.h"
 #include "_process.h"
 #include "_int23.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "doserrno.h"
 
 

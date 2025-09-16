@@ -43,7 +43,6 @@
 #include <dos.h>
 #include <dosfunc.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "doserrno.h"
 #include "rtumask.h"

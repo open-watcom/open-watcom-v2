@@ -44,7 +44,7 @@
 #include "_process.h"
 #include "_environ.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

@@ -80,7 +80,6 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "tinyio.h"

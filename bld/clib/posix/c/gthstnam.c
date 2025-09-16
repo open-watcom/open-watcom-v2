@@ -40,7 +40,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #ifdef __RDOS__
 #include "rdos.h"
 #else

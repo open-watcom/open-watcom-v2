@@ -38,7 +38,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"

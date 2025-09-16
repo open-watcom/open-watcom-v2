@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "owqnx.h"
 

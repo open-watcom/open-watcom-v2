@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <wos2.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

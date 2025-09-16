@@ -37,7 +37,7 @@
 #include <string.h>
 #include <netdb.h>
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

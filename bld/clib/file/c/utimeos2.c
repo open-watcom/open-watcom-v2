@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,8 @@
 #include <direct.h>
 #include <utime.h>
 #include <wos2.h>
-#include "rterrno.h"
-#include "openmode.h"
 #include "seterrno.h"
+#include "openmode.h"
 #include "thread.h"
 
 

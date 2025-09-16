@@ -35,7 +35,6 @@
 #include <limits.h>
 #include "rtinit.h"
 #include "exitwmsg.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "thread.h"
 

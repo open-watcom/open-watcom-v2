@@ -41,11 +41,10 @@
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "qwrite.h"
 #include "thread.h"

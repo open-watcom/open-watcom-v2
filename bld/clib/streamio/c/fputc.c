@@ -46,7 +46,7 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "fileacc.h"
 #include "orient.h"
 #include "_flush.h"

@@ -39,7 +39,7 @@
 #include "defwin.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
+#include "seterrno.h"
 
 /* determine if file is a terminal */
 

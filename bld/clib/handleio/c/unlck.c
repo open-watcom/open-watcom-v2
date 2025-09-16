@@ -39,10 +39,9 @@
 #else
     #include "tinyio.h"
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -38,7 +38,6 @@
 #include "tinyio.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
 #include "seterrno.h"
 
 

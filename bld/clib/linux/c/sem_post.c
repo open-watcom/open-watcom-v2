@@ -37,7 +37,6 @@
 #include <limits.h>
 #include "futex.h"
 #include "atomic.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "thread.h"
 

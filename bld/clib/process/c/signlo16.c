@@ -39,7 +39,7 @@
 #define INCL_DOSSIGNALS
 #include <wos2.h>
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
 #include "sigfunc.h"

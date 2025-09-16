@@ -35,10 +35,9 @@
 #include <stddef.h>
 #include <io.h>
 #include <windows.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
