@@ -39,7 +39,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

@@ -43,7 +43,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "doserrno.h"
 #include "msdos.h"
 #include "_process.h"

@@ -35,7 +35,6 @@
 #include <stddef.h>
 #include <process.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "seterrno.h"
 #include "thread.h"
 

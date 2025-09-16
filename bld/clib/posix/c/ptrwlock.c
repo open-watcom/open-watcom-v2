@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,7 +36,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <time.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 #include "_ptint.h"

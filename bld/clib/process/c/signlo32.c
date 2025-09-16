@@ -40,7 +40,7 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "rtinit.h"

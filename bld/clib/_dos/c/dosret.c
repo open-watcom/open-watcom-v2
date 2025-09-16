@@ -40,10 +40,10 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "doserrno.h"
 #include "thread.h"
+
 
 #if defined(__NT__) || defined(__OS2__)
 /*

@@ -34,7 +34,7 @@
 #ifdef __LINUX__
     #include <sys/ioctl.h>
 #else
-    #include "rterrno.h"
+    #include "seterrno.h"
     #include "thread.h"
 #endif
 

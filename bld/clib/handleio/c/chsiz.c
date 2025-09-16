@@ -36,11 +36,10 @@
 #include <io.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "tinyio.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "doserrno.h"
 #include "lseek.h"
 #include "msdos.h"

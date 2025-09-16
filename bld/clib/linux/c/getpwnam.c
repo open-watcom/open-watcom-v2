@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <string.h>
 #include <pwd.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

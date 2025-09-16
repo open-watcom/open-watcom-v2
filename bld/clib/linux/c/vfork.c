@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include "thread.h"
-#include "rterrno.h"
+#include "seterrno.h"
 
 
 #if defined( __386__ )

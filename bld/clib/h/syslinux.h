@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@
 #ifndef __TYPES_H_INCLUDED
     #include <sys/types.h>
 #endif
+
+#include "seterrno.h"
 
 /* Include architecture specific definitions */
 #if defined( _M_IX86 ) && !defined( _M_I86 )

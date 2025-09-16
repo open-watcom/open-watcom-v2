@@ -41,7 +41,7 @@
 #include "nw_lib.h"
 #include "nwlibmem.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
 #include "fileacc.h"

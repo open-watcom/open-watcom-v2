@@ -51,7 +51,7 @@
 #define INCL_LONGLONG
 #include <wos2.h>
 #include "os2fil64.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "i64.h"
 #include "d2ttime.h"
 #include "thread.h"

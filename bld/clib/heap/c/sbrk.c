@@ -44,7 +44,7 @@
 #endif
 #include "roundmac.h"
 #include "rtstack.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtdata.h"
 #include "heap.h"
 

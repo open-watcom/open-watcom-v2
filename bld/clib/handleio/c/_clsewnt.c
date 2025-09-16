@@ -35,11 +35,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"

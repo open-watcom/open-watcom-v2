@@ -51,7 +51,7 @@
     #include "_defwin.h"
   #endif
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rterrmsg.h"
 #include "thread.h"
 

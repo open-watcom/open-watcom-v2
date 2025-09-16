@@ -47,7 +47,7 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "iomode.h"
 #include "streamio.h"
 #include "thread.h"

@@ -44,11 +44,10 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "lseek.h"
 #include "handleio.h"
 #include "thread.h"

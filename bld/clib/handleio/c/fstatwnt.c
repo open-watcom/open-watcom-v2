@@ -38,13 +38,12 @@
 #include <sys/stat.h>
 #include <direct.h>
 #include <windows.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntext.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 #include "i64.h"
 

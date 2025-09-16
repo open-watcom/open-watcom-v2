@@ -47,11 +47,10 @@
 #include <dos.h>
 #include <mbstring.h>
 #include <windows.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
-#include "seterrno.h"
 #include "thread.h"
 #include "pathmac.h"
 #include "i64.h"

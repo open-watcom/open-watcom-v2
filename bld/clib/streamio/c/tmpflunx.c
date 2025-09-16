@@ -40,7 +40,7 @@
 #include <fcntl.h>
 #include "tmpfname.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

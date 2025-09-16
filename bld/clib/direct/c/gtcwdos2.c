@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +43,8 @@
     #include <mbstring.h>
 #endif
 #include <wos2.h>
-#include "rterrno.h"
-#include "thread.h"
 #include "seterrno.h"
+#include "thread.h"
 #include "pathmac.h"
 
 

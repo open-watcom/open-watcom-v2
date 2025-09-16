@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <sched.h>
 #include "atomic.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 _WCRTLINK int pthread_cond_init(pthread_cond_t *__cond, const pthread_condattr_t *__attr)

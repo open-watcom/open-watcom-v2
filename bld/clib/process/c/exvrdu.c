@@ -40,7 +40,7 @@
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "_process.h"

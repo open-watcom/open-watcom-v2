@@ -35,7 +35,7 @@
     #include <sys/ioctl.h>
     #include <sys/types.h>
 #else
-    #include "rterrno.h"
+    #include "seterrno.h"
     #include "thread.h"
 #endif
 

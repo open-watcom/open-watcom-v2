@@ -36,7 +36,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"

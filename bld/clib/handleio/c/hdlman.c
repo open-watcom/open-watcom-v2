@@ -50,12 +50,11 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "seterrno.h"
 #include "liballoc.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtinit.h"
-#include "seterrno.h"
 #include "handleio.h"
 #include "thread.h"
 

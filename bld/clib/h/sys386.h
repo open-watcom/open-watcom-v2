@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,6 @@
  * in eax register. Values between -125 and -1 indicate an error,
  * everything else is a valid return value.
  */
-
-#include "rterrno.h"
 
 typedef unsigned long       syscall_res;
 

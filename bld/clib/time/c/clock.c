@@ -38,7 +38,7 @@
 #elif defined( __LINUX__ )
     #include <sys/times.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "rtinit.h"
 #include "getctime.h"
 #include "thread.h"

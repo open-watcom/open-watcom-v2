@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sched.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

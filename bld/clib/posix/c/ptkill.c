@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,7 +35,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include "thread.h"
-#include "rterrno.h"
 #include "seterrno.h"
 #include "_ptint.h"
 #ifdef __LINUX__

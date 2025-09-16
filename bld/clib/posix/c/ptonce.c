@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <pthread.h>
-#include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 

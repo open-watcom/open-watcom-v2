@@ -46,7 +46,7 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "rterrno.h"
+#include "seterrno.h"
 #include "doserrno.h"
 #include "iomode.h"
 #include "rtcheck.h"

@@ -34,9 +34,8 @@
 #include <io.h>
 #include <dos.h>
 #include <windows.h>
-#include "rterrno.h"
-#include "iomode.h"
 #include "seterrno.h"
+#include "iomode.h"
 #include "thread.h"
 
 
