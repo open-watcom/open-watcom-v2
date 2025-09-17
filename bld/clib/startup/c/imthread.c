@@ -53,7 +53,7 @@
   #if defined(__NT__)
         if( !__NTThreadInit() )
             return;
-  #elif defined(_NETWARE_LIB)
+  #elif defined(_NETWARE_LIBC)
         if( !__LibCThreadInit() )
             return;
   #elif defined(__QNX__)
