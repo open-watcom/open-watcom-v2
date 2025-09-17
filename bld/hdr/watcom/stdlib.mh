@@ -332,7 +332,7 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :endsegment
 #endif
 
-:segment BITS16
+:segment BITS16 & DOS
 :include far2.sp
  _WCRTLINK extern int       _fwctomb( char _WCFAR * __s, wchar_t __wchar );
  _WCRTLINK extern size_t    _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
@@ -591,7 +591,7 @@ _WCRTLINK extern errno_t    mbstowcs_s( size_t * __restrict __retval, wchar_t * 
 _WCRTLINK extern errno_t    wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
 
 :include ext.sp
-:segment BITS16
+:segment BITS16 & DOS
 :include far2.sp
  _WCRTLINK extern errno_t   _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
  _WCRTLINK extern errno_t   _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
