@@ -36,13 +36,21 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <wos2.h>
-#elif defined( __NETWARE__ )
+#elif defined( __NETWARE__ ) \
+  && !defined( _THIN_LIB )
     #include "nw_lib.h"
 #endif
 #include "seterrno.h"
 #include "clibsupp.h"
 #include "thread.h"
 
+
+#if defined( __NETWARE__ ) \
+  && defined( _THIN_LIB )
+/*
+ * unused by OW thin libraries
+ */
+#else
 
 _WCRTLINK void __set_EDOM( void )
 {
@@ -59,3 +67,5 @@ int _WCNEAR __set_EINVAL( void )
     _RWD_errno = EINVAL;
     return( -1 );
 }
+
+#endif

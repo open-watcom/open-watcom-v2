@@ -43,7 +43,11 @@
 #include "thread.h"
 
 
-#if defined(__QNX__)
+#if defined(__NETWARE__)
+/*
+ * use __get_errno_ptr from Netware CRTL
+ */
+#elif defined(__QNX__)
 
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
@@ -57,16 +61,27 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 #endif
 }
 
+#elif defined( __RDOSDEV__ )
+
+#undef errno
+_WCRTDATA int       errno;
+_WCRTLINK int (*__get_errno_ptr( void ))
+{
+    return( &_RWD_errno );
+}
+
+#elif defined( __MT__ )
+
+#undef errno
+_WCRTLINK int (*__get_errno_ptr( void ))
+{
+    return( &_RWD_errno );
+}
+
 #else
 
 #undef errno
-
-#if !defined( __MT__ ) || defined( __RDOSDEV__ )
-
 _WCRTDATA int       errno;
-
-#endif
-
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
     return( &_RWD_errno );

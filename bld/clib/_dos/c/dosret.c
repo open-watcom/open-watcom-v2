@@ -395,12 +395,12 @@ int _WCNEAR __set_errno_dos_reterr( unsigned int err )
 
 
 #ifdef __NT__
-int __set_errno_nt( void )
+int _WCNEAR __set_errno_nt( void )
 {
     return( __set_errno_dos( GetLastError() ) );
 }
 
-int __set_errno_nt_reterr( void )
+int _WCNEAR __set_errno_nt_reterr( void )
 {
     return( __set_errno_dos_reterr( GetLastError() ) );
 }

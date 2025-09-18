@@ -41,9 +41,10 @@
 #include "thread.h"
 
 
-#if !defined(__UNIX__) && !defined( __NETWARE__ )
-
-#if !defined( __MT__ ) || defined( __RDOSDEV__ )
+#if defined( __NETWARE__ )
+#elif defined( __QNX__ )
+#elif defined( __LINUX__ )
+#elif defined( __RDOSDEV__ )
 
 int   _WCNEAR _doserrno;
 
@@ -52,7 +53,7 @@ _WCRTLINK int (*__get_doserrno_ptr( void ))
     return( &_doserrno );
 }
 
-#else
+#elif defined( __MT__ )
 
 void _WCNEAR __set_doserrno( int err )
 {
@@ -69,6 +70,13 @@ _WCRTLINK int (*__get_doserrno_ptr( void ))
     return( &(__THREADDATAPTR->__doserrnoP) );
 }
 
-#endif
+#else
+
+int   _WCNEAR _doserrno;
+
+_WCRTLINK int (*__get_doserrno_ptr( void ))
+{
+    return( &_doserrno );
+}
 
 #endif

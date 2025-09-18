@@ -35,33 +35,60 @@
 
 #include <errno.h>
 
-#if defined( __QNX__ )
-    // QNX errno is magically multithread aware
-    #define _RWD_errno      errno
-#elif defined( __NETWARE__ )
-    // What does NETWARE do?
+#if defined( __NETWARE__ ) \
+  && defined( _THIN_LIB )
+    /*
+     * not used by OW thin libraries
+     */
+#elif defined( __NETWARE__ ) \
+  && !defined( _THIN_LIB )
+    /*
+     * OW fat libraries
+     */
   #if defined( _NETWARE_LIBC )
     #undef errno
-    #define _RWD_errno      (*___errno())       /* get LibC errno */
+    /*
+     * get LibC errno
+     */
+    #define _RWD_errno      (*___errno())
   #else
+    /*
+     * get CLib errno
+     */
     #define _RWD_errno      errno
   #endif
-#elif defined( __MT__ ) && !defined( __RDOSDEV__ )
+#elif defined( __QNX__ )
+    /*
+     * QNX errno is magically multithread aware
+     */
+    #define _RWD_errno      errno
+#elif defined( __RDOSDEV__ )
+    #define _RWD_errno      errno
+#elif defined( __MT__ )
     #undef errno
     #define _RWD_errno      (__THREADDATAPTR->__errnoP)
 #else
     #define _RWD_errno      errno
 #endif
 
-// defined in _dos\c\dosret.c
+/*
+ * defined in _dos\c\dosret.c
+ */
+#if defined( __DOS__ ) \
+  || defined( __WINDOWS__ ) \
+  || defined( __NT__ ) \
+  || defined( __OS2__ )
 extern int _WCNEAR __set_errno_dos( unsigned int );
 extern int _WCNEAR __set_errno_dos_reterr( unsigned int );
+#endif
 #if defined( __NT__ )
-    extern int __set_errno_nt( void );
-    extern int __set_errno_nt_reterr( void );
+extern int _WCNEAR __set_errno_nt( void );
+extern int _WCNEAR __set_errno_nt_reterr( void );
 #endif
 
-// defined in startup\c\seterrno.c
+/*
+ * defined in startup\c\seterrno.c
+ */
 extern int  _WCNEAR __set_EINVAL( void );
 
 #endif

@@ -31,16 +31,23 @@
 ****************************************************************************/
 
 
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+#if defined( __NETWARE__ )
+#elif defined( __QNX__ )
+#elif defined( __LINUX__ )
+#elif defined( __RDOSDEV__ )
     #undef _doserrno
-  #if defined( __MT__ ) && !defined( __RDOSDEV__ )
+    extern int  _WCNEAR _doserrno;
+    #define lib_get_doserrno()  _doserrno
+    #define lib_set_doserrno(x) _doserrno = (x)
+#elif defined( __MT__ )
+    #undef _doserrno
     extern int      _WCNEAR __get_doserrno( void );
     extern void     _WCNEAR __set_doserrno( int err );
     #define lib_get_doserrno()  __get_doserrno()
     #define lib_set_doserrno(x) __set_doserrno(x)
-  #else
+#else
+    #undef _doserrno
     extern int  _WCNEAR _doserrno;
     #define lib_get_doserrno()  _doserrno
     #define lib_set_doserrno(x) _doserrno = (x)
-  #endif
 #endif
