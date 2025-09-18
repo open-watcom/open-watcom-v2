@@ -45,7 +45,7 @@
 
 #if !defined( __MT__ ) || defined( __RDOSDEV__ )
 
-int   _doserrno;
+int   _WCNEAR _doserrno;
 
 _WCRTLINK int (*__get_doserrno_ptr( void ))
 {

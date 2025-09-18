@@ -120,7 +120,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
         }
     }
     if( handle == -1 ) {                    /* could not open */
-        if( (mode & O_CREAT) == 0 || __get_doserrno() != E_nofile ) {
+        if( (mode & O_CREAT) == 0 || lib_get_doserrno() != E_nofile ) {
             return( -1 );
         }
         /* creating the file */

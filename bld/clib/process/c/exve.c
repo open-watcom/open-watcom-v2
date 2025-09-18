@@ -264,7 +264,7 @@ _WCRTLINK int execve( path, argv, envp )
     if( read( file, (char *)&exe, sizeof( exe ) ) == -1 ) {
         close( file );
         _RWD_errno = ENOEXEC;
-        __set_doserrno( E_badfmt );
+        lib_set_doserrno( E_badfmt );
         goto error;
     }
     isexe = exe.id == EXE_ID || exe.id == _swap( EXE_ID );

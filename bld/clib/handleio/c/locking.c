@@ -135,7 +135,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         }
         sleep( 1 );                             /* wait 1 second */
     }
-    __set_doserrno( rc );
+    lib_set_doserrno( rc );
     _RWD_errno = EDEADLOCK;
     return( -1 );
 }

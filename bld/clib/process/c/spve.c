@@ -280,7 +280,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         if( cmdline == NULL ) {
             retval = -1;
             _RWD_errno = E2BIG;
-            __set_doserrno( E_badenv );
+            lib_set_doserrno( E_badenv );
         }
     } else {
         cmdline = cmdline_mem;

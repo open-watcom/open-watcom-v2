@@ -82,7 +82,7 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         }
         if( end - p > _MAX_PATH - file_len ) {
             _RWD_errno = E2BIG;
-            __set_doserrno( E_badenv );
+            lib_set_doserrno( E_badenv );
             return( -1 );
         }
         memcpy( buffer, p, (end - p) * sizeof( CHAR_TYPE ) );

@@ -357,7 +357,7 @@ static signed char xlat[] = {
 int _WCNEAR __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
-    __set_doserrno( err );
+    lib_set_doserrno( err );
     // if we  can't map the Error code, use default EIO entry
     if( err > E_MAXERR )
         err = E_MAXERR;
@@ -366,7 +366,7 @@ int _WCNEAR __set_errno_dos( unsigned int err )
     register unsigned char index;
 
     index = err & 0xff;
-    __set_doserrno( index );
+    lib_set_doserrno( index );
     if( err < 0x100 ) {
         if( _RWD_osmajor >= 3 ) {
             if( index == DOS_EXIST ) {

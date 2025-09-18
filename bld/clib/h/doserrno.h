@@ -34,11 +34,13 @@
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     #undef _doserrno
   #if defined( __MT__ ) && !defined( __RDOSDEV__ )
-    extern void _WCNEAR __set_doserrno( int err );
-    extern int _WCNEAR __get_doserrno( void );
+    extern int      _WCNEAR __get_doserrno( void );
+    extern void     _WCNEAR __set_doserrno( int err );
+    #define lib_get_doserrno()  __get_doserrno()
+    #define lib_set_doserrno(x) __set_doserrno(x)
   #else
-    extern int _doserrno;
-    #define __set_doserrno(x)   _doserrno = (x)
-    #define __get_doserrno()    _doserrno
+    extern int  _WCNEAR _doserrno;
+    #define lib_get_doserrno()  _doserrno
+    #define lib_set_doserrno(x) _doserrno = (x)
   #endif
 #endif
