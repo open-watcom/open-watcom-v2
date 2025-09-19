@@ -1028,6 +1028,12 @@ static void SwitchStmt( void )
     case TYP_LONG:
 //        switch_type = TYP_LONG;
         break;
+    case TYP_ULONG64:
+        sw->case_format = "%llu";
+        break;
+    case TYP_LONG64:
+        sw->case_format = "%lld";
+        break;
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
     }
