@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
@@ -38,7 +39,6 @@
 #include <sys/stat.h>
 #include <direct.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"

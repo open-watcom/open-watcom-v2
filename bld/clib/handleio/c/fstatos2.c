@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <io.h>
@@ -40,7 +41,6 @@
 #define INCL_LONGLONG
 #include <wos2.h>
 #include "os2fil64.h"
-#include "seterrno.h"
 #include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"

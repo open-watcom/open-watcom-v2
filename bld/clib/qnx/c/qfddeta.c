@@ -33,7 +33,6 @@
 #include <sys/kernel.h>
 #include <sys/proc_msg.h>
 #include <sys/fd.h>
-#include "seterrno.h"
 
 
 int (qnx_fd_detach)( int fd )

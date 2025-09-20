@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +40,6 @@
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
-#include "seterrno.h"
 #include "doserror.h"
 #include "rtdata.h"
 #include "tinyio.h"

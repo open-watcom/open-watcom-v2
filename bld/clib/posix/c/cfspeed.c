@@ -30,9 +30,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <termios.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -30,13 +30,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <process.h>
 #include <string.h>
 #include <rdos.h>
 #include "roundmac.h"
-#include "seterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
 #include "thread.h"

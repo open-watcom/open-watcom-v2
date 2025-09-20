@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,7 +45,6 @@
 #include "rtdata.h"
 #include "libwin32.h"
 #include "osver.h"
-#include "seterrno.h"
 #include "_process.h"
 
 

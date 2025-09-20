@@ -33,6 +33,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "dll.h"        // needs to be first
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +49,6 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "doserrno.h"
 #include "liballoc.h"
 #include "msdos.h"

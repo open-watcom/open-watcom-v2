@@ -33,10 +33,10 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <process.h>
 #define INCL_DOSPROCESS
 #include <wos2.h>
-#include "seterrno.h"
 #include "_process.h"
 #include "_int23.h"
 #include "thread.h"

@@ -31,13 +31,13 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <pthread.h>
 #include <process.h>
 #include <malloc.h>
 #include <sched.h>
 #include <string.h>
 #include "_ptint.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

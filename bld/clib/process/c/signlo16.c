@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <signal.h>
@@ -39,7 +40,6 @@
 #define INCL_DOSSIGNALS
 #include <wos2.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
 #include "sigfunc.h"

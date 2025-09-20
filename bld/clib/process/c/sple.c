@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <string.h>
@@ -43,7 +44,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "seterrno.h"
 #include "thread.h"
 #include "_process.h"
 #include "_environ.h"

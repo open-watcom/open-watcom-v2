@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
@@ -44,7 +45,6 @@
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *phandle )

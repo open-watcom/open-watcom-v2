@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -31,10 +31,10 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <io.h>
 #include <dos.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "iomode.h"
 #include "thread.h"
 

@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <sys/kernel.h>
 #include <sys/io_msg.h>
-#include "seterrno.h"
 
 
 int (write)( int fd, const void *buf, unsigned nbytes )

@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -39,7 +40,6 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "lseek.h"
 
 

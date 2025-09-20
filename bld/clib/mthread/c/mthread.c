@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +61,6 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "seterrno.h"
 #include "liballoc.h"
 //#include "stacklow.h"
 #include "thread.h"

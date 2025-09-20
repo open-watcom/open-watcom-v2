@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <time.h>
 #include <dos.h>
 #include <windows.h>
 #include "iomode.h"
-#include "seterrno.h"
 #include "ntext.h"
 
 

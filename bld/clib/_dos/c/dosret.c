@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #if defined(__NT__)
     #include <windows.h>
@@ -40,7 +41,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "doserrno.h"
 #include "thread.h"
 

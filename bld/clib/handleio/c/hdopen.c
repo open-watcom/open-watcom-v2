@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -42,7 +43,6 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "seterrno.h"
 #include "openmode.h"
 #include "iomode.h"
 #include "rtcheck.h"

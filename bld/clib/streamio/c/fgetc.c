@@ -32,6 +32,7 @@
 
 #define __FUNCTION_DATA_ACCESS
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -51,7 +52,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "fileacc.h"
 #include "qread.h"
 #include "orient.h"

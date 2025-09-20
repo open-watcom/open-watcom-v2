@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <io.h>
 #include <direct.h>
 #include <wos2.h>
-#include "seterrno.h"
 
 
 _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )

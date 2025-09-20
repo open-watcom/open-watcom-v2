@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <sys/types.h>
@@ -46,7 +47,6 @@
 #include "rtdata.h"
 #include "libwin32.h"
 #include "openmode.h"
-#include "seterrno.h"
 #include "ntext.h"
 
 

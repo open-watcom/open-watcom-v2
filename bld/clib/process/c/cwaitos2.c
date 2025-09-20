@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <process.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <wos2.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -33,6 +33,7 @@
 
 #define __FUNCTION_DATA_ACCESS
 #include "variety.h"
+#include "seterrno.h"
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
@@ -41,7 +42,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "seterrno.h"
 #include "farfunc.h"
 #include "thread.h"
 #include "xstring.h"

@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +50,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #ifdef __NT__
     #include "libwin32.h"
 #endif

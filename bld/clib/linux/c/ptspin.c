@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include "atomic.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

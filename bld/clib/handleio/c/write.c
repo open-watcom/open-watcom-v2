@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -47,7 +48,6 @@
 #elif defined( __DOS__ )
     #include "tinyio.h"
 #endif
-#include "seterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"

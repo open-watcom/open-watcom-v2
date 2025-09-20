@@ -32,9 +32,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "osver.h"

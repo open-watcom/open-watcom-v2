@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -49,7 +50,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "thread.h"
 
 /*

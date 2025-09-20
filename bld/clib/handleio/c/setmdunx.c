@@ -34,11 +34,11 @@
 #pragma off (unreferenced);
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 

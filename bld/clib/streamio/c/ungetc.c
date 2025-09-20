@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -45,7 +46,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"

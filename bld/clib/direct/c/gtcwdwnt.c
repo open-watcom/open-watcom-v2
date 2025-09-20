@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -40,7 +41,6 @@
 #include <dos.h>
 #include <direct.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "libwin32.h"
 #include "liballoc.h"
 #include "thread.h"

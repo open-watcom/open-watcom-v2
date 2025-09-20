@@ -33,7 +33,6 @@
 #include <sys/kernel.h>
 #include <sys/io_msg.h>
 #include <sys/fd.h>
-#include "seterrno.h"
 
 int (close)( int fd )
 {

@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -80,7 +81,6 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "d2ttime.h"
 #include "tinyio.h"
 #include "_doslfn.h"

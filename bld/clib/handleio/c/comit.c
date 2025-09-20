@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <io.h>
 #include <dos.h>
-#include "seterrno.h"
 #include "iomode.h"
 
 _WCRTLINK int _commit( int handle )

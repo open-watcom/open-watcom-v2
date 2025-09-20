@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
 #include <wos2.h>
-#include "seterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"

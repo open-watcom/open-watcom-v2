@@ -31,13 +31,13 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #if defined(__NT__)
@@ -41,7 +42,6 @@
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
-#include "seterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"

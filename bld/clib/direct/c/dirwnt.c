@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -44,7 +45,6 @@
 #include "strdup.h"
 #include "libwin32.h"
 #include "ntinfo.h"
-#include "seterrno.h"
 #include "_direct.h"
 #include "_dtaxxx.h"
 #include "liballoc.h"

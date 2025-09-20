@@ -30,12 +30,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <semaphore.h>
 #include <limits.h>
 #include "rtinit.h"
 #include "exitwmsg.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

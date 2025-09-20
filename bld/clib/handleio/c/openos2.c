@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,7 +48,6 @@
 #include <wos2.h>
 #include "os2fil64.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "rtumask.h"
 #include "fileacc.h"
 #include "openmode.h"

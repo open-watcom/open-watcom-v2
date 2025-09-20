@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <direct.h>
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
@@ -42,7 +43,6 @@
 #else
     #include <dos.h>
 #endif
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )

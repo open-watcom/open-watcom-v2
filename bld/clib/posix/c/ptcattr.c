@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

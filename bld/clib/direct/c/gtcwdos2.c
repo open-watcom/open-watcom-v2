@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -43,7 +44,6 @@
     #include <mbstring.h>
 #endif
 #include <wos2.h>
-#include "seterrno.h"
 #include "thread.h"
 #include "pathmac.h"
 

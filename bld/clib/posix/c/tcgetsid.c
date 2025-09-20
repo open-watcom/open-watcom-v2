@@ -30,12 +30,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <termios.h>
 #ifdef __LINUX__
     #include <sys/ioctl.h>
     #include <sys/types.h>
 #else
-    #include "seterrno.h"
     #include "thread.h"
 #endif
 

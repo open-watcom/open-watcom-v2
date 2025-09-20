@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #ifdef __LINUX__
     #include <sys/ioctl.h>
 #else
-    #include "seterrno.h"
     #include "thread.h"
 #endif
 

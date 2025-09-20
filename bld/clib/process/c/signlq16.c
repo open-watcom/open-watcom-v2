@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <stdio.h>
 #include <signal.h>
@@ -39,7 +40,6 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "owqnx.h"
 
 

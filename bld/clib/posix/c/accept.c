@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -38,7 +39,6 @@
 #elif defined( __RDOS__ )
 #include <netinet/in.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "thread.h"
 #include "rdos.h"
 #endif

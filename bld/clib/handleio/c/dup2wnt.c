@@ -32,10 +32,10 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"

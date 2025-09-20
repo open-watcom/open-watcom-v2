@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <io.h>
 #include <direct.h>
 #include <stdio.h>
 #include <rdos.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

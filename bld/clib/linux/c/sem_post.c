@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <semaphore.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -37,7 +38,6 @@
 #include <limits.h>
 #include "futex.h"
 #include "atomic.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

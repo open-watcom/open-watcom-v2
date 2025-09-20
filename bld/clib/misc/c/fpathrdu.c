@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +39,6 @@
 #include <ctype.h>
 #include <direct.h>
 #include <rdos.h>
-#include "seterrno.h"
 #include "liballoc.h"
 #include "thread.h"
 #include "pathmac.h"

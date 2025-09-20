@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -41,7 +42,6 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "seterrno.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"

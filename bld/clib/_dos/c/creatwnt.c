@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <dos.h>
@@ -42,7 +43,6 @@
 #include "fileacc.h"
 #include "ntext.h"
 #include "openmode.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_creat( const char *name, unsigned attr, int *phandle )

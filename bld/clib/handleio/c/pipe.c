@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
@@ -41,7 +42,6 @@
 #elif defined(__OS2__)
     #include <wos2.h>
 #endif
-#include "seterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "thread.h"

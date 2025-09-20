@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -40,7 +41,6 @@
 #include <fcntl.h>
 #include "tmpfname.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

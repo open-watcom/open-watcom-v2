@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -41,7 +42,6 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "seterrno.h"
 #include "thread.h"
 
 

@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -43,7 +44,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "fileacc.h"
 #include "qwrite.h"
 #include "lseek.h"

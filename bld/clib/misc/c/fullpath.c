@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,7 +64,6 @@
     #include "nw_lib.h"
   #endif
 #endif
-#include "seterrno.h"
 #if defined(__UNIX__)
 #elif defined(__OS2__)
 #elif defined(__NT__)

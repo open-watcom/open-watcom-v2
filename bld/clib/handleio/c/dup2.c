@@ -32,13 +32,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "tinyio.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 
 
 _WCRTLINK int dup2( int handle1, int handle2 )

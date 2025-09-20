@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined(__QNX__)
@@ -39,7 +40,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "seterrno.h"
 #include "thread.h"
 
 

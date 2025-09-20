@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
-#include <signal.h>
 #include "seterrno.h"
+#include <signal.h>
 #include "thread.h"
 
 

@@ -31,10 +31,10 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdio.h>
 #include <rdos.h>
-#include "seterrno.h"
 #include "liballoc.h"
 #include "thread.h"
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <dos.h>
 #include <windows.h>
 #include "rtdata.h"
-#include "seterrno.h"
 
 _WCRTLINK unsigned _dos_allocmem( unsigned num_of_paras, LPVOID *p_mem )
 {

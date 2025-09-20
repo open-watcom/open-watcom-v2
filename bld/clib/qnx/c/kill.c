@@ -30,10 +30,10 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <signal.h>
 #include <sys/kernel.h>
 #include <sys/proc_msg.h>
-#include "seterrno.h"
 
 
 _WCRTLINK int  kill( pid_t pid, int signum )

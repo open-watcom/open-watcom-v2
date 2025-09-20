@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -47,7 +48,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "iomode.h"
 #include "streamio.h"
 #include "thread.h"

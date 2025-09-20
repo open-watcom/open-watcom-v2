@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <process.h>
 #include <sys/wait.h>
@@ -40,7 +41,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "_process.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

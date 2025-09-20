@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <pthread.h>
 #include <process.h>
 #include <stdio.h>
@@ -38,7 +39,6 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
-#include "seterrno.h"
 #include "thread.h"
 #include "rtinit.h"
 #include "atomic.h"

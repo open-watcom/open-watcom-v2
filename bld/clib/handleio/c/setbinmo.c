@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #if defined(__NT__)
     #include <windows.h>
@@ -40,7 +41,6 @@
 #include "iomode.h"
 #if defined( __DOS__ )
     #include "tinyio.h"
-    #include "seterrno.h"
 #endif
 
 

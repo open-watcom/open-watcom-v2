@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +32,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <dos.h>
 #include "dodoscal.h"
-#include "seterrno.h"
 
 
 _WCRTLINK int intdosx( const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )

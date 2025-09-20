@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "dll.h"        // needs to be first
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #if defined(__QNX__)
     #include <sys/seginfo.h>
@@ -49,7 +51,6 @@
 #include "rtdata.h"
 #include "crwd.h"
 #include "heap.h"
-#include "seterrno.h"
 
 
 #if defined(__WINDOWS__) || defined(__OS2__)

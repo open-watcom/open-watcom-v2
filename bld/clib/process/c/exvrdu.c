@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -40,7 +41,6 @@
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "_process.h"

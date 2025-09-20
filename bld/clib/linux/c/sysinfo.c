@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include <sys/sysinfo.h>
 #include "seterrno.h"
+#include <sys/sysinfo.h>
 #include "linuxsys.h"
 
 

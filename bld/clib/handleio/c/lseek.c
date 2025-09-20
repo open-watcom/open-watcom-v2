@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #if defined( __OS2__ )
@@ -38,7 +39,6 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"

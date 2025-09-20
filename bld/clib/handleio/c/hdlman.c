@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +51,6 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "liballoc.h"
 #include "iomode.h"
 #include "fileacc.h"

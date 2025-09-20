@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <time.h>
 #if defined( __QNX__ )
     #include <sys/types.h>
@@ -38,7 +39,6 @@
 #elif defined( __LINUX__ )
     #include <sys/times.h>
 #endif
-#include "seterrno.h"
 #include "rtinit.h"
 #include "getctime.h"
 #include "thread.h"

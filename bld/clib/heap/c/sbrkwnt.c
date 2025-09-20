@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <dos.h>
 #include <windows.h>
 #include "roundmac.h"
-#include "seterrno.h"
 #include "rtdata.h"
 #include "thread.h"
 #include "heap.h"

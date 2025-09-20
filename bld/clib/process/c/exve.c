@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -51,7 +52,6 @@
 #include "lseek.h"
 #include "_process.h"
 #include "_int23.h"
-#include "seterrno.h"
 #include "doserrno.h"
 
 

@@ -35,6 +35,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,7 +50,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "_environ.h"
 #include "thread.h"
 #include "pathmac.h"

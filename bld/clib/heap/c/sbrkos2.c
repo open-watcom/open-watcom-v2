@@ -32,13 +32,13 @@
 
 #include "dll.h"
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #define INCL_DOSMEMMGR
 #include <wos2.h>
 #include "roundmac.h"
 #include "rtstack.h"
-#include "seterrno.h"
 #include "rtdata.h"
 #include "heap.h"
 #include "heapacc.h"

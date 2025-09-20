@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
 #include <dos.h>
-#include "seterrno.h"
 #include "doserror.h"
 #include "rtdata.h"
 #include "tinyio.h"

@@ -34,13 +34,13 @@
 #define MUTEX_STATUS_DESTROYED  -2
 
 #include "variety.h"
+#include "seterrno.h"
 #include <semaphore.h>
 #include <sys/types.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
-#include "seterrno.h"
 #include "thread.h"
 #include "atomic.h"
 

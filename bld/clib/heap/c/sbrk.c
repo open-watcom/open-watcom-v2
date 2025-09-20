@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #if defined(__WINDOWS__)
     #include <windows.h>
@@ -44,7 +45,6 @@
 #endif
 #include "roundmac.h"
 #include "rtstack.h"
-#include "seterrno.h"
 #include "rtdata.h"
 #include "heap.h"
 

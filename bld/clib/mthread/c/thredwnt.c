@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <time.h>
@@ -39,7 +40,6 @@
 #include <dos.h>
 #include <windows.h>
 #include "roundmac.h"
-#include "seterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
 #include "ntext.h"

@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -38,7 +39,6 @@
 #ifdef __UNIX__
 #include <signal.h>
 #endif
-#include "seterrno.h"
 #include "thread.h"
 
 #include "_ptint.h"

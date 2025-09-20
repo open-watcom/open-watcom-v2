@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #if defined( __NT__ )
     #include <windows.h>
@@ -40,7 +41,6 @@
   && !defined( _THIN_LIB )
     #include "nw_lib.h"
 #endif
-#include "seterrno.h"
 #include "clibsupp.h"
 #include "thread.h"
 

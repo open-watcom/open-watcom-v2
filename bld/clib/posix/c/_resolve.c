@@ -34,6 +34,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -44,7 +45,6 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "_resolve.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

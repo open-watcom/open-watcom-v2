@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <io.h>
 #include <string.h>
@@ -67,7 +68,6 @@
 #endif
 #include "i64.h"
 #include "find.h"
-#include "seterrno.h"
 
 
 #ifdef __WIDECHAR__

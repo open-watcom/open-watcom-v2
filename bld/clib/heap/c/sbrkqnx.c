@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/seginfo.h>
 #include <unistd.h>
 #include "rtstack.h"
-#include "seterrno.h"
 #include "rtdata.h"
 #include "heapacc.h"
 #include "heap.h"

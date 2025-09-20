@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <wchar.h>
 #include <string.h>
@@ -42,7 +43,6 @@
 #endif
 #include "thread.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "liballoc.h"
 #include "_tcsstr.h"
 #include "_cvtstr.h"

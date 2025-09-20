@@ -32,13 +32,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #if defined( __OS2__ )
     #include <wos2.h>
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "seterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"

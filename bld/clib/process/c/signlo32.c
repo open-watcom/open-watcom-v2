@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <signal.h>
@@ -40,7 +41,6 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
-#include "seterrno.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "rtinit.h"

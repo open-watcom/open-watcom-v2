@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -41,7 +42,6 @@
 #include <direct.h>
 #include <utime.h>
 #include <wos2.h>
-#include "seterrno.h"
 #include "openmode.h"
 #include "thread.h"
 

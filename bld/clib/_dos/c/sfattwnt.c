@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <time.h>
 #include <dos.h>
 #include <windows.h>
 #include "ntext.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )

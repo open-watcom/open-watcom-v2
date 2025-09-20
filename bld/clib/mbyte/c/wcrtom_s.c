@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "saferlib.h"
 #include <mbstring.h>
 #include <wchar.h>
@@ -40,7 +41,6 @@
     #include <wos2.h>
 #endif
 #include "farfunc.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

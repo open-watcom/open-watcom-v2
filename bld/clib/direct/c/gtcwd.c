@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <direct.h>
@@ -39,7 +40,6 @@
     #include <mbstring.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "liballoc.h"
 #include "_direct.h"
 #include "tinyio.h"

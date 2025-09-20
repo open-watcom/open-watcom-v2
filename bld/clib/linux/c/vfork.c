@@ -30,9 +30,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include "thread.h"
-#include "seterrno.h"
 
 
 #if defined( __386__ )

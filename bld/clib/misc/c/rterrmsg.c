@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <malloc.h>
 #include <stdio.h>
@@ -51,7 +52,6 @@
     #include "_defwin.h"
   #endif
 #endif
-#include "seterrno.h"
 #include "rterrmsg.h"
 #include "thread.h"
 

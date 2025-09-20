@@ -31,13 +31,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 //#include <errno.h>
 #include <unistd.h>
 #include <dos.h>
 #include "tinyio.h"
-#include "seterrno.h"
 #include "msdos.h"
 
 _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *pathname, int pmode )

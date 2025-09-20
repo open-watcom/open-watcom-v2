@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +43,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "seterrno.h"
 #include "doserrno.h"
 #include "msdos.h"
 #include "thread.h"

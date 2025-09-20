@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 
 // TODO: Need Linux POSIX library!
 #if 0

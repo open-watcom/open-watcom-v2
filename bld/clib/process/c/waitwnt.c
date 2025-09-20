@@ -32,9 +32,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <process.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "thread.h"
 
 _WCRTLINK pid_t wait( int *status )

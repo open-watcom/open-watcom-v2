@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
 #include "thread.h"
-#include "seterrno.h"
 #include "_ptint.h"
 #ifdef __LINUX__
 #include "tgkill.h"

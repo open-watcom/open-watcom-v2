@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -51,7 +52,6 @@
 #define INCL_LONGLONG
 #include <wos2.h>
 #include "os2fil64.h"
-#include "seterrno.h"
 #include "i64.h"
 #include "d2ttime.h"
 #include "thread.h"

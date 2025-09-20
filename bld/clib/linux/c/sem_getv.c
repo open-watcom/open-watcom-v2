@@ -30,11 +30,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <semaphore.h>
 #include <stddef.h>
 #include "futex.h"
 #include "atomic.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

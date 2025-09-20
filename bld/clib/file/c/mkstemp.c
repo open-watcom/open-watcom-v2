@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,7 +49,6 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "seterrno.h"
 #include "thread.h"
 
 /* Note: This code is similar to _mktemp() but intended for POSIX usage */

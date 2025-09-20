@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <termios.h>
-#include "seterrno.h"
 #include "thread.h"
 
 

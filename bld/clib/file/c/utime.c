@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -45,7 +46,6 @@
     #include <windows.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "tinyio.h"
 #include "_doslfn.h"
 

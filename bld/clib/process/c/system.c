@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,7 +47,6 @@
 #endif
 #include "_process.h"
 #include "rtdata.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

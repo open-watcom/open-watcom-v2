@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
-#include "seterrno.h"
 #include "doserror.h"
 #include "rtdata.h"
 #include "tinyio.h"

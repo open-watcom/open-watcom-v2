@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 /* most includes should go after this line */
 #include <stddef.h>
@@ -47,7 +48,6 @@
 #include <dos.h>
 #include <mbstring.h>
 #include <windows.h>
-#include "seterrno.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"

@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
-#include "seterrno.h"
 #include "linuxsys.h"
 
 

@@ -32,6 +32,7 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -51,7 +52,6 @@
     #include <ctype.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "tinyio.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"

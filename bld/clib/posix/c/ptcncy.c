@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include <pthread.h>
 #include "seterrno.h"
+#include <pthread.h>
 
 #include "_ptint.h"
 

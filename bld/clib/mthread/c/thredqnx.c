@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <signal.h>
 #include <float.h>
@@ -43,7 +44,6 @@
 #include "mthread.h"
 #include "semapsx.h"
 #include "cthread.h"
-#include "seterrno.h"
 #include "owqnx.h"
 
 
