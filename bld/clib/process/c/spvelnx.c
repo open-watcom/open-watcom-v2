@@ -56,6 +56,7 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
 {
     pid_t               pid;
     int                 err;
+    int                 errno_save;
     int                 status;
     struct sigaction    old;
     struct sigaction    new;
@@ -86,19 +87,22 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
     if( pid == 0 ) {
         close( status_pipe[0] );
         execve( path, argv, envp );
-        write( status_pipe[1], &lib_get_errno(), sizeof( lib_get_errno() ) );
+        errno_save = lib_get_errno();
+        write( status_pipe[1], &errno_save, sizeof( errno_save ) );
         _exit( 127 );
         // never return
     }
     close( status_pipe[1] );
     /* EXEC's don't return, only SPAWN does */
-    if( err != -1 )
-        err = read( status_pipe[0], &lib_get_errno(), sizeof( lib_get_errno() ) );
+    if( err != -1 ) {
+        err = read( status_pipe[0], &errno_save, sizeof( errno_save ) );
+        lib_set_errno( errno_save );
+    }
     if( err != -1 ) {
         if( err > 0 ) {
-            err = lib_get_errno();
+            errno_save = lib_get_errno();
             waitpid( pid, NULL, 0 );
-            lib_set_errno( err );
+            lib_set_errno( errno_save );
             err = -1;
         } else if ( mode == P_WAIT ) {
            /* if P_WAIT return invoked task's status otherwise P_NOWAIT so
@@ -106,8 +110,9 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
             do {
                 err = waitpid( pid, &status, 0 );
             } while( err == -1 && lib_get_errno() == EINTR );
-            if( err == pid )
+            if( err == pid ) {
                 err = WEXITSTATUS( status );
+            }
         }
     }
     if( old.sa_handler == SIG_IGN ) {
