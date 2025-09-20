@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #include <direct.h>
 #define INCL_DOSERRORS

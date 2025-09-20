@@ -32,8 +32,8 @@
 
 #define __FUNCTION_DATA_ACCESS
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>

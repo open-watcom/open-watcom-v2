@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <wchar.h>
 #include <string.h>
 #include <mbstring.h>

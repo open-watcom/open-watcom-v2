@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>

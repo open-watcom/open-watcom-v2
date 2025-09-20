@@ -32,8 +32,8 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>

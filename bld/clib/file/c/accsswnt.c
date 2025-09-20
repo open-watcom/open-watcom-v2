@@ -32,8 +32,8 @@
 
 
 #include "variety.h"
-#include "seterrno.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #include <direct.h>
 #include <windows.h>
