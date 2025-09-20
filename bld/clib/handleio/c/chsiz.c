@@ -70,7 +70,7 @@ _WCRTLINK int _chsize( int handle, long size )
             rc = write( handle, buff, amount );
             if( rc != amount ) {
                 if( lib_get_doserrno() == E_access )
-                    _RWD_errno = ENOSPC;
+                    lib_set_errno( ENOSPC );
                 rc = -1;
                 break;
             }

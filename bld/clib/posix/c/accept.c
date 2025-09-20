@@ -69,7 +69,7 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
             return( 0 );
         }
     }
-    _RWD_errno = ENOTSOCK;
+    lib_set_errno( ENOTSOCK );
     return( -1 );
 #else
 

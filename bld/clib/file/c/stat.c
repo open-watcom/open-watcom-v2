@@ -138,7 +138,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #else
     if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
@@ -195,7 +195,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
             if( handle != -1 ) {
                 canwrite = true;
                 if( fstat( handle, buf ) == -1 ) {
-                    rc = _RWD_errno;
+                    rc = lib_get_errno();
                 } else {
                     fstatok = true;
                 }
@@ -206,17 +206,17 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
                 canread = true;
                 if( !fstatok ) {
                     if( fstat( handle, buf ) == -1 ) {
-                        rc = _RWD_errno;
+                        rc = lib_get_errno();
                     }
                 }
             }
             close( handle );
             if( !canread
               && !canwrite ) {
-                _RWD_errno = ENOENT;
+                lib_set_errno( ENOENT );
                 return( -1 );
             }
-            _RWD_errno = rc;
+            lib_set_errno( rc );
             if( rc != 0 ) {
                 return( -1 );
             }

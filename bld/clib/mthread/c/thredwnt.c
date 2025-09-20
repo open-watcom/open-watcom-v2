@@ -129,7 +129,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( rc );
     }
 

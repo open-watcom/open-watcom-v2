@@ -99,7 +99,7 @@ static int __iomode( int handle, unsigned amode )
     }
 #endif
     if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+        lib_set_errno( __errno );
         return( -1 );
     }
     return( 0 );
@@ -114,7 +114,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
     int             extflags;
 
     if( handle == -1 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( NULL );
     }
     file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );

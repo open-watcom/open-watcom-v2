@@ -80,7 +80,7 @@ unsigned __growPOSIXHandles( unsigned num )
             os_handles = lib_realloc( __OSHandles, num * sizeof( *os_handles ) );
         }
         if( os_handles == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
         } else {
             for( i = __NHandles; i < num; i++ ) {
                 os_handles[i] = INVALID_HANDLE_VALUE;
@@ -259,7 +259,7 @@ _WCRTLINK int _grow_handles( int num )
 
             new_handles = (char *)lib_nmalloc( num );
             if( new_handles == 0 ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 num = __NHandles;
             } else {
                 _fmemset( new_handles, 0xFF, num );

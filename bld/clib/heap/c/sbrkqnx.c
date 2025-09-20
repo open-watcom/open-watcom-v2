@@ -54,7 +54,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     unsigned long   seg_size;
 
     if( brk_value < _STACKTOP ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (void_nptr)-1 );
     }
     seg_size = __ROUND_UP_SIZE_PARA( brk_value );
@@ -67,7 +67,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 #else
     if( _brk( (void *)seg_size ) == -1 ) {
 #endif
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         _ReleaseNHeap();
         return( (void_nptr)-1 );
     }

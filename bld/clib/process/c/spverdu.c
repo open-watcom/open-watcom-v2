@@ -109,7 +109,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         cmdline = (CHAR_TYPE *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
-            _RWD_errno = E2BIG;
+            lib_set_errno( E2BIG );
         }
     } else {
         cmdline = cmdline_mem;
@@ -117,7 +117,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
 
     if( cmdline != NULL ) {
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         if( ext[0] != NULLCHAR ) {
             if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 )
             {
@@ -133,22 +133,22 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                         p, cmdline, NULL );
                 }
             } else {
-                _RWD_errno = 0;
+                lib_set_errno( 0 );
                 /* user specified an extension, so try it */
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
             }
         } else {
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
-            _RWD_errno = 0;
+            lib_set_errno( 0 );
             retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-            if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                _RWD_errno = 0;
+            if( retval == -1 || lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+                lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-                if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                if( retval == -1 || lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
                     /* try for a .BAT file */
-                    _RWD_errno = 0;
+                    lib_set_errno( 0 );
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
                     if( file_exists( p ) ) {
                         /* the environment will have to be reconstructed */

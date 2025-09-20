@@ -66,7 +66,7 @@ _WCRTLINK size_t _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FF
     } else if( n < MB_LEN_MAX && _ismbblead( CHAR2INT( *s ) ) ) {
         return( (size_t)-2 );               /* incomplete, possibly valid */
     } else {
-        _RWD_errno = EILSEQ;                /* encoding error */
+        lib_set_errno( EILSEQ );                /* encoding error */
         return( (size_t)-1 );
     }
 }

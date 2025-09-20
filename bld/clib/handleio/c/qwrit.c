@@ -178,7 +178,7 @@ int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
     len_written = TINY_LINFO( rc );
 #endif
     if( len_written != len ) {
-        _RWD_errno = ENOSPC;
+        lib_set_errno( ENOSPC );
     }
     if( atomic == 1 ) {
         _ReleaseFileH( handle );

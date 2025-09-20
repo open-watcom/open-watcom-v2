@@ -122,7 +122,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1L );
     }
 

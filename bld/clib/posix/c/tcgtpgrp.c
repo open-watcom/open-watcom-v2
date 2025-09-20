@@ -49,7 +49,7 @@ _WCRTLINK  pid_t  tcgetpgrp( int fd )
         return( -1 );
     return( pid );
 #else
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 #endif
 }

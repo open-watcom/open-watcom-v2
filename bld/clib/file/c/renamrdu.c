@@ -52,7 +52,7 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 
     dst = RdosOpenFile( new, 0 );
     if ( dst ) {
-        _RWD_errno = EEXIST;
+        lib_set_errno( EEXIST );
         RdosCloseFile( dst );
         return( -1 );
     }
@@ -94,6 +94,6 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
             return( 0 );
     }
 
-    _RWD_errno = ENOENT;
+    lib_set_errno( ENOENT );
     return( -1 );
 }

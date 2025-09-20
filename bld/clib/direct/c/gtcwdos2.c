@@ -73,7 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     path[2] = DIR_SEP;
     if( buf == NULL ) {
         if( (buf = malloc( max( size, pathlen + 4 ) * CHARSIZE )) == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
         size = pathlen + 3;

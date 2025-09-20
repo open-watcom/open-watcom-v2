@@ -57,7 +57,7 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
 
     rc = DosCwait( action, 0, &retval, &pid, process_id );
     if( rc != 0 ) {
-        _RWD_errno = ( rc == ERROR_WAIT_NO_CHILDREN ) ? ECHILD : EINVAL;
+        lib_set_errno( ( rc == ERROR_WAIT_NO_CHILDREN ) ? ECHILD : EINVAL );
         return( -1 );
     } else {
         u.stat = rc;
@@ -67,7 +67,7 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
         if( status != NULL )
             *status = u.stat;
         if( u.s.al != 0 ) {
-            _RWD_errno = EINTR;
+            lib_set_errno( EINTR );
             return( -1 );
         }
     }

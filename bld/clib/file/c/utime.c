@@ -158,13 +158,13 @@ static int _utime_sfn( const char *fname, _dos_tms *dostms )
     if( regs.x.cflag ) {
         switch( regs.w.ax ) {
         case 2:
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             break;
         case 4:
-            _RWD_errno = EMFILE;
+            lib_set_errno( EMFILE );
             break;
         case 5:
-            _RWD_errno = EACCES;
+            lib_set_errno( EACCES );
             break;
         }
         return( -1 );
@@ -177,14 +177,14 @@ static int _utime_sfn( const char *fname, _dos_tms *dostms )
     regs.h.al = 1;           /* set date & time */
     intdos( &regs, &regs );
     if( regs.x.cflag ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     regs.w.bx = handle;
     regs.h.ah = DOS_CLOSE;
     intdos( &regs, &regs );
     if( regs.x.cflag ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     return( 0 );

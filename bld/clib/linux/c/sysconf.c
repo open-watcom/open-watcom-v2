@@ -67,7 +67,7 @@ static int __sysconf_nprocessors_conf( void )
 
     fp = fopen( "/sys/devices/system/cpu/present", "rb" );
     if( fp == NULL ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( -1 );
     }
     fseek( fp, 0, SEEK_END );
@@ -110,7 +110,7 @@ static int __sysconf_nprocessors( void )
 
     res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
     if ( __syscall_iserror( res ) ) {
-        _RWD_errno = __syscall_errno( res );
+        lib_set_errno( __syscall_errno( res ) );
         return( -1 );
     }
     used = __syscall_val( int, res );

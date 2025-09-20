@@ -54,17 +54,17 @@
 
 _WCRTLINK void __set_EDOM( void )
 {
-    _RWD_errno = EDOM;
+    lib_set_errno( EDOM );
 }
 
 _WCRTLINK void __set_ERANGE( void )
 {
-    _RWD_errno = ERANGE;
+    lib_set_errno( ERANGE );
 }
 
 int _WCNEAR __set_EINVAL( void )
 {
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 }
 

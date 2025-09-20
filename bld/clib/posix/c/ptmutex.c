@@ -52,7 +52,7 @@ _WCRTLINK int pthread_mutex_init(pthread_mutex_t *__mutex, const pthread_mutexat
         return( EINVAL );
 
     if(sem_init(&__mutex->mutex, 0, 1) != 0) {
-        return( _RWD_errno );
+        return( lib_get_errno() );
     }
 
     __mutex->owner = (pid_t)MUTEX_STATUS_READY;
@@ -78,7 +78,7 @@ int res;
     /* Need to release the mutex semaphore now */
     sem_post(&__mutex->mutex);
     if(sem_destroy(&__mutex->mutex) != 0)
-        return( _RWD_errno );
+        return( lib_get_errno() );
 
     return( 0 );
 }

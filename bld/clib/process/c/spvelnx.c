@@ -86,26 +86,26 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
     if( pid == 0 ) {
         close( status_pipe[0] );
         execve( path, argv, envp );
-        write( status_pipe[1], &_RWD_errno, sizeof( _RWD_errno ) );
+        write( status_pipe[1], &lib_get_errno(), sizeof( lib_get_errno() ) );
         _exit( 127 );
         // never return
     }
     close( status_pipe[1] );
     /* EXEC's don't return, only SPAWN does */
     if( err != -1 )
-        err = read( status_pipe[0], &_RWD_errno, sizeof( _RWD_errno ) );
+        err = read( status_pipe[0], &lib_get_errno(), sizeof( lib_get_errno() ) );
     if( err != -1 ) {
         if( err > 0 ) {
-            err = _RWD_errno;
+            err = lib_get_errno();
             waitpid( pid, NULL, 0 );
-            _RWD_errno = err;
+            lib_set_errno( err );
             err = -1;
         } else if ( mode == P_WAIT ) {
            /* if P_WAIT return invoked task's status otherwise P_NOWAIT so
               return pid and let user do the wait */
             do {
                 err = waitpid( pid, &status, 0 );
-            } while( err == -1 && _RWD_errno == EINTR );
+            } while( err == -1 && lib_get_errno() == EINTR );
             if( err == pid )
                 err = WEXITSTATUS( status );
         }

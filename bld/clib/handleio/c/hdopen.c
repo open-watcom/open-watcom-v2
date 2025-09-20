@@ -81,7 +81,7 @@ static int _WCNEAR check_mode( int handle, int mode )
         }
     }
     if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+        lib_set_errno( __errno );
         return( -1 );
     }
   #elif defined(__OS2_32BIT__)
@@ -110,7 +110,7 @@ static int _WCNEAR check_mode( int handle, int mode )
         __errno = EACCES;
     }
     if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+        lib_set_errno( __errno );
         return( -1 );
     }
   #elif defined(__OS2_16BIT__)

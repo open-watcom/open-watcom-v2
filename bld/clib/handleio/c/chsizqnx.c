@@ -69,7 +69,7 @@ _WCRTLINK int _chsize( int handle, long size )
                 case -1:
                     return( -1 );
                 case 0:
-                    _RWD_errno = ENOSPC;
+                    lib_set_errno( ENOSPC );
                     return( -1 );
                 }
                 diff -= amount;

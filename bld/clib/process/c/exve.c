@@ -244,7 +244,7 @@ _WCRTLINK int execve( path, argv, envp )
     name = strrchr( pgmname, '\\' );
     if( strchr( name == NULL ? pgmname : name, '.' ) != NULL ) {
         file = open( pgmname, O_BINARY|O_RDONLY, 0 );
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         if( file == -1 ) {
             goto error;
         }
@@ -254,7 +254,7 @@ _WCRTLINK int execve( path, argv, envp )
         if( file == -1 ) {
             strcpy( strrchr( pgmname, '.' ), ".exe" );
             file = open( pgmname, O_BINARY|O_RDONLY, 0 );
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             if( file == -1 ) {
                 goto error;
             }
@@ -263,7 +263,7 @@ _WCRTLINK int execve( path, argv, envp )
 
     if( read( file, (char *)&exe, sizeof( exe ) ) == -1 ) {
         close( file );
-        _RWD_errno = ENOEXEC;
+        lib_set_errno( ENOEXEC );
         lib_set_doserrno( E_badfmt );
         goto error;
     }

@@ -110,7 +110,7 @@ unsigned long __CBeginThreadEx(
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( 0 );
     }
 

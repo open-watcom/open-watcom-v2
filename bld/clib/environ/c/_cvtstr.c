@@ -62,9 +62,9 @@ __F_NAME(wchar_t,char) * _WCNEAR __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcs
         lib_free( string );
     }
     if( string != NULL ) {
-        _RWD_errno = ERANGE;
+        lib_set_errno( ERANGE );
     } else {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
     }
     return( NULL );
 }

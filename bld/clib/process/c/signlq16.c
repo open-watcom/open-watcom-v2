@@ -142,7 +142,7 @@ _WCRTLINK int sigaction(
     if( act ) {
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
         if( msg.r.status != EOK ) {
-            _RWD_errno = msg.r.status;
+            lib_set_errno( msg.r.status );
             return( -1 );
         }
     }

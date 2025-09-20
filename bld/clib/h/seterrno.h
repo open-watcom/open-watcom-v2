@@ -50,25 +50,35 @@
     /*
      * get LibC errno
      */
-    #define _RWD_errno      (*___errno())
+    #define lib_get_errno()     (*___errno())
+    #define lib_set_errno(x)    (*___errno() = (x))
   #else
     /*
      * get CLib errno
      */
-    #define _RWD_errno      errno
+    #define lib_get_errno()     (errno)
+    #define lib_set_errno(x)    (errno = (x))
   #endif
 #elif defined( __QNX__ )
     /*
      * QNX errno is magically multithread aware
      */
-    #define _RWD_errno      errno
+    #define lib_get_errno()     (errno)
+    #define lib_set_errno(x)    (errno = (x))
 #elif defined( __RDOSDEV__ )
-    #define _RWD_errno      errno
+    #undef errno
+    extern _WCRTDATA int        errno;
+    #define lib_get_errno()     (errno)
+    #define lib_set_errno(x)    (errno = (x))
 #elif defined( __MT__ )
     #undef errno
-    #define _RWD_errno      (__THREADDATAPTR->__errnoP)
+    #define lib_get_errno()     (__THREADDATAPTR->__errnoP)
+    #define lib_set_errno(x)    (__THREADDATAPTR->__errnoP = (x))
 #else
-    #define _RWD_errno      errno
+    #undef errno
+    extern _WCRTDATA int        errno;
+    #define lib_get_errno()     (errno)
+    #define lib_set_errno(x)    (errno = (x))
 #endif
 
 /*

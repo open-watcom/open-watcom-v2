@@ -45,7 +45,7 @@ _WCRTLINK int tcgetattr( int fd, struct termios *termios_p )
 #ifdef __LINUX__
     return( ioctl( fd, TCGETS, termios_p ) );
 #else
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 #endif
 }

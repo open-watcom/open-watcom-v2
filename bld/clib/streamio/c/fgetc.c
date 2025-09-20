@@ -128,7 +128,7 @@ _WCRTLINK int fgetc( FILE *fp )
     ORIENT_STREAM( fp, EOF );
 
     if( (fp->_flag & _READ) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         c = EOF;
     } else {
@@ -194,7 +194,7 @@ static int _WCNEAR __read_wide_char( FILE *fp, wchar_t *wc )
             *wc = wcTemp;
             return( 1 );
         } else {
-            _RWD_errno = EILSEQ;
+            lib_set_errno( EILSEQ );
             return( 0 );
         }
     }

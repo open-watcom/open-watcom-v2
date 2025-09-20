@@ -165,7 +165,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 #else
     if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
@@ -189,7 +189,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
         if( __lib_GetDriveType( fullpath ) == DRIVE_UNKNOWN ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( -1 );
         }
 

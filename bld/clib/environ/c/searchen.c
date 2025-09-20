@@ -70,7 +70,7 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
 
     CHECK_WIDE_ENV();
 
-    prev_errno = _RWD_errno;
+    prev_errno = lib_get_errno();
     if( __F_NAME(access,_waccess)( name, F_OK ) == 0 ) {
         p = buffer;
         len = 0;
@@ -133,7 +133,7 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                     __F_NAME(strcat,wcscat)( p2, name );
                     /* check to see if file exists */
                     if( __F_NAME(access,_waccess)( buffer, 0 ) == 0 ) {
-                        _RWD_errno = prev_errno;
+                        lib_set_errno( prev_errno );
                         return;
                     }
                 }

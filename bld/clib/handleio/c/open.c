@@ -81,7 +81,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
     if( _dos_open( __F_NAME(name,mbName), rwmode | shflag, &handle ) == 0 ) {
         if( handle >= __NFiles ) {
             TinyClose( handle );
-            _RWD_errno = EMFILE;
+            lib_set_errno( EMFILE );
             return( -1 );
         }
     }
@@ -107,7 +107,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
                 if( (mode & O_EXCL) && (mode & O_CREAT) ) {
 #endif
                     TinyClose( handle );
-                    _RWD_errno = EEXIST;
+                    lib_set_errno( EEXIST );
                     return( -1 );
                 } else if( mode & O_TRUNC ) {   /* truncate file */
                     rc = TinyWrite( handle, &dummy, 0 );
@@ -161,7 +161,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
             }
             if( handle >= __NFiles ) {
                 TinyClose( handle );
-                _RWD_errno = EMFILE;
+                lib_set_errno( EMFILE );
                 return( -1 );
             }
             /*

@@ -39,7 +39,7 @@
 
     #define __handle_check( __h, __r ) \
             if( (__h) < 0 || (__h) >= __NFiles ) {  \
-                _RWD_errno = EBADF;                 \
+                lib_set_errno( EBADF );             \
                 return( __r );                      \
             }
 

@@ -64,7 +64,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
         fd = open( name, O_RDWR | O_CREAT | O_EXCL | O_TEMP, 0666 );
         if( fd != -1 )
             break;
-        if( _RWD_errno != EEXIST )
+        if( lib_get_errno() != EEXIST )
             return( NULL );
         if( tmpfnext == 'z' )
             tmpfnext = 'A' - 1;

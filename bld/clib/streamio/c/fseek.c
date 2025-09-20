@@ -106,7 +106,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
                 // assume __flush set the errno value
                 // if erroneous input, override errno value
                 if( origin == SEEK_SET && offset < 0 ) {
-                    _RWD_errno = EINVAL;
+                    lib_set_errno( EINVAL );
                 }
                 _ReleaseFile( fp );
                 return( -1 );
@@ -183,7 +183,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
             }
             break;
         default:
-            _RWD_errno = EINVAL;
+            lib_set_errno( EINVAL );
             _ReleaseFile( fp );
             return( -1 );
         }

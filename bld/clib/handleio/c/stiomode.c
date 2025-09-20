@@ -73,7 +73,7 @@ void _WCNEAR __grow_iomode( int num )
         new = lib_realloc( __io_mode, num * sizeof( *new ) );
     }
     if( new == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
     } else {
         memset( &new[__NFiles], 0, ( num - __NFiles ) * sizeof( *new ) );
         __io_mode = new;

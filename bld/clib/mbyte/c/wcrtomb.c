@@ -58,7 +58,7 @@ _WCRTLINK size_t _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate
     /*** Check for a valid wide character ***/
     rc = _NEARFAR(wctomb,_fwctomb)( s, wc );
     if( rc == -1 ) {
-        _RWD_errno = EILSEQ;
+        lib_set_errno( EILSEQ );
         return( (size_t)-1 );
     }
     if( rc == 0 ) {

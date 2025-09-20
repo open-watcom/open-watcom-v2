@@ -91,7 +91,7 @@ got_one:
     _ReleaseIOB();
     return( fp );
 no_mem:
-    _RWD_errno = ENOMEM;
+    lib_set_errno( ENOMEM );
     _ReleaseIOB();
     return( NULL );     /* no free slots */
 }

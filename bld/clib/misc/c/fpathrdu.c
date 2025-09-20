@@ -45,7 +45,7 @@
 
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            _RWD_errno = ERANGE;        \
+                            lib_set_errno( ERANGE );        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -63,7 +63,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
         size = _MAX_PATH;
         buff = lib_malloc( size );
         if( buff == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
     }
@@ -87,7 +87,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
     q += 2;
     if( !IS_DIR_SEP( p[0] ) ) {
         if( !RdosGetCurDir( path_drive_idx, curr_dir ) ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
         len = strlen( curr_dir );

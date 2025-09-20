@@ -38,6 +38,7 @@
 #include <windows.h>
 #include "rtdata.h"
 
+
 _WCRTLINK unsigned _dos_allocmem( unsigned num_of_paras, LPVOID *p_mem )
 {
     LPVOID      ptr;

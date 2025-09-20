@@ -209,7 +209,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
             _POSIX_HANDLE_CLEANUP;
             return( rc );
         }
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         _POSIX_HANDLE_CLEANUP;
         return( -1 );
     }
@@ -221,7 +221,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #if defined(__DOS__)
     use_cmd = false;
     if( mode >= OLD_P_OVERLAY ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         rc = -1;
         _POSIX_HANDLE_CLEANUP;
         return( rc );
@@ -279,7 +279,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         cmdline = alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
-            _RWD_errno = E2BIG;
+            lib_set_errno( E2BIG );
             lib_set_doserrno( E_badenv );
         }
     } else {
@@ -298,7 +298,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         }
 #endif
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         if( ext[0] != NULLCHAR ) {
 #if defined( __OS2__ )
             if( _stricmp( ext, STRING( ".cmd" ) ) == 0 || _stricmp( ext, STRING( ".bat" ) ) == 0 ) {
@@ -320,7 +320,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                         p, cmdline, NULL );
                 }
             } else {
-                _RWD_errno = 0;
+                lib_set_errno( 0 );
                 /* user specified an extension, so try it */
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
@@ -333,23 +333,23 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
          *      a.b.exe  a.cmd.exe  a.exe.cmd  a.cmd
          * we must always try to add .exe, etc.
          */
-        if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+        if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
 #endif
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             if( prot_mode286 ) {
-                _RWD_errno = ENOENT;
+                lib_set_errno( ENOENT );
             } else {
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
-                _RWD_errno = 0;
+                lib_set_errno( 0 );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
-            if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                _RWD_errno = 0;
+            if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+                lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
-                if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
                     /* try for a .BAT file */
-                    _RWD_errno = 0;
+                    lib_set_errno( 0 );
 #if defined( __OS2__ )
                     strcpy( end_of_p, STRING( ".cmd" ) );
                     if( !file_exists( p ) )

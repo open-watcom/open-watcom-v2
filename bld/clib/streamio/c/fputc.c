@@ -67,7 +67,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
     ORIENT_STREAM( fp, EOF );
 
     if( (fp->_flag & _WRITE) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( EOF );
@@ -127,7 +127,7 @@ static int __write_wide_char( FILE *fp, wchar_t wc )
         if( rc > 0 ) {
             return( fwrite( mbc, rc, 1, fp ) );
         } else {
-            _RWD_errno = EILSEQ;
+            lib_set_errno( EILSEQ );
             return( 0 );
         }
     }

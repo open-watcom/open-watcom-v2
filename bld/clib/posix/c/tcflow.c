@@ -44,7 +44,7 @@ _WCRTLINK int tcflow( int fd, int action )
 #ifdef __LINUX__
     return( ioctl( fd, TCXONC, action ) );
 #else
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 #endif
 }

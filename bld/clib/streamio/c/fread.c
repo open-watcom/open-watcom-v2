@@ -60,7 +60,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
     _ValidFile( fp, 0 );
     _AccessFile( fp );
     if( (fp->_flag & _READ) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( 0 );

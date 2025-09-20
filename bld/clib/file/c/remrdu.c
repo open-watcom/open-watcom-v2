@@ -48,7 +48,7 @@ _WCRTLINK int remove( CHAR_TYPE const *filename )
     if( RdosDeleteFile( filename ) )
         return( 0 );
     else {
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );  
     }
 }

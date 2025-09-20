@@ -101,7 +101,7 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
             ret = 0;
 
         if(ret == -ETIMEDOUT) {
-            _RWD_errno = ETIMEDOUT;
+            lib_set_errno( ETIMEDOUT );
             return( -1 );
         }
 
@@ -142,6 +142,6 @@ _WCRTLINK int sem_trywait( sem_t *sem )
     if( __decrement_if_positive( &sem->value ) )
         return( 0 );
 
-    _RWD_errno = EAGAIN;
+    lib_set_errno( EAGAIN );
     return( -1 );
 }

@@ -61,7 +61,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
     CHAR_TYPE *end;
 
     retval = __F_NAME(execve,_wexecve)( file, argv, envp );
-    if( retval != -1 || _RWD_errno != ENOENT && _RWD_errno != EINVAL )
+    if( retval != -1 || lib_get_errno() != ENOENT && lib_get_errno() != EINVAL )
         return( retval );
     if( IS_DIR_SEP( file[0] ) || file[0] == NULLCHAR || file[1] == DRV_SEP )
         return( retval );
@@ -77,7 +77,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
             end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
         }
         if( end - p > _MAX_PATH - file_len ) {
-            _RWD_errno = E2BIG;
+            lib_set_errno( E2BIG );
             lib_set_doserrno( E_badenv );
             return( -1 );
         }
@@ -90,7 +90,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
         retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
         if( retval != -1 )
             break;
-        if(_RWD_errno != ENOENT && _RWD_errno != EINVAL)
+        if(lib_get_errno() != ENOENT && lib_get_errno() != EINVAL)
             break;
         if( *end != STRING( ';' ) )
             break;

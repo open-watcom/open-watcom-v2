@@ -52,7 +52,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 
     sys_brk_value = sys_brk( brk_value );
     if( sys_brk_value == -1 ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         _ReleaseNHeap();
         return( (void_nptr)-1 );
     }

@@ -50,7 +50,7 @@ _WCRTLINK FILE *popen( const char *command, const char *mode )
         /* Note: by checking mode[1], we are basically ruling out
          * glibc's extra designators, as we should.
          */
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
     if( pipe( fd ) < 0 ) {

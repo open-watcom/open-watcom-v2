@@ -71,12 +71,12 @@ _WCRTLINK int fsync( int handle )
     }
   #elif defined(__OS2__)
     if( DosBufReset( handle ) != 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         ret = -1;
     }
   #elif defined(__NETWARE__)
     if( FEFlushWrite( handle ) != 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         ret = -1;
     }
   #else
