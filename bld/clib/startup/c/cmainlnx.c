@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #include "rtdata.h"

@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <sys/stat.h>
 #include "linuxsys.h"

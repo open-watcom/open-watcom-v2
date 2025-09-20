@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>

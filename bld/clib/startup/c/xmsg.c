@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include "clibsupp.h"
 #if defined( __DOS__ )
     #include "doexitwm.h"

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <sys/wait.h>
 #include "rtdata.h"

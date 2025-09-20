@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <dirent.h>
 #include <stdio.h>

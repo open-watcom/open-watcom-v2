@@ -40,8 +40,6 @@
     #include <sys/types.h>
 #endif
 
-#include "seterrno.h"
-
 /* Include architecture specific definitions */
 #if defined( _M_IX86 ) && !defined( _M_I86 )
     #include "sys386.h"

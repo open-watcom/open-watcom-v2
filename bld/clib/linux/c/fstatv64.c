@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/statvfs.h>
 #include "linuxsys.h"
 #include "kstatfs.h"
