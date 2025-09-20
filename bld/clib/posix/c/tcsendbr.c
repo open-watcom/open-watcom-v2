@@ -44,7 +44,7 @@ _WCRTLINK int tcsendbreak( int fd, int duration )
 #ifdef __LINUX__
     return( ioctl( fd, TCSBRKP, duration ) );
 #else
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 #endif
 }

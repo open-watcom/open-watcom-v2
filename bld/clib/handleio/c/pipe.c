@@ -86,7 +86,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
     rc = DosCreatePipe( &osfh_read, &osfh_write, psize );
   #endif
     if( rc != NO_ERROR ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
 #endif

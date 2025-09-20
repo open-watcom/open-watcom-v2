@@ -67,7 +67,7 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 _WCRTDATA int       errno;
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-    return( &_RWD_errno );
+    return( &errno );
 }
 
 #elif defined( __MT__ )
@@ -75,7 +75,7 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 #undef errno
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-    return( &_RWD_errno );
+    return( &(__THREADDATAPTR->__errnoP) );
 }
 
 #else
@@ -84,7 +84,7 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 _WCRTDATA int       errno;
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-    return( &_RWD_errno );
+    return( &errno );
 }
 
 #endif

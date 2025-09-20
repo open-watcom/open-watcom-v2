@@ -52,9 +52,9 @@ _WCRTLINK void_nptr sbrk( int increment )
         cstg = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
         if( cstg != NULL )
             return( cstg );
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
     } else {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
     }
     return( (void_nptr)-1 );
 }

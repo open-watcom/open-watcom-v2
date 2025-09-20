@@ -59,7 +59,7 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute ) {
     if( rc == 0 && searchcount == 1 ) {
         *attribute = dir_buff.attrFile;
     } else {
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
     }
     return( rc );
 }

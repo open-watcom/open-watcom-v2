@@ -73,7 +73,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     }
     if( DosQFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     if( times == NULL ) {
@@ -107,11 +107,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
 
     if( DosSetFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     if( DosClose( handle ) != 0 ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     return( 0 );

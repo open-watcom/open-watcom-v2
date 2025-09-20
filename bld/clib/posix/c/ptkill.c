@@ -58,7 +58,7 @@ _WCRTLINK int pthread_kill(pthread_t thread, int sig)
 #ifdef __LINUX__
         return( __tgkill(ppid, tpid, sig) );
 #else
-        _RWD_errno = ENOSYS;
+        lib_set_errno( ENOSYS );
         return( -1 );
 #endif
     }

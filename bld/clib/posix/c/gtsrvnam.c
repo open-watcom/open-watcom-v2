@@ -48,7 +48,7 @@ _WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
     struct servent *ret;
 
     if( name == NULL ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
 

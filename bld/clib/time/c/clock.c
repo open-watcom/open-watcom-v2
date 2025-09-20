@@ -59,10 +59,10 @@ _WCRTLINK clock_t clock( void )
     clock_t     clk;
     int         save_errno;
 
-    save_errno = _RWD_errno;
+    save_errno = lib_get_errno();
     times( &buf );
     clk = ( buf.tms_utime + buf.tms_stime ) * ( CLOCKS_PER_SEC / SYS_CLK_TCK );
-    _RWD_errno = save_errno;
+    lib_set_errno( save_errno );
     return clk;
 }
 

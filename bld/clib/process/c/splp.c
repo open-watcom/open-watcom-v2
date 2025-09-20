@@ -68,7 +68,7 @@ _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, cons
 
     argv = tmp = alloca( num * sizeof( ARGS_TYPE ) );
     if( argv == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
 

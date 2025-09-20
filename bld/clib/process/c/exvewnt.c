@@ -46,7 +46,7 @@ _WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE 
     int         rc;
 
     rc = __F_NAME(spawnve,_wspawnve)( P_NOWAIT, path, argv, envp );
-    if( _RWD_errno == 0 ) {
+    if( lib_get_errno() == 0 ) {
         __int23_exit();
         ExitProcess( rc );
         // never return

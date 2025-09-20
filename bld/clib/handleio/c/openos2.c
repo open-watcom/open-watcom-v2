@@ -127,7 +127,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
 
     if( handle >= __NFiles ) {
         DosClose( handle );
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
     iomode_flags = 0;

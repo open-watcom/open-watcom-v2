@@ -46,7 +46,7 @@ _WCRTLINK struct protoent *getprotobyname(const char *name)
     int i;
 
     if( name == NULL ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
 

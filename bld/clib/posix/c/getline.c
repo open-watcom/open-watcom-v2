@@ -75,7 +75,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
             size = linelength * 2 | 0x7F;
             buff = realloc( buff, size );
             if( buff == NULL ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 return( -1 );
             }
             *s = buff;

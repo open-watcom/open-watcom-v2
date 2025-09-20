@@ -46,7 +46,7 @@ pthread_key_t res;
 
     res = __register_pkey(__destructor);
     if(res < 0) {
-        ret = _RWD_errno;
+        ret = lib_get_errno();
     } else {
         ret = 0;
         *__key = res;

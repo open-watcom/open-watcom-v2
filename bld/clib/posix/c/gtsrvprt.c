@@ -48,7 +48,7 @@ _WCRTLINK struct servent *getservbyport( int port, const char *proto )
     struct servent *ret;
 
     if( port < 1 ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
 

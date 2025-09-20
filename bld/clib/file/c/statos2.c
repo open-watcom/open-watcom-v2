@@ -104,7 +104,7 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 #else
     if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
@@ -130,7 +130,7 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
         drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
         if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( -1 );
         }
         /* set attributes */
@@ -164,17 +164,17 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
             rc = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle < 0 ) {
-                _RWD_errno = ENOENT;
+                lib_set_errno( ENOENT );
                 return( -1 );
 #ifdef __INT64__
             } else if( _fstati64( handle, buf ) == -1 ) {
 #else
             } else if( fstat( handle, buf ) == -1 ) {
 #endif
-                rc = _RWD_errno;
+                rc = lib_get_errno();
             }
             close( handle );
-            _RWD_errno = rc;
+            lib_set_errno( rc );
             if( rc != 0 ) {
                 return( -1 );
             }
@@ -185,7 +185,7 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
         }
         if( rc != 0
           || searchcount != 1 ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( -1 );
         }
         /* set timestamps */

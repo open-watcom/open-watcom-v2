@@ -45,7 +45,7 @@ _WCRTLINK  int   tcsetpgrp( int fd, pid_t pgrp_id )
 #ifdef __LINUX__
     return( ioctl( fd, TIOCSPGRP, &pgrp_id ) );
 #else
-    _RWD_errno = EINVAL;
+    lib_set_errno( EINVAL );
     return( -1 );
 #endif
 }

@@ -64,7 +64,7 @@ _WCRTLINK int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t ad
             return( 0 );
         }
     }
-    _RWD_errno = ENOTSOCK;
+    lib_set_errno( ENOTSOCK );
     return( -1 );
 #else
 

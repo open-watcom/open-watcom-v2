@@ -54,7 +54,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     __segment   segment;
 
     if( brk_value < _STACKTOP ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (void_nptr)-1 );
     }
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
@@ -65,7 +65,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     _AccessNHeap();
     segment = _DGroup();
     if( DosReallocSeg( num_of_paras << 4, segment ) != 0 ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         _ReleaseNHeap();
         return( (void_nptr)-1 );
     }
@@ -93,9 +93,9 @@ _WCRTLINK void_nptr sbrk( int increment )
         if( !DosAllocMem( (PPVOID)&p, increment, PAG_COMMIT|PAG_READ|PAG_WRITE ) ) {
             return( p );
         }
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
     } else {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
     }
     return( (void_nptr)-1 );
 }

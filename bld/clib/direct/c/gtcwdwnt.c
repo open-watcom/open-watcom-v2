@@ -60,12 +60,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     if( buf == NULL ) {
         buf = lib_malloc( max( size, realsize + 1 ) * CHARSIZE );
         if( buf == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
     } else {
         if( realsize + 1 > size ) {
-            _RWD_errno = ERANGE;
+            lib_set_errno( ERANGE );
             return( NULL );
         }
     }

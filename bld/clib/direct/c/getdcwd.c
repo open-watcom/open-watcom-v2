@@ -52,7 +52,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer,
     if( drive != 0 ) {
         old_drive = _getdrive();
         if( _chdrive( drive ) ) {
-            _RWD_errno = ENODEV;
+            lib_set_errno( ENODEV );
             return( NULL );
         }
     }

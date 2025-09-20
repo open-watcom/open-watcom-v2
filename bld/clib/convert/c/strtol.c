@@ -121,7 +121,7 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
         }
     }
     if( base < 2 || base > 36 ) {
-        _RWD_errno = EDOM;
+        lib_set_errno( EDOM );
         return( 0 );
     }
     if( base == 16 ) {
@@ -158,7 +158,7 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
         }
     }
     if( overflow ) {
-        _RWD_errno = ERANGE;
+        lib_set_errno( ERANGE );
         if( !who )
             return( ULONG_MAX );
         if( minus )

@@ -90,12 +90,12 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
         return( _lread( handle, buffer, len ) );
 #else
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( -1 );
 #endif
     }
     if( (iomode_flags & _READ) == 0 ) {
-        _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
+        lib_set_errno( EACCES );     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
 #ifdef __NT__

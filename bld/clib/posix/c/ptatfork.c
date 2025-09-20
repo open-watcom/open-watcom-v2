@@ -40,6 +40,6 @@ _WCRTLINK int pthread_atfork( void (*prepare)(void), void (*parent)(void), void 
     (void)parent;
     (void)child;
 
-    _RWD_errno = ENOSYS;
+    lib_set_errno( ENOSYS );
     return( -1 );
 }

@@ -82,6 +82,6 @@ _WCRTLINK void jperror( const char *s )
         fputs( s, stderr );
         fputs( ": ", stderr );
     }
-    fputs( (char *)jstrerror( _RWD_errno ), stderr );
+    fputs( (char *)jstrerror( lib_get_errno() ), stderr );
     fputc( '\n', stderr );
 }

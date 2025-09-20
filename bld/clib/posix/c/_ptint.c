@@ -189,7 +189,7 @@ pthread_key_t __register_pkey( void (*destructor)(void*) )
 
     newkey = (struct __ptkeylist_struct *)malloc(sizeof(struct __ptkeylist_struct));
     if( newkey == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (pthread_key_t)(-1) );
     }
 
@@ -507,7 +507,7 @@ pthread_t __register_thread( void )
 
     newthread = (__ptcatalog_node *)malloc(sizeof(__ptcatalog_node));
     if( newthread == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (pthread_t)-1 );
     }
 
@@ -561,7 +561,7 @@ pthread_t __register_thread( void )
         }
         __ptcatalog_unlock();
     } else {
-        _RWD_errno = EBUSY;
+        lib_set_errno( EBUSY );
         return( (pthread_t)-1 );
     }
 

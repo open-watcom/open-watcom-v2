@@ -91,7 +91,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         flock_buff.l_type = F_RDLCK;
         break;
     default:
-        _RWD_errno = ENOSYS;
+        lib_set_errno( ENOSYS );
         return( -1 );
     }
     tries = 10;
@@ -99,7 +99,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         ret = fcntl( handle, cmd, &flock_buff );
         if( ret != -1 )
             break;
-        if( _RWD_errno != EAGAIN )
+        if( lib_get_errno() != EAGAIN )
             break;
         if( mode != LK_LOCK )
             break;
@@ -107,8 +107,8 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
             break;
         sleep( 1 );
     }
-    if( _RWD_errno == EAGAIN )
-        _RWD_errno = EDEADLK;
+    if( lib_get_errno() == EAGAIN )
+        lib_set_errno( EDEADLK );
     return( ret );
 }
 
@@ -136,7 +136,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         sleep( 1 );                             /* wait 1 second */
     }
     lib_set_doserrno( rc );
-    _RWD_errno = EDEADLOCK;
+    lib_set_errno( EDEADLOCK );
     return( -1 );
 }
 #endif

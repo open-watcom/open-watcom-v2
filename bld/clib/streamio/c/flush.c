@@ -85,7 +85,7 @@ int _WCNEAR __flush( FILE *fp )
                     ret = EOF;
 #ifndef __UNIX__
                 } else if( len == 0 ) {
-                    _RWD_errno = ENOSPC;
+                    lib_set_errno( ENOSPC );
                     fp->_flag |= _SFERR;
                     ret = EOF;
 #endif

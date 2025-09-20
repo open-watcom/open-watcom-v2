@@ -78,7 +78,7 @@
 
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            _RWD_errno = ERANGE;        \
+                            lib_set_errno( ERANGE );        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -102,7 +102,7 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
     fd = __resolve_net( _IO_HANDLE, 1, &msg._io_open, path, 0, fullpath );
     if( fd != -1 ) {
         close( fd );
-    } else if( _RWD_errno != ENOENT ) {
+    } else if( lib_get_errno() != ENOENT ) {
         return( NULL );
     } else {
         __resolve_net( 0, 0, &msg._io_open, path, 0, fullpath );
@@ -213,7 +213,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
   #endif
     len = strlen( temp_dir );
     if( len >= size ) {
-        _RWD_errno = ERANGE;
+        lib_set_errno( ERANGE );
         return( NULL );
     }
     return( strcpy( buff, temp_dir ) );
@@ -227,7 +227,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     q = buff;
     if( !IS_DIR_SEP( p[0] ) ) {
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
         len = strlen( curr_dir );
@@ -307,7 +307,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
         OS_UINT os2_drive;
 
         if( DosQCurDisk( &os2_drive, &drive_map ) ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
         path_drive_idx = os2_drive;
@@ -323,12 +323,12 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
         OS_UINT dir_len = sizeof( curr_dir );
 
         if( DosQCurDir( path_drive_idx, (PBYTE)curr_dir, &dir_len ) ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
   #else
         if( __getdcwd( curr_dir, path_drive_idx ) ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
   #endif
@@ -424,7 +424,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_fullpath,_wfullpath)
         size = _MAX_PATH;
         ptr = lib_malloc( size * CHARSIZE );
         if( ptr == NULL )
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
         buff = ptr;
     }
     if( buff != NULL ) {

@@ -293,7 +293,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_strerror,__wcserror)( const CHAR_TYPE *strErrMsg 
 {
     int errnum;
 
-    errnum = _RWD_errno;
+    errnum = lib_get_errno();
     ERROR_MSG[0] = NULLCHAR;
     if( strErrMsg != NULL ) {
         __F_NAME(strncpy,wcsncpy)( ERROR_MSG, strErrMsg, 94 );

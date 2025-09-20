@@ -50,7 +50,7 @@ typedef unsigned long long      syscall_res;
 
 #define __syscall_retcode( res, val )                   \
     if( __syscall_iserror( res ) ) {                    \
-        _RWD_errno = __syscall_errno( res );            \
+        lib_set_errno( __syscall_errno( res ) );        \
         res = (syscall_res)(val);                       \
     }
 

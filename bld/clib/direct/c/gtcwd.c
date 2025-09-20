@@ -58,7 +58,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     __null_check( buf, 1 );
     if( __getdcwd( &cwd[3], 0 ) ) {
-        _RWD_errno = ENOENT;      /* noent? */
+        lib_set_errno( ENOENT );      /* noent? */
         return( NULL );
     }
 
@@ -73,7 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 #endif
     if( buf == NULL ) {
         if( (buf = lib_malloc( max( size, len ) * CHARSIZE )) == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
         size = len;

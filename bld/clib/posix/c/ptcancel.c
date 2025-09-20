@@ -93,7 +93,7 @@ _WCRTLINK int pthread_cancel( pthread_t __thread )
         internal = __get_thread_id( __thread );
         ret = kill( internal, SIGCANCEL );
         if( ret != 0 ) {
-            ret = _RWD_errno;
+            ret = lib_get_errno();
         }
 #else
         ret = ENOSYS;

@@ -41,6 +41,6 @@ _WCRTLINK pid_t wait( int *status )
 {
     /* unused parameters */ (void)status;
 
-    _RWD_errno = ECHILD;
+    lib_set_errno( ECHILD );
     return( -1 );
 }

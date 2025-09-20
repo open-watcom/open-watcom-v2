@@ -62,7 +62,7 @@ _WCRTLINK int _setmode( int handle, int mode )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( -1 );
     }
     old_mode = (iomode_flags & _BINARY) ? O_BINARY : O_TEXT;

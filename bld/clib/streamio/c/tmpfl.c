@@ -82,7 +82,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
     char        name1[PATH_MAX + _TMPFNAME_LENGTH + 1];
     char        name2[PATH_MAX + _TMPFNAME_LENGTH + 1];
 
-    old_errno = _RWD_errno;
+    old_errno = lib_get_errno();
     suffix1 = 0;
     for( ;; ) {
         // Part I
@@ -97,7 +97,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 // if we created it then continue with part II
                 if( hdl != -1 )
                     break;
-                _RWD_errno = EAGAIN;
+                lib_set_errno( EAGAIN );
             }
             suffix1++;
             // give up after _TMP_INIT_CHAR tries  JBS 99/10/26
@@ -135,14 +135,14 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 if( fp != NULL ) {
                     fp->_flag |= _TMPFIL;
                     _FP_TMPFCHAR( fp ) = suffix2;
-                    _RWD_errno = old_errno;
+                    lib_set_errno( old_errno );
                     return( fp );
                 }
                 // We couldn't open it, probably because we have run out of handles.
                 // Remove the renamed file.
-                our_errno = _RWD_errno;
+                our_errno = lib_get_errno();
                 remove( name2 );
-                _RWD_errno = our_errno;
+                lib_set_errno( our_errno );
                 return( NULL );
             }
             // The rename didn't work or we couldn't open the renamed file.

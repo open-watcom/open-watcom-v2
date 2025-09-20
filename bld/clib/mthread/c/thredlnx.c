@@ -161,7 +161,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     thrdata = (struct __lnx_thread *)malloc( sizeof( struct __lnx_thread ) );
     if( thrdata == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
     thrdata->start_addr = (__thread_fn *)start_addr;

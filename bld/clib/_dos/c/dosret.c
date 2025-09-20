@@ -361,7 +361,7 @@ int _WCNEAR __set_errno_dos( unsigned int err )
     // if we  can't map the Error code, use default EIO entry
     if( err > E_MAXERR )
         err = E_MAXERR;
-    _RWD_errno = xlat[err];
+    lib_set_errno( xlat[err] );
 #else
     register unsigned char index;
 
@@ -379,9 +379,9 @@ int _WCNEAR __set_errno_dos( unsigned int err )
         }
         if( index > E_MAXERR )
             index = E_MAXERR;
-        _RWD_errno = xlat[index];
+        lib_set_errno( xlat[index] );
     } else {
-        _RWD_errno = (err >> 8) & 0xff;
+        lib_set_errno( (err >> 8) & 0xff );
     }
 #endif
     return( -1 );

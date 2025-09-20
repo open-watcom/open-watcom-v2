@@ -111,7 +111,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
 
     passed = (struct __thread_pass *)malloc( sizeof( struct __thread_pass ) );
     if( passed == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
     memset( passed, 0,  sizeof( struct __thread_pass ) );
@@ -123,7 +123,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
         stack = (char *)malloc( stack_size * sizeof( char * ) );
         if( stack == NULL ) {
             free( passed );
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( -1 );
         }
     }

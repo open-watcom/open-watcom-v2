@@ -122,7 +122,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     if( np == NULL ) {
         p = lib_malloc( length );
         if( p == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             lib_set_doserrno( E_nomem );
             _RWD_amblksiz = old_amblksiz;
             return( -1 );
@@ -175,7 +175,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     len += _MAX_PATH2 + 1;
 #else       /* __DOS__ */
     if( len > 126 ) {
-        _RWD_errno = E2BIG;
+        lib_set_errno( E2BIG );
         lib_set_doserrno( E_badenv );
         lib_free( *_envptr );
         return( -1 );

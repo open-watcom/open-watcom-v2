@@ -108,7 +108,7 @@ _WCRTLINK int mkstemp( char *template )
              * the creation failed for some other reason, it will almost
              * certainly fail again no matter how many times we try. So don't.
              */
-            if( _RWD_errno != EEXIST ) {
+            if( lib_get_errno() != EEXIST ) {
                 return( -1 );
             }
         }

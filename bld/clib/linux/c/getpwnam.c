@@ -42,7 +42,7 @@ _WCRTLINK struct passwd *getpwnam( const char *name )
     struct passwd *res = NULL;
 
     if( name == NULL ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
     setpwent();

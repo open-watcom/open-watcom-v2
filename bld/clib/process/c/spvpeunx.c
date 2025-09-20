@@ -63,7 +63,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
 
     __last_path = "";
     if( *path == '\0' ) {
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
     p = (char *)getenv( "PATH" );
@@ -73,7 +73,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
     }
     if( p == NULL || *p2 == '/' )
         return( spawnve( mode, path, argv, envp ) );
-    err = _RWD_errno;
+    err = lib_get_errno();
     for( retval = -1; ; ) {
         if( *p == '\0' )
             break;
@@ -85,7 +85,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
         retval = spawnve( mode, buffer, argv, envp );
         if( retval != -1 )
             break;
-        if( !(_RWD_errno == ENOENT || _RWD_errno == EACCES || _RWD_errno == ENOTDIR) )
+        if( !(lib_get_errno() == ENOENT || lib_get_errno() == EACCES || lib_get_errno() == ENOTDIR) )
             break;
         if( *p == '\0' )
             break;
@@ -98,7 +98,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
             --p;
             trailer++;
         }
-        _RWD_errno = err;
+        lib_set_errno( err );
     }
     return( retval );
 }

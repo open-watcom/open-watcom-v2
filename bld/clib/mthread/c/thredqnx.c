@@ -95,7 +95,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         }
         stack_bottom = lib_calloc( stack_size, 1 );
         if( stack_bottom == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( -1 );
         }
     }

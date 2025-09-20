@@ -48,7 +48,7 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
     bool cont;
 
     if(addr == NULL) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
 
