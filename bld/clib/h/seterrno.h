@@ -35,51 +35,42 @@
 
 #include <errno.h>
 
-#if defined( __NETWARE__ ) \
-  && defined( _THIN_LIB )
-    /*
-     * not used by OW thin libraries
-     */
-#elif defined( __NETWARE__ ) \
-  && !defined( _THIN_LIB )
-    /*
-     * OW fat libraries
-     */
+#if defined( __NETWARE__ )
+#if !defined( _THIN_LIB )
   #if defined( _NETWARE_LIBC )
     #undef errno
-    /*
-     * get LibC errno
-     */
-    #define lib_get_errno()     (*___errno())
-    #define lib_set_errno(x)    (*___errno() = (x))
   #else
-    /*
-     * get CLib errno
-     */
-    #define lib_get_errno()     (errno)
-    #define lib_set_errno(x)    (errno = (x))
   #endif
+    extern int                  _WCNEAR __get_errno( void );
+    extern void                 _WCNEAR __set_errno( int err );
+    #define lib_get_errno()     __get_errno()
+    #define lib_set_errno(x)    __set_errno(x)
+#endif
 #elif defined( __QNX__ )
     /*
      * QNX errno is magically multithread aware
      */
-    #define lib_get_errno()     (errno)
-    #define lib_set_errno(x)    (errno = (x))
+    #define lib_get_errno()     errno
+    #define lib_set_errno(x)    errno = (x)
 #elif defined( __RDOSDEV__ )
     #undef errno
     extern _WCRTDATA int        errno;
-    #define lib_get_errno()     (errno)
-    #define lib_set_errno(x)    (errno = (x))
+    #define lib_get_errno()     errno
+    #define lib_set_errno(x)    errno = (x)
 #elif defined( __MT__ )
     #undef errno
-    #define lib_get_errno()     (__THREADDATAPTR->__errnoP)
-    #define lib_set_errno(x)    (__THREADDATAPTR->__errnoP = (x))
+    extern int                  _WCNEAR __get_errno( void );
+    extern void                 _WCNEAR __set_errno( int err );
+    #define lib_get_errno()     __get_errno()
+    #define lib_set_errno(x)    __set_errno(x)
 #else
     #undef errno
     extern _WCRTDATA int        errno;
-    #define lib_get_errno()     (errno)
-    #define lib_set_errno(x)    (errno = (x))
+    #define lib_get_errno()     errno
+    #define lib_set_errno(x)    errno = (x)
 #endif
+
+#define lib_set_EINVAL()        __set_EINVAL()
 
 /*
  * defined in _dos\c\dosret.c
@@ -88,12 +79,12 @@
   || defined( __WINDOWS__ ) \
   || defined( __NT__ ) \
   || defined( __OS2__ )
-extern int _WCNEAR __set_errno_dos( unsigned int );
-extern int _WCNEAR __set_errno_dos_reterr( unsigned int );
+extern int  _WCNEAR __set_errno_dos( unsigned int );
+extern int  _WCNEAR __set_errno_dos_reterr( unsigned int );
 #endif
 #if defined( __NT__ )
-extern int _WCNEAR __set_errno_nt( void );
-extern int _WCNEAR __set_errno_nt_reterr( void );
+extern int  _WCNEAR __set_errno_nt( void );
+extern int  _WCNEAR __set_errno_nt_reterr( void );
 #endif
 
 /*
