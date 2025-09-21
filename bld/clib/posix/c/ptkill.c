@@ -62,6 +62,6 @@ _WCRTLINK int pthread_kill(pthread_t thread, int sig)
         return( -1 );
 #endif
     }
-    return( __set_EINVAL() );
+    return( lib_set_EINVAL() );
 }
 

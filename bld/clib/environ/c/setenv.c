@@ -108,7 +108,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     int                 rc;
 
     if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     /*** Ensure variable is deleted if value == "" ***/

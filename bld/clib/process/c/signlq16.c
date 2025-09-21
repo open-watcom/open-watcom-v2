@@ -118,7 +118,7 @@ _WCRTLINK int sigaction(
     }
 
     if( (sig < _SIGMIN) || (sig > _SIGMAX) ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     /*

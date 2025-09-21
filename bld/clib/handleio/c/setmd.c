@@ -89,7 +89,7 @@ _WCRTLINK int _setmode( int handle, int mode )
             }
             _ReleaseFileH( handle );
         } else {
-            return( __set_EINVAL() );
+            return( lib_set_EINVAL() );
         }
     }
     return( old_mode );

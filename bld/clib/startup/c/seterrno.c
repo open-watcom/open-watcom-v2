@@ -77,17 +77,23 @@ void _WCNEAR __set_errno( int err )
 #else
 #endif
 
-#if defined( __NETWARE__ )
 
 int _WCNEAR __set_EINVAL( void )
 {
+#if defined( __NETWARE__ )
 #if defined( _NETWARE_LIBC )
     *___errno() = EINVAL;
 #else
     *__get_errno_ptr() = EINVAL;
 #endif
+#else
+    lib_set_errno( EINVAL );
+#endif
     return( -1 );
 }
+
+
+#if defined( __NETWARE__ )
 
 #else
 
@@ -99,12 +105,6 @@ _WCRTLINK void __set_EDOM( void )
 _WCRTLINK void __set_ERANGE( void )
 {
     lib_set_errno( ERANGE );
-}
-
-int _WCNEAR __set_EINVAL( void )
-{
-    lib_set_errno( EINVAL );
-    return( -1 );
 }
 
 #endif
