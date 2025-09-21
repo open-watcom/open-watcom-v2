@@ -76,7 +76,7 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
             }
         } else {
             if( offset > LONG_MAX || offset < LONG_MIN ) {
-                return( __set_EINVAL() );
+                return( lib_set_EINVAL() );
             }
             pos = (unsigned long)__lseek( handle, offset, origin );
             if( (long)pos == -1L ) {
@@ -111,7 +111,7 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
     long            pos;
 
     if( offset > LONG_MAX || offset < LONG_MIN ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
     pos = __lseek( handle, offset, origin );
     if( pos == -1L ) {

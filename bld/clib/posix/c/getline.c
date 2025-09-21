@@ -61,7 +61,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
     char    *buff;
 
     if( n == NULL || s == NULL ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     buff = *s;

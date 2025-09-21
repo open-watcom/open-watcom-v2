@@ -41,7 +41,7 @@ _WCRTLINK int sysinfo( struct sysinfo *__info )
     syscall_res res;
 
     if( __info == 0 ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     res = sys_call1( SYS_sysinfo, (u_long)__info );

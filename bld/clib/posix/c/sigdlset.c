@@ -39,7 +39,7 @@ _WCRTLINK int sigdelset( sigset_t *__set, int signum )
 /****************************************************/
 {
     if( signum < 1 || signum > _NSIG ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
     --signum;
     __set->sig[signum / _NSIG_BPW] &= ~( 1 << ( signum % _NSIG_BPW ) );

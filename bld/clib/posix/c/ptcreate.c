@@ -94,7 +94,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
     struct __thread_pass    *passed;
 
     if( thread == NULL ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     stack_size = STACK_SIZE;

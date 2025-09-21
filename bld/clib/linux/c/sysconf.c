@@ -152,7 +152,7 @@ static int __sysconf_pages( int name )
 #ifdef PAGE_SIZE
     return( (int)( quantity / PAGE_SIZE ) );
 #else
-    return( __set_EINVAL() );
+    return( lib_set_EINVAL() );
 #endif
 }
 
@@ -219,7 +219,7 @@ _WCRTLINK long sysconf( int name )
         ret = PAGE_SIZE;
         break;
 #else
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
 #endif
     case _SC_PHYS_PAGES:
     case _SC_AVPHYS_PAGES:
@@ -250,7 +250,7 @@ _WCRTLINK long sysconf( int name )
         ret = (long)0;
         break;
     default:
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     return( ret );

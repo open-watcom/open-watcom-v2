@@ -70,7 +70,11 @@
     #define lib_set_errno(x)    errno = (x)
 #endif
 
-#define lib_set_EINVAL()        __set_EINVAL()
+/*
+ * defined in startup\c\seterrno.c
+ */
+extern int                  _WCNEAR __set_EINVAL( void );
+#define lib_set_EINVAL()    __set_EINVAL()
 
 /*
  * defined in _dos\c\dosret.c
@@ -86,10 +90,5 @@ extern int  _WCNEAR __set_errno_dos_reterr( unsigned int );
 extern int  _WCNEAR __set_errno_nt( void );
 extern int  _WCNEAR __set_errno_nt_reterr( void );
 #endif
-
-/*
- * defined in startup\c\seterrno.c
- */
-extern int  _WCNEAR __set_EINVAL( void );
 
 #endif

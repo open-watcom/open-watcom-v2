@@ -44,7 +44,7 @@
 _WCRTLINK int sem_post( sem_t *sem )
 {
     if( sem == NULL ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     while(sem->value < 0) __atomic_increment( &sem->value );

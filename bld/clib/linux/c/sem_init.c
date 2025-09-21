@@ -72,7 +72,7 @@ _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
         return( -1 );
     }
     if( value > SEM_VALUE_MAX ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
 
     // Debugging...

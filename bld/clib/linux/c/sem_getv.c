@@ -41,7 +41,7 @@
 _WCRTLINK int sem_getvalue( sem_t *sem, int *value )
 {
     if( value == NULL ) {
-        return( __set_EINVAL() );
+        return( lib_set_EINVAL() );
     }
     *value = sem->value;
     return( 0 );
