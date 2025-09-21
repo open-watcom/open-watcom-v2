@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of set errno routines called from assembled modules.
+* Description:  Implementation of CRTL internal set errno routines.
 *
 ****************************************************************************/
 
@@ -37,19 +37,58 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <wos2.h>
-#elif defined( __NETWARE__ ) \
-  && !defined( _THIN_LIB )
+#elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
 #include "clibsupp.h"
 #include "thread.h"
 
 
-#if defined( __NETWARE__ ) \
-  && defined( _THIN_LIB )
-/*
- * unused by OW thin libraries
- */
+#if defined( __NETWARE__ )
+#if !defined( _THIN_LIB )
+int _WCNEAR __get_errno( void )
+{
+#if defined( _NETWARE_LIBC )
+    return( *___errno() );
+#else
+    return( *__get_errno_ptr() );
+#endif
+}
+void _WCNEAR __set_errno( int err )
+{
+#if defined( _NETWARE_LIBC )
+    *___errno() = err;
+#else
+    *__get_errno_ptr() = err;
+#endif
+}
+#endif
+#elif defined(__QNX__)
+#elif defined(__RDOSDEV__)
+#elif defined(__MT__)
+int _WCNEAR __get_errno( void )
+{
+    return( __THREADDATAPTR->__errnoP );
+}
+void _WCNEAR __set_errno( int err )
+{
+    __THREADDATAPTR->__errnoP = err;
+}
+#else
+#endif
+
+#if defined( __NETWARE__ )
+
+int _WCNEAR __set_EINVAL( void )
+{
+#if defined( _NETWARE_LIBC )
+    *___errno() = EINVAL;
+#else
+    *__get_errno_ptr() = EINVAL;
+#endif
+    return( -1 );
+}
+
 #else
 
 _WCRTLINK void __set_EDOM( void )

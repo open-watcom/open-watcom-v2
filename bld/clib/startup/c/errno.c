@@ -45,7 +45,11 @@
 
 #if defined(__NETWARE__)
 /*
- * use __get_errno_ptr from Netware CRTL
+ * use either
+ * __get_errno_ptr for Netware CLib
+ * or use
+ * ___errno for Netware LibC
+ * to get pointer to Netware internal errno value
  */
 #elif defined(__QNX__)
 
@@ -63,7 +67,6 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 
 #elif defined( __RDOSDEV__ )
 
-#undef errno
 _WCRTDATA int       errno;
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
@@ -72,7 +75,6 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 
 #elif defined( __MT__ )
 
-#undef errno
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
     return( &(__THREADDATAPTR->__errnoP) );
@@ -80,7 +82,6 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 
 #else
 
-#undef errno
 _WCRTDATA int       errno;
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
