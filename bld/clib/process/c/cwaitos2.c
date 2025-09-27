@@ -56,20 +56,22 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
     #pragma pack(__pop);
 
     rc = DosCwait( action, 0, &retval, &pid, process_id );
-    if( rc != 0 ) {
-        lib_set_errno( ( rc == ERROR_WAIT_NO_CHILDREN ) ? ECHILD : EINVAL );
-        return( -1 );
-    } else {
+    if( rc == 0 ) {
         u.stat = rc;
         u.s.al = retval.codeTerminate;
         if( u.s.al == 0 )
             u.s.ah = retval.codeResult;
         if( status != NULL )
             *status = u.stat;
-        if( u.s.al != 0 ) {
-            lib_set_errno( EINTR );
-            return( -1 );
+        if( u.s.al == 0 ) {
+            return( pid );
         }
+        lib_set_errno( EINTR );
+        return( -1 );
     }
-    return( pid );
+    if( rc == ERROR_WAIT_NO_CHILDREN ) {
+        lib_set_errno( ECHILD );
+        return( -1 );
+    }
+    return( lib_set_EINVAL() );
 }

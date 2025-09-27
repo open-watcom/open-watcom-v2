@@ -94,10 +94,9 @@ _WCRTLINK void_nptr sbrk( int increment )
             return( p );
         }
         lib_set_errno( ENOMEM );
-    } else {
-        lib_set_errno( EINVAL );
+        return( (void_nptr)-1 );
     }
-    return( (void_nptr)-1 );
+    return( (void_nptr)lib_set_EINVAL() );
 }
 
 #endif

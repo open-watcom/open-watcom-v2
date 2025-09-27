@@ -49,7 +49,6 @@ _WCRTLINK pid_t tcgetsid( int fd )
         return( -1 );
     return( sid );
 #else
-    lib_set_errno( EINVAL );
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }

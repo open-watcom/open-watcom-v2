@@ -107,10 +107,9 @@ _WCRTLINK void_nptr sbrk( int increment )
             return( (void_nptr)hmem );
         }
         lib_set_errno( ENOMEM );
-    } else {
-        lib_set_errno( EINVAL );
+        return( (void_nptr)-1 );
     }
-    return( (void_nptr)-1 );
+    return( (void_nptr)lib_set_EINVAL() );
   #else
     increment = __ROUND_UP_SIZE_4K( increment );
     return( (void_nptr)WDPMIAlloc( increment ) );
@@ -199,12 +198,11 @@ _WCRTLINK void_nptr sbrk( int increment )
                 lib_set_errno( ENOMEM );
                 cstg = (void_nptr)-1;
             }
-        } else {
-            lib_set_errno( EINVAL );
-            cstg = (void_nptr)-1;
+            return( cstg );
         }
-        return( cstg );
-    } else if( _IsPharLap() ) {
+        return( (void_nptr)lib_set_EINVAL() );
+    }
+    if( _IsPharLap() ) {
         _curbrk = GetDataSelectorSize();
     }
   #endif

@@ -44,7 +44,6 @@ _WCRTLINK int tcdrain( int fd )
 #ifdef __LINUX__
     return( ioctl( fd, TCSBRK, 1 ) );
 #else
-    lib_set_errno( EINVAL );
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }
