@@ -67,8 +67,7 @@ static int __sysconf_nprocessors_conf( void )
 
     fp = fopen( "/sys/devices/system/cpu/present", "rb" );
     if( fp == NULL ) {
-        lib_set_errno( EINVAL );
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
     fseek( fp, 0, SEEK_END );
     len = ftell( fp );

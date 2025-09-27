@@ -45,7 +45,6 @@ _WCRTLINK int tcflush( int fd, int queue_selector )
 #ifdef __LINUX__
     return( ioctl( fd, TCFLSH, queue_selector ) );
 #else
-    lib_set_errno( EINVAL );
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }

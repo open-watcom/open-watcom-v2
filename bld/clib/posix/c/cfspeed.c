@@ -86,8 +86,7 @@ _WCRTLINK int cfsetispeed( struct termios *termios_p, speed_t speed )
 {
     if( termios_p == NULL
       || !valid_speed( speed ) ) {
-        lib_set_errno( EINVAL );
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 #ifdef __LINUX__
   #ifdef __MIPS__
@@ -105,8 +104,7 @@ _WCRTLINK int cfsetospeed( struct termios *termios_p, speed_t speed )
 {
     if( termios_p == NULL
       || !valid_speed( speed ) ) {
-        lib_set_errno( EINVAL );
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 #ifdef __LINUX__
   #ifdef __MIPS__
