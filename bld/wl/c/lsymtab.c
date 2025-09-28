@@ -661,7 +661,8 @@ static void DumpHashTable( void )
 static void WipeSym( symbol *sym )
 /********************************/
 {
-    if( IS_SYM_IMPORTED( sym ) && (FmtData.type & MK_ELF) == 0 ) {
+    if( IS_SYM_IMPORTED( sym )
+      && (FmtData.type & MK_ELF) == 0 ) {
         if( FmtData.type & MK_NOVELL ) {
             if( sym->p.import != DUMMY_IMPORT_PTR ) {
                 _LnkFree( sym->p.import );
@@ -765,16 +766,18 @@ void SetSymCase( void )
 }
 
 void SymModStart( void )
-/*****************************/
-/* do necessary symbol table processing before the start of a module in pass1 */
+/*****************************
+ * do necessary symbol table processing before the start of a module in pass1
+ */
 {
     SymList = LastSym;
 }
 
 void SymModEnd( void )
-/***************************/
-/* go through the list of symbols generated in this module, and find all
- * references to symbols which are in this module only. */
+/***************************
+ * go through the list of symbols generated in this module, and find all
+ * references to symbols which are in this module only.
+ */
 {
     symbol *    sym;
 
@@ -789,7 +792,8 @@ void SymModEnd( void )
     for( ; sym != NULL; sym = sym->link ) {
         sym->info &= ~SYM_IN_CURRENT;
         sym->info |= SYM_OLDHAT;
-        if( (sym->info & SYM_REFERENCED) && (sym->info & SYM_DEFINED) ) {
+        if( (sym->info & SYM_REFERENCED)
+          && (sym->info & SYM_DEFINED) ) {
             sym->info &= ~SYM_REFERENCED;
             sym->info |= SYM_LOCAL_REF;
         }
@@ -810,8 +814,9 @@ void ClearRefInfo( symbol *sym )
 }
 
 void ClearSymUnion( symbol * sym )
-/***************************************/
-/* clear the symbol unions of any possible allocated data */
+/***************************************
+ * clear the symbol unions of any possible allocated data
+ */
 {
     sym->info &= ~SYM_LINK_GEN;
     if( IS_SYM_VF_REF( sym ) ) {
@@ -833,7 +838,8 @@ symbol *DefISymbol( const char *name )
     symbol *sym;
 
     sym = RefISymbol( name );
-    if( (sym->info & SYM_DEFINED) && (sym->info & SYM_LINK_GEN) == 0 ) {
+    if( (sym->info & SYM_DEFINED)
+      && (sym->info & SYM_LINK_GEN) == 0 ) {
         LnkMsg( ERR+MSG_RESERVED_SYM_DEFINED, "s", name );
     }
     sym->info |= SYM_DEFINED | SYM_LINK_GEN;
@@ -851,15 +857,15 @@ symbol *SymOpNWPfx( sym_flags symop, const char *name, size_t length, const char
 {
     symbol  *sym;
 
-    if( NULL == (sym = SymOp( symop, name, length )) )
+    if( (sym = SymOp( symop, name, length )) == NULL )
         return( NULL );
 
-    if( ( NULL != prefix ) && ( 0 != prefixlen ) ) {
+    if( ( prefix != NULL ) && prefixlen ) {
         if( prefixlen > 254 ) {
             LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", prefix );
             return( NULL );
         }
-        if( NULL == (sym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) ) {
+        if( (sym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) == NULL ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "no memory for prefix symbol");
             return( NULL );
         }
@@ -878,13 +884,15 @@ static void SetSymAlias( symbol *sym, const char *target, size_t targetlen )
 }
 
 void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t targetlen )
-/*****************************************************************************************/
-/* make a symbol table alias */
+/******************************************************************************************
+ * make a symbol table alias
+ */
 {
     symbol      *sym;
     symbol      *targ;
 
-    if( namelen == targetlen && (*CmpRtn)( name, target, namelen ) == 0 ) {
+    if( namelen == targetlen
+      && (*CmpRtn)( name, target, namelen ) == 0 ) {
         char    *buff;
 
         DUPSTR_STACK( buff, target, targetlen );
@@ -910,8 +918,9 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
 }
 
 void WeldSyms( symbol *src, symbol *targ )
-/****************************************/
-/* make all references to src refer to targ. (alias src to targ) */
+/*****************************************
+ * make all references to src refer to targ. (alias src to targ)
+ */
 {
     if( targ != NULL ) {
         SetSymAlias( src, targ->name.u.ptr, strlen( targ->name.u.ptr ) );
@@ -919,13 +928,15 @@ void WeldSyms( symbol *src, symbol *targ )
 }
 
 static symbol *GlobalSearchSym( const char *symname, unsigned hash, size_t len )
-/******************************************************************************/
-/* search through the given chain for the given name */
+/*******************************************************************************
+ * search through the given chain for the given name
+ */
 {
     symbol      *sym;
 
     for( sym = GlobalSymPtrs[hash]; sym != NULL; sym = sym->hash ) {
-        if( len == sym->namelen_cmp && (*CmpRtn)( symname, sym->name.u.ptr, len ) == 0 ) {
+        if( len == sym->namelen_cmp
+          && (*CmpRtn)( symname, sym->name.u.ptr, len ) == 0 ) {
             break;
         }
     }
@@ -933,14 +944,16 @@ static symbol *GlobalSearchSym( const char *symname, unsigned hash, size_t len )
 }
 
 static symbol *StaticSearchSym( const char *symname, unsigned hash, size_t len )
-/******************************************************************************/
-/* search through the given chain for the given name */
+/*******************************************************************************
+ * search through the given chain for the given name
+ */
 {
     symbol      *sym;
 
     for( sym = StaticSymPtrs[hash]; sym != NULL; sym = sym->hash ) {
         if( sym->info & SYM_IN_CURRENT ) {
-            if( len == sym->namelen_cmp && memcmp( symname, sym->name.u.ptr, len ) == 0 ) {
+            if( len == sym->namelen_cmp
+              && memcmp( symname, sym->name.u.ptr, len ) == 0 ) {
                 break;
             }
         }
@@ -990,7 +1003,8 @@ static symbol *DoSymOp( sym_flags symop, const char *symname, size_t length )
     DUPSTR_STACK( symname_dbg, symname, length );
 #endif
     DEBUG(( DBG_OLD, "SymOp( %d, %s, %d )", symop, symname_dbg, length ));
-    if( NameLen != 0 && NameLen < length ) {
+    if( NameLen
+      && NameLen < length ) {
         searchlen = NameLen;
     } else {
         searchlen = length;
@@ -1039,7 +1053,8 @@ symbol *UnaliasSym( sym_flags symop, symbol *sym )
 /************************************************/
 {
     symbol *orig_sym = sym;
-    while( sym != NULL && IS_SYM_ALIAS( sym ) ) {
+    while( sym != NULL
+      && IS_SYM_ALIAS( sym ) ) {
         sym = DoSymOp( symop, sym->p.alias.u.ptr, sym->u.aliaslen );
         /* circular ref, may be a weak symbol ! */
         if( sym == orig_sym ) {
@@ -1061,7 +1076,8 @@ symbol *SymOp( sym_flags symop, const char *symname, size_t length )
     }
     if( sym != NULL ) {
         if( symop & ST_DEFINE ) {
-            if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_FREE_ALIAS) ) {
+            if( IS_SYM_ALIAS( sym )
+              && (sym->info & SYM_FREE_ALIAS) ) {
                 _LnkFree( sym->p.alias.u.ptr );
                 sym->info &= ~SYM_FREE_ALIAS;
             }
@@ -1191,7 +1207,9 @@ static void CleanAltDefs( symbol *sym )
     symbol *    testring;
     symbol *    altsym;
 
-    if( IS_SYM_ALIAS( sym ) || (sym->info & SYM_DEAD) || sym->u.altdefs == NULL )
+    if( IS_SYM_ALIAS( sym )
+      || (sym->info & SYM_DEAD)
+      || sym->u.altdefs == NULL )
         return;
     testring = NULL;
     while( (altsym = RingPop( &sym->u.altdefs )) != NULL ) {
@@ -1211,7 +1229,8 @@ static void UndefSymbol( symbol *sym )
 {
     ClearSymUnion( sym );
     SET_ADDR_UNDEFINED( sym->addr );
-    if( (sym->info & SYM_EXPORTED) == 0 && sym->e.def != NULL ) {
+    if( (sym->info & SYM_EXPORTED) == 0
+      && sym->e.def != NULL ) {
         sym->info = SYM_LAZY_REF | SYM_REFERENCED;
     } else {
         sym->info = SYM_REGULAR | SYM_REFERENCED;
@@ -1284,7 +1303,8 @@ void PurgeSymbols( void )
         } else if( sym->info & SYM_IS_ALTDEF ) {
             *list = sym->link;          // gonna get rid of these later
         } else {
-            if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_WAS_LAZY) ) {
+            if( IS_SYM_ALIAS( sym )
+              && (sym->info & SYM_WAS_LAZY) ) {
                 WipeSym( sym );
                 sym->info = SYM_WEAK_REF | SYM_REFERENCED;
             }
