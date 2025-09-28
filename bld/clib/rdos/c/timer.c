@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -167,10 +167,11 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
         }
     }
 
-    if( done )
+    if( done ) {
         return( index );
-    else
+    } else {
         return( 0 );
+    }
 }
 
 static int StopTimer( int index )
@@ -185,14 +186,17 @@ static int StopTimer( int index )
     i = index / 32;
     bit = index % 32;
     mask = 1 << bit;
-    if( timer->Req.DoneBitmap[i] & mask )
+    if( timer->Req.DoneBitmap[i] & mask ) {
         return( 0 );
-    else {
-        if( ( timer->Req.ReqBitmap[i] & mask ) || ( timer->Active.PendingBitmap[i] & mask ) || ( timer->Active.CompletedBitmap[i] & mask ) ) {
+    } else {
+        if( (timer->Req.ReqBitmap[i] & mask)
+          || (timer->Active.PendingBitmap[i] & mask)
+          || (timer->Active.CompletedBitmap[i] & mask) ) {
             timer->Req.DoneBitmap[i] |= mask;
             return( 1 );
-        } else
+        } else {
             return( 0 );
+        }
     }
 }
 
@@ -228,15 +232,16 @@ static int ResetTimer( int index, long long timeout )
     i = index / 32;
     bit = index % 32;
     mask = 1 << bit;
-    if( timer->Req.DoneBitmap[i] & mask )
+    if( timer->Req.DoneBitmap[i] & mask ) {
         return( 0 );
-    else {
+    } else {
         if( timer->Active.PendingBitmap[i] & mask ) {
             entry = &timer->Req.EntryArr[index - 4];
             entry->timeout = timeout;
             return( 1 );
-        } else
+        } else {
             return( 0 );
+        }
     }
 }
 

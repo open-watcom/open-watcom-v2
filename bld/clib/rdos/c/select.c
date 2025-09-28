@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,23 +58,23 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
     }
 
     ptr = masks;
-    if( __readfds )
+    if( __readfds ) {
         memcpy(ptr, __readfds->fds_bits, size);
-    else
+    } else {
         memset(ptr, 0, size);
-
+    }
     ptr += size;
-    if( __writefds )
+    if( __writefds ) {
         memcpy(ptr, __writefds->fds_bits, size);
-    else
+    } else {
         memset(ptr, 0, size);
-
+    }
     ptr += size;
-    if( __exceptfds )
+    if( __exceptfds ) {
         memcpy(ptr, __exceptfds->fds_bits, size);
-    else
+    } else {
         memset(ptr, 0, size);
-
+    }
     count = RdosSelect( masks, width, timeout );
 
     ptr = masks;

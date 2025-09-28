@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,12 @@ _WCRTLINK int access( const CHAR_TYPE *path, int pmode )
     int attr;
 
     if( RdosGetFileAttribute( path, &attr ) ) {
-        if( ( pmode & ACCESS_WR ) && ( attr & FILE_ATTRIBUTE_READONLY ) )
+        if( (pmode & ACCESS_WR) && (attr & FILE_ATTRIBUTE_READONLY) ) {
             return( -1 );
-        else
+        } else {
             return( 0 );
-    }
-    else
+        }
+    } else {
         return( -1 );
+    }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,12 +48,13 @@
 
 _WCRTLINK int wctob( wint_t c )
 {
-    unsigned char       mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX + 1];
 
     if( wctomb( (char *)mbc, c ) == -1 )
         return( EOF );
-    if( _mbclen( mbc ) == 1 )
+    if( _mbclen( mbc ) == 1 ) {
         return( mbc[0] );
-    else
+    } else {
         return( EOF );
+    }
 }

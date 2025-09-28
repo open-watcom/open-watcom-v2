@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,18 +80,23 @@ _WCRTLINK int _fjstricmp( const JCHAR _WCFAR *a, const JCHAR _WCFAR *b )
 {
     JMOJI aa, bb;
 
-    while( 1 ) {
+    for( ;; ) {
         a = _fjgetmoji( a, (JMOJI _WCFAR *)&aa );
         b = _fjgetmoji( b, (JMOJI _WCFAR *)&bb );
-        if( aa & 0xff00 )
+        if( aa & 0xff00 ) {
             aa = jtoupper( aa );
-        else
+        } else {
             aa = toupper( aa );
-        if( bb & 0xff00 )
+        }
+        if( bb & 0xff00 ) {
             bb = jtoupper( bb );
-        else
+        } else {
             bb = toupper( bb );
-        if( aa != bb ) return( ( aa < bb ) ? -1 : 1 );
-        if( aa == 0 ) return( 0 );
+        }
+        if( aa != bb )
+            return( ( aa < bb ) ? -1 : 1 );
+        if( aa == 0 ) {
+            return( 0 );
+        }
     }
 }

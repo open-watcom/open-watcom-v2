@@ -53,10 +53,11 @@
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
 {
-    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 )
+    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 ) {
         return( 1 );
-    else
+    } else {
         return( 0 );
+    }
 }
 
 #pragma on(check_stack);
@@ -124,8 +125,7 @@ _WCRTLINK int execve( const CHAR_TYPE * path,
             /* user specified an extension, so try it */
             retval = _doexec( p, cmdline, envptr, argv );
         }
-    }
-    else {
+    } else {
         end_of_p = p + __F_NAME(strlen,wcslen)( p );
         __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
         lib_set_errno( 0 );

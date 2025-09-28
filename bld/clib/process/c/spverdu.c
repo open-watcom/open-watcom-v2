@@ -52,10 +52,11 @@
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
 {
-    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 )
+    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 ) {
         return( 1 );
-    else
+    } else {
         return( 0 );
+    }
 }
 
 #pragma on(check_stack);

@@ -47,15 +47,16 @@ _WCRTLINK size_t _NEARFAR(_mbsnbcnt,_fmbsnbcnt)( const unsigned char _FFAR *stri
     size_t              bytes = 0;
 
     /*** Count the number of bytes ***/
-    while( !_NEARFAR(_mbterm,_fmbterm)(string) && n>0 ) { /* cook until done */
-        if( _ismbblead(*string) ) {             /* is it a lead byte? */
-            if( string[1] != '\0' )             /* yes, is next char NULL? */
+    while( _NEARFAR(_mbterm,_fmbterm)( string ) == 0 && n > 0 ) { /* cook until done */
+        if( _ismbblead( *string ) ) {             /* is it a lead byte? */
+            if( string[1] != '\0' ) {           /* yes, is next char NULL? */
                 bytes += _NEARFAR(_mbclen,_fmbclen)( string );  /* no, update 'bytes' */
-            else
+            } else {
                 return( bytes );                /* yes, return */
-        }
-        else
+            }
+        } else {
             bytes++;                            /* just single byte char */
+        }
         string = _NEARFAR(_mbsinc,_fmbsinc)( string );  /* next char */
         n--;                                    /* update counter */
     }

@@ -60,18 +60,21 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
     // ps     != NULL
     // if s == NULL then dstmax == 0
     // if s != NULL then dstmax > 0,
-    if(__check_constraint_nullptr_msg( msg, retval ) &&
-        __check_constraint_nullptr_msg( msg, ps )) {
-        if(s == NULL) {                /* reset state */
+    if( __check_constraint_nullptr_msg( msg, retval )
+      && __check_constraint_nullptr_msg( msg, ps ) ) {
+        if( s == NULL ) {               /* reset state */
             // ensure smax == 0
-            if(__check_constraint_a_gt_b_msg( msg, smax, 0 )) {
+            if( __check_constraint_a_gt_b_msg( msg, smax, 0 ) ) {
                  rc = 0;
             }
         } else {
-            if(wc & 0xff00) n = 2;
-            else            n = 1;
-            if(__check_constraint_a_gt_b_msg( msg, n, smax ) &&
-                __check_constraint_maxsize_msg( msg, smax )) {
+            if( wc & 0xff00 ) {
+                n = 2;
+            } else {
+                n = 1;
+            }
+            if( __check_constraint_a_gt_b_msg( msg, n, smax )
+              && __check_constraint_maxsize_msg( msg, smax ) ) {
                 /*** Check for a valid wide character ***/
                 ret = _NEARFAR(wctomb,_fwctomb)( s, wc );
                 if( ret == -1 ) {                            //encoding error

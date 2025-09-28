@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,12 +48,13 @@ _WCRTLINK size_t _NEARFAR(_mbsnccnt,_fmbsnccnt)( const unsigned char _FFAR *stri
     size_t              char_len;
 
     /*** Count the number of characters ***/
-    while( !_NEARFAR(_mbterm,_fmbterm)(string) && n>0 ) { /* cook until done */
+    while( _NEARFAR(_mbterm,_fmbterm)( string ) == 0 && n > 0 ) { /* cook until done */
         char_len = _NEARFAR(_mbclen,_fmbclen)( string );  /* get char size */
-        if( n >= char_len )                     /* is char too big? */
+        if( n >= char_len ) {                   /* is char too big? */
             n -= char_len;                      /* no, update 'n' */
-        else
+        } else {
             return( num_chars );                /* yes, return */
+        }
         string += char_len;                     /* point to next char */
         num_chars++;                            /* increment counter */
     }

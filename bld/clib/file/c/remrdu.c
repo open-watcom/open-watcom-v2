@@ -45,10 +45,10 @@ _WCRTLINK int remove( CHAR_TYPE const *filename )
 {
     __ptr_check( filename, 0 );
 
-    if( RdosDeleteFile( filename ) )
+    if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    else {
+    } else {
         lib_set_errno( ENOENT );
-        return( -1 );  
+        return( -1 );
     }
 }

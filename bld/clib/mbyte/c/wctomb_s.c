@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,45 +63,46 @@ _WCRTLINK errno_t _NEARFAR(wctomb_s,_fwctomb_s)( int _FFAR * __restrict status,
     // smax <= RSIZE_MAX
     // if s == NULL then smax = 0
     // if s != NULL then smax >= n
-    if(__check_constraint_maxsize_msg( msg, smax )) {
-        if(s == NULL) {
-            if(__check_constraint_a_gt_b_msg( msg, smax, 0 )) {
+    if( __check_constraint_maxsize_msg( msg, smax ) ) {
+        if( s == NULL ) {
+            if( __check_constraint_a_gt_b_msg( msg, smax, 0 ) ) {
                 *status = 0; /* no state-dependant encodings */
                 rc = 0;
             }
         } else {
-
-            if(wc & 0xff00) n = 2;
-            else            n = 1;
-
-            if(__check_constraint_a_gt_b_msg( msg, n, smax )) {
+            if( wc & 0xff00 ) {
+                n = 2;
+            } else {
+                n = 1;
+            }
+            if( __check_constraint_a_gt_b_msg( msg, n, smax ) ) {
                 /*** Convert the character ***/
-                #ifdef __NT__
-                    rcnt = WideCharToMultiByte( __MBCodePage, WC_COMPOSITECHECK,
-                                              (LPCWSTR)&wc, 1, (LPSTR)s,
-                                              MB_CUR_MAX, NULL, NULL );
-                    if( rcnt != FALSE ) {
-                        if(rcnt <= min( MB_CUR_MAX, smax )) {
-                            *status = rcnt;
-                            rc = 0;
-                        }
+#ifdef __NT__
+                rcnt = WideCharToMultiByte( __MBCodePage, WC_COMPOSITECHECK,
+                                          (LPCWSTR)&wc, 1, (LPSTR)s,
+                                          MB_CUR_MAX, NULL, NULL );
+                if( rcnt != FALSE ) {
+                    if( rcnt <= min( MB_CUR_MAX, smax ) ) {
+                        *status = rcnt;
+                        rc = 0;
                     }
-                #else                               /* OS/2 and others */
-                    if( wc & 0xFF00 ) {
-                        s[0] = (wc & 0xFF00) >> 8;      /* store lead byte */
-                        s[1] = wc & 0x00FF;             /* store trail byte */
-                        *status = 2;                    /* size in bytes */
-                    } else {
-                        s[0] = wc & 0x00FF;             /* store char byte */
-                        *status = 1;                    /* size in bytes */
-                    }
-                    rc = 0;
-                #endif
+                }
+#else                               /* OS/2 and others */
+                if( wc & 0xFF00 ) {
+                    s[0] = (wc & 0xFF00) >> 8;      /* store lead byte */
+                    s[1] = wc & 0x00FF;             /* store trail byte */
+                    *status = 2;                    /* size in bytes */
+                } else {
+                    s[0] = wc & 0x00FF;             /* store char byte */
+                    *status = 1;                    /* size in bytes */
+                }
+                rc = 0;
+#endif
             }
         }
 
     }
-    if(msg != NULL) {
+    if( msg != NULL ) {
         // Runtime-constraints found
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,9 +86,11 @@
 
 _WCRTLINK int chkctype( JCHAR c, int type )
 {
-    if( c == '\0' ) return( CT_ILGL );                  // JBS 92/10/01
-    if( type == CT_KJ1 )
+    if( c == '\0' )
+        return( CT_ILGL );
+    if( type == CT_KJ1 ) {
         return( iskanji2( c ) ? CT_KJ2 : CT_ILGL );
-    else
+    } else {
         return( iskanji( c ) ? CT_KJ1 : CT_ANK );
+    }
 }

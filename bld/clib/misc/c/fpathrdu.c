@@ -120,12 +120,13 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
             if( p[0] == NULLCHAR )
                 break;
             if( p[0] == '.' ) {
-                if( IS_DIR_SEP( p[1] ) )
+                if( IS_DIR_SEP( p[1] ) ) {
                     p += 2;
-                else {
+                } else {
                     p += 1;
-                    if( p[0] != NULLCHAR )
+                    if( p[0] != NULLCHAR ) {
                         return( NULL );
+                    }
                 }
 
                 /* go up a directory for a "../" */

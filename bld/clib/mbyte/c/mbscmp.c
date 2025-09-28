@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +55,9 @@ _WCRTLINK int _NEARFAR(_mbscmp,_fmbscmp)( const unsigned char _FFAR *s1, const u
         s2 = _NEARFAR(_mbsinc,_fmbsinc)( s2 );/* skip over character */
     }
 
-    if( _NEARFAR(_mbterm,_fmbterm)(s1) && _NEARFAR(_mbterm,_fmbterm)(s2) )
+    if( _NEARFAR(_mbterm,_fmbterm)(s1) && _NEARFAR(_mbterm,_fmbterm)(s2) ) {
         return( 0 );
-    else
+    } else {
         return( *s1 - *s2 );
+    }
 }

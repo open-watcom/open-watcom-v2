@@ -52,9 +52,9 @@ static unsigned short _WCNEAR at2mode( int attr, char *fname )
     register unsigned short mode;
     register char           *ext;
 
-    if( attr & _A_SUBDIR )
+    if( attr & _A_SUBDIR ) {
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
-    else {
+    } else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
         if( (ext = strchr( fname, '.' )) != NULL ) {

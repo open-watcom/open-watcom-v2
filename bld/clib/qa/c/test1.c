@@ -42,10 +42,11 @@ static const char* const rgMsgs[2] =
 
 unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
 {
-    if( termination )
+    if( termination ) {
         printf( rgMsgs[1] );
-    else
+    } else {
         printf( rgMsgs[0] );
+    }
     return( 1 );
 }
 

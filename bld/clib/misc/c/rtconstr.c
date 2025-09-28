@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +42,10 @@ _WCRTLINK constraint_handler_t set_constraint_handler_s( constraint_handler_t ha
     old_handler = _RWD_rtcthandler;
 
     /* Use the abort handler by default */
-    if( handler == NULL )
+    if( handler == NULL ) {
         _RWD_rtcthandler = abort_handler_s;
-    else
+    } else {
         _RWD_rtcthandler = handler;
-
+    }
     return( old_handler );
 }
