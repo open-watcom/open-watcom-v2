@@ -160,22 +160,24 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
                     &dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
         if( rc == ERROR_FILE_NOT_FOUND ) { // appply a bit more persistence
             int handle;
+            int errno_num;
 
-            rc = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle < 0 ) {
                 lib_set_errno( ENOENT );
                 return( -1 );
+            }
+            errno_num = 0;
 #ifdef __INT64__
-            } else if( _fstati64( handle, buf ) == -1 ) {
+            if( _fstati64( handle, buf ) == -1 ) {
 #else
-            } else if( fstat( handle, buf ) == -1 ) {
+            if( fstat( handle, buf ) == -1 ) {
 #endif
-                rc = lib_get_errno();
+                errno_num = lib_get_errno();
             }
             close( handle );
-            lib_set_errno( rc );
-            if( rc != 0 ) {
+            lib_set_errno( errno_num );
+            if( errno_num != 0 ) {
                 return( -1 );
             }
             return( 0 );

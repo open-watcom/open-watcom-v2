@@ -74,15 +74,14 @@ char __tmpfnext = _TMP_INIT_CHAR;
 _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 {
     int         hdl;
-    int         old_errno;
-    int         our_errno;
+    int         errno_save;
     char        suffix1;
     char        suffix2;
     FILE        *fp;
     char        name1[PATH_MAX + _TMPFNAME_LENGTH + 1];
     char        name2[PATH_MAX + _TMPFNAME_LENGTH + 1];
 
-    old_errno = lib_get_errno();
+    errno_save = lib_get_errno();
     suffix1 = 0;
     for( ;; ) {
         // Part I
@@ -135,14 +134,14 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 if( fp != NULL ) {
                     fp->_flag |= _TMPFIL;
                     _FP_TMPFCHAR( fp ) = suffix2;
-                    lib_set_errno( old_errno );
+                    lib_set_errno( errno_save );
                     return( fp );
                 }
                 // We couldn't open it, probably because we have run out of handles.
                 // Remove the renamed file.
-                our_errno = lib_get_errno();
+                errno_save = lib_get_errno();
                 remove( name2 );
-                lib_set_errno( our_errno );
+                lib_set_errno( errno_save );
                 return( NULL );
             }
             // The rename didn't work or we couldn't open the renamed file.
@@ -152,7 +151,8 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 
             // Check for case (2).
             // Quit if "from" file is gone and start over.
-            if( access( name1, F_OK ) != 0 ) break;
+            if( access( name1, F_OK ) != 0 )
+                break;
 
             // Must be case (1). Try another "to" name.
             ++suffix2;

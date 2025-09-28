@@ -65,16 +65,16 @@ _WCRTLINK char *_cmdname( char *name )
 
 _WCRTLINK char *_cmdname( char *name )
 {
-    int save_errno;
+    int errno_save;
     int result;
 
-    save_errno = lib_get_errno();
+    errno_save = lib_get_errno();
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
     }
-    lib_set_errno( save_errno );
+    lib_set_errno( errno_save );
 
     /* fall back to argv[0] if readlink doesn't work */
     if( result == -1 || result == PATH_MAX )

@@ -78,7 +78,6 @@ _WCRTLINK int pthread_cancel( pthread_t __thread )
 {
     pid_t internal;
     int   cancel_status;
-    int   ret;
 
     cancel_status = __get_thread_cancel_status( __thread );
 
@@ -88,19 +87,17 @@ _WCRTLINK int pthread_cancel( pthread_t __thread )
     if( CANCEL_DEFERED( cancel_status ) ) {
         cancel_status |= PTHREAD_CANCEL_SET;
         __set_thread_cancel_status( __thread, cancel_status );
-    } else {
-#ifdef __UNIX__
-        internal = __get_thread_id( __thread );
-        ret = kill( internal, SIGCANCEL );
-        if( ret != 0 ) {
-            ret = lib_get_errno();
-        }
-#else
-        ret = ENOSYS;
-#endif
+        return( 0 );
     }
-
-    return( ret );
+#ifdef __UNIX__
+    internal = __get_thread_id( __thread );
+    if( kill( internal, SIGCANCEL ) ) {
+        return( lib_get_errno() );
+    }
+    return( 0 );
+#else
+    return( ENOSYS );
+#endif
 }
 
 _WCRTLINK int pthread_setcancelstate( int __state, int *__oldstate )

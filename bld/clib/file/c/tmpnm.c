@@ -111,12 +111,12 @@ static size_t _WCNEAR init_name( void )
 
 _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
 {
-    int         err;
+    int         errno_save;
     int         iter;
     size_t      i;
     CHAR_TYPE   *tmpnmb;
 
-    err = lib_get_errno();
+    errno_save = lib_get_errno();
                             // JBS 99/10/18 rewrote for thread safety
     _AccessIOB();           // prevent same name in multi-threaded apps
     tmpnmb = (CHAR_TYPE *)_RWD_tmpnambuf;
@@ -159,6 +159,6 @@ _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
     _ReleaseIOB();          // if it's been copied, we are thread-safe
     if( iter == 2 )
         buf = NULL;
-    lib_set_errno( err );
+    lib_set_errno( errno_save );
     return( buf );
 }

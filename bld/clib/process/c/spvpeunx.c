@@ -57,7 +57,8 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
 {
     char    *p;
     char    *p2;
-    int     retval, err;
+    int     retval;
+    int     errno_save;
     char    buffer[_POSIX_PATH_MAX];
     int     trailer = 0;
 
@@ -73,7 +74,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
     }
     if( p == NULL || *p2 == '/' )
         return( spawnve( mode, path, argv, envp ) );
-    err = lib_get_errno();
+    errno_save = lib_get_errno();
     for( retval = -1; ; ) {
         if( *p == '\0' )
             break;
@@ -98,7 +99,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
             --p;
             trailer++;
         }
-        lib_set_errno( err );
+        lib_set_errno( errno_save );
     }
     return( retval );
 }

@@ -57,12 +57,12 @@ _WCRTLINK clock_t clock( void )
 {
     struct tms  buf;
     clock_t     clk;
-    int         save_errno;
+    int         errno_save;
 
-    save_errno = lib_get_errno();
+    errno_save = lib_get_errno();
     times( &buf );
     clk = ( buf.tms_utime + buf.tms_stime ) * ( CLOCKS_PER_SEC / SYS_CLK_TCK );
-    lib_set_errno( save_errno );
+    lib_set_errno( errno_save );
     return clk;
 }
 

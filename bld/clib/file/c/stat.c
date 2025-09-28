@@ -128,7 +128,6 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 {
     struct find_t       fdta;
     const CHAR_TYPE     *ptr;
-    unsigned            rc;
     CHAR_TYPE           fullpath[_MAX_PATH];
     int                 isrootdir = 0;
 
@@ -188,14 +187,15 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
             bool        canread = false;
             bool        canwrite = false;
             bool        fstatok = false;
+            int         errno_num;
 
             // Try getting information another way.
-            rc = 0;
+            errno_num = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle != -1 ) {
                 canwrite = true;
                 if( fstat( handle, buf ) == -1 ) {
-                    rc = lib_get_errno();
+                    errno_num = lib_get_errno();
                 } else {
                     fstatok = true;
                 }
@@ -206,7 +206,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
                 canread = true;
                 if( !fstatok ) {
                     if( fstat( handle, buf ) == -1 ) {
-                        rc = lib_get_errno();
+                        errno_num = lib_get_errno();
                     }
                 }
             }
@@ -216,8 +216,8 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
                 lib_set_errno( ENOENT );
                 return( -1 );
             }
-            lib_set_errno( rc );
-            if( rc != 0 ) {
+            lib_set_errno( errno_num );
+            if( errno_num != 0 ) {
                 return( -1 );
             }
             if( canread ) {
