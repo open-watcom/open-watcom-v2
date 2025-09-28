@@ -43,8 +43,8 @@ extern "C" {
 
 extern char             *_LpDllName;    /* pointer to dll name */
 
-extern char             **_argv;        /* argument vector */
-extern int              _argc;
+extern int              _argc;          /* arguments count */
+extern char             **_argv;        /* arguments vector */
 
 #if defined( __WATCOMC__ )
 

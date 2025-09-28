@@ -36,8 +36,9 @@
 #include "clibint.h"
 
 
-extern int         __F_NAME(_argc,_wargc);    /* argument count  */
-extern CHAR_TYPE **__F_NAME(_argv,_wargv);    /* argument vector */
+extern int          _wargc;         /* wide arguments count */
+extern wchar_t      **_wargv;       /* wide argument vector */
+
 
 extern void _WCNEAR __F_NAME(__Init_Argv,__wInit_Argv)( void );
 extern void _WCNEAR __F_NAME(__Fini_Argv,__wFini_Argv)( void );
