@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,12 @@ _WCRTLINK errno_t __F_NAME(asctime_s,_wasctime_s)( CHAR_TYPE *s,
     // timeptr not NULL
     // 26 <= maxsize      <= RSIZE_MAX
     // 0  <= timeptr.year <= 9999
-    if( __check_constraint_nullptr_msg( msg, s ) &&
-        __check_constraint_nullptr_msg( msg, timeptr ) &&
-        __check_constraint_maxsize_msg( msg, maxsize ) &&
-        __check_constraint_a_gt_b_msg( msg, 26, maxsize ) &&
-        __check_constraint_a_gt_b_msg( msg, 0, timeptr->tm_year ) &&
-        __check_constraint_a_gt_b_msg( msg, timeptr->tm_year, 9999  ) ) {
+    if( __check_constraint_nullptr_msg( msg, s )
+      && __check_constraint_nullptr_msg( msg, timeptr )
+      && __check_constraint_maxsize_msg( msg, maxsize )
+      && __check_constraint_a_gt_b_msg( msg, 26, maxsize )
+      && __check_constraint_a_gt_b_msg( msg, 0, timeptr->tm_year )
+      && __check_constraint_a_gt_b_msg( msg, timeptr->tm_year, 9999 ) ) {
 
         // Parameters validated, now call 'normal' _asctime
         __F_NAME(_asctime,__wasctime)( timeptr, s );
@@ -64,7 +64,9 @@ _WCRTLINK errno_t __F_NAME(asctime_s,_wasctime_s)( CHAR_TYPE *s,
 
     if( msg != NULL ) {
         // Runtime-constraint violated, store zero in receiving field if possible
-        if( (s != NULL) && (maxsize > 0) && __lte_rsizmax( maxsize ) ) {
+        if( (s != NULL)
+          && (maxsize > 0)
+          && __lte_rsizmax( maxsize ) ) {
             *s = NULLCHAR;
         }
         // Now call the handler

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ _WCRTLINK int __F_NAME(vfscanf_s,vfwscanf_s)( FILE * __restrict stream,
 
     /* Basic check for null pointers to see if we can continue */
     if( __check_constraint_nullptr_msg( msg, stream )
-     && __check_constraint_nullptr_msg( msg, format ) ) {
+      && __check_constraint_nullptr_msg( msg, format ) ) {
 
         _AccessFile( stream );
 

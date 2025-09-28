@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,19 +52,20 @@ _WCRTLINK errno_t __F_NAME(memcpy_s,wmemcpy_s)( VOID_WC_TYPE * __restrict s1,
     // n     <= RSIZE_MAX
     // n     <= s1max
     // s1 and s2 no overlap
-    if( __check_constraint_nullptr_msg( msg, s1 ) &&
-        __check_constraint_nullptr_msg( msg, s2 ) &&
-        __check_constraint_maxsize_msg( msg, s1max ) &&
-        __check_constraint_maxsize_msg( msg, n ) &&
-        __check_constraint_a_gt_b_msg( msg, n, s1max ) &&
-        __check_constraint_overlap_msg( msg, s1, s1max, s2, n ) ) {
+    if( __check_constraint_nullptr_msg( msg, s1 )
+      && __check_constraint_nullptr_msg( msg, s2 )
+      && __check_constraint_maxsize_msg( msg, s1max )
+      && __check_constraint_maxsize_msg( msg, n )
+      && __check_constraint_a_gt_b_msg( msg, n, s1max )
+      && __check_constraint_overlap_msg( msg, s1, s1max, s2, n ) ) {
 
         // now it's safe to use memcpy
          __F_NAME(memcpy,wmemcpy)( s1, s2, n );
          rc = 0;
     } else {
         // Runtime-constraints violated, zero out destination array
-        if( (s1 != NULL) && __lte_rsizmax( s1max ) ) {
+        if( (s1 != NULL)
+          && __lte_rsizmax( s1max ) ) {
             __F_NAME(memset,wmemset)( s1, 0, s1max );
         }
         // Now call the handler

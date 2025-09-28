@@ -65,7 +65,7 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
         if( s == NULL ) {               /* reset state */
             // ensure smax == 0
             if( __check_constraint_a_gt_b_msg( msg, smax, 0 ) ) {
-                 rc = 0;
+                rc = 0;
             }
         } else {
             if( wc & 0xff00 ) {
@@ -89,8 +89,11 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
     if( msg != NULL ) {
         // Runtime-constraints found
         // set s[0] to nullchar and *retval to -1
-        if( ( s != NULL ) && ( smax > 0 ) && __lte_rsizmax( smax ) )
+        if( ( s != NULL )
+          && ( smax > 0 )
+          && __lte_rsizmax( smax ) ) {
             *s = '\0';
+        }
         if( retval != NULL )
             *retval = (size_t)-1;
         // Now call the handler

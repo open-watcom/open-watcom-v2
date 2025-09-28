@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,14 +60,15 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
     // src    != NULL
     // if dst == NULL then dstmax == 0
     // if dst != NULL then dstmax != 0
-    if(__check_constraint_nullptr_msg( msg, retval ) &&
-        __check_constraint_nullptr_msg( msg, src )) {
-        if(dst == NULL) {                /* get required size */
+    if( __check_constraint_nullptr_msg( msg, retval )
+      && __check_constraint_nullptr_msg( msg, src ) ) {
+        if( dst == NULL ) {             /* get required size */
             // ensure dstmax == 0
-            if(__check_constraint_a_gt_b_msg( msg, dstmax, 0 )) {
+            if( __check_constraint_a_gt_b_msg( msg, dstmax, 0 ) ) {
                 for( ;; ) {
                     if( *src != '\0' ) {
-                        if(srcend < src) break;               //no null found
+                        if(srcend < src)
+                            break;               //no null found
                         ret = _NEARFAR(mbtowc,_fmbtowc)( NULL, src, MB_LEN_MAX );
                         if( ret == -1 )  {
                             *retval = (size_t)-1;
@@ -88,13 +89,14 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
             // more runtime-constraints
             // len    <= RSIZE_MAX
             // dstmax <= RSIZE_MAX
-            if(__check_constraint_maxsize_msg( msg, dstmax ) &&
-               __check_constraint_maxsize_msg( msg, len ) &&
-               __check_constraint_a_gt_b_msg( msg, 1, dstmax )) {
+            if( __check_constraint_maxsize_msg( msg, dstmax )
+              && __check_constraint_maxsize_msg( msg, len )
+              && __check_constraint_a_gt_b_msg( msg, 1, dstmax ) ) {
 
                 for( maxlen = min(len, dstmax); maxlen > 0; maxlen-- ) {
                     if( *src != '\0' ) {
-                        if(srcend < src) break;               //no null found
+                        if( srcend < src )
+                            break;               //no null found
                         ret = _NEARFAR(mbtowc,_fmbtowc)( dst, src, MB_LEN_MAX );
                         if( ret == -1 )  {
                             *retval = (size_t)-1;
@@ -107,14 +109,15 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                         break;
                     }
                 }
-                if( (dstmax > len) ||
-                    __check_constraint_toosmall_msg( msg, dst, maxlen )) {
+                if( (dstmax > len)
+                  || __check_constraint_toosmall_msg( msg, dst, maxlen ) ) {
                     *dst = L'\0';            // terminate string
                 }
-                if( (msg == NULL) && __check_constraint_a_gt_b_msg( msg, src, srcend )) {
+                if( (msg == NULL)
+                  && __check_constraint_a_gt_b_msg( msg, src, srcend ) ) {
                     if( ret != -1 ) {                         //no encoding error
-                      *retval = numChars;
-                      rc = 0;
+                        *retval = numChars;
+                        rc = 0;
                     }
                 }
             }
@@ -124,9 +127,12 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
     if(msg != NULL) {
         // Runtime-constraint found
         // set dst[0] to nullchar and *retval to -1
-        if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
+        if( (dst != NULL)
+          && (dstmax > 0)
+          && __lte_rsizmax( dstmax ) ) {
             *dststart = L'\0';
-        if(retval != NULL)
+        }
+        if( retval != NULL )
             *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );

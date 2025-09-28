@@ -67,8 +67,8 @@ int _WCNEAR __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
     /* Check for runtime-constraints before grabbing file lock */
     /* stream   not null */
     /* format   not null */
-    if( __check_constraint_nullptr_msg( msg, stream )  &&
-        __check_constraint_nullptr_msg( msg, format ) ) {
+    if( __check_constraint_nullptr_msg( msg, stream )
+      && __check_constraint_nullptr_msg( msg, format ) ) {
 
         _ValidFile( stream, 0 );
         _AccessFile( stream );

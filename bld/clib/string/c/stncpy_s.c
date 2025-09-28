@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,13 +56,14 @@ _WCRTLINK errno_t __F_NAME(strncpy_s,wcsncpy_s)( CHAR_TYPE * __restrict s1,
     // s1max != 0
     // if n >= s1max then s1max > strnlen_s( s2, s1max )
     // s1 s2 no overlap
-    if( __check_constraint_nullptr_msg( msg, s1 ) &&
-        __check_constraint_nullptr_msg( msg, s2 ) &&
-        __check_constraint_maxsize_msg( msg, s1max ) &&
-        __check_constraint_maxsize_msg( msg, n ) &&
-        __check_constraint_zero_msg( msg, s1max ) &&
-        ((n < s1max) || __check_constraint_a_gt_b_msg( msg, s2len, s1max - 1 )) &&
-        __check_constraint_overlap_msg( msg, s1, s1max, s2, s2len )) {
+    if( __check_constraint_nullptr_msg( msg, s1 )
+      && __check_constraint_nullptr_msg( msg, s2 )
+      && __check_constraint_maxsize_msg( msg, s1max )
+      && __check_constraint_maxsize_msg( msg, n )
+      && __check_constraint_zero_msg( msg, s1max )
+      && ( (n < s1max)
+      || __check_constraint_a_gt_b_msg( msg, s2len, s1max - 1 ) )
+      && __check_constraint_overlap_msg( msg, s1, s1max, s2, s2len ) ) {
 
          for( ; n; --n) {
              if( *s2 == NULLCHAR )
@@ -73,7 +74,9 @@ _WCRTLINK errno_t __F_NAME(strncpy_s,wcsncpy_s)( CHAR_TYPE * __restrict s1,
          rc = 0;
     } else {
         // Runtime-constraints found, store zero in receiving field
-        if( (s1 != NULL) && (s1max > 0) && __lte_rsizmax( s1max ) ) {
+        if( (s1 != NULL)
+          && (s1max > 0)
+          && __lte_rsizmax( s1max ) ) {
             s1[0] = NULLCHAR;
         }
         // Now call the handler

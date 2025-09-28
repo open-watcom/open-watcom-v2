@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,20 +50,22 @@ _WCRTLINK errno_t __F_NAME(tmpnam_s,_wtmpnam_s)( CHAR_TYPE *s, rsize_t maxsize )
     /* maxsize <= RSIZE_MAX */
     /* maxsize >  generated tmpname */
     /* maxsize > 0  */
-    if( __check_constraint_nullptr_msg( msg, s ) &&
-        __check_constraint_zero_msg( msg, maxsize ) &&
-        __check_constraint_maxsize_msg( msg, maxsize ) ) {
+    if( __check_constraint_nullptr_msg( msg, s )
+      && __check_constraint_zero_msg( msg, maxsize )
+      && __check_constraint_maxsize_msg( msg, maxsize ) ) {
 
         __F_NAME(tmpnam,_wtmpnam)( workname );
         len = __F_NAME(strlen,wcslen)( workname );
-        if ( __check_constraint_a_gt_b_msg( msg, len, maxsize ) ) {
+        if( __check_constraint_a_gt_b_msg( msg, len, maxsize ) ) {
             __F_NAME(strcpy,wcscpy)(s, workname );
             rc = 0;
         }
     }
     if( msg != NULL ) {
     /* Runtime-constraints violated, set tmpname empty */
-        if( (s != NULL) && (maxsize > 0) && __lte_rsizmax( maxsize ) ) {
+        if( (s != NULL)
+          && (maxsize > 0)
+          && __lte_rsizmax( maxsize ) ) {
             s[0] = NULLCHAR;
         }
         /* Now call the handler */

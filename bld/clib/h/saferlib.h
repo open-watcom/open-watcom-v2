@@ -37,6 +37,7 @@
 #define __STDC_WANT_LIB_EXT1__  1
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 
 // Maximum length of runtime-constraint error message
@@ -52,16 +53,16 @@ extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *r
 // failed, return non-zero value if check succeeded.
 
 #define __check_constraint_nullptr( arg )   \
-    ((arg == NULL) ? __rtct_fail( __func__, #arg " == NULL", NULL ), 0 : 1)
+    ((arg == NULL) ? __rtct_fail( __func__, #arg " == NULL", NULL ), false : true)
 
 #define __check_constraint_maxsize( arg )   \
-    ((arg > RSIZE_MAX) ? __rtct_fail( __func__, #arg " > RSIZE_MAX", NULL ), 0 : 1)
+    ((arg > RSIZE_MAX) ? __rtct_fail( __func__, #arg " > RSIZE_MAX", NULL ), false : true)
 
 #define __check_constraint_zero( arg )   \
-    ((arg == 0) ? __rtct_fail( __func__, #arg " == 0", NULL ), 0 : 1)
+    ((arg == 0) ? __rtct_fail( __func__, #arg " == 0", NULL ), false : true)
 
 #define __check_constraint_toosmall( name, left )   \
-    ((left == 0) ? __rtct_fail( __func__, #name " is too small to hold data", NULL ), 0 : 1)
+    ((left == 0) ? __rtct_fail( __func__, #name " is too small to hold data", NULL ), false : true)
 
 
 // Runtime-constraint validation macros. Construct the message and return
@@ -69,16 +70,16 @@ extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *r
 // __rtct_fail has to be explicitly called later.
 
 #define __check_constraint_nullptr_msg( msg, arg )   \
-    ((arg == NULL) ? ( msg = #arg " == NULL" ), 0 : 1)
+    ((arg == NULL) ? ( msg = #arg " == NULL" ), false : true)
 
 #define __check_constraint_maxsize_msg( msg, arg )   \
-    ((arg > RSIZE_MAX) ? ( msg = #arg " > RSIZE_MAX" ), 0 : 1)
+    ((arg > RSIZE_MAX) ? ( msg = #arg " > RSIZE_MAX" ), false : true)
 
 #define __check_constraint_zero_msg( msg, arg )   \
-    ((arg == 0) ? ( msg = #arg " == 0" ), 0 : 1)
+    ((arg == 0) ? ( msg = #arg " == 0" ), false : true)
 
 #define __check_constraint_toosmall_msg( msg, name, left )   \
-    ((left == 0) ? ( msg = #name " is too small to hold data" ), 0 : 1)
+    ((left == 0) ? ( msg = #name " is too small to hold data" ), false : true)
 
 // Double macro expansion to avoid "__F_NAME(strnlen_s,wcsnlen_s)"
 // showing up in constraint violation messages.
@@ -86,7 +87,7 @@ extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *r
     (__check_constraint_a_gt_b_msg_int( msg, a, b ))
 
 #define __check_constraint_a_gt_b_msg_int( msg, a, b )   \
-    ((a > b) ? ( msg = #a " > " #b ), 0 : 1)
+    ((a > b) ? ( msg = #a " > " #b ), false : true)
 
 #define __check_constraint_overlap_msg( msg, p1, len1, p2, len2 )       \
     (__check_constraint_overlap_msg_int( msg, p1, len1, p2, len2 ))
@@ -94,18 +95,18 @@ extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *r
 #define __check_constraint_overlap_msg_int( msg, p1, len1, p2, len2 )   \
     (((p1 == p2) || ( (p1 > p2) && ( p1 < (CHAR_TYPE *)p2 + len2 * sizeof( CHAR_TYPE )))    \
         || ( (p2 > p1) && ( p2 < (CHAR_TYPE *)p1 + len1 * sizeof( CHAR_TYPE ))))            \
-     ? ( msg = #p1 " overlap " #p2 ), 0 : 1)
+     ? ( msg = #p1 " overlap " #p2 ), false : true)
 
 
 // For 16-bit targets, the RSIZE_MAX check is effectively no-op. Object sizes
 // up to SIZE_MAX are legal and not uncommon.
 #if RSIZE_MAX == SIZE_MAX
     #undef  __check_constraint_maxsize
-    #define __check_constraint_maxsize( arg )   1
+    #define __check_constraint_maxsize( arg )           true
     #undef  __check_constraint_maxsize_msg
-    #define __check_constraint_maxsize_msg( msg, arg )  1
+    #define __check_constraint_maxsize_msg( msg, arg )  true
 
-    #define __lte_rsizmax( arg )    1
+    #define __lte_rsizmax( arg )    true
 #else
     #define __lte_rsizmax( arg )    (arg <= RSIZE_MAX)
 #endif

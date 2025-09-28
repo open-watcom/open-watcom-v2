@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -302,10 +302,11 @@ FUNCTION_LINKAGE errno_t FUNCTION_NAME(
     // n     <= RSIZE_MAX
     // size  <= RSIZE_MAX
     // if n  > 0  then in_base, compar not NULL
-    if( __check_constraint_maxsize( n ) &&
-        __check_constraint_maxsize( size ) &&
-        ((n == 0) || __check_constraint_nullptr( in_base ) &&
-                     __check_constraint_nullptr( compar )) ) {
+    if( __check_constraint_maxsize( n )
+      && __check_constraint_maxsize( size )
+      && ( (n == 0)
+      || __check_constraint_nullptr( in_base )
+      && __check_constraint_nullptr( compar ) ) ) {
 
         if( n == 0 ) {                              /* empty array - nothing to do */
             return( 0 );

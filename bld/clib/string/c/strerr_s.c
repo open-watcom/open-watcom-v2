@@ -67,9 +67,9 @@ _WCRTLINK errno_t __F_NAME(strerror_s,_wcserror_s)( CHAR_TYPE *s,
     // s not NULL
     // maxsize <= RSIZE_MAX
     // maxsize != 0
-    if( __check_constraint_nullptr( s ) &&
-        __check_constraint_maxsize( maxsize ) &&
-        __check_constraint_zero( maxsize ) ) {
+    if( __check_constraint_nullptr( s )
+      && __check_constraint_maxsize( maxsize )
+      && __check_constraint_zero( maxsize ) ) {
 
         if( errnum < 0 || errnum >= _sys_nerr ) {
             msg = UNKNOWN_ERROR;
