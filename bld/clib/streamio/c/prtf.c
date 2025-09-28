@@ -101,7 +101,7 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_PRTF_SPECS specs )
             specs->_flags |= SPF_FORCE_SIGN;
             specs->_flags &= ~SPF_BLANK;
         } else if( *ctl == STRING( ' ' ) ) {
-            if( ( specs->_flags & SPF_FORCE_SIGN ) == 0 ) {
+            if( (specs->_flags & SPF_FORCE_SIGN) == 0 ) {
                 specs->_flags |= SPF_BLANK;
             }
         } else if( *ctl == STRING( '0' ) ) {
@@ -428,7 +428,7 @@ static void SetZeroPad( PTR_PRTF_SPECS specs )
 {
     int         n;
 
-    if( !(specs->_flags & SPF_LEFT_ADJUST) ) {
+    if( (specs->_flags & SPF_LEFT_ADJUST) == 0 ) {
         if( specs->_pad_char == STRING( '0' ) ) {
             n = specs->_fld_width - specs->_n0 - specs->_nz0 -
                     specs->_n1 - specs->_nz1 - specs->_n2 - specs->_nz2;
@@ -586,7 +586,6 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
             break;
         }
         /* types f & F fall through */
-
     case STRING( 'a' ):
     case STRING( 'A' ):
     case STRING( 'g' ):
@@ -639,39 +638,54 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
 
 #ifdef __NETWARE__
         if( specs->_character == PASCAL_STRING ) {
-#ifdef __WIDECHAR__
-            if( specs->_flags & SPF_SHORT )
-#else
-            if( specs->_flags & SPF_LONG )
-#endif
-            {
+  #ifdef __WIDECHAR__
+            if( specs->_flags & SPF_SHORT ) {
+  #else
+            if( specs->_flags & SPF_LONG ) {
+  #endif
                 length = *( (_ALT_FAR_STRING)arg );
                 arg = (FAR_STRING)( (_ALT_FAR_STRING)arg + 1 );
             } else {
                 length = *arg++;
             }
-        } else
-#elif !defined( __NETWARE__ ) && !defined( __WIDECHAR__ )
+  #ifdef __WIDECHAR__
+        } else if( specs->_flags & SPF_SHORT ) {
+  #else
+        } else if( specs->_flags & SPF_LONG ) {
+  #endif
+            length = far_alt_strlen( arg, specs->_prec );
+        } else {
+            length = far_strlen( arg, specs->_prec );
+        }
+#elif !defined( __WIDECHAR__ )
         if( specs->_character == WIDE_CHAR_STRING ) {
             if( specs->_flags & SPF_SHORT ) {
                 length = far_strlen( arg, specs->_prec );
             } else {
                 length = far_alt_strlen( arg, specs->_prec );
             }
-        } else
-#endif
-#ifdef __WIDECHAR__
-        if( specs->_flags & SPF_SHORT ) {
-#else
-        if( specs->_flags & SPF_LONG ) {
-#endif
+  #ifdef __WIDECHAR__
+        } else if( specs->_flags & SPF_SHORT ) {
+  #else
+        } else if( specs->_flags & SPF_LONG ) {
+  #endif
             length = far_alt_strlen( arg, specs->_prec );
         } else {
             length = far_strlen( arg, specs->_prec );
         }
-
+#else
+  #ifdef __WIDECHAR__
+        if( specs->_flags & SPF_SHORT ) {
+  #else
+        if( specs->_flags & SPF_LONG ) {
+  #endif
+            length = far_alt_strlen( arg, specs->_prec );
+        } else {
+            length = far_strlen( arg, specs->_prec );
+        }
+#endif
         specs->_n1 = length;
-        if(( specs->_prec >= 0 ) && ( specs->_prec < length )) {
+        if( ( specs->_prec >= 0 ) && ( specs->_prec < length ) ) {
             specs->_n1 = specs->_prec;
         }
         break;
@@ -738,8 +752,8 @@ processNumericTypes:
         specs->_n1 = length;
         if( specs->_n1 < specs->_prec ) {
             specs->_nz0 = specs->_prec - specs->_n1;
-        } else if( specs->_flags & SPF_ALT && radix < 10
-         && (!length || (arg[0] != STRING( '0' ))) ) {
+        } else if( (specs->_flags & SPF_ALT) && radix < 10
+         && ( length == 0 || (arg[0] != STRING( '0' )) ) ) {
             /* For 'b' and 'o' conversions, alternate format forces the number to
              * start with a zero (effectively increases precision by one), but
              * only if it doesn't start with a zero already.
@@ -981,7 +995,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                                     specs._nz1 +
                                     specs._n2  +
                                     specs._nz2;
-                if( !(specs._flags & SPF_LEFT_ADJUST) ) {
+                if( (specs._flags & SPF_LEFT_ADJUST) == 0 ) {
                     if( specs._pad_char == STRING( ' ' ) ) {
                         while( specs._fld_width > 0 ) {
                             (out_putc)( &specs, STRING( ' ' ) );
@@ -1003,28 +1017,30 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_SHORT ) {
                         write_skinny_string( (FAR_ASCII_STRING)arg, &specs, out_putc );
-                    } else
+                    } else {
 #elif !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_LONG ) {
                         write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
-                    } else
-#endif
+                    } else {
+#else
                     {
+#endif
                         while( specs._n1 > 0 ) {
                             (out_putc)( &specs, *arg++ );
                             --specs._n1;
                         }
                     }
-                }
 #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-                else if( specs._character == WIDE_CHAR_STRING ) {
+                } else if( specs._character == WIDE_CHAR_STRING ) {
                     write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
-                } else
+                } else {
 #elif !defined( __WIDECHAR__ ) && defined( __NETWARE__ )
-                else if( specs._character == WIDE_CHAR_STRING ) {
-                } else
-#endif
+                } else if( specs._character == WIDE_CHAR_STRING ) {
+                } else {
+#else
+                }
                 {
+#endif
                     while( specs._n1 > 0 ) {
                         (out_putc)( &specs, *arg++ );
                         --specs._n1;
