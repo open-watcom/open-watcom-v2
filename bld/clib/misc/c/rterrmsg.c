@@ -55,6 +55,7 @@
 #include "rterrmsg.h"
 #include "thread.h"
 
+
 #define STR_SIZE        256
 
 /* Output error message 'msg' with header text 'hdr'. The message will
@@ -64,7 +65,7 @@
  * If printed on console, the text will be printed in format
  *     <hdr>": "<msg>
  */
-void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
+void _WCNEAR __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
 {
 #if defined( __WINDOWS__ )
     #ifdef __WIDECHAR__
@@ -84,7 +85,8 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
     rc = __F_NAME(fputs,fputws)( hdr, stderr );
     rc = __F_NAME(fputs,fputws)( STRING( ": " ), stderr );
     rc = __F_NAME(fputs,fputws)( msg, stderr );
-    if( (rc == EOF) && (lib_get_errno() == EBADF) ) {
+    if( (rc == EOF)
+      && (lib_get_errno() == EBADF) ) {
         MessageBox( NULL, msg, hdr, MB_OK | MB_TASKMODAL );
     }
 #elif defined( __OS2_32BIT__ )

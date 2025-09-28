@@ -75,9 +75,11 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
             }
             if( __check_constraint_a_gt_b_msg( msg, n, smax )
               && __check_constraint_maxsize_msg( msg, smax ) ) {
-                /*** Check for a valid wide character ***/
+                /*
+                 * Check for a valid wide character
+                 */
                 ret = _NEARFAR(wctomb,_fwctomb)( s, wc );
-                if( ret == -1 ) {                            //encoding error
+                if( ret == -1 ) {
                     *retval = (size_t)-1;
                 } else {
                     *retval = min( ret, n );
@@ -87,8 +89,10 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
         }
     }
     if( msg != NULL ) {
-        // Runtime-constraints found
-        // set s[0] to nullchar and *retval to -1
+        /*
+         * Runtime-constraints found
+         * set s[0] to nullchar and *retval to -1
+         */
         if( ( s != NULL )
           && ( smax > 0 )
           && __lte_rsizmax( smax ) ) {
@@ -96,7 +100,9 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
         }
         if( retval != NULL )
             *retval = (size_t)-1;
-        // Now call the handler
+        /*
+         * Now call the handler
+         */
         __rtct_fail( __func__, msg, NULL );
     }
     return( rc );

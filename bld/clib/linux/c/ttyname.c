@@ -49,7 +49,7 @@ _WCRTLINK int ttyname_r( int fd, char *buf, size_t buflen )
 
     if( isatty( fd ) == 0 ) {
         lib_set_errno( ENOTTY );
-        return( lib_get_errno() );
+        return( ENOTTY );
     }
 
     snprintf( linkpath, MAX_TTY_NAME, "%s%d", BASE_LINK, fd );

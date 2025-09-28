@@ -35,6 +35,7 @@
 #include "saferlib.h"
 #include <string.h>
 
+
 void _WCNEAR __rtct_fail( const char *fn, const char *reason, void *reserved )
 /****************************************************************************/
 {

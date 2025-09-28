@@ -99,7 +99,7 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
         n = 3;
     } else if( __flags & CLONE_SETTLS ) {
         n = 2;
-    } else if(__flags & CLONE_PARENT_SETTID ) {
+    } else if( __flags & CLONE_PARENT_SETTID ) {
         n = 1;
     }
     /* Process optional arguments, if any */
