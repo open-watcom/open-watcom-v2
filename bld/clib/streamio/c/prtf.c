@@ -187,7 +187,8 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
         ctl++;
         break;
     case STRING( 'I' ):
-        if(( ctl[1] == STRING( '6' ) ) && ( ctl[2] == STRING( '4' ) )) {
+        if( ( ctl[1] == STRING( '6' ) )
+          && ( ctl[2] == STRING( '4' ) ) ) {
             specs->_flags |= SPF_LONG_LONG;
             ctl += 3;
         }
@@ -260,7 +261,8 @@ static int far_alt_strlen( FAR_STRING s, int precision )
         }
         return( len );
     }
-    while( *ptr != _ALT_NULLCHAR && ( len <= precision )) {
+    while( *ptr != _ALT_NULLCHAR
+      && ( len <= precision )) {
         chBytes = wctomb( mbBuf, *ptr++ );
         if( chBytes != -1 ) {
             len += chBytes;
@@ -325,7 +327,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_PRTF_SPECS specs 
         *buf = NULLCHAR;
     }
     if( at.wd.lo & 0x8000 ) {   /* fraction >= .5, need to round */
-        for(;;) {                               /* 22-dec-91 */
+        for( ;; ) {
             if( buf == bufp ) {
                 *buf++ = STRING( '1' );
                 while( *buf == STRING( '0' ) )
@@ -585,7 +587,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
             specs->_n1 = far_strlen( buffer, -1 );
             break;
         }
-        /* types f & F fall through */
+        /* fall through */
     case STRING( 'a' ):
     case STRING( 'A' ):
     case STRING( 'g' ):
@@ -685,7 +687,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
         }
 #endif
         specs->_n1 = length;
-        if( ( specs->_prec >= 0 ) && ( specs->_prec < length ) ) {
+        if( ( specs->_prec >= 0 )
+          && ( specs->_prec < length ) ) {
             specs->_n1 = specs->_prec;
         }
         break;
@@ -712,8 +715,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
 
     case STRING( 'o' ):
         radix = 8;                  /* base 8 */
-        /* 'o' conversion falls through */
-
+        /* fall through */
     case STRING( 'd' ):
     case STRING( 'i' ):
     case STRING( 'u' ):
@@ -729,7 +731,8 @@ processNumericTypes:
         arg = &buffer[ specs->_n0 ];
 
         if( specs->_flags & SPF_LONG_LONG ) {
-            if(( specs->_prec == 0 ) && ( long_long_value == 0 )) {
+            if( ( specs->_prec == 0 )
+              && ( long_long_value == 0 ) ) {
                 *arg = NULLCHAR;
                 length = 0;
             } else {
@@ -739,7 +742,8 @@ processNumericTypes:
                 }
                 length = far_strlen( arg, -1 );
             }
-        } else if(( specs->_prec == 0 ) && ( long_value == 0 )) {
+        } else if( ( specs->_prec == 0 )
+          && ( long_value == 0 ) ) {
             *arg = NULLCHAR;
             length = 0;
         } else {
@@ -752,8 +756,9 @@ processNumericTypes:
         specs->_n1 = length;
         if( specs->_n1 < specs->_prec ) {
             specs->_nz0 = specs->_prec - specs->_n1;
-        } else if( (specs->_flags & SPF_ALT) && radix < 10
-         && ( length == 0 || (arg[0] != STRING( '0' )) ) ) {
+        } else if( (specs->_flags & SPF_ALT)
+          && radix < 10
+          && ( length == 0 || (arg[0] != STRING( '0' )) ) ) {
             /* For 'b' and 'o' conversions, alternate format forces the number to
              * start with a zero (effectively increases precision by one), but
              * only if it doesn't start with a zero already.
@@ -856,7 +861,7 @@ processNumericTypes:
 #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     case STRING( 'C' ):
         bytes = wctomb( buffer, va_arg( *pargs, int ) );
-//      if( bytes != -1  &&  bytes <= specs->_prec ) {
+//        if( bytes != -1 && bytes <= specs->_prec ) {
         if( bytes != -1 ) { /* Normative Addendum 4.5.3.3.1: no precision */
             specs->_n1 = bytes;
         } else {
@@ -946,7 +951,8 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
 #endif  /* __STDC_WANT_LIB_EXT1__ */
             } else {
 #ifdef __STDC_WANT_LIB_EXT1__
-                if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
+                if( specs._character == STRING( 's' )
+                  || specs._character == STRING( 'S' ) ) {
                     FAR_STRING  str;
                     va_list     args_copy;
 

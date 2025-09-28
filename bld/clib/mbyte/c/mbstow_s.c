@@ -67,7 +67,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
             if( __check_constraint_a_gt_b_msg( msg, dstmax, 0 ) ) {
                 for( ;; ) {
                     if( *src != '\0' ) {
-                        if(srcend < src)
+                        if( srcend < src )
                             break;               //no null found
                         ret = _NEARFAR(mbtowc,_fmbtowc)( NULL, src, MB_LEN_MAX );
                         if( ret == -1 )  {
@@ -81,8 +81,8 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                     }
                 }
                 if( ret != -1 ) {                         //no encoding error
-                  *retval = numChars;
-                  rc = 0;
+                    *retval = numChars;
+                    rc = 0;
                 }
             }
         } else {                                    /* convert the string */
@@ -124,7 +124,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
         }
     }
 
-    if(msg != NULL) {
+    if( msg != NULL ) {
         // Runtime-constraint found
         // set dst[0] to nullchar and *retval to -1
         if( (dst != NULL)

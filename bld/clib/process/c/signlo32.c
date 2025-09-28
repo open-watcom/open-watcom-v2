@@ -84,7 +84,9 @@ _WCRTLINK int   __sigfpe_handler( int fpe_type )
     __sig_func  func;
 
     func = _RWD_sigtab[SIGFPE].func;
-    if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
+    if( ( func != SIG_IGN )
+      && ( func != SIG_DFL )
+      && ( func != SIG_ERR ) ) {
         _RWD_sigtab[SIGFPE].func = SIG_DFL;
         SIGFPE_CALL( func, fpe_type );    /* so we can pass 2'nd parm */
         return( 0 );
@@ -110,8 +112,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
     registration = registration;
     unknown = unknown;
 
-    if(( pxcpt->ExceptionNum >= XCPT_FLOAT_DENORMAL_OPERAND ) &&
-       ( pxcpt->ExceptionNum <= XCPT_FLOAT_UNDERFLOW )) {
+    if( ( pxcpt->ExceptionNum >= XCPT_FLOAT_DENORMAL_OPERAND )
+      && ( pxcpt->ExceptionNum <= XCPT_FLOAT_UNDERFLOW ) ) {
         switch( pxcpt->ExceptionNum ) {
         case XCPT_FLOAT_DENORMAL_OPERAND :
             fpe_type = FPE_DENORMAL;
@@ -135,18 +137,19 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                 // exception caused by "fprem" instruction
                 fpe_type = FPE_MODERR;
             } else {
-                if( ( ip[0] == 0xdb ) || ( ip[0] == 0xdf ) ) {
-                    if( ( ip[1] & 0x30 ) == 0x10 ) {
+                if( ( ip[0] == 0xdb )
+                  || ( ip[0] == 0xdf ) ) {
+                    if( (ip[1] & 0x30) == 0x10 ) {
                         // exception caused by "fist(p)" instruction
                         fpe_type = FPE_IOVERFLOW;
                     }
                 }
-                if( !(ip[0] & 0x01) ) {
+                if( (ip[0] & 0x01) == 0 ) {
                     if( (ip[1] & 0x30) == 0x30 ) {
                         // it's a "fdiv" or "fidiv" instruction
                         fp_tw = context->ctx_env[2] & 0x0000ffff;
                         fp_sw.sw = context->ctx_env[1] & 0x0000ffff;
-                        if( ((fp_tw >> (fp_sw.b.st << 1)) & 0x01) == 0x01 ) {
+                        if( (fp_tw >> (fp_sw.b.st << 1)) & 0x01 ) {
                             fpe_type = FPE_ZERODIVIDE;
                         }
                     }
@@ -169,7 +172,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
         }
         _fpreset();
         __ExceptionHandled = 1;
-        if(( __sigfpe_handler( fpe_type ) == 0 ) && ( __ExceptionHandled )) {
+        if( ( __sigfpe_handler( fpe_type ) == 0 )
+          && ( __ExceptionHandled ) ) {
             context->ctx_env[1] &= ~( SW_BUSY | SW_XCPT_FLAGS | SW_IREQ );
             return( XCPT_CONTINUE_EXECUTION );
         }
@@ -179,23 +183,23 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
         }
         for( sig = 1; sig <= __SIGLAST; sig++ ) {
             if( pxcpt->ExceptionNum == _RWD_sigtab[sig].os_sig_code ) {
-                if( sig == SIGINT &&
-                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_INTR ) {
+                if( sig == SIGINT
+                  && pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_INTR ) {
                     continue;
                 }
-                if( sig == SIGBREAK &&
-                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_BREAK ) {
+                if( sig == SIGBREAK
+                  && pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_BREAK ) {
                     continue;
                 }
-                if( sig == SIGTERM &&
-                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_KILLPROC ) {
+                if( sig == SIGTERM
+                  && pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_KILLPROC ) {
                     continue;
                 }
-                if( (_RWD_sigtab[sig].func == SIG_IGN) ) {
+                if( _RWD_sigtab[sig].func == SIG_IGN ) {
                     return( XCPT_CONTINUE_EXECUTION );
                 }
-                if( (_RWD_sigtab[sig].func == SIG_DFL) ||
-                    (_RWD_sigtab[sig].func == SIG_ERR) ) {
+                if( (_RWD_sigtab[sig].func == SIG_DFL)
+                  || (_RWD_sigtab[sig].func == SIG_ERR) ) {
                     return( XCPT_CONTINUE_SEARCH );
                 }
                 __ExceptionHandled = 1;
@@ -237,7 +241,8 @@ static void __SigFini( void )
     __EXCEPTION_RECORD  *rr;
 
     rr = __XCPTHANDLER;
-    if( rr && rr->prev_structure ) {
+    if( rr
+      && rr->prev_structure ) {
         do {
             rc = DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
         } while( rc == NO_ERROR && nesting > 0 );
@@ -269,12 +274,14 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func ) {
     __sig_func  prev_func;
     ULONG       nesting;
 
-    if(( sig < 1 ) || ( sig > __SIGLAST )) {
+    if( ( sig < 1 )
+      || ( sig > __SIGLAST ) ) {
         lib_set_errno( EINVAL );
         return( SIG_ERR );
     }
     _RWD_abort = __sigabort;            /* change the abort rtn address */
-    if(( func != SIG_DFL ) && ( func != SIG_ERR )) {
+    if( ( func != SIG_DFL )
+      && ( func != SIG_ERR ) ) {
         if( _RWD_sigtab[sig].os_sig_code != 0 ) {
             if( __XCPTHANDLER->prev_structure == NULL ) {
                 DosSetExceptionHandler( __XCPTHANDLER );
@@ -324,7 +331,9 @@ _WCRTLINK int raise( int sig )
     case SIGUSR3:
     case SIGIDIVZ:
     case SIGIOVFL:
-        if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
+        if( ( func != SIG_IGN )
+          && ( func != SIG_DFL )
+          && ( func != SIG_ERR ) ) {
             _RWD_sigtab[sig].func = SIG_DFL;
             if( func ) {
                 (*func)( sig );

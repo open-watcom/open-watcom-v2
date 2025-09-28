@@ -62,13 +62,17 @@ _WCRTLINK errno_t __F_NAME(tmpnam_s,_wtmpnam_s)( CHAR_TYPE *s, rsize_t maxsize )
         }
     }
     if( msg != NULL ) {
-    /* Runtime-constraints violated, set tmpname empty */
+        /*
+         * Runtime-constraints violated, set tmpname empty
+         */
         if( (s != NULL)
           && (maxsize > 0)
           && __lte_rsizmax( maxsize ) ) {
             s[0] = NULLCHAR;
         }
-        /* Now call the handler */
+        /*
+         * Now call the handler
+         */
         __rtct_fail( __func__, msg, NULL );
     }
     return( rc );

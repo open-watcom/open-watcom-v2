@@ -208,7 +208,7 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
     }
     ok = RdosCarryToBool();
 
-    if( !ok )
+    if( ok == 0 )
         RcSize = 0;
 
     if( RcSize ) {
@@ -224,13 +224,15 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
                     dst++;
                 }
             } else {
-                if( low >= 0xD800 && low < 0xDC00 ) {
+                if( low >= 0xD800
+                  && low < 0xDC00 ) {
                     high = *src;
                     src++;
                     low -= 0xD800;
                     unicode = low << 10;
 
-                    if( high < 0xDC00 || high >= 0xE000 ) {
+                    if( high < 0xDC00
+                      || high >= 0xE000 ) {
                         high = 0;
                     } else {
                         high -= 0xDC00;
@@ -308,7 +310,7 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
         mov RcPtr,esi
     }
     ok = RdosCarryToBool();
-    if( !ok )
+    if( ok == 0 )
         RcSize = 0;
 
     if( RcSize ) {

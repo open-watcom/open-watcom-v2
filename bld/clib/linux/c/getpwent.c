@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,14 +39,14 @@
 
 static FILE *__pwfp;
 
-_WCRTLINK void setpwent()
+_WCRTLINK void setpwent( void )
 {
-    if(__pwfp != NULL)
-        fclose(__pwfp);
+    if( __pwfp != NULL )
+        fclose( __pwfp );
     __pwfp = NULL;
 }
 
-_WCRTLINK struct passwd *getpwent()
+_WCRTLINK struct passwd *getpwent( void )
 {
     static char *line;
     static size_t linesize;
@@ -58,63 +58,71 @@ _WCRTLINK struct passwd *getpwent()
     char *numptr;
     char *lignore;
 
-    if(!__pwfp)
+    if( __pwfp == NULL )
         __pwfp = fopen("/etc/passwd", "r");
-    if(!__pwfp)
+    if( __pwfp == NULL )
         goto getpwent_fail;
 
-    while(1) {
-        line_length = getline(&line, &linesize, __pwfp);
-        if(line_length < 0)
+    for( ;; ) {
+        line_length = getline( &line, &linesize, __pwfp );
+        if( line_length < 0 )
             goto getpwent_fail;
 
         ret.pw_name = line;
-        ptr = strchr(line, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( line, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
 
         ret.pw_passwd = ptr;
-        ptr = strchr(ptr, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( ptr, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
 
         numptr = ptr;
-        ptr = strchr(ptr, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( ptr, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
-        ret.pw_uid = (uid_t)strtol(numptr, &lignore, 10);
+        ret.pw_uid = (uid_t)strtol( numptr, &lignore, 10 );
 
         numptr = ptr;
-        ptr = strchr(ptr, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( ptr, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
-        ret.pw_gid = (gid_t)strtol(numptr, &lignore, 10);
+        ret.pw_gid = (gid_t)strtol( numptr, &lignore, 10 );
 
         ret.pw_gecos = ptr;
-        ptr = strchr(ptr, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( ptr, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
 
         ret.pw_dir = ptr;
-        ptr = strchr(ptr, ':');
-        if(ptr == NULL) continue;
+        ptr = strchr( ptr, ':' );
+        if( ptr == NULL )
+            continue;
         *ptr++ = '\0';
 
         ret.pw_shell = ptr;
-        ptr = strchr(line, '\n');
-        if(ptr != NULL)
+        ptr = strchr( line, '\n' );
+        if( ptr != NULL )
             *ptr = '\0';
 
         break;
     }
 
-    return &ret;
+    return( &ret );
 
 getpwent_fail:
-    if(line != NULL)
-        free(line);
+    if( line != NULL ) {
+        free( line );
+        line = NULL;
+    }
 
     linesize = 0;
 
-    return NULL;
+    return( NULL );
 }

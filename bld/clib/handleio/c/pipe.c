@@ -65,7 +65,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 
 // removed by JBS - allow O_NOINHERIT
 //  /*** Sanity check ***/
-//  if( textmode != 0  &&  textmode != _O_TEXT  &&  textmode != _O_BINARY ) {
+//  if( textmode != 0 && textmode != _O_TEXT && textmode != _O_BINARY ) {
 //      return( -1 );
 //  }
 
@@ -73,7 +73,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 #if defined(__NT__)
     sa.nLength = sizeof( SECURITY_ATTRIBUTES );
     sa.lpSecurityDescriptor = NULL;
-    sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
+    sa.bInheritHandle = (((textmode & O_NOINHERIT) == O_NOINHERIT)?FALSE:TRUE);
     if( CreatePipe( &osfh_read, &osfh_write, &sa, psize ) == 0 ) {
         return( __set_errno_nt() );
     }

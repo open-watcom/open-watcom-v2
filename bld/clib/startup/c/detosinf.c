@@ -51,7 +51,7 @@ void _WCNEAR __DetOSInfo( void )
     _osmajor = osdata.version / 100;
     _osminor = osdata.version % 100;
 #if defined( _M_I86 )
-    if( (osdata.sflags & _PSF_PROTECTED) != 0 ) {
+    if( osdata.sflags & _PSF_PROTECTED ) {
         _HShift = 3;
     } else {
         _HShift = 12;

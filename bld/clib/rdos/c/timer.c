@@ -42,6 +42,7 @@
 #include "rdos.h"
 #include "_rdos.h"
 
+
 /* timer structures are shared with kernel so do not modify the following types! */
 
 #define TIMER_ENTRIES 252
@@ -97,7 +98,7 @@ static void UpdateTimers(  )
             mask = 1;
             for( bit = 0; bit < 32; bit++ ) {
                 if( timer->Active.CompletedBitmap[i] & mask ) {
-                    if( ( timer->Req.DoneBitmap[i] & mask ) == 0 ) {
+                    if( (timer->Req.DoneBitmap[i] & mask) == 0 ) {
                         timer->Req.DoneBitmap[i] |= mask;
                         FCurrIndex = 32 * i + bit;
                         FCurrEntry = &timer->Req.EntryArr[FCurrIndex - 4];
@@ -117,7 +118,7 @@ static void TimerThread( void *param )
     timer = (struct RdosTimer *)param;
 
     for( ;; ) {
-        if( __wait_timer_event( ) ) {
+        if( __wait_timer_event() ) {
             RdosEnterFutex( &timer_futex );
             UpdateTimers();
             RdosLeaveFutex( &timer_futex );
@@ -133,8 +134,9 @@ static void CreateTimerThread( )
     int retry;
 
     _begintimerthread( &TimerThread );
-    for( retry = 0; retry < 100 && !timer; retry++ )
+    for( retry = 0; retry < 100 && !timer; retry++ ) {
         RdosWaitMilli( 10 );
+    }
 }
 
 static int StartTimer( void (*callback)( void *param ), void *param, long long timeout )
@@ -152,7 +154,7 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
         if( active != -1 ) {
             mask = 1;
             for( bit = 0; bit < 32; bit++ ) {
-                if( ( active & mask ) == 0 ) {
+                if( (active & mask) == 0 ) {
                     index = 32 * i + bit;
                     entry = &timer->Req.EntryArr[index - 4];
                     entry->timeout = timeout;
@@ -180,7 +182,8 @@ static int StopTimer( int index )
     int                    bit;
     int                    mask;
 
-    if( index < 4 || index >= 256 )
+    if( index < 4
+      || index >= 256 )
         return( 0 );
 
     i = index / 32;
@@ -226,7 +229,8 @@ static int ResetTimer( int index, long long timeout )
     int                    mask;
     struct RdosTimerEntry *entry;
 
-    if( index < 4 || index >= 256 )
+    if( index < 4
+      || index >= 256 )
         return( 0 );
 
     i = index / 32;
@@ -245,7 +249,7 @@ static int ResetTimer( int index, long long timeout )
     }
 }
 
-int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
+int RdosStartAppTimer( void (*Start)(void *Param), void *Param, int Ms )
 {
     int index;
     int id = 0;
@@ -253,7 +257,7 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
 
     RdosEnterFutex( &timer_futex );
 
-    if( !timer )
+    if( timer == 0 )
         CreateTimerThread( );
 
     index = StartTimer( Start, Param, timeout );
@@ -274,7 +278,7 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
     return( id );
 }
 
-int RdosStopAppTimer(int id)
+int RdosStopAppTimer( int id )
 {
     int i;
     int res = 0;
@@ -293,7 +297,7 @@ int RdosStopAppTimer(int id)
     return( res );
 }
 
-int RdosRestartCurrentAppTimer(int Ms)
+int RdosRestartCurrentAppTimer( int Ms )
 {
     int  res;
     long long timeout = RdosUserGetLongSysTime() + 1193 * Ms;
@@ -305,7 +309,7 @@ int RdosRestartCurrentAppTimer(int Ms)
     return( res );
 }
 
-int RdosResetAppTimer(int id, int Ms)
+int RdosResetAppTimer( int id, int Ms )
 {
     int  i;
     int  res = 0;
@@ -331,8 +335,9 @@ static void init( void )
 
     RdosInitFutex( &timer_futex, "App.Timer" );
 
-    for( i = 0; i < TIMER_ENTRIES; i++ )
+    for( i = 0; i < TIMER_ENTRIES; i++ ) {
         id_arr[i] = 0;
+    }
 }
 
 AXI( init, INIT_PRIORITY_RUNTIME )

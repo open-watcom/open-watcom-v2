@@ -100,9 +100,11 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 
     /* reject null string and names that has wildcard */
 #ifdef __WIDECHAR__
-    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR
+      || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
 #else
-    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR
+      || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
 #endif
         lib_set_errno( ENOENT );
         return( -1 );
@@ -110,7 +112,9 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
+        if( HAS_DRIVE( fullpath )
+          && fullpath[2] == DIR_SEP
+          && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -122,14 +126,16 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
     if( *_mbsinc( (unsigned char *)path ) == DRV_SEP )
 #endif
         ptr += 2;
-    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] )
+      && ptr[1] == NULLCHAR
+      || isrootdir ) {
         /* handle root directory */
         int     drv;
 
         /* check if drive letter is valid */
         drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
-        if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
+        if( (drvmap & ( 1UL << drv )) == 0 ) {
             lib_set_errno( ENOENT );
             return( -1 );
         }

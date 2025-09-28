@@ -63,11 +63,11 @@ _WCRTLINK errno_t __F_NAME(strcat_s,wcscat_s)( CHAR_TYPE * __restrict s1,
       && __check_constraint_a_gt_b_msg( msg, __F_NAME(strnlen_s,wcsnlen_s)( s2, m ), m - 1 )
       && __check_constraint_overlap_msg( msg, s1, s1max, s2, __F_NAME(strnlen_s,wcsnlen_s)( s2, s1max ) ) ) {
 
-         while( *s1 != NULLCHAR )
-            ++s1;                       // find end of field
-         while( *s1++ = *s2++ );        // append source field
-
-         rc = 0;
+        while( *s1 != NULLCHAR )
+            ++s1;                   // find end of field
+        while( *s1++ = *s2++ )      // append source field
+            /* nothing */;
+        rc = 0;
     } else {
         // Runtime-constraints found, store zero in receiving field
         if( (s1 != NULL)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,17 +83,19 @@
 
 _WCRTLINK JSTRING jstrset( JCHAR *str, JMOJI c )
 {
-   JCHAR *keep = str;
-   size_t count, len;
+    JCHAR *keep = str;
+    size_t count, len;
 
-   len = strlen( (char *)str );
-   if( jiszen( c ) ) {
-      for( count = 0; count < len/2; count++ ) {
-         str = jputmoji( str, c );
-      }
-      if( len & 1 ) *str = ' ';
-   } else {
-      memset( str, c, len );
-   }
-   return keep;
+    len = strlen( (char *)str );
+    if( jiszen( c ) ) {
+        for( count = 0; count < len / 2; count++ ) {
+            str = jputmoji( str, c );
+        }
+        if( len & 1 ) {
+            *str = ' ';
+        }
+    } else {
+        memset( str, c, len );
+    }
+    return( keep );
 }

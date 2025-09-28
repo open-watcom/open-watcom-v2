@@ -49,7 +49,7 @@ static int only_one_bit( size_t x )
         return 0;
     }
     /* turns off lowest 1 bit and leaves all other bits on */
-    if(( x & ( x - 1 )) != 0 ) {
+    if( (x & ( x - 1 )) != 0 ) {
         return 0;
     }
     /* only one bit was on! */

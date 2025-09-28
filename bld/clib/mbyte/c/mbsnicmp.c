@@ -49,7 +49,9 @@ _WCRTLINK int _NEARFAR(_mbsnicmp,_fmbsnicmp)( const unsigned char _FFAR *s1, con
 //    if( !__IsDBCS )  return( _strnicmp( s1, s2, n ) );
 
     /*** Compare characters, one by one ***/
-    while( n > 0 && _NEARFAR(_mbterm,_fmbterm)( s1 ) == 0 && _NEARFAR(_mbterm,_fmbterm)( s2 ) == 0 ) {
+    while( n > 0
+      && _NEARFAR(_mbterm,_fmbterm)( s1 ) == 0
+      && _NEARFAR(_mbterm,_fmbterm)( s2 ) == 0 ) {
         status = _NEARFAR((_mbcicmp),(_fmbcicmp))( s1, s2 ); /* compare chars */
         if( status != 0 )
             return( status );                   /* if error, break from loop */

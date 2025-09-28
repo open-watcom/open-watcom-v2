@@ -48,7 +48,8 @@ _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
         return( __set_errno_nt() );
     }
 
-    if( ( pmode & ACCESS_WR ) && ( attr & FILE_ATTRIBUTE_READONLY ) ) {
+    if( (pmode & ACCESS_WR)
+      && (attr & FILE_ATTRIBUTE_READONLY) ) {
         return( __set_errno_dos( ERROR_ACCESS_DENIED ) );
     }
     return( 0 );

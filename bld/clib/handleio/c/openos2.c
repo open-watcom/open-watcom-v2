@@ -92,7 +92,8 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
     }
     rwmode = mode & OPENMODE_ACCESS_MASK;
 #ifdef _M_I86
-    if( rwmode == OPEN_ACCESS_WRITEONLY && _osmode_REALMODE() ) {
+    if( rwmode == OPEN_ACCESS_WRITEONLY
+      && _osmode_REALMODE() ) {
         /* Can't open WRONLY file in bound application under DOS */
         rwmode = OPEN_ACCESS_READWRITE;
     }
@@ -103,7 +104,7 @@ static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned m
     openmode = shflag | rwmode;
 
     perm &= ~_RWD_umaskval;
-/*      if( ( perm & S_IREAD ) && (perm & S_IWRITE) == 0 )  */
+/*    if( (perm & S_IREAD) && (perm & S_IWRITE) == 0 )  */
     if( (perm & S_IWRITE) == 0 ) {
         fileattr = FILE_READONLY;
     } else {

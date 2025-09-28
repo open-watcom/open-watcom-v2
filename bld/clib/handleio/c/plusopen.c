@@ -66,11 +66,11 @@ _WCRTLINK int __clib_open( const char *name, int *pios_mode, int prot )
 
     // Figure out the POSIX "open" function parameters based on ios_mode:
     if( (ios_mode & (__in | __out)) == (__in | __out) ) {
-        mode = O_RDWR|O_CREAT;
+        mode = O_RDWR | O_CREAT;
     } else if( ios_mode & __in ) {
         mode = O_RDONLY;
     } else if( ios_mode & __out ) {
-        mode = O_WRONLY|O_CREAT;
+        mode = O_WRONLY | O_CREAT;
     } else {
         return( -1 );
     }
@@ -83,44 +83,47 @@ _WCRTLINK int __clib_open( const char *name, int *pios_mode, int prot )
     if( ios_mode & __nocreate ) {
         mode &= ~O_CREAT;
     }
-    #if defined(__UNIX__)
-        *pios_mode &= ~(__binary|__text);
-    #else
-        if( ios_mode & __binary ) {
-            mode |= O_BINARY;
-        } else {
-            mode |= O_TEXT;
-            *pios_mode |= __text;
-        }
-    #endif
-
-    // If "noreplace" is specified and O_CREAT is set,
-    // then an error will occur if the file already exists:
-    if( (ios_mode&__noreplace) && (mode|O_CREAT) ) {
+#if defined(__UNIX__)
+    *pios_mode &= ~(__binary | __text);
+#else
+    if( ios_mode & __binary ) {
+        mode |= O_BINARY;
+    } else {
+        mode |= O_TEXT;
+        *pios_mode |= __text;
+    }
+#endif
+    /*
+     * If "noreplace" is specified and O_CREAT is set,
+     * then an error will occur if the file already exists:
+     */
+    if( (ios_mode & __noreplace)
+      && (mode & O_CREAT) ) {
         struct stat buf;
 
-        if( stat( name, &buf) != -1) {
+        if( stat( name, &buf ) != -1 ) {
             return( -1 );
         }
     }
-
-    // Figure out sharing mode
+    /*
+     * Figure out sharing mode
+     */
     share = SH_COMPAT;
-    switch( prot & (__sh_read|__sh_write|__sh_none) ) {
+    switch( prot & (__sh_read | __sh_write | __sh_none) ) {
     case __sh_read:
         share = SH_DENYWR;      /* deny write */
         break;
     case __sh_write:
         share = SH_DENYRD;      /* deny read */
         break;
-    case __sh_read|__sh_write:
+    case __sh_read | __sh_write:
         share = SH_DENYNO;      /* deny none */
         break;
     case __sh_none:
         share = SH_DENYRW;      /* deny read/write */
         break;
     }
-    prot &= ~(__sh_read|__sh_write|__sh_none);
+    prot &= ~(__sh_read | __sh_write | __sh_none);
 
     return( _sopen( name, mode, share, prot ) );
 }

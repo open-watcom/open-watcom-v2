@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,15 +51,18 @@ _WCRTLINK int _NEARFAR(_mbsnbicmp,_fmbsnbicmp)( const unsigned char _FFAR *s1, c
 //    if( !__IsDBCS )  return( _strnicmp( s1, s2, n ) );
 
     /*** Compare characters, one by one ***/
-    while( n>0 && !_NEARFAR(_mbterm,_fmbterm)(s1) && !_NEARFAR(_mbterm,_fmbterm)(s2) ) {
+    while( n > 0
+      && _NEARFAR(_mbterm,_fmbterm)( s1 ) == 0
+      && _NEARFAR(_mbterm,_fmbterm)( s2 ) == 0 ) {
         if( n >= MB_LEN_MAX ) {
             status = _NEARFAR(_mbcicmp,_fmbcicmp)( s1, s2 );    /* compare */
         } else {
             status = _NEARFAR(_strnicmp,_fstrnicmp)( (const char _FFAR *)s1, (const char _FFAR *)s2, n );/* compare */
         }
-        if( status != 0 )  break;                   /* if error, exit loop */
+        if( status != 0 )
+            break;                                  /* if error, exit loop */
         bytes = _NEARFAR(_mbclen,_fmbclen)( s1 );   /* char size in bytes */
-        n = n>bytes ? n-bytes : 0;                  /* update counter */
+        n = ( n > bytes ) ? n - bytes : 0;          /* update counter */
         s1 = _NEARFAR(_mbsinc,_fmbsinc)( s1 );      /* skip over character */
         s2 = _NEARFAR(_mbsinc,_fmbsinc)( s2 );      /* skip over character */
     }

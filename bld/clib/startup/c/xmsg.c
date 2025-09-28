@@ -167,8 +167,11 @@ _WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *msg, int retcode )
     LPSTR       b;
 
     b = tmp;
-    while( *msg != '\0' && *msg != '\r' && b < tmp + sizeof( tmp ) - 1 )
+    while( *msg != '\0'
+      && *msg != '\r'
+      && b < tmp + sizeof( tmp ) - 1 ) {
         *b++ = *msg++;
+    }
     *b = '\0';
 
     MessageBox( (HWND)NULL, tmp, "Open Watcom", MB_OK );
