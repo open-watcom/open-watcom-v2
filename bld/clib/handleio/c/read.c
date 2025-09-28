@@ -87,7 +87,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
     __ChkTTYIOMode( handle );
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ )
         return( _lread( handle, buffer, len ) );
 #else
         lib_set_errno( EBADF );
