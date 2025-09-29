@@ -212,7 +212,7 @@ static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg, MPARAM mp
 /*
  * _GetAutoClearInterval - return number of lines between clearing
  */
-void _GetAutoClearInterval( void )
+void _WCNEAR _GetAutoClearInterval( void )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;

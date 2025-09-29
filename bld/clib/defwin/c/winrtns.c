@@ -34,20 +34,20 @@
 #include "_defwin.h"
 
 
-LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { NULL };
-void (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
-bool (*_WindowsNewWindow)( const char *s, ... ) = { NULL };
-bool (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
-bool (*_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
-bool (*_WindowsSetAppTitle)( const char *p ) = { NULL };
-bool (*_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
-bool (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
-bool (*_WindowsYieldControl)( void ) = { NULL };
-bool (*_WindowsShutDown)( void ) = { NULL };
-int (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
-int (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
-bool (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
-int (*_WindowsGetch)( LPWDATA lp ) = { NULL };
-int (*_WindowsGetche)( LPWDATA lp ) = { NULL };
-void (*_WindowsPutch)( LPWDATA lp, int c ) = { NULL };
-void (*_WindowsExitRtn)( void ) = { NULL };
+LPWDATA (_WCNEAR *_WindowsIsWindowedHandle)( int h ) = { NULL };
+void (_WCNEAR *_WindowsRemoveWindowedHandle)( int h ) = { NULL };
+bool (_WCNEAR *_WindowsNewWindow)( const char *s, ... ) = { NULL };
+bool (_WCNEAR *_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
+bool (_WCNEAR *_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
+bool (_WCNEAR *_WindowsSetAppTitle)( const char *p ) = { NULL };
+bool (_WCNEAR *_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
+bool (_WCNEAR *_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
+bool (_WCNEAR *_WindowsYieldControl)( void ) = { NULL };
+bool (_WCNEAR *_WindowsShutDown)( void ) = { NULL };
+int (_WCNEAR *_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
+int (_WCNEAR *_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
+bool (_WCNEAR *_WindowsKbhit)( LPWDATA lp ) = { NULL };
+int (_WCNEAR *_WindowsGetch)( LPWDATA lp ) = { NULL };
+int (_WCNEAR *_WindowsGetche)( LPWDATA lp ) = { NULL };
+void (_WCNEAR *_WindowsPutch)( LPWDATA lp, int c ) = { NULL };
+void (_WCNEAR *_WindowsExitRtn)( void ) = { NULL };

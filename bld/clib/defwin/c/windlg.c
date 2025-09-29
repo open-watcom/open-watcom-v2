@@ -102,7 +102,7 @@ BOOL CALLBACK IntervalDialogProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM
 /*
  * _GetAutoClearInterval - return number of lines between clearing
  */
-void _GetAutoClearInterval( void )
+void _WCNEAR _GetAutoClearInterval( void )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;

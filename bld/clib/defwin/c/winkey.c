@@ -59,7 +59,7 @@ static int              shiftState = 0;
 /*
  * _WindowsKeyUp - process a key up (for shift state)
  */
-void _WindowsKeyUp( unsigned vk, unsigned data )
+void _WCNEAR _WindowsKeyUp( unsigned vk, unsigned data )
 {
     (void)data;
 
@@ -79,7 +79,7 @@ void _WindowsKeyUp( unsigned vk, unsigned data )
 /*
  * _WindowsKeyPush - handle the press of a key
 */
-void _WindowsKeyPush( unsigned key, unsigned data )
+void _WCNEAR _WindowsKeyPush( unsigned key, unsigned data )
 {
     unsigned    scan;
     unsigned    ch;
@@ -125,7 +125,7 @@ void _WindowsKeyPush( unsigned key, unsigned data )
 /*
  * _WindowsVirtualKeyPush - handle the press of a virtual key
 */
-void _WindowsVirtualKeyPush( unsigned vk, unsigned data )
+void _WCNEAR _WindowsVirtualKeyPush( unsigned vk, unsigned data )
 {
     unsigned    scan;
     unsigned    ch;
@@ -182,7 +182,7 @@ void _WindowsVirtualKeyPush( unsigned vk, unsigned data )
 /*
  * _KeyboardHit - test for a waiting key
  */
-bool _KeyboardHit( bool block )
+bool _WCNEAR _KeyboardHit( bool block )
 {
     if( keyTop != keyBottom )
         return( true );
@@ -200,7 +200,7 @@ bool _KeyboardHit( bool block )
 /*
  * _GetKeyboard - get a keyboard result
  */
-int _GetKeyboard( int *scan )
+int _WCNEAR _GetKeyboard( int *scan )
 {
     int c;
 
@@ -216,7 +216,7 @@ int _GetKeyboard( int *scan )
 /*
  * _GetString - read in a string, return the length
  */
-int _GetString( LPWDATA w, char *str, unsigned maxbuff )
+int _WCNEAR _GetString( LPWDATA w, char *str, unsigned maxbuff )
 {
     HWND        hwnd;
     unsigned    buff_end = 0;
