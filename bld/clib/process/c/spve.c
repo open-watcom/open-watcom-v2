@@ -292,7 +292,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
          * on the front of a filename that doesn't have a path or drive
          */
         if( _RWD_osmajor >= 3 ) {
-            if( drive[0] == NULLCHAR && dir[0] == NULLCHAR ) {
+            if( drive[0] == NULLCHAR
+              && dir[0] == NULLCHAR ) {
                 dir = STRING( ".\\" );
             }
         }
@@ -301,7 +302,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         lib_set_errno( ENOENT );
         if( ext[0] != NULLCHAR ) {
 #if defined( __OS2__ )
-            if( _stricmp( ext, STRING( ".cmd" ) ) == 0 || _stricmp( ext, STRING( ".bat" ) ) == 0 ) {
+            if( _stricmp( ext, STRING( ".cmd" ) ) == 0
+              || _stricmp( ext, STRING( ".bat" ) ) == 0 ) {
 #else
             if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 ) {
 #endif
@@ -333,7 +335,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
          *      a.b.exe  a.cmd.exe  a.exe.cmd  a.cmd
          * we must always try to add .exe, etc.
          */
-        if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+        if( lib_get_errno() == ENOENT
+          || lib_get_errno() == EINVAL ) {
 #endif
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             if( prot_mode286 ) {
@@ -343,11 +346,13 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                 lib_set_errno( 0 );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
-            if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+            if( lib_get_errno() == ENOENT
+              || lib_get_errno() == EINVAL ) {
                 lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
-                if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+                if( lib_get_errno() == ENOENT
+                  || lib_get_errno() == EINVAL ) {
                     /* try for a .BAT file */
                     lib_set_errno( 0 );
 #if defined( __OS2__ )

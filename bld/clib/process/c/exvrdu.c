@@ -130,11 +130,13 @@ _WCRTLINK int execve( const CHAR_TYPE * path,
         __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
         lib_set_errno( 0 );
         retval = _doexec( p, cmdline, envptr, argv );
-        if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+        if( lib_get_errno() == ENOENT
+          || lib_get_errno() == EINVAL ) {
             lib_set_errno( 0 );
             __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
             retval = _doexec( p, cmdline, envptr, argv );
-            if( lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+            if( lib_get_errno() == ENOENT
+              || lib_get_errno() == EINVAL ) {
                 /* try for a .BAT file */
                 lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".bat",L".bat") );

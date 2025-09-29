@@ -61,10 +61,16 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
     CHAR_TYPE *end;
 
     retval = __F_NAME(execve,_wexecve)( file, argv, envp );
-    if( retval != -1 || lib_get_errno() != ENOENT && lib_get_errno() != EINVAL )
+    if( retval != -1
+      || lib_get_errno() != ENOENT
+      && lib_get_errno() != EINVAL ) {
         return( retval );
-    if( IS_DIR_SEP( file[0] ) || file[0] == NULLCHAR || file[1] == DRV_SEP )
+    }
+    if( IS_DIR_SEP( file[0] )
+      || file[0] == NULLCHAR
+      || file[1] == DRV_SEP ) {
         return( retval );
+    }
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
     if( p == NULL )
         return( retval );
@@ -88,10 +94,11 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
         }
         memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
         retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
-        if( retval != -1 )
+        if( retval != -1
+          || lib_get_errno() != ENOENT
+          && lib_get_errno() != EINVAL ) {
             break;
-        if(lib_get_errno() != ENOENT && lib_get_errno() != EINVAL)
-            break;
+        }
         if( *end != STRING( ';' ) )
             break;
         p = end + 1;

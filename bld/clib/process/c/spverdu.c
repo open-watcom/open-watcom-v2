@@ -120,8 +120,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
         lib_set_errno( ENOENT );
         if( ext[0] != NULLCHAR ) {
-            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 )
-            {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 ) {
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {
                     /* the environment will have to be reconstructed */
@@ -143,11 +142,15 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
             __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
             lib_set_errno( 0 );
             retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-            if( retval == -1 || lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+            if( retval == -1
+              || lib_get_errno() == ENOENT
+              || lib_get_errno() == EINVAL ) {
                 lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-                if( retval == -1 || lib_get_errno() == ENOENT || lib_get_errno() == EINVAL ) {
+                if( retval == -1
+                  || lib_get_errno() == ENOENT
+                  || lib_get_errno() == EINVAL ) {
                     /* try for a .BAT file */
                     lib_set_errno( 0 );
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );

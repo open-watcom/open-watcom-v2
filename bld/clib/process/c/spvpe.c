@@ -92,11 +92,11 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         }
         memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
         retval = __F_NAME(spawnve,_wspawnve)( mode, buffer, argv, envp );
-        if( retval != -1 )
+        if( retval != -1
+          || lib_get_errno() != ENOENT
+          && lib_get_errno() != EINVAL ) {
             break;
-        if( lib_get_errno() != ENOENT
-          && lib_get_errno() != EINVAL )
-            break;
+        }
         if( *end != STRING( ';' ) )
             break;
         p = end + 1;

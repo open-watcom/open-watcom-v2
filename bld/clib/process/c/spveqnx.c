@@ -89,7 +89,9 @@ _WCRTLINK int (spawnve)( mode, path, argv, envp )
             do {
                 err = waitpid( pid, &status, 0 );
             } while( err == -1 && lib_get_errno() == EINTR );
-            if( err == pid ) err = status;
+            if( err == pid ) {
+                err = status;
+            }
         }
     }
     if( old.sa_handler == SIG_IGN ) {
