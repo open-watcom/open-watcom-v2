@@ -62,13 +62,15 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
 
     retval = __F_NAME(spawnve,_wspawnve)( mode, file, argv, envp );
     if( retval != -1
-      || (lib_get_errno() != ENOENT
-      && lib_get_errno() != EINVAL) )
+      || lib_get_errno() != ENOENT
+      && lib_get_errno() != EINVAL ) {
         return( retval );
+    }
     if( file[0] == DIR_SEP
       || file[0] == NULLCHAR
-      || file[1] == DRV_SEP )
+      || file[1] == DRV_SEP ) {
         return( retval );
+    }
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
     if( p == NULL )
         return( retval );

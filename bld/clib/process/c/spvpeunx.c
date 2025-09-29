@@ -93,8 +93,9 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
         if( retval != -1
           || lib_get_errno() != ENOENT
           && lib_get_errno() != EACCES
-          && lib_get_errno() != ENOTDIR )
+          && lib_get_errno() != ENOTDIR ) {
             break;
+        }
         if( *p == '\0' )
             break;
         /*

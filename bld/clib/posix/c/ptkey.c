@@ -38,11 +38,11 @@
 #include "_ptint.h"
 
 
-_WCRTLINK int pthread_key_create( pthread_key_t *__key, void (*__destructor)(void*) )
+_WCRTLINK int pthread_key_create( pthread_key_t *__key, void (*__destructor)(void *) )
 {
     pthread_key_t res;
 
-    res = __register_pkey(__destructor);
+    res = __register_pkey( __destructor );
     if( res < 0 ) {
         return( lib_get_errno() );
     }

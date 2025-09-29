@@ -37,6 +37,7 @@
 #include <windows.h>
 #include "thread.h"
 
+
 _WCRTLINK pid_t wait( int *status )
 {
     /* unused parameters */ (void)status;

@@ -65,8 +65,8 @@ _WCRTLINK char *_cmdname( char *name )
 
 _WCRTLINK char *_cmdname( char *name )
 {
-    int errno_save;
-    int result;
+    int             errno_save;
+    int             result;
 
     errno_save = lib_get_errno();
     result = readlink( "/proc/self/exe", name, PATH_MAX );

@@ -38,7 +38,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include "thread.h"
-
 #include "_ptint.h"
 
 

@@ -51,8 +51,10 @@
 #endif
 #include "thread.h"
 
-/* Note: This code is similar to _mktemp() but intended for POSIX usage */
 
+/*
+ * Note: This code is similar to _mktemp() but intended for POSIX usage
+ */
 static int _WCNEAR is_valid_template( char *template, char **xs )
 {
     int                 len;

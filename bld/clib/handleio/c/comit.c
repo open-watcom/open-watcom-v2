@@ -36,6 +36,7 @@
 #include <dos.h>
 #include "iomode.h"
 
+
 _WCRTLINK int _commit( int handle )
 {
     unsigned iomode_flags;

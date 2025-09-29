@@ -126,10 +126,9 @@ static int __write_wide_char( FILE *fp, wchar_t wc )
         rc = wctomb( mbc, wc );
         if( rc > 0 ) {
             return( fwrite( mbc, rc, 1, fp ) );
-        } else {
-            lib_set_errno( EILSEQ );
-            return( 0 );
         }
+        lib_set_errno( EILSEQ );
+        return( 0 );
     }
 }
 

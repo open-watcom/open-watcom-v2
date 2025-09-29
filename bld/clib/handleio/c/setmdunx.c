@@ -42,6 +42,7 @@
 #include "iomode.h"
 #include "rtcheck.h"
 
+
 _WCRTLINK int (_setmode)( int handle, int mode )
 {
     __handle_check( handle, -1 );

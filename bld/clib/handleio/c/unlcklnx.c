@@ -39,6 +39,7 @@
 #include "iomode.h"
 #include "rtcheck.h"
 
+
 // TODO: Need Linux POSIX library!
 #if 0
 _WCRTLINK int (unlock)( handle, offset, nbytes )

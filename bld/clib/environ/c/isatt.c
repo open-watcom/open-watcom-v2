@@ -41,6 +41,7 @@
 #include "iomode.h"
 #include "rtcheck.h"
 
+
 /* determine if file is a terminal */
 
 _WCRTLINK int isatty( int handle )

@@ -39,6 +39,7 @@
 #include "iomode.h"
 #include "rtcheck.h"
 
+
 _WCRTLINK int (unlock)( int handle, unsigned long offset, unsigned long nbytes )
 {
     struct flock flock_buff;

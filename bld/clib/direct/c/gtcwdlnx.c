@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getcwd() for Linux. 
+* Description:  Implementation of getcwd() for Linux.
 *
 ****************************************************************************/
 
@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include "liballoc.h"
 #include "linuxsys.h"
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
