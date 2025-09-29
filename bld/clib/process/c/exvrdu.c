@@ -117,10 +117,11 @@ _WCRTLINK int execve( const CHAR_TYPE * path,
     __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
     lib_set_errno( ENOENT );
     if( ext[0] != '\0' ) {
-        if( __F_NAME(_stricmp,_wcsicmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
-        {
+        if( __F_NAME(_stricmp,_wcsicmp)( ext, __F_NAME(".bat",L".bat") ) == 0 ) {
             retval = -1; /* assume file doesn't exist */
-            if( file_exists( p ) ) goto spawn_command_com;
+            if( file_exists( p ) ) {
+                goto spawn_command_com;
+            }
         } else {
             lib_set_errno( 0 );
             /* user specified an extension, so try it */
@@ -143,14 +144,14 @@ _WCRTLINK int execve( const CHAR_TYPE * path,
                 __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".bat",L".bat") );
                 if( file_exists( p ) ) {
 spawn_command_com:
-                /* the environment will have to be reconstructed */
-                lib_free( _envptr );
-                _envptr = NULL;
-                __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
-                retval = execl( getenv("COMSPEC"),
-                    "COMMAND",
-                    "/c ",
-                    p, cmdline );
+                    /* the environment will have to be reconstructed */
+                    lib_free( _envptr );
+                    _envptr = NULL;
+                    __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
+                    retval = execl( getenv("COMSPEC"),
+                        "COMMAND",
+                        "/c ",
+                        p, cmdline );
                 }
             }
         }
