@@ -990,9 +990,9 @@ static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 
 
 #ifdef __STDC_WANT_LIB_EXT1__
-int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
+int _WCNEAR __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
 #else
-int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
+int _WCNEAR __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
 #endif
 {
     int                 char_match;

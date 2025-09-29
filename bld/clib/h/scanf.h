@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,9 +62,9 @@ typedef struct _SCNF_SPECS {
 } SCNF_SPECS;
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
-    extern int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
+    extern int _WCNEAR __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
 #else
-    extern int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
+    extern int _WCNEAR __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
 #endif
 
 #endif
