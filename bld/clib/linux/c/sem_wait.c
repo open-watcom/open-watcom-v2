@@ -42,19 +42,19 @@
 
 static int __decrement_if_positive( volatile int *dest )
 {
-int value;
+    int             value;
 
     value = *dest;
     if( value > 0 ) {
-        return (__atomic_compare_and_swap(dest, value, value-1));
+        return( __atomic_compare_and_swap( dest, value, value - 1 ) );
     }
     return( 0 );
 }
 
 _WCRTLINK int sem_wait( sem_t *sem )
 {
-int res;
-struct timespec timer;
+    int             res;
+    struct timespec timer;
 
     if( sem == NULL ) {
         return( lib_set_EINVAL() );
@@ -91,7 +91,7 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
         clock_gettime( CLOCK_MONOTONIC, &reltime );
         reltime.tv_sec = abstime->tv_sec - reltime.tv_sec;
         reltime.tv_nsec = abstime->tv_nsec - reltime.tv_nsec;
-        if(reltime.tv_nsec < 0) {
+        if( reltime.tv_nsec < 0 ) {
             reltime.tv_sec--;
             reltime.tv_nsec += 1E+9;
         }
