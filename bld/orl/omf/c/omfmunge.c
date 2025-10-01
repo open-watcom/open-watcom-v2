@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -875,7 +875,7 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
 }
 
 
-static orl_return   OmfAddFileName( omf_file_handle ofh, char *buffer, omf_string_len len )
+orl_return   OmfAddFileName( omf_file_handle ofh, const char *buffer, omf_string_len len )
 {
     omf_symbol_handle   sym;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,7 +371,7 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
 }
 
 
-static orl_return       doTHEADR( omf_file_handle ofh )
+static orl_return   doTHEADR( omf_file_handle ofh )
 {
     orl_return          return_val;
 
@@ -382,7 +382,6 @@ static orl_return       doTHEADR( omf_file_handle ofh )
         return( return_val );
     return( OmfTheadr( ofh ) );
 }
-
 
 static orl_return       doCOMENT( omf_file_handle ofh )
 {
@@ -1279,6 +1278,62 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
     }
 }
 
+static orl_return   doFirstTHEADR( omf_file_handle ofh )
+{
+    orl_return          return_val;
+    omf_rectyp          *typ;
+    omf_bytes           buffer;
+    omf_string_len      len;
+
+    assert( ofh );
+
+    /*
+     * read first THEADR record (module name)
+     */
+    typ = _ClientRead( ofh, 1 );
+    if( typ == NULL || ( *typ != CMD_THEADR ) )
+        return( ORL_ERROR );
+    ofh->last_rec = *typ;
+    return_val = loadRecord( ofh );
+    if( return_val != ORL_OKAY )
+        return( return_val );
+    buffer = ofh->parsebuf;
+    len = *buffer++;
+    if( len > ofh->parselen )
+        return( ORL_ERROR );
+    /*
+     * read second record after THEADR
+     */
+    typ = _ClientRead( ofh, 1 );
+    if( typ == NULL )
+        return( ORL_ERROR );
+    ofh->last_rec = *typ;
+    if( *typ == CMD_THEADR )  {
+        /*
+         * if exists second THEADR record (source file name)
+         * then ignore first THEADR record (module name)
+         * and use second THEADR record
+         */
+        return_val = loadRecord( ofh );
+        if( return_val != ORL_OKAY )
+            return( return_val );
+        buffer = ofh->parsebuf;
+        len = *buffer++;
+        if( len > ofh->parselen ) {
+            return( ORL_ERROR );
+        }
+        return( OmfAddFileName( ofh, (const char *)buffer, len ) );
+    }
+    /*
+     * if second record is not THEADR
+     * then use first THEADR record (module name)
+     * and process second record
+     */
+    OmfAddFileName( ofh, (const char *)buffer, len );
+    return( procRecord( ofh, *typ ) );
+
+}
+
 orl_return OmfLoadFileStructure( omf_file_handle ofh )
 {
     orl_return  return_val;
@@ -1287,15 +1342,10 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
     assert( ofh );
 
     setInitialData( ofh );
-    typ = _ClientRead( ofh, 1 );
-    if( typ == NULL || ( *typ != CMD_THEADR ) )
-        return( ORL_ERROR );
-    ofh->last_rec = *typ;
-    return_val = doTHEADR( ofh );
+    return_val = doFirstTHEADR( ofh );
     if( return_val != ORL_OKAY )
         return( return_val );
-
-    for( ;; ) {
+    for( ; ofh->last_rec != CMD_MODEND && ofh->last_rec != CMD_MODEND32; ) {
         typ = _ClientRead( ofh, 1 );
         if( typ == NULL ) {
             return_val = ORL_ERROR;
@@ -1303,9 +1353,7 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
         }
         ofh->last_rec = *typ;
         return_val = procRecord( ofh, *typ );
-        if( return_val != ORL_OKAY )
-            break;
-        if( ( *typ == CMD_MODEND ) || ( *typ == CMD_MODEND32 ) ) {
+        if( return_val != ORL_OKAY ) {
             break;
         }
     }
