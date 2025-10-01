@@ -1,4 +1,4 @@
-Module: fpu1.asm
+Module: fpu1
 
 Segment: S1 PARA USE16 00000002 bytes
 0000                          L$1:
