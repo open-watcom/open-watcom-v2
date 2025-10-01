@@ -124,7 +124,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .asm.obj:
     @set ERROR_MSG=failure to compile $@
-    %write xxxxxxxx.tmp  -zld -wx -nm=$[@ $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+    %write xxxxxxxx.tmp  -zld -wx -nm=$[& $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
     @%make echo_as
     -$(noecho)$(wasm_$(arch)) @xxxxxxxx.tmp
     @%create tmp.tmp
