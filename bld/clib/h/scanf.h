@@ -45,8 +45,8 @@
 #define PTR_SCNF_SPECS SCNF_SPECS SCNF_FAR *
 
 typedef struct _SCNF_SPECS {
-    INTCHAR_TYPE    (*cget_rtn)( struct _SCNF_SPECS SCNF_FAR *specs );                      /* character get rtn */
-    void            (*uncget_rtn)( INTCHAR_TYPE c, struct _SCNF_SPECS SCNF_FAR *specs );    /* unget a character rtn */
+    INTCHAR_TYPE    _WCNEAR (*cget_rtn)( struct _SCNF_SPECS SCNF_FAR *specs );                      /* character get rtn */
+    void            _WCNEAR (*uncget_rtn)( INTCHAR_TYPE c, struct _SCNF_SPECS SCNF_FAR *specs );    /* unget a character rtn */
     CHAR_TYPE       *ptr;               /* file or string pointer */
     int             width;              /* conversion field width */
     unsigned        assign         : 1; /* assignment flag for current argument */

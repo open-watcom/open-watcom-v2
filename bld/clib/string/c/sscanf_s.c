@@ -39,7 +39,7 @@
 #include "scanf.h"
 
 
-static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cget_string( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
@@ -53,7 +53,7 @@ static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 }
 
 
-static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+static void _WCNEAR uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     /* unused parameters */ (void)c;
 

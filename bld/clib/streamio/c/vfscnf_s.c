@@ -43,7 +43,7 @@
 #include "orient.h"
 
 
-static INTCHAR_TYPE cget_file( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cget_file( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
@@ -54,7 +54,7 @@ static INTCHAR_TYPE cget_file( PTR_SCNF_SPECS specs )
 }
 
 
-static void uncget_file( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+static void _WCNEAR uncget_file( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     __F_NAME(ungetc,ungetwc)( c, (FILE *)specs->ptr );
 }
