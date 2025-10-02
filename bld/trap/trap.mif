@@ -27,6 +27,7 @@ trap_basename = $(xname)cli
 
 build_target = $(trap_basename).exe
 
+TRAP_first_obj =
 TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
 
@@ -136,7 +137,8 @@ build_target = $(trap_basename)$(ext_lib_shared)
 !endif
 !endif
 
-TRAP_common_objs = $(os_prefix)strt.obj
+TRAP_first_obj   = $(os_prefix)strt.obj
+TRAP_common_objs = 
 TRAP_remote_objs = remote.obj
 
 !endif  ## ifndef test

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,56 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  DOS specific trap I/O.
+* Description:  Debugger DOS trap file specific file header declaration
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dos.h>
-#include "tinyio.h"
-#include "trptypes.h"
-#include "digcli.h"
-#include "digld.h"
-#include "servio.h"
-#include "int16.h"
+#define TRAP_SIGNATURE          0xDEAF
 
-
-void OutputLine( const char *str )
-{
-    TinyWrite( TINY_ERR, str, strlen( str ) );
-    TinyWrite( TINY_ERR, "\r\n", 2 );
-}
-
-void ServTerminate( int return_code )
-{
-    TinyTerminateProcess( return_code );
-    // never return
-}
-
-void StartupErr( const char *err )
-{
-    OutputLine( err );
-}
-
-int KeyPress( void )
-{
-    return( _BIOSKeyboardHit( KEYB_STD ) );
-}
-
-int KeyGet( void )
-{
-    unsigned short value;
-
-    value = _BIOSKeyboardGet( KEYB_STD );
-    return( value & 0x00ff );
-}
-
-int WantUsage( const char *ptr )
-{
-    if( (*ptr == '-') || (*ptr == '/') )
-        ++ptr;
-    return( *ptr == '?' );
-}
+/*
+ * following structure must correspond with declaration
+ * used in bld/trap/common/dos/dosstrt.asm
+ */
+typedef struct {
+    unsigned_16         signature;
+    unsigned_16         init_off;
+    unsigned_16         req_off;
+    unsigned_16         fini_off;
+} trap_header;
