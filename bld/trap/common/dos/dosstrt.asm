@@ -41,7 +41,7 @@
 public  _small_code_
 _small_code_    equ 0
 
-DGROUP  group   _TEXT,_DATA,_BSS,CONST,STACK
+DGROUP  group   STACK
 
 _TEXT   segment byte public 'CODE'
         assume  CS:_TEXT
@@ -71,15 +71,6 @@ dos_start label far
         int     21H
 
 _TEXT   ends
-
-_BSS    segment byte public 'BSS'
-_BSS    ends
-
-_DATA   segment byte public 'DATA'
-_DATA   ends
-
-CONST   segment byte public 'DATA'
-CONST   ends
 
 STACK   segment byte stack 'STACK'
     db  1   ; this causes the _BSS segment to be allocated
