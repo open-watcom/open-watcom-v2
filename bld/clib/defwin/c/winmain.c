@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Default Windowing - Start/exit Windows Win16, WIN386 and Win32
+* Description:  Default Windowing - Start/exit Windows WIN16, WIN386 and WIN32
 *
 ****************************************************************************/
 
