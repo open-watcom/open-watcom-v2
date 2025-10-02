@@ -66,7 +66,10 @@ int KeyPress( void )
 
 int KeyGet( void )
 {
-    return( _BIOSKeyboardGet( KEYB_STD ) );
+    unsigned short value;
+
+    value = _BIOSKeyboardGet( KEYB_STD );
+    return( value & 0x00ff );
 }
 
 int WantUsage( const char *ptr )
