@@ -50,7 +50,7 @@
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
-#define TRAP_VECTOR             0x1a
+#define TRAP_SWITCH_VECTOR      0x1a
 #define PSP_ENVSEG_OFF          0x2c
 
 #include "pushpck1.h"
@@ -141,7 +141,7 @@ extern void DoIntSwitchToRM( void );
         "xor    eax,eax" \
         "mov    ah,6" \
         "mov    cx,0xffff" \
-        "int    1ah" \
+        "int    1ah" /* TRAP_SWITCH_VECTOR */ \
         "popad" \
     __parm              [] \
     __value             \
@@ -277,6 +277,11 @@ static void GoToRealMode( void *rm_func )
             DPMISetPMInterruptVector( PMVectSaveList[i], OrigPMVects[i] );
         }
     } else {
+        /*
+         * DOS4GW has no raw switch to RM (DPMI API 0306)
+         * therefore it is emulated by call INT TRAP_SWITCH_VECTOR
+         * INT TRAP_SWITCH_VECTOR is setup to call RM function
+         */
         DoIntSwitchToRM();
     }
 }
@@ -356,7 +361,7 @@ static digld_error SetTrapHandler( void )
         }
     }
     if( IntrState == IS_RATIONAL ) {
-        MySetRMVector( TRAP_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
+        MySetRMVector( TRAP_SWITCH_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
     }
     return( DIGS_OK );
 }
