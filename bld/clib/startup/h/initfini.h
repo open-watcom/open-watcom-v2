@@ -46,7 +46,7 @@
     #define PARM2REG
 #endif
 
-extern void _INTERNAL __InitRtns( unsigned );
+extern void _WCNEAR __InitRtns( unsigned );
 #if defined( _M_IX86 )
   #pragma aux __InitRtns "*" __parm [PARM1REG]
 #endif
@@ -56,7 +56,7 @@ extern void _INTERNAL __InitRtns( unsigned );
 //      PARM1REG==255 -> run all init routines
 //      PARM1REG==15  -> run init routines whose priority is <= 15
 
-extern void _INTERNAL __FiniRtns( unsigned, unsigned );
+extern void _WCNEAR __FiniRtns( unsigned, unsigned );
 #if defined( _M_IX86 )
   #pragma aux __FiniRtns "*" __parm [PARM1REG] [PARM2REG]
 #endif

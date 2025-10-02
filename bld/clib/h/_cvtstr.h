@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern wchar_t  * _INTERNAL __lib_cvt_mbstowcs_errno( const char *string );
-extern char     * _INTERNAL __lib_cvt_wcstombs_errno( const wchar_t *string );
+extern wchar_t  * _WCNEAR __lib_cvt_mbstowcs_errno( const char *string );
+extern char     * _WCNEAR __lib_cvt_wcstombs_errno( const wchar_t *string );

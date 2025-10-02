@@ -128,7 +128,7 @@ static int __DoFreeSeg( __segment first )
 #endif
 
 
-int _INTERNAL __FreeSeg( __segment seg )
+int __FreeSeg( __segment seg )
 {
 #if defined(__QNX__)
     if( qnx_segment_free( seg ) == -1 ) {

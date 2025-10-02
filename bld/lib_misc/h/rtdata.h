@@ -83,7 +83,7 @@ typedef struct _87state {
 extern __stream_link        *__OpenStreams;
 extern __stream_link        *__ClosedStreams;
 extern char                 * _WCNEAR __env_mask;  /* ptr to char array of flags */
-extern void                 _INTERNAL (*__FPE_handler_exit)( void );
+extern void                 _WCNEAR (*__FPE_handler_exit)( void );
 #if !defined( __NETWARE__ )
 _WCRTDATA extern  int       _cbyte;
 _WCRTDATA extern  int       _cbyte2;

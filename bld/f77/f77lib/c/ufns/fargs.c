@@ -38,7 +38,6 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "ftnapi.h"
-#include "variety.h"
 #include "widechar.h"   /* C run-time library internal variable */
 #include "initarg.h"    /* C run-time library internal variable */
 

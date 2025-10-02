@@ -61,7 +61,7 @@ static void _WCNEAR restore_handler( void )
 }
 
 
-void _INTERNAL __grab_int23( void )
+void _WCNEAR __grab_int23( void )
 {
     USHORT          action;
 

@@ -48,9 +48,9 @@
 #endif
 
 #ifdef _M_I86
-int _INTERNAL __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
+int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
 #else
-int _INTERNAL __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size )
+int __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size )
 #endif
 {
     HEAP( seg )     heap;

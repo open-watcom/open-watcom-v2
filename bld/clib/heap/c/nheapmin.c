@@ -103,7 +103,7 @@ static int __ReturnMemToSystem( heapblk_nptr heap )
     return( 0 ); // success
 }
 
-int _INTERNAL __nheapshrink( void )
+int __nheapshrink( void )
 {
     heapblk_nptr    heap;
     heapblk_nptr    next_heap;

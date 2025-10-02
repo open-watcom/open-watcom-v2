@@ -82,15 +82,13 @@
   #if defined( __NT__ )
     static semaphore_object FListSemaphore;
   #endif
-
-    static void _INTERNAL nullSema4Rtn( semaphore_object *p ) { (void)p; }
+    void static nullSema4Rtn( semaphore_object *p ) { p = p; }
+    _WCRTDATA void (*__AccessSema4)( semaphore_object *) = &nullSema4Rtn;
+    _WCRTDATA void (*__ReleaseSema4)( semaphore_object *) = &nullSema4Rtn;
+    _WCRTDATA void (*__CloseSema4)( semaphore_object *) = &nullSema4Rtn;
   #if !defined( __NETWARE__ )
-    static void _INTERNAL __NullAccHeapRtn( void ) {}
+    static void __NullAccHeapRtn( void ) {}
   #endif
-
-    _WCRTDATA internal_fn *__AccessSema4  = nullSema4Rtn;
-    _WCRTDATA internal_fn *__ReleaseSema4 = nullSema4Rtn;
-    _WCRTDATA internal_fn *__CloseSema4   = nullSema4Rtn;
 #endif
 
 extern  int             __Sema4Fini;            // in finalizer segment
@@ -172,7 +170,7 @@ static void __NTFreeCriticalSection( void )
 }
 #endif
 
-void _INTERNAL __CloseSemaphore( semaphore_object *obj )
+_WCRTLINK void __CloseSemaphore( semaphore_object *obj )
 {
 #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
     // 0 is ok
@@ -187,31 +185,32 @@ void _INTERNAL __CloseSemaphore( semaphore_object *obj )
         // never return
     }
 #endif
-#if defined( _M_I86 )
+#if !defined( __NT__ )
+  #if defined( _M_I86 )
     if( obj->count > 0 ) {
         DosSemClear( &obj->semaphore );
     }
-#elif defined( __NT__ )
-#else
-    if( obj->initialized != 0 ) {
-  #if defined( __NETWARE__ )
-        obj->semaphore = 0;
-  #elif defined( __QNX__ ) || defined( __LINUX__ )
-        __posix_sem_destroy( &obj->semaphore );
-  #elif defined( __RDOS__ )
-        RdosResetFutex( &obj->semaphore );
-  #elif defined( __RDOSDEV__ )
   #else
+    if( obj->initialized != 0 ) {
+    #if defined( __NETWARE__ )
+        obj->semaphore = 0;
+    #elif defined( __QNX__ ) || defined( __LINUX__ )
+        __posix_sem_destroy( &obj->semaphore );
+    #elif defined( __RDOS__ )
+        RdosResetFutex( &obj->semaphore );
+    #elif defined( __RDOSDEV__ )
+    #else
         DosCloseMutexSem( obj->semaphore );
-  #endif
+    #endif
     }
+  #endif
     obj->initialized = 0;
     obj->owner = 0;
     obj->count = 0;
 #endif
 }
 
-void _INTERNAL __AccessSemaphore( semaphore_object *obj )
+_WCRTLINK void __AccessSemaphore( semaphore_object *obj )
 {
     _TID tid;
 
@@ -224,17 +223,7 @@ void _INTERNAL __AccessSemaphore( semaphore_object *obj )
 #if defined( _M_I86 )
         DosSemRequest( &obj->semaphore, -1L );
 #else
-  #if defined( __NETWARE__ )
-        while( obj->semaphore != 0 ) {
-    #if defined (_NETWARE_CLIB)
-            ThreadSwitch();
-    #else
-            NXThreadYield();
-    #endif
-        }
-        obj->semaphore = 1;
-        obj->initialized = 1;
-  #else
+  #if !defined( __NETWARE__ )
         if( obj->initialized == 0 ) {
     #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
             if( obj == &InitSemaphore ) {
@@ -261,17 +250,28 @@ void _INTERNAL __AccessSemaphore( semaphore_object *obj )
             }
             __ReleaseSemaphore( &InitSemaphore );
         }
-    #if defined( __NT__ )
-        EnterCriticalSection( obj->semaphore );
-    #elif defined( __QNX__ ) || defined( __LINUX__ )
-        __posix_sem_wait( &obj->semaphore );
-    #elif defined( __RDOS__ )
-        RdosEnterFutex( &obj->semaphore );
-    #elif defined( __RDOSDEV__ )
-        RdosEnterKernelSection( &obj->semaphore );
+  #endif
+  #if defined( __NETWARE__ )
+        while( obj->semaphore != 0 ) {
+    #if defined (_NETWARE_CLIB)
+            ThreadSwitch();
     #else
-        DosRequestMutexSem( obj->semaphore, SEM_INDEFINITE_WAIT );
+            NXThreadYield();
     #endif
+        }
+
+        obj->semaphore = 1;
+        obj->initialized = 1;
+  #elif defined( __NT__ )
+        EnterCriticalSection( obj->semaphore );
+  #elif defined( __QNX__ ) || defined( __LINUX__ )
+        __posix_sem_wait( &obj->semaphore );
+  #elif defined( __RDOS__ )
+        RdosEnterFutex( &obj->semaphore );
+  #elif defined( __RDOSDEV__ )
+        RdosEnterKernelSection( &obj->semaphore );
+  #else
+        DosRequestMutexSem( obj->semaphore, SEM_INDEFINITE_WAIT );
   #endif
 #endif
         obj->owner = tid;
@@ -279,7 +279,7 @@ void _INTERNAL __AccessSemaphore( semaphore_object *obj )
     obj->count++;
 }
 
-void _INTERNAL __ReleaseSemaphore( semaphore_object *obj )
+_WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
 {
     _TID tid;
 
@@ -318,51 +318,51 @@ void _INTERNAL __ReleaseSemaphore( semaphore_object *obj )
 
 #if defined( _M_I86 )
 
-void _INTERNAL __AccessIOB( void )
-/********************************/
+void    __AccessIOB( void )
+/*************************/
 {
     __AccessSemaphore( &IOBSemaphore );
 }
 
-void _INTERNAL __ReleaseIOB( void )
-/*********************************/
+void    __ReleaseIOB( void )
+/**************************/
 {
     __ReleaseSemaphore( &IOBSemaphore );
 }
 
-void _INTERNAL __AccessFileH( int handle )
-/****************************************/
+void __AccessFileH( int handle )
+/******************************/
 {
     __AccessSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
 
-void _INTERNAL __ReleaseFileH( int handle )
-/*****************************************/
+void __ReleaseFileH( int handle )
+/*******************************/
 {
     __ReleaseSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
-void _INTERNAL __AccessNHeap( void )
-/**********************************/
+void    __AccessNHeap( void )
+/***************************/
 {
     __AccessSemaphore( &NHeapSemaphore );
 }
 
-void _INTERNAL __ReleaseNHeap( void )
-/***********************************/
+void    __ReleaseNHeap( void )
+/****************************/
 {
     __ReleaseSemaphore( &NHeapSemaphore );
 }
 
-void _INTERNAL __AccessFHeap( void )
-/**********************************/
+void    __AccessFHeap( void )
+/***************************/
 {
     __AccessSemaphore( &FHeapSemaphore );
 }
 
-void _INTERNAL __ReleaseFHeap( void )
-/***********************************/
+void    __ReleaseFHeap( void )
+/****************************/
 {
     __ReleaseSemaphore( &FHeapSemaphore );
 }
@@ -371,26 +371,26 @@ void _INTERNAL __ReleaseFHeap( void )
 
   #if !defined (_THIN_LIB)
 
-static void _WCNEAR __AccessIOB( void )
-/*************************************/
+static void    __AccessIOB( void )
+/********************************/
 {
     __AccessSemaphore( &IOBSemaphore );
 }
 
-static void _WCNEAR __ReleaseIOB( void )
-/**************************************/
+static void    __ReleaseIOB( void )
+/*********************************/
 {
     __ReleaseSemaphore( &IOBSemaphore );
 }
 
-static void _WCNEAR __AccessFileH( int handle )
-/*********************************************/
+static void __AccessFileH( int handle )
+/*************************************/
 {
     __AccessSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
-static void _WCNEAR __ReleaseFileH( int handle )
-/**********************************************/
+static void __ReleaseFileH( int handle )
+/**************************************/
 {
     __ReleaseSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
@@ -399,39 +399,39 @@ static void _WCNEAR __ReleaseFileH( int handle )
 
   #if !defined( __NETWARE__ )
 
-static void _WCNEAR __AccessNHeap( void )
-/***************************************/
+static void    __AccessNHeap( void )
+/**********************************/
 {
     __AccessSemaphore( &NHeapSemaphore );
 }
 
-static void _WCNEAR __ReleaseNHeap( void )
-/****************************************/
+static void    __ReleaseNHeap( void )
+/***********************************/
 {
     __ReleaseSemaphore( &NHeapSemaphore );
 }
 
-static void _WCNEAR __AccessFHeap( void )
-/***************************************/
+static void    __AccessFHeap( void )
+/**********************************/
 {
     __AccessSemaphore( &FHeapSemaphore );
 }
 
-static void _WCNEAR __ReleaseFHeap( void )
-/****************************************/
+static void    __ReleaseFHeap( void )
+/***********************************/
 {
     __ReleaseSemaphore( &FHeapSemaphore );
 }
 
   #endif
 
-void _INTERNAL __AccessTDList( void )
-/***********************************/
+void    __AccessTDList( void )
+/****************************/
 {
     __AccessSemaphore( &TDListSemaphore );
 }
 
-void _INTERNAL __ReleaseTDList( void )
+void    __ReleaseTDList( void )
 /*****************************/
 {
     __ReleaseSemaphore( &TDListSemaphore );
@@ -439,14 +439,14 @@ void _INTERNAL __ReleaseTDList( void )
 
   #if defined( __NT__ )
 
-static void _WCNEAR __AccessFList( void )
-/***************************************/
+static void    __AccessFList( void )
+/**********************************/
 {
     __AccessSemaphore( &FListSemaphore );
 }
 
-static void _WCNEAR __ReleaseFList( void )
-/****************************************/
+static void    __ReleaseFList( void )
+/***********************************/
 {
     __ReleaseSemaphore( &FListSemaphore );
 }
@@ -541,41 +541,7 @@ thread_data *__MultipleThread( void )
 #endif
 }
 
-#if defined( _M_I86 )
-
-void _clib_CloseSemaphore( semaphore_object *obj )
-{
-    __CloseSemaphore( obj );
-}
-
-void _clib_AccessSemaphore( semaphore_object *obj )
-{
-    __AccessSemaphore( obj );
-}
-
-void _clib_ReleaseSemaphore( semaphore_object *obj )
-{
-    __ReleaseSemaphore( obj );
-}
-
-#else
-
-/*
-void _clib_CloseSemaphore( semaphore_object *obj )
-{
-    __CloseSemaphore( obj );
-}
-
-void _clib_AccessSemaphore( semaphore_object *obj )
-{
-    __AccessSemaphore( obj );
-}
-
-void _clib_ReleaseSemaphore( semaphore_object *obj )
-{
-    __ReleaseSemaphore( obj );
-}
-*/
+#if !defined( _M_I86 )
 
 thread_data *__AllocInitThreadData( thread_data *tdata )
 /******************************************************/
@@ -939,26 +905,26 @@ void __InitMultipleThread( void )
 
   #if !defined( _M_I86 )
     // Set these up after we have created the InitSemaphore
-    #if !defined( _THIN_LIB )
-        _AccessFileH      = __AccessFileH;
-        _ReleaseFileH     = __ReleaseFileH;
-        _AccessIOB        = __AccessIOB;
-        _ReleaseIOB       = __ReleaseIOB;
+    #if !defined (_THIN_LIB)
+        _AccessFileH      = &__AccessFileH;
+        _ReleaseFileH     = &__ReleaseFileH;
+        _AccessIOB        = &__AccessIOB;
+        _ReleaseIOB       = &__ReleaseIOB;
     #endif
-        _AccessTDList     = __AccessTDList;
-        _ReleaseTDList    = __ReleaseTDList;
-        __AccessSema4     = __AccessSemaphore;
-        __ReleaseSema4    = __ReleaseSemaphore;
-        __CloseSema4      = __CloseSemaphore;
+        _AccessTDList     = &__AccessTDList;
+        _ReleaseTDList    = &__ReleaseTDList;
+        __AccessSema4     = &__AccessSemaphore;
+        __ReleaseSema4    = &__ReleaseSemaphore;
+        __CloseSema4      = &__CloseSemaphore;
     #if !defined( __NETWARE__ )
-        _AccessNHeap      = __AccessNHeap;
-        _AccessFHeap      = __AccessFHeap;
-        _ReleaseNHeap     = __ReleaseNHeap;
-        _ReleaseFHeap     = __ReleaseFHeap;
+        _AccessNHeap  = &__AccessNHeap;
+        _AccessFHeap  = &__AccessFHeap;
+        _ReleaseNHeap = &__ReleaseNHeap;
+        _ReleaseFHeap = &__ReleaseFHeap;
     #endif
     #if defined( __NT__ )
-        _AccessFList      = __AccessFList;
-        _ReleaseFList     = __ReleaseFList;
+        _AccessFList  = &__AccessFList;
+        _ReleaseFList = &__ReleaseFList;
     #endif
   #endif
         __GetThreadPtr  = __MultipleThread;
@@ -966,7 +932,7 @@ void __InitMultipleThread( void )
 }
 #endif
 
-static void _WCNEAR __FiniSema4s( void )      // called from finalizer
+static void _WCNEAR __FiniSema4s( void )              // called from finalizer
 /**************************************/
 {
     int         i;
@@ -1001,14 +967,14 @@ static void _WCNEAR __FiniSema4s( void )      // called from finalizer
     // the dummy ones; someone may still want semaphore protection during shutdown
     // processing but since threading is gone now, there should be no reentrancy
     // problems
-    __AccessSema4  = nullSema4Rtn;
-    __ReleaseSema4 = nullSema4Rtn;
-    __CloseSema4   = nullSema4Rtn;
+    __AccessSema4  = &nullSema4Rtn;
+    __ReleaseSema4 = &nullSema4Rtn;
+    __CloseSema4   = &nullSema4Rtn;
   #if !defined( __NETWARE__ )
-    _AccessNHeap  = __NullAccHeapRtn;
-    _AccessFHeap  = __NullAccHeapRtn;
-    _ReleaseNHeap = __NullAccHeapRtn;
-    _ReleaseFHeap = __NullAccHeapRtn;
+    _AccessNHeap  = &__NullAccHeapRtn;
+    _AccessFHeap  = &__NullAccHeapRtn;
+    _ReleaseNHeap = &__NullAccHeapRtn;
+    _ReleaseFHeap = &__NullAccHeapRtn;
   #endif
 
   #if defined( __NT__ )

@@ -38,31 +38,30 @@
 #include "rtstack.h"
 #include "cmain.h"
 #include "cominit.h"
-#include "xmain.h"
 
 
 #ifdef __WIDECHAR__
+    extern      int     wmain( int, wchar_t ** );
 
-_WCNORETURN void _INTERNAL __wCMain( void )
-{
-    /* allocate alternate stack for F77 */
-    __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+    _WCNORETURN void _WCNEAR __wCMain( void )
+    {
+        /* allocate alternate stack for F77 */
+        __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
 
-    __CommonInit();
-    exit( wmain( ___wArgc, ___wArgv ) );
-    // never return
-}
-
+        __CommonInit();
+        exit( wmain( ___wArgc, ___wArgv ) );
+        // never return
+    }
 #else
+    extern      int     main( int, char ** );
 
-_WCNORETURN void _INTERNAL __CMain( void )
-{
-    /* allocate alternate stack for F77 */
-    __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+    _WCNORETURN void _WCNEAR __CMain( void )
+    {
+        /* allocate alternate stack for F77 */
+        __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
 
-    __CommonInit();
-    exit( main( ___Argc, ___Argv ) );
-    // never return
-}
-
+        __CommonInit();
+        exit( main( ___Argc, ___Argv ) );
+        // never return
+    }
 #endif

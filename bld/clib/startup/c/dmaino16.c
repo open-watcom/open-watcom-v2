@@ -31,8 +31,8 @@
 
 #if defined(__SW_BD)
 
-int main( void )
-/**************/
+unsigned main( void )
+/*******************/
 {
     return( 1 );
 }

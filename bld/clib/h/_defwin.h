@@ -42,23 +42,23 @@
 struct window_data;
 typedef struct window_data _WCI86FAR *LPWDATA;
 
-extern int      _INTERNAL (*_WindowsStdin)( LPWDATA, void *, unsigned );
-extern int      _INTERNAL (*_WindowsStdout)( LPWDATA, const void *, unsigned );
-extern bool     _INTERNAL (*_WindowsKbhit)( LPWDATA );
-extern int      _INTERNAL (*_WindowsGetch)( LPWDATA );
-extern int      _INTERNAL (*_WindowsGetche)( LPWDATA );
-extern void     _INTERNAL (*_WindowsPutch)( LPWDATA, int );
-extern void     _INTERNAL (*_WindowsExitRtn)( void );
-extern bool     _INTERNAL (*_WindowsNewWindow)( const char *, ... );
-extern bool     _INTERNAL (*_WindowsCloseWindow)( LPWDATA );
-extern LPWDATA  _INTERNAL (*_WindowsIsWindowedHandle)( int );
-extern void     _INTERNAL (*_WindowsRemoveWindowedHandle)( int );
-extern bool     _INTERNAL (*_WindowsSetAbout)( const char *, const char * );
-extern bool     _INTERNAL (*_WindowsSetAppTitle)( const char * );
-extern bool     _INTERNAL (*_WindowsSetConTitle)( LPWDATA, const char * );
-extern bool     _INTERNAL (*_WindowsDestroyOnClose)( LPWDATA );
-extern bool     _INTERNAL (*_WindowsYieldControl)( void );
-extern bool     _INTERNAL (*_WindowsShutDown)( void );
+extern int      (_WCNEAR *_WindowsStdin)( LPWDATA, void *, unsigned );
+extern int      (_WCNEAR *_WindowsStdout)( LPWDATA, const void *, unsigned );
+extern bool     (_WCNEAR *_WindowsKbhit)( LPWDATA );
+extern int      (_WCNEAR *_WindowsGetch)( LPWDATA );
+extern int      (_WCNEAR *_WindowsGetche)( LPWDATA );
+extern void     (_WCNEAR *_WindowsPutch)( LPWDATA, int );
+extern void     (_WCNEAR *_WindowsExitRtn)( void );
+extern bool     (_WCNEAR *_WindowsNewWindow)( const char *, ... );
+extern bool     (_WCNEAR *_WindowsCloseWindow)( LPWDATA );
+extern LPWDATA  (_WCNEAR *_WindowsIsWindowedHandle)( int );
+extern void     (_WCNEAR *_WindowsRemoveWindowedHandle)( int );
+extern bool     (_WCNEAR *_WindowsSetAbout)( const char *, const char * );
+extern bool     (_WCNEAR *_WindowsSetAppTitle)( const char * );
+extern bool     (_WCNEAR *_WindowsSetConTitle)( LPWDATA, const char * );
+extern bool     (_WCNEAR *_WindowsDestroyOnClose)( LPWDATA );
+extern bool     (_WCNEAR *_WindowsYieldControl)( void );
+extern bool     (_WCNEAR *_WindowsShutDown)( void );
 
 #endif
 #endif

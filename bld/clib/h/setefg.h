@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern void _INTERNAL __setEFGfmt( void );
+extern void _WCNEAR __setEFGfmt( void );

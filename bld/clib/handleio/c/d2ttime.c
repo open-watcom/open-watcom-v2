@@ -44,7 +44,7 @@
 #define min( x )        ((x >> 5) & 0x003f)
 #define hour( x )       ((x >> 11) & 0x001f)
 
-time_t _INTERNAL _d2ttime( unsigned short date, unsigned short time )
+time_t _WCNEAR _d2ttime( unsigned short date, unsigned short time )
 {
     struct tm t;
 

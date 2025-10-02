@@ -45,8 +45,13 @@
   #endif
 #else
     #define PRTF_CHAR_TYPE  CHAR_TYPE
-    #define PRTF_CALLBACK _INTERNAL
-    typedef void _INTERNAL prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
+  #if defined(_M_I86)
+    #define PRTF_CALLBACK _WCNEAR
+    typedef void _WCNEAR prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
+  #else
+    #define PRTF_CALLBACK
+    typedef void prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
+  #endif
   #if defined( __WINDOWS_386__ )
     #ifdef __SW_3S
         #pragma aux prtf_callback_t __modify [__eax __edx __ecx __fs __gs]
@@ -57,7 +62,7 @@
 #endif
 
 #if defined( __STDC_WANT_LIB_EXT1__ )
-    extern int _INTERNAL __F_NAME(__prtf_s,__wprtf_s)(
+    extern int __F_NAME(__prtf_s,__wprtf_s)(
         void   PTR_PRTF_FAR dest,                   /* parm for use by out_putc    */
         const CHAR_TYPE     * __restrict format,    /* pointer to format string    */
         va_list             args,                   /* pointer to pointer to args  */
@@ -76,7 +81,7 @@
         prtf_callback_t     *out_putc,      /* character output routine    */
         int                 ptr_size );     /* size of pointer in bytes    */
   #endif
-    extern int _INTERNAL __F_NAME(__prtf,__wprtf)(
+    extern int __F_NAME(__prtf,__wprtf)(
         void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
         const CHAR_TYPE     *format,        /* pointer to format string    */
         va_list             args,           /* pointer to pointer to args  */

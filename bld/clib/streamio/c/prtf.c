@@ -155,7 +155,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
         u, x or X conversions, if a precision is specified, the 0 flag
         is ignored. For other conversions, the behaviour is undefined."
         */
-//      if( specs->_prec != -1 )  specs->_pad_char = STRING( ' ' );
+//      if( specs->_prec != -1 )  specs->_pad_char = STRING( ' ' ); /* 30-jul-95 *//*removed by JBS*/
     }
     switch( *ctl ) {
 #ifdef JSPEC_IS_LLONG
@@ -198,14 +198,14 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
         ctl++;
         break;
 #if defined( __FAR_SUPPORT__ )
-    case STRING( 'F' ):             /* conflicts with ISO-defined 'F' conversion */
+    case STRING( 'F' ):         /* conflicts with ISO-defined 'F' conversion */
         /* fall through */
 #endif
-    case STRING( 'W' ):             /* 8086 specific flag for FAR pointer */
+    case STRING( 'W' ):                   /* 8086 specific flag for FAR pointer */
         specs->_flags |= SPF_FAR;
         ctl++;
         break;
-    case STRING( 'N' ):             /* 8086 specific flag for NEAR pointer */
+    case STRING( 'N' ):                   /* 8086 specific flag for NEAR pointer */
         specs->_flags |= SPF_NEAR;
         ctl++;
         break;
@@ -581,7 +581,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
     switch( specs->_character ) {
     case STRING( 'f' ):
     case STRING( 'F' ):
-        if( specs->_flags & SPF_SHORT ) {       /* "%hf" */
+        if( specs->_flags & SPF_SHORT ) {       /* "%hf"  13-jun-91 */
             long_value = va_arg( *pargs, long );
             FixedPoint_Format( buffer, long_value, specs );
             specs->_n1 = far_strlen( buffer, -1 );
@@ -709,7 +709,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
         radix = 16;                 /* base 16 */
         goto processNumericTypes;
 
-    case STRING( 'b' ):             /* Add binary mode */
+    case STRING( 'b' ):           /* CDH 2003 Apr 23 *//* Add binary mode */
         radix = 2;                  /* base 2 */
         goto processNumericTypes;
 
@@ -723,7 +723,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
 
 processNumericTypes:
         if( specs->_prec != -1 )
-            specs->_pad_char = STRING( ' ' );
+            specs->_pad_char = STRING( ' ' );     /* 30-jul-95, 11-may-99 */
 
         /* radix contains the base; 8 for 'o', 10 for 'd' and 'i' and 'u',
            16 for 'x' and 'X', and 2 for 'b' */
@@ -882,9 +882,9 @@ processNumericTypes:
 
 
 #ifdef __STDC_WANT_LIB_EXT1__
-int _INTERNAL __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
+int __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
 #else
-int _INTERNAL __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
+int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
 #endif
 /* dest         parm for use by out_putc    */
 /* format       pointer to format string    */

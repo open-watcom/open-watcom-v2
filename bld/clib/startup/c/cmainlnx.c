@@ -44,11 +44,12 @@
 #include "linuxsys.h"
 #include "thread.h"
 #include "cinit.h"
-#include "xmain.h"
 
 
 int     _argc;                      /* argument count  */
 char    **_argv;                    /* argument vector */
+
+extern int main( int, char **, char ** );
 
 _WCNORETURN void __cdecl _LinuxMain( int argc, char **argv, char **arge )
 {

@@ -61,7 +61,6 @@
 #if defined( __NT__ )
     #include "enterdb.h"
 #endif
-#include "variety.h"
 #include "thread.h"
 #include "fptraps.h"
 #include "rttraps.h"

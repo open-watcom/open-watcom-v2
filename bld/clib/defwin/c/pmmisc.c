@@ -40,8 +40,8 @@
 #include "pmmenu.rh"
 
 
-int _INTERNAL _MessageLoop( bool doexit )
-//=======================================
+int _WCNEAR _MessageLoop( bool doexit )
+//=====================================
 {
     QMSG        msg;
     int         rc;
@@ -62,8 +62,8 @@ int _INTERNAL _MessageLoop( bool doexit )
     return( rc );
 }
 
-int _INTERNAL _BlockingMessageLoop( bool doexit )
-//===============================================
+int _WCNEAR _BlockingMessageLoop( bool doexit )
+//=============================================
 {
     int         rc;
     QMSG        msg;
@@ -81,27 +81,27 @@ int _INTERNAL _BlockingMessageLoop( bool doexit )
     return( _MessageLoop( doexit ) );
 }
 
-bool _INTERNAL _SetConTitle( LPWDATA w, const char *title )
-//=========================================================
+bool _WCNEAR _SetConTitle( LPWDATA w, const char *title )
+//==================================================
 {
     return( WinSetWindowText( w->frame, title ) != 0 );
 }
 
-bool _INTERNAL _SetAppTitle( const char *title )
-//==============================================
+bool _WCNEAR _SetAppTitle( const char *title )
+//=======================================
 {
     return( WinSetWindowText( _MainFrameWindow, title ) != 0 );
 }
 
-bool _INTERNAL _ShutDown( void )
-//==============================
+bool _WCNEAR _ShutDown( void )
+//=======================
 {
     WinSetWindowPos( _MainFrameWindow, 0, 0, 0, 0, 0, SWP_MINIMIZE );
     WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
     return( false );
 }
 
-bool _INTERNAL _CloseWindow( LPWDATA w )
+bool _WCNEAR _CloseWindow( LPWDATA w )
 //=======================================
 {
     if( w->destroy ) {
@@ -138,8 +138,8 @@ void _NewCursor( LPWDATA w, cursors type )
 }
 
 
-void _INTERNAL _DisplayCursor( LPWDATA w )
-//========================================
+void _WCNEAR _DisplayCursor( LPWDATA w )
+//=================================
 // show the current cursor position
 {
     HPS                 ps;
@@ -163,8 +163,8 @@ void _INTERNAL _DisplayCursor( LPWDATA w )
 }
 
 
-void _INTERNAL _SetInputMode( LPWDATA w, bool inpmode )
-//=====================================================
+void _WCNEAR _SetInputMode( LPWDATA w, bool inpmode )
+//==============================================
 // set whether or not we are in input mode
 {
     w->InputMode = inpmode;
@@ -174,7 +174,7 @@ void _INTERNAL _SetInputMode( LPWDATA w, bool inpmode )
 /*
  * _ShowWindowActive - do windows-specific stuff to make a window active
  */
-void _INTERNAL _ShowWindowActive( LPWDATA w, LPWDATA last )
+void _WCNEAR _ShowWindowActive( LPWDATA w, LPWDATA last )
 {
     MENUITEM    menudesc;
 
@@ -218,7 +218,7 @@ void _INTERNAL _ShowWindowActive( LPWDATA w, LPWDATA last )
 /*
  * _OutOfMemory - display out of memory message
  */
-void _INTERNAL _OutOfMemory( void )
+void _WCNEAR _OutOfMemory( void )
 {
     WinMessageBox( HWND_DESKTOP, _MainWindow, "Out Of Memory!", "SYSTEM ERROR", 0, MB_OK );
 
@@ -228,7 +228,7 @@ void _INTERNAL _OutOfMemory( void )
 /*
  * _ExecutionComplete - display execution complete message
  */
-void _INTERNAL _ExecutionComplete( void )
+void _WCNEAR _ExecutionComplete( void )
 {
     flushall();
 //    WinMessageBox( HWND_DESKTOP, _MainWindow, "Execution Complete",
@@ -237,8 +237,8 @@ void _INTERNAL _ExecutionComplete( void )
 } /* _ExecutionComplete */
 
 
-void _INTERNAL _Error( HWND hwndDlg, char *caption, char *msg )
-//=============================================================
+void _WCNEAR _Error( HWND hwndDlg, char *caption, char *msg )
+//===================================================
 {
     WinMessageBox( HWND_DESKTOP, hwndDlg, msg, caption, 0,
                    MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
@@ -247,7 +247,7 @@ void _INTERNAL _Error( HWND hwndDlg, char *caption, char *msg )
 /*
  * _ResizeWindows - Resize windows after a main window resize
  */
-void _INTERNAL _ResizeWindows( void )
+void _WCNEAR _ResizeWindows( void )
 {
     int         i;
     int         place = 0;

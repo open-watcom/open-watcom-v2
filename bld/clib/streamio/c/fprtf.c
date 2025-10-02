@@ -58,7 +58,7 @@ static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_cha
 }
 
 
-int _INTERNAL __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args )
+int _WCNEAR __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args )
 {
     int             not_buffered;
     int             amount_written;
@@ -70,7 +70,7 @@ int _INTERNAL __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_
     /*** Deal with stream orientation ***/
     ORIENT_STREAM( fp, 0 );
 
-    oflag = fp->_flag & (_SFERR | _EOF);
+    oflag = fp->_flag & (_SFERR | _EOF);                  /* 06-sep-91 */
     fp->_flag &= ~(_SFERR | _EOF);
 
     if( _FP_BASE( fp ) == NULL ) {
@@ -89,7 +89,7 @@ int _INTERNAL __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_
         __flush( fp );
     }
     if( ferror( fp ) )
-        amount_written = -1;
+        amount_written = -1;             /* 06-sep-91 */
     fp->_flag |= oflag;
 
     _ReleaseFile( fp );

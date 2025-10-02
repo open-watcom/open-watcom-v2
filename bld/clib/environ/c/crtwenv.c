@@ -39,8 +39,8 @@
 #include "_environ.h"
 
 
-void _INTERNAL __create_wide_environment( void )
-/**********************************************/
+void __create_wide_environment( void )
+/************************************/
 {
     char                **envp;
     char                *p;

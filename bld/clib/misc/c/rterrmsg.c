@@ -65,7 +65,7 @@
  * If printed on console, the text will be printed in format
  *     <hdr>": "<msg>
  */
-void _INTERNAL __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
+void _WCNEAR __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg )
 {
 #if defined( __WINDOWS__ )
     #ifdef __WIDECHAR__

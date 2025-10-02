@@ -45,7 +45,7 @@
     to actually release the storage.
 */
 
-void _INTERNAL __freefp( FILE * fp )
+void _WCNEAR __freefp( FILE * fp )
 {
     __stream_link       **owner;
     __stream_link       *link;
@@ -63,7 +63,7 @@ void _INTERNAL __freefp( FILE * fp )
 }
 
 
-void _INTERNAL __purgefp( void )
+void _WCNEAR __purgefp( void )
 {
     __stream_link       *curr;
 

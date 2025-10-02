@@ -185,15 +185,15 @@
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void _INTERNAL __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd, struct _wfinddatai64_t *fileinfo )
+   void __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd, struct _wfinddatai64_t *fileinfo )
   #else
-   void _INTERNAL __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd, struct _wfinddata_t *fileinfo )
+   void __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void _INTERNAL __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd, struct _finddatai64_t *fileinfo )
+   void __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd, struct _finddatai64_t *fileinfo )
   #else
-   void _INTERNAL __nt_finddata_cvt( WIN32_FIND_DATA *ffd, struct _finddata_t *fileinfo )
+   void __nt_finddata_cvt( WIN32_FIND_DATA *ffd, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
@@ -221,15 +221,15 @@
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void _INTERNAL __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
   #else
-   void _INTERNAL __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void _INTERNAL __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
   #else
-   void _INTERNAL __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
+   void _WCNEAR __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
@@ -267,7 +267,7 @@
 
 #elif defined( __RDOS__ )
 
-time_t _INTERNAL __rdos_filetime_cvt( unsigned long long tics )
+time_t __rdos_filetime_cvt( unsigned long long tics )
 {
     unsigned long        msb = (tics >> 32) & 0xFFFFFFFF;
     unsigned long        lsb = tics & 0xFFFFFFFF;
@@ -340,15 +340,15 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void _INTERNAL __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
   #else
-   void _INTERNAL __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void _INTERNAL __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
   #else
-   void _INTERNAL __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
+   void _WCNEAR __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/

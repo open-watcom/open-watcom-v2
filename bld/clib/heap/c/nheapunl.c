@@ -35,7 +35,7 @@
 #include "heap.h"
 
 
-void _INTERNAL __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap )
+void __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap )
 {
     if( __nheapbeg == heap )
         __nheapbeg = next_heap;

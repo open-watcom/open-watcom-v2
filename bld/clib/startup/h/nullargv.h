@@ -31,4 +31,4 @@
 
 
 extern int  main( void );
-extern void _INTERNAL __Null_Argv( void );
+extern void _WCNEAR __Null_Argv( void );

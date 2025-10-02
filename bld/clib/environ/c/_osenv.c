@@ -44,7 +44,7 @@
 #include "_environ.h"
 
 
-int _INTERNAL __F_NAME(__os_env_update_narrow,__os_env_update_wide)( const CHAR_TYPE *name, const CHAR_TYPE *value )
+int _WCNEAR __F_NAME(__os_env_update_narrow,__os_env_update_wide)( const CHAR_TYPE *name, const CHAR_TYPE *value )
 {
 #ifdef __NT__
     /*** Update the process environment if using Win32 ***/

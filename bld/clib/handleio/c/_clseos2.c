@@ -43,7 +43,7 @@
 #include "thread.h"
 
 
-int _INTERNAL __close( int handle )
+int _WCNEAR __close( int handle )
 {
     APIRET      rc;
     int         rv;

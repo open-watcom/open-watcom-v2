@@ -82,7 +82,7 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
         if( fp->_cnt == 0 ) {           /* read buffer is empty */
             fp->_cnt = sizeof( wchar_t );
             fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - sizeof( wchar_t );
-            fp->_flag |= _UNGET;
+            fp->_flag |= _UNGET;                    /* 10-mar-90 */
             memcpy( fp->_ptr, &c, sizeof( wchar_t ) );
         } else if( fp->_ptr != _FP_BASE( fp ) ) {
             fp->_cnt += sizeof( wchar_t );
@@ -108,7 +108,7 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
         if( fp->_cnt == 0 ) {           /* read buffer is empty */
             fp->_cnt = mbcLen;
             fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - mbcLen;
-            fp->_flag |= _UNGET;
+            fp->_flag |= _UNGET;                            /* 10-mar-90 */
             _mbccpy( fp->_ptr, mbc );
         } else if( fp->_ptr != _FP_BASE( fp ) ) {
             fp->_cnt += mbcLen;
@@ -124,13 +124,13 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
     if( fp->_cnt == 0 ) {               /* read buffer is empty */
         fp->_cnt = 1;
         fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - 1;
-        fp->_flag |= _UNGET;
+        fp->_flag |= _UNGET;                                /* 10-mar-90 */
         *fp->_ptr = c;
     } else if( fp->_ptr != _FP_BASE( fp ) ) {
         fp->_cnt++;
         fp->_ptr--;
         if( *fp->_ptr != c ) {
-            fp->_flag |= _UNGET;
+            fp->_flag |= _UNGET;                            /* 10-mar-90 */
         }
         *fp->_ptr = c;
     } else {                            /* read buffer is full */

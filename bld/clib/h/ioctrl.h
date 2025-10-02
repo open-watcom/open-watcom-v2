@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern void _INTERNAL __full_io_exit( void );
-extern void _INTERNAL __InitFiles( void );
+extern void _WCNEAR __full_io_exit( void );
+extern void _WCNEAR __InitFiles( void );
 

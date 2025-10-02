@@ -47,7 +47,7 @@
 
 extern  constraint_handler_t    __runtime_constraint_handler;
 
-extern  void    _INTERNAL __rtct_fail( const char *fn, const char *reason, void *reserved );
+extern  void    _WCNEAR __rtct_fail( const char *fn, const char *reason, void *reserved );
 
 // Runtime-constraint validation macros. Call the handler and return zero if check
 // failed, return non-zero value if check succeeded.

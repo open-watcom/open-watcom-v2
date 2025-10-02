@@ -41,7 +41,6 @@
 #include "xfflags.h"
 #include "rundat.h"
 #include "rmemmgr.h"
-#include "variety.h"
 #include "thread.h"
 #include "runmain.h"
 #include "posopen.h"

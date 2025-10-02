@@ -57,7 +57,7 @@
 
 
 #ifndef __NETWARE__
-static int _WCNEAR __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *value )
+static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *value )
 /*
  * return 0 if succeded
  * otherwise return -1
@@ -85,7 +85,7 @@ static int _WCNEAR __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, c
 }
 #endif
 
-int _INTERNAL __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
+int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 /*
  * if value == NULL then find all matching entries and delete them
  * if value != NULL then find first matching entry in evironment list and setup new value

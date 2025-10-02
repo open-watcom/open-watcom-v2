@@ -105,7 +105,7 @@ static char _WCNEAR __hex( int num )
     #define getuniqueid()   (getpid())
 #endif
 
-void _INTERNAL __MkTmpFile( char *buf, int num )
+void _WCNEAR __MkTmpFile( char *buf, int num )
 {
     unsigned    pid;
     unsigned    i;
@@ -133,7 +133,7 @@ void _INTERNAL __MkTmpFile( char *buf, int num )
     ptr[12] = NULLCHAR;
 }
 
-void _INTERNAL __RmTmpFile( FILE *fp )
+void _WCNEAR __RmTmpFile( FILE *fp )
 {
     char    name[PATH_MAX + _TMPFNAME_LENGTH + 1];
 

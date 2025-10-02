@@ -54,7 +54,6 @@
 #include "trdlstac.h"
 #include "wprelude.h"
 #include "getds.h"
-#include "xmain.h"
 
 
 #define MAX_CMDLINE     500
@@ -75,6 +74,8 @@ extern unsigned short __DS( void );
     extern void     *GetNLMHandle( void );
 #endif
 
+extern int                  main( int argc, char **argv );
+
 extern void                 __Must_Have_Three_One_Or_Greater( void );
 extern int                  _TerminateNLM( void *, void *, int );
 extern int                  _SetupArgv( int (*)( int, char ** ) );
@@ -86,7 +87,7 @@ extern long                 _StartNLM( void *, void *, unsigned char *,
 extern int                  _edata;
 extern int                  _end;
 
-#if !defined( _THIN_LIB )
+#if !defined(_THIN_LIB)
 int                         __ReturnCode = 5; /* TERM_BY_UNLOAD */
 int                         _argc;
 char                        **_argv;
@@ -96,41 +97,41 @@ long AllocRTag;
 
 static void                 InitStackLow( void );
 
-#if !defined( _THIN_LIB )
+#if !defined(_THIN_LIB)
 static void                 *NCSp;
 static char                 CommandLine[ MAX_CMDLINE ];
 #endif
 static unsigned short       _saved_DS;
 static int                  InitFiniLevel = 0;
 
-static void _INTERNAL __NullSema4Rtn( semaphore_object *p ) { (void)p; }
+static void __NullSema4Rtn(semaphore_object *p) { p = p; }
 
-#if !defined( _THIN_LIB )
-static void _INTERNAL __NullAccessRtn( int hdl ) { hdl = hdl; }
+#if !defined (_THIN_LIB)
+static void __NullAccessRtn( int hdl ) { hdl = hdl; }
 #endif
 
-static void _INTERNAL __NullRtn( void ) {}
+static void __NullRtn( void ) {}
 
-#if !defined( _THIN_LIB )
-void    _INTERNAL (*_AccessFileH)( int ) = __NullAccessRtn;
-void    _INTERNAL (*_ReleaseFileH)( int ) = __NullAccessRtn;
-void    _INTERNAL (*_AccessIOB)( void ) = __NullRtn;
-void    _INTERNAL (*_ReleaseIOB)( void ) = __NullRtn;
+#if !defined(_THIN_LIB)
+void    (*_AccessFileH)( int ) = &__NullAccessRtn;
+void    (*_ReleaseFileH)( int ) = &__NullAccessRtn;
+void    (*_AccessIOB)( void ) = &__NullRtn;
+void    (*_ReleaseIOB)( void ) = &__NullRtn;
 #endif
-void    _INTERNAL (*_AccessTDList)( void ) = __NullRtn;
-void    _INTERNAL (*_ReleaseTDList)( void ) = __NullRtn;
+void    (*_AccessTDList)( void ) = &__NullRtn;
+void    (*_ReleaseTDList)( void ) = &__NullRtn;
 
 static void __FiniMultipleThread(void)
 {
-#if !defined( _THIN_LIB )
-    _AccessFileH   = __NullAccessRtn;
-    _ReleaseFileH  = __NullAccessRtn;
-    _AccessIOB     = __NullRtn;
-    _ReleaseIOB    = __NullRtn;
-#endif
-    __AccessSema4  = __NullSema4Rtn;
-    __ReleaseSema4 = __NullSema4Rtn;
-    __CloseSema4   = __NullSema4Rtn;
+    #if !defined(_THIN_LIB)
+    _AccessFileH   = &__NullAccessRtn;
+    _ReleaseFileH  = &__NullAccessRtn;
+    _AccessIOB     = &__NullRtn;
+    _ReleaseIOB    = &__NullRtn;
+    #endif
+    __AccessSema4  = &__NullSema4Rtn;
+    __ReleaseSema4 = &__NullSema4Rtn;
+    __CloseSema4   = &__NullSema4Rtn;
 } /* FiniMultipleThread() */
 
 
@@ -321,7 +322,7 @@ void __VersionEnforcement( void )
 }
 #endif
 
-_WCNORETURN void _INTERNAL __exit( int rc )
+_WCNORETURN void _WCNEAR __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     /*

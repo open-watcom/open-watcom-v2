@@ -60,8 +60,6 @@
 // specialized data reference macro
 #define _HUGEDATA       _WCDATA
 
-#define _INTERNAL       _WCNEAR
-
 // memory model macros
 #if defined(__SMALL__)
     #define __SMALL_DATA__

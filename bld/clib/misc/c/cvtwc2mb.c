@@ -39,7 +39,7 @@
 #include "cvtwc2mb.h"
 
 
-char * _INTERNAL __lib_cvt_wcstombs( const wchar_t *in_string )
+char * _WCNEAR __lib_cvt_wcstombs( const wchar_t *in_string )
 {
     char        *string;
     size_t      len;

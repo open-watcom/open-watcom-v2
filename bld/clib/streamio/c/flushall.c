@@ -38,7 +38,7 @@
 #include "_flush.h"
 
 
-int _INTERNAL __flushall( int mask )
+int _WCNEAR __flushall( int mask )
 {
     __stream_link   *link;
     FILE            *fp;

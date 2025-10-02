@@ -113,8 +113,8 @@ int
 #else
 _WCNORETURN void
 #endif
-_INTERNAL _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
-/********************************************************************************************/
+_WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
+/******************************************************************************************/
 {
     USHORT      shftval;
 
@@ -224,8 +224,8 @@ _INTERNAL _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, uns
 }
 
 
-_WCNORETURN void _INTERNAL __exit( int ret_code )
-/***********************************************/
+_WCNORETURN void _WCNEAR __exit( int ret_code )
+/*********************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD

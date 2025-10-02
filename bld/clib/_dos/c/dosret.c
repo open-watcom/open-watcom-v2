@@ -354,7 +354,7 @@ static signed char xlat[] = {
 #define E_MAXERR        19      /* unknown error, DOS 2.0 */
 #endif
 
-int _INTERNAL __set_errno_dos( unsigned int err )
+int _WCNEAR __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
     lib_set_doserrno( err );
@@ -387,7 +387,7 @@ int _INTERNAL __set_errno_dos( unsigned int err )
     return( -1 );
 }
 
-int _INTERNAL __set_errno_dos_reterr( unsigned int err )
+int _WCNEAR __set_errno_dos_reterr( unsigned int err )
 {
     __set_errno_dos( err );
     return( err );
@@ -395,12 +395,12 @@ int _INTERNAL __set_errno_dos_reterr( unsigned int err )
 
 
 #ifdef __NT__
-int _INTERNAL __set_errno_nt( void )
+int _WCNEAR __set_errno_nt( void )
 {
     return( __set_errno_dos( GetLastError() ) );
 }
 
-int _INTERNAL __set_errno_nt_reterr( void )
+int _WCNEAR __set_errno_nt_reterr( void )
 {
     return( __set_errno_dos_reterr( GetLastError() ) );
 }

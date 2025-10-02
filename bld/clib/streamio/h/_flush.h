@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern int          _INTERNAL __flush( FILE *fp );
-extern int          _INTERNAL __flushall( int );
+extern int          _WCNEAR __flush( FILE *fp );
+extern int          _WCNEAR __flushall( int );

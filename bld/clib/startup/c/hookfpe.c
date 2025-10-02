@@ -45,8 +45,8 @@ void __interrupt __FPEHandler();
 
 static void (__interrupt *old_FPE_handler)() = NULL;
 
-void _INTERNAL __Init_FPE_handler( void )
-/***************************************/
+void _WCNEAR __Init_FPE_handler( void )
+/*************************************/
 {
     char    devinfo;
 
@@ -56,8 +56,8 @@ void _INTERNAL __Init_FPE_handler( void )
     }
 }
 
-void _INTERNAL __Fini_FPE_handler( void )
-/***************************************/
+void _WCNEAR __Fini_FPE_handler( void )
+/*************************************/
 {
     if( old_FPE_handler != NULL ) {
         DosSetVec( 16, (PFN)old_FPE_handler, (PFN FAR*)&old_FPE_handler );

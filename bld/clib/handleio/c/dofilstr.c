@@ -45,7 +45,7 @@
  * If C_FILE_INFO isn't in the environment, don't do anything; if it is,
  * create the POSIX-level file handles accordingly.
  */
-void _INTERNAL __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
+void _WCNEAR __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
 /***************************************************************************/
 {
     CHAR_TYPE *         envp;

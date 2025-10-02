@@ -45,7 +45,7 @@ static ULONG            dataSegLen;
 /*
  * _DialogTemplate - build a dialog template
  */
-TEMPLATE_HANDLE _INTERNAL _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
+TEMPLATE_HANDLE _WCNEAR _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
 {
     TEMPLATE_HANDLE     dlgtemplate;
     UINT                blocklen;
@@ -82,7 +82,7 @@ TEMPLATE_HANDLE _INTERNAL _DialogTemplate( USHORT temptype, USHORT codepage, USH
 /*
  * _AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE _INTERNAL _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
+TEMPLATE_HANDLE _WCNEAR _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
                         int x, int y, int cx, int cy,
                         USHORT id, USHORT children, const char FAR *classname,
                         const char *captiontext, const char *presparms,
@@ -196,7 +196,7 @@ TEMPLATE_HANDLE _INTERNAL _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG st
 /*
  * _DoneAddingControls - called when there are no more controls
  */
-TEMPLATE_HANDLE _INTERNAL _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
+TEMPLATE_HANDLE _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
 {
     WPDLGITEMTEMPLATE   dit;
     WPDLGTEMPLATE       dt;
@@ -235,7 +235,7 @@ TEMPLATE_HANDLE _INTERNAL _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-int _INTERNAL _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+int _WCNEAR _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     long rc;
     HWND handle;

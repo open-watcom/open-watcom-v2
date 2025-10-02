@@ -102,7 +102,7 @@ static unsigned char getClassOrdinal( const char *classname )
 /*
  * _DialogTemplate - build a dialog template
  */
-TEMPLATE_HANDLE _INTERNAL _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
+TEMPLATE_HANDLE _WCNEAR _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                               const char *menuname, const char *classname, const char *captiontext,
                               WORD pointsize, const char *facename, size_t *templatelen )
 {
@@ -193,7 +193,7 @@ TEMPLATE_HANDLE _INTERNAL _DialogTemplate( DWORD style, int x, int y, int cx, in
 /*
  * _AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE _INTERNAL _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
+TEMPLATE_HANDLE _WCNEAR _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
         const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -297,7 +297,7 @@ TEMPLATE_HANDLE _INTERNAL _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, i
 /*
  * _DoneAddingControls - called when there are no more controls
  */
-void _INTERNAL _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
+void _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 {
     GlobalUnlock( dlgtemplate );
 
@@ -306,7 +306,7 @@ void _INTERNAL _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR _INTERNAL _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+INT_PTR _WCNEAR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;

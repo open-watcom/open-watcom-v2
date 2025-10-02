@@ -43,7 +43,7 @@
 
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)
 
-int _INTERNAL __qwrite( int file, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int file, const void *buffer, unsigned len )
 {
     unsigned    total;
     int         h;

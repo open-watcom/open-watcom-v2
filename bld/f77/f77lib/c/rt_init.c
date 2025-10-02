@@ -45,7 +45,6 @@
 #include "fapptype.h"
 #include "rtinit.h"
 #include "errrtns.h"
-#include "variety.h"
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 #include "thread.h"
 #include "rttraps.h"

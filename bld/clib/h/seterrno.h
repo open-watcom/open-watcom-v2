@@ -41,8 +41,8 @@
     #undef errno
   #else
   #endif
-    extern int                  _INTERNAL __get_errno( void );
-    extern void                 _INTERNAL __set_errno( int err );
+    extern int                  _WCNEAR __get_errno( void );
+    extern void                 _WCNEAR __set_errno( int err );
     #define lib_get_errno()     __get_errno()
     #define lib_set_errno(x)    __set_errno(x)
 #endif
@@ -59,8 +59,8 @@
     #define lib_set_errno(x)    errno = (x)
 #elif defined( __MT__ )
     #undef errno
-    extern int                  _INTERNAL __get_errno( void );
-    extern void                 _INTERNAL __set_errno( int err );
+    extern int                  _WCNEAR __get_errno( void );
+    extern void                 _WCNEAR __set_errno( int err );
     #define lib_get_errno()     __get_errno()
     #define lib_set_errno(x)    __set_errno(x)
 #else
@@ -73,7 +73,7 @@
 /*
  * defined in startup\c\seterrno.c
  */
-extern int                  _INTERNAL __set_EINVAL( void );
+extern int                  _WCNEAR __set_EINVAL( void );
 #define lib_set_EINVAL()    __set_EINVAL()
 
 /*
@@ -83,12 +83,12 @@ extern int                  _INTERNAL __set_EINVAL( void );
   || defined( __WINDOWS__ ) \
   || defined( __NT__ ) \
   || defined( __OS2__ )
-extern int  _INTERNAL __set_errno_dos( unsigned int );
-extern int  _INTERNAL __set_errno_dos_reterr( unsigned int );
+extern int  _WCNEAR __set_errno_dos( unsigned int );
+extern int  _WCNEAR __set_errno_dos_reterr( unsigned int );
 #endif
 #if defined( __NT__ )
-extern int  _INTERNAL __set_errno_nt( void );
-extern int  _INTERNAL __set_errno_nt_reterr( void );
+extern int  _WCNEAR __set_errno_nt( void );
+extern int  _WCNEAR __set_errno_nt_reterr( void );
 #endif
 
 #endif

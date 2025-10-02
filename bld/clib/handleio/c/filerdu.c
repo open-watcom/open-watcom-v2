@@ -134,17 +134,17 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     return( -1 );
 }
 
-unsigned _INTERNAL __GetIOMode( int handle )
+unsigned _WCNEAR __GetIOMode( int handle )
 {
     return( RdosGetHandleMode( handle ) );
 }
 
-void _INTERNAL __SetIOMode( int handle, unsigned value )
+void _WCNEAR __SetIOMode( int handle, unsigned value )
 {
     RdosSetHandleMode( handle, value );
 }
 
-int _INTERNAL __SetIOMode_grow( int handle, unsigned value )
+int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
 {
     return( RdosSetHandleMode( handle, value ) );
 }
@@ -614,7 +614,7 @@ static int vfs_write( int handle, const void *buffer, unsigned len )
     return( ret );
 }
 
-int _INTERNAL __qread( int handle, void *buffer, unsigned len )
+int _WCNEAR __qread( int handle, void *buffer, unsigned len )
 {
     if( handle >= 0
       && handle < MapCount ) {
@@ -625,7 +625,7 @@ int _INTERNAL __qread( int handle, void *buffer, unsigned len )
     return( RdosReadHandle( handle, buffer, len ) );
 }
 
-int _INTERNAL __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     if( handle >= 0
       && handle < MapCount ) {

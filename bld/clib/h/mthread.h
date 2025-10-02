@@ -82,6 +82,8 @@
     extern int          __RdosAddThread( thread_data * );
     extern void         __RdosRemoveThread( void );
   #endif
+    extern void         __AccessTDList( void );
+    extern void         __ReleaseTDList( void );
 #endif
 #endif
 

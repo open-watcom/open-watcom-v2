@@ -42,7 +42,7 @@
 #include "_int23.h"
 
 
-void _INTERNAL __CommonTerm( void )
+void _WCNEAR __CommonTerm( void )
 {
     struct _heapinfo    hinfo;
     void _WCNEAR        *moffs;

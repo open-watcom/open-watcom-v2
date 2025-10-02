@@ -201,8 +201,8 @@ _WCRTLINK void  __FiniDefaultWin( void )
 
 #endif
 
-void _INTERNAL _CreateFont( LPWDATA w )
-//=====================================
+void _WCNEAR _CreateFont( LPWDATA w )
+//==============================
 {
     LONG                cFonts = { 0 };
     LONG                num_fonts;
@@ -290,8 +290,8 @@ void _INTERNAL _CreateFont( LPWDATA w )
 }
 
 
-void _INTERNAL _SelectFont( HPS ps )
-//==================================
+void _WCNEAR _SelectFont( HPS ps )
+//===========================
 {
     GpiCreateLogFont( ps, NULL, FIXED_FONT, &FontAttrs );
     GpiSetCharSet( ps, FIXED_FONT );

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-extern FILE *   _INTERNAL __allocfp( void );
-extern void     _INTERNAL __freefp( FILE * );
-extern void     _INTERNAL __purgefp( void );
-extern void     _INTERNAL __chktty( FILE *fp );
-extern void     _INTERNAL __ioalloc( FILE * );
-extern int      _INTERNAL __doclose( FILE *fp, int close_handle );
-extern int      _INTERNAL __shutdown_stream( FILE *fp, int close_handle );
+extern FILE * _WCNEAR __allocfp( void );
+extern void _WCNEAR __freefp( FILE * );
+extern void _WCNEAR __purgefp( void );
+extern void _WCNEAR __chktty( FILE *fp );
+extern void _WCNEAR __ioalloc( FILE * );
+extern int  _WCNEAR __doclose( FILE *fp, int close_handle );
+extern int  _WCNEAR __shutdown_stream( FILE *fp, int close_handle );

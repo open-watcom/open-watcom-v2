@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int _INTERNAL __fill_buffer( FILE *fp );
+extern int _WCNEAR __fill_buffer( FILE *fp );

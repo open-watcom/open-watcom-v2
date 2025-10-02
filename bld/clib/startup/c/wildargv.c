@@ -38,9 +38,6 @@
 #include <malloc.h>
 #include <tchar.h>
 
-
-#define _INTERNAL       _WCNEAR
-
 #ifdef _UNICODE
     #define __F_NAME(n1,n2) n2
     #define CHAR_TYPE   wchar_t
@@ -76,13 +73,13 @@ extern "C" {
 #include "histsplt.h"
 
 
-static _WCNORETURN void _WCNEAR _Not_Enough_Memory( void )
+static _WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
     // never return
 }
 
-static void * _WCNEAR _allocate( unsigned amount )
+static void *_allocate( unsigned amount )
 {
     void *p;
 #if defined( _M_I86 )
@@ -107,7 +104,7 @@ static void * _WCNEAR _allocate( unsigned amount )
 }
 
 
-static int _WCNEAR _make_argv( TCHAR *p, TCHAR ***argv )
+static int _make_argv( TCHAR *p, TCHAR ***argv )
 {
     int             argc;
     TCHAR           *start;
@@ -238,7 +235,7 @@ static int _WCNEAR _make_argv( TCHAR *p, TCHAR ***argv )
     return( argc );
 }
 
-void _INTERNAL __INIT_ARGV( void )
+void _WCNEAR __INIT_ARGV( void )
 {
     TCHAR *cln;
 
@@ -254,7 +251,7 @@ void _INTERNAL __INIT_ARGV( void )
     __targv = ___ARGV;      /* from stdlib.h */
 }
 
-void _INTERNAL __FINI_ARGV( void )
+void _WCNEAR __FINI_ARGV( void )
 {
     if( _ARGV != NULL ) {
         if( (_ARGC > 1) && (_ARGV[1] != NULL) ) {

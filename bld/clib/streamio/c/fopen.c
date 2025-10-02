@@ -65,7 +65,7 @@
     #define PMODE   (S_IREAD | S_IWRITE)
 #endif
 
-unsigned _INTERNAL __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags )
+unsigned _WCNEAR __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags )
 {
     unsigned            flags;
     bool                alive;

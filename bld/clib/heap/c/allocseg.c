@@ -61,7 +61,7 @@
 extern unsigned         __qnx_alloc_flags;
 #endif
 
-__segment _INTERNAL __AllocSeg( unsigned int amount )
+__segment __AllocSeg( unsigned int amount )
 {
     unsigned    num_of_paras;       /* number of paragraphs desired   */
     unsigned    heaplen;

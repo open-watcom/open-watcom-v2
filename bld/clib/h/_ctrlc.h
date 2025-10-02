@@ -40,6 +40,6 @@ extern unsigned char    _WCNEAR __ctrl_break_int;
 #endif
 
 #ifndef __WINDOWS_386__
-extern      void    _INTERNAL __grab_int_ctrl_break( void );
-extern      void    _INTERNAL __restore_int_ctrl_break( void );
+extern      void    _WCNEAR __grab_int_ctrl_break( void );
+extern      void    _WCNEAR __restore_int_ctrl_break( void );
 #endif

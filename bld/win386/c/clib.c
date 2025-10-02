@@ -39,7 +39,6 @@
 #include <dos.h>
 #include <string.h>
 #include <time.h>
-#include "variety.h"
 #include "clibxw32.h"
 #include "dodoscal.h"
 #include "seterrno.h"

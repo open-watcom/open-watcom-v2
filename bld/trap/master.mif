@@ -283,9 +283,9 @@ remote_objs = &
 !endif
 
 !ifeq debug 0
-objs = $($(which)_first_obj) $(extra_objs) $($(which)_common_objs) mxutil.obj $(remote_objs)
+objs = $(extra_objs) $($(which)_common_objs) mxutil.obj $(remote_objs)
 !else
-objs = $($(which)_first_obj) $(extra_dobjs) $($(which)_common_objs) mxutil.obj $(remote_objs)
+objs = $(extra_dobjs) $($(which)_common_objs) mxutil.obj $(remote_objs)
 !endif
 
 libs = $(extra_libs) $(dbg_libs_$(host_os))

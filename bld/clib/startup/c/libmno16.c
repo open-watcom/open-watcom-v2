@@ -33,10 +33,11 @@
 #include "variety.h"
 #include <os2.h>
 #include "initdll.h"
-#include "xmain.h"
 
 
 #if defined(__SW_BD)
+
+extern          int     main( void );
 
 unsigned __dll_initialize( void )
 /*******************************/

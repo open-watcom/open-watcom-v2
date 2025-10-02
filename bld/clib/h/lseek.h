@@ -32,11 +32,11 @@
 #ifndef _LSEEK_H_INCLUDED
 #define _LSEEK_H_INCLUDED
 
-extern long long  _INTERNAL __lseeki64( int handle, long long offset, int origin );
+extern long long  _WCNEAR __lseeki64( int handle, long long offset, int origin );
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ ) || defined( __NETWARE__ ) || defined( __QNX__ )
 #define __lseek             lseek
 #else
-extern long       _INTERNAL __lseek( int handle, long offset, int origin );
+extern long       _WCNEAR __lseek( int handle, long offset, int origin );
 #endif
 
 #endif

@@ -152,7 +152,7 @@ static void callit( npfn *f )
 ;       eax==15  -> run init routines whose priority is <= 15
 ;
 */
-void _INTERNAL __InitRtns( unsigned limit )
+void _WCNEAR __InitRtns( unsigned limit )
 {
     __type_rtp local_limit;
     struct_rt_init_ptr  pnext;
@@ -216,7 +216,7 @@ void _INTERNAL __InitRtns( unsigned limit )
 ;       eax==16, edx=255 -> run fini routines in range 16..255
 ;       eax==16, edx=40  -> run fini routines in range 16..40
 */
-void _INTERNAL __FiniRtns( unsigned min_limit, unsigned max_limit )
+void _WCNEAR __FiniRtns( unsigned min_limit, unsigned max_limit )
 {
     __type_rtp local_min_limit;
     __type_rtp local_max_limit;

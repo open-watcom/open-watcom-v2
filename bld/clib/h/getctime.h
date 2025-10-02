@@ -33,6 +33,6 @@
 #ifndef CTIMDATA_H_INCLUDED
 #define CTIMDATA_H_INCLUDED
 
-extern int          _INTERNAL __getctime( struct tm * );
+extern int          _WCNEAR __getctime( struct tm * );
 
 #endif

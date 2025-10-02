@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int      _INTERNAL __close( int handle );
+extern int      _WCNEAR __close( int handle );

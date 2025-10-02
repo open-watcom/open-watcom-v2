@@ -55,12 +55,12 @@ _WCRTLINK int (*__get_doserrno_ptr( void ))
 
 #elif defined( __MT__ )
 
-void _INTERNAL __set_doserrno( int err )
+void _WCNEAR __set_doserrno( int err )
 {
     __THREADDATAPTR->__doserrnoP = err;
 }
 
-int _INTERNAL __get_doserrno( void )
+int _WCNEAR __get_doserrno( void )
 {
     return( __THREADDATAPTR->__doserrnoP );
 }

@@ -57,8 +57,8 @@ static long  shiftState = 0;
 #define SS_CAPS         0x04
 #define SS_CTRL         0x08
 
-bool _INTERNAL _SetAboutDlg( const char *title, const char *text )
-//================================================================
+bool    _WCNEAR _SetAboutDlg( const char *title, const char *text )
+//=========================================================
 {
     if( title != NULL ) {
         if( DefaultAboutTitle != AboutTitle ) {

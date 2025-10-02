@@ -45,7 +45,6 @@
 #include "rundat.h"
 #include "iotype.h"
 #include "errcod.h"
-#include "variety.h"
 #include "thread.h"
 #include "rtenv.h"
 #include "rtspawn.h"

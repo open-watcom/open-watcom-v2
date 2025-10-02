@@ -123,7 +123,7 @@ static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
     return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );
 }
 
-int _INTERNAL __F_NAME(__findenvadd,__wfindenvadd)( const CHAR_TYPE *env_string )
+int __F_NAME(__findenvadd,__wfindenvadd)( const CHAR_TYPE *env_string )
 /*
  * find entry, if not exist then allocate new one
  * return zero based index for entry
@@ -164,7 +164,7 @@ int _INTERNAL __F_NAME(__findenvadd,__wfindenvadd)( const CHAR_TYPE *env_string 
     return( index );
 }
 
-int _INTERNAL __F_NAME(__findenvdel,__wfindenvdel)( const CHAR_TYPE *env_string )
+int __F_NAME(__findenvdel,__wfindenvdel)( const CHAR_TYPE *env_string )
 /*
  * find all entries and delete them
  *

@@ -38,20 +38,21 @@
 #include "initarg.h"
 #include "cmain.h"
 #include "initdll.h"
-#include "xmain.h"
-
 
 /*
- * ___Argc, ___Argv will be filled in by an initializer routine
- * if main is defined with parameters.
- */
+        ___Argc, ___Argv will be filled in by an initializer routine
+        if main is defined with parameters.
+*/
+
 #if defined(__SW_BD)
-int _INTERNAL _CMain( void )
+int _WCNEAR _CMain( void )
 {
     return( __dll_initialize() );
 }
 #else
-_WCNORETURN void _INTERNAL _CMain( void )
+extern int     main( int, char ** );
+
+_WCNORETURN void _WCNEAR _CMain( void )
 {
     exit( main( ___Argc, ___Argv ) );
     // never return

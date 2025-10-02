@@ -57,7 +57,7 @@
 #include "_tcsstr.h"
 
 
-int _INTERNAL __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
+int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
 /*
  * return 0 if succeded
  * otherwise return -1

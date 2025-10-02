@@ -45,7 +45,6 @@
 #include "fthread.h"
 #include "xfflags.h"
 #include "rtenv.h"
-#include "variety.h"
 #include "thread.h"
 #include "runmain.h"
 #include "rtspawn.h"

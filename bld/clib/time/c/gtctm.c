@@ -47,7 +47,7 @@
 
 #define BUFF_SIZE       8
 
-int _INTERNAL __getctime( struct tm *ti )
+int _WCNEAR __getctime( struct tm *ti )
 {
     char        buff[BUFF_SIZE];
 
@@ -65,7 +65,7 @@ int _INTERNAL __getctime( struct tm *ti )
 
 #else
 
-int _INTERNAL __getctime( struct tm *ti )
+int _WCNEAR __getctime( struct tm *ti )
 {
     int         milliseconds;
     tiny_date_t d, tmp;

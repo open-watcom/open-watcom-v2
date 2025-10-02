@@ -43,13 +43,13 @@
                           | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN \
                           | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)
 
-    extern void     _INTERNAL __nt_finddata_cvt( WIN32_FIND_DATA *ffd,
+    extern void     __nt_finddata_cvt( WIN32_FIND_DATA *ffd,
                                        struct _finddata_t *fileinfo );
-    extern void     _INTERNAL __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd,
+    extern void     __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd,
                                         struct _wfinddata_t *fileinfo );
-    extern void     _INTERNAL __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd,
+    extern void     __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd,
                                           struct _finddatai64_t *fileinfo );
-    extern void     _INTERNAL __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd,
+    extern void     __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd,
                                            struct _wfinddatai64_t *fileinfo );
 
 #elif defined( __OS2__ )
@@ -66,13 +66,13 @@
         #define FF_BUFFER       FILEFINDBUF3
     #endif
 
-    extern void     _INTERNAL __os2_finddata_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_finddata_cvt( FF_BUFFER *ffb,
                                        struct _finddata_t *fileinfo );
-    extern void     _INTERNAL __os2_wfinddata_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_wfinddata_cvt( FF_BUFFER *ffb,
                                         struct _wfinddata_t *fileinfo );
-    extern void     _INTERNAL __os2_finddatai64_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_finddatai64_cvt( FF_BUFFER *ffb,
                                           struct _finddatai64_t *fileinfo );
-    extern void     _INTERNAL __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
                                            struct _wfinddatai64_t *fileinfo );
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
@@ -86,7 +86,7 @@
 
     #define RDOSFINDTYPE        struct _rdos_find_t
 
-    extern time_t   _INTERNAL __rdos_filetime_cvt( unsigned long long tics );
+    extern time_t   __rdos_filetime_cvt( unsigned long long tics );
 
     extern int      __rdos_finddata_get( RDOSFINDTYPE *findbuf,
                                          struct _finddata_t *fileinfo );
@@ -99,13 +99,13 @@
         #define DOSFINDTYPE     struct find_t
     #endif
 
-    extern void     _INTERNAL __dos_finddata_cvt( struct find_t *findbuf,
+    extern void     _WCNEAR __dos_finddata_cvt( struct find_t *findbuf,
                                         struct _finddata_t *fileinfo );
-    extern void     _INTERNAL __dos_wfinddata_cvt( struct _wfind_t *findbuf,
+    extern void     _WCNEAR __dos_wfinddata_cvt( struct _wfind_t *findbuf,
                                          struct _wfinddata_t *fileinfo );
-    extern void     _INTERNAL __dos_finddatai64_cvt( struct find_t *findbuf,
+    extern void     _WCNEAR __dos_finddatai64_cvt( struct find_t *findbuf,
                                            struct _finddatai64_t *fileinfo );
-    extern void     _INTERNAL __dos_wfinddatai64_cvt( struct _wfind_t *findbuf,
+    extern void     _WCNEAR __dos_wfinddatai64_cvt( struct _wfind_t *findbuf,
                                             struct _wfinddatai64_t *fileinfo );
 
 #endif

@@ -43,7 +43,6 @@
 #endif
 #include "rtstack.h"
 #include "fthread.h"
-#include "variety.h"
 #include "thread.h"
 
 

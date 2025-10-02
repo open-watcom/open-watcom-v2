@@ -142,7 +142,7 @@ static const UCHAR_TYPE *get_opt( const UCHAR_TYPE *opt_str, PTR_SCNF_SPECS spec
     specs->long_var         = 0;
     specs->long_long_var    = 0;
     specs->long_double_var  = 0;
-    specs->p_format         = 0;
+    specs->p_format         = 0;                    /* 21-nov-89 */
     specs->width            = -1;
     if( *opt_str == STRING( '*' ) ) {
         specs->assign = FALSE;
@@ -990,9 +990,9 @@ static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 
 
 #ifdef __STDC_WANT_LIB_EXT1__
-int _INTERNAL __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
+int _WCNEAR __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
 #else
-int _INTERNAL __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
+int _WCNEAR __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
 #endif
 {
     int                 char_match;
@@ -1016,7 +1016,7 @@ int _INTERNAL __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_
                     uncget( c, specs );
                 break;
             }
-            ++char_match;
+            ++char_match;                           /* 27-oct-88 */
         } else {            /* fmt_c == '%' */
             format = get_opt( format, specs );
             fmt_c = *format;

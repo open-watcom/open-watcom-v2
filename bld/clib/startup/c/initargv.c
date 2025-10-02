@@ -36,8 +36,8 @@
 #include <stddef.h>
 #include "initarg.h"
 
-void _INTERNAL __Init_Argv( void ) {}
-void _INTERNAL __Fini_Argv( void ) {}
+void _WCNEAR __Init_Argv( void ) {}
+void _WCNEAR __Fini_Argv( void ) {}
 
 #else
 
@@ -69,7 +69,7 @@ void _INTERNAL __Fini_Argv( void ) {}
 
 _WCRTDATA static CHAR_TYPE  *__F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
 
-static unsigned _WCNEAR _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
+static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
 {
     register unsigned argc;
     register CHAR_TYPE *start;
@@ -166,7 +166,7 @@ static unsigned _WCNEAR _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **a
     return( argc );
 }
 
-static void * _WCNEAR __F_NAME( _getargv, _wgetargv )(
+static void *__F_NAME( _getargv, _wgetargv )(
         int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
         int *pargc, CHAR_TYPE ***pargv )
 {
@@ -221,7 +221,7 @@ static void * _WCNEAR __F_NAME( _getargv, _wgetargv )(
     return( cmdline );
 }
 
-void _INTERNAL __F_NAME(__Init_Argv,__wInit_Argv)( void )
+void _WCNEAR __F_NAME(__Init_Argv,__wInit_Argv)( void )
 {
     __F_NAME( __CmdLine, __wCmdLine ) = __F_NAME( _getargv, _wgetargv )(
         __historical_splitparms,
@@ -234,7 +234,7 @@ void _INTERNAL __F_NAME(__Init_Argv,__wInit_Argv)( void )
     __F_NAME( ___Argv, ___wArgv ) = __F_NAME( _argv, _wargv );
 }
 
-void _INTERNAL __F_NAME(__Fini_Argv,__wFini_Argv)( void )
+void _WCNEAR __F_NAME(__Fini_Argv,__wFini_Argv)( void )
 {
     if( __F_NAME(__CmdLine,__wCmdLine) != NULL ) {
         lib_free( __F_NAME(__CmdLine,__wCmdLine) );

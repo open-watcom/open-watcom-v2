@@ -47,8 +47,12 @@
 #include "cmain.h"
 #include "cominit.h"
 #include "procfini.h"
-#include "xmain.h"
 
+
+#ifdef __SW_BR
+    extern      int     wmain( int, wchar_t ** );
+    extern      int     main( int, char ** );
+#endif
 
 _WCNORETURN void __F_NAME(__NTMain,__wNTMain)( void )
 /***************************************************/
