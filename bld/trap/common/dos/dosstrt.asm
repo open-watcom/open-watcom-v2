@@ -37,6 +37,8 @@
 public  _small_code_
 _small_code_    equ 0
 
+DGROUP  group   _DATA,_BSS,CONST,STACK
+
 BEGTEXT         segment byte public 'CODE'
         assume  CS:BEGTEXT
 
