@@ -25,40 +25,34 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _CMain() for 16-bit x86 platforms.
+* Description:  the C main class function prototypes
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "widechar.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include "initarg.h"
-#include "cmain.h"
-#include "initdll.h"
-#include "xmain.h"
+#if defined( __QNX__ )
 
+extern int main( int argc, char **argv, char **envp );
+#if defined( _M_I86 )
+#pragma aux main __modify [__sp]
+#else
+#pragma aux main __modify [__esp]
+#endif
 
-/*
-        ___Argc, ___Argv will be filled in by an initializer routine
-        if main is defined with parameters.
-*/
+#elif defined( __LINUX__ )
 
-#if defined(__SW_BD)
+extern int  main( int argc, char **argv, char **envp );
 
-int _WCNEAR _CMain( void )
-{
-    return( __dll_initialize() );
-}
+#elif defined( _M_I86 ) && defined(__SW_BD)
+
+extern int  main( void );
+
+#elif defined( __WIDECHAR__ )
+
+extern int  wmain( int wargc, wchar_t **wargv );
 
 #else
 
-_WCNORETURN void _WCNEAR _CMain( void )
-{
-    exit( main( ___Argc, ___Argv ) );
-    // never return
-}
+extern int  main( int argc, char **argv );
 
 #endif

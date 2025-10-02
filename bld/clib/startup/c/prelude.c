@@ -54,6 +54,7 @@
 #include "trdlstac.h"
 #include "wprelude.h"
 #include "getds.h"
+#include "xmain.h"
 
 
 #define MAX_CMDLINE     500
@@ -73,8 +74,6 @@ extern unsigned short __DS( void );
     extern int      __deinit_environment( void *reserved );
     extern void     *GetNLMHandle( void );
 #endif
-
-extern int                  main( int argc, char **argv );
 
 extern void                 __Must_Have_Three_One_Or_Greater( void );
 extern int                  _TerminateNLM( void *, void *, int );

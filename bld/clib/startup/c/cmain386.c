@@ -38,11 +38,10 @@
 #include "rtstack.h"
 #include "cmain.h"
 #include "cominit.h"
+#include "xmain.h"
 
 
 #ifdef __WIDECHAR__
-    extern      int     wmain( int, wchar_t ** );
-
     _WCNORETURN void _WCNEAR __wCMain( void )
     {
         /* allocate alternate stack for F77 */
@@ -53,8 +52,6 @@
         // never return
     }
 #else
-    extern      int     main( int, char ** );
-
     _WCNORETURN void _WCNEAR __CMain( void )
     {
         /* allocate alternate stack for F77 */

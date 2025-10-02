@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +34,15 @@
 #include "variety.h"
 #include <os2.h>
 #include "initdll.h"
+#include "xmain.h"
 
 
 #if defined(__SW_BD)
-
-extern          int     main( void );
 
 unsigned __dll_initialize( void )
 /*******************************/
 {
     return( main() );
 }
+
 #endif

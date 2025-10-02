@@ -53,19 +53,13 @@
 #include "rtdata.h"
 #include "fltsupp.h"
 #include "_environ.h"
+#include "xmain.h"
 
 
 #if defined( _M_I86 )
 #define __FAR __far
 #else
 #define __FAR
-#endif
-
-extern int main( int, char **, char ** );
-#if defined( _M_I86 )
-#pragma aux main __modify [__sp]
-#else
-#pragma aux main __modify [__esp]
 #endif
 
 void    __near *_endheap;                   /* temporary work-around */
