@@ -30,6 +30,10 @@
 ;*
 ;*****************************************************************************
 
+;
+; this module must be linked as first that code in _TEXT segment
+; is at offset 0 in final executable
+;
 
                 name    TRAPSTRT
 
@@ -37,10 +41,10 @@
 public  _small_code_
 _small_code_    equ 0
 
-DGROUP  group   _DATA,_BSS,CONST,STACK
+DGROUP  group   _TEXT,_DATA,_BSS,CONST,STACK
 
-BEGTEXT         segment byte public 'CODE'
-        assume  CS:BEGTEXT
+_TEXT   segment byte public 'CODE'
+        assume  CS:_TEXT
 
         extrn   TrapInit_               :near
         extrn   TrapRequest_            :near
@@ -66,9 +70,6 @@ dos_start label far
         mov     ax, 4cffH
         int     21H
 
-BEGTEXT ends
-
-_TEXT   segment byte public 'CODE'
 _TEXT   ends
 
 _BSS    segment byte public 'BSS'
