@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern char     * _WCNEAR __lib_cvt_wcstombs( const wchar_t *in_string );
+extern char     * _INTERNAL __lib_cvt_wcstombs( const wchar_t *in_string );

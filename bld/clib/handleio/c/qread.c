@@ -80,7 +80,7 @@ static tiny_ret_t _WCNEAR __TinyRead( int handle, char *buffer, unsigned len )
 
 
 
-int _WCNEAR __qread( int handle, void *buffer, unsigned len )
+int _INTERNAL __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;

@@ -45,7 +45,7 @@
 /*
  * _MovePageUp - move up a page
  */
-void _WCNEAR _MovePageUp( LPWDATA w )
+void _INTERNAL _MovePageUp( LPWDATA w )
 {
 
     if( w->TopLineNumber == 1 )
@@ -66,7 +66,7 @@ void _WCNEAR _MovePageUp( LPWDATA w )
 /*
  * _MovePageDown - move down a page
  */
-void _WCNEAR _MovePageDown( LPWDATA w )
+void _INTERNAL _MovePageDown( LPWDATA w )
 {
     DWORD       ll;
 
@@ -88,7 +88,7 @@ void _WCNEAR _MovePageDown( LPWDATA w )
 /*
  * _MoveLineUp - move up one line
  */
-void _WCNEAR _MoveLineUp( LPWDATA w )
+void _INTERNAL _MoveLineUp( LPWDATA w )
 {
     LPLDATA     lp;
 
@@ -106,7 +106,7 @@ void _WCNEAR _MoveLineUp( LPWDATA w )
 /*
  * _MoveLineDown - move down one line
  */
-void _WCNEAR _MoveLineDown( LPWDATA w )
+void _INTERNAL _MoveLineDown( LPWDATA w )
 {
     LPLDATA     lp;
     DWORD       bot;
@@ -132,7 +132,7 @@ void _WCNEAR _MoveLineDown( LPWDATA w )
 /*
  * _MoveToLine - move to a line, given a thumb position
  */
-void _WCNEAR _MoveToLine( LPWDATA w, DWORD line, bool center )
+void _INTERNAL _MoveToLine( LPWDATA w, DWORD line, bool center )
 {
     int         height;
     DWORD       bottom;

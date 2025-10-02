@@ -246,7 +246,7 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     return( -1 );
 }
 
-unsigned _WCNEAR __GetIOMode( int handle )
+unsigned _INTERNAL __GetIOMode( int handle )
 {
     unsigned mode = 0;
 
@@ -264,7 +264,7 @@ unsigned _WCNEAR __GetIOMode( int handle )
     return( mode );
 }
 
-void _WCNEAR __SetIOMode( int handle, unsigned value )
+void _INTERNAL __SetIOMode( int handle, unsigned value )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -278,7 +278,7 @@ void _WCNEAR __SetIOMode( int handle, unsigned value )
     RdosLeaveKernelSection( &handle_section );
 }
 
-int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
+int _INTERNAL __SetIOMode_grow( int handle, unsigned value )
 {
     int ret = -1;
 
@@ -607,7 +607,7 @@ _WCRTLINK off_t _tell( int handle )
     return( GetHandlePos( handle ) );
 }
 
-int _WCNEAR __qread( int handle, void *buffer, unsigned len )
+int _INTERNAL __qread( int handle, void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;
@@ -625,7 +625,7 @@ int _WCNEAR __qread( int handle, void *buffer, unsigned len )
     return( -1 );
 }
 
-int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
+int _INTERNAL __qwrite( int handle, const void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;

@@ -33,14 +33,14 @@
 
   #if defined( _M_I86 )
     #if defined(__SW_BD)
-        extern int _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
+        extern int _INTERNAL _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
     #else
-        extern _WCNORETURN void _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
+        extern _WCNORETURN void _INTERNAL _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
     #endif
         #pragma aux _OS2Main "_*" __parm __caller [__dx __ax] [__cx __bx]
   #else
-        extern _WCNORETURN void _WCNEAR __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
-        extern _WCNORETURN void _WCNEAR __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+        extern _WCNORETURN void _INTERNAL __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+        extern _WCNORETURN void _INTERNAL __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
     #if defined(_M_IX86)
         #pragma aux __wOS2Main "*" __parm __caller []
         #pragma aux __OS2Main "*" __parm __caller []

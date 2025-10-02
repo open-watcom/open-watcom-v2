@@ -53,19 +53,13 @@
 #include "rtdata.h"
 #include "fltsupp.h"
 #include "_environ.h"
+#include "xmain.h"
 
 
 #if defined( _M_I86 )
 #define __FAR __far
 #else
 #define __FAR
-#endif
-
-extern int main( int, char **, char ** );
-#if defined( _M_I86 )
-#pragma aux main __modify [__sp]
-#else
-#pragma aux main __modify [__esp]
 #endif
 
 void    __near *_endheap;                   /* temporary work-around */
@@ -232,7 +226,7 @@ static void setup_slib( void )
     __MAGIC.dgroup = _FP_SEG( &_STACKLOW );
 }
 
-_WCNORETURN void _WCNEAR _CMain( free, n, cmd, stk_bot, pid )
+_WCNORETURN void _INTERNAL _CMain( free, n, cmd, stk_bot, pid )
     void                __near *free;       /* start of free space                  */
     short unsigned      n;                  /* number of bytes                      */
     struct _proc_spawn  __near *cmd;        /* pointer to spawn msg                 */
@@ -268,7 +262,7 @@ _WCNORETURN void _WCNEAR _CMain( free, n, cmd, stk_bot, pid )
        __user_init();
 
     /* Invoke main skipping over the full path of the loaded command */
-    exit( main( _argc, _argv, environ ) );    /* 02-jan-91 */
+    exit( main( _argc, _argv, environ ) );
     // never return
 }
 
@@ -292,7 +286,7 @@ extern void setup_es( void );
         "pop es"    \
     __modify __exact __nomemory [__es]
 
-_WCNORETURN void _WCNEAR _CMain( int argc, char **argv, char **arge )
+_WCNORETURN void _INTERNAL _CMain( int argc, char **argv, char **arge )
 {
     union {
         void            *p;

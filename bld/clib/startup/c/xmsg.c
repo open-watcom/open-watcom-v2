@@ -86,7 +86,7 @@ static struct RdosThreadState state;
 static char FatalErrorStr[256];
 #endif
 
-_WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *msg, int retcode )
+_WCNORETURN void _INTERNAL __exit_with_msg( char _WCI86FAR *msg, int retcode )
 {
 #if defined( __DOS__ )
     __do_exit_with_msg( msg, retcode );
@@ -194,7 +194,7 @@ _WCNORETURN void _WCNEAR __exit_with_msg( char _WCI86FAR *msg, int retcode )
 #endif
 }
 
-_WCNORETURN void _WCNEAR __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
+_WCNORETURN void _INTERNAL __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
 {
     if( __EnterWVIDEO( msg ) )
         EXIT( retcode );

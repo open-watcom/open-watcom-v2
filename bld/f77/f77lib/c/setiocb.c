@@ -47,6 +47,7 @@
 #include "units.h"
 #include "errcod.h"
 #include "rtenv.h"
+#include "variety.h"
 #include "thread.h"
 #include "ioinit.h"
 #include "rt_init.h"

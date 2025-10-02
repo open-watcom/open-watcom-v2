@@ -126,7 +126,7 @@ static freelist_nptr __LinkUpNewNHeap( heapblk_nptr heap )
 
 #if defined( __DOS_EXT__ )
 
-void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
+void_nptr _INTERNAL __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
 {
     heapblk_nptr    heap;
     dpmi_hdr        *dpmi;
@@ -185,7 +185,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
 #endif
 
 #if !( defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) )
-size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
+size_t _INTERNAL __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     freelist_nptr   frl_last;
     unsigned        brk_value;
@@ -405,7 +405,7 @@ static int __CreateNewNHeap( unsigned amount )
 }
 #endif
 
-int __ExpandDGROUP( unsigned amount )
+int _INTERNAL __ExpandDGROUP( unsigned amount )
 {
 #if defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) || defined( __RDOS__ )
 #else

@@ -55,14 +55,14 @@
 #if defined( __NETWARE__ ) && defined( _THIN_LIB )
 
 /* Take flush from LibC */
-int _WCNEAR __flush( FILE *fp )
+int _INTERNAL __flush( FILE *fp )
 {
     return( fflush( fp ) );
 }
 
 #else
 
-int _WCNEAR __flush( FILE *fp )
+int _INTERNAL __flush( FILE *fp )
 {
     int             len;
     long            offset;
@@ -79,7 +79,7 @@ int _WCNEAR __flush( FILE *fp )
             ptr = _FP_BASE( fp );
             amount = fp->_cnt;
             while( amount != 0 && ret == 0 ) {
-                len = __qwrite( fileno( fp ), ptr, amount );    /* 02-aug-90 */
+                len = __qwrite( fileno( fp ), ptr, amount );
                 if( len == -1 ) {
                     fp->_flag |= _SFERR;
                     ret = EOF;

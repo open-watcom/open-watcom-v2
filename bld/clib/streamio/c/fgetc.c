@@ -65,7 +65,7 @@
 
 #ifndef __WIDECHAR__
 
-int _WCNEAR __fill_buffer( FILE *fp )
+int _INTERNAL __fill_buffer( FILE *fp )
 {
     if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );

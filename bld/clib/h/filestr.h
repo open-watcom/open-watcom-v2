@@ -37,11 +37,11 @@
 #include <stddef.h>
 
 
-extern char     * _WCNEAR __FormPosixHandleStr( void );
-extern void     _WCNEAR __ParsePosixHandleStr( void );
+extern char     * _INTERNAL __FormPosixHandleStr( void );
+extern void     _INTERNAL __ParsePosixHandleStr( void );
 
-extern wchar_t  * _WCNEAR __wFormPosixHandleStr( void );
-extern void     _WCNEAR __wParsePosixHandleStr( void );
+extern wchar_t  * _INTERNAL __wFormPosixHandleStr( void );
+extern void     _INTERNAL __wParsePosixHandleStr( void );
 
 
 #ifdef __NT__

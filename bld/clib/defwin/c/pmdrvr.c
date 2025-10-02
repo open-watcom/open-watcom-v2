@@ -56,8 +56,8 @@ static char  *AboutMsg = DefaultAboutMsg;
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-bool    _WCNEAR _SetAboutDlg( const char *title, const char *text )
-//=========================================================
+bool _INTERNAL _SetAboutDlg( const char *title, const char *text )
+//================================================================
 {
     if( title != NULL ) {
         if( DefaultAboutTitle != AboutTitle ) {

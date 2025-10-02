@@ -203,27 +203,27 @@ extern bool             _os2_use_obj_any;           // Prefer high memory heap b
 extern bool             _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif
 
-extern size_t           __LastFree( void );
-extern int              __NHeapWalk( struct _heapinfo *entry, heapblk_nptr start );
-extern int              __ExpandDGROUP( unsigned int __amt );
-extern void             __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap );
+extern size_t           _INTERNAL __LastFree( void );
+extern int              _INTERNAL __NHeapWalk( struct _heapinfo *entry, heapblk_nptr start );
+extern int              _INTERNAL __ExpandDGROUP( unsigned int __amt );
+extern void             _INTERNAL __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap );
 
 #if defined( _M_I86 )
 /*
  * 16-bit target
  */
-extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
-extern void_bptr        __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
-extern void             __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
+extern int              _INTERNAL __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
+extern void_bptr        _INTERNAL __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
+extern void             _INTERNAL __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
   #pragma aux __MemAllocator "*" __parm [__ax] [__dx] [__bx]
   #pragma aux __MemFree      "*" __parm [__ax] [__dx] [__bx]
 #else
 /*
  * 32-bit target
  */
-extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
-extern void_bptr        __MemAllocator( unsigned __size, heap_bptr __heap );
-extern void             __MemFree( void_bptr __cstg, heap_bptr __heap );
+extern int              _INTERNAL __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
+extern void_bptr        _INTERNAL __MemAllocator( unsigned __size, heap_bptr __heap );
+extern void             _INTERNAL __MemFree( void_bptr __cstg, heap_bptr __heap );
 # if defined( _M_IX86 )
 /*
  * 32-bit Intel target
@@ -234,18 +234,18 @@ extern void             __MemFree( void_bptr __cstg, heap_bptr __heap );
 #endif
 
 #if defined( _M_I86 )
-extern __segment        __AllocSeg( unsigned int __amt );
-extern int              __GrowSeg( __segment __seg, unsigned int __amt );
-extern int              __FreeSeg( __segment __seg );
-extern int              __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap );
-extern int              __HeapMin( __segment __seg, __segment one_heap );
-extern int              __HeapSet( __segment __seg, unsigned fill );
-extern void             _WCFAR __HeapInit( heapblk_nptr start, unsigned int amount );
+extern __segment        _INTERNAL __AllocSeg( unsigned int __amt );
+extern int              _INTERNAL __GrowSeg( __segment __seg, unsigned int __amt );
+extern int              _INTERNAL __FreeSeg( __segment __seg );
+extern int              _INTERNAL __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap );
+extern int              _INTERNAL __HeapMin( __segment __seg, __segment one_heap );
+extern int              _INTERNAL __HeapSet( __segment __seg, unsigned fill );
+extern void             _INTERNAL __HeapInit( heapblk_nptr start, unsigned int amount );
 #endif
 
 #if defined( __DOS_EXT__ )
-extern void             *__ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size );
-extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
+extern void             * _INTERNAL __ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size );
+extern void             * _INTERNAL __ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
 #if defined(__OS2_32BIT__) \
@@ -253,7 +253,7 @@ extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
   || defined(__NT__) \
   || defined(__RDOS__) \
   || defined(__DOS_EXT__)
-extern int              __nheapshrink( void );
+extern int              _INTERNAL __nheapshrink( void );
 #endif
 
 #if defined( __QNX__ )

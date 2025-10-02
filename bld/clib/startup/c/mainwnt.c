@@ -297,9 +297,9 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
     __InitRtns( 255 );
 }
 
-_WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
+_WCRTDATA void _INTERNAL (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _INTERNAL __exit( int ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {

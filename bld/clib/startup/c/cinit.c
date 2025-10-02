@@ -58,8 +58,8 @@
     extern int __GETDSEnd_;
 #endif
 
-void _WCNEAR __CommonInit( void )
-/*******************************/
+void _INTERNAL __CommonInit( void )
+/*********************************/
 {
 #if defined(__DOS_386__)
     /*

@@ -252,7 +252,7 @@ extern DWORD    _ColorMap[16];
  */
 
 /* windrvr.c/pmdrvr.c */
-extern bool     _WCNEAR _SetAboutDlg( const char *, const char * );
+extern bool     _INTERNAL _SetAboutDlg( const char *, const char * );
 
 #if defined( __OS2__ )
 /* pmdrvr.c */
@@ -263,106 +263,106 @@ extern WINEXPORT LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM w
 #endif
 
 /* windisp.c */
-extern void     _WCNEAR _DisplayAllLines( LPWDATA, bool );
-extern void     _WCNEAR _ResizeWin( LPWDATA, int, int, int, int );
-extern void     _WCNEAR _ShiftWindow( LPWDATA, int );
-extern void     _WCNEAR _DisplayLineInWindowWithColor( LPWDATA, int, LPSTR, int, int, int, int );
-extern void     _WCNEAR _DisplayLineInWindow( LPWDATA, int, LPSTR );
-extern void     _WCNEAR _ClearWindow( LPWDATA );
+extern void     _INTERNAL _DisplayAllLines( LPWDATA, bool );
+extern void     _INTERNAL _ResizeWin( LPWDATA, int, int, int, int );
+extern void     _INTERNAL _ShiftWindow( LPWDATA, int );
+extern void     _INTERNAL _DisplayLineInWindowWithColor( LPWDATA, int, LPSTR, int, int, int, int );
+extern void     _INTERNAL _DisplayLineInWindow( LPWDATA, int, LPSTR );
+extern void     _INTERNAL _ClearWindow( LPWDATA );
 
 /* windlg.c */
-extern void     _WCNEAR _GetAutoClearInterval( void );
+extern void     _INTERNAL _GetAutoClearInterval( void );
 
 /* wingen.c */
-extern LPWDATA  _WCNEAR _GetWindowData( HWND );
-extern LPWDATA  _WCNEAR _GetActiveWindowData( void );
-extern void     _WCNEAR _MakeWindowActive( LPWDATA w );
-extern LPWDATA  _WCNEAR _IsWindowedHandle( int handle );
-extern void     _WCNEAR _InitFunctionPointers( void );
-extern void     _WCNEAR _InitMainWindowData( HANDLE );
-extern void     _WCNEAR _FiniMainWindowData( void );
-extern LPWDATA  _WCNEAR _AnotherWindowData( HWND hwnd, va_list args );
-extern void     _WCNEAR _FreeWindowData( LPWDATA );
-extern void     _WCNEAR _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
-extern void     _WCNEAR _WindowsExit( void );
-extern bool     _WCNEAR _DestroyOnClose( LPWDATA );
-extern bool     _WCNEAR _YieldControl( void );
-extern void     _WCNEAR _RemoveWindowedHandle( int handle );
+extern LPWDATA  _INTERNAL _GetWindowData( HWND );
+extern LPWDATA  _INTERNAL _GetActiveWindowData( void );
+extern void     _INTERNAL _MakeWindowActive( LPWDATA w );
+extern LPWDATA  _INTERNAL _IsWindowedHandle( int handle );
+extern void     _INTERNAL _InitFunctionPointers( void );
+extern void     _INTERNAL _InitMainWindowData( HANDLE );
+extern void     _INTERNAL _FiniMainWindowData( void );
+extern LPWDATA  _INTERNAL _AnotherWindowData( HWND hwnd, va_list args );
+extern void     _INTERNAL _FreeWindowData( LPWDATA );
+extern void     _INTERNAL _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
+extern void     _INTERNAL _WindowsExit( void );
+extern bool     _INTERNAL _DestroyOnClose( LPWDATA );
+extern bool     _INTERNAL _YieldControl( void );
+extern void     _INTERNAL _RemoveWindowedHandle( int handle );
 
 /* winio.c */
-extern int      _WCNEAR _DoStdin( LPWDATA, void *, unsigned );
-extern int      _WCNEAR _DoStdout( LPWDATA, const void *, unsigned );
-extern bool     _WCNEAR _DoKbhit( LPWDATA );
-extern int      _WCNEAR _DoGetch( LPWDATA );
-extern int      _WCNEAR _DoGetche( LPWDATA );
-extern void     _WCNEAR _DoPutch( LPWDATA, int );
+extern int      _INTERNAL _DoStdin( LPWDATA, void *, unsigned );
+extern int      _INTERNAL _DoStdout( LPWDATA, const void *, unsigned );
+extern bool     _INTERNAL _DoKbhit( LPWDATA );
+extern int      _INTERNAL _DoGetch( LPWDATA );
+extern int      _INTERNAL _DoGetche( LPWDATA );
+extern void     _INTERNAL _DoPutch( LPWDATA, int );
 
 /* winkey.c */
-extern void     _WCNEAR _WindowsKeyUp( unsigned, unsigned );
-extern void     _WCNEAR _WindowsKeyPush( unsigned, unsigned );
-extern void     _WCNEAR _WindowsVirtualKeyPush( unsigned, unsigned );
-extern bool     _WCNEAR _KeyboardHit( bool );
-extern int      _WCNEAR _GetKeyboard( int * );
-extern int      _WCNEAR _GetString( LPWDATA, char *, unsigned );
+extern void     _INTERNAL _WindowsKeyUp( unsigned, unsigned );
+extern void     _INTERNAL _WindowsKeyPush( unsigned, unsigned );
+extern void     _INTERNAL _WindowsVirtualKeyPush( unsigned, unsigned );
+extern bool     _INTERNAL _KeyboardHit( bool );
+extern int      _INTERNAL _GetKeyboard( int * );
+extern int      _INTERNAL _GetString( LPWDATA, char *, unsigned );
 
 /* winlines.c */
-extern void     _WCNEAR _AddLine( LPWDATA, const void *, unsigned );
-extern DWORD    _WCNEAR _GetLineFromThumbPosition( LPWDATA, WORD );
-extern void     _WCNEAR _PositionScrollThumb( LPWDATA );
-extern LPLDATA  _WCNEAR _GetLineDataPointer( LPWDATA, DWORD );
-extern void     _WCNEAR _FreeAllLines( LPWDATA );
-extern void     _WCNEAR _SaveAllLines( LPWDATA );
-extern void     _WCNEAR _CopyAllLines( LPWDATA );
-extern int      _WCNEAR _UpdateInputLine( LPWDATA, char *, unsigned, bool );
-extern DWORD    _WCNEAR _GetLastLineNumber( LPWDATA w );
+extern void     _INTERNAL _AddLine( LPWDATA, const void *, unsigned );
+extern DWORD    _INTERNAL _GetLineFromThumbPosition( LPWDATA, WORD );
+extern void     _INTERNAL _PositionScrollThumb( LPWDATA );
+extern LPLDATA  _INTERNAL _GetLineDataPointer( LPWDATA, DWORD );
+extern void     _INTERNAL _FreeAllLines( LPWDATA );
+extern void     _INTERNAL _SaveAllLines( LPWDATA );
+extern void     _INTERNAL _CopyAllLines( LPWDATA );
+extern int      _INTERNAL _UpdateInputLine( LPWDATA, char *, unsigned, bool );
+extern DWORD    _INTERNAL _GetLastLineNumber( LPWDATA w );
 
 /* winmisc.c/pmmisc.c */
 #if !defined( __OS2__ )
-extern HFONT    _WCNEAR _SetMyDC( HDC, DWORD, DWORD ) ;
+extern HFONT    _INTERNAL _SetMyDC( HDC, DWORD, DWORD ) ;
 #else
-extern void     _WCNEAR _Error( HWND hwndDlg, char *caption, char *msg );
-extern void     _WCNEAR _ResizeWindows( void );
+extern void     _INTERNAL _Error( HWND hwndDlg, char *caption, char *msg );
+extern void     _INTERNAL _ResizeWindows( void );
 #endif
-extern int      _WCNEAR _MessageLoop( bool );
-extern int      _WCNEAR _BlockingMessageLoop( bool );
-extern void     _WCNEAR _NewCursor( LPWDATA, cursors );
-extern void     _WCNEAR _DisplayCursor( LPWDATA w );
-extern void     _WCNEAR _SetInputMode( LPWDATA, bool );
-extern void     _WCNEAR _ShowWindowActive( LPWDATA w, LPWDATA last );
-extern void     _WCNEAR _OutOfMemory( void );
-extern _WCNORETURN void _WCNEAR _OutOfMemoryExit( void );
-extern void     _WCNEAR _ExecutionComplete( void );
-extern bool     _WCNEAR _SetAppTitle( const char * );
-extern bool     _WCNEAR _SetConTitle( LPWDATA, const char *);
-extern bool     _WCNEAR _ShutDown( void );
+extern int      _INTERNAL _MessageLoop( bool );
+extern int      _INTERNAL _BlockingMessageLoop( bool );
+extern void     _INTERNAL _NewCursor( LPWDATA, cursors );
+extern void     _INTERNAL _DisplayCursor( LPWDATA w );
+extern void     _INTERNAL _SetInputMode( LPWDATA, bool );
+extern void     _INTERNAL _ShowWindowActive( LPWDATA w, LPWDATA last );
+extern void     _INTERNAL _OutOfMemory( void );
+extern _WCNORETURN void _INTERNAL _OutOfMemoryExit( void );
+extern void     _INTERNAL _ExecutionComplete( void );
+extern bool     _INTERNAL _SetAppTitle( const char * );
+extern bool     _INTERNAL _SetConTitle( LPWDATA, const char *);
+extern bool     _INTERNAL _ShutDown( void );
 
 /* winmove.c */
-extern void     _WCNEAR _MovePageUp( LPWDATA );
-extern void     _WCNEAR _MovePageDown( LPWDATA );
-extern void     _WCNEAR _MoveLineUp( LPWDATA );
-extern void     _WCNEAR _MoveLineDown( LPWDATA );
-extern void     _WCNEAR _MoveToLine( LPWDATA, DWORD, bool );
+extern void     _INTERNAL _MovePageUp( LPWDATA );
+extern void     _INTERNAL _MovePageDown( LPWDATA );
+extern void     _INTERNAL _MoveLineUp( LPWDATA );
+extern void     _INTERNAL _MoveLineDown( LPWDATA );
+extern void     _INTERNAL _MoveToLine( LPWDATA, DWORD, bool );
 
 /* winnew.c/pmmnew.c */
-extern bool     _WCNEAR _NewWindow( const char *name, ... );
-extern bool     _WCNEAR _CloseWindow( LPWDATA );
-extern void     _WCNEAR _ReleaseWindowResources( LPWDATA w );
+extern bool     _INTERNAL _NewWindow( const char *name, ... );
+extern bool     _INTERNAL _CloseWindow( LPWDATA );
+extern void     _INTERNAL _ReleaseWindowResources( LPWDATA w );
 #if defined( __OS2__ )
-extern void     _WCNEAR _SetWinMenuHandle( HWND hmenu );
-extern HWND     _WCNEAR _GetWinMenuHandle( void );
+extern void     _INTERNAL _SetWinMenuHandle( HWND hmenu );
+extern HWND     _INTERNAL _GetWinMenuHandle( void );
 #endif
 
 /* winpaint.c */
 #if defined( __OS2__ )
-extern void     _WCNEAR _RepaintWindow( LPWDATA, PRECT, HPS );
+extern void     _INTERNAL _RepaintWindow( LPWDATA, PRECT, HPS );
 #else
-extern void     _WCNEAR _RepaintWindow( LPWDATA, PRECT, HDC );
+extern void     _INTERNAL _RepaintWindow( LPWDATA, PRECT, HDC );
 #endif
 
 /* pmmain.c */
 #if defined( __OS2__ )
-extern void     _WCNEAR _SelectFont( HPS );
-extern void     _WCNEAR _CreateFont( LPWDATA );
+extern void     _INTERNAL _SelectFont( HPS );
+extern void     _INTERNAL _CreateFont( LPWDATA );
 #endif
 
 /* winmain.c */

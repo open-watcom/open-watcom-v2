@@ -34,7 +34,7 @@
 _WCRTDATA extern unsigned __hmodule;
 #endif
 
-extern void _WCNEAR __CommonInit( void );
+extern void _INTERNAL __CommonInit( void );
 #if defined(__DOS_386__)
-extern void _WCNEAR __CommonTerm( void );
+extern void _INTERNAL __CommonTerm( void );
 #endif

@@ -58,10 +58,10 @@ extern  HANDLE      __NTGetFakeHandle( void );
 extern  unsigned    __NHandles;
 extern  unsigned    __NFiles;              /* maximum # of files we can open */
 
-extern  unsigned    _WCNEAR __GetIOMode( int handle );
-extern  void        _WCNEAR __SetIOMode( int handle, unsigned value );
-extern  int         _WCNEAR __SetIOMode_grow( int handle, unsigned value );
-extern  void        _WCNEAR __ChkTTYIOMode( int handle );
+extern  unsigned    _INTERNAL __GetIOMode( int handle );
+extern  void        _INTERNAL __SetIOMode( int handle, unsigned value );
+extern  int         _INTERNAL __SetIOMode_grow( int handle, unsigned value );
+extern  void        _INTERNAL __ChkTTYIOMode( int handle );
 
 #endif
 

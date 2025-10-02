@@ -36,8 +36,10 @@
 
 #ifdef __MT__
   #if !defined( _M_I86 )
-    extern void (*_AccessTDList)( void );
-    extern void (*_ReleaseTDList)( void );
+    extern void _INTERNAL (*_AccessTDList)( void );
+    extern void _INTERNAL (*_ReleaseTDList)( void );
+    extern void _INTERNAL __AccessTDList( void );
+    extern void _INTERNAL __ReleaseTDList( void );
   #else
     #define _AccessTDList()
     #define _ReleaseTDList()

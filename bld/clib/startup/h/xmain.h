@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,20 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Linux low level __lseek() implementation.
+* Description:  (w)main function declaration.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "seterrno.h"
-#include <unistd.h>
-#include "lseek.h"
-#include "linuxsys.h"
+#if defined( __QNX__ )
 
+extern int  main( int argc, char **argv, char **env );
+#if defined( _M_I86 )
+#pragma aux main __modify [__sp]
+#else
+#pragma aux main __modify [__esp]
+#endif
 
-off_t _INTERNAL __lseek( int __fildes, off_t __offset, int __whence )
-{
-    syscall_res res = sys_call3( SYS_lseek, __fildes, __offset, __whence );
-    __syscall_return( off_t, res );
-}
+#elif defined( _M_I86 ) && defined(__SW_BD)
+
+extern int  main( void );
+
+#elif defined( __LINUX__ )
+
+extern int  main( int argc, char **argv, char **env );
+
+#elif defined( __WIDECHAR__ ) && ( defined( __NT__ ) || defined( __OS2__ ) )
+
+extern int  wmain( int wargc, wchar_t **wargv );
+
+#else
+
+extern int  main( int argc, char **argv );
+
+#endif

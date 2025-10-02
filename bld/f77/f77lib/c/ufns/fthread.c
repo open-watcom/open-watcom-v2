@@ -40,6 +40,7 @@
 #include "fthread.h"
 #include "rundat.h"
 #include "rmemmgr.h"
+#include "variety.h"
 #include "thread.h"
 #include "ftnapi.h"
 #include "fthrdini.h"

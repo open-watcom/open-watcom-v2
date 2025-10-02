@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -43,7 +44,7 @@
 #include "osinfqnx.h"
 
 
-void _WCNEAR __DetOSInfo( void )
+void _INTERNAL __DetOSInfo( void )
 {
     struct _osinfo osdata;
 

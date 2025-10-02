@@ -60,9 +60,9 @@
 //                else           -> absolute pointer value
 //
 #ifdef _M_I86
-void_bptr __MemAllocator( unsigned req_size, __segment seg, heap_bptr heap )
+void_bptr _INTERNAL __MemAllocator( unsigned req_size, __segment seg, heap_bptr heap )
 #else
-void_bptr __MemAllocator( unsigned req_size, heap_bptr heap )
+void_bptr _INTERNAL __MemAllocator( unsigned req_size, heap_bptr heap )
 #endif
 {
     void_bptr   cstg;
@@ -156,9 +156,9 @@ void_bptr __MemAllocator( unsigned req_size, heap_bptr heap )
 //      none
 //
 #ifdef _M_I86
-void __MemFree( void_bptr cstg, __segment seg, heap_bptr heap )
+void _INTERNAL __MemFree( void_bptr cstg, __segment seg, heap_bptr heap )
 #else
-void __MemFree( void_bptr cstg, heap_bptr heap )
+void _INTERNAL __MemFree( void_bptr cstg, heap_bptr heap )
 #endif
 {
     if( cstg != NULL ) {                                // quit if pointer is zero

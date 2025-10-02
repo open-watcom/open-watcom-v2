@@ -45,7 +45,7 @@
 /*
  * _DoStdin - get stuff from stdin
  */
-int _WCNEAR _DoStdin( LPWDATA w, void *in_buff, unsigned size )
+int _INTERNAL _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 {
     unsigned            rc;
     char                *buff;
@@ -80,7 +80,7 @@ int _WCNEAR _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 /*
  * _DoStdout - put stuff to stdout
  */
-int _WCNEAR _DoStdout( LPWDATA w, const void *buff, unsigned size )
+int _INTERNAL _DoStdout( LPWDATA w, const void *buff, unsigned size )
 {
     if( w == NULL )
         return( 0 );
@@ -95,7 +95,7 @@ int _WCNEAR _DoStdout( LPWDATA w, const void *buff, unsigned size )
 /*
  * _DoKbhit - test if the keyboard has been pressed
  */
-bool _WCNEAR _DoKbhit( LPWDATA w )
+bool _INTERNAL _DoKbhit( LPWDATA w )
 {
     if( w == NULL )
         return( false );
@@ -108,7 +108,7 @@ bool _WCNEAR _DoKbhit( LPWDATA w )
 /*
  * _DoGetch - get a character
  */
-int _WCNEAR _DoGetch( LPWDATA w )
+int _INTERNAL _DoGetch( LPWDATA w )
 {
     int     ci;
 
@@ -128,7 +128,7 @@ int _WCNEAR _DoGetch( LPWDATA w )
 /*
  * _DoGetche - get a character and echo it
  */
-int _WCNEAR _DoGetche( LPWDATA w )
+int _INTERNAL _DoGetche( LPWDATA w )
 {
     int     ci;
 
@@ -147,7 +147,7 @@ int _WCNEAR _DoGetche( LPWDATA w )
 /*
  * _DoPutch - put a character to stdout
  */
-void _WCNEAR _DoPutch( LPWDATA w, int ch )
+void _INTERNAL _DoPutch( LPWDATA w, int ch )
 {
     char tmp[2];
 

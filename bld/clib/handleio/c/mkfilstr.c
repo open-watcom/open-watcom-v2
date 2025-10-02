@@ -58,8 +58,8 @@
  * freeing the allocated memory.  The returned string begins with
  * "C_FILE_INFO=", and so forms a valid environment string.
  */
-CHAR_TYPE * _WCNEAR __F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
-/*******************************************************************************/
+CHAR_TYPE * _INTERNAL __F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
+/********************************************************************************/
 {
     CHAR_TYPE           *p;
     int                 posixHandle;

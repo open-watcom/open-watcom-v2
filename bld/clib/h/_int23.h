@@ -30,8 +30,8 @@
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
-extern void     _WCNEAR (*__int23_exit)( void );
-extern void     _WCNEAR __null_int23_exit( void );
-extern void     _WCNEAR __grab_int23( void );
-extern void     _WCNEAR __restore_int23( void );
+extern void     _INTERNAL (*__int23_exit)( void );
+extern void     _INTERNAL __null_int23_exit( void );
+extern void     _INTERNAL __grab_int23( void );
+extern void     _INTERNAL __restore_int23( void );
 #endif

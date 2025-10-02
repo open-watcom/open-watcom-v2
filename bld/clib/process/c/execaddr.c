@@ -36,7 +36,7 @@
 
 execveaddr_type  __Exec_addr = NULL;
 
-execveaddr_type _WCNEAR __execaddr( void )
+execveaddr_type _INTERNAL __execaddr( void )
 {
     return( __Exec_addr );
 }

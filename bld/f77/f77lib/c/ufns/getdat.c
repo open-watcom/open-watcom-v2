@@ -39,6 +39,7 @@
 #include "ftnstd.h"
 #include <time.h>
 #include "ftnapi.h"
+#include "variety.h"
 #include "getctime.h"
 
 

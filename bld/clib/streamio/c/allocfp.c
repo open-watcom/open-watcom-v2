@@ -48,7 +48,7 @@
 #include "thread.h"
 
 
-FILE * _WCNEAR __allocfp( void )
+FILE * _INTERNAL __allocfp( void )
 {
     FILE                *end;
     FILE                *fp;

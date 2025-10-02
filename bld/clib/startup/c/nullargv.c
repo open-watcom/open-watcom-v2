@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
+#define _INTERNAL       _WCNEAR
+
 #include <stdlib.h>
 #include "nullargv.h"
 
 
-void _WCNEAR __Null_Argv( void )
+void _INTERNAL __Null_Argv( void )
 {
 #ifndef __NETWARE__
     exit( main() );

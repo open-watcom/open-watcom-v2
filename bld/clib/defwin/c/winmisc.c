@@ -42,7 +42,7 @@
 /*
  * _SetMyDC - set display context for windows
  */
-HFONT _WCNEAR _SetMyDC( HDC dc, DWORD bkclr, DWORD txtclr )
+HFONT _INTERNAL _SetMyDC( HDC dc, DWORD bkclr, DWORD txtclr )
 {
     SetBkColor( dc, bkclr );
     SetTextColor( dc, txtclr );
@@ -53,7 +53,7 @@ HFONT _WCNEAR _SetMyDC( HDC dc, DWORD bkclr, DWORD txtclr )
 /*
  * _MessageLoop
 */
-int _WCNEAR _MessageLoop( bool doexit )
+int _INTERNAL _MessageLoop( bool doexit )
 {
     MSG         msg;
     WORD        rc = 1;
@@ -84,7 +84,7 @@ int _WCNEAR _MessageLoop( bool doexit )
 /*
  * _BlockingMessageLoop
 */
-int _WCNEAR _BlockingMessageLoop( bool doexit )
+int _INTERNAL _BlockingMessageLoop( bool doexit )
 {
     MSG         msg;
     WORD        rc;
@@ -107,7 +107,7 @@ int _WCNEAR _BlockingMessageLoop( bool doexit )
 /*
  * _OutOfMemory - display out of memory message
  */
-void _WCNEAR _OutOfMemory( void )
+void _INTERNAL _OutOfMemory( void )
 {
     MessageBox( (HWND)NULL, "Out Of Memory!", "SYSTEM ERROR", MB_OK );
 
@@ -116,28 +116,28 @@ void _WCNEAR _OutOfMemory( void )
 /*
  * _ExecutionComplete - display execution complete message
  */
-void _WCNEAR _ExecutionComplete( void )
+void _INTERNAL _ExecutionComplete( void )
 {
     flushall();
 //    MessageBox( NULL, "Execution Complete", "", MB_OK | MB_ICONEXCLAMATION );
 
 } /* _ExecutionComplete */
 
-bool _WCNEAR _SetConTitle( LPWDATA w, const char *title )
+bool _INTERNAL _SetConTitle( LPWDATA w, const char *title )
 //==================================================
 {
     SetWindowText( w->hwnd, title );
     return( true );
 }
 
-bool _WCNEAR _SetAppTitle( const char *title )
+bool _INTERNAL _SetAppTitle( const char *title )
 //=======================================
 {
     SetWindowText( _MainWindow, title );
     return( true );
 }
 
-bool _WCNEAR _ShutDown( void )
+bool _INTERNAL _ShutDown( void )
 //=======================
 {
     flushall();
@@ -147,7 +147,7 @@ bool _WCNEAR _ShutDown( void )
 }
 
 
-bool _WCNEAR _CloseWindow( LPWDATA w )
+bool _INTERNAL _CloseWindow( LPWDATA w )
 //=======================================
 {
     if( w->destroy ) {
@@ -160,7 +160,7 @@ bool _WCNEAR _CloseWindow( LPWDATA w )
 /*
  * _NewCursor - change the cursor type
  */
-void _WCNEAR _NewCursor( LPWDATA w, cursors type )
+void _INTERNAL _NewCursor( LPWDATA w, cursors type )
 {
     if( w->hascursor ) {
         DestroyCaret();
@@ -187,7 +187,7 @@ void _WCNEAR _NewCursor( LPWDATA w, cursors type )
 /*
  * _DisplayCursor - show the current cursor position
  */
-void _WCNEAR _DisplayCursor( LPWDATA w )
+void _INTERNAL _DisplayCursor( LPWDATA w )
 {
     HDC                 dc;
     SIZE                size;
@@ -218,7 +218,7 @@ void _WCNEAR _DisplayCursor( LPWDATA w )
 /*
  * _SetInputMode - set whether or not we are in input mode
  */
-void _WCNEAR _SetInputMode( LPWDATA w, bool inpmode  )
+void _INTERNAL _SetInputMode( LPWDATA w, bool inpmode  )
 {
     WORD cmd;
 
@@ -235,7 +235,7 @@ void _WCNEAR _SetInputMode( LPWDATA w, bool inpmode  )
 /*
  * _ShowWindowActive - do windows-specific stuff to make a window active
  */
-void _WCNEAR _ShowWindowActive( LPWDATA w, LPWDATA last )
+void _INTERNAL _ShowWindowActive( LPWDATA w, LPWDATA last )
 {
     if( last != NULL ) {
         CheckMenuItem( _SubMenuWindows, MSG_WINDOWS + last->handles[0],

@@ -40,7 +40,7 @@
 #include "heapacc.h"
 
 
-int __HeapSet( __segment seg, unsigned int fill )
+int _INTERNAL __HeapSet( __segment seg, unsigned int fill )
 {
     FRLPTR( seg )   frl;
 

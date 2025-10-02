@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void _WCNEAR __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg );
+extern void _INTERNAL __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg );

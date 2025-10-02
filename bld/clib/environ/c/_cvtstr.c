@@ -48,7 +48,7 @@
 #include "_cvtstr.h"
 
 
-__F_NAME(wchar_t,char) * _WCNEAR __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( const CHAR_TYPE *in_string )
+__F_NAME(wchar_t,char) * _INTERNAL __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( const CHAR_TYPE *in_string )
 {
     __F_NAME(wchar_t,char)  *string;
     size_t                  len;

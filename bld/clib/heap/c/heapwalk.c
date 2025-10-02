@@ -72,7 +72,7 @@ static int verifyHeapList( __segment start )
     return( _HEAPOK );
 }
 
-int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
+int _INTERNAL __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
 {
     __segment       next_seg;
     __segment       prev_seg;

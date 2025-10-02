@@ -67,7 +67,7 @@ unsigned _HUGEDATA __init_mode[_NFILES] = { /* file mode information (flags) */
 
 unsigned *__io_mode = __init_mode;      /* initially points to static array */
 
-unsigned _WCNEAR __GetIOMode( int handle )
+unsigned _INTERNAL __GetIOMode( int handle )
 {
     if( handle < __NFiles ) {
         return( __io_mode[handle] );
@@ -75,7 +75,7 @@ unsigned _WCNEAR __GetIOMode( int handle )
     return( 0 );
 }
 
-void _WCNEAR __SetIOMode( int handle, unsigned value )
+void _INTERNAL __SetIOMode( int handle, unsigned value )
 {
     if( handle < __NFiles ) {
         __io_mode[handle] = value;

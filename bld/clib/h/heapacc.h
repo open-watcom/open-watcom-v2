@@ -34,20 +34,20 @@
 
 #ifdef __MT__
   #if defined( _M_I86 )
-    extern void __AccessFHeap( void );
-    extern void __ReleaseFHeap( void );
-    extern void __AccessNHeap( void );
-    extern void __ReleaseNHeap( void );
+    extern void _INTERNAL __AccessFHeap( void );
+    extern void _INTERNAL __ReleaseFHeap( void );
+    extern void _INTERNAL __AccessNHeap( void );
+    extern void _INTERNAL __ReleaseNHeap( void );
     #define _AccessFHeap()  __AccessFHeap()
     #define _ReleaseFHeap() __ReleaseFHeap()
     #define _AccessNHeap()  __AccessNHeap()
     #define _ReleaseNHeap() __ReleaseNHeap()
   #else
     #if !defined( __NETWARE__ )
-        extern void (*_AccessFHeap)( void );
-        extern void (*_ReleaseFHeap)( void );
-        extern void (*_AccessNHeap)( void );
-        extern void (*_ReleaseNHeap)( void );
+        extern void _INTERNAL (*_AccessFHeap)( void );
+        extern void _INTERNAL (*_ReleaseFHeap)( void );
+        extern void _INTERNAL (*_AccessNHeap)( void );
+        extern void _INTERNAL (*_ReleaseNHeap)( void );
     #else
         #define _AccessFHeap()
         #define _ReleaseFHeap()

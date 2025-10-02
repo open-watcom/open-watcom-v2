@@ -55,7 +55,7 @@
 #include "heap.h"
 
 
-int __GrowSeg( __segment seg, unsigned int amount )
+int _INTERNAL __GrowSeg( __segment seg, unsigned int amount )
 {
     unsigned        num_of_paras;   /* number of paragraphs desired   */
     unsigned        new_heaplen;

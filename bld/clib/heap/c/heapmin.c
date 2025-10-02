@@ -55,7 +55,7 @@
 #include "heapacc.h"
 
 
-int __HeapMin( __segment seg, __segment one_heap )
+int _INTERNAL __HeapMin( __segment seg, __segment one_heap )
 {
     tag                 last_len;
     tag                 adjust_len;

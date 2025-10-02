@@ -47,7 +47,7 @@
 /*
  * _GetWindowData - test if a window handle is a display window...
  */
-LPWDATA _WCNEAR _GetWindowData( HWND hwnd )
+LPWDATA _INTERNAL _GetWindowData( HWND hwnd )
 {
     int i;
 
@@ -63,7 +63,7 @@ LPWDATA _WCNEAR _GetWindowData( HWND hwnd )
 /*
  * _GetActiveWindowData
  */
-LPWDATA _WCNEAR _GetActiveWindowData( void )
+LPWDATA _INTERNAL _GetActiveWindowData( void )
 {
     int i;
 
@@ -79,7 +79,7 @@ LPWDATA _WCNEAR _GetActiveWindowData( void )
 /*
  * _MakeWindowActive - force a given window to become active
  */
-void _WCNEAR _MakeWindowActive( LPWDATA w )
+void _INTERNAL _MakeWindowActive( LPWDATA w )
 {
     int         i;
     LPWDATA     last = NULL;
@@ -101,7 +101,7 @@ void _WCNEAR _MakeWindowActive( LPWDATA w )
 /*
  * _IsWindowedHandle - check if given handle is a windowed one or not
  */
-LPWDATA _WCNEAR _IsWindowedHandle( int handle )
+LPWDATA _INTERNAL _IsWindowedHandle( int handle )
 {
     int         i,j;
     LPWDATA     w;
@@ -121,7 +121,7 @@ LPWDATA _WCNEAR _IsWindowedHandle( int handle )
 /*
  * _RemoveWindowedHandle - remove given handle from list of windowed handles
  */
-void _WCNEAR _RemoveWindowedHandle( int handle )
+void _INTERNAL _RemoveWindowedHandle( int handle )
 {
     int         i,j,k;
     LPWDATA     w;
@@ -143,7 +143,7 @@ void _WCNEAR _RemoveWindowedHandle( int handle )
 /*
  * _WindowsExit - hang around and wait for finish...
  */
-void _WCNEAR _WindowsExit( void )
+void _INTERNAL _WindowsExit( void )
 {
     _ExecutionComplete();
     if( !_MainWindowDestroyed ) {
@@ -158,7 +158,7 @@ void _WCNEAR _WindowsExit( void )
 /*
  * _DestroyOnClose - Destroy the window when closed
  */
-bool _WCNEAR _DestroyOnClose( LPWDATA w )
+bool _INTERNAL _DestroyOnClose( LPWDATA w )
 {
     w->destroy = 1;
     return( true );
@@ -167,7 +167,7 @@ bool _WCNEAR _DestroyOnClose( LPWDATA w )
 /*
  * _YieldControl - Calls _MessageLoop to yeild control to OS.
  */
-bool _WCNEAR _YieldControl( void )
+bool _INTERNAL _YieldControl( void )
 {
     _MessageLoop( true );
     return( true );
@@ -176,7 +176,7 @@ bool _WCNEAR _YieldControl( void )
 /*
  * _InitFunctionPointers - set up ptrs for default windowing routines
  */
-void _WCNEAR _InitFunctionPointers( void )
+void _INTERNAL _InitFunctionPointers( void )
 {
     _WindowsStdin = _DoStdin;
     _WindowsStdout = _DoStdout;
@@ -198,7 +198,7 @@ void _WCNEAR _InitFunctionPointers( void )
 
 } /* _InitFunctionPointers */
 
-_WCNORETURN void _WCNEAR _OutOfMemoryExit( void )
+_WCNORETURN void _INTERNAL _OutOfMemoryExit( void )
 {
     _OutOfMemory();
     while( _MessageLoop( false ) )
@@ -217,7 +217,7 @@ _WCNORETURN void _WCNEAR _OutOfMemoryExit( void )
 /*
  * _GetWindowNameAndCoords - set up name and coordinates for a new window
  */
-void _WCNEAR _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 )
+void _INTERNAL _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 )
 {
     static int  _concnt = 0;
     static int  _x1 = 0;
@@ -254,7 +254,7 @@ void _WCNEAR _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int
 /*
  * _InitMainWindowData - set up main window data area
  */
-void _WCNEAR _InitMainWindowData( HANDLE inst )
+void _INTERNAL _InitMainWindowData( HANDLE inst )
 {
 
     _MainWindowData = FARmalloc( sizeof( main_window_data ) );
@@ -270,7 +270,7 @@ void _WCNEAR _InitMainWindowData( HANDLE inst )
 /*
  * _FiniMainWindowData - free main window data area
  */
-void _WCNEAR _FiniMainWindowData( void )
+void _INTERNAL _FiniMainWindowData( void )
 {
 
     FARfree( _MainWindowData );
@@ -280,7 +280,7 @@ void _WCNEAR _FiniMainWindowData( void )
 /*
  * _AnotherWindowData - create yet another window data item
  */
-LPWDATA _WCNEAR _AnotherWindowData( HWND hwnd, va_list args )
+LPWDATA _INTERNAL _AnotherWindowData( HWND hwnd, va_list args )
 {
     LPWDATA     w;
     int         h,hcnt;
@@ -322,7 +322,7 @@ LPWDATA _WCNEAR _AnotherWindowData( HWND hwnd, va_list args )
 /*
  * _FreeWindowData - get rid of a windows data
  */
-void _WCNEAR _FreeWindowData( LPWDATA w )
+void _INTERNAL _FreeWindowData( LPWDATA w )
 {
     int i,j;
 

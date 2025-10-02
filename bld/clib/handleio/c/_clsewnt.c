@@ -44,7 +44,7 @@
 #include "thread.h"
 
 
-int _WCNEAR __close( int handle )
+int _INTERNAL __close( int handle )
 {
     bool        is_closed;
     int         rc;

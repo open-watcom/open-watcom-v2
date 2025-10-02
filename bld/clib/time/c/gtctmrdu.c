@@ -36,7 +36,7 @@
 #include "getctime.h"
 
 
-int _WCNEAR __getctime( struct tm *t )
+int _INTERNAL __getctime( struct tm *t )
 {
     unsigned long msb;
     unsigned long lsb;

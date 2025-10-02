@@ -60,32 +60,32 @@
 _WCNORETURN extern void _cexit_( unsigned ret_code );
 #pragma aux _cexit_  "*" __parm __routine [__eax]
 
-static void __NullAccessRtn( int handle )
+static void _INTERNAL __NullAccessRtn( int handle )
 {
     handle = handle;
 }
 
-static void __NullAccIOBRtn(void) {}
-static void __NullAccHeapRtn(void) {}
-static void __NullAccTDListRtn(void) {}
+static void _INTERNAL __NullAccIOBRtn(void) {}
+static void _INTERNAL __NullAccHeapRtn(void) {}
+static void _INTERNAL __NullAccTDListRtn(void) {}
 
-void    (*_AccessFileH)(int)     = &__NullAccessRtn;
-void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
-void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;
-void    (*_ReleaseIOB)(void)     = &__NullAccIOBRtn;
-void    (*_AccessNHeap)(void)    = &__NullAccHeapRtn;
-void    (*_AccessFHeap)(void)    = &__NullAccHeapRtn;
-void    (*_ReleaseNHeap)(void)   = &__NullAccHeapRtn;
-void    (*_ReleaseFHeap)(void)   = &__NullAccHeapRtn;
-void    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
-void    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
-void    (*_AccessFList)(void)    = &__NullAccIOBRtn;
-void    (*_ReleaseFList)(void)   = &__NullAccIOBRtn;
+void    _INTERNAL (*_AccessFileH)(int)     = &__NullAccessRtn;
+void    _INTERNAL (*_ReleaseFileH)(int)    = &__NullAccessRtn;
+void    _INTERNAL (*_AccessIOB)(void)      = &__NullAccIOBRtn;
+void    _INTERNAL (*_ReleaseIOB)(void)     = &__NullAccIOBRtn;
+void    _INTERNAL (*_AccessNHeap)(void)    = &__NullAccHeapRtn;
+void    _INTERNAL (*_AccessFHeap)(void)    = &__NullAccHeapRtn;
+void    _INTERNAL (*_ReleaseNHeap)(void)   = &__NullAccHeapRtn;
+void    _INTERNAL (*_ReleaseFHeap)(void)   = &__NullAccHeapRtn;
+void    _INTERNAL (*_AccessTDList)(void)   = &__NullAccTDListRtn;
+void    _INTERNAL (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
+void    _INTERNAL (*_AccessFList)(void)    = &__NullAccIOBRtn;
+void    _INTERNAL (*_ReleaseFList)(void)   = &__NullAccIOBRtn;
 
 #ifdef _M_IX86
  #pragma aux _end "*"
 #endif
-extern  char            _end;
+extern char             _end;
 
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
@@ -120,7 +120,7 @@ _WCNORETURN void __RdosMain( void )
     // never return
 }
 
-_WCNORETURN void _WCNEAR __exit( int ret_code )
+_WCNORETURN void _INTERNAL __exit( int ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
     // never return

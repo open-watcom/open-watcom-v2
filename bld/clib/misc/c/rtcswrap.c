@@ -36,8 +36,8 @@
 #include <string.h>
 
 
-void _WCNEAR __rtct_fail( const char *fn, const char *reason, void *reserved )
-/****************************************************************************/
+void _INTERNAL __rtct_fail( const char *fn, const char *reason, void *reserved )
+/******************************************************************************/
 {
     char    msg[RTCT_MSG_MAX];
 

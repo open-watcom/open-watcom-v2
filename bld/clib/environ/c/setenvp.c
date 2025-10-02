@@ -90,7 +90,7 @@ static void *(_WCI86NEAR allocate)( size_t amt )
 #endif
 #endif
 
-void _WCNEAR __setenvp( void )
+void _INTERNAL __setenvp( void )
 {
 #if defined(__NETWARE__)
     // no environment support
@@ -248,7 +248,7 @@ void _WCNEAR __setenvp( void )
 
 #if !defined(__NETWARE__)
 
-void _WCNEAR __freeenvp( void )
+void _INTERNAL __freeenvp( void )
 {
     clearenv();
     if( _RWD_environ != NULL ) {

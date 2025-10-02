@@ -47,7 +47,7 @@ _WCRTLINK int _heapwalk( struct _heapinfo *entry )
 }
 #endif
 
-int __NHeapWalk( struct _heapinfo *entry, heapblk_nptr heap )
+int _INTERNAL __NHeapWalk( struct _heapinfo *entry, heapblk_nptr heap )
 {
     freelist_nptr frl;
     freelist_nptr frl_next;

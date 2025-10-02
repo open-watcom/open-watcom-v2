@@ -46,7 +46,7 @@
 
 #if defined( __NETWARE__ )
 #if !defined( _THIN_LIB )
-int _WCNEAR __get_errno( void )
+int _INTERNAL __get_errno( void )
 {
 #if defined( _NETWARE_LIBC )
     return( *___errno() );
@@ -54,7 +54,7 @@ int _WCNEAR __get_errno( void )
     return( *__get_errno_ptr() );
 #endif
 }
-void _WCNEAR __set_errno( int err )
+void _INTERNAL __set_errno( int err )
 {
 #if defined( _NETWARE_LIBC )
     *___errno() = err;
@@ -66,11 +66,11 @@ void _WCNEAR __set_errno( int err )
 #elif defined(__QNX__)
 #elif defined(__RDOSDEV__)
 #elif defined(__MT__)
-int _WCNEAR __get_errno( void )
+int _INTERNAL __get_errno( void )
 {
     return( __THREADDATAPTR->__errnoP );
 }
-void _WCNEAR __set_errno( int err )
+void _INTERNAL __set_errno( int err )
 {
     __THREADDATAPTR->__errnoP = err;
 }
@@ -78,7 +78,7 @@ void _WCNEAR __set_errno( int err )
 #endif
 
 
-int _WCNEAR __set_EINVAL( void )
+int _INTERNAL __set_EINVAL( void )
 {
 #if defined( __NETWARE__ )
 #if defined( _NETWARE_LIBC )

@@ -43,6 +43,7 @@
 #endif
 #include "frtdata.h"
 #include "fthread.h"
+#include "variety.h"
 #include "thread.h"
 #include "rtspawn.h"
 

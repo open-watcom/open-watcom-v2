@@ -42,7 +42,7 @@
 /*
  * _NewWindow - create a new window
  */
-bool _WCNEAR _NewWindow( const char *name, ... )
+bool _INTERNAL _NewWindow( const char *name, ... )
 {
     HWND        hwnd;
     LPWDATA     w;
@@ -110,7 +110,7 @@ bool _WCNEAR _NewWindow( const char *name, ... )
 /*
  * _ReleaseWindowResources - get rid of any resources
  */
-void _WCNEAR _ReleaseWindowResources( LPWDATA w )
+void _INTERNAL _ReleaseWindowResources( LPWDATA w )
 {
     DeleteObject( w->brush );
     if( w->hascursor ) {

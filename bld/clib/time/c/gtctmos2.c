@@ -38,7 +38,7 @@
 #include "getctime.h"
 
 
-int _WCNEAR __getctime( struct tm *t )
+int _INTERNAL __getctime( struct tm *t )
 {
     DATETIME    dt;
 

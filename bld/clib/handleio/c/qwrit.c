@@ -87,7 +87,7 @@ static tiny_ret_t _WCNEAR __TinyWrite( int handle, const void *buffer, unsigned 
 }
 #endif
 
-int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
+int _INTERNAL __qwrite( int handle, const void *buffer, unsigned len )
 {
     int             atomic;
 #if defined(__NT__)

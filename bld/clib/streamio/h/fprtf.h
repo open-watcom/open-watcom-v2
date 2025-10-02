@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int _WCNEAR __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args );
+extern int _INTERNAL __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args );

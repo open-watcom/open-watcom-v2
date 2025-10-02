@@ -40,8 +40,8 @@ extern int          _wargc;         /* wide arguments count */
 extern wchar_t      **_wargv;       /* wide argument vector */
 
 
-extern void _WCNEAR __F_NAME(__Init_Argv,__wInit_Argv)( void );
-extern void _WCNEAR __F_NAME(__Fini_Argv,__wFini_Argv)( void );
+extern void _INTERNAL __F_NAME(__Init_Argv,__wInit_Argv)( void );
+extern void _INTERNAL __F_NAME(__Fini_Argv,__wFini_Argv)( void );
 
 _WCRTDATA extern int        __F_NAME(___Argc,___wArgc); /* argument count */
 _WCRTDATA extern CHAR_TYPE**__F_NAME(___Argv,___wArgv); /* argument vector */

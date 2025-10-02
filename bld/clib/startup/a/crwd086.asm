@@ -99,13 +99,13 @@ _DATA   ends
 
 ifdef _PROT_MODE_
 
-        xrefp   __HeapInit_
+        xrefn   __HeapInit_
 
 _TEXT   segment word public 'CODE'
         assume  cs:_TEXT
         assume  ds:DGROUP
 
-InitHeap proc   far
+InitHeap proc   near
         push    dx                      ; save dx
         mov     ax,ds                   ; get data segment selector
         lsl     ax,ax                   ; get size of data segment
@@ -122,7 +122,7 @@ _TEXT   ends
 
 include xinit.inc
 
-        xinit   InitHeap,0
+        xinitn  InitHeap,0
 
 endif
 

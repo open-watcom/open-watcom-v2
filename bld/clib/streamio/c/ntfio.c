@@ -87,7 +87,7 @@ void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
          * Always allow reopening for read.  Since we don't want the same
          * file opened twice for writing, only allow the file to be opened
          * for writing hereafter if we're opening it now in read-only mode.
-         *                      -- M. Hildebrand, 14-jun-96
+         *                      -- M. Hildebrand
          */
         *share_mode = FILE_SHARE_READ;  /* can always open again for read */
         if( rwmode == OPENMODE_ACCESS_RDONLY ) {

@@ -39,9 +39,9 @@
 #include "streamio.h"
 
 
-void _WCNEAR __ioalloc( FILE *fp )
+void _INTERNAL __ioalloc( FILE *fp )
 {
-    __chktty( fp );                                 /* JBS 28-aug-90 */
+    __chktty( fp );
     if( fp->_bufsize == 0 ) {
         if( fp->_flag & _IOLBF ) {
             fp->_bufsize = 134;

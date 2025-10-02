@@ -46,11 +46,11 @@
 
 
 #ifndef __UNIX__
-void    _WCNEAR (*__RmTmpFileFn)( FILE *fp );
+void    _INTERNAL (*__RmTmpFileFn)( FILE *fp );
 #endif
 
 
-int _WCNEAR __doclose( FILE *fp, int close_handle )
+int _INTERNAL __doclose( FILE *fp, int close_handle )
 {
     int         ret;
 
@@ -64,19 +64,24 @@ int _WCNEAR __doclose( FILE *fp, int close_handle )
         }
     }
     _AccessFile( fp );
-/*
- *      02-nov-92 G.Turcotte  Syncronize buffer pointer with the file pointer
- *                        IEEE Std 1003.1-1988 B.8.2.3.2
- *      03-nov-03 B.Oldeman Inlined ftell; we already know the buffer isn't
- *                dirty (because of the flush), so only a "get" applies
- */
+    /*
+     *  G.Turcotte  Synchronize buffer pointer with the file pointer
+     *                IEEE Std 1003.1-1988 B.8.2.3.2
+     *  B.Oldeman   Inlined ftell; we already know the buffer isn't dirty
+     *                (because of the flush), so only a "get" applies
+     */
     if( fp->_cnt != 0 ) {                   /* if something in buffer */
         __lseek( fileno( fp ), -fp->_cnt, SEEK_CUR );
     }
 
     if( close_handle ) {
-#if defined( __UNIX__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
-        // we don't get to implement the close function on these systems
+#if defined( __UNIX__ ) \
+  || defined( __NETWARE__ ) \
+  || defined( __RDOS__ ) \
+  || defined( __RDOSDEV__ )
+        /*
+         * we don't get to implement the close function on these systems
+         */
         ret |= close( fileno( fp ) );
 #else
         ret |= __close( fileno( fp ) );
@@ -97,7 +102,7 @@ int _WCNEAR __doclose( FILE *fp, int close_handle )
     return( ret );
 }
 
-int _WCNEAR __shutdown_stream( FILE *fp, int close_handle )
+int _INTERNAL __shutdown_stream( FILE *fp, int close_handle )
 {
     int         ret;
 

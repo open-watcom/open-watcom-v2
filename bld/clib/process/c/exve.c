@@ -87,7 +87,7 @@ extern unsigned doslowblock( void );
     __modify __nomemory [__bx __es]
 
 extern void         __cdecl _WCFAR _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
-extern void         _WCNEAR __init_execve( void );
+extern void         _INTERNAL __init_execve( void );
 extern unsigned     __exec_para;
 
 static void dosexpand( unsigned block )
@@ -299,7 +299,7 @@ error: /* Clean up after error */
     return( -1 );
 }
 
-void _WCNEAR __init_execve( void )      /* called from initializer segment */
+void _INTERNAL __init_execve( void )    /* called from initializer segment */
 {
     __Exec_addr = execve;
 }

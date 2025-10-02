@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern void     _WCNEAR __MkTmpFile( char *buf, int num );
-extern void     _WCNEAR __RmTmpFile( FILE *fp );
-extern void     _WCNEAR (*__RmTmpFileFn)( FILE *fp );
+extern void     _INTERNAL __MkTmpFile( char *buf, int num );
+extern void     _INTERNAL __RmTmpFile( FILE *fp );
+extern void     _INTERNAL (*__RmTmpFileFn)( FILE *fp );

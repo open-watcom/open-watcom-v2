@@ -52,28 +52,28 @@
  * These routines are used internally only, so should not
  * have a _WCRTLINK modifier.
  */
-extern int      __findenvadd( const char *name );
-extern int      __findenvdel( const char *name );
-extern int      __setenv( const char *name, const char *newvalue, int overwrite );
-extern int      __putenv( const char *env_string );
+extern int      _INTERNAL __findenvadd( const char *name );
+extern int      _INTERNAL __findenvdel( const char *name );
+extern int      _INTERNAL __setenv( const char *name, const char *newvalue, int overwrite );
+extern int      _INTERNAL __putenv( const char *env_string );
 #ifdef CLIB_USE_ALT_ENV
-extern void     __create_wide_environment( void );
-extern int      __wfindenvadd( const wchar_t *name );
-extern int      __wfindenvdel( const wchar_t *name );
-extern int      __wsetenv( const wchar_t *name, const wchar_t *newvalue, int overwrite );
-extern int      __wputenv( const wchar_t *env_string );
+extern void     _INTERNAL __create_wide_environment( void );
+extern int      _INTERNAL __wfindenvadd( const wchar_t *name );
+extern int      _INTERNAL __wfindenvdel( const wchar_t *name );
+extern int      _INTERNAL __wsetenv( const wchar_t *name, const wchar_t *newvalue, int overwrite );
+extern int      _INTERNAL __wputenv( const wchar_t *env_string );
 #endif
 
-extern void     _WCNEAR __setenvp( void );
+extern void     _INTERNAL __setenvp( void );
 #if !defined(__NETWARE__)
-extern void     _WCNEAR __freeenvp( void );
+extern void     _INTERNAL __freeenvp( void );
 #endif
 
 #ifdef CLIB_UPDATE_OS_ENV
 #if defined( __NT__ )
-extern int      _WCNEAR __os_env_update_wide( const wchar_t *name, const wchar_t *value );
+extern int      _INTERNAL __os_env_update_wide( const wchar_t *name, const wchar_t *value );
 #endif
-extern int      _WCNEAR __os_env_update_narrow( const char *name, const char *value );
+extern int      _INTERNAL __os_env_update_narrow( const char *name, const char *value );
 #endif
 
 #endif

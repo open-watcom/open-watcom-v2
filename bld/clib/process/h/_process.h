@@ -61,7 +61,7 @@ extern char *__Slash_C( char *switch_c, bool use_slash );
 #endif
 #if defined( __DOS__ )
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
-extern execveaddr_type  _WCNEAR __execaddr( void );
+extern execveaddr_type  _INTERNAL __execaddr( void );
 extern execveaddr_type  __Exec_addr;
 #elif defined( __OS2__ ) || defined( __NT__ )
 #ifdef __WIDECHAR__

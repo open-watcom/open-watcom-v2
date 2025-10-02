@@ -46,7 +46,7 @@
 /*
  * _DisplayAllLines - show all visible lines...
  */
-void _WCNEAR _DisplayAllLines( LPWDATA w, bool clear )
+void _INTERNAL _DisplayAllLines( LPWDATA w, bool clear )
 {
     LPLDATA     ld;
     int         i,end;
@@ -99,7 +99,7 @@ void _WCNEAR _DisplayAllLines( LPWDATA w, bool clear )
 /*
  * _DisplayLineInWindowWithColor - as it sounds!
  */
-void _WCNEAR _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
+void _INTERNAL _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
                         int c2, int extra, int startcol )
 {
   #ifdef _MBCS
@@ -231,7 +231,7 @@ void _WCNEAR _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int
 /*
  * _DisplayLineInWindow - do as it sounds, use default colors
  */
-void _WCNEAR _DisplayLineInWindow( LPWDATA w, int line, LPSTR text )
+void _INTERNAL _DisplayLineInWindow( LPWDATA w, int line, LPSTR text )
 {
     int         c1,c2;
 
@@ -244,7 +244,7 @@ void _WCNEAR _DisplayLineInWindow( LPWDATA w, int line, LPSTR text )
 /*
  * _ClearWindow - erase a window
  */
-void _WCNEAR _ClearWindow( LPWDATA w )
+void _INTERNAL _ClearWindow( LPWDATA w )
 {
     HWND        hwnd;
 
@@ -299,7 +299,7 @@ void _WCNEAR _ClearWindow( LPWDATA w )
 /*
  * _ShiftWindow - move current window up/down
 */
-void _WCNEAR _ShiftWindow( LPWDATA w, int diff )
+void _INTERNAL _ShiftWindow( LPWDATA w, int diff )
 {
     HWND        hwnd;
     int         amt;
@@ -355,7 +355,7 @@ void _WCNEAR _ShiftWindow( LPWDATA w, int diff )
 /*
  * _ResizeWin - give a window a new size/location
  */
-void _WCNEAR _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
+void _INTERNAL _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
 {
     int height;
 

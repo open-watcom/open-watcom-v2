@@ -34,20 +34,20 @@
 #include "_defwin.h"
 
 
-LPWDATA (_WCNEAR *_WindowsIsWindowedHandle)( int h ) = { NULL };
-void (_WCNEAR *_WindowsRemoveWindowedHandle)( int h ) = { NULL };
-bool (_WCNEAR *_WindowsNewWindow)( const char *s, ... ) = { NULL };
-bool (_WCNEAR *_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
-bool (_WCNEAR *_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
-bool (_WCNEAR *_WindowsSetAppTitle)( const char *p ) = { NULL };
-bool (_WCNEAR *_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
-bool (_WCNEAR *_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
-bool (_WCNEAR *_WindowsYieldControl)( void ) = { NULL };
-bool (_WCNEAR *_WindowsShutDown)( void ) = { NULL };
-int (_WCNEAR *_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
-int (_WCNEAR *_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
-bool (_WCNEAR *_WindowsKbhit)( LPWDATA lp ) = { NULL };
-int (_WCNEAR *_WindowsGetch)( LPWDATA lp ) = { NULL };
-int (_WCNEAR *_WindowsGetche)( LPWDATA lp ) = { NULL };
-void (_WCNEAR *_WindowsPutch)( LPWDATA lp, int c ) = { NULL };
-void (_WCNEAR *_WindowsExitRtn)( void ) = { NULL };
+LPWDATA _INTERNAL (*_WindowsIsWindowedHandle)( int h ) = { NULL };
+void _INTERNAL (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
+bool _INTERNAL (*_WindowsNewWindow)( const char *s, ... ) = { NULL };
+bool _INTERNAL (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
+bool _INTERNAL (*_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
+bool _INTERNAL (*_WindowsSetAppTitle)( const char *p ) = { NULL };
+bool _INTERNAL (*_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
+bool _INTERNAL (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
+bool _INTERNAL (*_WindowsYieldControl)( void ) = { NULL };
+bool _INTERNAL (*_WindowsShutDown)( void ) = { NULL };
+int _INTERNAL (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
+int _INTERNAL (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
+bool _INTERNAL (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
+int _INTERNAL (*_WindowsGetch)( LPWDATA lp ) = { NULL };
+int _INTERNAL (*_WindowsGetche)( LPWDATA lp ) = { NULL };
+void _INTERNAL (*_WindowsPutch)( LPWDATA lp, int c ) = { NULL };
+void _INTERNAL (*_WindowsExitRtn)( void ) = { NULL };

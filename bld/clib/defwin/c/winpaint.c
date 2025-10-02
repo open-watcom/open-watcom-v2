@@ -46,9 +46,9 @@
  * _RepaintWindow
 */
 #if defined( __OS2__ )
-void _WCNEAR _RepaintWindow( LPWDATA w, PRECT rcPaint, HPS ph )
+void _INTERNAL _RepaintWindow( LPWDATA w, PRECT rcPaint, HPS ph )
 #else
-void _WCNEAR _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
+void _INTERNAL _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
 #endif
 {
     WORD                i;

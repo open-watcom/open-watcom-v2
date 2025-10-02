@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void _WCNEAR __init_8087( void );
-extern void _WCNEAR __chk8087( void );
+extern void _INTERNAL __init_8087( void );
+extern void _INTERNAL __chk8087( void );

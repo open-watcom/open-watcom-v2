@@ -214,7 +214,7 @@ _WCRTLINK void _fpreset( void )
     }
 }
 
-void _WCNEAR __init_8087( void )
+void _INTERNAL __init_8087( void )
 {
 #if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_32BIT__ )
     if( _RWD_real87 != 0 ) {            /* if our emulator, don't worry */
@@ -249,8 +249,8 @@ static void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 }
 #endif
 
-void _WCNEAR __chk8087( void )
-/****************************/
+void _INTERNAL __chk8087( void )
+/******************************/
 {
 #if defined( __OS2__ )
     char    devinfo;

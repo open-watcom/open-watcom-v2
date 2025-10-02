@@ -39,7 +39,7 @@
 
 #define FIRST_FRL(h)    ((freelist_nptr)(h + 1))
 
-void _WCFAR __HeapInit( heapblk_nptr heap, unsigned int amount )
+void _INTERNAL __HeapInit( heapblk_nptr heap, unsigned int amount )
 {
     __nheapbeg = heap;
     heap->len  = amount - TAG_SIZE;

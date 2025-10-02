@@ -46,6 +46,7 @@
 #include "rundat.h"
 #include "cioconst.h"
 #include "rtenv.h"
+#include "variety.h"
 #include "thread.h"
 #include "errrtns.h"
 #include "rtspawn.h"

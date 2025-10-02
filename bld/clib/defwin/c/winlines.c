@@ -197,7 +197,7 @@ static void newLine( LPWDATA w )
 /*
  * _AddLine - add a line to the lines data structures
  */
-void _WCNEAR _AddLine( LPWDATA w, const void *in_data, unsigned len )
+void _INTERNAL _AddLine( LPWDATA w, const void *in_data, unsigned len )
 {
     int                     i;
     bool                    hadbreak;
@@ -362,7 +362,7 @@ void _WCNEAR _AddLine( LPWDATA w, const void *in_data, unsigned len )
  * _UpdateInputLine - add data to current line; return number of chars
  *                   on next line if line break was forced
  */
-int _WCNEAR _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
+int _INTERNAL _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
 {
     int         i,j;
     bool        justnew;
@@ -419,7 +419,7 @@ int _WCNEAR _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_ad
 /*
  * _PositionScrollThumb
 */
-void _WCNEAR _PositionScrollThumb( LPWDATA w )
+void _INTERNAL _PositionScrollThumb( LPWDATA w )
 {
     DWORD       c;
     WORD        curr, end;
@@ -452,7 +452,7 @@ void _WCNEAR _PositionScrollThumb( LPWDATA w )
 /*
  * _GetLineFromThumbPosition - given a thumb position, find line in file
  */
-DWORD _WCNEAR _GetLineFromThumbPosition( LPWDATA w, WORD n )
+DWORD _INTERNAL _GetLineFromThumbPosition( LPWDATA w, WORD n )
 {
     DWORD       new;
     DWORD       ll;
@@ -472,7 +472,7 @@ DWORD _WCNEAR _GetLineFromThumbPosition( LPWDATA w, WORD n )
 /*
  * _GetLineDataPointer - get line data pointer
  */
-LPLDATA _WCNEAR _GetLineDataPointer( LPWDATA w, DWORD line )
+LPLDATA _INTERNAL _GetLineDataPointer( LPWDATA w, DWORD line )
 {
     DWORD       cnt;
     LPLDATA     ld;
@@ -497,7 +497,7 @@ LPLDATA _WCNEAR _GetLineDataPointer( LPWDATA w, DWORD line )
 /*
  * _FreeAllLines - as it sounds!
  */
-void _WCNEAR _FreeAllLines( LPWDATA w )
+void _INTERNAL _FreeAllLines( LPWDATA w )
 {
     LPLDATA     ld;
     LPLDATA     ld_next;
@@ -525,7 +525,7 @@ static char filterFiles[] = "Result Files (*.TXT)" \
 /*
  * _SaveAllLines - save all lines to a file
  */
-void _WCNEAR _SaveAllLines( LPWDATA w )
+void _INTERNAL _SaveAllLines( LPWDATA w )
 {
     char                fname[_MAX_PATH];
     OPENFILENAME        of;
@@ -572,7 +572,7 @@ void _WCNEAR _SaveAllLines( LPWDATA w )
 /*
  * _CopyAllLines - copy lines to clipboard
  */
-void _WCNEAR _CopyAllLines( LPWDATA w )
+void _INTERNAL _CopyAllLines( LPWDATA w )
 {
     LPLDATA     ld;
     DWORD       total;
@@ -645,7 +645,7 @@ void _WCNEAR _CopyAllLines( LPWDATA w )
 /*
  * _GetLastLineNumber
  */
-DWORD _WCNEAR _GetLastLineNumber( LPWDATA w )
+DWORD _INTERNAL _GetLastLineNumber( LPWDATA w )
 {
     DWORD       ll;
 

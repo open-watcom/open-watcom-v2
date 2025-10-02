@@ -58,7 +58,7 @@
 
 #ifdef __INT64__
 
-__int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
+__int64 _INTERNAL __lseeki64( int handle, __int64 offset, int origin )
 {
 #if defined( __NT__ ) || defined( __OS2_32BIT__ ) || defined( __LINUX__ )
     __int64         pos;
@@ -123,7 +123,7 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
 
 #else
 
-long _WCNEAR __lseek( int handle, long offset, int origin )
+long _INTERNAL __lseek( int handle, long offset, int origin )
 {
 #if defined( __NT__ )
     DWORD               pos;

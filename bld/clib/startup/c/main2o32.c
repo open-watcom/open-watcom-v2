@@ -49,14 +49,10 @@
 #include "cominit.h"
 #include "procfini.h"
 #include "rtexcpt.h"
+#include "xmain.h"
 
 
-#ifdef __SW_BR
-    extern      int     main( int, char ** );
-    extern      int     wmain( int, wchar_t ** );
-#endif
-
-_WCNORETURN void _WCNEAR __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod,
+_WCNORETURN void _INTERNAL __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod,
                             unsigned reserved, char *env, char *cmd )
 /********************************************************************/
 {

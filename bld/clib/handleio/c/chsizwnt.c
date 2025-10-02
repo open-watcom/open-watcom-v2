@@ -46,7 +46,7 @@
 #define PAD_SIZE        512
 
 // pad with zero bytes
-void static _WCNEAR __padfile( int handle, long offset, long diff )
+static void _WCNEAR __padfile( int handle, long offset, long diff )
 {
     int rc;
     unsigned amount;

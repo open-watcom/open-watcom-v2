@@ -45,7 +45,7 @@ static HWND menuHandle;
 /*
  * _NewWindow - create a new window
  */
-bool _WCNEAR _NewWindow( const char *name, ... )
+bool _INTERNAL _NewWindow( const char *name, ... )
 {
     LPWDATA     w;
     MENUITEM    menus;
@@ -107,7 +107,7 @@ bool _WCNEAR _NewWindow( const char *name, ... )
 /*
  * _ReleaseWindowResources - get rid of any resources
  */
-void _WCNEAR _ReleaseWindowResources( LPWDATA w )
+void _INTERNAL _ReleaseWindowResources( LPWDATA w )
 {
         w = w;
 } /* _ReleaseWindowResources */
@@ -115,12 +115,12 @@ void _WCNEAR _ReleaseWindowResources( LPWDATA w )
 /*
  * _SetWinMenuHandle - Sets the internal submenu handle.
  */
-void _WCNEAR _SetWinMenuHandle( HWND hmenu )
+void _INTERNAL _SetWinMenuHandle( HWND hmenu )
 {
     menuHandle = hmenu;
 }
 
-HWND _WCNEAR _GetWinMenuHandle( void )
+HWND _INTERNAL _GetWinMenuHandle( void )
 {
     return( menuHandle );
 }

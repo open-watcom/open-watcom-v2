@@ -47,12 +47,12 @@
 #define TEMP_TYPE       0
 #define RESERVED        0
 
-extern TEMPLATE_HANDLE  _WCNEAR _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-extern TEMPLATE_HANDLE  _WCNEAR _AddControl( TEMPLATE_HANDLE dlgtemplate, ULONG style,
+extern TEMPLATE_HANDLE  _INTERNAL _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
+extern TEMPLATE_HANDLE  _INTERNAL _AddControl( TEMPLATE_HANDLE dlgtemplate, ULONG style,
                             int x, int y, int cx, int cy, USHORT id, USHORT children,
                             const char FAR *classname, const char *captiontext, const char *presparms,
                             const void *ctldata, ULONG ctldatalen );
-extern TEMPLATE_HANDLE  _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
-extern int              _WCNEAR _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
+extern TEMPLATE_HANDLE  _INTERNAL _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+extern int              _INTERNAL _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
 
 #endif

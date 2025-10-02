@@ -53,25 +53,33 @@ extern "C" {
  * also updating the C++ runtime file prwdata.asm
  */
 typedef struct  semaphore_object {
-        _SEM            semaphore;
-        unsigned        initialized;
-        _TID            owner;
-        unsigned        count;
+    _SEM            semaphore;
+    unsigned        initialized;
+    _TID            owner;
+    unsigned        count;
 } semaphore_object;
 
-_WCRTLINK void __AccessSemaphore( semaphore_object * );
-_WCRTLINK void __ReleaseSemaphore( semaphore_object * );
-_WCRTLINK void __CloseSemaphore( semaphore_object * );
+typedef void        clib_fn( semaphore_object * );
+typedef void        _INTERNAL internal_fn( semaphore_object * );
+
+extern internal_fn __AccessSemaphore;
+extern internal_fn __ReleaseSemaphore;
+extern internal_fn __CloseSemaphore;
 
 // the following is for the C++ library
 #if defined( _M_I86 )
-    #define _AccessSemaphore( sema ) __AccessSemaphore( sema )
-    #define _ReleaseSemaphore( sema ) __ReleaseSemaphore( sema )
-    #define _CloseSemaphore( sema ) __CloseSemaphore( sema )
+
+    extern clib_fn _clib_AccessSemaphore;
+    extern clib_fn _clib_ReleaseSemaphore;
+    extern clib_fn _clib_CloseSemaphore;
+
+    #define _AccessSemaphore( sema )    _clib_AccessSemaphore( sema )
+    #define _ReleaseSemaphore( sema )   _clib_ReleaseSemaphore( sema )
+    #define _CloseSemaphore( sema )     _clib_CloseSemaphore( sema )
 #else
-    _WCRTLINK extern void (*__AccessSema4)( semaphore_object *);
-    _WCRTLINK extern void (*__ReleaseSema4)( semaphore_object *);
-    _WCRTLINK extern void (*__CloseSema4)( semaphore_object *);
+    _WCRTDATA extern internal_fn *__AccessSema4;
+    _WCRTDATA extern internal_fn *__ReleaseSema4;
+    _WCRTDATA extern internal_fn *__CloseSema4;
     #define _AccessSemaphore( sema ) __AccessSema4( sema )
     #define _ReleaseSemaphore( sema ) __ReleaseSema4( sema )
     #define _CloseSemaphore( sema ) __CloseSema4( sema )
