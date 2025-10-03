@@ -10,79 +10,79 @@
 
 dig_arch    mad_arch = DIG_ARCH_NIL;
 
-void    DumpPacket( unsigned char * pkt, unsigned short len, int tabit = 0 );
+void    DumpPacket( unsigned char *pkt, unsigned short len, int tabit = 0 );
 
-int handle_REQ_CONNECT( unsigned char * pkt, unsigned short len );
-int handle_REQ_DISCONNECT( unsigned char * pkt, unsigned short len );
-int handle_REQ_SUSPEND( unsigned char * pkt, unsigned short len );
-int handle_REQ_RESUME( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short len );
-int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_SYS_CONFIG( unsigned char * pkt, unsigned short len );
-int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short len );
-int handle_REQ_CHECKSUM_MEM( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_MEM( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_IO( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_GO( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_STEP( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_KILL( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_WATCH( unsigned char * pkt, unsigned short len );
-int handle_REQ_CLEAR_WATCH( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_BREAK( unsigned char * pkt, unsigned short len );
-int handle_REQ_CLEAR_BREAK( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_NEXT_ALIAS( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_USER_SCREEN( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_DEBUG_SCREEN( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_USER_KEYBOARD( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_LIB_NAME( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_ERR_TEXT( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_MESSAGE_TEXT( unsigned char * pkt, unsigned short len );
-int handle_REQ_REDIRECT_STDIN( unsigned char * pkt, unsigned short len );
-int handle_REQ_REDIRECT_STDOUT( unsigned char * pkt, unsigned short len );
-int handle_REQ_SPLIT_CMD( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_REGS( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_REGS( unsigned char * pkt, unsigned short len );
-int handle_REQ_MACHINE_DATA( unsigned char * pkt, unsigned short len );
+int handle_REQ_CONNECT( unsigned char *pkt, unsigned short len );
+int handle_REQ_DISCONNECT( unsigned char *pkt, unsigned short len );
+int handle_REQ_SUSPEND( unsigned char *pkt, unsigned short len );
+int handle_REQ_RESUME( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char *pkt, unsigned short len );
+int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_SYS_CONFIG( unsigned char *pkt, unsigned short len );
+int handle_REQ_MAP_ADDR( unsigned char *pkt, unsigned short len );
+int handle_REQ_CHECKSUM_MEM( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_MEM( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_MEM( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_IO( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_IO( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_GO( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_STEP( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_LOAD( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_KILL( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_WATCH( unsigned char *pkt, unsigned short len );
+int handle_REQ_CLEAR_WATCH( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_BREAK( unsigned char *pkt, unsigned short len );
+int handle_REQ_CLEAR_BREAK( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_NEXT_ALIAS( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_USER_SCREEN( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_DEBUG_SCREEN( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_USER_KEYBOARD( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_LIB_NAME( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_ERR_TEXT( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_MESSAGE_TEXT( unsigned char *pkt, unsigned short len );
+int handle_REQ_REDIRECT_STDIN( unsigned char *pkt, unsigned short len );
+int handle_REQ_REDIRECT_STDOUT( unsigned char *pkt, unsigned short len );
+int handle_REQ_SPLIT_CMD( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_REGS( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_REGS( unsigned char *pkt, unsigned short len );
+int handle_REQ_MACHINE_DATA( unsigned char *pkt, unsigned short len );
 
-int handle_REQ_CONNECT_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_DISCONNECT_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SUSPEND_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_RESUME_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_MAP_ADDR_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_MEM_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_IO_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_GO_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_STEP_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_PROG_KILL_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_WATCH_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_CLEAR_WATCH_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_BREAK_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_CLEAR_BREAK_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_USER_SCREEN_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SET_DEBUG_SCREEN_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_USER_KEYBOARD_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_LIB_NAME_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_ERR_TEXT_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_SPLIT_CMD_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_REGS_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_REGS_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len );
+int handle_REQ_CONNECT_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_DISCONNECT_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SUSPEND_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_RESUME_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_MAP_ADDR_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_MEM_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_MEM_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_IO_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_IO_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_GO_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_STEP_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_LOAD_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_PROG_KILL_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_WATCH_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_CLEAR_WATCH_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_BREAK_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_CLEAR_BREAK_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_USER_SCREEN_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SET_DEBUG_SCREEN_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_USER_KEYBOARD_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_LIB_NAME_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_ERR_TEXT_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_SPLIT_CMD_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_READ_REGS_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_WRITE_REGS_REPLY( unsigned char *pkt, unsigned short len );
+int handle_REQ_MACHINE_DATA_REPLY( unsigned char *pkt, unsigned short len );
 
-typedef int ( *RQ_HANDLER )( unsigned char * pkt, unsigned short len );
+typedef int ( *RQ_HANDLER )( unsigned char *pkt, unsigned short len );
 
 RQ_HANDLER MyHandlers[] = {
     #define pick(sym,dumbfunc,stdfunc)  handle_REQ_ ## sym,
@@ -98,9 +98,9 @@ RQ_HANDLER MyReplyHandlers[] = {
     NULL
 };
 
-typedef int ( SVC_DECODE )( int request, unsigned char * pkt, unsigned short len );
+typedef int ( SVC_DECODE )( int request, unsigned char *pkt, unsigned short len );
 
-typedef unsigned service_func(void);
+typedef unsigned service_func( void );
 
 typedef struct tagServiceNameAndId{
     struct tagServiceNameAndId      *next;
@@ -111,15 +111,15 @@ typedef struct tagServiceNameAndId{
 
 char    last_service_name[1024] = { 0 };
 
-ServiceNameAndId *  services = NULL;
-ServiceNameAndId *  last_service = NULL;
+ServiceNameAndId    *services = NULL;
+ServiceNameAndId    *last_service = NULL;
 
 extern int SSD_Files( int, unsigned char *, unsigned short );
-extern int SSD_FileInfo( int, unsigned char * , unsigned short );
-extern int SSD_Environment( int, unsigned char * , unsigned short );
-extern int SSD_Threads( int , unsigned char * , unsigned short );
-extern int SSD_Overlays( int, unsigned char * , unsigned short );
-extern int SSD_Capabilities( int, unsigned char * , unsigned short );
+extern int SSD_FileInfo( int, unsigned char *, unsigned short );
+extern int SSD_Environment( int, unsigned char *, unsigned short );
+extern int SSD_Threads( int , unsigned char *, unsigned short );
+extern int SSD_Overlays( int, unsigned char *, unsigned short );
+extern int SSD_Capabilities( int, unsigned char *, unsigned short );
 
 static char *dig_arch_desc[] = {
     "Unknown",
@@ -134,7 +134,7 @@ static char *dig_os_desc[] = {
     #undef pick
 };
 
-SVC_DECODE * get_supp_service_decoder( const char * service_name )
+SVC_DECODE *get_supp_service_decoder( const char *service_name )
 {
     if( 0 == stricmp( service_name, "Files" ) )
         return &SSD_Files;
@@ -157,8 +157,8 @@ int main( int argc, char ** argv )
     if( argc < 2 )
         return -1;
 
-    FILE * fil = fopen( argv[1], "rb" );
-    if( !fil ) {
+    FILE    *fil = fopen( argv[1], "rb" );
+    if( fil == NULL ) {
         fprintf( stderr, "Failed to open file\n" );
         return -1;
     }
@@ -182,22 +182,22 @@ int main( int argc, char ** argv )
 
         if( type > 3 ) {
             time_valid = 1;
-            if( sizeof( WORD ) != fread( &st.wHour, 1, sizeof(WORD), fil ) ) {
+            if( sizeof( WORD ) != fread( &st.wHour, 1, sizeof( WORD ), fil ) ) {
                 fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
                 break;
             }
             offset += sizeof( WORD );
-            if( sizeof( WORD ) != fread( &st.wMinute, 1, sizeof(WORD), fil ) ) {
+            if( sizeof( WORD ) != fread( &st.wMinute, 1, sizeof( WORD ), fil ) ) {
                 fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
                 break;
             }
             offset += sizeof( WORD );
-            if( sizeof( WORD ) != fread( &st.wSecond, 1, sizeof(WORD), fil ) ) {
+            if( sizeof( WORD ) != fread( &st.wSecond, 1, sizeof( WORD ), fil ) ) {
                 fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
                 break;
             }
             offset += sizeof( WORD );
-            if( sizeof( WORD ) != fread( &st.wMilliseconds, 1, sizeof(WORD), fil ) ) {
+            if( sizeof( WORD ) != fread( &st.wMilliseconds, 1, sizeof( WORD ), fil ) ) {
                 fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
                 break;
             }
@@ -279,14 +279,14 @@ unsigned char to_char( unsigned char x )
     return x;
 }
 
-void DumpPacket( unsigned char * pkt, unsigned short len, int tabit )
+void DumpPacket( unsigned char *pkt, unsigned short len, int tabit )
 {
 
     char    output_buffer_1[80] = {0};
     char    output_buffer_2[80] = {0};
     unsigned short  copy_len = len;
     unsigned offset = 0;
-    unsigned char * ptr = pkt;
+    unsigned char *ptr = pkt;
 
     if( tabit )
         printf( "    " );
@@ -334,11 +334,11 @@ void DumpPacket( unsigned char * pkt, unsigned short len, int tabit )
     }
 }
 
-int handle_REQ_CONNECT( unsigned char * pkt, unsigned short len )
+int handle_REQ_CONNECT( unsigned char *pkt, unsigned short len )
 {
     if( len != sizeof( connect_req ) )
         return 0;
-    connect_req * prq = ( connect_req * ) pkt;
+    connect_req *prq = (connect_req *)pkt;
 
     printf( "Debugger request: REQ_CONNECT\n" );
     printf( "    Major :     %u\n", prq->ver.major );
@@ -348,10 +348,10 @@ int handle_REQ_CONNECT( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_CONNECT_REPLY( unsigned char * pkt, unsigned short len )
+int handle_REQ_CONNECT_REPLY( unsigned char *pkt, unsigned short len )
 {
-    connect_ret * pr = ( connect_ret * ) pkt;
-    char * err = ( char * ) &pr[1];
+    connect_ret *pr = (connect_ret *)pkt;
+    char *err = (char *)&pr[1];
     unsigned short errlen = (unsigned short)( len - sizeof( connect_ret ) );
 
     printf( "Trap Reply: REQ_CONNECT\n" );
@@ -363,7 +363,7 @@ int handle_REQ_CONNECT_REPLY( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_DISCONNECT( unsigned char * , unsigned short )
+int handle_REQ_DISCONNECT( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_DISCONNECT\n" );
     return 1;
@@ -374,29 +374,29 @@ int handle_REQ_DISCONNECT_REPLY( unsigned char *, unsigned short )
     return 0;
 }
 
-int handle_REQ_SUSPEND( unsigned char * , unsigned short )
+int handle_REQ_SUSPEND( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_SUSPEND\n" );
     return 1;
 }
 
-int handle_REQ_SUSPEND_REPLY( unsigned char * , unsigned short )
+int handle_REQ_SUSPEND_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_RESUME( unsigned char * , unsigned short )
+int handle_REQ_RESUME( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_RESUME\n" );
     return 1;
 }
 
-int handle_REQ_RESUME_REPLY( unsigned char * , unsigned short )
+int handle_REQ_RESUME_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char *pkt, unsigned short )
 {
     trap_req *req = (trap_req *)pkt;
     req = &req[1];
@@ -429,10 +429,10 @@ int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char *pkt, unsigned sho
     return 1;
 }
 
-int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short len )
+int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char *pkt, unsigned short len )
 {
-    perform_supplementary_service_req * prq = ( perform_supplementary_service_req * ) pkt;
-    unsigned char * ssd = ( unsigned char * ) &prq[1];
+    perform_supplementary_service_req *prq = (perform_supplementary_service_req *)pkt;
+    unsigned char *ssd = (unsigned char *)&prq[1];
     unsigned short ssd_len = (unsigned short)( len - sizeof( perform_supplementary_service_req ) );
 
     printf( "Debugger request: REQ_PERFORM_SUPPLEMENTARY_SERVICE\n" );
@@ -463,7 +463,7 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
     return 1;
 }
 
-int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned short len)
+int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char *pkt, unsigned short len)
 {
     int rc = -1;
     if( last_service ) {
@@ -480,16 +480,16 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigne
     return 1;
 }
 
-int handle_REQ_GET_SYS_CONFIG( unsigned char * , unsigned short )
+int handle_REQ_GET_SYS_CONFIG( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_GET_SYS_CONFIG\n" );
 
     return 1;
 }
 
-int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char *pkt, unsigned short )
 {
-    get_sys_config_ret * pr = ( get_sys_config_ret * ) pkt;
+    get_sys_config_ret *pr = (get_sys_config_ret *)pkt;
 
     printf( "Trap reply: REQ_GET_SYS_CONFIG\n" );
 
@@ -515,9 +515,9 @@ int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short )
+int handle_REQ_MAP_ADDR( unsigned char *pkt, unsigned short )
 {
-    map_addr_req * prq = ( map_addr_req * ) pkt;
+    map_addr_req *prq = (map_addr_req *)pkt;
     printf( "Debugger request: REQ_MAP_ADDR\n" );
     if( prq->in_addr.segment == MAP_FLAT_CODE_SELECTOR ) {
         printf( "    Address:    FLAT_CODE:%.08x\n", prq->in_addr.offset );
@@ -531,9 +531,9 @@ int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_MAP_ADDR_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_MAP_ADDR_REPLY( unsigned char *pkt, unsigned short )
 {
-    map_addr_ret * pr = ( map_addr_ret * ) pkt;
+    map_addr_ret *pr = (map_addr_ret *)pkt;
 
     printf( "Trap reply: REQ_MAP_ADDR\n" );
     printf( "    Address:    %.04x:%.08x\n", pr->out_addr.segment, pr->out_addr.offset );
@@ -543,18 +543,18 @@ int handle_REQ_MAP_ADDR_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_CHECKSUM_MEM( unsigned char * pkt, unsigned short )
+int handle_REQ_CHECKSUM_MEM( unsigned char *pkt, unsigned short )
 {
-    checksum_mem_req * prq = ( checksum_mem_req * ) pkt;
+    checksum_mem_req *prq = (checksum_mem_req *)pkt;
     printf( "Debugger request: REQ_CHECKSUM_MEM\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->in_addr.segment, prq->in_addr.offset );
     printf( "    Length:     %.04x\n", prq->len );
     return 1;
 }
 
-int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char *pkt, unsigned short )
 {
-    checksum_mem_ret * pr = ( checksum_mem_ret * ) pkt;
+    checksum_mem_ret *pr = (checksum_mem_ret *)pkt;
 
     printf( "Trap reply: REQ_CHECKSUM_MEM\n" );
     printf( "    Checksum:     %.08x\n", pr->result );
@@ -562,16 +562,16 @@ int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_READ_MEM( unsigned char * pkt, unsigned short )
+int handle_REQ_READ_MEM( unsigned char *pkt, unsigned short )
 {
-    read_mem_req * prq = ( read_mem_req * ) pkt;
+    read_mem_req *prq = (read_mem_req *)pkt;
     printf( "Debugger request: REQ_READ_MEM\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->mem_addr.segment, prq->mem_addr.offset );
     printf( "    Length:     %.04x\n", prq->len );
     return 1;
 }
 
-int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len )
+int handle_REQ_READ_MEM_REPLY( unsigned char *pkt, unsigned short len )
 {
     printf( "Trap reply: REQ_READ_MEM\n" );
     printf( "    Length: 0x%.04x\n", len );
@@ -584,11 +584,11 @@ int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len )
+int handle_REQ_WRITE_MEM( unsigned char *pkt, unsigned short len )
 {
-    write_mem_req * prq = ( write_mem_req * ) pkt;
+    write_mem_req *prq = (write_mem_req *)pkt;
     unsigned short to_write = (unsigned short)( len - sizeof( write_mem_req ) );
-    unsigned char * data = ( unsigned char * ) &prq[1];
+    unsigned char *data = (unsigned char *)&prq[1];
 
     printf( "Debugger request: REQ_WRITE_MEM\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->mem_addr.segment, prq->mem_addr.offset );
@@ -599,9 +599,9 @@ int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_WRITE_MEM_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_WRITE_MEM_REPLY( unsigned char *pkt, unsigned short )
 {
-    write_mem_ret * pr = ( write_mem_ret * ) pkt;
+    write_mem_ret *pr = (write_mem_ret *)pkt;
 
     printf( "Trap reply: REQ_WRITE_MEM\n" );
     printf( "    Length: 0x%.04x\n", pr->len );
@@ -609,16 +609,16 @@ int handle_REQ_WRITE_MEM_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_READ_IO( unsigned char * pkt, unsigned short )
+int handle_REQ_READ_IO( unsigned char *pkt, unsigned short )
 {
-    read_io_req * prq = ( read_io_req * ) pkt;
+    read_io_req *prq = (read_io_req *)pkt;
     printf( "Debugger request: REQ_READ_IO\n" );
     printf( "    IO Address: %.08x\n", prq->IO_offset );
     printf( "    Length:     %.02x\n", prq->len );
     return 1;
 }
 
-int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len )
+int handle_REQ_READ_IO_REPLY( unsigned char *pkt, unsigned short len )
 {
     printf( "Trap reply: REQ_READ_IO\n" );
     printf( "    Length: 0x%.04x\n", len );
@@ -630,11 +630,11 @@ int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len )
+int handle_REQ_WRITE_IO( unsigned char *pkt, unsigned short len )
 {
-    write_io_req * prq = ( write_io_req * ) pkt;
+    write_io_req *prq = (write_io_req *)pkt;
     unsigned short to_write = (unsigned short)( len - sizeof( write_io_req ) );
-    unsigned char * data = (unsigned char *)&prq[1];
+    unsigned char *data = (unsigned char *)&prq[1];
 
     printf( "Debugger request: REQ_WRITE_IO\n" );
     printf( "    Address:    %.08x\n", prq->IO_offset );
@@ -645,9 +645,9 @@ int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_WRITE_IO_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_WRITE_IO_REPLY( unsigned char *pkt, unsigned short )
 {
-    write_io_ret * pr = ( write_io_ret * ) pkt;
+    write_io_ret *pr = (write_io_ret *)pkt;
 
     printf( "Trap reply: REQ_WRITE_IO\n" );
     printf( "    Length: %u\n", pr->len );
@@ -655,7 +655,7 @@ int handle_REQ_WRITE_IO_REPLY( unsigned char * pkt, unsigned short )
     return 0;
 }
 
-int handle_REQ_PROG_GO( unsigned char * , unsigned short )
+int handle_REQ_PROG_GO( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_PROG_GO\n" );
     return 1;
@@ -695,9 +695,9 @@ void PrintConditions( unsigned short cond )
     printf( "\n" );
 }
 
-int handle_REQ_PROG_GO_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_GO_REPLY( unsigned char *pkt, unsigned short )
 {
-    prog_go_ret * pr = ( prog_go_ret * ) pkt;
+    prog_go_ret *pr = (prog_go_ret *)pkt;
 
     printf( "Trap reply: REQ_PROG_GO\n" );
 
@@ -708,15 +708,15 @@ int handle_REQ_PROG_GO_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_PROG_STEP( unsigned char * , unsigned short )
+int handle_REQ_PROG_STEP( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_PROG_STEP\n" );
     return 1;
 }
 
-int handle_REQ_PROG_STEP_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_STEP_REPLY( unsigned char *pkt, unsigned short )
 {
-    prog_step_ret * pr = ( prog_step_ret * ) pkt;
+    prog_step_ret *pr = (prog_step_ret *)pkt;
 
     printf( "Trap reply: REQ_PROG_STEP\n" );
 
@@ -727,7 +727,7 @@ int handle_REQ_PROG_STEP_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len )
+int handle_REQ_PROG_LOAD( unsigned char *pkt, unsigned short len )
 {
     prog_load_req   *prq = (prog_load_req *)pkt;
     char            *p = (char *)pkt;
@@ -750,9 +750,9 @@ int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_LOAD_REPLY( unsigned char *pkt, unsigned short )
 {
-    prog_load_ret * pr = ( prog_load_ret * ) pkt;
+    prog_load_ret *pr = (prog_load_ret *)pkt;
 
     printf( "Trap reply: REQ_PROG_LOAD\n" );
     printf( "    Error:          %u\n", pr->err );
@@ -779,18 +779,18 @@ int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_PROG_KILL( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_KILL( unsigned char *pkt, unsigned short )
 {
-    prog_kill_req * prq = ( prog_kill_req * ) pkt;
+    prog_kill_req *prq = (prog_kill_req *)pkt;
     printf( "Debugger request: REQ_PROG_KILL\n" );
     printf( "    Task ID: 0x%.08x\n", prq->task_id );
 
     return 1;
 }
 
-int handle_REQ_PROG_KILL_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_KILL_REPLY( unsigned char *pkt, unsigned short )
 {
-    prog_kill_ret * pr = ( prog_kill_ret * ) pkt;
+    prog_kill_ret *pr = (prog_kill_ret *)pkt;
 
     printf( "Trap reply: REQ_PROG_KILL\n" );
     printf( "    Error   : 0x%.08x\n", pr->err );
@@ -798,9 +798,9 @@ int handle_REQ_PROG_KILL_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SET_WATCH( unsigned char * pkt, unsigned short )
+int handle_REQ_SET_WATCH( unsigned char *pkt, unsigned short )
 {
-    set_watch_req * prq = ( set_watch_req * ) pkt;
+    set_watch_req *prq = (set_watch_req *)pkt;
 
     printf( "Debugger request: REQ_SET_WATCH\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->watch_addr.segment, prq->watch_addr.offset );
@@ -809,9 +809,9 @@ int handle_REQ_SET_WATCH( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SET_WATCH_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_SET_WATCH_REPLY( unsigned char *pkt, unsigned short )
 {
-    set_watch_ret * pr = ( set_watch_ret * ) pkt;
+    set_watch_ret *pr = (set_watch_ret *)pkt;
 
     printf( "Trap reply: REQ_SET_WATCH\n" );
     printf( "    Error:  0x%.08x\n", pr->err );
@@ -823,9 +823,9 @@ int handle_REQ_SET_WATCH_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_CLEAR_WATCH( unsigned char * pkt, unsigned short )
+int handle_REQ_CLEAR_WATCH( unsigned char *pkt, unsigned short )
 {
-    clear_watch_req * prq = ( clear_watch_req * ) pkt;
+    clear_watch_req *prq = (clear_watch_req *)pkt;
 
     printf( "Debugger request: REQ_CLEAR_WATCH\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->watch_addr.segment, prq->watch_addr.offset );
@@ -834,14 +834,14 @@ int handle_REQ_CLEAR_WATCH( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_CLEAR_WATCH_REPLY( unsigned char * , unsigned short )
+int handle_REQ_CLEAR_WATCH_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_SET_BREAK( unsigned char * pkt, unsigned short )
+int handle_REQ_SET_BREAK( unsigned char *pkt, unsigned short )
 {
-    set_break_req * prq = ( set_break_req * ) pkt;
+    set_break_req *prq = (set_break_req *)pkt;
 
     printf( "Debugger request: REQ_SET_BREAK\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->break_addr.segment, prq->break_addr.offset );
@@ -849,9 +849,9 @@ int handle_REQ_SET_BREAK( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SET_BREAK_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_SET_BREAK_REPLY( unsigned char *pkt, unsigned short )
 {
-    set_break_ret * pr = ( set_break_ret * ) pkt;
+    set_break_ret *pr = (set_break_ret *)pkt;
 
     printf( "Trap reply: REQ_SET_BREAK\n" );
     printf( "    Old:        %.08x\n", pr->old );
@@ -859,9 +859,9 @@ int handle_REQ_SET_BREAK_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_CLEAR_BREAK( unsigned char * pkt, unsigned short )
+int handle_REQ_CLEAR_BREAK( unsigned char *pkt, unsigned short )
 {
-    clear_break_req * prq = ( clear_break_req * ) pkt;
+    clear_break_req *prq = (clear_break_req *)pkt;
 
     printf( "Debugger request: REQ_CLEAR_BREAK\n" );
     printf( "    Address:    %.04x:%.08x\n", prq->break_addr.segment, prq->break_addr.offset );
@@ -870,14 +870,14 @@ int handle_REQ_CLEAR_BREAK( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_CLEAR_BREAK_REPLY( unsigned char * , unsigned short )
+int handle_REQ_CLEAR_BREAK_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_GET_NEXT_ALIAS( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_NEXT_ALIAS( unsigned char *pkt, unsigned short )
 {
-    get_next_alias_req * prq = ( get_next_alias_req * ) pkt;
+    get_next_alias_req *prq = (get_next_alias_req *)pkt;
 
     printf( "Debugger request: REQ_GET_NEXT_ALIAS\n" );
     printf( "    Segment:    %.04x\n", prq->seg );
@@ -885,9 +885,9 @@ int handle_REQ_GET_NEXT_ALIAS( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char *pkt, unsigned short )
 {
-    get_next_alias_ret * pr = ( get_next_alias_ret * ) pkt;
+    get_next_alias_ret *pr = (get_next_alias_ret *)pkt;
 
     printf( "Trap reply: REQ_GET_NEXT_ALIAS\n" );
     if( pr->seg ) {
@@ -904,32 +904,32 @@ int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SET_USER_SCREEN( unsigned char * , unsigned short )
+int handle_REQ_SET_USER_SCREEN( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_SET_USER_SCREEN\n" );
 
     return 1;
 }
 
-int handle_REQ_SET_USER_SCREEN_REPLY( unsigned char * , unsigned short )
+int handle_REQ_SET_USER_SCREEN_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_SET_DEBUG_SCREEN( unsigned char * , unsigned short )
+int handle_REQ_SET_DEBUG_SCREEN( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_SET_DEBUG_SCREEN\n" );
     return 1;
 }
 
-int handle_REQ_SET_DEBUG_SCREEN_REPLY( unsigned char * , unsigned short )
+int handle_REQ_SET_DEBUG_SCREEN_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_READ_USER_KEYBOARD( unsigned char * pkt, unsigned short )
+int handle_REQ_READ_USER_KEYBOARD( unsigned char *pkt, unsigned short )
 {
-    read_user_keyboard_req * prq = ( read_user_keyboard_req * ) pkt;
+    read_user_keyboard_req *prq = (read_user_keyboard_req *)pkt;
 
     printf( "Debugger request: REQ_READ_USER_KEYBOARD\n" );
     printf( "    Wait:   %u\n", prq->wait );
@@ -937,9 +937,9 @@ int handle_REQ_READ_USER_KEYBOARD( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_READ_USER_KEYBOARD_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_READ_USER_KEYBOARD_REPLY( unsigned char *pkt, unsigned short )
 {
-    read_user_keyboard_ret * pr = ( read_user_keyboard_ret * ) pkt;
+    read_user_keyboard_ret *pr = (read_user_keyboard_ret *)pkt;
 
     printf( "Trap reply: REQ_READ_USER_KEYBOARD\n" );
     printf( "    Wait:   %.02x\n", pr->key );
@@ -947,9 +947,9 @@ int handle_REQ_READ_USER_KEYBOARD_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_LIB_NAME( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_LIB_NAME( unsigned char *pkt, unsigned short )
 {
-    get_lib_name_req * prq = ( get_lib_name_req * ) pkt;
+    get_lib_name_req *prq = (get_lib_name_req *)pkt;
 
     printf( "Debugger request: REQ_GET_LIB_NAME\n" );
     printf( "    MAD Handle: %u\n", prq->mod_handle );
@@ -957,10 +957,10 @@ int handle_REQ_GET_LIB_NAME( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_LIB_NAME_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_LIB_NAME_REPLY( unsigned char *pkt, unsigned short )
 {
-    get_lib_name_ret *pr = ( get_lib_name_ret * ) pkt;
-    char * name = ( char * ) &pr[1];
+    get_lib_name_ret *pr = (get_lib_name_ret *)pkt;
+    char *name = (char *)&pr[1];
 
     printf( "Trap reply: REQ_GET_LIB_NAME\n" );
     if( pr->mod_handle ) {
@@ -977,9 +977,9 @@ int handle_REQ_GET_LIB_NAME_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_ERR_TEXT( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_ERR_TEXT( unsigned char *pkt, unsigned short )
 {
-    get_err_text_req * prq = ( get_err_text_req * ) pkt;
+    get_err_text_req *prq = (get_err_text_req *)pkt;
 
     printf( "Debugger request: REQ_GET_ERR_TEXT\n" );
     printf( "    Error:  %.08x\n", prq->err );
@@ -987,22 +987,22 @@ int handle_REQ_GET_ERR_TEXT( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_ERR_TEXT_REPLY( unsigned char * , unsigned short )
+int handle_REQ_GET_ERR_TEXT_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_GET_MESSAGE_TEXT( unsigned char * , unsigned short )
+int handle_REQ_GET_MESSAGE_TEXT( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_GET_MESSAGE_TEXT\n" );
 
     return 1;
 }
 
-int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char *pkt, unsigned short )
 {
-    get_message_text_ret * pr = ( get_message_text_ret * ) pkt;
-    char * text = ( char * ) &pr[1];
+    get_message_text_ret *pr = (get_message_text_ret *)pkt;
+    char *text = (char *)&pr[1];
 
     printf( "Trap reply: REQ_GET_MESSAGE_TEXT\n" );
     printf( "    Flags:      %.02x\n", pr->flags );
@@ -1011,10 +1011,10 @@ int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_REDIRECT_STDIN( unsigned char * pkt, unsigned short )
+int handle_REQ_REDIRECT_STDIN( unsigned char *pkt, unsigned short )
 {
-    redirect_stdio_req * prq = (redirect_stdio_req *)pkt;
-    char * name = (char *)&prq[1];
+    redirect_stdio_req *prq = (redirect_stdio_req *)pkt;
+    char *name = (char *)&prq[1];
 
     printf( "Debugger request: REQ_REDIRECT_STDIN\n" );
     printf( "    Name:   %s\n", name );
@@ -1022,9 +1022,9 @@ int handle_REQ_REDIRECT_STDIN( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char *pkt, unsigned short )
 {
-    redirect_stdio_ret * pr = (redirect_stdio_ret *)pkt;
+    redirect_stdio_ret *pr = (redirect_stdio_ret *)pkt;
 
     printf( "Trap reply: REQ_REDIRECT_STDIN\n" );
     printf( "    Error:  %d\n", pr->err );
@@ -1032,10 +1032,10 @@ int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_REDIRECT_STDOUT( unsigned char * pkt, unsigned short )
+int handle_REQ_REDIRECT_STDOUT( unsigned char *pkt, unsigned short )
 {
-    redirect_stdio_req * prq = (redirect_stdio_req *)pkt;
-    char * name = (char *)&prq[1];
+    redirect_stdio_req *prq = (redirect_stdio_req *)pkt;
+    char *name = (char *)&prq[1];
 
     printf( "Debugger request: REQ_REDIRECT_STDOUT\n" );
     printf( "    Name:   %s\n", name );
@@ -1043,9 +1043,9 @@ int handle_REQ_REDIRECT_STDOUT( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char *pkt, unsigned short )
 {
-    redirect_stdio_ret * pr = (redirect_stdio_ret *)pkt;
+    redirect_stdio_ret *pr = (redirect_stdio_ret *)pkt;
 
     printf( "Trap reply: REQ_REDIRECT_STDOUT\n" );
     printf( "    Error:  %d\n", pr->err );
@@ -1053,10 +1053,10 @@ int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SPLIT_CMD( unsigned char * pkt, unsigned short )
+int handle_REQ_SPLIT_CMD( unsigned char *pkt, unsigned short )
 {
-    split_cmd_req * prq = ( split_cmd_req * ) pkt;
-    char * cmd = ( char * ) &prq[1];
+    split_cmd_req *prq = (split_cmd_req *)pkt;
+    char *cmd = (char *)&prq[1];
 
     printf( "Debugger request: REQ_SPLIT_CMD\n" );
     printf( "    Command:    %s\n", cmd );
@@ -1064,9 +1064,9 @@ int handle_REQ_SPLIT_CMD( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_SPLIT_CMD_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_SPLIT_CMD_REPLY( unsigned char *pkt, unsigned short )
 {
-    split_cmd_ret * pr = ( split_cmd_ret * ) pkt;
+    split_cmd_ret *pr = (split_cmd_ret *)pkt;
 
     printf( "Trap reply: REQ_SPLIT_CMD\n" );
     printf( "    Command end:        %.04x\n", pr->cmd_end );
@@ -1075,16 +1075,16 @@ int handle_REQ_SPLIT_CMD_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_READ_REGS( unsigned char * , unsigned short )
+int handle_REQ_READ_REGS( unsigned char *, unsigned short )
 {
     printf( "Debugger request: REQ_READ_REGS\n" );
 
     return 1;
 }
 
-void DumpRegistersMAX_X86( mad_registers * pregs )
+void DumpRegistersMAX_X86( mad_registers *pregs )
 {
-    struct x86_mad_registers * px = &pregs->x86;
+    struct x86_mad_registers *px = &pregs->x86;
     //          XXX:
     printf( "    EAX:%.08x EBX:%.08x ECX:%.08x EDX:%.08x\n", px->cpu.eax, px->cpu.ebx, px->cpu.ecx, px->cpu.edx );
     printf( "    ESI:%.08x EDI:%.08x EBP:%.08x ESP:%.08x\n", px->cpu.esi, px->cpu.edi, px->cpu.ebp, px->cpu.esp );
@@ -1096,7 +1096,7 @@ void DumpRegistersMAX_X86( mad_registers * pregs )
     printf( "    *** to be done - FPU, MMX, XMM *** \n" );
 }
 
-void DumpRegisters( mad_registers * pregs )
+void DumpRegisters( mad_registers *pregs )
 {
     switch( mad_arch ) {
     case DIG_ARCH_X86:
@@ -1112,9 +1112,9 @@ void DumpRegisters( mad_registers * pregs )
     }
 }
 
-int handle_REQ_READ_REGS_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_READ_REGS_REPLY( unsigned char *pkt, unsigned short )
 {
-    mad_registers * pregs = ( mad_registers * ) pkt;
+    mad_registers *pregs = (mad_registers *)pkt;
 
     printf( "Trap reply: REQ_READ_REGS\n" );
     DumpRegisters( pregs );
@@ -1122,10 +1122,10 @@ int handle_REQ_READ_REGS_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_WRITE_REGS( unsigned char * pkt, unsigned short )
+int handle_REQ_WRITE_REGS( unsigned char *pkt, unsigned short )
 {
-    write_regs_req * prq = ( write_regs_req * ) pkt;
-    mad_registers * pregs = ( mad_registers * ) &prq[1];
+    write_regs_req *prq = (write_regs_req *)pkt;
+    mad_registers *pregs = (mad_registers *)&prq[1];
 
     printf( "Debugger request: REQ_WRITE_REGS\n" );
     DumpRegisters( pregs );
@@ -1133,15 +1133,15 @@ int handle_REQ_WRITE_REGS( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_WRITE_REGS_REPLY( unsigned char * , unsigned short )
+int handle_REQ_WRITE_REGS_REPLY( unsigned char *, unsigned short )
 {
     return 0;
 }
 
-int handle_REQ_MACHINE_DATA( unsigned char * pkt, unsigned short len )
+int handle_REQ_MACHINE_DATA( unsigned char *pkt, unsigned short len )
 {
-    machine_data_req *  prq = ( machine_data_req * ) pkt;
-    unsigned char *     msd = ( unsigned char * ) &prq[1];
+    machine_data_req    *prq = (machine_data_req *)pkt;
+    unsigned char       *msd = (unsigned char *)&prq[1];
     unsigned short      msd_len = (unsigned short)( len - sizeof( machine_data_req ) );
 
     printf( "Debugger request: REQ_MACHINE_DATA\n" );
@@ -1155,10 +1155,10 @@ int handle_REQ_MACHINE_DATA( unsigned char * pkt, unsigned short len )
     return 1;
 }
 
-int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len )
+int handle_REQ_MACHINE_DATA_REPLY( unsigned char *pkt, unsigned short len )
 {
-    machine_data_ret * pr = (machine_data_ret * ) pkt;
-    unsigned char * msd = ( unsigned char * ) &pr[1];
+    machine_data_ret *pr = (machine_data_ret *)pkt;
+    unsigned char *msd = (unsigned char *)&pr[1];
     unsigned short  msd_len = (unsigned short)( len - sizeof( machine_data_ret ) );
 
     printf( "Trap reply: REQ_MACHINE_DATA\n" );
