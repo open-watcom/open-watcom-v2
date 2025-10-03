@@ -40,7 +40,7 @@
 /*
  * _SaveAllLines - save all lines to a file
  */
-void _SaveAllLines( LPWDATA w )
+void _WCNEAR _SaveAllLines( LPWDATA w )
 {
     char                fname[CCHMAXPATH + 1];
     FILEDLG             fdlg;
@@ -87,7 +87,7 @@ void _SaveAllLines( LPWDATA w )
 /*
  * _CopyAllLines - copy lines to clipboard
  */
-void _CopyAllLines( LPWDATA w )
+void _WCNEAR _CopyAllLines( LPWDATA w )
 {
     LPLDATA     ld;
     ULONG       total;

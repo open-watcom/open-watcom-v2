@@ -110,8 +110,8 @@ bool _WCNEAR _CloseWindow( LPWDATA w )
     return( false );
 }
 
-void _NewCursor( LPWDATA w, cursors type )
-//===========================================
+void _WCNEAR _NewCursor( LPWDATA w, cursors type )
+//================================================
 // change the cursor type
 {
     if( w->hascursor ) {
