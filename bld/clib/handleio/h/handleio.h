@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-extern unsigned     __IOMode( int handle );
 extern void         _WCNEAR __set_handles( int num );
 extern void         _WCNEAR __grow_iomode( int num );
 

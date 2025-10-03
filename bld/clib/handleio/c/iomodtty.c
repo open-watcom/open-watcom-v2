@@ -54,11 +54,3 @@ void _WCNEAR __ChkTTYIOMode( int handle )
         }
     }
 }
-
-// For F77 to call
-
-unsigned __IOMode( int handle )
-{
-    __ChkTTYIOMode( handle );
-    return( __GetIOMode( handle ) );
-}
