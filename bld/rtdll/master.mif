@@ -52,6 +52,7 @@ ntverrc_dll = $(dllname)
 !include deftarg.mif
 !include dllbase.mif
 !include libsubdi.mif
+!include defwind.mif
 
 !include ../objs.mif
 

@@ -30,6 +30,7 @@ debug = 1
 
 !include cproj.mif
 !include libsubdi.mif
+!include defwind.mif
 
 !include $(clib_dir)/flags.mif
 !include $(clib_dir)/include.mif
