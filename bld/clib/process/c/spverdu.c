@@ -51,7 +51,7 @@
 
 #define FALSE   0
 
-static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
+static int _WCNEAR file_exists( const CHAR_TYPE *filename )
 {
     if( __F_NAME(access,_waccess)( filename, 0 ) == 0 ) {
         return( 1 );

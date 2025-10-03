@@ -58,7 +58,7 @@ extern  unsigned _HUGEDATA __init_mode[_NFILES];
 
 static  unsigned _init_NFiles;          // original __NFiles value;
 
-void _WCNEAR __grow_iomode( int num )
+void _INTERNAL __grow_iomode( int num )
 {
     unsigned    *new;
 
@@ -99,7 +99,7 @@ AYIN( __shrink_iomode, INIT_PRIORITY_IOSTREAM );
 
 #if defined(__OS2_32BIT__)
 
-static void __preinit_iomode_os2( void )
+static void _WCNEAR __preinit_iomode_os2( void )
 {
     LONG    req_count;
     ULONG   curr_max_fh;

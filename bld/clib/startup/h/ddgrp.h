@@ -34,7 +34,7 @@
 #endif
 
 #if defined( __OS2__ )
-extern bool __disallow_single_dgroup( unsigned );
+extern bool _INTERNAL __disallow_single_dgroup( unsigned );
 #elif defined( __NT__ )
-extern bool __disallow_single_dgroup( HANDLE );
+extern bool _INTERNAL __disallow_single_dgroup( HANDLE );
 #endif

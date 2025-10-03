@@ -52,7 +52,7 @@
 
 #define _ISNAMEEND(p)   (_TCSNEXTC(p)==STRING('=')||_TCSTERM(p))
 
-static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
+static int _WCNEAR __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
 /*
  * return 1 based index if found
  * otherwise return existing size as negative nuber or 0

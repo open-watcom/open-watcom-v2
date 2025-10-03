@@ -87,8 +87,8 @@ static struct {
     unsigned    have_OS_TZ : 1;
 }               tzFlag = { 1, 0 };
 
-int __DontCacheOSTZ( void )
-/*************************/
+int _INTERNAL __DontCacheOSTZ( void )
+/***********************************/
 {
     int old_flag;
 
@@ -98,8 +98,8 @@ int __DontCacheOSTZ( void )
     return( old_flag );
 }
 
-int __CacheOSTZ( void )
-/*********************/
+int _INTERNAL __CacheOSTZ( void )
+/*******************************/
 {
     int old_flag;
 
@@ -109,8 +109,8 @@ int __CacheOSTZ( void )
     return( old_flag );
 }
 
-static char *parse_sign( char *tz, int *sign )
-/********************************************/
+static char * _WCNEAR parse_sign( char *tz, int *sign )
+/*****************************************************/
 {
     int neg;
 
@@ -125,8 +125,8 @@ static char *parse_sign( char *tz, int *sign )
     return( tz );
 }
 
-static char *parse_number( char *tz, int *val )
-/*********************************************/
+static char * _WCNEAR parse_number( char *tz, int *val )
+/******************************************************/
 {
     int value;
 
@@ -139,8 +139,8 @@ static char *parse_number( char *tz, int *val )
     return( tz );
 }
 
-static char *parse_time( char *tz, int *hours, int *minutes, int *seconds )
-/*************************************************************************/
+static char * _WCNEAR parse_time( char *tz, int *hours, int *minutes, int *seconds )
+/**********************************************************************************/
 {
     tz = parse_number( tz, hours );
     if( *tz == ':' ) {
@@ -152,8 +152,8 @@ static char *parse_time( char *tz, int *hours, int *minutes, int *seconds )
     return( tz );
 }
 
-static char *parse_name( char *tz, char *name )
-/*********************************************/
+static char * _WCNEAR parse_name( char *tz, char *name )
+/******************************************************/
 {
     int         len;
     char        ch;
@@ -203,8 +203,8 @@ static char *parse_name( char *tz, char *name )
     return( tz );
 }
 
-static char *parse_offset( char *tz, long *offset )
-/*************************************************/
+static char * _WCNEAR parse_offset( char *tz, long *offset )
+/**********************************************************/
 {
     int         hours;
     int         minutes;
@@ -225,8 +225,8 @@ static char *parse_offset( char *tz, long *offset )
     return( tz );
 }
 
-static char *parse_rule( char *tz, struct tm *timeptr )
-/*****************************************************/
+static char * _WCNEAR parse_rule( char *tz, struct tm *timeptr )
+/**************************************************************/
 {
     int         date_form;
     int         days;
@@ -289,8 +289,8 @@ static char *parse_rule( char *tz, struct tm *timeptr )
     return( tz );
 }
 
-static void fix_rule( struct tm *tm, int adjust )
-/***********************************************/
+static void _WCNEAR fix_rule( struct tm *tm, int adjust )
+/*******************************************************/
 {
     /*
      * convert rule to be in terms of Standard Time
@@ -301,8 +301,8 @@ static void fix_rule( struct tm *tm, int adjust )
     tm->tm_sec -= adjust % 60;
 }
 
-static char *parse_rule_OS2( char *tz, struct tm *timeptr )
-/*********************************************************/
+static char * _WCNEAR parse_rule_OS2( char *tz, struct tm *timeptr )
+/******************************************************************/
 {
     int         days;
     int         month;
@@ -375,8 +375,8 @@ static char *parse_rule_OS2( char *tz, struct tm *timeptr )
     return( tz );
 }
 
-static char *parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_zone )
-/*************************************************************************************
+static char * _WCNEAR parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_zone )
+/**********************************************************************************************
  * OS/2 format is checked if the format is not yet determined and the next
  * character is a ','
  * To be valid all fields from sm to shift must be specified
@@ -435,8 +435,8 @@ static char *parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_
     return( tz );
 }
 
-void __parse_tz( char *tz )
-/*************************/
+void _INTERNAL __parse_tz( char *tz )
+/***********************************/
 {
     long        dayzone;
 
@@ -490,8 +490,8 @@ void __parse_tz( char *tz )
     }
 }
 
-static int tryOSTimeZone( const char *tz )
-/****************************************/
+static int _WCNEAR tryOSTimeZone( const char *tz )
+/************************************************/
 {
     if( tz == NULL ) {
         /*

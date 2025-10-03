@@ -123,7 +123,7 @@ void __LinuxSetThreadData( void *__data )
     sem_post( __tls_sem );
 }
 
-static void __cloned_lnx_start_fn( void *thrvoiddata )
+static void _WCNEAR __cloned_lnx_start_fn( void *thrvoiddata )
 {
 
     struct __lnx_thread *thrdata;

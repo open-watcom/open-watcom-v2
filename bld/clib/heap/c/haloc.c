@@ -43,7 +43,7 @@
 #include "heap.h"
 
 
-static int only_one_bit( size_t x )
+static int _WCNEAR only_one_bit( size_t x )
 {
     if( x == 0 ) {
         return 0;

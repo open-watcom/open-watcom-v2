@@ -99,7 +99,7 @@ extern int  __cdecl __dospawn( int mode, char_type_stk_ptr pgmname, char_type_st
 
 #define FALSE   0
 
-static int file_exists( const CHAR_TYPE *filename )
+static int _WCNEAR file_exists( const CHAR_TYPE *filename )
 {
 #if defined( __DOS__ )
     /* should use _dos_findfirst to avoid DOS APPEND bug */

@@ -74,7 +74,7 @@ _WCRTLINK clock_t clock( void )
 static clock_t init_milliseconds;
 static time_t  init_seconds;
 
-static void get_clock_time( time_t *secs, clock_t *milliseconds )
+static void _WCNEAR get_clock_time( time_t *secs, clock_t *milliseconds )
 {
 #if defined( __QNX__ )
     struct timespec     timer;

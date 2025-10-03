@@ -39,7 +39,7 @@
 /*
  * copyString - copy from string to memory
  */
-static WPCHAR copyString( WPCHAR mem, const char *str, int len )
+static WPCHAR _WCNEAR copyString( WPCHAR mem, const char *str, int len )
 {
     if( str == NULL )
         str = "";
@@ -66,7 +66,7 @@ static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 /*
  * copyWord - copy from word to memory
  */
-static WPCHAR copyWord( WPCHAR mem, WORD word )
+static WPCHAR _WCNEAR copyWord( WPCHAR mem, WORD word )
 {
     *mem++ = word;
     *mem++ = word >> 8;
@@ -75,7 +75,7 @@ static WPCHAR copyWord( WPCHAR mem, WORD word )
 } /* copyWord */
 
 
-static unsigned char getClassOrdinal( const char *classname )
+static unsigned char _WCNEAR getClassOrdinal( const char *classname )
 {
     unsigned char   class_ordinal;
 

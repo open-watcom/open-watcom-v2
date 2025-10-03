@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 
 static  int             CurrThrdID = 1;
 
-static int gettid( void *netid )
+static int _WCNEAR gettid( void *netid )
 {
     int         j;
 
@@ -105,7 +105,7 @@ typedef struct {
     unsigned            semaphore;
 } begin_thread_data;
 
-static void begin_thread_helper( void *the_arg )
+static void _WCNEAR begin_thread_helper( void *the_arg )
 {
     __thread_fn         *start_addr;
     void                *arglist;

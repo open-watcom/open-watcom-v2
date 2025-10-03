@@ -193,7 +193,7 @@ extern lfn_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
   #endif
 #endif
 
-static long _cvt_stamp2dos_lfn( long long *timestamp )
+static long _WCNEAR _cvt_stamp2dos_lfn( long long *timestamp )
 {
   #ifdef _M_I86
     return( __cvt_stamp2dos_lfn( timestamp ) );
@@ -212,7 +212,7 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
   #endif
 }
 
-static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
+static lfn_ret_t _WCNEAR _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
 {
   #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );

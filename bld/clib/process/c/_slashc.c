@@ -39,7 +39,7 @@
 #include "_process.h"
 
 
-CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, bool use_slash )
+CHAR_TYPE * _INTERNAL __F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, bool use_slash )
 {
     if( use_slash ) {
         switch_c[0] = STRING( '/' );

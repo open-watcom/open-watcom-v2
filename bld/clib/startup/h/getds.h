@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,7 @@
 
 #ifdef _M_IX86
 #ifdef _M_I86
-extern void             _WCI86NEAR __GETDS( void );
+extern void             _INTERNAL __GETDS( void );
 #elif defined( __NETWARE__ )
 extern unsigned short   __GETDS( void );
 #else

@@ -112,8 +112,8 @@ _WCRTLINK int fputc( int c, FILE *fp )
 #else
 
 
-static int __write_wide_char( FILE *fp, wchar_t wc )
-/**************************************************/
+static int _WCNEAR __write_wide_char( FILE *fp, wchar_t wc )
+/**********************************************************/
 {
     if( fp->_flag & _BINARY ) {
         /*** Dump the wide character ***/

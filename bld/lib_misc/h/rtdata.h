@@ -105,8 +105,8 @@ _WCRTDATA extern char       *_Envptr;
 #endif
 
 #if defined( _M_IX86 ) && !defined( __UNIX__ )
-    extern void                 (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
-    extern void                 (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
+    extern void                 _WCNEAR (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
+    extern void                 _WCNEAR (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
 #endif
 extern unsigned short           _8087cw;    /* control word initializer */
 extern unsigned char            _no87;      /* NO87 environment var defined */

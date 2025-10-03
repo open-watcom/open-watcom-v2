@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,6 @@
 ****************************************************************************/
 
 
-extern int  __DontCacheOSTZ( void );
-extern int  __CacheOSTZ( void );
-extern void __parse_tz( char * tz );
+extern int      _INTERNAL __DontCacheOSTZ( void );
+extern int      _INTERNAL __CacheOSTZ( void );
+extern void     _INTERNAL __parse_tz( char * tz );

@@ -51,13 +51,13 @@
 #define ARGS_NEXT_VA(ap)    va_arg((ap), ARGS_TYPE)
 
 #ifdef __WIDECHAR__
-extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, bool );
-extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
-extern wchar_t *__wSlash_C( wchar_t *switch_c, bool use_slash );
+extern int  _INTERNAL __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, bool );
+extern void _INTERNAL __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
+extern wchar_t * _INTERNAL __wSlash_C( wchar_t *switch_c, bool use_slash );
 #else
-extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, bool );
-extern void __ccmdline( char *, const char * const *, char *, int );
-extern char *__Slash_C( char *switch_c, bool use_slash );
+extern int  _INTERNAL __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, bool );
+extern void _INTERNAL __ccmdline( char *, const char * const *, char *, int );
+extern char * _INTERNAL __Slash_C( char *switch_c, bool use_slash );
 #endif
 #if defined( __DOS__ )
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );

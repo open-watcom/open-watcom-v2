@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #define BCD_GET_LOW( w )        ( w & 0x000F )
 
 
-static void nec_to_ibm( const unsigned char *necBuf, long *timeval )
+static void _WCNEAR nec_to_ibm( const unsigned char *necBuf, long *timeval )
 {
     unsigned            hours;
     unsigned            minutes;
@@ -70,7 +70,7 @@ static void nec_to_ibm( const unsigned char *necBuf, long *timeval )
 }
 
 
-static void ibm_to_nec( unsigned char *necBuf, const long *timeval )
+static void _WCNEAR ibm_to_nec( unsigned char *necBuf, const long *timeval )
 {
     unsigned            hours;
     unsigned            minutes;

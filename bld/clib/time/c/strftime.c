@@ -75,7 +75,7 @@ static const char * const mon_name[12] = {
 };
 
 
-static void TwoDigits( CHAR_TYPE *buffer, int value )
+static void _WCNEAR TwoDigits( CHAR_TYPE *buffer, int value )
 {
     buffer[0] = ( value / 10 ) + STRING( '0' );
     buffer[1] = ( value % 10 ) + STRING( '0' );

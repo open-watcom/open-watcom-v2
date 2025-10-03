@@ -73,7 +73,7 @@ extern  void    *_Start_TI;
 extern  void    *_End_TI;
 extern  char    **_argv;
 
-static void p5_profile_init( void )
+static void _WCNEAR p5_profile_init( void )
 /*
  * Reset profiling data
  */
@@ -97,7 +97,7 @@ static void p5_profile_init( void )
     }
 }
 
-static void p5_profile_fini( void )
+static void _WCNEAR p5_profile_fini( void )
 /*
  * Dump profiling data to file
  */

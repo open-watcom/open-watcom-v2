@@ -56,9 +56,9 @@ char    __init_default_win;
 
 static char *mainClass;
 
-static bool firstInstance( HANDLE );
-static bool windowsInit( HANDLE, int );
-static void windowsFini( void );
+static bool _WCNEAR firstInstance( HANDLE );
+static bool _WCNEAR windowsInit( HANDLE, int );
+static void _WCNEAR windowsFini( void );
 
 
 #if defined( __NT__ )
@@ -121,7 +121,7 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 /*
  * firstInstance - initialization at startup
  */
-static bool firstInstance( HANDLE inst )
+static bool _WCNEAR firstInstance( HANDLE inst )
 {
     char        tmp[128];
     WNDCLASS    wc;
@@ -210,7 +210,7 @@ static bool firstInstance( HANDLE inst )
 /*
  * windowsInit - windows-specific initialization
 */
-static bool windowsInit( HANDLE inst, int showcmd )
+static bool _WCNEAR windowsInit( HANDLE inst, int showcmd )
 {
     LOGFONT     logfont;
     WORD        x,y;
@@ -269,7 +269,7 @@ static bool windowsInit( HANDLE inst, int showcmd )
 /*
  * windowsFini - windows-specific initialization
 */
-static void windowsFini( void )
+static void _WCNEAR windowsFini( void )
 {
     _FiniMainWindowData();
 

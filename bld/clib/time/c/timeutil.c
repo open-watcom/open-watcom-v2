@@ -34,9 +34,9 @@
 #include "rtdata.h"
 #include "timedata.h"
 
-static int time_less( const struct tm *t1, const struct tm *t2 );
+static int _WCNEAR time_less( const struct tm *t1, const struct tm *t2 );
 
-static int calc_yday( const struct tm *timetm, int year )
+static int _WCNEAR calc_yday( const struct tm *timetm, int year )
 {
     struct tm   tmptm;
     int         month_days;
@@ -73,7 +73,7 @@ static int calc_yday( const struct tm *timetm, int year )
 }
 
 /* determine if in souther hemisphere -> start is after end */
-static int check_order( const struct tm *start, const struct tm *end, int year )
+static int _WCNEAR check_order( const struct tm *start, const struct tm *end, int year )
 {
     int start_day;
     int end_day;
@@ -95,7 +95,7 @@ static int check_order( const struct tm *start, const struct tm *end, int year )
 }
 
 /* determine if daylight savings time */
-int __isindst( struct tm *t )
+int _INTERNAL __isindst( struct tm *t )
 {
     int                 month;
     int                 dst;
@@ -239,7 +239,7 @@ int __isindst( struct tm *t )
     return( t->tm_isdst = dst );
 }
 
-static int time_less( const struct tm *t1, const struct tm *t2 )
+static int _WCNEAR time_less( const struct tm *t1, const struct tm *t2 )
 {
     int before;
 

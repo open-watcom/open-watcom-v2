@@ -52,7 +52,7 @@
 #include "defwin.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     DWORD               create_disp, exists_disp;
     mode_t              perm;

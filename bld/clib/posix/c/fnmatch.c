@@ -44,7 +44,7 @@
  * identical to forward slashes when FNM_PATHNAME is set.
  */
 
-static int icase( int c, int flags )
+static int _WCNEAR icase( int c, int flags )
 {
     if( flags & FNM_IGNORECASE ) {
         return( tolower( c ) );
@@ -61,7 +61,7 @@ static int icase( int c, int flags )
 /* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
-static int sub_bracket( const unsigned char *p, int c )
+static int _WCNEAR sub_bracket( const unsigned char *p, int c )
 {
     const unsigned char *s = p;
     char                sname[CCL_NAME_MAX + 1];
@@ -113,7 +113,7 @@ static int sub_bracket( const unsigned char *p, int c )
 }
 
 
-static const char *cclass_match( const unsigned char *patt, int c )
+static const char * _WCNEAR cclass_match( const unsigned char *patt, int c )
 {
     bool        ok;
     int         lc;

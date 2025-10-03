@@ -67,7 +67,7 @@ void _WCNEAR __Fini_Argv( void ) {}
     #define ALIGN_SIZE( __x ) __ROUND_UP_SIZE_QWORD( __x )
 #endif
 
-_WCRTDATA static CHAR_TYPE  *__F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
+_WCRTDATA static CHAR_TYPE  * _WCNEAR __F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
 
 static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
 {

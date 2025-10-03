@@ -80,8 +80,8 @@ bool    _WCNEAR _SetAboutDlg( const char *title, const char *text )
     return( true );
 }
 
-static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
-//===================================================
+static USHORT _WCNEAR _VirtualKey( MPARAM mp1, MPARAM mp2 )
+//=========================================================
 {
     unsigned short      vk;
 

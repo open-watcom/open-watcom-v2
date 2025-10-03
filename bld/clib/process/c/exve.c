@@ -90,7 +90,7 @@ extern void         __cdecl _WCFAR _doexec( char_stk_ptr, char_stk_ptr, int, uns
 extern void         _WCNEAR __init_execve( void );
 extern unsigned     __exec_para;
 
-static void dosexpand( unsigned block )
+static void _WCNEAR dosexpand( unsigned block )
 {
     unsigned num_of_paras;
 
@@ -98,7 +98,7 @@ static void dosexpand( unsigned block )
     TinySetBlock( block, num_of_paras );
 }
 
-static unsigned dosalloc( unsigned num_of_paras )
+static unsigned _WCNEAR dosalloc( unsigned num_of_paras )
 {
     tiny_ret_t  rc;
     unsigned    block;
@@ -112,7 +112,7 @@ static unsigned dosalloc( unsigned num_of_paras )
     return( block );
 }
 
-static unsigned doscalve( unsigned block, unsigned req_paras )
+static unsigned _WCNEAR doscalve( unsigned block, unsigned req_paras )
 {
     unsigned    block_num_of_paras;
 
@@ -125,13 +125,13 @@ static unsigned doscalve( unsigned block, unsigned req_paras )
     }
 }
 
-static void resetints( void )
+static void _WCNEAR resetints( void )
 /* reset ctrl-break, floating point, divide by 0 interrupt */
 {
     (*__int23_exit)();
 }
 
-static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
+static bool _WCNEAR doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
     unsigned            p;
     unsigned            q;
@@ -198,7 +198,7 @@ error: /* if we get an error */
     return( false );
 }
 
-static void save_file_handles( void )
+static void _WCNEAR save_file_handles( void )
 {
     int             i;
     handle_tab_ptr  handle_table;

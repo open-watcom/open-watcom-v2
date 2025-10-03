@@ -45,7 +45,7 @@
 
 #ifndef __RDOS__
 
-static unsigned long *initrandnext( void )
+static unsigned long * _WCNEAR initrandnext( void )
 {
     _INITRANDNEXT( RETURN_ARG( unsigned long *, NULL ) );   // for NW386
     return( (unsigned long *)&_RWD_randnext );

@@ -110,7 +110,7 @@ typedef struct rt_init _WCNEAR      *struct_rt_init_ptr;
 #endif
 
 #if defined( _M_I86 )
-static void callit_near( npfn *f )
+static void _WCNEAR callit_near( npfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -122,7 +122,7 @@ static void callit_near( npfn *f )
     }
 }
 
-static void callit_far( fpfn *f )
+static void _WCNEAR callit_far( fpfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -133,7 +133,7 @@ static void callit_far( fpfn *f )
     }
 }
 #else
-static void callit( npfn *f )
+static void _WCNEAR callit( npfn *f )
 {
     // don't call a null pointer
     if( *f ) {

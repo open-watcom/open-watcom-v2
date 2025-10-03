@@ -95,11 +95,11 @@ _WCRTLINK int sem_destroy( sem_t *sem )
     return( 0 );
 }
 
-static void __check_cmpxchg( void )
+static void _WCNEAR __check_cmpxchg( void )
 {
     if( !is386() ) {
         __cmpxchg = 1;
     }
 }
 
-AXI( __check_cmpxchg, INIT_PRIORITY_THREAD )
+AXIN( __check_cmpxchg, INIT_PRIORITY_THREAD )

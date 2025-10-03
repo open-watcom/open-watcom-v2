@@ -87,7 +87,7 @@ static int                    id_arr[TIMER_ENTRIES];
 static int                    FCurrIndex = 0;
 static struct RdosTimerEntry *FCurrEntry = 0;
 
-static void UpdateTimers(  )
+static void _WCNEAR UpdateTimers( void )
 {
     int                    i;
     int                    bit;
@@ -113,7 +113,7 @@ static void UpdateTimers(  )
     }
 }
 
-static void TimerThread( void *param )
+static void _WCNEAR TimerThread( void *param )
 {
     timer = (struct RdosTimer *)param;
 
@@ -129,7 +129,7 @@ static void TimerThread( void *param )
     timer = 0;
 }
 
-static void CreateTimerThread( )
+static void _WCNEAR CreateTimerThread( void )
 {
     int retry;
 
@@ -139,7 +139,7 @@ static void CreateTimerThread( )
     }
 }
 
-static int StartTimer( void (*callback)( void *param ), void *param, long long timeout )
+static int _WCNEAR StartTimer( void (*callback)( void *param ), void *param, long long timeout )
 {
     int                    i;
     int                    bit;
@@ -176,7 +176,7 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
     }
 }
 
-static int StopTimer( int index )
+static int _WCNEAR StopTimer( int index )
 {
     int                    i;
     int                    bit;
@@ -203,7 +203,7 @@ static int StopTimer( int index )
     }
 }
 
-static int RestartCurrTimer( long long timeout )
+static int _WCNEAR RestartCurrTimer( long long timeout )
 {
     int                    i;
     int                    bit;
@@ -222,7 +222,7 @@ static int RestartCurrTimer( long long timeout )
     return( 1 );
 }
 
-static int ResetTimer( int index, long long timeout )
+static int _WCNEAR ResetTimer( int index, long long timeout )
 {
     int                    i;
     int                    bit;
@@ -329,7 +329,7 @@ int RdosResetAppTimer( int id, int Ms )
     return( res );
 }
 
-static void init( void )
+static void _WCNEAR init( void )
 {
     int i;
 
@@ -340,4 +340,4 @@ static void init( void )
     }
 }
 
-AXI( init, INIT_PRIORITY_RUNTIME )
+AXIN( init, INIT_PRIORITY_RUNTIME )

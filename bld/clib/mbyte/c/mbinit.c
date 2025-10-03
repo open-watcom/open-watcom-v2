@@ -71,7 +71,7 @@
 
 unsigned int __MBCodePage = DEFAULT_CODEPAGE;   /* default code page */
 
-static void clear_dbcs_table( void )
+static void _WCNEAR clear_dbcs_table( void )
 {
     __IsDBCS = 0;                               /* SBCS for now */
     __MBCodePage = DEFAULT_CODEPAGE;
@@ -79,7 +79,7 @@ static void clear_dbcs_table( void )
 }
 
 #if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
-static void set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
+static void _WCNEAR set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
 {
     unsigned short range;
 
@@ -91,7 +91,7 @@ static void set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
     }
 }
 #elif defined( __WINDOWS__ )
-static void set_dbcs_table( void )
+static void _WCNEAR set_dbcs_table( void )
 {
     unsigned short value;
 

@@ -57,7 +57,7 @@
  number of days since 1900.
 */
 
-static unsigned long __DaysToJan1( unsigned year )
+static unsigned long _WCNEAR __DaysToJan1( unsigned year )
 {
     unsigned    years = 1900 + year - 1;
     unsigned    leap_days = years / 4 - years / 100 + years / 400 - 460;
@@ -67,7 +67,7 @@ static unsigned long __DaysToJan1( unsigned year )
 
 /*  __brktime breaks down a calendar time (clock) into a struct tm t */
 
-struct tm *__brktime( unsigned long     days,
+struct tm * _INTERNAL __brktime( unsigned long     days,
                       time_t            wallclock,
                       long              gmtdelta,       // localtime - gmtime
                       struct tm         *t )
@@ -140,7 +140,7 @@ struct tm *__brktime( unsigned long     days,
 _WCRTLINK struct tm *_gmtime( const time_t *timer, struct tm *tm )
 {
     tm->tm_isdst = 0;          /* assume not */
-    return __brktime( DAYS_FROM_1900_TO_1970, *timer, 0L, tm );
+    return( __brktime( DAYS_FROM_1900_TO_1970, *timer, 0L, tm ) );
 }
 
 _WCRTLINK struct tm *gmtime( const time_t *timer )

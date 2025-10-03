@@ -48,9 +48,9 @@
 
 
 #ifdef __INT64__
-static int __update_buffer( long long diff, FILE *fp )
+static int _WCNEAR __update_buffer( long long diff, FILE *fp )
 #else
-static int __update_buffer( long diff, FILE *fp )
+static int _WCNEAR __update_buffer( long diff, FILE *fp )
 #endif
 {
     /*
@@ -72,7 +72,7 @@ static int __update_buffer( long diff, FILE *fp )
  * This used to be in __update_buffer(), but we don't want to do this until
  * AFTER we've made certain that lseek() will be a successful one.
  */
-static void __reset_buffer( FILE *fp )
+static void _WCNEAR __reset_buffer( FILE *fp )
 {
     fp->_flag &= ~(_EOF);
     fp->_ptr = _FP_BASE( fp );

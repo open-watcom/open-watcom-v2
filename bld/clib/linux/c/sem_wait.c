@@ -40,7 +40,7 @@
 #include "linuxsys.h"
 
 
-static int __decrement_if_positive( volatile int *dest )
+static int _WCNEAR __decrement_if_positive( volatile int *dest )
 {
     int             value;
 

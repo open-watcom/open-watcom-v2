@@ -89,7 +89,7 @@
 
 #else
 
-static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_PRTF_SPECS specs )
+static const CHAR_TYPE * _WCNEAR evalflags( const CHAR_TYPE *ctl, PTR_PRTF_SPECS specs )
 {
     specs->_flags = 0;
     for( ; ; ctl++ ) {
@@ -116,7 +116,7 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_PRTF_SPECS specs )
     return( ctl );
 }
 
-static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR_PRTF_SPECS specs )
+static const CHAR_TYPE * _WCNEAR getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR_PRTF_SPECS specs )
 {
     specs->_pad_char = STRING( ' ' );
     ctl = evalflags( ctl, specs );
@@ -220,7 +220,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
 }
 
 
-static int far_strlen( FAR_STRING s, int precision )
+static int _WCNEAR far_strlen( FAR_STRING s, int precision )
 {
     int     len;
 
@@ -238,7 +238,7 @@ static int far_strlen( FAR_STRING s, int precision )
  *                    for the ascii version
  */
 
-static int far_alt_strlen( FAR_STRING s, int precision )
+static int _WCNEAR far_alt_strlen( FAR_STRING s, int precision )
 {
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
@@ -278,7 +278,7 @@ static int far_alt_strlen( FAR_STRING s, int precision )
 #endif
 }
 
-static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
+static void _WCNEAR fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 {
     int         i, len;
     CHAR_TYPE   buffer[10];
@@ -298,7 +298,7 @@ static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 }
 
 
-static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_PRTF_SPECS specs )
+static void _WCNEAR FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_PRTF_SPECS specs )
 {
     T32         at;
     int         i;
@@ -357,7 +357,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_PRTF_SPECS specs 
     }
 }
 
-static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs )
+static void _WCNEAR float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs )
 {
 #ifdef __WIDECHAR__
     unsigned char       mbBuffer[BUF_SIZE*MB_CUR_MAX];
@@ -426,7 +426,7 @@ static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS spec
 #endif
 }
 
-static void SetZeroPad( PTR_PRTF_SPECS specs )
+static void _WCNEAR SetZeroPad( PTR_PRTF_SPECS specs )
 {
     int         n;
 
@@ -443,7 +443,7 @@ static void SetZeroPad( PTR_PRTF_SPECS specs )
 
 
 #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_wide_string( FAR_WIDE_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
+static void _WCNEAR write_wide_string( FAR_WIDE_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
 {
     int     bytes;
     char    mbBuf[MB_CUR_MAX];
@@ -468,7 +468,7 @@ static void write_wide_string( FAR_WIDE_STRING str, PTR_PRTF_SPECS specs, prtf_c
 
 
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_skinny_string( FAR_ASCII_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
+static void _WCNEAR write_skinny_string( FAR_ASCII_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
 {
     int                 bytes;
     wchar_t             wc;
@@ -494,7 +494,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, PTR_PRTF_SPECS specs, prt
 #endif
 
 
-static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs, CHAR_TYPE *null_string )
+static FAR_STRING _WCNEAR formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;

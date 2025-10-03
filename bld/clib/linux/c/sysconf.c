@@ -52,8 +52,8 @@
 #endif
 
 
-static int __sysconf_nprocessors_conf( void )
-/********************************************
+static int _WCNEAR __sysconf_nprocessors_conf( void )
+/****************************************************
  * I did not find a better method to find out the number
  * of installed CPUs than reading this value from the kernel
  * by file /sys/devices/system/cpu/present
@@ -99,7 +99,7 @@ static int __sysconf_nprocessors_conf( void )
     return( ret + 1 );
 }
 
-static int __sysconf_nprocessors( void )
+static int _WCNEAR __sysconf_nprocessors( void )
 {
     syscall_res res;
     unsigned char mask[128];    /* enough space for 1024 cores */
@@ -124,7 +124,7 @@ static int __sysconf_nprocessors( void )
     return( ret );
 }
 
-static int __sysconf_rlimit_int( int rlimid )
+static int _WCNEAR __sysconf_rlimit_int( int rlimid )
 {
     struct rlimit rls;
 
@@ -134,7 +134,7 @@ static int __sysconf_rlimit_int( int rlimid )
     return( -1 );
 }
 
-static int __sysconf_pages( int name )
+static int _WCNEAR __sysconf_pages( int name )
 {
     long quantity;
     struct sysinfo info;
@@ -155,7 +155,7 @@ static int __sysconf_pages( int name )
 #endif
 }
 
-static int __sysconf_somaxconn( void )
+static int _WCNEAR __sysconf_somaxconn( void )
 {
     FILE *fp;
     int ret;

@@ -58,9 +58,9 @@ struct name {
 };
 
 
-static  void    copydir( struct find_t *buf, FF_BUFFER *dir_buff ) {
-/******************************************************************/
-
+static void _WCNEAR copydir( struct find_t *buf, FF_BUFFER *dir_buff )
+/********************************************************************/
+{
     buf->attrib  = dir_buff->attrFile;
     buf->wr_time = *(unsigned short *)&dir_buff->ftimeLastWrite;
     buf->wr_date = *(unsigned short *)&dir_buff->fdateLastWrite;

@@ -42,14 +42,14 @@
 
 #define TZif 0x545A6966
 
-static long pntohl( const unsigned char *p )
+static long _WCNEAR pntohl( const unsigned char *p )
 {
     return( p[0] << 24 ) | ( p[1] << 16 ) | ( p[2] << 8 ) | p[3];
 }
 
 static unsigned char *tzfile = NULL;
 
-void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
+void _INTERNAL __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 {
 //    long                tzh_ttisutccnt;
 //    long                tzh_ttisstdcnt;
@@ -159,7 +159,7 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 #define DEFAULT_ZONEFILE    "/etc/localtime"
 #define DEFAULT_ZONEDIR     "/usr/share/zoneinfo/"
 
-int __read_tzfile( const char *tz )
+int _INTERNAL __read_tzfile( const char *tz )
 /**********************************
  * - if no file name specified in TZ then
  * use system default file "/etc/localtime"

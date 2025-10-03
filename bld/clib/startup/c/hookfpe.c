@@ -40,10 +40,11 @@
 #include <wos2.h>
 #include "grabfp87.h"
 
-void __interrupt __FPEHandler();
+
+void __interrupt __FPEHandler( void );
 #pragma aux __FPEHandler "*";
 
-static void (__interrupt *old_FPE_handler)() = NULL;
+static void (__interrupt *old_FPE_handler)( void ) = NULL;
 
 void _WCNEAR __Init_FPE_handler( void )
 /*************************************/

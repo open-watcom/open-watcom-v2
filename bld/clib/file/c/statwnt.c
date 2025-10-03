@@ -58,7 +58,7 @@
 
 #define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
 
-static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
+static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
     DWORD               mode = 0L;
     CHAR_TYPE *         ext;

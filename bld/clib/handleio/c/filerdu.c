@@ -64,7 +64,7 @@ static int              MapCount = 3;
 static struct HandleMap **MapArr = StdioMapArr;
 
 
-static void GrowMapArr( int size )
+static void _WCNEAR GrowMapArr( int size )
 {
     int                 i;
     int                 count;;
@@ -89,7 +89,7 @@ static void GrowMapArr( int size )
     MapCount = count;
 }
 
-static void CreateMap( int handle )
+static void _WCNEAR CreateMap( int handle )
 {
     struct RdosFileMap *map;
     int                 mhandle;
@@ -110,7 +110,7 @@ static void CreateMap( int handle )
     }
 }
 
-static void FreeMap( int handle )
+static void _WCNEAR FreeMap( int handle )
 {
     struct HandleMap    *map;
 
@@ -364,7 +364,7 @@ _WCRTLINK off_t _tell( int handle )
     return( RdosGetHandlePos( handle ) );
 }
 
-static int vfs_find( int handle, struct HandleMap *hm, long long Pos )
+static int _WCNEAR vfs_find( int handle, struct HandleMap *hm, long long Pos )
 {
     struct RdosFileMap *map = hm->map;
     int                Step = 0x80;
@@ -397,7 +397,7 @@ static int vfs_find( int handle, struct HandleMap *hm, long long Pos )
     return( -1 );
 }
 
-static int vfs_read_one( int handle, int index, char *buf, long long pos, int size )
+static int _WCNEAR vfs_read_one( int handle, int index, char *buf, long long pos, int size )
 {
     struct HandleMap        *hm = MapArr[handle];
     struct RdosFileMap      *map = hm->map;
@@ -438,7 +438,7 @@ static int vfs_read_one( int handle, int index, char *buf, long long pos, int si
     return( count );
 }
 
-static int vfs_read( int handle, void *buffer, unsigned len )
+static int _WCNEAR vfs_read( int handle, void *buffer, unsigned len )
 {
     struct HandleMap        *hm = MapArr[handle];
     struct RdosFileMap      *map = hm->map;
@@ -499,7 +499,7 @@ static int vfs_read( int handle, void *buffer, unsigned len )
     return( ret );
 }
 
-static int vfs_write_one( int handle, int index, const char *buf, long long pos, int size )
+static int _WCNEAR vfs_write_one( int handle, int index, const char *buf, long long pos, int size )
 {
     struct HandleMap        *hm = MapArr[handle];
     struct RdosFileMap      *map = hm->map;
@@ -546,7 +546,7 @@ static int vfs_write_one( int handle, int index, const char *buf, long long pos,
     return( count );
 }
 
-static int vfs_write( int handle, const void *buffer, unsigned len )
+static int _WCNEAR vfs_write( int handle, const void *buffer, unsigned len )
 {
     struct HandleMap        *hm = MapArr[handle];
     struct RdosFileMap      *map = hm->map;
@@ -658,7 +658,7 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
     return( RdosWriteHandle( handle, buffer, len ) );
 }
 
-static void init( void )
+static void _WCNEAR init( void )
 {
     int i;
 
@@ -667,4 +667,4 @@ static void init( void )
     }
 }
 
-AXI( init, INIT_PRIORITY_RUNTIME )
+AXIN( init, INIT_PRIORITY_RUNTIME )

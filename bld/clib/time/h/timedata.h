@@ -42,12 +42,12 @@ extern struct tm        __end_dst;   /* end of daylight savings */
 #define SECONDS_PER_DAY                 ( 24 * 60 * 60UL )
 #define DAYS_FROM_1900_TO_1970          ( ( long ) ( SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY ) )
 
-extern struct tm        *__brktime( unsigned long, time_t, long, struct tm * );
-extern time_t           __local_mktime( const struct tm *, long *, long * );
-extern int              __leapyear( unsigned );
-extern int              __isindst( struct tm * );
-extern int              __read_tzfile( const char *tz );
-extern void             __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep );
+extern struct tm        * _INTERNAL __brktime( unsigned long, time_t, long, struct tm * );
+extern time_t           _INTERNAL __local_mktime( const struct tm *, long *, long * );
+extern int              _INTERNAL __leapyear( unsigned );
+extern int              _INTERNAL __isindst( struct tm * );
+extern int              _INTERNAL __read_tzfile( const char *tz );
+extern void             _INTERNAL __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep );
 
 extern short const      __diyr[];  /* days in normal year array */
 extern short const      __dilyr[]; /* days in leap year array */

@@ -48,7 +48,7 @@ static char buf[sizeof( message_prefix ) + _MAX_PATH + sizeof( message_suffix )]
 static char dllname[_MAX_PATH];
 static char pgmname[_MAX_PATH];
 
-bool __disallow_single_dgroup( HANDLE hdll )
+bool _INTERNAL __disallow_single_dgroup( HANDLE hdll )
 {
     GetModuleFileName( 0, pgmname, sizeof( pgmname ) );
     GetModuleFileName( hdll, dllname, sizeof( dllname ) );

@@ -67,8 +67,8 @@ struct name {
     char buf[ NAME_MAX + 1 ];
 };
 
-static void copydir( DIR_TYPE *dirp, FF_BUFFER *dir_buff )
-/********************************************************/
+static void _WCNEAR copydir( DIR_TYPE *dirp, FF_BUFFER *dir_buff )
+/****************************************************************/
 {
 
 #ifdef __WIDECHAR__
@@ -88,8 +88,8 @@ static void copydir( DIR_TYPE *dirp, FF_BUFFER *dir_buff )
 #endif
 }
 
-static APIRET __find_close( DIR_TYPE *dirp )
-/******************************************/
+static APIRET _WCNEAR __find_close( DIR_TYPE *dirp )
+/**************************************************/
 {
 #ifdef _M_I86
     if( _osmode_PROTMODE() ) {          /* protected mode */
@@ -103,8 +103,8 @@ static APIRET __find_close( DIR_TYPE *dirp )
     return( 0 );
 }
 
-static int is_directory( const CHAR_TYPE *name )
-/**********************************************/
+static int _WCNEAR is_directory( const CHAR_TYPE *name )
+/******************************************************/
 {
     UINT_WC_TYPE    curr_ch;
     UINT_WC_TYPE    prev_ch;
@@ -145,8 +145,8 @@ static int is_directory( const CHAR_TYPE *name )
 }
 
 
-static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
-/*******************************************************************************************/
+static DIR_TYPE * _WCNEAR __F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
+/****************************************************************************************************/
 {
 
     /*** Convert a wide char string to a multibyte string ***/
@@ -206,8 +206,8 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
 }
 
 
-static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
-/*************************************************************************/
+static DIR_TYPE * _WCNEAR __F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
+/**********************************************************************************/
 {
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,8 @@
 #include "rtdata.h"
 #include "_direct.h"
 
-static char *try_one( char *p, char *buff )
+
+static char * _WCNEAR try_one( char *p, char *buff )
 {
 #ifdef __LINUX__
 

@@ -46,7 +46,7 @@
 
 #ifdef __NT__
 
-    static char *OS_GET_CMD_LINE( void )
+    static char * _WCNEAR OS_GET_CMD_LINE( void )
     {
         char    *cmd = GetCommandLine();
 
@@ -81,7 +81,7 @@
   #if defined( _M_I86 )
 
     #include <dos.h>
-    static char _WCFAR *OS_GET_CMD_LINE( void )
+    static char _WCFAR * _WCNEAR OS_GET_CMD_LINE( void )
     {
         unsigned short      envseg, cmdoff;
         char _WCFAR         *cmd;
@@ -107,7 +107,7 @@
 
   #else
 
-    static char *OS_GET_CMD_LINE( void )
+    static char * _WCNEAR OS_GET_CMD_LINE( void )
     {
         PTIB    tib;
         PPIB    pib;

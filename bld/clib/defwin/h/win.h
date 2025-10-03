@@ -65,8 +65,8 @@ extern  unsigned    __WinSetWindowPos(unsigned);
 #endif
 
 #if defined( __MT__ ) && defined( __NT__ )
-extern void _AccessWinLines( void );
-extern void _ReleaseWinLines( void );
+extern void _WCNEAR _AccessWinLines( void );
+extern void _WCNEAR _ReleaseWinLines( void );
 #else
 #define _AccessWinLines()
 #define _ReleaseWinLines()

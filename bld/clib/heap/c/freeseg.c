@@ -55,7 +55,7 @@
 
 #if defined(__WINDOWS__) || defined(__OS2__)
 
-static int DoFreeSeg( __segment seg )
+static int _WCNEAR DoFreeSeg( __segment seg )
 {
   #if defined(__WINDOWS__)
     HANDLE hmem;
@@ -110,7 +110,7 @@ extern int tricky_free_seg( int, int );
     __modify    [__cx __es]
 #endif
 
-static int __DoFreeSeg( __segment first )
+static int _WCNEAR __DoFreeSeg( __segment first )
 {
     __segment     last;
     long          segments;

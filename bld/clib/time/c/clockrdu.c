@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 static int    init_milliseconds;
 
-static unsigned long __get_tick( void )
+static unsigned long _WCNEAR __get_tick( void )
 {
     unsigned long           tick_count;
     unsigned long           msb;
@@ -60,9 +61,9 @@ _WCRTLINK clock_t clock( void )
     return( (clock_t)(__get_tick() - init_milliseconds) );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     init_milliseconds = __get_tick();
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

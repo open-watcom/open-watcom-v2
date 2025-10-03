@@ -110,8 +110,8 @@ static itemdata _getint[] = {
 static char *titleName = banner1t( "Default Windowing System" );
 static char *helpMsg = "Enter the number of lines of text you would like to keep in the window at any time";
 
-static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
-//===============================================================
+static void _WCNEAR setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
+//=======================================================================
 {
     char        buff[MAX_INTEGER_FIELD + 1];
 
@@ -120,8 +120,8 @@ static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 }
 
 
-static bool getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
-//=================================================================
+static bool _WCNEAR getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
+//=========================================================================
 {
     char        buff[MAX_INTEGER_FIELD + 1];
     char        *ptr;
@@ -149,8 +149,8 @@ static bool getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
 }
 
 
-static bool chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg )
-//===============================================================================
+static bool _WCNEAR chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg )
+//=======================================================================================
 {
     if( getIntegerValue( hwndDlg, id, pval ) ) {
         return( true );

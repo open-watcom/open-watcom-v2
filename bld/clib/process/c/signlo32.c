@@ -216,8 +216,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
 }
 
 
-static void __SigInit( void )
-/***************************/
+static void _WCNEAR __SigInit( void )
+/***********************************/
 {
 
 #ifdef __MT__
@@ -232,8 +232,8 @@ static void __SigInit( void )
 }
 
 
-static void __SigFini( void )
-/***************************/
+static void _WCNEAR __SigFini( void )
+/***********************************/
 {
 #ifdef __MT__
     ULONG               nesting;
@@ -347,11 +347,11 @@ _WCRTLINK int raise( int sig )
 }
 
 
-static void __sig_init( void )
+static void _WCNEAR __sig_init( void )
 {
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;
     _RWD_FPE_handler = __sigfpe_handler;
 }
 
-AXI( __sig_init, INIT_PRIORITY_LIBRARY )
+AXIN( __sig_init, INIT_PRIORITY_LIBRARY )

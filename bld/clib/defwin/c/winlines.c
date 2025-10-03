@@ -51,7 +51,7 @@
 /*
  * createNewEntry - build a new line number entry
  */
-static LPLDATA createNewEntry( LPWDATA w )
+static LPLDATA _WCNEAR createNewEntry( LPWDATA w )
 {
     LPLDATA             ld;
 #ifdef _MBCS
@@ -84,7 +84,7 @@ static LPLDATA createNewEntry( LPWDATA w )
 /*
  * incrementLastLineNumber - guess!
  */
-static void incrementLastLineNumber( LPWDATA w )
+static void _WCNEAR incrementLastLineNumber( LPWDATA w )
 {
     int diff;
 
@@ -113,7 +113,7 @@ static void incrementLastLineNumber( LPWDATA w )
 /*
  * replaceTail - replace tail line data
  */
-static void replaceTail( LPWDATA w )
+static void _WCNEAR replaceTail( LPWDATA w )
 {
     LPLDATA             prev;
 
@@ -149,7 +149,7 @@ static void replaceTail( LPWDATA w )
 /*
  * addBuff - add current working buffer to line data structures
  */
-static void addBuff( LPWDATA w )
+static void _WCNEAR addBuff( LPWDATA w )
 {
     LPLDATA     ld;
 
@@ -162,7 +162,7 @@ static void addBuff( LPWDATA w )
 /*
  * updateBuff - update current line with tmpbuff
  */
-static void updateBuff( LPWDATA w )
+static void _WCNEAR updateBuff( LPWDATA w )
 {
     int oldbuff;
 
@@ -180,7 +180,7 @@ static void updateBuff( LPWDATA w )
 /*
  * newLine - add a new line to the bottom
  */
-static void newLine( LPWDATA w )
+static void _WCNEAR newLine( LPWDATA w )
 {
     if( w->LineTail != NULL && !w->LineTail->has_cr ) {
         replaceTail( w );

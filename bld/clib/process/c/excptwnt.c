@@ -65,7 +65,7 @@ unsigned char   __ReportInvoked;
 __EXCEPTION_RECORD  *__XCPTHANDLER;
 #endif
 
-static int _my_GetActiveWindow( void )
+static int _WCNEAR _my_GetActiveWindow( void )
 {
     HANDLE hdl;
     typedef HWND (__stdcall *gaw_type)( void );
@@ -82,7 +82,7 @@ static int _my_GetActiveWindow( void )
     return( rc != 0 );
 }
 
-static void fmt_hex( char *buf, char *fmt, void *hex ) {
+static void _WCNEAR fmt_hex( char *buf, char *fmt, void *hex ) {
 
     char *ptr = NULL;
     unsigned long value;

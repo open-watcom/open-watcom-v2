@@ -89,8 +89,8 @@
 
 #if defined(__QNX__)
 
-static char *__qnx_fullpath( char *fullpath, const char *path )
-/*************************************************************/
+static char * _WCNEAR __qnx_fullpath( char *fullpath, const char *path )
+/**********************************************************************/
 {
     struct {
         struct _io_open _io_open;
@@ -112,7 +112,7 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
 
 #endif
 
-static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
+static CHAR_TYPE * _WCNEAR __F_NAME(_sys_fullpath,_sys_wfullpath)
                 ( CHAR_TYPE *buff, const CHAR_TYPE *path, size_t size )
 /*********************************************************************/
 {

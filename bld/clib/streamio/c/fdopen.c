@@ -56,7 +56,7 @@
 
 #ifndef __NETWARE__
 
-static int __iomode( int handle, unsigned amode )
+static int _WCNEAR __iomode( int handle, unsigned amode )
 {
     int             errno_num;
 #ifdef __UNIX__

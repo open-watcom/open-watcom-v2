@@ -76,7 +76,7 @@ static unsigned long long nearly_overflowing[] = {
     ULLONG_MAX / 34, ULLONG_MAX / 35, ULLONG_MAX / 36
 };
 
-static int radix_value( CHAR_TYPE c )
+static int _WCNEAR radix_value( CHAR_TYPE c )
 {
     if( c >= STRING( '0' ) && c <= STRING( '9' ) )
         return( c - STRING( '0' ) );
@@ -92,7 +92,7 @@ static int radix_value( CHAR_TYPE c )
 
 #define hexstr(p) (p[0] == STRING( '0' ) && (p[1] == STRING( 'x' ) || p[1] == STRING( 'X' )))
 
-static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
+static unsigned long long _WCNEAR _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
     const CHAR_TYPE     *p;
     const CHAR_TYPE     *startp;

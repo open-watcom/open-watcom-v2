@@ -66,7 +66,7 @@ int handle_count;
 
 static struct TKernelSection handle_section;
 
-static rdos_handle_type *AllocHandleObj( void )
+static rdos_handle_type * _WCNEAR AllocHandleObj( void )
 {
     rdos_handle_type *h;
 
@@ -78,7 +78,7 @@ static rdos_handle_type *AllocHandleObj( void )
     return( h );
 }
 
-static void FreeHandleObj( rdos_handle_type *h)
+static void _WCNEAR FreeHandleObj( rdos_handle_type *h)
 {
     h->ref_count--;
 
@@ -89,7 +89,7 @@ static void FreeHandleObj( rdos_handle_type *h)
     }
 }
 
-static void GrowHandleArr( void )
+static void _WCNEAR GrowHandleArr( void )
 {
     int                 i;
     int                 new_count;
@@ -109,7 +109,7 @@ static void GrowHandleArr( void )
     handle_count = new_count;
 }
 
-static int AllocHandleEntry( rdos_handle_type *obj )
+static int _WCNEAR AllocHandleEntry( rdos_handle_type *obj )
 {
     int i;
 
@@ -130,7 +130,7 @@ static int AllocHandleEntry( rdos_handle_type *obj )
     return( i );
 }
 
-static rdos_handle_type *FreeHandleEntry( int handle )
+static rdos_handle_type * _WCNEAR FreeHandleEntry( int handle )
 {
     rdos_handle_type *obj = 0;
 
@@ -149,7 +149,7 @@ static rdos_handle_type *FreeHandleEntry( int handle )
     return( obj );
 }
 
-static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
+static int _WCNEAR ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
 {
     int                 ok = 0;
     rdos_handle_type   *obj = 0;
@@ -173,7 +173,7 @@ static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
     return ( ok );
 }
 
-static int GetHandle( int handle )
+static int _WCNEAR GetHandle( int handle )
 {
     int rdos_handle = -1;
 
@@ -191,7 +191,7 @@ static int GetHandle( int handle )
     return( rdos_handle );
 }
 
-static long long GetHandlePos( int handle )
+static long long _WCNEAR GetHandlePos( int handle )
 {
     long long pos = 0;
 
@@ -209,7 +209,7 @@ static long long GetHandlePos( int handle )
     return( pos );
 }
 
-static void SetHandlePos( int handle, long long pos )
+static void _WCNEAR SetHandlePos( int handle, long long pos )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -297,7 +297,7 @@ int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
     return( ret );
 }
 
-static int open_base( const CHAR_TYPE *name, int mode )
+static int _WCNEAR open_base( const CHAR_TYPE *name, int mode )
 {
     int                 handle;
     rdos_handle_type   *obj;

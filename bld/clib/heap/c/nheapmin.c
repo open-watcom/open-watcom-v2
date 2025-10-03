@@ -75,7 +75,7 @@ _WCRTLINK int _heapshrink( void )
   || defined(__RDOS__) \
   || defined(__DOS_EXT__)
 
-static int __ReturnMemToSystem( heapblk_nptr heap )
+static int _WCNEAR __ReturnMemToSystem( heapblk_nptr heap )
 {
   #if defined(__OS2_32BIT__)
     if( DosFreeMem( (PBYTE)heap ) )

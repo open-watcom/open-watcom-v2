@@ -195,12 +195,12 @@ extern void __frstor( _87state * );
 
 #endif
 
-static void __save_8087( _87state *fst )
+static void _WCNEAR __save_8087( _87state *fst )
 {
     __fsave( fst );
 }
 
-static void __rest_8087( _87state *fst )
+static void _WCNEAR __rest_8087( _87state *fst )
 {
     __frstor( fst );
 }

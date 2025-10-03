@@ -55,7 +55,7 @@
 static char dllname[_MAX_PATH];
 static char buf[sizeof( message ) + sizeof( dllname ) + 6];
 
-static char *my_strcat( char *p, char *msg )
+static char * _WCNEAR my_strcat( char *p, char *msg )
 {
     while( *msg ) {
         *p = *msg;
@@ -77,7 +77,7 @@ static BOOL    (APIENTRY *pfnWinDestroyMsgQueue)( HMQ );
 static BOOL    (APIENTRY *pfnWinTerminate)( HAB );
 static ULONG   (APIENTRY *pfnWinMessageBox)( HWND, HWND, PCSZ, PCSZ, ULONG, ULONG );
 
-bool __disallow_single_dgroup( unsigned hmod )
+bool _INTERNAL __disallow_single_dgroup( unsigned hmod )
 {
     int         use_pm = 0;
     HMQ         hMessageQueue = 0;

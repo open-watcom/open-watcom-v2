@@ -60,7 +60,7 @@
 #define GetNthDigit( u, n ) ((u >> (n << 2)) & 0x0f)
 #define QUEUENAME_SIZE  sizeof( TERM_QUEUE ) + 16
 
-static void makeqname( char *qname, ULONG pid, ULONG tid )
+static void _WCNEAR makeqname( char *qname, ULONG pid, ULONG tid )
 {
     int         x;
     char        *px;

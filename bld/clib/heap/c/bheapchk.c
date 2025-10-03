@@ -39,7 +39,7 @@
 #include "heapacc.h"
 
 
-static int checkFreeList( unsigned long *free_size, __segment req_seg )
+static int _WCNEAR checkFreeList( unsigned long *free_size, __segment req_seg )
 {
     __segment           seg;
     FRLPTR( seg )       frl;
@@ -60,7 +60,7 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     return( _HEAPOK );
 }
 
-static int checkFree( freelist_fptr frl )
+static int _WCNEAR checkFree( freelist_fptr frl )
 {
     __segment           seg;
     FRLPTR( seg )       prev;

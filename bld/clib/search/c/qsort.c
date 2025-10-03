@@ -43,7 +43,7 @@ typedef int qcomp( const void *, const void * );
 
 
 /* Function to find the median value */
-static char *med3( char *a, char *b, char *c, qcomp cmp )
+static char * _WCNEAR med3( char *a, char *b, char *c, qcomp cmp )
 {
     if( cmp( a, b ) > 0 ) {
         if( cmp( a, c ) > 0 ) {

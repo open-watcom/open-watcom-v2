@@ -57,7 +57,7 @@
 
 
 #if defined(__WINDOWS_386__)
-static int __read( int handle, void *buf, unsigned len )
+static int _WCNEAR __read( int handle, void *buf, unsigned len )
 #else
 _WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif

@@ -42,8 +42,8 @@
 
 #if defined(__WINDOWS__) || defined(__NT__)
 
-static int win_nt( void )
-/***********************/
+static int _WCNEAR win_nt( void )
+/*******************************/
 {
   #ifdef __NT__                             /* Win32 app */
     return( WIN32_IS_NT );
@@ -53,8 +53,8 @@ static int win_nt( void )
 }
 
 
-static int win_95( void )
-/***********************/
+static int _WCNEAR win_95( void )
+/*******************************/
 {
   #ifdef __NT__                             /* Win32 app */
     return( WIN32_IS_WIN95 );
@@ -67,8 +67,8 @@ static int win_95( void )
 }
 
 
-static int win_32s( void )
-/************************/
+static int _WCNEAR win_32s( void )
+/********************************/
 {
   #ifdef __NT__                             /* Win32 app */
     return( WIN32_IS_WIN32S );
@@ -78,8 +78,8 @@ static int win_32s( void )
 }
 
 
-static int win_3x( void )
-/************************/
+static int _WCNEAR win_3x( void )
+/*******************************/
 {
   #if defined( __WINDOWS__ )
     return( win_nt() == 0 && win_95() == 0 );

@@ -38,7 +38,7 @@
 #include "streamio.h"
 
 
-static int docloseall( unsigned dont_close )
+static int _WCNEAR docloseall( unsigned dont_close )
 {
     FILE            *fp;
     int             number_of_files_closed;

@@ -61,7 +61,7 @@
 
 #ifdef CLIB_USE_ALT_ENV
 
-static int __alt_env_update( const CHAR_TYPE *in_name, const CHAR_TYPE *in_value, int overwrite )
+static int _WCNEAR __alt_env_update( const CHAR_TYPE *in_name, const CHAR_TYPE *in_value, int overwrite )
 /*
  * it updates counterpart environment data (wide or narrow)
  *
