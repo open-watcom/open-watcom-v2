@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,10 +98,16 @@ static long     FileSize;
 static int getChar( void )
 {
 #if defined( __DOS__ )
+    /*
+     * get ASCII code
+     */
     return( _BIOSKeyboardGet( KEYB_STD ) & 0xff );
 #else
 #if defined( __OS2__ ) && defined( _M_I86 )
     if( _osmode_REALMODE() ) {
+        /*
+         * get ASCII code
+         */
         return( _BIOSKeyboardGet( KEYB_STD ) & 0xff );
     }
 #endif

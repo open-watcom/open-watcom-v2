@@ -321,7 +321,10 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
         }
     }
     DosMonClose( mon );
-    ret->key = key.info.chChar + ( (unsigned)key.info.chScan << 8 );
+    /*
+     * get ASCII code
+     */
+    ret->key = key.info.chChar;
     return( sizeof( *ret ) );
 }
 
