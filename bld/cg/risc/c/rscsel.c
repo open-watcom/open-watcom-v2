@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,6 @@
 
 
 extern  type_length     TypeClassLength[];
-
-#define MAX_COST        0x7FFF
 
 cost_val ScanCost( sel_handle s_node )
 /************************************/

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -547,7 +547,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     kind = 0;
     node = Arithmetic( node, TypeInteger );
     if( s_node->num_cases != 0 ) {
-        best = 0x7FFFFFFF;
+        best = MAX_COST;
         SortNodeList( node, s_node, true ); /* sort signed */
         if( allowed & CG_SWITCH_SCAN ) {
             cost = ScanCost( s_node );

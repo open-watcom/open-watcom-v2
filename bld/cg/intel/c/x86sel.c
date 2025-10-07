@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,6 @@
 002A    26 FF 65 0C               jmp       word ptr es:0xc[di]
 */
 
-#define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 #if _TARGET & _TARG_8086
@@ -88,23 +87,16 @@
 static cost_val Balance( int_32 size, int_32 time )
 /*************************************************/
 {
-    cost_val    balance;
+    int_32      balance;
     byte        opt_size;
-    cost_val    cost_size;
-    cost_val    cost_time;
 
     opt_size = OptForSize;
     if( opt_size < 25 ) {
         opt_size = 25;
     }
-    cost_size = size * opt_size;
-    if( cost_size < 0 )
-        return( MAX_COST );     // overflow
-    cost_time = 10 * time * ( 100 - opt_size );
-    if( cost_time < 0 )
-        return( MAX_COST );     // overflow
-    // balance = ( size * opt_size + 10 * time * ( 100 - opt_size ) ) / 100;
-    balance = ( cost_time + cost_size ) / 100;
+    balance = ( size * opt_size + 10 * time * ( 100 - opt_size ) ) / 100;
+    if( balance < 0 || (uint_32)balance > MAX_COST )
+        return( MAX_COST );
     return( balance );
 }
 
@@ -154,12 +146,14 @@ cost_val JumpCost( sel_handle s_node )
     } else if( in_range < MIN_JUMPS ) {
         cost = MAX_COST;
     } else {
-        cost = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
+        int_32  size;
+
+        size = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
         /* an extra two bytes are needed to zero the high part before
            the jump */
         if( SelType( 0xffffffff ) == TY_UINT_1 )
-            cost += 2;
-        cost = Balance( cost, 1 );
+            size += 2;
+        cost = Balance( size, 1 );
     }
     return( cost );
 }
@@ -170,10 +164,10 @@ cost_val IfCost( sel_handle s_node, int entries )
 {
     int_32      hi;
     int_32      lo;
-    cost_val    cost;
     int_32      jumpsize;
     int         log_entries;
     int         tipe_length;
+    int_32      size;
 
     hi = s_node->upper;
     lo = s_node->lower;
@@ -183,12 +177,12 @@ cost_val IfCost( sel_handle s_node, int entries )
     } else {
         jumpsize = SHORT_JUMP;
     }
-    cost = jumpsize + CmpSize[tipe_length];
+    size = jumpsize + CmpSize[tipe_length];
     /* for char-sized switches, often the two-byte "cmp al,xx" is used.
        otherwise we need three bytes */
     if( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
-        cost++;
-    cost *= entries;
+        size++;
+    size *= entries;
     log_entries = 0;
     while( entries != 0 ) {
         log_entries++;
@@ -196,12 +190,8 @@ cost_val IfCost( sel_handle s_node, int entries )
     }
     /* add cost for extra jumps generated for grandparents and
        every other child except the last one */
-    cost += (entries / 4) * 2 * jumpsize;
-    cost = Balance( cost, log_entries );
-    if( cost >= MAX_COST ) {
-        cost = MAX_COST - 1;
-    }
-    return( cost );
+    size += (entries / 4) * 2 * jumpsize;
+    return( Balance( size, log_entries ) );
 }
 
 static  void    GenValuesForward( select_list *list, int_32 hi,
