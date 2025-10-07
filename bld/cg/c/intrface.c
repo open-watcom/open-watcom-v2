@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -956,7 +956,9 @@ cg_name _CGAPI CGBinary( cg_op op, cg_name name1, cg_name name2, cg_type tipe )
     EchoAPI( "CGBinary( %o, %n, %n, %t )", op, name1, name2, tipe );
     hdlUseOnce( CG_NAMES, name1 );
     hdlUseOnce( CG_NAMES, name2 );
-    if( op != O_COMMA ) verifyNotUserType( tipe );
+    if( op != O_COMMA ) {
+        verifyNotUserType( tipe );
+    }
 #endif
     if( op == O_COMMA ) {
         name1 = TGTrash( name1 );
@@ -980,7 +982,9 @@ cg_name _CGAPI CGUnary( cg_op op, cg_name name, cg_type tipe )
 
     EchoAPI( "CGUnary( %o, %n, %t )", op, name, tipe );
     hdlUseOnce( CG_NAMES, name );
-    if( op != O_POINTS ) verifyNotUserType( tipe );
+    if( op != O_POINTS ) {
+        verifyNotUserType( tipe );
+    }
     retn = TGUnary( op, name, TypeAddress( tipe ) );
     hdlAddUnary( CG_NAMES, retn, name );
     return EchoAPICgnameReturn( retn );

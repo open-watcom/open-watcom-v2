@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ static  void    ReallyScrapLabel( label_handle lbl )
 
   optbegin
     owner = &Handles;
-    for(;;) {
+    for( ;; ) {
         if( *owner == NULL )
             optreturnvoid;
         if( *owner == lbl )
@@ -192,7 +192,7 @@ void    TellBeginExecutions( void )
     label_handle    dead;
 
   optbegin
-    for(;;) {
+    for( ;; ) {
         dead = NextCondemned( Handles );
         if( dead == NULL )
             break;

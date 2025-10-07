@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ static void dumpAutoLocn( void )
     AUTO_LOCN* curr;
 
     if( auto_locations ) {
-        for( ; ; ) {
+        for( ;; ) {
             curr = auto_locations;
             if( curr == NULL )
                 break;
@@ -533,7 +533,9 @@ extern  void    CGSelOther( sh *s, l *lb ) {
     Action( "CGSelOther" );
     Action( "( %d, %s )%n", s->i, Label( lb ) );
     CRefLabel(lb);
-    if( s->o != NULL ) { CGError( "Otherwise already defined" ); }
+    if( s->o != NULL ) {
+        CGError( "Otherwise already defined" );
+    }
     s->o=lb;
 }
 extern  void    CGSelect( sh *s, n *e ) {
@@ -555,7 +557,9 @@ extern  void    CGSelect( sh *s, n *e ) {
         s->r=r->n;
         CGFree(r);
     }
-    if( s->o != NULL ) { Code( "default: %s%n", Label(s->o) ); }
+    if( s->o != NULL ) {
+        Code( "default: %s%n", Label(s->o) );
+    }
     Code("}%n");
     CGFree(s);
 }
@@ -809,7 +813,9 @@ extern  n       *CGUnary( cg_op o, n *r, cg_type t ) {
     Action( "CGUnary" );
     VerNode( r ); VerOp( o, UnaryOps );
     Action( "( %s, %t, %s )", Op(o), r, Tipe(t) );
-    if( o == O_POINTS ) { NotDefault( t ); }
+    if( o == O_POINTS ) {
+        NotDefault( t );
+    }
     new_n = Unary( o, r, t );
     Action( " -> %t%n", new_n );
     return( new_n );
@@ -876,7 +882,8 @@ extern  n       *CGCall( n *r ) {
         Action( "%n" );
     }
     VerNode( r );
-    if( r->r != NULL ) r->r->i++;
+    if( r->r != NULL )
+        r->r->i++;
     return( r );
 }
 extern  void    CGReturn( n *r, cg_type t ) {

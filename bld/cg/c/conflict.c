@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ conflict_node   *AddConflictNode( name *opnd )
             flags |= CROSSES_BLOCKS;
         }
         scan = opnd;
-        for(;;) {
+        for( ;; ) {
             scan->v.conflict = new_cn;
             scan->t.temp_flags |= flags;
             scan = scan->t.alias;
@@ -184,7 +184,7 @@ conflict_node   *FindConflictNode( name *opnd, block *blk, instruction *ins )
     }
     if( opnd->n.class == N_TEMP ) {
         scan = opnd;
-        for(;;) {
+        for( ;; ) {
             scan->v.conflict = opnd->v.conflict;
             scan->t.temp_flags |= HAD_CONFLICT;
             scan = scan->t.alias;
@@ -373,7 +373,7 @@ void    FreeAConflict( conflict_node *conf )
     if( prev == conf ) {
         if( opnd->n.class == N_TEMP ) {
             scan = opnd;
-            for(;;) {
+            for( ;; ) {
                 scan->v.conflict = conf->next_for_name;
                 scan->t.temp_flags |= HAD_CONFLICT;
                 scan = scan->t.alias;

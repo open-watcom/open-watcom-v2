@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,9 @@ void    DumpInOut( instruction *ins )
 void    DumpITab( instruction *ins )
 /**********************************/
 {
-    if( ins->u.gen_table != NULL ) DumpTab( ins->u.gen_table );
+    if( ins->u.gen_table != NULL ) {
+        DumpTab( ins->u.gen_table );
+    }
 }
 
 
@@ -490,7 +492,7 @@ void    DumpVUsage( name *v )
     DumpLiteral( "  Usage " );
     i = 0;
     j = 0;
-    for(;;) {
+    for( ;; ) {
         if( u & 1 ) {
             j += 14;
             if( j > 71 ) {

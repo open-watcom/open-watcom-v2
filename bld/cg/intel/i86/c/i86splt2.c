@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -770,7 +770,8 @@ instruction     *rCYPSHIFT( instruction *ins )
     DupSegRes( ins, ins3 );
     ins->operands[0] = AllocIntConst( 0 ); // so false live info not gen'd
     PrefixIns( ins, ins1 );
-    if( ins2 != NULL ) PrefixIns( ins, ins2 );
+    if( ins2 != NULL )
+        PrefixIns( ins, ins2 );
     ReplIns( ins, ins3 );
     UpdateLive( ins1, ins3 );
     return( ins1 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,7 +217,7 @@ static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
         if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
             first = &scoreboard[info->index_reg];
             curr = first;
-            for(;;) {
+            for( ;; ) {
                 info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
                 if( !ScoreLookup( &scoreboard[i], info ) ) {
                     ScoreInsert( scoreboard, i, info );

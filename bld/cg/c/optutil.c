@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ ins_entry       *ValidIns( ins_entry *instr )
 /*******************************************/
 {
   optbegin
-    for(;;) {
+    for( ;; ) {
         if( instr == NULL )
             break;
         if( _Class( instr ) != OC_DEAD )
@@ -66,7 +66,7 @@ ins_entry       *PrevIns( ins_entry *instr )
     } else {
         instr = instr->ins.prev;
     }
-    for(;;) {
+    for( ;; ) {
         if( instr == NULL )
             break;
         if( _Class( instr ) != OC_INFO )
@@ -104,7 +104,7 @@ ins_entry       *NextIns( ins_entry *instr )
     } else {
         instr = instr->ins.next;
     }
-    for(;;) {
+    for( ;; ) {
         if( instr == NULL )
             break;
         if( _Class( instr ) != OC_INFO )
@@ -167,7 +167,7 @@ void    DelRef( ins_entry **owner, ins_entry *instr )
     ins_entry   *curr;
 
   optbegin
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == instr )
             break;
@@ -229,7 +229,7 @@ static  ins_entry *DelInstr_Helper( ins_entry *old )
     }
     _ResetClass( old, OC_DEAD );
     next = ValidIns( old->ins.next );
-    for(;;) {
+    for( ;; ) {
         if( next == NULL )
             return( NULL );
         if( _Class( next ) != OC_INFO )

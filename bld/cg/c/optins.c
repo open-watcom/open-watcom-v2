@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
         return( true );
     /* dead code*/
     ins = *instr;
-    for(;;) {
+    for( ;; ) {
         if( ins == NULL )
             break;
         if( _Class( ins ) == OC_LABEL )
@@ -315,7 +315,7 @@ void    OptPush( void )
         FreePendingDeletes();
         /* find the last interesting queue entry and try some more*/
         ins = LastIns;
-        for(;;) {
+        for( ;; ) {
             if( ins == NULL )
                 optreturnvoid;
             if( _Class( ins ) != OC_INFO )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +241,7 @@ static  void    DumpInputs( block *b )
     if( b->input_edges != NULL ) {
         i = 0;
         edge = b->input_edges;
-        for(;;) {
+        for( ;; ) {
             if( FindBlock( edge->source ) ) {
                 DumpBlkId( edge->source );
             } else {
@@ -373,7 +373,7 @@ void    DumpFlowGraph( block *blk )
             DumpLiteral( " loop depth " );
             DumpInt( curr->first_block->depth );
             DumpNL();
-            for(;;) {
+            for( ;; ) {
                 if( curr->next_sub_int != NULL )
                     break;
                 if( curr == head )
@@ -384,7 +384,7 @@ void    DumpFlowGraph( block *blk )
                 DumpLiteral( "|     " );
             }
             if( level > 0 ) {
-                for(;;) {
+                for( ;; ) {
                     DumpLiteral( "End   " );
                     if( --level == 0 ) {
                         break;

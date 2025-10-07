@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -394,7 +394,7 @@ static  void    AddField( field_any **owner, field_any *field )
 
     strt = field->member.b_strt;
     off  = field->member.u.off;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -447,7 +447,7 @@ dbg_type        WVEndStruct( dbg_struct st )
     BuffDWord( st->size );
     EndType( true );
     SortFields( st );
-    for(;;) {
+    for( ;; ) {
         field = st->list;
         if( field == NULL )
             break;
@@ -521,7 +521,7 @@ dbg_type        WVEndEnum( dbg_enum en )
     BuffWord( en->num );
     BuffByte( GetScalar( en->tipe ) );
     EndType( true );
-    for(;;) {
+    for( ;; ) {
         cons = en->list;
         if( cons == NULL )
             break;
@@ -558,7 +558,7 @@ dbg_type        WVEndProc( dbg_proc pr )
     proc_type = TypeIdx;
     BuffIndex( pr->ret );
     BuffByte( pr->num );
-    for(;;) {
+    for( ;; ) {
         parm = pr->list;
         if( parm == NULL )
             break;

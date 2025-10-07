@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -469,7 +469,8 @@ instruction     *rMAKEU4( instruction *ins )
         temp = AllocTemp( U2 );
         new_ins = MakeMove( lseg, temp, U2 );
         PrefixIns( ins, new_ins );
-        if( first == NULL ) first = new_ins;
+        if( first == NULL )
+            first = new_ins;
         lseg = temp;
     }
     rseg = SegmentPart( rite );
@@ -477,7 +478,8 @@ instruction     *rMAKEU4( instruction *ins )
         temp = AllocTemp( U2 );
         new_ins = MakeMove( rseg, temp, U2 );
         PrefixIns( ins, new_ins );
-        if( first == NULL ) first = new_ins;
+        if( first == NULL )
+            first = new_ins;
         rseg = temp;
     }
     high = MakeCondition( ins->head.opcode, lseg,
@@ -485,7 +487,8 @@ instruction     *rMAKEU4( instruction *ins )
     if( low->head.opcode == OP_CMP_EQUAL ) {
         low->head.opcode = OP_CMP_NOT_EQUAL;
     }
-    if( first == NULL ) first = low;
+    if( first == NULL )
+        first = low;
     DupSeg( ins, low );
     PrefixIns( ins, low );
     DupSeg( ins, high );

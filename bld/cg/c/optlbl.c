@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ void    AddLblDef( ins_entry *instr )
   optbegin
     _LblRef( instr ) = NULL;
     lbl = _Label( instr );
-    for(;;) {
+    for( ;; ) {
         _SetStatus( lbl, CODELABEL );
         lbl->ins = instr;
         lbl = lbl->alias;
@@ -117,7 +117,7 @@ void    ChgLblRef( ins_entry *instr, label_handle new_lbl )
     old_lbl = _Label( instr );
     if( old_lbl != new_lbl ) {
         owner = &old_lbl->refs;
-        for(;;) {
+        for( ;; ) {
             curr = *owner;
             if( curr == instr )
                 break;
@@ -178,7 +178,7 @@ ins_entry       *AliasLabels( ins_entry *old_ins, ins_entry *new_ins )
             old_lbl->redirect = NULL;
             _ClrStatus( new_lbl, REDIRECTION );
         }
-        for(;;) {
+        for( ;; ) {
             old_lbl->ins = new_lbl->ins;
             old_lbl = old_lbl->alias;
             if( old_lbl == NULL ) {
@@ -187,7 +187,7 @@ ins_entry       *AliasLabels( ins_entry *old_ins, ins_entry *new_ins )
         }
         old_lbl = _Label( old_ins );
         owner = &old_lbl->refs;
-        for(;;) {
+        for( ;; ) {
             old_jmp = *owner;
             if( old_jmp == NULL )
                 break;
@@ -216,7 +216,7 @@ static  void    KillDeadLabels( ins_entry *instr )
 
   optbegin
     owner = &_Label( instr );
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -251,7 +251,7 @@ void    ScrapCodeLabel( label_handle lbl )
 
   optbegin
     owner = &Handles;
-    for(;;) {
+    for( ;; ) {
         if( *owner == NULL )
             optreturnvoid;
         if( *owner == lbl )

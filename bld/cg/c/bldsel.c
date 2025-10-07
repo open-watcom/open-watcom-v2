@@ -92,7 +92,8 @@ void    BGSelRange( sel_handle s_node, int_32 lo, int_32 hi, label_handle label 
 {
     select_list         *new_entry;
 
-    if( ( hi ^ lo ) < 0 ) _Zoiks( ZOIKS_089 );
+    if( ( hi ^ lo ) < 0 )
+        _Zoiks( ZOIKS_089 );
     new_entry = NewCase( lo, hi, label );
     new_entry->next = s_node->list;
     s_node->list = new_entry;
@@ -317,7 +318,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     MkSelOp( SelIdx( table, node ), U2 );
     i = 0;
     targets = 0;
-    for(;;) {
+    for( ;; ) {
         if( table->cases[i] != other ) {
             ++targets;
         }
@@ -330,7 +331,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     }
     GenBlock( BLK_SELECT, targets );
     i = 0;
-    for(;;) {
+    for( ;; ) {
         if( table->cases[i] != other ) {
             AddTarget( table->cases[i], false );
         }

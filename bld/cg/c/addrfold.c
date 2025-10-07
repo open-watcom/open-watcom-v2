@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -394,7 +394,7 @@ an      AddrPlus( an l_addr, an r_addr, const type_def *tipe )
     if( tipe->refno == TY_HUGE_POINTER )
         return( NULL );
     addr = NewAddrName();
-    for(;;) {
+    for( ;; ) {
         action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
         switch( action ) {
         case UNEXPECTED:

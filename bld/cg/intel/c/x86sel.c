@@ -202,7 +202,7 @@ static  void    GenValuesForward( select_list *list, int_32 hi,
     int_32      curr;
 
     curr = lo;
-    for(;;) {
+    for( ;; ) {
         switch( tipe ) {
         case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
@@ -238,7 +238,7 @@ static  void    GenValuesBackward( select_list *list, int_32 hi,
     for( scan = list; scan->high != hi; ) {
         scan = scan->next;
     }
-    for(;;) {
+    for( ;; ) {
         switch( tipe ) {
         case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
@@ -344,7 +344,7 @@ tbl_control     *MakeJmpTab( select_list *list, int_32 lo,
         CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
         table->size = cases;
         tab_ptr = &table->cases[0];
-        for(;;) {
+        for( ;; ) {
             if( SelCompare( lo, list->low ) < 0 ) {
                 *tab_ptr = other;
             } else {

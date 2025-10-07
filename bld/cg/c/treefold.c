@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,9 +227,11 @@ static signed_64 CFGetInteger64Value( float_handle cf )
 
     trunc = CFTrunc( &cgh, cf );
     neg = CFTest( trunc );
-    if( neg < 0 ) CFNegate( trunc );
+    if( neg < 0 )
+        CFNegate( trunc );
     value = CFCnvF64( trunc );
-    if( neg < 0 ) U64Neg( &value, &value );
+    if( neg < 0 )
+        U64Neg( &value, &value );
     CFFree( &cgh, trunc );
     return( value );
 }

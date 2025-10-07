@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -686,7 +686,7 @@ dbg_type        DFEndStruct( dbg_struct st )
         name = NULL;
     }
     DWBeginStruct( Client, ret, st->size, name, 0, 0 );
-    for(;;) {
+    for( ;; ) {
         field = st->list;
         if( field == NULL )
             break;
@@ -760,7 +760,7 @@ dbg_type        DFEndEnum( dbg_enum en )
 
     tipe_addr = TypeAddress( en->tipe );
     ret = DWBeginEnumeration( Client, tipe_addr->length, NULL, 0, 0 );
-    for(;;) {
+    for( ;; ) {
         cons = en->list;
         if( cons == NULL )
             break;
@@ -793,7 +793,7 @@ dbg_type        DFEndProc( dbg_proc pr )
     if( parm == NULL ) {
         DWAddEllipsisToSubroutineType( Client );
     }
-    for(;;) {
+    for( ;; ) {
         if( parm == NULL )
             break;
         DWAddParmToSubroutineType( Client, parm->tipe, NULL, NULL, NULL );

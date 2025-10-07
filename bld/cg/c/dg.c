@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +205,8 @@ extern  void    DGFEPtr( sym s, cg_type t, int_32 o ) {
     Action( "( %s, %s, %l )%n", Name( s ), Tipe( t ), o );
     bk = (b*)FEBack(s);
     VerBack(bk);
-    if( (FEAttr( s ) & FE_IMPORT) == 0 ) DRefLabel( bk->lp );
+    if( (FEAttr( s ) & FE_IMPORT) == 0 )
+        DRefLabel( bk->lp );
     Put( "        A(" );
     PutName(bk);
     Put( ") + %l %s%n",o,Tipe(t) );
@@ -768,7 +769,7 @@ static  void    AddDim( array_list *ar, dim_any *dim )
     dim_any **owner;
 
     owner = &ar->list;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -900,7 +901,7 @@ static  void    AddField( struct_list *st, field_any *field )
     field_entry **owner;
 
     owner = &st->list;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -1151,7 +1152,7 @@ extern  dbg_type        DBEndEnum( enum_list *en )
     Action( "DBEndEnum( %p )", en );
     TypDbg( "(%d) Enumerated base==%s, &consts==%d%n", ++TypeIdx,
             Tipe( en->tipe ), en->num );
-    for(;;) {
+    for( ;; ) {
         cons = en->list;
         if( cons == NULL )
             break;
@@ -1216,7 +1217,7 @@ extern  dbg_type        DBEndProc( proc_list *pr )
     Action( "DBEndProc( %p )", pr );
     TypDbg( "(%d) Procedure %s, return==%d, &parms==%d%n", ++TypeIdx,
             Tipe(pr->call), pr->ret, pr->num );
-    for(;;) {
+    for( ;; ) {
         parm = pr->list;
         if( parm == NULL )
             break;
