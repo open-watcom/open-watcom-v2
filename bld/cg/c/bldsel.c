@@ -97,7 +97,7 @@ void    BGSelRange( sel_handle s_node, int_32 lo, int_32 hi, label_handle label 
     new_entry = NewCase( lo, hi, label );
     new_entry->next = s_node->list;
     s_node->list = new_entry;
-    s_node->num_cases += hi - lo + 1;
+    s_node->num_cases += new_entry->count;
 }
 
 
@@ -169,7 +169,14 @@ static  void    MergeListEntries( sel_handle s_node )
 
     for( curr = s_node->list, next = curr->next; next != NULL; next = curr->next ) {
         if( ( curr->high + 1 == next->low ) && ( curr->label == next->label ) ) {
+            /*
+             * add/merge second range to first range
+             */
             curr->high = next->high;
+            curr->count += next->count;
+            /*
+             * remove second range
+             */
             curr->next = next->next;
             CGFree( next );
         } else {
@@ -303,7 +310,7 @@ static  an      GenScanTable( an node, sel_handle s_node, const type_def *tipe )
             BGControl( O_IF_FALSE, lt, s_node->other_wise );
         }
     }
-    ScanBlock( MakeScanTab( s_node->list, s_node->upper, s_node->other_wise, value_type, real_type ),
+    ScanBlock( MakeScanTab( s_node, value_type, real_type ),
                node, (type_class_def)value_type, s_node->other_wise );
     return( node );
 }
@@ -366,9 +373,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
     /* generate table*/
     /* index into table*/
     node = BGConvert( node, UnSignedIntTipe( tipe ) ); /* value an unsigned index */
-    SelectBlock( MakeJmpTab( s_node->list, s_node->lower, s_node->upper,
-                             s_node->other_wise ),
-                 node, s_node->other_wise );
+    SelectBlock( MakeJmpTab( s_node ), node, s_node->other_wise );
     return( node );
 }
 
@@ -466,15 +471,15 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
         }
     }
     if( mid < hi ) {
-        DoBinarySearch( node, list, tipe, mid+1, hi, other,
-                        mid_list->high+1, hibound, true, have_hibound );
+        DoBinarySearch( node, list, tipe, mid + 1, hi, other,
+                        mid_list->high + 1, hibound, true, have_hibound );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
     BGControl( O_LABEL, NULL, lt );
     if( lo < mid ) {
-        DoBinarySearch( node, list, tipe, lo, mid-1, other,
-                        lobound, mid_list->low-1, have_lobound, true );
+        DoBinarySearch( node, list, tipe, lo, mid - 1, other,
+                        lobound, mid_list->low - 1, have_lobound, true );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
@@ -491,7 +496,7 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
     for( list = s_node->list; list != NULL; list = list->next ) {
         ++nodes;
     }
-    DoBinarySearch( node, s_node->list, tipe, 0, nodes-1, s_node->other_wise,
+    DoBinarySearch( node, s_node->list, tipe, 0, nodes - 1, s_node->other_wise,
                     0, 0, false, false );
     return( node );
 }
@@ -503,11 +508,12 @@ int_32      NumValues( select_list *list, int_32 hi )
     int_32      cases;
 
     cases = 0;
-    for( ; list != NULL; list = list->next ) {
+    while( list != NULL ) {
         if( SelCompare( list->high, hi ) > 0 ) {
             break;
         }
-        cases += list->high - list->low + 1;
+        cases += list->count;
+        list = list->next;
     }
     return( cases );
 }

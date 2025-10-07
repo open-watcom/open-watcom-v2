@@ -72,19 +72,19 @@ cost_val IfCost( sel_handle s_node, int entries )
 }
 
 
-tbl_control *MakeScanTab( select_list *list, int_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
-/***********************************************************************************************************/
+tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_type )
+/**********************************************************************************/
 {
-    /* unused parameters */ (void)list; (void)hi; (void)tipe; (void)other; (void)real_tipe;
+    /* unused parameters */ (void)s_node; (void)value_type; (void)real_type;
 
     return( NULL );
 }
 
 
-tbl_control *MakeJmpTab( select_list *list, int_32 lo, int_32 hi, label_handle other )
-/************************************************************************************/
+tbl_control *MakeJmpTab( sel_handle s_node )
+/******************************************/
 {
-    /* unused parameters */ (void)list; (void)lo; (void)hi; (void)other;
+    /* unused parameters */ (void)s_node;
 
     return( NULL );
 }

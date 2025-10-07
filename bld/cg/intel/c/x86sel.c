@@ -118,7 +118,7 @@ cost_val ScanCost( sel_handle s_node )
     for( list = s_node->list; list != NULL; list = list->next ) {
         if( SelCompare( list->low, hi ) > 0 )
             break;
-        values += list->high - list->low + 1;
+        values += list->count;
     }
     tipe = SelType( hi - lo );
     if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) || ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
@@ -265,47 +265,51 @@ static  void    GenValuesBackward( select_list *list, int_32 hi,
 }
 
 
-tbl_control     *MakeScanTab( select_list *list, int_32 hi,
-                                      label_handle other, cg_type tipe,
-                                      cg_type real_tipe )
-/*********************************************************************/
+tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_type )
+/**********************************************************************************/
 {
     tbl_control         *table;
     label_handle        *tab_ptr;
     uint_32             cases;
     int_32              lo;
+    int_32              hi;
+    int_32              curr;
     int_32              to_sub;
     select_list         *scan;
-    int_32              curr;
+    select_list         *list;
+    label_handle        other;
 
+    list = s_node->list;
+    lo = s_node->lower;
+    hi = s_node->upper;
     cases = NumValues( list, hi );
-    lo = list->low;
-    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
+    other = s_node->other_wise;
     PUSH_OP( AskCodeSeg() );
         table->value_lbl = AskForNewLabel();
         CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
         GenSelEntry( true );
         table->lbl = AskForNewLabel();
-        if( tipe != real_tipe ) {
+        if( value_type != real_type ) {
             to_sub = lo;
         } else {
             to_sub = 0;
         }
         if( other == NULL ) {
-            other = table->cases[0];  /* no otherwise? he bakes!*/
+            other = table->cases[0];  /* no otherwise? he bakes! */
         }
-        if( tipe == TY_WORD ) {
-            GenValuesForward( list, hi, lo, to_sub, tipe );
+        if( value_type == TY_WORD ) {
+            GenValuesForward( list, hi, lo, to_sub, value_type );
         } else {
-            GenValuesBackward( list, hi, lo, to_sub, tipe );
+            GenValuesBackward( list, hi, lo, to_sub, value_type );
         }
         GenSelEntry( false );
         CodeLabel( table->lbl, 0 );
         tab_ptr = &table->cases[0];
         curr = lo;
         scan = list;
-        if( tipe != TY_WORD ) {
+        if( value_type != TY_WORD ) {
             GenCodePtr( other );
         }
         for( ;; ) {
@@ -321,29 +325,36 @@ tbl_control     *MakeScanTab( select_list *list, int_32 hi,
                 ++curr;
             }
         }
-        if( tipe == TY_WORD ) {
+        if( value_type == TY_WORD ) {
             GenCodePtr( other );
         }
     POP_OP();
     return( table );
 }
 
-tbl_control     *MakeJmpTab( select_list *list, int_32 lo,
-                                     int_32 hi, label_handle other )
-/*********************************************************************/
+tbl_control     *MakeJmpTab( sel_handle s_node )
+/**********************************************/
 {
     tbl_control         *table;
     label_handle        *tab_ptr;
     uint_32             cases;
+    select_list         *list;
+    int_32              lo;
+    int_32              hi;
+    label_handle        other;
 
+    lo = s_node->lower;
+    hi = s_node->upper;
     cases = hi - lo + 1;
-    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     PUSH_OP( AskCodeSeg() );
         table->lbl = AskForNewLabel();
         table->value_lbl = NULL;
         CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
         table->size = cases;
         tab_ptr = &table->cases[0];
+        list = s_node->list;
+        other = s_node->other_wise;
         for( ;; ) {
             if( SelCompare( lo, list->low ) < 0 ) {
                 *tab_ptr = other;
