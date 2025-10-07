@@ -138,7 +138,7 @@ jobs:
         bld:
         - owtools:  'CLANG'
           arch:     'x64'
-          image:    'macos-13'
+          image:    'macos-14-large'
           tools:    'clang'
           relpath:  'rel bino64'
         - owtools:  'CLANG'
