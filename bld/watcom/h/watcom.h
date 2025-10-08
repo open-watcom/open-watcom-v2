@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,15 +53,39 @@
     #define I64LO32     1
     #define I64HI32     0
     #define I64LO16     3
+    #define I64MI16W0   3
+    #define I64MI16W1   2
+    #define I64MI16W2   1
+    #define I64MI16W3   0
     #define I64HI16     0
     #define I64LO8      7
+    #define I64MI8B0    7
+    #define I64MI8B1    6
+    #define I64MI8B2    5
+    #define I64MI8B3    4
+    #define I64MI8B4    3
+    #define I64MI8B5    2
+    #define I64MI8B6    1
+    #define I64MI8B7    0
     #define I64HI8      0
 #else
     #define I64LO32     0
     #define I64HI32     1
     #define I64LO16     0
+    #define I64MI16W0   0
+    #define I64MI16W1   1
+    #define I64MI16W2   2
+    #define I64MI16W3   3
     #define I64HI16     3
     #define I64LO8      0
+    #define I64MI8B0    0
+    #define I64MI8B1    1
+    #define I64MI8B2    2
+    #define I64MI8B3    3
+    #define I64MI8B4    4
+    #define I64MI8B5    5
+    #define I64MI8B6    6
+    #define I64MI8B7    7
     #define I64HI8      7
 #endif
 
