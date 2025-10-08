@@ -72,8 +72,7 @@ unsigned short dos_get_code_page( void )
         int                 cflag;
 
         memset( &dp, 0, sizeof( dp ) );
-        dp.r.h.ah = 0x66;               /* get extended country info */
-        dp.r.h.al = 0x01;               /* ... */
+        dp.r.w.ax = 0x6601;             /* get extended country info */
         dp.intno = 0x21;                /* DOS call */
         cflag = PharlapSimulateRealModeInterruptExt( &dp );
         if( cflag == 0 ) {
@@ -84,8 +83,7 @@ unsigned short dos_get_code_page( void )
         int                 cflag;
 
         memset( &dr, 0, sizeof( dr ) );
-        dr.r.h.ah = 0x66;               /* get extended country info */
-        dr.r.h.al = 0x01;               /* ... */
+        dr.r.w.ax = 0x6601;             /* get extended country info */
         cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
         if( cflag == 0 ) {
             codepage = dr.r.w.bx;       /* return active code page */
