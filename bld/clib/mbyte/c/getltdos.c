@@ -85,7 +85,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         int                 cflag;
 
         memset( &dp, 0, sizeof( dp ) );
-        dp.r.x.eax = 0x6300;                 /* get DBCS vector table */
+        dp.r.h.ah = 0x63;                   /* get DBCS vector table */
         dp.intno = 0x21;                    /* DOS call */
         cflag = PharlapSimulateRealModeInterruptExt( &dp );
         if( cflag == 0 && dp.r.h.al == 0 ) {
@@ -102,7 +102,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         int                 cflag;
 
         memset( &dr, 0, sizeof( dr ) );
-        dr.r.x.eax = 0x6300;                /* get DBCS vector table */
+        dr.r.h.ah = 0x63;                   /* get DBCS vector table */
         cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
         if( cflag == 0 && dr.r.h.al == 0 ) {
             /*
