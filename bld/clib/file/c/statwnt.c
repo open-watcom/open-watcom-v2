@@ -53,10 +53,8 @@
 #include "osver.h"
 #include "thread.h"
 #include "pathmac.h"
-#include "i64.h"
+#include "libi64.h"
 
-
-#define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
 
 static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
@@ -217,7 +215,8 @@ static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *ori
     buf->st_rdev = buf->st_dev;
 
 #ifdef __INT64__
-    MAKE_SIZE64( buf->st_size, ffd.nFileSizeHigh, ffd.nFileSizeLow );
+    LIB_LODWORD( buf->st_size ) = ffd.nFileSizeLow;
+    LIB_HIDWORD( buf->st_size ) = ffd.nFileSizeHigh;
 #else
     buf->st_size = ffd.nFileSizeLow;
 #endif

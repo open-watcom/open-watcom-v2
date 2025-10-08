@@ -66,7 +66,7 @@
     #include "_dtaxxx.h"
     #include "d2ttime.h"
 #endif
-#include "i64.h"
+#include "libi64.h"
 #include "find.h"
 
 
@@ -208,7 +208,8 @@
 
     /*** Handle the file size ***/
   #ifdef __INT64__
-    U64Set( (unsigned_64 *)&fileinfo->size, ffd->nFileSizeLow, ffd->nFileSizeHigh );
+    LIB_LODWORD( fileinfo->size ) = ffd->nFileSizeLow;
+    LIB_HIDWORD( fileinfo->size ) = ffd->nFileSizeHigh;
   #else
     fileinfo->size = ffd->nFileSizeLow;
   #endif
@@ -371,7 +372,8 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
     fileinfo->time_write = _d2ttime( findbuf->wr_date, findbuf->wr_time );
     /*** Handle the file size ***/
   #ifdef __INT64__
-    U64Set( (unsigned_64 *)&fileinfo->size, findbuf->size, 0 );
+    LIB_LODWORD( fileinfo->size ) = findbuf->size;
+    LIB_HIDWORD( fileinfo->size ) = 0;
   #else
     fileinfo->size = findbuf->size;
   #endif

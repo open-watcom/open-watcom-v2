@@ -45,16 +45,13 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "i64.h"
+#include "libi64.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
 #include "handleio.h"
 #include "thread.h"
 
-
-#define LODWORD(x) (((unsigned_64 *)&x)->u._32[I64LO32])
-#define HIDWORD(x) (((unsigned_64 *)&x)->u._32[I64HI32])
 
 #ifdef __INT64__
 
@@ -90,8 +87,8 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
         DWORD           error;
         LONG            pos_hi;
 
-        pos_hi = HIDWORD( offset );
-        pos_lo = SetFilePointer( __getOSHandle( handle ), LODWORD( offset ), &pos_hi, origin );
+        pos_hi = LIB_HIDWORD( offset );
+        pos_lo = SetFilePointer( __getOSHandle( handle ), LIB_LODWORD( offset ), &pos_hi, origin );
         if( pos_lo == INVALID_SET_FILE_POINTER ) {
             // this might be OK so check for error
             error = GetLastError();
@@ -99,10 +96,11 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
                 return( __set_errno_dos( error ) );
             }
         }
-        U64Set( (unsigned_64 *)&pos, pos_lo, pos_hi );
+        LIB_LODWORD( pos ) = pos_lo;
+        LIB_HIDWORD( pos ) = pos_hi;
     }
   #elif defined( __LINUX__ )
-    if( _llseek( handle, LODWORD( offset ), HIDWORD( offset ), &pos, origin ) ) {
+    if( _llseek( handle, LIB_LODWORD( offset ), LIB_HIDWORD( offset ), &pos, origin ) ) {
         pos = -1LL;
     }
   #endif
