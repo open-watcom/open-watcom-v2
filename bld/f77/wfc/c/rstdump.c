@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ static  bool    CkInCommon( sym_id sym ) {
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
         leader = sym;
-        for(;;) {
+        for( ;; ) {
             eq_ext = leader->u.ns.si.va.vi.ec_ext;
             if( eq_ext->ec_flags & LEADER )
                 break;
@@ -315,7 +315,7 @@ static  void    CkDataOk( sym_id sym ) {
         if( flags & SY_IN_COMMON ) {
             sym = sym->u.ns.si.va.vi.ec_ext->com_blk;
         } else { // if( flags & SY_IN_EQUIV ) {
-            for(;;) {
+            for( ;; ) {
                 eq_ext = sym->u.ns.si.va.vi.ec_ext;
                 if( (eq_ext->ec_flags & LEADER) != 0 )
                     break;

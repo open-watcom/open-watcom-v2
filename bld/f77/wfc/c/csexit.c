@@ -57,7 +57,7 @@ void    CpExit(void) {
     CSExtn();
     block_label = GetBlockLabel();
     csblock = CSHead;
-    for(;;) {
+    for( ;; ) {
         if( ( csblock->typ == CS_DO ) ||
             ( csblock->typ == CS_DO_WHILE ) ||
             ( csblock->typ == CS_WHILE ) ||

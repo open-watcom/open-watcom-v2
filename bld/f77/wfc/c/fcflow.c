@@ -87,7 +87,7 @@ void    FiniLabels( int label_type ) {
     label_entry *curr;
 
     owner = (label_entry **)&LabelList;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -118,7 +118,7 @@ static  label_entry     *FindLabel( int label ) {
     label_entry *le;
 
     le = LabelList;
-    for(;;) {
+    for( ;; ) {
         if( le == NULL )
             break;
         if( (le->label & ~FORMAT_LABEL) == label )
@@ -308,7 +308,7 @@ void    FCAssignedGOTOList( void ) {
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
     s = CGSelInit();
-    for(;;) {
+    for( ;; ) {
         sn = GetPtr();
         if( sn == NULL )
             break;
@@ -324,7 +324,7 @@ void    FCAssignedGOTOList( void ) {
     CGControl( O_LABEL, NULL, label );
     BEFiniLabel( label );
     FCodeSeek( curr_obj );
-    for(;;) {
+    for( ;; ) {
         sn = GetPtr();
         if( sn == NULL )
             break;
@@ -431,7 +431,7 @@ void    FCSFCall( void ) {
     arg_list = NULL;
     value = NULL;
     sf_type = 0;
-    for(;;) {
+    for( ;; ) {
         sf_arg = GetPtr();
         if( sf_arg == NULL )
             break;
@@ -552,7 +552,7 @@ void            FCSFReferenced( void ) {
     sym_id      sf;
 
     sf = SFSymId;
-    for(;;) {
+    for( ;; ) {
         if( sf == NULL )
             break;
         if( sf->u.ns.si.sf.header->ref_count == 0 ) {
@@ -584,7 +584,7 @@ void    DoneLabel( label_id label ) {
     label_entry *curr;
 
     owner = (label_entry **)&LabelList;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr->label == label )
             break;

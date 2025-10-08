@@ -94,7 +94,7 @@ void ComRead( void )
     stmt_no = 0;
     stno_found = false;
     done_scan = false;
-    for(;;) {
+    for( ;; ) {
         ReadSrc();
         if( ProgSw & PS_SOURCE_EOF )
             break;
@@ -120,7 +120,7 @@ void ComRead( void )
             // try for a statement number
             stmt_no = 0;
             stno_found = false;
-            for(;;) {
+            for( ;; ) {
                 chtype = CharSetInfo.character_set[ (unsigned char)ch ];
                 if( chtype == C_EL )
                     break;

@@ -94,7 +94,7 @@ static  void    PrSFList( void ) {
         done_list = RecCloseParen() || RecColon();
     } else {
         done_list = false;
-        for(;;) {
+        for( ;; ) {
             if( done_list )
                 break;
             if( parm == NULL )
@@ -151,7 +151,7 @@ static  void    PrSubList( itnode *array_node ) {
 //===============================================
 
     GBegSubScr( array_node );
-    for(;;) {
+    for( ;; ) {
         GSubScr();
         AdvanceITPtr();
         if( RecCloseParen() || RecColon() ) {

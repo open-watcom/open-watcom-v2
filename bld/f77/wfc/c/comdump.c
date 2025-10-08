@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ void    STComDump( void )
             if( name_in_com == NULL )
                 break;
             common_type = ClassifyType( name_in_com->u.ns.u1.s.typ );
-            for(;;) {
+            for( ;; ) {
                 sym = name_in_com;
                 if( ( common_type != CT_MIXED ) &&
                     ( common_type != ClassifyType( sym->u.ns.u1.s.typ ) ) ) {
@@ -102,7 +102,7 @@ void    STComDump( void )
                 if( sym->u.ns.flags & SY_IN_EQUIV ) {
                     com_blk->u.ns.flags |= SY_EQUIVED_NAME;
                     offset = 0;
-                    for(;;) {
+                    for( ;; ) {
                         eq_ext = sym->u.ns.si.va.vi.ec_ext;
                         if( eq_ext->ec_flags & LEADER )
                             break;

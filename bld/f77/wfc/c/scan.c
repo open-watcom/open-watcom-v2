@@ -155,7 +155,7 @@ void    Scan( void ) {
         LexToken.start = LexToken.stop;
         LexToken.col = Column;
         LexToken.line = Line;
-        for(;;) {
+        for( ;; ) {
             ch = *Cursor;
             ch_class = CharSetInfo.character_set[ch];
             wasextch |= ch_class;

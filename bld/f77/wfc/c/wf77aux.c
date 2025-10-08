@@ -990,7 +990,7 @@ static void GetByteSeq( void )
 
     AsmInit();
     seq_len = 0;
-    for(;;) {
+    for( ;; ) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
                 CSuicide();
@@ -1079,7 +1079,7 @@ static hw_reg_set RegSet( void )
     int         i;
 
     HW_CAsgn( reg_set, HW_EMPTY );
-    for(;;) {
+    for( ;; ) {
         if( TokEnd - TokStart > REGNAME_MAX_LEN )
             break;
         for( i = 0; i < TokEnd - TokStart; i++ ) {
@@ -1128,7 +1128,7 @@ static void GetArgList( pass_by **curr_arg )
     FreeChain( curr_arg );
     if( RecToken( ")" ) )
         return;
-    for(;;) {
+    for( ;; ) {
         arg_pass_info = 0;
         if( RecToken( "VALUE" ) ) {
             arg_pass_info |= PASS_BY_VALUE;
@@ -1223,7 +1223,7 @@ static void GetSTRetInfo( void )
     have.f_struct = false;
     have.f_allocs = false;
     have.f_list   = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_float && RecToken( "FLOAT" ) ) {
             CurrAux->cclass_target |= FECALL_X86_NO_FLOAT_REG_RETURNS;
             have.f_float = true;
@@ -1262,7 +1262,7 @@ static void GetRetInfo( void )
     // "3s" default is FECALL_X86_NO_8087_RETURNS - turn off FECALL_X86_NO_8087_RETURNS
     // flag so that "3s" model programs can use 387 pragmas
     CurrAux->cclass_target &= ~FECALL_X86_NO_8087_RETURNS;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_no8087 && RecToken( "NO8087" ) ) {
             CurrAux->cclass_target |= FECALL_X86_NO_8087_RETURNS;
             HW_CTurnOff( CurrAux->returns, HW_FLTS );
@@ -1297,7 +1297,7 @@ static void GetSaveInfo( void )
     have.f_exact    = false;
     have.f_nomemory = false;
     have.f_list     = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_exact && RecToken( "EXACT" ) ) {
             CurrAux->cclass_target |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
@@ -1350,7 +1350,7 @@ static void GetParmInfo( void )
     have.f_list          = false;
 #endif
     have.f_args          = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_args && RecToken( "(" ) ) {
             GetArgList( &CurrAux->arg_info );
             have.f_args = true;

@@ -161,7 +161,7 @@ void    EquivResolve( void ) {
         if( eqv_entry == NULL ) {
             eq_head->name_equived->u.ns.si.va.vi.ec_ext->ec_flags |= LEADER;
         } else {
-            for(;;) {
+            for( ;; ) {
                 offset = CheckSubscr( eqv_entry );
                 if( eqv_entry->substr != 0 ) {
                     offset += CheckSubStr( eqv_entry );
@@ -240,7 +240,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     c = 0;
     d = 0;
     dist = b_offset - a_offset;
-    for(;;) {   // find leader of B
+    for( ;; ) {   // find leader of B
         q_ext = q->u.ns.si.va.vi.ec_ext;
         if( (q_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
             SetHigh( q );
@@ -256,7 +256,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     if( q_type == ES_NO_TYPE ) {
         q_type = ClassifyType( q->u.ns.u1.s.typ );
     }
-    for(;;) {   // find leader of A
+    for( ;; ) {   // find leader of A
         p_ext = p->u.ns.si.va.vi.ec_ext;
         if( (p_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
             SetHigh( p );

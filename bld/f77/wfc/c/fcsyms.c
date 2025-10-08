@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -359,7 +359,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
     if( flags & SY_IN_EQUIV ) {
         leader = sym;
         offset = 0;
-        for(;;) {
+        for( ;; ) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
             if( ce_ext->ec_flags & LEADER )
                 break;
@@ -820,7 +820,7 @@ static  void    DbgVarInfo( sym_id sym ) {
 
         offset = 0;
         leader = sym;
-        for(;;) {
+        for( ;; ) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
             if( ce_ext->ec_flags & LEADER )
                 break;

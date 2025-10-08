@@ -752,7 +752,7 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
         }
         exponent /= 2;
         while( exponent != 0 ) {
-            for(;;) {
+            for( ;; ) {
                 Mul[ typ - FT_INTEGER_1 ]( base, base );
                 odd = ( (exponent & 1) != 0 );
                 exponent /= 2;

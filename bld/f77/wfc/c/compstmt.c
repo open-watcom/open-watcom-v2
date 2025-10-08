@@ -428,7 +428,7 @@ static void CheckDoEnd( void )
 {
     csnode      *cs_node;
 
-    for(;;) {
+    for( ;; ) {
         if( CSHead->typ == CS_DO ) {
             if( CSHead->cs_info.do_parms->do_term != StmtNo ) {
                 break;
@@ -494,7 +494,7 @@ void RemKeyword( itnode *itptr, size_t remove_len )
         itptr->opnd_size -= remove_len;
         curr_char = itptr->opnd;
         curr_size = itptr->opnd_size;
-        for(;;) {
+        for( ;; ) {
             if( curr_char == itptr->opnd + curr_size )
                 break;
             if( isdigit( *curr_char ) == 0 )

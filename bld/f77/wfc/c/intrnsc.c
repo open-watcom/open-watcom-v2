@@ -64,7 +64,7 @@ void    CpIntrinsic(void) {
     sym_id      sym_ptr;
     TYPE        func_typ;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_INTRINSIC ) ) {
             func = IFLookUp();
             if( func > 0 ) {

@@ -117,7 +117,7 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
         EmitOp( FC_ALT_RET );
         OutU16( num_stmts );
         arg = itptr->list;
-        for(;;) {
+        for( ;; ) {
             if( (arg->opn.us & USOPN_WHAT) == USOPN_STN ) {
                 GStmtAddr( arg->sym_ptr );
                 num_stmts--;
@@ -176,7 +176,7 @@ int     GParms( itnode *sp ) {
     /* unused parameters */ (void)sp;
 
     num_stmts = 0;
-    for(;;) {
+    for( ;; ) {
         if( !RecNOpn() ) {  // consider f()
             if( CITNode->opn.us == USOPN_STN ) {
                 num_stmts++;
@@ -206,7 +206,7 @@ static  int     DumpArgInfo( itnode *node ) {
 
     num_args = 0;
     if( node != NULL ) {
-        for(;;) {
+        for( ;; ) {
             if( node->opr == OPR_COL )
                 break;
             if( node->opr == OPR_RBR )

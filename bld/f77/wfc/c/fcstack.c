@@ -117,7 +117,7 @@ cg_type SymPtrType( sym_id sym ) {
     } else if( flags & SY_IN_EQUIV ) {
         leader = sym;
         offset = 0;
-        for(;;) {
+        for( ;; ) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
             if( ce_ext->ec_flags & LEADER )
                 break;
@@ -309,7 +309,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
     } else if( sym->u.ns.flags & SY_IN_EQUIV ) {
         leader = sym;
         offset = 0;
-        for(;;) {
+        for( ;; ) {
             if( leader->u.ns.si.va.vi.ec_ext->ec_flags & LEADER )
                 break;
             offset += leader->u.ns.si.va.vi.ec_ext->offset;

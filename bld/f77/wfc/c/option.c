@@ -278,7 +278,7 @@ static unsigned_32 OptV( opt_entry *optn, const char *ptr )
         Warning( CO_WANT_NUMBER, optn->option );
     }
     number = 0;
-    for(;;) {
+    for( ;; ) {
         number = 10 * number + ( *ptr - '0' );
         ptr++;
         if( isdigit( *ptr ) == 0 ) {
@@ -446,7 +446,7 @@ static bool OptMatch( const char *buff, const char *list, bool value )
 //==========================================================================
 // Determine if option matches.
 {
-    for(;;) {
+    for( ;; ) {
         if( *buff == NULLCHAR )
             break;
         if( *buff == ' ' )
@@ -567,7 +567,7 @@ static void ScanOpts( const char *buff )
         SrcBuff[ LastColumn ] = NULLCHAR;
     }
     first_opt = true;
-    for(;;) {
+    for( ;; ) {
         buff = SkipBlanks( buff );
         if( *buff == NULLCHAR )
             break;
@@ -609,7 +609,7 @@ static int GetDirective( const char *buff )
 
     drctv = CompDrctvs;
     offset = 0;
-    for(;;) {
+    for( ;; ) {
         if( drctv[ offset ] == NULL )
             return( 0 );
         if( OptMatch( buff, drctv[ offset ], false ) )

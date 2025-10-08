@@ -44,7 +44,7 @@ sym_id STSearch( const char *name, size_t len, sym_id head )
 //==========================================================
 // Search symbol table for given name.
 {
-    for(;;) {
+    for( ;; ) {
         if( head == NULL )
             break;
         if( head->u.ns.u2.name_len == len ) {
@@ -70,7 +70,7 @@ sym_id STNameSearch( const char *name, size_t len )
     if( head == NULL )
         return( NULL );
     tail = HashTable[ HashValue ].h_tail;
-    for(;;) {
+    for( ;; ) {
         if( head->u.ns.u2.name_len == len ) {
             if( memcmp( name, &head->u.ns.name, len ) == 0 ) {
                 return( head );

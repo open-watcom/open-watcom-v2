@@ -87,7 +87,7 @@ sym_id        SearchGList( sym_id local ) {
     if( head == NULL )
         return( NULL );
     tail = GHashTable[HashValue].h_tail;
-    for(;;) {
+    for( ;; ) {
         if( ( head->u.ns.u2.name_len == name_len ) &&
             ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
             ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {

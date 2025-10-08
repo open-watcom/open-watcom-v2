@@ -216,7 +216,7 @@ bool CheckCSList( byte typ )
 {
     byte        head_typ;
 
-    for(;;) {
+    for( ;; ) {
         head_typ = CSHead->typ;
         if( head_typ == typ )
             break;

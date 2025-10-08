@@ -58,7 +58,7 @@ sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
     head = ConstHashTable[ hash_value ].h_head;
     if( head != NULL ) {
         tail = ConstHashTable[ hash_value ].h_tail;
-        for(;;) {
+        for( ;; ) {
             if( head->u.cn.typ == typ ) {
                 if( memcmp( c_ptr, &head->u.cn.value, size ) == 0 ) {
                     return( head );

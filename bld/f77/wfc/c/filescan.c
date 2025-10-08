@@ -52,9 +52,9 @@ char *SDFName( const char *fn )
         fn += 2;
     }
 #endif
-    for(;;) {
+    for( ;; ) {
         start = (char *)fn;
-        for(;;) {
+        for( ;; ) {
             chr = *fn;
             if( chr == NULLCHAR )
                 return( start );
@@ -79,7 +79,7 @@ char *SDSplitExtn( char *fn, char *default_extn )
 
     fn = SDFName( fn );
     src_extn = NULL;
-    for(;;) {
+    for( ;; ) {
         chr = *fn;
         if( chr == NULLCHAR )
             break;

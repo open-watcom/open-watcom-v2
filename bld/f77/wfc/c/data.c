@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ void    CpData(void) {
     data_sets = 0;
     CITNode->opr = OPR_COM; // prevent call to FinishImpDo first time
     end_data = GDataProlog();
-    for(;;) {
+    for( ;; ) {
         DoData();
         error |= AError;
         ++data_sets;
@@ -183,7 +183,7 @@ static  OPR    FindSlash( itnode **itptr_ptr ) {
 
     cit = CITNode;
     level = 0;
-    for(;;) {
+    for( ;; ) {
         if( RecOpenParen() ) {
             level++;
         } else if( RecCloseParen() ) {
@@ -303,7 +303,7 @@ static  void    ConList( void ) {
     itnode      *last_node;
 
     opr = FindSlash( &last_node );
-    for(;;) {
+    for( ;; ) {
         if( RecNextOpr( OPR_MUL ) ) {
             ProcDataRepExpr();
             if( ITIntValue( CITNode ) <= 0 ) {
@@ -340,13 +340,13 @@ static  void    DumpDataSets( int num, itnode *node ) {
     CITNode = node;
     GBegDList();
     while( --num >= 0 ) {
-        for(;;) {
+        for( ;; ) {
             AdvanceITPtr();
             if( RecDiv() ) {
                 break;
             }
         }
-        for(;;) {
+        for( ;; ) {
             if( RecNextOpr( OPR_MUL ) ) {
                 rpt = CITNode;
                 AdvanceITPtr();

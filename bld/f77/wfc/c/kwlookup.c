@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
         mid = (low + high) / 2;    // find mid point
         key = table[ mid ];
         ident = id;
-        for(;;) {
+        for( ;; ) {
             if( ident == id + id_len )
                 break;
             if( *ident != *key )

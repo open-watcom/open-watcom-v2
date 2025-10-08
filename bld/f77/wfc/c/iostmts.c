@@ -142,7 +142,7 @@ static  bool    Scan4ListOprs( void ) {
 
     level = 0;
     cit = CITNode;
-    for(;;) {
+    for( ;; ) {
         if( cit == SPtr1 )
             return( false );
         if( cit->opr == OPR_LBR ) {

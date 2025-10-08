@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +324,7 @@ bool CurrToken( const char *tok )
     const char  *ptr;
 
     ptr = TokStart;
-    for(;;) {
+    for( ;; ) {
         if( ptr == TokEnd )
             break;
         if( toupper( *ptr ) != *tok )
@@ -350,7 +350,7 @@ void ScanToken( void )
     TokStart = ptr;
     first = true;
     found_token = false;
-    for(;;) {
+    for( ;; ) {
         switch( *ptr ) {
         case ' ' :
         case '\t' :
@@ -359,7 +359,7 @@ void ScanToken( void )
             break;
         case '"' :
             if( first ) {
-                for(;;) {
+                for( ;; ) {
                     ++ptr;
                     if( *ptr == NULLCHAR )
                         break;
@@ -440,7 +440,7 @@ static void ScanFnToken( void )
             break;
         case '"' :
             if( first ) {
-                for(;;) {
+                for( ;; ) {
                     ++ptr;
                     if( *ptr == NULLCHAR )
                         break;
@@ -559,7 +559,7 @@ void DoPragma( const char *ptr )
     TokStart = ptr;
     TokEnd = ptr;
     ScanToken();
-    for(;;) {
+    for( ;; ) {
         status = CSpawn( &Pragma );
         if( status != 0 ) {
             if( ProgSw & PS_FATAL_ERROR ) {

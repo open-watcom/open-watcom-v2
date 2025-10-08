@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ sym_id FindStruct( const char *name, size_t len )
     sym_id      head;
 
     head = RList;
-    for(;;) {
+    for( ;; ) {
         if( head == NULL )
             return( NULL );
         if( head->u.sd.name_len == len ) {
@@ -149,7 +149,7 @@ static sym_id *Strut( sym_id *p_field, const char *name, size_t len )
     sym_id      field;
     sym_id      *q_field;
 
-    for(;;) {
+    for( ;; ) {
         field = *p_field;
         if( field == NULL )
             return( p_field );

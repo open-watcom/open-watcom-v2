@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ static  void    FoldCatSequence( itnode *cit )
     CITNode = cit;
     num = 0;
     size = 0;
-    for(;;) {
+    for( ;; ) {
         if( CITNode->opn.us != USOPN_CON )
             break;
         num++;
@@ -218,7 +218,7 @@ void            CatBack( void ) {
     itnode      *itptr;
 
     itptr = CITNode->link->link; // point one operator past "//"
-    for(;;) {
+    for( ;; ) {
         if( itptr->opr == OPR_TRM )
             break;
         if( itptr->opr != OPR_CAT ) {
@@ -272,7 +272,7 @@ static  itnode  *findMatch( bool *ok_to_axe, bool *all_const_opns ) {
     if( all_const_opns != NULL ) {
         *all_const_opns = true;
     }
-    for(;;) {
+    for( ;; ) {
         if( all_const_opns != NULL ) {
             if( (cit->opn.ds != DSOPN_PHI) && (cit->opn.us != USOPN_CON) ) {
                 *all_const_opns = false;

@@ -146,7 +146,7 @@ sym_id  LkUpStmtNo( void ) {
                 Err( ST_CANNOT_BRANCH, sym_ptr );
             }
             csptr = CSHead;
-            for(;;) {
+            for( ;; ) {
                 if( sym_ptr->u.st.block == csptr->block )
                     break;
                 csptr = csptr->link;

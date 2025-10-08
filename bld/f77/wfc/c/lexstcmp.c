@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 static  int     ChkBlanks( char *ptr, size_t len )
 //================================================
 {
-    for(;;) {
+    for( ;; ) {
         --len;
         if( len == 0 )
             break;
@@ -55,7 +55,7 @@ int     LexStrCmp( char *ptr1, size_t len1, char *ptr2, size_t len2 )
 {
     int         result;
 
-    for(;;) {
+    for( ;; ) {
         if( *ptr1 != *ptr2 )
             break;
         ++ptr1;

@@ -53,7 +53,7 @@ typedef struct f_procs {
 static  void    FSkipSpaces( void )
 // Skip spaces between format codes.
 {
-    for(;;) {
+    for( ;; ) {
         if( Fmt_charptr >= Fmt_end )
             break;
         if( *Fmt_charptr != ' ' )
@@ -94,7 +94,7 @@ static  int     R_FConst( void ) {
     FSkipSpaces();
     result = 0;
     start_char = Fmt_charptr;
-    for(;;) {
+    for( ;; ) {
         if( R_FRecEos() ) break;
         cur_char = *Fmt_charptr;
         if( isdigit( cur_char ) == 0 ) break;
@@ -149,7 +149,7 @@ static  void    R_FSpec( void )
 // Process a format specification.
 {
     Fmt_delimited = YES_DELIM;
-    for(;;) {
+    for( ;; ) {
         if( R_FRecEos() )
             return;
         if( R_FR_Char( ')' ) )
@@ -216,7 +216,7 @@ static  void    R_FLiteral( void )
     if( FNoRep() ) {
         lit_length = 0;
         cur_char_ptr = ++Fmt_charptr;
-        for(;;) {
+        for( ;; ) {
             if( *Fmt_charptr == '\'' ) {
                 ++Fmt_charptr;
                 if( *Fmt_charptr != '\'' ) {
@@ -235,7 +235,7 @@ static  void    R_FLiteral( void )
         if( Fmt_charptr < Fmt_end ) {
             GFEmCode( H_FORMAT );
             GFEmNum( lit_length );
-            for(;;) {
+            for( ;; ) {
                 if( *cur_char_ptr == '\'' ) {
                     ++cur_char_ptr;
                     if( *cur_char_ptr != '\'' ) {
@@ -260,7 +260,7 @@ static  void    R_FH( void )
     } else {
         GFEmCode( H_FORMAT );
         GFEmNum( Fmt_rep_spec );
-        for(;;) {
+        for( ;; ) {
             GFEmChar( Fmt_charptr );
             ++Fmt_charptr;
             if( --Fmt_rep_spec == 0 ) {
@@ -303,7 +303,7 @@ static  void    R_FSlash( void )
     if( FNoRep() ) {
         Fmt_delimited = YES_DELIM;
         Fmt_rep_spec = 0;
-        for(;;) {
+        for( ;; ) {
             ++Fmt_rep_spec;
             if( !R_FR_Char( '/' ) ) {
                 break;
@@ -641,7 +641,7 @@ static  void    FCode( void )
     }
     current = tolower( *Fmt_charptr );
     f_rtn = FP_Cod;
-    for(;;) {
+    for( ;; ) {
         if( f_rtn->code == NULLCHAR ) {
             FmtError( FM_FMTCHAR );
             return;

@@ -137,7 +137,7 @@ void    MakeITList( void ) {
         return;
     }
     CITNode = ITHead;
-    for(;;) {
+    for( ;; ) {
         if( LexToken.flags & TK_EOL )
             break;
         GetOpr();
@@ -185,7 +185,7 @@ void    MakeITList( void ) {
 static  void FlushStatement( void ) {
 //========================================
 
-    for(;;) {
+    for( ;; ) {
         ComRead();
         if( ProgSw & PS_SOURCE_EOF )
             break;

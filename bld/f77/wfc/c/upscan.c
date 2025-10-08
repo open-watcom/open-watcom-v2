@@ -877,7 +877,7 @@ static  void    IFPrmChk( void ) {
     oldcit = CITNode;
     CITNode = oldcit->list;
     parm_cnt = 0;
-    for(;;) {
+    for( ;; ) {
         if( RecColon() )         // substring the i.f.
             break;
         if( RecCloseParen() )    // end of list
@@ -1315,7 +1315,7 @@ void    UpScan( void ) {
     int         index;
 
     BackTrack();
-    for(;;) {
+    for( ;; ) {
         if( AError ) {
             USCleanUp();
             break;

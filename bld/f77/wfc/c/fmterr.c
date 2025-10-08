@@ -87,7 +87,7 @@ void    FmtError( int err_code ) {
     opnpos = SetCaret();
     Error( err_code );
     if( err_code != FM_DELIM ) {
-        for(;;) {
+        for( ;; ) {
             if( *Fmt_charptr == ',' )
                 break;
             if( *Fmt_charptr == '/' )

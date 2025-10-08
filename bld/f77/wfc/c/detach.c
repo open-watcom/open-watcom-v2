@@ -188,7 +188,7 @@ static  void    SubStrArgs( itnode *cit ) {
         Error( SS_ONLY_IF_CHAR );
     }
     count = 1;
-    for(;;) {
+    for( ;; ) {
         if( CITNode->opn.us & USOPN_SS1 ) {
             cit->opn.us |= USOPN_SS1;
             cit->value.st.ss_size = CITNode->value.st.ss_size;
