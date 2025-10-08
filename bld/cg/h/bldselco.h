@@ -38,7 +38,7 @@
 
 typedef int_32          cost_val;
 
-extern cost_val         IfCost( sel_handle s_node, int );
+extern cost_val         IfCost( sel_handle s_node, uint_32 );
 extern name             *ScanCall( tbl_control *, name *, type_class_def );
 extern cost_val         JumpCost( sel_handle s_node );
 extern cost_val         ScanCost( sel_handle s_node );

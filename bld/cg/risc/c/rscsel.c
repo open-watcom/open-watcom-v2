@@ -63,8 +63,8 @@ cost_val JumpCost( sel_handle s_node )
 }
 
 
-cost_val IfCost( sel_handle s_node, int entries )
-/***********************************************/
+cost_val IfCost( sel_handle s_node, uint_32 entries )
+/***************************************************/
 {
     /* unused parameters */ (void)s_node; (void)entries;
 
@@ -93,15 +93,15 @@ tbl_control *MakeJmpTab( sel_handle s_node )
 name    *SelIdx( tbl_control *table, an node )
 /********************************************/
 {
-    /* unused parameters */ (void)node; (void)table;
+    /* unused parameters */ (void)table; (void)node;
 
     return( NULL );
 }
 
-name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def type_class )
+name    *ScanCall( tbl_control *table, name* tmp, type_class_def type_class )
 /*************************************************************************/
 {
-    /* unused parameters */ (void)tbl; (void)tmp; (void)type_class;
+    /* unused parameters */ (void)table; (void)tmp; (void)type_class;
 
     return( NULL );
 }

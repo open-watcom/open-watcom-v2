@@ -84,10 +84,10 @@
 #endif
 
 
-static cost_val Balance( int_32 size, int_32 time )
-/*************************************************/
+static cost_val Balance( uint_32 size, uint_32 time )
+/***************************************************/
 {
-    int_32      balance;
+    uint_32     balance;
     byte        opt_size;
 
     opt_size = OptForSize;
@@ -95,7 +95,7 @@ static cost_val Balance( int_32 size, int_32 time )
         opt_size = 25;
     }
     balance = ( size * opt_size + 10 * time * ( 100 - opt_size ) ) / 100;
-    if( balance < 0 || (uint_32)balance > MAX_COST )
+    if( (int_32)balance < 0 || balance > MAX_COST )
         return( MAX_COST );
     return( balance );
 }
@@ -107,10 +107,10 @@ cost_val ScanCost( sel_handle s_node )
     select_list *list;
     int_32      hi;
     int_32      lo;
-    int_32      values;
+    uint_32     values;
     cost_val    cost;
-    int         type_length;
-    cg_type     tipe;
+    uint_32     type_length;
+    cg_type     type;
 
     hi = s_node->upper;
     lo = s_node->lower;
@@ -120,11 +120,14 @@ cost_val ScanCost( sel_handle s_node )
             break;
         values += list->count;
     }
-    tipe = SelType( hi - lo );
-    if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) || ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
+    type = SelType( hi - lo );
+    if( ( type == TY_UINT_4
+      && values < MIN_LVALUES )
+      || ( type != TY_UINT_4
+      && values < MIN_SVALUES ) ) {
         cost = MAX_COST;
     } else {
-        type_length = TypeAddress( tipe )->length;
+        type_length = TypeAddress( type )->length;
         cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ), values / 2 );
     }
     return( cost );
@@ -134,11 +137,12 @@ cost_val ScanCost( sel_handle s_node )
 cost_val JumpCost( sel_handle s_node )
 /************************************/
 {
-    int_32      in_range;
+    uint_32     in_range;
     cost_val    cost;
 
     in_range = s_node->upper - s_node->lower + 1;
-    if( in_range > MAX_IN_RANGE || in_range < 0 ) {
+    if( in_range > MAX_IN_RANGE
+      || (int_32)in_range < 0 ) {
         in_range = MAX_IN_RANGE;
     }
     if( s_node->num_cases < MIN_JUMPS ) {
@@ -146,11 +150,13 @@ cost_val JumpCost( sel_handle s_node )
     } else if( in_range < MIN_JUMPS ) {
         cost = MAX_COST;
     } else {
-        int_32  size;
+        uint_32 size;
 
         size = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
-        /* an extra two bytes are needed to zero the high part before
-           the jump */
+        /*
+         * an extra two bytes are needed to zero the high part before
+         * the jump
+         */
         if( SelType( 0xffffffff ) == TY_UINT_1 )
             size += 2;
         cost = Balance( size, 1 );
@@ -159,51 +165,56 @@ cost_val JumpCost( sel_handle s_node )
 }
 
 
-cost_val IfCost( sel_handle s_node, int entries )
-/***********************************************/
+cost_val IfCost( sel_handle s_node, uint_32 entries )
+/***************************************************/
 {
     int_32      hi;
     int_32      lo;
-    int_32      jumpsize;
-    int         log_entries;
-    int         tipe_length;
-    int_32      size;
+    int         type_length;
+    uint_32     log_entries;
+    uint_32     jumpsize;
+    uint_32     size;
 
     hi = s_node->upper;
     lo = s_node->lower;
-    tipe_length = TypeAddress( SelType( hi - lo ) )->length;
+    type_length = TypeAddress( SelType( hi - lo ) )->length;
     if( entries > 20 ) {
         jumpsize = LONG_JUMP;
     } else {
         jumpsize = SHORT_JUMP;
     }
-    size = jumpsize + CmpSize[tipe_length];
-    /* for char-sized switches, often the two-byte "cmp al,xx" is used.
-       otherwise we need three bytes */
-    if( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
+    size = jumpsize + CmpSize[type_length];
+    /*
+     * for char-sized switches, often the two-byte "cmp al,xx" is used.
+     * otherwise we need three bytes
+     */
+    if( SelType( 0xffffffff ) != TY_UINT_1
+      && type_length == 1 ) {
         size++;
+    }
     size *= entries;
     log_entries = 0;
     while( entries != 0 ) {
         log_entries++;
-        entries = (uint_32)entries >> 2;
+        entries >>= 2;
     }
-    /* add cost for extra jumps generated for grandparents and
-       every other child except the last one */
-    size += (entries / 4) * 2 * jumpsize;
+    /*
+     * add cost for extra jumps generated for grandparents and
+     * every other child except the last one
+     */
+    size += ( entries / 4 ) * 2 * jumpsize;
     return( Balance( size, log_entries ) );
 }
 
 static  void    GenValuesForward( select_list *list, int_32 hi,
-                                  int_32 lo, int_32 to_sub,
-                                  cg_type tipe )
-/****************************************************************/
+                            int_32 lo, int_32 to_sub, cg_type type )
+/******************************************************************/
 {
     int_32      curr;
 
     curr = lo;
     for( ;; ) {
-        switch( tipe ) {
+        switch( type ) {
         case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
@@ -227,8 +238,7 @@ static  void    GenValuesForward( select_list *list, int_32 hi,
 
 
 static  void    GenValuesBackward( select_list *list, int_32 hi,
-                                   int_32 lo, int_32 to_sub,
-                                   cg_type tipe )
+                        int_32 lo, int_32 to_sub, cg_type type )
 {
     select_list     *scan;
     select_list     *next;
@@ -239,7 +249,7 @@ static  void    GenValuesBackward( select_list *list, int_32 hi,
         scan = scan->next;
     }
     for( ;; ) {
-        switch( tipe ) {
+        switch( type ) {
         case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
@@ -381,7 +391,9 @@ name        *SelIdx( tbl_control *table, an node )
     an          idxan;
     name        *idx;
 
-    /* use CG routines here to get folding*/
+    /*
+     * use CG routines here to get folding
+     */
     idxan = TreeGen( TGBinary( O_TIMES, TGLeaf( BGDuplicate( node ) ),
                                 TGLeaf( BGInteger( WORD_SIZE, TypeAddress( TY_WORD ) ) ), TypeAddress( TY_WORD ) ) );
     idx = GenIns( idxan );

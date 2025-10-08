@@ -52,13 +52,13 @@ typedef struct select_node {
         label_handle            other_wise;
         int_32                  lower;
         int_32                  upper;
-        uint                    num_cases;
+        uint_32                 num_cases;
 } select_node;
 
 typedef struct tbl_control {
         label_handle            lbl;            /*  for the table */
         label_handle            value_lbl;      /*  for the value table */
-        uint                    size;
+        uint_32                 size;
         label_handle            cases[1];
 } tbl_control;
 #endif // __SELDEF__H__

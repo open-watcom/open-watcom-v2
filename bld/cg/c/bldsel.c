@@ -191,7 +191,7 @@ static cost_val DistinctIfCost( sel_handle s_node )
 {
     select_list *curr;
     select_list *next;
-    int         entries;
+    uint_32     entries;
 
     entries = 1;
     for( curr = s_node->list, next = curr->next; next != NULL; next = next->next ) {
@@ -502,10 +502,10 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
 }
 
 
-int_32      NumValues( select_list *list, int_32 hi )
+uint_32     NumValues( select_list *list, int_32 hi )
 /***************************************************/
 {
-    int_32      cases;
+    uint_32     cases;
 
     cases = 0;
     while( list != NULL ) {
