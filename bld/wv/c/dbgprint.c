@@ -185,7 +185,7 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
 
     ptr = &internal[64];
     U32ToU64( radix, &big_radix );
-    while( (len > 0) || U64Test( value ) ) {
+    while( (len > 0) || U64Test( *value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
