@@ -48,7 +48,7 @@
 #include "generate.h"
 
 
-static  select_list *NewCase( int_32 lo, int_32 hi, label_handle label )
+static  select_list *NewCase( int_64 lo, int_64 hi, label_handle label )
 /**********************************************************************/
 {
     select_list         *new_entry;
@@ -80,14 +80,14 @@ sel_handle  BGSelInit( void )
 }
 
 
-void    BGSelCase( sel_handle s_node, label_handle label, int_32 value )
+void    BGSelCase( sel_handle s_node, label_handle label, int_64 value )
 /**********************************************************************/
 {
     BGSelRange( s_node, value, value, label );
 }
 
 
-void    BGSelRange( sel_handle s_node, int_32 lo, int_32 hi, label_handle label )
+void    BGSelRange( sel_handle s_node, int_64 lo, int_64 hi, label_handle label )
 /*******************************************************************************/
 {
     select_list         *new_entry;
@@ -110,7 +110,7 @@ void    BGSelOther( sel_handle s_node, label_handle other )
 
 static const type_def   *SortTipe;
 
-int SelCompare( int_32 lo1, int_32 lo2 )
+int SelCompare( int_64 lo1, int_64 lo2 )
 /**************************************/
 {
     if( lo1 == lo2 )
@@ -120,7 +120,7 @@ int SelCompare( int_32 lo1, int_32 lo2 )
             return( -1 );
         }
     } else {
-        if( (uint_32)lo1 < (uint_32)lo2 ) {
+        if( (uint_64)lo1 < (uint_64)lo2 ) {
             return( -1 );
         }
     }
@@ -128,8 +128,8 @@ int SelCompare( int_32 lo1, int_32 lo2 )
 }
 
 
-static  bool            NodeLess( void *s1, void *s2 )
-/****************************************************/
+static bool     NodeLess( void *s1, void *s2 )
+/********************************************/
 {
     return( SelCompare( ((select_list *)s1)->low, ((select_list *)s2)->low ) < 0 );
 }
@@ -204,19 +204,23 @@ static cost_val DistinctIfCost( sel_handle s_node )
 }
 
 
-cg_type SelType( uint_32 value_range )
+cg_type SelType( uint_64 value_range )
 /************************************/
 {
     cg_type     tipe;
 
-    if( ( value_range & 0xFFFF0000 ) == 0 ) {
-        if( ( value_range & 0xFF00 ) == 0 ) {
-            tipe = TY_UINT_1;
+    if( ( value_range & 0xFFFFFFFF00000000 ) == 0 ) {
+        if( ( value_range & 0xFFFF0000 ) == 0 ) {
+            if( ( value_range & 0xFF00 ) == 0 ) {
+                tipe = TY_UINT_1;
+            } else {
+                tipe = TY_UINT_2;
+            }
         } else {
-            tipe = TY_UINT_2;
+            tipe = TY_UINT_4;
         }
     } else {
-        tipe = TY_UINT_4;
+        tipe = TY_UINT_8;
     }
     if( tipe > SortTipe->refno ) {
         switch( SortTipe->refno ) {
@@ -231,6 +235,10 @@ cg_type SelType( uint_32 value_range )
         case TY_UINT_4:
         case TY_INT_4:
             tipe = TY_UINT_4;
+            break;
+        case TY_UINT_8:
+        case TY_INT_8:
+            tipe = TY_UINT_8;
             break;
         }
     }
@@ -380,7 +388,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
 
 static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe,
                                int lo, int hi, label_handle other,
-                               int_32 lobound, int_32 hibound,
+                               int_64 lobound, int_64 hibound,
                                bool have_lobound, bool have_hibound )
 /*************************************************************************/
 {
@@ -502,7 +510,7 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
 }
 
 
-uint_32     NumValues( select_list *list, int_32 hi )
+uint_32     NumValues( select_list *list, int_64 hi )
 /***************************************************/
 {
     uint_32     cases;

@@ -105,8 +105,8 @@ cost_val ScanCost( sel_handle s_node )
 /************************************/
 {
     select_list *list;
-    int_32      hi;
-    int_32      lo;
+    int_64      hi;
+    int_64      lo;
     uint_32     values;
     cost_val    cost;
     uint_32     type_length;
@@ -157,7 +157,7 @@ cost_val JumpCost( sel_handle s_node )
          * an extra two bytes are needed to zero the high part before
          * the jump
          */
-        if( SelType( 0xffffffff ) == TY_UINT_1 )
+        if( SelType( -1ULL ) == TY_UINT_1 )
             size += 2;
         cost = Balance( size, 1 );
     }
@@ -168,8 +168,8 @@ cost_val JumpCost( sel_handle s_node )
 cost_val IfCost( sel_handle s_node, uint_32 entries )
 /***************************************************/
 {
-    int_32      hi;
-    int_32      lo;
+    int_64      hi;
+    int_64      lo;
     int         type_length;
     uint_32     log_entries;
     uint_32     jumpsize;
@@ -188,7 +188,7 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
      * for char-sized switches, often the two-byte "cmp al,xx" is used.
      * otherwise we need three bytes
      */
-    if( SelType( 0xffffffff ) != TY_UINT_1
+    if( SelType( -1ULL ) != TY_UINT_1
       && type_length == 1 ) {
         size++;
     }
@@ -206,11 +206,11 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
     return( Balance( size, log_entries ) );
 }
 
-static  void    GenValuesForward( select_list *list, int_32 hi,
-                            int_32 lo, int_32 to_sub, cg_type type )
+static void     GenValuesForward( select_list *list, int_64 hi,
+                            int_64 lo, int_64 to_sub, cg_type type )
 /******************************************************************/
 {
-    int_32      curr;
+    int_64      curr;
 
     curr = lo;
     for( ;; ) {
@@ -223,6 +223,9 @@ static  void    GenValuesForward( select_list *list, int_32 hi,
             break;
         case TY_UINT_4:
             Gen4ByteValue( curr - to_sub );
+            break;
+        case TY_UINT_8:
+            Gen8ByteValue( curr - to_sub );
             break;
         }
         if( SelCompare( curr, hi ) >= 0 )
@@ -237,12 +240,12 @@ static  void    GenValuesForward( select_list *list, int_32 hi,
 }
 
 
-static  void    GenValuesBackward( select_list *list, int_32 hi,
-                        int_32 lo, int_32 to_sub, cg_type type )
+static void     GenValuesBackward( select_list *list, int_64 hi,
+                        int_64 lo, int_64 to_sub, cg_type type )
 {
     select_list     *scan;
     select_list     *next;
-    int_32          curr;
+    int_64          curr;
 
     curr = hi;
     for( scan = list; scan->high != hi; ) {
@@ -258,6 +261,9 @@ static  void    GenValuesBackward( select_list *list, int_32 hi,
             break;
         case TY_UINT_4:
             Gen4ByteValue( curr - to_sub );
+            break;
+        case TY_UINT_8:
+            Gen8ByteValue( curr - to_sub );
             break;
         }
         if( SelCompare( curr, lo ) <= 0 )
@@ -281,10 +287,10 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
     tbl_control         *table;
     label_handle        *tab_ptr;
     uint_32             cases;
-    int_32              lo;
-    int_32              hi;
-    int_32              curr;
-    int_32              to_sub;
+    int_64              lo;
+    int_64              hi;
+    int_64              curr;
+    int_64              to_sub;
     select_list         *scan;
     select_list         *list;
     label_handle        other;
@@ -349,8 +355,8 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
     label_handle        *tab_ptr;
     uint_32             cases;
     select_list         *list;
-    int_32              lo;
-    int_32              hi;
+    int_64              lo;
+    int_64              hi;
     label_handle        other;
 
     lo = s_node->lower;

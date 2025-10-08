@@ -525,6 +525,24 @@ void    Gen4ByteValue( uint_32 value )
 }
 
 
+void    Gen8ByteValue( uint_64 value )
+/*************************************
+ * Drop a 64 bit integer into the queue.
+ */
+{
+    _Code;
+    AddByte( value & 0xFF );
+    AddByte( ( value >> 8 ) & 0xFF );
+    AddByte( ( value >> 16 ) & 0xFF );
+    AddByte( ( value >> 24 ) & 0xFF );
+    AddByte( ( value >> 32 ) & 0xFF );
+    AddByte( ( value >> 40 ) & 0xFF );
+    AddByte( ( value >> 48 ) & 0xFF );
+    AddByte( ( value >> 56 ) & 0xFF );
+    _Emit;
+}
+
+
 void    GenCodePtr( pointer label )
 /**********************************
  * Dump a near reference to a label into the code segment.
