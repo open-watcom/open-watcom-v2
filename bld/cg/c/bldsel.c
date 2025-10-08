@@ -92,7 +92,14 @@ void    BGSelRange( sel_handle s_node, int_64 lo, int_64 hi, label_handle label 
 {
     select_list         *new_entry;
 
-    if( ( hi ^ lo ) < 0 )
+    /*
+     *  lo sign hi sign status
+     *     -       -      ok
+     *     -       +      ok
+     *     +       -      error
+     *     +       +      ok
+     */
+    if( ((signed_64 *)&lo)->u.sign.v < ((signed_64 *)&hi)->u.sign.v )
         _Zoiks( ZOIKS_089 );
     new_entry = NewCase( lo, hi, label );
     new_entry->next = s_node->list;

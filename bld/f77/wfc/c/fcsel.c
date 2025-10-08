@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,15 +80,7 @@ void    DoSelect( FCODE kind ) {
         }
         hi = GetConst32();
         lo = GetConst32();
-        // the following code is to get around a bug
-        // in the code generator - eventually the "if"
-        // block should be replaced by the "else" block
-        if( (hi ^ lo) < 0 ) {
-            CGSelRange( s, lo, -1, label );
-            CGSelRange( s, 0, hi, label );
-        } else {
-            CGSelRange( s, lo, hi, label );
-        }
+        CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();
     if( sel_sym->u.ns.u1.s.typ == FT_CHAR ) {
