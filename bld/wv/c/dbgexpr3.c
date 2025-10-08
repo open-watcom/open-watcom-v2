@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -586,7 +586,7 @@ static bool ConvFP6( stack_entry *entry, conv_class from )
     case U2:
     case U4:
     case U8:
-        if( (entry->flags & SF_CONST) && U64Test( &entry->v.uint ) == 0 )
+        if( (entry->flags & SF_CONST) && !U64Test( entry->v.uint ) )
             tmp = NilAddr;
         //NYI: 64 bit offsets
         tmp.mach.offset = U32FetchTrunc( entry->v.uint );

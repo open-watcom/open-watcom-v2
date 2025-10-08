@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,7 +185,7 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
 
     ptr = &internal[64];
     U32ToU64( radix, &big_radix );
-    while( (len > 0) || (U64Test( value ) != 0) ) {
+    while( (len > 0) || U64Test( value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
@@ -812,7 +812,7 @@ static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
     U64Clear( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
-    if( U64Test( &val ) == 0 )
+    if( !U64Test( val ) )
         return( WR_CONTINUE );
     U64And( &val, &vd->value, &tmp );
     if( U64Cmp( &tmp, &val ) == 0 ) {
@@ -841,7 +841,7 @@ static unsigned ValueToName( char *buff, unsigned len )
         return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
-    while( U64Test( &d.value ) != 0 ) {
+    while( U64Test( d.value ) ) {
         d.found = false;
         DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )

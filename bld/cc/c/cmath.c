@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -683,7 +683,7 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
             }
         }
     } else {
-        if( rel == REL_LE && !rev_ret && !NumSign( op1_size ) && U64Test( &val ) == 0 ) {
+        if( rel == REL_LE && !rev_ret && !NumSign( op1_size ) && !U64Test( val ) ) {
             /*
              * special case for unsigned <= 0
              */

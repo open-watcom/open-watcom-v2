@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,13 +188,6 @@ int U64Cmp( const unsigned_64 *a, const unsigned_64 *b )
     if( a->u._32[H] < b->u._32[H] ) return( -1 );
     if( a->u._32[L] > b->u._32[L] ) return( +1 );
     if( a->u._32[L] < b->u._32[L] ) return( -1 );
-    return( 0 );
-}
-
-int U64Test( const unsigned_64 *a )
-{
-    if( a->u._32[H] > 0 ) return( +1 );
-    if( a->u._32[L] > 0 ) return( +1 );
     return( 0 );
 }
 

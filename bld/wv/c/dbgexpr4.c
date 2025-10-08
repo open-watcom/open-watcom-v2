@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,7 +237,7 @@ void DoDiv( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( U64Test( &ExprSP->v.uint ) == 0 ) {
+        if( !U64Test( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
@@ -302,7 +302,7 @@ void DoMod( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( U64Test( &ExprSP->v.uint ) == 0 ) {
+        if( !U64Test( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
