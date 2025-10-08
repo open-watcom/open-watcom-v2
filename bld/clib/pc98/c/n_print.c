@@ -72,7 +72,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short      ret;
-        unsigned char		data;
+        unsigned short		data;
 #ifdef _M_I86
         union REGS          regs;
         struct SREGS        segregs;
@@ -80,18 +80,18 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
         unsigned            len;
         dpmi_dos_mem_block  dos_mem;
         unsigned            size_para;
+        void                __far *p;
 #endif
 
-        data = 0;
+        data = __cmd << 8;
         switch( __cmd ) {
         case _PRINTER_WRITE:
-            data = *__data;
+            data |= *__data;
             /* fall through */
         case _PRINTER_INIT:
         case _PRINTER_STATUS:
 #ifdef _M_I86
-            regs.h.ah = __cmd;
-            regs.h.al = data;
+            regs.w.ax = data;
             int86( 0x1a, &regs, &regs );
             ret = regs.w.ax;
 #else
@@ -99,8 +99,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 pharlap_regs_struct dp;
 
                 memset( &dp, 0, sizeof( dp ) );
-                dp.r.h.ah = __cmd;
-                dp.r.h.al = data;
+                dp.r.w.ax = data;
                 dp.intno = 0x1a;
                 PharlapSimulateRealModeInterrupt( &dp, 0, 0, 0 );
                 ret = dp.r.h.ah;
@@ -108,8 +107,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 dpmi_regs_struct    dr;
 
                 memset( &dr, 0, sizeof( dr ) );
-                dr.r.h.ah = __cmd;
-                dr.r.h.al = data;
+                dr.r.w.ax = data;
                 DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
                 ret = dr.r.h.ah;
             } else {
@@ -119,8 +117,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
             break;
         case _PRINTER_WRITE_STRING:
 #ifdef _M_I86
-            regs.h.ah = _PRINTER_WRITE_STRING;
-            regs.h.al = 0;
+            regs.w.ax = data;
             regs.w.cx = strlen( (char *)__data );
             regs.w.bx = FP_OFF( __data );
             segregs.es = FP_SEG( __data );
@@ -134,8 +131,9 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 
                 dos_mem.pm = 0;
                 dos_mem.rm = PharlapAllocateDOSMemoryBlock( size_para );
+                p = RealModeSegmPtr( dos_mem.rm );
                 for( ; len > 0xffff; len -= 0xffff ) {
-                    _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
+                    _fmemmove( p, __data, 0xffff );
                     __data += 0xffff;
                     memset( &dp, 0, sizeof( dp ) );
                     dp.r.h.ah = _PRINTER_WRITE_STRING;
@@ -148,7 +146,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                         break;
                     }
                 }
-                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
+                _fmemmove( p, __data, len );
                 memset( &dp, 0, sizeof( dp ) );
                 dp.r.h.ah = _PRINTER_WRITE_STRING;
                 dp.r.w.cx = len;
@@ -156,15 +154,16 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 dp.intno = 0x1a;
                 PharlapSimulateRealModeInterruptExt( &dp );
                 ret = dp.r.w.cx;
-                if( dos_mem.rm ){
+                if( dos_mem.rm ) {
                     PharlapFreeDOSMemoryBlock( dos_mem.rm );
                 }
             } else if( _DPMI || _IsRational() ) {
                 dpmi_regs_struct    dr;
 
                 dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
+                p = RealModeSegmPtr( dos_mem.rm );
                 for( ; len > 0xffff; len -= 0xffff ) {
-                    _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, 0xffff );
+                    _fmemmove( p, __data, 0xffff );
                     __data += 0xffff;
                     memset( &dr, 0, sizeof( dr ) );
                     dr.r.h.ah = _PRINTER_WRITE_STRING;
@@ -176,7 +175,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                         break;
                     }
                 }
-                _fmemmove( RealModeSegmPtr( dos_mem.rm ), __data, len );
+                _fmemmove( p, __data, len );
                 memset( &dr, 0, sizeof( dr ) );
                 dr.r.h.ah = _PRINTER_WRITE_STRING;
                 dr.r.w.cx = len;
