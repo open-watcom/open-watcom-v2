@@ -135,13 +135,13 @@ static  bool    FindFlowOut( block *blk ) {
     U64Set1P( one );
     U64Set1M( neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
-    if( U64Cmp( &diff, &neg_one ) == 0 ) {
+    if( U64Eq( diff, neg_one ) ) {
         U64IncDec( &false_cons, -1 );
         reverse = true;
-    } else {
-        if( U64Cmp( &diff, &one ) != 0 )
-            return( false );
+    } else if( U64Eq( diff, one ) ) {
         reverse = false;
+    } else {
+        return( false );
     }
     result = ins0->result;
     if( result != ins1->result )

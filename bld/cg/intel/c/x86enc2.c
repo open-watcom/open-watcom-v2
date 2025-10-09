@@ -525,20 +525,20 @@ void    Gen4ByteValue( uint_32 value )
 }
 
 
-void    Gen8ByteValue( unsigned_64 value )
+void    Gen8ByteValue( unsigned_64 *value )
 /*****************************************
  * Drop a 64 bit integer into the queue.
  */
 {
     _Code;
-    AddByte( value.u._8[I64MI8B0] );
-    AddByte( value.u._8[I64MI8B1] );
-    AddByte( value.u._8[I64MI8B2] );
-    AddByte( value.u._8[I64MI8B3] );
-    AddByte( value.u._8[I64MI8B4] );
-    AddByte( value.u._8[I64MI8B5] );
-    AddByte( value.u._8[I64MI8B6] );
-    AddByte( value.u._8[I64MI8B7] );
+    AddByte( value->u._8[I64MI8B0] );
+    AddByte( value->u._8[I64MI8B1] );
+    AddByte( value->u._8[I64MI8B2] );
+    AddByte( value->u._8[I64MI8B3] );
+    AddByte( value->u._8[I64MI8B4] );
+    AddByte( value->u._8[I64MI8B5] );
+    AddByte( value->u._8[I64MI8B6] );
+    AddByte( value->u._8[I64MI8B7] );
     _Emit;
 }
 

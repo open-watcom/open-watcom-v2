@@ -39,7 +39,7 @@ extern void     GenSelEntry( bool starts );
 extern void     Gen1ByteValue( byte value );
 extern void     Gen2ByteValue( uint_16 value );
 extern void     Gen4ByteValue( uint_32 value );
-extern void     Gen8ByteValue( unsigned_64 value );
+extern void     Gen8ByteValue( unsigned_64 *value );
 extern void     GenCodePtr( pointer label );
 extern void     GenJmpMemory( instruction *ins );
 extern void     GenJmpRegister( instruction *ins );

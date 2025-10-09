@@ -229,7 +229,7 @@ static void GenValuesForward( const select_list *list, const signed_64 *hi,
             Gen4ByteValue( tmp.u._32[I64LO32] );
             break;
         case TY_UINT_8:
-            Gen8ByteValue( tmp );
+            Gen8ByteValue( &tmp );
             break;
         }
         if( SelCompare( &curr, hi ) >= 0 )
@@ -270,7 +270,7 @@ static void GenValuesBackward( const select_list *list, const signed_64 *hi,
             Gen4ByteValue( tmp.u._32[I64LO32] );
             break;
         case TY_UINT_8:
-            Gen8ByteValue( tmp );
+            Gen8ByteValue( &tmp );
             break;
         }
         if( SelCompare( &curr, lo ) <= 0 )
