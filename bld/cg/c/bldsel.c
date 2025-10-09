@@ -96,7 +96,7 @@ void    BGSelCase( sel_handle s_node, label_handle label, const signed_64 *value
 void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi, label_handle label )
 /***************************************************************************************************/
 {
-    select_list     *prev;
+    select_list     *list;
 
     /*
      *  lo sign hi sign status
@@ -107,9 +107,9 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
      */
     if( lo->u.sign.v < hi->u.sign.v )
         _Zoiks( ZOIKS_089 );
-    prev = s_node->list;
-    s_node->list = NewCase( lo, hi, label );
-    s_node->list->next = prev;
+    list = NewCase( lo, hi, label );
+    list->next = s_node->list;
+    s_node->list = list;
     s_node->num_cases += list->count;
 }
 
