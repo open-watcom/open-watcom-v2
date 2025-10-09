@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -525,20 +525,20 @@ void    Gen4ByteValue( uint_32 value )
 }
 
 
-void    Gen8ByteValue( uint_64 value )
-/*************************************
+void    Gen8ByteValue( unsigned_64 value )
+/*****************************************
  * Drop a 64 bit integer into the queue.
  */
 {
     _Code;
-    AddByte( value & 0xFF );
-    AddByte( ( value >> 8 ) & 0xFF );
-    AddByte( ( value >> 16 ) & 0xFF );
-    AddByte( ( value >> 24 ) & 0xFF );
-    AddByte( ( value >> 32 ) & 0xFF );
-    AddByte( ( value >> 40 ) & 0xFF );
-    AddByte( ( value >> 48 ) & 0xFF );
-    AddByte( ( value >> 56 ) & 0xFF );
+    AddByte( value.u._8[I64MI8B0] );
+    AddByte( value.u._8[I64MI8B1] );
+    AddByte( value.u._8[I64MI8B2] );
+    AddByte( value.u._8[I64MI8B3] );
+    AddByte( value.u._8[I64MI8B4] );
+    AddByte( value.u._8[I64MI8B5] );
+    AddByte( value.u._8[I64MI8B6] );
+    AddByte( value.u._8[I64MI8B7] );
     _Emit;
 }
 

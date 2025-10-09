@@ -38,8 +38,8 @@
 
 typedef struct select_list {
         struct select_list      *next;
-        int_64                  low;
-        int_64                  high;
+        signed_64               low;
+        signed_64               high;
         uint_32                 count;
         label_handle            label;
 } select_list;
@@ -50,8 +50,8 @@ typedef struct select_node {
 #endif
         struct select_list      *list;
         label_handle            other_wise;
-        int_64                  lower;
-        int_64                  upper;
+        signed_64               lower;
+        signed_64               upper;
         uint_32                 num_cases;
 } select_node;
 

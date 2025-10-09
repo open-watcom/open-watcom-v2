@@ -64,6 +64,7 @@
 #include "bgcall.h"
 #include "savings.h"
 #include "regsave.h"
+#include "i64.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -1210,24 +1211,32 @@ sel_handle _CGAPI       CGSelInit( void )
 void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, int_32 val )
 /*********************************************************************/
 {
+    signed_64   tmp;
+
 #ifdef DEVBUILD
     EchoAPI( "CGSelCase( %S, %L, %i )\n", s, lbl, val );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
-    BGSelCase( s, lbl, val );
+    I32ToI64( val, &tmp );
+    BGSelCase( s, lbl, tmp );
 }
 
 void _CGAPI     CGSelRange( sel_handle s, int_32 lo,
                             int_32 hi, label_handle lbl )
 /*******************************************************/
 {
+    signed_64   tmp_lo;
+    signed_64   tmp_hi;
+
 #ifdef DEVBUILD
     EchoAPI( "CGSelRange( %S, %L, %i, %i )\n", s, lbl, lo, hi );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
-    BGSelRange( s, lo, hi, lbl );
+    I32ToI64( lo, &tmp_lo );
+    I32ToI64( hi, &tmp_hi );
+    BGSelRange( s, tmp_lo, tmp_hi, lbl );
 }
 
 void _CGAPI     CGSelOther( sel_handle s, label_handle lbl )
