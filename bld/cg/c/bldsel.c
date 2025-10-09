@@ -49,16 +49,18 @@
 #include "i64.h"
 
 
-static  select_list *NewCase( signed_64 lo, signed_64 hi, label_handle label )
-/****************************************************************************/
+static const type_def   *SortTipe;
+
+static  select_list *NewCase( const signed_64 *lo, const signed_64 *hi, label_handle label )
+/******************************************************************************************/
 {
     select_list     *list;
     unsigned_64     tmp;
 
     list = CGAlloc( sizeof( select_list ) );
-    list->low = lo;
-    list->high = hi;
-    U64Sub( &hi, &lo, &tmp );
+    list->low = *lo;
+    list->high = *hi;
+    U64Sub( hi, lo, &tmp );
     U64IncDec( &tmp, 1 );
     list->count = tmp.u._32[I64LO32];
     list->label = label;
@@ -70,7 +72,7 @@ static  select_list *NewCase( signed_64 lo, signed_64 hi, label_handle label )
 sel_handle  BGSelInit( void )
 /***************************/
 {
-    sel_handle  s_node;
+    sel_handle      s_node;
 
     s_node = CGAlloc( sizeof( select_node ) );
     s_node->num_cases = 0;
@@ -84,17 +86,17 @@ sel_handle  BGSelInit( void )
 }
 
 
-void    BGSelCase( sel_handle s_node, label_handle label, signed_64 value )
-/*************************************************************************/
+void    BGSelCase( sel_handle s_node, label_handle label, const signed_64 *value )
+/********************************************************************************/
 {
     BGSelRange( s_node, value, value, label );
 }
 
 
-void    BGSelRange( sel_handle s_node, signed_64 lo, signed_64 hi, label_handle label )
-/*************************************************************************************/
+void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi, label_handle label )
+/***************************************************************************************************/
 {
-    select_list         *list;
+    select_list     *prev;
 
     /*
      *  lo sign hi sign status
@@ -103,11 +105,11 @@ void    BGSelRange( sel_handle s_node, signed_64 lo, signed_64 hi, label_handle 
      *     +       -      error
      *     +       +      ok
      */
-    if( lo.u.sign.v < hi.u.sign.v )
+    if( lo->u.sign.v < hi->u.sign.v )
         _Zoiks( ZOIKS_089 );
-    list = NewCase( lo, hi, label );
-    list->next = s_node->list;
-    s_node->list = list;
+    prev = s_node->list;
+    s_node->list = NewCase( lo, hi, label );
+    s_node->list->next = prev;
     s_node->num_cases += list->count;
 }
 
@@ -119,34 +121,32 @@ void    BGSelOther( sel_handle s_node, label_handle other )
 }
 
 
-static const type_def   *SortTipe;
-
-int SelCompare( signed_64 lo1, signed_64 lo2 )
-/********************************************/
+int SelCompare( const signed_64 *lo1, const signed_64 *lo2 )
+/**********************************************************/
 {
     if( SortTipe->attr & TYPE_SIGNED ) {
-        return( I64Cmp( &lo1, &lo2 ) );
+        return( I64Cmp( lo1, lo2 ) );
     }
-    return( U64Cmp( &lo1, &lo2 ) );
+    return( U64Cmp( lo1, lo2 ) );
 }
 
 
 static bool     NodeLess( void *s1, void *s2 )
 /********************************************/
 {
-    return( SelCompare( ((select_list *)s1)->low, ((select_list *)s2)->low ) < 0 );
+    return( SelCompare( &((const select_list *)s1)->low, &((const select_list *)s2)->low ) < 0 );
 }
 
 
 
-static  void    SortNodeList( an node, sel_handle s_node, bool is_signed )
+static void     SortNodeList( an node, sel_handle s_node, bool is_signed )
 /************************************************************************/
 {
-    select_list *list;
+    const select_list   *list;
 
     SortTipe = SelNodeType( node, is_signed );
-    list = SortList( s_node->list, offsetof( select_list, next ), NodeLess );
-    s_node->list = list;
+    s_node->list = SortList( s_node->list, offsetof( select_list, next ), NodeLess );
+    list = s_node->list;
     s_node->lower = list->low;
     while( list->next != NULL ) {
         list = list->next;
@@ -195,10 +195,10 @@ static  void    MergeListEntries( sel_handle s_node )
 static cost_val DistinctIfCost( sel_handle s_node )
 /*************************************************/
 {
-    select_list *list;
-    select_list *next;
-    uint_32     entries;
-    signed_64       tmp;
+    const select_list   *list;
+    const select_list   *next;
+    uint_32             entries;
+    signed_64           tmp;
 
     entries = 1;
     for( list = s_node->list, next = list->next; next != NULL; next = next->next ) {
@@ -213,16 +213,16 @@ static cost_val DistinctIfCost( sel_handle s_node )
 }
 
 
-cg_type SelType( unsigned_64 value_range )
-/****************************************/
+cg_type SelType( const unsigned_64 *value_range )
+/***********************************************/
 {
     cg_type     tipe;
 
-    if( value_range.u._32[I64HI32] ) {
+    if( value_range->u._32[I64HI32] ) {
         tipe = TY_UINT_8;
-    } else if( value_range.u._16[I64MI16W1] ) {
+    } else if( value_range->u._16[I64MI16W1] ) {
         tipe = TY_UINT_4;
-    } else if( value_range.u._8[I64MI8B1] ) {
+    } else if( value_range->u._8[I64MI8B1] ) {
         tipe = TY_UINT_2;
     } else {
         tipe = TY_UINT_1;
@@ -315,7 +315,7 @@ static  an      GenScanTable( an node, sel_handle s_node, const type_def *tipe )
     unsigned_64     tmp;
 
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
-    value_type = SelType( tmp );
+    value_type = SelType( &tmp );
     real_type = tipe->refno;
     if( real_type != value_type ) {
         node = BGBinary( O_MINUS, node, BGInteger( s_node->lower.u._32[I64LO32], tipe ), tipe, true );
@@ -379,43 +379,47 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
         node = BGBinary( O_MINUS, node,
                           BGInteger( s_node->lower.u._32[I64LO32], tipe ), tipe , true );
     }
-    /* generate if's to check if index in table*/
+    /*
+     * generate if's to check if index in table
+     */
     if( s_node->other_wise != NULL ) {
         U64Sub( &s_node->upper, &s_node->lower, &tmp );
-        lt = BGCompare( O_LE, BGDuplicate(node),
+        lt = BGCompare( O_LE, BGDuplicate( node ),
                         BGInteger( tmp.u._32[I64LO32], tipe ), NULL,
                         UnSignedIntTipe( tipe ) );
         BGControl( O_IF_FALSE, lt, s_node->other_wise );
     }
-    /* generate table*/
-    /* index into table*/
+    /*
+     * generate table
+     * index into table
+     */
     node = BGConvert( node, UnSignedIntTipe( tipe ) ); /* value an unsigned index */
     SelectBlock( MakeJmpTab( s_node ), node, s_node->other_wise );
     return( node );
 }
 
 
-static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe,
+static void DoBinarySearch( an node, const select_list *list, const type_def *tipe,
                                int lo, int hi, label_handle other,
-                               signed_64 lobound, signed_64 hibound,
+                               const signed_64 *lobound, const signed_64 *hibound,
                                bool have_lobound, bool have_hibound )
 /*************************************************************************/
 {
-    int             num;
-    int             mid;
-    select_list     *mid_list;
-    an              cmp;
-    label_handle    lt;
-    unsigned_64     tmp;
+    int                 num;
+    int                 mid;
+    const select_list   *mid_list;
+    an                  cmp;
+    label_handle        lt;
+    unsigned_64         tmp;
 
-    mid = lo + ( hi - lo ) / 2;
     mid_list = list;
-    for( num = mid; num > 0; --num ) {
+    num = mid = lo + ( hi - lo ) / 2;
+    while( num-- > 0 ) {
         mid_list = mid_list->next;
     }
     if( lo == hi ) {
-        if( have_lobound && U64Eq( lobound, mid_list->low )
-         && have_hibound && U64Eq( hibound, mid_list->high ) ) {
+        if( have_lobound && U64Eq( *lobound, mid_list->low )
+          && have_hibound && U64Eq( *hibound, mid_list->high ) ) {
              BGControl( O_GOTO, NULL, mid_list->label );
              return;
         } else if( U64Eq( mid_list->low, mid_list->high ) ) {
@@ -427,51 +431,55 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
         }
     }
     if( hi == mid + 1 && U64Eq( mid_list->next->low, mid_list->next->high ) ) {
-        /* a linear sequence for three different non-sequential cases where
-           c1<c2<c3, looks like:
-        if( a == c3 ) goto l3;
-        if( a == c2 ) goto l2;
-        if( a != c1 ) goto default;
-        l1: ...
-
-           a binary sequence for these three cases looks like:
-        if( a < c2 goto lt;    \
-        if( a <= c2 ) goto l2; /only one cmp ins on x86
-        if( a == c3 ) goto l3;
-        goto default;
-        lt:
-        if( a != c1 ) goto default;
-        l1: ...
-
-        Advantage of the linear search:
-        * 3 goto's instead of 5, resulting in smaller code.
-        Advantage of the binary search:
-        * Execution time for all the cases is more balanced. which one is
-          really faster depends a lot on the CPU's branch prediction and
-          other things that are very hard to measure here.
-
-        Using a linear search here for <= 3 cases to save on code size
-        with negligible performance loss or gain.
-        */
+        /*
+         * a linear sequence for three different non-sequential cases where
+         * c1<c2<c3, looks like:
+         *   if( a == c3 ) goto l3;
+         *   if( a == c2 ) goto l2;
+         *   if( a != c1 ) goto default;
+         * l1: ...
+         *
+         * a binary sequence for these three cases looks like:
+         *   if( a < c2 goto lt;    \
+         *   if( a <= c2 ) goto l2; /only one cmp ins on x86
+         *   if( a == c3 ) goto l3;
+         *   goto default;
+         * lt:
+         *   if( a != c1 ) goto default;
+         * l1: ...
+         *
+         * Advantage of the linear search:
+         *   3 goto's instead of 5, resulting in smaller code.
+         *
+         * Advantage of the binary search:
+         *   Execution time for all the cases is more balanced. which one is
+         * really faster depends a lot on the CPU's branch prediction and
+         * other things that are very hard to measure here.
+         *
+         * Using a linear search here for <= 3 cases to save on code size
+         * with negligible performance loss or gain.
+         */
         mid_list = mid_list->next;
         cmp = BGCompare( O_EQ, BGDuplicate( node ),
                          BGInteger( mid_list->low.u._32[I64LO32], tipe ), NULL, tipe );
         BGControl( O_IF_TRUE, cmp, mid_list->label );
-        /* Because we only compared for equality, it is only possible to
-           decrease the upper bound if it was already set and equal to
-           the value we are comparing to. Otherwise the incoming value
-           may still be higher, where the inner call may produce an
-           unconditional O_GOTO to a specific case label!
-        */
-        if( have_hibound && U64Eq( hibound, mid_list->low ) )
-            U64IncDec( &hibound, -1 );
+        /*
+         * Because we only compared for equality, it is only possible to
+         * decrease the upper bound if it was already set and equal to
+         * the value we are comparing to. Otherwise the incoming value
+         * may still be higher, where the inner call may produce an
+         * unconditional O_GOTO to a specific case label!
+         */
+        tmp = *hibound;
+        if( have_hibound && U64Eq( tmp, mid_list->low ) )
+            U64IncDec( &tmp, -1 );
         DoBinarySearch( node, list, tipe, lo, mid, other,
-                        lobound, hibound, have_lobound, have_hibound );
+                        lobound, &tmp, have_lobound, have_hibound );
         return;
     }
     lt = AskForNewLabel();
-    if( !have_lobound || SelCompare( lobound, mid_list->low ) < 0 ) {
-        if( have_hibound && SelCompare( hibound, mid_list->low ) < 0 ) {
+    if( !have_lobound || SelCompare( lobound, &mid_list->low ) < 0 ) {
+        if( have_hibound && SelCompare( hibound, &mid_list->low ) < 0 ) {
             BGControl( O_GOTO, NULL, lt );
         } else {
             cmp = BGCompare( O_LT, BGDuplicate( node ),
@@ -479,8 +487,8 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
             BGControl( O_IF_TRUE, cmp, lt );
         }
     }
-    if( !have_lobound || SelCompare( lobound, mid_list->high ) <= 0 ) {
-        if( have_hibound && SelCompare( hibound, mid_list->high ) <= 0 ) {
+    if( !have_lobound || SelCompare( lobound, &mid_list->high ) <= 0 ) {
+        if( have_hibound && SelCompare( hibound, &mid_list->high ) <= 0 ) {
             BGControl( O_GOTO, NULL, mid_list->label );
         } else {
             cmp = BGCompare( O_LE, BGDuplicate( node ),
@@ -492,7 +500,7 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
         tmp = mid_list->high;
         U64IncDec( &tmp, 1 );
         DoBinarySearch( node, list, tipe, mid + 1, hi, other,
-                        tmp, hibound, true, have_hibound );
+                        &tmp, hibound, true, have_hibound );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
@@ -501,7 +509,7 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
         tmp = mid_list->low;
         U64IncDec( &tmp, -1 );
         DoBinarySearch( node, list, tipe, lo, mid - 1, other,
-                        lobound, tmp, have_lobound, true );
+                        lobound, &tmp, have_lobound, true );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
@@ -511,9 +519,9 @@ static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe
 static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
 /****************************************************************************/
 {
-    select_list *list;
-    int         nodes;
-    signed_64   tmp;
+    const select_list   *list;
+    int                 nodes;
+    signed_64           tmp;
 
     nodes = 0;
     for( list = s_node->list; list != NULL; list = list->next ) {
@@ -521,19 +529,19 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
     }
     U64Clear( tmp );
     DoBinarySearch( node, s_node->list, tipe, 0, nodes - 1, s_node->other_wise,
-                    tmp, tmp, false, false );
+                    &tmp, &tmp, false, false );
     return( node );
 }
 
 
-uint_32     NumValues( select_list *list, signed_64 hi )
-/******************************************************/
+uint_32     NumValues( const select_list *list, const signed_64 *hi )
+/*******************************************************************/
 {
     uint_32     cases;
 
     cases = 0;
     while( list != NULL ) {
-        if( SelCompare( list->high, hi ) > 0 ) {
+        if( SelCompare( &list->high, hi ) > 0 ) {
             break;
         }
         cases += list->count;
@@ -579,7 +587,10 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     node = Arithmetic( node, TypeInteger );
     if( s_node->num_cases != 0 ) {
         best = MAX_COST;
-        SortNodeList( node, s_node, true ); /* sort signed */
+        /*
+         * sort signed
+         */
+        SortNodeList( node, s_node, true );
         if( allowed & CG_SWITCH_SCAN ) {
             cost = ScanCost( s_node );
             if( cost <= best ) {
@@ -601,7 +612,10 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
                 kind = S_IF;
             }
         }
-        SortNodeList( node, s_node, false ); /* sort unsigned */
+        /*
+         * sort unsigned
+         */
+        SortNodeList( node, s_node, false );
         if( allowed & CG_SWITCH_SCAN ) {
             cost = ScanCost( s_node );
             if( cost <= best ) {
@@ -627,11 +641,13 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
         case S_SCAN:
         case S_JUMP:
         case S_IF:
-            SortNodeList( node, s_node, true ); /* sort signed */
+            /*
+             * sort signed
+             */
+            SortNodeList( node, s_node, true );
             break;
         }
         node = BGConvert( node, SortTipe );
-
         /*
          * We generate this bogus add 0 node so that we have a temporary
          * for the actual value to switch on. If we don't do this, a
@@ -640,9 +656,10 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
          * once to index into the scan table. This would be bad if it
          * changed in between.
          */
-        node = BGBinary(O_PLUS, node, BGInteger( 0, SortTipe ), SortTipe, true );
+        node = BGBinary( O_PLUS, node, BGInteger( 0, SortTipe ), SortTipe, true );
 
         MergeListEntries( s_node );
+
         switch( kind ) {
         case S_SCAN:
         case U_SCAN:

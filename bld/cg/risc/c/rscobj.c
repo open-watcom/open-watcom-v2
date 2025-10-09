@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1167,14 +1167,14 @@ byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
 void    ObjEmitSeq( const byte_seq *code )
 /****************************************/
 {
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    const byte          *code_ptr;
-    void                *ins_opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
+    const byte_seq_reloc    *curr;
+    back_handle             back;
+    type_length             loc;
+    byte_seq_len            i;
+    const byte              *code_ptr;
+    void                    *ins_opcode;
+    pointer                 reloc_sym;
+    owl_reloc_type          reloc_type;
 
     assert( code->length % 4 == 0 );
     curr = SortListReloc( code->relocs );

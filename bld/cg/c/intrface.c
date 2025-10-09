@@ -1219,7 +1219,7 @@ void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, int_32 val )
     hdlExists( LABEL_HANDLE, lbl );
 #endif
     I32ToI64( val, &tmp );
-    BGSelCase( s, lbl, tmp );
+    BGSelCase( s, lbl, &tmp );
 }
 
 void _CGAPI     CGSelRange( sel_handle s, int_32 lo,
@@ -1236,7 +1236,7 @@ void _CGAPI     CGSelRange( sel_handle s, int_32 lo,
 #endif
     I32ToI64( lo, &tmp_lo );
     I32ToI64( hi, &tmp_hi );
-    BGSelRange( s, tmp_lo, tmp_hi, lbl );
+    BGSelRange( s, &tmp_lo, &tmp_hi, lbl );
 }
 
 void _CGAPI     CGSelOther( sel_handle s, label_handle lbl )

@@ -2857,8 +2857,8 @@ static  bool    DangerousTypeChange( induction *var, induction *other )
     return( true );
 }
 
-static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
-/*************************************************************************
+static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_class )
+/************************************************************************************
  * Return true if the given (signed) constant is too big or too small for
  * the given type_class.
  */
@@ -2933,7 +2933,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         /*
          * make sure we always allow negative values - hack for BMark
          */
-        if( (big_cons.u._32[I64HI32] & 0x80000000) == 0 ) {
+        if( big_cons.u.sign.v == 0 ) {
             if( ConstOverflowsType( &big_cons, type_class ) ) {
                 return( false );
             }
