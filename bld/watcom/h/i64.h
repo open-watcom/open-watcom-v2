@@ -155,7 +155,7 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define U64Eq( a, b )   ((a).u._32[0]==(b).u._32[0] && (a).u._32[1]==(b).u._32[1])
 #define U64Clear( x )   ((x).u._32[0]=0,(x).u._32[1]=0)
 #define U64Set1P( x )   ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
-#define U64Set1M( x )   ((x).u._32[I64LO32]=-1,(x).u._32[I64HI32]=-1)
+#define U64Set1M( x )   ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
 
 /* The FetchTrunc macros grab an 8/16/32-bit value from memory assuming
  * that the value is stored as a 64-bit integer. This is required for
