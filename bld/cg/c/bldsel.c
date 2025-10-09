@@ -52,18 +52,18 @@
 static  select_list *NewCase( signed_64 lo, signed_64 hi, label_handle label )
 /****************************************************************************/
 {
-    select_list     *new_entry;
+    select_list     *list;
     unsigned_64     tmp;
 
-    new_entry = CGAlloc( sizeof( select_list ) );
-    new_entry->low = lo;
-    new_entry->high = hi;
+    list = CGAlloc( sizeof( select_list ) );
+    list->low = lo;
+    list->high = hi;
     U64Sub( &hi, &lo, &tmp );
     U64IncDec( &tmp, 1 );
-    new_entry->count = tmp.u._32[I64LO32];
-    new_entry->label = label;
-    new_entry->next = NULL;
-    return( new_entry );
+    list->count = tmp.u._32[I64LO32];
+    list->label = label;
+    list->next = NULL;
+    return( list );
 }
 
 
@@ -94,7 +94,7 @@ void    BGSelCase( sel_handle s_node, label_handle label, signed_64 value )
 void    BGSelRange( sel_handle s_node, signed_64 lo, signed_64 hi, label_handle label )
 /*************************************************************************************/
 {
-    select_list         *new_entry;
+    select_list         *list;
 
     /*
      *  lo sign hi sign status
@@ -105,10 +105,10 @@ void    BGSelRange( sel_handle s_node, signed_64 lo, signed_64 hi, label_handle 
      */
     if( lo.u.sign.v < hi.u.sign.v )
         _Zoiks( ZOIKS_089 );
-    new_entry = NewCase( lo, hi, label );
-    new_entry->next = s_node->list;
-    s_node->list = new_entry;
-    s_node->num_cases += new_entry->count;
+    list = NewCase( lo, hi, label );
+    list->next = s_node->list;
+    s_node->list = list;
+    s_node->num_cases += list->count;
 }
 
 
@@ -167,26 +167,26 @@ typedef enum sel_kind {
 static  void    MergeListEntries( sel_handle s_node )
 /***************************************************/
 {
-    select_list     *curr;
+    select_list     *list;
     select_list     *next;
     signed_64       tmp;
 
-    for( curr = s_node->list, next = curr->next; next != NULL; next = curr->next ) {
-        tmp = curr->high;
+    for( list = s_node->list, next = list->next; next != NULL; next = list->next ) {
+        tmp = list->high;
         U64IncDec( &tmp, 1 );
-        if( U64Eq( tmp, next->low ) && ( curr->label == next->label ) ) {
+        if( U64Eq( tmp, next->low ) && ( list->label == next->label ) ) {
             /*
              * add/merge second range to first range
              */
-            curr->high = next->high;
-            curr->count += next->count;
+            list->high = next->high;
+            list->count += next->count;
             /*
              * remove second range
              */
-            curr->next = next->next;
+            list->next = next->next;
             CGFree( next );
         } else {
-            curr = next;
+            list = next;
         }
     }
 }
@@ -195,18 +195,18 @@ static  void    MergeListEntries( sel_handle s_node )
 static cost_val DistinctIfCost( sel_handle s_node )
 /*************************************************/
 {
-    select_list *curr;
+    select_list *list;
     select_list *next;
     uint_32     entries;
     signed_64       tmp;
 
     entries = 1;
-    for( curr = s_node->list, next = curr->next; next != NULL; next = next->next ) {
-        tmp = curr->high;
+    for( list = s_node->list, next = list->next; next != NULL; next = next->next ) {
+        tmp = list->high;
         U64IncDec( &tmp, 1 );
-        if( !U64Eq( tmp, next->low ) || ( curr->label != next->label ) ) {
+        if( !U64Eq( tmp, next->low ) || ( list->label != next->label ) ) {
             ++entries;
-            curr = next;
+            list = next;
         }
     }
     return( IfCost( s_node, entries ) );

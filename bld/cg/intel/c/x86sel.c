@@ -381,11 +381,11 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
     U64IncDec( &tmp, 1 );
     cases = tmp.u._32[I64LO32];
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
+    table->size = cases;
     PUSH_OP( AskCodeSeg() );
         table->lbl = AskForNewLabel();
         table->value_lbl = NULL;
         CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
-        table->size = cases;
         tab_ptr = &table->cases[0];
         list = s_node->list;
         other = s_node->other_wise;
