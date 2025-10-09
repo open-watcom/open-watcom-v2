@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +132,8 @@ static  bool    FindFlowOut( block *blk ) {
     if( ins1 == NULL )
         return( false );
 
-    I32ToI64( 1, &one );
-    I32ToI64( -1, &neg_one );
+    U64Set1P( one );
+    U64Set1M( neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
     if( U64Cmp( &diff, &neg_one ) == 0 ) {
         U64IncDec( &false_cons, -1 );
@@ -161,7 +161,7 @@ static  bool    FindFlowOut( block *blk ) {
     SuffixIns( ins, ins1 );
     ins = ins1;
 
-    if( I64Test( &false_cons ) != 0 ) {
+    if( I64Test( false_cons ) != 0 ) {
         konst = AllocS64Const( false_cons.u._32[I64LO32], false_cons.u._32[I64HI32] );
         ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {

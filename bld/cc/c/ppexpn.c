@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,8 @@
 #define U64OrEq(a,b)        U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 #define U64XOrEq(a,b)       U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 
-#define I64SetZero( a )     ( I32ToI64( 0, &(a).u.sval) );
-#define U64SetZero( a )     ( U32ToU64( 0, &(a).u.uval) );
+#define I64SetZero( a )     U64Clear( (a).u.sval );
+#define U64SetZero( a )     U64Clear( (a).u.uval );
 
 #define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
 

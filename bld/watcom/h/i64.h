@@ -57,8 +57,10 @@ void U64IncDec( unsigned_64 *a, signed_32 i );
 int U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
 int I64Cmp( const signed_64 *a, const signed_64 *b );
 
+int _I64Test( const signed_64 *a );
+
 #define U64Test( a )    ((a).u._32[I64HI32] || (a).u._32[I64LO32])
-int I64Test( const signed_64 *a );
+#define I64Test( a )    _I64Test( &(a) )
 
 void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
 void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );

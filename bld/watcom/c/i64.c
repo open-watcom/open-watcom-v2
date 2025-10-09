@@ -205,7 +205,7 @@ int I64Cmp( const signed_64 *a, const signed_64 *b )
     return( 0 );
 }
 
-int I64Test( const signed_64 *a )
+int _I64Test( const signed_64 *a )
 {
     signed_32 ah;
 

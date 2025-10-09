@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2876,7 +2876,7 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
       || type_class == U8 )
         return( false );
     len = TypeClassSize[type_class] * 8;
-    I32ToI64( 1, &one );
+    U64Set1P( one );
     if( _IsSigned( type_class ) ) {
         /*
          * signed type of length 'len' bits
@@ -2888,7 +2888,7 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
         /*
          * unsigned type of length 'len' bits
          */
-        I32ToI64( 0, &min );
+        U64Clear( min );
         U64ShiftL( &one, len, &max );
         U64Sub( &max, &one, &max );
     }

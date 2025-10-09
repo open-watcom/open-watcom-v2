@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1707,8 +1707,9 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
         U64ShiftR( &mask, 1, &mask );
         U64Not( &mask, &mask );
         if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
-                        unsigned_64 one;
-                        I32ToI64( 1, &one );
+            signed_64 one;
+
+            U64Set1P( one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
             retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, true );
         } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */

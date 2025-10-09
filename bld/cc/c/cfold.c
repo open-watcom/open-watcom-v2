@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1229,7 +1229,7 @@ static void CheckOpndValues( TREEPTR tree )
                 uint64      big_shift;
 
                 right = LongValue64( opnd );
-                if( I64Test( &right ) < 0 ) {
+                if( I64Test( right ) < 0 ) {
                     shift_negative = true;
                 } else {
                     U32ToU64( max_shift, &big_shift );

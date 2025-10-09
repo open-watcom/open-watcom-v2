@@ -205,7 +205,7 @@ static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class
     const char  *prefix;
     size_t      prefix_len;
 
-    if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
+    if( sign_type == NUM_SIGNED && I64Test( num ) < 0 ) {
         *buff = '-';
         ++buff;
         U64Neg( &num, &num );
