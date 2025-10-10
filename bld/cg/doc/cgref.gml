@@ -1686,7 +1686,7 @@ Create a sel_handle.
 A sel_handle to be passed to the following routines.
 .endnote
 .*
-.section void CGSelCase( sel_handle s, label_handle lbl, signed_32 val )
+.section void CGSelCase( sel_handle s, label_handle lbl, signed_64 val )
 .*
 .ix CGSelCase
 .ix 'control flow'
@@ -1703,7 +1703,7 @@ The label to be associated with the case value.
 The case value.
 .endnote
 .*
-.section void CGSelRange( sel_handle s, signed_32 lo, signed_32 hi, label_handle lbl )
+.section void CGSelRange( sel_handle s, signed_64 lo, signed_64 hi, label_handle lbl )
 .*
 .ix CGSelRange
 .ix 'control flow'
