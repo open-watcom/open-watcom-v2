@@ -253,7 +253,7 @@ static void GenValuesBackward( const select_list *list, const signed_64 *hi,
     unsigned_64     tmp;
 
     scan = list;
-    while( U64Eq( scan->high, *hi ) ) {
+    while( !U64Eq( scan->high, *hi ) ) {
         scan = scan->next;
     }
     curr = *hi;
