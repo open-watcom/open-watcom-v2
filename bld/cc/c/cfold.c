@@ -437,22 +437,22 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         tmp = U64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
         case CC_EQ:
-            tmp = tmp == 0;
+            tmp = ( tmp == 0 );
             break;
         case CC_NE:
-            tmp = tmp != 0;
+            tmp = ( tmp != 0 );
             break;
         case CC_GT:
-            tmp = tmp > 0;
+            tmp = ( tmp > 0 );
             break;
         case CC_LE:
-            tmp = tmp <= 0;
+            tmp = ( tmp <= 0 );
             break;
         case CC_GE:
-            tmp = tmp >= 0;
+            tmp = ( tmp >= 0 );
             break;
         case CC_LT:
-            tmp = tmp < 0;
+            tmp = ( tmp < 0 );
             break;
         }
         const_type = TYP_INT;
@@ -495,22 +495,22 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         tmp = I64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
         case CC_EQ:
-            tmp = tmp == 0;
+            tmp = ( tmp == 0 );
             break;
         case CC_NE:
-            tmp = tmp != 0;
+            tmp = ( tmp != 0 );
             break;
         case CC_GT:
-            tmp = tmp > 0;
+            tmp = ( tmp > 0 );
             break;
         case CC_LE:
-            tmp = tmp <= 0;
+            tmp = ( tmp <= 0 );
             break;
         case CC_GE:
-            tmp = tmp >= 0;
+            tmp = ( tmp >= 0 );
             break;
         case CC_LT:
-            tmp = tmp < 0;
+            tmp = ( tmp < 0 );
             break;
         }
         const_type = TYP_INT;
