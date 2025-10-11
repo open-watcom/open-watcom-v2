@@ -1212,7 +1212,7 @@ void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_64 val )
 /************************************************************************/
 {
 #ifdef DEVBUILD
-    EchoAPI( "CGSelCase( %S, %L, %i )\n", s, lbl, val );
+    EchoAPI( "CGSelCase( %S, %L, %l )\n", s, lbl, val.u._64[0] );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
@@ -1224,7 +1224,7 @@ void _CGAPI     CGSelRange( sel_handle s, signed_64 lo,
 /******************************************************/
 {
 #ifdef DEVBUILD
-    EchoAPI( "CGSelRange( %S, %L, %i, %i )\n", s, lbl, lo, hi );
+    EchoAPI( "CGSelRange( %S, %L, %l, %l )\n", s, lbl, lo.u._64[0], hi.u._64[0] );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,6 +250,12 @@ void EchoAPI              // EchoAPI ROUTINE
                   case 'i' : {
                     int val = va_arg( args, int );
                     sprintf( buffer, "%d", val );
+                    EchoAPIString( buffer );
+                    break;
+                  }
+                  case 'l' : {
+                    long long val64 = va_arg( args, long long );
+                    sprintf( buffer, "%ll", val64 );
                     EchoAPIString( buffer );
                     break;
                   }
