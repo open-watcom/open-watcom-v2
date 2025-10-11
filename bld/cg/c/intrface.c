@@ -1208,35 +1208,27 @@ sel_handle _CGAPI       CGSelInit( void )
 #endif
 }
 
-void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, int_32 val )
-/*********************************************************************/
+void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_64 val )
+/************************************************************************/
 {
-    signed_64   tmp;
-
 #ifdef DEVBUILD
     EchoAPI( "CGSelCase( %S, %L, %i )\n", s, lbl, val );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
-    I32ToI64( val, &tmp );
-    BGSelCase( s, lbl, &tmp );
+    BGSelCase( s, lbl, &val );
 }
 
-void _CGAPI     CGSelRange( sel_handle s, int_32 lo,
-                            int_32 hi, label_handle lbl )
-/*******************************************************/
+void _CGAPI     CGSelRange( sel_handle s, signed_64 lo,
+                        signed_64 hi, label_handle lbl )
+/******************************************************/
 {
-    signed_64   tmp_lo;
-    signed_64   tmp_hi;
-
 #ifdef DEVBUILD
     EchoAPI( "CGSelRange( %S, %L, %i, %i )\n", s, lbl, lo, hi );
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
-    I32ToI64( lo, &tmp_lo );
-    I32ToI64( hi, &tmp_hi );
-    BGSelRange( s, &tmp_lo, &tmp_hi, lbl );
+    BGSelRange( s, &lo, &hi, lbl );
 }
 
 void _CGAPI     CGSelOther( sel_handle s, label_handle lbl )

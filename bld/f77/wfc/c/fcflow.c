@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,23 +299,23 @@ void    FCAssignedGOTOList( void ) {
 
 // Perform assigned GOTO with list.
 
-    sel_handle          s;
-    label_handle        label;
-    sym_id              sn;
-    sym_id              var;
-    obj_ptr             curr_obj;
+    sel_handle      s;
+    label_handle    label;
+    sym_id          sn;
+    sym_id          var;
+    obj_ptr         curr_obj;
+    signed_64       tmp;
 
+    tmp.u._32[I64HI32] = 0;
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
     s = CGSelInit();
-    for( ;; ) {
-        sn = GetPtr();
-        if( sn == NULL )
-            break;
+    while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            CGSelCase( s, label, sn->u.st.address );
+            tmp.u._32[I64LO32] = sn->u.st.address;
+            CGSelCase( s, label, tmp );
         }
     }
     label = BENewLabel();

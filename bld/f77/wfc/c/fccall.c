@@ -32,6 +32,7 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "i64.h"
 #include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77cg.h"
@@ -110,7 +111,7 @@ void    FCPrologue( void ) {
 
     sym_id              sym;
     entry_pt            *ep;
-    int                 ep_count;
+    signed_64           ep_count;
     sel_handle          sel;
     label_handle        main_entry_label;
     unsigned_16         sp_type;
@@ -146,10 +147,10 @@ void    FCPrologue( void ) {
     }
     if( CommonEntry != NULL ) {
         sel = CGSelInit();
-        ep_count = 1;
+        U64Set1P( ep_count );
         for( ep = Entries->link; ep != NULL; ep = ep->link ) {
             CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
-            ep_count++;
+            U64IncDec( &ep_count, 1 );
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
@@ -903,19 +904,21 @@ void    FCAltReturn( void ) {
 
 // Process alternate return.
 
-    sel_handle          sel;
-    int                 num_alts;
-    int                 alt_ret;
-    sym_id              sn;
-    obj_ptr             curr_obj;
-    label_handle        other;
+    sel_handle      sel;
+    int             num_alts;
+    signed_64       alt_ret;
+    sym_id          sn;
+    obj_ptr         curr_obj;
+    label_handle    other;
 
     curr_obj = FCodeTell( 0 );
-    num_alts = GetU16();
     sel = CGSelInit();
-    for( alt_ret = 1; alt_ret <= num_alts; alt_ret++ ) {
+    U64Set1P( alt_ret );
+    num_alts = GetU16();
+    while( num_alts-- > 0 ) {
         sn = GetPtr();
         CGSelCase( sel, GetStmtLabel( sn ), alt_ret );
+        U64IncDec( &alt_ret, 1 );
     }
     other = BENewLabel();
     CGSelOther( sel, other );
@@ -924,7 +927,8 @@ void    FCAltReturn( void ) {
     BEFiniLabel( other );
     // mark all referenced statements
     FCodeSeek( curr_obj );
-    for( num_alts = GetU16(); num_alts != 0; num_alts-- ) {
+    num_alts = GetU16();
+    while( num_alts-- > 0 ) {
         RefStmtLabel( GetPtr() );
     }
 }

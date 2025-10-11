@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "langenv.h"
 #include "jmpbuf.h"
+#include "i64.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
@@ -958,11 +959,13 @@ static void DoSwitch( OPNODE *node, cg_name name )
     sel_handle  table;
     SWITCHPTR   sw;
     CASEPTR     ce;
+    signed_64   tmp;
 
     table = CGSelInit();
     sw = node->u2.switch_info;
     for( ce = sw->case_list; ce != NULL; ce = ce->next_case ) {
-        CGSelCase( table, CGLabelHandles[ce->label], ce->value );
+        I32ToI64( ce->value, &tmp );
+        CGSelCase( table, CGLabelHandles[ce->label], tmp );
     }
     CGSelOther( table, CGLabelHandles[sw->default_label] );
     CGSelect( table, name );

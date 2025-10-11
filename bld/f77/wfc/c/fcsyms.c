@@ -1131,17 +1131,20 @@ static  void    DumpBrTable( void ) {
 
 // Dump the branch table ( for wild goto's ).
 
-    sym_id              stmt;
-    sel_handle          s_handle;
-    label_handle        end_sel;
+    sym_id          stmt;
+    sel_handle      s_handle;
+    label_handle    end_sel;
+    signed_64       tmp;
 
+    tmp.u._32[I64HI32] = 0;
     end_sel = BENewLabel();
     CGControl( O_GOTO, NULL, end_sel );
     CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            CGSelCase( s_handle, GetStmtLabel( stmt ), stmt->u.st.address );
+            tmp.u._32[I64LO32] = stmt->u.st.address;
+            CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
         }
     }
     CGSelOther( s_handle, end_sel );

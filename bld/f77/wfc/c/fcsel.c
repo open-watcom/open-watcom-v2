@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include "i64.h"
 #include "symbol.h"
 #include "cgdefs.h"
 #include "cg.h"
@@ -63,23 +64,23 @@ void    DoSelect( FCODE kind ) {
     sym_id              sel_sym;
     cg_name             sel_expr;
     obj_ptr             curr_obj;
-    signed_32           lo;
-    signed_32           hi;
+    signed_64           lo;
+    signed_64           hi;
 
     s = CGSelInit();
     cases = GetU16();
     stmts = cases;
     CGSelOther( s, GetLabel( GetU16() ) );
     curr_obj = FCodeTell( 0 );
-    for( ; cases != 0; cases-- ) {
+    while( cases-- > 0 ) {
         if( kind == FC_COMPUTED_GOTO ) {
             sn = GetPtr();
             label = GetStmtLabel( sn );
         } else {
             label = GetLabel( GetU16() );
         }
-        hi = GetConst32();
-        lo = GetConst32();
+        I32ToI64( GetConst32(), &hi );
+        I32ToI64( GetConst32(), &lo );
         CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();
