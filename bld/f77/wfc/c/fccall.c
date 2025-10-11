@@ -906,7 +906,6 @@ void    FCAltReturn( void ) {
     sel_handle      sel;
     int             num_alts;
     signed_64       alt_ret;
-    sym_id          sn;
     obj_ptr         curr_obj;
     label_handle    other;
 
@@ -915,8 +914,7 @@ void    FCAltReturn( void ) {
     U64Set1P( alt_ret );
     num_alts = GetU16();
     while( num_alts-- > 0 ) {
-        sn = GetPtr();
-        CGSelCase( sel, GetStmtLabel( sn ), alt_ret );
+        CGSelCase( sel, GetStmtLabel( GetPtr() ), alt_ret );
         U64IncDec( &alt_ret, 1 );
     }
     other = BENewLabel();

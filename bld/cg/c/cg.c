@@ -491,21 +491,21 @@ extern  void    SelRange( sh *s, const signed_64 *lo, const signed_64 *hi, l *lb
 
     VerLabel( lb );
     CRefLabel( lb );
-    if( lo > hi )
+    if( I64Cmp( lo, hi ) > 0 )
         CGError( "lo bound > hi bound" );
     or = &s->r;
     for( ;; ) {
         if( *or == NULL )
             break;
-        if( hi < (*or)->l )
+        if( I64Cmp( hi, &(*or)->l ) < 0 )
             break;
-        if( lo <= (*or)->h )
+        if( I64Cmp( lo, &(*or)->h ) <= 0 )
             CGError( "case range overlap" );
         or = &(*or)->n;
     }
     n = CGAlloc( sizeof( rh ) );
-    n->l = lo;
-    n->h = hi;
+    n->l = *lo;
+    n->h = *hi;
     n->lb = lb;
     n->n = *or;
     *or = n;

@@ -434,6 +434,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
         /*
          * a linear sequence for three different non-sequential cases where
          * c1<c2<c3, looks like:
+         *
          *   if( a == c3 ) goto l3;
          *   if( a == c2 ) goto l2;
          *   if( a != c1 ) goto default;

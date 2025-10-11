@@ -1126,11 +1126,10 @@ static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
 }
 
 
-static  void    DumpBrTable( void ) {
+static  void    DumpBrTable( void )
 //=============================
-
 // Dump the branch table ( for wild goto's ).
-
+{
     sym_id          stmt;
     sel_handle      s_handle;
     label_handle    end_sel;
