@@ -64,7 +64,6 @@
 #include "feprotos.h"
 
 
-extern  cg_name         CmplxAddr(cg_name,cg_name);
 extern  void            FiniTmps(void);
 
 extern  back_handle     TraceEntry;

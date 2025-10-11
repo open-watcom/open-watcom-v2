@@ -470,8 +470,8 @@ extern  n       *CGFlow( cg_op o, n *l, n *r ) {
     Action( " -> %t%n", new_n );
     return( new_n );
 }
-extern  sh      *CGSelInit() {
-/****************************/
+extern  sh      *CGSelInit( void ) {
+/**********************************/
 
     sh  *s;
 
@@ -483,25 +483,8 @@ extern  sh      *CGSelInit() {
     Action( " -> %d%n", SelId );
     return(s);
 }
-extern  void    CGSelCase( sh *s, l *lb, int_32 v ) {
-/*************************************************/
-
-    Action( "CGSelCase" );
-    Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
-    CRefLabel( lb );
-    SelRange(s,v,v,lb);
-}
-extern  void    CGSelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
-/**************************************************************/
-
-    Action( "CGSelRange" );
-    Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
-    CRefLabel( lb );
-    SelRange(s,lo,hi,lb);
-}
-
-extern  void    SelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
-/************************************************************/
+extern  void    SelRange( sh *s, const signed_64 *lo, const signed_64 *hi, l *lb ) {
+/**********************************************************************************/
 
     rh  **or;
     rh  *n;
@@ -526,6 +509,22 @@ extern  void    SelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
     n->lb = lb;
     n->n = *or;
     *or = n;
+}
+extern  void    CGSelCase( sh *s, l *lb, signed_64 v ) {
+/******************************************************/
+
+    Action( "CGSelCase" );
+    Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
+    CRefLabel( lb );
+    SelRange(s,&v,&v,lb);
+}
+extern  void    CGSelRange( sh *s, signed_64 lo, signed_64 hi, l *lb ) {
+/**********************************************************************/
+
+    Action( "CGSelRange" );
+    Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
+    CRefLabel( lb );
+    SelRange(s,&lo,&hi,lb);
 }
 extern  void    CGSelOther( sh *s, l *lb ) {
 /******************************************/
