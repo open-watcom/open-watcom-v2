@@ -87,10 +87,7 @@ void    FiniLabels( int label_type ) {
     label_entry *curr;
 
     owner = (label_entry **)&LabelList;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL )
-            break;
+    while( (curr = *owner) != NULL ) {
         if( (curr->label & FORMAT_LABEL) == label_type ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
                 if( curr->label & FORMAT_LABEL ) {
@@ -117,13 +114,10 @@ static  label_entry     *FindLabel( int label ) {
 
     label_entry *le;
 
-    le = LabelList;
-    for( ;; ) {
-        if( le == NULL )
+    for( le = LabelList; le != NULL; le = le->link ) {
+        if( (le->label & ~FORMAT_LABEL) == label ) {
             break;
-        if( (le->label & ~FORMAT_LABEL) == label )
-            break;
-        le = le->link;
+        }
     }
     if( le == NULL ) {
         le = FMemAlloc( sizeof( label_entry ) );
@@ -324,10 +318,7 @@ void    FCAssignedGOTOList( void ) {
     CGControl( O_LABEL, NULL, label );
     BEFiniLabel( label );
     FCodeSeek( curr_obj );
-    for( ;; ) {
-        sn = GetPtr();
-        if( sn == NULL )
-            break;
+    while( (sn = GetPtr()) != NULL ) {
         sn->u.st.flags &= ~SN_IN_GOTO_LIST;
         RefStmtLabel( sn );
     }
@@ -431,10 +422,7 @@ void    FCSFCall( void ) {
     arg_list = NULL;
     value = NULL;
     sf_type = 0;
-    for( ;; ) {
-        sf_arg = GetPtr();
-        if( sf_arg == NULL )
-            break;
+    while( (sf_arg = GetPtr()) != NULL ) {
         if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
@@ -551,17 +539,13 @@ void            FCSFReferenced( void ) {
 
     sym_id      sf;
 
-    sf = SFSymId;
-    for( ;; ) {
-        if( sf == NULL )
-            break;
+    for( sf = SFSymId; sf != NULL; sf = sf->u.ns.si.sf.header->link ) {
         if( sf->u.ns.si.sf.header->ref_count == 0 ) {
             if( sf->u.ns.si.sf.u.location != 0 ) {
                 DoneLabel( sf->u.ns.si.sf.u.location );
                 sf->u.ns.si.sf.u.location = 0;
             }
         }
-        sf = sf->u.ns.si.sf.header->link;
     }
 }
 
@@ -586,8 +570,9 @@ void    DoneLabel( label_id label ) {
     owner = (label_entry **)&LabelList;
     for( ;; ) {
         curr = *owner;
-        if( curr->label == label )
+        if( curr->label == label ) {
             break;
+        }
         owner = &curr->link;
     }
     *owner = curr->link;
