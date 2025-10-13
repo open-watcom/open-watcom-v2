@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1462,9 +1462,9 @@ static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
             val = icon.u.value;
         } else if( icon.type->id == TYP_ULONG || icon.type->id == TYP_UINT ) {
-            U32ToU64( icon.u.uval, &val );
+            Set64ValU32( val, icon.u.uval );
         } else {
-            I32ToI64( icon.u.sval, &val );
+            Set64ValI32( val, icon.u.sval );
         }
         ret = CheckMeaninglessCompare( rel
                                    , op1_size

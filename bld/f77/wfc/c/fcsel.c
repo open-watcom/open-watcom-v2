@@ -79,8 +79,8 @@ void    DoSelect( FCODE kind ) {
         } else {
             label = GetLabel( GetU16() );
         }
-        I32ToI64( GetConst32(), &hi );
-        I32ToI64( GetConst32(), &lo );
+        Set64ValI32( hi, GetConst32() );
+        Set64ValI32( lo, GetConst32() );
         CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();

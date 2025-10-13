@@ -964,7 +964,7 @@ static void DoSwitch( OPNODE *node, cg_name name )
     table = CGSelInit();
     sw = node->u2.switch_info;
     for( ce = sw->case_list; ce != NULL; ce = ce->next_case ) {
-        I32ToI64( ce->value, &tmp );
+        Set64ValI32( tmp, ce->value );
         CGSelCase( table, CGLabelHandles[ce->label], tmp );
     }
     CGSelOther( table, CGLabelHandles[sw->default_label] );

@@ -640,9 +640,9 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
     }
     if( typ_op2->decl_type != TYP_LONG64 && typ_op2->decl_type != TYP_ULONG64 ) {
         if( typ_op2->decl_type == TYP_ULONG || typ_op2->decl_type == TYP_UINT ) {
-            U32ToU64( val.u._32[0], &val );
+            Set64ValU32( val, U32FetchTrunc( val ) );
         } else {
-            I32ToI64( val.u._32[0], &val );
+            Set64ValI32( val, I32FetchTrunc( val ) );
         }
     }
 
@@ -1022,7 +1022,7 @@ static TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
           {
             signed_64   val64;
 
-            I32ToI64( amount, &val64 );
+            Set64ValI32( val64, amount );
             U64Mul( &opnd->op.u2.long64_value, &val64, &opnd->op.u2.long64_value );
           } break;
         default:
@@ -1044,7 +1044,7 @@ static TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
       {
         unsigned_64 val64;
 
-        I32ToI64( amount, &val64 );
+        Set64ValI32( val64, amount );
         tree = ExprNode( opnd, OPR_MUL, Long64Leaf( &val64 ) );
         tree->u.expr_type = GetType( TYP_LONG64 );
       } break;

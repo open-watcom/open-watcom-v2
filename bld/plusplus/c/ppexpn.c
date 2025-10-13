@@ -323,7 +323,7 @@ static bool COperand( void )
                 SrcFileGetTokenLocn( &left_loc );
                 NextToken();    // no need to error check or advance Pos
                 PPControl = old_ppctl;
-                I32ToI64( MacroDependsDefined(), &(p.u.sval) );
+                Set64ValU32( p.u.uval, MacroDependsDefined() );
                 NextToken();    // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
@@ -332,7 +332,7 @@ static bool COperand( void )
                 }
             } else {
                 PPControl = old_ppctl;
-                I32ToI64( MacroDependsDefined(), &(p.u.sval) );
+                Set64ValU32( p.u.uval, MacroDependsDefined() );
             }
         } else {
             CErr2p( WARN_UNDEFD_MACRO_IS_ZERO, Buffer );
@@ -358,7 +358,7 @@ static bool COperand( void )
         case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
-            I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
+            Set64ValI32( p.u.sval, SafeAtof( Buffer ) );
             // add long double support if available
             p.no_sign = 0;
             break;
@@ -477,10 +477,10 @@ static bool CConditional( void )
         return( PpNextToken() );
     }
     if( PopOperand( &e3, &e3_info ) && ( e3_info.pos > op2_info.pos ) ) {
-        if( PopOperand( &e2, &e2_info ) && ( e2_info.pos < op2_info.pos ) &&
-            ( e2_info.pos > op1_info.pos ) ) {
-            if( PopOperand( &e1, &e1_info ) &&
-                ( e1_info.pos < op1_info.pos ) ) {
+        if( PopOperand( &e2, &e2_info ) && ( e2_info.pos < op2_info.pos )
+          && ( e2_info.pos > op1_info.pos ) ) {
+            if( PopOperand( &e1, &e1_info )
+              && ( e1_info.pos < op1_info.pos ) ) {
                 if( I64NonZero( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
@@ -720,7 +720,7 @@ static bool CShift( void )
                     Set64ValZero( e1.u.uval );
                 } else {
                     if( (signed int)U64Low( e1 ) < 0 ) {
-                        Set64ValU32( e1.u.sval, -1 );
+                        Set64ValU32( e1.u.uval, -1 );
                     } else {
                         Set64ValZero( e1.u.uval );
                     }
@@ -834,13 +834,13 @@ static bool CUnary( void )
     TOKEN top;
 
     PopOperator( &top, &operator_info );
-    if( PopOperand( &p, &operand_info ) &&
-        ( operator_info.pos < operand_info.pos ) ) {
+    if( PopOperand( &p, &operand_info )
+      && ( operator_info.pos < operand_info.pos ) ) {
         switch( top ) {
         case T_UNARY_PLUS:
             break;
         case T_UNARY_MINUS:
-            U64Neg( &((p).u.uval), &((p).u.uval ) );
+            U64Neg( &(p.u.uval), &(p.u.uval) );
             break;
         case T_EXCLAMATION:
         case T_ALT_EXCLAMATION:

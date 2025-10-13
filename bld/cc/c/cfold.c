@@ -400,9 +400,9 @@ int64 LongValue64( TREEPTR leaf )
         break;
     }
     if( sign ) {
-        I32ToI64( val32, &value );
+        Set64ValI32( value, val32 );
     } else {
-        U32ToU64( val32, &value );
+        Set64ValU32( value, val32 );
     }
     return( value );
 }
@@ -1223,7 +1223,7 @@ static void CheckOpndValues( TREEPTR tree )
                 if( I64Test( right ) < 0 ) {
                     shift_negative = true;
                 } else {
-                    U32ToU64( max_shift, &big_shift );
+                    Set64ValU32( big_shift, max_shift );
                     if( U64Cmp( &right, &big_shift ) >= 0 ) {
                         shift_too_big = true;
                     }
@@ -1239,7 +1239,7 @@ static void CheckOpndValues( TREEPTR tree )
                 uint64      big_shift;
 
                 right = LongValue64( opnd );
-                U32ToU64( max_shift, &big_shift );
+                Set64ValU32( big_shift, max_shift );
                 if( U64Cmp( &right, &big_shift ) >= 0 ) {
                     shift_too_big = true;
                 }

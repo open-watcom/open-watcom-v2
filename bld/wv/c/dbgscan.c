@@ -583,10 +583,10 @@ static bool GetNum( unsigned base )
     int         dig;
 
     ok = false;
-    U32ToU64( base, &big_base );
+    Set64ValU32( big_base, base );
     Set64ValZero( num );
     while( (dig = GetDig( base )) >= 0 ) {
-        U32ToU64( dig, &big_dig );
+        Set64ValU32( big_dig, dig );
         U64Mul( &num, &big_base, &num );
         U64Add( &num, &big_dig, &num );
         ++ScanPtr;
@@ -612,7 +612,7 @@ static bool ScanNumber( void )
     hold_scan = ScanPtr;
     if( ScanCCharNum && (*ScanPtr == '\'') ) {
         if( ScanPtr[1] != NULLCHAR && ScanPtr[2] == '\'' ) {
-            U32ToU64( ScanPtr[1], &TokenVal.int_val );
+            Set64ValU32( TokenVal.int_val, ScanPtr[1] );
             ScanPtr += 3;
             CurrToken = T_INT_NUM;
             return( true );

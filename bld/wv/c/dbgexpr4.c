@@ -156,7 +156,7 @@ void DoMinus( void )
             break;
         case TK_POINTER:
         case TK_ADDRESS:
-            I32ToI64( AddrDiff( left->v.addr, ExprSP->v.addr ), &left->v.sint );
+            Set64ValI32( left->v.sint, AddrDiff( left->v.addr, ExprSP->v.addr ) );
             left->ti.kind = TK_INTEGER;
             left->ti.modifier = TM_SIGNED;
             left->ti.size = sizeof( signed_64 );

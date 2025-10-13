@@ -468,7 +468,7 @@ static TOKEN doScanCharConst( type_id char_type, bool expanding )
             }
         }
     }
-    I32ToI64( value, &Constant64 );
+    Set64ValI32( Constant64, value );
     return( token );
 }
 
@@ -871,7 +871,7 @@ static TOKEN doScanNum( bool expanding )
         max_value = &uintMax;
     } else {                /* scan decimal number */
         // we know 'CurrChar' is a digit
-        U32ToU64( CurrChar - '0', &Constant64 );
+        Set64ValU32( Constant64, CurrChar - '0' );
         c = NextChar();
         while( CharSet[c] & C_DI ) {
             if( U64Cnv10( &Constant64, c - '0' ) ) {

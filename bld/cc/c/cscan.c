@@ -553,7 +553,7 @@ static cnv_cc Cnv8( void )
     return( CNV_32 );
 is64:
     ret = CNV_64;
-    U32ToU64( value, &value64 );
+    Set64ValU32( value64, value );
     do {
         c = *curr;
         if( U64Cnv8( &value64, c - '0' ) ) {
@@ -599,7 +599,7 @@ static cnv_cc Cnv16( void )
     return( CNV_32 );
 is64:
     ret = CNV_64;
-    U32ToU64( value, &value64 );
+    Set64ValU32( value64, value );
     do {
         c = *curr;
         if( CharSet[c] & C_HX ) {
@@ -648,7 +648,7 @@ static cnv_cc Cnv2( void )
     return( CNV_32 );
 is64:
     ret = CNV_64;
-    U32ToU64( value, &value64 );
+    Set64ValU32( value64, value );
     do {
         c = *curr;
         if( U64Cnv2( &value64, c - '0' ) ) {
@@ -692,7 +692,7 @@ static cnv_cc Cnv10( void )
     return( CNV_32 );
 is64:
     ret = CNV_64;
-    U32ToU64( value, &value64 );
+    Set64ValU32( value64, value );
     do {
         c = *curr;
         if( U64Cnv10( &value64, c - '0') ) {

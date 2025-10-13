@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -349,7 +349,7 @@ void PushName( lookup_item *li )
 void PushNum( long val )
 {
     CreateEntry();
-    I32ToI64( val, &ExprSP->v.sint );
+    Set64ValI32( ExprSP->v.sint, val );
     ClassNum( ExprSP );
 }
 
@@ -488,7 +488,7 @@ void PushType( type_handle *th )
 void PushInt( int val )
 {
     CreateEntry();
-    I32ToI64( val, &ExprSP->v.sint );
+    Set64ValI32( ExprSP->v.sint, val );
     ExprSP->ti.kind = TK_INTEGER;
     ExprSP->ti.modifier = TM_SIGNED;
     ExprSP->ti.size = sizeof( ExprSP->v.sint );
@@ -498,7 +498,7 @@ void PushInt( int val )
 static void PushBool( int val )
 {
     CreateEntry();
-    I32ToI64( val, &ExprSP->v.sint );
+    Set64ValI32( ExprSP->v.sint, val );
     ExprSP->ti.kind = TK_BOOL;
     ExprSP->ti.modifier = TM_NONE;
     ExprSP->ti.size = 1;

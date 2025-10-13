@@ -2925,10 +2925,10 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         /*
          * if we are going to overflow our type, bail!
          */
-        I32ToI64( non_ind_op->c.lo.u.int_value, &big_cons );
-        I32ToI64( rep->times, &temp );
+        Set64ValI32( big_cons, non_ind_op->c.lo.u.int_value );
+        Set64ValI32( temp, rep->times );
         U64Mul( &big_cons, &temp, &big_cons );
-        I32ToI64( rep->plus, &temp );
+        Set64ValI32( temp, rep->plus );
         U64Add( &big_cons, &temp, &big_cons );
         /*
          * make sure we always allow negative values - hack for BMark

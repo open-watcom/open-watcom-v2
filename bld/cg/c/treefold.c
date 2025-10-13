@@ -290,7 +290,7 @@ static  tn      IntToType( int_32 value, const type_def *tipe )
 {
     signed_64   temp;
 
-    I32ToI64( value, &temp );
+    Set64ValI32( temp, value );
     return( TGConst( IntToCF( temp, tipe ), tipe ) );
 }
 

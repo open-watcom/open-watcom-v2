@@ -184,7 +184,7 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
     unsigned_64 remainder;
 
     ptr = &internal[64];
-    U32ToU64( radix, &big_radix );
+    Set64ValU32( big_radix, radix );
     while( (len > 0) || U64Test( *value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
@@ -303,7 +303,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
         {
             signed_64   tmp;
 
-            I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
+            Set64ValI32( tmp, LDToD( &ExprSP->v.real ) );
             ptr = FmtNum( tmp, FMT2RADIX( radixfmt ), base_letter, NUM_SIGNED, ptr, 1 );
         }
         break;
@@ -762,7 +762,7 @@ static void PrintArray( void )
         EndSubscript();
         ExprValue( ExprSP );
         buff[0] = '[';
-        I32ToI64( ai.low_bound, &tmp );
+        Set64ValI32( tmp, ai.low_bound );
         ptr = FmtNum( tmp, CurrRadix, 'A', NUM_SIGNED, &buff[1], 1 );
         *ptr++ = ']';
         *ptr++ = '=';

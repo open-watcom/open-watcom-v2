@@ -965,7 +965,7 @@ void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, int_32 val )
     cons = CGAlloc( sizeof( const_entry ) + len );
     strcpy( cons->name, nm );
     cons->len = len;
-    I32ToI64( val, &cons->val );
+    Set64ValI32( cons->val, val );
     cons->next = en->list;
     en->list = cons;
     en->num++;

@@ -108,7 +108,7 @@ void CgSwitchCase               // GENERATE CODE FOR SWITCH CASE
 {
     signed_64   tmp;
 
-    I32ToI64( case_value, &tmp );
+    Set64ValI32( tmp, case_value );
     CGSelCase( switch_id(), switch_label(), tmp );
 }
 

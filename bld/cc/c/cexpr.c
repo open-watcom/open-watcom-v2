@@ -1191,10 +1191,10 @@ bool ConstExprAndType( const_val *val )
             break;
         case TYP_ULONG:
         case TYP_UINT:
-            U32ToU64( tree->op.u2.long_value, &val->value );
+            Set64ValU32( val->value, tree->op.u2.long_value );
             break;
         default:
-            I32ToI64( tree->op.u2.long_value, &val->value );
+            Set64ValI32( val->value, tree->op.u2.long_value );
             break;
         }
         ret = true;

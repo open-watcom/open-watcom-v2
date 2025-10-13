@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ static DWORD procException( DEBUG_EVENT *dbinfo ) {
         tn = FindThread( FindProcess( dbinfo->dwProcessId ), dbinfo->dwThreadId );
         context.ContextFlags=CONTEXT_CONTROL;
         GetThreadContext( tn->threadhdl, &context );
-        U32ToU64( 4, &a );
+        Set64ValU32( a, 4 );
         U64Add( &a, (unsigned_64 *) &context.Fir, (unsigned_64 *) &context.Fir );
         SetThreadContext( tn->threadhdl, &context );
     }

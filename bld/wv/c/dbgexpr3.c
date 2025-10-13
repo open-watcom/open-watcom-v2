@@ -344,25 +344,25 @@ static bool ConvU8( stack_entry *entry, conv_class from )
     case F8:
     case F10:
         //NYI: 64-bit support
-        I32ToI64( LDToD( &entry->v.real ), &tmp );
+        Set64ValI32( tmp, LDToD( &entry->v.real ) );
         break;
     case C8:
     case C16:
     case C20:
-        I32ToI64( LDToD( &entry->v.cmplx.re ), &tmp );
+        Set64ValI32( tmp, LDToD( &entry->v.cmplx.re ) );
         break;
     case NP2:
     case NP4:
         //NYI: 64-bit offsets
-        U32ToU64( entry->v.addr.mach.offset, &tmp );
+        Set64ValU32( tmp, entry->v.addr.mach.offset );
         break;
     case FP4:
     case HP4:
-        U32ToU64( entry->v.addr.mach.offset +
-                ((long) entry->v.addr.mach.segment << 16), &tmp );
+        Set64ValU32( tmp, entry->v.addr.mach.offset +
+                ((long)entry->v.addr.mach.segment << 16) );
         break;
     case FP6:
-        U32ToU64( entry->v.addr.mach.offset, &tmp );
+        Set64ValU32( tmp, entry->v.addr.mach.offset );
         break;
     default:
         return( false );
@@ -375,7 +375,7 @@ static bool ConvU1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( U8FetchTrunc( entry->v.uint ), &entry->v.uint );
+    Set64ValU32( entry->v.uint, U8FetchTrunc( entry->v.uint ) );
     return( true );
 }
 
@@ -383,7 +383,7 @@ static bool ConvU2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( U16FetchTrunc( entry->v.uint ), &entry->v.uint );
+    Set64ValU32( entry->v.uint, U16FetchTrunc( entry->v.uint ) );
     return( true );
 }
 
@@ -391,7 +391,7 @@ static bool ConvU4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( U32FetchTrunc( entry->v.uint ), &entry->v.uint );
+    Set64ValU32( entry->v.uint, U32FetchTrunc( entry->v.uint ) );
     return( true );
 }
 
@@ -399,7 +399,7 @@ static bool ConvI1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( I8FetchTrunc( entry->v.uint ), &entry->v.sint );
+    Set64ValI32( entry->v.sint, I8FetchTrunc( entry->v.sint ) );
     return( true );
 }
 
@@ -407,7 +407,7 @@ static bool ConvI2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( I16FetchTrunc( entry->v.uint ), &entry->v.sint );
+    Set64ValI32( entry->v.sint, I16FetchTrunc( entry->v.sint ) );
     return( true );
 }
 
@@ -415,7 +415,7 @@ static bool ConvI4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( I32FetchTrunc( entry->v.uint ), &entry->v.sint );
+    Set64ValI32( entry->v.sint, I32FetchTrunc( entry->v.sint ) );
     return( true );
 }
 
@@ -682,22 +682,22 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size 
     from = ConvIdx( &entry->ti );
     switch( from ) {
     case U1:
-        U32ToU64( U8FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValU32( entry->v.uint, U8FetchTrunc( entry->v.uint ) );
         break;
     case U2:
-        U32ToU64( U16FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValU32( entry->v.uint, U16FetchTrunc( entry->v.uint ) );
         break;
     case U4:
-        U32ToU64( U32FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValU32( entry->v.uint, U32FetchTrunc( entry->v.uint ) );
         break;
     case I1:
-        I32ToI64( I8FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValI32( entry->v.sint, I8FetchTrunc( entry->v.sint ) );
         break;
     case I2:
-        I32ToI64( I16FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValI32( entry->v.sint, I16FetchTrunc( entry->v.sint ) );
         break;
     case I4:
-        I32ToI64( I32FetchTrunc( entry->v.uint ), &entry->v.uint );
+        Set64ValI32( entry->v.sint, I32FetchTrunc( entry->v.sint ) );
         break;
     case F4:
         DToLD( (float)LDToD( &entry->v.real ), &entry->v.real );

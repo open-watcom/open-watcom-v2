@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +38,18 @@
 void Int64From32                // CREATE 64-BIT VALUE FROM 32-BIT VALUE
     ( TYPE type                 // - source integral type (signed or unsigned)
     , signed_32 value           // - integral value (signed or unsigned)
-    , signed_64* result )       // - addr[ result (signed or unsigned) ]
+    , signed_64 *result )       // - addr[ result (signed or unsigned) ]
 {
     if( SignedIntType( type ) ) {
-        I32ToI64( value, result );
+        Set64ValI32( *result, value );
     } else {
-        U32ToU64( (unsigned_32)value, (unsigned_64*)result );
+        Set64ValU32( *result, (unsigned_32)value );
     }
 }
 
 void Int64FromU32               // CREATE 64-BIT VALUE FROM UNSIGNED 32-BIT VALUE
     ( unsigned_32 value         // - integral value (unsigned)
-    , unsigned_64* result )     // - addr[ result (unsigned) ]
+    , unsigned_64 *result )     // - addr[ result (unsigned) ]
 {
-    U32ToU64( value, result );
+    Set64ValU32( *result, value );
 }

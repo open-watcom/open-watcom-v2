@@ -41,18 +41,6 @@
 #define L       I64LO32
 #define H       I64HI32
 
-void I32ToI64( signed_32 in, signed_64 *res )
-{
-    res->u._32[L] = in;
-    res->u._32[H] = (in < 0) ? -1L : 0L;
-}
-
-void U32ToU64( unsigned_32 in, unsigned_64 *res )
-{
-    res->u._32[L] = in;
-    res->u._32[H] = 0;
-}
-
 void U64Neg( const unsigned_64 *a, unsigned_64 *res )
 {
     res->u._32[L] = ~a->u._32[L];
