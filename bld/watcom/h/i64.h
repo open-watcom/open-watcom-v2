@@ -183,8 +183,7 @@ int  U64Cnv16( unsigned_64 *res, char c );
     #define Init64Val( h, l )   { l, h }
 #endif
 // set 64-bit from low, high part
-#define U64Set( x, l, h )       ((x)->u._32[I64LO32]=(l),(x)->u._32[I64HI32]=(h))
-#define Set64Val( x, l, h )     ((x)->u._32[I64LO32]=(l),(x)->u._32[I64HI32]=(h))
+#define Set64Val( x, l, h )     ((x).u._32[I64LO32]=(l),(x).u._32[I64HI32]=(h))
 
 #define Set64ValZero( x )       ((x).u._32[0]=0,(x).u._32[1]=0)
 #define Set64Val1p( x )         ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)

@@ -450,8 +450,8 @@ static  unsigned_64    TGMask64( tn node )
     unsigned_64     tmp;
 
     len = node->u1.b.len;
-    U32ToU64( 0, &mask );
-    U32ToU64( 1, &tmp );
+    Set64ValZero( mask );
+    Set64Val1p( tmp );
     U64ShiftL( &tmp, node->u1.b.start, &bit );
     for( ;; ) {
         U64Or( &mask, &bit, &tmp );

@@ -135,8 +135,8 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         U64Mul( &left, &right, &value );
         break;
     case OPR_DIV:
-        U32ToU64( 0, &value );
-        if( U64Cmp( &right, &value ) != 0 ) {
+        Set64ValZero( value );
+        if( U64Test( right ) ) {
             if( sign ) {
                 I64Div( &left, &right, &value, &tmp );
             } else {
@@ -145,8 +145,8 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         }
         break;
     case OPR_MOD:
-        U32ToU64( 0, &value );
-        if( U64Cmp( &right, &value ) != 0 ) {
+        Set64ValZero( value );
+        if( U64Test( right ) ) {
             if( sign ) {
                 I64Div( &left, &right, &tmp, &value );
             } else {
@@ -178,10 +178,7 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         value.u._32[I64HI32] |= right.u._32[I64HI32];
         break;
     case OPR_OR_OR:
-        U32ToU64( 0, &value );
-        if( U64Cmp( &left, &value ) || U64Cmp( &right, &value ) ) {
-            U32ToU64( 1, &value );
-        }
+        Set64ValU32( value, U64Test( left ) || U64Test( right ) );
         break;
     case OPR_AND:
         value = left;
@@ -189,10 +186,7 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         value.u._32[I64HI32] &= right.u._32[I64HI32];
         break;
     case OPR_AND_AND:
-        U32ToU64( 0, &value );
-        if( U64Cmp( &left, &value ) && U64Cmp( &right, &value ) ) {
-            U32ToU64( 1, &value );
-        }
+        Set64ValU32( value, U64Test( left ) && U64Test( right ) );
         break;
     case OPR_XOR:
         value = left;
@@ -208,13 +202,10 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         value.u._32[I64HI32] = ~right.u._32[I64HI32];
         break;
     case OPR_NOT:
-        U32ToU64( 0, &value );
-        if( U64Cmp( &right, &value ) == 0 ) {
-            U32ToU64( 1, &value );
-        }
+        Set64ValU32( value, !U64Test( right ) );
         break;
     default:
-        U32ToU64( 0, &value );
+        Set64ValZero( value );
     }
     return( value );
 }
@@ -429,7 +420,7 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     if( op1 != NULL ) {
         left = LongValue64( op1 );
     } else {
-        U32ToU64( 0, &left );
+        Set64ValZero( left );
     }
     right = LongValue64( op2 );
     const_type = tree->u.expr_type->decl_type;
@@ -487,7 +478,7 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     if( op1 != NULL ) {
         left = LongValue64( op1 );
     } else {
-        U32ToU64( 0, &left );
+        Set64ValZero( left );
     }
     right = LongValue64( op2 );
     const_type = tree->u.expr_type->decl_type;

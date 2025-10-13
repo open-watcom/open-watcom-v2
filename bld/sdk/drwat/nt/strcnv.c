@@ -56,7 +56,7 @@ bool StrToU64( char *str, unsigned_64 *u64, bool neg )
     int         radix;
 
     str = eatSpace( str );
-    U32ToU64( 0, u64 );
+    Set64ValZero( *u64 );
     if( neg ) {
         if( *str == '-') {
             str++;

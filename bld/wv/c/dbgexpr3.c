@@ -595,7 +595,7 @@ static bool ConvFP6( stack_entry *entry, conv_class from )
     case I2:
     case I4:
     case I8:
-        if( (entry->flags & SF_CONST) && I64Test( entry->v.sint ) == 0 )
+        if( (entry->flags & SF_CONST) && !U64Test( entry->v.sint ) )
             tmp = NilAddr;
         //NYI: 64 bit offsets
         tmp.mach.offset = U32FetchTrunc( entry->v.sint );

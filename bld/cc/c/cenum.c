@@ -214,7 +214,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_EMPTY_ENUM_LIST );
         }
-        U32ToU64( 1, &Inc );
+        Set64Val1p( Inc );
         Set64ValZero( n );
         minus = false;
         has_sign = false;

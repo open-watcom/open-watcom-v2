@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -603,7 +603,7 @@ static void StoreInt64( TYPEPTR typ )
 
     dq.type = (enum quad_type)typ->decl_type;
     dq.flags = Q_DATA;
-    U32ToU64( 0, &dq.u.long64 );
+    Set64ValZero( dq.u.long64 );
     if( CurToken != T_RIGHT_BRACE ) {
         tree = SingleExpr();
         tree = InitAsgn( typ, tree ); // as if we are assigning

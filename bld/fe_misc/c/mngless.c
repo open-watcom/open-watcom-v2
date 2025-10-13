@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ cmp_result CheckMeaninglessCompare( rel_op rel, int op1_size, int result_size,
         I64ShiftR( &LOW_VAL, shift, low );
         U64Not( low, high );
     } else {
-        U64Set( low, 0, 0 );
+        Set64ValZero( *low );
         U64ShiftR( &HIGH_VAL, shift, high );
     }
     if( I64Cmp( &val, low ) == 0 ) {

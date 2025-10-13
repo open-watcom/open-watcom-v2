@@ -151,7 +151,7 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     }
     /* Determine type range */
     if( NumSign( op_type ) ) {
-        U64Set( &low, 0, 0x80000000 );
+        Set64Val( low, 0, 0x80000000 );
         I64ShiftR( &low, MAXSIZE - NumBits( op_type ), &low );
         U64Not( &low, &high );
     } else {
