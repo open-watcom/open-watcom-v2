@@ -152,12 +152,6 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define _U64_C_ROUTINES
 #endif
 
-#define Set64ValZero( x )   ((x).u._32[0]=0,(x).u._32[1]=0)
-#define Set64Val1p( x )     ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
-#define Set64Val1m( x )     ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
-#define Set64ValI32( x, v ) ((x).u._32[I64LO32]=v,(x).u._32[I64HI32]=((x).u.sign.v)?(unsigned_32)-1:0)
-#define Set64ValU32( x, v ) ((x).u._32[I64LO32]=v,(x).u._32[I64HI32]=0)
-
 /* The FetchTrunc macros grab an 8/16/32-bit value from memory assuming
  * that the value is stored as a 64-bit integer. This is required for
  * big endian systems where the value is at different memory address
@@ -184,23 +178,29 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define I8FetchNative( x )      ((signed_8)(x).u._8[0])
 
 #if defined( __BIG_ENDIAN__ )
-    #define Init64Val(h,l)      { h, l }
+    #define Init64Val( h, l )   { h, l }
 #else
-    #define Init64Val(h,l)      { l, h }
+    #define Init64Val( h, l )   { l, h }
 #endif
+// set 64-bit from low, high part
+#define U64Set( x, l, h )       ((x)->u._32[I64LO32]=(l),(x)->u._32[I64HI32]=(h))
+#define Set64Val( x, l, h )     ((x)->u._32[I64LO32]=(l),(x)->u._32[I64HI32]=(h))
 
-// set U64 from low, high part
-#define U64Set( x, l, h )       ((x)->u._32[I64LO32] = (l), (x)->u._32[I64HI32] = (h))
+#define Set64ValZero( x )       ((x).u._32[0]=0,(x).u._32[1]=0)
+#define Set64Val1p( x )         ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
+#define Set64Val1m( x )         ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
+#define Set64ValI32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=((signed_32)(v)<0)?(unsigned_32)-1:0)
+#define Set64ValU32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=0)
 
 // is the U64 a valid U32?
-#define U64IsU32( x )   ((x).u._32[I64HI32]==0)
+#define U64IsU32( x )           ((x).u._32[I64HI32]==0)
 // is the U64 a positive I32?
-#define U64IsI32( x )   (((x).u._32[I64HI32]==0)&&((int_32)((x).u._32[I64LO32]))>=0)
+#define U64IsI32( x )           (((x).u._32[I64HI32]==0)&&((int_32)((x).u._32[I64LO32]))>=0)
 // is the U64 a positive I64?
-#define U64IsI64( x )   (((int_32)((x).u._32[I64HI32]))>=0)
+#define U64IsI64( x )           (((int_32)((x).u._32[I64HI32]))>=0)
 // is the I64 a I32?
-#define I64IsI32(x) (((x).u._32[I64HI32]==0)&&(((int_32)((x).u._32[I64LO32]))>=0) \
-                   ||((x).u._32[I64HI32]==-1)&&(((int_32)((x).u._32[I64LO32]))<0))
+#define I64IsI32(x)             (((x).u._32[I64HI32]==0)&&(((int_32)((x).u._32[I64LO32]))>=0) \
+                                ||((x).u._32[I64HI32]==-1)&&(((int_32)((x).u._32[I64LO32]))<0))
 
 #ifdef __cplusplus
 }
