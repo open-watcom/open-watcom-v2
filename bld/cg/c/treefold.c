@@ -155,7 +155,7 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
         I64ShiftR( &low, MAXSIZE - NumBits( op_type ), &low );
         U64Not( &low, &high );
     } else {
-        U64Clear( low );
+        Set64ValZero( low );
         U64Not( &low, &high );
         U64ShiftR( &high, MAXSIZE - NumBits( op_type ), &high );
     }

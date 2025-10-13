@@ -74,8 +74,8 @@
 #define U64OrEq(a,b)        U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 #define U64XOrEq(a,b)       U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 
-#define I64SetZero( a )     U64Clear( (a).u.sval );
-#define U64SetZero( a )     U64Clear( (a).u.uval );
+#define I64SetZero( a )     Set64ValZero( (a).u.sval );
+#define U64SetZero( a )     Set64ValZero( (a).u.uval );
 
 #define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
 

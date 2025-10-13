@@ -146,7 +146,7 @@ void    FCPrologue( void ) {
     }
     if( CommonEntry != NULL ) {
         sel = CGSelInit();
-        U64Set1P( ep_count );
+        Set64Val1p( ep_count );
         for( ep = Entries->link; ep != NULL; ep = ep->link ) {
             CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
             U64IncDec( &ep_count, 1 );
@@ -911,7 +911,7 @@ void    FCAltReturn( void ) {
 
     curr_obj = FCodeTell( 0 );
     sel = CGSelInit();
-    U64Set1P( alt_ret );
+    Set64Val1p( alt_ret );
     num_alts = GetU16();
     while( num_alts-- > 0 ) {
         CGSelCase( sel, GetStmtLabel( GetPtr() ), alt_ret );

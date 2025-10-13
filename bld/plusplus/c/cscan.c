@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,7 +331,7 @@ static int doESCChar( int c, bool expanding, type_id char_type )
         }
     } else if( classification == ESCAPE_HEX ) {
         WriteBufferChar( c );
-        U64Clear( Constant64 );
+        Set64ValZero( Constant64 );
         if( doScanHex( expanding ) ) {
             n = U32FetchTrunc( Constant64 );
             if( n > 0x0ff && char_type != TYP_WCHAR ) {
@@ -820,7 +820,7 @@ static TOKEN doScanNum( bool expanding )
     char too_big;
     char max_digit;
 
-    U64Clear( Constant64 );
+    Set64ValZero( Constant64 );
     too_big = 0;
     if( CurrChar == '0' ) {
         c = NextChar();

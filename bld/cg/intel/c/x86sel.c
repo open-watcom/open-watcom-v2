@@ -159,7 +159,7 @@ cost_val JumpCost( sel_handle s_node )
          * an extra two bytes are needed to zero the high part before
          * the jump
          */
-        U64Set1M( tmp );
+        Set64Val1m( tmp );
         if( SelType( &tmp ) == TY_UINT_1 )
             size += 2;
         cost = Balance( size, 1 );
@@ -189,7 +189,7 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
      * for char-sized switches, often the two-byte "cmp al,xx" is used.
      * otherwise we need three bytes
      */
-    U64Set1M( tmp );
+    Set64Val1m( tmp );
     if( SelType( &tmp ) != TY_UINT_1
       && type_length == 1 ) {
         size++;
@@ -314,7 +314,7 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
         if( value_type != real_type ) {
             to_sub = s_node->lower;
         } else {
-            U64Clear( to_sub );
+            Set64ValZero( to_sub );
         }
         if( other == NULL ) {
             /*

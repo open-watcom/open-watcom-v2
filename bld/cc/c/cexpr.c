@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1208,7 +1208,7 @@ bool ConstExprAndType( const_val *val )
         if( tree->op.opr != OPR_ERROR ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
-        U64Clear( val->value );
+        Set64ValZero( val->value );
         ret = false;
         break;
     }

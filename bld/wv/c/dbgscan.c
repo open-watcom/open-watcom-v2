@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -584,7 +584,7 @@ static bool GetNum( unsigned base )
 
     ok = false;
     U32ToU64( base, &big_base );
-    U64Clear( num );
+    Set64ValZero( num );
     while( (dig = GetDig( base )) >= 0 ) {
         U32ToU64( dig, &big_dig );
         U64Mul( &num, &big_base, &num );

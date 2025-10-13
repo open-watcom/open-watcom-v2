@@ -2876,7 +2876,7 @@ static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_cl
       || type_class == U8 )
         return( false );
     len = TypeClassSize[type_class] * 8;
-    U64Set1P( one );
+    Set64Val1p( one );
     if( _IsSigned( type_class ) ) {
         /*
          * signed type of length 'len' bits
@@ -2888,7 +2888,7 @@ static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_cl
         /*
          * unsigned type of length 'len' bits
          */
-        U64Clear( min );
+        Set64ValZero( min );
         U64ShiftL( &one, len, &max );
         U64Sub( &max, &one, &max );
     }

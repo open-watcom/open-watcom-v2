@@ -791,7 +791,7 @@ static walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    U64Clear( val );
+    Set64ValZero( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
     if( U64Cmp( &val, &vd->value ) != 0 )
@@ -809,7 +809,7 @@ static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    U64Clear( val );
+    Set64ValZero( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
     if( !U64Test( val ) )

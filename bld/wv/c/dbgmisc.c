@@ -454,7 +454,7 @@ void ProcIf( void )
     for( ;; ) {
         if( have_true ) {
             ChkExpr();
-            U64Clear( res );
+            Set64ValZero( res );
         } else {
             res = ReqU64Expr();
         }

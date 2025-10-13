@@ -528,7 +528,7 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
     for( list = s_node->list; list != NULL; list = list->next ) {
         ++nodes;
     }
-    U64Clear( tmp );
+    Set64ValZero( tmp );
     DoBinarySearch( node, s_node->list, tipe, 0, nodes - 1, s_node->other_wise,
                     &tmp, &tmp, false, false );
     return( node );

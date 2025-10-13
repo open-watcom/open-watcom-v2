@@ -1709,7 +1709,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
         if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
             signed_64 one;
 
-            U64Set1P( one );
+            Set64Val1p( one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
             retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, true );
         } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */

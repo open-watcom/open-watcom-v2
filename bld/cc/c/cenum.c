@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,7 +215,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             CErr1( ERR_EMPTY_ENUM_LIST );
         }
         U32ToU64( 1, &Inc );
-        U64Clear( n );
+        Set64ValZero( n );
         minus = false;
         has_sign = false;
         step = 1;
