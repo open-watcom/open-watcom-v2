@@ -346,7 +346,7 @@ static bool COperand( void )
         break;
     case T_FALSE:
     case T_TRUE:
-        I32ToI64( CurToken == T_TRUE, &(p.u.sval) );
+        Set64ValU32( p.u.uval, CurToken == T_TRUE );
         p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
@@ -539,15 +539,7 @@ static bool CLogicalOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( I64Zero( e1 ) ) {               // e1 is zero, so consider e2
-            if( I64NonZero( e2 ) ) {        // e2 non-zero
-                I32ToI64( 1, &e1.u.sval );  // answer is 1
-            } else {
-                Set64ValZero( e1.u.uval );
-            }
-        } else {
-            I32ToI64( 1, &e1.u.sval );      // answer is 1
-        }
+        Set64ValU32( e1.u.uval, I64NonZero( e1 ) || I64NonZero( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -566,14 +558,7 @@ static bool CLogicalAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( I64NonZero( e1 ) ) {            // e1 is non-zero
-            if( I64Zero( e2 ) ) {           // e2 is zero
-                e1.u.sval = e2.u.sval;
-            } else {
-                I32ToI64( 1, &e1.u.sval );  // answer is 1
-            }
-        }
-        // else e1 is already zero
+        Set64ValU32( e1.u.uval, I64NonZero( e1 ) && I64NonZero( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -742,7 +727,7 @@ static bool CShift( void )
                 }
             } else {
                 if( e1.no_sign ) {
-                        U64ShiftR( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
+                    U64ShiftR( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
                 } else {
                     I64ShiftR( &(e1.u.sval), U64Low( e2 ), &e1.u.sval );
                 }
@@ -859,11 +844,7 @@ static bool CUnary( void )
             break;
         case T_EXCLAMATION:
         case T_ALT_EXCLAMATION:
-            if( I64Zero( p ) ) {
-                I32ToI64( 1, &(p.u.sval) );
-            } else {
-                Set64ValZero( p.u.uval );
-            }
+            Set64ValU32( p.u.uval, I64Zero( p ) );
             p.no_sign = 0;
             break;
         case T_TILDE:
@@ -981,7 +962,7 @@ static void PrecedenceParse( ppvalue *p )
     loc_info loc;
     error_state_t error_info;
 
-    Set64ValZero( p->u.sval );  // default value 0
+    Set64ValZero( p->u.uval );  // default value 0
 
     if( CurToken == T_NULL ) {
         unexpectedCurToken();

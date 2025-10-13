@@ -368,7 +368,7 @@ static bool COperand( void )
 #if 0
     case T_FALSE:
     case T_TRUE:
-        I32ToI64( CurToken == T_TRUE, &(p.u.sval) );
+        Set64ValU32( p.u.uval, CurToken == T_TRUE );
         p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
@@ -402,7 +402,7 @@ static bool COperand( void )
             p.no_sign = 0;
             break;
         default:
-            I32ToI64( Constant, &(p.u.sval) );
+            Set64ValI32( p.u.sval, Constant );
             p.no_sign = 0;
         }
         if( !done ) {
