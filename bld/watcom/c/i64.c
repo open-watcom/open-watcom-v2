@@ -227,22 +227,6 @@ int I64Cmp( const signed_64 *a, const signed_64 *b )
     return( 0 );
 }
 
-int _I64Test( const signed_64 *a )
-{
-    signed_32 ah;
-
-    ah = a->u._32[H];
-
-    if( ah > 0 )
-        return( +1 );
-    if( ah < 0 )
-        return( -1 );
-    if( a->u._32[L] > 0 )
-        return( +1 );
-    return( 0 );
-}
-
-
 void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res )
 {
     unsigned_32       save;
