@@ -375,7 +375,7 @@ static bool ConvU1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( (unsigned_8)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
+    U32ToU64( U8FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
@@ -383,7 +383,7 @@ static bool ConvU2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( (unsigned_16)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
+    U32ToU64( U16FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
@@ -391,7 +391,7 @@ static bool ConvU4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    U32ToU64( (unsigned_32)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
+    U32ToU64( U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
@@ -399,7 +399,7 @@ static bool ConvI1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( (signed_8)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
+    I32ToI64( I8FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
@@ -407,7 +407,7 @@ static bool ConvI2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( (signed_16)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
+    I32ToI64( I16FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
@@ -415,7 +415,7 @@ static bool ConvI4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    I32ToI64( (signed_32)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
+    I32ToI64( I32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 

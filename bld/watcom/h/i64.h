@@ -60,6 +60,8 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 #define U64Test( a )    (((a).u._32[I64HI32]|(a).u._32[I64LO32])!=0)
 #define I64Test( a )    (((a).u.sign.v)?-1:U64Test((a)))
 
+#define U64Eq( a, b )   ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
+
 void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
 void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
@@ -150,7 +152,6 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define _U64_C_ROUTINES
 #endif
 
-#define U64Eq( a, b )   ((a).u._32[0]==(b).u._32[0] && (a).u._32[1]==(b).u._32[1])
 #define U64Clear( x )   ((x).u._32[0]=0,(x).u._32[1]=0)
 #define U64Set1P( x )   ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
 #define U64Set1M( x )   ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
