@@ -62,7 +62,11 @@ static  select_list *NewCase( const signed_64 *lo, const signed_64 *hi, label_ha
     list->high = *hi;
     U64Sub( hi, lo, &tmp );
     U64IncDec( &tmp, 1 );
-    list->count = tmp.u._32[I64LO32];
+    if( tmp.u._32[I64HI32] ) {
+        list->count = UINT_MAX;
+    } else {
+        list->count = tmp.u._32[I64LO32];
+    }
     list->label = label;
     list->next = NULL;
     return( list );
@@ -97,6 +101,7 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
 /***************************************************************************************************/
 {
     select_list     *list;
+    uint_32         count;
 
     /*
      *  lo sign hi sign status
@@ -110,7 +115,10 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
     list = NewCase( lo, hi, label );
     list->next = s_node->list;
     s_node->list = list;
-    s_node->num_cases += list->count;
+    count = s_node->num_cases + list->count;
+    if( count < s_node->num_cases )
+        count = UINT_MAX;
+    s_node->num_cases = count;
 }
 
 
@@ -170,6 +178,7 @@ static  void    MergeListEntries( sel_handle s_node )
     select_list     *list;
     select_list     *next;
     signed_64       tmp;
+    uint_32         count;
 
     for( list = s_node->list, next = list->next; next != NULL; next = list->next ) {
         tmp = list->high;
@@ -179,7 +188,10 @@ static  void    MergeListEntries( sel_handle s_node )
              * add/merge second range to first range
              */
             list->high = next->high;
-            list->count += next->count;
+            count = list->count + next->count;
+            if( count < list->count )
+                count = UINT_MAX;
+            list->count = count;
             /*
              * remove second range
              */
@@ -261,9 +273,20 @@ static const type_def   *UnSignedIntTipe( const type_def *tipe )
         return( TypeAddress( TY_UINT_2 ) );
     case 4:
         return( TypeAddress( TY_UINT_4 ) );
+    case 8:
+        return( TypeAddress( TY_UINT_8 ) );
     }
     _Zoiks( ZOIKS_102 );  /* if we get here bug */
     return( NULL );
+}
+
+static an BGIntegerSel( const signed_64 *value, const type_def *tipe )
+{
+    if( tipe->length == 8 ) {
+        return( BGInt64( *value, tipe ) );
+    } else {
+        return( BGInteger( value->u._32[I64LO32], tipe ) );
+    }
 }
 
 static  void    ScanBlock( tbl_control *table, an node, type_class_def type_class, label_handle other )
@@ -318,9 +341,9 @@ static  an      GenScanTable( an node, sel_handle s_node, const type_def *tipe )
     value_type = SelType( &tmp );
     real_type = tipe->refno;
     if( real_type != value_type ) {
-        node = BGBinary( O_MINUS, node, BGInteger( s_node->lower.u._32[I64LO32], tipe ), tipe, true );
+        node = BGBinary( O_MINUS, node, BGIntegerSel( &s_node->lower, tipe ), tipe, true );
         if( s_node->other_wise != NULL ) {
-            lt = BGCompare( O_LE, BGDuplicate(node), BGInteger( tmp.u._32[I64LO32], tipe ),
+            lt = BGCompare( O_LE, BGDuplicate(node), BGIntegerSel( &tmp, tipe ),
                             NULL, UnSignedIntTipe( tipe ) );
             BGControl( O_IF_FALSE, lt, s_node->other_wise );
         }
@@ -377,7 +400,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
 
     if( U64Test( s_node->lower ) ) {
         node = BGBinary( O_MINUS, node,
-                          BGInteger( s_node->lower.u._32[I64LO32], tipe ), tipe , true );
+                          BGIntegerSel( &s_node->lower, tipe ), tipe , true );
     }
     /*
      * generate if's to check if index in table
@@ -385,7 +408,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
     if( s_node->other_wise != NULL ) {
         U64Sub( &s_node->upper, &s_node->lower, &tmp );
         lt = BGCompare( O_LE, BGDuplicate( node ),
-                        BGInteger( tmp.u._32[I64LO32], tipe ), NULL,
+                        BGIntegerSel( &tmp, tipe ), NULL,
                         UnSignedIntTipe( tipe ) );
         BGControl( O_IF_FALSE, lt, s_node->other_wise );
     }
@@ -424,7 +447,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
              return;
         } else if( U64Eq( mid_list->low, mid_list->high ) ) {
             cmp = BGCompare( O_EQ, BGDuplicate( node ),
-                             BGInteger( mid_list->low.u._32[I64LO32], tipe ), NULL, tipe );
+                             BGIntegerSel( &mid_list->low, tipe ), NULL, tipe );
             BGControl( O_IF_TRUE, cmp, mid_list->label );
             BGControl( O_GOTO, NULL, other );
             return;
@@ -462,7 +485,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
          */
         mid_list = mid_list->next;
         cmp = BGCompare( O_EQ, BGDuplicate( node ),
-                         BGInteger( mid_list->low.u._32[I64LO32], tipe ), NULL, tipe );
+                         BGIntegerSel( &mid_list->low, tipe ), NULL, tipe );
         BGControl( O_IF_TRUE, cmp, mid_list->label );
         /*
          * Because we only compared for equality, it is only possible to
@@ -484,7 +507,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
             BGControl( O_GOTO, NULL, lt );
         } else {
             cmp = BGCompare( O_LT, BGDuplicate( node ),
-                             BGInteger( mid_list->low.u._32[I64LO32], tipe ), NULL, tipe );
+                             BGIntegerSel( &mid_list->low, tipe ), NULL, tipe );
             BGControl( O_IF_TRUE, cmp, lt );
         }
     }
@@ -493,7 +516,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
             BGControl( O_GOTO, NULL, mid_list->label );
         } else {
             cmp = BGCompare( O_LE, BGDuplicate( node ),
-                             BGInteger( mid_list->high.u._32[I64LO32], tipe ), NULL, tipe );
+                             BGIntegerSel( &mid_list->high, tipe ), NULL, tipe );
             BGControl( O_IF_TRUE, cmp, mid_list->label );
         }
     }
@@ -562,6 +585,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     cost_val    cost;
     cost_val    best;
     sel_kind    kind;
+    unsigned_64 tmp;
 
     if( ( allowed & CG_SWITCH_ALL ) == 0 ) {
         _Zoiks( ZOIKS_090 );
@@ -640,7 +664,8 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
          * once to index into the scan table. This would be bad if it
          * changed in between.
          */
-        node = BGBinary( O_PLUS, node, BGInteger( 0, SortTipe ), SortTipe, true );
+        Set64ValZero( tmp );
+        node = BGBinary( O_PLUS, node, BGIntegerSel( &tmp, SortTipe ), SortTipe, true );
 
         MergeListEntries( s_node );
 

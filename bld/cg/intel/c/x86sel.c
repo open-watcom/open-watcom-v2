@@ -77,13 +77,48 @@
 #if _TARGET & _TARG_8086
     #define LONG_JUMP 5
     #define SHORT_JUMP 2
-    static const byte CmpSize[] = { 0, 2, 3, 0, 9 };
 #elif _TARGET & _TARG_80386
     #define LONG_JUMP 6
     #define SHORT_JUMP 2
-    static const byte CmpSize[] = { 0, 2, 4, 0, 5 };
 #endif
 
+static int GetCmpSize( int type_len )
+{
+    int     size;
+
+    switch( type_len ) {
+#if _TARGET & _TARG_8086
+    case 1:
+        size = 2;
+        break;
+    case 2:
+        size = 3;
+        break;
+    case 4:
+        size = 9;
+        break;
+    case 8:
+        size = 0;
+        break;
+#else
+    case 1:
+        size = 2;
+        break;
+    case 2:
+        size = 4;
+        break;
+    case 4:
+        size = 5;
+        break;
+    case 8:
+        size = 0;
+        break;
+#endif
+    default:
+        size = 0;
+    }
+    return( size );
+}
 
 static cost_val Balance( uint_32 size, uint_32 time )
 /***************************************************/
@@ -105,19 +140,13 @@ static cost_val Balance( uint_32 size, uint_32 time )
 cost_val ScanCost( sel_handle s_node )
 /************************************/
 {
-    const select_list   *list;
     uint_32             values;
     cost_val            cost;
     uint_32             type_length;
     cg_type             type;
     unsigned_64         tmp;
 
-    values = 0;
-    for( list = s_node->list; list != NULL; list = list->next ) {
-        if( SelCompare( &list->low, &s_node->upper ) > 0 )
-            break;
-        values += list->count;
-    }
+    values = s_node->num_cases;
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     type = SelType( &tmp );
     if( ( type == TY_UINT_4
@@ -184,7 +213,7 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
     } else {
         jumpsize = SHORT_JUMP;
     }
-    size = jumpsize + CmpSize[type_length];
+    size = jumpsize + GetCmpSize( type_length );
     /*
      * for char-sized switches, often the two-byte "cmp al,xx" is used.
      * otherwise we need three bytes
