@@ -37,5 +37,4 @@ extern void         BGSelOther( sel_handle s_node, label_handle other );
 extern void         BGSelect( sel_handle s_node, an node, cg_switch_type allowed );
 extern int          SelCompare( const signed_64 *lo1, const signed_64 *lo2 );
 extern cg_type      SelType( const unsigned_64 *value_range );
-extern uint_32      NumValues( const select_list *list, const signed_64 *hi );
 extern void         FreeTable( tbl_control *table );

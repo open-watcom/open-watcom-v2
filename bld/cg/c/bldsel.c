@@ -535,23 +535,6 @@ static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
 }
 
 
-uint_32     NumValues( const select_list *list, const signed_64 *hi )
-/*******************************************************************/
-{
-    uint_32     cases;
-
-    cases = 0;
-    while( list != NULL ) {
-        if( SelCompare( &list->high, hi ) > 0 ) {
-            break;
-        }
-        cases += list->count;
-        list = list->next;
-    }
-    return( cases );
-}
-
-
 void    FreeTable( tbl_control *table )
 /*************************************/
 {

@@ -208,14 +208,15 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
     return( Balance( size, log_entries ) );
 }
 
-static void GenValuesForward( const select_list *list, const signed_64 *hi,
-                const signed_64 *lo, const signed_64 *to_sub, cg_type type )
-/**************************************************************************/
+static void GenValuesForward( sel_handle s_node, const signed_64 *to_sub, cg_type type )
+/**************************************************************************************/
 {
-    signed_64       curr;
-    unsigned_64     tmp;
+    signed_64           curr;
+    unsigned_64         tmp;
+    const select_list   *list;
 
-    curr = *lo;
+    list = s_node->list;
+    curr = s_node->lower;
     for( ;; ) {
         U64Sub( &curr, to_sub, &tmp );
         switch( type ) {
@@ -232,7 +233,7 @@ static void GenValuesForward( const select_list *list, const signed_64 *hi,
             Gen8ByteValue( &tmp );
             break;
         }
-        if( SelCompare( &curr, hi ) >= 0 )
+        if( SelCompare( &curr, &s_node->upper ) >= 0 )
             break;
         if( SelCompare( &curr, &list->high ) >= 0 ) {
             list = list->next;
@@ -244,19 +245,18 @@ static void GenValuesForward( const select_list *list, const signed_64 *hi,
 }
 
 
-static void GenValuesBackward( const select_list *list, const signed_64 *hi,
-                    const signed_64 *lo, const signed_64 *to_sub, cg_type type )
+static void GenValuesBackward( sel_handle s_node, const signed_64 *to_sub, cg_type type )
 {
-    const select_list     *scan;
-    const select_list     *next;
-    signed_64       curr;
-    unsigned_64     tmp;
+    const select_list   *list;
+    const select_list   *next;
+    signed_64           curr;
+    unsigned_64         tmp;
 
-    scan = list;
-    while( !U64Eq( scan->high, *hi ) ) {
-        scan = scan->next;
+    list = s_node->list;
+    while( !U64Eq( list->high, s_node->upper ) ) {
+        list = list->next;
     }
-    curr = *hi;
+    curr = s_node->upper;
     for( ;; ) {
         U64Sub( &curr, to_sub, &tmp );
         switch( type ) {
@@ -273,15 +273,15 @@ static void GenValuesBackward( const select_list *list, const signed_64 *hi,
             Gen8ByteValue( &tmp );
             break;
         }
-        if( SelCompare( &curr, lo ) <= 0 )
+        if( SelCompare( &curr, &s_node->lower ) <= 0 )
             break;
-        if( SelCompare( &curr, &scan->low ) <= 0 ) {
-            next = scan;
-            scan = list;
-            while( scan->next != next ) {
-                scan = scan->next;
+        if( SelCompare( &curr, &list->low ) <= 0 ) {
+            next = list;
+            list = s_node->list;
+            while( list->next != next ) {
+                list = list->next;
             }
-            curr = scan->high;
+            curr = list->high;
         } else {
             U64IncDec( &curr, -1 );
         }
@@ -297,12 +297,10 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
     uint_32             cases;
     signed_64           curr;
     signed_64           to_sub;
-    const select_list   *scan;
     const select_list   *list;
     label_handle        other;
 
-    list = s_node->list;
-    cases = NumValues( list, &s_node->upper );
+    cases = s_node->num_cases;
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
     other = s_node->other_wise;
@@ -323,9 +321,9 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
             other = table->cases[0];
         }
         if( value_type == TY_WORD ) {
-            GenValuesForward( list, &s_node->upper, &s_node->lower, &to_sub, value_type );
+            GenValuesForward( s_node, &to_sub, value_type );
         } else {
-            GenValuesBackward( list, &s_node->upper, &s_node->lower, &to_sub, value_type );
+            GenValuesBackward( s_node, &to_sub, value_type );
         }
         GenSelEntry( false );
         CodeLabel( table->lbl, 0 );
@@ -333,17 +331,17 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
         if( value_type != TY_WORD ) {
             GenCodePtr( other );
         }
-        scan = list;
+        list = s_node->list;
         curr = s_node->lower;
         for( ;; ) {
-            *tab_ptr = scan->label;
+            *tab_ptr = list->label;
             GenCodePtr( *tab_ptr );
             ++tab_ptr;
             if( SelCompare( &curr, &s_node->upper ) >= 0 )
                 break;
-            if( SelCompare( &curr, &scan->high ) >= 0 ) {
-                scan = scan->next;
-                curr = scan->low;
+            if( SelCompare( &curr, &list->high ) >= 0 ) {
+                list = list->next;
+                curr = list->low;
             } else {
                 U64IncDec( &curr, 1 );
             }
