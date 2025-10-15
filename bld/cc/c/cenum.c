@@ -196,7 +196,6 @@ TYPEPTR EnumDecl( type_modifiers flags )
         enum enum_rng   step;
         enum enum_rng   error;
         uint64          n;
-        uint64          Inc;
         bool            minus;
         bool            has_sign;
         ENUMPTR         *prev_lnk;
@@ -214,7 +213,6 @@ TYPEPTR EnumDecl( type_modifiers flags )
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_EMPTY_ENUM_LIST );
         }
-        Set64Val1p( Inc );
         Set64ValZero( n );
         minus = false;
         has_sign = false;
@@ -311,7 +309,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             EnumTable[esym->hash] = esym;
             if( CurToken == T_RIGHT_BRACE )
                 break;
-            U64Add( &n, &Inc, &n );
+            U64IncDec( &n, 1 );
             MustRecog( T_COMMA );
             if( !CompFlags.extensions_enabled
               && ( CompVars.cstd < STD_C99 )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #define global
 #include "cvars.h"
+#include "i64.h"
 #include "cmacadd.h"
 
 
@@ -60,7 +61,6 @@ void InitGlobalVars( void )
     CommentLoc.fno          = 0;
     CurrChar                = 0;
     ConstType               = 0;
-    Constant                = 0;
     MainSrcFile             = NULL;     /* primary source file being compiled */
     SrcFiles                = NULL;
     SrcFName                = NULL;     /* source file name without suffix */
@@ -226,6 +226,8 @@ void InitGlobalVars( void )
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     memset( &CompVars, 0, sizeof( CompVars ) );
+
+    Set64ValZero( Constant64 );
 
     InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();

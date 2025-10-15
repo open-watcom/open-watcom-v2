@@ -390,7 +390,7 @@ static bool COperand( void )
         case TYP_USHORT:
         case TYP_UINT:
         case TYP_ULONG:
-            Set64ValU32( p.u.uval, Constant );
+            Set64ValU32( p.u.uval, U32FetchTrunc( Constant64 ) );
             p.no_sign = 1;
             break;
         case TYP_ULONG64:
@@ -402,7 +402,7 @@ static bool COperand( void )
             p.no_sign = 0;
             break;
         default:
-            Set64ValI32( p.u.sval, Constant );
+            Set64ValI32( p.u.sval, I32FetchTrunc( Constant64 ) );
             p.no_sign = 0;
         }
         if( !done ) {

@@ -147,7 +147,6 @@ global source_loc   SrcFileLoc;         /* duplicate of SrcFile->src_line */
 global source_loc   CommentLoc;
 global int          CurrChar;
 global DATA_TYPE    ConstType;
-global unsigned     Constant;
 global uint64       Constant64;
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFiles;

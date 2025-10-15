@@ -122,8 +122,6 @@ static void ChunkSaveStrWord( STRCHUNK *pch, const char *str )
 #ifdef FDEBUG
 void DumpToken( void )
 {
-    int     value;
-
     if( DebugFlag >= 3 ) {
         printf( "%2d: ", CurToken );
         if( CurToken == T_ID ) {
@@ -131,8 +129,7 @@ void DumpToken( void )
         } else if( CurToken == T_STRING ) {
             printf( "\"%s\"\n", Buffer );
         } else if( CurToken == T_CONSTANT ) {
-            value = Constant;
-            printf( "%d\n", value );
+            printf( "%lld\n", Constant64.u._64[0] );
         } else {
             printf( "'%s'\n", Tokens[CurToken] );
         }

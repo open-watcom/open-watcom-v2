@@ -248,22 +248,22 @@ static TREEPTR ConstLeaf( void )
 #else
         leaf->op.u1.const_type = TYP_USHORT;
 #endif
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_CHAR:
         leaf->op.u1.const_type = TYP_INT;
         /* fall through */
     case TYP_INT:
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = I32FetchTrunc( Constant64 );
         break;
     case TYP_UINT:
-        leaf->op.u2.ulong_value = Constant;
+        leaf->op.u2.ulong_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_LONG:
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = I32FetchTrunc( Constant64 );
         break;
     case TYP_ULONG:
-        leaf->op.u2.ulong_value = Constant;
+        leaf->op.u2.ulong_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_LONG64:
         leaf->op.u2.long64_value = Constant64;

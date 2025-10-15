@@ -549,7 +549,7 @@ static cnv_cc Cnv8( void )
         value = value * 8 + c - '0';
         ++curr;
     }
-    Constant = value;
+    Set64ValU32( Constant64, value );
     return( CNV_32 );
 is64:
     ret = CNV_64;
@@ -595,7 +595,7 @@ static cnv_cc Cnv16( void )
         value = value * 16 + c - '0';
         ++curr;
     }
-    Constant = value;
+    Set64ValU32( Constant64, value );
     return( CNV_32 );
 is64:
     ret = CNV_64;
@@ -644,7 +644,7 @@ static cnv_cc Cnv2( void )
         }
         ++curr;
     }
-    Constant = value;
+    Set64ValU32( Constant64, value );
     return( CNV_32 );
 is64:
     ret = CNV_64;
@@ -688,7 +688,7 @@ static cnv_cc Cnv10( void )
         value = value * 10 + c - '0';
         ++curr;
     }
-    Constant = value;
+    Set64ValU32( Constant64, value );
     return( CNV_32 );
 is64:
     ret = CNV_64;
@@ -720,7 +720,7 @@ static TOKEN doScanNum( void )
 
     BadTokenInfo = ERR_NONE;
     ov = CNV_32;
-    Constant = 0;
+    Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
         if( c == 'x'
@@ -894,8 +894,8 @@ static TOKEN doScanNum( void )
         }
         if( value == 64 ) {
             if( ov == CNV_32 ) {
-                Constant64.u._32[I64LO32] = Constant;
-                Constant64.u._32[I64HI32] = 0;
+//                Constant64.u._32[I64LO32] = Constant;
+//                Constant64.u._32[I64HI32] = 0;
             }
             if( con.suffix == SUFF_I ) {
                 ConstType = TYP_LONG64;
@@ -928,7 +928,7 @@ static TOKEN doScanNum( void )
         if( ov == CNV_64
           && value < 64 ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            Constant =  Constant64.u._32[I64LO32];
+//            Constant =  Constant64.u._32[I64LO32];
             if( diagnose_lex_error() ) {
                 CWarn1( ERR_CONSTANT_TOO_BIG );
             }
@@ -939,12 +939,12 @@ static TOKEN doScanNum( void )
          */
         switch( con.suffix ) {
         case SUFF_NONE:
-            if( Constant <= TARGET_INT_MAX ) {
+            if( I64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
                 ConstType = TYP_INT;
                 break;
             }
 #if TARGET_INT < TARGET_LONG
-            if( Constant <= TARGET_UINT_MAX
+            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0
               && con.form != CON_DEC ) {
 #else
             if( con.form != CON_DEC ) {
@@ -954,7 +954,7 @@ static TOKEN doScanNum( void )
             }
             /* fall through */
         case SUFF_L:
-            if( Constant <= TARGET_LONG_MAX ) {
+            if( I64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
                 ConstType = TYP_LONG;
                 break;
             }
@@ -964,13 +964,13 @@ static TOKEN doScanNum( void )
             }
             /* fall through */
         case SUFF_LL:
-            Constant64.u._32[I64LO32] = Constant;
-            Constant64.u._32[I64HI32] = 0;
+//            Constant64.u._32[I64LO32] = Constant;
+//            Constant64.u._32[I64HI32] = 0;
             ConstType = TYP_LONG64;
             break;
         case SUFF_U:
 #if TARGET_INT < TARGET_LONG
-            if( Constant <= TARGET_UINT_MAX ) {
+            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
                 ConstType = TYP_UINT;
                 break;
             }
@@ -983,8 +983,8 @@ static TOKEN doScanNum( void )
             ConstType = TYP_ULONG;
             break;
         case SUFF_ULL:
-            Constant64.u._32[I64LO32] = Constant;
-            Constant64.u._32[I64HI32] = 0;
+//            Constant64.u._32[I64LO32] = Constant;
+//            Constant64.u._32[I64HI32] = 0;
             ConstType = TYP_ULONG64;
             break;
         default:
@@ -1401,7 +1401,7 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
         value = value * 16 + c - '0';
         --max;
     }
-    Constant = value;
+    Set64ValU32( Constant64, value );
     if( count == max ) {
         /*
          * indicate no characters matched
@@ -1450,7 +1450,7 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
         err_msg = doScanHex( 127, ifn, ofn );
         if( err_msg != ERR_NONE )
             *perr_msg = err_msg;
-        n = Constant;
+        n = I32FetchTrunc( Constant64 );
     } else {
         if( ofn != NULL )
             ofn( c );
@@ -1648,7 +1648,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             value -= 256;
         }
     }
-    Constant = value;
+    Set64ValI32( Constant64, value );
     return( token );
 }
 

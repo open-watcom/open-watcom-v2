@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,9 @@
 
 
 #include "cvars.h"
-#include "scan.h"
 #include <stddef.h>
+#include "i64.h"
+#include "scan.h"
 #include "cgmisc.h"
 #include "cmacadd.h"
 #include "cscanbuf.h"
@@ -773,7 +774,7 @@ static void CLine( void )
     PPNextToken();
     if( ExpectingConstant() ) {
         if( !CompFlags.cpp_ignore_line ) {
-            src_line = Constant; // stash in case of side effects
+            src_line = U32FetchTrunc( Constant64 ); // stash in case of side effects
             SrcFiles->src_loc.line = src_line - 1; /* don't count this line */
         }
         PPNextToken();
