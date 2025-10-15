@@ -227,7 +227,7 @@ char *CmdGetFileName( char *src, char **fname, bool osname )
         if( t == '\\' ) {
             if( !dquote ) {
                 t = src[1];
-                if( cisws( t ) || t == '\"' || t == '\\' ) {
+                if( t == '\"' || t == '\\' ) {
                     src++;
                 } else {
                     t = '\\';
