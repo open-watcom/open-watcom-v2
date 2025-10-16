@@ -210,6 +210,31 @@ static bool chk_is_dir( const char *name )
     return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
 }
 
+static void fix_path_separator( char *path )
+/*******************************************
+ * remove trailing path separator because filename path component
+ * can contain trailing slash from splitpath function
+ * it is necessary for OS/2 otherwise path related functions fail
+ * but we fix it for all platforms to be transparent
+ */
+{
+#ifndef __UNIX__
+    /*
+     * special case for drive letters
+     */
+    if( cisalpha( path[0] )
+      && path[1] == ':' ) {
+        path += 2;
+    }
+#endif
+    if( path[0] != NULLCHAR && path[1] != NULLCHAR ) {
+        path += strlen( path ) - 1;
+        if( IS_PATH_SEP( path ) ) {
+            *path = NULLCHAR;
+        }
+    }
+}
+
 char *CmdGetFileName( char *src, char **fname, bool osname )
 /**********************************************************/
 {
@@ -802,7 +827,7 @@ STATIC bool percentRename( char *arg )
         return( true );
     }
 
-    /* Get first LFN */
+    /* Get first file name */
     p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
@@ -813,7 +838,7 @@ STATIC bool percentRename( char *arg )
     *p++ = NULLCHAR;        /* terminate first file name */
     /* skip ws after first and before second file name */
     p = SkipWS( p );
-    /* Get second LFN as well */
+    /* Get second file name as well */
     p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR
       && !cisws( *p ) ) {
@@ -938,7 +963,7 @@ STATIC bool percentCopy( char *arg )
         return( true );
     }
     /*
-     * Get first LFN
+     * Get first file name
      */
     p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
@@ -953,7 +978,7 @@ STATIC bool percentCopy( char *arg )
      */
     p = SkipWS( p );
     /*
-     * Get second LFN as well
+     * Get second file name as well
      */
     p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR
@@ -1553,10 +1578,11 @@ STATIC RET_T handleCD( char *cmd )
     }
 #endif
     /*
-     * handle File name
+     * handle directory name
      */
     p = CmdGetFileName( p, &path, true );
     *p = NULLCHAR;                  /* terminate path */
+    fix_path_separator( path );     /* fix trailing separator */
     if( chdir( path ) != 0 ) {      /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, path );
         return( RET_ERROR );
@@ -1865,10 +1891,12 @@ STATIC RET_T handleRM( char *cmd )
 
     for( ok = getRMArgs( cmd, &flags, &p ); ok && p != NULL && *p != NULLCHAR; ok = getRMArgs( NULL, NULL, &p ) ) {
         /*
-         * handle File name
+         * handle File/Directory name
          */
         p = CmdGetFileName( p, &name, false );
-        *p = NULLCHAR;      /* terminate file name */
+        *p = NULLCHAR;                  /* terminate file name */
+        if( flags->bDirs )
+            fix_path_separator( name ); /* fix trailing separator */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
         }
@@ -1968,12 +1996,13 @@ STATIC RET_T handleMkdir( char *cmd )
         p = SkipWS( p + 1 );
     }
     /*
-     * handle File name
+     * handle directory name
      */
     p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
     }
+    fix_path_separator( path ); /* fix trailing separator */
     if( !processMkdir( path, mkparents ) ) {
         return( RET_ERROR );
     }
@@ -2007,6 +2036,7 @@ STATIC RET_T handleRmdir( char *cmd )
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
         return( RET_ERROR );
     }
+    fix_path_separator( path ); /* fix trailing separator */
     if( rmdir( path ) ) {
         return( RET_ERROR );
     }
