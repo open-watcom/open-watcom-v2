@@ -1895,7 +1895,7 @@ STATIC RET_T handleRM( char *cmd )
          */
         p = CmdGetFileName( p, &name, false );
         *p = NULLCHAR;                  /* terminate file name */
-        if( flags->bDirs )
+        if( flags.bDirs )
             fix_path_separator( name ); /* fix trailing separator */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
