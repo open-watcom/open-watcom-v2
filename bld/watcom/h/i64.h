@@ -165,6 +165,13 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define U8FetchTrunc( x )       ((x).u._8[I64LO8])
 #define I8FetchTrunc( x )       ((signed_8)(x).u._8[I64LO8])
 
+#define U64ConvU32( x )         ((x).u._32[I64HI32]=0)
+#define U64ConvI32( x )         ((x).u._32[I64HI32]=((signed_32)(x).u._32[I64LO32])?-1:0)
+#define U64ConvU16( x )         ((x).u._32[I64HI32]=(x).u._16[I64MI16W1]=0)
+#define U64ConvI16( x )         ((x).u._32[I64MI16W1]=(x).u._32[I64HI32]=((signed_16)(x).u._32[I64MI16W0])?-1:0)
+#define U64ConvU8( x )          ((x).u._32[I64HI32]=(x).u._16[I64MI16W1]=(x).u._16[I64MI8B1]=0)
+#define U64ConvI8( x )          ((x).u._32[I64MI8B1]=(x).u._32[I64MI16W1]=(x).u._32[I64HI32]=((signed_8)(x).u._32[I64MI8B0])?-1:0)
+
 /* Note about the FetchNative macros: These assume that the value is stored
  * in memory as a non-64bit type, starting at the lowest address. That is,
  * it must be accessed as the first entry of the appropriate array (u._16
