@@ -104,9 +104,9 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         dpmi_regs_struct    dr;
 
         memset( &dr, 0, sizeof( dr ) );
-        dr.r.x.eax = 0xfe00;                /* get video buffer addr */
+        dr.r.h.ah = 0xfe;                   /* get video buffer addr */
         dr.es = _FP_OFF( vbuff ) >> 4;
-        dr.r.x.edi = (_FP_OFF( vbuff ) & 0x0f);
+        dr.r.w.di = (_FP_OFF( vbuff ) & 0x0f);
         DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
         vbuff = RealModeDataPtr( dr.es, dr.r.x.edi );
     }
@@ -316,8 +316,8 @@ static void desqview_update( unsigned short offset, unsigned short count )
         memset( &dr, 0, sizeof( dr ) );
         dr.r.h.ah = 0xff;                /* update from v-screen */
         dr.es = _FP_OFF( UIData->screen.origin ) >> 4;
-        dr.r.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-        dr.r.x.ecx = count;
+        dr.r.w.di = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        dr.r.w.cx = count;
         DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
     }
 #endif
