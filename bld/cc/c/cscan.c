@@ -1641,14 +1641,18 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     }
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
-    if( char_type == TYP_CHAR
-      && CompFlags.signed_char ) {
-        if( value < 256
-          && value > 127 ) {
-            value -= 256;
+    if( char_type == TYP_CHAR ) {
+        ConstType = TYP_INT;
+        if( CompFlags.signed_char ) {
+            if( value < 256
+              && value > 127 ) {
+                value -= 256;
+            }
         }
+        Set64ValI32( Constant64, value );
+    } else {
+        Set64ValU32( Constant64, value );
     }
-    Set64ValI32( Constant64, value );
     return( token );
 }
 
