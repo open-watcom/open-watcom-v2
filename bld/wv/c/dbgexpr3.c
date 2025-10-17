@@ -375,7 +375,7 @@ static bool ConvU1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValU32( entry->v.uint, U8FetchTrunc( entry->v.uint ) );
+    U64ConvU8( entry->v.uint );
     return( true );
 }
 
@@ -383,7 +383,7 @@ static bool ConvU2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValU32( entry->v.uint, U16FetchTrunc( entry->v.uint ) );
+    U64ConvU16( entry->v.uint );
     return( true );
 }
 
@@ -391,7 +391,7 @@ static bool ConvU4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValU32( entry->v.uint, U32FetchTrunc( entry->v.uint ) );
+    U64ConvU32( entry->v.uint );
     return( true );
 }
 
@@ -399,7 +399,7 @@ static bool ConvI1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValI32( entry->v.sint, I8FetchTrunc( entry->v.sint ) );
+    U64ConvI8( entry->v.sint );
     return( true );
 }
 
@@ -407,7 +407,7 @@ static bool ConvI2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValI32( entry->v.sint, I16FetchTrunc( entry->v.sint ) );
+    U64ConvI16( entry->v.sint );
     return( true );
 }
 
@@ -415,7 +415,7 @@ static bool ConvI4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
-    Set64ValI32( entry->v.sint, I32FetchTrunc( entry->v.sint ) );
+    U64ConvI32( entry->v.sint );
     return( true );
 }
 
@@ -682,22 +682,22 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size 
     from = ConvIdx( &entry->ti );
     switch( from ) {
     case U1:
-        Set64ValU32( entry->v.uint, U8FetchTrunc( entry->v.uint ) );
+        U64ConvU8( entry->v.uint );
         break;
     case U2:
-        Set64ValU32( entry->v.uint, U16FetchTrunc( entry->v.uint ) );
+        U64ConvU16( entry->v.uint );
         break;
     case U4:
-        Set64ValU32( entry->v.uint, U32FetchTrunc( entry->v.uint ) );
+        U64ConvU32( entry->v.uint );
         break;
     case I1:
-        Set64ValI32( entry->v.sint, I8FetchTrunc( entry->v.sint ) );
+        U64ConvI8( entry->v.sint );
         break;
     case I2:
-        Set64ValI32( entry->v.sint, I16FetchTrunc( entry->v.sint ) );
+        U64ConvI16( entry->v.sint );
         break;
     case I4:
-        Set64ValI32( entry->v.sint, I32FetchTrunc( entry->v.sint ) );
+        U64ConvI32( entry->v.sint );
         break;
     case F4:
         DToLD( (float)LDToD( &entry->v.real ), &entry->v.real );
