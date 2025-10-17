@@ -2,3 +2,4 @@
 system dos
 file obj.obj
 file 2.obj
+option nocaseexact

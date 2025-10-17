@@ -5,3 +5,4 @@ option map=foo.map
 # segments option is not necessary when using WLINK
 option stack=3
 option stack=1024
+option nocaseexact

@@ -4,3 +4,4 @@ file object.obj
 file file.obj
 file name.obj
 name e_xe.exe
+option nocaseexact

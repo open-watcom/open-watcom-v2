@@ -21,7 +21,6 @@ option nodefaultlibs
 # noextdictionary option is not necessary when using WLINK
 # nofarcalltranslation option is not necessary when using WLINK
 # nogroupassociation option is not supported by WLINK
-option caseexact
 option quiet
 # nonullsdosseg option is not supported by WLINK
 option packcode=0
