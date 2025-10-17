@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,15 +64,20 @@ typedef enum charset_flags {
 
         (( c | HEX_MASK ) - HEX_BASE ) + 10
 */
-#if defined( __370__ )
+#ifdef _EBCDIC
 /* EBCDIC */
 #define HEX_MASK        0x40
 #define HEX_BASE        'A'
+#define ONE_CASE( c )   ((c)|'\x40')
 #else
 /* ASCII */
 #define HEX_MASK        0x20
 #define HEX_BASE        'a'
+#define ONE_CASE( c )   ((c)|'\x20')
 #endif
+#define ONE_CASE_EQUAL( a, b )  (ONE_CASE( a ) == ONE_CASE( b ))
+#define DEC2BIN( c )            ((c) - '0')
+#define HEX2BIN( c )            (((c) | HEX_MASK) - HEX_BASE + 10)
 
 extern charset_flags    CharSet[LCHR_MAX];
 
