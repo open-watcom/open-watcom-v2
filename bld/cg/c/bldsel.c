@@ -55,18 +55,12 @@ static  select_list *NewCase( const signed_64 *lo, const signed_64 *hi, label_ha
 /******************************************************************************************/
 {
     select_list     *list;
-    unsigned_64     tmp;
 
     list = CGAlloc( sizeof( select_list ) );
     list->low = *lo;
     list->high = *hi;
-    U64Sub( hi, lo, &tmp );
-    U64IncDec( &tmp, 1 );
-    if( tmp.u._32[I64HI32] ) {
-        list->count = UINT_MAX;
-    } else {
-        list->count = tmp.u._32[I64LO32];
-    }
+    U64Sub( hi, lo, &list->count );
+    U64IncDec( &list->count, 1 );
     list->label = label;
     list->next = NULL;
     return( list );
@@ -79,7 +73,7 @@ sel_handle  BGSelInit( void )
     sel_handle      s_node;
 
     s_node = CGAlloc( sizeof( select_node ) );
-    s_node->num_cases = 0;
+    Set64ValZero( s_node->num_cases );
     s_node->other_wise = NULL;
     s_node->list = NULL;
 #ifdef DEVBUILD
@@ -101,7 +95,6 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
 /***************************************************************************************************/
 {
     select_list     *list;
-    uint_32         count;
 
     /*
      *  lo sign hi sign status
@@ -115,10 +108,7 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
     list = NewCase( lo, hi, label );
     list->next = s_node->list;
     s_node->list = list;
-    count = s_node->num_cases + list->count;
-    if( count < s_node->num_cases )
-        count = UINT_MAX;
-    s_node->num_cases = count;
+    U64Add( &s_node->num_cases, &list->count, &s_node->num_cases );
 }
 
 
@@ -178,7 +168,6 @@ static  void    MergeListEntries( sel_handle s_node )
     select_list     *list;
     select_list     *next;
     signed_64       tmp;
-    uint_32         count;
 
     for( list = s_node->list, next = list->next; next != NULL; next = list->next ) {
         tmp = list->high;
@@ -188,10 +177,7 @@ static  void    MergeListEntries( sel_handle s_node )
              * add/merge second range to first range
              */
             list->high = next->high;
-            count = list->count + next->count;
-            if( count < list->count )
-                count = UINT_MAX;
-            list->count = count;
+            U64Add( &list->count, &next->count, &list->count );
             /*
              * remove second range
              */
@@ -593,7 +579,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     }
     kind = 0;
     node = Arithmetic( node, TypeInteger );
-    if( s_node->num_cases != 0 ) {
+    if( U64Test( s_node->num_cases ) ) {
         best = MAX_COST;
         /*
          * sort signed

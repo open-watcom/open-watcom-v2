@@ -40,7 +40,7 @@ typedef struct select_list {
         struct select_list      *next;
         signed_64               low;
         signed_64               high;
-        uint_32                 count;
+        unsigned_64             count;
         label_handle            label;
 } select_list;
 
@@ -52,7 +52,7 @@ typedef struct select_node {
         label_handle            other_wise;
         signed_64               lower;
         signed_64               upper;
-        uint_32                 num_cases;
+        unsigned_64             num_cases;
 } select_node;
 
 typedef struct tbl_control {

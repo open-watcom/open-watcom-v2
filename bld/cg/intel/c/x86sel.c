@@ -58,13 +58,13 @@
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
 #define MIN_SVALUES     7            /* to make it worth while for short sca*/
-#define MIN_JUMPS_SETUP 12           /* minimal size of jum code */
+#define MIN_JUMPS_SETUP 12           /* minimal size of jump code */
 /* for instance:
 0010    83 F8 03                  cmp       eax,0x00000003
 0013    77 0D                     ja        L$3
 0015    FF 24 85 00 00 00 00      jmp       dword ptr L$1[eax*4]
 */
-#define MIN_SCAN_SETUP  12           /* minimal size of sca code */
+#define MIN_SCAN_SETUP  12           /* minimal size of scan code */
 /* for instance:
 0022    B9 08 00                  mov       cx,0x0008
 0025    BF 00 00                  mov       di,offset L$1
@@ -82,38 +82,24 @@
     #define SHORT_JUMP 2
 #endif
 
+#define CMPSIZEDEFS \
+        CMPSIZEDEF(1,2,2) \
+        CMPSIZEDEF(2,3,4) \
+        CMPSIZEDEF(4,9,5) \
+        CMPSIZEDEF(8,0,0)
+
 static int GetCmpSize( int type_len )
 {
     int     size;
 
     switch( type_len ) {
 #if _TARGET & _TARG_8086
-    case 1:
-        size = 2;
-        break;
-    case 2:
-        size = 3;
-        break;
-    case 4:
-        size = 9;
-        break;
-    case 8:
-        size = 0;
-        break;
+        #define CMPSIZEDEF(a,b,c) case a: size=b; break;
 #else
-    case 1:
-        size = 2;
-        break;
-    case 2:
-        size = 4;
-        break;
-    case 4:
-        size = 5;
-        break;
-    case 8:
-        size = 0;
-        break;
+        #define CMPSIZEDEF(a,b,c) case a: size=c; break;
 #endif
+            CMPSIZEDEFS
+        #undef CMPSIZEDEF
     default:
         size = 0;
     }
@@ -146,17 +132,23 @@ cost_val ScanCost( sel_handle s_node )
     cg_type             type;
     unsigned_64         tmp;
 
-    values = s_node->num_cases;
+    /*
+     * initial value, means not used
+     */
+    cost = MAX_COST;
+
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     type = SelType( &tmp );
-    if( ( type == TY_UINT_4
-      && values < MIN_LVALUES )
-      || ( type != TY_UINT_4
-      && values < MIN_SVALUES ) ) {
-        cost = MAX_COST;
-    } else {
-        type_length = TypeAddress( type )->length;
-        cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ), values / 2 );
+    if( type != TY_UINT_8 ) {
+        if( s_node->num_cases.u._32[I64HI32] == 0 ) {
+            values = s_node->num_cases.u._32[I64LO32];
+            if( values >= MIN_SVALUES
+              || type == TY_UINT_4
+              && values >= MIN_LVALUES ) {
+                type_length = TypeAddress( type )->length;
+                cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ), values / 2 );
+            }
+        }
     }
     return( cost );
 }
@@ -169,18 +161,18 @@ cost_val JumpCost( sel_handle s_node )
     cost_val        cost;
     unsigned_64     tmp;
 
+    /*
+     * initial value, means not used
+     */
+    cost = MAX_COST;
+
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     U64IncDec( &tmp, 1 );
     in_range = tmp.u._32[I64LO32];
-    if( in_range > MAX_IN_RANGE
-      || (int_32)in_range < 0 ) {
-        in_range = MAX_IN_RANGE;
-    }
-    if( s_node->num_cases < MIN_JUMPS ) {
-        cost = MAX_COST;
-    } else if( in_range < MIN_JUMPS ) {
-        cost = MAX_COST;
-    } else {
+    if( tmp.u._32[I64HI32] == 0
+      && in_range <= MAX_IN_RANGE
+      && s_node->num_cases.u._32[I64LO32] >= MIN_JUMPS
+      && in_range >= MIN_JUMPS ) {
         uint_32 size;
 
         size = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
@@ -200,6 +192,7 @@ cost_val JumpCost( sel_handle s_node )
 cost_val IfCost( sel_handle s_node, uint_32 entries )
 /***************************************************/
 {
+    cost_val        cost;
     int             type_length;
     uint_32         log_entries;
     uint_32         jumpsize;
@@ -234,7 +227,11 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
      * every other child except the last one
      */
     size += ( entries / 4 ) * 2 * jumpsize;
-    return( Balance( size, log_entries ) );
+    cost = Balance( size, log_entries );
+    if( cost >= MAX_COST ) {
+        cost = MAX_COST - 1;
+    }
+    return( cost );
 }
 
 static void GenValuesForward( sel_handle s_node, const signed_64 *to_sub, cg_type type )
@@ -329,7 +326,7 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
     const select_list   *list;
     label_handle        other;
 
-    cases = s_node->num_cases;
+    cases = s_node->num_cases.u._32[I64LO32];
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
     other = s_node->other_wise;
