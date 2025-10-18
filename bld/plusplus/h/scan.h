@@ -64,7 +64,7 @@ typedef enum charset_flags {
 
         (( c | HEX_MASK ) - HEX_BASE ) + 10
 */
-#ifdef _EBCDIC
+#ifdef _CSET_EBCDIC
 /* EBCDIC */
 #define HEX_MASK        0x40
 #define HEX_BASE        'A'

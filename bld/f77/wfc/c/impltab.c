@@ -49,7 +49,7 @@ static  unsigned char   CharIndex( char chr ) {
         return( 26 );
     if( chr == '_' )
         return( 27 );
-#if _CSET == _EBCDIC
+#ifdef _CSET_EBCDIC
     if( chr <= 'I' )
         return( chr - 'A' );
     if( chr <= 'R' )

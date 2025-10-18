@@ -143,7 +143,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
     while( pbuf < pend ) {
         c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( read_inp(), read_inp, &BadTokenInfo, NULL );
+            c = ESCChar( read_inp(), read_inp, NULL, &BadTokenInfo );
             if( buf != NULL ) {
                 if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {

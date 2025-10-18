@@ -43,6 +43,8 @@
 
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
 
+#define GETHEXBIN(c)	    	((CharSet[c] & C_HX) ? HEX2BIN((c)) : DEC2BIN((c)))
+
 enum scan_class {
     #define pick(e,p) e,
     #include "_scnclas.h"
@@ -589,10 +591,7 @@ static cnv_cc Cnv16( void )
              */
             goto is64;
         }
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        value = value * 16 + c - '0';
+        value = value * 16 + GETHEXBIN( c );
         ++curr;
     }
     Set64ValU32( Constant64, value );
@@ -602,10 +601,7 @@ is64:
     Set64ValU32( value64, value );
     do {
         c = *curr;
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        if( U64Cnv16( &value64, c - '0' ) ) {
+        if( U64Cnv16( &value64, GETHEXBIN( c ) ) ) {
             ret = CNV_OVR;
         }
         ++curr;
@@ -1394,11 +1390,9 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
             break;
         if( ofn != NULL )
             ofn( c );
-        if( CharSet[c] & C_HX )
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         if( value & 0xF0000000 )
             too_big = 1;
-        value = value * 16 + c - '0';
+        value = value * 16 + GETHEXBIN( c );
         --max;
     }
     Set64ValU32( Constant64, value );
@@ -1417,7 +1411,7 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
     return( ERR_NONE );
 }
 
-int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
+int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
 /**********************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
@@ -1570,7 +1564,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     c = n;
                 } else {
-                    c = ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
+                    c = ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         if( diagnose_lex_error() ) {
                             CWarn1( ERR_CONSTANT_TOO_BIG );
@@ -1697,7 +1691,7 @@ static TOKEN doScanString( bool wide )
         if( c == '\\' ) {
             c = WriteBufferCharNextChar( c );
             if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
+                ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
                 if( diagnose_lex_error() ) {
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         CWarn1( ERR_CONSTANT_TOO_BIG );
