@@ -101,13 +101,13 @@ static unsigned long _WCNEAR _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, i
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)nptr;
     p = nptr;
-    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p) )
+    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) )
         ++p;
     minus = false;
     switch( *p ) {
     case STRING( '-' ):
         minus = true;
-        // fall down
+        /* fall through */
     case STRING( '+' ):
         ++p;
         break;
@@ -150,7 +150,7 @@ static unsigned long _WCNEAR _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, i
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)p;
     if( who ) {
-        if( value >= 0x80000000 ) {
+        if( value & 0x80000000 ) {
             if( value == 0x80000000 && minus ) {
                 ;  /* OK */
             } else {

@@ -112,7 +112,7 @@ static unsigned long long _WCNEAR _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **end
     switch( *p ) {
     case STRING( '-' ):
         minus = true;
-        // fall down
+        /* fall through */
     case STRING( '+' ):
         ++p;
         break;
@@ -155,7 +155,7 @@ static unsigned long long _WCNEAR _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **end
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)p;
     if( who ) {
-        if( value >= 0x8000000000000000 ) {
+        if( value & 0x8000000000000000 ) {
             if( value == 0x8000000000000000 && minus ) {
                 ;  /* OK */
             } else {
