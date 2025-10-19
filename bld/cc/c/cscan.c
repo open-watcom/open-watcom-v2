@@ -43,7 +43,7 @@
 
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
 
-#define HEXBIN(c)            	((CharSet[c] & C_HX) ? HEX2BIN((c)) : DEC2BIN((c)))
+#define HEXBIN(c)               ((CharSet[c] & C_HX) ? HEX2BIN((c)) : DEC2BIN((c)))
 
 enum scan_class {
     #define pick(e,p) e,
@@ -525,189 +525,15 @@ static TOKEN ScanPPDot( void )
     }
 }
 
-typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
-
-static cnv_cc Cnv8( void )
-/************************/
-{
-    char        *curr;
-    char        c;
-    size_t      len;
-    int         value;
-    uint64      value64;
-    cnv_cc      ret;
-
-    curr = Buffer;
-    len = TokenLen;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0xE0000000 ) {
-            /*
-             * 64 bit
-             */
-            goto is64;
-        }
-        value = value * 8 + c - '0';
-        ++curr;
-    }
-    Set64ValU32( Constant64, value );
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    Set64ValU32( value64, value );
-    do {
-        c = *curr;
-        if( U64Cnv8( &value64, c - '0' ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-static cnv_cc Cnv16( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    /*
-     * skip 0x thing
-     */
-    curr = Buffer + 2;
-    len = TokenLen - 2;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0xF0000000 ) {
-            /*
-             * 64 bit
-             */
-            goto is64;
-        }
-        value = value * 16 + HEXBIN( c );
-        ++curr;
-    }
-    Set64ValU32( Constant64, value );
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    Set64ValU32( value64, value );
-    do {
-        c = *curr;
-        if( U64Cnv16( &value64, HEXBIN( c ) ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-
-static cnv_cc Cnv2( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    /*
-     * skip the 0b start of the binary number
-     */
-    curr = Buffer + 2;
-    len = TokenLen - 2;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0x80000000 ) {
-            /*
-             * value needs 64 bit
-             */
-            goto is64;
-        }
-        if( c == '0' || c == '1' ) {
-            value = value + value + ( c - '0' );
-        }
-        ++curr;
-    }
-    Set64ValU32( Constant64, value );
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    Set64ValU32( value64, value );
-    do {
-        c = *curr;
-        if( U64Cnv2( &value64, c - '0' ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-
-static cnv_cc Cnv10( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    curr = Buffer;
-    len = TokenLen;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value >= 429496729 ) {
-            if( value == 429496729 ) {
-                if( c > '5' ) {
-                    goto is64;
-                }
-            } else {
-                goto is64;
-            }
-        }
-        value = value * 10 + c - '0';
-        ++curr;
-    }
-    Set64ValU32( Constant64, value );
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    Set64ValU32( value64, value );
-    do {
-        c = *curr;
-        if( U64Cnv10( &value64, c - '0') ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
 static TOKEN doScanNum( void )
 /****************************/
 {
-    int         c;
-    msg_codes   bad_token_type;
-    cnv_cc      ov;
-    TOKEN       token;
-
+    int             c;
+    msg_codes       bad_token_type;
+    TOKEN           token;
+    const char      *curr;
+    size_t          len;
+    enum { CNV_32, CNV_64, CNV_OVR } ov;
     struct {
         enum { CON_DEC, CON_HEX, CON_OCT, CON_BIN, CON_ERR } form;
         enum {
@@ -753,9 +579,20 @@ static TOKEN doScanNum( void )
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
-                ov = CNV_32;
             } else {
-                ov = Cnv16();
+                /*
+                 * skip 0x thing
+                 */
+                curr = Buffer + 2;
+                len = TokenLen - 2;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv16( &Constant64, HEXBIN( ch ) ) ) {
+                        ov = CNV_OVR;
+                    }
+                }
             }
         } else if(( c == 'b' || c == 'B' ) &&
             ( CompFlags.extensions_enabled || ( CompVars.cstd >= STD_C23 ))) {
@@ -775,9 +612,20 @@ static TOKEN doScanNum( void )
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_BINARY_CONSTANT );
                 }
-                ov = CNV_32;
             } else {
-                ov = Cnv2();
+                /*
+                 * skip the 0b start of the binary number
+                 */
+                curr = Buffer + 2;
+                len = TokenLen - 2;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv2( &Constant64, DEC2BIN( ch ) ) ) {
+                        ov = CNV_OVR;
+                    }
+                }
             }
         } else {
             /*
@@ -810,9 +658,17 @@ static TOKEN doScanNum( void )
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_OCTAL_CONSTANT );
                 }
-                ov = CNV_32;
             } else {
-                ov = Cnv8();
+                curr = Buffer;
+                len = TokenLen;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv8( &Constant64, DEC2BIN( ch ) ) ) {
+                        ov = CNV_OVR;
+                    }
+                }
             }
         }
     } else {
@@ -830,12 +686,28 @@ static TOKEN doScanNum( void )
           || c == 'E' ) {
             return( doScanFloat( false ) );
         }
-        ov = Cnv10();
+        curr = Buffer;
+        len = TokenLen;
+        while( len-- > 0 ) {
+            unsigned char   ch;
+
+            ch = *(unsigned char *)curr++;
+            if( U64Cnv10( &Constant64, DEC2BIN( ch ) ) ) {
+                ov = CNV_OVR;
+            }
+        }
     }
-    con.suffix = SUFF_NONE;
+    if( ov == CNV_32
+      && Constant64.u._32[I64HI32] ) {
+        /*
+         * 64 bit
+         */
+        ov = CNV_64;
+    }
     /*
      * collect suffix
      */
+    con.suffix = SUFF_NONE;
     if( c == 'l'
       || c == 'L' ) {
         c = WriteBufferCharNextChar( c );
@@ -1447,7 +1319,7 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
         while( i-- > 0 && c >= '0' && c <= '7' ) {
             if( ofn != NULL )
                 ofn( c );
-            n = n * 8 + c - '0';
+            n = n * 8 + DEC2BIN( c );
             c = ifn();
         }
     } else if( c == 'x' ) {
@@ -1551,17 +1423,17 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 c = NextChar();
                 if( c >= '0'
                   && c <= '7' ) {
-                    n = c - '0';
+                    n = DEC2BIN( c );
                     Buffer[TokenLen++] = c;
                     c = NextChar();
                     if( c >= '0'
                       && c <= '7' ) {
-                        n = n * 8 + c - '0';
+                        n = n * 8 + DEC2BIN( c );
                         Buffer[TokenLen++] = c;
                         c = NextChar();
                         if( c >= '0'
                           && c <= '7' ) {
-                            n = n * 8 + c - '0';
+                            n = n * 8 + DEC2BIN( c );
                             Buffer[TokenLen++] = c;
                             NextChar();
                             if( n > 0377
