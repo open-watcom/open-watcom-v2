@@ -531,7 +531,8 @@ static TOKEN doScanNum( void )
     const char      *curr;
     size_t          len;
 //    unsigned_64     const_max;
-    enum { CNV_32, CNV_64, CNV_OVR } ov;
+    bool            ovr;
+    enum { BITS_32, BITS_64 } bits;
     enum {
         SUFF_NONE,
         SUFF_8  = 0x01,
@@ -544,7 +545,8 @@ static TOKEN doScanNum( void )
     } suffix;
 
     BadTokenInfo = ERR_NONE;
-    ov = CNV_32;
+    ovr = false;
+    bits = BITS_32;
     Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
@@ -581,7 +583,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv16( &Constant64, HEXBIN( ch ) ) ) {
-                        ov = CNV_OVR;
+                        ovr = true;
                     }
                 }
             }
@@ -613,7 +615,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv2( &Constant64, DEC2BIN( ch ) ) ) {
-                        ov = CNV_OVR;
+                        ovr = true;
                     }
                 }
             }
@@ -653,7 +655,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv8( &Constant64, DEC2BIN( ch ) ) ) {
-                        ov = CNV_OVR;
+                        ovr = true;
                     }
                 }
             }
@@ -678,16 +680,17 @@ static TOKEN doScanNum( void )
 
             ch = *(unsigned char *)curr++;
             if( U64Cnv10( &Constant64, DEC2BIN( ch ) ) ) {
-                ov = CNV_OVR;
+                ovr = true;
             }
         }
     }
-    if( ov == CNV_32
+    if( !ovr
+      && bits == BITS_32
       && Constant64.u._32[I64HI32] ) {
         /*
          * 64 bit
          */
-        ov = CNV_64;
+        bits = BITS_64;
     }
     /*
      * collect suffix
@@ -742,12 +745,12 @@ static TOKEN doScanNum( void )
         } else if( diagnose_lex_error() ) {
             CErr1( ERR_INVALID_CONSTANT );
         }
-        if( ov == CNV_64
+        if( bits == BITS_64
           && (suffix & SUFF_MASK) != SUFF_LL ) {
-            ov = CNV_OVR;
+            ovr = true;
         }
     }
-    if( ov == CNV_32 ) {
+    if( bits == BITS_32 ) {
         /*
          * 32-bit value
          */
@@ -801,7 +804,7 @@ static TOKEN doScanNum( void )
         default:
             break;
         }
-    } else if( ov == CNV_64 ) {
+    } else if( bits == BITS_64 ) {
         /*
          * 64-bit value
          */
@@ -831,7 +834,7 @@ static TOKEN doScanNum( void )
         }
     }
     WriteBufferNullChar();
-    if( ov == CNV_OVR ) {
+    if( ovr ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
         if( diagnose_lex_error() ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
