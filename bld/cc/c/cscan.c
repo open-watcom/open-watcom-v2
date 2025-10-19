@@ -532,19 +532,16 @@ static TOKEN doScanNum( void )
     size_t          len;
 //    unsigned_64     const_max;
     enum { CNV_32, CNV_64, CNV_OVR } ov;
-    struct {
-        enum { CON_DEC, CON_HEX, CON_OCT, CON_BIN, CON_ERR } form;
-        enum {
-            SUFF_NONE,
-            SUFF_8  = 0x01,
-            SUFF_16 = 0x02,
-            SUFF_L  = 0x03,
-            SUFF_LL = 0x04,
-            SUFF_U  = 0x08,
-            SUFF_MS = 0x10,
-            SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL
-        } suffix;
-    } con;
+    enum {
+        SUFF_NONE,
+        SUFF_8  = 0x01,
+        SUFF_16 = 0x02,
+        SUFF_L  = 0x03,
+        SUFF_LL = 0x04,
+        SUFF_U  = 0x08,
+        SUFF_MS = 0x10,
+        SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL
+    } suffix;
 
     BadTokenInfo = ERR_NONE;
     ov = CNV_32;
@@ -553,7 +550,6 @@ static TOKEN doScanNum( void )
         c = NextChar();
         if( ONE_CASE_EQUAL( c, 'X' ) ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
-            con.form = CON_HEX;
             c = WriteBufferCharNextChar( c );
             while( CharSet[c] & (C_HX | C_DI) ) {
                 c = WriteBufferCharNextChar( c );
@@ -571,7 +567,6 @@ static TOKEN doScanNum( void )
                  * just collected a 0x
                  */
                 BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
@@ -594,7 +589,6 @@ static TOKEN doScanNum( void )
           && ( CompFlags.extensions_enabled
           || ( CompVars.cstd >= STD_C23 ))) {
             bad_token_type = ERR_INVALID_BINARY_CONSTANT;
-            con.form = CON_BIN;
             c = WriteBufferCharNextChar( c );
             while( c == '0' || c == '1' ) {
                 c = WriteBufferCharNextChar( c );
@@ -605,7 +599,6 @@ static TOKEN doScanNum( void )
                  * just collected a 0b
                  */
                 BadTokenInfo = ERR_INVALID_BINARY_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_BINARY_CONSTANT );
                 }
@@ -631,7 +624,6 @@ static TOKEN doScanNum( void )
             bool        digit89;
 
             bad_token_type = ERR_INVALID_OCTAL_CONSTANT;
-            con.form = CON_OCT;
             digit89 = false;
             /*
              * if collecting tokens for macro preprocessor, allow 8 and 9
@@ -650,7 +642,6 @@ static TOKEN doScanNum( void )
                  * if digit 8 or 9 somewhere
                  */
                 BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_OCTAL_CONSTANT );
                 }
@@ -672,7 +663,6 @@ static TOKEN doScanNum( void )
          * scan decimal number
          */
         bad_token_type = ERR_INVALID_CONSTANT;
-        con.form = CON_DEC;
         c = NextChar();
         while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
@@ -702,30 +692,30 @@ static TOKEN doScanNum( void )
     /*
      * collect suffix
      */
-    con.suffix = SUFF_NONE;
+    suffix = SUFF_NONE;
     if( ONE_CASE_EQUAL( c, 'U' ) ) {
-        con.suffix |= SUFF_U;
+        suffix |= SUFF_U;
         c = WriteBufferCharNextChar( c );
     }
     if( ONE_CASE_EQUAL( c, 'L' ) ) {
         c = WriteBufferCharNextChar( c );
         if( ONE_CASE_EQUAL( c, 'L' ) ) {
-            con.suffix |= SUFF_LL;
+            suffix |= SUFF_LL;
             c = WriteBufferCharNextChar( c );
         } else {
-            con.suffix |= SUFF_L;
+            suffix |= SUFF_L;
         }
         if( ONE_CASE_EQUAL( c, 'U' ) ) {
-            con.suffix |= SUFF_U;
+            suffix |= SUFF_U;
             c = WriteBufferCharNextChar( c );
         }
     } else if( ONE_CASE_EQUAL( c, 'I' ) ) {
-        con.suffix |= SUFF_MS;
+        suffix |= SUFF_MS;
         c = WriteBufferCharNextChar( c );
         if( c == '6' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '4' ) {
-                con.suffix |= SUFF_LL;
+                suffix |= SUFF_LL;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
@@ -733,7 +723,7 @@ static TOKEN doScanNum( void )
         } else if( c == '3' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '2' ) {
-                con.suffix |= SUFF_L;
+                suffix |= SUFF_L;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
@@ -741,27 +731,27 @@ static TOKEN doScanNum( void )
         } else if( c == '1' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '6' ) {
-                con.suffix |= SUFF_16;
+                suffix |= SUFF_16;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
             }
         } else if( c == '8' ) {
-            con.suffix |= SUFF_8;
+            suffix |= SUFF_8;
             c = WriteBufferCharNextChar( c );
         } else if( diagnose_lex_error() ) {
             CErr1( ERR_INVALID_CONSTANT );
         }
         if( ov == CNV_64
-          && (con.suffix & SUFF_MASK) != SUFF_LL ) {
-          	ov = CNV_OVR;
+          && (suffix & SUFF_MASK) != SUFF_LL ) {
+            ov = CNV_OVR;
         }
     }
     if( ov == CNV_32 ) {
         /*
          * 32-bit value
          */
-        switch( con.suffix & (SUFF_MASK | SUFF_U) ) {
+        switch( suffix & (SUFF_MASK | SUFF_U) ) {
         case SUFF_NONE:
             if( U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
                 ConstType = TYP_INT;
@@ -815,7 +805,7 @@ static TOKEN doScanNum( void )
         /*
          * 64-bit value
          */
-        switch( con.suffix ) {
+        switch( suffix ) {
         case SUFF_NONE:
         case SUFF_L:
         case SUFF_LL:
