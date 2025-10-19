@@ -466,7 +466,7 @@ static TOKEN doScanPPNumber( void )
             WriteBufferChar( c );
         } else if( ( ONE_CASE_EQUAL( prevc, 'E' )
           || ( CompVars.cstd > STD_C89 )
-          && ONE_CASE_EQUAL( prevc, 'E' ) )
+          && ONE_CASE_EQUAL( prevc, 'P' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
