@@ -381,9 +381,8 @@ static TOKEN doScanFloat( bool hex )
         }
     }
     token = T_CONSTANT;
-    if( c == 'e'
-      || c == 'E'
-      || ( hex && ( c == 'p' || c == 'P' ) ) ) {
+    if( ONE_CASE_EQUAL( c, 'E' )
+      || hex && ONE_CASE_EQUAL( c, 'P' ) ) {
         c = WriteBufferCharNextChar( c );
         if( c == '+'
           || c == '-' ) {
@@ -397,12 +396,10 @@ static TOKEN doScanFloat( bool hex )
             c = WriteBufferCharNextChar( c );
         }
     }
-    if( c == 'f'
-      || c == 'F' ) {
+    if( ONE_CASE_EQUAL( c, 'F' ) ) {
         WriteBufferCharNextChar( c );
         ConstType = TYP_FLOAT;
-    } else if( c == 'l'
-      || c == 'L' ) {
+    } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
         WriteBufferCharNextChar( c );
         if( CompFlags.use_long_double ) {
             ConstType = TYP_LONG_DOUBLE;
@@ -467,9 +464,9 @@ static TOKEN doScanPPNumber( void )
         if( (CharSet[c] & (C_AL | C_DI))
           || c == '.' ) {
             WriteBufferChar( c );
-        } else if( ( prevc == 'e' || prevc == 'E'
+        } else if( ( ONE_CASE_EQUAL( prevc, 'E' )
           || ( CompVars.cstd > STD_C89 )
-          && ( prevc == 'p' || prevc == 'P' ) )
+          && ONE_CASE_EQUAL( prevc, 'E' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
@@ -553,8 +550,7 @@ static TOKEN doScanNum( void )
     Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
-        if( c == 'x'
-          || c == 'X' ) {
+        if( ONE_CASE_EQUAL( c, 'X' ) ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
             con.form = CON_HEX;
             c = WriteBufferCharNextChar( c );
@@ -564,8 +560,7 @@ static TOKEN doScanNum( void )
 
             if( CompVars.cstd > STD_C89 ) {
                 if( c == '.'
-                  || c == 'p'
-                  || c == 'P' ) {
+                  || ONE_CASE_EQUAL( c, 'P' ) ) {
                     return( doScanFloat( true ) );
                 }
             }
@@ -594,8 +589,9 @@ static TOKEN doScanNum( void )
                     }
                 }
             }
-        } else if(( c == 'b' || c == 'B' ) &&
-            ( CompFlags.extensions_enabled || ( CompVars.cstd >= STD_C23 ))) {
+        } else if( ONE_CASE_EQUAL( c, 'B' )
+          && ( CompFlags.extensions_enabled
+          || ( CompVars.cstd >= STD_C23 ))) {
             bad_token_type = ERR_INVALID_BINARY_CONSTANT;
             con.form = CON_BIN;
             c = WriteBufferCharNextChar( c );
@@ -645,8 +641,7 @@ static TOKEN doScanNum( void )
                 c = WriteBufferCharNextChar( c );
             }
             if( c == '.'
-              || c == 'e'
-              || c == 'E' ) {
+              || ONE_CASE_EQUAL( c, 'E' ) ) {
                 return( doScanFloat( false ) );
             }
             if( digit89 ) {
@@ -682,8 +677,7 @@ static TOKEN doScanNum( void )
             c = WriteBufferCharNextChar( c );
         }
         if( c == '.'
-          || c == 'e'
-          || c == 'E' ) {
+          || ONE_CASE_EQUAL( c, 'E' ) ) {
             return( doScanFloat( false ) );
         }
         curr = Buffer;
@@ -708,18 +702,14 @@ static TOKEN doScanNum( void )
      * collect suffix
      */
     con.suffix = SUFF_NONE;
-    if( c == 'l'
-      || c == 'L' ) {
+    if( ONE_CASE_EQUAL( c, 'L' ) ) {
         c = WriteBufferCharNextChar( c );
-        if( c == 'u'
-          || c == 'U' ) {
+        if( ONE_CASE_EQUAL( c, 'U' ) ) {
             c = WriteBufferCharNextChar( c );
             con.suffix = SUFF_U | SUFF_L;
-        } else if( c == 'l'
-          || c == 'L' ) {
+        } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
             c = WriteBufferCharNextChar( c );
-            if( c == 'u'
-              || c == 'U' ) {
+            if( ONE_CASE_EQUAL( c, 'U' ) ) {
                 c = WriteBufferCharNextChar( c );
                 con.suffix = SUFF_U | SUFF_LL;
             } else {
@@ -728,28 +718,23 @@ static TOKEN doScanNum( void )
         } else {
             con.suffix = SUFF_L;
         }
-    } else if( c == 'u'
-      || c == 'U' ) {
+    } else if( ONE_CASE_EQUAL( c, 'U' ) ) {
         c = WriteBufferCharNextChar( c );
-        if( c == 'l'
-          || c == 'L' ) {
+        if( ONE_CASE_EQUAL( c, 'L' ) ) {
             c = WriteBufferCharNextChar( c );
-            if( c == 'l'
-              || c == 'L' ) {
+            if( ONE_CASE_EQUAL( c, 'L' ) ) {
                 c = WriteBufferCharNextChar( c );
                 con.suffix = SUFF_U | SUFF_LL;
             } else {
                 con.suffix = SUFF_U | SUFF_L;
             }
-        } else if( c == 'i'
-          || c == 'I' ) {
+        } else if( ONE_CASE_EQUAL( c, 'I' ) ) {
             c = WriteBufferCharNextChar( c );
             con.suffix = SUFF_U | SUFF_MS;
         } else {
             con.suffix = SUFF_U;
         }
-    } else if( c == 'i'
-      || c == 'I' ) {
+    } else if( ONE_CASE_EQUAL( c, 'I' ) ) {
         c = WriteBufferCharNextChar( c );
         con.suffix = SUFF_MS;
     }
