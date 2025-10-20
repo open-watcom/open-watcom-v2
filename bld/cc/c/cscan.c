@@ -1331,7 +1331,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 Buffer[TokenLen++] = '\\';
                 c = ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
                 if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
-                    CErr1( ERR_INVALID_HEX_CONSTANT );
+                    if( diagnose_lex_error() ) {
+                        CErr1( ERR_INVALID_HEX_CONSTANT );
+                    }
                 } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
                   || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
                     if( diagnose_lex_error() ) {
@@ -1464,7 +1466,9 @@ static TOKEN doScanString( bool wide )
             WriteBufferChar( c );
             ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
             if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
-                CErr1( ERR_INVALID_HEX_CONSTANT );
+                if( diagnose_lex_error() ) {
+                    CErr1( ERR_INVALID_HEX_CONSTANT );
+                }
             } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
               || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
                 if( diagnose_lex_error() ) {
