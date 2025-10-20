@@ -530,9 +530,8 @@ static TOKEN doScanNum( void )
     TOKEN           token;
     const char      *curr;
     size_t          len;
-//    unsigned_64     const_max;
-    bool            ovr;
-    enum { BITS_32, BITS_64 } bits;
+    unsigned_64     const_max;
+    bool            overflow;
     enum {
         SUFF_NONE,
         SUFF_8  = 0x01,
@@ -545,8 +544,7 @@ static TOKEN doScanNum( void )
     } suffix;
 
     BadTokenInfo = ERR_NONE;
-    ovr = false;
-    bits = BITS_32;
+    overflow = false;
     Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
@@ -583,7 +581,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv16( &Constant64, HEXBIN( ch ) ) ) {
-                        ovr = true;
+                        overflow = true;
                     }
                 }
             }
@@ -615,7 +613,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv2( &Constant64, DEC2BIN( ch ) ) ) {
-                        ovr = true;
+                        overflow = true;
                     }
                 }
             }
@@ -655,7 +653,7 @@ static TOKEN doScanNum( void )
 
                     ch = *(unsigned char *)curr++;
                     if( U64Cnv8( &Constant64, DEC2BIN( ch ) ) ) {
-                        ovr = true;
+                        overflow = true;
                     }
                 }
             }
@@ -680,17 +678,9 @@ static TOKEN doScanNum( void )
 
             ch = *(unsigned char *)curr++;
             if( U64Cnv10( &Constant64, DEC2BIN( ch ) ) ) {
-                ovr = true;
+                overflow = true;
             }
         }
-    }
-    if( !ovr
-      && bits == BITS_32
-      && Constant64.u._32[I64HI32] ) {
-        /*
-         * 64 bit
-         */
-        bits = BITS_64;
     }
     /*
      * collect suffix
@@ -745,86 +735,49 @@ static TOKEN doScanNum( void )
         } else if( diagnose_lex_error() ) {
             CErr1( ERR_INVALID_CONSTANT );
         }
-        if( bits == BITS_64
-          && (suffix & SUFF_MASK) != SUFF_LL ) {
-            ovr = true;
-        }
     }
-    if( bits == BITS_32 ) {
-        /*
-         * 32-bit value
-         */
-        switch( suffix & (SUFF_MASK | SUFF_U) ) {
-        case SUFF_NONE:
-            if( U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
-                ConstType = TYP_INT;
-                break;
-            }
+    /*
+     * process constant size
+     */
+    switch( suffix & SUFF_MASK ) {
+    case SUFF_NONE:
+    case SUFF_8:
+    case SUFF_16:
+        if( (suffix & SUFF_U) == 0
+          && U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
+            ConstType = TYP_INT;
+            break;
+        }
 #if TARGET_INT < TARGET_LONG
-            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
-                ConstType = TYP_UINT;
-                break;
-            }
-            /* fall through */
+        if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
 #else
+        Set64Val( const_max, TARGET_UINT_MAX, 0 );
+        if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
+#endif
             ConstType = TYP_UINT;
             break;
-#endif
-        case SUFF_L:
-            if( U64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
-                ConstType = TYP_LONG;
-                break;
-            }
+        }
+        /* fall through */
+    case SUFF_L:
+        if( (suffix & SUFF_U) == 0
+          && U64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
+            ConstType = TYP_LONG;
+            break;
+        }
+        Set64Val( const_max, TARGET_ULONG_MAX, 0 );
+        if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
             ConstType = TYP_ULONG;
             break;
-        case SUFF_LL:
-//            Constant64.u._32[I64LO32] = Constant;
-//            Constant64.u._32[I64HI32] = 0;
+        }
+        /* fall through */
+    case SUFF_LL:
+        if( (suffix & SUFF_U) == 0
+          && Constant64.u.sign.v == 0 ) {
             ConstType = TYP_LONG64;
             break;
-        case SUFF_U:
-#if TARGET_INT < TARGET_LONG
-            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
-                ConstType = TYP_UINT;
-                break;
-            }
-            /* fall through */
-#else
-            ConstType = TYP_UINT;
-            break;
-#endif
-        case SUFF_U | SUFF_L:
-            ConstType = TYP_ULONG;
-            break;
-        case SUFF_U | SUFF_LL:
-//            Constant64.u._32[I64LO32] = Constant;
-//            Constant64.u._32[I64HI32] = 0;
-            ConstType = TYP_ULONG64;
-            break;
-        default:
-            break;
         }
-    } else if( bits == BITS_64 ) {
-        /*
-         * 64-bit value
-         */
-        switch( suffix ) {
-        case SUFF_NONE:
-        case SUFF_L:
-        case SUFF_LL:
-            if( (Constant64.u._32[I64HI32] & 0x80000000) == 0 ) {
-                ConstType = TYP_LONG64;
-                break;
-            }
-            /* fall through */
-        case SUFF_U:
-        case SUFF_U | SUFF_L:
-        case SUFF_U | SUFF_LL:
-            ConstType = TYP_ULONG64;
-            break;
-        default:
-            break;
-        }
+        ConstType = TYP_ULONG64;
+        break;
     }
     token = T_CONSTANT;
     if( CharSet[c] & (C_AL | C_DI) ) {
@@ -834,7 +787,7 @@ static TOKEN doScanNum( void )
         }
     }
     WriteBufferNullChar();
-    if( ovr ) {
+    if( overflow ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
         if( diagnose_lex_error() ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
