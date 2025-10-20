@@ -1156,7 +1156,7 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_fn ofn )
+static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn *ifn, escout_fn ofn )
 /******************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
@@ -1165,21 +1165,21 @@ static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_
 {
     int             c;
     int             count;
-    char            too_big;
+    bool            too_big;
 
-    too_big = 0;
+    too_big = false;
     count = max;
     Set64ValZero( *pval64 );
     for( ;; ) {
-        c = ifn();
+        c = (*ifn)();
         if( max == 0 )
             break;
-        if( ( CharSet[c] & (C_HX | C_DI) ) == 0 )
+        if( (CharSet[c] & (C_HX | C_DI)) == 0 )
             break;
         if( ofn != NULL )
             ofn( c );
         if( U64Cnv16( pval64, HEXBIN( c ) ) ) {
-            too_big = 1;
+            too_big = true;
         }
         --max;
     }
@@ -1198,7 +1198,7 @@ static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_
     return( ERR_NONE );
 }
 
-int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
+int ESCChar( escinp_fn *ifn, escout_fn ofn, msg_codes *perr_msg )
 /**********************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
@@ -1208,7 +1208,9 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
     int         n;
     int         i;
     msg_codes   err_msg;
+    int         c;
 
+    c = (*ifn)();
     if( OCTAL( c ) ) {
         /*
          * get octal escape sequence
@@ -1219,7 +1221,7 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
             if( ofn != NULL )
                 ofn( c );
             n = n * 8 + DEC2BIN( c );
-            c = ifn();
+            c = (*ifn)();
         }
     } else if( c == 'x' ) {
         unsigned_64 val64;
@@ -1268,12 +1270,20 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
             }
             break;
 #endif
+        case '\\':
+        case '\"':
+        case '\'':
+        case '?':
+            break;
+        default:
+            *perr_msg = ERR_INV_CHAR_CONSTANT;
+            break;
         }
 #if _CPU == 370
         _ASCIIOUT( c );
 #endif
         n = c;
-        ifn();
+        (*ifn)();
     }
     return( n );
 }
@@ -1299,7 +1309,6 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
 {
     int         c;
     int         i;
-    int         n;
     TOKEN       token;
 
     Set64ValZero( Constant64 );
@@ -1320,39 +1329,12 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             }
             if( c == '\\' ) {
                 Buffer[TokenLen++] = '\\';
-                c = NextChar();
-                if( OCTAL( c ) ) {
-                    n = DEC2BIN( c );
-                    Buffer[TokenLen++] = c;
-                    c = NextChar();
-                    if( OCTAL( c ) ) {
-                        n = n * 8 + DEC2BIN( c );
-                        Buffer[TokenLen++] = c;
-                        c = NextChar();
-                        if( OCTAL( c ) ) {
-                            n = n * 8 + DEC2BIN( c );
-                            Buffer[TokenLen++] = c;
-                            NextChar();
-                            if( n > 0377
-                              && char_type != TYP_WCHAR ) {
-                                BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                                if( diagnose_lex_error() ) {
-                                    CWarn1( ERR_CONSTANT_TOO_BIG );
-                                }
-                                /*
-                                 * mask off high bits
-                                 */
-                                n &= 0377;
-                            }
-                        }
-                    }
-                    c = n;
-                } else {
-                    c = ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
-                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        if( diagnose_lex_error() ) {
-                            CWarn1( ERR_CONSTANT_TOO_BIG );
-                        }
+                c = ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
+                if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
+                  || BadTokenInfo == ERR_INVALID_HEX_CONSTANT
+                  || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
+                    if( diagnose_lex_error() ) {
+                        CWarn1( BadTokenInfo );
                     }
                 }
                 if( char_type == TYP_WCHAR ) {
@@ -1478,18 +1460,16 @@ static TOKEN doScanString( bool wide )
         }
 
         if( c == '\\' ) {
-            c = WriteBufferCharNextChar( c );
-            if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
+            WriteBufferChar( c );
+            ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
+            if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
+              || BadTokenInfo == ERR_INVALID_HEX_CONSTANT
+              || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
                 if( diagnose_lex_error() ) {
-                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        CWarn1( ERR_CONSTANT_TOO_BIG );
-                    } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        CErr1( ERR_INVALID_HEX_CONSTANT );
-                    }
+                    CWarn1( BadTokenInfo );
                 }
-                c = CurrChar;
             }
+            c = CurrChar;
         } else {
             /*
              * if first character of a double-byte character, then
