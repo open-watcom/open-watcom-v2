@@ -62,19 +62,19 @@
 #define TARGET_UCHAR_MAX    255U
 #define TARGET_SHORT_MAX    32767
 #define TARGET_USHORT_MAX   65535U
-#define TARGET_INT_MAX	    2147483647
+#define TARGET_INT_MAX      2147483647
 #define TARGET_INT_MIN      (-2147483647-1)
 #define TARGET_UINT_MAX     4294967295U
 #define TARGET_LONG_MAX     2147483647
 #define TARGET_ULONG_MAX    4294967295U
 #define TARGET_FLT_MAX      3.402823466e+38f
 
-typedef short		        target_short;
+typedef short               target_short;
 typedef unsigned short      target_ushort;
 typedef int                 target_int;
 typedef unsigned int        target_uint;
 typedef int                 target_long;
-typedef unsigned int	    target_ulong;
+typedef unsigned int        target_ulong;
 
 typedef int                 target_ssize;
 typedef unsigned int        target_size;
