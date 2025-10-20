@@ -534,13 +534,13 @@ static TOKEN doScanNum( void )
     bool            overflow;
     enum {
         SUFF_NONE,
-        SUFF_8  = 0x01,
-        SUFF_16 = 0x02,
-        SUFF_L  = 0x03,
-        SUFF_LL = 0x04,
-        SUFF_U  = 0x08,
-        SUFF_MS = 0x10,
-        SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL
+        SUFF_8    = 0x01, /* 8-bit */
+        SUFF_16   = 0x02, /* 16-bit */
+        SUFF_L    = 0x03, /* 32-bit */
+        SUFF_LL   = 0x04, /* 64-bit */
+        SUFF_U    = 0x08, /* unsigned */
+        SUFF_MS   = 0x10, /* MS ixx */
+        SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL,
     } suffix;
 
     BadTokenInfo = ERR_NONE;
@@ -587,7 +587,7 @@ static TOKEN doScanNum( void )
             }
         } else if( ONE_CASE_EQUAL( c, 'B' )
           && ( CompFlags.extensions_enabled
-          || ( CompVars.cstd >= STD_C23 ))) {
+          || ( CompVars.cstd >= STD_C23 ) ) ) {
             bad_token_type = ERR_INVALID_BINARY_CONSTANT;
             c = WriteBufferCharNextChar( c );
             while( c == '0' || c == '1' ) {
@@ -621,14 +621,14 @@ static TOKEN doScanNum( void )
             /*
              * scan octal number
              */
-            bool        digit89;
+            bool    digit89;
 
             bad_token_type = ERR_INVALID_OCTAL_CONSTANT;
-            digit89 = false;
             /*
              * if collecting tokens for macro preprocessor, allow 8 and 9
              * since the argument may be used in with # or ##.
              */
+            digit89 = false;
             while( CharSet[c] & C_DI ) {
                 digit89 |= ( c > '7' );
                 c = WriteBufferCharNextChar( c );
@@ -703,12 +703,11 @@ static TOKEN doScanNum( void )
             c = WriteBufferCharNextChar( c );
         }
     } else if( ONE_CASE_EQUAL( c, 'I' ) ) {
-        suffix |= SUFF_MS;
         c = WriteBufferCharNextChar( c );
         if( c == '6' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '4' ) {
-                suffix |= SUFF_LL;
+                suffix |= SUFF_LL | SUFF_MS;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
@@ -716,7 +715,7 @@ static TOKEN doScanNum( void )
         } else if( c == '3' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '2' ) {
-                suffix |= SUFF_L;
+                suffix |= SUFF_L | SUFF_MS;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
@@ -724,13 +723,13 @@ static TOKEN doScanNum( void )
         } else if( c == '1' ) {
             c = WriteBufferCharNextChar( c );
             if( c == '6' ) {
-                suffix |= SUFF_16;
+                suffix |= SUFF_16 | SUFF_MS;
                 c = WriteBufferCharNextChar( c );
             } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
             }
         } else if( c == '8' ) {
-            suffix |= SUFF_8;
+            suffix |= SUFF_8 | SUFF_MS;
             c = WriteBufferCharNextChar( c );
         } else if( diagnose_lex_error() ) {
             CErr1( ERR_INVALID_CONSTANT );
@@ -779,6 +778,7 @@ static TOKEN doScanNum( void )
         ConstType = TYP_ULONG64;
         break;
     }
+
     token = T_CONSTANT;
     if( CharSet[c] & (C_AL | C_DI) ) {
         token = T_BAD_TOKEN;
