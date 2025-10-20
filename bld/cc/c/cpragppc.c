@@ -119,9 +119,11 @@ hw_reg_set PragRegName( const char *regname )
 {
     int             index;
     hw_reg_set      name;
+    int             c;
 
-    if( *regname != '\0' ) {
-        if( *regname == '$' ) {
+    c = *(unsigned char *)regname;
+    if( c != '\0' ) {
+        if( c == '$' ) {
             if( regname[1] != '\0' ) {
                 // search register or alias name
                 index = PragRegIndex( Registers, regname + 1, false );
@@ -134,7 +136,7 @@ hw_reg_set PragRegName( const char *regname )
                     return( RegBits[index] );
                 }
             }
-        } else if( *regname == 'r' || *regname == 'R' ) {
+        } else if( ONE_CASE_EQUAL( c, 'r' ) ) {
             // decode regular register name [rR]nn
             if( regname[1] != '\0' ) {
                 index = PragRegNumIndex( regname + 1, 32 );
