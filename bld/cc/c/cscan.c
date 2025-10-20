@@ -1156,7 +1156,7 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
+static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_fn ofn )
 /******************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
@@ -1166,11 +1166,10 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
     int             c;
     int             count;
     char            too_big;
-    unsigned        value;
 
     too_big = 0;
     count = max;
-    value = 0;
+    Set64ValZero( *pval64 );
     for( ;; ) {
         c = ifn();
         if( max == 0 )
@@ -1179,12 +1178,11 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
             break;
         if( ofn != NULL )
             ofn( c );
-        if( value & 0xF0000000 )
+        if( U64Cnv16( pval64, HEXBIN( c ) ) ) {
             too_big = 1;
-        value = value * 16 + HEXBIN( c );
+        }
         --max;
     }
-    Set64ValU32( Constant64, value );
     if( count == max ) {
         /*
          * indicate no characters matched
@@ -1224,15 +1222,17 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
             c = ifn();
         }
     } else if( c == 'x' ) {
+        unsigned_64 val64;
+
         /*
          * get hex escape sequence
          */
         if( ofn != NULL )
             ofn( c );
-        err_msg = doScanHex( 127, ifn, ofn );
+        err_msg = doScanHex( 127, &val64, ifn, ofn );
         if( err_msg != ERR_NONE )
             *perr_msg = err_msg;
-        n = I32FetchTrunc( Constant64 );
+        n = U32FetchTrunc( val64 );
     } else {
         if( ofn != NULL )
             ofn( c );
@@ -1301,9 +1301,8 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     int         i;
     int         n;
     TOKEN       token;
-    int         value;
 
-    value = 0;
+    Set64ValZero( Constant64 );
     c = NextChar();
     if( c == '\'' ) {
         Buffer[TokenLen++] = '\'';
@@ -1358,7 +1357,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 }
                 if( char_type == TYP_WCHAR ) {
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                 }
             } else {
@@ -1375,14 +1376,18 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                         }
                     }
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                     Buffer[TokenLen++] = CurrChar;
                     NextChar();
                 } else if( char_type == TYP_WCHAR ) {
                     c = EncodeWchar( c );
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
 #if _CPU == 370
                 } else {
@@ -1391,7 +1396,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 }
             }
             ++i;
-            value = (value << 8) + c;
+            /* value = (value << 8) + c; */
+            U64ShiftL( &Constant64, 8, &Constant64 );
+            U64IncDec( &Constant64, c );
             /*
              * handle case where user wants a \ but doesn't escape it
              */
@@ -1421,16 +1428,13 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
     if( char_type == TYP_CHAR ) {
-        ConstType = TYP_INT;
         if( CompFlags.signed_char ) {
-            if( value < 256
-              && value > 127 ) {
-                value -= 256;
+            if( Constant64.u._32[I64HI32] == 0
+              && Constant64.u._32[I64LO32] > 127
+              && Constant64.u._32[I64LO32] < 256 ) {
+                U64IncDec( &Constant64, -256 );
             }
         }
-        Set64ValI32( Constant64, value );
-    } else {
-        Set64ValU32( Constant64, value );
     }
     return( token );
 }
