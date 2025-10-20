@@ -1861,7 +1861,7 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         index_expr->op.u2.long_value *= SizeOfArg( typ );
         tree = ExprNode( tree, OPR_DOT, index_expr );
 #if _CPU == 8086
-        if( index_expr->op.u2.long_value > 0x7FFF ) {
+        if( index_expr->op.u2.long_value > TARGET_INT_MAX ) {
             index_expr->op.u1.const_type = TYP_LONG;
             index_expr->u.expr_type = GetType( TYP_LONG );
         }
