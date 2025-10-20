@@ -36,6 +36,7 @@
 #include "cgswitch.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
+#include "scan.h"
 
 
 static  aux_info        AuxInfo;
@@ -136,7 +137,7 @@ hw_reg_set PragRegName( const char *regname )
                     return( RegBits[index] );
                 }
             }
-        } else if( ONE_CASE_EQUAL( c, 'r' ) ) {
+        } else if( ONE_CASE_EQUAL( c, 'R' ) ) {
             // decode regular register name [rR]nn
             if( regname[1] != '\0' ) {
                 index = PragRegNumIndex( regname + 1, 32 );
