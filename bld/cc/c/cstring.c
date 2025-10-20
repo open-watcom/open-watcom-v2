@@ -149,8 +149,9 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
             if( buf != NULL ) {
                 if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {
-                        if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
-                          || BadTokenInfo == ERR_INVALID_HEX_CONSTANT
+                        if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
+                            CErr1( ERR_INVALID_HEX_CONSTANT );
+                        } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
                           || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
                             CWarn1( BadTokenInfo );
                         }
