@@ -38,6 +38,7 @@
 #include "caux.h"
 #include "cfeinfo.h"
 #include "asmstmt.h"
+#include "scan.h"
 #include "toggles.h"
 #ifdef DEVBUILD
     #include "togglesd.h"
@@ -1051,7 +1052,7 @@ bool GetMsgNum( const char *str, msg_codes *val )
      * skip, C++ compiler messages, prefixed by 'P' character
      */
     c = *(unsigned char *)str;
-    if( ONE_CASE_EQUAL( c, 'p' ) ) {
+    if( ONE_CASE_EQUAL( c, 'P' ) ) {
         *val = 0;
         return( true );
     }
@@ -1060,7 +1061,7 @@ bool GetMsgNum( const char *str, msg_codes *val )
      * or old messages without prefix which can be C or C++ message
      * it is for backward compatibility
      */
-    if( ONE_CASE_EQUAL( c, 'c' ) ) {
+    if( ONE_CASE_EQUAL( c, 'C' ) )
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
         *val = atol( str );
