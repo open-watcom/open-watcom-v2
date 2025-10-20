@@ -532,6 +532,8 @@ static TOKEN doScanNum( void )
     size_t          len;
     unsigned_64     const_max;
     bool            overflow;
+    bool            ssuffix;
+    bool            usuffix;
     enum {
         SUFF_NONE,
         SUFF_8    = 0x01, /* 8-bit */
@@ -543,8 +545,10 @@ static TOKEN doScanNum( void )
         SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL,
     } suffix;
 
+    ConstType = TYP_UNDEFINED;
     BadTokenInfo = ERR_NONE;
     overflow = false;
+    usuffix = true;
     Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
@@ -663,6 +667,7 @@ static TOKEN doScanNum( void )
          * scan decimal number
          */
         bad_token_type = ERR_INVALID_CONSTANT;
+        usuffix = false;
         c = NextChar();
         while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
@@ -738,44 +743,55 @@ static TOKEN doScanNum( void )
     /*
      * process constant size
      */
+    ssuffix = ( (suffix & SUFF_U) == 0 );
+    usuffix = ( !ssuffix || usuffix );
     switch( suffix & SUFF_MASK ) {
     case SUFF_NONE:
     case SUFF_8:
     case SUFF_16:
-        if( (suffix & SUFF_U) == 0
-          && U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
-            ConstType = TYP_INT;
-            break;
+        if( ssuffix ) {
+            if( U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
+                ConstType = TYP_INT;
+                break;
+            }
         }
+        if( usuffix ) {
 #if TARGET_INT < TARGET_LONG
-        if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
+            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
 #else
-        Set64Val( const_max, TARGET_UINT_MAX, 0 );
-        if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
+            Set64Val( const_max, TARGET_UINT_MAX, 0 );
+            if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
 #endif
-            ConstType = TYP_UINT;
-            break;
+                ConstType = TYP_UINT;
+                break;
+            }
         }
         /* fall through */
     case SUFF_L:
-        if( (suffix & SUFF_U) == 0
-          && U64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
-            ConstType = TYP_LONG;
-            break;
+        if( ssuffix ) {
+            if( U64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
+                ConstType = TYP_LONG;
+                break;
+            }
         }
-        Set64Val( const_max, TARGET_ULONG_MAX, 0 );
-        if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
-            ConstType = TYP_ULONG;
-            break;
+        if( usuffix ) {
+            Set64Val( const_max, TARGET_ULONG_MAX, 0 );
+            if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
+                ConstType = TYP_ULONG;
+                break;
+            }
         }
         /* fall through */
     case SUFF_LL:
-        if( (suffix & SUFF_U) == 0
-          && Constant64.u.sign.v == 0 ) {
-            ConstType = TYP_LONG64;
-            break;
+        if( ssuffix ) {
+            if( Constant64.u.sign.v == 0 ) {
+                ConstType = TYP_LONG64;
+                break;
+            }
         }
-        ConstType = TYP_ULONG64;
+        if( usuffix ) {
+            ConstType = TYP_ULONG64;
+        }
         break;
     }
 
@@ -1194,14 +1210,13 @@ int ESCChar( int c, escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
     int         i;
     msg_codes   err_msg;
 
-    if( c >= '0'
-      && c <= '7' ) {
+    if( OCTAL( c ) ) {
         /*
          * get octal escape sequence
          */
         n = 0;
         i = 3;
-        while( i-- > 0 && c >= '0' && c <= '7' ) {
+        while( i-- > 0 && OCTAL( c ) ) {
             if( ofn != NULL )
                 ofn( c );
             n = n * 8 + DEC2BIN( c );
@@ -1306,18 +1321,16 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             if( c == '\\' ) {
                 Buffer[TokenLen++] = '\\';
                 c = NextChar();
-                if( c >= '0'
-                  && c <= '7' ) {
+#if 0
+                if( OCTAL( c ) ) {
                     n = DEC2BIN( c );
                     Buffer[TokenLen++] = c;
                     c = NextChar();
-                    if( c >= '0'
-                      && c <= '7' ) {
+                    if( OCTAL( c ) ) {
                         n = n * 8 + DEC2BIN( c );
                         Buffer[TokenLen++] = c;
                         c = NextChar();
-                        if( c >= '0'
-                          && c <= '7' ) {
+                        if( OCTAL( c ) ) {
                             n = n * 8 + DEC2BIN( c );
                             Buffer[TokenLen++] = c;
                             NextChar();
@@ -1336,13 +1349,14 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     c = n;
                 } else {
+#endif
                     c = ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         if( diagnose_lex_error() ) {
                             CWarn1( ERR_CONSTANT_TOO_BIG );
                         }
                     }
-                }
+//                }
                 if( char_type == TYP_WCHAR ) {
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
