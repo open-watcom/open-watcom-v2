@@ -44,6 +44,7 @@
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
 
 #define HEXBIN(c)               ((CharSet[c] & C_HX) ? HEX2BIN((c)) : DEC2BIN((c)))
+#define OCTAL(c)                ((c) >= '0' && (c) <= '7')
 
 enum scan_class {
     #define pick(e,p) e,
@@ -1321,7 +1322,6 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             if( c == '\\' ) {
                 Buffer[TokenLen++] = '\\';
                 c = NextChar();
-#if 0
                 if( OCTAL( c ) ) {
                     n = DEC2BIN( c );
                     Buffer[TokenLen++] = c;
@@ -1349,14 +1349,13 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     c = n;
                 } else {
-#endif
                     c = ESCChar( c, NextChar, WriteBufferChar, &BadTokenInfo );
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         if( diagnose_lex_error() ) {
                             CWarn1( ERR_CONSTANT_TOO_BIG );
                         }
                     }
-//                }
+                }
                 if( char_type == TYP_WCHAR ) {
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
