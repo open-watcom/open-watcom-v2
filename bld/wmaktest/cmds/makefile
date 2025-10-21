@@ -25,4 +25,4 @@ commands += prntdir$(exe)
 
 $(commands) : .SYMBOLIC
     @echo Compile: $@
-    $(bld_cl) $(c_dir)$^&.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $(c_dir)$^&.c -I"../../watcom/h" $(bld_clflags) $(bld_ldflags)
