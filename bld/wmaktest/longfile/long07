@@ -15,7 +15,7 @@ FILES=myfile.out "my second file.out"
 .tmp.out:
     %copy "$[@" "$^@"
 
-test: .symbolic create $(FILES) clean
+test: .symbolic create $(FILES) clean    
 
 create: .symbolic
     -mkdir testpath
