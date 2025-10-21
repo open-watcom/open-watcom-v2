@@ -135,17 +135,15 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
     int                 c;
     target_size         olen;
     const unsigned char *pend;
-    escinp_fn           pread_inp;
 
     olen = 0;
     BadTokenInfo = ERR_NONE;
-    pread_inp = read_inp;
     pbuf = (const unsigned char *)inbuf;
     pend = pbuf + ilen;
     while( pbuf < pend ) {
         c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( &pread_inp, NULL, &BadTokenInfo );
+            c = ESCChar( read_inp, NULL, &BadTokenInfo );
             if( buf != NULL ) {
                 if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {

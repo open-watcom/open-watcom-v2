@@ -1156,8 +1156,8 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn *ifn, escout_fn ofn )
-/******************************************************************
+static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_fn ofn )
+/***************************************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1171,7 +1171,7 @@ static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn *ifn, escout
     count = max;
     Set64ValZero( *pval64 );
     for( ;; ) {
-        c = (*ifn)();
+        c = ifn();
         if( max == 0 )
             break;
         if( (CharSet[c] & (C_HX | C_DI)) == 0 )
@@ -1198,8 +1198,8 @@ static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn *ifn, escout
     return( ERR_NONE );
 }
 
-int ESCChar( escinp_fn *ifn, escout_fn ofn, msg_codes *perr_msg )
-/**********************************************************************
+int ESCChar( escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
+/***************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1210,7 +1210,7 @@ int ESCChar( escinp_fn *ifn, escout_fn ofn, msg_codes *perr_msg )
     msg_codes   err_msg;
     int         c;
 
-    c = (*ifn)();
+    c = ifn();
     if( OCTAL( c ) ) {
         /*
          * get octal escape sequence
@@ -1221,7 +1221,7 @@ int ESCChar( escinp_fn *ifn, escout_fn ofn, msg_codes *perr_msg )
             if( ofn != NULL )
                 ofn( c );
             n = n * 8 + DEC2BIN( c );
-            c = (*ifn)();
+            c = ifn();
         }
     } else if( c == 'x' ) {
         unsigned_64 val64;
@@ -1283,7 +1283,7 @@ int ESCChar( escinp_fn *ifn, escout_fn ofn, msg_codes *perr_msg )
         _ASCIIOUT( c );
 #endif
         n = c;
-        (*ifn)();
+        ifn();
     }
     return( n );
 }
@@ -1299,6 +1299,11 @@ int EncodeWchar( int c )
         c = UniCode[c];
     }
     return( c );
+}
+
+static int read_inp( void )
+{
+    return( NextChar() );
 }
 
 static TOKEN doScanCharConst( DATA_TYPE char_type )
@@ -1329,7 +1334,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             }
             if( c == '\\' ) {
                 Buffer[TokenLen++] = '\\';
-                c = ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
+                c = ESCChar( read_inp, WriteBufferChar, &BadTokenInfo );
                 if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
                     if( diagnose_lex_error() ) {
                         CErr1( ERR_INVALID_HEX_CONSTANT );
@@ -1413,12 +1418,23 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
     if( char_type == TYP_CHAR ) {
+        /*
+         * character constant has plain character type
+         * ConstType must be setup to appropriate character type
+         */
         if( CompFlags.signed_char ) {
+            /*
+             * check if it is single character constant
+             * it means value in range 128 ... 255
+             * then convert into signed char range -128 ... 127
+             */
             if( Constant64.u._32[I64HI32] == 0
               && Constant64.u._32[I64LO32] > 127
               && Constant64.u._32[I64LO32] < 256 ) {
                 U64IncDec( &Constant64, -256 );
             }
+        } else {
+            ConstType = TYP_UCHAR;
         }
     }
     return( token );
@@ -1464,7 +1480,7 @@ static TOKEN doScanString( bool wide )
 
         if( c == '\\' ) {
             WriteBufferChar( c );
-            ESCChar( &NextChar, WriteBufferChar, &BadTokenInfo );
+            ESCChar( read_inp, WriteBufferChar, &BadTokenInfo );
             if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
