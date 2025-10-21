@@ -18,58 +18,58 @@ echo # =============================
 echo # Error Tests
 echo # =============================
 
-if .%2 == . goto usage
-set PRG=%1
-set ERRLOG=%2
+if .%1 == . goto usage
+set WMK=%1
+set ERRLOG=..\error.out
 
 set TEST=03
 head err%TEST% -3
-%PRG% "-." > tmp%TEST%a.lst 2>&1
+%WMK% "-." > tmp%TEST%a.lst 2>&1
 egrep Error tmp%TEST%a.lst > test%TEST%a.lst
 diff err%TEST%a.chk test%TEST%a.lst
 call :result a
 
-%PRG% "- " > tmp%TEST%b.lst 2>&1
+%WMK% "- " > tmp%TEST%b.lst 2>&1
 egrep Error tmp%TEST%b.lst > test%TEST%b.lst
 diff -b err%TEST%b.chk test%TEST%b.lst
 call :result b
 
 set TEST=04
 head err%TEST% -3
-%PRG% -f > tmp%TEST%.lst 2>&1
+%WMK% -f > tmp%TEST%.lst 2>&1
 egrep Error tmp%TEST%.lst > test%TEST%.lst
 diff err%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=13
 head err%TEST% -3
-%PRG% -h "-" 2> test%TEST%.lst
-%PRG% -h - 2>> test%TEST%.lst
-%PRG% -h "-\" 2>> test%TEST%.lst
+%WMK% -h "-" 2> test%TEST%.lst
+%WMK% -h - 2>> test%TEST%.lst
+%WMK% -h "-\" 2>> test%TEST%.lst
 diff err%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=17
 head err%TEST% -3
-%PRG% -h -f err%TEST%a >  test%TEST%.lst 2>&1
-%PRG% -h -f err%TEST%b >> test%TEST%.lst 2>&1
-%PRG% -h -f err%TEST%c >> test%TEST%.lst 2>&1
-%PRG% -h -f err%TEST%d >> test%TEST%.lst 2>&1
-%PRG% -h -f err%TEST%e >> test%TEST%.lst 2>&1
-%PRG% -h -f err%TEST%f >> test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%a >  test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%b >> test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%c >> test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%d >> test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%e >> test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST%f >> test%TEST%.lst 2>&1
 diff -i err%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=36
 head err%TEST% -3
-%PRG% -h -f err%TEST% .c.obj > test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST% .c.obj > test%TEST%.lst 2>&1
 diff err%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=39
 head err%TEST% -3
 echo. >ditty.c
-%PRG% -h -f err%TEST% ditty.obj > test%TEST%.lst 2>&1
+%WMK% -h -f err%TEST% ditty.obj > test%TEST%.lst 2>&1
 diff err%TEST%.chk test%TEST%.lst
 call :result
 
@@ -78,7 +78,7 @@ del ditty.*
 head err%TEST% -3
 echo. >err%TEST%.tst
 chmod +r err%TEST%.tst >test%TEST%.lst
-%PRG% -h -a -t -f err%TEST% >> test%TEST%.lst 2>&1
+%WMK% -h -a -t -f err%TEST% >> test%TEST%.lst 2>&1
 chmod -r err%TEST%.tst
 del err%TEST%.tst
 diff err%TEST%.chk test%TEST%.lst
@@ -108,7 +108,7 @@ goto end
 :work
     set TEST=%1
     head err%TEST% -3
-    %PRG% -f err%TEST% -h > test%TEST%.lst 2>&1
+    %WMK% -f err%TEST% -h > test%TEST%.lst 2>&1
     diff -i err%TEST%.chk test%TEST%.lst
     call :result
 goto end
@@ -116,7 +116,7 @@ goto end
 :debug
     set TEST=%1
     head err%TEST% -3
-    %PRG% -f err%TEST% -h -d > tmp%TEST%.lst 2>&1
+    %WMK% -f err%TEST% -h -d > tmp%TEST%.lst 2>&1
     egrep W%TEST% tmp%TEST%.lst > test%TEST%.lst
     diff -i err%TEST%.chk test%TEST%.lst
     call :result
