@@ -6,46 +6,46 @@ ECHO # ===================================
 ECHO # Preprocessor IF Tests
 ECHO # ===================================
 
-if .%2 == . goto usage
-set PRG=%1
-set ERRLOG=%2
+if .%1 == . goto usage
+set WMK=%1
+set ERRLOG=..\error.out
 
 set TEST=01
 call :header
 :: 2>nul to hide debug-build, memory-tracking diagnostic
-%PRG% -h -f pre%TEST%a pre%TEST%a -f pre%TEST%b pre%TEST%b 2>nul
+%WMK% -h -f pre%TEST%a pre%TEST%a -f pre%TEST%b pre%TEST%b 2>nul
 call :result
 
 set TEST=02
 call :header
-%PRG% -h -f pre%TEST% pre%TEST% > test%TEST%.lst 2>&1
+%WMK% -h -f pre%TEST% pre%TEST% > test%TEST%.lst 2>&1
 diff -i pre%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=03
 call :header
-%PRG% -h -f pre%TEST% pre%TEST%
+%WMK% -h -f pre%TEST% pre%TEST%
 call :result
 
 set TEST=04
 call :header
-%PRG% -h -f pre%TEST% pre%TEST%
+%WMK% -h -f pre%TEST% pre%TEST%
 call :result
 
 set TEST=05
 call :header
-%PRG% -h -f pre%TEST% pre%TEST%
+%WMK% -h -f pre%TEST% pre%TEST%
 call :result
 
 set TEST=06
 call :header
-%PRG% -h -f pre%TEST% > test%TEST%.lst 2>&1
+%WMK% -h -f pre%TEST% > test%TEST%.lst 2>&1
 diff -i pre%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=07
 call :header
-%PRG% -h -f pre%TEST% > test%TEST%.lst 2>&1
+%WMK% -h -f pre%TEST% > test%TEST%.lst 2>&1
 call :result a
 diff pre%TEST%.chk test%TEST%.lst
 call :result b

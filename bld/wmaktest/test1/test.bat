@@ -7,15 +7,15 @@ echo # Multiple Dependents Tests
 echo # ===========================
 
 if .%1 == . goto usage
-set PRG=%1
-set ERRLOG=%2
+set WMK=%1
+set ERRLOG=..\error.out
 
 set TEST=01
 call :header
-%PRG% -h -f create
+%WMK% -h -f create
 echo. >err%TEST%.ref
 echo. >err%TEST%.lst
-%PRG% -h -f maketst1 -l err%TEST%.lst > test%TEST%.lst
+%WMK% -h -f maketst1 -l err%TEST%.lst > test%TEST%.lst
 diff -b err%TEST%.ref err%TEST%.lst
 call :result a
 diff -b test%TEST%.chk test%TEST%.lst > nul

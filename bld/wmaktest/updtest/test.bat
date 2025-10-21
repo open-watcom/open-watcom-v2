@@ -6,9 +6,9 @@ echo # ===========================
 echo # Update Tests
 echo # ===========================
 
-if .%2 == . goto usage
-set PRG=%1
-set ERRLOG=%2
+if .%1 == . goto usage
+set WMK=%1
+set ERRLOG=..\error.out
 
 set TEST=01
 call :header

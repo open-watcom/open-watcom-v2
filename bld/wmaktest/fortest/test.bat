@@ -7,24 +7,24 @@ echo # For Loop Tests
 echo # ===========================
 
 if .%1 == . goto usage
-set PRG=%1
-set ERRLOG=%2
+set WMK=%1
+set ERRLOG=..\error.out
 
 set TEST=01
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
 set TEST=02
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
 set TEST=03
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
@@ -36,25 +36,25 @@ dir /b /-o       >> tmp%TEST%.lst
 type for%TEST%b.chk >> tmp%TEST%.lst
 dir /b /-o for?? >> tmp%TEST%.lst
 type for%TEST%c.chk >> tmp%TEST%.lst
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff tmp%TEST%.lst for%TEST%.lst
 call :result
 
 set TEST=05
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
 set TEST=06
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
 set TEST=07
 call :header
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff for%TEST%.chk for%TEST%.lst
 call :result
 
@@ -70,7 +70,7 @@ echo a >> tmp%TEST%.lst
 echo b >> tmp%TEST%.lst
 ..\cmds\prntdir "echo c" >> tmp%TEST%.lst
 echo c >> tmp%TEST%.lst
-%PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
+%WMK% -h -f for%TEST% > for%TEST%.lst 2>&1
 diff -b tmp%TEST%.lst for%TEST%.lst
 call :result
 

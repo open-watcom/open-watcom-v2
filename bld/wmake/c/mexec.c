@@ -307,7 +307,7 @@ STATIC char *createTmpFileName( void )
     }
 
     for( ;; ) {
-        tmpFileChar = tmpFileNumber % 26 + 'a' ;
+        tmpFileChar = ( tmpFileNumber % 26 ) + 'a' ;
         buf = StartVec();
         FmtStr( fileName, "wm%c%u.tmp", tmpFileChar, tmpFileNumber );
         if( tmpPath != NULL ) {
@@ -1603,7 +1603,7 @@ STATIC RET_T handleChangeDrive( const char *cmd )
 
     drive_index = (ctoupper( *cmd ) - 'A' + 1);
     if( drive_index == 0
-      || drive_index > 26 ) {
+      || drive_index > ('Z' - 'A' + 1) ) {
         return( RET_ERROR );
     }
     if( _chdrive( drive_index ) ) {
