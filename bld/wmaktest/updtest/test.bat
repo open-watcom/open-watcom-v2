@@ -12,50 +12,50 @@ set ERRLOG=..\error.out
 
 set TEST=01
 call :header
-%1 -h -f upd%TEST%
+%WMK% -h -f upd%TEST%
 call :result a
-%1 -h -f upd%TEST% -m -sn -y > test%TEST%.lst
+%WMK% -h -f upd%TEST% -m -sn -y > test%TEST%.lst
 call :result b
 diff upd%TEST%.chk test%TEST%.lst
 call :result c
 
 set TEST=02
 call :header
-%1 -h -f upd%TEST% /c
+%WMK% -h -f upd%TEST% /c
 call :result
 
 set TEST=03
 call :header
-%1 -h -f upd%TEST%
+%WMK% -h -f upd%TEST%
 call :result
 
 set TEST=04
 call :header
-%1 -h -f upd%TEST% > test%TEST%.lst 2>&1
+%WMK% -h -f upd%TEST% > test%TEST%.lst 2>&1
 diff -b upd%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=05
 call :header
-%1 -h -s -f upd%TEST% > test%TEST%.lst
+%WMK% -h -s -f upd%TEST% > test%TEST%.lst
 diff -b upd%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=06
 call :header
-%1 -h -f upd%TEST% > test%TEST%.lst
+%WMK% -h -f upd%TEST% > test%TEST%.lst
 diff upd%TEST%.chk test%TEST%.lst
 call :result
 
 set TEST=07
 call :header
-%1 -h -f upd%TEST% > test%TEST%.lst
+%WMK% -h -f upd%TEST% > test%TEST%.lst
 diff upd%TEST%.chk test%TEST%.lst
 call :result
 
 REM set TEST=08
 REM call :header
-REM %1 -h -f upd%TEST% >test%TEST%.lst
+REM %WMK% -h -f upd%TEST% >test%TEST%.lst
 REM call :result a
 REM diff upd%TEST%.chk test%TEST%.lst
 REM call :result b
@@ -64,17 +64,17 @@ REM call :result b
 
 set TEST=09
 call :header
-%1 -h -f upd%TEST%
+%WMK% -h -f upd%TEST%
 call :result
 
 set TEST=10
 call :header
-%1 -h -f upd%TEST%
+%WMK% -h -f upd%TEST%
 call :result
 
 set TEST=11
 call :header
-%1 -h -ms -f upd%TEST% > test%TEST%.lst 2>&1
+%WMK% -h -ms -f upd%TEST% > test%TEST%.lst 2>&1
 diff -b upd%TEST%.chk test%TEST%.lst
 call :result
 
