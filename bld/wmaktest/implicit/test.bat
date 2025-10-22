@@ -15,7 +15,7 @@ echo. >hello.cpp
 
 set TEST=01
 call :header
-%WMK% -h -l err%TEST%.lst > test%TEST%.lst
+%WMK% -h -l err%TEST%.lst -f imp%TEST% > test%TEST%.lst
 call :result
 
 set TEST=02
