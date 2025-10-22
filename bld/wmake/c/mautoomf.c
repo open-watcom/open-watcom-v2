@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
-#include "dostimet.h"
+#include "duttime.h"
 #include "pcobj.h"
 
 #include "clibext.h"
@@ -45,7 +45,7 @@
 
 typedef struct {
     FILE    *fp;            // file handle of open obj file
-    time_t  time_stamp;     // time stamp of next dependancy comment
+    time_t  timestamp;      // time stamp of next dependancy comment
     char    *name;          // point to nameBuffer - name of next dependancy comment
 } omf_info;
 
@@ -144,7 +144,7 @@ static bool getOMFCommentRecord( omf_info *info )
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
-        info->time_stamp = _dos2timet( comment.dos_date * 0x10000L + comment.dos_time );
+        info->timestamp = __dosu2ttime( comment.dos_date, comment.dos_time );
         info->name = nameBuffer;
         return( true );
     }
@@ -166,7 +166,7 @@ STATIC void OMFTransDep( dep_handle info, char **name, time_t *stamp )
     omf_info *o = (void*)info;
 
     *name  = o->name;
-    *stamp = o->time_stamp;
+    *stamp = o->timestamp;
 }
 
 
