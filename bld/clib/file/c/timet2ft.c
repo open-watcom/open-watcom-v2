@@ -20,7 +20,7 @@ void __NT_timet_to_filetime( time_t t, FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
-    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
+    ulint.QuadPart = t * WINDOWS_TICK_PER_SEC + TICK_TO_UNIX_EPOCH;
     ft->dwLowDateTime = ulint.u.LowPart;
     ft->dwHighDateTime = ulint.u.HighPart;
 }

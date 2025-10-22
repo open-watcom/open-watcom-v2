@@ -1272,7 +1272,7 @@ void __NT_timet_to_filetime( time_t t, FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
-    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
+    ulint.QuadPart = t * WINDOWS_TICK_PER_SEC + TICK_TO_UNIX_EPOCH;
     ft->dwLowDateTime = ulint.u.LowPart;
     ft->dwHighDateTime = ulint.u.HighPart;
 }
@@ -1283,7 +1283,7 @@ time_t __NT_filetime_to_timet( const FILETIME *ft )
 
     ulint.u.LowPart   =   ft->dwLowDateTime;
     ulint.u.HighPart  =   ft->dwHighDateTime;
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart - TICK_TO_UNIX_EPOCH ) / WINDOWS_TICK_PER_SEC );
 }
 
 void __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib )

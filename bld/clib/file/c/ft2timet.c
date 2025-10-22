@@ -22,5 +22,5 @@ time_t __NT_filetime_to_timet( const FILETIME *ft )
 
     ulint.u.LowPart   =   ft->dwLowDateTime;
     ulint.u.HighPart  =   ft->dwHighDateTime;
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart - TICK_TO_UNIX_EPOCH ) / WINDOWS_TICK_PER_SEC );
 }
