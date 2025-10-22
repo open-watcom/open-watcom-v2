@@ -109,7 +109,6 @@
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
-
 #elif defined( __RDOS__ )
 
 # define PATH_SPLIT         ';'     /* path seperator                       */
@@ -129,29 +128,31 @@
 # define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
 
 #else
+
 # error Must define system dependent macros
+
 #endif
 
-#define MAX_MAC_NAME    130     /* Maximum macro name length                */
-#define MAX_MAC_NEST    16      /* Maximum depth of macro nesting           */
+#define MAX_MAC_NAME        130     /* Maximum macro name length            */
+#define MAX_MAC_NEST        16      /* Maximum depth of macro nesting       */
 
 #define MAX_DATE_QUARTER    ((time_t)1 << (sizeof(time_t) * CHAR_BIT - 2))
 #define MAX_DATE_SIGNED     ((time_t)(MAX_DATE_QUARTER - 1 + MAX_DATE_QUARTER))
 #define MAX_DATE_UNSIGNED   ((time_t)-1)
 
-#define OLDEST_DATE     ((time_t)0)
-#define YOUNGEST_DATE   (((time_t)-1 > 0) ? MAX_DATE_UNSIGNED : MAX_DATE_SIGNED)
+#define OLDEST_DATE         ((time_t)0)
+#define YOUNGEST_DATE       (((time_t)-1 > 0) ? MAX_DATE_UNSIGNED : MAX_DATE_SIGNED)
 
-#define MAKEFILE_NAME   "makefile"
+#define MAKEFILE_NAME       "makefile"
 #ifdef __UNIX__
-#define MAKEFILE_ALT    "Makefile"
+#define MAKEFILE_ALT        "Makefile"
 #endif
-#define MAKEINIT_NAME   "makeinit"
-#define MAKEFINI_NAME   "makefini"
-#define TOOLSINI_NAME   "tools.ini"
+#define MAKEINIT_NAME       "makeinit"
+#define MAKEFINI_NAME       "makefini"
+#define TOOLSINI_NAME       "tools.ini"
 
-#define MAX_TOK_SIZE    ((MIN_TOK_SIZE < _MAX_PATH2)?_MAX_PATH2:MIN_TOK_SIZE)
-#define MAX_SUFFIX      ((MIN_SUFFIX < _MAX_EXT)?_MAX_EXT:MIN_SUFFIX)
+#define MAX_TOK_SIZE        ((MIN_TOK_SIZE < _MAX_PATH2)?_MAX_PATH2:MIN_TOK_SIZE)
+#define MAX_SUFFIX          ((MIN_SUFFIX < _MAX_EXT)?_MAX_EXT:MIN_SUFFIX)
 
 typedef enum {
     SOA_NOT_AN_OBJ,
