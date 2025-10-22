@@ -19,7 +19,7 @@ REM ===========================
 echo *****************************************************************
 cd TEST1
 :: %comspec% /c call  ... rather than call ... to isolate echo off changes
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst2
@@ -28,7 +28,7 @@ REM -- TEST2 - Implicit Rules Test
 REM ===========================
 echo *****************************************************************
 cd IMPLICIT
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst3
@@ -37,7 +37,7 @@ REM -- FORTEST - FOR LOOP TEST
 REM ===========================
 echo *****************************************************************
 cd FORTEST
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst4
@@ -46,7 +46,7 @@ REM -- PRETEST - PRE COMPILER TEST
 REM ===========================
 echo *****************************************************************
 cd PRETEST
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst5
@@ -55,7 +55,7 @@ REM -- UPDTEST - UPDATE TEST
 REM ===========================
 echo *****************************************************************
 cd UPDTEST
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst6
@@ -65,7 +65,7 @@ REM -- ERRTEST - ERROR TEST
 REM ===========================
 echo *****************************************************************
 cd ERRTEST
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst7
@@ -75,7 +75,7 @@ REM -- INLINE TEST -
 REM ===========================
 echo *****************************************************************
 cd INLINE
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst8
@@ -84,7 +84,7 @@ REM -- PREPROCESS TEST -
 REM ===========================
 echo *****************************************************************
 cd PREPROC
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst9
@@ -93,7 +93,7 @@ REM -- MACROS TEST -
 REM ===========================
 echo *****************************************************************
 cd MACROS
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst10
@@ -102,7 +102,7 @@ REM -- MISC TEST -
 REM ===========================
 echo *****************************************************************
 cd MISC
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 :tst11
@@ -111,7 +111,7 @@ REM -- LONG FILENAME TEST -
 REM ===========================
 echo *****************************************************************
 cd LONGFILE
-%comspec% /c call test.bat %1 ..\error.out
+%comspec% /c call test.bat %1
 cd ..
 
 
