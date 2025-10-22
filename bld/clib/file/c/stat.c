@@ -242,12 +242,12 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
     buf->st_size = fdta.size;
     buf->st_mode = at2mode( fdta.attrib, fdta.name );
 
-    buf->st_mtime = _d2ttime( fdta.wr_date, fdta.wr_time );
+    buf->st_mtime = __dos2ttime( fdta.wr_date, fdta.wr_time );
     buf->st_btime = buf->st_mtime;
 #ifdef __WATCOM_LFN__
     if( IS_LFN( fdta.reserved ) && DTALFN_CRTIME_OF( fdta.reserved ) ) {
-        buf->st_atime = _d2ttime( DTALFN_ACDATE_OF( fdta.reserved ), DTALFN_ACTIME_OF( fdta.reserved ) );
-        buf->st_ctime = _d2ttime( DTALFN_CRDATE_OF( fdta.reserved ), DTALFN_CRTIME_OF( fdta.reserved ) );
+        buf->st_atime = __dos2ttime( DTALFN_ACDATE_OF( fdta.reserved ), DTALFN_ACTIME_OF( fdta.reserved ) );
+        buf->st_ctime = __dos2ttime( DTALFN_CRDATE_OF( fdta.reserved ), DTALFN_CRTIME_OF( fdta.reserved ) );
     } else {
 #endif
         buf->st_atime = buf->st_mtime;

@@ -292,19 +292,19 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
                 t = 0;
                 rc1 = _cvt_stamp2dos_lfn( &lfni.writetimestamp );
                 if( rc1 != -1 ) {
-                    t = _d2ttime( rc1 >> 16, rc1 );
+                    t = __dos2ttime( rc1 >> 16, rc1 );
                 }
                 buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = t;
                 if( lfni.creattimestamp ) {
                     rc1 = _cvt_stamp2dos_lfn( &lfni.creattimestamp );
                     if( rc1 != -1 ) {
-                        buf->st_ctime = _d2ttime( rc1 >> 16, rc1 );
+                        buf->st_ctime = __dos2ttime( rc1 >> 16, rc1 );
                     }
                 }
                 if( lfni.accesstimestamp ) {
                     rc1 = _cvt_stamp2dos_lfn( &lfni.accesstimestamp );
                     if( rc1 != -1 ) {
-                        buf->st_atime = _d2ttime( rc1 >> 16, rc1 );
+                        buf->st_atime = __dos2ttime( rc1 >> 16, rc1 );
                     }
                 }
                 buf->st_size = lfni.lfilesize;
@@ -322,7 +322,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         if( rc == -1 ) {
             return( -1 );
         }
-        buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = _d2ttime( rc >> 16, rc );
+        buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = __dos2ttime( rc >> 16, rc );
         buf->st_size = _filelength( handle );
         buf->st_mode |= S_IFREG;
         return( 0 );

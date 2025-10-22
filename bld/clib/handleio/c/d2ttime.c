@@ -31,31 +31,9 @@
 ****************************************************************************/
 
 
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+
 #include "variety.h"
-#include <time.h>
-#include "d2ttime.h"
 
-/* date extraction macros */
-#define day( x )        (x & 0x001f)
-#define month( x )      ((x >> 5) & 0x000f)
-#define year( x )       ((x >> 9) & 0x007f)
-/* time extraction macros */
-#define sec2( x )       (x & 0x001f)
-#define min( x )        ((x >> 5) & 0x003f)
-#define hour( x )       ((x >> 11) & 0x001f)
-
-time_t _WCNEAR _d2ttime( unsigned short date, unsigned short time )
-{
-    struct tm t;
-
-    t.tm_year = year( date ) + 80;
-    t.tm_mon  = month( date ) - 1;
-    t.tm_mday = day( date );
-    t.tm_hour = hour( time );
-    t.tm_min  = min( time );
-    t.tm_sec  = sec2( time ) * 2;
-    t.tm_wday = -1;
-    t.tm_yday = -1;
-    t.tm_isdst = -1;
-    return( mktime( &t ) );
-}
+#include "dttime.c"

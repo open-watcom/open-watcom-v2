@@ -56,6 +56,9 @@
     #include <windows.h>
     #include "_dtaxxx.h"
 #endif
+#if !defined( __UNIX__ ) && !defined( __NT__ )
+    #include "dttime.h"
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
@@ -259,22 +262,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     /*
      * DOS date/time format
      */
-    {
-        struct tm t;
-        unsigned short  date = dir->d_date;
-        unsigned short  time = dir->d_time;
-
-        t.tm_year = ((date >> 9) & 0x007f) + 80;
-        t.tm_mon  = ((date >> 5) & 0x000f) - 1;
-        t.tm_mday = (date & 0x001f);
-        t.tm_hour = ((time >> 11) & 0x001f);
-        t.tm_min  = ((time >> 5) & 0x003f);
-        t.tm_sec  = (time & 0x001f) * 2;
-        t.tm_wday = -1;
-        t.tm_yday = -1;
-        t.tm_isdst = -1;
-        ftime = mktime( &t );
-    }
+    ftime = __dos2ttime( dir->d_date, dir->d_time );
 #endif
     ptime = localtime( &ftime );
     touchTime = *ptime;

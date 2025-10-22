@@ -113,11 +113,11 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         }
         buf->st_dev = buf->st_rdev = 0;
         /* handle timestamps */
-        buf->st_ctime = _d2ttime( TODDATE( info.fdateCreation ),
+        buf->st_ctime = __dos2ttime( TODDATE( info.fdateCreation ),
                                   TODTIME( info.ftimeCreation ) );
-        buf->st_atime = _d2ttime( TODDATE( info.fdateLastAccess ),
+        buf->st_atime = __dos2ttime( TODDATE( info.fdateLastAccess ),
                                   TODTIME( info.ftimeLastAccess ) );
-        buf->st_mtime = _d2ttime( TODDATE( info.fdateLastWrite ),
+        buf->st_mtime = __dos2ttime( TODDATE( info.fdateLastWrite ),
                                   TODTIME( info.ftimeLastWrite ) );
         buf->st_btime = buf->st_mtime;
 #if defined( __INT64__ ) && !defined( _M_I86 )

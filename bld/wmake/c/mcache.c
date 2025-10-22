@@ -40,15 +40,15 @@
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
-#include "dostimet.h"
+#include "dttime.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "pathgrp2.h"
 #include "mcache.h"
 #if defined( USE_DIR_CACHE ) && defined( __NT__ )
-	#include <windows.h>
-	#include "_dtaxxx.h"
+    #include <windows.h>
+    #include "_dtaxxx.h"
 #endif
 
 #include "clibext.h"
@@ -160,19 +160,19 @@ static time_t get_direntry_timestamp( struct dirent *entry )
     /*
      * OW1.x bootstrap compiler workaround
      */
-    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
+    return( __dos2ttime( entry->d_date, entry->d_time ) );
 #elif defined( __NT__ )
     return( DTAXXX_TSTAMP_OF( entry->d_dta ) );
 #elif defined( __RDOS__ )
-    unsigned short date;
-    unsigned short time;
-    unsigned long msb = (entry->d_modify_time >> 32) & 0xFFFFFFFF;
+    unsigned short dos_date;
+    unsigned short dos_time;
+    unsigned long msb = ( entry->d_modify_time >> 32 ) & 0xFFFFFFFF;
     unsigned long lsb = entry->d_modify_time & 0xFFFFFFFF;
 
-    RdosTicsToDosTimeDate(msb, lsb, &date, &time);
-    return( _dos2timet( date * 0x10000L + time ) );
+    RdosTicsToDosTimeDate( msb, lsb, &dos_date, &dos_time );
+    return( __dos2ttime( dos_date, dos_time ) );
 #else
-    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
+    return( __dos2ttime( entry->d_date, entry->d_time ) );
 #endif
 }
 

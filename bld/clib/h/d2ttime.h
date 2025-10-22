@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <time.h>
+#include "dttime.h"
+
 
 #define TODDATE(d) (*(unsigned short *)&d)
 #define TODTIME(t) (*(unsigned short *)&t)
-
-extern time_t _WCNEAR _d2ttime( unsigned short date, unsigned short time );

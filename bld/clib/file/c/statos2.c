@@ -196,11 +196,11 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
             return( -1 );
         }
         /* set timestamps */
-        buf->st_ctime = _d2ttime( TODDATE( dir_buff.fdateCreation ),
+        buf->st_ctime = __dos2ttime( TODDATE( dir_buff.fdateCreation ),
                                   TODTIME( dir_buff.ftimeCreation ) );
-        buf->st_atime = _d2ttime( TODDATE( dir_buff.fdateLastAccess ),
+        buf->st_atime = __dos2ttime( TODDATE( dir_buff.fdateLastAccess ),
                                   TODTIME( dir_buff.ftimeLastAccess ) );
-        buf->st_mtime = _d2ttime( TODDATE( dir_buff.fdateLastWrite ),
+        buf->st_mtime = __dos2ttime( TODDATE( dir_buff.fdateLastWrite ),
                                   TODTIME( dir_buff.ftimeLastWrite ) );
         buf->st_btime = buf->st_mtime;
 #if defined( __INT64__ ) && !defined( _M_I86 )

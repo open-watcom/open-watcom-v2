@@ -101,6 +101,7 @@ objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
 
+d2ttime_opts =-I"$(watcom_dir)/c"
 filerdk_opts =-I"$(clib_dir)/streamio/h"
 filerdu_opts =-I"$(clib_dir)/streamio/h"
 qread_opts   =-I"$(clib_dir)/streamio/h"

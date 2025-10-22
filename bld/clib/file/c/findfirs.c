@@ -236,11 +236,11 @@
 /******************************************************************************/
 {
     /*** Handle the timestamps ***/
-    fileinfo->time_create = _d2ttime( TODDATE( ffb->fdateCreation ),
+    fileinfo->time_create = __dos2ttime( TODDATE( ffb->fdateCreation ),
                                         TODTIME( ffb->ftimeCreation ) );
-    fileinfo->time_access = _d2ttime( TODDATE( ffb->fdateLastAccess ),
+    fileinfo->time_access = __dos2ttime( TODDATE( ffb->fdateLastAccess ),
                                         TODTIME( ffb->ftimeLastAccess ) );
-    fileinfo->time_write  = _d2ttime( TODDATE( ffb->fdateLastWrite ),
+    fileinfo->time_write  = __dos2ttime( TODDATE( ffb->fdateLastWrite ),
                                         TODTIME( ffb->ftimeLastWrite ) );
 
   #if defined( __INT64__ ) && !defined( _M_I86 )
@@ -360,8 +360,8 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
     /*** Handle the timestamps ***/
   #ifdef __WATCOM_LFN__
     if( IS_LFN( findbuf->reserved ) && DTALFN_CRTIME_OF( findbuf->reserved ) ) {
-        fileinfo->time_create = _d2ttime( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
-        fileinfo->time_access = _d2ttime( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
+        fileinfo->time_create = __dos2ttime( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
+        fileinfo->time_access = __dos2ttime( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
     } else {
   #endif
         fileinfo->time_create = -1L;
@@ -369,7 +369,7 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
   #ifdef __WATCOM_LFN__
     }
   #endif
-    fileinfo->time_write = _d2ttime( findbuf->wr_date, findbuf->wr_time );
+    fileinfo->time_write = __dos2ttime( findbuf->wr_date, findbuf->wr_time );
     /*** Handle the file size ***/
   #ifdef __INT64__
     LIB_LODWORD( fileinfo->size ) = findbuf->size;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,14 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  conversion function for autodependency date/time stamps
+* Description:  prototype and macros for DOS date/time stamps (local timezone)
 *
 ****************************************************************************/
 
-#ifndef _DOSTIMET_H
-#define _DOSTIMET_H
 
-time_t _timet2dos(time_t x);
-time_t _dos2timet(time_t x);
+#ifndef _DTTIME_H_INCLUDED
+#define _DTTIME_H_INCLUDED
+
+#ifndef _INTERNAL
+    #define _INTERNAL
+#endif
+#include <time.h>
+
+extern time_t   _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time );
+extern time_t   _INTERNAL __ttime2dos( time_t stamp );
 
 #endif
