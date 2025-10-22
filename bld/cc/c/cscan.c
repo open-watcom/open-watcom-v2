@@ -757,12 +757,8 @@ static TOKEN doScanNum( void )
             }
         }
         if( usuffix ) {
-#if TARGET_INT < TARGET_LONG
-            if( U64CmpC32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
-#else
             Set64Val( const_max, TARGET_UINT_MAX, 0 );
             if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
-#endif
                 ConstType = TYP_UINT;
                 break;
             }
