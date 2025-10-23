@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +38,15 @@ extern "C" {
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
 
-#include "pushpck1.h"
 typedef struct {
     uint_32     time;           /* file's time taken from stat */
     uint_16     len;            /* sizeof the name array */
     char        name[1];        /* dynamic array */
-} _WCUNALIGNED DepInfo;
-#include "poppck.h"
+} DepInfo;
 
 extern DepInfo  *WResGetAutoDep( const char *fname );
 extern void     WResFreeAutoDep( DepInfo *ptr );
+extern void     *WResReadBaseDepinfo( DepInfo *dst, const void *src );
 
 #ifdef __cplusplus
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,18 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "wresall.h"
 #include "autodep.h"
 #include "reserr.h"
 #include "wresrtns.h"
+
+
+void *WResReadBaseDepinfo( DepInfo *dst, const void *src )
+{
+    memcpy( (void *)dst, src, offsetof( DepInfo, name ) );
+    return(  (char *)src + offsetof( DepInfo, name ) );
+}
 
 DepInfo *WResGetAutoDep( const char *fname )
 {
