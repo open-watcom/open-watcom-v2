@@ -36,4 +36,5 @@
 
 #include "variety.h"
 
+#define DTTIME_READ_ONLY
 #include "dttime.c"

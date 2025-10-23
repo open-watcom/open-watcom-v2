@@ -51,27 +51,35 @@ enum {
     DATE_YEAR_F = 0xfe00
 };
 
-static void dos2tm( unsigned short dos_date, unsigned short dos_time, struct tm *t )
-/**********************************************************************************/
+time_t _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time )
+/******************************************************************************/
 {
-    t->tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
-    t->tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
-    t->tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+    struct tm t;
 
-    t->tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
-    t->tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
-    t->tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
 
-    t->tm_wday  = -1;
-    t->tm_yday  = -1;
-    t->tm_isdst = -1;
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( mktime( &t ) );
 }
 
-static time_t tm2dos( struct tm *t )
-/**********************************/
+#ifndef DTTIME_READ_ONLY
+time_t _INTERNAL __ttime2dos( time_t stamp )
+/******************************************/
 {
-    unsigned short dos_time;
-    unsigned short dos_date;
+    struct tm       *t;
+    unsigned short  dos_time;
+    unsigned short  dos_date;
+
+    t = localtime( &stamp );
 
     dos_date = ( ( t->tm_year - 80 ) << DATE_YEAR_B )
              | ( ( t->tm_mon + 1 ) << DATE_MON_B )
@@ -81,21 +89,4 @@ static time_t tm2dos( struct tm *t )
              | ( ( t->tm_sec / 2 ) << TIME_SEC_B );
     return( dos_date * 0x10000UL + dos_time );
 }
-
-time_t _INTERNAL __dos2ttime( unsigned short date, unsigned short time )
-/**********************************************************************/
-{
-    struct tm t;
-
-    dos2tm( date, time, &t );
-    return( mktime( &t ) );
-}
-
-time_t _INTERNAL __ttime2dos( time_t x )
-/**************************************/
-{
-    struct tm       *xtime;
-
-    xtime = localtime( &x );
-    return( tm2dos( xtime ) );
-}
+#endif

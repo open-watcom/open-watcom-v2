@@ -72,37 +72,6 @@ static short const month_start_days[] = {
     31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
 };
 
-static void dos2tm( unsigned short dos_date, unsigned short dos_time, struct tm *t )
-/**********************************************************************************/
-{
-    t->tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
-    t->tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
-    t->tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
-
-    t->tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
-    t->tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
-    t->tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
-
-    t->tm_wday  = -1;
-    t->tm_yday  = -1;
-    t->tm_isdst = -1;
-}
-
-static time_t tm2dos( struct tm *t )
-/**********************************/
-{
-    unsigned short dos_time;
-    unsigned short dos_date;
-
-    dos_date = ( ( t->tm_year - 80 ) << DATE_YEAR_B )
-             | ( ( t->tm_mon + 1 ) << DATE_MON_B )
-             | ( t->tm_mday << DATE_DAY_B );
-    dos_time = ( ( t->tm_hour ) << TIME_HOUR_B )
-             | ( t->tm_min << TIME_MIN_B )
-             | ( ( t->tm_sec / 2 ) << TIME_SEC_B );
-    return( dos_date * 0x10000UL + dos_time );
-}
-
 static bool is_leapyear( unsigned year )
 {
     if( year & 3 )
@@ -150,17 +119,37 @@ static time_t mktime_utc( const struct tm *t )
 time_t _INTERNAL __ttime2dosu( time_t stamp )
 /*******************************************/
 {
-    struct tm       *xtime;
+    struct tm       *t;
+    unsigned short  dos_time;
+    unsigned short  dos_date;
 
-    xtime = gmtime( &stamp );
-    return( tm2dos( xtime ) );
+    t = gmtime( &stamp );
+
+    dos_date = ( ( t->tm_year - 80 ) << DATE_YEAR_B )
+             | ( ( t->tm_mon + 1 ) << DATE_MON_B )
+             | ( t->tm_mday << DATE_DAY_B );
+    dos_time = ( ( t->tm_hour ) << TIME_HOUR_B )
+             | ( t->tm_min << TIME_MIN_B )
+             | ( ( t->tm_sec / 2 ) << TIME_SEC_B );
+    return( dos_date * 0x10000UL + dos_time );
 }
 
 time_t _INTERNAL __dosu2ttime( unsigned short dos_date, unsigned short dos_time )
 /*******************************************************************************/
 {
-    struct tm       xtime;
+    struct tm       t;
 
-    dos2tm( dos_date, dos_time, &xtime );
-    return( mktime_utc( &xtime ) );
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( mktime_utc( &t ) );
 }

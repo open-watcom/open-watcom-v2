@@ -39,6 +39,8 @@
 #include <time.h>
 
 extern time_t   _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time );
+#ifndef DTTIME_READ_ONLY
 extern time_t   _INTERNAL __ttime2dos( time_t stamp );
+#endif
 
 #endif
