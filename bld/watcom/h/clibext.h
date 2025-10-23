@@ -33,6 +33,22 @@
 
 #if __WATCOMC__ < 1310
 
+#if ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
+/*
+ * temporary fix for older builds of OW 2.0
+ */
+#ifndef _WCI86NEAR
+#define _WCI86NEAR
+#endif
+#ifndef _WCI86FAR
+#define _WCI86FAR
+#endif
+#ifndef _WCI86HUGE
+#define _WCI86HUGE
+#endif
+
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
