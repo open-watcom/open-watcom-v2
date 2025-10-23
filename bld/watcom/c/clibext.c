@@ -29,11 +29,23 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
+/****************************************************************************
+*
+* Notes:
+*   botstrap tools use only single-byte encoding that no need to deal with
+*   multi-byte encodings or wide character support
+*
+****************************************************************************/
+
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
     /*
      * We don't need any of this stuff, but being able to build this
      * module simplifies makefiles.
      */
+#else
+
+#if defined( __WATCOMC__ )
+
 #else
 
 #include <string.h>
@@ -47,23 +59,19 @@
 #include "wio.h"
 #include "wreslang.h"
 
+#endif
+
 #include "clibint.h"
 #include "clibext.h"
 
 
 /****************************************************************************
 *
-* Notes:
-*   botstrap tools use only single-byte encoding that no need to deal with
-*   multi-byte encodings or wide character support
-*
-****************************************************************************/
-
-/****************************************************************************
-*
 * Description:  Platform independent macros.
 *
 ****************************************************************************/
+
+#ifndef __WATCOMC__
 
 #define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
 #define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
@@ -203,6 +211,8 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
     outp = pcopy( fn, outp, fnamep, dotp );
     outp = pcopy( ext, outp, dotp, inp );
 }
+
+#endif
 
 #if defined(__UNIX__)
 
@@ -472,24 +482,13 @@ char *strrev( char *str )
 
 /****************************************************************************
 *
-* Description:  Implementation of _cmdname().
+* Description:  Implementation of _mkgmtime.
 *
 ****************************************************************************/
 
-#ifdef __OSX__
+#if defined( __OSX__ ) || defined( __WATCOMC__ )
 
 #include <time.h>
-#include <mach-o/dyld.h>
-
-/* No procfs on Darwin, have to use special API */
-
-char *_cmdname( char *name )
-{
-    uint32_t    len = 4096;
-
-    _NSGetExecutablePath( name, &len );
-    return( name );
-}
 
 #define SECONDS_FROM_1900_TO_1970       2208988800UL
 #define SECONDS_PER_DAY                 (24UL * 60UL * 60UL)
@@ -529,15 +528,15 @@ static short const month_start_days[] = {
     31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
 };
 
-static bool is_leapyear( unsigned year )
+static int is_leapyear( unsigned year )
 {
     if( year & 3 )
-        return( false );
+        return( 0 );
     if( ( year % 100 ) != 0 )
-        return( true );
+        return( 1 );
     if( ( year % 400 ) == 0 )
-        return( true );
-    return( false );
+        return( 1 );
+    return( 0 );
 }
 
 static unsigned long years_days( unsigned year )
@@ -571,6 +570,30 @@ time_t _mkgmtime( struct tm *t )
         return( (time_t)-1 );
     return( ( days - DAYS_FROM_1900_TO_1970 ) * SECONDS_PER_DAY
             + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
+}
+
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of _cmdname().
+*
+****************************************************************************/
+
+#if defined( __WATCOMC__ )
+
+#elif defined( __OSX__ )
+
+#include <mach-o/dyld.h>
+
+/* No procfs on Darwin, have to use special API */
+
+char *_cmdname( char *name )
+{
+    uint32_t    len = 4096;
+
+    _NSGetExecutablePath( name, &len );
+    return( name );
 }
 
 #elif defined( __BSD__ )
@@ -801,7 +824,9 @@ char *_cmdname( char *name )
 *
 ****************************************************************************/
 
-#if defined( _MSC_VER )
+#if defined( __WATCOMC__ )
+
+#elif defined( _MSC_VER )
 
 int _bgetcmd( char *buffer, int len )
 {
@@ -850,7 +875,7 @@ int _bgetcmd( char *buffer, int len )
     return( cmdlen );
 }
 
-#else   /* _MSC_VER */
+#else   /* others */
 
 int (_bgetcmd)( char *buffer, int len )
 {
@@ -1786,6 +1811,8 @@ unsigned sleep( unsigned time )
 *
 ****************************************************************************/
 
+#ifndef __WATCOMC__
+
 wres_lang_id _WResLanguage( void )
 {
     return( RLE_ENGLISH );
@@ -1813,3 +1840,5 @@ char *get_dllname( char *buf, int len )
 }
 
 #endif /* ! __WATCOMC__ */
+
+#endif /* ! __WATCOMC__ > 1.9 */

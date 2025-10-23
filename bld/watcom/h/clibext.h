@@ -29,7 +29,31 @@
 ****************************************************************************/
 
 
-#ifndef __WATCOMC__
+#ifdef __WATCOMC__
+
+#if __WATCOMC__ < 1300
+
+#include <time.h>
+
+extern time_t   _mkgmtime( struct tm * );
+
+#elif ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
+/*
+ * temporary fix for older builds of OW 2.0
+ */
+#ifndef _WCI86NEAR
+#define _WCI86NEAR
+#endif
+#ifndef _WCI86FAR
+#define _WCI86FAR
+#endif
+#ifndef _WCI86HUGE
+#define _WCI86HUGE
+#endif
+
+#endif
+
+#else
 /*
  * clibext.h:
  * This file contains defines and prototypes of functions that are present
@@ -205,23 +229,6 @@ extern char     *get_dllname( char *buf, int len );
 
 #ifdef __cplusplus
 }
-#endif
-
-#else   /* __WATCOMC__ */
-
-/*
- * temporary fix for older builds of OW 2.0
- */
-#if ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
-#ifndef _WCI86NEAR
-#define _WCI86NEAR
-#endif
-#ifndef _WCI86FAR
-#define _WCI86FAR
-#endif
-#ifndef _WCI86HUGE
-#define _WCI86HUGE
-#endif
 #endif
 
 #endif  /* !__WATCOMC__ */
