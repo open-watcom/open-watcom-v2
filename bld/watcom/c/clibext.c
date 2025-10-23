@@ -46,6 +46,8 @@
 
 #if defined( __WATCOMC__ )
 
+#include <stddef.h> /* need to load _comdef.h */
+
 #else
 
 #include <string.h>
