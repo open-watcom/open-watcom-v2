@@ -478,6 +478,7 @@ char *strrev( char *str )
 
 #ifdef __OSX__
 
+#include <time.h>
 #include <mach-o/dyld.h>
 
 /* No procfs on Darwin, have to use special API */
