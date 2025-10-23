@@ -34,7 +34,7 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 !else
     $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_opts)$-
     @for %f in ($+$(dlltarg_objs)$-) do @%append $^&.lnd file %f
-    @for %l in ($+$(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
+    @for %l in ($+$(old_watcom_extra_libs_dll) $(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif

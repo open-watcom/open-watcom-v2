@@ -471,18 +471,32 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!if !defined( bootstrap ) || ( $(%OWTOOLSVER) > 1300 )
-# this can be used for OW 2.1 because older versions of OW 2.0
-# not support these new options
-watcom_common_cflags   = -wx-wce=C310
-watcom_common_cxxflags = -w8-wce=P579
-c_flags          = $(watcom_common_cflags) -zastd=c99
-!else
+!ifdef __WATCOM_TOOLS__
+!  ifeq __WATCOM_TOOLS__ 1300
+!    if defined( bootstrap )
+# OW 2.0 bootstrap compiler can be old OW 2.0 without new options
 watcom_common_cflags   = -wx-wce=310
 watcom_common_cxxflags = -w8-wce=579
 c_flags          = $(watcom_common_cflags)
-!endif
+!    else
+# new OW 2.0 build compiler is OK to use new options
+watcom_common_cflags   = -wx-wce=C310
+watcom_common_cxxflags = -w8-wce=P579
+c_flags          = $(watcom_common_cflags) -zastd=c99
+!    endif
+!  else	if $(__WATCOM_TOOLS__) < 1300
+# OW 1.9 bootstrap compiler doesn't support new options
+watcom_common_cflags   = -wx-wce=310
+watcom_common_cxxflags = -w8-wce=579
+c_flags          = $(watcom_common_cflags)
+!  else	# __WATCOM_TOOLS__ > 1300
+# OW 2.1 will support new options
+watcom_common_cflags   = -wx-wce=C310
+watcom_common_cxxflags = -w8-wce=P579
+c_flags          = $(watcom_common_cflags) -zastd=c99
+!  endif
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+!endif
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host))
 cppflags         = $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)

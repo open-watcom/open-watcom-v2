@@ -737,14 +737,26 @@ bld_cxx_flags   = #-zastd=c++98
 
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-! if $(%OWTOOLSVER) > 1300
-# this can be used for OW 2.1 because older versions of OW 2.0
-# not support these new options
-bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
-bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
-! else
+! ifdef __WATCOM_TOOLS__
+!   ifeq __WATCOM_TOOLS__ 1300
+# older OW 2.0 bootstrap compiler doesn't support new options
 bld_watcom_common_cflags   =-wx-wce=310-za99
 bld_watcom_common_cxxflags =-w8-wce=579
+!   else if $(__WATCOM_TOOLS__) < 1300
+# OW 1.9 bootstrap compiler doesn't support new options
+bld_watcom_common_cflags   =-wx-wce=310-za99
+bld_watcom_common_cxxflags =-w8-wce=579
+!     ifdef bootstrap
+# OW 1.9 bootstrap compiler requires watcom library
+# this library add missing functions or fix bug in OW 1.9
+old_watcom_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+old_watcom_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+!     endif
+!   else    # $(__WATCOM_TOOLS__) > 1300
+# OW 2.1 bootstrap compiler supports new options
+bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
+bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
+!   endif
 ! endif
 
 ! ifeq debug 0
