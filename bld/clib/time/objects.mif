@@ -20,8 +20,9 @@
 !inject gtmodrdu.obj                                                                            rdu rdk
 !inject leapyear.obj    d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject localtim.obj    d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject locmktim.obj    d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject locmktim.obj    d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject mktime.obj      d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject mkgmtime.obj    d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject strdate.obj     d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject strftime.obj    d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject strtime.obj     d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
