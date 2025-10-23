@@ -1,7 +1,7 @@
-.func _mkgmtime
+.func timegm
 .synop begin
 #include <time.h>
-time_t _mkgmtime( struct tm *timeptr );
+time_t timegm( struct tm *timeptr );
 .im structtm
 .ixfunc2 '&TimeFunc' &funcb
 .synop end
