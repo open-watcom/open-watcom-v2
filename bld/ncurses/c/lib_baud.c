@@ -32,13 +32,13 @@
  ****************************************************************************/
 
 /*
- *	lib_baudrate.c
+ *  lib_baudrate.c
  *
  */
 
 #include <curses_p.h>
-#include <term.h>		/* cur_term, pad_char */
-#include <termcap.h>		/* ospeed */
+#include <term.h>       /* cur_term, pad_char */
+#include <termcap.h>    /* ospeed */
 
 /*
  * These systems use similar header files, which define B1200 as 1200, etc.,
@@ -79,16 +79,16 @@
 MODULE_ID("$Id: lib_baudrate.c,v 1.22 2002/01/19 23:07:53 Andrey.A.Chernov Exp $")
 
 /*
- *	int
- *	baudrate()
+ *  int
+ *  baudrate()
  *
- *	Returns the current terminal's baud rate.
+ *  Returns the current terminal's baud rate.
  *
  */
 
 struct speed {
-    int s;			/* value for 'ospeed' is an index */
-    int sp;			/* the actual speed */
+    int s;          /* value for 'ospeed' is an index */
+    int sp;         /* the actual speed */
 };
 
 static struct speed const speeds[] =
@@ -148,18 +148,18 @@ _nc_baudrate(int OSpeed)
     unsigned i;
 
     if (OSpeed == last_OSpeed) {
-	result = last_baudrate;
+        result = last_baudrate;
     } else {
-	result = ERR;
-	if (OSpeed >= 0) {
-	    for (i = 0; i < SIZEOF(speeds); i++) {
-		if (speeds[i].s == OSpeed) {
-		    result = speeds[i].sp;
-		    break;
-		}
-	    }
-	}
-	last_baudrate = result;
+        result = ERR;
+        if (OSpeed >= 0) {
+            for (i = 0; i < SIZEOF(speeds); i++) {
+                if (speeds[i].s == OSpeed) {
+                    result = speeds[i].sp;
+                    break;
+                }
+            }
+        }
+        last_baudrate = result;
     }
     return (result);
 }
@@ -171,12 +171,12 @@ _nc_ospeed(int BaudRate)
     unsigned i;
 
     if (BaudRate >= 0) {
-	for (i = 0; i < SIZEOF(speeds); i++) {
-	    if (speeds[i].sp == BaudRate) {
-		result = speeds[i].s;
-		break;
-	    }
-	}
+        for (i = 0; i < SIZEOF(speeds); i++) {
+            if (speeds[i].sp == BaudRate) {
+                result = speeds[i].s;
+                break;
+            }
+        }
     }
     return (result);
 }
@@ -195,12 +195,12 @@ baudrate(void)
      */
 #ifdef TRACE
     if (SP && !isatty(fileno(SP->_ofp))
-	&& getenv("BAUDRATE") != 0) {
-	int ret;
-	if ((ret = _nc_getenv_num("BAUDRATE")) <= 0)
-	    ret = 9600;
-	ospeed = _nc_ospeed(ret);
-	returnCode(ret);
+      && getenv("BAUDRATE") != 0) {
+        int ret;
+        if ((ret = _nc_getenv_num("BAUDRATE")) <= 0)
+            ret = 9600;
+        ospeed = _nc_ospeed(ret);
+        returnCode(ret);
     }
 #endif
 
@@ -216,7 +216,7 @@ baudrate(void)
     result = _nc_baudrate(ospeed);
 #endif
     if (cur_term != 0)
-	cur_term->_baudrate = result;
+        cur_term->_baudrate = result;
 
     returnCode(result);
 }

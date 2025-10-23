@@ -1,7 +1,7 @@
 #include "fail.h"
 
 #define FOO /*
-testing */	1
+testing */  1
 
 int hi = FOO;
 

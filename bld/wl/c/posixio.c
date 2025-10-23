@@ -356,7 +356,7 @@ bool QIsDevice( f_handle file )
 
     if( fstat( file, &st ) == 0 ) {
         if( S_ISCHR( st.st_mode ) ) {
-    		return( true );
+            return( true );
         }
     }
     return( false );

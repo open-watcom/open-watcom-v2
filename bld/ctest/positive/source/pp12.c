@@ -11,10 +11,10 @@ int main()
     int i;
 
     for( i = 0; i < 8; ++i ) {
-	if( p[i] != ( 'a' + i ) ) fail(__LINE__);
+        if( p[i] != ( 'a' + i ) ) fail(__LINE__);
     }
     for( i = 0; i < 10; ++i ) {
-	if( q[i] != ( '0' + i ) ) fail(__LINE__);
+        if( q[i] != ( '0' + i ) ) fail(__LINE__);
     }
     _PASS;
 }

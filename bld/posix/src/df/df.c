@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@
 #include <ctype.h>
 #include <direct.h>
 #if defined( __OS2__ )
-	#include <os2.h>
+    #include <os2.h>
 #elif defined( __NT__ )
-	#include <windows.h>
+    #include <windows.h>
 #endif
 #include "misc.h"
 #include "getopt.h"

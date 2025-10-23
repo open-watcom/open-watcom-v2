@@ -5,10 +5,10 @@ int is_one( double d )
 {
     d -= 1.0;
     if( d < 0 ) {
-	d = -d;
+        d = -d;
     }
     if( d < 2 * DBL_EPSILON ) {
-	return 1;
+        return 1;
     }
     return 0;
 }

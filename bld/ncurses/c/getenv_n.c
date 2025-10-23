@@ -31,7 +31,7 @@
  ****************************************************************************/
 
 /*
- *	getenv_num.c -- obtain a number from the environment
+ *  getenv_num.c -- obtain a number from the environment
  */
 
 #include <curses_p.h>
@@ -46,11 +46,11 @@ _nc_getenv_num(const char *name)
     long value;
 
     if ((src == 0)
-	|| (value = strtol(src, &dst, 0)) < 0
-	|| (dst == src)
-	|| (*dst != '\0')
-	|| (int) value < value)
-	value = -1;
+      || (value = strtol(src, &dst, 0)) < 0
+      || (dst == src)
+      || (*dst != '\0')
+      || (int) value < value)
+        value = -1;
 
     return (int) value;
 }

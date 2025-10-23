@@ -12,16 +12,16 @@ int main() {
     E i;
 
     for( i = v0, xx=0; i != vf; ++i, ++xx ) {
-	check( i, xx, __LINE__ );
+        check( i, xx, __LINE__ );
     }
     for( i = vf, xx = 0x0f; i != v0; --i, --xx ) {
-	check( i, xx, __LINE__ );
+        check( i, xx, __LINE__ );
     }
     for( i = v0, xx=0; i != vf; i+=1, xx+=1 ) {
-	check( i, xx, __LINE__ );
+        check( i, xx, __LINE__ );
     }
     for( i = (xx=0x0f,vf); i != v0; i-=1, xx-=1 ) {
-	check( i, xx, __LINE__ );
+        check( i, xx, __LINE__ );
     }
     _PASS;
 }

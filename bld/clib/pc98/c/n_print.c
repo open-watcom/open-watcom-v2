@@ -72,7 +72,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short      ret;
-        unsigned short		data;
+        unsigned short      data;
 #ifdef _M_I86
         union REGS          regs;
         struct SREGS        segregs;

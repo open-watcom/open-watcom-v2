@@ -14,15 +14,15 @@ struct {
     struct b b1;
     struct { int c; } d;
     struct e {
-	union {
-	    int f;
-	};
-	struct {
-	    int g;
-	} *h;
-	int i;
-	struct j {
-	    int k;
-	} l, *m;
+        union {
+            int f;
+        };
+        struct {
+            int g;
+        } *h;
+        int i;
+        struct j {
+            int k;
+        } l, *m;
     } o;
 } name;

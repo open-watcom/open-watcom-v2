@@ -3,8 +3,8 @@
 #ifndef NCURSES_DLL_H_incl
 #define NCURSES_DLL_H_incl 1
 
-#undef NCURSES_DLL	/* cygwin dll not implemented */
-#define NCURSES_STATIC	/* cygwin dll not implemented */
+#undef NCURSES_DLL      /* cygwin dll not implemented */
+#define NCURSES_STATIC  /* cygwin dll not implemented */
 
 #if defined(__CYGWIN__)
 #  if defined(NCURSES_DLL)

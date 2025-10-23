@@ -7,7 +7,7 @@ void clr( char **b, unsigned *s )
     int i;
 
     for( i = 0; i < *s; ++i ) {
-	(*b)[i] = 0;
+        (*b)[i] = 0;
     }
 }
 

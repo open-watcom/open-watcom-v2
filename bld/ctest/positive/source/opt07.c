@@ -5,22 +5,22 @@ int is_one( double d )
 {
     d -= 1.0;
     if( d < 0 ) {
-	d = -d;
+        d = -d;
     }
     if( d < 2 * DBL_EPSILON ) {
-	return 1;
+        return 1;
     }
     return 0;
 }
 
-#define test_cg( k )	\
-	{ \
-	    double t1, t2; \
-	    t1 = (double) k; \
-	    t2 = t1 / (double) k; \
-	    if( ! is_one( t2 ) ) fail(__LINE__); \
-	    alt_test( t1, (double) k, __LINE__); \
-	}
+#define test_cg( k )    \
+    { \
+        double t1, t2; \
+        t1 = (double) k; \
+        t2 = t1 / (double) k; \
+        if( ! is_one( t2 ) ) fail(__LINE__); \
+        alt_test( t1, (double) k, __LINE__); \
+    }
 
 void alt_test( double t1, double k, unsigned line )
 {

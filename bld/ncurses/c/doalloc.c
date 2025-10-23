@@ -47,12 +47,12 @@ _nc_doalloc(void *oldp, size_t amount)
     void *newp;
 
     if (oldp != 0) {
-	if ((newp = realloc(oldp, amount)) == 0) {
-	    free(oldp);
-	    errno = ENOMEM;	/* just in case 'free' reset */
-	}
+        if ((newp = realloc(oldp, amount)) == 0) {
+            free(oldp);
+            errno = ENOMEM; /* just in case 'free' reset */
+        }
     } else {
-	newp = malloc(amount);
+        newp = malloc(amount);
     }
     return newp;
 }
@@ -63,12 +63,12 @@ _nc_strdup(const char *src)
 {
     char *dst;
     if (src != 0) {
-	dst = typeMalloc(char, strlen(src) + 1);
-	if (dst != 0) {
-	    (void) strcpy(dst, src);
-	}
+        dst = typeMalloc(char, strlen(src) + 1);
+        if (dst != 0) {
+            (void) strcpy(dst, src);
+        }
     } else {
-	dst = 0;
+        dst = 0;
     }
     return dst;
 }

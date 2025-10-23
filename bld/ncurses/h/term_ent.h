@@ -34,7 +34,7 @@
 /* $Id: term_entry.h,v 1.32 2001/03/24 21:53:10 tom Exp $ */
 
 /*
- *	term_entry.h -- interface to entry-manipulation code
+ *  term_entry.h -- interface to entry-manipulation code
  */
 
 #ifndef NCURSES_TERM_ENTRY_H_incl
@@ -46,25 +46,25 @@ extern "C" {
 
 #include <term.h>
 
-#define MAX_USES	32
-#define MAX_CROSSLINKS	16
+#define MAX_USES        32
+#define MAX_CROSSLINKS  16
 
 typedef struct entry {
-	TERMTYPE	tterm;
-	int		nuses;
-	struct
-        {
-	    char		*name;
-	    struct entry	*link;
-	    long	line;
-        }
-	uses[MAX_USES];
-	int		ncrosslinks;
-	struct entry	*crosslinks[MAX_CROSSLINKS];
-	long		cstart, cend;
-	long		startline;
-	struct entry	*next;
-	struct entry	*last;
+    TERMTYPE    tterm;
+    int         nuses;
+    struct
+    {
+        char            *name;
+        struct entry    *link;
+        long            line;
+    }
+    uses[MAX_USES];
+    int             ncrosslinks;
+    struct entry    *crosslinks[MAX_CROSSLINKS];
+    long            cstart, cend;
+    long            startline;
+    struct entry    *next;
+    struct entry    *last;
 }
 ENTRY;
 
@@ -92,9 +92,9 @@ ENTRY;
 
 extern NCURSES_EXPORT_VAR(ENTRY *) _nc_head;
 extern NCURSES_EXPORT_VAR(ENTRY *) _nc_tail;
-#define for_entry_list(qp)	for (qp = _nc_head; qp; qp = qp->next)
+#define for_entry_list(qp)  for (qp = _nc_head; qp; qp = qp->next)
 
-#define MAX_LINE	132
+#define MAX_LINE        132
 
 #define NULLHOOK        (bool(*)(ENTRY *))0
 
@@ -102,19 +102,19 @@ extern NCURSES_EXPORT_VAR(ENTRY *) _nc_tail;
  * Note that WANTED and PRESENT are not simple inverses!  If a capability
  * has been explicitly cancelled, it's not considered WANTED.
  */
-#define WANTED(s)	((s) == ABSENT_STRING)
-#define PRESENT(s)	(((s) != ABSENT_STRING) && ((s) != CANCELLED_STRING))
+#define WANTED(s)       ((s) == ABSENT_STRING)
+#define PRESENT(s)      (((s) != ABSENT_STRING) && ((s) != CANCELLED_STRING))
 
 #define ANDMISSING(p,q) \
-		{if (PRESENT(p) && !PRESENT(q)) _nc_warning(#p " but no " #q);}
+        {if (PRESENT(p) && !PRESENT(q)) _nc_warning(#p " but no " #q);}
 
 #define PAIRED(p,q) \
-		{ \
-		if (PRESENT(q) && !PRESENT(p)) \
-			_nc_warning(#q " but no " #p); \
-		if (PRESENT(p) && !PRESENT(q)) \
-			_nc_warning(#p " but no " #q); \
-		}
+        { \
+            if (PRESENT(q) && !PRESENT(p)) \
+                _nc_warning(#q " but no " #p); \
+            if (PRESENT(p) && !PRESENT(q)) \
+                _nc_warning(#p " but no " #q); \
+        }
 
 /* alloc_entry.c: elementary allocation code */
 extern NCURSES_EXPORT(ENTRY *) _nc_copy_entry (ENTRY *oldp);
@@ -131,7 +131,7 @@ extern NCURSES_EXPORT(void) _nc_copy_termtype (TERMTYPE *, TERMTYPE *);
 extern NCURSES_EXPORT(void) _nc_free_termtype (TERMTYPE *);
 
 /* lib_acs.c */
-extern NCURSES_EXPORT(void) _nc_init_acs (void);	/* corresponds to traditional 'init_acs()' */
+extern NCURSES_EXPORT(void) _nc_init_acs (void);    /* corresponds to traditional 'init_acs()' */
 
 /* parse_entry.c: entry-parsing code */
 #if NCURSES_XNAMES

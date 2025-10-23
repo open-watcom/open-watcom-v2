@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ typedef enum {
     ASCIZ
 } string_type;
 
-static const char	*getDataTypeStr( unsigned size )
+static const char   *getDataTypeStr( unsigned size )
 {
     if( IsMasmOutput ) {
         return( masmTypes[size] );
@@ -256,7 +256,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
 {
     size_t      i;
     size_t      d;
-    const char	*datatype;
+    const char  *datatype;
     dis_value   value;
 
     datatype = getDataTypeStr( 1 );

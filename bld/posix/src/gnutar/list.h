@@ -36,13 +36,13 @@ extern void print_header( char *xname );
 extern void read_and( void (*do_something)( char *dummy ) );
 
 extern void list_archive( char *xname );
-extern void decode_header( union record *header, struct stat *st, 
+extern void decode_header( union record *header, struct stat *st,
                      int *stdp, int wantug );
 extern void skip_file( long   size );
-extern long from_oct(	int digs, char *where );
+extern long from_oct( int digs, char *where );
 
 extern struct stat hstat[1];    /* Stat struct corresponding */
 extern union record   *head;    /* Points to current archive header */
 extern struct stat    *phstat;  /* to overcome construct ACK C can't handle */
-                     
+
 #endif /* _LIST_H_D10FF5DF_6352_437B_A86F_F52CDBDC34CA */

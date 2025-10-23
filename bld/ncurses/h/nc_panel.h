@@ -35,9 +35,9 @@
 /*
  * $Id: nc_panel.h,v 1.3 2000/12/10 02:04:35 tom Exp $
  *
- *	nc_panel.h
+ *  nc_panel.h
  *
- *	Headerfile to provide an interface for the panel layer into
+ *  Headerfile to provide an interface for the panel layer into
  *      the SCREEN structure of the ncurses core.
  */
 

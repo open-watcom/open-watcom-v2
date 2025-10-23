@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1847,10 +1847,9 @@ int main( int argc, char **argv )
             showUsageAndExit();
         }
     }
-    if( i_gml == NULL )
-    {
-	    error( "fatal: gml file required\n\n" );
-	    showUsageAndExit();
+    if( i_gml == NULL ) {
+        error( "fatal: gml file required\n\n" );
+        showUsageAndExit();
     }
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );

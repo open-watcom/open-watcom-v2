@@ -32,22 +32,22 @@
  ****************************************************************************/
 
 /*
- *	beep.c
+ *  beep.c
  *
- *	The routine beep().
+ *  The routine beep().
  *
  */
 
 #include <curses_p.h>
-#include <term.h>		/* beep, flash */
+#include <term.h>       /* beep, flash */
 
 MODULE_ID("$Id: lib_beep.c,v 1.9 2000/12/10 02:43:26 tom Exp $")
 
 /*
- *	beep()
+ *  beep()
  *
- *	Sound the current terminal's audible bell if it has one.   If not,
- *	flash the screen if possible.
+ *  Sound the current terminal's audible bell if it has one.   If not,
+ *  flash the screen if possible.
  *
  */
 
@@ -60,13 +60,13 @@ beep(void)
 
     /* FIXME: should make sure that we are not in altchar mode */
     if (bell) {
-	TPUTS_TRACE("bell");
-	res = putp(bell);
-	_nc_flush();
+        TPUTS_TRACE("bell");
+        res = putp(bell);
+        _nc_flush();
     } else if (flash_screen) {
-	TPUTS_TRACE("flash_screen");
-	res = putp(flash_screen);
-	_nc_flush();
+        TPUTS_TRACE("flash_screen");
+        res = putp(flash_screen);
+        _nc_flush();
     }
 
     returnCode(res);

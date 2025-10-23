@@ -2,8 +2,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +29,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines resource tags as used in AllocateResourceTag and
@@ -45,15 +46,15 @@
 #define _NW_SIGS_H
 
 #if !defined (DebuggerSignature)
-#define DebuggerSignature		0x47554244		/* 'GUBD' */ 
+#define DebuggerSignature       0x47554244      /* 'GUBD' */
 #endif
 
 #if !defined (BreakpointSignature)
-#define BreakpointSignature		0x54504B42		/* 'TPKB' */ 
+#define BreakpointSignature     0x54504B42      /* 'TPKB' */
 #endif
 
 #if !defined (AllocSignature)
-#define AllocSignature			0x54524C41		/* 'TRLA' */
+#define AllocSignature          0x54524C41      /* 'TRLA' */
 #endif
 
 #if !defined(ScreenSignature)
@@ -117,15 +118,15 @@
 #endif
 
 #if !defined(ASYNCIOSignature)
-#define ASYNCIOSignature		0x4E595341		/* 'NYSA' */
+#define ASYNCIOSignature        0x4E595341      /* 'NYSA' */
 #endif
 
 #if !defined(AESProcessSignature)
-#define AESProcessSignature		0x50534541		/* 'AESP' */
+#define AESProcessSignature     0x50534541      /* 'AESP' */
 #endif
 
 #if !defined(EventSignature)
-#define EventSignature			0x544E5645		/* 'EVNT' */
+#define EventSignature          0x544E5645      /* 'EVNT' */
 #endif
 
 #endif

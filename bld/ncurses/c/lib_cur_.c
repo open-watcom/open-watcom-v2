@@ -32,13 +32,13 @@
 /*
  * Module that "owns" the 'cur_term' variable:
  *
- *	TERMINAL *set_curterm(TERMINAL *)
- *	int del_curterm(TERMINAL *)
+ *  TERMINAL *set_curterm(TERMINAL *)
+ *  int del_curterm(TERMINAL *)
  */
 
 #include <curses_p.h>
-#include <term_ent.h>		/* TTY, cur_term */
-#include <termcap.h>		/* ospeed */
+#include <term_ent.h>       /* TTY, cur_term */
+#include <termcap.h>        /* ospeed */
 
 MODULE_ID("$Id: lib_cur_term.c,v 1.11 2000/12/10 02:55:07 tom Exp $")
 
@@ -50,8 +50,8 @@ set_curterm(TERMINAL * termp)
     TERMINAL *oldterm = cur_term;
 
     if ((cur_term = termp) != 0) {
-	ospeed = _nc_ospeed(cur_term->_baudrate);
-	PC = (pad_char != NULL) ? pad_char[0] : 0;
+        ospeed = _nc_ospeed(cur_term->_baudrate);
+        PC = (pad_char != NULL) ? pad_char[0] : 0;
     }
     return oldterm;
 }
@@ -62,11 +62,11 @@ del_curterm(TERMINAL * termp)
     T((T_CALLED("del_curterm(%p)"), termp));
 
     if (termp != 0) {
-	_nc_free_termtype(&(termp->type));
-	free(termp);
-	if (termp == cur_term)
-	    cur_term = 0;
-	returnCode(OK);
+        _nc_free_termtype(&(termp->type));
+        free(termp);
+        if (termp == cur_term)
+            cur_term = 0;
+        returnCode(OK);
     }
     returnCode(ERR);
 }

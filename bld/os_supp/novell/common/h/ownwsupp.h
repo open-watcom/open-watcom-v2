@@ -5,8 +5,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +32,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  This is a special file that defines some of the scalar types
@@ -41,74 +42,74 @@
 ****************************************************************************/
 
 #ifdef __cplusplus
-#define		CPP_START	extern "C"{
-#define		CPP_END		}
+#define CPP_START       extern "C"{
+#define CPP_END         }
 #else
-#define		CPP_START
-#define		CPP_END
+#define CPP_START
+#define CPP_END
 #endif
 
 #ifndef LONG
-#define LONG LONG
-typedef unsigned long	LONG;
+#define LONG            LONG
+typedef unsigned long   LONG;
 #endif
 
 #ifndef BYTE
-#define BYTE BYTE
-typedef unsigned char	BYTE;
+#define BYTE            BYTE
+typedef unsigned char   BYTE;
 #endif
 
 #ifndef WORD
-#define WORD WORD
-typedef unsigned short	WORD;
+#define WORD            WORD
+typedef unsigned short  WORD;
 #endif
 
-#ifndef	MEON
-#define	MEON MEON
-typedef	unsigned char	MEON;
+#ifndef MEON
+#define MEON            MEON
+typedef unsigned char   MEON;
 #endif
 
-#ifndef	MEON_STRING
-#define	MEON_STRING MEON_STRING
-typedef	unsigned char	MEON_STRING;
+#ifndef MEON_STRING
+#define MEON_STRING     MEON_STRING
+typedef unsigned char   MEON_STRING;
 #endif
 
-#ifndef	UINT8
-#define	UINT8 UINT8
-typedef	unsigned char	UINT8;
+#ifndef UINT8
+#define UINT8           UINT8
+typedef unsigned char   UINT8;
 #endif
 
-#ifndef	UINT16
-#define	UINT16 UINT16
-typedef	unsigned short	UINT16;
+#ifndef UINT16
+#define UINT16          UINT16
+typedef unsigned short  UINT16;
 #endif
 
 
-#ifndef	UINT32
-#define UINT32 UINT32
-typedef	unsigned int	UINT32;
+#ifndef UINT32
+#define UINT32          UINT32
+typedef unsigned int    UINT32;
 #endif
 
 #ifndef FALSE
-#define FALSE	0
+#define FALSE   0
 #endif
 
 #ifndef TRUE
-#define TRUE	1
+#define TRUE    1
 #endif
 
 /*
-//	Miscellaneous #defines that should be somewhere else
+//      Miscellaneous #defines that should be somewhere else
 */
 
-#define PrimaryDataStream			0			/*	from nlm\nwfattr.h	*/
+#define PrimaryDataStream   0           /*  from nlm\nwfattr.h      */
 
-#define NOCHECK						0			/*	bindery stuff		*/
-#define CHECK						0xFF		/*	bindery stuff		*/
+#define NOCHECK             0           /*  bindery stuff           */
+#define CHECK               0xFF        /*  bindery stuff           */
 
-#define _MAX_VOLUME					16			/*	max len of volume	*/
+#define _MAX_VOLUME         16          /*  max len of volume       */
 
-#include <nw_sigs.h>	/* NetWare resource signatures */
+#include <nw_sigs.h>    /* NetWare resource signatures */
 
 
 #endif /* _OWNWSUPP_H_F39997A6_88FC_434B_B339_554BE343B3E8 */

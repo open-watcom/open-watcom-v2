@@ -448,7 +448,7 @@ char *qstring( const char *s, int delim )
         if( c == '\n' ) {
             SYNTAX( "newline in string %.20s...", os );
         } else if( c == '\0' ) {
-        	break;
+            break;
         } else if( c != '\\' ) {
             *bp++ = c;
         } else {  /* \something */
