@@ -58,7 +58,7 @@
 #include "intrface.h"
 #include "x86obj.h"
 #include "i87data.h"
-#include "duttime.h"
+#include "dutimet.h"
 #include "cgsegids.h"
 #include "feprotos.h"
 
@@ -1188,7 +1188,7 @@ void    ObjInit( void )
         /*
          * OMF use dos time/date format
          */
-        OutLongInt( __ttime2dosu( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
+        OutLongInt( __timet2dosu( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, FEINF_DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names );
     }

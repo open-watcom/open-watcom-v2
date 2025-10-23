@@ -25,13 +25,16 @@
 *
 *  ========================================================================
 *
-* Description:  prototype and macros for _d2ttime internal function
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "dttime.h"
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
 
+#include "variety.h"
 
-#define TODDATE(d) (*(unsigned short *)&d)
-#define TODTIME(t) (*(unsigned short *)&t)
+#define DTIMET_READ_ONLY
+#include "dtimet.c"

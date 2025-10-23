@@ -28,8 +28,8 @@ objs = &
     msysdep.obj &
     mtarget.obj &
     mupdate.obj &
-    dttime.obj &
-    duttime.obj &
+    dtimet.obj &
+    dutimet.obj &
     mvecstr.obj &
     $(trmem_objs)
 

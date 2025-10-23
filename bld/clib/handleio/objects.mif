@@ -20,7 +20,7 @@
 !inject comitos2.obj                                                o16 o32
 !inject comitwnt.obj                nt  nta ntp ntm
 !inject creat.obj       d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32         w16 w32 l32 lpc lmp
-!inject d2ttime.obj     d16 d32                                     o16 o32         w16 w32
+!inject d2timet.obj     d16 d32                                     o16 o32         w16 w32
 !inject dofilstr.obj                nt  nta ntp ntm
 !inject dup.obj         d16 d32                                                     w16 w32
 !inject dup2.obj        d16 d32                                                     w16 w32
@@ -101,7 +101,7 @@ objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
 
-d2ttime_opts =-I"$(watcom_dir)/c"
+d2timet_opts =-I"$(watcom_dir)/c"
 filerdk_opts =-I"$(clib_dir)/streamio/h"
 filerdu_opts =-I"$(clib_dir)/streamio/h"
 qread_opts   =-I"$(clib_dir)/streamio/h"

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "dttime.h"
+#include "dtimet.h"
 
 
 enum {
@@ -51,7 +51,7 @@ enum {
     DATE_YEAR_F = 0xfe00
 };
 
-time_t _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time )
+time_t _INTERNAL __dos2timet( unsigned short dos_date, unsigned short dos_time )
 /******************************************************************************/
 {
     struct tm t;
@@ -71,8 +71,8 @@ time_t _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time )
     return( mktime( &t ) );
 }
 
-#ifndef DTTIME_READ_ONLY
-time_t _INTERNAL __ttime2dos( time_t stamp )
+#ifndef DTIMET_READ_ONLY
+time_t _INTERNAL __timet2dos( time_t stamp )
 /******************************************/
 {
     struct tm       *t;

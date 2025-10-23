@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-#ifndef _DTTIME_H_INCLUDED
-#define _DTTIME_H_INCLUDED
+#ifndef _DTIMET_H_INCLUDED
+#define _DTIMET_H_INCLUDED
 
 #ifndef _INTERNAL
     #define _INTERNAL
 #endif
 #include <time.h>
 
-extern time_t   _INTERNAL __dos2ttime( unsigned short dos_date, unsigned short dos_time );
-#ifndef DTTIME_READ_ONLY
-extern time_t   _INTERNAL __ttime2dos( time_t stamp );
+extern time_t   _INTERNAL __dos2timet( unsigned short dos_date, unsigned short dos_time );
+#ifndef DTIMET_READ_ONLY
+extern time_t   _INTERNAL __timet2dos( time_t stamp );
 #endif
 
 #endif

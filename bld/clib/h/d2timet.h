@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,21 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  prototype and macros for DOS date/time stamps (UTC timezone)
+* Description:  prototype and macros for __dos2timet internal function
 *
 ****************************************************************************/
 
 
-#ifndef _DUTTIME_H_INCLUDED
-#define _DUTTIME_H_INCLUDED
-
-#ifndef _INTERNAL
-    #define _INTERNAL
-#endif
-#include <time.h>
+#include "dtimet.h"
 
 
-extern time_t   _INTERNAL __ttime2dosu( time_t stamp );
-extern time_t   _INTERNAL __dosu2ttime( unsigned short dos_date, unsigned short dos_time );
-
-#endif
+#define TODDATE(d) (*(unsigned short *)&d)
+#define TODTIME(t) (*(unsigned short *)&t)

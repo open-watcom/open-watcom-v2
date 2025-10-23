@@ -41,7 +41,7 @@
 #include "asmglob.h"
 #include "omffixup.h"
 #include "autodept.h"
-#include "duttime.h"
+#include "dutimet.h"
 #include "mangle.h"
 #include "directiv.h"
 #include "queues.h"
@@ -731,7 +731,7 @@ static bool write_autodep( void )
         objr = ObjNewRec( CMD_COMENT );
         objr->u.coment.attr = 0x80;
         objr->u.coment.class = CMT_DEPENDENCY;
-        MPUT_LE_32( buff, __ttime2dosu( curr->mtime ) );
+        MPUT_LE_32( buff, __timet2dosu( curr->mtime ) );
         buff[4] = (unsigned char)len;
         memcpy( buff + 4 + 1, curr->fullname, len );
         ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );

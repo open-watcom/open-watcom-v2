@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "duttime.h"
+#include "dutimet.h"
 #include "bool.h"
 
 
@@ -116,7 +116,7 @@ static time_t mktime_utc( const struct tm *t )
             + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
 }
 
-time_t _INTERNAL __ttime2dosu( time_t stamp )
+time_t _INTERNAL __timet2dosu( time_t stamp )
 /*******************************************/
 {
     struct tm       *t;
@@ -134,7 +134,7 @@ time_t _INTERNAL __ttime2dosu( time_t stamp )
     return( dos_date * 0x10000UL + dos_time );
 }
 
-time_t _INTERNAL __dosu2ttime( unsigned short dos_date, unsigned short dos_time )
+time_t _INTERNAL __dosu2timet( unsigned short dos_date, unsigned short dos_time )
 /*******************************************************************************/
 {
     struct tm       t;

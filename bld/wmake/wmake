@@ -24,7 +24,7 @@ objs = &
   macros.obj main.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
-  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dttime.obj duttime.obj &
+  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dtimet.obj dutimet.obj &
   mcache.obj misc.obj
 
 .c : ../c;../../builder/c;../../watcom/c

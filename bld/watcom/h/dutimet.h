@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,16 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  prototype and macros for DOS date/time stamps (UTC timezone)
 *
 ****************************************************************************/
 
 
-// this file should remain an indirected file
-// it is done this way to support the reuse of the source file
+#ifndef _DUTIMET_H_INCLUDED
+#define _DUTIMET_H_INCLUDED
 
-#include "variety.h"
+#ifndef _INTERNAL
+    #define _INTERNAL
+#endif
+#include <time.h>
 
-#define DTTIME_READ_ONLY
-#include "dttime.c"
+
+extern time_t   _INTERNAL __timet2dosu( time_t stamp );
+extern time_t   _INTERNAL __dosu2timet( unsigned short dos_date, unsigned short dos_time );
+
+#endif

@@ -29,8 +29,8 @@ extra_l_flags_dos = opt stack=4k
 # explicit rules
 #################
 
-extra_objs_dos = dttime.obj
-extra_objs_os2 = dttime.obj
+extra_objs_dos = dtimet.obj
+extra_objs_os2 = dtimet.obj
 #
 # EXE
 #

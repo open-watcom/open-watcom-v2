@@ -57,7 +57,7 @@
     #include "_dtaxxx.h"
 #endif
 #if !defined( __UNIX__ ) && !defined( __NT__ )
-    #include "dttime.h"
+    #include "dtimet.h"
 #endif
 
 #include "clibint.h"
@@ -262,7 +262,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     /*
      * DOS date/time format
      */
-    ftime = __dos2ttime( dir->d_date, dir->d_time );
+    ftime = __dos2timet( dir->d_date, dir->d_time );
 #endif
     ptime = localtime( &ftime );
     touchTime = *ptime;

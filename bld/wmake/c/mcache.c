@@ -40,7 +40,7 @@
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
-#include "dttime.h"
+#include "dtimet.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
@@ -160,7 +160,7 @@ static time_t get_direntry_timestamp( struct dirent *entry )
     /*
      * OW1.x bootstrap compiler workaround
      */
-    return( __dos2ttime( entry->d_date, entry->d_time ) );
+    return( __dos2timet( entry->d_date, entry->d_time ) );
 #elif defined( __NT__ )
     return( DTAXXX_TSTAMP_OF( entry->d_dta ) );
 #elif defined( __RDOS__ )
@@ -170,9 +170,9 @@ static time_t get_direntry_timestamp( struct dirent *entry )
     unsigned long lsb = entry->d_modify_time & 0xFFFFFFFF;
 
     RdosTicsToDosTimeDate( msb, lsb, &dos_date, &dos_time );
-    return( __dos2ttime( dos_date, dos_time ) );
+    return( __dos2timet( dos_date, dos_time ) );
 #else
-    return( __dos2ttime( entry->d_date, entry->d_time ) );
+    return( __dos2timet( entry->d_date, entry->d_time ) );
 #endif
 }
 
