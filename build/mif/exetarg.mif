@@ -58,7 +58,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
-    @for %l in ($+$(old_watcom_extra_libs_gen) $(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
+    @for %l in ($+$(watcom_extra_libs_gen) $(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
     $(linker) name $(lname) @$^&.lnk
 ! else

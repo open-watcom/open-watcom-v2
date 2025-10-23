@@ -20,16 +20,12 @@ link_sys_linux      = linux
 wsplice_opts_linux  = -u -kUNIX
 !endif
 
-!if $(%OWTOOLSVER) < 1300
-extra_objs = clibext.obj
-!endif
-
 objs = &
   macros.obj main.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dtimet.obj dutimet.obj &
-  mcache.obj misc.obj $(extra_objs)
+  mcache.obj misc.obj clibext.obj
 
 .c : ../c;../../builder/c;../../watcom/c
 

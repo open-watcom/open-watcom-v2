@@ -37,7 +37,7 @@
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1300 )
     /*
      * We don't need any of this stuff, but being able to build this
      * module simplifies makefiles.
@@ -87,8 +87,6 @@
   #define PC '\\'
   #define ISPS(c)   ((c)==PC || (c)=='/')
 #endif
-
-
 
 /****************************************************************************
 *
@@ -214,14 +212,13 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 
 #endif
 
-#if defined(__UNIX__)
-
 /****************************************************************************
 *
 * Description:  Platform independent _makepath() implementation.
 *
 ****************************************************************************/
 
+#if defined(__UNIX__)
 
 /* create full Unix style path name from the components */
 
@@ -291,6 +288,7 @@ void _makepath(
     *path = '\0';
 }
 
+#endif
 
 /****************************************************************************
 *
@@ -298,6 +296,8 @@ void _makepath(
 *               pathname of a file.
 *
 ****************************************************************************/
+
+#if defined(__UNIX__)
 
 #define _WILL_FIT( c )          \
     if(( (c) + 1 ) > size ) {   \
@@ -409,11 +409,15 @@ char *_fullpath( char *buff, const char *path, size_t size )
     return( buff );
 }
 
+#endif
+
 /****************************************************************************
 *
 * Description:  Implementation of strlwr().
 *
 ****************************************************************************/
+
+#if defined(__UNIX__)
 
 char *strlwr( char *str )
 {
@@ -429,11 +433,16 @@ char *strlwr( char *str )
     }
     return( str );
 }
+
+#endif
+
 /****************************************************************************
 *
 * Description:  Implementation of strupr().
 *
 ****************************************************************************/
+
+#if defined(__UNIX__)
 
 char *strupr( char *str )
 {
@@ -450,12 +459,15 @@ char *strupr( char *str )
     return( str );
 }
 
+#endif
+
 /****************************************************************************
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strrev().
 *
 ****************************************************************************/
+
+#if defined(__UNIX__)
 
 char *strrev( char *str )
 /* reverse characters in string */
@@ -598,9 +610,9 @@ char *_cmdname( char *name )
 
 #elif defined( __BSD__ )
 
-#if defined( __FREEBSD__ )
+  #if defined( __FREEBSD__ )
 
-#include <sys/sysctl.h>
+  #include <sys/sysctl.h>
 
 char *_cmdname( char *name )
 {
@@ -616,10 +628,10 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined( __OPENBSD__ )
+  #elif defined( __OPENBSD__ )
 
 extern const char *__progname;
-#include <sys/stat.h>
+    #include <sys/stat.h>
 
 static int _cmdname_sub( char *out, const char *path, const char *name )
 {
@@ -715,7 +727,7 @@ fin0:
     return( result );
 }
 
-#else
+  #else
 
 char *_cmdname( char *name )
 {
@@ -726,11 +738,11 @@ char *_cmdname( char *name )
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
-#if defined( __NETBSD__ )
+  #if defined( __NETBSD__ )
         result = readlink( "/proc/curproc/exe", name, PATH_MAX );
-#else
+  #else
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
-#endif
+  #endif
     }
     errno = save_errno;
 
@@ -744,11 +756,11 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#endif
+  #endif
 
 #elif defined (__HAIKU__)
 
-#include <image.h>
+  #include <image.h>
 
 char *_cmdname( char *name )
 {
@@ -1080,7 +1092,6 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 
 #endif /* __UNIX__ */
 
-#ifdef _MSC_VER
 
 /****************************************************************************
 *
@@ -1092,6 +1103,8 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 * (but not in the pattern) are considered to be path separators and
 * identical to forward slashes when FNM_PATHNAME is set.
 */
+
+#ifdef _MSC_VER
 
 static const struct my_wctypes {
     const char  *name;
@@ -1332,6 +1345,110 @@ int   fnmatch( const char *patt, const char *s, int flags )
     return( *s != '\0' ? FNM_NOMATCH : 0 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of _mkgmtime function
+*
+****************************************************************************/
+
+#if defined( __OSX__ ) || defined( __WATCOMC__ )
+
+#include <time.h>
+
+#define SECONDS_FROM_1900_TO_1970       2208988800UL
+#define SECONDS_PER_DAY                 (24UL * 60UL * 60UL)
+#define DAYS_FROM_1900_TO_1970          (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
+
+static short const month_start_days[] = {
+    0,                                                          /* Jan */
+    31,                                                         /* Feb */
+    31 + 28,                                                    /* Mar */
+    31 + 28 + 31,                                               /* Apr */
+    31 + 28 + 31 + 30,                                          /* May */
+    31 + 28 + 31 + 30 + 31,                                     /* Jun */
+    31 + 28 + 31 + 30 + 31 + 30,                                /* Jul */
+    31 + 28 + 31 + 30 + 31 + 30 + 31,                           /* Aug */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,                      /* Sep */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,                 /* Oct */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,            /* Nov */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,       /* Dec */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
+};
+
+static int is_leapyear( unsigned year )
+{
+    if( year & 3 )
+        return( 0 );
+    if( ( year % 100 ) != 0 )
+        return( 1 );
+    if( ( year % 400 ) == 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static unsigned long years_days( unsigned year )
+{
+    return( year * 365L                         /* # of days in the years */
+        + ( ( year + 3L ) / 4L )                /* add # of leap years before year */
+        - ( ( year + 99L ) / 100L )             /* sub # of leap centuries */
+        + ( ( year + 399L - 100L ) / 400L ) );  /* add # of leap 4 centuries */
+                                                /* adjust for 1900 offset */
+                                                /* note: -100 == 300 (mod 400) */
+}
+
+time_t _mkgmtime( struct tm *t )
+/*********************************************
+ * used internaly then no checks to simplify
+ * it suppose tm structure contains valid data
+ */
+{
+    unsigned long   days;
+    unsigned        month_start;
+
+    month_start = month_start_days[t->tm_mon];
+    if( t->tm_mon > 1
+      && is_leapyear( t->tm_year + 1900U ) ) {
+        month_start++;
+    }
+    days = years_days( t->tm_year ) /* # of days in the years + leap years days */
+        + month_start               /* # of days to 1st of month*/
+        + t->tm_mday - 1;           /* day of the month */
+    if( days < ( DAYS_FROM_1900_TO_1970 - 1 ) )
+        return( (time_t)-1 );
+    return( ( days - DAYS_FROM_1900_TO_1970 ) * SECONDS_PER_DAY
+            + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
+}
+
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX environment setenv and unsetenv
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
+
 int setenv( const char *name, const char *newvalue, int overwrite )
 /*****************************************************************/
 {
@@ -1360,6 +1477,16 @@ int unsetenv( const char *name )
     free( buff );
     return( 0 );
 }
+
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX opendir/readdir/closedir
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
 
 #define _DIR_ISFIRST            0
 #define _DIR_NOTFIRST           1
@@ -1642,6 +1769,16 @@ int closedir( DIR *dirp )
     return( 0 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX getopt
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
+
 char        *optarg;            /* pointer to option argument */
 int         optind = 1;         /* current argv[] index */
 int         optopt;             /* currently processed chracter */
@@ -1741,6 +1878,16 @@ int getopt( int argc, char * const argv[], const char *optstring )
     }
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX mkstemp
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
+
 static int is_valid_template( char *template_str, char **xs )
 {
     size_t              len;
@@ -1797,6 +1944,16 @@ int mkstemp( char *template_str )
     return( -1 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of sleep function
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
+
 unsigned sleep( unsigned time )
 {
     Sleep( time * 1000UL );
@@ -1841,4 +1998,4 @@ char *get_dllname( char *buf, int len )
 
 #endif /* ! __WATCOMC__ */
 
-#endif /* ! __WATCOMC__ > 1.9 */
+#endif /* ! __WATCOMC__ */

@@ -472,23 +472,18 @@ cflags_dll_os2  = -bd
 !endif
 
 !ifdef __WATCOM_TOOLS__
-!  ifeq __WATCOM_TOOLS__ 1300
+!  if $(__WATCOM_TOOLS__) <= 1300
 !    if defined( bootstrap )
-# OW 2.0 bootstrap compiler can be old OW 2.0 without new options
+# OW 1.9 and older OW 2.0 bootstrap compiler doesn't support new options
 watcom_common_cflags   = -wx-wce=310
 watcom_common_cxxflags = -w8-wce=579
 c_flags          = $(watcom_common_cflags)
 !    else
-# new OW 2.0 build compiler is OK to use new options
+# new build compiler is always OK to use new options
 watcom_common_cflags   = -wx-wce=C310
 watcom_common_cxxflags = -w8-wce=P579
 c_flags          = $(watcom_common_cflags) -zastd=c99
 !    endif
-!  else	if $(__WATCOM_TOOLS__) < 1300
-# OW 1.9 bootstrap compiler doesn't support new options
-watcom_common_cflags   = -wx-wce=310
-watcom_common_cxxflags = -w8-wce=579
-c_flags          = $(watcom_common_cflags)
 !  else	# __WATCOM_TOOLS__ > 1300
 # OW 2.1 will support new options
 watcom_common_cflags   = -wx-wce=C310

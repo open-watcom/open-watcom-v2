@@ -31,13 +31,9 @@
 
 #ifdef __WATCOMC__
 
-#if __WATCOMC__ < 1300
+#if __WATCOMC__ < 1310
 
-#include <time.h>
-
-extern time_t   _mkgmtime( struct tm * );
-
-#elif ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
+#if ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
 /*
  * temporary fix for older builds of OW 2.0
  */
@@ -53,7 +49,22 @@ extern time_t   _mkgmtime( struct tm * );
 
 #endif
 
-#else
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <time.h>
+
+extern time_t   _mkgmtime( struct tm * );
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#else   /* !__WATCOMC__ */
+
 /*
  * clibext.h:
  * This file contains defines and prototypes of functions that are present
@@ -105,9 +116,10 @@ extern time_t   _mkgmtime( struct tm * );
 #endif
 #ifndef _UI32_MAX
 #define _UI32_MAX 4294967295UL
+#endif
+
 #ifndef __OSX__
 #define _mkgmtime timegm
-#endif
 #endif
 
 #elif defined( _MSC_VER )
@@ -196,7 +208,7 @@ extern char     *strrev( char *string );
 extern void     _searchenv( const char *name, const char *env_var, char *buf );
 extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
 extern int      spawnvp( int mode, const char *cmd, const char * const *args );
-#ifndef __OSX__
+#ifdef __OSX__
 extern time_t   _mkgmtime( struct tm * );
 #endif
 
