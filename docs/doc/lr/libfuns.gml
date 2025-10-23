@@ -893,6 +893,7 @@
 .fn7 _mktemp                  _mktemp                  mktemp.gml    DOS       WIN32
 .fnw _wmktemp                 _mktemp                  mktemp.gml    DOS       WIN32
 .fnc mktime                   mktime                   mktime.gml    DOS QNX W WIN32
+.fnc _mkgmtime                _mkgmtime                mkgmtime.gml  DOS QNX W WIN32
 .fnc mlock                    mlock                    mlock.gml     DOS QNX W WIN32
 .fnc mlockall                 mlockall                 mlockall.gml  DOS QNX W WIN32
 .fnc mmap                     mmap                     mmap.gml      DOS QNX W WIN32
