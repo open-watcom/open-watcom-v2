@@ -78,15 +78,15 @@ static short const month_start_days[] = {
     31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
 };
 
-static bool is_leapyear( unsigned year )
+static int is_leapyear( unsigned year )
 {
     if( year & 3 )
-        return( false );
+        return( 0 );
     if( ( year % 100 ) != 0 )
-        return( true );
+        return( 1 );
     if( ( year % 400 ) == 0 )
-        return( true );
-    return( false );
+        return( 1 );
+    return( 0 );
 }
 
 static unsigned long years_days( unsigned year )
