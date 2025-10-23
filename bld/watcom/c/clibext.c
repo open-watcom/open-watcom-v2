@@ -500,8 +500,6 @@ char *strrev( char *str )
 
 #if defined( __OSX__ ) || defined( __WATCOMC__ )
 
-#include <time.h>
-
 #define SECONDS_FROM_1900_TO_1970       2208988800UL
 #define SECONDS_PER_DAY                 (24UL * 60UL * 60UL)
 #define DAYS_FROM_1900_TO_1970          (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)

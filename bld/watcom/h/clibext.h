@@ -75,13 +75,16 @@ extern time_t   _mkgmtime( struct tm * );
 #include <stdio.h>
 #include <stdarg.h>
 #ifdef __BSD__
-#include <unistd.h>         /* for off_t */
+    #include <unistd.h>     /* for off_t */
 #else
-#include <sys/types.h>      /* for off_t */
+    #include <sys/types.h>  /* for off_t */
 #endif
 #ifdef __UNIX__
     #include <strings.h>    /* for str*case* functions */
     #include <sys/wait.h>
+#endif
+#ifdef __OSX__
+    #include <time.h>
 #endif
 
 #define _WCRTLINK
