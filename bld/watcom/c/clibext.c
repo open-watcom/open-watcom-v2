@@ -218,7 +218,9 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 /* create full Unix style path name from the components */
 
@@ -297,7 +299,9 @@ void _makepath(
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 #define _WILL_FIT( c )          \
     if(( (c) + 1 ) > size ) {   \
@@ -417,7 +421,9 @@ char *_fullpath( char *buff, const char *path, size_t size )
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 char *strlwr( char *str )
 {
@@ -442,7 +448,9 @@ char *strlwr( char *str )
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 char *strupr( char *str )
 {
@@ -467,7 +475,9 @@ char *strupr( char *str )
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 char *strrev( char *str )
 /* reverse characters in string */
@@ -958,7 +968,9 @@ int (_bgetcmd)( char *buffer, int len )
 *
 ****************************************************************************/
 
-#ifdef __UNIX__
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 int spawnvp( int mode, const char *cmd, const char * const *args )
 {
@@ -1007,7 +1019,9 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined( __WATCOMC__ )
+
+#elif defined(__UNIX__)
 
 #define LIST_SEPARATOR ':'
 
@@ -1102,7 +1116,9 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 * identical to forward slashes when FNM_PATHNAME is set.
 */
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 static const struct my_wctypes {
     const char  *name;
@@ -1351,7 +1367,9 @@ int   fnmatch( const char *patt, const char *s, int flags )
 *
 ****************************************************************************/
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 int setenv( const char *name, const char *newvalue, int overwrite )
 /*****************************************************************/
@@ -1390,7 +1408,9 @@ int unsetenv( const char *name )
 *
 ****************************************************************************/
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 #define _DIR_ISFIRST            0
 #define _DIR_NOTFIRST           1
@@ -1681,7 +1701,9 @@ int closedir( DIR *dirp )
 *
 ****************************************************************************/
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 char        *optarg;            /* pointer to option argument */
 int         optind = 1;         /* current argv[] index */
@@ -1790,7 +1812,9 @@ int getopt( int argc, char * const argv[], const char *optstring )
 *
 ****************************************************************************/
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 static int is_valid_template( char *template_str, char **xs )
 {
@@ -1856,7 +1880,9 @@ int mkstemp( char *template_str )
 *
 ****************************************************************************/
 
-#ifdef _MSC_VER
+#if defined( __WATCOMC__ )
+
+#elif defined(_MSC_VER)
 
 unsigned sleep( unsigned time )
 {
