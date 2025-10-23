@@ -11,6 +11,10 @@ inc_dirs = -I"../h"
 
 !ifndef __WATCOM_TOOLS__
 libs = clibext.lib clibexts.lib
+!else ifdef bootstrap
+!  if $(__WATCOM_TOOLS__) < 1300
+libs = clibext.lib clibexts.lib
+!  endif
 !endif
 
 all: $(libs) .SYMBOLIC
