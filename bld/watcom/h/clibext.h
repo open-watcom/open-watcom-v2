@@ -72,7 +72,6 @@
 #define _MAX_EXT    (PATH_MAX-3)
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
-#define _mkgmtime timegm
 #define __int64 long long
 #ifndef _I32_MIN
 #define _I32_MIN (-2147483647L-1L)
@@ -82,6 +81,9 @@
 #endif
 #ifndef _UI32_MAX
 #define _UI32_MAX 4294967295UL
+#ifndef __OSX__
+#define _mkgmtime timegm
+#endif
 #endif
 
 #elif defined( _MSC_VER )
@@ -170,6 +172,9 @@ extern char     *strrev( char *string );
 extern void     _searchenv( const char *name, const char *env_var, char *buf );
 extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
 extern int      spawnvp( int mode, const char *cmd, const char * const *args );
+#ifndef __OSX__
+extern time_t   _mkgmtime( struct tm * );
+#endif
 
 #elif defined( _MSC_VER )
 

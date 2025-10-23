@@ -34,13 +34,6 @@
 
 #include "clibext.h"
 
-/*
- * workaround for Open Watcom 1.9 (not implemented _mkgmtime function)
- */
-#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
-    #define _mkgmtime   mktime
-    #define gmtime      localtime
-#endif
 
 enum {
     TIME_SEC_B  = 0,
@@ -59,6 +52,76 @@ enum {
     DATE_YEAR_B = 9,
     DATE_YEAR_F = 0xfe00
 };
+
+/*
+ * workaround for Open Watcom 1.9 (not implemented _mkgmtime function)
+ */
+#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+
+#define SECONDS_FROM_1900_TO_1970       2208988800UL
+#define SECONDS_PER_DAY                 (24UL * 60UL * 60UL)
+#define DAYS_FROM_1900_TO_1970          (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)
+
+static short const month_start_days[] = {
+    0,                                                          /* Jan */
+    31,                                                         /* Feb */
+    31 + 28,                                                    /* Mar */
+    31 + 28 + 31,                                               /* Apr */
+    31 + 28 + 31 + 30,                                          /* May */
+    31 + 28 + 31 + 30 + 31,                                     /* Jun */
+    31 + 28 + 31 + 30 + 31 + 30,                                /* Jul */
+    31 + 28 + 31 + 30 + 31 + 30 + 31,                           /* Aug */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,                      /* Sep */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,                 /* Oct */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,            /* Nov */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,       /* Dec */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
+};
+
+static bool is_leapyear( unsigned year )
+{
+    if( year & 3 )
+        return( false );
+    if( ( year % 100 ) != 0 )
+        return( true );
+    if( ( year % 400 ) == 0 )
+        return( true );
+    return( false );
+}
+
+static unsigned long years_days( unsigned year )
+{
+    return( year * 365L                         /* # of days in the years */
+        + ( ( year + 3L ) / 4L )                /* add # of leap years before year */
+        - ( ( year + 99L ) / 100L )             /* sub # of leap centuries */
+        + ( ( year + 399L - 100L ) / 400L ) );  /* add # of leap 4 centuries */
+                                                /* adjust for 1900 offset */
+                                                /* note: -100 == 300 (mod 400) */
+}
+
+time_t _mkgmtime( struct tm *t )
+/*********************************************
+ * used internaly then no checks to simplify
+ * it suppose tm structure contains valid data
+ */
+{
+    unsigned long   days;
+    unsigned        month_start;
+
+    month_start = month_start_days[t->tm_mon];
+    if( t->tm_mon > 1
+      && is_leapyear( t->tm_year + 1900U ) ) {
+        month_start++;
+    }
+    days = years_days( t->tm_year ) /* # of days in the years + leap years days */
+        + month_start               /* # of days to 1st of month*/
+        + t->tm_mday - 1;           /* day of the month */
+    if( days < ( DAYS_FROM_1900_TO_1970 - 1 ) )
+        return( (time_t)-1 );
+    return( ( days - DAYS_FROM_1900_TO_1970 ) * SECONDS_PER_DAY
+            + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
+}
+#endif
 
 time_t _INTERNAL __dosu2timet( unsigned short dos_date, unsigned short dos_time )
 /*******************************************************************************/
