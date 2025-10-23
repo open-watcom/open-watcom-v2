@@ -62,6 +62,8 @@
 #include "cgsegids.h"
 #include "feprotos.h"
 
+#include "clibext.h"
+
 
 #define _NIDX_NULL      1   /* lname "" */
 #define _NIDX_CODE      2   /* lname "CODE" */
