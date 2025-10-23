@@ -32,6 +32,7 @@
 
 #include "dutimet.h"
 
+#include "clibext.h"
 
 /*
  * workaround for Open Watcom 1.9 (not implemented _mkgmtime function)
