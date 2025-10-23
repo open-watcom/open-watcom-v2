@@ -38,8 +38,9 @@
 #endif
 #include <time.h>
 
-
-extern time_t   _INTERNAL __timet2dosu( time_t stamp );
 extern time_t   _INTERNAL __dosu2timet( unsigned short dos_date, unsigned short dos_time );
+#ifndef DUTIMET_ONLY_READ
+extern time_t   _INTERNAL __timet2dosu( time_t stamp );
+#endif
 
 #endif

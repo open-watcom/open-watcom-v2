@@ -13,9 +13,11 @@ additional_clean = *.grc
 #
 # cflags
 #
-.c: ../c
+.c: ../c;$(watcom_dir)/c
 
 inc_dirs = -I"../h"
+
+extra_cpp_flags = -DDTIMET_ONLY_READ
 
 # explicit rules
 #################
@@ -27,7 +29,8 @@ exetarg_objs = &
     dmpobj.obj &
     objread.obj &
     output.obj &
-    process.obj
+    process.obj &
+    dtimet.obj
 !include exetarg.mif
 
 #

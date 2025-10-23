@@ -72,6 +72,7 @@
 #define _MAX_EXT    (PATH_MAX-3)
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
+#define _mkgmtime timegm
 #define __int64 long long
 #ifndef _I32_MIN
 #define _I32_MIN (-2147483647L-1L)

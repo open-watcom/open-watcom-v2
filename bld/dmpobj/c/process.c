@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <string.h>
+#include "dtimet.h"
 #include "dmpobj.h"
 
 
@@ -44,45 +45,7 @@ enum {
     DBG_HLL
 };
 
-enum {
-    TIME_SEC_B  = 0,
-    TIME_SEC_F  = 0x001f,
-    TIME_MIN_B  = 5,
-    TIME_MIN_F  = 0x07e0,
-    TIME_HOUR_B = 11,
-    TIME_HOUR_F = 0xf800
-};
-
-enum {
-    DATE_DAY_B  = 0,
-    DATE_DAY_F  = 0x001f,
-    DATE_MON_B  = 5,
-    DATE_MON_F  = 0x01e0,
-    DATE_YEAR_B = 9,
-    DATE_YEAR_F = 0xfe00
-};
-
-typedef unsigned short  DOSDATE_T;
-
 int  DbgStyle = DBG_CODEVIEW;
-
-static time_t d2t( DOSDATE_T date, DOSDATE_T time )
-/*************************************************/
-{
-    struct tm tmbuf;
-
-    tmbuf.tm_year = ( ( date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
-    tmbuf.tm_mon  = ( ( date & DATE_MON_F ) >> DATE_MON_B ) - 1;
-    tmbuf.tm_mday = ( date & DATE_DAY_F ) >> DATE_DAY_B;
-
-    tmbuf.tm_hour = ( time & TIME_HOUR_F ) >> TIME_HOUR_B;
-    tmbuf.tm_min  = ( time & TIME_MIN_F ) >> TIME_MIN_B;
-    tmbuf.tm_sec  = ( ( time & TIME_SEC_F ) >> TIME_SEC_B ) * 2;
-
-    tmbuf.tm_isdst= -1;
-
-    return( mktime( &tmbuf ) );
-}
 
 void ProcEndRec( void )
 /*********************/
@@ -191,11 +154,11 @@ static void doWeakLazyExtern( void )
 
 static void doDependency( void )
 {
-    byte        len;
-    DOSDATE_T   dos_date;
-    DOSDATE_T   dos_time;
-    time_t      t;
-    char        buff[80];
+    byte            len;
+    unsigned short  dos_date;
+    unsigned short  dos_time;
+    time_t          t;
+    char            buff[80];
 
     if( EndRec() ) {
         Output( INDENT "Last Dependency Record\n" );
@@ -205,7 +168,7 @@ static void doDependency( void )
     dos_time |= GetByte() << 8;
     dos_date = GetByte();
     dos_date |= GetByte() << 8;
-    t = d2t( dos_date, dos_time );
+    t = __dos2timet( dos_date, dos_time );
     Output( INDENT "File: " );
     buff[1] = '\0';
     for( len = GetByte(); len != 0; --len ) {

@@ -35,6 +35,6 @@
 // it is done this way to support the reuse of the source file
 
 #include "variety.h"
+#include "d2timet.h"
 
-#define DTIMET_READ_ONLY
 #include "dtimet.c"

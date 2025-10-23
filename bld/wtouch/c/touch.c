@@ -55,8 +55,7 @@
 #if defined(__NT__)
     #include <windows.h>
     #include "_dtaxxx.h"
-#endif
-#if !defined( __UNIX__ ) && !defined( __NT__ )
+#elif !defined( __UNIX__ )
     #include "dtimet.h"
 #endif
 

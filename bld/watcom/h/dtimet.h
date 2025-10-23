@@ -39,7 +39,7 @@
 #include <time.h>
 
 extern time_t   _INTERNAL __dos2timet( unsigned short dos_date, unsigned short dos_time );
-#ifndef DTIMET_READ_ONLY
+#ifndef DTIMET_ONLY_READ
 extern time_t   _INTERNAL __timet2dos( time_t stamp );
 #endif
 

@@ -21,6 +21,8 @@ additional_clean = *.gh *.grh *.grc
 
 inc_dirs = -I. -I"../h" -I"$(clib_dir)/h"
 
+extra_cpp_flags = -DDTIMET_ONLY_READ
+
 #
 # lflags
 #
