@@ -32,6 +32,7 @@
 
 
 #include <stddef.h>
+#include <string.h>
 #include "wresall.h"
 #include "autodep.h"
 #include "reserr.h"
