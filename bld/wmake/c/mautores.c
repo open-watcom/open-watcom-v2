@@ -92,7 +92,8 @@ STATIC handle RESNextDep( dep_handle f )
     char        *p;
 
     file = (res_info *)f;
-    p = WResReadBaseDepinfo( &depinfo, file->curr ) + depinfo.len;
+    p = WResReadBaseDepinfo( &depinfo, file->curr );
+    p += depinfo.len;
     WResReadBaseDepinfo( &depinfo, p );
     if( depinfo.len == 0 ) {
         file->curr = NULL;

@@ -241,7 +241,8 @@ static dep_handle AutoORLNextDep( dep_handle hdl )
     DepInfo     depinfo;
 
     (void)hdl;
-    p = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr ) + depinfo.len;
+    p = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    p += depinfo.len;
     WResReadBaseDepinfo( &depinfo, p );
     if( depinfo.len == 0 ) {
         orlIO.orlInfo.curr = NULL;
