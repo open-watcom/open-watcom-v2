@@ -46,7 +46,7 @@ typedef struct orl_info {
     FILE                *fp;
     orl_file_handle     orl_handle;
     UINT8               *buffer;
-    DepInfo             *curr;
+    char                *curr;
 }                       orl_info;
 
 struct orl_io_struct {
@@ -210,9 +210,12 @@ static handle AutoORLFileInit( const char *name )
 static dep_handle AutoORLFirstDep( handle hdl )
 /*********************************************/
 {
+    DepInfo depinfo;
+
     (void)hdl;
-    orlIO.orlInfo.curr = (void *)orlIO.orlInfo.buffer;
-    if( orlIO.orlInfo.curr->len != 0 ) {
+    orlIO.orlInfo.curr = (char *)orlIO.orlInfo.buffer;
+    WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    if( depinfo.len != 0 ) {
         return( &orlIO );
     }
     return( NULL );
@@ -222,21 +225,25 @@ static dep_handle AutoORLFirstDep( handle hdl )
 static void AutoORLTransDep( dep_handle hdl, char **name, time_t *stamp )
 /***********************************************************************/
 {
+    DepInfo depinfo;
+
     (void)hdl;
-    *name = orlIO.orlInfo.curr->name;
-    *stamp = orlIO.orlInfo.curr->time;
+
+    *name = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    *stamp = depinfo.time;
 }
 
 
 static dep_handle AutoORLNextDep( dep_handle hdl )
 /************************************************/
 {
-    DepInfo     *p;
+    char        *p;
+    DepInfo     depinfo;
 
     (void)hdl;
-    p = orlIO.orlInfo.curr;
-    p = (void *)( (char *)p + offsetof( DepInfo, name ) + p->len );
-    if( p->len == 0 ) {
+    p = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr ) + depinfo.len;
+    WResReadBaseDepinfo( &depinfo, p );
+    if( depinfo.len == 0 ) {
         orlIO.orlInfo.curr = NULL;
         return( NULL );
     }

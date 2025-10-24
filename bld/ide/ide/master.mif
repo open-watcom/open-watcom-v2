@@ -20,8 +20,9 @@ ide_rc_host_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
+additional_clean = *.grc *.grh
 !ifndef nowgml
-additional_clean = $(docs_host_dir)/ide.gh
+additional_clean += $(docs_host_dir)/ide.gh
 !endif
 
 !include cproj.mif
@@ -48,7 +49,7 @@ inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(cli_idelib_inc_dirs) $(cli_wpi_inc_dirs) &
     -I"$(docs_host_dir)" -I"$(editdll_dir)" $(cli_rcsdll_inc_dirs) -I"$(batch_dir)/h"
 
-extra_cpp_flags     = -DGUI_IS_GUI
+extra_cpp_flags     = -DGUI_IS_GUI -DDUTIMET_ONLY_READ
 !ifdef nowgml
 extra_cpp_flags     += -DNOWGML
 !endif

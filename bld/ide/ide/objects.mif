@@ -19,7 +19,8 @@ objs = &
         objautod.obj &
         vrcscli.obj &
         idemem.obj &
-        autoenv.obj
+        autoenv.obj &
+        dutimet.obj
 
 !ifneq host_os os2
 objs += vfilelst.obj resautod.obj

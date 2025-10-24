@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -591,12 +591,10 @@ void VComponent::mIncludedItems( WMenuItem* )
         data.comp = _component;
         startWait();
         _parent->setStatus( "Scanning result file..." );
-        walk_status stat = WalkOBJAutoDep( (char*)(const char*)resf,
-            captureName, &data );
+        walk_status stat = WalkOBJAutoDep( (char*)(const char*)resf, captureName, &data );
 #ifndef __OS2__
         if( stat == ADW_NOT_AN_OBJ ) {
-            stat = WalkRESAutoDep( (char*)(const char*)resf,
-                captureName, &data );
+            stat = WalkRESAutoDep( (char*)(const char*)resf, captureName, &data );
         }
 #endif
         _parent->setStatus( NULL );

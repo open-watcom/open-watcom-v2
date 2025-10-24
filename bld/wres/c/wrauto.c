@@ -39,13 +39,13 @@
 #include "wresrtns.h"
 
 
-void *WResReadBaseDepinfo( DepInfo *dst, const void *src )
+char *WResReadBaseDepinfo( DepInfo *dst, const char *src )
 {
-    memcpy( (void *)dst, src, offsetof( DepInfo, name ) );
-    return(  (char *)src + offsetof( DepInfo, name ) );
+    memcpy( (void *)dst, (void *)src, offsetof( DepInfo, name ) );
+    return(  (char *)( src + offsetof( DepInfo, name ) ) );
 }
 
-DepInfo *WResGetAutoDep( const char *fname )
+char *WResGetAutoDep( const char *fname )
 {
     FILE            *fp;
     WResDir         dir;
@@ -54,7 +54,7 @@ DepInfo *WResGetAutoDep( const char *fname )
     WResID          *type;
     WResDirWindow   window;
     WResLangInfo    *info;
-    DepInfo         *ret;
+    char            *ret;
     size_t          numread;
 
     ret = NULL;
@@ -99,7 +99,7 @@ DepInfo *WResGetAutoDep( const char *fname )
     return( ret );
 }
 
-void WResFreeAutoDep( DepInfo *ptr )
+void WResFreeAutoDep( char *ptr )
 {
     WRESFREE( ptr );
 }

@@ -35,7 +35,8 @@
 
 #if ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
 /*
- * temporary fix for older builds of OW 2.0
+ * fix for bug in older builds of OW 2.0
+ * there are missing following macros
  */
 #ifndef _WCI86NEAR
 #define _WCI86NEAR

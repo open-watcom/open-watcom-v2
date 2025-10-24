@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 #include "wressetr.h"
 
 typedef struct res_info {
-    DepInfo *first;
-    DepInfo *curr;
+    char    *first;
+    char    *curr;
 } res_info;
 
 static res_info ResInfo;
@@ -48,7 +49,7 @@ static res_info ResInfo;
 STATIC handle RESInitFile( const char *name )
 /*******************************************/
 {
-    DepInfo         *depends;
+    char            *depends;
     res_info        *ret_val;
     long            old_shift;
 
@@ -76,22 +77,24 @@ STATIC dep_handle RESFirstDep( dep_handle file )
 STATIC void RESTransDep( dep_handle f, char **name, time_t *stamp )
 /*****************************************************************/
 {
-    DepInfo *curr = ((res_info *)f)->curr;
+    DepInfo     depinfo;
 
-    *name = curr->name;
-    *stamp = curr->time;
+    *name = WResReadBaseDepinfo( &depinfo, ((res_info *)f)->curr );
+    *stamp = depinfo.time;
 }
 
 
 STATIC handle RESNextDep( dep_handle f )
 /**************************************/
 {
-    DepInfo     *p;
-    res_info    *file = f;
+    res_info    *file;
+    DepInfo     depinfo;
+    char        *p;
 
-    p = (void *)file->curr;
-    p = (void *)( (char *)p + sizeof( *p ) + p->len - 1 );
-    if( p->len == 0 ) {
+    file = (res_info *)f;
+    p = WResReadBaseDepinfo( &depinfo, file->curr ) + depinfo.len;
+    WResReadBaseDepinfo( &depinfo, p );
+    if( depinfo.len == 0 ) {
         file->curr = NULL;
         return( NULL );
     }

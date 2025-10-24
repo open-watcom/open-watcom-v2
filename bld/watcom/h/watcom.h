@@ -89,6 +89,14 @@
     #define I64HI8      7
 #endif
 
+#if defined( __BIG_ENDIAN__ )
+    #define I16LO8     1
+    #define I16HI8     0
+#else
+    #define I16LO8     0
+    #define I16HI8     1
+#endif
+
 /*  Macros for little/big endian conversion; These exist to simplify writing
  *  code that handles both little and big endian data on either little or big
  *  endian host platforms. Some of these macros could be implemented as inline

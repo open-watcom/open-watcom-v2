@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,26 +37,13 @@
 #include "wio.h"
 #include "watcom.h"
 #include "pcobj.h"
+#include "dutimet.h"
 #include "objautod.h"
 
-#pragma pack( __push, 1 )
-enum {
-    TIME_SEC_B  = 0,
-    TIME_SEC_F  = 0x001f,
-    TIME_MIN_B  = 5,
-    TIME_MIN_F  = 0x07e0,
-    TIME_HOUR_B = 11,
-    TIME_HOUR_F = 0xf800
-};
+#include "clibext.h"
 
-enum {
-    DATE_DAY_B  = 0,
-    DATE_DAY_F  = 0x001f,
-    DATE_MON_B  = 5,
-    DATE_MON_F  = 0x01e0,
-    DATE_YEAR_B = 9,
-    DATE_YEAR_F = 0xfe00
-};
+#define GET_UN16(p)         ((unsigned char)(p)[I16LO8] + (unsigned char)(p)[I16HI8]*256)
+#define THEADER_REC_SIZE    4
 
 static int verifyOBJFile( int fh )
 {
@@ -64,13 +51,17 @@ static int verifyOBJFile( int fh )
         omf_record      header;
         omf_name        name;
     } theadr;
+    char    buff[THEADER_REC_SIZE];
 
     if( lseek( fh, 0, SEEK_SET ) == -1L ) {
         return( 0 );
     }
-    if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
+    if( read( fh, buff, THEADER_REC_SIZE ) != THEADER_REC_SIZE ) {
         return( 0 );
     }
+    theadr.header.command = buff[0];
+    theadr.header.length = GET_UN16( buff + 1 );
+    theadr.name.len = buff[3];
     if( theadr.header.command != CMD_THEADR ) {
         return( 0 );
     }
@@ -83,22 +74,8 @@ static int verifyOBJFile( int fh )
     return( 1 );
 }
 
-static time_t dosStampToTime( unsigned short date, unsigned short time )
-{
-    struct tm tmbuf;
-
-    tmbuf.tm_year = ( ( date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
-    tmbuf.tm_mon  = ( ( date & DATE_MON_F ) >> DATE_MON_B ) - 1;
-    tmbuf.tm_mday = ( date & DATE_DAY_F ) >> DATE_DAY_B;
-
-    tmbuf.tm_hour = ( time & TIME_HOUR_F ) >> TIME_HOUR_B;
-    tmbuf.tm_min  = ( time & TIME_MIN_F ) >> TIME_MIN_B;
-    tmbuf.tm_sec  = ( ( time & TIME_SEC_F ) >> TIME_SEC_B ) * 2;
-
-    tmbuf.tm_isdst= -1;
-
-    return( mktime( &tmbuf ) );
-}
+#define HEADER_REC_SIZE         3
+#define COMMENT_REC_SIZE    7
 
 walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
 /**********************************************************************************************************/
@@ -125,11 +102,13 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     wstatus = ADW_NOT_AN_OBJ;
     if( verifyOBJFile( fh ) ) {
         wstatus = ADW_OK;
-        for(;;) {
-            if( read( fh, &header, sizeof( header ) ) != sizeof( header ) ) {
+        for( ;; ) {
+            if( read( fh, buff, HEADER_REC_SIZE ) != HEADER_REC_SIZE ) {
                 wstatus = ADW_FILE_ERROR;
                 break;
             }
+            header.command = buff[0];
+            header.length = GET_UN16( buff + 1 );
             if( header.command != CMD_COMENT ) {
                 if( header.command == CMD_LNAMES ) {
                     /* first LNAMES record means object file doesn't have deps */
@@ -139,15 +118,20 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
                 lseek( fh, header.length, SEEK_CUR );
                 continue;
             }
-            if( read( fh, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
+            if( read( fh, buff, COMMENT_REC_SIZE ) != COMMENT_REC_SIZE ) {
                 wstatus = ADW_FILE_ERROR;
                 break;
             }
+            comment.bits = buff[0];
+            comment.type = buff[1];
+            comment.dos_time = GET_UN16( buff + 2 );
+            comment.dos_date = GET_UN16( buff + 4 );
+            comment.name_len = buff[6];
             if( comment.type != CMT_DEPENDENCY ) {
-                lseek( fh, (fpos_t)header.length - sizeof( comment ), SEEK_CUR );
+                lseek( fh, (fpos_t)header.length - COMMENT_REC_SIZE, SEEK_CUR );
                 continue;
             }
-            if( header.length < sizeof( comment ) ) {
+            if( header.length < COMMENT_REC_SIZE ) {
                 /* null dependency ends our search */
                 break;
             }
@@ -160,7 +144,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
             }
             buff[len - 1] = '\0';
             if( rtn != NULL ) {
-                DOS_stamp_time = dosStampToTime( comment.dos_date, comment.dos_time );
+                DOS_stamp_time = __dosu2timet( comment.dos_date, comment.dos_time );
                 rstatus = (*rtn)( DOS_stamp_time, buff, data );
                 if( rstatus == ADR_STOP ) {
                     wstatus = ADW_RTN_STOPPED;

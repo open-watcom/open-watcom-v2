@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,15 +43,9 @@
 #include "clibext.h"
 
 
-typedef struct {
-    uint_32             time;       /* file's time taken from stat */
-    uint_16             len;        /* sizeof the name array */
-    char                name[1];    /* dynamic array */
-} ResDepInfo;
-
 typedef struct DepNode {
     struct DepNode      *next;
-    ResDepInfo          info;       /* this must be the last element because it contains a dynamic array */
+    DepInfo             info;       /* this must be the last element because it contains a dynamic array */
 } DepNode;
 
 static DepNode          *depList;
@@ -88,7 +82,7 @@ bool AddDependency( const char *fname )
     return( false );
 }
 
-static void writeOneNode( ResDepInfo *cur )
+static void writeOneNode( DepInfo *cur )
 {
     RawDataItem         item;
 
@@ -98,7 +92,7 @@ static void writeOneNode( ResDepInfo *cur )
     item.WriteNull = false;
 
     /*
-     * write out time
+     * write out time stamp
      */
 #ifdef __BIG_ENDIAN__
     item.Item.Num = cur->time >> 16;
@@ -129,9 +123,9 @@ static void writeOneNode( ResDepInfo *cur )
 
 static void writeDepListEOF( void )
 {
-    ResDepInfo  eof;
+    DepInfo     eof;
 
-    memset( &eof, 0, sizeof( ResDepInfo ) );
+    memset( &eof, 0, sizeof( DepInfo ) );
     writeOneNode( &eof );
 }
 

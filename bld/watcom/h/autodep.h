@@ -44,9 +44,9 @@ typedef struct {
     char        name[1];        /* dynamic array */
 } DepInfo;
 
-extern DepInfo  *WResGetAutoDep( const char *fname );
-extern void     WResFreeAutoDep( DepInfo *ptr );
-extern void     *WResReadBaseDepinfo( DepInfo *dst, const void *src );
+extern char     *WResGetAutoDep( const char *fname );
+extern void     WResFreeAutoDep( char *ptr );
+extern char     *WResReadBaseDepinfo( DepInfo *dst, const char *src );
 
 #ifdef __cplusplus
 }

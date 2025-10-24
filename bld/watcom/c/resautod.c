@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,26 +41,34 @@
 #include "objautod.h"
 #include "autodep.h"    //for res files
 
+
 walk_status WalkRESAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
 /**********************************************************************************************************/
 {
-    DepInfo     *depends;
-    DepInfo     *p;
+    char        *depends;
+    char        *p;
     walk_status wstatus;
     rtn_status  rstatus;
+    DepInfo     depinfo;
 
     wstatus = ADW_NOT_AN_OBJ;
     depends = WResGetAutoDep( file_name );
     if( depends != NULL ) {
         wstatus = ADW_OK;
-        for( p = depends; p->len != 0; p = (DepInfo *)( (char *)p + sizeof( DepInfo ) - 1 + p->len ) ) {
-            rstatus = (*rtn)( p->time, p->name, data );
+        p = depends;
+        for( ;; ) {
+            p = WResReadBaseDepinfo( &depinfo, p );
+            if( depinfo.len == 0 ) {
+                break;
+            }
+            rstatus = (*rtn)( depinfo.time, p, data );
             if( rstatus == ADR_STOP ) {
                 wstatus = ADW_RTN_STOPPED;
                 break;
             }
+            p += depinfo.len;
         }
-        free( depends );
+        WResFreeAutoDep( depends );
     }
     return( wstatus );
 }
