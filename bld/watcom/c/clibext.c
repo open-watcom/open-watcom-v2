@@ -50,6 +50,9 @@
 
 #else
 
+#ifdef __LINUX__
+    #define _BSD_SOURCE
+#endif
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
