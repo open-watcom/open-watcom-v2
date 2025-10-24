@@ -126,3 +126,4 @@ jobs:
       with:
         hostos:     'nt'
         owdebug:    ${{ inputs.owdebug }}
+        testboot:   1

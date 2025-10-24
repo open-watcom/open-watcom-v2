@@ -18,7 +18,10 @@ $(libtarg_name).lib : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)
 !ifndef __WATCOM_TOOLS__
     @%make echo_lib
     $(bld_lib) $+$(libtarg_objs) $(libtarg_libs)$-
-!else if $(__WATCOM_TOOLS__) == 1290
+!else ifeq %TESTBOOT 1
+    @%make echo_lib
+    $(librarian) $(libflags) $+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-
+!else ifeq __WATCOM_TOOLS__ 1290
     $(noecho)%create $(libtarg_name).lbc
     @for %o in ($+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-) do @%append $(libtarg_name).lbc %o
     @%make echo_lib

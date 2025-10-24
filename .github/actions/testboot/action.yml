@@ -11,6 +11,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testboot:
+    description: 'if test boot with new OW version'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -25,6 +30,7 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
+      TESTBOOT:      ${{ inputs.testboot }}
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
@@ -37,4 +43,5 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
+      TESTBOOT:      ${{ inputs.testboot }}
     shell: cmd

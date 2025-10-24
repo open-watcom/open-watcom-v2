@@ -20,6 +20,10 @@ link_sys_linux      = linux
 wsplice_opts_linux  = -u -kUNIX
 !endif
 
+!ifeq %TESTBOOT 1
+extra_cflag = -DTESTBOOT
+!endif
+
 objs = &
   macros.obj main.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
@@ -38,7 +42,7 @@ objs = &
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DINCL_MSGTEXT -DDTIME_ONLY_READ -DDUTIME_ONLY_READ -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
+    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP $(extra_cflag) -DINCL_MSGTEXT -DDTIME_ONLY_READ -DDUTIME_ONLY_READ -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys_$(bld_os)) file {$<}

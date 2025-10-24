@@ -31,7 +31,7 @@
 
 
 #ifdef __WATCOMC__
-    #if defined( BOOTSTRAP )
+    #if defined( BOOTSTRAP ) && !defined( TESTBOOT )
         #define IMPLEMENT_MKGMTIME
     #endif
 #elif defined( _MSC_VER )
