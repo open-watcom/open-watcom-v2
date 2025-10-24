@@ -33,7 +33,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <string.h>
-#include "dtimet.h"
+#include "dutimet.h"
 #include "dmpobj.h"
 
 
@@ -168,7 +168,7 @@ static void doDependency( void )
     dos_time |= GetByte() << 8;
     dos_date = GetByte();
     dos_date |= GetByte() << 8;
-    t = __dos2timet( dos_date, dos_time );
+    t = __dosu2timet( dos_date, dos_time );
     Output( INDENT "File: " );
     buff[1] = '\0';
     for( len = GetByte(); len != 0; --len ) {
