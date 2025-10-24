@@ -78,24 +78,6 @@ enum {
 #define SECONDS_PER_DAY                 (24UL * 60UL * 60UL)
 #define DAYS_FROM_1900_TO_1970          (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)
 
-enum {
-    TIME_SEC_B  = 0,
-    TIME_SEC_F  = 0x001f,
-    TIME_MIN_B  = 5,
-    TIME_MIN_F  = 0x07e0,
-    TIME_HOUR_B = 11,
-    TIME_HOUR_F = 0xf800
-};
-
-enum {
-    DATE_DAY_B  = 0,
-    DATE_DAY_F  = 0x001f,
-    DATE_MON_B  = 5,
-    DATE_MON_F  = 0x01e0,
-    DATE_YEAR_B = 9,
-    DATE_YEAR_F = 0xfe00
-};
-
 static short const month_start_days[] = {
     0,                                                          /* Jan */
     31,                                                         /* Feb */
