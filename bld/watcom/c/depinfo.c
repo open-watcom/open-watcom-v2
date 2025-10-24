@@ -25,22 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  Autodependency structure defintion shared between resource
-*               compiler and wmake.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+#include <stddef.h>
+#include <string.h>
+#include "watcom.h"
 #include "depinfo.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern char     *WResGetAutoDep( const char *fname );
-extern void     WResFreeAutoDep( char *ptr );
-
-#ifdef __cplusplus
+char *ReadBaseDepinfo( DepInfo *dst, const char *src )
+{
+    memcpy( (void *)dst, (void *)src, offsetof( DepInfo, name ) );
+    return(  (char *)( src + offsetof( DepInfo, name ) ) );
 }
-#endif

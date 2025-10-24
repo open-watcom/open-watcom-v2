@@ -57,7 +57,7 @@ walk_status WalkRESAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
         wstatus = ADW_OK;
         p = depends;
         for( ;; ) {
-            p = WResReadBaseDepinfo( &depinfo, p );
+            p = ReadBaseDepinfo( &depinfo, p );
             if( depinfo.len == 0 ) {
                 break;
             }

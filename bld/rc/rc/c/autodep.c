@@ -34,7 +34,7 @@
 #include <errno.h>
 #include "global.h"
 #include "rcerrors.h"
-#include "wresauto.h"
+#include "depinfo.h"
 #include "semantic.h"
 #include "rcrtns.h"
 #include "depend.h"

@@ -39,7 +39,7 @@
 #include "mupdate.h"
 #include "mautodep.h"
 #include "orl.h"
-#include "wresauto.h"
+#include "depinfo.h"
 
 
 typedef struct orl_info {
@@ -214,7 +214,7 @@ static dep_handle AutoORLFirstDep( handle hdl )
 
     (void)hdl;
     orlIO.orlInfo.curr = (char *)orlIO.orlInfo.buffer;
-    WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    ReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
     if( depinfo.len != 0 ) {
         return( &orlIO );
     }
@@ -229,7 +229,7 @@ static void AutoORLTransDep( dep_handle hdl, char **name, time_t *stamp )
 
     (void)hdl;
 
-    *name = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    *name = ReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
     *stamp = depinfo.time;
 }
 
@@ -241,9 +241,9 @@ static dep_handle AutoORLNextDep( dep_handle hdl )
     DepInfo     depinfo;
 
     (void)hdl;
-    p = WResReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
+    p = ReadBaseDepinfo( &depinfo, orlIO.orlInfo.curr );
     p += depinfo.len;
-    WResReadBaseDepinfo( &depinfo, p );
+    ReadBaseDepinfo( &depinfo, p );
     if( depinfo.len == 0 ) {
         orlIO.orlInfo.curr = NULL;
         return( NULL );

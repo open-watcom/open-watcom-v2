@@ -25,22 +25,24 @@
 *
 *  ========================================================================
 *
-* Description:  Autodependency structure defintion shared between resource
-*               compiler and wmake.
+* Description:  Autodependency structure defintion used/shared
+*               by multiple tools
 *
 ****************************************************************************/
 
 
-#include "depinfo.h"
+#ifndef _DEPINFO_H_INCLUDED
+#define _DEPINFO_H_INCLUDED
 
+#define DEP_LIST_TYPE       0x79
+#define DEP_LIST_NAME       "EBWF_XFMMTUPPE"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef struct {
+    unsigned_32     time;           /* file's time taken from stat */
+    unsigned_16     len;            /* sizeof the name array */
+    char            name[1];        /* dynamic array */
+} DepInfo;
 
-extern char     *WResGetAutoDep( const char *fname );
-extern void     WResFreeAutoDep( char *ptr );
+extern char     *ReadBaseDepinfo( DepInfo *dst, const char *src );
 
-#ifdef __cplusplus
-}
 #endif

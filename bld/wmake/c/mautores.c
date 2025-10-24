@@ -79,7 +79,7 @@ STATIC void RESTransDep( dep_handle f, char **name, time_t *stamp )
 {
     DepInfo     depinfo;
 
-    *name = WResReadBaseDepinfo( &depinfo, ((res_info *)f)->curr );
+    *name = ReadBaseDepinfo( &depinfo, ((res_info *)f)->curr );
     *stamp = depinfo.time;
 }
 
@@ -92,9 +92,9 @@ STATIC handle RESNextDep( dep_handle f )
     char        *p;
 
     file = (res_info *)f;
-    p = WResReadBaseDepinfo( &depinfo, file->curr );
+    p = ReadBaseDepinfo( &depinfo, file->curr );
     p += depinfo.len;
-    WResReadBaseDepinfo( &depinfo, p );
+    ReadBaseDepinfo( &depinfo, p );
     if( depinfo.len == 0 ) {
         file->curr = NULL;
         return( NULL );

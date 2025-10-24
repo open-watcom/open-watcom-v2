@@ -25,7 +25,7 @@ objs = &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dtimet.obj dutimet.obj &
-  mcache.obj misc.obj clibext.obj
+  mcache.obj misc.obj depinfo.obj clibext.obj
 
 .c : ../c;../../builder/c;../../watcom/c
 

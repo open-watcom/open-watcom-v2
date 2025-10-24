@@ -39,12 +39,6 @@
 #include "wresrtns.h"
 
 
-char *WResReadBaseDepinfo( DepInfo *dst, const char *src )
-{
-    memcpy( (void *)dst, (void *)src, offsetof( DepInfo, name ) );
-    return(  (char *)( src + offsetof( DepInfo, name ) ) );
-}
-
 char *WResGetAutoDep( const char *fname )
 {
     FILE            *fp;
