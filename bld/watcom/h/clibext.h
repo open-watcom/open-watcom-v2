@@ -54,10 +54,6 @@
 extern "C" {
 #endif
 
-#include <time.h>
-
-extern time_t   _mkgmtime( struct tm * );
-
 #ifdef __cplusplus
 }
 #endif
@@ -120,10 +116,6 @@ extern time_t   _mkgmtime( struct tm * );
 #endif
 #ifndef _UI32_MAX
 #define _UI32_MAX 4294967295UL
-#endif
-
-#ifndef __OSX__
-#define _mkgmtime timegm
 #endif
 
 #elif defined( _MSC_VER )
@@ -212,9 +204,6 @@ extern char     *strrev( char *string );
 extern void     _searchenv( const char *name, const char *env_var, char *buf );
 extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
 extern int      spawnvp( int mode, const char *cmd, const char * const *args );
-#ifdef __OSX__
-extern time_t   _mkgmtime( struct tm * );
-#endif
 
 #elif defined( _MSC_VER )
 
