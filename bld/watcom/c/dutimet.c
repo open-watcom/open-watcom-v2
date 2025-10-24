@@ -34,17 +34,13 @@
     #if defined( BOOTSTRAP )
         #define IMPLEMENT_MKGMTIME
     #endif
+#elif defined( _MSC_VER )
 #else
     #if defined( __OSX__ )
-        #define _DEFAULT_SOURCE
-        #define _BSD_SOURCE
-//        #define IMPLEMENT_MKGMTIME
-        #define _mkgmtime timegm
-    #elif defined( __LINUX__ )
-        #define _DEFAULT_SOURCE
-        #define _BSD_SOURCE
-        #define _mkgmtime timegm
+        #define IMPLEMENT_MKGMTIME
     #else
+        #define _DEFAULT_SOURCE
+        #define _BSD_SOURCE
         #define _mkgmtime timegm
     #endif
 #endif
