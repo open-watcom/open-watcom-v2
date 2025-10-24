@@ -55,7 +55,7 @@
 
 #include "objautod.h"
 #include "ide.rh"
-#include "autodep.h"
+#include "wresauto.h"
 
 #include "clibext.h"
 

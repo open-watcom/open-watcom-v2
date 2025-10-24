@@ -39,7 +39,7 @@
 #include "mupdate.h"
 #include "mautodep.h"
 #include "orl.h"
-#include "autodep.h"
+#include "wresauto.h"
 
 
 typedef struct orl_info {

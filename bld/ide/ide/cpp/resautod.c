@@ -39,7 +39,7 @@
 #include "watcom.h"
 #include "pcobj.h"
 #include "objautod.h"
-#include "autodep.h"    //for res files
+#include "wresauto.h"    //for res files
 
 
 walk_status WalkRESAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )

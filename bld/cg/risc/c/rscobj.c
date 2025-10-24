@@ -40,7 +40,7 @@
 #include "cgswitch.h"
 #include "owl.h"
 #include "rscobj.h"
-#include "autodep.h"
+#include "wresauto.h"
 #include "data.h"
 #include "rtrtn.h"
 #include "utils.h"

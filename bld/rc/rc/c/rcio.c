@@ -44,7 +44,7 @@
 #include "rcerrors.h"
 #include "preproc.h"
 #include "reserr.h"
-#include "autodep.h"
+#include "wresauto.h"
 #include "errprt.h"
 #include "util.h"
 #include "rcldstr.h"
