@@ -1189,6 +1189,8 @@ void    ObjInit( void )
         OutShort( DEPENDENCY_COMMENT, names );
         /*
          * OMF use dos time/date format
+         * for better portability, we use UTC instead of local time,
+         * so as not to be dependent on the time zone
          */
         OutLongInt( __timet2dosu( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, FEINF_DEPENDENCY_NAME ), names );

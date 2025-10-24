@@ -204,7 +204,7 @@ void OutSelect( bool starts )
 
         if( (Parse_Pass > PASS_1) && !PhaseError ) {
             objr = ObjNewRec( CMD_COMENT );
-            objr->u.coment.attr = 0x80;
+            objr->u.coment.attr = CMT_TNP;
             objr->u.coment.class = CMT_DISASM_DIRECTIVE;
 
             curr = GetCurrAddr();
@@ -247,7 +247,7 @@ static void write_dosseg( void )
     obj_rec_handle  objr;
 
     objr = ObjNewRec( CMD_COMENT );
-    objr->u.coment.attr = 0x80;
+    objr->u.coment.attr = CMT_TNP;
     objr->u.coment.class = CMT_DOSSEG;
     ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, true );
@@ -267,7 +267,7 @@ static void write_lib( void )
         if( len > 255 )
             len = 255;
         objr = ObjNewRec( CMD_COMENT );
-        objr->u.coment.attr = 0x80;
+        objr->u.coment.attr = CMT_TNP;
         objr->u.coment.class = CMT_DEFAULT_LIBRARY;
         ObjAttachData( objr, (uint_8 *)name, (uint_16)len );
         write_record( objr, true );
@@ -739,7 +739,7 @@ static bool write_autodep( void )
     }
     // one NULL dependency record must be on the end
     objr = ObjNewRec( CMD_COMENT );
-    objr->u.coment.attr = 0x80;
+    objr->u.coment.attr = CMT_TNP;
     objr->u.coment.class = CMT_DEPENDENCY;
     ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, true );

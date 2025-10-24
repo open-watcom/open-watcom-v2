@@ -36,6 +36,8 @@
 #include "dutimet.h"
 #include "dmpobj.h"
 
+#include "clibext.h"
+
 
 #define BUFLEN  512
 
@@ -308,9 +310,10 @@ static int doLinkerDirective( void )
     return( 0 );
 }
 
-static int doEasyOmf( byte c_bits )
+static int doEasyOmf( byte c_type )
 {
-    if( c_bits == 0x80 && memcmp( RecPtr, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
+    if( c_type == CMT_TNP
+      && memcmp( RecPtr, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
         Output( INDENT "---- PharLap 80386 object deck ----\n" );
         IsPharLap = true;
         IsIntel = false;
@@ -417,13 +420,13 @@ static int doOMFExt( void )
 void ProcComent( void )
 /*********************/
 {
-    byte        c_bits;
+    byte        c_type;
     byte        c_class;
     int         dont_print;
 
-    c_bits = GetByte();
+    c_type = GetByte();
     c_class = GetByte();
-    Output( INDENT "bits %b, class %b\n", c_bits, c_class );
+    Output( INDENT "type %b, class %b\n", c_type, c_class );
     dont_print = 0;
     if( InterpretComent ) {
         switch( c_class ) {
@@ -473,7 +476,7 @@ void ProcComent( void )
             Output( INDENT "End of Linker Pass 1\n" );
             break;
         case CMT_EASY_OMF:
-            dont_print = doEasyOmf( c_bits );
+            dont_print = doEasyOmf( c_type );
             break;
         case CMT_DISASM_DIRECTIVE:
             dont_print = doDisasmDirective();
@@ -487,7 +490,7 @@ void ProcComent( void )
            properly */
         switch( c_class ) {
         case CMT_EASY_OMF:
-            dont_print = doEasyOmf( c_bits );
+            dont_print = doEasyOmf( c_type );
             break;
         case CMT_MS_OMF:
             dont_print = doMSOmf();
