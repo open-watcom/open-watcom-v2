@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#ifdef __LINUX__
+    #define _BSD_SOURCE
+#endif
+
 #include "dutimet.h"
 
 #include "clibext.h"
