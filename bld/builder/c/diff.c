@@ -910,7 +910,7 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
     }
 
     if( c == 'a'
-      && !cflag ) {
+      && cflag == 0 ) {
         /*
          * Addition: just print one odd #
          */
@@ -921,7 +921,7 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
          */
         range( astart, aend, FIL_A );
     }
-    if( !cflag ) {
+    if( cflag == 0 ) {
         putchar( c );
         if( !eflag ) {
             if( c == 'd' ) {
@@ -1223,7 +1223,7 @@ int main( int argc, char **argv )
         error( cmdusage );
         return( DIFF_NOT_COMPARED );
     }
-    if( nflag + ( cflag != 0 ) + eflag > 1 ) {
+    if( nflag + ( ( cflag ) ? 1 : 0 ) + eflag > 1 ) {
         error( " -c, -n and -e are incompatible.\n" );
         return( DIFF_NOT_COMPARED );
     }
