@@ -113,7 +113,6 @@ typedef struct  switch_entry {
     unsigned_64         low_value;
     unsigned_64         high_value;
     LABEL_INDEX         last_case_label;
-    char                *case_format;   /* "%ld" or "%lu" */
 } SWITCHDEFN, *SWITCHPTR;
 
 // if we end up converting the string to binary to store in long_double

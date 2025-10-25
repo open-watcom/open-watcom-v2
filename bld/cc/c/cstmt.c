@@ -800,8 +800,11 @@ static void AddCaseLabel( signed_64 value )
             break;
         prev_ce = ce;
     }
-    if( U64Eq( converted_value, old_value ) ) {   /* duplicate case value found */
-        sprintf( buffer, SwitchStack->case_format, value );
+    if( U64Eq( converted_value, old_value ) ) {
+        /*
+         * duplicate case value found
+         */
+        sprintf( buffer, "%lld", value );
         CErr2p( ERR_DUPLICATE_CASE_VALUE, buffer );
     } else {
         new_ce = (CASEPTR)CMemAlloc( sizeof( CASEDEFN ) );
@@ -995,7 +998,6 @@ static void SwitchStmt( void )
     SWITCHPTR   sw;
     TREEPTR     tree;
     TYPEPTR     typ;
-//    int         switch_type;
 
     StartNewBlock();
     NextToken();
@@ -1003,36 +1005,23 @@ static void SwitchStmt( void )
     sw->prev_switch = SwitchStack;
     Set64Val1m( sw->low_value );
     Set64ValZero( sw->high_value );
-    sw->case_format = "%ld";        /* assume signed cases */
     SwitchStack = sw;
-//    switch_type = TYP_INT;         /* assume int */
     tree = RValue( BracketExpr() );
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
-    if( typ->decl_type == TYP_UFIELD ) {
-        if( typ->u.f.field_width == (TARGET_INT * CHAR_BIT) ) {
-            sw->case_format = "%lu";
-//            switch_type = TYP_UINT;
-        }
-    }
     switch( typ->decl_type ) {
     case TYP_USHORT:
     case TYP_UINT:
-        sw->case_format = "%lu";
-//        switch_type = TYP_UINT;
     case TYP_CHAR:
     case TYP_UCHAR:
     case TYP_SHORT:
     case TYP_INT:
     case TYP_FIELD:
     case TYP_UFIELD:
-        break;
     case TYP_ULONG:
-        sw->case_format = "%lu";
-//        switch_type = TYP_ULONG;
-        break;
     case TYP_LONG:
-//        switch_type = TYP_LONG;
+    case TYP_ULONG64:
+    case TYP_LONG64:
         break;
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
