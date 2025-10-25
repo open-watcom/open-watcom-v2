@@ -788,6 +788,19 @@ static TOKEN doScanNum( void )
         }
         if( usuffix ) {
             ConstType = TYP_ULONG64;
+        } else if( ConstType == TYP_UNDEFINED ) {
+            /*
+             * C99 say that signed long long decimal number is undefined type
+             * if it cannot be represented by any standard or extended signed type
+             * signed integer over LLONG_MAX cannot be represented by OW signed type
+             * that it should be undefined type.
+             * We report this issue at Warning level 1 and setup it as
+             * unsigned long long type
+             */
+            ConstType = TYP_ULONG64;
+            if( diagnose_lex_error() ) {
+                CWarn1( ERR_INT_IS_UNSIGNED );
+            }
         }
         break;
     }

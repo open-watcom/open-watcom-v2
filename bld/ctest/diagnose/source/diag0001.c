@@ -1,7 +1,7 @@
 
 typedef enum {
     en644_3 = -0x7FFFFFFFFFFFFFFF,
-    en644_1 = 0xFFFFFFFFFFFFFFFF,
+    en644_1 = 18446744073709551615,
     en644_2 = -0x7FFFFFFFFFFFFFFF
 } enum_u644;
 

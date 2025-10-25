@@ -1,3 +1,4 @@
+source\diag0001.c(4): Warning! W144: integer constant is so large that it is unsigned
 source\diag0001.c(4): Error! E1128: Enum constant is out of range -9223372036854775808 to 9223372036854775807
 source\diag0001.c(10): Error! E1128: Enum constant is out of range 0 to 18446744073709551615
 source\diag0002.c(9): Warning! W133: Symbol name truncated for '__CPR305___Y_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1Z'

@@ -1386,7 +1386,8 @@ static TREEPTR GetExpr( void )
                 break;
             case TC_SIZEOF:
                 typ = tree->u.expr_type;
-                if ( typ != NULL && typ->decl_type == TYP_FUNCTION ) {
+                if( typ != NULL
+                  && typ->decl_type == TYP_FUNCTION ) {
                     tree = AddrOp( tree );
                     typ = tree->u.expr_type;
                 }
@@ -2052,7 +2053,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 /*
  * This really ought to be defined somewhere else...
  */
-  #if (_CPU == _AXP)
+  #if _CPU == _AXP
     #define REG_SIZE    8
   #else
     #define REG_SIZE    4
@@ -2309,7 +2310,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( strcmp( sym_name, "__builtin_alloca" ) == 0 ) {
                     return( GenAllocaNode( last_parm ) );
                 }
-    #if  _CPU == _PPC
+    #if _CPU == _PPC
                 if( strcmp( sym_name, "__builtin_va_arg" ) == 0 ) {
                     return( GenVaArgNode( last_parm ) );
                 }

@@ -106,6 +106,7 @@ positive_tests = &
     callc01.$(exe) &
     cmp01.$(exe) &
     cmp02.$(exe) &
+    const01.$(exe) &
     conv02.$(exe) &
     conv03.$(exe) &
     conv04.$(exe) &
