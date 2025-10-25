@@ -959,13 +959,11 @@ static void DoSwitch( OPNODE *node, cg_name name )
     sel_handle  table;
     SWITCHPTR   sw;
     CASEPTR     ce;
-    signed_64   tmp;
 
     table = CGSelInit();
     sw = node->u2.switch_info;
     for( ce = sw->case_list; ce != NULL; ce = ce->next_case ) {
-        Set64ValI32( tmp, ce->value );
-        CGSelCase( table, CGLabelHandles[ce->label], tmp );
+        CGSelCase( table, CGLabelHandles[ce->label], ce->value );
     }
     CGSelOther( table, CGLabelHandles[sw->default_label] );
     CGSelect( table, name );
