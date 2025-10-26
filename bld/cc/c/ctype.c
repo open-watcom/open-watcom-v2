@@ -453,6 +453,9 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T___INLINE:
             flags |= FLAG_INLINE;
             break;
+        case T__NORETURN:
+            flags |= FLAG_NORETURN;
+            break;
         case T__PACKED:
             if( packed )
                 CErr1( ERR_REPEATED_MODIFIER );
@@ -586,11 +589,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                     }
                 }
                 if( modifier & FLAG_NORETURN ) {
-                    if( info->decl_mod & FLAG_NORETURN ) {
-                        CErr1( ERR_INVALID_DECLSPEC );
-                    } else {
-                        info->decl_mod |= modifier;
-                    }
+                    info->decl_mod |= modifier;
                 }
                 if( modifier & FLAG_FARSS ) {
                     if( info->decl_mod & FLAG_FARSS ) {

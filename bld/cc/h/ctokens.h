@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,9 @@ typedef enum token_class {
     TC_SEGNAME,
     TC_SELF,
     TC_KEYWORD,             /* C keyword */
-    TC_QUALIFIER,           /* const, volatile */
+    TC_TYPE_SPECIFIER,      /* void, char, int, long, ... */
+    TC_FUNC_SPECIFIER,      /* inline, _Noreturn */
+    TC_TYPE_QUALIFIER,      /* const, volatile */
     TC_STG_CLASS,           /* auto, register, static, extern, typedef */
     TC_SEG16,
     TC_DECLSPEC,

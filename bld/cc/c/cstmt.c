@@ -1141,32 +1141,10 @@ static bool IsDeclarator( TOKEN token )
 
     /* If token class is storage class or qualifier, it's a declaration */
     if( TokenClass[token] == TC_STG_CLASS
-      || TokenClass[token] == TC_QUALIFIER
+      || TokenClass[token] == TC_TYPE_QUALIFIER
+      || TokenClass[token] == TC_TYPE_SPECIFIER
       || TokenClass[token] == TC_DECLSPEC ) {
         return( true );
-    }
-
-    /* If token is one of the following, it's a declaration */
-    switch( token ) {
-    case T_VOID:
-    case T_CHAR:
-    case T_SHORT:
-    case T_INT:
-    case T_LONG:
-    case T_FLOAT:
-    case T_DOUBLE:
-    case T_SIGNED:
-    case T_UNSIGNED:
-    case T__COMPLEX:
-    case T__IMAGINARY:
-    case T__BOOL:
-    case T___INT64:
-    case T_STRUCT:
-    case T_UNION:
-    case T_ENUM:
-        return( true );
-    default:
-        break;
     }
 
     /* If token is an ID, it might be a typedef */
