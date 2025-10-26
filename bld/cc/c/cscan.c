@@ -219,19 +219,27 @@ TOKEN KwLookup( const char *buf, size_t len )
     /*
      * look up id in keyword table
      */
-    if( CompVars.cstd < STD_C99 ) {
-        switch( token ) {
-        case T__BOOL:
-        case T_INLINE:
-            if( CompFlags.extensions_enabled )
-                break;
-            /* fall through */
-        case T_RESTRICT:
-        case T__COMPLEX:
-        case T__IMAGINARY:
-        case T___OW_IMAGINARY_UNIT:
+    switch( token ) {
+    case T__BOOL:
+    case T_INLINE:
+        if( CompVars.cstd < STD_C99
+          && !CompFlags.extensions_enabled )
+            return( T_ID );
+        break;
+    case T__COMPLEX:
+    case T_RESTRICT:
+    case T__IMAGINARY:
+    case T___OW_IMAGINARY_UNIT:
+        if( CompVars.cstd < STD_C99 ) {
             return( T_ID );
         }
+        break;
+    case T__NORETURN:
+        if( CompVars.cstd >= STD_C23
+          || CompVars.cstd < STD_C11
+          && !CompFlags.extensions_enabled )
+            return( T_ID );
+        break;
     }
     keyword = Tokens[token];
     if( *keyword == buf[0] ) {
