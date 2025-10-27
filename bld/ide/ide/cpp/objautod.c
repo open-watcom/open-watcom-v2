@@ -37,7 +37,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "pcobj.h"
-#include "dutimet.h"
 #include "objautod.h"
 
 #include "clibext.h"
@@ -72,6 +71,26 @@ static int verifyOBJFile( int fh )
         return( 0 );
     }
     return( 1 );
+}
+
+static time_t dosu2timet( unsigned short dos_date, unsigned short dos_time )
+/**************************************************************************/
+{
+    struct tm       t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( _mkgmtime( &t ) );
 }
 
 #define HEADER_REC_SIZE         3
@@ -144,7 +163,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
             }
             buff[len - 1] = '\0';
             if( rtn != NULL ) {
-                DOS_stamp_time = __dosu2timet( comment.dos_date, comment.dos_time );
+                DOS_stamp_time = dosu2timet( comment.dos_date, comment.dos_time );
                 rstatus = (*rtn)( DOS_stamp_time, buff, data );
                 if( rstatus == ADR_STOP ) {
                     wstatus = ADW_RTN_STOPPED;
