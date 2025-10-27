@@ -44,6 +44,24 @@
 #define GET_UN16(p)         ((unsigned char)(p)[I16LO8] + (unsigned char)(p)[I16HI8]*256)
 #define THEADER_REC_SIZE    4
 
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
+
 static int verifyOBJFile( int fh )
 {
     struct {
