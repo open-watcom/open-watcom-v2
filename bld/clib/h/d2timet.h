@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#define DTIMET_ONLY_READ
-#include "dtimet.h"
-
+#include <time.h>
 
 #define TODDATE(d) (*(unsigned short *)&d)
 #define TODTIME(t) (*(unsigned short *)&t)
+
+extern time_t   _INTERNAL __dos2timet( unsigned short dos_date, unsigned short dos_time );
