@@ -476,7 +476,7 @@ cflags_dll_os2  = -bd
 
 !ifdef __WATCOM_TOOLS__
 !  ifeq %TESTBOOT 1
-# testboot will support new options
+# test boot will support new options
 watcom_common_cflags   = -wx-wce=C310
 watcom_common_cxxflags = -w8-wce=P579
 c_flags = $(watcom_common_cflags) -zastd=c99

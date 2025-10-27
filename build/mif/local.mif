@@ -739,7 +739,7 @@ bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 ! ifdef __WATCOM_TOOLS__
 !   ifeq %TESTBOOT 1
-# testboot supports new options
+# test boot supports new options
 bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
 bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
 !   else if $(__WATCOM_TOOLS__) <= 1300

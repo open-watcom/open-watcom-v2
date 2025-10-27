@@ -19,20 +19,32 @@ bootutil_proc()
     if [ "$OWTOOLS" = "WATCOM" ]; then
         mkdir $OWROOT/bld/wmake/$OWOBJDIR
         cd $OWROOT/bld/wmake/$OWOBJDIR
-        wmake -m -f ../wmake
+        if [ "$TESTBOOT" = "1" ]; then
+            wmake -m -f ../wmake EXTRADEF=-DTESTBOOT
+        else
+            wmake -m -f ../wmake
+        fi
         RC=$?
     else
         case `uname` in
             Darwin)
                 mkdir $OWROOT/bld/wmake/$OWOBJDIR
                 cd $OWROOT/bld/wmake/$OWOBJDIR
-                make -f ../posmake TARGETDEF=-D__OSX__
+                if [ "$TESTBOOT" = "1" ]; then
+                    make -f ../posmake TARGETDEF=-D__OSX__ EXTRADEF=-DTESTBOOT
+                else
+                    make -f ../posmake TARGETDEF=-D__OSX__
+                fi
                 RC=$?
                 ;;
             *)
                 mkdir $OWROOT/bld/wmake/$OWOBJDIR
                 cd $OWROOT/bld/wmake/$OWOBJDIR
-                make -f ../posmake TARGETDEF=-D__LINUX__
+                if [ "$TESTBOOT" = "1" ]; then
+                    make -f ../posmake TARGETDEF=-D__LINUX__ EXTRADEF=-DTESTBOOT
+                else
+                    make -f ../posmake TARGETDEF=-D__LINUX__
+                fi
                 RC=$?
                 ;;
         esac
