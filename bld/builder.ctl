@@ -120,6 +120,8 @@ cdsay .
 #[ INCLUDE "<OWROOT>/bld/aui/builder.ctl" ]
 #[ INCLUDE "<OWROOT>/bld/wprof/builder.ctl" ]
 #[ ENDIF ]
+# rebuild regular wmake for next build phase
+[ INCLUDE "<OWROOT>/bld/wmake/builder.ctl" ]
 
 [ BLOCK <1> clean build rel cprel passclean pass ]
 #=================================================

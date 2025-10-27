@@ -20,7 +20,6 @@ objs = &
     vrcscli.obj &
     idemem.obj &
     autoenv.obj &
-    dutimet.obj &
     depinfo.obj
 
 !ifneq host_os os2

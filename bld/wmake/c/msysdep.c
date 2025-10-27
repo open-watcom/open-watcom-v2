@@ -156,9 +156,10 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
 
     if( in_obj == stamp )
         return( true );
-#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
     /*
-     * OW1.x bootstrap compiler workaround
+     * OW 1.9 bootstrap compiler workaround
+     * all platforms are dos based two-second timestamp
      */
     if( in_obj < stamp ) {
         if( (( in_obj + 1 ) & ~1) == (stamp & ~1) ) {
@@ -170,9 +171,13 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
         }
     }
 #else
+    /*
+     * OW 2.0 use one-second timestamp if available
+     * only DOS and OS/2 has two-second timestamp
+     */
   #if defined( __DOS__ ) || defined( __OS2__ )
     /*
-     * host is two-second file time based, the stamp is always two-second based time
+     * the host file stamp is always two-second based time
      * if in_obj is not a two-second based file time ( ELF, COFF or RES object files )
      * then we need to round in_obj to the nearest two-second based time
      */

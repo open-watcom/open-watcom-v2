@@ -21,8 +21,6 @@ additional_clean = *.gh *.grh *.grc
 
 inc_dirs = -I. -I"../h" -I"$(clib_dir)/h"
 
-extra_cpp_flags = -DDTIMET_ONLY_READ
-
 #
 # lflags
 #
@@ -31,13 +29,11 @@ extra_l_flags_dos = opt stack=4k
 # explicit rules
 #################
 
-extra_objs_dos = dtimet.obj
-extra_objs_os2 = dtimet.obj
 #
 # EXE
 #
 exetarg_prebuild_objs = usage.gh msg.grh
-exetarg_objs          = touch.obj dtparse.obj wtmsg.obj $(extra_objs_$(host_os))
+exetarg_objs          = touch.obj dtparse.obj wtmsg.obj
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

@@ -55,8 +55,6 @@
 #if defined(__NT__)
     #include <windows.h>
     #include "_dtaxxx.h"
-#elif !defined( __UNIX__ )
-    #include "dtimet.h"
 #endif
 
 #include "clibint.h"
@@ -68,6 +66,24 @@ enum {
     #define pick(num,eng,jap)   + 1
         #include "usage.gh"
     #undef pick
+};
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
 };
 
 extern touchflags   TouchFlags;
@@ -222,6 +238,28 @@ static void incTouchTime( void )
     mktime( &touchTime );
 }
 
+#if !defined( __UNIX__ ) && !defined( __NT__ )
+static time_t dos2timet( unsigned short dos_date, unsigned short dos_time )
+/*************************************************************************/
+{
+    struct tm t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( mktime( &t ) );
+}
+#endif
+
 static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
 /***************************************************************************************/
 {
@@ -261,7 +299,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     /*
      * DOS date/time format
      */
-    ftime = __dos2timet( dir->d_date, dir->d_time );
+    ftime = dos2timet( dir->d_date, dir->d_time );
 #endif
     ptime = localtime( &ftime );
     touchTime = *ptime;

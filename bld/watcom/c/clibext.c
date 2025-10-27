@@ -1942,5 +1942,4 @@ time_t _mkgmtime( struct tm *t )
             + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
 }
 
-#undef GMMKTIME
 #endif

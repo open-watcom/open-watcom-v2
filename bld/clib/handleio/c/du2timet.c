@@ -25,15 +25,31 @@
 *
 *  ========================================================================
 *
-* Description:  prototype and macros for __dos2timet internal function
+* Description:  conversion function for DOS date/time stamps (UTC timezone)
 *
 ****************************************************************************/
 
 
-#include <time.h>
+#include "variety.h"
+#include "d2timet.h"
 
 
-#define TODDATE(d) (*(unsigned short *)&d)
-#define TODTIME(t) (*(unsigned short *)&t)
+time_t _INTERNAL __dosu2timet( unsigned short dos_date, unsigned short dos_time )
+/*******************************************************************************/
+{
+    struct tm       t;
 
-extern time_t _INTERNAL __dos2timet( unsigned short dos_date, unsigned short dos_time );
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( _mkgmtime( &t ) );
+}

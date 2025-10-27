@@ -138,7 +138,17 @@ static bool getOMFCommentRecord( omf_info *info )
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+        /*
+         * OW 1.9 use DOS local time
+         */
+        info->timestamp = dos2timet( dep.dos_date, dep.dos_time );
+#else
+        /*
+         * OW 2.x use UTC
+         */
         info->timestamp = dosu2timet( dep.dos_date, dep.dos_time );
+#endif
         info->name = nameBuffer;
         return( true );
     }
