@@ -37,31 +37,24 @@
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1300 )
-    /*
-     * We don't need any of this stuff, but being able to build this
-     * module simplifies makefiles.
-     */
-#else
-
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #include <stddef.h> /* need to load _comdef.h */
 
-#else
+#else /* !__WATCOMC__ */
 
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#if defined( _MSC_VER )
+    #include <string.h>
+    #include <ctype.h>
+    #include <errno.h>
+  #if defined( _MSC_VER )
     #include <windows.h>
     #include "_dtaxxx.h"
     #include "ntext.h"
-#endif
-#include "wio.h"
-#include "wreslang.h"
+  #endif
+    #include "wio.h"
+    #include "wreslang.h"
 
-#endif
+#endif /* !__WATCOMC__ */
 
 #include "clibint.h"
 #include "clibext.h"
@@ -73,22 +66,24 @@
 *
 ****************************************************************************/
 
-#ifndef __WATCOMC__
+#ifdef __WATCOMC__
 
-#define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
-#define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
-#define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
+#else /* !__WATCOMC__ */
 
-#define DRIVE2CHAR(x)       ('a' + (x))
-#define CHAR2DRIVE(x)       (tolower(x) - 'a')
+    #define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
+    #define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
+    #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
-#if defined(__UNIX__)
-  #define PC '/'
-  #define ISPS(c)   ((c)==PC)
-#else   /* DOS, OS/2, Windows */
-  #define PC '\\'
-  #define ISPS(c)   ((c)==PC || (c)=='/')
-#endif
+    #define DRIVE2CHAR(x)       ('a' + (x))
+    #define CHAR2DRIVE(x)       (tolower(x) - 'a')
+
+  #if defined(__UNIX__)
+    #define PC '/'
+    #define ISPS(c)   ((c)==PC)
+  #else   /* DOS, OS/2, Windows */
+    #define PC '\\'
+    #define ISPS(c)   ((c)==PC || (c)=='/')
+  #endif
 
 /****************************************************************************
 *
@@ -147,11 +142,11 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
      * process node/drive/UNC specification
      */
     startp = inp;
-#ifdef __UNIX__
+  #ifdef __UNIX__
     if( TEST_NODE( inp ) ) {
-#else
+  #else
     if( TEST_UNC( inp ) ) {
-#endif
+  #endif
         inp += 2;
         for( ;; ) {
             if( *inp == '\0' )
@@ -163,7 +158,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
             inp++;
         }
         outp = pcopy( drive, outp, startp, inp );
-#if !defined(__UNIX__)
+  #ifndef __UNIX__
     } else if( TEST_DRIVE( inp ) ) {
         /*
          * process drive specification
@@ -175,7 +170,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
             *outp++ = '\0';
         }
         inp += 2;
-#endif
+  #endif
     } else if( drive != NULL ) {
         *drive = outp;
         *outp++ = '\0';
@@ -212,7 +207,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
     outp = pcopy( ext, outp, dotp, inp );
 }
 
-#endif
+#endif /* !__WATCOMC__ */
 
 /****************************************************************************
 *
@@ -220,7 +215,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -301,7 +296,7 @@ void _makepath(
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -423,7 +418,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -450,7 +445,7 @@ char *strlwr( char *str )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -477,7 +472,7 @@ char *strupr( char *str )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -510,7 +505,7 @@ char *strrev( char *str )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined( __OSX__ )
 
@@ -528,9 +523,9 @@ char *_cmdname( char *name )
 
 #elif defined( __BSD__ )
 
-  #if defined( __FREEBSD__ )
+ #if defined( __FREEBSD__ )
 
-  #include <sys/sysctl.h>
+    #include <sys/sysctl.h>
 
 char *_cmdname( char *name )
 {
@@ -546,7 +541,7 @@ char *_cmdname( char *name )
     return( name );
 }
 
-  #elif defined( __OPENBSD__ )
+ #elif defined( __OPENBSD__ )
 
 extern const char *__progname;
     #include <sys/stat.h>
@@ -645,7 +640,7 @@ fin0:
     return( result );
 }
 
-  #else
+ #else
 
 char *_cmdname( char *name )
 {
@@ -674,11 +669,11 @@ char *_cmdname( char *name )
     return( name );
 }
 
-  #endif
+ #endif
 
 #elif defined (__HAIKU__)
 
-  #include <image.h>
+    #include <image.h>
 
 char *_cmdname( char *name )
 {
@@ -754,7 +749,7 @@ char *_cmdname( char *name )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined( _MSC_VER )
 
@@ -878,7 +873,7 @@ int (_bgetcmd)( char *buffer, int len )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
@@ -929,11 +924,11 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(__UNIX__)
 
-#define LIST_SEPARATOR ':'
+    #define LIST_SEPARATOR ':'
 
 void _searchenv( const char *name, const char *env_var, char *buffer )
 {
@@ -1026,7 +1021,7 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 * identical to forward slashes when FNM_PATHNAME is set.
 */
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
@@ -1047,7 +1042,7 @@ static const struct my_wctypes {
     { "xdigit", _HEX }
 };
 
-#define WCTYPES_SIZE (sizeof( my_wctypes ) / sizeof( my_wctypes[0] ))
+    #define WCTYPES_SIZE (sizeof( my_wctypes ) / sizeof( my_wctypes[0] ))
 
 static int my_wctype( const char *name )
 {
@@ -1073,7 +1068,7 @@ static int icase( int ch, int flags )
 /* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
-#define CCL_NAME_MAX    8
+    #define CCL_NAME_MAX    8
 
 /* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
@@ -1277,7 +1272,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
@@ -1318,24 +1313,24 @@ int unsetenv( const char *name )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
-#define _DIR_ISFIRST            0
-#define _DIR_NOTFIRST           1
-#define _DIR_CLOSED             2
+    #define _DIR_ISFIRST            0
+    #define _DIR_NOTFIRST           1
+    #define _DIR_CLOSED             2
 
-#define OPENMODE_ACCESS_MASK    0x0007
-#define OPENMODE_SHARE_MASK     0x0070
+    #define OPENMODE_ACCESS_MASK    0x0007
+    #define OPENMODE_SHARE_MASK     0x0070
 
-#define OPENMODE_ACCESS_RDONLY  0x0000
+    #define OPENMODE_ACCESS_RDONLY  0x0000
 
-#define OPENMODE_DENY_COMPAT    0x0000
-#define OPENMODE_DENY_ALL       0x0010
-#define OPENMODE_DENY_WRITE     0x0020
-#define OPENMODE_DENY_READ      0x0030
-#define OPENMODE_DENY_NONE      0x0040
+    #define OPENMODE_DENY_COMPAT    0x0000
+    #define OPENMODE_DENY_ALL       0x0010
+    #define OPENMODE_DENY_WRITE     0x0020
+    #define OPENMODE_DENY_READ      0x0030
+    #define OPENMODE_DENY_NONE      0x0040
 
 void __NT_timet_to_filetime( time_t t, FILETIME *ft )
 {
@@ -1440,7 +1435,7 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
     FileTimeToDosDateTime( &local_ft, d, t );
 }
 
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+    #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
 bool __NTFindNextFileWithAttr( HANDLE osffh, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
 /**************************************************************************************/
@@ -1611,7 +1606,7 @@ int closedir( DIR *dirp )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
@@ -1625,9 +1620,9 @@ char        __optchar;          /* matched option char ('-' or altoptchar) */
 
 static int  opt_offset = 0;     /* position in currently parsed argument */
 
-/* Error messages suggested by Single UNIX Specification */
-#define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
-#define BAD_OPT_MSG     "%s: illegal option -- %c\n"
+    /* Error messages suggested by Single UNIX Specification */
+    #define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
+    #define BAD_OPT_MSG     "%s: illegal option -- %c\n"
 
 int getopt( int argc, char * const argv[], const char *optstring )
 /****************************************************************/
@@ -1722,7 +1717,7 @@ int getopt( int argc, char * const argv[], const char *optstring )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
@@ -1790,7 +1785,7 @@ int mkstemp( char *template_str )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
+#ifdef __WATCOMC__
 
 #elif defined(_MSC_VER)
 
@@ -1808,13 +1803,16 @@ unsigned sleep( unsigned time )
 *
 ****************************************************************************/
 
-#ifndef __WATCOMC__
+#ifdef __WATCOMC__
+
+#else
 
 wres_lang_id _WResLanguage( void )
 {
     return( RLE_ENGLISH );
 }
 
+#endif /* ! __WATCOMC__ */
 
 /****************************************************************************
 *
@@ -1822,20 +1820,119 @@ wres_lang_id _WResLanguage( void )
 *
 ****************************************************************************/
 
+#ifdef __WATCOMC__
+
+#else
+
 char *get_dllname( char *buf, int len )
 {
-#ifdef _MSC_VER
+  #ifdef _MSC_VER
     HMODULE hnd = NULL;
-#endif
+  #endif
 
     *buf = '\0';
-#ifdef _MSC_VER
+  #ifdef _MSC_VER
     GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)&optind, &hnd);
     GetModuleFileName( hnd, buf, len );
-#endif
+  #endif
     return( buf );
 }
 
-#endif /* ! __WATCOMC__ */
+#endif
 
-#endif /* ! __WATCOMC__ */
+/****************************************************************************
+*
+* Description:  Implementation of _mkgmtime.
+*
+****************************************************************************/
+
+#if defined( __OSX__ ) || defined( __WATCOMC__ ) && defined( BOOTSTRAP ) && !defined( TESTBOOT )
+
+    #define SECONDS_FROM_1900_TO_1970   2208988800UL
+    #define SECONDS_PER_DAY             (24UL * 60UL * 60UL)
+    #define DAYS_FROM_1900_TO_1970      (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
+
+static short const month_start_days[] = {
+    0,                                                          /* Jan */
+    31,                                                         /* Feb */
+    31 + 28,                                                    /* Mar */
+    31 + 28 + 31,                                               /* Apr */
+    31 + 28 + 31 + 30,                                          /* May */
+    31 + 28 + 31 + 30 + 31,                                     /* Jun */
+    31 + 28 + 31 + 30 + 31 + 30,                                /* Jul */
+    31 + 28 + 31 + 30 + 31 + 30 + 31,                           /* Aug */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,                      /* Sep */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,                 /* Oct */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,            /* Nov */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,       /* Dec */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
+};
+
+static int is_leapyear( unsigned year )
+{
+    if( year & 3 )
+        return( 0 );
+    if( ( year % 100 ) != 0 )
+        return( 1 );
+    if( ( year % 400 ) == 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static unsigned long years_days( unsigned year )
+{
+    return( year * 365L                         /* # of days in the years */
+        + ( ( year + 3L ) / 4L )                /* add # of leap years before year */
+        - ( ( year + 99L ) / 100L )             /* sub # of leap centuries */
+        + ( ( year + 399L - 100L ) / 400L ) );  /* add # of leap 4 centuries */
+                                                /* adjust for 1900 offset */
+                                                /* note: -100 == 300 (mod 400) */
+}
+
+  #if ( __WATCOMC__ == 1300 )
+time_t _mkgmtime20( struct tm *t )
+  #else
+time_t _mkgmtime( struct tm *t )
+  #endif
+/*********************************************
+ * used internaly then no checks to simplify
+ * it suppose tm structure contains valid data
+ */
+{
+    unsigned long   days;
+    unsigned        month_start;
+
+    month_start = month_start_days[t->tm_mon];
+    if( t->tm_mon > 1
+      && is_leapyear( t->tm_year + 1900U ) ) {
+        month_start++;
+    }
+    days = years_days( t->tm_year ) /* # of days in the years + leap years days */
+        + month_start               /* # of days to 1st of month*/
+        + t->tm_mday - 1;           /* day of the month */
+    if( days < ( DAYS_FROM_1900_TO_1970 - 1 ) )
+        return( (time_t)-1 );
+    return( ( days - DAYS_FROM_1900_TO_1970 ) * SECONDS_PER_DAY
+            + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
+}
+
+#undef GMMKTIME
+#endif

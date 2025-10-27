@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,5 +46,7 @@ extern int          KWCompare( const void *p1, const void *p2 );
 extern char         *SkipWS( const char *p );
 extern char         *FindNextWS( const char *str );
 extern char         *FindNextWSorEqual( const char *str );
+extern time_t       dos2timet( unsigned short dos_date, unsigned short dos_time );
+extern time_t       dosu2timet( unsigned short dos_date, unsigned short dos_time );
 
 #endif

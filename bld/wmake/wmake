@@ -24,7 +24,7 @@ objs = &
   macros.obj main.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
-  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dtimet.obj dutimet.obj &
+  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj &
   mcache.obj misc.obj depinfo.obj clibext.obj
 
 .c : ../c;../../builder/c;../../watcom/c
@@ -38,7 +38,7 @@ objs = &
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DINCL_MSGTEXT -DDTIME_ONLY_READ -DDUTIME_ONLY_READ $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
+    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DINCL_MSGTEXT $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys_$(bld_os)) file {$<}

@@ -17,8 +17,6 @@ additional_clean = *.grc
 
 inc_dirs = -I"../h"
 
-extra_cpp_flags = -DDUTIMET_ONLY_READ
-
 # explicit rules
 #################
 
@@ -29,8 +27,7 @@ exetarg_objs = &
     dmpobj.obj &
     objread.obj &
     output.obj &
-    process.obj &
-    dutimet.obj
+    process.obj
 !include exetarg.mif
 
 #

@@ -47,7 +47,7 @@ additional_clean = *.gh *.grc
 
 inc_dirs = -I. -I"$(wmake_dir)/h" $(cli_orl_inc_dirs)
 
-extra_cpp_flags = -DDTIME_ONLY_READ -DDUTIME_ONLY_READ
+extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif

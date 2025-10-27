@@ -33,7 +33,6 @@
 #include <ctype.h>
 #include <time.h>
 #include <string.h>
-#include "dutimet.h"
 #include "dmpobj.h"
 
 #include "clibext.h"
@@ -45,6 +44,24 @@ enum {
     DBG_UNKNOWN,
     DBG_CODEVIEW,
     DBG_HLL
+};
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
 };
 
 int  DbgStyle = DBG_CODEVIEW;
@@ -154,6 +171,30 @@ static void doWeakLazyExtern( void )
     }
 }
 
+static time_t dosu2timet( unsigned short dos_date, unsigned short dos_time )
+/**************************************************************************/
+{
+    struct tm       t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+#if defined( BOOTSTRAP ) && !defined( TESTBOOT ) && ( __WATCOMC__ == 1300 )
+    return( _mkgmtime20( &t ) );
+#else
+    return( _mkgmtime( &t ) );
+#endif
+}
+
 static void doDependency( void )
 {
     byte            len;
@@ -170,7 +211,7 @@ static void doDependency( void )
     dos_time |= GetByte() << 8;
     dos_date = GetByte();
     dos_date |= GetByte() << 8;
-    t = __dosu2timet( dos_date, dos_time );
+    t = dosu2timet( dos_date, dos_time );
     Output( INDENT "File: " );
     buff[1] = '\0';
     for( len = GetByte(); len != 0; --len ) {

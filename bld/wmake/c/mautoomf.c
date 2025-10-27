@@ -37,7 +37,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
-#include "dutimet.h"
+#include "mmisc.h"
 #include "pcobj.h"
 
 #include "clibext.h"
@@ -138,7 +138,7 @@ static bool getOMFCommentRecord( omf_info *info )
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
-        info->timestamp = __dosu2timet( dep.dos_date, dep.dos_time );
+        info->timestamp = dosu2timet( dep.dos_date, dep.dos_time );
         info->name = nameBuffer;
         return( true );
     }
