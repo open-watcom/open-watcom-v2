@@ -43,6 +43,14 @@
 
 #else /* !__WATCOMC__ */
 
+  #if defined( __UNIX__ ) && !defined( __OSX__ )
+    /*
+     * following definition is necessary to access timegm function
+     * in GNU C library
+     */
+    #define _DEFAULT_SOURCE
+    #define _BSD_SOURCE
+  #endif
     #include <string.h>
     #include <ctype.h>
     #include <errno.h>

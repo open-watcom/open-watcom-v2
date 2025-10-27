@@ -30,6 +30,14 @@
 ****************************************************************************/
 
 
+#if !defined( __WATCOMC__ ) && defined( __UNIX__ ) && !defined( __OSX__ )
+    /*
+     * following definition is necessary to access timegm function
+     * in GNU C library
+     */
+    #define _DEFAULT_SOURCE
+    #define _BSD_SOURCE
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 #include "wdirent.h"
