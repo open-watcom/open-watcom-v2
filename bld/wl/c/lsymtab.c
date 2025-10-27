@@ -914,6 +914,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
      * hauled in from libraries
      */
     targ = SymOp( ST_CREATE, target, targetlen );
+    targ->info |= SYM_ALIAS_TARGET;
     SetSymAlias( sym, targ->name.u.ptr, targetlen );
 }
 
@@ -1118,6 +1119,11 @@ void ReportUndefined( void )
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         sym->info &= ~SYM_CLEAR_ON_P2;  // reset also floatin-point patch flags
+
+        /* if alias target, not referenced and not defined, ignore */
+        if( (sym->info & SYM_ALIAS_TARGET) && (sym->info & (SYM_DEFINED | SYM_REFERENCED | SYM_LOCAL_REF | SYM_EXPORTED)) == 0 )
+            continue;
+
         if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
             if( LinkFlags & LF_UNDEFS_ARE_OK ) {
                 level = WRN;
