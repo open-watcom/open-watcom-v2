@@ -348,7 +348,9 @@ static int processOptions( int argc, char **argv )
 #ifndef __UNIX__
         case '/':
 #endif
-            if( ( isalpha( p[1] ) || p[1] == '?' ) && p[2] == '\0' ) {
+            if( ( isalpha( p[1] )
+              || p[1] == '?' )
+              && p[2] == '\0' ) {
                 switch( tolower( p[1] ) ) {
                 case '?':
                     Usage();
@@ -373,7 +375,8 @@ static int processOptions( int argc, char **argv )
                     TouchFlags.recursive = 1;
                     break;
                 case 'd':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         DoDOption( argv[1] );
                         ++argv;
                         --argc;
@@ -382,7 +385,8 @@ static int processOptions( int argc, char **argv )
                     }
                     break;
                 case 'f':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         doFOption( argv[1] );
                         ++argv;
                         --argc;
@@ -391,7 +395,8 @@ static int processOptions( int argc, char **argv )
                     }
                     break;
                 case 't':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         DoTOption( argv[1] );
                         ++argv;
                         --argc;
@@ -429,16 +434,18 @@ static int doTouchFile( char *full_name, struct dirent *dire, struct utimbuf *st
     utime_rc = utime( full_name, stamp );
     if( utime_rc == -1 ) {
         stat_rc = stat( full_name, &sb );
-        if( stat_rc == -1 ) return 0;
-        if( TouchFlags.allow_read_only && stat_rc == 0 ) {
+        if( stat_rc == -1 )
+            return 0;
+        if( TouchFlags.allow_read_only
+          && stat_rc == 0 ) {
             chmod( full_name, sb.st_mode | S_IWRITE );
             utime_rc = utime( full_name, stamp );
             chmod( full_name, sb.st_mode );
         }
         if( utime_rc == -1 ) {
             if( !TouchFlags.quiet ) {
-                if( stat( full_name, &sb ) == 0 &&
-                    ( sb.st_mode & S_IWRITE ) == 0 ) {
+                if( stat( full_name, &sb ) == 0
+                  && (sb.st_mode & S_IWRITE) == 0 ) {
                     writeMsg( MSG_READ_ONLY, full_name );
                     return 1;
                 } else {
@@ -496,13 +503,16 @@ static void doTouch( void )
 #ifdef __UNIX__
         if( item[len - 1] == '/' ) {
 #else
-        if( item[len - 1] == '\\' || item[len - 1] == '/' ) {
+        if( item[len - 1] == '\\'
+          || item[len - 1] == '/' ) {
 #endif
             strcpy( dir_name, item );
             dir_name[len] = '.';
             dir_name[len + 1] = '\0';
             item = dir_name;
-        } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) && S_ISDIR( sb.st_mode ) ) {
+        } else if( ( strpbrk( item, "*?" ) == NULL )
+          && !stat( item, &sb )
+          && S_ISDIR( sb.st_mode ) ) {
             strcpy( dir_name, item );
 #ifdef __UNIX__
             dir_name[len] = '/';
@@ -532,7 +542,7 @@ static void doTouch( void )
                 if( S_ISREG( attr ) ) {
     #else
                 attr = dire->d_attr;
-                if( !( dire->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
+                if( (dire->d_attr & (_A_VOLID | _A_SUBDIR)) == 0 ) {
     #endif
                     number_of_successful_touches +=
                         doTouchFile( full_name, dire, &stamp );
@@ -553,7 +563,8 @@ static void doTouch( void )
                         if ( '.' != *dire->d_name ) {
 #ifdef __UNIX__
                             _makepath( full_name, pg.drive, pg.dir, dire->d_name, NULL );
-                            if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
+                            if( !stat( full_name, &sb )
+                              && S_ISDIR( sb.st_mode) ) {
 #else
                             if( dire->d_attr & _A_SUBDIR ) {
 
