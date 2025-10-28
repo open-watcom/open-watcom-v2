@@ -39,7 +39,16 @@
 
 #ifdef __WATCOMC__
 
-#include <stddef.h> /* need to load _comdef.h */
+    #include <stddef.h> /* need to load _comdef.h */
+  #if defined( __NT__ ) && ( __WATCOMC__ == 1290 )
+    #include <stdlib.h>
+    #include <errno.h>
+    #include <time.h>
+    #include <windows.h>
+    #include "_dtaxxx.h"
+    #include "ntext.h"
+    #include "wio.h"
+  #endif
 
 #else /* !__WATCOMC__ */
 
@@ -74,24 +83,20 @@
 *
 ****************************************************************************/
 
-#ifdef __WATCOMC__
+#define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
+#define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
+#define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
-#else /* !__WATCOMC__ */
+#define DRIVE2CHAR(x)       ('a' + (x))
+#define CHAR2DRIVE(x)       (tolower(x) - 'a')
 
-    #define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
-    #define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
-    #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
-
-    #define DRIVE2CHAR(x)       ('a' + (x))
-    #define CHAR2DRIVE(x)       (tolower(x) - 'a')
-
-  #if defined(__UNIX__)
+#if defined(__UNIX__)
     #define PC '/'
     #define ISPS(c)   ((c)==PC)
-  #else   /* DOS, OS/2, Windows */
+#else   /* DOS, OS/2, Windows */
     #define PC '\\'
     #define ISPS(c)   ((c)==PC || (c)=='/')
-  #endif
+#endif
 
 /****************************************************************************
 *
@@ -99,6 +104,10 @@
 *               must be setup by main
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#else /* !__WATCOMC__ */
 
 char **_argv;
 int  _argc;
@@ -1321,9 +1330,10 @@ int unsetenv( const char *name )
 *
 ****************************************************************************/
 
-#ifdef __WATCOMC__
-
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER) \
+  || defined( __WATCOMC__ ) \
+  && ( __WATCOMC__ == 1290 ) \
+  && defined( __NT__ )
 
     #define _DIR_ISFIRST            0
     #define _DIR_NOTFIRST           1
@@ -1339,6 +1349,16 @@ int unsetenv( const char *name )
     #define OPENMODE_DENY_WRITE     0x0020
     #define OPENMODE_DENY_READ      0x0030
     #define OPENMODE_DENY_NONE      0x0040
+
+  #if defined(_MSC_VER)
+    #define MAKEDOSDTXX     __MakeDOSDT
+    #define FROMDOSDTXX     __FromDOSDT
+    #define GETNTDIRINFOXX  __GetNTDirInfo
+  #else
+    #define MAKEDOSDTXX     __MakeDOSDT20
+    #define FROMDOSDTXX     __FromDOSDT20
+    #define GETNTDIRINFOXX  __GetNTDirInfo20
+  #endif
 
 void __NT_timet_to_filetime( time_t t, FILETIME *ft )
 {
@@ -1425,7 +1445,7 @@ void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
     }
 }
 
-void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
+void FROMDOSDTXX( unsigned short d, unsigned short t, FILETIME *NT_stamp )
 /************************************************************************/
 {
     FILETIME local_ft;
@@ -1434,7 +1454,7 @@ void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
     LocalFileTimeToFileTime( &local_ft, NT_stamp );
 }
 
-void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
+void MAKEDOSDTXX( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 /**************************************************************************/
 {
     FILETIME local_ft;
@@ -1492,19 +1512,19 @@ static int is_directory( const char *name )
     return( -1 );
 }
 
-void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
-/***************************************************************/
+void GETNTDIRINFOXX( struct DIRENTXX *dirp, LPWIN32_FIND_DATA ffd )
+/*****************************************************************/
 {
     DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
-    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    MAKEDOSDTXX( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = NT2DOSATTR( ffd->dwFileAttributes );
     dirp->d_size = ffd->nFileSizeLow;
     strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
 }
 
-static DIR *__opendir( const char *dirname, DIR *dirp )
-/*****************************************************/
+static DIRXX *__opendir( const char *dirname, DIRXX *dirp )
+/*********************************************************/
 {
     WIN32_FIND_DATA     ffd;
     HANDLE              osffh;
@@ -1519,20 +1539,20 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
         return( NULL );
     }
     DTAXXX_HANDLE_OF( dirp->d_dta ) = osffh;
-    __GetNTDirInfo( dirp, &ffd );
+    GETNTDIRINFOXX( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
 
-DIR *opendir( const char *dirname )
-/*********************************/
+DIRXX *OPENDIRXX( const char *dirname )
+/*************************************/
 {
-    DIR         tmp;
-    DIR         *dirp;
+    DIRXX       tmp;
+    DIRXX       *dirp;
     int         i;
     char        pathname[MAX_PATH + 6];
 
-    memset( &tmp, 0, sizeof( DIR ) );
+    memset( &tmp, 0, sizeof( tmp ) );
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     i = is_directory( dirname );
@@ -1557,7 +1577,7 @@ DIR *opendir( const char *dirname )
         }
         dirname = pathname;
     }
-    dirp = malloc( sizeof( DIR ) );
+    dirp = malloc( sizeof( *dirp ) );
     if( dirp == NULL ) {
         FindClose( DTAXXX_HANDLE_OF( tmp.d_dta ) );
         errno = ENOMEM;
@@ -1568,8 +1588,8 @@ DIR *opendir( const char *dirname )
     return( dirp );
 }
 
-struct dirent *readdir( DIR *dirp )
-/*********************************/
+struct DIRENTXX *READDIRXX( DIRXX *dirp )
+/***************************************/
 {
     WIN32_FIND_DATA     ffd;
 
@@ -1583,13 +1603,13 @@ struct dirent *readdir( DIR *dirp )
             errno = ENOENT;
             return( NULL );
         }
-        __GetNTDirInfo( dirp, &ffd );
+        GETNTDIRINFOXX( dirp, &ffd );
     }
     return( dirp );
 }
 
-int closedir( DIR *dirp )
-/***********************/
+int CLOSEDIRXX( DIRXX *dirp )
+/***************************/
 {
     if( dirp == NULL
       || dirp->d_first == _DIR_CLOSED ) {
@@ -1854,7 +1874,8 @@ char *get_dllname( char *buf, int len )
 *
 ****************************************************************************/
 
-#if defined( __OSX__ ) || defined( __WATCOMC__ ) && defined( BOOTSTRAP ) && !defined( TESTBOOT )
+#if defined( __OSX__ ) \
+  || defined( __WATCOMC__ ) && defined( BOOTSTRAP ) && !defined( TESTBOOT )
 
     #define SECONDS_FROM_1900_TO_1970   2208988800UL
     #define SECONDS_PER_DAY             (24UL * 60UL * 60UL)

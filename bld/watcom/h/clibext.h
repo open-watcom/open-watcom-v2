@@ -30,8 +30,8 @@
 
 
 #ifdef __WATCOMC__
- #if defined( BOOTSTRAP ) && !defined( TESTBOOT )
-  #if ( __WATCOMC__ == 1300 ) /* OW 2.0 */
+ #if defined( BOOTSTRAP )
+  #if ( __WATCOMC__ == 1300 ) && !defined( TESTBOOT ) /* OW 2.0 */
     /*
      * fix for bug in older builds of OW 2.0
      * there are missing following macros
@@ -48,10 +48,33 @@
     #include <time.h>
     extern time_t _mkgmtime20( struct tm *t );
   #elif ( __WATCOMC__ == 1290 ) /* OW 1.9 */
-    #include <time.h>
+    #include <time.h>       /* for time_t */
     extern time_t _mkgmtime( struct tm *t );
-  #endif  /* __WATCOMC__ == 1290 */
- #endif
+   #ifdef __NT__
+    /*
+     * this enable to use new OW 2.0 ...dir() functions
+     * with OW 1.9 compiler
+     * OW 2.0 uses new dirent structure
+     */
+    #include <direct.h>     /* for NAME_MAX */
+    typedef struct dirent20 {
+        char            d_dta[21];          /* disk transfer area */
+        char            d_attr;             /* file's attribute */
+        unsigned short  d_time;             /* file's time */
+        unsigned short  d_date;             /* file's date */
+        long            d_size;             /* file's size */
+        unsigned short  d_ino;              /* serial number (not used) */
+        char            d_first;            /* flag for 1st time */
+        char            *d_openpath;        /* path specified to opendir */
+        char            d_name[NAME_MAX+1]; /* file's name */
+    } dirent20;
+    typedef struct dirent20 DIR20;
+    extern DIR20            *opendir20( const char *dirname );
+    extern struct dirent20  *readdir20( DIR20 *dirp );
+    extern int              closedir20( DIR20 *dirp );
+   #endif /* __NT__ */
+  #endif /* __WATCOMC__ == 1290 */
+ #endif /* BOOTSTRAP */
 #else /* !__WATCOMC__ */
     /*
      * clibext.h:
@@ -229,3 +252,25 @@
  #endif
 
 #endif  /* !__WATCOMC__ */
+
+/*
+ * this enable to use new OW 2.0 ...dir() functions
+ * with OW 1.9 compiler
+ * OW 2.0 uses new dirent structure
+ */
+#if defined( __WATCOMC__ ) \
+  && ( __WATCOMC__ == 1290 ) \
+  && defined( __NT__ ) \
+  && defined( BOOTSTRAP )
+    #define DIRENTXX        dirent20
+    #define DIRXX           DIR20
+    #define OPENDIRXX       opendir20
+    #define READDIRXX       readdir20
+    #define CLOSEDIRXX      closedir20
+#else
+    #define DIRENTXX        dirent
+    #define DIRXX           DIR
+    #define OPENDIRXX       opendir
+    #define READDIRXX       readdir
+    #define CLOSEDIRXX      closedir
+#endif
