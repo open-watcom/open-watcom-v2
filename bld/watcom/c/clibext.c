@@ -1878,7 +1878,7 @@ char *get_dllname( char *buf, int len )
   || defined( __WATCOMC__ ) \
   && defined( BOOTSTRAP ) \
   && !defined( TESTBOOT ) \
-  && defined( __WATCOMC__ <= 1300 )
+  && ( __WATCOMC__ <= 1300 )
 
     #define SECONDS_FROM_1900_TO_1970   2208988800UL
     #define SECONDS_PER_DAY             (24UL * 60UL * 60UL)
