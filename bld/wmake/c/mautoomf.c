@@ -138,7 +138,7 @@ static bool getOMFCommentRecord( omf_info *info )
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 ) && defined( PREBOOT )
         /*
          * OW 1.9 use DOS local time
          */

@@ -31,7 +31,9 @@
 
 #ifdef __WATCOMC__
  #if defined( BOOTSTRAP )
-  #if ( __WATCOMC__ == 1300 ) && !defined( TESTBOOT ) /* OW 2.0 */
+  #if defined( TESTBOOT )
+    #include <time.h>
+  #elif ( __WATCOMC__ == 1300 ) /* OW 2.0 */
     /*
      * fix for bug in older builds of OW 2.0
      * there are missing following macros
@@ -49,7 +51,7 @@
     extern time_t _mkgmtime20( struct tm *t );
   #elif ( __WATCOMC__ == 1290 ) /* OW 1.9 */
     #include <time.h>       /* for time_t */
-    extern time_t _mkgmtime( struct tm *t );
+    extern time_t _mkgmtime20( struct tm *t );
    #ifdef __NT__
     /*
      * this enable to use new OW 2.0 ...dir() functions

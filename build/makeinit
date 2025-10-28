@@ -67,6 +67,9 @@ __WATCOM_TOOLS__ = $(bld_ver_tool)
 # if bootstrap and use WATCOM tools then set to WATCOM tools version
 __WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
 !endif
+!ifeq %TESTBOOT 1
+testbootstrap = 1
+!endif
 
 !ifdef %BOOTSTRAP_CPU
 bld_cpu = $+$(%BOOTSTRAP_CPU)$-

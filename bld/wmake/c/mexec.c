@@ -1720,8 +1720,8 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     size_t              i;
     size_t              j;
     size_t              len;
-    DIR                 *dirp;
-    struct dirent       *dire;
+    DIRXX               *dirp;
+    struct DIRENTXX     *dire;
     bool                rc = true;
 
     /*
@@ -1755,13 +1755,13 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         memcpy( fname, fullpath + j, len - j + 1 );
     }
 #endif
-    dirp = opendir( fpath );
+    dirp = OPENDIRXX( fpath );
     if( dirp == NULL ) {
 //        Log( false, "File (%s) not found.\n", f );
         return( true );
     }
 
-    while( ( dire = readdir( dirp ) ) != NULL ) {
+    while( ( dire = READDIRXX( dirp ) ) != NULL ) {
         if( ENTRY_INVALID( fname, dire ) )
             continue;
         /*
@@ -1804,7 +1804,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
             }
         }
     }
-    closedir( dirp );
+    CLOSEDIRXX( dirp );
     /*
      * process any directories found
      */

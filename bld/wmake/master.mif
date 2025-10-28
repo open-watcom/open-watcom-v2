@@ -54,9 +54,6 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 !ifdef cachestat
 extra_cpp_flags += -DCACHE_STATS
 !endif
-!ifeq %TESTBOOT 1
-extra_cpp_flags += -DTESTBOOT
-!endif
 
 extra_cpp_flags_f_memory = $(trmem_cpp_flags)
 
@@ -92,7 +89,7 @@ extra_l_flags_dos386 = opt stack=8k
 !endif
 
 .BEFORE
-!ifeq %TESTBOOT 1
+!ifdef bootstrap
     rm -f *.obj *.exe
 !endif
 

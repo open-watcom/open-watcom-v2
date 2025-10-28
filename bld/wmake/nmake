@@ -2,7 +2,7 @@ CPPFLAGS = $(DEFS) -I. -I..\h -I..\..\lib_misc\h -I..\..\watcom\h
 # -wd4214 "bit field types other than int"
 # -wd4244 "conversion ....., possible loss of data"
 CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -wd4214 -wd4244 -wd4063
-DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D__NT__ -DBOOTSTRAP -DINCL_MSGTEXT $(EXTRADEF)
+DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D__NT__ -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT $(EXTRADEF)
 LFLAGS = -link -INCREMENTAL:NO -DEBUG -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
 
 {..\c}.c.obj :

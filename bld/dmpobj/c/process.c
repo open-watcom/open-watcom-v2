@@ -196,7 +196,7 @@ static time_t dosu2timet( unsigned short dos_date, unsigned short dos_time )
     t.tm_yday  = -1;
     t.tm_isdst = -1;
 
-#if defined( BOOTSTRAP ) && !defined( TESTBOOT ) && ( __WATCOMC__ == 1300 )
+#if defined( BOOTSTRAP ) && !defined( TESTBOOT ) && defined( __WATCOMC__ ) && ( __WATCOMC__ <= 1300 )
     return( _mkgmtime20( &t ) );
 #else
     return( _mkgmtime( &t ) );

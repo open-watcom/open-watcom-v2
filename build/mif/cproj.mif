@@ -175,7 +175,7 @@ ppflags_debug = -DDEVBUILD
 ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
 !ifdef bootstrap
 ppflags_common += -DBOOTSTRAP
-!  ifeq %TESTBOOT 1
+!  ifdef testbootstrap
 ppflags_common += -DTESTBOOT
 !  endif
 !endif
@@ -475,25 +475,14 @@ cflags_dll_os2  = -bd
 !endif
 
 !ifdef __WATCOM_TOOLS__
-!  ifeq %TESTBOOT 1
-# test boot will support new options
-watcom_common_cflags   = -wx-wce=C310
-watcom_common_cxxflags = -w8-wce=P579
-c_flags = $(watcom_common_cflags) -zastd=c99
-!  else if $(__WATCOM_TOOLS__) <= 1300
-!    if defined( bootstrap )
-# OW 1.9 and older OW 2.0 bootstrap compiler doesn't support new options
+!  ifdef bootstrap
+!    ifndef testbootstrap
 watcom_common_cflags   = -wx-wce=310
 watcom_common_cxxflags = -w8-wce=579
 c_flags = $(watcom_common_cflags)
-!    else
-# new build compiler is always OK to use new options
-watcom_common_cflags   = -wx-wce=C310
-watcom_common_cxxflags = -w8-wce=P579
-c_flags = $(watcom_common_cflags) -zastd=c99
 !    endif
-!  else	# __WATCOM_TOOLS__ > 1300
-# OW 2.1 will support new options
+!  endif
+!  ifndef watcom_common_cflags
 watcom_common_cflags   = -wx-wce=C310
 watcom_common_cxxflags = -w8-wce=P579
 c_flags = $(watcom_common_cflags) -zastd=c99

@@ -38,7 +38,7 @@ objs = &
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DINCL_MSGTEXT $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
+    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys_$(bld_os)) file {$<}

@@ -1875,7 +1875,10 @@ char *get_dllname( char *buf, int len )
 ****************************************************************************/
 
 #if defined( __OSX__ ) \
-  || defined( __WATCOMC__ ) && defined( BOOTSTRAP ) && !defined( TESTBOOT )
+  || defined( __WATCOMC__ ) \
+  && defined( BOOTSTRAP ) \
+  && !defined( TESTBOOT ) \
+  && defined( __WATCOMC__ <= 1300 )
 
     #define SECONDS_FROM_1900_TO_1970   2208988800UL
     #define SECONDS_PER_DAY             (24UL * 60UL * 60UL)
@@ -1936,10 +1939,10 @@ static unsigned long years_days( unsigned year )
                                                 /* note: -100 == 300 (mod 400) */
 }
 
-  #if ( __WATCOMC__ == 1300 )
-time_t _mkgmtime20( struct tm *t )
-  #else
+  #if defined( __OSX__ )
 time_t _mkgmtime( struct tm *t )
+  #else
+time_t _mkgmtime20( struct tm *t )
   #endif
 /*********************************************
  * used internaly then no checks to simplify

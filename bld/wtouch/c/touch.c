@@ -52,7 +52,9 @@
 #include "touch.h"
 #include "wtmsg.h"
 #include "pathgrp2.h"
-#if defined(__NT__)
+#if defined( __RDOS__ )
+    #include "rdos.h"
+#elif defined(__NT__)
     #include <windows.h>
     #include "_dtaxxx.h"
 #endif
@@ -260,15 +262,21 @@ static time_t dos2timet( unsigned short dos_date, unsigned short dos_time )
 }
 #endif
 
-static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
-/***************************************************************************************/
+static void incFilesOwnTime( char *full_name, struct dirent *dire, struct utimbuf *stamp )
+/****************************************************************************************/
 {
-    time_t      ftime;
-    struct tm  *ptime;
+    time_t          ftime;
+    struct tm       *ptime;
+#if defined( __RDOS__ )
+    unsigned short  dos_date;
+    unsigned short  dos_time;
+    unsigned long   msb;
+    unsigned long   lsb;
+#endif
 
     /* unused parameters */ (void)full_name;
 #if defined( __UNIX__ ) && !defined( __QNX__ )
-    /* unused parameters */ (void)dir;
+    /* unused parameters */ (void)dire;
 #endif
 
     /* check for the case of only specifying '/i' with nothing else */
@@ -286,7 +294,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     }
     /* we need to access the file's time stamp and increment it */
 #if defined( __QNX__ )
-    ftime = dir->d_stat.st_mtime;
+    ftime = dire->d_stat.st_mtime;
 #elif defined( __UNIX__ )
     {
         struct stat buf;
@@ -294,12 +302,17 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
         ftime = buf.st_mtime;
     }
 #elif defined( __NT__ )
-    ftime = DTAXXX_TSTAMP_OF( dir->d_dta );
+    ftime = DTAXXX_TSTAMP_OF( dire->d_dta );
+#elif defined( __RDOS__ )
+    msb = ( dire->d_modify_time >> 32 ) & 0xFFFFFFFF;
+    lsb = dire->d_modify_time & 0xFFFFFFFF;
+    RdosTicsToDosTimeDate( msb, lsb, &dos_date, &dos_time );
+    ftime = dos2timet( dos_date, dos_time );
 #else
     /*
      * DOS date/time format
      */
-    ftime = dos2timet( dir->d_date, dir->d_time );
+    ftime = dos2timet( dire->d_date, dire->d_time );
 #endif
     ptime = localtime( &ftime );
     touchTime = *ptime;
@@ -405,9 +418,8 @@ static int processOptions( int argc, char **argv )
     return( 1 );
 }
 
-static int doTouchFile( char *full_name, struct dirent *dire,
-                        struct utimbuf *stamp )
-/*********************************************/
+static int doTouchFile( char *full_name, struct dirent *dire, struct utimbuf *stamp )
+/***********************************************************************************/
 {
     int utime_rc;
     int stat_rc;

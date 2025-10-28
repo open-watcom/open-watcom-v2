@@ -31,9 +31,6 @@
 
 
 #include <sys/types.h>
-#if defined( __RDOS__ )
-    #include "rdos.h"
-#endif
 #include "wdirent.h"
 #include "make.h"
 #include "wio.h"
@@ -45,9 +42,11 @@
 #include "msg.h"
 #include "pathgrp2.h"
 #include "mcache.h"
-#if defined( USE_DIR_CACHE ) && defined( __NT__ )
+#if defined( __NT__ ) && defined( USE_DIR_CACHE )
     #include <windows.h>
     #include "_dtaxxx.h"
+#elif defined( __RDOS__ )
+    #include "rdos.h"
 #endif
 
 #include "clibext.h"
@@ -151,15 +150,10 @@ STATIC void freeDirectList( DHEADPTR dhead )
 #endif
 }
 
-static time_t get_direntry_timestamp( struct dirent *entry )
+static time_t get_direntry_timestamp( struct DIRENTXX *entry )
 {
 #if defined( __UNIX__ )
     return( YOUNGEST_DATE );
-#elif defined( __WATCOMC__ ) && __WATCOMC__ < 1300
-    /*
-     * OW1.x bootstrap compiler workaround
-     */
-    return( dos2timet( entry->d_date, entry->d_time ) );
 #elif defined( __NT__ )
     return( DTAXXX_TSTAMP_OF( entry->d_dta ) );
 #elif defined( __RDOS__ )
@@ -183,8 +177,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
  */
 {
     CENTRYPTR       cnew;       /* new cacheEntry struct */
-    DIR             *dirp;      /* parent directory entry */
-    struct dirent   *dire;      /* current directory entry */
+    DIRXX           *dirp;      /* parent directory entry */
+    struct DIRENTXX *dire;      /* current directory entry */
     HASH_T          h;          /* hash value */
     size_t          len;
     char            *name_ptr;
@@ -216,7 +210,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
     memcpy( name_ptr, "*.*", 4 );
 #endif
-    dirp = opendir( path );
+    dirp = OPENDIRXX( path );
     if( dirp == NULL ) {
 #ifdef CACHE_STATS
         if( Glob.cachestat ) {
@@ -226,7 +220,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         return( CACHE_OK );     /* an empty, or nonexistent directory */
     }
 
-    while( (dire = readdir( dirp )) != NULL ) {
+    while( (dire = READDIRXX( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
         if( dire->d_attr & IGNORE_MASK )
             continue;
@@ -235,7 +229,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         h = Hash( FixName( dire->d_name ), HASH_PRIME );
         cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
-            closedir( dirp );
+            CLOSEDIRXX( dirp );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
@@ -263,7 +257,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         }
 #endif
     }
-    closedir( dirp );
+    CLOSEDIRXX( dirp );
 
 #ifdef CACHE_STATS
     if( Glob.cachestat ) {

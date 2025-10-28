@@ -156,7 +156,7 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
 
     if( in_obj == stamp )
         return( true );
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 ) && defined( PREBOOT )
     /*
      * OW 1.9 bootstrap compiler workaround
      * all platforms are dos based two-second timestamp
