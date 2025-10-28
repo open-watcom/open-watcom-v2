@@ -43,7 +43,7 @@
 
 #define NUM_BUFF_RELOCS         16
 
-static trap_header      __far *TrapCode = NULL;
+static dos_trap_header  __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
 static digld_error ReadInTrap( FILE *fp )

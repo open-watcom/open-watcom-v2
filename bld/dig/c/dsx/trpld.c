@@ -481,7 +481,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
-    trap_header         __far *head;
+    dos_trap_header     __far *head;
     char                filename[_MAX_PATH];
     const char          *base_name;
     digld_error         err;

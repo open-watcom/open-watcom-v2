@@ -41,4 +41,4 @@ typedef struct {
     unsigned_16         init_off;
     unsigned_16         req_off;
     unsigned_16         fini_off;
-} trap_header;
+} dos_trap_header;
