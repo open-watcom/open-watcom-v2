@@ -804,7 +804,7 @@ static void AddCaseLabel( signed_64 value )
         /*
          * duplicate case value found
          */
-        sprintf( buffer, "%lld", value );
+        sprintf( buffer, "%lld", value.u._64[0] );
         CErr2p( ERR_DUPLICATE_CASE_VALUE, buffer );
     } else {
         new_ce = (CASEPTR)CMemAlloc( sizeof( CASEDEFN ) );
