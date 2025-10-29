@@ -48,9 +48,9 @@ pick( MSG_PRESS_KEY,            "press any key to continue" ,
                                 "続行するために何かキーを押して下さい" )
 
 
-#define pick1(a,b,c,d)   pick( MSG_FILE_TYPES_##a, c, d )
+#define pick_format(a,b,c,d,e)   pick( MSG_FILE_TYPES_##c, d, e )
 FORMATS()
-#undef pick1
+#undef pick_format
 
 
 pick( MSG_CREATE_TYPE_DLL,      "dynamic link library" ,

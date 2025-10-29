@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,13 @@
 #include "_formats.h"
 
 typedef enum {          // there is a corresp. table in MSG.C
-    #define pick1(a,b,c,d)   b = CONSTU32( 1 << a ),
+    #define pick_format(a,b,c,d,e)  b = CONSTU32( a ),
     FORMATS()
-    #undef pick1
-    MK_ALL              = CONSTU32( (1 << 22) - 1 ),
+    #undef pick_format
+    MK_ALL                    = 0
+    #define pick_format(a,b,c,d,e)  | b
+    FORMATS()
+    #undef pick_format
 } exe_format;
 
 #define MK_DOS          (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
