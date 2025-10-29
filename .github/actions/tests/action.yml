@@ -36,6 +36,13 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
-  - name: try tests
+  - if: inputs.hostos == 'lnx' || inputs.hostos == 'osx'
+    name: try tests
+    run: |
+      echo OS=${{ inputs.hostos }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}
+    shell: bash
+  - if: inputs.hostos == 'nt'
+    name: try tests
     run: |
       echo "OS=${{ inputs.hostos }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}"
+    shell: bash
