@@ -183,6 +183,11 @@ source\diag0014.c(27): Warning! W201: Unreachable code
 source\diag0014.c(35): Warning! W107: Missing return value for function 'fn5'
 source\diag0014.c(53): Warning! W201: Unreachable code
 source\diag0014.c(62): Warning! W107: Missing return value for function 'fn8'
+source\diag0014.c(69): Error! E1051: Not expecting a return value for function 'fn9'
+source\diag0014.c(69): Error! E1010: Type mismatch
+source\diag0014.c(69): Note! I2003: source conversion type is 'int'
+source\diag0014.c(69): Note! I2004: target conversion type is 'void'
+source\diag0014.c(78): Warning! W107: Missing return value for function 'fn10'
 source\inc2.h(1): Warning! W138: No newline at end of file
 inc3.h(35): Warning! W300: Nested comment found in comment started on line 8
 inc3.h(59): Error! E1046: Incomplete comment started on line 8

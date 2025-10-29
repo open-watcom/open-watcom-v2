@@ -9,7 +9,7 @@ jmp_buf     env;
 
 int fn1( void )
 {
-    return;             
+    return;
 }                       // bad - not returning value
 
 int fn2( void )
@@ -58,5 +58,21 @@ int fn8( int i )
     if( i ) {
         return( 1 );
     }
-    ++i;                
+    ++i;
 }                       // bad - not returning anything
+
+_Noreturn void fn9( int i )
+{
+    if( i ) {
+        longjmp( env, 1 );
+    } else {
+        return( 0 );
+    }
+}                       // bad - returning anything
+
+_Noreturn int fn10( int i )
+{
+    if( i ) {
+        longjmp( env, 1 );
+    }
+}                       // bad - returning anything
