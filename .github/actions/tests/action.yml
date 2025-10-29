@@ -16,6 +16,16 @@ inputs:
     required: false
     default: ''
     type: string
+  path:
+    description: 'path where tests are located'
+    required: false
+    default: ''
+    type: string
+  skip:
+    description: 'ignore tests'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -26,3 +36,6 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
+  - name: try tests
+    run: |
+      echo "OS=${{ inputs.hostos }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}"

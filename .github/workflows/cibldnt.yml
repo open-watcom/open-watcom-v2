@@ -92,14 +92,40 @@ jobs:
     name: Tests
     needs: build-nt
     runs-on: ${{ inputs.image }}
+    timeout-minutes: 90
+    strategy:
+      matrix:
+        include:
+        - title: Wmake tests
+          path: wmaktest
+          skip: true
+        - title: Wasm tests
+          path: wasmtest
+          skip: true
+        - title: C tests
+          path: ctest
+          skip: true
+        - title: C++ tests
+          path: plustest
+          skip: true
+        - title: Fortran tests
+          path: f77test
+          skip: true
+        - title: C run-time library tests
+          path: clibtest
+          skip: true
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - name: Tests
+    - name: ${{ matrix.title }}
       uses: "./.github/actions/tests"
       with:
         hostos:     'nt'
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+        path:       ${{ matrix.path }}
+        skip:       ${{ matrix.skip }}
   testboot-nt:
     name: Test Bootstrap
     if: inputs.arch == 'x64'
