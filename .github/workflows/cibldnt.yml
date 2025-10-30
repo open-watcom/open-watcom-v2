@@ -91,8 +91,15 @@ jobs:
         suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
-  tests-nt:
+  tests-nt-pre:
+    if: inputs.arch == 'x64'
     needs: build-nt
+    name: Check to run Tests
+    runs-on: ${{ inputs.image }}
+    steps:
+    - run: 
+  tests-nt:
+    needs: tests-nt-pre
     timeout-minutes: 90
     strategy:
       matrix:
@@ -132,7 +139,6 @@ jobs:
         skip:       ${{ matrix.test.skip }}
   testboot-nt:
     name: Test Bootstrap
-    if: inputs.arch == 'x64'
     needs: tests-nt
     runs-on: ${{ inputs.image }}
 

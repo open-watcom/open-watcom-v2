@@ -51,10 +51,15 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
-  tests-lnx:
+  tests-lnx-pre:
     if: inputs.arch == 'x64'
     needs: build-lnx
-    name: Tests
+    name: Check to run Tests
+    runs-on: ${{ inputs.image }}
+    steps:
+    - run: 
+  tests-lnx:
+    needs: tests-lnx-pre
     timeout-minutes: 90
     strategy:
       matrix:
@@ -78,6 +83,7 @@ jobs:
           path: clibtest
           skip: true
     runs-on: ${{ inputs.image }}
+    name: ${{ matrix.test.title }}
 
     steps:
     - run: git config --global core.eol lf
@@ -93,7 +99,6 @@ jobs:
         skip:       ${{ matrix.test.skip }}
   testboot-lnx:
     name: Test Bootstrap
-    if: inputs.arch == 'x64'
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
 
