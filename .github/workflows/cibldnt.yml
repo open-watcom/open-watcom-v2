@@ -92,7 +92,6 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-nt:
-    id: Tests
     needs: build-nt
     timeout-minutes: 90
     strategy:

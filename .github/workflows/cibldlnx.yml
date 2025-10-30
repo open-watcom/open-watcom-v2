@@ -53,7 +53,6 @@ jobs:
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
     if: inputs.arch == 'x64'
-    id: Tests
     needs: build-lnx
     timeout-minutes: 90
     strategy:
