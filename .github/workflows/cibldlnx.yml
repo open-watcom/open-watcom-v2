@@ -54,6 +54,7 @@ jobs:
   tests-lnx:
     if: inputs.arch == 'x64'
     needs: build-lnx
+    name: Tests
     timeout-minutes: 90
     strategy:
       matrix:
@@ -76,7 +77,7 @@ jobs:
         - title: C run-time library tests
           path: clibtest
           skip: true
-    name: ${{ matrix.test.title }}
+    id: ${{ matrix.test.path }}
     runs-on: ${{ inputs.image }}
 
     steps:
@@ -91,6 +92,10 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         path:       ${{ matrix.test.path }}
         skip:       ${{ matrix.test.skip }}
+    if: inputs.arch != 'x64'
+    needs: build-lnx
+    name: Tests
+    runs-on: ${{ inputs.image }}
   testboot-lnx:
     name: Test Bootstrap
     if: inputs.arch == 'x64'
