@@ -22,6 +22,7 @@ jobs:
   boot-lnx:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
+
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -38,6 +39,7 @@ jobs:
     needs: boot-lnx
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
+
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -50,13 +52,13 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
-    name: Tests
+    if: inputs.arch == 'x64'
+    id: Tests
     needs: build-lnx
-    runs-on: ${{ inputs.image }}
     timeout-minutes: 90
     strategy:
       matrix:
-        include:
+        test:
         - title: Wmake tests
           path: wmaktest
           skip: true
@@ -75,23 +77,27 @@ jobs:
         - title: C run-time library tests
           path: clibtest
           skip: true
+    name: ${{ matrix.test.title }}
+    runs-on: ${{ inputs.image }}
+
     steps:
     - run: git config --global core.eol lf
     - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - name: ${{ matrix.title }}
+    - name: ${{ matrix.test.title }}
       uses: "./.github/actions/tests"
       with:
         hostos:     'lnx'
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
-        path:       ${{ matrix.path }}
-        skip:       ${{ matrix.skip }}
+        path:       ${{ matrix.test.path }}
+        skip:       ${{ matrix.test.skip }}
   testboot-lnx:
     name: Test Bootstrap
     if: inputs.arch == 'x64'
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
+
     steps:
     - name: checkout
       uses: actions/checkout@v4
