@@ -77,7 +77,6 @@ jobs:
         - title: C run-time library tests
           path: clibtest
           skip: true
-    id: ${{ matrix.test.path }}
     runs-on: ${{ inputs.image }}
 
     steps:
