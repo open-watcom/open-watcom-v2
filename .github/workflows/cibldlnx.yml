@@ -92,10 +92,6 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         path:       ${{ matrix.test.path }}
         skip:       ${{ matrix.test.skip }}
-    if: inputs.arch != 'x64'
-    needs: build-lnx
-    name: Tests
-    runs-on: ${{ inputs.image }}
   testboot-lnx:
     name: Test Bootstrap
     if: inputs.arch == 'x64'
