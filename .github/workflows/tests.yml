@@ -1,0 +1,50 @@
+name: CI-OW-Tests
+run-name: OW Tests
+on:
+  workflow_call:
+    inputs:
+      hostos:
+        required: true
+        type: string
+      suffix:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+jobs:
+  tests-x:
+    strategy:
+      matrix:
+        test:
+          - title: Wmake tests
+            path: wmaktest
+            skip: true
+          - title: Wasm tests
+            path: wasmtest
+            skip: true
+          - title: C tests
+            path: ctest
+            skip: true
+          - title: C++ tests
+            path: plustest
+            skip: true
+          - title: Fortran tests
+            path: f77test
+            skip: true
+          - title: C run-time library tests
+            path: clibtest
+            skip: true
+    timeout-minutes: 90
+    runs-on: ${{ inputs.image }}
+    name: ${{ matrix.test.title }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: ${{ matrix.test.title }}
+        uses: ./.github/actions/tests
+        with:
+          hostos: ${{ inputs.hostos }}
+          suffix: ${{ inputs.suffix }}
+          path: ${{ matrix.test.path }}
+          skip: ${{ matrix.test.skip }}
