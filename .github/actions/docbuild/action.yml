@@ -31,8 +31,8 @@ inputs:
     required: false
     default: ''
     type: string
-  buildcmd:
-    description: 'build command'
+  args:
+    description: 'build command arguments'
     required: false
     default: ''
     type: string
@@ -70,7 +70,7 @@ runs:
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: if "${{ inputs.testmode }}" == "" ${{ inputs.buildcmd }}
+    run: if "${{ inputs.testmode }}" == "" ci\buildx.cmd ${{ inputs.args }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}

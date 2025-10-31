@@ -29,7 +29,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
-        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        args:       ${{ inputs.tools }}
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -45,7 +45,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'lnx'
-        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        args:       ${{ inputs.tools }}
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
