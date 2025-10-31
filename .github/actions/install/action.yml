@@ -26,6 +26,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -41,12 +46,14 @@ runs:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui nt x64 ${{inputs.tools_nt}}'
       owdebug:      ${{inputs.owdebug}}
+      testmode:     ${{inputs.testmode}}
   - uses: "./.github/actions/artfload"
     with:
       hostos:       'lnx'
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui lnx x64 ${{inputs.tools_lnx}}'
       owdebug:      ${{inputs.owdebug}}
+      testmode:     ${{inputs.testmode}}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
@@ -54,6 +61,7 @@ runs:
       tools_lnx:    ${{inputs.tools_lnx}}
       tools_osx:    ${{inputs.tools_osx}}
       owdebug:      ${{inputs.owdebug}}
+      testmode:     ${{inputs.testmode}}
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
     id: owsnapshot
@@ -62,8 +70,9 @@ runs:
       hostos:       'lnx'
       gitpath:      'rel'
       owdebug:      ${{inputs.owdebug}}
+      testmode:     ${{inputs.testmode}}
   # run build script
-  - if: inputs.target != 'snapshot'
+  - if: inputs.target != 'snapshot' && inputs.testmode == ''
     name: Build Installers
     run: ci/buildx.sh gcc
     env:
@@ -82,3 +91,4 @@ runs:
       gitpath:      'distrib ow bin'
       artifact:     "install ${{inputs.target}}"
       owdebug:      ${{inputs.owdebug}}
+      testmode:     ${{inputs.testmode}}

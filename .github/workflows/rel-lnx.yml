@@ -63,3 +63,4 @@ jobs:
       with:
         hostos:     'lnx'
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
+        testmode:   ${{ vars.TESTMODE }}

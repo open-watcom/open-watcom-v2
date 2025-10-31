@@ -172,13 +172,16 @@ jobs:
         tools_lnx:  'gcc'
         tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Create OW snapshot
+        testmode:   ${{ vars.TESTMODE }}
+    - if: vars.TESTMODE == ''
+      name: Create OW snapshot
       id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
         hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
     - if: github.event_name == 'pull_request' && vars.TESTMODE == ''
       name: Upload Pull Request owsnapshot
       uses: actions/upload-artifact@v4
@@ -194,7 +197,7 @@ jobs:
         exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: github.event_name != 'pull_request'
+    - if: github.event_name != 'pull_request' && vars.TESTMODE == ''
       name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:

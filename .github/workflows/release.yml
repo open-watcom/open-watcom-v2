@@ -125,6 +125,7 @@ jobs:
         tools_lnx:  'gcc'
         tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
   release:
     needs: Installers
     name: "Create GitHub Release"
@@ -135,12 +136,14 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: GitHub Release
+    - if: vars.TESTMODE == ''
+      name: GitHub Release
       id: rel_rel
       uses: "./.github/actions/release"
       with:
-        owdebug: ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        testmode:   ${{ vars.TESTMODE }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
   Uploads:
@@ -180,6 +183,7 @@ jobs:
         mrelid:     ${{ needs.release.outputs.mrelid }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        testmode:   ${{ vars.TESTMODE }}
   end-end:
     needs: Uploads
     name: Call to delete Artifacts

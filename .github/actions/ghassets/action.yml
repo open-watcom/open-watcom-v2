@@ -31,6 +31,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -40,12 +45,14 @@ runs:
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
     with:
       owcurlopts: ${{ inputs.owcurlopts }}
-  - run: |
+  - if: inputs.testmode == ''
+    run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.drelid }}/assets?name=$($_.Name)" `
@@ -54,7 +61,7 @@ runs:
         if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
       }
     shell: pwsh
-  - if: inputs.mrelid != ''
+  - if: inputs.mrelid != '' && inputs.testmode == ''
     run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `

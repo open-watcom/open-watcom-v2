@@ -26,6 +26,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 outputs:
   fullname:
     description: 'snapshot file full name'
@@ -55,3 +60,4 @@ runs:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
