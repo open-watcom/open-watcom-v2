@@ -91,7 +91,7 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
         cvt.flags |= FPCVT_F_DOT;
     }
     if( (specs->_flags & SPF_LONG_DOUBLE)
-      && (*__get_rt_control_ptr() & RTFLG_LD_80BIT) == 0 ) {
+      && (*__get_rt_control_ptr() & RTFLG_LD_80BIT) ) {
         ld = va_arg( *pargs, long_double );
         cvt.flags |= FPCVT_LONG_DOUBLE;
     } else {
