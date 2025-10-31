@@ -79,7 +79,10 @@ jobs:
         | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
     - name: "Build Coverity output data Linux"
-      run: ci/coverity.sh ${{ steps.covtool.outputs.cmd }} $OWCOV_RESULTS_GITPATH ci/covbuild.sh
+      run: |
+        if [ "${{ vars.TESTMODE }}" = "" ]; then
+          ci/coverity.sh ${{ steps.covtool.outputs.cmd }} $OWCOV_RESULTS_GITPATH ci/covbuild.sh
+        fi
       env:
         OWROOT:     ${{ github.workspace }}
         OWTOOLS:    GCC
@@ -96,10 +99,12 @@ jobs:
       shell: pwsh
     - name: "Create Archive with Coverity output data"
       run: |
-        if [ "${{ vars.OWDEBUG }}" = "1" ]; then
-          tar -cvf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
-        else
-          tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
+        if [ "${{ vars.TESTMODE }}" = "" ]; then
+          if [ "${{ vars.OWDEBUG }}" = "1" ]; then
+            tar -cvf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
+          else
+            tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
+          fi
         fi
       shell: bash
     - if: vars.OWDEBUG == 1 && vars.TESTMODE == ''
@@ -115,15 +120,17 @@ jobs:
       shell: pwsh
     - name: "Upload Coverity output data Archive"
       run: >
-        $response = ${{ steps.curlcmd.outputs.cov }}
-        --write-out "\n%{http_code}\n"
-        --form project=$env:OWCOV_PROJECT
-        --form token=${{ secrets.OWCOVERITY_TOKEN }}
-        --form email=malak.jiri@gmail.com
-        --form file=`@${{ steps.tarname.outputs.fullname }}
-        --form version=${{ steps.last_commit.outputs.sha }}
-        --form description="Open Watcom V2 Azure Pipelines CI build"
-        https://scan.coverity.com/builds
+        if( '${{ vars.TESTMODE }}' -eq '' ) {
+          $response = ${{ steps.curlcmd.outputs.cov }}
+          --write-out "\n%{http_code}\n"
+          --form project=$env:OWCOV_PROJECT
+          --form token=${{ secrets.OWCOVERITY_TOKEN }}
+          --form email=malak.jiri@gmail.com
+          --form file=`@${{ steps.tarname.outputs.fullname }}
+          --form version=${{ steps.last_commit.outputs.sha }}
+          --form description="Open Watcom V2 GitHub Actions CI build"
+          https://scan.coverity.com/builds
+        }
       shell: pwsh
     - name: Check tag reference
       id: check_tag
@@ -134,18 +141,22 @@ jobs:
     - if: steps.check_tag.outputs.sha == ''
       name: Create new Coverity scan tag
       run: |
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
-        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{ vars.TESTMODE }}' -eq '' ) {
+          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+          -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
+          -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
+          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+        }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
       name: Update Coverity scan tag
       run: |
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
-        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{ vars.TESTMODE }}' -eq '' ) {
+          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+          -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
+          -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
+          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+        }
       shell: pwsh
 
 #  scan-nt:
@@ -235,7 +246,7 @@ jobs:
 #        --form email=malak.jiri@gmail.com
 #        --form file=`@${{ steps.tarname.outputs.fullname }}
 #        --form version=${{ steps.last_commit.outputs.sha }}
-#        --form description="Open Watcom V2 Azure Pipelines CI build"
+#        --form description="Open Watcom V2 GitHub Actions CI build"
 #        https://scan.coverity.com/builds
 #      shell: pwsh
 #    - name: Check tag reference

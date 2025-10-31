@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -35,6 +40,7 @@ runs:
       tag:     ${{ steps.cireldata.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
       owcurlopts: ${{ inputs.owcurlopts }}
+      testmode:   ${{ inputs.testmode }}
   - name: Create new Release
     uses: "./.github/actions/ghrelcre"
     id: cinewrel
@@ -45,11 +51,14 @@ runs:
       tagmsg:  ${{ steps.cireldata.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
       owcurlopts: ${{ inputs.owcurlopts }}
+      testmode:   ${{ inputs.testmode }}
   - run: |
-      $name = Split-Path -Path ${{ inputs.fullname }} -Leaf
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.cinewrel.outputs.id }}/assets?name=$($name)" `
-      -H "Content-Type: application/octet-stream" `
-      --data-binary `@${{ inputs.fullname }}
-      if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+      if( '${{ inputs.testmode }}' -eq '' ) {
+        $name = Split-Path -Path ${{ inputs.fullname }} -Leaf
+        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+        -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.cinewrel.outputs.id }}/assets?name=$($name)" `
+        -H "Content-Type: application/octet-stream" `
+        --data-binary `@${{ inputs.fullname }}
+        if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+      }
     shell: pwsh

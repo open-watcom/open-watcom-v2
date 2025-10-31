@@ -11,6 +11,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 outputs:
   drelid:
     description: 'day release ID'
@@ -41,6 +46,7 @@ runs:
       tag:     ${{ steps.dreldata.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
       owcurlopts: ${{ inputs.owcurlopts }}
+      testmode: ${{ inputs.testmode }}
   - name: 'Create daily Release'
     id: newdrel
     uses: "./.github/actions/ghrelcre"
@@ -51,6 +57,7 @@ runs:
       tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
       owcurlopts: ${{ inputs.owcurlopts }}
+      testmode: ${{ inputs.testmode }}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
@@ -85,6 +92,7 @@ runs:
       tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}
       owdebug: ${{ inputs.owdebug }}
       owcurlopts: ${{ inputs.owcurlopts }}
+      testmode: ${{ inputs.testmode }}
   - if: steps.oldmrel.outputs.sha == ''
     id: mdata
     run: echo "tag=${{ steps.mreldata.outputs.tag }}" >> ${{ github.output }}
