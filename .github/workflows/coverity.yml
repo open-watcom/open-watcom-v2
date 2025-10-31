@@ -14,7 +14,7 @@ env:
   OWCOV_TAG:             'Coverity-scan'
 jobs:
   check_run:
-    if: github.repository == 'open-watcom/open-watcom-v2'
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
     name: Check if to run
     runs-on: ubuntu-latest
     outputs:
