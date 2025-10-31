@@ -196,13 +196,14 @@ jobs:
         exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: github.event_name != 'pull_request' && vars.TESTMODE == ''
+    - if: github.event_name != 'pull_request'
       name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        testmode:   ${{ vars.TESTMODE }}
     - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'pull_request'
       name: Call to delete Last CI Build Artifacs
       uses: "./.github/actions/artfdelc"

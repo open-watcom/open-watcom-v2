@@ -109,17 +109,17 @@ jobs:
         git config --global core.eol lf
         git config --global core.autocrlf input
     - name: Setup Git User
-      shell: cmd
       run: |
         git config --global user.email "openwatcom.github@gmail.com"
         git config --global user.name "Open Watcom GitHub"
-    - name: Wiki Repo clone
       shell: cmd
+    - name: Wiki Repo clone
       run: |
         git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
+      shell: cmd
     - if: vars.TESTMODE == ''
       name: Download Artifact html
       uses: actions/download-artifact@v4
@@ -132,13 +132,14 @@ jobs:
       with:
         name: 'rel-wikipdf-vs2022'
         path: docs
-    - if: vars.TESTMODE == ''
-      name: Wiki Repo Update
-      shell: cmd
+    - name: Wiki Repo Update
       run: |
-        git add -v -f .
-        git commit -v -m "GitHub Workflow build"
-        git push -v
+        if "${{ vars.TESTMODE }}" == "" (
+          git add -v -f .
+          git commit -v -m "GitHub Workflow build"
+          git push -v
+        )
+      shell: cmd
     # run: git config --list
   cleanup:
     needs: wiki-update

@@ -136,8 +136,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.TESTMODE == ''
-      name: GitHub Release
+    - name: GitHub Release
       id: rel_rel
       uses: "./.github/actions/release"
       with:
