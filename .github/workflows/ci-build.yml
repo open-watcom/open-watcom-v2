@@ -173,8 +173,7 @@ jobs:
         tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
-    - if: vars.TESTMODE == ''
-      name: Create OW snapshot
+    - name: Create OW snapshot
       id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
