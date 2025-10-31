@@ -27,7 +27,9 @@ runs:
   - if: inputs.hostos == 'lnx' && inputs.testmode == ''
     name: Test Bootstrap OW
     run: |
-      env | sort
+      if [ "${{ inputs.owdebug }}" = "1" ]; then
+        env | sort
+      fi
       ci/buildx.sh
     env:
       OWBUILD_STAGE: 'boot'
@@ -40,8 +42,8 @@ runs:
   - if: inputs.hostos == 'nt' && inputs.testmode == ''
     name: Test Bootstrap OW
     run: |
-      set
-      ci/buildx.cmd
+      if "${{ inputs.owdebug }}" == "1" set
+      ci\buildx.cmd
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'

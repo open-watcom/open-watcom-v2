@@ -70,10 +70,7 @@ runs:
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: |
-      if "${{ inputs.testmode }}" == "" (
-        ${{ inputs.buildcmd }}
-      )
+    run: if "${{ inputs.testmode }}" == "" ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}

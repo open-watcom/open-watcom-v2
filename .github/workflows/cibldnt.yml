@@ -33,7 +33,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'nt'
-        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
+        buildcmd:   "ci\buildx.cmd ${{ inputs.tools }}"
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -53,7 +53,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'nt'
-        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
+        buildcmd:   "ci\buildx.cmd ${{ inputs.tools }}"
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -89,7 +89,7 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
-        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
+        buildcmd:   "ci\buildx.cmd ${{ inputs.tools }}"
         target:     ${{ matrix.doctype }}
         suffixi:    "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"

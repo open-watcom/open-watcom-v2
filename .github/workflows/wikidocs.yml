@@ -54,7 +54,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:         'nt'
-        buildcmd:       'ci/buildx.cmd vs2022'
+        buildcmd:       'ci\buildx.cmd vs2022'
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
         noarchive:      '1'
@@ -84,7 +84,7 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
-        buildcmd:   'ci/buildx.cmd vs2022'
+        buildcmd:   'ci\buildx.cmd vs2022'
         target:     ${{ matrix.doctype }}
         relpath:    'docs wiki'
         suffixi:    'nt x64 vs2022'

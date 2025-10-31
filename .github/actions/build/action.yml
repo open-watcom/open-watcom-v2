@@ -70,10 +70,7 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Build
-    run: |
-      if "${{ inputs.testmode }}" == "" (
-        ${{ inputs.buildcmd }}
-      )
+    run: if "${{ inputs.testmode }}" == "" ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
