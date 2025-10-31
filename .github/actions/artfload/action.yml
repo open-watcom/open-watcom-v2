@@ -26,6 +26,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -45,7 +50,8 @@ runs:
         Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh
-  - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
+  - if: inputs.testmode == ''
+    name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/download-artifact@v4
     with:
       name: ${{ steps.artifact_name.outputs.id }}
@@ -66,6 +72,7 @@ runs:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
   - if: inputs.noarchive == ''
     name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}

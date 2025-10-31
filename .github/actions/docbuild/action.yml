@@ -51,6 +51,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -65,7 +70,10 @@ runs:
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: ${{ inputs.buildcmd }}
+    run: |
+      if "${{ inputs.testmode }}" == "" (
+        ${{ inputs.buildcmd }}
+      )
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
@@ -83,3 +91,4 @@ runs:
       artifact:     "rel ${{ inputs.suffixo }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
+      testmode:     ${{ inputs.testmode }}

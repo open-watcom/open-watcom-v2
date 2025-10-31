@@ -49,6 +49,7 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+        testmode:   ${{ vars.TESTMODE }}
   tests-lnx:
     name: Tests
     if: inputs.arch == 'x64'

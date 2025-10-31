@@ -16,10 +16,15 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
-  - if: inputs.hostos == 'lnx'
+  - if: inputs.hostos == 'lnx' && inputs.testmode == ''
     name: Test Bootstrap OW
     run: |
       env | sort
@@ -32,7 +37,7 @@ runs:
       OWVERBOSE:     1
       TESTBOOT:      ${{ inputs.testboot }}
     shell: bash
-  - if: inputs.hostos == 'nt'
+  - if: inputs.hostos == 'nt' && inputs.testmode == ''
     name: Test Bootstrap OW
     run: |
       set

@@ -66,6 +66,7 @@ jobs:
         gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
         format:     'gzip'
         owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
     - name: "Remove Coverity Tools Archive"
       run: rm -f $OWCOV_SRC_ARCHIVE
       shell: bash
@@ -101,7 +102,7 @@ jobs:
           tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
         fi
       shell: bash
-    - if: vars.OWDEBUG == 1
+    - if: vars.OWDEBUG == 1 && vars.TESTMODE == ''
       name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -184,6 +185,7 @@ jobs:
 #        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
 #        format:     'gzip'
 #        owdebug:    ${{ vars.OWDEBUG }}
+#        testmode:   ${{ vars.TESTMODE }}
 #    - name: "Remove Coverity Tools Archive"
 #      run: rm -f $OWCOV_SRC_ARCHIVE
 #      shell: bash

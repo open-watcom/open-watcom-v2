@@ -53,6 +53,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+        testmode:   ${{ vars.TESTMODE }}
   docsbuild:
     needs: boot-nt
     name: Documentation
@@ -88,6 +89,7 @@ jobs:
         suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+        testmode:   ${{ vars.TESTMODE }}
   tests-nt:
     needs: build-nt
     name: Tests

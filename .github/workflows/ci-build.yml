@@ -179,7 +179,7 @@ jobs:
         hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
-    - if: github.event_name == 'pull_request'
+    - if: github.event_name == 'pull_request' && vars.TESTMODE == ''
       name: Upload Pull Request owsnapshot
       uses: actions/upload-artifact@v4
       with:

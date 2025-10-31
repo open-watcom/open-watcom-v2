@@ -93,6 +93,7 @@ jobs:
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
+        testmode:   ${{ vars.TESTMODE }}
     # run: git config --local --list
   wiki-update:
     name: Update Wiki
@@ -113,12 +114,14 @@ jobs:
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
-    - name: Download Artifact html
+    - if: vars.TESTMODE == ''
+      name: Download Artifact html
       uses: actions/download-artifact@v4
       with:
         name: 'rel-wikihtml-vs2022'
         path: docs
-    - name: Download Artifact pdf
+    - if: vars.TESTMODE == ''
+      name: Download Artifact pdf
       uses: actions/download-artifact@v4
       with:
         name: 'rel-wikipdf-vs2022'

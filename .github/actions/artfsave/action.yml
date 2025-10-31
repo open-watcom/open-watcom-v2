@@ -31,6 +31,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -55,6 +60,7 @@ runs:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
   - name: Get source
     id: srcpath
     run: |
@@ -64,7 +70,8 @@ runs:
         Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh
-  - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
+  - if: inputs.testmode == ''
+    name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/upload-artifact@v4
     with:
       name:             ${{ steps.artifact_name.outputs.id }}

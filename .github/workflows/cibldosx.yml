@@ -53,3 +53,4 @@ jobs:
         suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+        testmode:   ${{ vars.TESTMODE }}

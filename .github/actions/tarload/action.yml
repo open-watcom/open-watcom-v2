@@ -26,6 +26,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -48,28 +53,32 @@ runs:
   - name: Create destination folder
     run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }} > $null
     shell: pwsh
-  - if: inputs.hostos == 'lnx' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'lnx' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact Linux
-    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    run: |
+      tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: inputs.hostos == 'lnx' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'lnx' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact Linux
-    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    run: |
+      tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: inputs.hostos == 'osx' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'osx' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact OSX
-    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    run: |
+      gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: inputs.hostos == 'osx' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'osx' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact OSX
-    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    run: |
+      gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: inputs.hostos == 'nt' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'nt' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact (Windows)
     run: |
       7z x -aoa "${{ inputs.fullname }}" -o${{ steps.dstpath.outputs.path }}
     shell: cmd
-  - if: inputs.hostos == 'nt' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'nt' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact (Windows)
     run: |
       7z x -txz "${{ inputs.fullname }}" -o${{ runner.temp }}

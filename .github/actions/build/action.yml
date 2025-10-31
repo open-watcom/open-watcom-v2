@@ -31,6 +31,11 @@ inputs:
     required: false
     default: ''
     type: string
+  testmode:
+    description: 'testing mode (no build)'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -51,7 +56,10 @@ runs:
       owdebug:  ${{ inputs.owdebug }}
   - if: inputs.hostos == 'lnx'
     name: Build
-    run: ${{ inputs.buildcmd }}
+    run: |
+      if [ "${{ inputs.testmode }}" = "" ]; then
+        ${{ inputs.buildcmd }}
+      fi
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -62,7 +70,10 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Build
-    run: ${{ inputs.buildcmd }}
+    run: |
+      if "${{ inputs.testmode }}" == "" (
+        ${{ inputs.buildcmd }}
+      )
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -74,7 +85,10 @@ runs:
     shell: cmd
   - if: inputs.hostos == 'osx'
     name: Build
-    run: ${{ inputs.buildcmd }}
+    run: |
+      if [ "${{ inputs.testmode }}" = "" ]; then
+        ${{ inputs.buildcmd }}
+      fi
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -89,6 +103,7 @@ runs:
       gitpath:  ${{ inputs.relpath }}
       artifact: "rel ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
   - if: inputs.hostos == 'lnx' || inputs.hostos == 'nt'
     uses: "./.github/actions/artfsave"
     with:
@@ -96,3 +111,4 @@ runs:
       gitpath:  'bld setupgui'
       artifact: "bld setupgui ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
+      testmode: ${{ inputs.testmode }}
