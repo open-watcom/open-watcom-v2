@@ -132,7 +132,8 @@ jobs:
       with:
         name: 'rel-wikipdf-vs2022'
         path: docs
-    - name: Wiki Repo Update
+    - if: vars.TESTMODE == ''
+      name: Wiki Repo Update
       shell: cmd
       run: |
         git add -v -f .
