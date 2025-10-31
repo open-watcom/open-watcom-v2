@@ -72,9 +72,12 @@ runs:
       owdebug:      ${{inputs.owdebug}}
       testmode:     ${{inputs.testmode}}
   # run build script
-  - if: inputs.target != 'snapshot' && inputs.testmode == ''
+  - if: inputs.target != 'snapshot'
     name: Build Installers
-    run: ci/buildx.sh gcc
+    run: |
+      if [ "${{ inputs.testmode }}" = "" ]; then
+        ci/buildx.sh gcc
+      fi
     env:
       OWBUILD_STAGE: 'inst'
       OWTOOLS:       'GCC'

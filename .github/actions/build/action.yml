@@ -70,7 +70,10 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Build
-    run: if "${{ inputs.testmode }}" == "" ci\buildx.cmd ${{ inputs.args }}
+    run: |
+      if "${{ inputs.testmode }}" == "" (
+        ci\buildx.cmd ${{ inputs.args }}
+      )
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}

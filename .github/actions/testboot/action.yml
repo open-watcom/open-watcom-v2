@@ -24,13 +24,15 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: inputs.hostos == 'lnx' && inputs.testmode == ''
+  - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
     run: |
       if [ "${{ inputs.owdebug }}" = "1" ]; then
         env | sort
       fi
-      ci/buildx.sh
+      if [ "${{ inputs.testmode }}" = "" ]; then
+        ci/buildx.sh
+      fi
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
@@ -39,11 +41,15 @@ runs:
       OWVERBOSE:     1
       TESTBOOT:      ${{ inputs.testboot }}
     shell: bash
-  - if: inputs.hostos == 'nt' && inputs.testmode == ''
+  - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
     run: |
-      if "${{ inputs.owdebug }}" == "1" set
-      ci\buildx.cmd
+      if "${{ inputs.owdebug }}" == "1" (
+        set
+      )
+      if "${{ inputs.testmode }}" == "" (
+        ci\buildx.cmd
+      )
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'

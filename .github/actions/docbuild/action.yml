@@ -70,7 +70,10 @@ runs:
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: if "${{ inputs.testmode }}" == "" ci\buildx.cmd ${{ inputs.args }}
+    run: |
+      if "${{ inputs.testmode }}" == "" (
+        ci\buildx.cmd ${{ inputs.args }}
+      )
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}

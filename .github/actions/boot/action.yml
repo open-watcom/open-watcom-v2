@@ -36,7 +36,8 @@ runs:
   steps:
   - if: inputs.hostos == 'lnx' || inputs.hostos == 'osx'
     name: Bootstrap
-    run: ci/buildx.sh ${{ inputs.args }}
+    run: |
+      ci/buildx.sh ${{ inputs.args }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -46,7 +47,8 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Bootstrap
-    run: ci\buildx.cmd ${{ inputs.args }}
+    run: |
+      ci\buildx.cmd ${{ inputs.args }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
