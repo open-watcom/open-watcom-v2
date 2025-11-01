@@ -3,10 +3,10 @@ run-name: CI workflow Windows
 on:
   workflow_call:
     inputs:
-      arch:
+      args:
         required: true
         type: string
-      args:
+      suffix:
         required: true
         type: string
       gitpath:
@@ -16,9 +16,6 @@ on:
         required: true
         type: string
       image:
-        required: true
-        type: string
-      owdebug:
         required: true
         type: string
 
@@ -37,11 +34,10 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
 
   build-nt:
     name: Build
@@ -56,15 +52,16 @@ jobs:
         git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/build"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
         gitpath:    ${{ inputs.gitpath }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   docsbuild:
@@ -95,56 +92,25 @@ jobs:
         git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/docbuild"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
         gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   tests-nt:
-    if: inputs.arch == 'x64'
+    if: runner.arch == 'X64'
     needs: build-nt
     name: Tests
     uses: "./.github/workflows/tests.yml"
     with:
-      hostos: 'nt'
-      suffix: "nt ${{ inputs.arch }} ${{ inputs.args }}"
-      image:  ${{ inputs.image }}
-
-  testboot-nt:
-    name: Test Bootstrap
-    needs: build-nt
-    runs-on: ${{ inputs.image }}
-
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Load Artifact
-      uses: "./.github/actions/artfload"
-      with:
-        hostos:     'nt'
-        gitpath:    'rel'
-        artifact:   "rel nt ${{ inputs.arch }} ${{ inputs.args }}"
-        owdebug:    ${{ inputs.owdebug }}
-        testmode:   ${{ vars.TESTMODE }}
-    - name: Setup new OW
-      run: |
-        echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
-        echo WATCOM=${{github.workspace}}\rel>> "%GITHUB_ENV%"
-        echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
-      shell: cmd
-    - if: inputs.arch == 'x64'
-      name: Test Bootstrap
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'nt'
-        owdebug:    ${{ inputs.owdebug }}
-        testboot:   1
-        testmode:   ${{ vars.TESTMODE }}
+      suffix:   ${{ inputs.suffix }}
+      image:    ${{ inputs.image }}

@@ -1,11 +1,6 @@
 name: github-release-assets
 description: 'Upload release asset file (day and month release)'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   drelid:
     description: 'day release ID'
     required: false
@@ -41,7 +36,6 @@ runs:
   steps:
   - uses: "./.github/actions/artfload"
     with:
-      hostos:   ${{ inputs.hostos }}
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
       owdebug:  ${{ inputs.owdebug }}

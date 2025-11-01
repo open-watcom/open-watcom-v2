@@ -32,22 +32,21 @@ jobs:
         - owtools:  'GCC'
           arch:     'x64'
           image:    'ubuntu-22.04'
-          tools:    'gcc'
+          args:     'gcc'
           gitpath:  'rel'
         - owtools:  'GCC'
           arch:     'a64'
           image:    'ubuntu-24.04-arm'
-          tools:    'gcc'
+          args:     'gcc'
           gitpath:  'rel'
-    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
+    name: Linux ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-lnx.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
+      args:         ${{ matrix.args }}
+      suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -57,42 +56,40 @@ jobs:
         - owtools:  'VISUALC'
           arch:     'x64'
           image:    'windows-2022'
-          tools:    'vs2022'
+          args:     'vs2022'
           gitpath:  'rel'
-    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
+    name: Windows ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-nt.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
+      args:         ${{ matrix.args }}
+      suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   OSX:
     needs: check_run
     if: needs.check_run.outputs.runit
     strategy:
       matrix:
         include:
-        - owtools: 'CLANG'
-          arch:    'x64'
-          image:   'macos-15-intel'
-          tools:   'clang'
-          gitpath: 'rel bino64'
-        - owtools: 'CLANG'
-          arch:    'a64'
-          image:   'macos-15'
-          tools:   'clang'
-          gitpath: 'rel armo64'
-    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
+        - owtools:  'CLANG'
+          arch:     'x64'
+          image:    'macos-15-intel'
+          args:     'clang'
+          gitpath:  'rel bino64'
+        - owtools:  'CLANG'
+          arch:     'a64'
+          image:    'macos-15'
+          args:     'clang'
+          gitpath:  'rel armo64'
+    name: OSX ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-osx.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
+      args:         ${{ matrix.args }}
+      suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   Installers:
     needs:
     - Linux
@@ -145,8 +142,8 @@ jobs:
       id: rel_rel
       uses: "./.github/actions/release"
       with:
-        owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
@@ -181,12 +178,11 @@ jobs:
     - name: ${{ matrix.title }} Asset
       uses: "./.github/actions/ghassets"
       with:
-        hostos:     'lnx'
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
         mrelid:     ${{ needs.release.outputs.mrelid }}
-        owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   end-end:
     needs: Uploads
@@ -199,5 +195,5 @@ jobs:
       name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
-        owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.OWDEBUG }}

@@ -1,11 +1,6 @@
 name: last-build
 description: 'Create OW snapshot Archive (compressed tar)'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   gitpath:
     description: 'git subdirectory'
     required: false
@@ -56,7 +51,6 @@ runs:
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
-      hostos:   ${{ inputs.hostos }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}

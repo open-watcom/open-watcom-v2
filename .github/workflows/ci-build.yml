@@ -33,7 +33,7 @@ jobs:
     needs: start-start
     strategy:
       matrix:
-        pre:
+        include:
         - name:  '1.9'
           id:    '1.9'
           os:    'nt'
@@ -43,26 +43,23 @@ jobs:
           tag:  '2023-01-01-Build'
           os:   'nt'
           image: 'windows-2025'
-    name: Bootstrap Test OW ${{ matrix.pre.name }} Windows
-    runs-on: ${{ matrix.pre.image }}
+    name: Bootstrap Test OW ${{ matrix.name }} Windows
+    runs-on: ${{ matrix.image }}
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Open Watcom setup
-      uses: open-watcom/setup-watcom@v0
-      with:
-        version: ${{ matrix.pre.id }}
-        tag:     ${{ matrix.pre.tag }}
-    - name: Test
+    - name: Test new OW bootstrap
       uses: "./.github/actions/testboot"
       with:
-        hostos:     ${{ matrix.pre.os }}
+        ow_version: ${{ matrix.id }}
+        ow_tag:     ${{ matrix.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
   Linux-pre:
     needs: start-start
     strategy:
       matrix:
-        pre:
+        include:
         - name:  '1.9'
           id:    '1.9'
           os:    'lnx'
@@ -72,94 +69,91 @@ jobs:
           tag:   '2023-01-01-Build'
           os:    'lnx'
           image: 'ubuntu-latest'
-    name: Bootstrap Test OW ${{ matrix.pre.name }} Linux
-    runs-on: ${{ matrix.pre.image }}
+    name: Bootstrap Test OW ${{ matrix.name }} Linux
+    runs-on: ${{ matrix.image }}
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Open Watcom setup
-      uses: open-watcom/setup-watcom@v0
-      with:
-        version: ${{ matrix.pre.id }}
-        tag:     ${{ matrix.pre.tag }}
-    - name: Test
+    - name: Test new OW bootstrap
       uses: "./.github/actions/testboot"
       with:
-        hostos:     ${{ matrix.pre.os }}
+        ow_version: ${{ matrix.id }}
+        ow_tag:     ${{ matrix.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
   Linux:
     needs:
     - Linux-pre
     strategy:
       matrix:
-        bld:
+        include:
         - owtools:  'GCC'
           arch:     'x64'
           image:    'ubuntu-latest'
-          tools:    'gcc'
+          args:     'gcc'
           gitpath:  'rel'
         - owtools:  'CLANG'
           arch:     'x64'
           image:    'ubuntu-latest'
-          tools:    'clang'
+          args:     'clang'
           gitpath:  'rel'
         - owtools:  'GCC'
           arch:     'a64'
           image:    'ubuntu-24.04-arm'
-          tools:    'gcc'
+          args:     'gcc'
           gitpath:  'rel'
-    name: Linux ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
+    name: Linux ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         ${{ matrix.bld.arch }}
-      tools:        ${{ matrix.bld.tools }}
-      gitpath:      ${{ matrix.bld.gitpath }}
-      owtools:      ${{ matrix.bld.owtools }}
-      image:        ${{ matrix.bld.image }}
+      args:         ${{ matrix.args }}
+      suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
+      gitpath:      ${{ matrix.gitpath }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
     - Windows-pre
     strategy:
       matrix:
-        bld:
+        include:
         - owtools:  'VISUALC'
           arch:     'x64'
           image:    'windows-2025'
-          tools:    'vs2022'
+          args:     'vs2022'
           gitpath:  'rel'
-    name: Windows ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
+    name: Windows ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         ${{ matrix.bld.arch }}
-      tools:        ${{ matrix.bld.tools }}
-      gitpath:      ${{ matrix.bld.gitpath }}
-      owtools:      ${{ matrix.bld.owtools }}
-      image:        ${{ matrix.bld.image }}
+      args:         ${{ matrix.args }}
+      suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
+      gitpath:      ${{ matrix.gitpath }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   OSX:
     needs: start-start
     strategy:
       matrix:
-        bld:
+        include:
         - owtools:  'CLANG'
           arch:     'x64'
           image:    'macos-15-intel'
-          tools:    'clang'
+          args:     'clang'
           gitpath:  'rel bino64'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-15'
-          tools:    'clang'
+          args:     'clang'
           gitpath:  'rel armo64'
-    name: OSX ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
+    name: OSX ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
-      arch:         ${{ matrix.bld.arch }}
-      tools:        ${{ matrix.bld.tools }}
-      gitpath:      ${{ matrix.bld.gitpath }}
-      owtools:      ${{ matrix.bld.owtools }}
-      image:        ${{ matrix.bld.image }}
+      args:         ${{ matrix.args }}
+      suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
+      gitpath:      ${{ matrix.gitpath }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   snapshot-both:
     needs:
@@ -183,7 +177,6 @@ jobs:
       id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
-        hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}

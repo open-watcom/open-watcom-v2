@@ -3,10 +3,10 @@ run-name: CI workflow Linux
 on:
   workflow_call:
     inputs:
-      arch:
+      args:
         required: true
         type: string
-      args:
+      suffix:
         required: true
         type: string
       gitpath:
@@ -16,9 +16,6 @@ on:
         required: true
         type: string
       image:
-        required: true
-        type: string
-      owdebug:
         required: true
         type: string
 jobs:
@@ -32,11 +29,10 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:     'lnx'
         args:       ${{ inputs.args }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
 
   build-lnx:
     name: Build
@@ -47,62 +43,23 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/build"
       with:
-        hostos:     'lnx'
         args:       ${{ inputs.args }}
         gitpath:    ${{ inputs.gitpath }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   tests-lnx:
-    if: inputs.arch == 'x64'
+    if: runner.arch == 'X64'
     needs: build-lnx
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:
-      hostos: 'lnx'
-      suffix: "lnx ${{ inputs.arch }} ${{ inputs.args }}"
-      image:  ${{ inputs.image }}
-
-  testboot-lnx:
-    name: Test Bootstrap
-    needs: build-lnx
-    runs-on: ${{ inputs.image }}
-
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Load Artifact
-      uses: "./.github/actions/artfload"
-      with:
-        hostos:     'lnx'
-        gitpath:    'rel'
-        artifact:   "rel lnx ${{ inputs.arch }} ${{ inputs.args }}"
-        owdebug:    ${{ inputs.owdebug }}
-        testmode:   ${{ vars.TESTMODE }}
-    - if: inputs.arch == 'x64'
-      name: Setup new OW
-      run: |
-        if [ "${{ inputs.arch }}" = "x64" ]; then
-          echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
-          echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
-          echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
-        fi
-        if [ "${{ inputs.arch }}" = "a64" ]; then
-          echo "${{github.workspace}}/rel/arm64" >> "$GITHUB_PATH"
-          echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
-          echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
-        fi
-      shell: bash
-    - if: inputs.arch == 'x64'
-      name: Test
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'lnx'
-        owdebug:    ${{ inputs.owdebug }}
-        testboot:   1
-        testmode:   ${{ vars.TESTMODE }}
+      suffix:   ${{ inputs.suffix }}
+      image:    ${{ inputs.image }}

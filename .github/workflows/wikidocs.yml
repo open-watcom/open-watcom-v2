@@ -55,7 +55,6 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:         'nt'
         args:           'vs2022'
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
@@ -84,10 +83,11 @@ jobs:
         git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
-        hostos:     'nt'
         args:       'vs2022'
         target:     ${{ matrix.doctype }}
         gitpath:    'docs wiki'

@@ -3,10 +3,10 @@ run-name: Release workflow Linux (daily and monthly)
 on:
   workflow_call:
     inputs:
-      arch:
+      args:
         required: true
         type: string
-      args:
+      suffix:
         required: true
         type: string
       gitpath:
@@ -16,9 +16,6 @@ on:
         required: true
         type: string
       image:
-        required: true
-        type: string
-      owdebug:
         required: true
         type: string
 jobs:
@@ -31,11 +28,10 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:     'lnx'
         args:       ${{ inputs.args }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
   build-lnx:
     needs: boot-lnx
     name: Build
@@ -44,22 +40,22 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/build"
       with:
-        hostos:     'lnx'
         args:       ${{ inputs.args }}
         gitpath:    ${{ inputs.gitpath }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   tests-lnx:
     name: Tests
-    if: inputs.arch == 'x64'
+    if: runner.arch == 'X64'
     needs: build-lnx
     uses: ./.github/workflows/tests.yml
     with:
-      hostos:   'lnx'
-      suffix:   "lnx ${{ inputs.arch }} ${{ inputs.args }}"
+      suffix:   ${{ inputs.suffix }}
       image:    ${{ inputs.image }}

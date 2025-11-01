@@ -3,10 +3,10 @@ run-name: CI workflow OSX
 on:
   workflow_call:
     inputs:
-      arch:
+      args:
         required: true
         type: string
-      args:
+      suffix:
         required: true
         type: string
       gitpath:
@@ -16,9 +16,6 @@ on:
         required: true
         type: string
       image:
-        required: true
-        type: string
-      owdebug:
         required: true
         type: string
 jobs:
@@ -31,11 +28,10 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:     'osx'
         args:       ${{ inputs.args }}
-        suffix:     "osx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
   build-osx:
     name: Build
     needs: boot-osx
@@ -44,13 +40,14 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/build"
       with:
-        hostos:     'osx'
         args:       ${{ inputs.args }}
         gitpath:    ${{ inputs.gitpath }}
-        suffix:     "osx ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}

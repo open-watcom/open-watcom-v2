@@ -1,11 +1,6 @@
 name: tar-save
 description: 'Create compressed tar file with git sub-directory full contents'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   gitpath:
     description: 'git subdirectory'
     required: false
@@ -50,23 +45,23 @@ runs:
         'opts=-cf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh      
-  - if: inputs.hostos == 'lnx' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.hostos == 'lnx' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.hostos == 'osx' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.hostos == 'osx' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.hostos == 'nt' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Create tar File (Windows)
     run: |
       7z a "${{ inputs.fullname }}" "${{ steps.srcpath.outputs.path }}"
@@ -74,7 +69,7 @@ runs:
       7z rn "${{ inputs.fullname }}" @lst.txt
       del lst.txt
     shell: cmd
-  - if: inputs.hostos == 'nt' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Create tar File (Windows)
     run: |
       tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .

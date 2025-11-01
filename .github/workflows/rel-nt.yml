@@ -3,10 +3,10 @@ run-name: Release workflow Windows (daily and monthly)
 on:
   workflow_call:
     inputs:
-      arch:
+      args:
         required: true
         type: string
-      args:
+      suffix:
         required: true
         type: string
       gitpath:
@@ -16,9 +16,6 @@ on:
         required: true
         type: string
       image:
-        required: true
-        type: string
-      owdebug:
         required: true
         type: string
 jobs:
@@ -35,11 +32,10 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
+        suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
   build-nt:
     needs: boot-nt
     name: Build
@@ -52,15 +48,16 @@ jobs:
         git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Build
       uses: "./.github/actions/build"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
+        suffix:     ${{ inputs.suffix }}
         gitpath:    ${{ inputs.gitpath }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   docsbuild:
     needs: boot-nt
@@ -89,23 +86,23 @@ jobs:
         git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: "./.github/actions/dosboxin"
     - name: Documentation
       uses: "./.github/actions/docbuild"
       with:
-        hostos:     'nt'
         args:       ${{ inputs.args }}
+        suffix:     ${{ inputs.suffix }}
         gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ inputs.owdebug }}
+        owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   tests-nt:
     needs: build-nt
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:
-      hostos:   'nt'
-      suffix:   "nt ${{ inputs.arch }} ${{ inputs.args }}"
+      suffix:   ${{ inputs.suffix }}
       image:    ${{ inputs.image }}

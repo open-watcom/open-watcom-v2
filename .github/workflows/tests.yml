@@ -3,9 +3,6 @@ run-name: OW Tests
 on:
   workflow_call:
     inputs:
-      hostos:
-        required: true
-        type: string
       suffix:
         required: true
         type: string
@@ -16,7 +13,7 @@ jobs:
   tests-x:
     strategy:
       matrix:
-        test:
+        include:
           - title: Wmake tests
             path: wmaktest
             skip: true
@@ -37,14 +34,29 @@ jobs:
             skip: true
     timeout-minutes: 90
     runs-on: ${{ inputs.image }}
-    name: ${{ matrix.test.title }}
+    name: ${{ matrix.title }}
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: ${{ matrix.test.title }}
-        uses: ./.github/actions/tests
-        with:
-          hostos: ${{ inputs.hostos }}
-          suffix: ${{ inputs.suffix }}
-          path: ${{ matrix.test.path }}
-          skip: ${{ matrix.test.skip }}
+    - name: checkout
+      uses: actions/checkout@v4
+    - if: runner.arch == 'X64'
+      name: ${{ matrix.title }}
+      uses: ./.github/actions/tests
+      with:
+        suffix:   ${{ inputs.suffix }}
+        path:     ${{ matrix.path }}
+        skip:     ${{ matrix.skip }}
+
+  testboot-x:
+    name: Test Bootstrap
+    runs-on: ${{ inputs.image }}
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - if: runner.arch == 'X64'
+      name: Test
+      uses: "./.github/actions/testboot"
+      with:
+        suffix:     ${{ inputs.suffix }}
+        owdebug:    ${{ vars.OWDEBUG }}
+        testmode:   ${{ vars.TESTMODE }}
