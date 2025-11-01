@@ -99,12 +99,8 @@ jobs:
   tests-nt:
     needs: build-nt
     name: Tests
-    runs-on: ${{ inputs.image }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Tests
-      uses: "./.github/actions/tests"
-      with:
-        hostos:     'nt'
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+    uses: ./.github/workflows/tests.yml
+    with:
+      hostos:   'nt'
+      suffix:   "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+      image:    ${{ inputs.image }}

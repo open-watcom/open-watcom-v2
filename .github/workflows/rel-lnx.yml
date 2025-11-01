@@ -54,13 +54,8 @@ jobs:
     name: Tests
     if: inputs.arch == 'x64'
     needs: build-lnx
-    runs-on: ${{ inputs.image }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Tests
-      uses: "./.github/actions/tests"
-      with:
-        hostos:     'lnx'
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
-        testmode:   ${{ vars.TESTMODE }}
+    uses: ./.github/workflows/tests.yml
+    with:
+      hostos:   'lnx'
+      suffix:   "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
+      image:    ${{ inputs.image }}
