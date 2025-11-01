@@ -168,9 +168,9 @@ jobs:
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        tools_nt:   'vs2022'
-        tools_lnx:  'gcc'
-        tools_osx:  'clang'
+        suffix_nt:  'vs2022'
+        suffix_lnx: 'gcc'
+        suffix_osx: 'clang'
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - name: Create OW snapshot

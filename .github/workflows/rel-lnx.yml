@@ -6,7 +6,7 @@ on:
       arch:
         required: true
         type: string
-      tools:
+      args:
         required: true
         type: string
       owtools:
@@ -29,8 +29,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
-        args:       ${{ inputs.tools }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
+        args:       ${{ inputs.args }}
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-lnx:
@@ -45,8 +45,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'lnx'
-        args:       ${{ inputs.tools }}
-        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
+        args:       ${{ inputs.args }}
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
         testmode:   ${{ vars.TESTMODE }}
@@ -57,5 +57,5 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       hostos:   'lnx'
-      suffix:   "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
+      suffix:   "lnx ${{ inputs.arch }} ${{ inputs.args }}"
       image:    ${{ inputs.image }}

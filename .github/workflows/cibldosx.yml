@@ -6,7 +6,7 @@ on:
       arch:
         required: true
         type: string
-      tools:
+      args:
         required: true
         type: string
       relpath:
@@ -32,8 +32,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'osx'
-        args:       ${{ inputs.tools }}
-        suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
+        args:       ${{ inputs.args }}
+        suffix:     "osx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-osx:
@@ -48,9 +48,9 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'osx'
-        args:       ${{ inputs.tools }}
+        args:       ${{ inputs.args }}
         relpath:    ${{ inputs.relpath }}
-        suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
+        suffix:     "osx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
         testmode:   ${{ vars.TESTMODE }}

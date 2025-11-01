@@ -6,7 +6,7 @@ on:
       arch:
         required: true
         type: string
-      tools:
+      args:
         required: true
         type: string
       owtools:
@@ -33,8 +33,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'nt'
-        args:       ${{ inputs.tools }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+        args:       ${{ inputs.args }}
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-nt:
@@ -53,8 +53,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'nt'
-        args:       ${{ inputs.tools }}
-        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+        args:       ${{ inputs.args }}
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
         testmode:   ${{ vars.TESTMODE }}
@@ -89,10 +89,10 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
-        args:       ${{ inputs.tools }}
+        args:       ${{ inputs.args }}
         target:     ${{ matrix.doctype }}
-        suffixi:    "nt ${{ inputs.arch }} ${{ inputs.tools }}"
-        suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
+        doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
         testmode:   ${{ vars.TESTMODE }}
@@ -102,5 +102,5 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       hostos:   'nt'
-      suffix:   "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+      suffix:   "nt ${{ inputs.arch }} ${{ inputs.args }}"
       image:    ${{ inputs.image }}

@@ -6,18 +6,18 @@ inputs:
     required: false
     default: ''
     type: string
-  tools_nt:
-    description: 'used compiler toolchain (for Windows)'
+  suffix_nt:
+    description: 'artifact name suffix (for Windows)'
     required: false
     default: ''
     type: string
-  tools_lnx:
-    description: 'used compiler toolchain (for Linux)'
+  suffix_lnx:
+    description: 'artifact name suffix (for Linux)'
     required: false
     default: ''
     type: string
-  tools_osx:
-    description: 'used compiler toolchain (for OSX)'
+  suffix_osx:
+    description: 'artifact name suffix (for OSX)'
     required: false
     default: ''
     type: string
@@ -38,28 +38,28 @@ runs:
     with:
       hostos:       'lnx'
       gitpath:      'build binbuild'
-      artifact:     'build lnx x64 ${{inputs.tools_lnx}}'
+      artifact:     'build lnx x64 ${{inputs.suffix_lnx}}'
       owdebug:      ${{inputs.owdebug}}
   - uses: "./.github/actions/artfload"
     with:
       hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui nt x64 ${{inputs.tools_nt}}'
+      artifact:     'bld setupgui nt x64 ${{inputs.suffix_nt}}'
       owdebug:      ${{inputs.owdebug}}
       testmode:     ${{inputs.testmode}}
   - uses: "./.github/actions/artfload"
     with:
       hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui lnx x64 ${{inputs.tools_lnx}}'
+      artifact:     'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
       owdebug:      ${{inputs.owdebug}}
       testmode:     ${{inputs.testmode}}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
-      tools_nt:     ${{inputs.tools_nt}}
-      tools_lnx:    ${{inputs.tools_lnx}}
-      tools_osx:    ${{inputs.tools_osx}}
+      suffix_nt:    ${{inputs.suffix_nt}}
+      suffix_lnx:   ${{inputs.suffix_lnx}}
+      suffix_osx:   ${{inputs.suffix_osx}}
       owdebug:      ${{inputs.owdebug}}
       testmode:     ${{inputs.testmode}}
   - if: inputs.target == 'snapshot'
