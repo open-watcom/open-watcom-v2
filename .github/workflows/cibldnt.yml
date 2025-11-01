@@ -115,7 +115,7 @@ jobs:
 
   testboot-nt:
     name: Test Bootstrap
-    needs: tests-nt
+    needs: build-nt
     runs-on: ${{ inputs.image }}
 
     steps:

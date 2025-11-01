@@ -121,15 +121,16 @@ jobs:
     - name: "Upload Coverity output data Archive"
       run: >
         if( '${{ vars.TESTMODE }}' -eq '' ) {
-          $response = ${{ steps.curlcmd.outputs.cov }}
-          --write-out "\n%{http_code}\n"
-          --form project=$env:OWCOV_PROJECT
-          --form token=${{ secrets.OWCOVERITY_TOKEN }}
-          --form email=malak.jiri@gmail.com
-          --form file=`@${{ steps.tarname.outputs.fullname }}
-          --form version=${{ steps.last_commit.outputs.sha }}
-          --form description="Open Watcom V2 GitHub Actions CI build"
+          $response = ${{ steps.curlcmd.outputs.cov }} `
+          --write-out "\n%{http_code}\n" `
+          --form project=$env:OWCOV_PROJECT `
+          --form token=${{ secrets.OWCOVERITY_TOKEN }} `
+          --form email=malak.jiri@gmail.com `
+          --form file=`@${{ steps.tarname.outputs.fullname }} `
+          --form version=${{ steps.last_commit.outputs.sha }} `
+          --form description="Open Watcom V2 GitHub Actions CI build" `
           https://scan.coverity.com/builds
+          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
         }
       shell: pwsh
     - name: Check tag reference
