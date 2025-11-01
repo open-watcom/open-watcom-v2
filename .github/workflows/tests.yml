@@ -38,7 +38,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: runner.arch == 'X64'
+    - if: ${{ runner.arch }} == 'X64'
       name: ${{ matrix.title }}
       uses: ./.github/actions/tests
       with:
@@ -53,7 +53,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: runner.arch == 'X64'
+    - if: ${{ runner.arch }} == 'X64'
       name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:

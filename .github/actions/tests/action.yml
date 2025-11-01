@@ -29,17 +29,17 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
-  - if: runner.os == 'Linux'
+  - if: ${{ runner.os }} == 'Linux'
     name: try tests
     run: |
       echo OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}
     shell: bash
-  - if: runner.os == 'Windows'
+  - if: ${{ runner.os }} == 'Windows'
     name: try tests
     run: |
       echo "OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}"
     shell: bash
-  - if: runner.os == 'macOS'
+  - if: ${{ runner.os }} == 'macOS'
     name: try tests
     run: |
       echo OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}

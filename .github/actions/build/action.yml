@@ -42,7 +42,7 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
-  - if: runner.os == 'Linux'
+  - if: ${{ runner.os }} == 'Linux'
     name: Build
     run: |
       if [ "${{ inputs.testmode }}" = "" ]; then
@@ -56,7 +56,7 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
-  - if: runner.os == 'Windows'
+  - if: ${{ runner.os }} == 'Windows'
     name: Build
     run: |
       if "${{ inputs.testmode }}" == "" (
@@ -71,7 +71,7 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
-  - if: runner.os == 'macOS'
+  - if: ${{ runner.os }} == 'macOS'
     name: Build
     run: |
       if [ "${{ inputs.testmode }}" = "" ]; then
@@ -91,7 +91,7 @@ runs:
       artifact: "rel ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}
       testmode: ${{ inputs.testmode }}
-  - if: runner.os == 'Linux' || runner.os == 'Windows'
+  - if: ${{ runner.os }} == 'Linux' || ${{ runner.os }} == 'Windows'
     uses: "./.github/actions/artfsave"
     with:
       gitpath:  'bld setupgui'

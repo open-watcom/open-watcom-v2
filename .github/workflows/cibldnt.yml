@@ -107,7 +107,7 @@ jobs:
         testmode:   ${{ vars.TESTMODE }}
 
   tests-nt:
-    if: runner.arch == 'X64'
+    if: ${{ runner.arch }} == 'X64'
     needs: build-nt
     name: Tests
     uses: "./.github/workflows/tests.yml"

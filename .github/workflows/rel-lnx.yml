@@ -54,7 +54,7 @@ jobs:
 
   tests-lnx:
     name: Tests
-    if: runner.arch == 'X64'
+    if: ${{ runner.arch }} == 'X64'
     needs: build-lnx
     uses: ./.github/workflows/tests.yml
     with:

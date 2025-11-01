@@ -28,7 +28,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: runner.os == 'Linux' || runner.os == 'macOS'
+  - if: ${{ runner.os }} == 'Linux' || ${{ runner.os }} == 'macOS'
     name: Bootstrap
     run: |
       ci/buildx.sh ${{ inputs.args }}
@@ -39,7 +39,7 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
-  - if: runner.os == 'Windows'
+  - if: ${{ runner.os }} == 'Windows'
     name: Bootstrap
     run: |
       ci\buildx.cmd ${{ inputs.args }}
