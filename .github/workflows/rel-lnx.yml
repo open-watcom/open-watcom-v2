@@ -51,6 +51,7 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
+
   tests-lnx:
     name: Tests
     if: runner.arch == 'X64'
