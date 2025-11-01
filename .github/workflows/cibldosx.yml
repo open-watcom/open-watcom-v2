@@ -9,7 +9,7 @@ on:
       args:
         required: true
         type: string
-      relpath:
+      gitpath:
         required: true
         type: string
       owtools:
@@ -49,7 +49,7 @@ jobs:
       with:
         hostos:     'osx'
         args:       ${{ inputs.args }}
-        relpath:    ${{ inputs.relpath }}
+        gitpath:    ${{ inputs.gitpath }}
         suffix:     "osx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}

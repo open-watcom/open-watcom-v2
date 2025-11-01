@@ -9,6 +9,9 @@ on:
       args:
         required: true
         type: string
+      gitpath:
+        required: true
+        type: string
       owtools:
         required: true
         type: string
@@ -49,6 +52,7 @@ jobs:
       with:
         hostos:     'lnx'
         args:       ${{ inputs.args }}
+        gitpath:    ${{ inputs.gitpath }}
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}

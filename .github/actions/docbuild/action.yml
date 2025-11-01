@@ -6,10 +6,9 @@ inputs:
     required: false
     default: ''
     type: string
-  relpath:
-    description: 'binary release path'
-    required: false
-    default: 'rel'
+  gitpath:
+    description: 'git subdirectory'
+    required: true
     type: string
   owtarget:
     description: 'OW builder additional cmd line arguments'
@@ -87,7 +86,7 @@ runs:
   - uses: "./.github/actions/artfsave"
     with:
       hostos:       ${{ inputs.hostos }}
-      gitpath:      ${{ inputs.relpath }}
+      gitpath:      ${{ inputs.gitpath }}
       artifact:     "rel ${{ inputs.doc_suffix }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}

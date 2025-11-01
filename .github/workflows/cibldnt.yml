@@ -9,6 +9,9 @@ on:
       args:
         required: true
         type: string
+      gitpath:
+        required: true
+        type: string
       owtools:
         required: true
         type: string
@@ -58,6 +61,7 @@ jobs:
       with:
         hostos:     'nt'
         args:       ${{ inputs.args }}
+        gitpath:    ${{ inputs.gitpath }}
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -96,6 +100,7 @@ jobs:
       with:
         hostos:     'nt'
         args:       ${{ inputs.args }}
+        gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.args }}"
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"

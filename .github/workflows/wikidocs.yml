@@ -90,7 +90,7 @@ jobs:
         hostos:     'nt'
         args:       'vs2022'
         target:     ${{ matrix.doctype }}
-        relpath:    'docs wiki'
+        gitpath:    'docs wiki'
         suffix:     'nt x64 vs2022'
         doc_suffix: "${{ matrix.doctype }} vs2022"
         owtools:    'VISUALC'

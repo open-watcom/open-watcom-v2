@@ -93,23 +93,27 @@ jobs:
     strategy:
       matrix:
         bld:
-        - owtools: 'GCC'
-          arch:    'x64'
-          image:   'ubuntu-latest'
-          tools:   'gcc'
-        - owtools: 'CLANG'
-          arch:    'x64'
-          image:   'ubuntu-latest'
-          tools:   'clang'
-        - owtools: 'GCC'
-          arch:    'a64'
-          image:   'ubuntu-24.04-arm'
-          tools:   'gcc'
+        - owtools:  'GCC'
+          arch:     'x64'
+          image:    'ubuntu-latest'
+          tools:    'gcc'
+          gitpath:  'rel'
+        - owtools:  'CLANG'
+          arch:     'x64'
+          image:    'ubuntu-latest'
+          tools:    'clang'
+          gitpath:  'rel'
+        - owtools:  'GCC'
+          arch:     'a64'
+          image:    'ubuntu-24.04-arm'
+          tools:    'gcc'
+          gitpath:  'rel'
     name: Linux ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
       arch:         ${{ matrix.bld.arch }}
       tools:        ${{ matrix.bld.tools }}
+      gitpath:      ${{ matrix.bld.gitpath }}
       owtools:      ${{ matrix.bld.owtools }}
       image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
@@ -119,15 +123,17 @@ jobs:
     strategy:
       matrix:
         bld:
-        - owtools: 'VISUALC'
-          arch:    'x64'
-          image:   'windows-2025'
-          tools:   'vs2022'
+        - owtools:  'VISUALC'
+          arch:     'x64'
+          image:    'windows-2025'
+          tools:    'vs2022'
+          gitpath:  'rel'
     name: Windows ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
       arch:         ${{ matrix.bld.arch }}
       tools:        ${{ matrix.bld.tools }}
+      gitpath:      ${{ matrix.bld.gitpath }}
       owtools:      ${{ matrix.bld.owtools }}
       image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
@@ -140,18 +146,18 @@ jobs:
           arch:     'x64'
           image:    'macos-15-intel'
           tools:    'clang'
-          relpath:  'rel bino64'
+          gitpath:  'rel bino64'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-15'
           tools:    'clang'
-          relpath:  'rel armo64'
+          gitpath:  'rel armo64'
     name: OSX ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
       arch:         ${{ matrix.bld.arch }}
       tools:        ${{ matrix.bld.tools }}
-      relpath:      ${{ matrix.bld.relpath }}
+      gitpath:      ${{ matrix.bld.gitpath }}
       owtools:      ${{ matrix.bld.owtools }}
       image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
