@@ -16,14 +16,12 @@ inputs:
     default: ''
     type: string
   suffix:
-    description: 'run-time artifact suffix'
-    required: false
-    default: ''
+    description: 'artifact name suffix'
+    required: true
     type: string
   doc_suffix:
-    description: 'documentation artifact suffix'
-    required: false
-    default: ''
+    description: 'documentation artifact name suffix'
+    required: true
     type: string
   args:
     description: 'build command arguments'

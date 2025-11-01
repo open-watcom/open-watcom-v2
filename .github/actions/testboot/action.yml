@@ -2,9 +2,8 @@ name: test-boot
 description: 'Process test bootstrap build by OW (for test compatibility)'
 inputs:
   suffix:
-    description: 'build command arguments'
-    required: false
-    default: ''
+    description: 'artifact name suffix'
+    required: true
     type: string
   ow_version:
     description: 'OW version'

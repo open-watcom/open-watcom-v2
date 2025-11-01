@@ -54,7 +54,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - if: runner.arch == 'X64'
-      name: Test
+      name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         suffix:     ${{ inputs.suffix }}

@@ -2,9 +2,8 @@ name: boot
 description: 'Process OW bootstrap build'
 inputs:
   suffix:
-    description: 'run-time artifact suffix'
-    required: false
-    default: ''
+    description: 'artifact name suffix'
+    required: true
     type: string
   args:
     description: 'build command arguments'

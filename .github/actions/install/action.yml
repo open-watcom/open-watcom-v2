@@ -8,18 +8,15 @@ inputs:
     type: string
   suffix_nt:
     description: 'artifact name suffix (for Windows)'
-    required: false
-    default: ''
+    required: true
     type: string
   suffix_lnx:
     description: 'artifact name suffix (for Linux)'
-    required: false
-    default: ''
+    required: true
     type: string
   suffix_osx:
     description: 'artifact name suffix (for OSX)'
-    required: false
-    default: ''
+    required: true
     type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'

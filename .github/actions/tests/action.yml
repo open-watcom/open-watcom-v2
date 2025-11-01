@@ -2,9 +2,8 @@ name: tests
 description: 'Process OW tests'
 inputs:
   suffix:
-    description: 'run-time artifact suffix'
-    required: false
-    default: ''
+    description: 'artifact name suffix'
+    required: true
     type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'

@@ -20,7 +20,7 @@ jobs:
     outputs:
       runit: ${{ steps.check_tag.outputs.old }}
     steps:
-    - name: Checkout Actions
+    - name: checkout
       uses: actions/checkout@v4
     - name: Check tag reference
       id: check_tag
@@ -39,7 +39,7 @@ jobs:
       OWCOV_TOOLS_ARCHIVE:   'cov-analysis-linux.tgz'
       OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.tgz'
     steps:
-    - name: Checkout Actions
+    - name: checkout
       uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: "./.github/actions/dosboxin"
@@ -112,7 +112,8 @@ jobs:
         path:             ${{ steps.tarname.outputs.fullname }}
         retention-days:   3
         overwrite:        true
-    - id: last_commit
+    - name: Get last commit SHA
+      id: last_commit
       run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
     - name: "Upload Coverity output data Archive"
@@ -167,7 +168,7 @@ jobs:
 #      OWCOV_TOOLS_ARCHIVE:   'cov-analysis-linux.zip'
 #      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
 #    steps:
-#    - name: Checkout Actions
+#    - name: checkout
 #      uses: actions/checkout@v4
 #    - name: Install DOSBOX
 #      uses: "./.github/actions/dosboxin"

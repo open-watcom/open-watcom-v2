@@ -36,12 +36,10 @@ jobs:
         include:
         - name:  '1.9'
           id:    '1.9'
-          os:    'nt'
           image: 'windows-2025'
-        - name: '2.0'
+        - name: '2.0 (2023)'
           id:   '2.0'
           tag:  '2023-01-01-Build'
-          os:   'nt'
           image: 'windows-2025'
     name: Bootstrap Test OW ${{ matrix.name }} Windows
     runs-on: ${{ matrix.image }}
@@ -62,12 +60,10 @@ jobs:
         include:
         - name:  '1.9'
           id:    '1.9'
-          os:    'lnx'
           image: 'ubuntu-latest'
-        - name:  '2.0'
+        - name:  '2.0 (2023)'
           id:    '2.0'
           tag:   '2023-01-01-Build'
-          os:    'lnx'
           image: 'ubuntu-latest'
     name: Bootstrap Test OW ${{ matrix.name }} Linux
     runs-on: ${{ matrix.image }}
@@ -181,7 +177,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - if: github.event_name == 'pull_request' && vars.TESTMODE == ''
-      name: Upload owsnapshot (Pull Request)
+      name: Upload OW snapshot (Pull Request)
       uses: actions/upload-artifact@v4
       with:
         name:           'owsnapshot'
@@ -200,6 +196,6 @@ jobs:
       name: Call to delete Artifacs ${{ github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)' }}
       uses: "./.github/actions/artfdelc"
       with:
-        exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' }}
+        exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' || '' }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
