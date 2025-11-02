@@ -932,7 +932,13 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
             }
             if( CmdScanSwitchChar( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
-                OPT_PROCESS( data );
+                if( OPT_PROCESS( data ) ) {
+                    /*
+                     * incorrect option
+                     */
+                    CBanner();
+                    BadCmdLineOption();
+                }
             } else {  /* collect  file name */
                 CmdScanUngetChar();
                 switch_start = CmdScanAddr();
