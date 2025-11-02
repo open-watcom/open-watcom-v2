@@ -51,7 +51,7 @@ jobs:
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   Linux-pre:
     needs: start-start
@@ -75,7 +75,7 @@ jobs:
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   Linux:
     needs:
@@ -167,14 +167,14 @@ jobs:
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - name: Create OW snapshot
       id: owsnapshot
       uses: ./.github/actions/snapshot
       with:
         gitpath:    'rel'
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - if: github.event_name == 'pull_request' && vars.TESTMODE == ''
       name: Upload OW snapshot (Pull Request)
@@ -189,13 +189,13 @@ jobs:
       uses: ./.github/actions/lastbld
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
         testmode:   ${{ vars.TESTMODE }}
-    - if: vars.OWDELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacs ${{ github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)' }}
       uses: ./.github/actions/artfdelc
       with:
         exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' || '' }}
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}

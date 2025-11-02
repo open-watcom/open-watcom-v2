@@ -27,8 +27,8 @@ jobs:
       uses: ./.github/actions/ghtagchk
       with:
         tag:        ${{ env.OWCOV_TAG }}
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
   scan-lnx:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -54,7 +54,7 @@ jobs:
         -o $env:OWCOV_TOOLS_ARCHIVE `
         "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
         -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
-        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - name: "Restore Coverity Tools"
       uses: ./.github/actions/tarload
@@ -62,7 +62,7 @@ jobs:
         fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
         gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
         format:     'gzip'
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - name: "Remove Coverity Tools Archive"
       run: rm -f $OWCOV_SRC_ARCHIVE
@@ -84,7 +84,7 @@ jobs:
         OWROOT:     ${{ github.workspace }}
         OWTOOLS:    GCC
         OWDOSBOX:   dosbox
-        OWDEBUG:    ${{ vars.OWDEBUG }}
+        OWDEBUG:    ${{ vars.DEBUG }}
         OWVERBOSE:  1
       shell: bash
     - name: Get Coverity output data path
@@ -97,14 +97,14 @@ jobs:
     - name: "Create Archive with Coverity output data"
       run: |
         if [ "${{ vars.TESTMODE }}" = "" ]; then
-          if [ "${{ vars.OWDEBUG }}" = "1" ]; then
+          if [ "${{ vars.DEBUG }}" = "1" ]; then
             tar -cvf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
           else
             tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
           fi
         fi
       shell: bash
-    - if: vars.OWDEBUG == 1 && vars.TESTMODE == ''
+    - if: vars.DEBUG == 1 && vars.TESTMODE == ''
       name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -128,7 +128,7 @@ jobs:
           --form version=${{ steps.last_commit.outputs.sha }} `
           --form description="Open Watcom V2 GitHub Actions CI build" `
           https://scan.coverity.com/builds
-          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+          if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
         }
       shell: pwsh
     - name: Check tag reference
@@ -136,7 +136,7 @@ jobs:
       uses: ./.github/actions/ghtagchk
       with:
         tag:     ${{ env.OWCOV_TAG }}
-        owdebug: ${{ vars.OWDEBUG }}
+        owdebug: ${{ vars.DEBUG }}
     - if: steps.check_tag.outputs.sha == ''
       name: Create new Coverity scan tag
       run: |
@@ -144,7 +144,7 @@ jobs:
           $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
           -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
           -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
-          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+          if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
         }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
@@ -154,7 +154,7 @@ jobs:
           $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
           -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
           -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
-          if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+          if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
         }
       shell: pwsh
 
@@ -183,7 +183,7 @@ jobs:
 #        -o $env:OWCOV_TOOLS_ARCHIVE `
 #        "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
 #        -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
-#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+#        if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - name: "Restore Coverity Tools"
 #      uses: ./.github/actions/tarload
@@ -191,7 +191,7 @@ jobs:
 #        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
 #        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
 #        format:     'gzip'
-#        owdebug:    ${{ vars.OWDEBUG }}
+#        owdebug:    ${{ vars.DEBUG }}
 #        testmode:   ${{ vars.TESTMODE }}
 #    - name: "Remove Coverity Tools Archive"
 #      run: rm -f $OWCOV_SRC_ARCHIVE
@@ -212,7 +212,7 @@ jobs:
 #        OWTOOLS:        VISUALC
 #        OWDOSBOX:       dosbox.exe
 #        OWDOSBOXPATH:   ci\nt386
-#        OWDEBUG:        ${{ vars.OWDEBUG }}
+#        OWDEBUG:        ${{ vars.DEBUG }}
 #        OWVERBOSE:      1
 #      shell: cmd
 #    - name: Get Coverity output data path
@@ -231,7 +231,7 @@ jobs:
 #        fullname:   ${{ steps.tarname.outputs.fullname }}
 #        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
 #        format:     'gzip'
-#        owdebug:    ${{ vars.OWDEBUG }}
+#        owdebug:    ${{ vars.DEBUG }}
 #    - name: "Upload Coverity output data Archive"
 #      run: >
 #        $response = ${{ steps.curlcmd.outputs.cov }}
@@ -249,14 +249,14 @@ jobs:
 #      uses: ./.github/actions/ghtagchk
 #      with:
 #        tag:     ${{ env.OWCOV_TAG }}
-#        owdebug: ${{ vars.OWDEBUG }}
+#        owdebug: ${{ vars.DEBUG }}
 #    - if: steps.check_tag.outputs.sha == ''
 #      name: Create new Coverity scan tag
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
 #        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
-#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+#        if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
 #      name: Update Coverity scan tag
@@ -264,5 +264,5 @@ jobs:
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
 #        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
-#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
+#        if( '${{ vars.DEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh

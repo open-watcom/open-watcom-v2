@@ -78,7 +78,7 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
-      TESTBOOT:      ${{ inputs.ow_version == '' && '1' || '' }}
+      OWTESTBOOT:    ${{ inputs.ow_version == '' && '1' || '' }}
     shell: bash
   - if: runner.os == 'Windows'
     name: Test Bootstrap OW
@@ -95,5 +95,5 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
-      TESTBOOT:      ${{ inputs.ow_version == '' && '1' || '' }}
+      OWTESTBOOT:    ${{ inputs.ow_version == '' && '1' || '' }}
     shell: cmd

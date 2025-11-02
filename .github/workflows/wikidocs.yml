@@ -59,7 +59,7 @@ jobs:
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
         noarchive:      '1'
-        owdebug:        ${{ vars.OWDEBUG }}
+        owdebug:        ${{ vars.DEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
     # run: git config --local --list
@@ -95,7 +95,7 @@ jobs:
         doc_suffix: "${{ matrix.doctype }} vs2022"
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         noarchive:  '1'
         testmode:   ${{ vars.TESTMODE }}
     # run: git config --local --list
@@ -148,9 +148,9 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.OWDELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacts
       uses: ./.github/actions/artfdelc
       with:
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}

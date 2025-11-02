@@ -35,7 +35,7 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
 
   build-lnx:
     name: Build
@@ -55,7 +55,7 @@ jobs:
         gitpath:    ${{ inputs.gitpath }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   tests-lnx:

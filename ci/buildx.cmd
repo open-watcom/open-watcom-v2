@@ -41,13 +41,13 @@ if "%OWBUILD_STAGE%" == "boot" (
     mkdir %OWROOT%\bld\wmake\%OWOBJDIR%
     cd %OWROOT%\bld\wmake\%OWOBJDIR%
     if "%OWTOOLS%" == "WATCOM" (
-        if "%TESTBOOT%" == "1" (
+        if "%OWTESTBOOT%" == "1" (
             wmake -m -f ..\wmake EXTRADEF=-DTESTBOOT
         ) else (
             wmake -m -f ..\wmake
         )
     ) else (
-        if "%TESTBOOT%" == "1" (
+        if "%OWTESTBOOT%" == "1" (
             nmake -f ..\nmake EXTRADEF=-DTESTBOOT
         ) else (
             nmake -f ..\nmake

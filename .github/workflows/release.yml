@@ -21,8 +21,8 @@ jobs:
       uses: ./.github/actions/ghtagchk
       with:
         tag:     'Current-build'
-        owdebug: ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        owdebug: ${{ vars.DEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
   Linux:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -129,7 +129,7 @@ jobs:
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   release:
     needs: Installers
@@ -145,8 +145,8 @@ jobs:
       id: rel_rel
       uses: ./.github/actions/release
       with:
-        owcurlopts: ${{ vars.OWCURLOPTS }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
@@ -184,8 +184,8 @@ jobs:
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
         mrelid:     ${{ needs.release.outputs.mrelid }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
   end-end:
     needs: Uploads
@@ -194,9 +194,9 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.OWDELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacs
       uses: ./.github/actions/artfdelc
       with:
-        owcurlopts: ${{ vars.OWCURLOPTS }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.CURLOPTS }}
+        owdebug:    ${{ vars.DEBUG }}

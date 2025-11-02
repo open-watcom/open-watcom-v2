@@ -40,7 +40,7 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
 
   build-nt:
     name: Build
@@ -64,7 +64,7 @@ jobs:
         gitpath:    ${{ inputs.gitpath }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   docsbuild:
@@ -106,7 +106,7 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.OWDEBUG }}
+        owdebug:    ${{ vars.DEBUG }}
         testmode:   ${{ vars.TESTMODE }}
 
   tests-nt:
