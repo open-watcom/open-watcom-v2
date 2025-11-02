@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Check tag reference
       id: check_tag
-      uses: "./.github/actions/ghtagchk"
+      uses: ./.github/actions/ghtagchk
       with:
         tag:     'Current-build'
         owdebug: ${{ vars.OWDEBUG }}
@@ -40,13 +40,14 @@ jobs:
           gitpath:  'rel'
           image:    'ubuntu-24.04-arm'
     name: Linux ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/rel-lnx.yml"
+    uses: ./.github/workflows/rel-lnx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    ${{ matrix.arch == 'x64' }}
   Windows:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -59,13 +60,14 @@ jobs:
           gitpath:  'rel'
           image:    'windows-2022'
     name: Windows ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/rel-nt.yml"
+    uses: ./.github/workflows/rel-nt.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    ${{ matrix.arch == 'x64' }}
   OSX:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -83,13 +85,14 @@ jobs:
           gitpath:  'rel armo64'
           image:    'macos-15'
     name: OSX ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/rel-osx.yml"
+    uses: ./.github/workflows/rel-osx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    false
   Installers:
     needs:
     - Linux
@@ -120,7 +123,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: ${{ matrix.title }}
-      uses: "./.github/actions/install"
+      uses: ./.github/actions/install
       with:
         target:     ${{ matrix.asset }}
         suffix_nt:  'vs2022'
@@ -140,7 +143,7 @@ jobs:
       uses: actions/checkout@v4
     - name: GitHub Release
       id: rel_rel
-      uses: "./.github/actions/release"
+      uses: ./.github/actions/release
       with:
         owcurlopts: ${{ vars.OWCURLOPTS }}
         owdebug:    ${{ vars.OWDEBUG }}
@@ -176,7 +179,7 @@ jobs:
     - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
       shell: bash
     - name: ${{ matrix.title }} Asset
-      uses: "./.github/actions/ghassets"
+      uses: ./.github/actions/ghassets
       with:
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
@@ -193,7 +196,7 @@ jobs:
       uses: actions/checkout@v4
     - if: vars.OWDELETEARTIFACTS == 1
       name: Call to delete Artifacs
-      uses: "./.github/actions/artfdelc"
+      uses: ./.github/actions/artfdelc
       with:
         owcurlopts: ${{ vars.OWCURLOPTS }}
         owdebug:    ${{ vars.OWDEBUG }}

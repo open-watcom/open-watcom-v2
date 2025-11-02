@@ -53,7 +53,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
-      uses: "./.github/actions/boot"
+      uses: ./.github/actions/boot
       with:
         args:           'vs2022'
         suffix:         'nt x64 vs2022'
@@ -84,9 +84,9 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Install DOSBOX
-      uses: "./.github/actions/dosboxin"
+      uses: ./.github/actions/dosboxin
     - name: Build ${{ matrix.title }}
-      uses: "./.github/actions/docbuild"
+      uses: ./.github/actions/docbuild
       with:
         args:       'vs2022'
         target:     ${{ matrix.doctype }}
@@ -150,7 +150,7 @@ jobs:
       uses: actions/checkout@v4
     - if: vars.OWDELETEARTIFACTS == 1
       name: Call to delete Artifacts
-      uses: "./.github/actions/artfdelc"
+      uses: ./.github/actions/artfdelc
       with:
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}

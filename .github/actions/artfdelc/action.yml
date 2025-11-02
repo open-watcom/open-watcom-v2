@@ -21,7 +21,7 @@ runs:
   steps:
   - name: Setup curl options
     id: curlcmd
-    uses: "./.github/actions/curlcmd"
+    uses: ./.github/actions/curlcmd
     with:
       owcurlopts: ${{ inputs.owcurlopts }}
   - name: Call to delete Artifacts

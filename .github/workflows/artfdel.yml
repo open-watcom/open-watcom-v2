@@ -10,7 +10,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Delete Artifacts
-      uses: "./.github/actions/artfdel"
+      uses: ./.github/actions/artfdel
       with:
         runid: ${{ github.event.client_payload.runid  }}
         exclude: ${{ github.event.client_payload.exclude }}

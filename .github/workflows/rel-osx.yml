@@ -18,6 +18,9 @@ on:
       image:
         required: true
         type: string
+      run_tests:
+        required: true
+        type: boolean
 jobs:
   boot-osx:
     name: Bootstrap
@@ -26,7 +29,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
-      uses: "./.github/actions/boot"
+      uses: ./.github/actions/boot
       with:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
@@ -41,9 +44,9 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Install DOSBOX
-      uses: "./.github/actions/dosboxin"
+      uses: ./.github/actions/dosboxin
     - name: Build
-      uses: "./.github/actions/build"
+      uses: ./.github/actions/build
       with:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
@@ -51,3 +54,11 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
+  tests-osx:
+    if: inputs.run_tests
+    needs: build-osx
+    name: Tests
+    uses: ./.github/workflows/tests.yml
+    with:
+      suffix:   ${{ inputs.suffix }}
+      image:    ${{ inputs.image }}

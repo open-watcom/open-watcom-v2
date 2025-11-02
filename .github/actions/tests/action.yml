@@ -24,7 +24,7 @@ runs:
   using: composite
   steps:
   - name: Load Artifact
-    uses: "./.github/actions/artfload"
+    uses: ./.github/actions/artfload
     with:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"

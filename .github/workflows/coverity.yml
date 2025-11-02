@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Check tag reference
       id: check_tag
-      uses: "./.github/actions/ghtagchk"
+      uses: ./.github/actions/ghtagchk
       with:
         tag:        ${{ env.OWCOV_TAG }}
         owdebug:    ${{ vars.OWDEBUG }}
@@ -42,10 +42,10 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Install DOSBOX
-      uses: "./.github/actions/dosboxin"
+      uses: ./.github/actions/dosboxin
     - name: Setup curl options
       id: curlcmd
-      uses: "./.github/actions/curlcmd"
+      uses: ./.github/actions/curlcmd
       with:
         owcurlopts: ${{ inputs.owcurlopts }}
     - name: "Download Coverity Tools"
@@ -57,7 +57,7 @@ jobs:
         if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - name: "Restore Coverity Tools"
-      uses: "./.github/actions/tarload"
+      uses: ./.github/actions/tarload
       with:
         fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
         gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
@@ -133,7 +133,7 @@ jobs:
       shell: pwsh
     - name: Check tag reference
       id: check_tag
-      uses: "./.github/actions/ghtagchk"
+      uses: ./.github/actions/ghtagchk
       with:
         tag:     ${{ env.OWCOV_TAG }}
         owdebug: ${{ vars.OWDEBUG }}
@@ -171,10 +171,10 @@ jobs:
 #    - name: checkout
 #      uses: actions/checkout@v4
 #    - name: Install DOSBOX
-#      uses: "./.github/actions/dosboxin"
+#      uses: ./.github/actions/dosboxin
 #    - name: Setup curl options
 #      id: curlcmd
-#      uses: "./.github/actions/curlcmd"
+#      uses: ./.github/actions/curlcmd
 #      with:
 #        owcurlopts: ${{ inputs.owcurlopts }}
 #    - name: "Download Coverity Tools"
@@ -186,7 +186,7 @@ jobs:
 #        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - name: "Restore Coverity Tools"
-#      uses: "./.github/actions/tarload"
+#      uses: ./.github/actions/tarload
 #      with:
 #        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
 #        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
@@ -226,7 +226,7 @@ jobs:
 #      run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
 #      shell: pwsh
 #    - name: "Archive Coverity output data"
-#      uses: "./.github/actions/tarsave"
+#      uses: ./.github/actions/tarsave
 #      with:
 #        fullname:   ${{ steps.tarname.outputs.fullname }}
 #        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
@@ -246,7 +246,7 @@ jobs:
 #      shell: pwsh
 #    - name: Check tag reference
 #      id: check_tag
-#      uses: "./.github/actions/ghtagchk"
+#      uses: ./.github/actions/ghtagchk
 #      with:
 #        tag:     ${{ env.OWCOV_TAG }}
 #        owdebug: ${{ vars.OWDEBUG }}

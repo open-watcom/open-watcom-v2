@@ -47,7 +47,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Test new OW bootstrap
-      uses: "./.github/actions/testboot"
+      uses: ./.github/actions/testboot
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
@@ -71,7 +71,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Test new OW bootstrap
-      uses: "./.github/actions/testboot"
+      uses: ./.github/actions/testboot
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
@@ -99,13 +99,14 @@ jobs:
           gitpath:  'rel'
           image:    'ubuntu-24.04-arm'
     name: Linux ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/cibldlnx.yml"
+    uses: ./.github/workflows/cibldlnx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    ${{ matrix.arch == 'x64' }}
   Windows:
     needs:
     - Windows-pre
@@ -118,13 +119,14 @@ jobs:
           gitpath:  'rel'
           image:    'windows-2025'
     name: Windows ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/cibldnt.yml"
+    uses: ./.github/workflows/cibldnt.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    ${{ matrix.arch == 'x64' }}
   OSX:
     needs: start-start
     strategy:
@@ -141,13 +143,14 @@ jobs:
           gitpath:  'rel armo64'
           image:    'macos-15'
     name: OSX ${{ matrix.arch }} ${{ matrix.args }}
-    uses: "./.github/workflows/cibldosx.yml"
+    uses: ./.github/workflows/cibldosx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      run_tests:    false
   snapshot-both:
     needs:
     - Linux
@@ -159,7 +162,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: Load all release files
-      uses: "./.github/actions/relload"
+      uses: ./.github/actions/relload
       with:
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
@@ -168,7 +171,7 @@ jobs:
         testmode:   ${{ vars.TESTMODE }}
     - name: Create OW snapshot
       id: owsnapshot
-      uses: "./.github/actions/snapshot"
+      uses: ./.github/actions/snapshot
       with:
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
@@ -183,7 +186,7 @@ jobs:
         overwrite:      true
     - if: github.event_name != 'pull_request'
       name: Upload Last CI Build
-      uses: "./.github/actions/lastbld"
+      uses: ./.github/actions/lastbld
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
@@ -191,7 +194,7 @@ jobs:
         testmode:   ${{ vars.TESTMODE }}
     - if: vars.OWDELETEARTIFACTS == 1
       name: Call to delete Artifacs ${{ github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)' }}
-      uses: "./.github/actions/artfdelc"
+      uses: ./.github/actions/artfdelc
       with:
         exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' || '' }}
         owdebug:    ${{ vars.OWDEBUG }}

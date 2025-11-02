@@ -36,7 +36,7 @@ runs:
       tag:     ${{ inputs.ow_tag }}
   - if: inputs.ow_version == ''
     name: Load Artifact
-    uses: "./.github/actions/artfload"
+    uses: ./.github/actions/artfload
     with:
       gitpath:    'rel'
       artifact:   "rel ${{ inputs.suffix }}"
