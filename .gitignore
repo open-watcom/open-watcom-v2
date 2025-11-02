@@ -97,6 +97,7 @@
 *ytab.*
 
 /*/
+!/.github/
 !/bld/
 !/build/
 !/ci/
