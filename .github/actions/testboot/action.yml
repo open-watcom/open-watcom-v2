@@ -15,16 +15,6 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -40,8 +30,6 @@ runs:
     with:
       gitpath:    'rel'
       artifact:   "rel ${{ inputs.suffix }}"
-      owdebug:    ${{ inputs.owdebug }}
-      testmode:   ${{ inputs.testmode }}
   - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'X64'
     name: Setup new OW
     run: |
@@ -66,34 +54,32 @@ runs:
   - if: runner.os == 'Linux'
     name: Test Bootstrap OW
     run: |
-      if [ "${{ inputs.owdebug }}" = "1" ]; then
+      if [ '${{ env.OWDEBUG }}' = '1' ]; then
         env | sort
       fi
-      if [ "${{ inputs.testmode }}" = "" ]; then
+      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
         ci/buildx.sh
       fi
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
       OWTESTBOOT:    ${{ inputs.ow_version == '' && '1' || '' }}
     shell: bash
   - if: runner.os == 'Windows'
     name: Test Bootstrap OW
     run: |
-      if "${{ inputs.owdebug }}" == "1" (
+      if "${{ env.OWDEBUG }}" == "1" (
         set
       )
-      if "${{ inputs.testmode }}" == "" (
+      if not "${{ env.OWTESTMODE }}" == "1" (
         ci\buildx.cmd
       )
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
       OWTESTBOOT:    ${{ inputs.ow_version == '' && '1' || '' }}
     shell: cmd

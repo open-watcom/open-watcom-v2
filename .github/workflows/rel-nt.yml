@@ -21,6 +21,12 @@ on:
       run_tests:
         required: true
         type: boolean
+
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   boot-nt:
     name: Bootstrap
@@ -38,7 +44,6 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.DEBUG }}
   build-nt:
     needs: boot-nt
     name: Build
@@ -60,8 +65,6 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         gitpath:    ${{ inputs.gitpath }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   docsbuild:
     needs: boot-nt
     name: Documentation
@@ -100,8 +103,6 @@ jobs:
         target:     ${{ matrix.doctype }}
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   tests-nt:
     if: inputs.run_tests
     needs: build-nt

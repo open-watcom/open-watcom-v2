@@ -6,28 +6,16 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  owcurlopts:
-    description: 'additional curl options for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
   - name: Setup curl options
     id: curlcmd
     uses: ./.github/actions/curlcmd
-    with:
-      owcurlopts: ${{ inputs.owcurlopts }}
   - name: Call to delete Artifacts
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
       -d '{"event_type":"delete_artifacts","client_payload":{"runid":"${{ github.run_id }}"}}'
-      if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
     shell: pwsh

@@ -21,9 +21,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:
@@ -51,8 +56,6 @@ jobs:
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   Linux-pre:
     needs: start-start
     strategy:
@@ -75,8 +78,6 @@ jobs:
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   Linux:
     needs:
     - Linux-pre
@@ -167,16 +168,12 @@ jobs:
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
     - name: Create OW snapshot
       id: owsnapshot
       uses: ./.github/actions/snapshot
       with:
         gitpath:    'rel'
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
-    - if: github.event_name == 'pull_request' && vars.TESTMODE == ''
+    - if: github.event_name == 'pull_request' && env.OWTESTMODE != '1'
       name: Upload OW snapshot (Pull Request)
       uses: actions/upload-artifact@v4
       with:
@@ -189,13 +186,8 @@ jobs:
       uses: ./.github/actions/lastbld
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
-        owdebug:    ${{ vars.DEBUG }}
-        owcurlopts: ${{ vars.CURLOPTS }}
-        testmode:   ${{ vars.TESTMODE }}
     - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacs ${{ github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)' }}
       uses: ./.github/actions/artfdelc
       with:
         exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' || '' }}
-        owdebug:    ${{ vars.DEBUG }}
-        owcurlopts: ${{ vars.CURLOPTS }}

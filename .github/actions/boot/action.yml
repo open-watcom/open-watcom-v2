@@ -20,34 +20,33 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
   - if: runner.os == 'Linux' || runner.os == 'macOS'
     name: Bootstrap
     run: |
+      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+        env | sort
+      fi
       ci/buildx.sh ${{ inputs.args }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: runner.os == 'Windows'
     name: Bootstrap
     run: |
+      if "${{ env.OWDEBUG }}" == "1" (
+        set
+      )
       ci\buildx.cmd ${{ inputs.args }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
   - uses: "./.github/actions/artfsave"
@@ -55,10 +54,8 @@ runs:
       gitpath:      'bld watcom binbuild'
       artifact:     "bld watcom ${{ inputs.suffix }}"
       noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
     with:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
       noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}

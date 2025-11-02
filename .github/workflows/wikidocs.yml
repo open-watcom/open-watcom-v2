@@ -33,9 +33,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:
@@ -59,7 +64,6 @@ jobs:
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
         noarchive:      '1'
-        owdebug:        ${{ vars.DEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
     # run: git config --local --list
@@ -95,9 +99,7 @@ jobs:
         doc_suffix: "${{ matrix.doctype }} vs2022"
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
-        owdebug:    ${{ vars.DEBUG }}
         noarchive:  '1'
-        testmode:   ${{ vars.TESTMODE }}
     # run: git config --local --list
   wiki-update:
     name: Update Wiki
@@ -120,13 +122,13 @@ jobs:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
       shell: cmd
-    - if: vars.TESTMODE == ''
+    - if: env.OWTESTMODE != '1'
       name: Download Artifact html
       uses: actions/download-artifact@v4
       with:
         name: 'rel-wikihtml-vs2022'
         path: docs
-    - if: vars.TESTMODE == ''
+    - if: env.OWTESTMODE != '1'
       name: Download Artifact pdf
       uses: actions/download-artifact@v4
       with:
@@ -134,7 +136,7 @@ jobs:
         path: docs
     - name: Wiki Repo Update
       run: |
-        if "${{ vars.TESTMODE }}" == "" (
+        if not "${{ env.OWTESTMODE }}" == "1" (
           git add -v -f .
           git commit -v -m "GitHub Workflow build"
           git push -v
@@ -151,6 +153,3 @@ jobs:
     - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacts
       uses: ./.github/actions/artfdelc
-      with:
-        owdebug:    ${{ vars.DEBUG }}
-        owcurlopts: ${{ vars.CURLOPTS }}

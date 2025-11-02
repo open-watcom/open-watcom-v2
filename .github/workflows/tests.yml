@@ -9,6 +9,12 @@ on:
       image:
         required: true
         type: string
+
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   tests-x:
     strategy:
@@ -59,5 +65,3 @@ jobs:
       uses: ./.github/actions/testboot
       with:
         suffix:     ${{ inputs.suffix }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}

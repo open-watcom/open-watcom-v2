@@ -1,21 +1,5 @@
 name: release
 description: 'Create new day and month Release on GitHub'
-inputs:
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  owcurlopts:
-    description: 'additional curl options for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 outputs:
   drelid:
     description: 'day release ID'
@@ -29,8 +13,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owcurlopts: ${{ inputs.owcurlopts }}
 ##############################################
 # create daily release, delete existing one
 ##############################################
@@ -44,9 +26,6 @@ runs:
     uses: "./.github/actions/ghreldel"
     with:
       tag:     ${{ steps.dreldata.outputs.tag }}
-      owdebug: ${{ inputs.owdebug }}
-      owcurlopts: ${{ inputs.owcurlopts }}
-      testmode: ${{ inputs.testmode }}
   - name: 'Create daily Release'
     id: newdrel
     uses: "./.github/actions/ghrelcre"
@@ -55,9 +34,6 @@ runs:
       title:   ${{ steps.dreldata.outputs.tag }}
       tag:     ${{ steps.dreldata.outputs.tag }}
       tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
-      owdebug: ${{ inputs.owdebug }}
-      owcurlopts: ${{ inputs.owcurlopts }}
-      testmode: ${{ inputs.testmode }}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
@@ -76,7 +52,7 @@ runs:
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{ steps.mreldata.outputs.mtag }}"
-      if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
       $sha = $response | jq -r .[].object.sha
       if( "$sha" -eq 'null' ) { $sha = '' }
       "sha=$sha" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
@@ -90,9 +66,6 @@ runs:
       title:   ${{ steps.mreldata.outputs.title }}
       tag:     ${{ steps.mreldata.outputs.tag }}
       tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}
-      owdebug: ${{ inputs.owdebug }}
-      owcurlopts: ${{ inputs.owcurlopts }}
-      testmode: ${{ inputs.testmode }}
   - if: steps.oldmrel.outputs.sha == ''
     id: mdata
     run: echo "tag=${{ steps.mreldata.outputs.tag }}" >> ${{ github.output }}

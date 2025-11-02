@@ -38,16 +38,6 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -56,10 +46,12 @@ runs:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
       noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
     run: |
-      if "${{ inputs.testmode }}" == "" (
+      if "${{ env.OWDEBUG }}" == "1" (
+        set
+      )
+      if not "${{ env.OWTESTMODE }}" == "1" (
         ci\buildx.cmd ${{ inputs.args }}
       )
     env:
@@ -69,7 +61,6 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox.exe'
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
-      OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
   - uses: "./.github/actions/artfsave"
@@ -77,5 +68,3 @@ runs:
       gitpath:      ${{ inputs.gitpath }}
       artifact:     "rel ${{ inputs.doc_suffix }}"
       noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
-      testmode:     ${{ inputs.testmode }}

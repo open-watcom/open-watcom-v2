@@ -5,11 +5,6 @@ inputs:
     description: 'artifact name suffix'
     required: true
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
   path:
     description: 'path where tests are located'
     required: false
@@ -28,7 +23,6 @@ runs:
     with:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
-      owdebug:  ${{ inputs.owdebug }}
   - if: runner.os == 'Linux'
     name: try tests
     run: |

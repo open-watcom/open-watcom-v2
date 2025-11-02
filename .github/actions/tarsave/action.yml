@@ -16,16 +16,6 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -39,29 +29,29 @@ runs:
   - name: Setup tar options
     id: tarcmd
     run: >
-      if( '${{ inputs.owdebug }}' -eq '1' ) {
+      if( '${{ env.OWDEBUG }}' -eq '1' ) {
         'opts=-cvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
         'opts=-cf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh      
-  - if: runner.os == 'Linux' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: runner.os == 'Linux' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: runner.os == 'macOS' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: runner.os == 'macOS' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: runner.os == 'Windows' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File (Windows)
     run: |
       7z a "${{ inputs.fullname }}" "${{ steps.srcpath.outputs.path }}"
@@ -69,7 +59,7 @@ runs:
       7z rn "${{ inputs.fullname }}" @lst.txt
       del lst.txt
     shell: cmd
-  - if: runner.os == 'Windows' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File (Windows)
     run: |
       tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .

@@ -16,16 +16,6 @@ inputs:
     required: false
     default: 10
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 outputs:
   fullname:
     description: 'snapshot file full name'
@@ -53,5 +43,3 @@ runs:
     with:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
-      owdebug:  ${{ inputs.owdebug }}
-      testmode: ${{ inputs.testmode }}

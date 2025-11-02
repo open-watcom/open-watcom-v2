@@ -6,9 +6,14 @@ on:
     - cron:  '30 0 * * *'
   workflow_dispatch:
 
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   check_run:
-    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
     name: Check if to run
     runs-on: ubuntu-latest
     outputs:
@@ -21,8 +26,6 @@ jobs:
       uses: ./.github/actions/ghtagchk
       with:
         tag:     'Current-build'
-        owdebug: ${{ vars.DEBUG }}
-        owcurlopts: ${{ vars.CURLOPTS }}
   Linux:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -129,8 +132,6 @@ jobs:
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   release:
     needs: Installers
     name: "Create GitHub Release"
@@ -144,10 +145,6 @@ jobs:
     - name: GitHub Release
       id: rel_rel
       uses: ./.github/actions/release
-      with:
-        owcurlopts: ${{ vars.CURLOPTS }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
   Uploads:
@@ -184,9 +181,6 @@ jobs:
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
         mrelid:     ${{ needs.release.outputs.mrelid }}
-        owcurlopts: ${{ vars.CURLOPTS }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   end-end:
     needs: Uploads
     name: Call to delete Artifacts
@@ -197,6 +191,3 @@ jobs:
     - if: vars.DELETEARTIFACTS == 1
       name: Call to delete Artifacs
       uses: ./.github/actions/artfdelc
-      with:
-        owcurlopts: ${{ vars.CURLOPTS }}
-        owdebug:    ${{ vars.DEBUG }}

@@ -18,16 +18,6 @@ inputs:
     description: 'artifact name suffix (for OSX)'
     required: true
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -35,47 +25,40 @@ runs:
     with:
       gitpath:      'build binbuild'
       artifact:     'build lnx x64 ${{inputs.suffix_lnx}}'
-      owdebug:      ${{inputs.owdebug}}
   - uses: "./.github/actions/artfload"
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui nt x64 ${{inputs.suffix_nt}}'
-      owdebug:      ${{inputs.owdebug}}
-      testmode:     ${{inputs.testmode}}
   - uses: "./.github/actions/artfload"
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
-      owdebug:      ${{inputs.owdebug}}
-      testmode:     ${{inputs.testmode}}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
       suffix_nt:    ${{inputs.suffix_nt}}
       suffix_lnx:   ${{inputs.suffix_lnx}}
       suffix_osx:   ${{inputs.suffix_osx}}
-      owdebug:      ${{inputs.owdebug}}
-      testmode:     ${{inputs.testmode}}
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
     id: owsnapshot
     uses: "./.github/actions/snapshot"
     with:
       gitpath:      'rel'
-      owdebug:      ${{inputs.owdebug}}
-      testmode:     ${{inputs.testmode}}
   # run build script
   - if: inputs.target != 'snapshot'
     name: Build Installers
     run: |
-      if [ "${{ inputs.testmode }}" = "" ]; then
+      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+        env | sort
+      fi
+      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
         ci/buildx.sh gcc
       fi
     env:
       OWBUILD_STAGE: 'inst'
       OWTOOLS:       'GCC'
       OWROOT:        ${{github.workspace}}
-      OWDEBUG:       ${{inputs.owdebug}}
       OWINSTTARGET:  ${{inputs.target}}
       OWVERBOSE:     1
     shell: bash
@@ -85,5 +68,3 @@ runs:
     with:
       gitpath:      'distrib ow bin'
       artifact:     "install ${{inputs.target}}"
-      owdebug:      ${{inputs.owdebug}}
-      testmode:     ${{inputs.testmode}}

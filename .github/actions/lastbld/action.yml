@@ -6,29 +6,12 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  owcurlopts:
-    description: 'additional curl options for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owcurlopts: ${{ inputs.owcurlopts }}
   - id: cireldata
     run: |
       echo "tag=Last-CI-build" >> ${{ github.output }}
@@ -38,9 +21,6 @@ runs:
     uses: "./.github/actions/ghreldel"
     with:
       tag:     ${{ steps.cireldata.outputs.tag }}
-      owdebug: ${{ inputs.owdebug }}
-      owcurlopts: ${{ inputs.owcurlopts }}
-      testmode:   ${{ inputs.testmode }}
   - name: Create new Release
     uses: "./.github/actions/ghrelcre"
     id: cinewrel
@@ -49,16 +29,13 @@ runs:
       title:   ${{ steps.cireldata.outputs.tag }}
       tag:     ${{ steps.cireldata.outputs.tag }}
       tagmsg:  ${{ steps.cireldata.outputs.timestamp }}
-      owdebug: ${{ inputs.owdebug }}
-      owcurlopts: ${{ inputs.owcurlopts }}
-      testmode:   ${{ inputs.testmode }}
   - run: |
-      if( '${{ inputs.testmode }}' -eq '' ) {
+      if( '${{ env.OWTESTMODE }}' -ne '1' ) {
         $name = Split-Path -Path ${{ inputs.fullname }} -Leaf
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.cinewrel.outputs.id }}/assets?name=$($name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@${{ inputs.fullname }}
-        if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
       }
     shell: pwsh

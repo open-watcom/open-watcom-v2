@@ -21,6 +21,12 @@ on:
       run_tests:
         required: true
         type: boolean
+
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   boot-osx:
     name: Bootstrap
@@ -34,7 +40,6 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.DEBUG }}
   build-osx:
     name: Build
     needs: boot-osx
@@ -52,8 +57,6 @@ jobs:
         gitpath:    ${{ inputs.gitpath }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
-        owdebug:    ${{ vars.DEBUG }}
-        testmode:   ${{ vars.TESTMODE }}
   tests-osx:
     if: inputs.run_tests
     needs: build-osx

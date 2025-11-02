@@ -1,6 +1,11 @@
 name: Delete Artifacts (Workflow run)
 on: repository_dispatch
 
+env:
+  OWDEBUG:    "${{ vars.DEBUG }}"
+  OWTESTMODE: "${{ vars.TESTMODE }}"
+  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+
 jobs:
   delete-artifacts:
     if: github.event.action == 'delete_artifacts'
@@ -14,5 +19,3 @@ jobs:
       with:
         runid: ${{ github.event.client_payload.runid  }}
         exclude: ${{ github.event.client_payload.exclude }}
-        owdebug: ${{ vars.DEBUG }}
-        owcurlopts: ${{ vars.CURLOPTS }}

@@ -16,21 +16,6 @@ inputs:
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  owcurlopts:
-    description: 'additional curl options for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
-  testmode:
-    description: 'testing mode (no build)'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -38,30 +23,26 @@ runs:
     with:
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
-      owdebug:  ${{ inputs.owdebug }}
-      testmode: ${{ inputs.testmode }}
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owcurlopts: ${{ inputs.owcurlopts }}
-  - if: inputs.testmode == ''
+  - if: env.OWTESTMODE != '1'
     run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.drelid }}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)
-        if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
       }
     shell: pwsh
-  - if: inputs.mrelid != '' && inputs.testmode == ''
+  - if: inputs.mrelid != '' && env.OWTESTMODE != '1'
     run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.mrelid }}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)
-        if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
       }
     shell: pwsh
