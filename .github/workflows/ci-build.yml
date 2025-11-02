@@ -182,7 +182,7 @@ jobs:
         retention-days: 14
         overwrite:      true
     - if: github.event_name != 'pull_request'
-      name: Upload Last CI Build
+      name: Upload OW (Last CI Build)
       uses: ./.github/actions/lastbld
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
