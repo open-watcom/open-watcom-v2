@@ -56,7 +56,6 @@ jobs:
         testmode:   ${{ vars.TESTMODE }}
 
   tests-lnx:
-    if: ${{ runner.arch }} == 'X64'
     needs: build-lnx
     name: Tests
     uses: ./.github/workflows/tests.yml

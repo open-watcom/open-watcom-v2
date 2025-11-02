@@ -106,7 +106,6 @@ jobs:
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
     - Windows-pre
@@ -126,7 +125,6 @@ jobs:
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   OSX:
     needs: start-start
     strategy:
@@ -150,7 +148,6 @@ jobs:
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
   snapshot-both:
     needs:
     - Linux

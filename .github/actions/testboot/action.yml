@@ -35,34 +35,35 @@ runs:
       version: ${{ inputs.ow_version }}
       tag:     ${{ inputs.ow_tag }}
   - if: inputs.ow_version == ''
-      name: Load Artifact
-      uses: "./.github/actions/artfload"
-      with:
-        gitpath:    'rel'
-        artifact:   "rel ${{ inputs.suffix }}"
-        owdebug:    ${{ inputs.owdebug }}
-        testmode:   ${{ inputs.testmode }}
-  - if: inputs.ow_version == '' && ${{ runner.os }} == 'Linux' && ${{ runner.arch }} == 'X64'
+    name: Load Artifact
+    uses: "./.github/actions/artfload"
+    with:
+      gitpath:    'rel'
+      artifact:   "rel ${{ inputs.suffix }}"
+      owdebug:    ${{ inputs.owdebug }}
+      testmode:   ${{ inputs.testmode }}
+  - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'X64'
     name: Setup new OW
     run: |
       echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
       echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
       echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
     shell: bash
-  - if: inputs.ow_version == '' && ${{ runner.os }} == 'Linux' && ${{ runner.arch }} == 'ARM64'
+  - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'ARM64'
     name: Setup new OW
+    run: |
       echo "${{github.workspace}}/rel/arm64" >> "$GITHUB_PATH"
       echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
       echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
     shell: bash
-  - if: inputs.ow_version == '' && ${{ runner.os }} == 'Windows'
+  - if: inputs.ow_version == '' && runner.os == 'Windows'
     name: Setup new OW
     run: |
       echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
       echo WATCOM=${{github.workspace}}\rel>> "%GITHUB_ENV%"
       echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
     shell: cmd
-  - if: ${{ runner.os }} == 'Linux'
+  - if: runner.os == 'Linux'
     name: Test Bootstrap OW
     run: |
       if [ "${{ inputs.owdebug }}" = "1" ]; then
@@ -79,7 +80,7 @@ runs:
       OWVERBOSE:     1
       TESTBOOT:      ${{ inputs.ow_version == '' && '1' || '' }}
     shell: bash
-  - if: ${{ runner.os }} == 'Windows'
+  - if: runner.os == 'Windows'
     name: Test Bootstrap OW
     run: |
       if "${{ inputs.owdebug }}" == "1" (

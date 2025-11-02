@@ -48,32 +48,32 @@ runs:
   - name: Create destination folder
     run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }} > $null
     shell: pwsh
-  - if: ${{ runner.os }} == 'Linux' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact Linux
     run: |
       tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: ${{ runner.os }} == 'Linux' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Linux' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact Linux
     run: |
       tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: ${{ runner.os }} == 'macOS' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact OSX
     run: |
       gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: ${{ runner.os }} == 'macOS' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'macOS' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact OSX
     run: |
       gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: ${{ runner.os }} == 'Windows' && inputs.format == 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format == 'gzip' && inputs.testmode == ''
     name: Restore Artifact (Windows)
     run: |
       7z x -aoa "${{ inputs.fullname }}" -o${{ steps.dstpath.outputs.path }}
     shell: cmd
-  - if: ${{ runner.os }} == 'Windows' && inputs.format != 'gzip' && inputs.testmode == ''
+  - if: runner.os == 'Windows' && inputs.format != 'gzip' && inputs.testmode == ''
     name: Restore Artifact (Windows)
     run: |
       7z x -txz "${{ inputs.fullname }}" -o${{ runner.temp }}
