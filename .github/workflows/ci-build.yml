@@ -35,11 +35,11 @@ jobs:
       matrix:
         include:
         - name:  '1.9'
-          id:    '1.9'
+          verid: '1.9'
           image: 'windows-2025'
-        - name: '2.0 (2023)'
-          id:   '2.0'
-          tag:  '2023-01-01-Build'
+        - name:  '2.0 (2023)'
+          verid: '2.0'
+          tag:   '2023-01-01-Build'
           image: 'windows-2025'
     name: Bootstrap Test OW ${{ matrix.name }} Windows
     runs-on: ${{ matrix.image }}
@@ -49,7 +49,7 @@ jobs:
     - name: Test new OW bootstrap
       uses: "./.github/actions/testboot"
       with:
-        ow_version: ${{ matrix.id }}
+        ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
@@ -59,10 +59,10 @@ jobs:
       matrix:
         include:
         - name:  '1.9'
-          id:    '1.9'
+          verid: '1.9'
           image: 'ubuntu-latest'
         - name:  '2.0 (2023)'
-          id:    '2.0'
+          verid: '2.0'
           tag:   '2023-01-01-Build'
           image: 'ubuntu-latest'
     name: Bootstrap Test OW ${{ matrix.name }} Linux
@@ -73,7 +73,7 @@ jobs:
     - name: Test new OW bootstrap
       uses: "./.github/actions/testboot"
       with:
-        ow_version: ${{ matrix.id }}
+        ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
         testmode:   ${{ vars.TESTMODE }}
@@ -85,19 +85,19 @@ jobs:
         include:
         - owtools:  'GCC'
           arch:     'x64'
-          image:    'ubuntu-latest'
           args:     'gcc'
           gitpath:  'rel'
+          image:    'ubuntu-latest'
         - owtools:  'CLANG'
           arch:     'x64'
-          image:    'ubuntu-latest'
           args:     'clang'
           gitpath:  'rel'
+          image:    'ubuntu-latest'
         - owtools:  'GCC'
           arch:     'a64'
-          image:    'ubuntu-24.04-arm'
           args:     'gcc'
           gitpath:  'rel'
+          image:    'ubuntu-24.04-arm'
     name: Linux ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
@@ -114,9 +114,9 @@ jobs:
         include:
         - owtools:  'VISUALC'
           arch:     'x64'
-          image:    'windows-2025'
           args:     'vs2022'
           gitpath:  'rel'
+          image:    'windows-2025'
     name: Windows ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
@@ -132,14 +132,14 @@ jobs:
         include:
         - owtools:  'CLANG'
           arch:     'x64'
-          image:    'macos-15-intel'
           args:     'clang'
           gitpath:  'rel bino64'
+          image:    'macos-15-intel'
         - owtools:  'CLANG'
           arch:     'a64'
-          image:    'macos-15'
           args:     'clang'
           gitpath:  'rel armo64'
+          image:    'macos-15'
     name: OSX ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/cibldosx.yml"
     with:

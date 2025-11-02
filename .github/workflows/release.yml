@@ -31,14 +31,14 @@ jobs:
         include:
         - owtools:  'GCC'
           arch:     'x64'
-          image:    'ubuntu-22.04'
           args:     'gcc'
           gitpath:  'rel'
+          image:    'ubuntu-22.04'
         - owtools:  'GCC'
           arch:     'a64'
-          image:    'ubuntu-24.04-arm'
           args:     'gcc'
           gitpath:  'rel'
+          image:    'ubuntu-24.04-arm'
     name: Linux ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-lnx.yml"
     with:
@@ -55,9 +55,9 @@ jobs:
         include:
         - owtools:  'VISUALC'
           arch:     'x64'
-          image:    'windows-2022'
           args:     'vs2022'
           gitpath:  'rel'
+          image:    'windows-2022'
     name: Windows ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-nt.yml"
     with:
@@ -74,14 +74,14 @@ jobs:
         include:
         - owtools:  'CLANG'
           arch:     'x64'
-          image:    'macos-15-intel'
           args:     'clang'
           gitpath:  'rel bino64'
+          image:    'macos-15-intel'
         - owtools:  'CLANG'
           arch:     'a64'
-          image:    'macos-15'
           args:     'clang'
           gitpath:  'rel armo64'
+          image:    'macos-15'
     name: OSX ${{ matrix.arch }} ${{ matrix.args }}
     uses: "./.github/workflows/rel-osx.yml"
     with:
