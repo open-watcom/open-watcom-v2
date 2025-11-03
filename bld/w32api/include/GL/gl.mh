@@ -866,7 +866,7 @@ WINGDIAPI void APIENTRY         glGetMaterialiv( GLenum, GLenum, GLint * );
 WINGDIAPI void APIENTRY         glGetPixelMapfv( GLenum, GLfloat * );
 WINGDIAPI void APIENTRY         glGetPixelMapuiv( GLenum, GLuint * );
 WINGDIAPI void APIENTRY         glGetPixelMapusv( GLenum, GLushort * );
-WINGDIAPI void APIENTRY         glGetPointerv( GLenum, GLvoid * );
+WINGDIAPI void APIENTRY         glGetPointerv( GLenum, GLvoid ** );
 WINGDIAPI void APIENTRY         glGetPolygonStipple( GLubyte * );
 WINGDIAPI const GLubyte * APIENTRY  glGetString( GLenum );
 WINGDIAPI void APIENTRY         glGetTexEnvfv( GLenum, GLenum, GLfloat * );
