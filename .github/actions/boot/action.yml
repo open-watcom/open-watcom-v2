@@ -16,7 +16,7 @@ inputs:
     default: ''
     type: string
   usearchive:
-    description: 'not use tar archive for artifacts'
+    description: 'use tar archive for artifacts'
     required: false
     default: ''
     type: string
@@ -51,11 +51,11 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      gitpath:      'bld watcom binbuild'
-      artifact:     "bld watcom ${{ inputs.suffix }}"
-      usearchive:   ${{ inputs.usearchive }}
+      gitpath:       'bld watcom binbuild'
+      artifact:      "bld watcom ${{ inputs.suffix }}"
+      usearchive:    ${{ inputs.usearchive }}
   - uses: "./.github/actions/artfsave"
     with:
-      gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.suffix }}"
-      usearchive:   ${{ inputs.usearchive }}
+      gitpath:       'build binbuild'
+      artifact:      "build ${{ inputs.suffix }}"
+      usearchive:    ${{ inputs.usearchive }}

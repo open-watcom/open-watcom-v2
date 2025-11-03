@@ -34,7 +34,7 @@ inputs:
     default: ''
     type: string
   usearchive:
-    description: 'not use tar archive for artifacts'
+    description: 'use tar archive for artifacts'
     required: false
     default: ''
     type: string
@@ -45,7 +45,7 @@ runs:
     with:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
-      usearchive:    ${{ inputs.usearchive }}
+      usearchive:   ${{ inputs.usearchive }}
   - name: Documentation Build
     run: |
       if "${{ env.OWDEBUG }}" == "1" (
@@ -65,6 +65,6 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      gitpath:      ${{ inputs.gitpath }}
-      artifact:     "rel ${{ inputs.doc_suffix }}"
+      gitpath:       ${{ inputs.gitpath }}
+      artifact:      "rel ${{ inputs.doc_suffix }}"
       usearchive:    ${{ inputs.usearchive }}

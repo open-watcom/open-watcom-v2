@@ -12,7 +12,7 @@ inputs:
     default: ''
     type: string
   usearchive:
-    description: 'not use tar archive for artifact'
+    description: 'use tar archive for artifact'
     required: false
     default: ''
     type: string
