@@ -23,6 +23,7 @@ runs:
     with:
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
+      usearchive:  '1'
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"

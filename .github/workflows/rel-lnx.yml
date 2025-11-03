@@ -40,6 +40,7 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
+        usearchive: '1'
   build-lnx:
     needs: boot-lnx
     name: Build

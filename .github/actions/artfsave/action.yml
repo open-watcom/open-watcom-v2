@@ -11,7 +11,7 @@ inputs:
     required: false
     default: ''
     type: string
-  noarchive:
+  usearchive:
     description: 'not use tar archive for artifact'
     required: false
     default: ''
@@ -31,14 +31,14 @@ runs:
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.noarchive == ''
+  - if: inputs.usearchive == '1'
     id: tarname
     run: >
       Join-Path ${{ github.workspace }} owartifact.tar.xz
       | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.noarchive == ''
+  - if: inputs.usearchive == '1'
     uses: "./.github/actions/tarsave"
     with:
       gitpath:  ${{ inputs.gitpath }}
@@ -46,7 +46,7 @@ runs:
   - name: Get source
     id: srcpath
     run: |
-      if( '${{ inputs.noarchive }}' -eq '' ) {
+      if( '${{ inputs.usearchive }}' -eq '1' ) {
         "${{ steps.tarname.outputs.fullname }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
         Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
@@ -60,7 +60,7 @@ runs:
       path:             ${{ steps.srcpath.outputs.path }}
       retention-days:   ${{ inputs.retention_days }}
       overwrite:        true
-  - if: inputs.noarchive == ''
+  - if: inputs.usearchive == '1'
     name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash

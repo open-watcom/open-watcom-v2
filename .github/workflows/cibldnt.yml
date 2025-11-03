@@ -45,6 +45,7 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
+        usearchive: '1'
 
   build-nt:
     name: Build
@@ -108,6 +109,7 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
+        usearchive: '1'
 
   tests-nt:
     if: inputs.run_tests

@@ -23,6 +23,7 @@ runs:
     with:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
+      usearchive:  '1'
   - if: runner.os == 'Linux'
     name: try tests
     run: |

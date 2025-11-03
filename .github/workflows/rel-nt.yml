@@ -44,6 +44,7 @@ jobs:
         args:       ${{ inputs.args }}
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
+        usearchive: '1'
   build-nt:
     needs: boot-nt
     name: Build
@@ -103,6 +104,7 @@ jobs:
         target:     ${{ matrix.doctype }}
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
+        usearchive: '1'
   tests-nt:
     if: inputs.run_tests
     needs: build-nt

@@ -15,7 +15,7 @@ inputs:
     required: false
     default: ''
     type: string
-  noarchive:
+  usearchive:
     description: 'not use tar archive for artifacts'
     required: false
     default: ''
@@ -53,9 +53,9 @@ runs:
     with:
       gitpath:      'bld watcom binbuild'
       artifact:     "bld watcom ${{ inputs.suffix }}"
-      noarchive:    ${{ inputs.noarchive }}
+      usearchive:   ${{ inputs.usearchive }}
   - uses: "./.github/actions/artfsave"
     with:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
-      noarchive:    ${{ inputs.noarchive }}
+      usearchive:   ${{ inputs.usearchive }}
