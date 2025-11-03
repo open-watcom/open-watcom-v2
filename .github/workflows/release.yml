@@ -1,5 +1,5 @@
-name: Release-Build
-run-name: Release build (daily and monthly)
+name: Release
+run-name: Release Build (daily and monthly)
 
 on:
   schedule:
@@ -22,7 +22,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Check tag reference
+    - if: ${{ env.OWTESTMODE }} != '1'
+      name: Check tag reference
       id: check_tag
       uses: ./.github/actions/ghtagchk
       with:
@@ -37,8 +38,8 @@ jobs:
         # LINUX X64
         - name:      'Linux x64'
           suffix:    'lnx x64'
-          docbuild:  false
-          run_tests: true
+          docbuild:  ''
+          run_tests: '1'
           image:     'ubuntu-22.04'
           owtools:   'GCC'
           args:      'gcc'
@@ -46,8 +47,8 @@ jobs:
         # LINUX ARM64
         - name:      'Linux arm64'
           suffix:    'lnx a64'
-          docbuild:  false
-          run_tests: false
+          docbuild:  ''
+          run_tests: ''
           image:     'ubuntu-24.04-arm'
           owtools:   'GCC'
           args:      'gcc'
@@ -55,8 +56,8 @@ jobs:
         # WINDOWS X64
         - name:      'Windows x64'
           suffix:    'nt x64'
-          docbuild:  true
-          run_tests: true
+          docbuild:  '1'
+          run_tests: '1'
           image:     'windows-2022'
           owtools:   'VISUALC'
           args:      'vs2022'
@@ -64,8 +65,8 @@ jobs:
         # OSX X64
         - name:      'OSX x64'
           suffix:    'osx x64'
-          docbuild:  false
-          run_tests: false
+          docbuild:  ''
+          run_tests: ''
           image:     'macos-15-intel'
           owtools:   'CLANG'
           args:      'clang'
@@ -73,14 +74,14 @@ jobs:
         # OSX ARM64
         - name:      'OSX arm64'
           suffix:    'osx a64'
-          docbuild:  false
-          run_tests: false
+          docbuild:  ''
+          run_tests: ''
           image:     'macos-15'
           owtools:   'CLANG'
           args:      'clang'
           gitpath:   'rel armo64'
     name: ${{ matrix.name }} ${{ matrix.args }}
-    uses: ./.github/workflows/releasep.yml
+    uses: ./.github/workflows/buildx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       ${{ matrix.suffix }} ${{ matrix.args }}

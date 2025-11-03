@@ -60,11 +60,13 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Test new OW bootstrap
-      uses: ./.github/actions/testboot
+    - name: Set new OW environment
+      uses: ./.github/actions/setnewow
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
+    - name: Test new OW bootstrap
+      uses: ./.github/actions/testboot
 
   Builds:
     needs:

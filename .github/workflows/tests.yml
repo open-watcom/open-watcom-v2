@@ -1,4 +1,4 @@
-name: CI-OW-Tests
+name: X-Tests
 run-name: OW Tests
 on:
   workflow_call:
@@ -46,13 +46,16 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: runner.arch == 'X64'
-      name: ${{ matrix.title }}
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        suffix: ${{ inputs.suffix }}
+    - name: ${{ matrix.title }}
       uses: ./.github/actions/tests
       with:
-        suffix:   ${{ inputs.suffix }}
-        path:     ${{ matrix.path }}
-        skip:     ${{ matrix.skip }}
+        suffix: ${{ inputs.suffix }}
+        path:   ${{ matrix.path }}
+        skip:   ${{ matrix.skip }}
 
   testboot-xx:
     name: Test Bootstrap
@@ -61,8 +64,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: runner.arch == 'X64'
-      name: Test Bootstrap
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        suffix: ${{ inputs.suffix }}
+    - name: Test Bootstrap
       uses: ./.github/actions/testboot
       with:
-        suffix:     ${{ inputs.suffix }}
+        testnewow:  '1'

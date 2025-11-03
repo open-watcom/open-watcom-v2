@@ -19,9 +19,28 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-          delete_run_by_conclusion_pattern: cancelled, failure
+          delete_run_by_conclusion_pattern: cancelled, failure, skipped
+      # delete all del_runs workflow runs
+      - if: github.repository == vars.REPO
+        name: Delete all artifact delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
+          delete_workflow_pattern: Delete Artifacts | Delete Old
       # delete workflow runs after retension period
-      - name: Delete workflow runs
+      - if: github.repository == vars.REPO
+        name: Delete workflow runs 5 days/5 runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 5
+      - if: github.repository != vars.REPO
+        name: Delete workflow runs 45 days/45 runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
