@@ -51,7 +51,7 @@ runs:
     shell: pwsh
   - if: inputs.usearchive == '1'
     name: Restore Artifact
-    uses: "./.github/actions/tarload"
+    uses: ./.github/actions/tarload
     with:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}

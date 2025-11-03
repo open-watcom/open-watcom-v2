@@ -39,7 +39,7 @@ runs:
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: inputs.usearchive == '1'
-    uses: "./.github/actions/tarsave"
+    uses: ./.github/actions/tarsave
     with:
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}

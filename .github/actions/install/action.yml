@@ -21,23 +21,23 @@ inputs:
 runs:
   using: composite
   steps:
-  - uses: "./.github/actions/artfload"
+  - uses: ./.github/actions/artfload
     with:
       gitpath:      'build binbuild'
       artifact:     'build lnx x64 ${{inputs.suffix_lnx}}'
       usearchive:  '1'
-  - uses: "./.github/actions/artfload"
+  - uses: ./.github/actions/artfload
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui nt x64 ${{inputs.suffix_nt}}'
       usearchive:  '1'
-  - uses: "./.github/actions/artfload"
+  - uses: ./.github/actions/artfload
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
       usearchive:  '1'
   # load all release binaries
-  - uses: "./.github/actions/relload"
+  - uses: ./.github/actions/relload
     with:
       suffix_nt:    ${{inputs.suffix_nt}}
       suffix_lnx:   ${{inputs.suffix_lnx}}
@@ -45,7 +45,7 @@ runs:
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
     id: owsnapshot
-    uses: "./.github/actions/snapshot"
+    uses: ./.github/actions/snapshot
     with:
       gitpath:      'rel'
   # run build script
@@ -67,7 +67,7 @@ runs:
     shell: bash
   # save all artifacts for distribution
   # full content of directory, cannot specify files
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
       gitpath:      'distrib ow bin'
       artifact:     "install ${{inputs.target}}"

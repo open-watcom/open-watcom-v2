@@ -18,7 +18,7 @@ runs:
   steps:
   - name: Setup curl options
     id: curlcmd
-    uses: "./.github/actions/curlcmd"
+    uses: ./.github/actions/curlcmd
   - id: last_commit
     run: |
       $sha = git rev-parse HEAD

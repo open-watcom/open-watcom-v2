@@ -11,18 +11,18 @@ runs:
   steps:
   - name: Setup curl options
     id: curlcmd
-    uses: "./.github/actions/curlcmd"
+    uses: ./.github/actions/curlcmd
   - id: cireldata
     run: |
       echo "tag=Last-CI-build" >> ${{ github.output }}
       echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
     shell: bash
   - name: Delete old Release
-    uses: "./.github/actions/ghreldel"
+    uses: ./.github/actions/ghreldel
     with:
       tag:     ${{ steps.cireldata.outputs.tag }}
   - name: Create new Release
-    uses: "./.github/actions/ghrelcre"
+    uses: ./.github/actions/ghrelcre
     id: cinewrel
     with:
       note:    "Last updated ${{ steps.cireldata.outputs.timestamp }} UTC"

@@ -63,7 +63,7 @@ jobs:
         args:           'vs2022'
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
-        noarchive:      ''
+        usearchive:     ''
       env:
         OWDOCTARGET:    'bootdocs'
     # run: git config --local --list
@@ -99,7 +99,7 @@ jobs:
         doc_suffix: "${{ matrix.doctype }} vs2022"
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
-        noarchive:  ''
+        usearchive: ''
     # run: git config --local --list
   wiki-update:
     name: Update Wiki

@@ -49,12 +49,12 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWVERBOSE:     1
     shell: cmd
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
       gitpath:       'bld watcom binbuild'
       artifact:      "bld watcom ${{ inputs.suffix }}"
       usearchive:    ${{ inputs.usearchive }}
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
       gitpath:       'build binbuild'
       artifact:      "build ${{ inputs.suffix }}"

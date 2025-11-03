@@ -41,7 +41,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - uses: "./.github/actions/artfload"
+  - uses: ./.github/actions/artfload
     with:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
@@ -63,7 +63,7 @@ runs:
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
       OWVERBOSE:     1
     shell: cmd
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
       gitpath:       ${{ inputs.gitpath }}
       artifact:      "rel ${{ inputs.doc_suffix }}"

@@ -12,7 +12,7 @@ runs:
   steps:
   - name: Setup curl options
     id: curlcmd
-    uses: "./.github/actions/curlcmd"
+    uses: ./.github/actions/curlcmd
 ##############################################
 # create daily release, delete existing one
 ##############################################
@@ -23,12 +23,12 @@ runs:
       echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
     shell: bash
   - name: 'Remove daily Release if exists'
-    uses: "./.github/actions/ghreldel"
+    uses: ./.github/actions/ghreldel
     with:
       tag:     ${{ steps.dreldata.outputs.tag }}
   - name: 'Create daily Release'
     id: newdrel
-    uses: "./.github/actions/ghrelcre"
+    uses: ./.github/actions/ghrelcre
     with:
       note:    "Last updated ${{ steps.dreldata.outputs.timestamp }} UTC"
       title:   ${{ steps.dreldata.outputs.tag }}
@@ -60,7 +60,7 @@ runs:
   - if: steps.oldmrel.outputs.sha == ''
     id: newmrel
     name: 'Create monthly Release'
-    uses: "./.github/actions/ghrelcre"
+    uses: ./.github/actions/ghrelcre
     with:
       note:    "Created ${{ steps.mreldata.outputs.timestamp }} UTC"
       title:   ${{ steps.mreldata.outputs.title }}

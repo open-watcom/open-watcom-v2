@@ -19,14 +19,14 @@ inputs:
 runs:
   using: composite
   steps:
-  - uses: "./.github/actions/artfload"
+  - uses: ./.github/actions/artfload
     with:
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
       usearchive:  '1'
   - name: Setup curl options
     id: curlcmd
-    uses: "./.github/actions/curlcmd"
+    uses: ./.github/actions/curlcmd
   - if: env.OWTESTMODE != '1'
     run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
