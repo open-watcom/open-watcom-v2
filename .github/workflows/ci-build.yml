@@ -22,9 +22,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  OWDEBUG:    "${{ vars.DEBUG }}"
-  OWTESTMODE: "${{ vars.TESTMODE }}"
-  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{ vars.DEBUG }}"
+  OWTESTMODE:       "${{ vars.TESTMODE }}"
+  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWUSETARARCHIVE:  '1'
 
 jobs:
   start-start:

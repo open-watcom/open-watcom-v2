@@ -15,11 +15,6 @@ inputs:
     required: false
     default: ''
     type: string
-  usearchive:
-    description: 'use tar archive for artifacts'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -53,9 +48,7 @@ runs:
     with:
       gitpath:       'bld watcom binbuild'
       artifact:      "bld watcom ${{ inputs.suffix }}"
-      usearchive:    ${{ inputs.usearchive }}
   - uses: ./.github/actions/artfsave
     with:
       gitpath:       'build binbuild'
       artifact:      "build ${{ inputs.suffix }}"
-      usearchive:    ${{ inputs.usearchive }}

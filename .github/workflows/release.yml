@@ -7,9 +7,10 @@ on:
   workflow_dispatch:
 
 env:
-  OWDEBUG:    "${{ vars.DEBUG }}"
-  OWTESTMODE: "${{ vars.TESTMODE }}"
-  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{ vars.DEBUG }}"
+  OWTESTMODE:       "${{ vars.TESTMODE }}"
+  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWUSETARARCHIVE:  '1'
 
 jobs:
   check_run:

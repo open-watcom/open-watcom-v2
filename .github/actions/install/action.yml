@@ -25,17 +25,14 @@ runs:
     with:
       gitpath:      'build binbuild'
       artifact:     'build lnx x64 ${{inputs.suffix_lnx}}'
-      usearchive:  '1'
   - uses: ./.github/actions/artfload
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui nt x64 ${{inputs.suffix_nt}}'
-      usearchive:  '1'
   - uses: ./.github/actions/artfload
     with:
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
-      usearchive:  '1'
   # load all release binaries
   - uses: ./.github/actions/relload
     with:
@@ -71,4 +68,3 @@ runs:
     with:
       gitpath:      'distrib ow bin'
       artifact:     "install ${{inputs.target}}"
-      usearchive:  '1'

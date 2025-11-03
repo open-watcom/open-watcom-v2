@@ -2,9 +2,10 @@ name: Delete Artifacts (Workflow run)
 on: repository_dispatch
 
 env:
-  OWDEBUG:    "${{ vars.DEBUG }}"
-  OWTESTMODE: "${{ vars.TESTMODE }}"
-  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{ vars.DEBUG }}"
+  OWTESTMODE:       "${{ vars.TESTMODE }}"
+  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWUSETARARCHIVE:  ''
 
 jobs:
   delete-artifacts:

@@ -33,11 +33,6 @@ inputs:
     required: false
     default: ''
     type: string
-  usearchive:
-    description: 'use tar archive for artifacts'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -45,7 +40,6 @@ runs:
     with:
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
-      usearchive:   ${{ inputs.usearchive }}
   - name: Documentation Build
     run: |
       if "${{ env.OWDEBUG }}" == "1" (
@@ -67,4 +61,3 @@ runs:
     with:
       gitpath:       ${{ inputs.gitpath }}
       artifact:      "rel ${{ inputs.doc_suffix }}"
-      usearchive:    ${{ inputs.usearchive }}

@@ -30,7 +30,6 @@ runs:
     with:
       gitpath:    'rel'
       artifact:   "rel ${{ inputs.suffix }}"
-      usearchive:  '1'
   - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'X64'
     name: Setup new OW
     run: |

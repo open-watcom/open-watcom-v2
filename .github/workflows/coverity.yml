@@ -12,9 +12,10 @@ env:
   OWCOV_TOOLS_GITPATH:   'coverity-scan-analysis'
   OWCOV_RESULTS_GITPATH: 'cov-int'
   OWCOV_TAG:             'Coverity-scan'
-  OWDEBUG:    "${{ vars.DEBUG }}"
-  OWTESTMODE: "${{ vars.TESTMODE }}"
-  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+  OWDEBUG:               "${{ vars.DEBUG }}"
+  OWTESTMODE:            "${{ vars.TESTMODE }}"
+  OWCURLOPTS:            "${{ vars.CURLOPTS }}"
+  OWUSETARARCHIVE:       ''
 
 jobs:
   check_run:

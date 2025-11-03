@@ -11,9 +11,10 @@ on:
         type: string
 
 env:
-  OWDEBUG:    "${{ vars.DEBUG }}"
-  OWTESTMODE: "${{ vars.TESTMODE }}"
-  OWCURLOPTS: "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{ vars.DEBUG }}"
+  OWTESTMODE:       "${{ vars.TESTMODE }}"
+  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWUSETARARCHIVE:  '1'
 
 jobs:
   tests-x:
