@@ -47,8 +47,8 @@ runs:
   - uses: ./.github/actions/artfsave
     with:
       gitpath:       'bld watcom binbuild'
-      artifact:      "bld watcom ${{ inputs.suffix }}"
+      artifact:      bld watcom ${{ inputs.suffix }}
   - uses: ./.github/actions/artfsave
     with:
       gitpath:       'build binbuild'
-      artifact:      "build ${{ inputs.suffix }}"
+      artifact:      build ${{ inputs.suffix }}

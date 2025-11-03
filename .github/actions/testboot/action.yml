@@ -29,7 +29,7 @@ runs:
     uses: ./.github/actions/artfload
     with:
       gitpath:    'rel'
-      artifact:   "rel ${{ inputs.suffix }}"
+      artifact:   rel ${{ inputs.suffix }}
   - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'X64'
     name: Setup new OW
     run: |

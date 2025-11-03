@@ -79,11 +79,11 @@ jobs:
           owtools:   'CLANG'
           args:      'clang'
           gitpath:   'rel armo64'
-    name: "${{ matrix.name }} ${{ matrix.args }}"
+    name: ${{ matrix.name }} ${{ matrix.args }}
     uses: ./.github/workflows/releasep.yml
     with:
       args:         ${{ matrix.args }}
-      suffix:       "${{ matrix.suffix }} ${{ matrix.args }}"
+      suffix:       ${{ matrix.suffix }} ${{ matrix.args }}
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
@@ -126,7 +126,7 @@ jobs:
         suffix_osx: 'clang'
   release:
     needs: Installers
-    name: "Create GitHub Release"
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
       drelid: ${{ steps.rel_rel.outputs.drelid }}

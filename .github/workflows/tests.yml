@@ -17,7 +17,7 @@ env:
   OWUSETARARCHIVE:  '1'
 
 jobs:
-  tests-x:
+  tests-xx:
     strategy:
       matrix:
         include:
@@ -54,7 +54,7 @@ jobs:
         path:     ${{ matrix.path }}
         skip:     ${{ matrix.skip }}
 
-  testboot-x:
+  testboot-xx:
     name: Test Bootstrap
     runs-on: ${{ inputs.image }}
 

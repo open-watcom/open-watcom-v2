@@ -25,11 +25,11 @@ runs:
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'bld watcom binbuild'
-      artifact: "bld watcom ${{ inputs.suffix }}"
+      artifact: bld watcom ${{ inputs.suffix }}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.suffix }}"
+      artifact: build ${{ inputs.suffix }}
   - if: runner.os == 'Linux'
     name: Build
     run: |
@@ -82,9 +82,9 @@ runs:
   - uses: ./.github/actions/artfsave
     with:
       gitpath:  ${{ inputs.gitpath }}
-      artifact: "rel ${{ inputs.suffix }}"
+      artifact: rel ${{ inputs.suffix }}
   - if: runner.os == 'Linux' || runner.os == 'Windows'
     uses: ./.github/actions/artfsave
     with:
       gitpath:  'bld setupgui'
-      artifact: "bld setupgui ${{ inputs.suffix }}"
+      artifact: bld setupgui ${{ inputs.suffix }}

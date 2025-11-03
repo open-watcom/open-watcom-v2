@@ -52,7 +52,7 @@ jobs:
     name: Bootstrap
     runs-on: windows-2022
     steps:
-    - name: Set git EOL to LF
+    - name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -81,7 +81,7 @@ jobs:
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
-    - name: Set git EOL to LF
+    - name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -96,7 +96,7 @@ jobs:
         target:     ${{ matrix.doctype }}
         gitpath:    'docs wiki'
         suffix:     'nt x64 vs2022'
-        doc_suffix: "${{ matrix.doctype }} vs2022"
+        doc_suffix: ${{ matrix.doctype }} vs2022
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
     # run: git config --local --list
@@ -105,7 +105,7 @@ jobs:
     needs: wiki-build
     runs-on: windows-2022
     steps:
-    - name: Set git EOL to LF
+    - name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input

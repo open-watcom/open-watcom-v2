@@ -21,7 +21,7 @@ runs:
   steps:
   - uses: ./.github/actions/artfload
     with:
-      artifact: "install ${{ inputs.target }}"
+      artifact: install ${{ inputs.target }}
       gitpath:  'temp'
   - name: Setup curl options
     id: curlcmd

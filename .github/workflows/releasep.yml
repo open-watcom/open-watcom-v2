@@ -1,4 +1,4 @@
-name: Release-Build-xx
+name: Release-Build-x
 run-name: Release workflow single Platform (daily and monthly)
 on:
   workflow_call:
@@ -32,12 +32,12 @@ env:
   OWUSETARARCHIVE:  '1'
 
 jobs:
-  boot-xx:
+  boot-x:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -50,14 +50,14 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  build-xx:
-    needs: boot-xx
+  build-x:
+    needs: boot-x
     name: Build
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -73,9 +73,9 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  docsbuild-xx:
+  docsbuild-x:
     if: inputs.docbuild
-    needs: boot-xx
+    needs: boot-x
     name: Documentation
     runs-on: ${{ inputs.image }}
     timeout-minutes: 90
@@ -96,7 +96,7 @@ jobs:
           doctype: docwin
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -111,12 +111,12 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
-        doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
+        doc_suffix: ${{ matrix.doctype }} ${{ inputs.args }}
         owtools:    ${{ inputs.owtools }}
 
-  tests-xx:
+  tests-x:
     if: inputs.run_tests
-    needs: build-xx
+    needs: build-x
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:

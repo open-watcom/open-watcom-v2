@@ -22,7 +22,7 @@ runs:
     uses: ./.github/actions/artfload
     with:
       gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.suffix }}"
+      artifact: build ${{ inputs.suffix }}
   - if: runner.os == 'Linux'
     name: try tests
     run: |

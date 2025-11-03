@@ -39,7 +39,7 @@ runs:
   - uses: ./.github/actions/artfload
     with:
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.suffix }}"
+      artifact:     build ${{ inputs.suffix }}
   - name: Documentation Build
     run: |
       if "${{ env.OWDEBUG }}" == "1" (
@@ -60,4 +60,4 @@ runs:
   - uses: ./.github/actions/artfsave
     with:
       gitpath:       ${{ inputs.gitpath }}
-      artifact:      "rel ${{ inputs.doc_suffix }}"
+      artifact:      rel ${{ inputs.doc_suffix }}

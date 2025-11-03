@@ -67,4 +67,4 @@ runs:
   - uses: ./.github/actions/artfsave
     with:
       gitpath:      'distrib ow bin'
-      artifact:     "install ${{inputs.target}}"
+      artifact:     install ${{inputs.target}}

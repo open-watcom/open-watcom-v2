@@ -1,4 +1,4 @@
-name: CI-Build-xx
+name: CI-Build-x
 run-name: CI workflow single Platform
 on:
   workflow_call:
@@ -32,13 +32,13 @@ env:
   OWUSETARARCHIVE:  '1'
 
 jobs:
-  boot-xx:
+  boot-x:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
 
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -51,15 +51,15 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  build-xx:
+  build-x:
     name: Build
-    needs: boot-xx
+    needs: boot-x
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
 
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -75,10 +75,10 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  docsbuild-xx:
+  docsbuild-x:
     if: inputs.docbuild
     name: Docs Build
-    needs: boot-xx
+    needs: boot-x
     timeout-minutes: 90
     strategy:
       matrix:
@@ -98,7 +98,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - if: runner.os == 'Windows'
-      name: Set git EOL to LF
+      name: Set EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -113,12 +113,12 @@ jobs:
         gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
         suffix:     ${{ inputs.suffix }}
-        doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
+        doc_suffix: ${{ matrix.doctype }} ${{ inputs.args }}
         owtools:    ${{ inputs.owtools }}
 
-  tests-xx:
+  tests-x:
     if: inputs.run_tests
-    needs: build-xx
+    needs: build-x
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:
