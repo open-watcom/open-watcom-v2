@@ -1,5 +1,5 @@
-name: CI-Build-nt
-run-name: CI workflow Windows
+name: CI-Build-xx
+run-name: CI workflow single Platform
 on:
   workflow_call:
     inputs:
@@ -18,6 +18,9 @@ on:
       image:
         required: true
         type: string
+      docbuild:
+        required: true
+        type: boolean
       run_tests:
         required: true
         type: boolean
@@ -29,12 +32,13 @@ env:
   OWUSETARARCHIVE:  '1'
 
 jobs:
-  boot-nt:
+  boot-xx:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
 
     steps:
-    - name: Set git EOL to LF
+    - if: runner.os == 'Windows'
+      name: Set git EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -47,14 +51,15 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  build-nt:
+  build-xx:
     name: Build
-    needs: boot-nt
+    needs: boot-xx
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
 
     steps:
-    - name: Set git EOL to LF
+    - if: runner.os == 'Windows'
+      name: Set git EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -70,9 +75,10 @@ jobs:
         suffix:     ${{ inputs.suffix }}
         owtools:    ${{ inputs.owtools }}
 
-  docsbuild:
+  docsbuild-xx:
+    if: inputs.docbuild
     name: Docs Build
-    needs: boot-nt
+    needs: boot-xx
     timeout-minutes: 90
     strategy:
       matrix:
@@ -90,9 +96,9 @@ jobs:
         - title: WIN
           doctype: docwin
     runs-on: ${{ inputs.image }}
-
     steps:
-    - name: Set git EOL to LF
+    - if: runner.os == 'Windows'
+      name: Set git EOL to LF
       run: |
         git config --global core.eol lf
         git config --global core.autocrlf input
@@ -110,9 +116,9 @@ jobs:
         doc_suffix: "${{ matrix.doctype }} ${{ inputs.args }}"
         owtools:    ${{ inputs.owtools }}
 
-  tests-nt:
+  tests-xx:
     if: inputs.run_tests
-    needs: build-nt
+    needs: build-xx
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:

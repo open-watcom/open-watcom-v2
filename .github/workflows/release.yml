@@ -27,81 +27,72 @@ jobs:
       uses: ./.github/actions/ghtagchk
       with:
         tag:     'Current-build'
-  Linux:
+
+  Builds:
     needs: check_run
     if: needs.check_run.outputs.runit
     strategy:
       matrix:
         include:
-        - owtools:  'GCC'
-          arch:     'x64'
-          args:     'gcc'
-          gitpath:  'rel'
-          image:    'ubuntu-22.04'
-        - owtools:  'GCC'
-          arch:     'a64'
-          args:     'gcc'
-          gitpath:  'rel'
-          image:    'ubuntu-24.04-arm'
-    name: Linux ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/rel-lnx.yml
+        # LINUX X64
+        - name:      'Linux x64'
+          suffix:    'lnx x64'
+          docbuild:  false
+          run_tests: true
+          image:     'ubuntu-22.04'
+          owtools:   'GCC'
+          args:      'gcc'
+          gitpath:   'rel'
+        # LINUX ARM64
+        - name:      'Linux arm64'
+          suffix:    'lnx a64'
+          docbuild:  false
+          run_tests: false
+          image:     'ubuntu-24.04-arm'
+          owtools:   'GCC'
+          args:      'gcc'
+          gitpath:   'rel'
+        # WINDOWS X64
+        - name:      'Windows x64'
+          suffix:    'nt x64'
+          docbuild:  true
+          run_tests: true
+          image:     'windows-2022'
+          owtools:   'VISUALC'
+          args:      'vs2022'
+          gitpath:   'rel'
+        # OSX X64
+        - name:      'OSX x64'
+          suffix:    'osx x64'
+          docbuild:  false
+          run_tests: false
+          image:     'macos-15-intel'
+          owtools:   'CLANG'
+          args:      'clang'
+          gitpath:   'rel bino64'
+        # OSX ARM64
+        - name:      'OSX arm64'
+          suffix:    'osx a64'
+          docbuild:  false
+          run_tests: false
+          image:     'macos-15'
+          owtools:   'CLANG'
+          args:      'clang'
+          gitpath:   'rel armo64'
+    name: "${{ matrix.name }} ${{ matrix.args }}"
+    uses: ./.github/workflows/releasep.yml
     with:
       args:         ${{ matrix.args }}
-      suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
+      suffix:       "${{ matrix.suffix }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
-      run_tests:    ${{ matrix.arch == 'x64' }}
-  Windows:
-    needs: check_run
-    if: needs.check_run.outputs.runit
-    strategy:
-      matrix:
-        include:
-        - owtools:  'VISUALC'
-          arch:     'x64'
-          args:     'vs2022'
-          gitpath:  'rel'
-          image:    'windows-2022'
-    name: Windows ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/rel-nt.yml
-    with:
-      args:         ${{ matrix.args }}
-      suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
-      gitpath:      ${{ matrix.gitpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      run_tests:    ${{ matrix.arch == 'x64' }}
-  OSX:
-    needs: check_run
-    if: needs.check_run.outputs.runit
-    strategy:
-      matrix:
-        include:
-        - owtools:  'CLANG'
-          arch:     'x64'
-          args:     'clang'
-          gitpath:  'rel bino64'
-          image:    'macos-15-intel'
-        - owtools:  'CLANG'
-          arch:     'a64'
-          args:     'clang'
-          gitpath:  'rel armo64'
-          image:    'macos-15'
-    name: OSX ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/rel-osx.yml
-    with:
-      args:         ${{ matrix.args }}
-      suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
-      gitpath:      ${{ matrix.gitpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      run_tests:    false
+      docbuild:     ${{ matrix.docbuild }}
+      run_tests:    ${{ matrix.run_tests }}
+
   Installers:
     needs:
-    - Linux
-    - Windows
-    - OSX
+    - Builds
     strategy:
       matrix:
         include:

@@ -101,13 +101,14 @@ jobs:
           gitpath:  'rel'
           image:    'ubuntu-24.04-arm'
     name: Linux ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/cibldlnx.yml
+    uses: ./.github/workflows/cibuildp.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "lnx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      docbuild:     false
       run_tests:    ${{ matrix.arch == 'x64' }}
   Windows:
     needs:
@@ -121,13 +122,14 @@ jobs:
           gitpath:  'rel'
           image:    'windows-2025'
     name: Windows ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/cibldnt.yml
+    uses: ./.github/workflows/cibuildp.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "nt ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      docbuild:     true
       run_tests:    ${{ matrix.arch == 'x64' }}
   OSX:
     needs: start-start
@@ -145,13 +147,14 @@ jobs:
           gitpath:  'rel armo64'
           image:    'macos-15'
     name: OSX ${{ matrix.arch }} ${{ matrix.args }}
-    uses: ./.github/workflows/cibldosx.yml
+    uses: ./.github/workflows/cibuildp.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       "osx ${{ matrix.arch }} ${{ matrix.args }}"
       gitpath:      ${{ matrix.gitpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
+      docbuild:     false
       run_tests:    false
   snapshot-both:
     needs:
