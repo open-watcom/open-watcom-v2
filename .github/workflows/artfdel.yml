@@ -6,7 +6,7 @@ env:
   OWDEBUG:          "${{vars.DEBUG}}"
   OWTESTMODE:       "${{vars.TESTMODE}}"
   OWCURLOPTS:       "${{vars.CURLOPTS}}"
-  OWUSETARARCHIVE:  ''
+  OWUSETARARCHIVE:  '0'
 
 jobs:
   delete-artifacts:

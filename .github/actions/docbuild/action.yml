@@ -42,10 +42,7 @@ runs:
       artifact:     build ${{inputs.suffix}}
   - name: Documentation Build
     run: |
-      if "${{env.OWDEBUG}}" == "1" (
-        set
-      )
-      if not "${{env.OWTESTMODE}}" == "1" (
+      if not '${{env.OWTESTMODE}}' == '1' (
         ci\buildx.cmd ${{inputs.args}}
       )
     env:

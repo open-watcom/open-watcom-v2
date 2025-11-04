@@ -15,7 +15,7 @@ env:
   OWDEBUG:               "${{vars.DEBUG}}"
   OWTESTMODE:            "${{vars.TESTMODE}}"
   OWCURLOPTS:            "${{vars.CURLOPTS}}"
-  OWUSETARARCHIVE:       ''
+  OWUSETARARCHIVE:       '0'
 
 jobs:
   check_run:
@@ -144,7 +144,8 @@ jobs:
       name: Create new Coverity scan tag
       run: |
         if( '${{env.OWTESTMODE}}' -ne '1' ) {
-          $response = ${{steps.curlcmd.outputs.gh1}} -X POST "${{steps.curlcmd.outputs.gh2}}/git/refs" `
+          $response = ${{steps.curlcmd.outputs.gh1}} `
+          -X POST "${{steps.curlcmd.outputs.gh2}}/git/refs" `
           -d '{"ref":"refs/tags/${{env.OWCOV_TAG}}","sha":"${{steps.last_commit.outputs.sha}}"}'
           if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
         }
@@ -153,7 +154,8 @@ jobs:
       name: Update Coverity scan tag
       run: |
         if( '${{env.OWTESTMODE}}' -ne '1' ) {
-          $response = ${{steps.curlcmd.outputs.gh1}} -X PATCH "${{steps.curlcmd.outputs.gh2}}/git/refs/tags/${{env.OWCOV_TAG}}" `
+          $response = ${{steps.curlcmd.outputs.gh1}} `
+          -X PATCH "${{steps.curlcmd.outputs.gh2}}/git/refs/tags/${{env.OWCOV_TAG}}" `
           -d '{"sha":"${{steps.last_commit.outputs.sha}}"}'
           if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
         }
@@ -251,14 +253,16 @@ jobs:
 #    - if: steps.check_tag.outputs.sha == ''
 #      name: Create new Coverity scan tag
 #      run: |
-#        $response = ${{steps.curlcmd.outputs.gh1}} -X POST "${{steps.curlcmd.outputs.gh2}}/git/refs" `
+#        $response = ${{steps.curlcmd.outputs.gh1}} `
+#        -X POST "${{steps.curlcmd.outputs.gh2}}/git/refs" `
 #        -d '{"ref":"refs/tags/${{env.OWCOV_TAG}}","sha":"${{steps.last_commit.outputs.sha}}"}'
 #        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
 #      name: Update Coverity scan tag
 #      run: |
-#        $response = ${{steps.curlcmd.outputs.gh1}} -X PATCH "${{steps.curlcmd.outputs.gh2}}/git/refs/tags/${{env.OWCOV_TAG}}" `
+#        $response = ${{steps.curlcmd.outputs.gh1}} `
+#        -X PATCH "${{steps.curlcmd.outputs.gh2}}/git/refs/tags/${{env.OWCOV_TAG}}" `
 #        -d '{"sha":"${{steps.last_commit.outputs.sha}}"}'
 #        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
 #      shell: pwsh

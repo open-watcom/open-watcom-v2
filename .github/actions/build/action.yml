@@ -49,10 +49,7 @@ runs:
   - if: runner.os == 'Windows'
     name: Build
     run: |
-      if "${{env.OWDEBUG}}" == "1" (
-        set
-      )
-      if not "${{env.OWTESTMODE}}" == "1" (
+      if not '${{env.OWTESTMODE}}' == '1' (
         ci\buildx.cmd ${{inputs.args}}
       )
     env:

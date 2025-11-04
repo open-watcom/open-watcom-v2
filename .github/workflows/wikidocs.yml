@@ -37,7 +37,7 @@ env:
   OWDEBUG:          "${{vars.DEBUG}}"
   OWTESTMODE:       "${{vars.TESTMODE}}"
   OWCURLOPTS:       "${{vars.CURLOPTS}}"
-  OWUSETARARCHIVE:  ''
+  OWUSETARARCHIVE:  '0'
 
 jobs:
   start-start:
@@ -123,20 +123,20 @@ jobs:
       shell: cmd
     - if: env.OWTESTMODE != '1'
       name: Download Artifact html
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: 'rel-wikihtml-vs2022'
         path: docs
     - if: env.OWTESTMODE != '1'
       name: Download Artifact pdf
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: 'rel-wikipdf-vs2022'
         path: docs
     - name: Wiki Repo Update
       run: |
-        if "${{github.repository}}" == "open-watcom/open-watcom-v2" (
-          if not "${{env.OWTESTMODE}}" == "1" (
+        if '${{github.repository}}' == 'open-watcom/open-watcom-v2' (
+          if not '${{env.OWTESTMODE}}' == '1' (
             git add -v -f .
             git commit -v -m "GitHub Workflow build"
             git push -v
@@ -151,6 +151,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.DELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacts
       uses: ./.github/actions/artfdelc

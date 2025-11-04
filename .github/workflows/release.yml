@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: ${{env.OWTESTMODE}} != '1'
+    - if: env.OWTESTMODE != '1'
       name: Check tag reference
       id: check_tag
       uses: ./.github/actions/ghtagchk
@@ -181,6 +181,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.DELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacs
       uses: ./.github/actions/artfdelc

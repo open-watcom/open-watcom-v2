@@ -34,9 +34,6 @@ runs:
   - if: runner.os == 'Windows'
     name: Bootstrap
     run: |
-      if "${{env.OWDEBUG}}" == "1" (
-        set
-      )
       ci\buildx.cmd ${{inputs.args}}
     env:
       OWBUILD_STAGE: 'boot'

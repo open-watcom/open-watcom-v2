@@ -171,7 +171,7 @@ jobs:
       uses: ./.github/actions/lastbld
       with:
         fullname:   ${{steps.owsnapshot.outputs.fullname}}
-    - if: vars.DELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacs ${{github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)'}}
       uses: ./.github/actions/artfdelc
       with:
