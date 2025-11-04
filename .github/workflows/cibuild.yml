@@ -1,5 +1,5 @@
 name: CI-Build
-run-name: CI build
+run-name: CI Build
 
 on:
   pull_request:
@@ -60,12 +60,12 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Set new OW environment
-      uses: ./.github/actions/setnewow
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
       with:
         ow_version: ${{ matrix.verid }}
         ow_tag:     ${{ matrix.tag }}
-    - name: Test new OW bootstrap
+    - name: Test OW bootstrap
       uses: ./.github/actions/testboot
 
   Builds:
@@ -77,8 +77,8 @@ jobs:
         # LINUX X64 gcc
         - name:         'Linux x64'
           suffix:       'lnx x64'
-          docbuild:     false
-          run_tests:    true
+          docbuild:     ''
+          run_tests:    '1'
           image:        'ubuntu-latest'
           owtools:      'GCC'
           args:         'gcc'
@@ -86,8 +86,8 @@ jobs:
         # LINUX X64 clang
         - name:         'Linux x64'
           suffix:       'lnx x64'
-          docbuild:     false
-          run_tests:    true
+          docbuild:     ''
+          run_tests:    '1'
           image:        'ubuntu-latest'
           owtools:      'CLANG'
           args:         'clang'
@@ -95,8 +95,8 @@ jobs:
         # LINUX ARM64
         - name:         'Linux arm64'
           suffix:       'lnx a64'
-          docbuild:     false
-          run_tests:    false
+          docbuild:     ''
+          run_tests:    ''
           image:        'ubuntu-24.04-arm'
           owtools:      'GCC'
           args:         'gcc'
@@ -104,8 +104,8 @@ jobs:
         # WINDOWS X64
         - name:         'Windows x64'
           suffix:       'nt x64'
-          docbuild:     true
-          run_tests:    true
+          docbuild:     '1'
+          run_tests:    '1'
           image:        'windows-2025'
           owtools:      'VISUALC'
           args:         'vs2022'
@@ -113,8 +113,8 @@ jobs:
         # OSX X64
         - name:         'OSX x64'
           suffix:       'osx x64'
-          docbuild:     false
-          run_tests:    false
+          docbuild:     ''
+          run_tests:    ''
           image:        'macos-15-intel'
           owtools:      'CLANG'
           args:         'clang'
@@ -122,14 +122,14 @@ jobs:
         # OSX ARM64
         - name:         'OSX arm64'
           suffix:       'osx a64'
-          docbuild:     false
-          run_tests:    false
+          docbuild:     ''
+          run_tests:    ''
           image:        'macos-15'
           owtools:      'CLANG'
           args:         'clang'
           gitpath:      'rel armo64'
     name: ${{ matrix.name }} ${{ matrix.args }}
-    uses: ./.github/workflows/cibuildp.yml
+    uses: ./.github/workflows/buildx.yml
     with:
       args:         ${{ matrix.args }}
       suffix:       ${{ matrix.suffix }} ${{ matrix.args }}

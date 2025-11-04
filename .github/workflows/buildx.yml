@@ -1,5 +1,5 @@
-name: Release-Build-x
-run-name: Release workflow single Platform (daily and monthly)
+name: X-Build
+run-name: Build for single Platform
 on:
   workflow_call:
     inputs:
@@ -19,11 +19,13 @@ on:
         required: true
         type: string
       docbuild:
-        required: true
-        type: boolean
+        required: false
+        default: ''
+        type: string
       run_tests:
-        required: true
-        type: boolean
+        required: false
+        default: ''
+        type: string
 
 env:
   OWDEBUG:          "${{ vars.DEBUG }}"
@@ -35,6 +37,7 @@ jobs:
   boot-x:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
+
     steps:
     - if: runner.os == 'Windows'
       name: Set EOL to LF
@@ -51,10 +54,11 @@ jobs:
         owtools:    ${{ inputs.owtools }}
 
   build-x:
-    needs: boot-x
     name: Build
+    needs: boot-x
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
+
     steps:
     - if: runner.os == 'Windows'
       name: Set EOL to LF
@@ -74,9 +78,9 @@ jobs:
         owtools:    ${{ inputs.owtools }}
 
   docsbuild-x:
-    if: inputs.docbuild
+    if: inputs.docbuild == '1'
+    name: Docs Build
     needs: boot-x
-    name: Documentation
     runs-on: ${{ inputs.image }}
     timeout-minutes: 90
     strategy:
@@ -104,18 +108,18 @@ jobs:
       uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: ./.github/actions/dosboxin
-    - name: Documentation
+    - name: Build
       uses: ./.github/actions/docbuild
       with:
         args:       ${{ inputs.args }}
-        suffix:     ${{ inputs.suffix }}
         gitpath:    ${{ inputs.gitpath }}
         target:     ${{ matrix.doctype }}
+        suffix:     ${{ inputs.suffix }}
         doc_suffix: ${{ matrix.doctype }} ${{ inputs.args }}
         owtools:    ${{ inputs.owtools }}
 
   tests-x:
-    if: inputs.run_tests
+    if: inputs.run_tests == '1'
     needs: build-x
     name: Tests
     uses: ./.github/workflows/tests.yml
