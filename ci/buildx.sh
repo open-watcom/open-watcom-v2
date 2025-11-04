@@ -96,7 +96,8 @@ build_proc()
             RC=$?
             ;;
         "tests")
-            builder test $OWTESTTARGET
+            cd bld/$OWTESTTARGET
+            builder test
             RC=$?
             ;;
         "docs")
