@@ -15,43 +15,43 @@ runs:
   - id: ghrel
     name: "Search existing Release tag"
     run: |
-      if( '${{ env.OWTESTMODE }}' -ne '1' ) {
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ inputs.tag }}"
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      if( '${{env.OWTESTMODE}}' -ne '1' ) {
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        "${{steps.curlcmd.outputs.gh2}}/releases/tags/${{inputs.tag}}"
+        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
         $id = $response | jq -r .id
         if( "$id" -eq 'null' ) { $id = '' }
       } else {
         $id = ''
       }
-      "id=$id" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      "id=$id" | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.ghrel.outputs.id != ''
     name: "Remove Release Assets"
     run: |
-      echo "${{ steps.ghrel.outputs.id }}"
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}/assets"
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      echo "${{steps.ghrel.outputs.id}}"
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      "${{steps.curlcmd.outputs.gh2}}/releases/${{steps.ghrel.outputs.id}}/assets"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       $id = $response | jq -r .[].id
       if( "$id" -eq 'null' ) { $id = '' }
       $id | Foreach-Object {
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X DELETE "https://api.github.com/repos/${{ github.repository }}/releases/assets/$_"
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        -X DELETE "${{steps.curlcmd.outputs.gh2}}/releases/assets/$_"
+        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       }
     shell: pwsh
   - if: steps.ghrel.outputs.id != ''
     name: "Remove Release"
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X DELETE "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}"
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      -X DELETE "${{steps.curlcmd.outputs.gh2}}/releases/${{steps.ghrel.outputs.id}}"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
     shell: pwsh
   - name: "Remove Release Tag"
     if: env.OWTESTMODE != '1'
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X DELETE "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ inputs.tag }}"
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      -X DELETE "${{steps.curlcmd.outputs.gh2}}/git/refs/tags/${{inputs.tag}}"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
     shell: pwsh

@@ -21,52 +21,50 @@ runs:
   steps:
   - name: Get destination folder
     id: dstpath
-    run: >
-      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
-      | Join-String -OutputPrefix 'path='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      Join-Path ${{github.workspace}} ${{inputs.gitpath}} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - name: Setup tar options
     id: tarcmd
-    run: >
-      if( '${{ env.OWDEBUG }}' -eq '1' ) {
-        'opts=-xvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      if( '${{env.OWDEBUG}}' -eq '1' ) {
+        'opts=-xvf' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       } else {
-        'opts=-xf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        'opts=-xf' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       }
     shell: pwsh      
   - name: Create destination folder
-    run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }} > $null
+    run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{steps.dstpath.outputs.path}} > $null
     shell: pwsh
   - if: runner.os == 'Linux' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact Linux
     run: |
-      tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
+      tar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -z --overwrite -C "${{steps.dstpath.outputs.path}}"
     shell: bash
   - if: runner.os == 'Linux' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact Linux
     run: |
-      tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+      tar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -J --overwrite -C "${{steps.dstpath.outputs.path}}"
     shell: bash
   - if: runner.os == 'macOS' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact OSX
     run: |
-      gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
+      gtar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -z --overwrite -C "${{steps.dstpath.outputs.path}}"
     shell: bash
   - if: runner.os == 'macOS' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact OSX
     run: |
-      gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+      gtar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -J --overwrite -C "${{steps.dstpath.outputs.path}}"
     shell: bash
   - if: runner.os == 'Windows' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact (Windows)
     run: |
-      7z x -aoa "${{ inputs.fullname }}" -o${{ steps.dstpath.outputs.path }}
+      7z x -aoa "${{inputs.fullname}}" -o${{steps.dstpath.outputs.path}}
     shell: cmd
   - if: runner.os == 'Windows' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Restore Artifact (Windows)
     run: |
-      7z x -txz "${{ inputs.fullname }}" -o${{ runner.temp }}
-      tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.dstpath.outputs.path }}" *
-      del ${{ runner.temp }}\owartifact.tar
+      7z x -txz "${{inputs.fullname}}" -o${{runner.temp}}
+      tar ${{steps.tarcmd.outputs.opts}} ${{runner.temp}}\owartifact.tar -C "${{steps.dstpath.outputs.path}}" *
+      del ${{runner.temp}}\owartifact.tar
     shell: cmd

@@ -39,25 +39,25 @@ runs:
   - uses: ./.github/actions/artfload
     with:
       gitpath:      'build binbuild'
-      artifact:     build ${{ inputs.suffix }}
+      artifact:     build ${{inputs.suffix}}
   - name: Documentation Build
     run: |
-      if "${{ env.OWDEBUG }}" == "1" (
+      if "${{env.OWDEBUG}}" == "1" (
         set
       )
-      if not "${{ env.OWTESTMODE }}" == "1" (
-        ci\buildx.cmd ${{ inputs.args }}
+      if not "${{env.OWTESTMODE}}" == "1" (
+        ci\buildx.cmd ${{inputs.args}}
       )
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
+      OWDOCTARGET:   ${{inputs.target}} ${{inputs.owtarget}}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox.exe'
-      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
+      OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
       OWVERBOSE:     1
     shell: cmd
   - uses: ./.github/actions/artfsave
     with:
-      gitpath:       ${{ inputs.gitpath }}
-      artifact:      rel ${{ inputs.doc_suffix }}
+      gitpath:       ${{inputs.gitpath}}
+      artifact:      rel ${{inputs.doc_suffix}}

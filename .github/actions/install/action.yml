@@ -49,10 +49,10 @@ runs:
   - if: inputs.target != 'snapshot'
     name: Build Installers
     run: |
-      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+      if [ '${{env.OWDEBUG}}' = '1' ]; then
         env | sort
       fi
-      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
         ci/buildx.sh gcc
       fi
     env:

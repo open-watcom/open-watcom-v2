@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  '1'
 
 jobs:
@@ -18,11 +18,11 @@ jobs:
     name: Check if to run
     runs-on: ubuntu-latest
     outputs:
-      runit: ${{ steps.check_tag.outputs.old }}
+      runit: ${{steps.check_tag.outputs.old}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: ${{ env.OWTESTMODE }} != '1'
+    - if: ${{env.OWTESTMODE}} != '1'
       name: Check tag reference
       id: check_tag
       uses: ./.github/actions/ghtagchk
@@ -80,16 +80,16 @@ jobs:
           owtools:   'CLANG'
           args:      'clang'
           gitpath:   'rel armo64'
-    name: ${{ matrix.name }} ${{ matrix.args }}
+    name: ${{matrix.name}} ${{matrix.args}}
     uses: ./.github/workflows/buildx.yml
     with:
-      args:         ${{ matrix.args }}
-      suffix:       ${{ matrix.suffix }} ${{ matrix.args }}
-      gitpath:      ${{ matrix.gitpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      docbuild:     ${{ matrix.docbuild }}
-      run_tests:    ${{ matrix.run_tests }}
+      args:         ${{matrix.args}}
+      suffix:       ${{matrix.suffix}} ${{matrix.args}}
+      gitpath:      ${{matrix.gitpath}}
+      owtools:      ${{matrix.owtools}}
+      image:        ${{matrix.image}}
+      docbuild:     ${{matrix.docbuild}}
+      run_tests:    ${{matrix.run_tests}}
 
   Installers:
     needs:
@@ -113,15 +113,15 @@ jobs:
           title:   'Build Windows(64-bit) Installer'
         - asset: snapshot
           title:   'Create OW full snapshot'
-    name: ${{ matrix.title }}
+    name: ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: ${{ matrix.title }}
+    - name: ${{matrix.title}}
       uses: ./.github/actions/install
       with:
-        target:     ${{ matrix.asset }}
+        target:     ${{matrix.asset}}
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
@@ -130,15 +130,15 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
-      drelid: ${{ steps.rel_rel.outputs.drelid }}
-      mrelid: ${{ steps.rel_rel.outputs.mrelid }}
+      drelid: ${{steps.rel_rel.outputs.drelid}}
+      mrelid: ${{steps.rel_rel.outputs.mrelid}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: GitHub Release
       id: rel_rel
       uses: ./.github/actions/release
-    - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
+    - run: echo "drelid=${{steps.rel_rel.outputs.drelid}};mrelid=${{steps.rel_rel.outputs.mrelid}}"
       shell: bash
   Uploads:
     needs: release
@@ -161,19 +161,19 @@ jobs:
           title:   'Windows(64-bit) Installer'
         - asset: snapshot
           title:   'OW full snapshot'
-    name: Upload ${{ matrix.title }}
+    name: Upload ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
+    - run: echo "drelid=${{needs.release.outputs.drelid}};mrelid=${{needs.release.outputs.mrelid}}"
       shell: bash
-    - name: ${{ matrix.title }} Asset
+    - name: ${{matrix.title}} Asset
       uses: ./.github/actions/ghassets
       with:
-        target:     ${{ matrix.asset }}
-        drelid:     ${{ needs.release.outputs.drelid }}
-        mrelid:     ${{ needs.release.outputs.mrelid }}
+        target:     ${{matrix.asset}}
+        drelid:     ${{needs.release.outputs.drelid}}
+        mrelid:     ${{needs.release.outputs.mrelid}}
   end-end:
     needs: Uploads
     name: Call to delete Artifacts

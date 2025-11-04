@@ -21,28 +21,28 @@ runs:
   steps:
   - uses: ./.github/actions/artfload
     with:
-      artifact: install ${{ inputs.target }}
+      artifact: install ${{inputs.target}}
       gitpath:  'temp'
   - name: Setup curl options
     id: curlcmd
     uses: ./.github/actions/curlcmd
   - if: env.OWTESTMODE != '1'
     run: |
-      Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.drelid }}/assets?name=$($_.Name)" `
+      Join-Path ${{github.workspace}} temp | Get-ChildItem -File | Foreach-Object {
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        -X POST "${{steps.curlcmd.outputs.gh3}}/releases/${{inputs.drelid}}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       }
     shell: pwsh
   - if: inputs.mrelid != '' && env.OWTESTMODE != '1'
     run: |
-      Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.mrelid }}/assets?name=$($_.Name)" `
+      Join-Path ${{github.workspace}} temp | Get-ChildItem -File | Foreach-Object {
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        -X POST "${{steps.curlcmd.outputs.gh3}}/releases/${{inputs.mrelid}}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       }
     shell: pwsh

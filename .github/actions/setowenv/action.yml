@@ -22,14 +22,14 @@ runs:
     name: Open Watcom setup
     uses: open-watcom/setup-watcom@v0
     with:
-      version: ${{ inputs.ow_version }}
-      tag:     ${{ inputs.ow_tag }}
+      version: ${{inputs.ow_version}}
+      tag:     ${{inputs.ow_tag}}
   - if: inputs.ow_version == ''
     name: Load Artifact
     uses: ./.github/actions/artfload
     with:
       gitpath:    'rel'
-      artifact:   rel ${{ inputs.suffix }}
+      artifact:   rel ${{inputs.suffix}}
   - if: inputs.ow_version == '' && runner.os == 'Linux' && runner.arch == 'X64'
     name: Setup OW Linux x64
     run: |

@@ -24,7 +24,7 @@ inputs:
 outputs:
   id:
     description: 'new release ID'
-    value: ${{ steps.newrel.outputs.id }}
+    value: ${{steps.newrel.outputs.id}}
 runs:
   using: composite
   steps:
@@ -32,41 +32,41 @@ runs:
     id: curlcmd
     uses: ./.github/actions/curlcmd
   - id: last_commit
-    run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - id: ghtag
     name: Create new Release tag
     run: |
-      if( '${{ env.OWTESTMODE }}' -ne '1' ) {
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://api.github.com/repos/${{ github.repository }}/git/tags" `
-        -d '{"tag":"${{ inputs.tag }}","message":"${{ inputs.tagmsg }}","object":"${{ steps.last_commit.outputs.sha }}","type":"commit","tagger":{"name":"Open Watcom GitHub","email":"openwatcom.github@gmail.com"}}'
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      if( '${{env.OWTESTMODE}}' -ne '1' ) {
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        -X POST "${{steps.curlcmd.outputs.gh2}}/git/tags" `
+        -d '{"tag":"${{inputs.tag}}","message":"${{inputs.tagmsg}}","object":"${{steps.last_commit.outputs.sha}}","type":"commit","tagger":{"name":"Open Watcom GitHub","email":"openwatcom.github@gmail.com"}}'
+        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
         $sha = $response | jq -r .sha
         if( "$sha" -eq 'null' ) { $sha = '' }
       } else {
         $sha = ''
       }
-      "sha=$sha" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      "sha=$sha" | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.ghtag.outputs.sha != ''
     name: Create new Release tag reference
     run: |
-      echo "${{ steps.ghtag.outputs.sha }}"
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-      -d '{"ref":"refs/tags/${{ inputs.tag }}","sha":"${{ steps.ghtag.outputs.sha }}"}'
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      echo "${{steps.ghtag.outputs.sha}}"
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      -X POST "${{steps.curlcmd.outputs.gh2}}/git/refs" `
+      -d '{"ref":"refs/tags/${{inputs.tag}}","sha":"${{steps.ghtag.outputs.sha}}"}'
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
     shell: pwsh
   - if: steps.ghtag.outputs.sha != ''
     name: Create new Release
     id: newrel
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X POST "https://api.github.com/repos/${{ github.repository }}/releases" `
-      -d '{"tag_name":"${{ inputs.tag }}","target_commitish":"master","name":"${{ inputs.title }}","body":"${{ inputs.note }}","draft":false,"prerelease":true,"generate_release_notes":false}'
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      -X POST "${{steps.curlcmd.outputs.gh2}}/releases" `
+      -d '{"tag_name":"${{inputs.tag}}","target_commitish":"master","name":"${{inputs.title}}","body":"${{inputs.note}}","draft":false,"prerelease":true,"generate_release_notes":false}'
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       $id = $response | jq -r .id
       if( "$id" -eq 'null' ) { $id = '' }
-      "id=$id" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      "id=$id" | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh

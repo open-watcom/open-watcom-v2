@@ -22,44 +22,44 @@ runs:
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel nt x64 ${{ inputs.suffix_nt }}
+      artifact: rel nt x64 ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel lnx x64 ${{ inputs.suffix_lnx }}
+      artifact: rel lnx x64 ${{inputs.suffix_lnx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel lnx a64 ${{ inputs.suffix_lnx }}
+      artifact: rel lnx a64 ${{inputs.suffix_lnx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel bino64'
-      artifact: rel osx x64 ${{ inputs.suffix_osx }}
+      artifact: rel osx x64 ${{inputs.suffix_osx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel armo64'
-      artifact: rel osx a64 ${{ inputs.suffix_osx }}
+      artifact: rel osx a64 ${{inputs.suffix_osx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docdos ${{ inputs.suffix_nt }}
+      artifact: rel docdos ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docchm ${{ inputs.suffix_nt }}
+      artifact: rel docchm ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docnt ${{ inputs.suffix_nt }}
+      artifact: rel docnt ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docos2 ${{ inputs.suffix_nt }}
+      artifact: rel docos2 ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docpdf ${{ inputs.suffix_nt }}
+      artifact: rel docpdf ${{inputs.suffix_nt}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
-      artifact: rel docwin ${{ inputs.suffix_nt }}
+      artifact: rel docwin ${{inputs.suffix_nt}}

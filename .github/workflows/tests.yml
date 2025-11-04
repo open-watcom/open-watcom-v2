@@ -11,9 +11,9 @@ on:
         type: string
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  '1'
 
 jobs:
@@ -40,8 +40,8 @@ jobs:
             path: clibtest
             skip: true
     timeout-minutes: 90
-    runs-on: ${{ inputs.image }}
-    name: ${{ matrix.title }}
+    runs-on: ${{inputs.image}}
+    name: ${{matrix.title}}
 
     steps:
     - name: checkout
@@ -49,17 +49,17 @@ jobs:
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:
-        suffix: ${{ inputs.suffix }}
-    - name: ${{ matrix.title }}
+        suffix: ${{inputs.suffix}}
+    - name: ${{matrix.title}}
       uses: ./.github/actions/tests
       with:
-        suffix: ${{ inputs.suffix }}
-        path:   ${{ matrix.path }}
-        skip:   ${{ matrix.skip }}
+        suffix: ${{inputs.suffix}}
+        path:   ${{matrix.path}}
+        skip:   ${{matrix.skip}}
 
   testboot-xx:
     name: Test Bootstrap
-    runs-on: ${{ inputs.image }}
+    runs-on: ${{inputs.image}}
 
     steps:
     - name: checkout
@@ -67,7 +67,7 @@ jobs:
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:
-        suffix: ${{ inputs.suffix }}
+        suffix: ${{inputs.suffix}}
     - name: Test Bootstrap
       uses: ./.github/actions/testboot
       with:

@@ -28,15 +28,15 @@ on:
         type: string
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  '1'
 
 jobs:
   boot-x:
     name: Bootstrap
-    runs-on: ${{ inputs.image }}
+    runs-on: ${{inputs.image}}
 
     steps:
     - if: runner.os == 'Windows'
@@ -49,14 +49,14 @@ jobs:
     - name: Bootstrap
       uses: ./.github/actions/boot
       with:
-        args:       ${{ inputs.args }}
-        suffix:     ${{ inputs.suffix }}
-        owtools:    ${{ inputs.owtools }}
+        args:       ${{inputs.args}}
+        suffix:     ${{inputs.suffix}}
+        owtools:    ${{inputs.owtools}}
 
   build-x:
     name: Build
     needs: boot-x
-    runs-on: ${{ inputs.image }}
+    runs-on: ${{inputs.image}}
     timeout-minutes: 120
 
     steps:
@@ -72,16 +72,16 @@ jobs:
     - name: Build
       uses: ./.github/actions/build
       with:
-        args:       ${{ inputs.args }}
-        gitpath:    ${{ inputs.gitpath }}
-        suffix:     ${{ inputs.suffix }}
-        owtools:    ${{ inputs.owtools }}
+        args:       ${{inputs.args}}
+        gitpath:    ${{inputs.gitpath}}
+        suffix:     ${{inputs.suffix}}
+        owtools:    ${{inputs.owtools}}
 
   docsbuild-x:
     if: inputs.docbuild == '1'
     name: Docs Build
     needs: boot-x
-    runs-on: ${{ inputs.image }}
+    runs-on: ${{inputs.image}}
     timeout-minutes: 90
     strategy:
       matrix:
@@ -111,12 +111,12 @@ jobs:
     - name: Build
       uses: ./.github/actions/docbuild
       with:
-        args:       ${{ inputs.args }}
-        gitpath:    ${{ inputs.gitpath }}
-        target:     ${{ matrix.doctype }}
-        suffix:     ${{ inputs.suffix }}
-        doc_suffix: ${{ matrix.doctype }} ${{ inputs.args }}
-        owtools:    ${{ inputs.owtools }}
+        args:       ${{inputs.args}}
+        gitpath:    ${{inputs.gitpath}}
+        target:     ${{matrix.doctype}}
+        suffix:     ${{inputs.suffix}}
+        doc_suffix: ${{matrix.doctype}} ${{inputs.args}}
+        owtools:    ${{inputs.owtools}}
 
   tests-x:
     if: inputs.run_tests == '1'
@@ -124,5 +124,5 @@ jobs:
     name: Tests
     uses: ./.github/workflows/tests.yml
     with:
-      suffix:   ${{ inputs.suffix }}
-      image:    ${{ inputs.image }}
+      suffix:   ${{inputs.suffix}}
+      image:    ${{inputs.image}}

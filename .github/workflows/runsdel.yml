@@ -1,49 +1,49 @@
-name: Delete Old (Workflow Runs)
+name: Delete old Workflow runs
+
 on:
+  # Run weekly, at 01:05 on the Sunday.
   schedule:
     - cron: '5 3 * * 0'
-# Run weekly, at 01:05 on the Sunday.
   workflow_dispatch:
 
 jobs:
-  del_runs:
+  deleteruns:
+    name: Delete Workflow runs
     runs-on: ubuntu-latest
     permissions:
       actions: write
+
     steps:
-      # delete cancelled workflow runs
-      - name: Delete cancelled workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 0
-          keep_minimum_runs: 0
-          delete_run_by_conclusion_pattern: cancelled, failure, skipped
-      # delete all del_runs workflow runs
-      - if: github.repository == vars.REPO
-        name: Delete all artifact delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 0
-          keep_minimum_runs: 0
-          delete_workflow_pattern: Delete Artifacts | Delete Old
-      # delete workflow runs after retension period
-      - if: github.repository == vars.REPO
-        name: Delete workflow runs 5 days/5 runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 5
-      - if: github.repository != vars.REPO
-        name: Delete workflow runs 45 days/45 runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 45
-          keep_minimum_runs: 45
+    - name: This Workflow runs - 10 runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{github.token}}
+        repository: ${{github.repository}}
+        retain_days: 0
+        keep_minimum_runs: 10
+        delete_workflow_pattern: Delete Artifacts | Delete Old
+    - if: github.repository != vars.REPO
+      name: OW Workflow runs - 45 days/45 runs (regular)
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{github.token}}
+        repository: ${{github.repository}}
+        retain_days: 45
+        keep_minimum_runs: 45
+    - if: github.repository == vars.REPO
+      name: OW Workflow runs - cancelled, failure, skipped (dev)
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{github.token}}
+        repository: ${{github.repository}}
+        retain_days: 0
+        keep_minimum_runs: 0
+        delete_run_by_conclusion_pattern: cancelled, failure, skipped
+    - if: github.repository == vars.REPO
+      name: OW Workflow runs - 5 runs (dev)
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{github.token}}
+        repository: ${{github.repository}}
+        retain_days: 0
+        keep_minimum_runs: 5

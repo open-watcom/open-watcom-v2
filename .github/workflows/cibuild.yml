@@ -18,13 +18,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  '1'
 
 jobs:
@@ -55,16 +55,16 @@ jobs:
           verid: '2.0'
           tag:   '2023-01-01-Build'
           image: 'ubuntu-latest'
-    name: Bootstrap Test ${{ matrix.name }}
-    runs-on: ${{ matrix.image }}
+    name: Bootstrap Test ${{matrix.name}}
+    runs-on: ${{matrix.image}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:
-        ow_version: ${{ matrix.verid }}
-        ow_tag:     ${{ matrix.tag }}
+        ow_version: ${{matrix.verid}}
+        ow_tag:     ${{matrix.tag}}
     - name: Test OW bootstrap
       uses: ./.github/actions/testboot
 
@@ -128,16 +128,16 @@ jobs:
           owtools:      'CLANG'
           args:         'clang'
           gitpath:      'rel armo64'
-    name: ${{ matrix.name }} ${{ matrix.args }}
+    name: ${{matrix.name}} ${{matrix.args}}
     uses: ./.github/workflows/buildx.yml
     with:
-      args:         ${{ matrix.args }}
-      suffix:       ${{ matrix.suffix }} ${{ matrix.args }}
-      gitpath:      ${{ matrix.gitpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      docbuild:     ${{ matrix.docbuild }}
-      run_tests:    ${{ matrix.run_tests }}
+      args:         ${{matrix.args}}
+      suffix:       ${{matrix.suffix}} ${{matrix.args}}
+      gitpath:      ${{matrix.gitpath}}
+      owtools:      ${{matrix.owtools}}
+      image:        ${{matrix.image}}
+      docbuild:     ${{matrix.docbuild}}
+      run_tests:    ${{matrix.run_tests}}
 
   snapshot-both:
     needs:
@@ -163,16 +163,16 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name:           'owsnapshot'
-        path:           ${{ steps.owsnapshot.outputs.fullname }}
+        path:           ${{steps.owsnapshot.outputs.fullname}}
         retention-days: 14
         overwrite:      true
     - if: github.event_name != 'pull_request'
       name: Upload OW (Last CI Build)
       uses: ./.github/actions/lastbld
       with:
-        fullname:   ${{ steps.owsnapshot.outputs.fullname }}
+        fullname:   ${{steps.owsnapshot.outputs.fullname}}
     - if: vars.DELETEARTIFACTS == 1
-      name: Call to delete Artifacs ${{ github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)' }}
+      name: Call to delete Artifacs ${{github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)'}}
       uses: ./.github/actions/artfdelc
       with:
-        exclude:    ${{ github.event_name == 'pull_request' && 'owsnapshot' || '' }}
+        exclude:    ${{github.event_name == 'pull_request' && 'owsnapshot' || ''}}

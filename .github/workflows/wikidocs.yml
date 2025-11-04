@@ -30,13 +30,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  ''
 
 jobs:
@@ -89,16 +89,16 @@ jobs:
       uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: ./.github/actions/dosboxin
-    - name: Build ${{ matrix.title }}
+    - name: Build ${{matrix.title}}
       uses: ./.github/actions/docbuild
       with:
         args:       'vs2022'
-        target:     ${{ matrix.doctype }}
+        target:     ${{matrix.doctype}}
         gitpath:    'docs wiki'
         suffix:     'nt x64 vs2022'
-        doc_suffix: ${{ matrix.doctype }} vs2022
+        doc_suffix: ${{matrix.doctype}} vs2022
         owtools:    'VISUALC'
-        owtarget:   ${{ matrix.owtarget }}
+        owtarget:   ${{matrix.owtarget}}
     # run: git config --local --list
   wiki-update:
     name: Update Wiki
@@ -118,7 +118,7 @@ jobs:
       run: |
         git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
-        OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
+        OWGHTOKEN: ${{secrets.OWGHTOKEN}}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
       shell: cmd
     - if: env.OWTESTMODE != '1'
@@ -135,10 +135,12 @@ jobs:
         path: docs
     - name: Wiki Repo Update
       run: |
-        if not "${{ env.OWTESTMODE }}" == "1" (
-          git add -v -f .
-          git commit -v -m "GitHub Workflow build"
-          git push -v
+        if "${{github.repository}}" == "open-watcom/open-watcom-v2" (
+          if not "${{env.OWTESTMODE}}" == "1" (
+            git add -v -f .
+            git commit -v -m "GitHub Workflow build"
+            git push -v
+          )
         )
       shell: cmd
     # run: git config --list

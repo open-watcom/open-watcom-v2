@@ -3,9 +3,9 @@ name: X-Delete Artifacts (Workflow run)
 on: repository_dispatch
 
 env:
-  OWDEBUG:          "${{ vars.DEBUG }}"
-  OWTESTMODE:       "${{ vars.TESTMODE }}"
-  OWCURLOPTS:       "${{ vars.CURLOPTS }}"
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
   OWUSETARARCHIVE:  ''
 
 jobs:
@@ -19,5 +19,5 @@ jobs:
     - name: Delete Artifacts
       uses: ./.github/actions/artfdel
       with:
-        runid: ${{ github.event.client_payload.runid  }}
-        exclude: ${{ github.event.client_payload.exclude }}
+        runid: ${{github.event.client_payload.runid}}
+        exclude: ${{github.event.client_payload.exclude}}

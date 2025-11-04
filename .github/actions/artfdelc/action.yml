@@ -14,8 +14,8 @@ runs:
     uses: ./.github/actions/curlcmd
   - name: Call to delete Artifacts
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
-      -d '{"event_type":"delete_artifacts","client_payload":{"runid":"${{ github.run_id }}"}}'
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      -X POST "${{steps.curlcmd.outputs.gh2}}/dispatches" `
+      -d '{"event_type":"delete_artifacts","client_payload":{"runid":"${{github.run_id}}"}}'
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
     shell: pwsh

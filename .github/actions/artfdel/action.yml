@@ -21,17 +21,17 @@ runs:
   - name: Delete artifacts list
     id: artflist
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts?per_page=100"
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      "${{steps.curlcmd.outputs.gh2}}/actions/runs/${{inputs.runid}}/artifacts?per_page=100"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       $list_id = $response | jq -r .artifacts[].id
       $list_name = $response | jq -r .artifacts[].name
       for ($i = 0; $i -lt $list_id.Length; ++$i) {
-        if( '${{ env.OWDEBUG }}' -eq '1' ) { "$($list_id[$i]),$($list_name[$i])" }
-        if( '${{ inputs.exclude }}' -eq '' || "$($list_name[$i])" -ne "${{ inputs.exclude }}" ) {
-          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-          -X DELETE "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$($list_id[$i])"
-          if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+        if( '${{env.OWDEBUG}}' -eq '1' ) { "$($list_id[$i]),$($list_name[$i])" }
+        if( '${{inputs.exclude}}' -eq '' || "$($list_name[$i])" -ne "${{inputs.exclude}}" ) {
+          $response = ${{steps.curlcmd.outputs.gh1}} `
+          -X DELETE "${{steps.curlcmd.outputs.gh2}}/actions/artifacts/$($list_id[$i])"
+          if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
         }
       }
     shell: pwsh  

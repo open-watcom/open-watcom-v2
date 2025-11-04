@@ -3,10 +3,10 @@ description: 'Create new day and month Release on GitHub'
 outputs:
   drelid:
     description: 'day release ID'
-    value: ${{ steps.newdrel.outputs.id }}
+    value: ${{steps.newdrel.outputs.id}}
   mrelid:
     description: 'month release ID'
-    value: ${{ steps.newmrel.outputs.id }}
+    value: ${{steps.newmrel.outputs.id}}
 runs:
   using: composite
   steps:
@@ -19,21 +19,21 @@ runs:
   - name: 'Prepare build information for Release'
     id: dreldata
     run: |
-      echo "tag=Current-build" >> ${{ github.output }}
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
+      echo "tag=Current-build" >> ${{github.output}}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{github.output}}
     shell: bash
   - name: 'Remove daily Release if exists'
     uses: ./.github/actions/ghreldel
     with:
-      tag:     ${{ steps.dreldata.outputs.tag }}
+      tag:     ${{steps.dreldata.outputs.tag}}
   - name: 'Create daily Release'
     id: newdrel
     uses: ./.github/actions/ghrelcre
     with:
-      note:    "Last updated ${{ steps.dreldata.outputs.timestamp }} UTC"
-      title:   ${{ steps.dreldata.outputs.tag }}
-      tag:     ${{ steps.dreldata.outputs.tag }}
-      tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
+      note:    "Last updated ${{steps.dreldata.outputs.timestamp}} UTC"
+      title:   ${{steps.dreldata.outputs.tag}}
+      tag:     ${{steps.dreldata.outputs.tag}}
+      tagmsg:  ${{steps.dreldata.outputs.timestamp}}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
@@ -41,32 +41,32 @@ runs:
     id: mreldata
     run: |
       tagstamp=$(date +'%Y-%m-%d')
-      echo "mtag=$(date +'%Y-%m-')" >> ${{ github.output }}
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
-      echo "tag=$tagstamp-Build" >> ${{ github.output }}
-      echo "tagmsg=$tagstamp $tagstamp-Build" >> ${{ github.output }}
-      echo "title=$tagstamp Build" >> ${{ github.output }}
+      echo "mtag=$(date +'%Y-%m-')" >> ${{github.output}}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{github.output}}
+      echo "tag=$tagstamp-Build" >> ${{github.output}}
+      echo "tagmsg=$tagstamp $tagstamp-Build" >> ${{github.output}}
+      echo "title=$tagstamp Build" >> ${{github.output}}
     shell: bash
   - name: 'Check monthly Release exists'
     id: oldmrel
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{ steps.mreldata.outputs.mtag }}"
-      if( '${{ env.OWDEBUG }}' -eq '1' ) { $response }
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      "${{steps.curlcmd.outputs.gh2}}/git/matching-refs/tags/${{steps.mreldata.outputs.mtag}}"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
       $sha = $response | jq -r .[].object.sha
       if( "$sha" -eq 'null' ) { $sha = '' }
-      "sha=$sha" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      "sha=$sha" | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.oldmrel.outputs.sha == ''
     id: newmrel
     name: 'Create monthly Release'
     uses: ./.github/actions/ghrelcre
     with:
-      note:    "Created ${{ steps.mreldata.outputs.timestamp }} UTC"
-      title:   ${{ steps.mreldata.outputs.title }}
-      tag:     ${{ steps.mreldata.outputs.tag }}
-      tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}
+      note:    "Created ${{steps.mreldata.outputs.timestamp}} UTC"
+      title:   ${{steps.mreldata.outputs.title}}
+      tag:     ${{steps.mreldata.outputs.tag}}
+      tagmsg:  ${{steps.mreldata.outputs.tagmsg}}
   - if: steps.oldmrel.outputs.sha == ''
     id: mdata
-    run: echo "tag=${{ steps.mreldata.outputs.tag }}" >> ${{ github.output }}
+    run: echo "tag=${{steps.mreldata.outputs.tag}}" >> ${{github.output}}
     shell: bash

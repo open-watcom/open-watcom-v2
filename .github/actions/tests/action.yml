@@ -22,19 +22,19 @@ runs:
     uses: ./.github/actions/artfload
     with:
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.suffix }}
+      artifact: build ${{inputs.suffix}}
   - if: runner.os == 'Linux'
     name: try tests
     run: |
-      echo OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
     shell: bash
   - if: runner.os == 'Windows'
     name: try tests
     run: |
-      echo "OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}"
+      echo "OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}"
     shell: bash
   - if: runner.os == 'macOS'
     name: try tests
     run: |
-      echo OS=${{ runner.os }}, path=${{ inputs.path }}, skip=${{ inputs.skip }}
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
     shell: bash

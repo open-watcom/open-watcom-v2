@@ -16,41 +16,45 @@ runs:
   steps:
   - name: Get Artifact name
     id: artifact_name
-    run: >
-      -Split "${{ inputs.artifact }}"
-      | Join-String -Separator '-' -OutputPrefix 'id='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      -Split "${{inputs.artifact}}" `
+      | Join-String -Separator '-' -OutputPrefix 'id=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - name: Get destination folder
     id: dstpath
     run: |
-      if( '${{ env.OWUSETARARCHIVE }}' -eq '1' ) {
-        "${{ github.workspace }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      if( '${{env.OWUSETARARCHIVE}}' -eq '1' ) {
+        "${{github.workspace}}" `
+        | Join-String -OutputPrefix 'path=' `
+        | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       } else {
-        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        Join-Path ${{github.workspace}} ${{inputs.gitpath}} `
+        | Join-String -OutputPrefix 'path=' `
+        | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       }
     shell: pwsh
   - if: env.OWTESTMODE != '1'
-    name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
+    name: Restore Artifact ${{steps.artifact_name.outputs.id}}
     uses: actions/download-artifact@v4
     with:
-      name: ${{ steps.artifact_name.outputs.id }}
-      path: ${{ steps.dstpath.outputs.path }}
+      name: ${{steps.artifact_name.outputs.id}}
+      path: ${{steps.dstpath.outputs.path}}
   - if: env.OWUSETARARCHIVE == '1'
     name: Get tar file name
     id: tarname
-    run: >
-      Join-Path ${{ github.workspace }} owartifact.tar.xz
-      | Join-String -OutputPrefix 'fullname='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      Join-Path ${{github.workspace}} owartifact.tar.xz `
+      | Join-String -OutputPrefix 'fullname=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - if: env.OWUSETARARCHIVE == '1'
     name: Restore Artifact
     uses: ./.github/actions/tarload
     with:
-      gitpath:  ${{ inputs.gitpath }}
-      fullname: ${{ steps.tarname.outputs.fullname }}
+      gitpath:  ${{inputs.gitpath}}
+      fullname: ${{steps.tarname.outputs.fullname}}
   - if: env.OWUSETARARCHIVE == '1'
     name: Delete Temporary Artifact tar file
-    run: rm -f ${{ steps.tarname.outputs.fullname }}
+    run: rm -f ${{steps.tarname.outputs.fullname}}
     shell: bash

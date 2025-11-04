@@ -12,32 +12,32 @@ runs:
   - if: runner.os == 'Linux'
     name: Test Bootstrap OW
     run: |
-      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+      if [ '${{env.OWDEBUG}}' = '1' ]; then
         env | sort
       fi
-      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
         ci/buildx.sh
       fi
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
-      OWROOT:        ${{ github.workspace }}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
-      OWTESTBOOT:    ${{ inputs.testnewow }}
+      OWTESTBOOT:    ${{inputs.testnewow}}
     shell: bash
   - if: runner.os == 'Windows'
     name: Test Bootstrap OW
     run: |
-      if "${{ env.OWDEBUG }}" == "1" (
+      if "${{env.OWDEBUG}}" == "1" (
         set
       )
-      if not "${{ env.OWTESTMODE }}" == "1" (
+      if not "${{env.OWTESTMODE}}" == "1" (
         ci\buildx.cmd
       )
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
-      OWROOT:        ${{ github.workspace }}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
-      OWTESTBOOT:    ${{ inputs.testnewow }}
+      OWTESTBOOT:    ${{inputs.testnewow}}
     shell: cmd

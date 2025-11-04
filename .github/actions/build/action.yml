@@ -25,66 +25,66 @@ runs:
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'bld watcom binbuild'
-      artifact: bld watcom ${{ inputs.suffix }}
+      artifact: bld watcom ${{inputs.suffix}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.suffix }}
+      artifact: build ${{inputs.suffix}}
   - if: runner.os == 'Linux'
     name: Build
     run: |
-      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+      if [ '${{env.OWDEBUG}}' = '1' ]; then
         env | sort
       fi
-      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
-        ci/buildx.sh ${{ inputs.args }}
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh ${{inputs.args}}
       fi
     env:
       OWBUILD_STAGE: 'build'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox'
       OWVERBOSE:     1
     shell: bash
   - if: runner.os == 'Windows'
     name: Build
     run: |
-      if "${{ env.OWDEBUG }}" == "1" (
+      if "${{env.OWDEBUG}}" == "1" (
         set
       )
-      if not "${{ env.OWTESTMODE }}" == "1" (
-        ci\buildx.cmd ${{ inputs.args }}
+      if not "${{env.OWTESTMODE}}" == "1" (
+        ci\buildx.cmd ${{inputs.args}}
       )
     env:
       OWBUILD_STAGE: 'build'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox.exe'
-      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
+      OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
       OWVERBOSE:     1
     shell: cmd
   - if: runner.os == 'macOS'
     name: Build
     run: |
-      if [ '${{ env.OWDEBUG }}' = '1' ]; then
+      if [ '${{env.OWDEBUG}}' = '1' ]; then
         env | sort
       fi
-      if [ ! '${{ env.OWTESTMODE }}' = '1' ]; then
-        ci/buildx.sh ${{ inputs.args }}
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh ${{inputs.args}}
       fi
     env:
       OWBUILD_STAGE: 'build'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox-x'
       OWVERBOSE:     1
     shell: bash
   - uses: ./.github/actions/artfsave
     with:
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: rel ${{ inputs.suffix }}
+      gitpath:  ${{inputs.gitpath}}
+      artifact: rel ${{inputs.suffix}}
   - if: runner.os == 'Linux' || runner.os == 'Windows'
     uses: ./.github/actions/artfsave
     with:
       gitpath:  'bld setupgui'
-      artifact: bld setupgui ${{ inputs.suffix }}
+      artifact: bld setupgui ${{inputs.suffix}}

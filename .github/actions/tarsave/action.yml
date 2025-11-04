@@ -21,48 +21,48 @@ runs:
   steps:
   - name: Get source folder
     id: srcpath
-    run: >
-      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
-      | Join-String -OutputPrefix 'path='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      Join-Path ${{github.workspace}} ${{inputs.gitpath}} `
+      | Join-String -OutputPrefix 'path=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
   - name: Setup tar options
     id: tarcmd
-    run: >
-      if( '${{ env.OWDEBUG }}' -eq '1' ) {
-        'opts=-cvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      if( '${{env.OWDEBUG}}' -eq '1' ) {
+        'opts=-cvf' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       } else {
-        'opts=-cf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        'opts=-cf' | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       }
     shell: pwsh      
   - if: runner.os == 'Linux' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File Linux
-    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: tar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -z --overwrite -C "${{steps.srcpath.outputs.path}}" .
     shell: bash
   - if: runner.os == 'Linux' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File Linux
-    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: tar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -J --overwrite -C "${{steps.srcpath.outputs.path}}" .
     shell: bash
   - if: runner.os == 'macOS' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File OSX
-    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: gtar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -z --overwrite -C "${{steps.srcpath.outputs.path}}" .
     shell: bash
   - if: runner.os == 'macOS' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File OSX
-    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: gtar ${{steps.tarcmd.outputs.opts}} "${{inputs.fullname}}" -J --overwrite -C "${{steps.srcpath.outputs.path}}" .
     shell: bash
   - if: runner.os == 'Windows' && inputs.format == 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File (Windows)
     run: |
-      7z a "${{ inputs.fullname }}" "${{ steps.srcpath.outputs.path }}"
-      ci\slash.cmd "${{ inputs.fullname }}" > lst.txt
-      7z rn "${{ inputs.fullname }}" @lst.txt
+      7z a "${{inputs.fullname}}" "${{steps.srcpath.outputs.path}}"
+      ci\slash.cmd "${{inputs.fullname}}" > lst.txt
+      7z rn "${{inputs.fullname}}" @lst.txt
       del lst.txt
     shell: cmd
   - if: runner.os == 'Windows' && inputs.format != 'gzip' && env.OWTESTMODE != '1'
     name: Create tar File (Windows)
     run: |
-      tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .
-      7z a -txz "${{ inputs.fullname }}" ${{ runner.temp }}\owartifact.tar
-      del ${{ runner.temp }}\owartifact.tar
+      tar ${{steps.tarcmd.outputs.opts}} ${{runner.temp}}\owartifact.tar -C "${{steps.srcpath.outputs.path}}" .
+      7z a -txz "${{inputs.fullname}}" ${{runner.temp}}\owartifact.tar
+      del ${{runner.temp}}\owartifact.tar
     shell: cmd
