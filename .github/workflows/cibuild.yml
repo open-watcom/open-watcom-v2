@@ -36,7 +36,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
 
-  Bootstrap-prev:
+  bootstrap-prev:
     needs: start-start
     strategy:
       matrix:
@@ -68,9 +68,9 @@ jobs:
     - name: Test OW bootstrap
       uses: ./.github/actions/testboot
 
-  Builds:
+  builds:
     needs:
-    - Bootstrap-prev
+    - bootstrap-prev
     strategy:
       matrix:
         include:
@@ -141,38 +141,43 @@ jobs:
 
   snapshot-both:
     needs:
-    - Builds
+    - builds
     name: CI Release
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Load all release files
+    - name: Load all release files and create snapshot
+      id:   snapshot
       uses: ./.github/actions/relload
       with:
+        asset:      'snapshot'
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
-    - name: Create OW snapshot
-      id: owsnapshot
-      uses: ./.github/actions/snapshot
-      with:
-        gitpath:    'rel'
     - if: github.event_name == 'pull_request' && env.OWTESTMODE != '1'
-      name: Upload OW snapshot (Pull Request)
+      name: Upload snapshot (Pull Request)
       uses: actions/upload-artifact@v4
       with:
         name:           'owsnapshot'
-        path:           ${{steps.owsnapshot.outputs.fullname}}
+        path:           ${{steps.snapshot.outputs.fullname}}
         retention-days: 14
         overwrite:      true
     - if: github.event_name != 'pull_request'
-      name: Upload OW (Last CI Build)
-      uses: ./.github/actions/lastbld
+      id: relrel
+      name: GitHub CI-build Release
+      uses: ./.github/actions/release
+    - if: github.event_name != 'pull_request'
+      run: echo "relid=${{steps.relrel.outputs.relid}}"
+      shell: bash
+    - if: github.event_name != 'pull_request'
+      name: Upload asset files
+      uses: ./.github/actions/ghassets
       with:
-        fullname:   ${{steps.owsnapshot.outputs.fullname}}
+        relid:    ${{steps.relrel.outputs.relid}}
+        gitpath:  'distrib ow bin'
     - if: vars.DELETEARTIFACTS == '1'
-      name: Call to delete Artifacs ${{github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)'}}
+      name: Call to delete Artifacts ${{github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)'}}
       uses: ./.github/actions/artfdelc
       with:
         exclude:    ${{github.event_name == 'pull_request' && 'owsnapshot' || ''}}

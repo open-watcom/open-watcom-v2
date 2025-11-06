@@ -1,4 +1,4 @@
-name: Release
+name: release
 run-name: Release Build (daily and monthly)
 
 on:
@@ -29,7 +29,7 @@ jobs:
       with:
         tag:     'Current-build'
 
-  Builds:
+  builds:
     needs: check_run
     if: needs.check_run.outputs.runit
     strategy:
@@ -91,76 +91,85 @@ jobs:
       docbuild:     ${{matrix.docbuild}}
       run_tests:    ${{matrix.run_tests}}
 
-  Installers:
+  installers:
     needs:
-    - Builds
+    - builds
     strategy:
       matrix:
         include:
         - asset: instdos
-          title:   'Build DOS Installer'
+          title:    'Build DOS Installer'
         - asset: instos2
-          title:   'Build OS/2 Installer'
+          title:    'Build OS/2 Installer'
         - asset: instlnx32
-          title:   'Build Linux(32-bit) Installer'
+          title:    'Build Linux(32-bit) Installer'
         - asset: instlnx64
-          title:   'Build Linux(64-bit) Installer'
+          title:    'Build Linux(64-bit) Installer'
         - asset: instwin16
-          title:   'Build Windows(16-bit) Installer'
+          title:    'Build Windows(16-bit) Installer'
         - asset: instwin32
-          title:   'Build Windows(32-bit) Installer'
+          title:    'Build Windows(32-bit) Installer'
         - asset: instwin64
-          title:   'Build Windows(64-bit) Installer'
+          title:    'Build Windows(64-bit) Installer'
         - asset: snapshot
-          title:   'Create OW full snapshot'
+          title:    'Create OW snapshot'
+          gitpath:  'distrib ow bin'
     name: ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: ${{matrix.title}}
-      uses: ./.github/actions/install
+      uses: ./.github/actions/relload
       with:
-        target:     ${{matrix.asset}}
+        asset:      ${{matrix.asset}}
         suffix_nt:  'vs2022'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
+        isrelrel:   '1'
+
   release:
-    needs: Installers
+    needs: installers
     name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
-      drelid: ${{steps.rel_rel.outputs.drelid}}
-      mrelid: ${{steps.rel_rel.outputs.mrelid}}
+      drelid: ${{steps.relrel.outputs.relid}}
+      mrelid: ${{steps.mrelrel.outputs.relid}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: GitHub Release
-      id: rel_rel
+      id: relrel
       uses: ./.github/actions/release
-    - run: echo "drelid=${{steps.rel_rel.outputs.drelid}};mrelid=${{steps.rel_rel.outputs.mrelid}}"
+      with:
+        isrelrel:   '1'
+    - name: GitHub Month Release
+      id: mrelrel
+      uses: ./.github/actions/releasem
+    - run: echo "drelid=${{steps.relrel.outputs.relid}};mrelid=${{steps.mrelrel.outputs.relid}}"
       shell: bash
-  Uploads:
+
+  uploads:
     needs: release
     strategy:
       matrix:
         include:
         - asset: instdos
-          title:   'DOS Installer'
+          title:    'DOS Installer'
         - asset: instos2
-          title:   'OS/2 Installer'
+          title:    'OS/2 Installer'
         - asset: instlnx32
-          title:   'Linux(32-bit) Installer'
+          title:    'Linux(32-bit) Installer'
         - asset: instlnx64
-          title:   'Linux(64-bit) Installer'
+          title:    'Linux(64-bit) Installer'
         - asset: instwin16
-          title:   'Windows(16-bit) Installer'
+          title:    'Windows(16-bit) Installer'
         - asset: instwin32
-          title:   'Windows(32-bit) Installer'
+          title:    'Windows(32-bit) Installer'
         - asset: instwin64
-          title:   'Windows(64-bit) Installer'
+          title:    'Windows(64-bit) Installer'
         - asset: snapshot
-          title:   'OW full snapshot'
+          title:    'OW snapshot'
     name: Upload ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
@@ -168,14 +177,25 @@ jobs:
       uses: actions/checkout@v4
     - run: echo "drelid=${{needs.release.outputs.drelid}};mrelid=${{needs.release.outputs.mrelid}}"
       shell: bash
-    - name: ${{matrix.title}} Asset
+    - name: Load asset files artifact
+      uses: ./.github/actions/artfload
+      with:
+        artifact: install ${{matrix.asset}}
+        gitpath:  'temp'
+    - name: Upload asset files (day release)
       uses: ./.github/actions/ghassets
       with:
-        target:     ${{matrix.asset}}
-        drelid:     ${{needs.release.outputs.drelid}}
-        mrelid:     ${{needs.release.outputs.mrelid}}
+        relid:    ${{needs.release.outputs.drelid}}
+        gitpath:  'temp'
+    - if: needs.release.outputs.mrelid != ''
+      name: Upload asset files (month release)
+      uses: ./.github/actions/ghassets
+      with:
+        relid:    ${{needs.release.outputs.mrelid}}
+        gitpath:  'temp'
+
   end-end:
-    needs: Uploads
+    needs: uploads
     name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:

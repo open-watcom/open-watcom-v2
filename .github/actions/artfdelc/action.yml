@@ -16,6 +16,6 @@ runs:
     run: |
       $response = ${{steps.curlcmd.outputs.gh1}} `
       -X POST "${{steps.curlcmd.outputs.gh2}}/dispatches" `
-      -d '{"event_type":"delete_artifacts","client_payload":{"runid":"${{github.run_id}}"}}'
+      -d '{"event_type":"delete_artifacts","client_payload":{"runid":"${{github.run_id}}","exclude":"${{inputs.exclude}}"}}'
       if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
     shell: pwsh

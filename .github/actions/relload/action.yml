@@ -1,6 +1,11 @@
 name: release-load-all
 description: 'Load all artifact for OW Release'
 inputs:
+  asset:
+    description: 'asset name'
+    required: false
+    default: ''
+    type: string
   suffix_nt:
     description: 'used compiler toolchain (for Windows)'
     required: false
@@ -16,9 +21,33 @@ inputs:
     required: false
     default: ''
     type: string
+  isrelrel:
+    description: 'is release release'
+    required: false
+    default: ''
+    type: string
+outputs:
+  fullname:
+    description: 'snapshot file full name'
+    value: ${{steps.snapshot.outputs.fullname}}
 runs:
   using: composite
   steps:
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
+    with:
+      gitpath:  'build binbuild'
+      artifact: 'build lnx x64 ${{inputs.suffix_lnx}}'
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
+    with:
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui nt x64 ${{inputs.suffix_nt}}'
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
+    with:
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
@@ -63,3 +92,42 @@ runs:
     with:
       gitpath:  'rel'
       artifact: rel docwin ${{inputs.suffix_nt}}
+  - if: inputs.asset != 'snapshot'
+    name: Build Installer
+    run: |
+      if [ '${{env.OWDEBUG}}' = '1' ]; then
+        env | sort
+      fi
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh gcc
+      fi
+    env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       'GCC'
+      OWROOT:        ${{github.workspace}}
+      OWINSTTARGET:  ${{inputs.asset}}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.asset == 'snapshot'
+    name: Create snapshot directory and get tar file name
+    id: snapshot
+    run: |
+      $dstpath = Join-Path ${{github.workspace}} distrib ow bin
+      New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path $dstpath > $null
+      Join-Path $dstpath ow-snapshot.tar.xz `
+      | Join-String -OutputPrefix 'fullname=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
+    shell: pwsh
+  - if: inputs.asset == 'snapshot'
+    name: OW snapshot save (tar)
+    uses: ./.github/actions/tarsave
+    with:
+      gitpath:  'rel'
+      fullname: ${{steps.snapshot.outputs.fullname}}
+  # save asset as artifacts for distribution
+  # use full content of directory, cannot specify individual files
+  - if: inputs.isrelrel == '1'
+    uses: ./.github/actions/artfsave
+    with:
+      gitpath:    'distrib ow bin'
+      artifact:   install ${{inputs.asset}}

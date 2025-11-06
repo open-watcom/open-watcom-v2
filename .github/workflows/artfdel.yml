@@ -3,10 +3,7 @@ name: X-Delete Artifacts (Workflow run)
 on: repository_dispatch
 
 env:
-  OWDEBUG:          "${{vars.DEBUG}}"
-  OWTESTMODE:       "${{vars.TESTMODE}}"
   OWCURLOPTS:       "${{vars.CURLOPTS}}"
-  OWUSETARARCHIVE:  '0'
 
 jobs:
   delete-artifacts:
@@ -16,8 +13,23 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Delete Artifacts
-      uses: ./.github/actions/artfdel
-      with:
-        runid: ${{github.event.client_payload.runid}}
-        exclude: ${{github.event.client_payload.exclude}}
+    - name: Setup curl options
+      id: curlcmd
+      uses: ./.github/actions/curlcmd
+    - name: Delete artifacts list
+      id: artflist
+      run: |
+        $response = ${{steps.curlcmd.outputs.gh1}} `
+        "${{steps.curlcmd.outputs.gh2}}/actions/runs/${{github.event.client_payload.runid}}/artifacts?per_page=100"
+        if( '${{vars.DEBUG}}' -eq '1' ) { $response }
+        $list_id = $response | jq -r .artifacts[].id
+        $list_name = $response | jq -r .artifacts[].name
+        for ($i = 0; $i -lt $list_id.Length; ++$i) {
+          if( '${{vars.DEBUG}}' -eq '1' ) { "$($list_id[$i]),$($list_name[$i])" }
+          if( '${{github.event.client_payload.exclude}}' -eq '' || "$($list_name[$i])" -ne "${{github.event.client_payload.exclude}}" ) {
+            $response = ${{steps.curlcmd.outputs.gh1}} `
+            -X DELETE "${{steps.curlcmd.outputs.gh2}}/actions/artifacts/$($list_id[$i])"
+            if( '${{vars.DEBUG}}' -eq '1' ) { $response }
+          }
+        }
+      shell: pwsh  

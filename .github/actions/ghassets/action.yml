@@ -1,48 +1,32 @@
-name: github-release-assets
-description: 'Upload release asset file (day and month release)'
+name: github-upload-asset-files
+description: 'Upload asset files'
 inputs:
-  drelid:
-    description: 'day release ID'
+  relid:
+    description: 'release ID'
     required: false
     default: ''
     type: string
-  mrelid:
-    description: 'month release ID'
-    required: false
-    default: ''
-    type: string
-  target:
-    description: 'install component to process'
+  gitpath:
+    description: 'source path for asset files'
     required: false
     default: ''
     type: string
 runs:
   using: composite
   steps:
-  - uses: ./.github/actions/artfload
-    with:
-      artifact: install ${{inputs.target}}
-      gitpath:  'temp'
   - name: Setup curl options
     id: curlcmd
     uses: ./.github/actions/curlcmd
-  - if: env.OWTESTMODE != '1'
-    run: |
-      Join-Path ${{github.workspace}} temp | Get-ChildItem -File | Foreach-Object {
-        $response = ${{steps.curlcmd.outputs.gh1}} `
-        -X POST "${{steps.curlcmd.outputs.gh3}}/releases/${{inputs.drelid}}/assets?name=$($_.Name)" `
-        -H "Content-Type: application/octet-stream" `
-        --data-binary `@$($_.FullName)
-        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
-      }
-    shell: pwsh
-  - if: inputs.mrelid != '' && env.OWTESTMODE != '1'
-    run: |
-      Join-Path ${{github.workspace}} temp | Get-ChildItem -File | Foreach-Object {
-        $response = ${{steps.curlcmd.outputs.gh1}} `
-        -X POST "${{steps.curlcmd.outputs.gh3}}/releases/${{inputs.mrelid}}/assets?name=$($_.Name)" `
-        -H "Content-Type: application/octet-stream" `
-        --data-binary `@$($_.FullName)
-        if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
+  - run: |
+      Join-Path ${{github.workspace}} ${{inputs.gitpath}} | Get-ChildItem -File | Foreach-Object {
+        if( '${{env.OWTESTMODE}}' -ne '1' ) {
+          $response = ${{steps.curlcmd.outputs.gh1}} `
+          -X POST "${{steps.curlcmd.outputs.gh3}}/releases/${{inputs.relid}}/assets?name=$($_.Name)" `
+          -H "Content-Type: application/octet-stream" `
+          --data-binary `@$($_.FullName)
+          if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
+        } else {
+          "$($_.Name), $($_.FullName)"
+        }
       }
     shell: pwsh
