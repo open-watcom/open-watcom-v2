@@ -6,57 +6,6 @@
 
 bld = $(bld_os)$(bld_cpu)
 
-##################################################
-# check for MS Visual Studio and Intel toolchains
-##################################################
-!ifeq use_for_build_$(bld) msvc_intel
-! if !( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
-# skip, configuration mismatch
-skip = 1
-! else ifeq use_for_target_$(host) msvc_intel
-!  if "$(bld)" != "$(host)"
-# skip, target mismatch
-skip = 2
-!  endif
-! else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 3
-! endif
-##################################################
-# check for Clang and GCC toolchains
-##################################################
-!else ifeq use_for_build_$(bld) clang_gcc
-! if !( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
-# skip, configuration mismatch
-skip = 4
-! else ifeq use_for_target_$(host) clang_gcc
-!  if "$(bld)" != "$(host)"
-# skip, target mismatch
-skip = 5
-!  endif
-! else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 6
-! endif
-##################################################
-# check for WATCOM toolchain
-##################################################
-!else ifdef use_for_build_$(bld)
-# skip, current host requires toolchain other then configured
-skip = 7
-!else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 8
-!endif
-##############################################################################
-!ifdef skip
-skip_build: .SYMBOLIC
-!  ifeq verbose 1
-    @echo skip $(skip) : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!  endif
-!endif
-##############################################################################
-
 # bootstrap overrides
 ######################
 
@@ -76,7 +25,7 @@ skip_build: .SYMBOLIC
 ! endif
 !endif
 
-!ifeq use_for_build_$(bld) msvc_intel
+!if ( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
 ##############################################################################
 ##############################################################################
 #
@@ -150,9 +99,9 @@ common_flags = $(common_flags_dbg)
 # C4820 "'bytes' bytes padding added after construct 'member_name'"
 # C5045 "Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
 #
-!ifeq proj_name builder
+! ifeq proj_name builder
 common_cflags_wng = -W4 -wd4214
-!else
+! else
 common_cflags_wng = -Wall &
     -we4013 &
     -we4020 &
@@ -174,7 +123,7 @@ common_cflags_wng = -Wall &
     -wd4774 &
     -wd4820 &
     -wd5045
-!endif
+! endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -248,7 +197,7 @@ bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 ! else
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bld)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bld)/clibexts.lib
-!endif
+! endif
 
 ! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
@@ -289,7 +238,8 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
 #
 # target definitions for VISUALC and INTEL toolchains
 #
-! ifeq use_for_target_$(host) msvc_intel
+
+! ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
@@ -349,7 +299,7 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -FI
 
 ! endif
-!else ifeq use_for_build_$(bld) clang_gcc
+!else if ( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
 ##############################################################################
 ##############################################################################
 #
@@ -604,7 +554,8 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 #
 # target definitions for Clang and GCC toolchains
 #
-! ifeq use_for_target_$(host) clang_gcc
+
+! ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
@@ -685,10 +636,6 @@ incl_file_opts = -include
 #
 ##############################################################################
 ##############################################################################
-
-! if !( defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__") )
-!error "OS is unsupported by OW build system for this toolchain"
-! endif
 
 # librarian settings
 ############################

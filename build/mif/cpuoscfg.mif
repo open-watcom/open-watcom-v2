@@ -1,0 +1,100 @@
+#
+# bootstrap hosts configuration
+#
+!ifdef __MSVC_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+#
+bld_os_nt    = 1
+!else ifdef __INTEL_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+bld_os_nt    = 1
+!else ifdef __GCC_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+bld_cpu_arm  = 1
+bld_cpu_a64  = 1
+#
+bld_os_linux = 1
+bld_os_bsd   = 1
+!else ifdef __CLANG_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+bld_cpu_arm  = 1
+bld_cpu_a64  = 1
+#
+bld_os_linux = 1
+bld_os_bsd   = 1
+bld_os_osx   = 1
+!else ifdef __WATCOM_TOOLS__
+
+!ifdef bootstrap
+bld_cpu_386  = 1
+#
+bld_os_dos   = 1
+bld_os_os2   = 1
+bld_os_nt    = 1
+bld_os_linux = 1
+!endif
+
+!endif
+
+!ifdef bootstrap
+
+!ifndef bld_cpu_$(bld_cpu)
+skip_build = 1
+!else ifndef bld_os_$(bld_os)
+skip_build = 1
+!else ifndef bld_cpu_$(host_cpu)
+skip_build = 1
+!else ifndef bld_os_$(host_os)
+skip_build = 1
+!endif
+
+!else
+
+watbld_cpu_i86     = 1
+watbld_cpu_386     = 1
+watbld_cpu_axp     = 1
+watbld_cpu_mps     = 1
+watbld_cpu_ppc     = 1
+watbld_cpu_generic = 1
+#
+watbld_os_dos      = 1
+watbld_os_linux    = 1
+watbld_os_nov      = 1
+watbld_os_nt       = 1
+watbld_os_os2      = 1
+watbld_os_qnx      = 1
+watbld_os_rdos     = 1
+watbld_os_rdosdev  = 1
+watbld_os_win      = 1
+watbld_os_zdos     = 1
+watbld_os_generic  = 1
+
+wattest = $(watbld_cpu_$(host_cpu))$(watbld_os_$(host_os))
+!ifeq wattest 11
+__WATCOM_TOOLS__ = $(bld_ver_tool)
+!else ifndef bld_cpu_$(bld_cpu)
+skip_build = 1
+!else ifndef bld_os_$(bld_os)
+skip_build = 1
+!else ifndef bld_cpu_$(host_cpu)
+skip_build = 1
+!else ifndef bld_os_$(host_os)
+skip_build = 1
+!else
+!undef __WATCOM_TOOLS__
+!endif
+
+!endif
+
+##############################################################################
+!ifdef skip_build
+skip_all: .SYMBOLIC
+!  ifeq verbose 1
+    @echo skip: target $(host_os)-$(host_cpu) (host $(bld_os)-$(bld_cpu))
+!  endif
+!endif
+##############################################################################

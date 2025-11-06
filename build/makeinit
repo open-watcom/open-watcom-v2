@@ -54,19 +54,13 @@ __GCC_TOOLS__ = $+$(%OWTOOLSVER)$-
 __CLANG_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS INTEL
 __INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
+!else ifeq %OWTOOLS WATCOM
+__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else
 # if OWTOOLS is WATCOM or not defined or unknow value, default to WATCOM
 __WATCOM_TOOLS__ = 0
 !endif
 
-# setup run-time WATCOM tools version
-!ifndef bootstrap
-# if it is not bootstrap then set to new OW build version
-__WATCOM_TOOLS__ = $(bld_ver_tool)
-!else ifeq %OWTOOLS WATCOM
-# if bootstrap and use WATCOM tools then set to WATCOM tools version
-__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
-!endif
 !ifdef %TESTBOOT
 !ifeq %TESTBOOT 1
 testbootstrap = 1
@@ -88,7 +82,6 @@ bld_os = nt
 !else ifdef __NTX64__
 bld_cpu = x64
 bld_os = nt
-use_for_build_ntx64 = msvc_intel
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -101,7 +94,6 @@ bld_os = linux
 !else ifdef __LINUXX64__
 bld_cpu = x64
 bld_os = linux
-use_for_build_linuxx64 = clang_gcc
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -111,18 +103,15 @@ bld_os = linux
 !else ifdef __LINUXARM__
 bld_cpu = arm
 bld_os = linux
-use_for_build_linuxarm = clang_gcc
 !else ifdef __LINUXARM64__
 bld_cpu = a64
 bld_os = linux
-use_for_build_linuxa64 = clang_gcc
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd
 !else ifdef __BSDX64__
 bld_cpu = x64
 bld_os = bsd
-use_for_build_bsdx64 = clang_gcc
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -132,7 +121,6 @@ bld_os = haiku
 !else ifdef __HAIKUX64__
 bld_cpu = x64
 bld_os = haiku
-use_for_build_haikux64 = clang_gcc
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -142,18 +130,15 @@ bld_os = osx
 !else ifdef __OSXX64__
 bld_cpu = x64
 bld_os = osx
-use_for_build_osxx64 = clang_gcc
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
 bld_os = osx
-use_for_build_osxarm = clang_gcc
 !else ifdef __OSXARM64__
 bld_cpu = a64
 bld_os = osx
-use_for_build_osxa64 = clang_gcc
 !endif
 
 nested_wmake = wmake
