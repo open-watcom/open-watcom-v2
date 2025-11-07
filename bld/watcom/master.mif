@@ -2,6 +2,17 @@ proj_name = watcom
 
 watcom_autodepends = .AUTODEPEND
 
+#
+# only host version is build
+# it builds clibext objects which are used
+# only for tools running on this host
+#
+!ifneq host_os $(bld_os)
+skip_build = 1
+!else ifneq host_cpu $(bld_cpu)
+skip_build = 1
+!endif
+
 !include cproj.mif
 !include deftarg.mif
 
@@ -9,14 +20,10 @@ watcom_autodepends = .AUTODEPEND
 
 inc_dirs = -I"../h"
 
-!ifeq host_os $(bld_os)
-! ifeq host_cpu $(bld_cpu)
-!  ifndef __WATCOM_TOOLS__
+!ifndef __WATCOM_TOOLS__
 libs = clibext.lib clibexts.lib
-!  else ifdef bootstrap
+!else ifdef bootstrap
 libs = clibext.lib clibexts.lib
-!  endif
-! endif
 !endif
 
 all: $(libs) .SYMBOLIC
