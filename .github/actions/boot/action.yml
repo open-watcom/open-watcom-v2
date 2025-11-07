@@ -21,9 +21,6 @@ runs:
   - if: runner.os == 'Linux' || runner.os == 'macOS'
     name: Bootstrap
     run: |
-      if [ '${{env.OWDEBUG}}' = '1' ]; then
-        env | sort
-      fi
       ci/buildx.sh ${{inputs.args}}
     env:
       OWBUILD_STAGE: 'boot'

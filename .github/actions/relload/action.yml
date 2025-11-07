@@ -95,9 +95,6 @@ runs:
   - if: inputs.asset != 'snapshot'
     name: Build Installer
     run: |
-      if [ '${{env.OWDEBUG}}' = '1' ]; then
-        env | sort
-      fi
       if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
         ci/buildx.sh gcc
       fi

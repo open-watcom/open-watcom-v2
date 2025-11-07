@@ -33,9 +33,6 @@ runs:
   - if: runner.os == 'Linux'
     name: Build
     run: |
-      if [ '${{env.OWDEBUG}}' = '1' ]; then
-        env | sort
-      fi
       if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
         ci/buildx.sh ${{inputs.args}}
       fi
@@ -63,9 +60,6 @@ runs:
   - if: runner.os == 'macOS'
     name: Build
     run: |
-      if [ '${{env.OWDEBUG}}' = '1' ]; then
-        env | sort
-      fi
       if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
         ci/buildx.sh ${{inputs.args}}
       fi
