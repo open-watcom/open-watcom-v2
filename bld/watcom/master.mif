@@ -9,10 +9,14 @@ watcom_autodepends = .AUTODEPEND
 
 inc_dirs = -I"../h"
 
-!ifndef __WATCOM_TOOLS__
+!ifeq host_os $(bld_os)
+! ifeq host_cpu $(bld_cpu)
+!  ifndef __WATCOM_TOOLS__
 libs = clibext.lib clibexts.lib
-!else ifdef bootstrap
+!  else ifdef bootstrap
 libs = clibext.lib clibexts.lib
+!  endif
+! endif
 !endif
 
 all: $(libs) .SYMBOLIC
