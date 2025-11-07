@@ -1,5 +1,8 @@
 proj_name=hdr
 
+host_cpu = generic
+host_os  = generic
+
 crwatpro_gsp = crwatpro.gsp
 
 additional_clean = $(crwatpro_gsp)
