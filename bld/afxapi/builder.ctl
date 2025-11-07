@@ -19,7 +19,7 @@ set PROJDIR=<CWD>
     <CCCMD> nt/*.inl                      "<OWRELROOT>/h/nt/afx/"
     <CCCMD> nt/*.rc                       "<OWRELROOT>/h/nt/afx/"
 
-    <CCCMD> include/res/*.cur             "<OWRELROOT>/h/nt/afx/res/"
+    <CCCMD> h/res/*.cur                   "<OWRELROOT>/h/nt/afx/res/"
 
     <CCCMD> dnt386/nafxcwd.lib            "<OWRELROOT>/lib386/nt/afx/"
     <CCCMD> dnt386u/uafxcwd.lib           "<OWRELROOT>/lib386/nt/afx/"
