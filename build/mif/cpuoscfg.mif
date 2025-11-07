@@ -94,7 +94,7 @@ skip_build = 1
 !ifdef skip_build
 skip_all: .SYMBOLIC
 !  ifeq verbose 1
-    @echo skip: target $(host_os)-$(host_cpu) (host $(bld_os)-$(bld_cpu))
+    @echo skip: target $(host_os)-$(host_cpu) [host $(bld_os)-$(bld_cpu)]
 !  endif
 !endif
 ##############################################################################
