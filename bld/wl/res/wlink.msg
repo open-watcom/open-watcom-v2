@@ -625,18 +625,6 @@ pick( MSG_WIN_VXD_HELP_21,  "            | (\"MOVeable\" | \"FIXed\") | \"DIScar
 */
 
 /*
- *  Zdos help screen: max 16 lines (from 0 to 15).
- *  To start a new page, leave a line undefined or define an empty line.
- */
-pick( MSG_ZDOS_HELP_0,      " " ,
-                            " " )
-pick( MSG_ZDOS_HELP_1,      "commands valid for the ZDOS executable formats only:" ,
-                            "ZDOS 実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_ZDOS_HELP_2,      " " ,
-                            " " )
-pick( MSG_ZDOS_HELP_3,      "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" ,
-                            "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" )
-/*
  *  Raw help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
@@ -652,7 +640,7 @@ pick( MSG_RAW_HELP_4,       "option    ::= \"OFFset=\"n" ,
                             "option    ::= \"OFFset=\"n" )
                                 
 /*
- *  Zdos help screen: max 16 lines (from 0 to 15).
+ *  RDOS help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
 pick( MSG_RDOS_HELP_0,      " " ,

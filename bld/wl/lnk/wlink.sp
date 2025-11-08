@@ -125,19 +125,6 @@ system begin 386
 #    format qnx flat
     format qnx 
 end
-:elsesegment zdos
-::
-:: ZDOS default system
-::
-# remember, don't put carets (^) in following entry!
-system begin 386
-    option osname='ZDOS User Application'
-    libpath '%WATCOM%/lib386'
-    libpath '%WATCOM%/lib386/zdos'
-    libfile appstart.obj
-    library clib3r.lib
-    format zdos
-end
 :elsesegment rdos
 ::
 :: RDOS default systems

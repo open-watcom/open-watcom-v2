@@ -10,7 +10,6 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
     FORMAT form
 
     form ::= DOS [COM]
-            | ZDOS [SYS | HWD | FSD]
             | RAW [BIN | HEX]
             | WINDOWS [win_dll_attrs] [MEMORY] [FONT]
             | WINDOWS VXD [STATIC | DYNAMIC]
@@ -64,21 +63,6 @@ a separate file.
 .np
 For more information on DOS executable file formats,
 see the chapter entitled :HDREF refid='doschap'..
-.do end
-.*
-.mnote ZDOS
-(short form "ZD") tells the &lnkname to generate a ZDOS "EXE" file.
-.np
-The name of the executable file will have extension "exe".
-If "SYS", "HWD" or "FSD" is specified, a ZDOS driver file
-will be generated in which case the name of the executable file will have
-the extension "sys", "hwd" or "fsd".
-Note that these default extensions can be overridden by using the
-"NAME" directive to name the executable file.
-.if '&target' ne 'QNX' .do begin
-.np
-For more information on ZDOS executable file formats,
-see the chapter entitled :HDREF refid='zdoschap'..
 .do end
 .*
 .mnote RAW

@@ -49,10 +49,10 @@ typedef enum {          // there is a corresp. table in MSG.C
 #define MK_QNX          (MK_QNX_16 | MK_QNX_FLAT)
 #define MK_RDOS         (MK_RDOS_16 | MK_RDOS_32)
 #define MK_64BIT        (MK_PE | MK_ELF)
-#define MK_32BIT        (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_FLAT | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS_32)
+#define MK_32BIT        (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_FLAT | MK_PE | MK_ELF | MK_WIN_VXD | MK_RAW | MK_RDOS_32)
 #define MK_16BIT        (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_RDOS_16)
 /* MK_OS2_LE, MK_OS2_LX, MK_WIN_VXD and MK_PE are not treated as FLAT internally */
-#define MK_FLAT_OFFS    (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_ZDOS | MK_RAW)
+#define MK_FLAT_OFFS    (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_RAW)
 #define MK_ALLOW_64     (MK_64BIT)
 #define MK_ALLOW_32     (MK_32BIT)
 #define MK_ALLOW_16     (MK_16BIT | MK_PHAR_FLAT | MK_OS2_FLAT | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW)

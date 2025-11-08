@@ -9,12 +9,6 @@ files.
 The DOS executable file format will only run under the DOS operating
 system.
 .do end
-.if '&exeformat' eq 'zdos' .do begin
-.ix 'ZDOS applications' 'creating'
-.ix 'applications' 'creating for ZDOS'
-The ZDOS executable file format will only run under the ZDOS operating
-system.
-.do end
 .if '&exeformat' eq 'elf' .do begin
 .ix 'ELF applications' 'creating'
 .ix 'applications' 'creating for ELF'

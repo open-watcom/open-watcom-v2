@@ -1067,7 +1067,7 @@ static void PatchData( fix_relo_data *fix )
     if( (fix->type & FIX_BASE) == 0 ) {     // it's offset only
         if( !( (FmtData.type & MK_WIN_NE) && (fix->type & FIX_LOADER_RES) ) ) {
             PatchOffset( fix, FindRealAddr( fix ), false );
-            if( (FmtData.type & (MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_WIN_VXD | MK_NOVELL | MK_PHAR_REX | MK_ZDOS | MK_RAW)) == 0
+            if( (FmtData.type & (MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_WIN_VXD | MK_NOVELL | MK_PHAR_REX | MK_RAW)) == 0
                 || (FmtData.type & MK_OS2_LX) && !FmtData.u.os2fam.gen_int_relocs ) {
                 fix->done = true;
             }
@@ -1684,12 +1684,6 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         return( true );
     }
 #endif
-#ifdef _ZDOS
-    if( FmtData.type & MK_ZDOS ) {
-        breloc->item.zdos.reloc_offset = fix->loc_addr.off;
-        return( true );
-    }
-#endif
 #ifdef _EXE
     if( FmtData.type & MK_COM ) {
         LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
@@ -1724,7 +1718,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         || (FmtData.type & MK_ELF) && (LinkState & LS_HAVE_X86_CODE) == 0
             && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || (FmtData.type & MK_PE) && (ftype & (FIX_BASE | FIX_OFFSET_8))
-        || ((FmtData.type & (MK_PHAR_REX | MK_ZDOS | MK_RAW)) && (ftype != FIX_OFFSET_16)
+        || ((FmtData.type & (MK_PHAR_REX | MK_RAW)) && (ftype != FIX_OFFSET_16)
             && (ftype != FIX_OFFSET_32)) ) {
         LnkMsg( LOC+ERR+MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
         return;

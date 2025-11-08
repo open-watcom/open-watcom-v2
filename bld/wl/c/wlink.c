@@ -54,7 +54,6 @@
 #include "loadqnx.h"
 #include "loadnov.h"
 #include "loadelf.h"
-#include "loadzdos.h"
 #include "loadrdv.h"
 #include "loadphar.h"
 #include "symtrace.h"

@@ -242,7 +242,7 @@ static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
         return( true );
     }
 #endif
-#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+#if defined( _PHARLAP ) || defined( _RAW )
     if( FmtData.type & MK_FLAT_OFFS ) {
         currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
         return( false );

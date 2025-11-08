@@ -56,7 +56,6 @@
 #include "load16m.h"
 #include "loadqnx.h"
 #include "loadelf.h"
-#include "loadzdos.h"
 #include "loadrdv.h"
 #include "loadraw.h"
 #include "loadfile.h"
@@ -324,12 +323,6 @@ static void finiLoad( void )
 #ifdef _ELF
     if( FmtData.type & MK_ELF ) {
         FiniELFLoadFile();
-        return;
-    }
-#endif
-#ifdef _ZDOS
-    if( FmtData.type & MK_ZDOS ) {
-        FiniZdosLoadFile();
         return;
     }
 #endif

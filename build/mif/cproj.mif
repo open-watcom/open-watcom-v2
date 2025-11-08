@@ -285,7 +285,6 @@ model_switch_i86 = -m$(memory_model_i86)
 !endif
 
 default_memory_model_386_dos     = s
-default_memory_model_386_zdos    = s
 default_memory_model_386_qnx     = s
 default_memory_model_386_nov     = s
 default_memory_model_386_rdosdev = c
@@ -343,9 +342,6 @@ def_fpu_flags_linux386 = -fpi
   ######
   # NOVELL ?????
 def_fpu_flags_nov386   = -fpc
-  ######
-  # ZDOS doesn't have emulator support
-def_fpu_flags_zdos386  = -fpc
   ######
 def_fpu_flags_nto386   = -fpi
 
@@ -436,7 +432,6 @@ cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_dos      = -bt=dos
-cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
 cflags_rdosdev  = -bt=rdosdev -bm -zu
 cflags_nov      = -bt=netware
@@ -510,7 +505,6 @@ clflags_qnxi86     = -l=qnx
 clflags_qnx386     = -l=qnx
 clflags_dosi86     = -l=dos $(clflags_doslfn_i86)
 clflags_dos386     = -l=$(dos_extender) $(clflags_doslfn_386)
-clflags_zdos386    = -l=zdos
 clflags_rdos386    = -l=rdos
 clflags_rdosdev386 = -l=rdosdev
 clflags_nov386     = -l=netware
@@ -576,7 +570,6 @@ aflags_win      = -bt=windows
 aflags_os2      = -bt=os2
 aflags_qnx      = -bt=qnx
 aflags_dos      = -bt=dos
-aflags_zdos     = -bt=zdos
 aflags_rdos     = -bt=rdos
 aflags_rdosdev  = -bt=rdosdev
 aflags_nov      = -bt=netware
@@ -621,7 +614,6 @@ lflags_rdos386     = sys rdos
 lflags_rdosdev386  = sys rdosdev
 lflags_win386      = sys win386
 lflags_wini86      = sys windows
-lflags_zdos386     = sys zdos
 
 # windowed application macros
 lflags_wind_nt386   = sys nt_win
@@ -648,7 +640,6 @@ lflags_dll_rdos386    = sys rdos_dll
 lflags_dll_rdosdev386 = $(lflags_rdosdev386)
 lflags_dll_win386     = $(lflags_win386)
 lflags_dll_wini86     = sys windows_dll
-lflags_dll_zdos386    = $(lflags_zdos386)
 
 proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags_$(host)) $(extra_l_flags)
 proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll_$(host)) $(extra_l_flags_dll)
@@ -689,7 +680,6 @@ libflags_qnx       = -io
 libflags_rdos      = -io
 libflags_rdosdev   = -io
 libflags_win       = -io
-libflags_zdos      = -io
 
 proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 
@@ -712,7 +702,6 @@ inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_rdos  =
 inc_dirs_sys_rdosdev =
-inc_dirs_sys_zdos  =
 
 inc_dirs_lang_dos  =
 
@@ -731,7 +720,6 @@ inc_dirs_sys_linux   =
 inc_dirs_sys_nto     =
 inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
-inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 
 inc_dirs_lang_dos     = -I"$(hdr_dir)/dos/h"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx/h"

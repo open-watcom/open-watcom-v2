@@ -47,7 +47,6 @@
 #include "cmdrdv.h"
 #include "cmdqnx.h"
 #include "cmdelf.h"
-#include "cmdzdos.h"
 #include "cmdraw.h"
 #include "cmdline.h"
 #include "symtrace.h"
@@ -2062,9 +2061,6 @@ static parse_entry  Models[] = {
 #endif
 #ifdef _ELF
     "ELF",          ProcELFFormat,      MK_ELF, 0,
-#endif
-#ifdef _ZDOS
-    "ZDos",         ProcZdosFormat,     MK_ZDOS, 0,
 #endif
 #ifdef _RDOS
     "RDos",         ProcRdosFormat,     MK_RDOS, 0,
