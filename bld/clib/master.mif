@@ -11,10 +11,10 @@ clib_host_cpu_ppc=ppc
 host_cpu = $(clib_host_cpu_$(processor))
 
 clib_host_os_msdos      =dos
-clib_host_os_nw_clib    =nov_clib
-clib_host_os_nw_clibl   =nov_clibl
-clib_host_os_nw_libc    =nov_libc
-clib_host_os_nw_libcl   =nov_libcl
+clib_host_os_nw_clib    =nov
+clib_host_os_nw_clibl   =nov
+clib_host_os_nw_libc    =nov
+clib_host_os_nw_libcl   =nov
 clib_host_os_os2        =os2
 clib_host_os_qnx        =qnx
 clib_host_os_windows    =win

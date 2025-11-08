@@ -10,7 +10,7 @@ bld = $(bld_os)$(bld_cpu)
 ######################
 
 !ifdef bootstrap
-! ifdef __WATCOM_TOOLS__
+! ifdef __BLD_WATCOM_TOOLS__
 !  ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
@@ -33,6 +33,8 @@ bld = $(bld_os)$(bld_cpu)
 #
 ##############################################################################
 ##############################################################################
+
+!if !defined( __BLD_WATCOM_TOOLS__ )
 
 additional_clean_sys = *.pdb *.exp
 
@@ -235,6 +237,8 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
+!endif
+
 #
 # target definitions for VISUALC and INTEL toolchains
 #
@@ -299,6 +303,7 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -FI
 
 ! endif
+
 !else if ( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
 ##############################################################################
 ##############################################################################
@@ -307,6 +312,8 @@ incl_file_opts = -FI
 #
 ##############################################################################
 ##############################################################################
+
+!if !defined( __BLD_WATCOM_TOOLS__ )
 
 # librarian settings
 ############################
@@ -551,6 +558,8 @@ bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 # options for linking
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
+!endif
+
 #
 # target definitions for Clang and GCC toolchains
 #
@@ -628,6 +637,7 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -include
 
 ! endif
+
 !else
 ##############################################################################
 ##############################################################################
@@ -684,8 +694,8 @@ bld_cxx_flags   = #-zastd=c++98
 
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-! ifdef __WATCOM_TOOLS__
-!   if $(__WATCOM_TOOLS__) <= 1300
+! ifdef __BLD_WATCOM_TOOLS__
+!   if $(__BLD_WATCOM_TOOLS__) <= 1300
 !     ifndef testbootstrap
 bld_watcom_common_cflags   =-wx-wce=310-za99
 bld_watcom_common_cxxflags =-w8-wce=579
@@ -729,6 +739,7 @@ bld_ldflags     =
 #
 
 !endif
+
 ##############################################################################
 ##############################################################################
 

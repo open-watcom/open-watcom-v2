@@ -28,32 +28,26 @@ bld_os_linux = 1
 bld_os_bsd   = 1
 bld_os_osx   = 1
 !else ifdef __WATCOM_TOOLS__
-
-!ifdef bootstrap
 bld_cpu_386  = 1
 #
 bld_os_dos   = 1
 bld_os_os2   = 1
 bld_os_nt    = 1
 bld_os_linux = 1
-!endif
-
+__BLD_WATCOM_TOOLS__ = $(__WATCOM_TOOLS__)
 !endif
 
 !ifdef bootstrap
-
-!ifndef bld_cpu_$(bld_cpu)
+! ifndef bld_cpu_$(bld_cpu)
 skip_build = 1
-!else ifndef bld_os_$(bld_os)
+! else ifndef bld_os_$(bld_os)
 skip_build = 1
-!else ifndef bld_cpu_$(host_cpu)
+! else ifneq bld_os $(host_os)
 skip_build = 1
-!else ifndef bld_os_$(host_os)
+! else ifneq bld_cpu $(host_cpu)
 skip_build = 1
-!endif
-
+! endif
 !else
-
 watbld_cpu_i86     = 1
 watbld_cpu_386     = 1
 watbld_cpu_axp     = 1
@@ -72,22 +66,21 @@ watbld_os_rdosdev  = 1
 watbld_os_win      = 1
 watbld_os_zdos     = 1
 watbld_os_generic  = 1
-
-wattest = $(watbld_cpu_$(host_cpu))$(watbld_os_$(host_os))
-!ifeq wattest 11
+#
+wattesthost = $(watbld_cpu_$(host_cpu))$(watbld_os_$(host_os))
+! ifndef bld_cpu_$(bld_cpu)
+skip_build = 1
+! else ifndef bld_os_$(bld_os)
+skip_build = 1
+! else ifeq wattesthost 11
 __WATCOM_TOOLS__ = $(bld_ver_tool)
-!else ifndef bld_cpu_$(bld_cpu)
+! else ifneq bld_os $(host_os)
 skip_build = 1
-!else ifndef bld_os_$(bld_os)
+! else ifneq bld_cpu $(host_cpu)
 skip_build = 1
-!else ifndef bld_cpu_$(host_cpu)
-skip_build = 1
-!else ifndef bld_os_$(host_os)
-skip_build = 1
-!else
+! else
 !undef __WATCOM_TOOLS__
-!endif
-
+! endif
 !endif
 
 ##############################################################################
