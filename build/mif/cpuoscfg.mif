@@ -68,12 +68,12 @@ watbld_os_zdos     = 1
 watbld_os_generic  = 1
 #
 wattesthost = $(watbld_cpu_$(host_cpu))$(watbld_os_$(host_os))
-! ifndef bld_cpu_$(bld_cpu)
+! ifeq wattesthost 11
+__WATCOM_TOOLS__ = $(bld_ver_tool)
+! else ifndef bld_cpu_$(bld_cpu)
 skip_build = 1
 ! else ifndef bld_os_$(bld_os)
 skip_build = 1
-! else ifeq wattesthost 11
-__WATCOM_TOOLS__ = $(bld_ver_tool)
 ! else ifneq bld_os $(host_os)
 skip_build = 1
 ! else ifneq bld_cpu $(host_cpu)
