@@ -6,24 +6,24 @@ rtdll_ntverrc = ..
 
 additional_clean = *.ilb *.grc
 
-rtdll_host_cpu_086=i86
-rtdll_host_cpu_286=i86
-rtdll_host_cpu_287=i86
-rtdll_host_cpu_386=386
-rtdll_host_cpu_387=386
-rtdll_host_cpu_axp=axp
-rtdll_host_cpu_mps=mps
-rtdll_host_cpu_ppc=ppc
+rtdll_host_cpu_086 = i86
+rtdll_host_cpu_286 = i86
+rtdll_host_cpu_287 = i86
+rtdll_host_cpu_386 = 386
+rtdll_host_cpu_387 = 386
+rtdll_host_cpu_axp = axp
+rtdll_host_cpu_mps = mps
+rtdll_host_cpu_ppc = ppc
 host_cpu = $(rtdll_host_cpu_$(processor))
 
-rtdll_host_os_generic =dos
-rtdll_host_os_msdos   =dos
-rtdll_host_os_netware =nov
-rtdll_host_os_os2     =os2
-rtdll_host_os_qnx     =qnx
-rtdll_host_os_windows =win
-rtdll_host_os_winnt   =nt
-rtdll_host_os_linux   =linux
+rtdll_host_os_generic = generic
+rtdll_host_os_msdos   = dos
+rtdll_host_os_netware = nov
+rtdll_host_os_os2     = os2
+rtdll_host_os_qnx     = qnx
+rtdll_host_os_windows = win
+rtdll_host_os_winnt   = nt
+rtdll_host_os_linux   = linux
 host_os=$(rtdll_host_os_$(system))
 
 !ifdef profile

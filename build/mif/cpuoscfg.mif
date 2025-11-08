@@ -1,5 +1,6 @@
 #
-# bootstrap hosts configuration
+# native host compilers
+# supported configuration
 #
 !ifdef __MSVC_TOOLS__
 bld_cpu_386  = 1
@@ -9,6 +10,7 @@ bld_os_nt    = 1
 !else ifdef __INTEL_TOOLS__
 bld_cpu_386  = 1
 bld_cpu_x64  = 1
+#
 bld_os_nt    = 1
 !else ifdef __GCC_TOOLS__
 bld_cpu_386  = 1
@@ -48,28 +50,35 @@ skip_build = 1
 skip_build = 1
 ! endif
 !else
-watbld_cpu_i86     = 1
-watbld_cpu_386     = 1
-watbld_cpu_axp     = 1
-watbld_cpu_mps     = 1
-watbld_cpu_ppc     = 1
-watbld_cpu_generic = 1
 #
-watbld_os_dos      = 1
-watbld_os_linux    = 1
-watbld_os_nov      = 1
-watbld_os_nt       = 1
-watbld_os_os2      = 1
-watbld_os_qnx      = 1
-watbld_os_rdos     = 1
-watbld_os_rdosdev  = 1
-watbld_os_win      = 1
-watbld_os_zdos     = 1
-watbld_os_generic  = 1
+# Open Watcom new build
+# supported target configurations
 #
-wattesthost = $(watbld_cpu_$(host_cpu))$(watbld_os_$(host_os))
-! ifeq wattesthost 11
+watbld_dosi86         = 1
+watbld_dos386         = 1
+watbld_linux386       = 1
+watbld_nov386         = 1
+watbld_nt386          = 1
+watbld_ntgeneric      = 1
+watbld_os2i86         = 1
+watbld_os2386         = 1
+watbld_qnxi86         = 1
+watbld_qnx386         = 1
+watbld_rdos386        = 1
+watbld_rdosdev386     = 1
+watbld_wini86         = 1
+watbld_win386         = 1
+watbld_generici86     = 1
+watbld_generic386     = 1
+watbld_genericgeneric = 1
+#
+! ifdef watbld_$(host_os)$(host_cpu)
 __WATCOM_TOOLS__ = $(bld_ver_tool)
+#
+# if platform is not supported by new build Open Watcom
+# then try to check if host platform is supported
+# by bootstrap compiler
+#
 ! else ifndef bld_cpu_$(bld_cpu)
 skip_build = 1
 ! else ifndef bld_os_$(bld_os)
@@ -91,3 +100,4 @@ skip_all: .SYMBOLIC
 !  endif
 !endif
 ##############################################################################
+
