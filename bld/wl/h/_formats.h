@@ -52,6 +52,6 @@ pick_format( 0x00004000, MK_QNX_FLAT,      14, "QNX 386",              "QNX 386"
 pick_format( 0x00008000, MK_ELF,           15, "ELF",                  "ELF" ) \
 pick_format( 0x00010000, MK_WIN_VXD,       16, "Windows VxD",          "Windows VxD" ) \
 pick_format( 0x00020000, MK_DOS16M,        17, "DOS/16M",              "DOS/16M" ) \
-pick_format( 0x00040000, MK_RAW,           19, "RAW Binary Image",     "Raw" ) \
-pick_format( 0x00080000, MK_RDOS_32,       20, "RDOS",                 "RDOS" ) \
-pick_format( 0x00100000, MK_RDOS_16,       21, "RDOS 16-bit",          "RDOS 16-bit" )
+pick_format( 0x00040000, MK_RAW,           18, "RAW Binary Image",     "Raw" ) \
+pick_format( 0x00080000, MK_RDOS_32,       19, "RDOS",                 "RDOS" ) \
+pick_format( 0x00100000, MK_RDOS_16,       20, "RDOS 16-bit",          "RDOS 16-bit" )
