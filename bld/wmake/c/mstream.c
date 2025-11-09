@@ -240,7 +240,7 @@ static bool needQuotes( const char *name )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 bool InsFile( const char *name, bool envsearch )
 /***********************************************
@@ -283,7 +283,7 @@ bool InsFile( const char *name, bool envsearch )
     return( false );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 void InsOpenFile( FILE *fp )

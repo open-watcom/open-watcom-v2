@@ -84,7 +84,7 @@
                         size -= (c);
 
 #if !defined( __NT__ ) && !defined( __NETWARE__ ) && !defined( __UNIX__ )
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 
 #if defined(__QNX__)
@@ -413,6 +413,10 @@ static CHAR_TYPE * _WCNEAR __F_NAME(_sys_fullpath,_sys_wfullpath)
     return( buff );
 #endif
 }
+
+#if !defined( __NT__ ) && !defined( __NETWARE__ ) && !defined( __UNIX__ )
+#pragma pop( check_stack );
+#endif
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_fullpath,_wfullpath)
                 ( CHAR_TYPE *buff, const CHAR_TYPE *path, size_t size )

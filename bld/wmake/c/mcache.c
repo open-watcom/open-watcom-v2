@@ -322,7 +322,7 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
 /********************************************************************/
@@ -373,7 +373,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     return( CACHE_OK );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 #endif  /* USE_DIR_CACHE */

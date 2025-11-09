@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@
 void __RemoveAllThreadData( void );
 #endif
 
-#if !defined( __QNX__ ) && !defined(__RDOSDEV__) && !defined(__RDOSDEV__)
+#if !defined( __QNX__ ) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
 
 // lookup thread data

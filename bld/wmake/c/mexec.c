@@ -1463,7 +1463,7 @@ STATIC void doForSubst( const char *var, size_t varlen,
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC RET_T handleFor( char *line )
 /***********************************
@@ -1544,7 +1544,7 @@ STATIC RET_T handleFor( char *line )
     return( RET_SUCCESS );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -2168,7 +2168,7 @@ STATIC void killTmpEnv( UINT16 tmp )
 #endif
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 /*****************************************************/
@@ -2395,7 +2395,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     return( my_ret );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@
     static CRITICAL_SECTION Sync;
 #endif
 
-#pragma off(check_stack)
+#pragma off( check_stack );
 
 int             LSuppInit( void )
 {
@@ -141,3 +142,5 @@ link_buffer     *LSuppQueuePull( volatile link_queue *lq )
     LSuppCritExit( save );
     return( (link_buffer*)buff );
 }
+
+#pragma pop( check_stack );

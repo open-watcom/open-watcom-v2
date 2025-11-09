@@ -76,7 +76,7 @@ static void parseString( const char *s )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC void doBuiltIns( const char *makeopts )
 /*********************************************
@@ -133,7 +133,7 @@ STATIC void doBuiltIns( const char *makeopts )
     }
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 static void setFirstTarget( TLIST *potential_first )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "rtinit.h"
 
 /* This code may be called before stack checking is set up! */
-#pragma off( check_stack )
+#pragma off( check_stack );
 
 extern "C"
 void CPPLIB( multi_thread_init )( // MULTI-THREAD INITIALIZATION
@@ -42,5 +43,7 @@ void CPPLIB( multi_thread_init )( // MULTI-THREAD INITIALIZATION
 {
     _wint_thread_data_offset = __RegisterThreadDataSize( sizeof( THREAD_CTL ) );
 }
+
+#pragma pop( check_stack );
 
 #endif

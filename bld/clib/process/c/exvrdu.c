@@ -61,7 +61,7 @@ static int _WCNEAR file_exists( const CHAR_TYPE *filename )
     }
 }
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 _WCRTLINK int execve( const CHAR_TYPE * path,
                      const CHAR_TYPE * const argv[],
@@ -162,3 +162,5 @@ cleanup:
     lib_free( _envptr );
     return( retval );
 }
+
+#pragma pop( check_stack );
