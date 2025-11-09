@@ -41,7 +41,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "frtdata.h"
 #include "fthread.h"
 #include "thread.h"
 #include "rtspawn.h"

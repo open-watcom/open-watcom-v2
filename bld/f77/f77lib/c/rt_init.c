@@ -37,9 +37,7 @@
     #include <wos2.h>
 #endif
 #include "rtstack.h"
-#include "frtdata.h"
 #include "fthread.h"
-#include "xfflags.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "fapptype.h"

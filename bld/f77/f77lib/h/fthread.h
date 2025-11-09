@@ -36,6 +36,8 @@
 
 #include <setjmp.h>
 #include "trcback.h"
+#include "xfflags.h"
+#include "frtdata.h"
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
   #define __setjmp      Catch
