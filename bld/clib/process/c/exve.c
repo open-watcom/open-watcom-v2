@@ -60,7 +60,7 @@
 
 #define _swap(i)        (((i&0xff) << 8)|((i&0xff00) >> 8))
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 typedef struct a_blk {
     unsigned            next;
@@ -303,3 +303,5 @@ void _WCNEAR __init_execve( void )      /* called from initializer segment */
 {
     __Exec_addr = execve;
 }
+
+#pragma pop( check_stack );

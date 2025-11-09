@@ -125,7 +125,7 @@ static int _dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdl
 #endif
 
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                                           const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
@@ -391,3 +391,5 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #endif
     return( retval );
 }
+
+#pragma pop( check_stack );

@@ -49,7 +49,7 @@
 #include "pathmac.h"
 
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
 {
@@ -105,3 +105,5 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
     }
     return( retval );
 }
+
+#pragma pop( check_stack );

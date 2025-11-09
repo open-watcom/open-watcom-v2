@@ -60,7 +60,7 @@ static int _WCNEAR file_exists( const CHAR_TYPE *filename )
     }
 }
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                        const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
@@ -174,3 +174,5 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     lib_free( _envptr );
     return( retval );
 }
+
+#pragma pop( check_stack );

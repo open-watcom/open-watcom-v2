@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,7 @@ STATIC MTOKEN_T lexDollar( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC MTOKEN_T lexSubString( STRM_T s )
 /**************************************/
@@ -306,7 +306,7 @@ STATIC MTOKEN_T lexSubString( STRM_T s )
     return( state );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -334,7 +334,7 @@ MTOKEN_T LexMacSubst( STRM_T s )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 MTOKEN_T LexMacDef( STRM_T s )
 /************************************
@@ -397,5 +397,5 @@ MTOKEN_T LexMacDef( STRM_T s )
     return( MAC_TEXT );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif

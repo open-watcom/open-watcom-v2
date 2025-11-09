@@ -198,7 +198,7 @@ void    __FiniBeginThread( void )
     FiniFThreads();
 }
 
-#pragma off (check_stack)
+#pragma off( check_stack );
 void    __InitBeginThread( void )
 //===============================
 {
@@ -208,3 +208,4 @@ void    __InitBeginThread( void )
     __RegisterThreadData( &__BeginThread, &__EndThread, &__InitThreadData );
     ThreadsInitialized = false;
 }
+#pragma pop( check_stack );

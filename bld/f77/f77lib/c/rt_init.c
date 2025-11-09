@@ -157,16 +157,11 @@ unsigned        RTSysInit( void ) {
 }
 
 
-// WARNING: ALL routines below this point are XI initialization routines with no
-// stack checking on at all times.  do not place routines below this point
-// unless stack checking must be turned off at all times.
-#pragma off (check_stack)
-
 #ifdef __MT__
 
-static  void    __InitThreadDataSize( void ) {
-//======================================
-
+static  void    __InitThreadDataSize( void )
+//==========================================
+{
     __FThreadDataOffset = __RegisterThreadDataSize( sizeof( fthread_data ) );
 }
 
@@ -179,11 +174,18 @@ XI( __fthread_data_size, __InitThreadDataSize, INIT_PRIORITY_THREAD )
 
 #define F77_ALT_STACK_SIZE      8 * 1024
 
+/*
+ * WARNING: Following routine manipulate with stack therefore
+ * stack checking must be turned off at all times.
+ */
+
+#pragma off( check_stack );
 static void     _WCNEAR __InitAlternateStack( void )
 //==================================================
 {
         __ASTACKSIZ = F77_ALT_STACK_SIZE;
 }
+#pragma pop( check_stack );
 
 AXIN( __InitAlternateStack, INIT_PRIORITY_LIBRARY );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -191,7 +191,7 @@ STRM_T EatToEOL( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC directiveTok getPreTok( void )
 /************************************
@@ -249,7 +249,7 @@ STATIC directiveTok getPreTok( void )
     return( (int)( key - (char **)directives ) );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -556,7 +556,7 @@ STATIC void doElse( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC void doElIf( bool (*logical)(void), directiveTok tok )
 /************************************************************
@@ -614,7 +614,7 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
     }
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

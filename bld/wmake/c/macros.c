@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -365,7 +365,7 @@ STATIC predef_macro checkPseudoMacro( const char *name )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC const char *GetMacroValueProcess( const char *name )
 /**********************************************************
@@ -450,7 +450,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
     return( NULL );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -538,7 +538,7 @@ STATIC char *trimMacroValue( char *v )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC bool addMacro( const char *name, char *value )
 /****************************************************
@@ -574,7 +574,7 @@ STATIC bool addMacro( const char *name, char *value )
     return( unused_value );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -609,7 +609,7 @@ bool IsMacroName( const char *inName )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 void UnDefMacro( const char *name )
 /*****************************************
@@ -636,7 +636,7 @@ void UnDefMacro( const char *name )
     FreeSafe( dead );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

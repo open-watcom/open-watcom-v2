@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ STATIC MTOKEN_T lexLongFilePathName( STRM_T s, MTOKEN_T tok )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 MTOKEN_T LexPath( STRM_T s )
 /*********************************
@@ -240,12 +240,12 @@ MTOKEN_T LexPath( STRM_T s )
     return( TOK_PATH );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC MTOKEN_T lexFileName( STRM_T s )
 /**************************************
@@ -307,7 +307,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     return( TOK_FILENAME );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -370,7 +370,7 @@ STATIC char *getCurlPath( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC MTOKEN_T lexDotName( void )
 /*********************************
@@ -484,7 +484,7 @@ STATIC MTOKEN_T lexDotName( void )
     return( ret );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -499,7 +499,7 @@ STATIC MTOKEN_T lexCmd( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC bool checkMacro( STRM_T s )
 /*********************************
@@ -556,7 +556,7 @@ STATIC bool checkMacro( STRM_T s )
     return( false );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
