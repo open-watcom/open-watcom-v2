@@ -55,22 +55,24 @@
   #if defined( __386__ )
     // so compile-generated symbol "__fthread_init" is defined
     // when we link a 32-bit Windows DLL
-    #pragma aux         __fthread_init "*";
-    char                __fthread_init = { 0 };
+    #pragma aux __fthread_init "*";
+    char        __fthread_init = { 0 };
   #endif
-  char          __FAppType = { FAPP_GUI };
+    char        __FAppType = { FAPP_GUI };
 #else
-  char          __FAppType = { FAPP_CHARACTER_MODE };
+    char        __FAppType = { FAPP_CHARACTER_MODE };
 #endif
 
 void            (* _ExceptionInit)( void ) = { &R_TrapInit };
 void            (* _ExceptionFini)( void ) = { &R_TrapFini };
 
-static  char            RTSysInitialized = { 0 };
+static char     RTSysInitialized = { 0 };
 
 #ifdef __MT__
 
-static  void    __NullFIOAccess( void ) {}
+static void     __NullFIOAccess( void )
+{
+}
 
 void            (*_AccessFIO)( void )         = &__NullFIOAccess;
 void            (*_ReleaseFIO)( void )        = &__NullFIOAccess;
@@ -94,7 +96,7 @@ void    __InitFThreadData( void *td )
 #endif
 
 
-static  void    __InitRTData( void )
+static void     __InitRTData( void )
 //==============================
 {
     // Must match __InitFThreadData().
@@ -104,17 +106,17 @@ static  void    __InitRTData( void )
 }
 
 
-static void RTSysFini( void ) {
-//=============================
-
+static void RTSysFini( void )
+//===========================
+{
     _ExceptionFini();
     // WATFOR-77 calls __ErrorFini() when it terminates
     __ErrorFini();
 }
 
-unsigned        RTSysInit( void ) {
-//===========================
-
+unsigned        RTSysInit( void )
+//===============================
+{
     if( RTSysInitialized )
         return( 0 );
 #if defined( __OS2__ ) && defined( __386__ )

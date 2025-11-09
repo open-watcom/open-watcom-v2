@@ -202,9 +202,9 @@ void    __FiniBeginThread( void )
 void    __InitBeginThread( void )
 //===============================
 {
-    __BeginThread = &FBeginThread;
-    __EndThread = &FEndThread;
-    __InitThreadData = &FInitDataThread;
+    __BeginThread = FBeginThread;
+    __EndThread = FEndThread;
+    __InitThreadData = FInitDataThread;
     __RegisterThreadData( &__BeginThread, &__EndThread, &__InitThreadData );
     ThreadsInitialized = false;
 }
