@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fortran thread-specific data and related functions
 *
 ****************************************************************************/
 
@@ -37,7 +36,6 @@
 #include <setjmp.h>
 #include "trcback.h"
 #include "xfflags.h"
-#include "frtdata.h"
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
   #define __setjmp      Catch
@@ -50,20 +48,37 @@
 #endif
 
 #ifdef __MT__
-    extern      void    (*_AccessFIO)( void );
-    extern      void    (*_ReleaseFIO)( void );
-    extern      void    (*_PartialReleaseFIO)( void );
+    extern void         (*_AccessFIO)( void );
+    extern void         (*_ReleaseFIO)( void );
+    extern void         (*_PartialReleaseFIO)( void );
 #else
-    #define     _AccessFIO()
-    #define     _ReleaseFIO()
-    #define     _PartialReleaseFIO()
+    #define _AccessFIO()
+    #define _ReleaseFIO()
+    #define _PartialReleaseFIO()
+#endif
+
+#ifdef __MT__
+    /*
+     * macro to convert C run-time to Fortran thread extension data pointer
+     */
+    #define C2F_THREADDATAPTR(ct)   ((fthread_data *)((char *)(ct) + __FThreadDataOffset))
+    #define __FTHREADDATAPTR        C2F_THREADDATAPTR( __THREADDATAPTR )
+
+    #define _RWD_XcptFlags          (__FTHREADDATAPTR->__XceptionFlags)
+    #define _RWD_ExCurr             (__FTHREADDATAPTR->__ExCurr)
+#else
+    #define _RWD_XcptFlags          XcptFlags
+    #define _RWD_ExCurr             ExCurr
+
+    extern volatile unsigned short  XcptFlags;
+    extern traceback                PGM *ExCurr;    // head of traceback list
 #endif
 
 #ifdef __MT__
 
-// Thread-specific data:
-// =====================
-
+/*
+ * Fortran extension of C run-time thread data
+ */
 typedef struct fthread_data {
     __jmp_buf           *__SpawnStack;
     traceback           *__ExCurr;
@@ -72,11 +87,7 @@ typedef struct fthread_data {
     void                *__arglist;
 } fthread_data;
 
-extern  unsigned        __FThreadDataOffset;
-
-#define THREADPTR2FTHREADPTR(p) ((fthread_data *)(((char *)(p)) + __FThreadDataOffset))
-
-#define __FTHREADDATAPTR        THREADPTR2FTHREADPTR( __THREADDATAPTR )
+extern unsigned         __FThreadDataOffset;
 
 extern void             __FiniFThreadProcessing( void );
 extern int              __InitFThreadProcessing( void );

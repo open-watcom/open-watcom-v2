@@ -83,17 +83,13 @@ void    __InitFThreadData( void *td )
 {
     fthread_data *ftd;
 
-    ftd = THREADPTR2FTHREADPTR( td );
+    ftd = C2F_THREADDATAPTR( td );
 
     // Must match __InitRTData().
 
     ftd->__ExCurr = NULL;
     ftd->__XceptionFlags = 0;
 }
-
-#else
-
-volatile unsigned short __XcptFlags;
 
 #endif
 

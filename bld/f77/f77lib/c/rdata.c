@@ -37,7 +37,8 @@
 #include "fmtdef.h"
 
 #ifndef __MT__
-    struct traceback PGM *ExCurr;      // head of traceback list
+    struct traceback        PGM *ExCurr;    // head of traceback list
+    volatile unsigned short XcptFlags;
 #endif
 
 #define gbl_defn

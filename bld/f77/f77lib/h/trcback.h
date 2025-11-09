@@ -41,14 +41,3 @@ typedef struct traceback {
 
 #define TB_LG           (~(uint)0)
 #define TB_LG_DB        (~(uint)0-1)
-
-#ifdef __MT__
-
-    #define _EXCURR         (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
-
-#else
-
-    extern traceback PGM    *ExCurr;        // head of traceback list
-    #define _EXCURR         (ExCurr)
-
-#endif

@@ -49,14 +49,3 @@
 #define XF_LIMIT_ERR            0x0040  // indicates one of the LimitErrs
 #define XF_IO_INTERRUPTED       0x0080  // user interrupt during I/O
 #define XF_IO_INTERRUPTABLE     0x0100  // allow interrupts in I/O system
-
-#ifdef __MT__
-
-    #define _XCPTFLAGS          (__FTHREADDATAPTR->__XceptionFlags)
-
-#else
-
-    extern volatile unsigned short  __XcptFlags;
-    #define _XCPTFLAGS              __XcptFlags
-
-#endif
