@@ -110,7 +110,7 @@ void    FCPrologue( void ) {
 
     sym_id              sym;
     entry_pt            *ep;
-    signed_64           ep_count;
+        signed_64                       ep_count;
     sel_handle          sel;
     label_handle        main_entry_label;
     unsigned_16         sp_type;
@@ -149,7 +149,7 @@ void    FCPrologue( void ) {
         Set64Val1p( ep_count );
         for( ep = Entries->link; ep != NULL; ep = ep->link ) {
             CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
-            U64IncDec( &ep_count, 1 );
+            ep_count.u._32[I64LO32]++;
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
@@ -915,7 +915,7 @@ void    FCAltReturn( void ) {
     num_alts = GetU16();
     while( num_alts-- > 0 ) {
         CGSelCase( sel, GetStmtLabel( GetPtr() ), alt_ret );
-        U64IncDec( &alt_ret, 1 );
+        alt_ret.u._32[I64LO32]++;
     }
     other = BENewLabel();
     CGSelOther( sel, other );

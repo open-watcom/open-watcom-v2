@@ -60,14 +60,14 @@ void    DoSelect( FCODE kind ) {
     int                 cases;
     int                 stmts;
     label_handle        label;
-    sym_id              sn;
     sym_id              sel_sym;
     cg_name             sel_expr;
     obj_ptr             curr_obj;
     signed_64           lo;
     signed_64           hi;
-    signed_32           tmp;
 
+    lo.u._32[I64HI32] = 0;
+    hi.u._32[I64HI32] = 0;
     s = CGSelInit();
     cases = GetU16();
     stmts = cases;
@@ -75,15 +75,12 @@ void    DoSelect( FCODE kind ) {
     curr_obj = FCodeTell( 0 );
     while( cases-- > 0 ) {
         if( kind == FC_COMPUTED_GOTO ) {
-            sn = GetPtr();
-            label = GetStmtLabel( sn );
+            label = GetStmtLabel( GetPtr() );
         } else {
             label = GetLabel( GetU16() );
         }
-        tmp = GetConst32();
-        Set64ValI32( hi, tmp );
-        tmp = GetConst32();
-        Set64ValI32( lo, tmp );
+        hi.u._32[I64LO32] = GetConst32();
+        lo.u._32[I64LO32] = GetConst32();
         CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();
