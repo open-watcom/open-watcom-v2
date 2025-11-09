@@ -72,7 +72,9 @@
 
 #if defined( __OS2_286__ )
     #define _handler        __interrupt __pascal __far
-#elif defined( __DOS__ ) || defined( __WINDOWS__ )
+#elif defined( __DOS__ )
+    #define _handler        __interrupt __far
+#elif defined( __WINDOWS__ )
     #define _handler        __interrupt
 #else
     #define _handler
