@@ -66,6 +66,7 @@ void    DoSelect( FCODE kind ) {
     obj_ptr             curr_obj;
     signed_64           lo;
     signed_64           hi;
+    signed_32           tmp;
 
     s = CGSelInit();
     cases = GetU16();
@@ -79,8 +80,10 @@ void    DoSelect( FCODE kind ) {
         } else {
             label = GetLabel( GetU16() );
         }
-        Set64ValI32( hi, GetConst32() );
-        Set64ValI32( lo, GetConst32() );
+        tmp = GetConst32();
+        Set64ValI32( hi, tmp );
+        tmp = GetConst32();
+        Set64ValI32( lo, tmp );
         CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();
