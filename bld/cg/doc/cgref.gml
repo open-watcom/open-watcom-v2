@@ -1670,7 +1670,7 @@ CGSelOther( sel_handle, other_label );
 CGControl( O_GOTO, NULL, end_label ); // or else, fall through
 
 CGControl( O_LABEL, NULL, sel_label );
-CGSelect( sel_handle );
+CGSelect( sel_handle, sel_expr );
 
 CGControl( O_LABEL, NULL, end_label );
 :eXMP.
