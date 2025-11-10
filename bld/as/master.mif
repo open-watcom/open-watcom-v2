@@ -20,30 +20,8 @@ exetarg_name = was$(target_cpu)
 
 ntverrc_exe = $(exetarg_name)
 
-additional_remove_subdirs = stand lib
-
 !include cproj.mif
 !include defrule.mif
-###########################
-# standalone objects rules
-defrule_key = stand
-subdir_stand = stand
-extra_cpp_stand_flags = -D_STANDALONE_
-!ifdef __WATCOM_TOOLS__
-extra_cpp_stand_flags += -fh=stand.pch
-!endif
-ppflags_stand_wreslib = $(ppflags_wreslib)
-!include defrule.mif
-###########################
-# inline objects rules
-defrule_key = lib
-subdir_lib = lib
-!ifdef __WATCOM_TOOLS__
-extra_cpp_lib_flags = -fh=lib.pch
-!endif
-ppflags_lib_wreslib = -DINCL_MSGTEXT
-!include defrule.mif
-###########################
 !include deftarg.mif
 !include trmem.mif
 
@@ -55,27 +33,23 @@ ppflags_lib_wreslib = -DINCL_MSGTEXT
 #########################
 
 as_yacc_prefix  = asy
-asi_yacc_prefix = asiy
 
 as_yacc_flags   = -b $(as_yacc_prefix) -d -db -dd
-asi_yacc_flags  = -b $(asi_yacc_prefix) -d -db -dd
 
 yacc_src        = $(as_dir)/y/as.y
 yacc_driver     = $(as_dir)/y/yydriver.c
 as_yacc_out     = $(as_yacc_prefix)tab
-asi_yacc_out    = $(asi_yacc_prefix)tab
 
 lex_flags       =
 lex_src         = $(as_dir)/y/scan.re
 as_lex_out      = aslexyy
-asi_lex_out     = asilexyy
 
 # cflags
 #################
 
-.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cli_cpp_c_dirs);$(fe_misc_dir)/c;$(watcom_dir)/c
+.c: $(cli_asminline_c);$(trmem_dir);$(cli_cpp_c_dirs);$(fe_misc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $(cli_owl_inc_dirs) $(cli_cpp_inc_dirs) -I"$(fe_misc_dir)/h"
+inc_dirs = -I. $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_cpp_inc_dirs) -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags_target_axp = -DAS_ALPHA
 extra_cpp_flags_target_mps = -DAS_MIPS
@@ -85,6 +59,10 @@ extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu))
 !ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
+!ifndef test_inline_as
+extra_cpp_flags += -D_STANDALONE_
+!endif
+
 extra_cpp_flags_f_asitest = $(trmem_cpp_flags)
 extra_cpp_flags_f_asmem = $(trmem_cpp_flags)
 extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
@@ -114,24 +92,7 @@ extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 #
 # objects
 #
-as_comm_objs_axp = $(_subdir_)alphafmt.obj $(_subdir_)alphains.obj
-as_comm_objs_mps = $(_subdir_)mipsfmt.obj $(_subdir_)mipsins.obj
-as_comm_objs_ppc = $(_subdir_)ppcfmt.obj $(_subdir_)ppcins.obj
-
-as_comm_objs = &
-    $(_subdir_)asexpr.obj &
-    $(_subdir_)asopernd.obj &
-    $(_subdir_)asmem.obj &
-    $(_subdir_)asutils.obj &
-    $(_subdir_)asregs.obj &
-    $(_subdir_)assymbol.obj &
-    $(_subdir_)asdrectv.obj &
-    $(_subdir_)asdirop.obj &
-    $(_subdir_)asnumlab.obj &
-    $(_subdir_)ashash.obj &
-    $(_subdir_)asmsg.obj
-
-as_stand_objs = &
+cli_asminline_objs_stand = &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
     $(_subdir_)main.obj &
@@ -144,43 +105,26 @@ as_stand_objs = &
     $(_subdir_)trmemcvr.obj &
     $(trmem_objs)
 
-as_inline_objs = &
-    $(_subdir_)asinline.obj &
-    $(_subdir_)asiobj.obj
+as_objs = $(cli_asminline_objs_comm) $(cli_asminline_objs_stand)
 
-_subdir_ = $(subdir_stand)/
-as_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_stand_objs)$-
-_subdir_ = $(subdir_lib)/
-asi_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_inline_objs)$-
-
-asi_test_objs = asitest.obj trmemcvr.obj $+$(trmem_objs)$-
+asi_test_objs = asitest.obj trmemcvr.obj $(trmem_objs)
 
 #
 # TEST
 #
 !ifdef test_inline_as
-asinline.exe : $(cli_asminline_libs) $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
-    $(cl) $(clflags) $(asi_test_objs) $(cli_asminline_libs) $(cli_owl_libs) $(ldflags)
+asinline.exe : asi_msg.grh asilexyy.gc asiytab.gc $(cli_asminline_objs_comm) $(cli_asminline_objs_inline) $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
+    $(cl) $(clflags) $(cli_asminline_objs_comm) $(cli_asminline_objs_inline) $(asi_test_objs) $(cli_owl_libs) $(ldflags)
 !endif
 
 #
 # EXE
 #
-!ifndef lib_only
-exetarg_prebuild_objs = asinline.lib $(subdir_stand) msg.grh usage.gh cmdlnprs.gh $(as_yacc_out).gc $(as_lex_out).gc
+exetarg_prebuild_objs = msg.grh usage.gh cmdlnprs.gh $(as_yacc_out).gc $(as_lex_out).gc
 exetarg_objs = $(as_objs)
 exetarg_libs = $(cli_owl_libs)
 exetarg_res = $(proj_name).res
 !include exetarg.mif
-!endif
-
-#
-# LIB
-#
-libtarg_prebuild_objs = $(subdir_lib) asi_msg.grh $(asi_yacc_out).gc $(asi_lex_out).gc
-libtarg_objs = $(asi_objs)
-libtarg_name = asinline
-!include libtarg.mif
 
 #
 # rc and others
@@ -197,12 +141,6 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
-asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
-    @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(ppflags_lib_wreslib) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
-    @%make echo_awk
-    $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
-
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS
 wsplice_opts_ppc = -kAS_PPC
@@ -217,25 +155,9 @@ $(as_yacc_out).gc : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
     %ren $(as_yacc_out).c $(as_yacc_out).gc
     %ren $(as_yacc_out).h $(as_yacc_out).gh
 
-$(asi_yacc_out).gc : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    @rm -f tmp.tmp $(asi_yacc_out).gh $(asi_yacc_out).gc
-    @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) $[@ tmp.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) $(asi_yacc_flags) tmp.tmp $(yacc_driver) > $(nulldevice)
-    %ren $(asi_yacc_out).c $(asi_yacc_out).gc
-    %ren $(asi_yacc_out).h $(asi_yacc_out).gh
-
-
 $(as_lex_out).gc : $(lex_src) $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ tmp.tmp
-    @%make echo_re2c
-    $(noecho)re2c $(lex_flags) tmp.tmp > $@
-
-$(asi_lex_out).gc : $(lex_src) $(__MAKEFILES__)
-    @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) $[@ tmp.tmp
     @%make echo_re2c
     $(noecho)re2c $(lex_flags) tmp.tmp > $@
 
@@ -250,6 +172,3 @@ optencod_targets += dbg
 cmdlnprs.gh cmdlnprs.gc usage.gh : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
-
-$(additional_remove_subdirs) :
-    mkdir $@
