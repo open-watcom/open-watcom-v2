@@ -77,10 +77,11 @@ asi_lex_out     = asilexyy
 
 inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $(cli_owl_inc_dirs) $(cli_cpp_inc_dirs) -I"$(fe_misc_dir)/h"
 
-extra_cppflags_axp = -DAS_ALPHA
-extra_cppflags_mps = -DAS_MIPS
-extra_cppflags_ppc = -DAS_PPC
-extra_cpp_flags = $(extra_cppflags_$(target_cpu))
+extra_cpp_flags_target_axp = -DAS_ALPHA
+extra_cpp_flags_target_mps = -DAS_MIPS
+extra_cpp_flags_target_ppc = -DAS_PPC
+
+extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu))
 !ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif

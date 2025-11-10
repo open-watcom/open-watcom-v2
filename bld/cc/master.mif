@@ -64,17 +64,17 @@ additional_remove_subdirs = $(bin_subdir)
 
 inc_dirs  = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_cpp_flags =
+extra_cpp_flags_target_axp = -DAS_ALPHA
+extra_cpp_flags_target_mps = -DAS_MIPS
+extra_cpp_flags_target_ppc = -DAS_PPC
+
+extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu))
 !ifndef cc_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
 !ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
-extra_cppflags_axp = -DAS_ALPHA
-extra_cppflags_mps = -DAS_MIPS
-extra_cppflags_ppc = -DAS_PPC
-extra_cpp_flags += $(extra_cppflags_$(target_cpu))
 !ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
