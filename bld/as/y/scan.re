@@ -1,12 +1,3 @@
-#include "as.h"
-#include "lexyacc.h"
-#include "ytab.h"
-#include "asparser.h"
-#ifdef _STANDALONE_
-#include "preproc.h"
-#include "options.h"
-#endif
-
 #define BSIZE           8192
 #define YYCTYPE         char
 #define YYCURSOR        cursor

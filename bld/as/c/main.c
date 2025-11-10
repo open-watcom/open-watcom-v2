@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,8 @@
 
 #include "as.h"
 #include <setjmp.h>
+#include "lexyacc.h"
+#include "asytab.gh"
 #include "preproc.h"
 #include "asparser.h"
 #include "options.h"
@@ -44,6 +46,9 @@ extern int      CurrLineno;
 
 jmp_buf         AsmParse;
 int             ExitStatus = EXIT_SUCCESS;
+
+#include "aslexyy.gc"
+#include "asytab.gc"
 
 int PP_MBCharLen( const char *p )
 /*******************************/

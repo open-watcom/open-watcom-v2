@@ -131,8 +131,6 @@ as_comm_objs = &
     $(_subdir_)asmsg.obj
 
 as_stand_objs = &
-    $(_subdir_)$(as_yacc_out).obj &
-    $(_subdir_)$(as_lex_out).obj &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
     $(_subdir_)main.obj &
@@ -146,8 +144,6 @@ as_stand_objs = &
     $(trmem_objs)
 
 as_inline_objs = &
-    $(_subdir_)$(asi_yacc_out).obj &
-    $(_subdir_)$(asi_lex_out).obj &
     $(_subdir_)asinline.obj &
     $(_subdir_)asiobj.obj
 
@@ -170,7 +166,7 @@ asinline.exe : $(cli_asminline_libs) $(asi_test_objs) $(cli_owl_libs) $(__MAKEFI
 # EXE
 #
 !ifndef lib_only
-exetarg_prebuild_objs = asinline.lib $(subdir_stand) msg.grh usage.gh cmdlnprs.gh
+exetarg_prebuild_objs = asinline.lib $(subdir_stand) msg.grh usage.gh cmdlnprs.gh $(as_yacc_out).gc $(as_lex_out).gc
 exetarg_objs = $(as_objs)
 exetarg_libs = $(cli_owl_libs)
 exetarg_res = $(proj_name).res
@@ -180,7 +176,7 @@ exetarg_res = $(proj_name).res
 #
 # LIB
 #
-libtarg_prebuild_objs = $(subdir_lib) asi_msg.grh
+libtarg_prebuild_objs = $(subdir_lib) asi_msg.grh $(asi_yacc_out).gc $(asi_lex_out).gc
 libtarg_objs = $(asi_objs)
 libtarg_name = asinline
 !include libtarg.mif
@@ -211,45 +207,36 @@ wsplice_opts_mps = -kAS_MIPS
 wsplice_opts_ppc = -kAS_PPC
 wsplice_opts     = -u $(wsplice_opts_$(target_cpu))
 
-as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+$(as_yacc_out).gc : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    @rm -f tmp.tmp $(as_yacc_out).gh $(as_yacc_out).gc
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
-    @%make echo_sed
-    $(noecho)sed -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
-
-asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
-    @%make echo_sed
-    $(noecho)sed -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
-
-$(as_yacc_out).c : as_in.y $(__MAKEFILES__)
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ tmp.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)$(yacc) $(as_yacc_flags) tmp.tmp $(yacc_driver) > $(nulldevice)
+    %ren $(as_yacc_out).c $(as_yacc_out).gc
+    %ren $(as_yacc_out).h $(as_yacc_out).gh
 
-$(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
+$(asi_yacc_out).gc : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    @rm -f tmp.tmp $(asi_yacc_out).gh $(asi_yacc_out).gc
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) $[@ tmp.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)$(yacc) $(asi_yacc_flags) tmp.tmp $(yacc_driver) > $(nulldevice)
+    %ren $(asi_yacc_out).c $(asi_yacc_out).gc
+    %ren $(asi_yacc_out).h $(asi_yacc_out).gh
 
-scan_in.re : $(lex_src) $(__MAKEFILES__)
+
+$(as_lex_out).gc : $(lex_src) $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
-    @%make echo_sed
-    $(noecho)sed -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ tmp.tmp
+    @%make echo_re2c
+    $(noecho)re2c $(lex_flags) tmp.tmp > $@
 
-scani_in.re : $(lex_src) $(__MAKEFILES__)
+$(asi_lex_out).gc : $(lex_src) $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
-    @%make echo_sed
-    $(noecho)sed -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
-
-$(as_lex_out).c : scan_in.re $(__MAKEFILES__)
+    $(noecho)*wsplice $(wsplice_opts) $[@ tmp.tmp
     @%make echo_re2c
-    $(noecho)re2c $(lex_flags) $[@ > $@
-
-$(asi_lex_out).c : scani_in.re $(__MAKEFILES__)
-    @%make echo_re2c
-    $(noecho)re2c $(lex_flags) $[@ > $@
+    $(noecho)re2c $(lex_flags) tmp.tmp > $@
 
 # optencod options and targets for various hosts
 #optencod_enc_linux  = -utf8
