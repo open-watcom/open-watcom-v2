@@ -40,16 +40,12 @@ wres_subdir_linux386   = linux386/$(name_model_386)
 wres_subdir_rdos386    = rdos386/$(name_model_386)
 !ifdef $(proj_name)_rtdll
 wres_subdir_os2386     = os2386.rtd/$(name_model_386)
-!else ifdef $(proj_name)_dll
-wres_subdir_os2386     = os2386.dll/$(name_model_386)
 !else
 wres_subdir_os2386     = os2386/$(name_model_386)
 !endif
 wres_subdir_win386     = win386/$(name_model_386)
 !ifdef $(proj_name)_rtdll
 wres_subdir_nt386      = nt386.rtd/$(name_model_386)
-!else ifdef $(proj_name)_dll
-wres_subdir_nt386      = nt386.dll/$(name_model_386)
 !else
 wres_subdir_nt386      = nt386/$(name_model_386)
 !endif
