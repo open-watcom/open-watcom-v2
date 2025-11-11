@@ -13,7 +13,11 @@ cli_dwarfw_libs = $(dwarfw_dir)/$(host).rtd/dwarfw.lib
 #
 # DWARF DLL used
 #
+! ifeq host ntx64
 cli_dwarfw_libs = $(dwarfw_dir)/$(host).dll/dwarfw.lib
+! else
+cli_dwarfw_libs = $(dwarfw_dir)/$(host)/dwarfw.lib
+! endif
 !else
 #
 # DWARF library used
