@@ -195,7 +195,7 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define Set64ValZero( x )       ((x).u._32[0]=0,(x).u._32[1]=0)
 #define Set64Val1p( x )         ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
 #define Set64Val1m( x )         ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
-#define Set64ValI32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=((signed_32)(v)<0)?(unsigned_32)-1:0)
+#define Set64ValI32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=((signed_32)((x).u._32[I64LO32])<0)?(unsigned_32)-1:0)
 #define Set64ValU32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=0)
 
 // is the U64 a valid U32?
