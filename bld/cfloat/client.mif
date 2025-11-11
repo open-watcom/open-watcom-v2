@@ -13,7 +13,11 @@ cli_cfloat_libs = $(cfloat_dir)/$(host).rtd/cf.lib
 #
 # CFLOAT DLL used
 #
+! ifeq host ntx64
 cli_cfloat_libs = $(cfloat_dir)/$(host).dll/cf.lib
+! else
+cli_cfloat_libs = $(cfloat_dir)/$(host)/cf.lib
+! endif
 !else
 #
 # CFLOAT library used
