@@ -1222,7 +1222,7 @@ static void CheckOpndValues( TREEPTR tree )
                 if( I64Test( right ) < 0 ) {
                     shift_negative = true;
                 } else {
-                    if( U64CmpU32( &right, max_shift ) >= 0 ) {
+                    if( U64CmpU32( right, max_shift ) >= 0 ) {
                         shift_too_big = true;
                     }
                 }
@@ -1236,7 +1236,7 @@ static void CheckOpndValues( TREEPTR tree )
                 uint64      right;
 
                 right = LongValue64( opnd );
-                if( U64CmpU32( &right, max_shift ) >= 0 ) {
+                if( U64CmpU32( right, max_shift ) >= 0 ) {
                     shift_too_big = true;
                 }
               } break;
