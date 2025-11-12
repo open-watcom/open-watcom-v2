@@ -54,8 +54,8 @@ void U64IncDec( unsigned_64 *a, signed_32 i );
 int U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
 int I64Cmp( const signed_64 *a, const signed_64 *b );
 
-#define U64CmpC32( a, b )   (((a).u._32[I64HI32]>0)?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]>(b))))
-#define I64CmpC32( a, b )   (((a).u.sign.v)?-1:U64CmpC32((a),(b)))
+#define U64CmpU32( a, b )   (((a).u._32[I64HI32]>0)?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]>(b))))
+#define I64CmpU32( a, b )   (((a).u.sign.v)?-1:U64CmpU32((a),(b)))
 
 #define U64Test( a )        (((a).u._32[I64HI32]|(a).u._32[I64LO32])!=0)
 #define I64Test( a )        (((a).u.sign.v)?-1:U64Test((a)))

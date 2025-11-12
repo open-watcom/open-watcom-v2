@@ -1217,14 +1217,12 @@ static void CheckOpndValues( TREEPTR tree )
             case SIGNED_INT64:
               {
                 int64       right;
-                uint64      big_shift;
 
                 right = LongValue64( opnd );
                 if( I64Test( right ) < 0 ) {
                     shift_negative = true;
                 } else {
-                    Set64ValU32( big_shift, max_shift );
-                    if( U64Cmp( &right, &big_shift ) >= 0 ) {
+                    if( U64CmpU32( &right, max_shift ) >= 0 ) {
                         shift_too_big = true;
                     }
                 }
@@ -1236,11 +1234,9 @@ static void CheckOpndValues( TREEPTR tree )
             case UNSIGNED_INT64:
               {
                 uint64      right;
-                uint64      big_shift;
 
                 right = LongValue64( opnd );
-                Set64ValU32( big_shift, max_shift );
-                if( U64Cmp( &right, &big_shift ) >= 0 ) {
+                if( U64CmpU32( &right, max_shift ) >= 0 ) {
                     shift_too_big = true;
                 }
               } break;

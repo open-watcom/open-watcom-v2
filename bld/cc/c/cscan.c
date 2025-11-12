@@ -539,7 +539,6 @@ static TOKEN doScanNum( void )
     TOKEN           token;
     const char      *curr;
     size_t          len;
-    unsigned_64     const_max;
     bool            overflow;
     bool            ssuffix;
     bool            usuffix;
@@ -759,14 +758,13 @@ static TOKEN doScanNum( void )
     case SUFF_8:
     case SUFF_16:
         if( ssuffix ) {
-            if( U64CmpC32( Constant64, TARGET_INT_MAX ) <= 0 ) {
+            if( U64CmpU32( Constant64, TARGET_INT_MAX ) <= 0 ) {
                 ConstType = TYP_INT;
                 break;
             }
         }
         if( usuffix ) {
-            Set64Val( const_max, TARGET_UINT_MAX, 0 );
-            if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
+            if( U64CmpU32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
                 ConstType = TYP_UINT;
                 break;
             }
@@ -774,14 +772,13 @@ static TOKEN doScanNum( void )
         /* fall through */
     case SUFF_L:
         if( ssuffix ) {
-            if( U64CmpC32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
+            if( U64CmpU32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
                 ConstType = TYP_LONG;
                 break;
             }
         }
         if( usuffix ) {
-            Set64Val( const_max, TARGET_ULONG_MAX, 0 );
-            if( U64Cmp( &Constant64, &const_max ) <= 0 ) {
+            if( U64CmpU32( Constant64, TARGET_ULONG_MAX ) <= 0 ) {
                 ConstType = TYP_ULONG;
                 break;
             }

@@ -1445,7 +1445,7 @@ static void pragUnroll( void )
         unroll_count = 0;
         PPNextToken();
         if( CurToken == T_CONSTANT ) {
-            if( U64CmpC32( Constant64, 255 ) > 0 ) {
+            if( U64CmpU32( Constant64, 255 ) > 0 ) {
                 unroll_count = (unroll_type)255;
             } else {
                 unroll_count = (unroll_type)U8FetchTrunc( Constant64 );
