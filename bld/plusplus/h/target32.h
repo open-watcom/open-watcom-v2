@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +57,10 @@
 #define TARGET_INT_MAX          2147483647
 #define TARGET_INT_MIN          (-2147483647-1)
 #define TARGET_UINT_MAX         4294967295U
+
+#define TARGET_LONG_MAX         2147483647
+#define TARGET_LONG_MIN         (-2147483647-1)
+#define TARGET_ULONG_MAX        4294967295U
 
 #define TARGET_PACKING          8
 #define TARGET_MAX_PACKING      8
