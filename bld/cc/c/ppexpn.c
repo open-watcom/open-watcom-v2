@@ -329,6 +329,7 @@ static bool COperand( void )
     bool done;
 
     done = false;
+    p.no_sign = 0;
     switch( CurToken ) {
     case T_ID:
         loc.locn = SrcFileLoc; // need this to store result
@@ -359,7 +360,6 @@ static bool COperand( void )
             CWarn2p( ERR_UNDEFD_MACRO_IS_ZERO, Buffer );
             Set64ValZero( p.u.uval );
         }
-        p.no_sign = 0;
         if( !done ) {
             PushOperand( p, &loc );
             done = PpNextToken();
@@ -369,7 +369,6 @@ static bool COperand( void )
     case T_FALSE:
     case T_TRUE:
         Set64ValU32( p.u.uval, CurToken == T_TRUE );
-        p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
         break;
@@ -383,27 +382,18 @@ static bool COperand( void )
             done = true;
             p.u.sval.u._64[0] = (long long)SafeAtof( Buffer );
             // add long double support if available
-            p.no_sign = 0;
             break;
         case TYP_WCHAR:
         case TYP_UCHAR:
         case TYP_USHORT:
         case TYP_UINT:
         case TYP_ULONG:
-            Set64ValU32( p.u.uval, U32FetchTrunc( Constant64 ) );
-            p.no_sign = 1;
-            break;
         case TYP_ULONG64:
-            p.u.uval = Constant64;
             p.no_sign = 1;
-            break;
-        case TYP_LONG64:
-            p.u.uval = Constant64;
-            p.no_sign = 0;
-            break;
+            /* fall through */
         default:
-            Set64ValI32( p.u.sval, I32FetchTrunc( Constant64 ) );
-            p.no_sign = 0;
+            p.u.uval = Constant64;
+            break;
         }
         if( !done ) {
             PushOperandCurLocation( p );
@@ -413,7 +403,6 @@ static bool COperand( void )
     default:
         CErr2p( ERR_UNDEFD_MACRO_IS_ZERO, Buffer );
         Set64ValZero( p.u.uval );
-        p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
     }
