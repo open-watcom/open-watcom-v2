@@ -933,12 +933,12 @@ static TOKEN doScanNum( bool expanding )
     case ONE_CASE( 'L' ):
         ConstType = TYP_SLONG;
         c = WriteBufferCharNextChar( c );
-        if( ONE_CASE_EQUAL( c, 'u' ) ) {
+        if( ONE_CASE_EQUAL( c, 'U' ) ) {
             ConstType = TYP_ULONG;
             c = WriteBufferCharNextChar( c );
         } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
             c = WriteBufferCharNextChar( c );
-            if( ONE_CASE_EQUAL( c, 'u' ) ) {
+            if( ONE_CASE_EQUAL( c, 'U' ) ) {
                 ConstType = TYP_ULONG64;
                 c = WriteBufferCharNextChar( c );
             } else {
@@ -1370,7 +1370,7 @@ static TOKEN doScanPPNumber( void )
         c = NextChar();
         if( c == '.' || (CharSet[c] & (C_AL | C_DI)) ) {
             WriteBufferChar( c );
-        } else if( ONE_CASE_EQUAL( prevc, 'e' ) && ( c == '+' || c == '-' ) ) {
+        } else if( ONE_CASE_EQUAL( prevc, 'E' ) && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
                 /* concession to existing practice...
