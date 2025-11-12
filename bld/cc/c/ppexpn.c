@@ -40,17 +40,13 @@
 #include "feprotos.h"
 
 
-#define L                   I64LO32
-#define H                   I64HI32
+#define I64Zero( a )        ( !U64Test((a).u.uval) )
+#define I64NonZero( a )     ( U64Test((a).u.uval) )
+#define U64Zero( a )        ( !U64Test((a).u.uval) )
+#define U64NonZero( a )     ( U64Test((a).u.uval) )
 
-#define I64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define I64NonZero( a )     ( !I64Zero(a) )
-#define U64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define U64NonZero( a )     ( !U64Zero(a) )
-#define U64Low( a )         ( (a).u.uval.u._32[L] )
-#define U64High( a )        ( (a).u.uval.u._32[H] )
-
-#define I64Low( a )         ( (signed_32)(a).u.uval.u._32[L] )
+#define U64LowU32( a )      ( U64Low((a).u.uval) )
+#define U64HighU32( a )     ( U64High((a).u.uval) )
 
 #define U64LT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
 #define U64GT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
@@ -778,12 +774,12 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( U64Low( e2 ) > 64
-              || ( U64High( e2 ) != 0 ) ) {
+            if( U64LowU32( e2 ) > 64
+              || ( U64HighU32( e2 ) != 0 ) ) {
                 if( e1.no_sign ) {
                     Set64ValZero( e1.u.uval );
                 } else {
-                    if( (signed int)U64Low( e1 ) < 0 ) {
+                    if( (signed int)U64LowU32( e1 ) < 0 ) {
                         Set64ValU32( e1.u.uval, -1 );
                     } else {
                         Set64ValZero( e1.u.uval );
@@ -791,18 +787,18 @@ static bool CShift( void )
                 }
             } else {
                 if( e1.no_sign ) {
-                    U64ShiftR( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
+                    U64ShiftR( &(e1.u.uval), U64LowU32( e2 ), &e1.u.uval );
                 } else {
-                    I64ShiftR( &(e1.u.sval), U64Low( e2 ), &e1.u.sval );
+                    I64ShiftR( &(e1.u.sval), U64LowU32( e2 ), &e1.u.sval );
                 }
             }
             break;
         case T_LSHIFT:
-            if( U64Low( e2 ) > 64
-              || ( U64High( e2 ) != 0 ) ) {
+            if( U64LowU32( e2 ) > 64
+              || ( U64HighU32( e2 ) != 0 ) ) {
                 Set64ValZero( e1.u.uval );
             } else {
-                U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
+                U64ShiftL( &(e1.u.uval), U64LowU32( e2 ), &e1.u.uval );
             }
             break;
         DbgDefault( "Default in CShift\n" );
