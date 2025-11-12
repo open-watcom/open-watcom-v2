@@ -267,13 +267,16 @@ static bool PopOperand( ppvalue *p, loc_info *loc )
 static bool CheckToken( TOKEN prev_token )
 /****************************************/
 {
-    if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
+    if( IS_OPERAND( prev_token )
+      && IS_OPERAND( CurToken ) ) {
         CErr1( ERR_CONSECUTIVE_OPERANDS );  // can't have 2 operands in a row
         return( true );
     }
-    if( ( CurToken == T_PLUS ) || ( CurToken == T_MINUS ) ) {
+    if( ( CurToken == T_PLUS )
+      || ( CurToken == T_MINUS ) ) {
         if( ( prev_token != T_RIGHT_PAREN )
-         && ( !IS_OPERAND( prev_token ) || prev_token == T_START ) ) {
+          && ( !IS_OPERAND( prev_token )
+          || prev_token == T_START ) ) {
             if( CurToken == T_PLUS ) {
                 CurToken = T_UNARY_PLUS;
             } else {
@@ -311,7 +314,8 @@ static double SafeAtof( char *p )
     errno = 0;
     r = atof( p );
     if( errno ) {
-        if( r == 0 && errno == ERANGE ) {
+        if( r == 0
+          && errno == ERANGE ) {
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         } else {
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
@@ -468,7 +472,8 @@ static bool CLeftParen( void )
         return( true );
     }
     if( PopOperand( &e1, &e1_info ) ) {
-        if( ( e1_info.pos < Pos ) && ( e1_info.pos > left_info.pos ) ) {
+        if( ( e1_info.pos < Pos )
+          && ( e1_info.pos > left_info.pos ) ) {
             PushOperand( e1, &e1_info );
             return( PpNextToken() );
         }
@@ -496,7 +501,9 @@ static bool CConditional( void )
 
     PopOperator( &op2, &op2_info );
     if( op2 != T_COLON ) {
-        if( ( op2 != T_QUESTION && op2 != T_START ) || CurToken == T_NULL ) {
+        if( ( op2 != T_QUESTION
+          && op2 != T_START )
+          || CurToken == T_NULL ) {
             SetErrLoc( &op2_info.locn );
             CErr1( ERR_CONDITIONAL_MISSING_COLON );
             return( true );
@@ -509,23 +516,28 @@ static bool CConditional( void )
     // always something to pop next, even if its T_START
     PopOperator( &op1, &op1_info );
     if( op1 != T_QUESTION ) {
-        if( ( op1 != T_COLON && op1 != T_START ) || ( CurToken == T_NULL ) ) {
+        if( ( op1 != T_COLON
+          && op1 != T_START )
+          || ( CurToken == T_NULL ) ) {
             SetErrLoc( &op1_info.locn );
             CErr1( ERR_CONDITIONAL_MISSING_QUESTION );
             return( true );
         }
     }
-    if( op2 != T_COLON || op1 != T_QUESTION ) {
+    if( op2 != T_COLON
+      || op1 != T_QUESTION ) {
         PushOperator( op1, &op1_info, Prec[op1] );
         PushOperator( op2, &op2_info, Prec[op2] );
         PushCurToken( Prec[CurToken] );
         return( PpNextToken() );
     }
-    if( PopOperand( &e3, &e3_info ) && ( e3_info.pos > op2_info.pos ) ) {
-        if( PopOperand( &e2, &e2_info ) && ( e2_info.pos < op2_info.pos ) &&
-            ( e2_info.pos > op1_info.pos ) ) {
-            if( PopOperand( &e1, &e1_info ) &&
-                ( e1_info.pos < op1_info.pos ) ) {
+    if( PopOperand( &e3, &e3_info )
+      && ( e3_info.pos > op2_info.pos ) ) {
+        if( PopOperand( &e2, &e2_info )
+          && ( e2_info.pos < op2_info.pos )
+          && ( e2_info.pos > op1_info.pos ) ) {
+            if( PopOperand( &e1, &e1_info )
+              && ( e1_info.pos < op1_info.pos ) ) {
                 if( I64NonZero( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
@@ -559,8 +571,10 @@ static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
 
 
     PopOperator( token, loc );
-    if( PopOperand( e2, &e2_info ) && ( e2_info.pos > loc->pos ) ) {
-        if( PopOperand( e1, &e1_info ) && ( e1_info.pos < loc->pos ) ) {
+    if( PopOperand( e2, &e2_info )
+      && ( e2_info.pos > loc->pos ) ) {
+        if( PopOperand( e1, &e1_info )
+          && ( e1_info.pos < loc->pos ) ) {
             return( true );
         } else {
             SetErrLoc( &loc->locn );
@@ -707,7 +721,8 @@ static bool CRelational( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_LT:
-            if( e1.no_sign || e2.no_sign ) {
+            if( e1.no_sign
+              || e2.no_sign ) {
                 val = U64LT( e1, e2 );
             } else {
                 val = I64LT( e1, e2 );
@@ -715,7 +730,8 @@ static bool CRelational( void )
             Set64ValU32( e1.u.uval, val );
             break;
         case T_LE:
-            if( e1.no_sign || e2.no_sign ) {
+            if( e1.no_sign
+              || e2.no_sign ) {
                 val = U64LE( e1, e2 );
             } else {
                 val = I64LE( e1, e2 );
@@ -723,7 +739,8 @@ static bool CRelational( void )
             Set64ValU32( e1.u.uval, val );
             break;
         case T_GT:
-            if( e1.no_sign || e2.no_sign ) {
+            if( e1.no_sign
+              || e2.no_sign ) {
                 val = U64GT( e1, e2 );
             } else {
                 val = I64GT( e1, e2 );
@@ -731,7 +748,8 @@ static bool CRelational( void )
             Set64ValU32( e1.u.uval, val );
             break;
         case T_GE:
-            if( e1.no_sign || e2.no_sign ) {
+            if( e1.no_sign
+              || e2.no_sign ) {
                 val = U64GE( e1, e2 );
             } else {
                 val = I64GE( e1, e2 );
@@ -760,7 +778,8 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
+            if( U64Low( e2 ) > 64
+              || ( U64High( e2 ) != 0 ) ) {
                 if( e1.no_sign ) {
                     Set64ValZero( e1.u.uval );
                 } else {
@@ -779,7 +798,8 @@ static bool CShift( void )
             }
             break;
         case T_LSHIFT:
-            if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
+            if( U64Low( e2 ) > 64
+              || ( U64High( e2 ) != 0 ) ) {
                 Set64ValZero( e1.u.uval );
             } else {
                 U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
@@ -840,7 +860,8 @@ static bool CMultiplicative( void )
         case T_DIV:
             if( U64Zero( e2 ) ) {
                 Set64ValZero( e1.u.uval );
-            } else if( e1.no_sign || e2.no_sign ) {
+            } else if( e1.no_sign
+              || e2.no_sign ) {
                 unsigned_64 unused;
                 U64Div( &(e1.u.uval), &(e2.u.uval), &(e1.u.uval), &unused );
             } else {
@@ -851,7 +872,8 @@ static bool CMultiplicative( void )
         case T_PERCENT:
             if( U64Zero( e2 ) ) {
                 Set64ValZero( e1.u.uval );
-            } else if( e1.no_sign || e2.no_sign ) {
+            } else if( e1.no_sign
+              || e2.no_sign ) {
                 unsigned_64 unused;
                 U64Div( &(e1.u.uval), &(e2.u.uval), &unused, &e1.u.uval );
             } else {
@@ -879,8 +901,8 @@ static bool CUnary( void )
     TOKEN top;
 
     PopOperator( &top, &operator_info );
-    if( PopOperand( &p, &operand_info ) &&
-        ( operator_info.pos < operand_info.pos ) ) {
+    if( PopOperand( &p, &operand_info )
+      && ( operator_info.pos < operand_info.pos ) ) {
         switch( top ) {
         case T_UNARY_PLUS:
             break;
@@ -928,7 +950,8 @@ static void stringize( char *s )
     d = s;
     while( *s != '\0' ) {
         if( s[0] == '\\' ) {
-            if( s[1] == '\\' || s[1] == '\"' ) {
+            if( s[1] == '\\'
+              || s[1] == '\"' ) {
                 s++;
             }
         }
@@ -1035,7 +1058,8 @@ static void PrecedenceParse( ppvalue *p )
             if( CurToken < LAST_TOKEN_PREC ) {
                 prec_token = Prec[CurToken];
                 if( prec_token < prec_operator
-                  || ( ( prec_token == prec_operator ) && ( prec_token != PREC_UNARY ) ) ) {
+                  || ( ( prec_token == prec_operator )
+                  && ( prec_token != PREC_UNARY ) ) ) {
                     done = CExpr[prec_operator](); // reduce
                 } else {
                     PushCurToken( prec_token ); // shift
