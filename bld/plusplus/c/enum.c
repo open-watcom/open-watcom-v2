@@ -302,7 +302,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         // value is not signed negative (to avoid sign extension later on)
         sym->flags |= SYMF_ENUM_UINT;
     }
-    U64IncDec( edata->next_value, 1 );
+    U64IncDec( &edata->next_value, 1 );
     // what about wrap around ? to zero?
 }
 
