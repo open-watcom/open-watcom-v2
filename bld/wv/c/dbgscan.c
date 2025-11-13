@@ -587,8 +587,8 @@ static bool GetNum( unsigned base )
     Set64ValZero( num );
     while( (dig = GetDig( base )) >= 0 ) {
         Set64ValU32( big_dig, dig );
-        U64Mul( &num, &big_base, &num );
-        U64Add( &num, &big_dig, &num );
+        U64MulEq( &num, &big_base );
+        U64AddEq( &num, &big_dig );
         ++ScanPtr;
         ok = true;
     }

@@ -1023,7 +1023,7 @@ static TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
             signed_64   val64;
 
             Set64ValI32( val64, amount );
-            U64Mul( &opnd->op.u2.long64_value, &val64, &opnd->op.u2.long64_value );
+            U64MulEq( &opnd->op.u2.long64_value, &val64 );
           } break;
         default:
             opnd->op.u2.long_value *= amount;

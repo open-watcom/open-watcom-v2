@@ -108,7 +108,7 @@ void    BGSelRange( sel_handle s_node, const signed_64 *lo, const signed_64 *hi,
     list = NewCase( lo, hi, label );
     list->next = s_node->list;
     s_node->list = list;
-    U64Add( &s_node->num_cases, &list->count, &s_node->num_cases );
+    U64AddEq( &s_node->num_cases, &list->count );
 }
 
 
@@ -177,7 +177,7 @@ static  void    MergeListEntries( sel_handle s_node )
              * add/merge second range to first range
              */
             list->high = next->high;
-            U64Add( &list->count, &next->count, &list->count );
+            U64AddEq( &list->count, &next->count );
             /*
              * remove second range
              */

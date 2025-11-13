@@ -2883,14 +2883,14 @@ static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_cl
          */
         U64ShiftL( &one, len - 1, &max );
         U64Neg( &max, &min );
-        U64Sub( &max, &one, &max );
+        U64SubEq( &max, &one );
     } else {
         /*
          * unsigned type of length 'len' bits
          */
         Set64ValZero( min );
         U64ShiftL( &one, len, &max );
-        U64Sub( &max, &one, &max );
+        U64SubEq( &max, &one );
     }
     if( I64Cmp( val, &min ) < 0 )
         return( true );
@@ -2927,9 +2927,9 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
          */
         Set64ValI32( big_cons, non_ind_op->c.lo.u.int_value );
         Set64ValI32( temp, rep->times );
-        U64Mul( &big_cons, &temp, &big_cons );
+        U64MulEq( &big_cons, &temp );
         Set64ValI32( temp, rep->plus );
-        U64Add( &big_cons, &temp, &big_cons );
+        U64AddEq( &big_cons, &temp );
         /*
          * make sure we always allow negative values - hack for BMark
          */

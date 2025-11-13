@@ -40,10 +40,15 @@ extern "C" {
 #endif
 
 void U64Neg( const unsigned_64 *a, unsigned_64 *res );
-
 void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
 void U64Sub( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
 void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
+
+#define U64NegEq(a)     U64Neg(a,a)
+#define U64AddEq(a,b)   U64Add(a,b,a)
+#define U64SubEq(a,b)   U64Sub(a,b,a)
+#define U64MulEq(a,b)   U64Mul(a,b,a)
+
 void U64Div( const unsigned_64 *a, const unsigned_64 *b,
                 unsigned_64 *div, unsigned_64 *rem );
 void I64Div( const signed_64 *a, const signed_64 *b,
@@ -73,18 +78,30 @@ void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 
-#define U64And( a, b, c )                                       \
-        { (c)->u._32[0] = (a)->u._32[0] & (b)->u._32[0];      \
-          (c)->u._32[1] = (a)->u._32[1] & (b)->u._32[1]; }
-#define U64Or( a, b, c )                                        \
-        { (c)->u._32[0] = (a)->u._32[0] | (b)->u._32[0];      \
-          (c)->u._32[1] = (a)->u._32[1] | (b)->u._32[1]; }
-#define U64Xor( a, b, c )                                       \
-        { (c)->u._32[0] = (a)->u._32[0] ^ (b)->u._32[0];      \
-          (c)->u._32[1] = (a)->u._32[1] ^ (b)->u._32[1]; }
-#define U64Not( a, b )                          \
-        { (b)->u._32[0] = ~(a)->u._32[0];   \
-          (b)->u._32[1] = ~(a)->u._32[1]; }
+#define U64And( a, b, c ) \
+        { (a)->u._32[0] = (b)->u._32[0] & (c)->u._32[0]; \
+          (a)->u._32[1] = (b)->u._32[1] & (c)->u._32[1]; }
+#define U64AndEq( a, b ) \
+        { (a)->u._32[0] &= (b)->u._32[0]; \
+          (a)->u._32[1] &= (b)->u._32[1]; }
+#define U64Or( a, b, c ) \
+        { (a)->u._32[0] = (b)->u._32[0] | (c)->u._32[0]; \
+          (a)->u._32[1] = (b)->u._32[1] | (c)->u._32[1]; }
+#define U64OrEq( a, b ) \
+        { (a)->u._32[0] |= (b)->u._32[0]; \
+          (a)->u._32[1] |= (b)->u._32[1]; }
+#define U64Xor( a, b, c ) \
+        { (a)->u._32[0] = (b)->u._32[0] ^ (c)->u._32[0]; \
+          (a)->u._32[1] = (b)->u._32[1] ^ (c)->u._32[1]; }
+#define U64XorEq( a, b ) \
+        { (a)->u._32[0] ^= (b)->u._32[0]; \
+          (a)->u._32[1] ^= (b)->u._32[1]; }
+#define U64Not( a, b ) \
+        { (a)->u._32[0] = ~(b)->u._32[0]; \
+          (a)->u._32[1] = ~(b)->u._32[1]; }
+#define U64NotEq( a ) \
+        { (a)->u._32[0] = ~(a)->u._32[0]; \
+          (a)->u._32[1] = ~(a)->u._32[1]; }
 
 int  U64Cnv10( unsigned_64 *res, char c );
 int  U64Cnv8( unsigned_64 *res, char c );

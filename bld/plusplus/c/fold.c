@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -585,7 +585,7 @@ PTREE FoldUnary( PTREE expr )
             op1->u.int64_constant.u._32[1] = ~ op1->u.int64_constant.u._32[1];
             break;
         case CO_UMINUS:
-            U64Neg( &op1->u.int64_constant, &op1->u.int64_constant );
+            U64NegEq( &op1->u.int64_constant );
             break;
         case CO_UPLUS:
             break;

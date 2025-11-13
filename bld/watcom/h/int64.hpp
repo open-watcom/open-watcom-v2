@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +126,7 @@ class int64 {
         int64 operator&( const int64 & a ) const
         {
             int64 result;
-            U64And( &this->_d, &a._d, &result._d );
+            U64And( &result._d, &this->_d, &a._d );
             return( result );
         }
         int64 operator&=( const int64 & a )
@@ -137,7 +138,7 @@ class int64 {
         int64 operator|( const int64 & a ) const
         {
             int64 result;
-            U64Or( &this->_d, &a._d, &result._d );
+            U64Or( &result._d, &this->_d, &a._d );
             return( result );
         }
         int64 operator|=( const int64 & a )
@@ -149,7 +150,7 @@ class int64 {
         int64 operator^( const int64 & a ) const
         {
             int64 result;
-            U64Xor( &this->_d, &a._d, &result._d );
+            U64Xor( &result._d, &this->_d, &a._d );
             return( result );
         }
         int64 operator^=( const int64 & a )
@@ -161,7 +162,7 @@ class int64 {
         int64 operator~() const
         {
             int64 not;
-            U64Not( &this->_d, &not._d );
+            U64Not( &not._d, &this->_d );
             return( not );
         }
 

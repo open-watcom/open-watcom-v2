@@ -208,7 +208,7 @@ static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class
     if( sign_type == NUM_SIGNED && I64Test( num ) < 0 ) {
         *buff = '-';
         ++buff;
-        U64Neg( &num, &num );
+        U64NegEq( &num );
     }
     prefix = NULL;
     prefix_len = 0;
@@ -814,7 +814,7 @@ static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
         return( WR_STOP );
     if( !U64Test( val ) )
         return( WR_CONTINUE );
-    U64And( &val, &vd->value, &tmp );
+    U64And( &tmp, &val, &vd->value );
     if( U64Cmp( &tmp, &val ) == 0 ) {
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
             HDLAssign( sym, vd->sh, sh );
@@ -846,8 +846,8 @@ static unsigned ValueToName( char *buff, unsigned len )
         DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )
             return( 0 );
-        U64Not( &d.best_value, &d.best_value );
-        U64And( &d.value, &d.best_value, &d.value );
+        U64NotEq( &d.best_value );
+        U64AndEq( &d.value, &d.best_value );
         if( p != buff ) {
             if( len == 0 )
                 return( 0 );

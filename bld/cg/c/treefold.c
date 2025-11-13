@@ -153,10 +153,10 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     if( NumSign( op_type ) ) {
         Set64Val( low, 0, 0x80000000 );
         I64ShiftR( &low, MAXSIZE - NumBits( op_type ), &low );
-        U64Not( &low, &high );
+        U64Not( &high, &low );
     } else {
         Set64ValZero( low );
-        U64Not( &low, &high );
+        U64Not( &high, &low );
         U64ShiftR( &high, MAXSIZE - NumBits( op_type ), &high );
     }
     /* Determine how to compare */
@@ -231,7 +231,7 @@ static signed_64 CFGetInteger64Value( float_handle cf )
         CFNegate( trunc );
     value = CFCnvF64( trunc );
     if( neg < 0 )
-        U64Neg( &value, &value );
+        U64NegEq( &value );
     CFFree( &cgh, trunc );
     return( value );
 }
@@ -636,7 +636,7 @@ tn      FoldAnd( tn left, tn rite, const type_def *tipe )
             li = CFGetInteger64Value( lv );
             ri = CFGetInteger64Value( rv );
 
-            U64And( &li, &ri, &and );
+            U64And( &and, &li, &ri );
             fold = Int64ToType( and, tipe );
             BurnTree( left );
             BurnTree( rite );
@@ -688,7 +688,7 @@ tn      FoldOr( tn left, tn rite, const type_def *tipe )
             li = CFGetInteger64Value( lv );
             ri = CFGetInteger64Value( rv );
 
-            U64Or( &li, &ri, &or );
+            U64Or( &or, &li, &ri );
             fold = Int64ToType( or, tipe );
             BurnTree( left );
             BurnTree( rite );
@@ -743,7 +743,7 @@ tn      FoldXor( tn left, tn rite, const type_def *tipe )
             li = CFGetInteger64Value( lv );
             ri = CFGetInteger64Value( rv );
 
-            U64Xor( &li, &ri, &xor );
+            U64Xor( &xor, &li, &ri );
             fold = Int64ToType( xor, tipe );
             BurnTree( left );
             BurnTree( rite );

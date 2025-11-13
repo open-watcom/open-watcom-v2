@@ -454,7 +454,7 @@ static  unsigned_64    TGMask64( tn node )
     Set64Val1p( tmp );
     U64ShiftL( &tmp, node->u1.b.start, &bit );
     for( ;; ) {
-        U64Or( &mask, &bit, &tmp );
+        U64Or( &tmp, &mask, &bit );
         mask = tmp;
         U64ShiftL( &bit, 1, &tmp );
         bit = tmp;
@@ -1705,7 +1705,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
         U64ShiftR( &mask, node->u1.b.start, &mask );
         retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         U64ShiftR( &mask, 1, &mask );
-        U64Not( &mask, &mask );
+        U64NotEq( &mask );
         if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
             signed_64 one;
 
@@ -1796,7 +1796,7 @@ static  void    DoAnd64( an left, unsigned_64 mask, tn node )
 {
     unsigned_64     tmp;
 
-    U64Not( &mask, &tmp );
+    U64Not( &tmp, &mask );
     BGDone( BGOpGets( O_AND, AddrCopy( left ), Int64( tmp ),
               node->tipe, node->tipe ) );
 }

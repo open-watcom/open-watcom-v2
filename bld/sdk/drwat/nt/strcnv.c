@@ -95,12 +95,12 @@ bool StrToU64( char *str, unsigned_64 *u64, bool neg )
             return( false );
         }
         Set64ValU32( v64, value );
-        U64Mul( u64, &r64, u64 );
-        U64Add( &v64, u64, u64 );
+        U64MulEq( u64, &r64 );
+        U64AddEq( u64, &v64 );
         str++;
     }
     if( neg ) {
-        U64Neg( u64, u64 );
+        U64NegEq( u64 );
     }
     return( true );
 }

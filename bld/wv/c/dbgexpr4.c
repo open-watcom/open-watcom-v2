@@ -88,7 +88,7 @@ void DoPlus( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Add( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64AddEq( &left->v.uint, &ExprSP->v.uint );
         break;
     case TK_POINTER:
     case TK_ADDRESS:
@@ -141,7 +141,7 @@ void DoMinus( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Sub( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64SubEq( &left->v.uint, &ExprSP->v.uint );
         left->ti.modifier = TM_SIGNED;
         break;
     case TK_POINTER:
@@ -197,7 +197,7 @@ void DoMul( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Mul( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64MulEq( &left->v.uint, &ExprSP->v.uint );
         break;
     case TK_REAL:
         LDMul( &left->v.real, &ExprSP->v.real, &left->v.real );
@@ -334,7 +334,7 @@ void DoAnd( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64And( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64AndEq( &left->v.uint, &ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -359,7 +359,7 @@ void DoOr( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Or( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64OrEq( &left->v.uint, &ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -384,7 +384,7 @@ void DoXor( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Xor( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64XorEq( &left->v.uint, &ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );

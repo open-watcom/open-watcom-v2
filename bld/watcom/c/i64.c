@@ -98,7 +98,7 @@ void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
     res->u._32[H] = 0;
     while( U64Test( tmp_b ) ) {
         if( tmp_b.u._32[L] & 1 )
-            U64Add( &tmp_a, res, res );
+            U64AddEq( res, &tmp_a );
         U64ShiftL( &tmp_a, 1, &tmp_a );
         U64ShiftR( &tmp_b, 1, &tmp_b );
     }
@@ -140,7 +140,7 @@ void U64Div( const unsigned_64 *a, const unsigned_64 *b,
             U64ShiftL( div, 1, div );
             if( U64Cmp( &tmp_a, &tmp_b ) >= 0 ) {
                 div->u._32[L] |= 1;
-                U64Sub( &tmp_a, &tmp_b, &tmp_a );
+                U64SubEq( &tmp_a, &tmp_b );
             }
             U64Shift( &tmp_b, 1, &tmp_b );
             --count;
@@ -176,11 +176,11 @@ void I64Div( const signed_64 *a, const signed_64 *b,
     }
     U64Div( &tmp_a, &tmp_b, div, rem );
     if( neg ) {
-        U64Neg( div, div );
+        U64NegEq( div );
     }
     if( remneg
       && (rem != NULL) ) {
-        U64Neg( rem, rem );
+        U64NegEq( rem );
     }
 }
 

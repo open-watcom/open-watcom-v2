@@ -71,14 +71,18 @@
 #define I64EQ(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
 #define I64NE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
 
-#define U64AddEq(a,b)       U64Add( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64SubEq(a,b)       U64Sub( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64MulEq(a,b)       U64Mul( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64AndEq(a,b)       U64And( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64OrEq(a,b)        U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64XOrEq(a,b)       U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64NegEq(a)         U64Neg( &((a).u.uval), &((a).u.uval) )
-#define U64NotEq(a)         U64Not( &((a).u.uval), &((a).u.uval) )
+#define U64AddEqPP(a,b)     U64AddEq( &((a).u.uval), &((b).u.uval) );
+#define U64SubEqPP(a,b)     U64SubEq( &((a).u.uval), &((b).u.uval) );
+#define U64MulEqPP(a,b)     U64MulEq( &((a).u.uval), &((b).u.uval) );
+#define U64NegEqPP(a)       U64NegEq( &((a).u.uval) );
+
+#define U64AndEqPP(a,b)     U64AndEq( &((a).u.uval), &((b).u.uval) );
+#define U64OrEqPP(a,b)      U64OrEq(  &((a).u.uval), &((b).u.uval) );
+#define U64XorEqPP(a,b)     U64XorEq( &((a).u.uval), &((b).u.uval) );
+#define U64NotEqPP(a)       U64NotEq( &((a).u.uval) );
+
+#define U64DivPP(a,b,c,d)   U64Div( &((a).u.uval), &((b).u.uval), &((c).u.uval), &((d).u.uval) );
+#define I64DivPP(a,b,c,d)   I64Div( &((a).u.sval), &((b).u.sval), &((c).u.sval), &((d).u.sval) );
 
 #define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
 
@@ -588,7 +592,7 @@ static bool COr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        U64OrEq( e1, e2 );
+        U64OrEqPP( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -607,7 +611,7 @@ static bool CXOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        U64XOrEq( e1, e2 );
+        U64XorEqPP( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -626,7 +630,7 @@ static bool CAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        U64AndEq( e1, e2 );
+        U64AndEqPP( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -778,11 +782,11 @@ static bool CAdditive( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_PLUS:
-            U64AddEq( e1, e2 );
+            U64AddEqPP( e1, e2 );
             e1.no_sign |= e2.no_sign;
             break;
         case T_MINUS:
-            U64SubEq( e1, e2 );
+            U64SubEqPP( e1, e2 );
             e1.no_sign = 0;
             break;
         DbgDefault( "Default in CAdditive\n" );
@@ -803,22 +807,21 @@ static bool CMultiplicative( void )
     ppvalue e2;
     loc_info loc;
     TOKEN token;
+    ppvalue unused;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_TIMES:
-            U64MulEq( e1, e2 );
+            U64MulEqPP( e1, e2 );
             break;
         case T_DIV:
             if( U64ZeroPP( e2 ) ) {
                 Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
-                unsigned_64 unused;
-                U64Div( &(e1.u.uval), &(e2.u.uval), &(e1.u.uval), &unused );
+                U64DivPP( e1, e2, e1, unused );
             } else {
-                signed_64 unused;
-                I64Div( &((e1).u.sval), &((e2).u.sval), &((e1).u.sval), &unused );
+                I64DivPP( e1, e2, e1, unused );
             }
             break;
         case T_PERCENT:
@@ -826,11 +829,9 @@ static bool CMultiplicative( void )
                 Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
-                unsigned_64 unused;
-                U64Div( &(e1.u.uval), &(e2.u.uval), &unused, &e1.u.uval );
+                U64DivPP( e1, e2, unused, e1 );
             } else {
-                signed_64 unused;
-                I64Div( &(e1.u.sval), &(e2.u.sval), &unused, &e1.u.sval );
+                I64DivPP( e1, e2, unused, e1 );
             }
             break;
         DbgDefault( "Default in CMultiplicative\n" );
@@ -859,7 +860,7 @@ static bool CUnary( void )
         case T_UNARY_PLUS:
             break;
         case T_UNARY_MINUS:
-            U64NegEq( p );
+            U64NegEqPP( p );
             break;
         case T_EXCLAMATION:
         case T_ALT_EXCLAMATION:
@@ -868,7 +869,7 @@ static bool CUnary( void )
             break;
         case T_TILDE:
         case T_ALT_TILDE:
-            U64NotEq( p );
+            U64NotEqPP( p );
             break;
         DbgDefault( "Default in CUnary\n" );
         }

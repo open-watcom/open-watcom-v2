@@ -176,9 +176,9 @@ static signed_64    CFGetDec64( const char *str )
     Set64ValZero( number );
     Set64ValU32( ten, 10 );
     while( _IsDigit( *str ) ) {
-        U64Mul( &number, &ten, &number );
+        U64MulEq( &number, &ten );
         Set64ValU32( temp, *str++ - '0' );
-        U64Add( &number, &temp, &number );
+        U64AddEq( &number, &temp );
     }
     return( number );
 }
@@ -779,7 +779,7 @@ signed_64       CFCnvF64( cfloat *f )
         data = CFGetDec64( f->mant );
         exp = f->exp - f->len;
         while( exp > 0 ) {
-            U64Mul( &data, &ten, &data );
+            U64MulEq( &data, &ten );
             exp--;
         }
         while( exp < 0 ) {
@@ -787,7 +787,7 @@ signed_64       CFCnvF64( cfloat *f )
             exp++;
         }
         if( f->sign == -1 ) {
-            U64Neg( &data, &data );
+            U64NegEq( &data );
         }
     }
     return( data );

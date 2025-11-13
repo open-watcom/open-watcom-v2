@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,7 +305,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
     }
     incr.u._32[I64LO32] = 1;
     incr.u._32[I64HI32] = 0;
-    U64Add( &edata->next_value, &incr, &edata->next_value );
+    U64AddEq( &edata->next_value, &incr );
     // what about wrap around ? to zero?
 }
 

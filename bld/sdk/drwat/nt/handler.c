@@ -125,7 +125,7 @@ static DWORD procException( DEBUG_EVENT *dbinfo ) {
         context.ContextFlags=CONTEXT_CONTROL;
         GetThreadContext( tn->threadhdl, &context );
         Set64ValU32( a, 4 );
-        U64Add( &a, (unsigned_64 *) &context.Fir, (unsigned_64 *) &context.Fir );
+        U64AddEq( (unsigned_64 *)&context.Fir, &a );
         SetThreadContext( tn->threadhdl, &context );
     }
 #endif
