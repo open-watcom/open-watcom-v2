@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "elfload.h"
 #include "elforl.h"
+#include "i64.h"
 
 
 // fixme: finish making ELF SPECIFIC (see next fixme)
@@ -411,14 +413,10 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             s_hdr32 = (Elf32_Shdr *)s_hdr;
             fix_shdr_byte_order( elf_file_hnd, s_hdr32 );
             name_index[i] = s_hdr32->sh_name;
-            elf_sec_hnd->size.u._32[I64HI32] = 0;
-            elf_sec_hnd->size.u._32[I64LO32] = s_hdr32->sh_size;
-            elf_sec_hnd->base.u._32[I64HI32] = 0;
-            elf_sec_hnd->base.u._32[I64LO32] = s_hdr32->sh_addr;
-            elf_sec_hnd->file_offset.u._32[I64HI32] = 0;
-            elf_sec_hnd->file_offset.u._32[I64LO32] = s_hdr32->sh_offset;
-            elf_sec_hnd->entsize.u._32[I64HI32] = 0;
-            elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr32->sh_entsize;
+            Set64ValU32( elf_sec_hnd->size, s_hdr32->sh_size );
+            Set64ValU32( elf_sec_hnd->base, s_hdr32->sh_addr );
+            Set64ValU32( elf_sec_hnd->file_offset, s_hdr32->sh_offset );
+            Set64ValU32( elf_sec_hnd->entsize, s_hdr32->sh_entsize );
             sh_align = s_hdr32->sh_addralign;
             sh_flags = s_hdr32->sh_flags;
             sh_type = s_hdr32->sh_type;
@@ -472,7 +470,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             // Certain funky toolchains produce two reloc sections for each
             // section containing relocations (both .rel and .rela) and one of
             // them is empty. We have to ignore the empty one!
-            if( elf_sec_hnd->size.u._32[I64LO32] != 0 || elf_sec_hnd->size.u._32[I64HI32] != 0 ) {
+            if( U64isNonZero( elf_sec_hnd->size ) ) {
                 associated_index[i] = sh_info - 1;
                 associated2_index[i] = sh_link - 1;
             } else {
@@ -579,8 +577,7 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
         if( e_hdr32 == NULL )
             return( ORL_ERROR );
         fix_ehdr_byte_order( elf_file_hnd, e_hdr32 );
-        shoff.u._32[I64HI32] = 0;
-        shoff.u._32[I64LO32] = e_hdr32->e_shoff;
+        Set64ValU32( shoff, e_hdr32->e_shoff );
         shnum = e_hdr32->e_shnum;
         ehsize = e_hdr32->e_ehsize;
         shstrndx = e_hdr32->e_shstrndx;

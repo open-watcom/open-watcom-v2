@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "elflwlv.h"
 #include "elforl.h"
 #include "orlhash.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -164,8 +165,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             current_sym32 = (Elf32_Sym *)current_sym;
             fix_sym_byte_order( elf_sec_hnd->elf_file_hnd, current_sym32 );
             st_name = current_sym32->st_name;
-            current->value.u._32[I64HI32] = 0;
-            current->value.u._32[I64LO32] = current_sym32->st_value;
+            Set64ValU32( current->value, current_sym32->st_value );
             current->info = current_sym32->st_info;
             current->shndx = current_sym32->st_shndx;
         }

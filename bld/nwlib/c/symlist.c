@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,8 @@
 
 
 #include "wlib.h"
+#include "i64.h"
+
 
 static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
 /************************************************************/
@@ -54,7 +57,7 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
             unsigned_64 val64;
 
             ORLSymbolGetValue( orl_sym_hnd, &val64 );
-            if( val64.u._32[I64LO32] != 0 || val64.u._32[I64HI32] != 0 ) {
+            if( U64isNonZero( val64 ) ) {
                 AddSym( name, SYM_WEAK, info );
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "coffimpc.h"
 #include "roundmac.h"
 #include "implcoff.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -285,14 +286,10 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         opt_hdr.h64->section_align = 0x1000;
         opt_hdr.h64->file_align = 0x0200;
         opt_hdr.h64->os_major = 1;
-        opt_hdr.h64->stack_reserve.u._32[I64LO32] = PE_EXE_DEF_STACK_SIZE;
-        opt_hdr.h64->stack_reserve.u._32[I64HI32] = 0;
-        opt_hdr.h64->stack_commit.u._32[I64LO32]  = PE_EXE_DEF_STACK_COMMIT;
-        opt_hdr.h64->stack_commit.u._32[I64HI32]  = 0;
-        opt_hdr.h64->heap_reserve.u._32[I64LO32]  = PE_EXE_DEF_HEAP_SIZE;
-        opt_hdr.h64->heap_reserve.u._32[I64HI32]  = 0;
-        opt_hdr.h64->heap_commit.u._32[I64LO32]   = PE_EXE_DEF_HEAP_COMMIT;
-        opt_hdr.h64->heap_commit.u._32[I64HI32]   = 0;
+        Set64ValU32( opt_hdr.h64->stack_reserve, PE_EXE_DEF_STACK_SIZE );
+        Set64ValU32( opt_hdr.h64->stack_commit, PE_EXE_DEF_STACK_COMMIT );
+        Set64ValU32( opt_hdr.h64->heap_reserve, PE_EXE_DEF_HEAP_SIZE );
+        Set64ValU32( opt_hdr.h64->heap_commit, PE_EXE_DEF_HEAP_COMMIT );
         opt_hdr.h64->data_directories = 0x10;
         break;
     case WL_PROC_AXP:
