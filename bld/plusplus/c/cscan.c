@@ -877,7 +877,7 @@ static TOKEN doScanNum( bool expanding )
         max_value = TARGET_UINT_MAX;
     }
     switch( ONE_CASE( c ) ) {
-    case ONE_CASE( 'i' ):
+    case ONE_CASE( 'I' ):
         ConstType = TYP_SINT;
         c = WriteBufferCharNextChar( c );
         switch( c ) {
@@ -955,10 +955,10 @@ static TOKEN doScanNum( bool expanding )
             }
         }
         break;
-    case ONE_CASE( 'u' ):
+    case ONE_CASE( 'U' ):
         c = WriteBufferCharNextChar( c );
         switch( ONE_CASE( c ) ) {
-        case ONE_CASE( 'i' ):
+        case ONE_CASE( 'I' ):
             ConstType = TYP_ULONG64;
             c = WriteBufferCharNextChar( c );
             switch( c ) {
