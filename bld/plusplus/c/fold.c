@@ -862,13 +862,10 @@ static void idiv64              // DO 64-BIT SIGNED DIVISION
     , signed_64* result         // - result
     , signed_64* rem )          // - remainder
 {
-    if( v2->u._32[0] == 0
-     && v2->u._32[1] == 0 ) {
+    if( U64isZero( *v2 ) ) {
         CErr1( ERR_DIVISION_BY_ZERO );
-        result->u._32[I64HI32] = 0;
-        result->u._32[I64LO32] = 1;
-        rem->u._32[I64HI32] = 0;
-        rem->u._32[I64LO32] = 0;
+        Set64Val1p( *result );
+        Set64ValZero( *rem );
     } else {
         I64Div( v1, v2, result, rem );
     }

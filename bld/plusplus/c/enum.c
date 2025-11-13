@@ -248,7 +248,6 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
 /**********************************************************/
 {
     SYMBOL sym;
-    signed_64 incr;
 
     /* enter the enumerated constant into the symbol table */
     sym = AllocSymbol();
@@ -303,9 +302,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         // value is not signed negative (to avoid sign extension later on)
         sym->flags |= SYMF_ENUM_UINT;
     }
-    incr.u._32[I64LO32] = 1;
-    incr.u._32[I64HI32] = 0;
-    U64AddEq( &edata->next_value, &incr );
+    U64IncDec( edata->next_value, 1 );
     // what about wrap around ? to zero?
 }
 
