@@ -57,11 +57,14 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 #define U64Low( a )         ((a).u._32[I64LO32])
 #define U64High( a )        ((a).u._32[I64HI32])
 
-#define U64CmpU32( a, b )   (((a).u._32[I64HI32]>0)?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]!=(b))))
+#define U64CmpU32( a, b )   (((a).u._32[I64HI32])?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]!=(b))))
 #define I64CmpU32( a, b )   (((a).u.sign.v)?-1:U64CmpU32((a),(b)))
 
-#define U64Test( a )        (((a).u._32[I64HI32]|(a).u._32[I64LO32])!=0)
-#define I64Test( a )        (((a).u.sign.v)?-1:U64Test((a)))
+#define U64BTest( a )       ((a).u._32[0]|(a).u._32[1])
+#define U64isZero( a )      (U64BTest((a))==0)
+#define U64isNonZero( a )   (U64BTest((a))!=0)
+#define U64Test( a )        (U64BTest((a))!=0)
+#define I64Test( a )        (((a).u.sign.v)?-1:U64BTest((a))!=0)
 
 #define U64Eq( a, b )       ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
 
@@ -71,17 +74,17 @@ void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 
 #define U64And( a, b, c )                                       \
-        { (c)->u._32[I64LO32] = (a)->u._32[I64LO32] & (b)->u._32[I64LO32];      \
-          (c)->u._32[I64HI32] = (a)->u._32[I64HI32] & (b)->u._32[I64HI32]; }
+        { (c)->u._32[0] = (a)->u._32[0] & (b)->u._32[0];      \
+          (c)->u._32[1] = (a)->u._32[1] & (b)->u._32[1]; }
 #define U64Or( a, b, c )                                        \
-        { (c)->u._32[I64LO32] = (a)->u._32[I64LO32] | (b)->u._32[I64LO32];      \
-          (c)->u._32[I64HI32] = (a)->u._32[I64HI32] | (b)->u._32[I64HI32]; }
+        { (c)->u._32[0] = (a)->u._32[0] | (b)->u._32[0];      \
+          (c)->u._32[1] = (a)->u._32[1] | (b)->u._32[1]; }
 #define U64Xor( a, b, c )                                       \
-        { (c)->u._32[I64LO32] = (a)->u._32[I64LO32] ^ (b)->u._32[I64LO32];      \
-          (c)->u._32[I64HI32] = (a)->u._32[I64HI32] ^ (b)->u._32[I64HI32]; }
+        { (c)->u._32[0] = (a)->u._32[0] ^ (b)->u._32[0];      \
+          (c)->u._32[1] = (a)->u._32[1] ^ (b)->u._32[1]; }
 #define U64Not( a, b )                          \
-        { (b)->u._32[I64LO32] = ~(a)->u._32[I64LO32];   \
-          (b)->u._32[I64HI32] = ~(a)->u._32[I64HI32]; }
+        { (b)->u._32[0] = ~(a)->u._32[0];   \
+          (b)->u._32[1] = ~(a)->u._32[1]; }
 
 int  U64Cnv10( unsigned_64 *res, char c );
 int  U64Cnv8( unsigned_64 *res, char c );

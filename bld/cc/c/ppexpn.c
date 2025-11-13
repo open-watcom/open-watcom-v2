@@ -40,27 +40,30 @@
 #include "feprotos.h"
 
 
-#define I64Zero( a )        ( !U64Test((a).u.uval) )
-#define I64NonZero( a )     ( U64Test((a).u.uval) )
-#define U64Zero( a )        ( !U64Test((a).u.uval) )
-#define U64NonZero( a )     ( U64Test((a).u.uval) )
+#define I64ZeroPP(a)        U64isZero((a).u.uval)
+#define I64NonZeroPP(a)     U64isNonZero((a).u.uval)
+#define U64ZeroPP(a)        U64isZero((a).u.uval)
+#define U64NonZeroPP(a)     U64isNonZero((a).u.uval)
 
-#define U64LowU32( a )      ( U64Low((a).u.uval) )
-#define U64HighU32( a )     ( U64High((a).u.uval) )
+#define U64LowPP(a)         U64Low((a).u.uval)
+#define U64HighPP(a)        U64High((a).u.uval)
 
-#define U64LT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
-#define U64GT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
-#define U64LE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
-#define U64GE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
-#define U64EQ( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
-#define U64NE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
+#define Set64ValZeroPP(a)   Set64ValZero((a).u.uval)
+#define Set64ValU32PP(a,b)  Set64ValU32((a).u.uval,(b))
 
-#define I64LT( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
-#define I64GT( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
-#define I64LE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
-#define I64GE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
-#define I64EQ( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
-#define I64NE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
+#define U64LT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
+#define U64GT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
+#define U64LE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
+#define U64GE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
+#define U64EQ(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
+#define U64NE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
+
+#define I64LT(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
+#define I64GT(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
+#define I64LE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
+#define I64GE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
+#define I64EQ(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
+#define I64NE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
 
 #define U64AddEq(a,b)       U64Add( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 #define U64SubEq(a,b)       U64Sub( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
@@ -68,6 +71,8 @@
 #define U64AndEq(a,b)       U64And( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 #define U64OrEq(a,b)        U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 #define U64XOrEq(a,b)       U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64NegEq(a)         U64Neg( &((a).u.uval), &((a).u.uval) );
+#define U64NotEq(a)         U64Not( &((a).u.uval), &((a).u.uval) );
 
 #define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
 
@@ -345,7 +350,7 @@ static bool COperand( void )
                 left_loc = SrcFileLoc;
                 NextToken();    // no need to error check or advance Pos
                 PPControl = old_ppctl;
-                Set64ValU32( p.u.uval, MacroLookup( Buffer ) != NULL );
+                Set64ValU32PP( p, MacroLookup( Buffer ) != NULL );
                 NextToken();    // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
@@ -354,11 +359,11 @@ static bool COperand( void )
                 }
             } else {
                 PPControl = old_ppctl;
-                Set64ValU32( p.u.uval, MacroLookup( Buffer ) != NULL );
+                Set64ValU32PP( p, MacroLookup( Buffer ) != NULL );
             }
         } else {
             CWarn2p( ERR_UNDEFD_MACRO_IS_ZERO, Buffer );
-            Set64ValZero( p.u.uval );
+            Set64ValZeroPP( p );
         }
         if( !done ) {
             PushOperand( p, &loc );
@@ -368,7 +373,7 @@ static bool COperand( void )
 #if 0
     case T_FALSE:
     case T_TRUE:
-        Set64ValU32( p.u.uval, CurToken == T_TRUE );
+        Set64ValU32PP( p, CurToken == T_TRUE );
         PushOperandCurLocation( p );
         done = PpNextToken();
         break;
@@ -402,7 +407,7 @@ static bool COperand( void )
         break;
     default:
         CErr2p( ERR_UNDEFD_MACRO_IS_ZERO, Buffer );
-        Set64ValZero( p.u.uval );
+        Set64ValZeroPP( p );
         PushOperandCurLocation( p );
         done = PpNextToken();
     }
@@ -523,7 +528,7 @@ static bool CConditional( void )
           && ( e2_info.pos > op1_info.pos ) ) {
             if( PopOperand( &e1, &e1_info )
               && ( e1_info.pos < op1_info.pos ) ) {
-                if( I64NonZero( e1 ) ) {
+                if( I64NonZeroPP( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
                     e1.u.sval = e3.u.sval;
@@ -583,7 +588,7 @@ static bool CLogicalOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32( e1.u.uval, I64NonZero( e1 ) || I64NonZero( e2 ) );
+        Set64ValU32PP( e1, I64NonZeroPP( e1 ) || I64NonZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -602,7 +607,7 @@ static bool CLogicalAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32( e1.u.uval, I64NonZero( e1 ) && I64NonZero( e2 ) );
+        Set64ValU32PP( e1, I64NonZeroPP( e1 ) && I64NonZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -684,7 +689,7 @@ static bool CEquality( void )
         } else {
             val = I64NE( e1, e2 );
         }
-        Set64ValU32( e1.u.uval, val );
+        Set64ValU32PP( e1, val );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -712,7 +717,7 @@ static bool CRelational( void )
             } else {
                 val = I64LT( e1, e2 );
             }
-            Set64ValU32( e1.u.uval, val );
+            Set64ValU32PP( e1, val );
             break;
         case T_LE:
             if( e1.no_sign
@@ -721,7 +726,7 @@ static bool CRelational( void )
             } else {
                 val = I64LE( e1, e2 );
             }
-            Set64ValU32( e1.u.uval, val );
+            Set64ValU32PP( e1, val );
             break;
         case T_GT:
             if( e1.no_sign
@@ -730,7 +735,7 @@ static bool CRelational( void )
             } else {
                 val = I64GT( e1, e2 );
             }
-            Set64ValU32( e1.u.uval, val );
+            Set64ValU32PP( e1, val );
             break;
         case T_GE:
             if( e1.no_sign
@@ -739,7 +744,7 @@ static bool CRelational( void )
             } else {
                 val = I64GE( e1, e2 );
             }
-            Set64ValU32( e1.u.uval, val );
+            Set64ValU32PP( e1, val );
             break;
         DbgDefault( "Default in CRelational\n" );
         }
@@ -763,31 +768,31 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( U64LowU32( e2 ) > 64
-              || ( U64HighU32( e2 ) != 0 ) ) {
+            if( U64LowPP( e2 ) > 64
+              || ( U64HighPP( e2 ) != 0 ) ) {
                 if( e1.no_sign ) {
-                    Set64ValZero( e1.u.uval );
+                    Set64ValZeroPP( e1 );
                 } else {
-                    if( (signed int)U64LowU32( e1 ) < 0 ) {
-                        Set64ValU32( e1.u.uval, -1 );
+                    if( (signed int)U64LowPP( e1 ) < 0 ) {
+                        Set64ValU32PP( e1, -1 );
                     } else {
-                        Set64ValZero( e1.u.uval );
+                        Set64ValZeroPP( e1 );
                     }
                 }
             } else {
                 if( e1.no_sign ) {
-                    U64ShiftR( &(e1.u.uval), U64LowU32( e2 ), &e1.u.uval );
+                    U64ShiftR( &(e1.u.uval), U64LowPP( e2 ), &e1.u.uval );
                 } else {
-                    I64ShiftR( &(e1.u.sval), U64LowU32( e2 ), &e1.u.sval );
+                    I64ShiftR( &(e1.u.sval), U64LowPP( e2 ), &e1.u.sval );
                 }
             }
             break;
         case T_LSHIFT:
-            if( U64LowU32( e2 ) > 64
-              || ( U64HighU32( e2 ) != 0 ) ) {
-                Set64ValZero( e1.u.uval );
+            if( U64LowPP( e2 ) > 64
+              || ( U64HighPP( e2 ) != 0 ) ) {
+                Set64ValZeroPP( e1 );
             } else {
-                U64ShiftL( &(e1.u.uval), U64LowU32( e2 ), &e1.u.uval );
+                U64ShiftL( &(e1.u.uval), U64LowPP( e2 ), &e1.u.uval );
             }
             break;
         DbgDefault( "Default in CShift\n" );
@@ -843,8 +848,8 @@ static bool CMultiplicative( void )
             U64MulEq( e1, e2 );
             break;
         case T_DIV:
-            if( U64Zero( e2 ) ) {
-                Set64ValZero( e1.u.uval );
+            if( U64ZeroPP( e2 ) ) {
+                Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
                 unsigned_64 unused;
@@ -855,8 +860,8 @@ static bool CMultiplicative( void )
             }
             break;
         case T_PERCENT:
-            if( U64Zero( e2 ) ) {
-                Set64ValZero( e1.u.uval );
+            if( U64ZeroPP( e2 ) ) {
+                Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
                 unsigned_64 unused;
@@ -892,16 +897,16 @@ static bool CUnary( void )
         case T_UNARY_PLUS:
             break;
         case T_UNARY_MINUS:
-            U64Neg( &((p).u.uval), &((p).u.uval ) );
+            U64NegEq( p );
             break;
         case T_EXCLAMATION:
 //        case T_ALT_EXCLAMATION:
-            Set64ValU32( p.u.uval, I64Zero( p ) );
+            Set64ValU32PP( p, I64ZeroPP( p ) );
             p.no_sign = 0;
             break;
         case T_TILDE:
 //        case T_ALT_TILDE:
-            U64Not( &(p.u.sval), &(p.u.sval) );
+            U64NotEq( p );
             break;
         DbgDefault( "Default in CUnary\n" );
         }
@@ -1016,7 +1021,7 @@ static void PrecedenceParse( ppvalue *p )
     loc_info loc;
     unsigned error_info;
 
-    Set64ValZero( p->u.uval );  // default value 0
+    Set64ValZeroPP( *p );  // default value 0
 
     if( CurToken == T_NULL ) {
         unexpectedCurToken();
@@ -1082,7 +1087,7 @@ bool PpConstExpr( void )
     ppvalue val;
 
     PrecedenceParse( &val );
-    return( I64NonZero( val ) );
+    return( I64NonZeroPP( val ) );
 }
 
 void InitPPexpn( void )
