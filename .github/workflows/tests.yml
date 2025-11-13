@@ -35,7 +35,7 @@ jobs:
             skip: true
           - title: Fortran tests
             path: f77test
-            skip: true
+            skip: false
           - title: C run-time library tests
             path: clibtest
             skip: true
