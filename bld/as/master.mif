@@ -29,21 +29,6 @@ ntverrc_exe = $(exetarg_name)
 !include $(cpp_dir)/client.mif
 !include $(as_dir)/client.mif
 
-# yacc macros
-#########################
-
-as_yacc_prefix  = asy
-
-as_yacc_flags   = -b $(as_yacc_prefix) -d -db -dd
-
-yacc_src        = $(as_dir)/y/as.y
-yacc_driver     = $(as_dir)/y/yydriver.c
-as_yacc_out     = $(as_yacc_prefix)tab
-
-lex_flags       =
-lex_src         = $(as_dir)/y/scan.re
-as_lex_out      = aslexyy
-
 # cflags
 #################
 
@@ -90,37 +75,27 @@ extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 #################
 
 #
-# objects
+# objects (see client.mif make file in as root)
 #
-cli_asminline_objs_stand = &
-    $(_subdir_)cmdlnprs.obj &
-    $(_subdir_)cmdscan.obj &
-    $(_subdir_)main.obj &
-    $(_subdir_)obj.obj &
-    $(_subdir_)sections.obj &
-    $(_subdir_)options.obj &
-    $(cli_cpp_objs) &
-    $(_subdir_)ppenv.obj &
-    $(_subdir_)ppmem.obj &
-    $(_subdir_)trmemcvr.obj &
-    $(trmem_objs)
-
-as_objs = $(cli_asminline_objs_comm) $(cli_asminline_objs_stand)
-
-asi_test_objs = asitest.obj trmemcvr.obj $(trmem_objs)
+as_objs = &
+    $(as_comm_objs) &
+    $(as_targ_objs_$(target_cpu)) &
+    $(as_stand_objs) &
+    $(cli_cpp_objs) trmemcvr.obj $(trmem_objs)
 
 #
 # TEST
 #
 !ifdef test_inline_as
-asinline.exe : asi_msg.grh asilexyy.gc asiytab.gc $(cli_asminline_objs_comm) $(cli_asminline_objs_inline) $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
-    $(cl) $(clflags) $(cli_asminline_objs_comm) $(cli_asminline_objs_inline) $(asi_test_objs) $(cli_owl_libs) $(ldflags)
+asi_test_objs = $(cli_asminline_objs) asitest.obj trmemcvr.obj $(trmem_objs)
+asinline.exe : asi_msg.grh asilexyy.gc asiytab.gc $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
+    $(cl) $(clflags) $(asi_test_objs) $(cli_owl_libs) $(ldflags)
 !endif
 
 #
 # EXE
 #
-exetarg_prebuild_objs = msg.grh usage.gh cmdlnprs.gh $(as_yacc_out).gc $(as_lex_out).gc
+exetarg_prebuild_objs = msg.grh usage.gh cmdlnprs.gh asytab.gc aslexyy.gc
 exetarg_objs = $(as_objs)
 exetarg_libs = $(cli_owl_libs)
 exetarg_res = $(proj_name).res
@@ -141,25 +116,20 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
-wsplice_opts_axp = -kAS_ALPHA
-wsplice_opts_mps = -kAS_MIPS
-wsplice_opts_ppc = -kAS_PPC
-wsplice_opts     = -u $(wsplice_opts_$(target_cpu))
-
-$(as_yacc_out).gc : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    @rm -f tmp.tmp $(as_yacc_out).gh $(as_yacc_out).gc
+asytab.gc : $(as_dir)/y/as.y $(as_dir)/y/yydriver.c $(__MAKEFILES__)
+    @rm -f tmp.tmp asytab.gh asytab.gc
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ tmp.tmp
+    $(noecho)*wsplice -u $(as_wsplice_opts_$(target_cpu)) -k_STANDALONE_ $[@ tmp.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(as_yacc_flags) tmp.tmp $(yacc_driver) > $(nulldevice)
-    %ren $(as_yacc_out).c $(as_yacc_out).gc
-    %ren $(as_yacc_out).h $(as_yacc_out).gh
+    $(noecho)$(yacc) -b asy -d -db -dd tmp.tmp $(as_dir)/y/yydriver.c > $(nulldevice)
+    %ren asytab.c asytab.gc
+    %ren asytab.h asytab.gh
 
-$(as_lex_out).gc : $(lex_src) $(__MAKEFILES__)
+aslexyy.gc : $(as_dir)/y/scan.re $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ tmp.tmp
+    $(noecho)*wsplice -u $(as_wsplice_opts_$(target_cpu)) -k_STANDALONE_ $[@ tmp.tmp
     @%make echo_re2c
-    $(noecho)re2c $(lex_flags) tmp.tmp > $@
+    $(noecho)re2c tmp.tmp > $@
 
 # optencod options and targets for various hosts
 #optencod_enc_linux  = -utf8
