@@ -27,12 +27,37 @@ runs:
     name: try tests
     run: |
       echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        if [ ! '${{inputs.skip}}' = '1' ]; then
+          ci/buildx.sh
+        fi
+      fi
+    env:
+      OWBUILD_STAGE: 'tests'
+      OWTESTTARGET:  ${{inputs.path}}
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{github.workspace}}
+      OWDOSBOX:      'dosbox'
+      OWVERBOSE:     1
     shell: bash
   - if: runner.os == 'Windows'
     name: try tests
     run: |
-      echo "OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}"
-    shell: bash
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
+      if not '${{env.OWTESTMODE}}' == '1' (
+        if not '${{inputs.skip}}' == '1' (
+          ci\buildx.cmd ${{inputs.args}}
+        )
+      )
+    env:
+      OWBUILD_STAGE: 'tests'
+      OWTESTTARGET:  ${{inputs.path}}
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{github.workspace}}
+      OWDOSBOX:      'dosbox.exe'
+      OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
+      OWVERBOSE:     1
+    shell: cmd
   - if: runner.os == 'macOS'
     name: try tests
     run: |
