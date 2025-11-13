@@ -40,16 +40,16 @@
 #include "feprotos.h"
 
 
-#define I64ZeroPP(a)        U64isZero((a).u.uval)
-#define I64NonZeroPP(a)     U64isNonZero((a).u.uval)
-#define U64ZeroPP(a)        U64isZero((a).u.uval)
-#define U64NonZeroPP(a)     U64isNonZero((a).u.uval)
+#define U64isZeroPP(a)      U64isZero((a).u.uval)
+#define U64isNonZeroPP(a)   U64isNonZero((a).u.uval)
 
 #define U64LowPP(a)         U64Low((a).u.uval)
 #define U64HighPP(a)        U64High((a).u.uval)
 
 #define Set64ValZeroPP(a)   Set64ValZero((a).u.uval)
 #define Set64ValU32PP(a,b)  Set64ValU32((a).u.uval,(b))
+
+#define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
 
 #define U64LT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
 #define U64GT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
@@ -70,10 +70,10 @@
 #define U64MulEqPP(a,b)     U64MulEq( &((a).u.uval), &((b).u.uval) );
 #define U64NegEqPP(a)       U64NegEq( &((a).u.uval) );
 
-#define U64AndEqPP(a,b)     U64AndEq( &((a).u.uval), &((b).u.uval) );
-#define U64OrEqPP(a,b)      U64OrEq(  &((a).u.uval), &((b).u.uval) );
-#define U64XorEqPP(a,b)     U64XorEq( &((a).u.uval), &((b).u.uval) );
-#define U64NotEqPP(a)       U64NotEq( &((a).u.uval) );
+#define U64AndEqPP(a,b)     U64AndEq( (a).u.uval, (b).u.uval );
+#define U64OrEqPP(a,b)      U64OrEq(  (a).u.uval, (b).u.uval );
+#define U64XorEqPP(a,b)     U64XorEq( (a).u.uval, (b).u.uval );
+#define U64NotEqPP(a)       U64NotEq( (a).u.uval );
 
 #define U64DivPP(a,b,c,d)   U64Div( &((a).u.uval), &((b).u.uval), &((c).u.uval), &((d).u.uval) );
 #define I64DivPP(a,b,c,d)   I64Div( &((a).u.sval), &((b).u.sval), &((c).u.sval), &((d).u.sval) );
@@ -532,7 +532,7 @@ static bool CConditional( void )
           && ( e2_info.pos > op1_info.pos ) ) {
             if( PopOperand( &e1, &e1_info )
               && ( e1_info.pos < op1_info.pos ) ) {
-                if( I64NonZeroPP( e1 ) ) {
+                if( U64isNonZeroPP( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
                     e1.u.sval = e3.u.sval;
@@ -592,7 +592,7 @@ static bool CLogicalOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32PP( e1, I64NonZeroPP( e1 ) || I64NonZeroPP( e2 ) );
+        Set64ValU32PP( e1, U64isNonZeroPP( e1 ) || U64isNonZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -611,7 +611,7 @@ static bool CLogicalAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32PP( e1, I64NonZeroPP( e1 ) && I64NonZeroPP( e2 ) );
+        Set64ValU32PP( e1, U64isNonZeroPP( e1 ) && U64isNonZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -772,8 +772,7 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( U64LowPP( e2 ) > 64
-              || ( U64HighPP( e2 ) != 0 ) ) {
+            if( U64CmpU32PP( e2, 64 ) > 0 ) {
                 if( e1.no_sign ) {
                     Set64ValZeroPP( e1 );
                 } else {
@@ -792,8 +791,7 @@ static bool CShift( void )
             }
             break;
         case T_LSHIFT:
-            if( U64LowPP( e2 ) > 64
-              || ( U64HighPP( e2 ) != 0 ) ) {
+            if( U64CmpU32PP( e2, 64 ) > 0 ) {
                 Set64ValZeroPP( e1 );
             } else {
                 U64ShiftL( &(e1.u.uval), U64LowPP( e2 ), &e1.u.uval );
@@ -853,7 +851,7 @@ static bool CMultiplicative( void )
             U64MulEqPP( e1, e2 );
             break;
         case T_DIV:
-            if( U64ZeroPP( e2 ) ) {
+            if( U64isZeroPP( e2 ) ) {
                 Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
@@ -863,7 +861,7 @@ static bool CMultiplicative( void )
             }
             break;
         case T_PERCENT:
-            if( U64ZeroPP( e2 ) ) {
+            if( U64isZeroPP( e2 ) ) {
                 Set64ValZeroPP( e1 );
             } else if( e1.no_sign
               || e2.no_sign ) {
@@ -902,7 +900,7 @@ static bool CUnary( void )
             break;
         case T_EXCLAMATION:
 //        case T_ALT_EXCLAMATION:
-            Set64ValU32PP( p, I64ZeroPP( p ) );
+            Set64ValU32PP( p, U64isZeroPP( p ) );
             p.no_sign = 0;
             break;
         case T_TILDE:
@@ -1088,7 +1086,7 @@ bool PpConstExpr( void )
     ppvalue val;
 
     PrecedenceParse( &val );
-    return( I64NonZeroPP( val ) );
+    return( U64isNonZeroPP( val ) );
 }
 
 void InitPPexpn( void )

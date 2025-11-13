@@ -185,7 +185,7 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
 
     ptr = &internal[64];
     Set64ValU32( big_radix, radix );
-    while( (len > 0) || U64Test( *value ) ) {
+    while( (len > 0) || U64isNonZero( *value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
@@ -812,9 +812,9 @@ static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
     Set64ValZero( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
-    if( !U64Test( val ) )
+    if( U64isZero( val ) )
         return( WR_CONTINUE );
-    U64And( &tmp, &val, &vd->value );
+    U64And( tmp, val, vd->value );
     if( U64Cmp( &tmp, &val ) == 0 ) {
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
             HDLAssign( sym, vd->sh, sh );
@@ -841,13 +841,13 @@ static unsigned ValueToName( char *buff, unsigned len )
         return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
-    while( U64Test( d.value ) ) {
+    while( U64isNonZero( d.value ) ) {
         d.found = false;
         DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )
             return( 0 );
-        U64NotEq( &d.best_value );
-        U64AndEq( &d.value, &d.best_value );
+        U64NotEq( d.best_value );
+        U64AndEq( d.value, d.best_value );
         if( p != buff ) {
             if( len == 0 )
                 return( 0 );

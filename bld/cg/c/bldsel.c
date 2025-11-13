@@ -384,7 +384,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
     an              lt;
     unsigned_64     tmp;
 
-    if( U64Test( s_node->lower ) ) {
+    if( U64isNonZero( s_node->lower ) ) {
         node = BGBinary( O_MINUS, node,
                           BGIntegerSel( &s_node->lower, tipe ), tipe , true );
     }
@@ -579,7 +579,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     }
     kind = 0;
     node = Arithmetic( node, TypeInteger );
-    if( U64Test( s_node->num_cases ) ) {
+    if( U64isNonZero( s_node->num_cases ) ) {
         best = MAX_COST;
         /*
          * sort signed

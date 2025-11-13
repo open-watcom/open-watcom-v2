@@ -78,30 +78,36 @@ void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
 void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 
-#define U64And( a, b, c ) \
-        { (a)->u._32[0] = (b)->u._32[0] & (c)->u._32[0]; \
-          (a)->u._32[1] = (b)->u._32[1] & (c)->u._32[1]; }
-#define U64AndEq( a, b ) \
-        { (a)->u._32[0] &= (b)->u._32[0]; \
-          (a)->u._32[1] &= (b)->u._32[1]; }
-#define U64Or( a, b, c ) \
-        { (a)->u._32[0] = (b)->u._32[0] | (c)->u._32[0]; \
-          (a)->u._32[1] = (b)->u._32[1] | (c)->u._32[1]; }
-#define U64OrEq( a, b ) \
-        { (a)->u._32[0] |= (b)->u._32[0]; \
-          (a)->u._32[1] |= (b)->u._32[1]; }
-#define U64Xor( a, b, c ) \
-        { (a)->u._32[0] = (b)->u._32[0] ^ (c)->u._32[0]; \
-          (a)->u._32[1] = (b)->u._32[1] ^ (c)->u._32[1]; }
-#define U64XorEq( a, b ) \
-        { (a)->u._32[0] ^= (b)->u._32[0]; \
-          (a)->u._32[1] ^= (b)->u._32[1]; }
-#define U64Not( a, b ) \
-        { (a)->u._32[0] = ~(b)->u._32[0]; \
-          (a)->u._32[1] = ~(b)->u._32[1]; }
-#define U64NotEq( a ) \
-        { (a)->u._32[0] = ~(a)->u._32[0]; \
-          (a)->u._32[1] = ~(a)->u._32[1]; }
+#define U64And( a, b, c )   \
+        { (a).u._32[0] = (b).u._32[0] & (c).u._32[0]; \
+          (a).u._32[1] = (b).u._32[1] & (c).u._32[1]; }
+#define U64AndEq( a, b )    \
+        { (a).u._32[0] &= (b).u._32[0]; \
+          (a).u._32[1] &= (b).u._32[1]; }
+#define U64Or( a, b, c )    \
+        { (a).u._32[0] = (b).u._32[0] | (c).u._32[0]; \
+          (a).u._32[1] = (b).u._32[1] | (c).u._32[1]; }
+#define U64OrEq( a, b )     \
+        { (a).u._32[0] |= (b).u._32[0]; \
+          (a).u._32[1] |= (b).u._32[1]; }
+#define U64Xor( a, b, c )   \
+        { (a).u._32[0] = (b).u._32[0] ^ (c).u._32[0]; \
+          (a).u._32[1] = (b).u._32[1] ^ (c).u._32[1]; }
+#define U64XorEq( a, b )    \
+        { (a).u._32[0] ^= (b).u._32[0]; \
+          (a).u._32[1] ^= (b).u._32[1]; }
+#define U64ResetBits( a, b, c ) \
+        { (a).u._32[0] = (b).u._32[0] & ~(c).u._32[0]; \
+          (a).u._32[0] = (b).u._32[1] & ~(c).u._32[1]; }
+#define U64ResetBitsEq( a, b )  \
+        { (a).u._32[0] &= ~(b).u._32[0]; \
+          (a).u._32[1] &= ~(b).u._32[1]; }
+#define U64Not( a, b )      \
+        { (a).u._32[0] = ~(b).u._32[0]; \
+          (a).u._32[1] = ~(b).u._32[1]; }
+#define U64NotEq( a )      \
+        { (a).u._32[0] = ~(a).u._32[0]; \
+          (a).u._32[1] = ~(a).u._32[1]; }
 
 int  U64Cnv10( unsigned_64 *res, char c );
 int  U64Cnv8( unsigned_64 *res, char c );
@@ -218,18 +224,18 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define Set64ValZero( x )       ((x).u._32[0]=0,(x).u._32[1]=0)
 #define Set64Val1p( x )         ((x).u._32[I64LO32]=1,(x).u._32[I64HI32]=0)
 #define Set64Val1m( x )         ((x).u._32[I64LO32]=(unsigned_32)-1,(x).u._32[I64HI32]=(unsigned_32)-1)
-#define Set64ValI32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=((signed_32)((x).u._32[I64LO32])<0)?(unsigned_32)-1:0)
+#define Set64ValI32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=((signed_32)(x).u._32[I64LO32]<0)?(unsigned_32)-1:0)
 #define Set64ValU32( x, v )     ((x).u._32[I64LO32]=(v),(x).u._32[I64HI32]=0)
 
 // is the U64 a valid U32?
 #define U64IsU32( x )           ((x).u._32[I64HI32]==0)
 // is the U64 a positive I32?
-#define U64IsI32( x )           (((x).u._32[I64HI32]==0)&&((int_32)((x).u._32[I64LO32]))>=0)
+#define U64IsI32( x )           (((x).u._32[I64HI32]==0)&&((signed_32)(x).u._32[I64LO32]>=0))
 // is the U64 a positive I64?
-#define U64IsI64( x )           (((int_32)((x).u._32[I64HI32]))>=0)
+#define U64IsI64( x )           ((signed_32)(x).u._32[I64HI32]>=0)
 // is the I64 a I32?
-#define I64IsI32( x )           (((x).u._32[I64HI32]==0)&&(((int_32)((x).u._32[I64LO32]))>=0) \
-                                ||((x).u._32[I64HI32]==-1)&&(((int_32)((x).u._32[I64LO32]))<0))
+#define I64IsI32( x )           (((x).u._32[I64HI32]==0)&&((signed_32)(x).u._32[I64LO32]>=0) \
+                                ||((x).u._32[I64HI32]==-1)&&((signed_32)(x).u._32[I64LO32]<0))
 
 #ifdef __cplusplus
 }

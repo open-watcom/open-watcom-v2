@@ -82,12 +82,6 @@ static PTREE overCondDecor(     // BY-PASS CONDITIONAL DECORATION
 }
 
 
-bool Zero64                     // TEST IF 64-BITTER IS ZERO
-    ( signed_64 const *test )   // - value to be tested
-{
-    return( test->u._32[0] == 0 && test->u._32[1] == 0 );
-}
-
 /**
  * Check if node is or evaluates to a zero constant for folding purposes.
  *
@@ -105,7 +99,7 @@ static bool zeroConstant( PTREE expr )
         if( NULL == Integral64Type( expr->type ) ) {
             return( expr->u.int_constant == 0 );
         } else {
-            return( Zero64( &expr->u.int64_constant ) );
+            return( U64isZero( expr->u.int64_constant ) );
         }
     case PT_FLOATING_CONSTANT:
       { target_ulong ul_val = CFCnvF32( expr->u.floating_constant );
@@ -581,8 +575,7 @@ PTREE FoldUnary( PTREE expr )
     } else if( op1->op == PT_INT_CONSTANT ) {
         switch( expr->cgop ) {
         case CO_TILDE:
-            op1->u.int64_constant.u._32[0] = ~ op1->u.int64_constant.u._32[0];
-            op1->u.int64_constant.u._32[1] = ~ op1->u.int64_constant.u._32[1];
+            U64NotEq( op1->u.int64_constant );
             break;
         case CO_UMINUS:
             U64NegEq( &op1->u.int64_constant );
@@ -917,16 +910,13 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         idiv64( &v1, &v2, &div, &left->u.int64_constant );
       } break;
     case CO_AND:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] & v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] & v2.u._32[1];
+        U64And( left->u.int64_constant, v1, v2 );
         break;
     case CO_OR:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] | v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] | v2.u._32[1];
+        U64Or( left->u.int64_constant, v1, v2 );
         break;
     case CO_XOR:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] ^ v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] ^ v2.u._32[1];
+        U64Xor( left->u.int64_constant, v1, v2 );
         break;
     case CO_RSHIFT:
         I64ShiftR( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
@@ -953,10 +943,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= I64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, !Zero64( &v1 ) && !Zero64( &v2 ) );
+        left = makeBooleanConst( left, U64isNonZero( v1 ) && U64isNonZero( v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, !Zero64( &v1) || !Zero64( &v2 ) );
+        left = makeBooleanConst( left, U64isNonZero( v1) || U64isNonZero( v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;
@@ -974,13 +964,10 @@ static void udiv64              // DO 64-BIT UNSIGNED DIVISION
     , unsigned_64* result       // - result
     , unsigned_64* rem )        // - remainder
 {
-    if( v2->u._32[0] == 0
-     && v2->u._32[1] == 0 ) {
+    if( U64isZero( *v2 ) ) {
         CErr1( ERR_DIVISION_BY_ZERO );
-        result->u._32[I64HI32] = 0;
-        result->u._32[I64LO32] = 1;
-        rem->u._32[I64HI32] = 0;
-        rem->u._32[I64LO32] = 0;
+        Set64Val1p( *result );
+        Set64ValZero( *rem );
     } else {
         U64Div( v1, v2, result, rem );
     }
@@ -1022,16 +1009,13 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         udiv64( &v1, &v2, &div, &left->u.int64_constant );
       } break;
     case CO_AND:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] & v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] & v2.u._32[1];
+        U64And( left->u.int64_constant, v1, v2 );
         break;
     case CO_OR:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] | v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] | v2.u._32[1];
+        U64Or( left->u.int64_constant, v1, v2 );
         break;
     case CO_XOR:
-        left->u.int64_constant.u._32[0] = v1.u._32[0] ^ v2.u._32[0];
-        left->u.int64_constant.u._32[1] = v1.u._32[1] ^ v2.u._32[1];
+        U64Xor( left->u.int64_constant, v1, v2 );
         break;
     case CO_RSHIFT:
         U64ShiftR( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
@@ -1058,10 +1042,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= U64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, !Zero64( &v1 ) && !Zero64( &v2 ) );
+        left = makeBooleanConst( left, U64isNonZero( v1 ) && U64isNonZero( v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, !Zero64( &v1) || !Zero64( &v2 ) );
+        left = makeBooleanConst( left, U64isNonZero( v1) || U64isNonZero( v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;

@@ -161,7 +161,7 @@ static  bool    FindFlowOut( block *blk ) {
     SuffixIns( ins, ins1 );
     ins = ins1;
 
-    if( U64Test( false_cons ) ) {
+    if( U64isNonZero( false_cons ) ) {
         konst = AllocS64Const( false_cons.u._32[I64LO32], false_cons.u._32[I64HI32] );
         ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {

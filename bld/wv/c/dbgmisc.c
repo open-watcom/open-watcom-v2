@@ -461,7 +461,7 @@ void ProcIf( void )
         if( !ScanQuote( &start, &len ) ) {
             Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
         }
-        if( U64Test( res ) ) {
+        if( U64isNonZero( res ) ) {
             true_start = start;
             true_len   = len;
             have_true  = true;
@@ -502,7 +502,7 @@ void ProcWhile( void )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     }
     ReqEOC();
-    if( U64Test( res ) ) {
+    if( U64isNonZero( res ) ) {
         cmd = AllocCmdList( start, len );
         ReScan( CmdStart );
         PushCmdList( cmd );

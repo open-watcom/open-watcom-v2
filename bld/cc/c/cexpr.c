@@ -342,7 +342,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         /* fall through */
     case TYP_INT:
     case TYP_LONG:
-        leaf->op.u2.long_value = (signed_32)ep->value.u._32[I64LO32];
+        leaf->op.u2.long_value = (signed_32)U64Low( ep->value );
         break;
     case TYP_UCHAR:
     case TYP_USHORT:
@@ -350,7 +350,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         /* fall through */
     case TYP_UINT:
     case TYP_ULONG:
-        leaf->op.u2.long_value = ep->value.u._32[I64LO32];
+        leaf->op.u2.long_value = U64Low( ep->value );
         break;
     case TYP_LONG64:
     case TYP_ULONG64:
@@ -2609,7 +2609,7 @@ static TREEPTR NotOp( TREEPTR tree )
             break;
         case TYP_LONG64:
         case TYP_ULONG64:
-            if( (tree->op.u2.long64_value.u._32[I64LO32] | tree->op.u2.long64_value.u._32[I64HI32]) == 0 ) {
+            if( U64isZero( tree->op.u2.long64_value ) ) {
                 tree->op.u2.long_value = 1;
             } else {
                 tree->op.u2.long_value = 0;

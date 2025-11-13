@@ -237,7 +237,7 @@ void DoDiv( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( !U64Test( ExprSP->v.uint ) ) {
+        if( U64isZero( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
@@ -302,7 +302,7 @@ void DoMod( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( !U64Test( ExprSP->v.uint ) ) {
+        if( U64isZero( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
@@ -334,7 +334,7 @@ void DoAnd( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64AndEq( &left->v.uint, &ExprSP->v.uint );
+        U64AndEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -359,7 +359,7 @@ void DoOr( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64OrEq( &left->v.uint, &ExprSP->v.uint );
+        U64OrEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -384,7 +384,7 @@ void DoXor( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64XorEq( &left->v.uint, &ExprSP->v.uint );
+        U64XorEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );

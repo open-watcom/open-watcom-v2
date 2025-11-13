@@ -36,6 +36,8 @@
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+#include "i64.h"
+
 
 static dw_client       Client;
 static dw_loc_handle   dummyLoc;
@@ -213,7 +215,7 @@ static dw_handle dwarfEnum( TYPEPTR typ )
                              0 );
     enum_list = ReverseEnums( typ->u.tag->u.enum_list );
     for( esym = enum_list; esym != NULL; esym = esym->thread ) {
-        DWAddEnumerationConstant( Client, esym->value.u._32[I64LO32], esym->name );
+        DWAddEnumerationConstant( Client, U64Low( esym->value ), esym->name );
     }
     ReverseEnums( enum_list );
     DWEndEnumeration( Client );

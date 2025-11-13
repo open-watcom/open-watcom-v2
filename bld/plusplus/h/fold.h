@@ -37,6 +37,5 @@ extern PTREE CastIntConstant( PTREE, TYPE, bool * );
 extern PTREE Fold( PTREE );
 extern PTREE FoldUnary( PTREE );
 extern PTREE FoldBinary( PTREE );
-extern bool Zero64( signed_64 const *test );
 
 #endif

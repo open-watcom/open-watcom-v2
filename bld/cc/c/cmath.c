@@ -683,7 +683,7 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
             }
         }
     } else {
-        if( rel == REL_LE && !rev_ret && !NumSign( op1_size ) && !U64Test( val ) ) {
+        if( rel == REL_LE && !rev_ret && !NumSign( op1_size ) && U64isZero( val ) ) {
             /*
              * special case for unsigned <= 0
              */

@@ -118,7 +118,7 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
         } else {
             POOL_CON* pcon = ConPoolInt64Add( expr->u.int64_constant );
             CgFrontDataPtr( IC_DATA_INT64, pcon );
-            ok = Zero64( &expr->u.int64_constant );
+            ok = U64isZero( expr->u.int64_constant );
         }
         break;
     case PT_STRING_CONSTANT:

@@ -135,31 +135,29 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         U64Mul( &left, &right, &value );
         break;
     case OPR_DIV:
-        Set64ValZero( value );
-        if( U64Test( right ) ) {
-            if( sign ) {
-                I64Div( &left, &right, &value, &tmp );
-            } else {
-                U64Div( &left, &right, &value, &tmp );
-            }
+        if( U64isZero( right ) ) {
+            Set64ValZero( value );
+        } else if( sign ) {
+            I64Div( &left, &right, &value, &tmp );
+        } else {
+            U64Div( &left, &right, &value, &tmp );
         }
         break;
     case OPR_MOD:
-        Set64ValZero( value );
-        if( U64Test( right ) ) {
-            if( sign ) {
-                I64Div( &left, &right, &tmp, &value );
-            } else {
-                U64Div( &left, &right, &tmp, &value );
-            }
+        if( U64isZero( right ) ) {
+            Set64ValZero( value );
+        } else if( sign ) {
+            I64Div( &left, &right, &tmp, &value );
+        } else {
+            U64Div( &left, &right, &tmp, &value );
         }
         break;
     case OPR_LSHIFT:
-        shift = right.u._32[I64LO32];
+        shift = U64Low( right );
         shift = -shift;
         goto do_shift;
     case OPR_RSHIFT:
-        shift = right.u._32[I64LO32];
+        shift = U64Low( right );
     do_shift:
         if( shift > 0 ) {
             if( sign ) {
@@ -173,36 +171,29 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         }
         break;
     case OPR_OR:
-        value = left;
-        value.u._32[I64LO32] |= right.u._32[I64LO32];
-        value.u._32[I64HI32] |= right.u._32[I64HI32];
+        U64Or( value, left, right );
         break;
     case OPR_OR_OR:
-        Set64ValU32( value, U64Test( left ) || U64Test( right ) );
+        Set64ValU32( value, U64isNonZero( right ) || U64isNonZero( left ) );
         break;
     case OPR_AND:
-        value = left;
-        value.u._32[I64LO32] &= right.u._32[I64LO32];
-        value.u._32[I64HI32] &= right.u._32[I64HI32];
+        U64And( value, left, right );
         break;
     case OPR_AND_AND:
-        Set64ValU32( value, U64Test( left ) && U64Test( right ) );
+        Set64ValU32( value, U64isNonZero( right ) && U64isNonZero( left ) );
         break;
     case OPR_XOR:
-        value = left;
-        value.u._32[I64LO32] ^= right.u._32[I64LO32];
-        value.u._32[I64HI32] ^= right.u._32[I64HI32];
+        U64Xor( value, left, right );
         break;
     case OPR_NEG:
         U64Neg( &right, &value );
 //        value = - right;
         break;
     case OPR_COM:
-        value.u._32[I64LO32] = ~right.u._32[I64LO32];
-        value.u._32[I64HI32] = ~right.u._32[I64HI32];
+        U64Not( value, right );
         break;
     case OPR_NOT:
-        Set64ValU32( value, !U64Test( right ) );
+        Set64ValU32( value, U64isZero( right ) );
         break;
     default:
         Set64ValZero( value );
@@ -453,7 +444,7 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         if( const_type  == TYP_ULONG64 ) {
             tree->op.u2.long64_value = value;
         } else {
-            tree->op.u2.ulong_value = value.u._32[I64LO32];
+            tree->op.u2.ulong_value = U64Low( value );
         }
     }
     tree->op.opr = OPR_PUSHINT;
@@ -511,7 +502,7 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         if( const_type  == TYP_LONG64 ) {
             tree->op.u2.long64_value = value;
         } else {
-            tree->op.u2.long_value = (signed_32)value.u._32[I64LO32];
+            tree->op.u2.long_value = (signed_32)U64Low( value );
         }
     }
     tree->op.opr = OPR_PUSHINT;
@@ -839,10 +830,10 @@ static int_32 LongValue( TREEPTR leaf )
         value = (target_ulong)leaf->op.u2.ulong_value;
         break;
     case TYP_LONG64:
-        value = (target_long)leaf->op.u2.ulong64_value.u._32[I64LO32];
+        value = (target_long)U64Low( leaf->op.u2.ulong64_value );
         break;
     case TYP_ULONG64:
-        value = (target_ulong)leaf->op.u2.ulong64_value.u._32[I64LO32];
+        value = (target_ulong)U64Low( leaf->op.u2.ulong64_value );
         break;
     case TYP_FLOAT:
     case TYP_DOUBLE:
@@ -1115,8 +1106,7 @@ static bool FoldableTree( TREEPTR tree )
             seg_val = LongValue64( tree->left );
             off_val = LongValue64( tree->right );
             U64ShiftL( &seg_val, TARGET_NEAR_POINTER * CHAR_BIT, &value );
-            U64OrEq( &value, &off_val );
-            tree->op.u2.ulong64_value = value;
+            U64Or( tree->op.u2.ulong64_value, value, off_val );
             tree->op.opr = OPR_PUSHINT;
             tree->op.u1.const_type = TYP_POINTER;
             tree->op.flags |= OPFLAG_FARPTR;

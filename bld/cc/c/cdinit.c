@@ -623,18 +623,16 @@ static void LoadBitField( uint64 *val64 )
 {
     DATA_QUAD           *dqp;
 
-    val64->u._32[I64LO32] = 0;
-    val64->u._32[I64HI32] = 0;
+    Set64ValZero( *val64 );
     if( CurDataQuad->next == NULL )
         return;
     dqp = &CurDataQuad->next->dq;
     if( dqp->type == QDT_CONSTANT )
         return;
     if( CurDataQuad->next->size == TARGET_LONG64 ) {
-        val64->u._32[I64LO32] = dqp->u.long64.u._32[I64LO32];
-        val64->u._32[I64HI32] = dqp->u.long64.u._32[I64HI32];
+        *val64 = dqp->u.long64;
     } else {
-        val64->u._32[I64LO32] = dqp->u.ulong_values[0];
+        U64Low( *val64 ) = dqp->u.ulong_values[0];
     }
 }
 
@@ -645,16 +643,11 @@ static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
     /*
      * mask = ( 1 << width ) - 1;
      */
-    mask.u._32[I64LO32] = 1;
-    mask.u._32[I64HI32] = 0;
+    Set64Val1p( mask );
     U64ShiftL( &mask, width, &mask );
-    if( mask.u._32[I64LO32] == 0 )
-        mask.u._32[I64HI32]--;
-    mask.u._32[I64LO32]--;
+    U64IncDec( &mask, -1 );
     U64ShiftL( &mask, start, &mask );
-
-    val64->u._32[I64HI32] &= ~mask.u._32[I64HI32];
-    val64->u._32[I64LO32] &= ~mask.u._32[I64LO32];
+    U64ResetBitsEq( *val64, mask );
 }
 
 static void InitBitField( FIELDPTR field )
@@ -688,14 +681,13 @@ static void InitBitField( FIELDPTR field )
                 CWarn1( ERR_CONSTANT_TOO_BIG );
             }
             U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
-            value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
-            value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
+            U64OrEq( value64, bit_value.value );
         }
     }
     if( is64bit ) {
         StoreIValue64( dtype, value64 );
     } else {
-        StoreIValue( dtype, value64.u._32[I64LO32], size );
+        StoreIValue( dtype, U64Low( value64 ), size );
     }
     if( token == T_LEFT_BRACE ) {
         if( CurToken == T_COMMA )

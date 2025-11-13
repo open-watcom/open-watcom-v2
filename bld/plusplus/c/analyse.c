@@ -4100,7 +4100,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                         expr = PTreeOp( &throw_exp );
                     } else {
                         INT_CONSTANT int_con;
-                        if( NodeIsIntConstant( throw_exp, &int_con ) && Zero64( &int_con.u.value ) ) {
+                        if( NodeIsIntConstant( throw_exp, &int_con ) && U64isZero( int_con.u.value ) ) {
                             rt_code = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );

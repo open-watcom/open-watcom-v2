@@ -2048,7 +2048,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             if( curr_segid != SEG_BSS ) {
                 DGInteger64( con->u.int64_constant, exprn_type );
             } else {
-                DbgVerify( Zero64( &con->u.int64_constant ), "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
+                DbgVerify( U64isZero( con->u.int64_constant ), "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
             }
           } break;
         case IC_DATA_FLT :                  // GENERATE FLOATING-POINT

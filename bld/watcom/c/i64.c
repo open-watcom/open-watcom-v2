@@ -96,7 +96,7 @@ void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
 
     res->u._32[L] = 0;
     res->u._32[H] = 0;
-    while( U64Test( tmp_b ) ) {
+    while( U64isNonZero( tmp_b ) ) {
         if( tmp_b.u._32[L] & 1 )
             U64AddEq( res, &tmp_a );
         U64ShiftL( &tmp_a, 1, &tmp_a );

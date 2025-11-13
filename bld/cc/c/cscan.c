@@ -1442,9 +1442,8 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
              * it means value in range 128 ... 255
              * then convert into signed char range -128 ... 127
              */
-            if( Constant64.u._32[I64HI32] == 0
-              && Constant64.u._32[I64LO32] > 127
-              && Constant64.u._32[I64LO32] < 256 ) {
+            if( U64CmpU32( Constant64, 127 ) > 0
+              && U64CmpU32( Constant64, 256 ) < 0 ) {
                 U64IncDec( &Constant64, -256 );
             }
         } else {

@@ -766,7 +766,7 @@ bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        ok = Zero64( &icon.u.value );
+        ok = U64isZero( icon.u.value );
     } else {
         ok = false;
     }
@@ -784,7 +784,7 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
         if( ( icon.type->id < TYP_BOOL ) || ( icon.type->id > TYP_ULONG64 ) ) {
             ok = false;
         } else {
-            ok = Zero64( &icon.u.value );
+            ok = U64isZero( icon.u.value );
         }
     } else {
         ok = false;
