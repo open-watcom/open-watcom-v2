@@ -83,7 +83,7 @@ if "%OWBUILD_STAGE%" == "build" (
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "tests" (
-    cd bld\%OWTESTTARGET%
+    cd %OWTESTTARGET%
     builder test
     set RC=!ERRORLEVEL!
 )

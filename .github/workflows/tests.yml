@@ -26,10 +26,10 @@ jobs:
             skip:   '1'
           - title: Wasm tests
             path:   wasmtest
-            skip:   '1'
+            skip:   ''
           - title: C tests
             path:   ctest
-            skip:   '1'
+            skip:   ''
           - title: C++ tests
             path:   plustest
             skip:   '1'

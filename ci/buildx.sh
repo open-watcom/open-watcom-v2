@@ -96,7 +96,7 @@ build_proc()
             RC=$?
             ;;
         "tests")
-            cd bld/$OWTESTTARGET
+            cd $OWTESTTARGET
             builder test
             RC=$?
             ;;
