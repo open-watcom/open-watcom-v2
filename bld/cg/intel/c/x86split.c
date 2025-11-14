@@ -59,6 +59,7 @@
 #include "x86splt2.h"
 #include "_x86rtrn.h"
 #include "_x86half.h"
+#include "i64.h"
 
 
 instruction *(* const ReduceTab[])( instruction * ) = {
@@ -206,19 +207,19 @@ instruction      *rDIVREGISTER( instruction *ins )
 name    *IntEquivalent( name *name )
 /**********************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FS );
-    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( *(uint_32 *)( defn->value + 0 ) ) ) ) );
+    floatval = GetFloat( name, FS );
+    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( U64DWord( floatval->buffer.u64, 0 ) ) ) ) );
 }
 
 name    *Int64Equivalent( name *name )
 /************************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FD );
-    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
+    floatval = GetFloat( name, FD );
+    return( AllocU64Const( U64DWord( floatval->buffer.u64, 0 ), U64DWord( floatval->buffer.u64, 1 ) ) );
 }
 
 instruction      *rFSCONSCMP( instruction *ins )

@@ -323,7 +323,7 @@ constant_defn   *GetFloat( name *cons, type_class_def type_class )
     defn = AllocFrl( &ConstDefnFrl, sizeof( constant_defn ) );
     defn->const_class = type_class;
     defn->label = NULL;
-    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[type_class] );
+    CFCnvTarget( cons->c.value, &defn->buffer, TypeClassSize[type_class] );
     defn->next_defn = cons->c.static_defn;
     cons->c.static_defn = defn;
     return( defn );

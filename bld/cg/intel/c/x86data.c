@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -342,15 +342,15 @@ name    *GenConstData( const void *buffer, type_class_def type_class )
 name    *GenFloat( name *cons, type_class_def type_class )
 /********************************************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
     name                *result;
 
-    defn = GetFloat( cons, type_class );
-    if( defn->label == NULL ) {
-        result = GenConstData( defn->value, type_class );
-        defn->label = result->v.symbol;
+    floatval = GetFloat( cons, type_class );
+    if( floatval->label == NULL ) {
+        result = GenConstData( &floatval->buffer, type_class );
+        floatval->label = result->v.symbol;
     } else {
-        result = AllocMemory( defn->label, 0, ConstDataClass(), type_class );
+        result = AllocMemory( floatval->label, 0, ConstDataClass(), type_class );
     }
     return( result );
 }

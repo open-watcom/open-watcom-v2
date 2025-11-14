@@ -50,6 +50,7 @@
 #include "opctable.h"
 #include "rscsplit.h"
 #include "_split.h"
+#include "i64.h"
 #include "_rscsplt.h"
 
 
@@ -521,10 +522,10 @@ name    *Int64Equivalent( name *name )
 * Return a U64 equivalent of a double value
 */
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FD );
-    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
+    floatval = GetFloat( name, FD );
+    return( AllocU64Const( U64DWord( floatval->buffer.u64, 0 ), U64DWord( floatval->buffer.u64, 1 ) ) );
 }
 
 name    *LowPart( name *tosplit, type_class_def type_class )
@@ -566,7 +567,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 0 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
@@ -648,7 +649,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 1 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {

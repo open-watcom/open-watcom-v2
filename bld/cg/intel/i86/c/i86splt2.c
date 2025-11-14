@@ -49,6 +49,7 @@
 #include "x86segs.h"
 #include "confldef.h"
 #include "liveinfo.h"
+#include "i64.h"
 #include "x86splt2.h"
 
 
@@ -89,7 +90,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
@@ -163,7 +164,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 1 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
@@ -347,10 +348,10 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
             break;
         case FD:
             floatval = GetFloat( tosplit, FD );
-            out->low      = AllocIntConst( _TargetShort( floatval->value[0] ) );
-            out->mid_low  = AllocIntConst( _TargetShort( floatval->value[1] ) );
-            out->mid_high = AllocIntConst( _TargetShort( floatval->value[2] ) );
-            out->high     = AllocIntConst( _TargetShort( floatval->value[3] ) );
+            out->low      = AllocIntConst( _TargetShort( U64Word( floatval->buffer.u64, 0 ) ) );
+            out->mid_low  = AllocIntConst( _TargetShort( U64Word( floatval->buffer.u64, 1 ) ) );
+            out->mid_high = AllocIntConst( _TargetShort( U64Word( floatval->buffer.u64, 2 ) ) );
+            out->high     = AllocIntConst( _TargetShort( U64Word( floatval->buffer.u64, 3 ) ) );
             break;
         default:
             Zoiks( ZOIKS_136 );

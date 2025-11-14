@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "namelist.h"
 #include "opttell.h"
 #include "rscobj.h"
+#include "i64.h"
 #include "feprotos.h"
 
 
@@ -191,40 +192,40 @@ void    DataLabel( label_handle lbl )
 static constant_defn    *GetI64Const( name *cons, type_class_def type_class )
 /***************************************************************************/
 {
-    static constant_defn i64Defn = { NULL, NULL, { 0, 0, 0, 0 }, I8 };
+    static constant_defn i64Defn = { NULL, NULL, { 0 }, I8 };
 
     i64Defn.label = NULL;
     i64Defn.const_class = type_class;
-    i64Defn.value[0] = cons->c.lo.u.uint_value & 0xffff;
-    i64Defn.value[1] = ( cons->c.lo.u.uint_value >> 16 ) & 0xffff;
-    i64Defn.value[2] = cons->c.hi.u.uint_value & 0xffff;
-    i64Defn.value[3] = ( cons->c.hi.u.uint_value >> 16 ) & 0xffff;
+    U64Word( i64Defn.buffer.u64, 0 ) = cons->c.lo.u.uint_value & 0xffff;
+    U64Word( i64Defn.buffer.u64, 1 ) = ( cons->c.lo.u.uint_value >> 16 ) & 0xffff;
+    U64Word( i64Defn.buffer.u64, 2 ) = cons->c.hi.u.uint_value & 0xffff;
+    U64Word( i64Defn.buffer.u64, 3 ) = ( cons->c.hi.u.uint_value >> 16 ) & 0xffff;
     return( &i64Defn );
 }
 
 name    *GenFloat( name *cons, type_class_def type_class )
 /********************************************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
     name                *result;
 
     TellOptimizerByPassed();
     if( _IsFloating( type_class ) ) {
-        defn = GetFloat( cons, type_class );
+        floatval = GetFloat( cons, type_class );
     } else {
-        defn = GetI64Const( cons, type_class );
+        floatval = GetI64Const( cons, type_class );
     }
-    if( defn->label == NULL ) {
-        defn->label = AskForLabel( NULL );
+    if( floatval->label == NULL ) {
+        floatval->label = AskForLabel( NULL );
         PUSH_OP( AskBackSeg() );
             AlignObject( 8 );
             assert( ( AskLocation() & 0x07 ) == 0 );
-            OutLabel( defn->label );
-            DataBytes( TypeClassSize[type_class], &defn->value );
+            OutLabel( floatval->label );
+            DataBytes( TypeClassSize[type_class], &floatval->buffer );
         POP_OP();
 
     }
-    result = AllocMemory( defn->label, 0, CG_LBL, type_class );
+    result = AllocMemory( floatval->label, 0, CG_LBL, type_class );
     result->v.usage |= USE_IN_ANOTHER_BLOCK;
     TellByPassOver();
     return( result );

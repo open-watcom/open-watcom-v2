@@ -137,7 +137,7 @@ typedef struct var_name {
 typedef struct constant_defn {
     struct constant_defn    *next_defn;
     pointer                 label;          /*  back end label for static */
-    uint_16                 value[4];       /*  in internal format */
+    flt                     buffer;         /*  in internal format */
     type_class_def          const_class;
 } constant_defn;
 
