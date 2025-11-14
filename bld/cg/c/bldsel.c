@@ -218,9 +218,9 @@ cg_type SelType( const unsigned_64 *value_range )
 
     if( value_range->u._32[I64HI32] ) {
         tipe = TY_UINT_8;
-    } else if( value_range->u._16[I64MI16W1] ) {
+    } else if( value_range->u._16[I64W1] ) {
         tipe = TY_UINT_4;
-    } else if( value_range->u._8[I64MI8B1] ) {
+    } else if( value_range->u._8[I64B1] ) {
         tipe = TY_UINT_2;
     } else {
         tipe = TY_UINT_1;

@@ -196,10 +196,10 @@ int  U64Cnv16( unsigned_64 *res, char c );
 
 #define U64ConvU32( x )         ((x).u._32[I64HI32]=0)
 #define U64ConvI32( x )         ((x).u._32[I64HI32]=((signed_32)(x).u._32[I64LO32]<0)?-1:0)
-#define U64ConvU16( x )         ((x).u._16[I64MI16W1]=(x).u._32[I64HI32]=0)
-#define U64ConvI16( x )         ((x).u._16[I64MI16W1]=(x).u._32[I64HI32]=((signed_16)(x).u._16[I64MI16W0]<0)?-1:0)
-#define U64ConvU8( x )          ((x).u._8[I64MI8B1]=(x).u._16[I64MI16W1]=(x).u._32[I64HI32]=0)
-#define U64ConvI8( x )          ((x).u._8[I64MI8B1]=(x).u._16[I64MI16W1]=(x).u._32[I64HI32]=((signed_8)(x).u._8[I64MI8B0]<0)?-1:0)
+#define U64ConvU16( x )         ((x).u._16[I64W1]=(x).u._32[I64HI32]=0)
+#define U64ConvI16( x )         ((x).u._16[I64W1]=(x).u._32[I64HI32]=((signed_16)(x).u._16[I64W0]<0)?-1:0)
+#define U64ConvU8( x )          ((x).u._8[I64B1]=(x).u._16[I64W1]=(x).u._32[I64HI32]=0)
+#define U64ConvI8( x )          ((x).u._8[I64B1]=(x).u._16[I64W1]=(x).u._32[I64HI32]=((signed_8)(x).u._8[I64B0]<0)?-1:0)
 
 /* Note about the FetchNative macros: These assume that the value is stored
  * in memory as a non-64bit type, starting at the lowest address. That is,

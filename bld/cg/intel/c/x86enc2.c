@@ -531,14 +531,14 @@ void    Gen8ByteValue( unsigned_64 *value )
  */
 {
     _Code;
-    AddByte( value->u._8[I64MI8B0] );
-    AddByte( value->u._8[I64MI8B1] );
-    AddByte( value->u._8[I64MI8B2] );
-    AddByte( value->u._8[I64MI8B3] );
-    AddByte( value->u._8[I64MI8B4] );
-    AddByte( value->u._8[I64MI8B5] );
-    AddByte( value->u._8[I64MI8B6] );
-    AddByte( value->u._8[I64MI8B7] );
+    AddByte( value->u._8[I64B0] );
+    AddByte( value->u._8[I64B1] );
+    AddByte( value->u._8[I64B2] );
+    AddByte( value->u._8[I64B3] );
+    AddByte( value->u._8[I64B4] );
+    AddByte( value->u._8[I64B5] );
+    AddByte( value->u._8[I64B6] );
+    AddByte( value->u._8[I64B7] );
     _Emit;
 }
 
