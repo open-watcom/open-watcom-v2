@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "system.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"

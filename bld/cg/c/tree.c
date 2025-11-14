@@ -35,7 +35,6 @@
 #include "tree.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
@@ -73,6 +72,7 @@
 #ifdef DEVBUILD
     #include "echoapi.h"
 #endif
+
 
 static  void    FreeTreeNode( tn node );
 static  void    Control( cg_op op, tn node, label_handle lbl, bool gen );

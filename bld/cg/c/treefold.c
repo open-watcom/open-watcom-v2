@@ -33,7 +33,6 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "tree.h"
-#include "_cfloat.h"
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"

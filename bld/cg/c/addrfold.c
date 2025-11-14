@@ -39,7 +39,6 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "fpu.h"
 #include "makeins.h"
 #include "makeaddr.h"

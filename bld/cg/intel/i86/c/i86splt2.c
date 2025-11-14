@@ -36,7 +36,6 @@
 #include "model.h"
 #include "system.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "rgtbl.h"

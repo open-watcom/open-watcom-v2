@@ -39,7 +39,6 @@
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
-#include "_cfloat.h"
 #include "cgaux.h"
 #include "p5prof.h"
 #include "data.h"

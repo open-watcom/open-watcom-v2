@@ -35,7 +35,6 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
-#include "_cfloat.h"
 #include "dbbit.h"
 #include "symdbg.h"
 #include "bldins.h"

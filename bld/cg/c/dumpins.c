@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "data.h"
 #include "intrface.h"
 #include "rgtbl.h"

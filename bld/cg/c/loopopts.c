@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
-#include "_cfloat.h"
 #include "stackcg.h"
 #include "zoiks.h"
 #include "i64.h"

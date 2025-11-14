@@ -37,7 +37,6 @@
 #include "memcheck.h"
 #include "cgmem.h"
 #include "tree.h"
-#include "_cfloat.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
 #include "data.h"

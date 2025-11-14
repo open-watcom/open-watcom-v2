@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +29,12 @@
 *
 ****************************************************************************/
 
+
+#include "bitset.h"
+#include "_cfloat.h"
+
+
+#define    EMPTY        0
 
 /* aligned */
 typedef enum {
@@ -111,9 +117,6 @@ typedef enum {
     MF_EMPTY                = 0x0000,
     MF_VISITED              = 0x0001,
 } m_flags;
-
-#include "bitset.h"
-#define    EMPTY        0
 
 typedef struct name_def {
     union name              *next_name;
