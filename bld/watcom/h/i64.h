@@ -59,6 +59,14 @@ void U64IncDec( unsigned_64 *a, signed_32 i );
 int U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
 int I64Cmp( const signed_64 *a, const signed_64 *b );
 
+#define U64Byte( a, b )     ((a).u._8[(b)])
+#define U64Word( a, b )     ((a).u._16[(b)])
+#define U64DWord( a, b )    ((a).u._32[(b)])
+
+#define I64Byte( a, b )     ((signed_8)(a).u._8[(b)])
+#define I64Word( a, b )     ((signed_16)(a).u._16[(b)])
+#define I64DWord( a, b )    ((signed_32)(a).u._32[(b)])
+
 #define U64Low( a )         ((a).u._32[I64LO32])
 #define U64High( a )        ((a).u._32[I64HI32])
 
