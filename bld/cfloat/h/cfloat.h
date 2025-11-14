@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,6 +61,7 @@ typedef struct cfstruct {
 typedef cfstruct    *cfhandle;
 
 typedef union flt {
+    unsigned_64     u64;
     float           sngl;
     double          dble;
     double          ldble;  // FIXME - need long double support
