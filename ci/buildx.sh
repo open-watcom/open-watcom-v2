@@ -99,6 +99,7 @@ build_proc()
             cd $OWTESTTARGET
             builder test
             RC=$?
+            cat result.log
             ;;
         "docs")
             builder docs $OWDOCTARGET

@@ -86,6 +86,7 @@ if "%OWBUILD_STAGE%" == "tests" (
     cd %OWTESTTARGET%
     builder test
     set RC=!ERRORLEVEL!
+    type result.log
 )
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
