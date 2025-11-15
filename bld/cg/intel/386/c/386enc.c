@@ -363,7 +363,7 @@ static int_32   GetNextAddConstant( instruction *ins )
          * turn it into:
          *      LEA     EAX, 3[ECX+EDX]
          */
-        disp = neg * next->operands[1]->c.lo.u.int_value,
+        disp = neg * next->operands[1]->c.lo.u.int_value;
         DoNothing( next );
         break;
     }
