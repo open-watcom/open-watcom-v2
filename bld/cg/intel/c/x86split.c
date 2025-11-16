@@ -210,7 +210,7 @@ name    *IntEquivalent( name *name )
     constant_defn       *floatval;
 
     floatval = GetFloat( name, FS );
-    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( U64DWord( floatval->buffer.u64, 0 ) ) ) ) );
+    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( U64LowLE( floatval->buffer.u64 ) ) ) ) );
 }
 
 name    *Int64Equivalent( name *name )
@@ -219,7 +219,7 @@ name    *Int64Equivalent( name *name )
     constant_defn       *floatval;
 
     floatval = GetFloat( name, FD );
-    return( AllocU64Const( U64DWord( floatval->buffer.u64, 0 ), U64DWord( floatval->buffer.u64, 1 ) ) );
+    return( AllocU64Const( U64LowLE( floatval->buffer.u64 ), U64HighLE( floatval->buffer.u64 ) ) );
 }
 
 instruction      *rFSCONSCMP( instruction *ins )
