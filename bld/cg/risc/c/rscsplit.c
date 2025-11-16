@@ -525,7 +525,7 @@ name    *Int64Equivalent( name *name )
     constant_defn       *floatval;
 
     floatval = GetFloat( name, FD );
-    return( AllocU64Const( U64DWord( floatval->buffer.u64, 0 ), U64DWord( floatval->buffer.u64, 1 ) ) );
+    return( AllocU64Const( U64LowLE( floatval->buffer.u64 ), U64HighLE( floatval->buffer.u64 ) ) );
 }
 
 name    *LowPart( name *tosplit, type_class_def type_class )
@@ -567,7 +567,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 0 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64LowLE( floatval->buffer.u64 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
@@ -649,7 +649,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64DWord( floatval->buffer.u64, 1 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64HighLE( floatval->buffer.u64 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
