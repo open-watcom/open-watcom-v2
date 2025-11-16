@@ -59,8 +59,10 @@ bool     IsTrickyPointerConv( instruction *ins )
 */
 {
 #if _TARGET_INTEL
-    if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
-        if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE ) {
+    if( (ins->head.opcode == OP_CONVERT)
+      && _IsPointer( ins->type_class ) ) {
+        if( ins->base_type_class == U2
+          && TypeClassSize[ins->type_class] > WORD_SIZE ) {
             return( true );
         }
     }
@@ -138,7 +140,8 @@ static  instruction *CmpRelocZero( instruction *ins, opcnt c, opcnt r )
     if( CFTest( cons->c.value ) != 0 )
         return( NULL );
     rel = ins->operands[r];
-    if( rel->c.const_type == CONS_OFFSET && !AskSegIsNear( (segment_id)rel->c.lo.u.int_value ) )
+    if( rel->c.const_type == CONS_OFFSET
+      && !AskSegIsNear( (segment_id)rel->c.lo.u.int_value ) )
         return( NULL );
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_FALSE:
@@ -309,15 +312,16 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     if( fold != NULL ) {
         fold_tipe = fold->tipe;
         result = TGetName( fold );
-        if( result != NULL && !NeedConvert( fold_tipe, tipe ) ) {
+        if( result != NULL
+          && !NeedConvert( fold_tipe, tipe ) ) {
             ins->table = NULL;
             /* look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions */
-            if( result->n.class != N_CONSTANT &&
-                result->n.size != TypeClassSize[ins->type_class] )
+            if( result->n.class != N_CONSTANT
+              && result->n.size != TypeClassSize[ins->type_class] )
                 return( NULL );
             /* look out for scary MUL U4 EDX:EAX, c1 -> t1 type instructions */
-            if( result->n.class != N_CONSTANT &&
-                ins->result->n.size != TypeClassSize[ins->type_class] )
+            if( result->n.class != N_CONSTANT
+              && ins->result->n.size != TypeClassSize[ins->type_class] )
                 return( NULL );
             new_ins = MakeMove( result, ins->result, ins->type_class );
             SetCSEBits( ins, new_ins );
@@ -336,8 +340,8 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     switch( ins->head.opcode ) {
     case OP_SUB:
         /* change sub t1, k -> add t1, -k */
-        if( ins->operands[1]->n.class == N_CONSTANT &&
-            ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
+        if( ins->operands[1]->n.class == N_CONSTANT
+          && ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
             cf_value = OkToNegate( ins->operands[1]->c.value, tipe );
             if( cf_value != NULL ) {
                 new_const = AllocConst( cf_value );
@@ -360,7 +364,8 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         if( _IsPointer( ins->type_class ) )
             break;
         tmp = ins->operands[0];
-        if( tmp->n.class == N_CONSTANT && tmp->c.const_type == CONS_ABSOLUTE ) {
+        if( tmp->n.class == N_CONSTANT
+          && tmp->c.const_type == CONS_ABSOLUTE ) {
             ins->operands[0] = ins->operands[1];
             ins->operands[1] = tmp;
         }
