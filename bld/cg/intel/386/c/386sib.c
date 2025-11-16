@@ -78,7 +78,7 @@ bool FoldIntoIndex( instruction *ins )
             return( false );
         if( cons->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( cons->c.lo.u.int_value > 3 )
+        if( cons->c.lo.u.int_value > SCALE_8 )
             return( false );
         /*
          * found SHL R1,n => R1
