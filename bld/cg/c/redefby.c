@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +45,11 @@
 
 static bool_maybe   ZapsIndexed( name *, name * );
 
-bool    TempsOverlap( name *name1, name *name2 ) {
-/*************************************************
-    Do N_TEMP names "name1" and "name2" occupy the same memory?
-*/
-
+bool    TempsOverlap( name *name1, name *name2 )
+/***********************************************
+ * Do N_TEMP names "name1" and "name2" occupy the same memory?
+ */
+{
     type_length start_1;
     type_length end_1;
     type_length start_2;
@@ -59,17 +59,18 @@ bool    TempsOverlap( name *name1, name *name2 ) {
     end_1 = start_1 + name1->n.size - 1;
     start_2 = name2->v.offset;
     end_2 = start_2 + name2->n.size - 1;
-    if( start_2 > end_1 || end_2 < start_1 )
+    if( start_2 > end_1
+      || end_2 < start_1 )
         return( false );
     return( true );
 }
 
 
-static  bool  ZapsMemory( name *result, name *op, bool for_index ) {
-/*********************************************************************
-    Could redefining "result" redefine N_MEMORY name "op"?
-*/
-
+static  bool  ZapsMemory( name *result, name *op, bool for_index )
+/*****************************************************************
+ * Could redefining "result" redefine N_MEMORY name "op"?
+ */
+{
     switch( result->n.class ) {
     case N_TEMP:
         return( false );
@@ -102,10 +103,11 @@ static  bool  ZapsMemory( name *result, name *op, bool for_index ) {
 }
 
 
-static  bool  ZapsTemp( name *result, name *op, bool for_index ) {
-/*******************************************************************
-    Could redefining "result" redefine N_TEMP name "op"?
-*/
+static  bool  ZapsTemp( name *result, name *op, bool for_index )
+/***************************************************************
+ * Could redefining "result" redefine N_TEMP name "op"?
+ */
+{
     switch( result->n.class ) {
     case N_TEMP:
         if( DeAlias( result ) != DeAlias( op ) )
@@ -117,7 +119,8 @@ static  bool  ZapsTemp( name *result, name *op, bool for_index ) {
         return( false );
     case N_INDEXED:
         /* might be a structured move with a fake base */
-        if( result->i.base != NULL && result->i.base->n.class == N_TEMP ) {
+        if( result->i.base != NULL
+          && result->i.base->n.class == N_TEMP ) {
             if( DeAlias( result->i.base ) == DeAlias( op ) ) {
                 return( true );
             }
@@ -161,7 +164,8 @@ static bool_maybe   ZapsTheOp( name *result, name *op )
             return( MB_TRUE );
         return( ZapsTemp( result, op, false ) ? MB_TRUE : MB_FALSE );
     case N_REGISTER:
-        if( result->n.class == N_REGISTER && HW_Ovlap( result->r.reg, op->r.reg ) )
+        if( result->n.class == N_REGISTER
+          && HW_Ovlap( result->r.reg, op->r.reg ) )
             return( MB_TRUE );
         return( MB_FALSE );
     case N_CONSTANT:
@@ -175,8 +179,8 @@ static bool_maybe   ZapsTheOp( name *result, name *op )
 
 static  bool_maybe  ZapsIndexed( name *result, name *op )
 /********************************************************
-    Could redefining "result" redefine N_INDEXED name "op"?
-*/
+ * Could redefining "result" redefine N_INDEXED name "op"?
+ */
 {
     switch( result->n.class ) {
     case N_TEMP:
@@ -208,12 +212,12 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
             return( ZapsMemory( result, op->i.base, true ) ? MB_TRUE : MB_FALSE );
         }
     case N_INDEXED:
-        if( result->i.base == op->i.base &&
-            result->i.index == op->i.index &&
-            result->i.index_flags == op->i.index_flags &&
-            result->i.scale == op->i.scale &&
-            ( result->i.constant >= op->i.constant + op->n.size ||
-              op->i.constant >= result->i.constant + result->n.size ) ) {
+        if( result->i.base == op->i.base
+          && result->i.index == op->i.index
+          && result->i.index_flags == op->i.index_flags
+          && result->i.scale == op->i.scale
+          && ( result->i.constant >= op->i.constant + op->n.size
+          || op->i.constant >= result->i.constant + result->n.size ) ) {
             return( MB_MAYBE ); // no overlap if index is the same
         }
         if( result->i.base == NULL )
@@ -227,7 +231,8 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
         }
         return( ZapsMemory( result->i.base, op->i.base, true ) ? MB_TRUE : MB_FALSE );
     case N_REGISTER:
-        if( op->i.base != NULL && ZapsTheOp( result, op->i.base ) ) {
+        if( op->i.base != NULL
+          && ZapsTheOp( result, op->i.base ) ) {
             return( MB_TRUE );
         }
         return( ZapsTheOp( result, op->i.index ) );
@@ -238,10 +243,11 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
 }
 
 
-bool    NameIsConstant( name *op ) {
-/**********************************/
-
-    if( op->n.class == N_TEMP && ( op->v.usage & VAR_CONSTANT ) )
+bool    NameIsConstant( name *op )
+/********************************/
+{
+    if( op->n.class == N_TEMP
+      && ( op->v.usage & VAR_CONSTANT ) )
         return( true );
     if( op->n.class != N_MEMORY )
         return( false );
@@ -249,20 +255,22 @@ bool    NameIsConstant( name *op ) {
         return( false );
     if( op->v.usage & VAR_CONSTANT )
         return( true );
-    if( op->m.memory_type == CG_FE && ( FEAttr( op->v.symbol ) & FE_CONSTANT) )
+    if( op->m.memory_type == CG_FE
+      && (FEAttr( op->v.symbol ) & FE_CONSTANT) )
         return( true );
     return( AskNameIsROM( op->v.symbol, op->m.memory_type ) );
 }
 
 bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
-/*****************************************************************************
-    Is the operand 'op' visible to the code in invoked by the call 'ins'?
-    The 'modifies' flag means we only care if the routine can modify 'op'.
-*/
+/*********************************************************************
+ * Is the operand 'op' visible to the code in invoked by the call 'ins'?
+ * The 'modifies' flag means we only care if the routine can modify 'op'.
+ */
 {
     switch( op->n.class ) {
     case N_MEMORY:
-        if( modifies && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) )
+        if( modifies
+          && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) )
             return( MB_FALSE );
         if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
@@ -302,8 +310,9 @@ bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
     return( MB_FALSE );
 }
 
-static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
-/***********************************************************/
+static  bool    ZappedBySTQ_U( instruction *ins, name *op )
+/*********************************************************/
+{
 #if _TARGET & _TARG_AXP
     name        *temp;
     name        *base_1;
@@ -349,11 +358,11 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     return( false );
 }
 
-bool_maybe  ReDefinedBy( instruction *ins, name *op ) {
-/**************************************************************
-    Is it possible that operand "op" could be redefined by instruction "ins"?
-*/
-
+bool_maybe  ReDefinedBy( instruction *ins, name *op )
+/****************************************************
+ * Is it possible that operand "op" could be redefined by instruction "ins"?
+ */
+{
     bool_maybe  zaps;
 
     if( op->n.class == N_REGISTER ) {
@@ -374,11 +383,11 @@ bool_maybe  ReDefinedBy( instruction *ins, name *op ) {
 }
 
 
-bool    IsVolatile( name *op ) {
-/***************************************
-    Is "op" volatile in the C sense of the word?
-*/
-
+bool    IsVolatile( name *op )
+/*****************************
+ * Is "op" volatile in the C sense of the word?
+ */
+{
     switch( op->n.class ) {
     case N_MEMORY:
         if( op->v.usage & VAR_VOLATILE )
