@@ -194,7 +194,7 @@ void    DumpOperand( name *operand )
         } else {
             DumpOperand( operand->i.index );
         }
-        if( operand->i.scale > 0 ) {
+        if( operand->i.scale != SCALE_NONE ) {
             DumpChar( '*' );
             DumpInt( 1 << operand->i.scale );
         }

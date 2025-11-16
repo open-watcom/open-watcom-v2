@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,12 @@
 
 #include "cg.h"
 
-typedef unsigned char   scale_typ;
+typedef enum scale_typ {
+    SCALE_NONE,
+    SCALE_2,
+    SCALE_4,
+    SCALE_8,
+    SCALE_16,
+} scale_typ;
 
 #endif

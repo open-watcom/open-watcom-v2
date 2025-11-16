@@ -190,9 +190,8 @@ byte    DoIndex( hw_reg_set regs )
 }
 
 
-static  byte    DoScaleIndex( hw_reg_set base_reg,
-                              hw_reg_set idx_reg, scale_typ scale )
-/***********************************************************/
+static  byte    DoScaleIndex( hw_reg_set base_reg, hw_reg_set idx_reg, scale_typ scale )
+/**************************************************************************************/
 {
     byte        sib;
 
@@ -265,11 +264,11 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
             /*
              * [disp32]
              */
-            if( scale != 0 || val != 0 )
+            if( scale != SCALE_NONE || val != 0 )
                 _Zoiks( ZOIKS_079 );
             Inst[RMR] |= DoMDisp( mem_loc, true );
         } else {
-            if( scale != 0 ) {
+            if( scale != SCALE_NONE ) {
                 /*
                  * [disp32+scale_index]
                  */
@@ -294,14 +293,14 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
          * [(disp0|disp8|disp32)+base+scale_index]
          */
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            if( scale == 0
+            if( scale == SCALE_NONE
               && !HW_CEqual( base, HW_ESP ) ) {
                 Inst[RMR] |= DoIndex( base );
             } else {
                 Inst[RMR] |= DoScaleIndex( base, HW_ESP, scale );
             }
         } else {
-            if( scale == 0
+            if( scale == SCALE_NONE
               && HW_CEqual( base, HW_EBP )
               && ( lea || _IsntTargetModel( CGSW_X86_FLOATING_DS ) && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) ) {
                 /*
@@ -375,7 +374,7 @@ void    LayLeaRegOp( instruction *ins )
 {
     name        *left;
     name        *right;
-    scale_typ   scale = 0;
+    scale_typ   scale;
     int         neg;
     int_32      disp;
 
@@ -389,39 +388,41 @@ void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.u.int_value, NULL, true );
+                EA( HW_EMPTY, left->r.reg, SCALE_NONE, neg * right->c.lo.u.int_value, NULL, true );
             } else {
-                EA( HW_EMPTY, left->r.reg, 0, 0, right, true );
+                EA( HW_EMPTY, left->r.reg, SCALE_NONE, 0, right, true );
             }
         } else if( right->n.class == N_REGISTER ) {
             disp = GetNextAddConstant( ins );
-            EA( left->r.reg, right->r.reg, 0, disp, NULL, true );
+            EA( left->r.reg, right->r.reg, SCALE_NONE, disp, NULL, true );
         }
         break;
     case OP_MUL:
         switch( right->c.lo.u.int_value ) {
-        case 3: scale = 1;  break;
-        case 5: scale = 2;  break;
-        case 9: scale = 3;  break;
+        case 3:     scale = SCALE_2;    break;
+        case 5:     scale = SCALE_4;    break;
+        case 9:     scale = SCALE_8;    break;
+        default:    scale = SCALE_NONE; break;
         }
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
         EA( left->r.reg, left->r.reg, scale, disp, NULL, true );
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        switch( right->c.lo.u.int_value ) {
-        case 1:
+        scale = (scale_typ)right->c.lo.u.int_value;
+        switch( scale ) {
+        case SCALE_2:
             if( _CPULevel( CPU_586 ) ) {
                 /*
                  * want to avoid the extra big-fat 0 on 586's
                  * but two base registers is slower on a 486
                  */
-                EA( left->r.reg, left->r.reg, 0, disp, NULL, true );
+                EA( left->r.reg, left->r.reg, SCALE_NONE, disp, NULL, true );
                 break;
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.u.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, scale, disp, NULL, true );
         }
         break;
     }
@@ -494,7 +495,7 @@ void    LayModRM( name *op )
     switch( op->n.class ) {
     case N_MEMORY:
         CheckSize();
-        EA( HW_EMPTY, HW_EMPTY, 0, 0, op, false );
+        EA( HW_EMPTY, HW_EMPTY, SCALE_NONE, 0, op, false );
         break;
     case N_TEMP:
         CheckSize();
@@ -503,9 +504,9 @@ void    LayModRM( name *op )
             _Zoiks( ZOIKS_030 );
         }
         if( BaseIsSP( base ) ) {
-            EA( HW_ESP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+            EA( HW_ESP, HW_EMPTY, SCALE_NONE, TmpLoc( base, op ), NULL, false );
         } else {
-            EA( HW_EBP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+            EA( HW_EBP, HW_EMPTY, SCALE_NONE, TmpLoc( base, op ), NULL, false );
         }
         break;
     case N_INDEXED:
@@ -773,7 +774,7 @@ void    GFstp10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x3ddb );
-    EA( HW_EMPTY, HW_EBP, 0, -where, NULL, false );
+    EA( HW_EMPTY, HW_EBP, SCALE_NONE, -where, NULL, false );
     _Emit;
 }
 
@@ -784,7 +785,7 @@ void    GFld10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x2ddb );
-    EA( HW_EMPTY, HW_EBP, 0, -where, NULL, false );
+    EA( HW_EMPTY, HW_EBP, SCALE_NONE, -where, NULL, false );
     _Emit;
 }
 

@@ -201,14 +201,14 @@ name    *Points( an addr, const type_def *tipe )
         }
         break;
     case CL_POINTER:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, type_class, size, SCALE_NONE, flags );
         break;
     case CL_GLOBAL_INDEX:
     case CL_TEMP_INDEX:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, type_class, size, 0, flags & ~X_FAKE_BASE );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, type_class, size, SCALE_NONE, flags & ~X_FAKE_BASE );
         break;
     case CL_TEMP_OFFSET:
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, type_class, size, SCALE_NONE, flags );
         break;
     case CL_CONS2:
 #if WORD_SIZE != 2
@@ -217,11 +217,11 @@ name    *Points( an addr, const type_def *tipe )
         addr->u.n.name = AllocIntConst( addr->u.n.offset );
         addr->class = CL_VALUE;
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, SCALE_NONE, flags );
         break;
     default:
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, SCALE_NONE, flags );
         break;
     }
     if( addr->flags & FL_VOLATILE ) {

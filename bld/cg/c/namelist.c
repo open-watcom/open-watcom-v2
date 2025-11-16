@@ -619,7 +619,7 @@ name    *SAllocIndex( name *index, name *base, type_length offset,
                             type_class_def type_class, type_length size )
 /***********************************************************************/
 {
-    return( ScaleIndex( index, base, offset, type_class, size, 0, EMPTY ) );
+    return( ScaleIndex( index, base, offset, type_class, size, SCALE_NONE, EMPTY ) );
 }
 
 

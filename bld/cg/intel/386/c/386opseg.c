@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,8 +68,8 @@ static  void    CheckName( name **pop, name *gblreg )
             } else {
                 flags = X_LOW_BASE;
             }
-            *pop = ScaleIndex( index, op->i.base, op->i.constant,
-            op->n.type_class, op->n.size, op->i.scale, op->i.index_flags|flags);
+            *pop = ScaleIndex( index, op->i.base, op->i.constant, op->n.type_class,
+                                op->n.size, op->i.scale, op->i.index_flags | flags );
         }
     }
 }

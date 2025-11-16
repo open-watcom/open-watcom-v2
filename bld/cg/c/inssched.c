@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -749,7 +749,7 @@ static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
     *scale_adj = op->i.scale;
     if( (op->i.index_flags & X_HIGH_BASE) && HW_Ovlap( HighReg( idx_reg ), reg )
         || (op->i.index_flags & X_LOW_BASE) && HW_Ovlap( LowReg( idx_reg ), reg ) ) {
-        *scale_adj = 0;
+        *scale_adj = SCALE_NONE;
     }
     return( true );
 }

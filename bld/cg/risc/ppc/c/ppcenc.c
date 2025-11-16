@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -425,7 +425,7 @@ static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
     switch( mem->n.class ) {
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
-        assert( mem->i.scale == 0 );
+        assert( mem->i.scale == SCALE_NONE );
         assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
         *reg_mem = RegTrans( mem->i.index->r.reg );

@@ -355,7 +355,7 @@ static name *FakeIndex( name *op, hw_reg_set index )
         base = NULL;
         flags = EMPTY;
     }
-    return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, 0, flags ) );
+    return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, SCALE_NONE, flags ) );
 }
 
 static  bool    SegmentFloats( name *op )

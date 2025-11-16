@@ -280,7 +280,7 @@ void    ScoreInfo( score_info *info, name *op )
         op = op->i.base; /* track memory location */
     }
     info->class = (score_name_class_def)op->n.class;
-    info->scale = 0;
+    info->scale = SCALE_NONE;
     info->base  = NULL;
     info->index_reg = NO_INDEX;
     switch( op->n.class ) {
@@ -353,7 +353,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
-        info->scale = 0;
+        info->scale = SCALE_NONE;
         return( true );
     default:
         return( false );
