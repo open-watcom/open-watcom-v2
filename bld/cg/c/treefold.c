@@ -109,8 +109,8 @@ static int CmpType( const type_def *tipe )
     return( ret );
 }
 
-static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
-/************************************************************************/
+static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle cf )
+/***********************************************************************/
 /* Check if comparison 'op' of operand of type 'op_type' against constant
  * 'val' can be folded, eg. '(unsigned char)x <= 255'. Integer only, can
  * be used for bitfields (op_type contains number of bits).
@@ -120,7 +120,7 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     cmp_result          ret;
     signed_64           low;
     signed_64           high;
-    signed_64           val64;
+    signed_64           val;
     rel_op              rel;
     bool                rev_ret = false;
 
@@ -159,15 +159,15 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
         U64ShiftR( &high, MAXSIZE - NumBits( op_type ), &high );
     }
     /* Determine how to compare */
-    val64 = CFCnvF64( val );
-    if( I64Cmp( &val64, &low ) == 0 ) {
+    val = CFCnvF64( cf );
+    if( U64Eq( val, low ) ) {
         range = CASE_LOW_EQ;
-    } else if( I64Cmp( &val64, &high) == 0 ) {
+    } else if( U64Eq( val, high ) ) {
         range = CASE_HIGH_EQ;
     } else if( NumBits( op_type ) < MAXSIZE ) { /* Can't be outside range */
-        if( I64Cmp( &val64, &low ) < 0 ) {      /* Don't need unsigned compare */
+        if( I64Cmp( &val, &low ) < 0 ) {      /* Don't need unsigned compare */
             range = CASE_LOW;
-        } else if( I64Cmp( &val64, &high ) > 0 ) {
+        } else if( I64Cmp( &val, &high ) > 0 ) {
             range = CASE_HIGH;
         } else {
             range = CASE_SIZE;
