@@ -7868,7 +7868,7 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
 
         if( (*u_top)->op == PT_INT_CONSTANT ) {
             if( (*b_top)->op == PT_INT_CONSTANT ) {
-                if( !I64Cmp( &(*u_top)->u.int64_constant, &(*b_top)->u.int64_constant ) ) {
+                if( U64Eq( (*u_top)->u.int64_constant, (*b_top)->u.int64_constant ) ) {
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
                     continue;

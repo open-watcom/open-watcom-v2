@@ -894,7 +894,7 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
         U64Mul( &v1, &v2, &left->u.int64_constant );
-        if( 0 != I64Cmp( &test, &left->u.int64_constant ) ) {
+        if( U64Eq( test, left->u.int64_constant ) == 0 ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
         break;
@@ -993,7 +993,7 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
         U64Mul( &v1, &v2, &left->u.int64_constant );
-        if( 0 != U64Cmp( &test, &left->u.int64_constant ) ) {
+        if( U64Eq( test, left->u.int64_constant ) == 0 ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
         break;

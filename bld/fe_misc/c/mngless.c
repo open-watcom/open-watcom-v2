@@ -85,9 +85,9 @@ cmp_result CheckMeaninglessCompare( rel_op rel, int op1_size, int result_size,
         Set64ValZero( *low );
         U64ShiftR( &HIGH_VAL, shift, high );
     }
-    if( I64Cmp( &val, low ) == 0 ) {
+    if( U64Eq( val, *low ) ) {
         range = CASE_LOW_EQ;
-    } else if( I64Cmp( &val, high ) == 0 ) {
+    } else if( U64Eq( val, *high ) ) {
         range = CASE_HIGH_EQ;
     } else if( shift > 0 ) {                // can't be outside range and
         if( I64Cmp( &val, low ) < 0 ) {     // don't have to do unsigned compare
