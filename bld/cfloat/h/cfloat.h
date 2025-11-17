@@ -61,10 +61,10 @@ typedef struct cfstruct {
 typedef cfstruct    *cfhandle;
 
 typedef union flt {
-    unsigned_64     u64;
-    float           sngl;
-    double          dble;
     double          ldble;  // FIXME - need long double support
+    double          dble;
+    float           sngl;
+    unsigned_64     u64;
 } flt;
 
 extern  void        CFCnvTarget( cfloat *f, flt *buffer, int class );
