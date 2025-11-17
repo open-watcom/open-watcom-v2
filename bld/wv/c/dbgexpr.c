@@ -571,7 +571,7 @@ int TstEQ( int true_value )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        temp = (U64Cmp( &left->v.uint, &rite->v.uint ) == 0);
+        temp = U64Eq( left->v.uint, rite->v.uint );
         break;
     case TK_ADDRESS:
     case TK_POINTER:
