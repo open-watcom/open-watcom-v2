@@ -456,7 +456,8 @@ instruction      *rFIXSHIFT( instruction *ins )
     shift_count = ins->operands[1]->c.lo.u.int_value;
     assert( shift_count >= REG_SIZE * 8 );
 #endif
-    if( ins->head.opcode == OP_RSHIFT && Signed[ins->type_class] == ins->type_class ) {
+    if( ins->head.opcode == OP_RSHIFT
+      && Signed[ins->type_class] == ins->type_class ) {
         ins->operands[1] = AllocS32Const( REG_SIZE * 8 - 1 );
         return( ins );
     } else {
@@ -509,25 +510,26 @@ instruction      *rCLRHI_R( instruction *ins )
     res = ins->result;
     high = HighReg( res->r.reg );
     if( op->n.class == N_INDEXED
-        && ( ( op->i.index->n.class == N_REGISTER && HW_Ovlap( op->i.index->r.reg, res->r.reg ) ) /* (1) */
-            || ( CheckIndecies( ins, res->r.reg, HW_EMPTY, NULL ) == MB_MAYBE ) /* 2 */
-           )
-      ) {
+      && ( ( op->i.index->n.class == N_REGISTER
+      && HW_Ovlap( op->i.index->r.reg, res->r.reg ) ) /* (1) */
+      || ( CheckIndecies( ins, res->r.reg, HW_EMPTY, NULL ) == MB_MAYBE ) ) ) { /* 2 */
         /* (1) would have gen'd movzd  eax,[eax]
          * (2) avoid incorrect reduction of "cnv [foo] => BX" to
          *      xor bx,bx / mov bx, [foo] / mov bl, [bx]
          *     (zoiks register allocator)
          */
         new_ins = NULL;
-    } else if( !HW_CEqual( high, HW_EMPTY ) && half_type_class == type_class ) {
-        if( op->n.class == N_REGISTER && HW_Equal( op->r.reg, high ) ) {        // BBB - may 19, 1994
+    } else if( !HW_CEqual( high, HW_EMPTY )
+      && half_type_class == type_class ) {
+        if( op->n.class == N_REGISTER
+          && HW_Equal( op->r.reg, high ) ) {
             /* look out for movzd ax,ah */
             new_ins = NULL;
         } else {
             new_ins = MoveConst( 0, HighPart( res, type_class ), type_class );
         }
     } else if( op->n.class == N_REGISTER
-            && HW_Ovlap( op->r.reg, res->r.reg ) ) {
+      && HW_Ovlap( op->r.reg, res->r.reg ) ) {
         /* would have gen'd movzd eax,ah */
         new_ins = NULL;
     } else {
@@ -583,7 +585,8 @@ instruction      *rCYPHIGH( instruction *ins )
     HalfType( ins );
     ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
     ins->operands[1] = HighPart( ins->operands[1], ins->type_class );
-    if( ins->result != NULL && ins->head.opcode < FIRST_CONDITION ) {
+    if( ins->result != NULL
+      && ins->head.opcode < FIRST_CONDITION ) {
         ins->result = HighPart( ins->result, ins->type_class );
     }
     return( ins );
@@ -596,7 +599,8 @@ instruction      *rCYPLOW( instruction *ins )
     HalfType( ins );
     ins->operands[0] = LowPart( ins->operands[0], ins->type_class );
     ins->operands[1] = LowPart( ins->operands[1], ins->type_class );
-    if( ins->result != NULL && ins->head.opcode < FIRST_CONDITION ) {
+    if( ins->result != NULL
+      && ins->head.opcode < FIRST_CONDITION ) {
         ins->result = LowPart( ins->result, ins->type_class );
     }
     return( ins );

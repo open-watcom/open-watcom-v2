@@ -578,9 +578,11 @@ name    *LowPart( name *tosplit, type_class_def type_class )
         }
         break;
     case N_REGISTER:
-        if( type_class == U1 || type_class == I1 ) {
+        if( type_class == U1
+          || type_class == I1 ) {
             new_name = AllocRegName( Low16Reg( tosplit->r.reg ) );
-        } else if( type_class == U2 || type_class == I2 ) {
+        } else if( type_class == U2
+          || type_class == I2 ) {
             new_name = AllocRegName( Low32Reg( tosplit->r.reg ) );
         } else {
             new_name = AllocRegName( Low64Reg( tosplit->r.reg ) );
@@ -660,9 +662,11 @@ name    *HighPart( name *tosplit, type_class_def type_class )
         }
         break;
     case N_REGISTER:
-        if( type_class == U1 || type_class == I1 ) {
+        if( type_class == U1
+          || type_class == I1 ) {
             new_name = AllocRegName( High16Reg( tosplit->r.reg ) );
-        } else if( type_class == U2 || type_class == I2 ) {
+        } else if( type_class == U2
+          || type_class == I2 ) {
             new_name = AllocRegName( High32Reg( tosplit->r.reg ) );
         } else {
             new_name = AllocRegName( High64Reg( tosplit->r.reg ) );
@@ -793,7 +797,8 @@ instruction     *rMOVEXX_4( instruction *ins )
             first_ins = new_ins;
         }
         new_ins = MakeMove( temp, dst, U4 );
-        if( words == 0 && rem == 0 ) {
+        if( words == 0
+          && rem == 0 ) {
             ReplIns( ins, new_ins );
             last_ins = new_ins;
         } else {
