@@ -35,7 +35,7 @@ jobs:
             skip:   '1'
           - title: Fortran tests
             path:   f77test
-            skip:   '1'
+            skip:   ''
           - title: C run-time library tests
             path:   clibtest
             skip:   '1'
