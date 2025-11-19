@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -489,7 +489,6 @@ static opt_entry *GetOptn( const char *buff, bool *negated )
 {
     opt_entry   *optn;
 
-    optn = CompOptns;
     *negated = false;
     if( ( toupper( buff[ 0 ] ) == 'N' ) && ( toupper( buff[ 1 ] ) == 'O' ) ) {
         *negated = true;
@@ -745,7 +744,6 @@ void    PrtOptions( void )
     PrtLst( "Options:" );
     buffer[ 0 ] = ' ';
     number = 0;
-    optn = CompOptns;
     for( optn = CompOptns; optn->option != NULL; optn++ ) {
         if( optn->flags & VAL ) {
             // the following check will only work if
