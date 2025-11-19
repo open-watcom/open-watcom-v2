@@ -97,7 +97,7 @@ build_proc()
             ;;
         "tests")
             cd $OWTESTTARGET
-            builder test
+            builder -i test
             RC=$?
             cat result.log
             ;;
