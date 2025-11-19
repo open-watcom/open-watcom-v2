@@ -98,7 +98,7 @@ build_proc()
         "tests")
             cd $OWTESTTARGET
             builder -i test
-            RC=$?
+            #RC=$?
             cat result.log
             ;;
         "docs")

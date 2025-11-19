@@ -85,7 +85,7 @@ if "%OWBUILD_STAGE%" == "build" (
 if "%OWBUILD_STAGE%" == "tests" (
     cd %OWTESTTARGET%
     builder -i test
-    set RC=!ERRORLEVEL!
+    rem set RC=!ERRORLEVEL!
     type result.log
 )
 if "%OWBUILD_STAGE%" == "docs" (

@@ -96,10 +96,10 @@ start : .SYMBOLIC .EXPLICIT
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)%create $@
-    @%append $@ $(targ_ldb_$(targ_env_$(arch)))
-    @%append $@ $(targ_lnk_$(targ_env_$(arch)))
-    @%append $@ $(lnk_any)
-    @%append $@ $(stack_$(arch))
+    $(noecho)%append $@ $(targ_ldb_$(targ_env_$(arch)))
+    $(noecho)%append $@ $(targ_lnk_$(targ_env_$(arch)))
+    $(noecho)%append $@ $(lnk_any)
+    $(noecho)%append $@ $(stack_$(arch))
 
 .c.obj:
     @set ERROR_MSG=failure to compile $^&
