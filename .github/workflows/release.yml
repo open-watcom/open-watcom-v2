@@ -52,7 +52,7 @@ jobs:
           image:     'ubuntu-24.04-arm'
           owtools:   'GCC'
           args:      'gcc'
-          gitpath:   'rel'
+          gitpath:   'rel arml64'
         # WINDOWS X64
         - name:      'Windows x64'
           suffix:    'nt x64'

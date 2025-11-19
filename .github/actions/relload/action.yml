@@ -50,15 +50,7 @@ runs:
       artifact: 'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
   - uses: ./.github/actions/artfload
     with:
-      gitpath:  'rel'
-      artifact: rel nt x64 ${{inputs.suffix_nt}}
-  - uses: ./.github/actions/artfload
-    with:
-      gitpath:  'rel'
-      artifact: rel lnx x64 ${{inputs.suffix_lnx}}
-  - uses: ./.github/actions/artfload
-    with:
-      gitpath:  'rel'
+      gitpath:  'rel arml64'
       artifact: rel lnx a64 ${{inputs.suffix_lnx}}
   - uses: ./.github/actions/artfload
     with:
@@ -68,6 +60,14 @@ runs:
     with:
       gitpath:  'rel armo64'
       artifact: rel osx a64 ${{inputs.suffix_osx}}
+  - uses: ./.github/actions/artfload
+    with:
+      gitpath:  'rel'
+      artifact: rel nt x64 ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
+    with:
+      gitpath:  'rel'
+      artifact: rel lnx x64 ${{inputs.suffix_lnx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
