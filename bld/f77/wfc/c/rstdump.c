@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include "ecflags.h"
 #include "errcod.h"
-#include "undef.h"
 #include "global.h"
 #include "progsw.h"
 #include "segsw.h"
