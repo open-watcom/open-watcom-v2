@@ -576,6 +576,7 @@ STATIC bool doMusts( void )
 /*************************/
 {
     bool    ok;
+    TLIST   *target;
 
     if( firstTargFound == NULL
       && mustTargs == NULL ) {
@@ -593,14 +594,12 @@ STATIC bool doMusts( void )
          */
         CheckNoCmds();
     }
-
-    if( mustTargs == NULL ) {
-        ignoreNoCommands( firstTargFound );
-        ok = MakeList( firstTargFound );
-    } else {
-        ignoreNoCommands( mustTargs );
-        ok = MakeList( mustTargs );
+    target = mustTargs;
+    if( target == NULL ) {
+        target = firstTargFound;
     }
+    ignoreNoCommands( target );
+    ok = MakeList( target );
 
     UpdateFini();
     return( ok );
