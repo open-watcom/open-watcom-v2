@@ -81,7 +81,7 @@ static void     SwitchThreadStackLow( void )
 }
 
 
-void            __InitMultiThreadIO( void )
+void            __InitMultiThreadFIO( void )
 //=========================================
 {
     __SwitchStkLow = &SwitchThreadStackLow;

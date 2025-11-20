@@ -92,10 +92,10 @@ extern unsigned         __FThreadDataOffset;
 extern void             __FiniFThreadProcessing( void );
 extern int              __InitFThreadProcessing( void );
 extern void             __InitFThreadData( void * );
-extern void             __InitMultiThreadIO( void );
+extern void             __InitMultiThreadFIO( void );
 
-extern void             __FiniBeginThread( void );
-extern void             __InitBeginThread( void );
+extern void             __FiniBeginFThread( void );
+extern void             __InitBeginFThread( void );
 
 #endif
 
