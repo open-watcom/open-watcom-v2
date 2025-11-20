@@ -2,6 +2,10 @@
 
 tree_depth = 2
 
+!ifdef %BUILDTEST
+buildtest = 1
+!endif
+
 tests = &
     test1 &
     implicit &
@@ -16,18 +20,28 @@ tests = &
     longfile &
     finish
 
+!ifdef buildtest
 !ifdef __OS2__
 test_wmake = ..\..\wmake\os2386\wmk.exe
-cmdext=.cmd
 !else ifdef __LINUX__
 test_wmake = ../../wmake/linux386/wmk.exe
-cmdext=.sh
 !else ifdef __NT__
 test_wmake = ..\..\wmake\nt386\wmk.exe
-cmdext=.bat
 !else	# DOS
 test_wmake = ..\..\wmake\dos386\wmk.exe
-cmdext=.bat
+!endif
+!else
+test_wmake = wmake
+!endif
+
+!ifdef __OS2__
+testcmd=call test.cmd $(test_wmake)
+!else ifdef __LINUX__
+testcmd=sh test.sh $(test_wmake)
+!else ifdef __NT__
+testcmd=call test.bat $(test_wmake)
+!else	# DOS
+testcmd=call test.bat $(test_wmake)
 !endif
 
 from = $+$(%__CWD__)$-
@@ -51,7 +65,7 @@ test1: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 implicit: .SYMBOLIC
@@ -60,7 +74,7 @@ implicit: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 fortest: .SYMBOLIC
@@ -69,7 +83,7 @@ fortest: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 pretest: .SYMBOLIC
@@ -78,7 +92,7 @@ pretest: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 updtest: .SYMBOLIC
@@ -87,7 +101,7 @@ updtest: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 errtest: .SYMBOLIC
@@ -97,7 +111,7 @@ errtest: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 inline: .SYMBOLIC
@@ -107,7 +121,7 @@ inline: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 preproc: .SYMBOLIC
@@ -116,7 +130,7 @@ preproc: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 macros: .SYMBOLIC
@@ -125,7 +139,7 @@ macros: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 misc: .SYMBOLIC
@@ -134,7 +148,7 @@ misc: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 longfile: .SYMBOLIC
@@ -143,7 +157,7 @@ longfile: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!call test$(cmdext) $(test_wmake)
+    @!$(testcmd)
     @cd $(from)
 
 finish: .SYMBOLIC
