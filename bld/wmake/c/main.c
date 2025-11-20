@@ -99,7 +99,8 @@ STATIC void doBuiltIns( const char *makeopts )
             strcat( cpy, "wmake" );
         }
         parseString( cpy );
-        if( Glob.compat_nmake || Glob.compat_unix ) {
+        if( Glob.compat_nmake
+          || Glob.compat_unix ) {
             FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %s", makeopts );
             parseString( cpy );
         }
@@ -139,7 +140,8 @@ STATIC void doBuiltIns( const char *makeopts )
 static void setFirstTarget( TLIST *potential_first )
 /**************************************************/
 {
-    if( firstTargFound != NULL || potential_first == NULL ) {
+    if( firstTargFound != NULL
+      || potential_first == NULL ) {
         if( potential_first != NULL ) {
             FreeTList( potential_first );
         }
@@ -252,7 +254,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
 #define CHK_OPTION(o)   options[(unsigned char)(o)]
 
     if( (p = argv[1]) != NULL ) {
-        if( strcmp( p, "?" ) == 0 || (CHECK_OPTION( p ) && strcmp( p + 1, "?" ) == 0) ) {
+        if( strcmp( p, "?" ) == 0
+          || (CHECK_OPTION( p )
+          && strcmp( p + 1, "?" ) == 0) ) {
             Usage();
             // never return
         }
@@ -264,7 +268,8 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         select = p[0];
         option = ctolower( p[1] );
         if( CHECK_OPTION( p ) ) {
-            if( option != NULLCHAR && p[2] == NULLCHAR ) {
+            if( option != NULLCHAR
+              && p[2] == NULLCHAR ) {
                 /*
                  * single character options processing
                  */
@@ -339,24 +344,28 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                  * two character options processing
                  */
 #if defined( __DOS__ )
-                if( option == 'e' && ctolower( p[2] ) == 'r' ) {
+                if( option == 'e'
+                  && ctolower( p[2] ) == 'r' ) {
                     Glob.redir_err = true;
                     SET_OPTION( option );
                     continue;
                 }
 #endif
-                if( option == 'm' && ctolower( p[2] ) == 's' ) {
+                if( option == 'm'
+                  && ctolower( p[2] ) == 's' ) {
                     Glob.compat_nmake = true;
                     Glob.nocheck   = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 's' && ctolower( p[2] ) == 'n' ) {
+                if( option == 's'
+                  && ctolower( p[2] ) == 'n' ) {
                     Glob.silentno  = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 'u' && ctolower( p[2] ) == 'x' ) {
+                if( option == 'u'
+                  && ctolower( p[2] ) == 'x' ) {
                     /* POSIX compatibility */
                     Glob.compat_posix = true;
                     Glob.compat_unix = true;
@@ -374,7 +383,8 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         }
     } // while( *++argv != NULL )
 
-    if( Glob.compat_nmake && Glob.compat_unix ) {
+    if( Glob.compat_nmake
+      && Glob.compat_unix ) {
         PrtMsg( ERR | INCOMPATIBLE__OPTIONS );
         Usage();
         // never return
@@ -457,7 +467,9 @@ STATIC const char *procLogName( const char * const *argv )
 
     while( *++argv != NULL ) {
         p = *argv;
-        if( CHECK_OPTION( p ) && (ctolower( p[1] ) == 'l') && (p[2] == NULLCHAR) ) {
+        if( CHECK_OPTION( p )
+          && (ctolower( p[1] ) == 'l')
+          && (p[2] == NULLCHAR) ) {
             return( ((p = *++argv) == NULL || CHECK_OPTION( p )) ? NULL : p );
         }
     }
@@ -565,14 +577,16 @@ STATIC bool doMusts( void )
 {
     bool    ok;
 
-    if( firstTargFound == NULL && mustTargs == NULL ) {
+    if( firstTargFound == NULL
+      && mustTargs == NULL ) {
         PrtMsg( FTL | NO_TARGETS_SPECIFIED );
         ExitFatal();
         // never return
     }
 
     UpdateInit();
-    if( Glob.compat_nmake || Glob.compat_unix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_unix ) {
         /* For MS/UNIX mode, targets with no commands may be symbolic.
          * We need to check this now, after input files have been processed
          * but before any commands have been executed.
@@ -648,7 +662,8 @@ static int ExitSafe( int rc )
 
     if( !busy ) {
         busy = true;
-        if( rc == EXIT_ERROR || rc == EXIT_FATAL ) {
+        if( rc == EXIT_ERROR
+          || rc == EXIT_FATAL ) {
             PrtMsg( ERR | MAKE_ABORT );
         }
 #ifdef DEVBUILD
@@ -716,7 +731,8 @@ int main( int argc, char **argv )
     InitSignals();
     InitHardErr();
     init( (const char **)argv );        /* initialize, process cmdline */
-    if( !Glob.noheader && !Glob.headerout ) {
+    if( !Glob.noheader
+      && !Glob.headerout ) {
         PrintBanner();
     }
     parseFiles();
