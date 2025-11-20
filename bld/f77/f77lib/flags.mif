@@ -9,7 +9,6 @@ f77lib_cpp_flags += -D__MT__
 f77lib_cpp_flags += -D__MT__
 !endif
 !ifeq linkage dynamic
-f77lib_cpp_flags += -D__DLL__
 !endif
 !ifdef share
 f77lib_cpp_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
@@ -34,7 +33,6 @@ f77lib_app_flags += -d__MT__
 f77lib_app_flags += -d__MT__
 !endif
 !ifeq linkage dynamic
-f77lib_app_flags += -d__DLL__
 !endif
 
 f77lib_app_msdos      = -D__WATCOM_LFN__
