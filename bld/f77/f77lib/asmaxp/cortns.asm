@@ -62,11 +62,6 @@ SaveRegs: // assembler does not support .quad directive
 #define FRAME_SIZE      0x90            // define stack frame to discard when restoring
                                         // state (8 registers and return address)
 
-.globl  SwitchToGen
-// .ent SwitchToGen
-        br      zero, j^SwitchToRT      // Use same routine as to switch in
-// .end SwitchToGen
-
 .globl  SwitchToRT
 // .ent SwitchToRT
 SwitchToRT:

@@ -61,11 +61,6 @@ SaveRegs: // assembler does not support .quad directive
                                         // state (20 registers*4 + 18 fp regs*8
                                         // + link*4 + cr*4) align 8 boundary
 
-.globl  SwitchToGen
-// .ent SwitchToGen
-        b       j^SwitchToRT            // Use same routine as to switch in
-// .end SwitchToGen
-
 .globl  SwitchToRT
 // .ent SwitchToRT
 SwitchToRT:
