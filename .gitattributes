@@ -109,8 +109,9 @@ unicode*.* binary
 /bld/wmake/nmake text
 /bld/wmake/posmake text
 /bld/wmake/wmake text
-/bld/wmake/regress/errtest/error.bat binary
-/bld/wmake/regress/errtest/error.cmd binary
+
+/bld/wmaktest/errtest/error.bat binary
+/bld/wmaktest/errtest/error.cmd binary
 
 # text files in exact encoding
 /bld/wipfc/helper/enti*.txt binary
@@ -118,15 +119,6 @@ unicode*.* binary
 /bld/wipfc/configure text
 
 /build/makeinit text
-
-# ow linux executables
-/ci/ow/binl/wcc386 binary
-/ci/ow/binl/wcl386 binary
-/ci/ow/binl/wlib binary
-/ci/ow/binl/wlink binary
-/ci/ow/binl/wmake binary
-/ci/ow/binl/wpp386 binary
-/ci/ow/binl/wrc binary
 
 /contrib/libzip/configure text
 
