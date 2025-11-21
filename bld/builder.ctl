@@ -93,10 +93,12 @@ cdsay .
 # The following tools are required by F77
 [ INCLUDE "<OWROOT>/bld/f77/utils/builder.ctl" ]
 
-## The following tools are required by tests
+# The following tools are required by tests
 [ INCLUDE "<OWROOT>/bld/ndisasm/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/dmpobj/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/testutil/builder.ctl" ]
+# The following tools can be used for development
+[ INCLUDE "<OWROOT>/bld/pmake/builder.ctl" ]
 
 ## The following tools are not required during build
 #[ INCLUDE "<OWROOT>/bld/exedump/builder.ctl" ]
