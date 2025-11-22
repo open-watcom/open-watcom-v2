@@ -301,8 +301,8 @@ void ToItem( stack_entry *entry, item_mach *tmp )
                 tmp->lo = entry->v.addr.mach.offset;
                 return;
             case 8:
-                tmp->qo.u._32[I64LO32] = entry->v.addr.mach.offset;
-                tmp->qo.u._32[I64HI32] = 0;
+                U64Low( tmp->qo ) = entry->v.addr.mach.offset;
+                U64High( tmp->qo ) = 0;
             }
             break;
         case TM_FAR:

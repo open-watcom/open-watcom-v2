@@ -52,6 +52,7 @@
 #include "loadfile.h"
 #include "objstrip.h"
 #include "toc.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -655,7 +656,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
             ORLSymbolGetValue( symhdl, &val64 );
-            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
+            sym = MakeCommunalSym( sym, U64Low( val64 ), false, BITS_32 );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
             isweak = false;
@@ -682,14 +683,14 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             if( (type & ORL_SYM_TYPE_COMMON)
               && (type & ORL_SYM_TYPE_OBJECT)
               && sechdl == NULL ) {
-                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
+                sym = MakeCommunalSym( sym, U64Low( val64 ), false, BITS_32 );
             } else if( snode != NULL
               && snode->entry != NULL
               && snode->entry->iscdat ) {
-                DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
+                DefineComdatSym( snode, sym, U64Low( val64 ) );
             } else {
                 sym->info |= SYM_DEFINED;
-                DefineSymbol( sym, snode, val64.u._32[I64LO32], 0 );
+                DefineSymbol( sym, snode, U64Low( val64 ), 0 );
             }
         }
         newnode->entry = sym;
@@ -823,7 +824,7 @@ static orl_return DoReloc( orl_reloc reloc )
                 unsigned_64 val64;
 
                 ORLSymbolGetValue( reloc->symbol, &val64 );
-                addend = val64.u._32[I64LO32];
+                addend = U64Low( val64 );
                 target.u.sdata = symseg->entry;
                 target.type = FIX_TARGET_SEG;
                 if( istoc ) {
