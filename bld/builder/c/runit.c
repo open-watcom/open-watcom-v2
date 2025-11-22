@@ -181,13 +181,8 @@ static int ProcSet( const char *cmd )
     /* Watcom implementation is non-conforming to POSIX, return value is incorrect in some cases */
     rep++;
     if( *rep == '\0' ) {
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
-        /* fix for OW 1.9 */
-        setenv( tmp_buf, NULL, 1 );
-#else
         /* Delete the environment variable! */
         unsetenv( tmp_buf );
-#endif
         return( 0 );
     }
     return( setenv( tmp_buf, rep, 1 ) );

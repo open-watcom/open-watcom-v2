@@ -40,8 +40,11 @@
 #ifdef __WATCOMC__
 
     #include <stddef.h> /* need to load _comdef.h */
-  #if defined( __NT__ ) && ( __WATCOMC__ == 1290 )
+  #if __WATCOMC__ == 1290           /* OW 1.9 fix */
     #include <stdlib.h>
+    #include <stdio.h>
+  #endif
+  #if ( __WATCOMC__ == 1290 ) && defined( __NT__ ) /* OW 1.9 fix */
     #include <errno.h>
     #include <time.h>
     #include <windows.h>
@@ -1285,7 +1288,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
 
 /****************************************************************************
 *
-* Description:  Implementation of POSIX environment setenv and unsetenv
+* Description:  Implementation of POSIX environment setenv
 *
 ****************************************************************************/
 
@@ -1307,6 +1310,32 @@ int setenv( const char *name, const char *newvalue, int overwrite )
     free( buff );
     return( 0 );
 }
+
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX environment unsetenv
+*
+****************************************************************************/
+
+#if defined( __WATCOMC__ ) \
+  && ( __WATCOMC__ == 1290 )        /* OW 1.9 fix */
+
+void unsetenv( const char *name )
+/*******************************/
+{
+    char    *buff;
+    size_t  len;
+
+    len = strlen( name ) + 16;
+    buff = malloc( len );
+    sprintf( buff, "%s=", name );
+    putenv( buff );
+    free( buff );
+}
+
+#elif defined(_MSC_VER)
 
 int unsetenv( const char *name )
 /******************************/
@@ -1333,7 +1362,7 @@ int unsetenv( const char *name )
 #if defined(_MSC_VER) \
   || defined( __WATCOMC__ ) \
   && ( __WATCOMC__ == 1290 ) \
-  && defined( __NT__ )
+  && defined( __NT__ )      /* OW 1.9 fix */
 
     #define _DIR_ISFIRST            0
     #define _DIR_NOTFIRST           1
@@ -1967,3 +1996,4 @@ time_t _mkgmtime20( struct tm *t )
 }
 
 #endif
+
