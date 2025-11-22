@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #include "mad.h"
 #include "madregs.h"
 #include "lnxcomm.h"
+#include "i64.h"
 
 
 /* Implementation notes:
@@ -55,9 +56,9 @@
  */
 
 /* Macros to get at GP/FP registers based on their index; useful in loops */
-#define TRANS_GPREG_32( mr, idx ) (*((unsigned_32 *)(&(mr->r0.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr->f0.u64.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr->f0.u64.u._32[I64HI32])) + (2 * idx)))
+#define TRANS_GPREG_32( mr, idx ) (*(&U64Low( mr->r0 ) + (2 * idx)))
+#define TRANS_FPREG_LO( mr, idx ) (*(&U64Low( mr->f0.u64 ) + (2 * idx)))
+#define TRANS_FPREG_HI( mr, idx ) (*(&U64Low( mr->f0.u64 ) + (2 * idx)))
 
 static void ReadCPU( struct ppc_mad_registers *r )
 {
@@ -74,14 +75,14 @@ static void ReadCPU( struct ppc_mad_registers *r )
         TRANS_FPREG_LO( r, i ) = ptrace( PTRACE_PEEKUSER, pid, (PT_FPR0 + i * 2 + 1) * REGSIZE, 0 );
     }
     /* Read SPRs */
-    r->iar.u._32[I64LO32] = ptrace( PTRACE_PEEKUSER, pid, PT_NIP * REGSIZE, 0 );
-    r->msr.u._32[I64LO32] = ptrace( PTRACE_PEEKUSER, pid, PT_MSR * REGSIZE, 0 );
-    r->ctr.u._32[I64LO32] = ptrace( PTRACE_PEEKUSER, pid, PT_CTR * REGSIZE, 0 );
-    r->lr.u._32[I64LO32]  = ptrace( PTRACE_PEEKUSER, pid, PT_LNK * REGSIZE, 0 );
+    U64Low( r->iar ) = ptrace( PTRACE_PEEKUSER, pid, PT_NIP * REGSIZE, 0 );
+    U64Low( r->msr ) = ptrace( PTRACE_PEEKUSER, pid, PT_MSR * REGSIZE, 0 );
+    U64Low( r->ctr ) = ptrace( PTRACE_PEEKUSER, pid, PT_CTR * REGSIZE, 0 );
+    U64Low( r->lr )  = ptrace( PTRACE_PEEKUSER, pid, PT_LNK * REGSIZE, 0 );
     r->xer                = ptrace( PTRACE_PEEKUSER, pid, PT_XER * REGSIZE, 0 );
     r->cr                 = ptrace( PTRACE_PEEKUSER, pid, PT_CCR * REGSIZE, 0 );
     r->fpscr              = ptrace( PTRACE_PEEKUSER, pid, PT_FPSCR * REGSIZE, 0 );
-    last_eip = r->iar.u._32[I64LO32];
+    last_eip = U64Low( r->iar );
 }
 
 trap_retval TRAP_CORE( Read_regs )( void )
@@ -98,10 +99,10 @@ static void WriteCPU( struct ppc_mad_registers *r )
     int         i;
 
     /* Write SPRs */
-    ptrace( PTRACE_POKEUSER, pid, PT_NIP * REGSIZE, (void *)(r->iar.u._32[I64LO32]) );
-    ptrace( PTRACE_POKEUSER, pid, PT_MSR * REGSIZE, (void *)(r->msr.u._32[I64LO32]) );
-    ptrace( PTRACE_POKEUSER, pid, PT_CTR * REGSIZE, (void *)(r->ctr.u._32[I64LO32]) );
-    ptrace( PTRACE_POKEUSER, pid, PT_LNK * REGSIZE, (void *)(r->lr.u._32[I64LO32]) );
+    ptrace( PTRACE_POKEUSER, pid, PT_NIP * REGSIZE, (void *)U64Low( r->iar ) );
+    ptrace( PTRACE_POKEUSER, pid, PT_MSR * REGSIZE, (void *)U64Low( r->msr ) );
+    ptrace( PTRACE_POKEUSER, pid, PT_CTR * REGSIZE, (void *)U64Low( r->ctr ) );
+    ptrace( PTRACE_POKEUSER, pid, PT_LNK * REGSIZE, (void *)U64Low( r->lr ) );
     ptrace( PTRACE_POKEUSER, pid, PT_CCR * REGSIZE, (void *)r->cr );
     ptrace( PTRACE_POKEUSER, pid, PT_XER * REGSIZE, (void *)r->xer );
     /* Write GPRs */
