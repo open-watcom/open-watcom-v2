@@ -43,6 +43,7 @@
   #if __WATCOMC__ == 1290           /* OW 1.9 fix */
     #include <stdlib.h>
     #include <stdio.h>
+    #include <string.h>
   #endif
   #if ( __WATCOMC__ == 1290 ) && defined( __NT__ ) /* OW 1.9 fix */
     #include <errno.h>
