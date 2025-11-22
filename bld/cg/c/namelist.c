@@ -191,8 +191,8 @@ name    *AllocConst( float_handle cf_value )
             unsigned_64         i64val;
 
             i64val = CFCnvF64( cf_value );
-            new_c->c.lo.u.int_value = i64val.u._32[I64LO32];
-            new_c->c.hi.u.int_value = i64val.u._32[I64HI32];
+            new_c->c.lo.u.int_value = I64Low( i64val );
+            new_c->c.hi.u.int_value = I64High( i64val );
         }
     }
     return( new_c );

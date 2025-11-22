@@ -95,8 +95,8 @@ static  uint    SignedSizeClass64( signed_64 val )
 {
     uint        class;
 
-    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
-        class = SignedSizeClass( val.u._32[I64LO32] );
+    if( I64High( val ) == 0 || I64High( val ) == -1 ) {
+        class = SignedSizeClass( I64Low( val ) );
     } else {
         class = 3;
     }
@@ -529,10 +529,10 @@ dbg_type        WVEndEnum( dbg_enum en )
         class = SignedSizeClass64( val );
         BuffStart( &temp, WT_ENUMERATED + ENUM_BYTE + class );
         if( class == 3 ) {
-            BuffValue( val.u._32[I64LO32], 2 );
-            BuffValue( val.u._32[I64HI32], 2 );
+            BuffValue( U64Low( val ), 2 );
+            BuffValue( U64High( val ), 2 );
         } else {
-            BuffValue( val.u._32[I64LO32], class );
+            BuffValue( U64Low( val ), class );
         }
         BuffString( cons->len, cons->name );
         EndType( false );

@@ -161,7 +161,7 @@ static  bool    FindFlowOut( block *blk ) {
     ins = ins1;
 
     if( U64isNonZero( false_cons ) ) {
-        konst = AllocS64Const( false_cons.u._32[I64LO32], false_cons.u._32[I64HI32] );
+        konst = AllocS64Const( U64Low( false_cons ), U64High( false_cons ) );
         ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {
         ins1 = MakeMove( temp, result, type_class );

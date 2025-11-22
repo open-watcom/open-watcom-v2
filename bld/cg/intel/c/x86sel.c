@@ -140,8 +140,8 @@ cost_val ScanCost( sel_handle s_node )
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     type = SelType( &tmp );
     if( type != TY_UINT_8 ) {
-        if( s_node->num_cases.u._32[I64HI32] == 0 ) {
-            values = s_node->num_cases.u._32[I64LO32];
+        if( U64High( s_node->num_cases ) == 0 ) {
+            values = U64Low( s_node->num_cases );
             if( values >= MIN_SVALUES
               || type == TY_UINT_4
               && values >= MIN_LVALUES ) {
@@ -168,10 +168,10 @@ cost_val JumpCost( sel_handle s_node )
 
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     U64IncDec( &tmp, 1 );
-    in_range = tmp.u._32[I64LO32];
-    if( tmp.u._32[I64HI32] == 0
+    in_range = U64Low( tmp );
+    if( U64High( tmp ) == 0
       && in_range <= MAX_IN_RANGE
-      && s_node->num_cases.u._32[I64LO32] >= MIN_JUMPS
+      && U64Low( s_node->num_cases ) >= MIN_JUMPS
       && in_range >= MIN_JUMPS ) {
         uint_32 size;
 
@@ -247,13 +247,13 @@ static void GenValuesForward( sel_handle s_node, const signed_64 *to_sub, cg_typ
         U64Sub( &curr, to_sub, &tmp );
         switch( type ) {
         case TY_UINT_1:
-            Gen1ByteValue( tmp.u._8[I64LO8] );
+            Gen1ByteValue( U64LowByte( tmp ) );
             break;
         case TY_UINT_2:
-            Gen2ByteValue( tmp.u._16[I64LO16] );
+            Gen2ByteValue( U64LowWord( tmp ) );
             break;
         case TY_UINT_4:
-            Gen4ByteValue( tmp.u._32[I64LO32] );
+            Gen4ByteValue( U64Low( tmp ) );
             break;
         case TY_UINT_8:
             Gen8ByteValue( &tmp );
@@ -287,13 +287,13 @@ static void GenValuesBackward( sel_handle s_node, const signed_64 *to_sub, cg_ty
         U64Sub( &curr, to_sub, &tmp );
         switch( type ) {
         case TY_UINT_1:
-            Gen1ByteValue( tmp.u._8[I64LO8] );
+            Gen1ByteValue( U64LowByte( tmp ) );
             break;
         case TY_UINT_2:
-            Gen2ByteValue( tmp.u._16[I64LO16] );
+            Gen2ByteValue( U64LowWord( tmp ) );
             break;
         case TY_UINT_4:
-            Gen4ByteValue( tmp.u._32[I64LO32] );
+            Gen4ByteValue( U64Low( tmp ) );
             break;
         case TY_UINT_8:
             Gen8ByteValue( &tmp );
@@ -326,7 +326,7 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
     const select_list   *list;
     label_handle        other;
 
-    cases = s_node->num_cases.u._32[I64LO32];
+    cases = U64Low( s_node->num_cases );
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
     other = s_node->other_wise;
@@ -392,7 +392,7 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
 
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
     U64IncDec( &tmp, 1 );
-    cases = tmp.u._32[I64LO32];
+    cases = U64Low( tmp );
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
     PUSH_OP( AskCodeSeg() );

@@ -238,27 +238,17 @@ static signed_64 CFGetInteger64Value( float_handle cf )
 static  float_handle IntToCF( signed_64 value, const type_def *tipe )
 /*******************************************************************/
 {
-    signed_8    s8;
-    unsigned_8  u8;
-    int_16      s16;
-    uint_16     u16;
-    int_32      s32;
-    uint_32     u32;
-
     if( tipe->attr & TYPE_SIGNED ) {
         switch( tipe->length ) {
         case 1:
-            s8 = value.u._8[I64LO8];
-            return( CFCnvI32F( &cgh, s8 ) );
+            return( CFCnvI32F( &cgh, I64LowByte( value ) ) );
         case 2:
-            s16 = value.u._16[I64LO16];
-            return( CFCnvI32F( &cgh, s16 ) );
+            return( CFCnvI32F( &cgh, I64LowWord( value ) ) );
         case 4:
         case 6:
-            s32 = value.u._32[I64LO32];
-            return( CFCnvI32F( &cgh, s32 ) );
+            return( CFCnvI32F( &cgh, I64Low( value ) ) );
         case 8:
-            return( CFCnvI64F( &cgh, value.u._32[I64LO32], value.u._32[I64HI32] ) );
+            return( CFCnvI64F( &cgh, U64Low( value ), U64High( value ) ) );
         default:
             _Zoiks( ZOIKS_112 );
             return( NULL );
@@ -266,17 +256,14 @@ static  float_handle IntToCF( signed_64 value, const type_def *tipe )
     } else {
         switch( tipe->length ) {
         case 1:
-            u8 = value.u._8[I64LO8];
-            return( CFCnvU32F( &cgh, u8 ) );
+            return( CFCnvU32F( &cgh, U64LowByte( value ) ) );
         case 2:
-            u16 = value.u._16[I64LO16];
-            return( CFCnvU32F( &cgh, u16 ) );
+            return( CFCnvU32F( &cgh, U64LowWord( value ) ) );
         case 4:
         case 6:
-            u32 = value.u._32[I64LO32];
-            return( CFCnvU32F( &cgh, u32 ) );
+            return( CFCnvU32F( &cgh, U64Low( value ) ) );
         case 8:
-            return( CFCnvU64F( &cgh, value.u._32[I64LO32], value.u._32[I64HI32] ) );
+            return( CFCnvU64F( &cgh, U64Low( value ), U64High( value ) ) );
         default:
             _Zoiks( ZOIKS_112 );
             return( NULL );

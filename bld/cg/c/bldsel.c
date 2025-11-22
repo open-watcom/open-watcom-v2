@@ -216,11 +216,11 @@ cg_type SelType( const unsigned_64 *value_range )
 {
     cg_type     tipe;
 
-    if( value_range->u._32[I64HI32] ) {
+    if( U64High( *value_range ) ) {
         tipe = TY_UINT_8;
-    } else if( value_range->u._16[I64W1] ) {
+    } else if( U64HighWord( *value_range ) ) {
         tipe = TY_UINT_4;
-    } else if( value_range->u._8[I64B1] ) {
+    } else if( U64HighByte( *value_range ) ) {
         tipe = TY_UINT_2;
     } else {
         tipe = TY_UINT_1;
@@ -271,7 +271,7 @@ static an BGIntegerSel( const signed_64 *value, const type_def *tipe )
     if( tipe->length == 8 ) {
         return( BGInt64( *value, tipe ) );
     } else {
-        return( BGInteger( value->u._32[I64LO32], tipe ) );
+        return( BGInteger( I64Low( *value ), tipe ) );
     }
 }
 

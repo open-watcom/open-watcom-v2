@@ -1706,13 +1706,13 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
         retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         U64ShiftR( &mask, 1, &mask );
         U64NotEq( mask );
-        if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
+        if( U64Low( mask ) == 0xffffffff ) { /* a one-bit signed bit field */
             signed_64 one;
 
             Set64Val1p( one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
             retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, true );
-        } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */
+        } else if( U64Low( mask ) == 0xfffff80 ) { /* an eight-bit signed bit field */
             switch( tipeu->length ) {
             case 1:
                 break;
@@ -1730,7 +1730,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
                 break;
             }
             retv = BGConvert( retv, tipes );
-        } else if( mask.u._32[I64LO32] == 0xffff8000 ) { /* a sixteen-bit signed bit field */
+        } else if( U64Low( mask ) == 0xffff8000 ) { /* a sixteen-bit signed bit field */
             switch( tipeu->length ) {
             case 2:
                 break;
@@ -1743,7 +1743,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
                 break;
             }
             retv = BGConvert( retv, tipes );
-        } else if( mask.u._32[I64LO32] == 0x80000000 ) { /* a 32-bit signed bit field */
+        } else if( U64Low( mask ) == 0x80000000 ) { /* a 32-bit signed bit field */
             switch( tipeu->length ) {
             case 4:
                 break;
@@ -1785,7 +1785,7 @@ static  void    DoAnd( an left, unsigned_64 mask, tn node )
  * Turn off bits "mask" in address name "left"
  */
 {
-    BGDone( BGOpGets( O_AND, AddrCopy( left ), Int( ~(mask.u._32[I64LO32]) ),
+    BGDone( BGOpGets( O_AND, AddrCopy( left ), Int( ~(U64Low( mask )) ),
               node->tipe, node->tipe ) );
 }
 
@@ -1841,8 +1841,8 @@ static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & (uint_32)after_value->u.n.name->c.lo.u.int_value );
-        if( (uint_32)retv->u.n.name->c.lo.u.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( U64Low( shiftmask ) & (uint_32)after_value->u.n.name->c.lo.u.int_value );
+        if( (uint_32)retv->u.n.name->c.lo.u.int_value != U64Low( shiftmask ) ) {
             DoAnd( left, mask, node );
         }
         if( retv->u.n.name->c.lo.u.int_value != 0 ) {

@@ -93,9 +93,9 @@ an      BGInt64( signed_64 value, const type_def *tipe )
     name   *cname;
 
     if( tipe->attr & TYPE_SIGNED ) {
-        cname = AllocS64Const( value.u._32[I64LO32],value.u._32[I64HI32] );
+        cname = AllocS64Const( U64Low( value ), U64High( value ) );
     } else {
-        cname = AllocU64Const( value.u._32[I64LO32],value.u._32[I64HI32] );
+        cname = AllocU64Const( U64Low( value ), U64High( value ) );
     }
     return( AddrName( cname, tipe ) );
 }

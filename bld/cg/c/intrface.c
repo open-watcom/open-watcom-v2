@@ -727,8 +727,8 @@ cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
     cg_name     retn;
 
     EchoAPI( "CGInt64( %x %x, %t )"
-           , val.u._32[I64LO32]
-           , val.u._32[I64HI32]
+           , U64Low( val )
+           , U64High( val )
            , tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( BGInt64( val, TypeAddress( tipe ) ) );

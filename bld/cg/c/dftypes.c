@@ -765,10 +765,10 @@ dbg_type        DFEndEnum( dbg_enum en )
         if( cons == NULL )
             break;
         val = cons->val;
-        if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
-            DWAddEnumerationConstant( Client, val.u._32[I64LO32], cons->name );
+        if( I64High( val ) == 0 || I64High( val ) == -1 ) {
+            DWAddEnumerationConstant( Client, U64Low( val ), cons->name );
         } else {
-            DWAddEnumerationConstant( Client, val.u._32[I64LO32], cons->name );
+            DWAddEnumerationConstant( Client, U64Low( val ), cons->name );
         }
         en->list = cons->next;
         CGFree( cons );

@@ -2939,7 +2939,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         }
         ins->type_class = type_class;
         ins->operands[ind] = rep->name;
-        ins->operands[non_ind] = AllocS64Const( big_cons.u._32[I64LO32], big_cons.u._32[I64HI32] );
+        ins->operands[non_ind] = AllocS64Const( U64Low( big_cons ), U64High( big_cons ) );
     } else {
         ins->type_class = type_class;
         ins->operands[ind] = rep->name;
