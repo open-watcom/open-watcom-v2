@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -627,7 +627,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
                  * number is long double
                  */
                 xexp = ld.exponent - 0x3FFF;
-                int_char = GET_HEX( m.u64.u._8[I64HI8] );
+                int_char = GET_HEX( U64Byte( m.u64, I64HI8 ) );
                 m.u64.u._64[0] <<= 4U;
                 xexp -= 4;
             } else {
@@ -635,13 +635,13 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
                 /*
                  * number is double
                  */
-                xexp = ( m.u64.u._32[I64HI32] >> 20 ) - 0x3FF;
+                xexp = ( U64High( m.u64 ) >> 20 ) - 0x3FF;
                 m.u64.u._64[0] <<= 12U;
             }
 #else
             U64Low( m.u64 ) = ld.u.word[I64LO32];
             U64High( m.u64 ) = ld.u.word[I64HI32];
-            xexp = ( m.u64.u._32[I64HI32] >> 20 ) - 0x3FF;
+            xexp = ( U64High( m.u64 ) >> 20 ) - 0x3FF;
             m.u64.u._64[0] <<= 12U;
 #endif
             break;
@@ -663,7 +663,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         if( m.u64.u._64[0] != 0 ) {
             *p++ = '.';
             while( m.u64.u._64[0] != 0 ) {
-                *p++ = GET_HEX( m.u64.u._8[I64HI8] );
+                *p++ = GET_HEX( U64Byte( m.u64, I64HI8 ) );
                 m.u64.u._64[0] <<= 4U;
             }
         }
