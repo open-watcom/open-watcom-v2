@@ -40,6 +40,7 @@
 #include "bool.h"
 #include "trmemcvr.h"
 #include "orl.h"
+#include "i64.h"
 
 
 #define MAX_SECS    255
@@ -98,9 +99,9 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     printf( "%-25s:", name ? name : "" );
     ORLSymbolGetValue( symbol, &val64 );
 #ifdef _M_I86
-    printf( " %8.8lx%8.8lx ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+    printf( " %8.8lx%8.8lx ", U64High( val64 ), U64Low( val64 ) );
 #else
-    printf( " %8.8x%8.8x ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+    printf( " %8.8x%8.8x ", U64High( val64 ), U64Low( val64 ) );
 #endif
     switch( ORLSymbolGetBinding( symbol ) ) {
     case ORL_SYM_BINDING_NONE:
