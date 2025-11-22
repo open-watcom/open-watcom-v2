@@ -47,14 +47,14 @@ class int64 {
         }
         int64( unsigned long hi, long lo )
         {
-            _d.u._32[I64HI32] = hi;
-            _d.u._32[I64LO32] = lo;
+            U64High( _d ) = hi;
+            U64Low( _d ) = lo;
         }
 
         int64 operator=( const int64 & a )
         {
-            this->_d.u._32[0] = a._d.u._32[0];
-            this->_d.u._32[1] = a._d.u._32[1];
+            U64Low( this->_d ) = U64Low( a._d );
+            U64High( this->_d ) = U64High( a._d );
             return( *this );
         }
 

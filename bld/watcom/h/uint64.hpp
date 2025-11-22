@@ -41,8 +41,8 @@ class uint64 {
     public:
         void set( unsigned long hi, unsigned long lo )
         {
-            _d.u._32[I64HI32] = hi;
-            _d.u._32[I64LO32] = lo;
+            U64High( _d ) = hi;
+            U64Low( _d ) = lo;
         }
 
         uint64 operator=( unsigned long i )
@@ -213,11 +213,11 @@ class uint64 {
         }
         uint hi32() const
         {
-            return _d.u._32[I64HI32];
+            return U64High( _d );
         }
         uint lo32() const
         {
-            return _d.u._32[I64LO32];
+            return U64Low( _d );
         }
         divmod( const uint64 &a, uint64 &quot, uint64 &rem )
         {
