@@ -960,7 +960,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
             MCTypeToString( dd->radix, &mti, &I64Low( op->value ), buff, &buff_size );
-        } else if( I64Low( op->value ) == 0 ) {
+        } else if( U64Low( op->value ) == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
             char *p = buff;

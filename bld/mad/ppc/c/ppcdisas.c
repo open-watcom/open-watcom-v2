@@ -236,9 +236,12 @@ const mad_type_handle RefTrans[] = {
 
 static int CTRZero( mad_registers const *mr )
 {
-    if( U64Low( mr->ppc.ctr ) != 1 ) return( 0 );
+    if( U64Low( mr->ppc.ctr ) != 1 )
+        return( 0 );
     if( U64High( mr->ppc.msr ) & (1UL << MSR_H_sf) ) {
-        if( U64High( mr->ppc.ctr ) != 0 ) return( 0 );
+        if( U64High( mr->ppc.ctr ) != 0 ) {
+            return( 0 );
+        }
     }
     return( 1 );
 }
@@ -308,7 +311,7 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
     switch( dd->ins.type ) {
     case DI_PPC_twi:
     case DI_PPC_tdi:
-       U64Low( b ) = I64Low( dd->ins.op[2].value );
+       U64Low( b ) = U64Low( dd->ins.op[2].value );
        if( I64Low( dd->ins.op[2].value ) < 0 ) {
            U64High( b ) = (unsigned_32)-1L;
        } else {
@@ -426,7 +429,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     case DI_PPC_tw:
     case DI_PPC_twi:
         c = MDC_SYSRET | MDC_CONDITIONAL;
-        if( TrapTest( dd, mr ) & I64Low( dd->ins.op[0].value ) ) {
+        if( TrapTest( dd, mr ) & U64Low( dd->ins.op[0].value ) ) {
             c |= MDC_TAKEN;
         }
         return( c );
