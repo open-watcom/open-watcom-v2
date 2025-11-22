@@ -57,6 +57,7 @@
 #include "liveinfo.h"
 #include "x86rtrn.h"
 #include "bldselco.h"
+#include "i64.h"
 #include "_x86rtrn.h"
 
 

@@ -42,6 +42,7 @@
 #include "cvsyms.h"
 #include "cvtypes.h"
 #include "dbsupp.h"
+#include "i64.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 

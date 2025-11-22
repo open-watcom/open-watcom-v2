@@ -50,6 +50,7 @@
 #include "typemap.h"
 #include "generate.h"
 #include "types.h"
+#include "i64.h"
 #include "feprotos.h"
 
 

@@ -57,6 +57,7 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
+#include "i64.h"
 #include "x86enc.h"
 #include "x86enc2.h"
 #include "feprotos.h"
@@ -531,14 +532,14 @@ void    Gen8ByteValue( unsigned_64 *value )
  */
 {
     _Code;
-    AddByte( U64Byte( value, I64B0 ) );
-    AddByte( U64Byte( value, I64B1 ) );
-    AddByte( U64Byte( value, I64B2 ) );
-    AddByte( U64Byte( value, I64B3 ) );
-    AddByte( U64Byte( value, I64B4 ) );
-    AddByte( U64Byte( value, I64B5 ) );
-    AddByte( U64Byte( value, I64B6 ) );
-    AddByte( U64Byte( value, I64B7 ) );
+    AddByte( U64Byte( *value, I64B0 ) );
+    AddByte( U64Byte( *value, I64B1 ) );
+    AddByte( U64Byte( *value, I64B2 ) );
+    AddByte( U64Byte( *value, I64B3 ) );
+    AddByte( U64Byte( *value, I64B4 ) );
+    AddByte( U64Byte( *value, I64B5 ) );
+    AddByte( U64Byte( *value, I64B6 ) );
+    AddByte( U64Byte( *value, I64B7 ) );
     _Emit;
 }
 

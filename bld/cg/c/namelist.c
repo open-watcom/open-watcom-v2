@@ -42,6 +42,7 @@
 #include "intrface.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "i64.h"
 
 
 static  pointer         *FrlHead[N_CLASS_MAX];

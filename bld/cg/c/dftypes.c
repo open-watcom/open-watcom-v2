@@ -49,6 +49,7 @@
 #include "dfsupp.h"
 #include "dfsyms.h"
 #include "targetdb.h"
+#include "i64.h"
 #include "cgprotos.h"
 
 

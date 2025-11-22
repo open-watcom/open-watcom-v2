@@ -44,6 +44,7 @@
 #include "x86dbsup.h"
 #include "dbsupp.h"
 #include "wvsupp.h"
+#include "i64.h"
 
 
 #define MAX_TYPE_SIZE   (1024 * 16)
