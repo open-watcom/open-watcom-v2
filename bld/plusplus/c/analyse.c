@@ -65,6 +65,8 @@ ANALYSE.C -- analyse parsed tree of tokens
     #include "togglesd.h"
 #endif
 #include "mngless.h"
+#include "i64.h"
+
 
 // define action-codes for (operation,operand,operand)-combination actions
 
@@ -2299,12 +2301,12 @@ static unsigned getConstBits(   // GET SIGNIFICANT BITS IN CONSTANT NODE
     if( SignedIntType( con->type ) && value.u.sign.v ) {
         U64NegEq( &value );
     }
-    if( 0 == value.u._32[I64HI32] ) {
+    if( 0 == U64High( value ) ) {
         bits = 0;
-        sig = value.u._32[I64LO32];
+        sig = U64Low( value );
     } else {
         bits = 32;
-        sig = value.u._32[I64HI32];
+        sig = U64High( value );
     }
     for( ; sig != 0; ++bits ) {
         sig >>= 1;
