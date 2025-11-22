@@ -63,7 +63,7 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 #define U64Word( a, b )     ((a).u._16[(b)])
 
 #define U64LowByte( a )     ((a).u._8[I64B0])
-#define U64LowWord( a )     ((a).u._16[I64w0])
+#define U64LowWord( a )     ((a).u._16[I64W0])
 #define U64Low( a )         ((a).u._32[I64LO32])
 #define U64LowLE( a )       ((a).u._32[0])
 #define U64HighByte( a )    ((a).u._8[I64B1])
