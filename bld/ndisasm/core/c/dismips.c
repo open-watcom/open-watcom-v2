@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include "dis.h"
 #include "distypes.h"
+#include "i64.h"
 #include "dismips.h"
 
 
@@ -163,7 +164,7 @@ dis_handler_return MIPSJType( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = ins->opcode;
     ins->op[0].type = DO_ABSOLUTE;
-    ins->op[0].value.s._32[I64LO32] = code.jtype.target << 2;
+    U64Low( ins->op[0].value ) = code.jtype.target << 2;
     ins->num_ops = 1;
     if( code.jtype.op & 1 )
         ins->flags.u.mips |= DIF_MIPS_LINK;
@@ -178,7 +179,7 @@ dis_handler_return MIPSCode( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value.s._32[I64LO32] = code.break_t.code;
+    U64Low( ins->op[0].value ) = code.break_t.code;
     if( code.break_t.code ) {   // hide zero "opcode"
         ins->num_ops = 1;
     } else {
@@ -197,7 +198,7 @@ dis_handler_return MIPSImmed1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rt + DR_MIPS_r0;
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value.s._32[I64LO32] = code.itype.immediate;
+    U64Low( ins->op[1].value ) = code.itype.immediate;
     ins->num_ops = 2;
     return( DHR_DONE );
 }
@@ -214,7 +215,7 @@ dis_handler_return MIPSImmed2( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.itype.rs + DR_MIPS_r0;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
+    U64Low( ins->op[2].value ) = DisSEX( code.itype.immediate, 15 );
     ins->num_ops = 3;
     return( DHR_DONE );
 }
@@ -231,7 +232,7 @@ dis_handler_return MIPSImmed2U( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.itype.rs + DR_MIPS_r0;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value.s._32[I64LO32] = code.itype.immediate;
+    U64Low( ins->op[2].value ) = code.itype.immediate;
     ins->num_ops = 3;
     return( DHR_DONE );
 }
@@ -248,7 +249,7 @@ dis_handler_return MIPSShift( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.rtype.rt + DR_MIPS_r0;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value.s._32[I64LO32] = code.rtype.sa;
+    U64Low( ins->op[2].value ) = code.rtype.sa;
     ins->num_ops = 3;
     return( DHR_DONE );
 }
@@ -263,7 +264,7 @@ dis_handler_return MIPSTrap1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rs + DR_MIPS_r0;
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
+    U64Low( ins->op[1].value ) = DisSEX( code.itype.immediate, 15 );
     ins->num_ops = 2;
     return( DHR_DONE );
 }
@@ -281,7 +282,7 @@ dis_handler_return MIPSTrap2( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].base = code.trap_t.rt + DR_MIPS_r0;
 // What do we do with 'code'?
 //    ins->op[2].type = DO_IMMED;
-//    ins->op[2].value.s._32[I64LO32] = code.trap_t.code;
+//    U64Low( ins->op[2].value ) = code.trap_t.code;
 //    ins->num_ops = 3;
     ins->num_ops = 2;
     return( DHR_DONE );
@@ -368,11 +369,11 @@ dis_handler_return MIPSCache( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value.s._32[I64LO32] = code.itype.rt;
+    U64Low( ins->op[0].value ) = code.itype.rt;
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.itype.rt + DR_MIPS_r0;
     ins->op[2].type = DO_MEMORY_ABS;
-    ins->op[2].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
+    U64Low( ins->op[2].value ) = DisSEX( code.itype.immediate, 15 );
     ins->op[2].base = code.itype.rs + DR_MIPS_r0;
     ins->num_ops = 3;
     return( DHR_DONE );
@@ -388,7 +389,7 @@ dis_handler_return MIPSMemory( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rt + DR_MIPS_r0;
     ins->op[1].type = DO_MEMORY_ABS;
-    ins->op[1].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
+    U64Low( ins->op[1].value ) = DisSEX( code.itype.immediate, 15 );
     ins->op[1].base = code.itype.rs + DR_MIPS_r0;
     ins->num_ops = 2;
     switch( code.itype.op & 0x07 ) {
@@ -448,7 +449,7 @@ dis_handler_return MIPSBranch1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rs + DR_MIPS_r0;
     ins->op[1].type = DO_RELATIVE;
-    ins->op[1].value.s._32[I64LO32] = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
+    U64Low( ins->op[1].value ) = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 2;
     if( code.itype.rt & 0x10 )
         ins->flags.u.mips |= DIF_MIPS_LINK;
@@ -469,7 +470,7 @@ dis_handler_return MIPSBranch2( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.itype.rt + DR_MIPS_r0;
     ins->op[2].type = DO_RELATIVE;
-    ins->op[2].value.s._32[I64LO32] = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
+    U64Low( ins->op[2].value ) = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 3;
     if( code.itype.op & 0x10 )
         ins->flags.u.mips |= DIF_MIPS_LIKELY;
@@ -486,7 +487,7 @@ dis_handler_return MIPSBranch3( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rs + DR_MIPS_r0;
     ins->op[1].type = DO_RELATIVE;
-    ins->op[1].value.s._32[I64LO32] = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
+    U64Low( ins->op[1].value ) = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 2;
     if( code.itype.op & 0x10 )
         ins->flags.u.mips |= DIF_MIPS_LIKELY;
@@ -568,7 +569,7 @@ dis_handler_return MIPSFPUMemory( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.itype.rt + DR_MIPS_f0;
     ins->op[1].type = DO_MEMORY_ABS;
-    ins->op[1].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
+    U64Low( ins->op[1].value ) = DisSEX( code.itype.immediate, 15 );
     ins->op[1].base = code.itype.rs + DR_MIPS_r0;
     ins->num_ops = 2;
     if( (ins->type == DI_MIPS_LDC1) || (ins->type == DI_MIPS_SDC1) ) {
@@ -587,7 +588,7 @@ dis_handler_return MIPSBranchCop( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = ins->opcode;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value.s._32[I64LO32] = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
+    U64Low( ins->op[0].value ) = (DisSEX( code.itype.immediate, 15 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 1;
     if( code.itype.rt & 0x10 )
         ins->flags.u.mips |= DIF_MIPS_LIKELY;
@@ -629,7 +630,7 @@ static size_t MIPSInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         if( ins->op[1].base == DR_MIPS_r0 ) {
             new = "li";
             ins->op[1].type  = ins->op[2].type;
-            ins->op[1].value.s._32[I64LO32] = ins->op[2].value.s._32[I64LO32];
+            U64Low( ins->op[1].value ) = U64Low( ins->op[2].value );
             ins->num_ops = 2;
         }
         break;
@@ -645,7 +646,7 @@ static size_t MIPSInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             new = "b";
             ins->op[0].type  = ins->op[2].type;
             ins->op[0].base  = ins->op[2].base;
-            ins->op[0].value.s._32[I64LO32] = ins->op[2].value.s._32[I64LO32];
+            U64Low( ins->op[0].value ) = U64Low( ins->op[2].value );
             ins->num_ops = 1;
         }
         break;

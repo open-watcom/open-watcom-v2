@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,8 @@
 #include "main.h"
 #include "print.h"
 #include "labproc.h"
+#include "i64.h"
+
 
 #define COMMENT_TAB_POS 4
 #define OPS_REP_TAB_POS 10
@@ -160,7 +162,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
     const char          *frame_sep;
     const char          *frame;
     char                temp[20];
-    dis_value           value;
+    unsigned_64         value;
 
     frame_sep = ":";
     frame = r_entry->frame;
@@ -169,12 +171,12 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
         frame_sep = "";
     }
 
-    value.u._32[I64HI32] = 0;
+    U64High( value ) = 0;
     l_entry = r_entry->label;
     if( (Options & METAWARE_COMPATIBLE) || ( ext_pref[0] == '\0' && int_pref[0] == '\0' ) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
-            value.u._32[I64LO32] = l_entry->offset;
+            U64Low( value ) = l_entry->offset;
             FmtHexNum( temp, 0, value );
             if( r_entry->frame == NULL && (flags & RFLAG_NO_FRAME) == 0 )
                 frame = "ds:";
@@ -204,7 +206,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
             break;
 
         case LTYP_ABSOLUTE:
-            value.u._32[I64LO32] = l_entry->offset;
+            U64Low( value ) = l_entry->offset;
             FmtHexNum( temp, 0, value );
             if( *frame == '\0' && ( (flags & RFLAG_NO_FRAME) == 0 ) )
                 frame = "ds:";
@@ -223,7 +225,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
     return( RC_OKAY );
 }
 
-size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
+size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
                            dis_sec_offset offset, dis_sec_size sec_size,
                            ref_entry *reference_entry, char *buff )
 // handle any references at this offset
@@ -237,7 +239,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
     buff[0] = '\0';
     for( ; r_entry != NULL && r_entry->offset == offset; r_entry = r_entry->next ) {
         if( r_entry->has_val ) {
-            nvalue = value.u._32[I64LO32];
+            nvalue = U64Low( value );
         } else if( r_entry->addend ) {
             nvalue = HandleAddend( r_entry );
         } else {
@@ -404,8 +406,8 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             } else {
                 *p++ = '+';
             }
-            value.u._32[I64HI32] = 0;
-            value.u._32[I64LO32] = nvalue;
+            U64High( value ) = 0;
+            U64Low( value ) = nvalue;
             FmtHexNum( p, 0, value );
         }
     }
@@ -417,24 +419,24 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
 {
     unsigned            prec;
     unsigned            i;
-    dis_value           mask;
-    dis_value           value;
+    unsigned_64         mask;
+    unsigned_64         value;
 
-    mask.u._32[I64HI32] = 0;
-    mask.u._32[I64LO32] = 0;
+    U64High( mask ) = 0;
+    U64Low( mask ) = 0;
     value = ins->op[op_num].value;
     switch( ins->op[op_num].ref_type ) {
     case DRT_SPARC_BYTE:
     case DRT_X86_BYTE:
     case DRT_X64_BYTE:
         prec = 2;
-        mask.u._32[I64LO32] = 0x000000ff;
+        U64Low( mask ) = 0x000000ff;
         break;
     case DRT_SPARC_HALF:
     case DRT_X86_WORD:
     case DRT_X64_WORD:
         prec = 4;
-        mask.u._32[I64LO32] = 0x0000ffff;
+        U64Low( mask ) = 0x0000ffff;
         break;
     case DRT_SPARC_WORD:
     case DRT_SPARC_SFLOAT:
@@ -442,14 +444,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     case DRT_X86_DWORDF:
     case DRT_X64_DWORD:
         prec = 8;
-        mask.u._32[I64LO32] = 0xffffffff;
+        U64Low( mask ) = 0xffffffff;
         break;
     case DRT_X64_QWORD:
     case DRT_SPARC_DWORD:
     case DRT_SPARC_DFLOAT:
         prec = 16;
-        mask.u._32[I64HI32] = 0xffffffff;
-        mask.u._32[I64LO32] = 0xffffffff;
+        U64High( mask ) = 0xffffffff;
+        U64Low( mask ) = 0xffffffff;
         break;
     default:
         prec = 0;
@@ -459,14 +461,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
             case DRT_X64_BYTE:
                 if( prec < 2 ) {
                     prec = 2;
-                    mask.u._32[I64LO32] = 0x000000ff;
+                    U64Low( mask ) = 0x000000ff;
                 }
                 break;
             case DRT_X86_WORD:
             case DRT_X64_WORD:
                 if( prec < 4 ) {
                     prec = 4;
-                    mask.u._32[I64LO32] = 0x0000ffff;
+                    U64Low( mask ) = 0x0000ffff;
                 }
                 break;
             case DRT_X86_DWORD:
@@ -474,14 +476,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
             case DRT_X64_DWORD:
                 if( prec < 8 ) {
                     prec = 8;
-                    mask.u._32[I64LO32] = 0xffffffff;
+                    U64Low( mask ) = 0xffffffff;
                 }
                 break;
             case DRT_X64_QWORD:
                 if( prec < 16 ) {
                     prec = 16;
-                    mask.u._32[I64HI32] = 0xffffffff;
-                    mask.u._32[I64LO32] = 0xffffffff;
+                    U64High( mask ) = 0xffffffff;
+                    U64Low( mask ) = 0xffffffff;
                 }
                 break;
             default:
@@ -490,12 +492,12 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
         }
         if( prec == 0 ) {
             prec = 8;
-            mask.u._32[I64LO32] = 0xffffffff;
+            U64Low( mask ) = 0xffffffff;
         }
         break;
     }
-    value.u._32[I64HI32] &= mask.u._32[I64HI32];
-    value.u._32[I64LO32] &= mask.u._32[I64LO32];
+    U64High( value ) &= U64High( mask );
+    U64Low( value ) &= U64Low( mask );
     FmtHexNum( buff, prec, value );
 }
 
@@ -505,7 +507,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     size_t              len;
     dis_operand         *op;
     ref_flags           rf;
-    dis_value           value;
+    unsigned_64         value;
 
     /* unused parameters */ (void)buff_len;
 
@@ -533,17 +535,17 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         switch( op->type & DO_MASK ) {
         case DO_RELATIVE:
         case DO_MEMORY_REL:
-            op->value.u._32[I64LO32] += pd->loop;
+            U64Low( op->value ) += pd->loop;
             break;
         }
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
-        } else if( op->value.s._32[I64LO32] > 0 ) {
+        } else if( I64Low( op->value ) > 0 ) {
             FmtHexNum( buff, 0, op->value );
-        } else if( op->value.s._32[I64LO32] < 0 ) {
+        } else if( I64Low( op->value ) < 0 ) {
             buff[0] = '-';
-            value.s._32[I64HI32] = 0;
-            value.s._32[I64LO32] = -op->value.s._32[I64LO32];
+            U64High( value ) = 0;
+            U64Low( value ) = -I64Low( op->value );
             FmtHexNum( &buff[1], 0, value );
         }
         break;

@@ -45,6 +45,7 @@
 #include "print.h"
 #include "main.h"
 #include "init.h"
+#include "i64.h"
 
 
 #define STRING_LINE_LEN 41
@@ -221,7 +222,7 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 {
     size_t      d;
     size_t      dup;
-    dis_value   value;
+    unsigned_64 value;
 
 
     if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
@@ -240,13 +241,13 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 
     BufferHexU32( 0, dup );
     BufferConcat( " DUP(" );
-    value.u._32[I64HI32] = 0;
+    U64High( value ) = 0;
     for( dup = 0; dup < 7; dup++ ) {
-        value.u._32[I64LO32] = bytes[i + dup];
+        U64Low( value ) = bytes[i + dup];
         BufferHex( 2, value );
         BufferConcatChar( ',' );
     }
-    value.u._32[I64LO32] = bytes[i + 7];
+    U64Low( value ) = bytes[i + 7];
     BufferHex( 2, value );
     BufferConcatChar( ')' );
     return( d );
@@ -257,12 +258,12 @@ static void printRest( unsigned_8 *bytes, size_t size )
     size_t      i;
     size_t      d;
     const char  *datatype;
-    dis_value   value;
+    unsigned_64 value;
 
     datatype = getDataTypeStr( 1 );
     BufferConcat( "    " );
     BufferConcat( datatype );
-    value.u._32[I64HI32] = 0;
+    U64High( value ) = 0;
     for( i = 0; i < size; ) {
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
@@ -280,7 +281,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
             }
         }
 
-        value.u._32[I64LO32] = bytes[i];
+        U64Low( value ) = bytes[i];
         BufferHex( 2, value );
         if( i < size - 1 ) {
             if( (i % 8) == 7 ) {
@@ -456,28 +457,28 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     unsigned            rv;
     const char          *datatype;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
-    dis_value           value;
+    unsigned_64         value;
 
     rv = RelocSize( r_entry );
-    value.u._32[I64HI32] = 0;
+    U64High( value ) = 0;
     switch( rv ) {
     case 6:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
+        U64Low( value ) = *(unsigned_32 *)data;
         break;
     case 4:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
+        U64Low( value ) = *(unsigned_32 *)data;
         break;
     case 2:
-        value.u._32[I64LO32] = *(unsigned_16 *)data;
+        U64Low( value ) = *(unsigned_16 *)data;
         break;
     case 1:
-        value.u._32[I64LO32] = *(unsigned_8 *)data;
+        U64Low( value ) = *(unsigned_8 *)data;
         break;
     case 8:
-        value.u._32[I64LO32] = 0;
+        U64Low( value ) = 0;
         break;
     default:
-        value.u._32[I64LO32] = 0;
+        U64Low( value ) = 0;
         break;
     }
     if( asmLabels ) {
@@ -490,15 +491,15 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     BufferConcat( buff );
     switch( rv ) {
     case 8:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
-        value.u._32[I64HI32] = *((unsigned_32 *)data + 1);
-        if( value.u._32[I64LO32] != 0 || value.u._32[I64HI32] != 0 ) {
+        U64Low( value ) = *(unsigned_32 *)data;
+        U64High( value ) = *((unsigned_32 *)data + 1);
+        if( U64Low( value ) != 0 || U64High( value ) != 0 ) {
             BufferConcat( "+0x" );
-            if( value.u._32[I64HI32] != 0 ) {
-                BufferHexU32( 0, value.u._32[I64HI32] );
-                BufferHexU32( 8, value.u._32[I64LO32] );
+            if( U64High( value ) != 0 ) {
+                BufferHexU32( 0, U64High( value ) );
+                BufferHexU32( 8, U64Low( value ) );
             } else {
-                BufferHexU32( 0, value.u._32[I64LO32] );
+                BufferHexU32( 0, U64Low( value ) );
             }
         }
         break;
@@ -802,16 +803,16 @@ static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, lab
 static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
     size_t      offset = OFFSET_UNDEF;
-    dis_value   value;
+    unsigned_64 value;
 
     PrintHeader( section );
 
-    value.u._32[I64HI32] = 0;
+    U64High( value ) = 0;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
         if( l_entry->type != LTYP_SECTION ) {
             if( offset != l_entry->offset ) {
                 BufferConcat( "    ORG " );
-                value.u._32[I64LO32] = l_entry->offset;
+                U64Low( value ) = l_entry->offset;
                 BufferHex( 8, value );
                 offset = l_entry->offset;
                 BufferConcatNL();
@@ -843,7 +844,7 @@ static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, lab
     }
     if( size > offset ) {
         BufferConcat( "    ORG " );
-        value.u._32[I64LO32] = size;
+        U64Low( value ) = size;
         BufferHex( 8, value );
         BufferConcatNL();
         BufferPrint();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include "memfuncs.h"
 #include "hashtabl.h"
 #include "formasm.h"
+#include "i64.h"
 
 
 static void labelNameAlloc( label_entry entry, const char *name )
@@ -227,7 +228,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     if( entry == NULL )
         return( ORL_OUT_OF_MEMORY );
     ORLSymbolGetValue( sym_hnd, &val64 );
-    entry->offset = val64.u._32[I64LO32];
+    entry->offset = U64Low( val64 );
     // all symbols from the object file will have names
     entry->shnd = ORLSymbolGetSecHandle( sym_hnd );
     if( primary_type == ORL_SYM_TYPE_SECTION ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,6 @@
 #define WDIS_PASS_2_INCLUDED
 
 extern num_errors   DoPass2( section_ptr, unsigned_8 *, dis_sec_size, label_list, ref_list );
-extern size_t       HandleAReference( dis_value, int, ref_flags, dis_sec_offset, dis_sec_size, ref_entry *, char * );
+extern size_t       HandleAReference( unsigned_64, int, ref_flags, dis_sec_offset, dis_sec_size, ref_entry *, char * );
 
 #endif
