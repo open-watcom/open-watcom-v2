@@ -61,14 +61,21 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 
 #define U64Byte( a, b )     ((a).u._8[(b)])
 #define U64Word( a, b )     ((a).u._16[(b)])
+
+#define U64LowByte( a )     ((a).u._8[I64B0])
+#define U64LowWord( a )     ((a).u._16[I64w0])
 #define U64Low( a )         ((a).u._32[I64LO32])
 #define U64LowLE( a )       ((a).u._32[0])
+#define U64HighByte( a )    ((a).u._8[I64B1])
+#define U64HighWord( a )    ((a).u._16[I64W1])
 #define U64High( a )        ((a).u._32[I64HI32])
 #define U64HighLE( a )      ((a).u._32[1])
 
-#define I64Byte( a, b )     ((signed_8)(a).u._8[(b)])
-#define I64Word( a, b )     ((signed_16)(a).u._16[(b)])
+#define I64LowByte( a )     ((signed_8)(a).u._8[I64B0])
+#define I64LowWord( a )     ((signed_16)(a).u._16[I64W0])
 #define I64Low( a )         ((signed_32)(a).u._32[I64LO32])
+#define I64HighByte( a )    ((signed_32)(a).u._8[I64B1])
+#define I64HighWord( a )    ((signed_32)(a).u._16[I64W1])
 #define I64High( a )        ((signed_32)(a).u._32[I64HI32])
 
 #define U64CmpU32( a, b )   (((a).u._32[I64HI32])?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]!=(b))))
