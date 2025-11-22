@@ -61,6 +61,7 @@
 #include "fccall.h"
 #include "fcstack.h"
 #include "wf77info.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
@@ -1135,14 +1136,14 @@ static  void    DumpBrTable( void )
     label_handle    end_sel;
     signed_64       tmp;
 
-    tmp.u._32[I64HI32] = 0;
+    U64High( tmp ) = 0;
     end_sel = BENewLabel();
     CGControl( O_GOTO, NULL, end_sel );
     CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            tmp.u._32[I64LO32] = stmt->u.st.address;
+            U64Low( tmp ) = stmt->u.st.address;
             CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
         }
     }

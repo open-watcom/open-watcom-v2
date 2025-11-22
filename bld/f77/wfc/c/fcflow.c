@@ -57,6 +57,7 @@
 #include "fcdata.h"
 #include "fcgmain.h"
 #include "fcstack.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -300,7 +301,7 @@ void    FCAssignedGOTOList( void ) {
     obj_ptr         curr_obj;
     signed_64       tmp;
 
-    tmp.u._32[I64HI32] = 0;
+    U64High( tmp ) = 0;
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
     s = CGSelInit();
@@ -308,7 +309,7 @@ void    FCAssignedGOTOList( void ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            tmp.u._32[I64LO32] = sn->u.st.address;
+            U64Low( tmp ) = sn->u.st.address;
             CGSelCase( s, label, tmp );
         }
     }
