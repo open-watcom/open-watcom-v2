@@ -37,6 +37,7 @@
 #include <string.h>
 #include "fltsupp.h"
 #include "watcom.h"
+#include "i64.h"
 
 
 #define NDIG            8
@@ -619,8 +620,8 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
             /* fall through */
         case FP_SUBNORMAL:
 #ifdef _LONG_DOUBLE_
-            m.u64.u._32[I64LO32] = ld.low_word;
-            m.u64.u._32[I64HI32] = ld.high_word;
+            U64Low( m.u64 ) = ld.low_word;
+            U64High( m.u64 ) = ld.high_word;
             if( cvt->flags & FPCVT_LONG_DOUBLE ) {
                 /*
                  * number is long double
@@ -638,8 +639,8 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
                 m.u64.u._64[0] <<= 12U;
             }
 #else
-            m.u64.u._32[I64LO32] = ld.u.word[I64LO32];
-            m.u64.u._32[I64HI32] = ld.u.word[I64HI32];
+            U64Low( m.u64 ) = ld.u.word[I64LO32];
+            U64High( m.u64 ) = ld.u.word[I64HI32];
             xexp = ( m.u64.u._32[I64HI32] >> 20 ) - 0x3FF;
             m.u64.u._64[0] <<= 12U;
 #endif
