@@ -939,7 +939,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? 4 : 2;
         }
         MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-        MCTypeToString( dd->radix, &mti, &I64Low( op->value ), buff, &buff_size );
+        MCTypeToString( dd->radix, &mti, &U64Low( op->value ), buff, &buff_size );
         break;
     case DO_RELATIVE:
         val.mach.offset += I64Low( op->value );
@@ -959,7 +959,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             // direct memory address
             size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &I64Low( op->value ), buff, &buff_size );
+            MCTypeToString( dd->radix, &mti, &U64Low( op->value ), buff, &buff_size );
         } else if( U64Low( op->value ) == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
@@ -972,7 +972,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             }
             size = GetValueByteSize( I64Low( op->value ) );
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &I64Low( op->value ), p, &buff_size );
+            MCTypeToString( dd->radix, &mti, &U64Low( op->value ), p, &buff_size );
         }
         break;
     }
