@@ -34,13 +34,13 @@
 #include "seterrno.h"
 #include <unistd.h>
 #include "linuxsys.h"
-#include "watcom.h"
+#include "libi64.h"
 
 
 _WCRTLINK int ftruncate64( int __fd, off64_t __length )
 {
     syscall_res res = sys_call3( SYS_ftruncate64, (u_long)__fd,
-                        ((unsigned_64 *)&__length)->u._32[I64LO32],
-                        ((unsigned_64 *)&__length)->u._32[I64HI32] );
+                        LIB_LODWORD( __length ),
+                        LIB_HIDWORD( __length ) );
     __syscall_return( int, res );
 }

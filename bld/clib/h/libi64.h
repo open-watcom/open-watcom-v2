@@ -31,6 +31,7 @@
 
 
 #include "watcom.h"
+#include "i64.h"
 
-#define LIB_LODWORD(x)  (((unsigned_64 *)&(x))->u._32[I64LO32])
-#define LIB_HIDWORD(x)  (((unsigned_64 *)&(x))->u._32[I64HI32])
+#define LIB_LODWORD(x)  U64Low( *(unsigned_64 *)&(x) )
+#define LIB_HIDWORD(x)  U64High( *(unsigned_64 *)&(x) )
