@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "x86.h"
 #include "x86types.h"
 #include "madregs.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -229,7 +230,7 @@ static mad_disasm_control Adjustment( mad_disasm_data *dd )
     switch( dd->ins.op[OP_1].type & DO_MASK ) {
     case DO_IMMED:
     case DO_RELATIVE:
-        if( (addr_off)dd->ins.op[OP_1].value.s._32[I64LO32] < dd->addr.mach.offset )
+        if( (addr_off)I64Low( dd->ins.op[OP_1].value ) < dd->addr.mach.offset )
             return( MDC_TAKEN_BACK );
         return( MDC_TAKEN_FORWARD );
     }
@@ -385,7 +386,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
             next->mach.segment = dd->ins.op[OP_1].extra;
             /* fall through */
         case DO_RELATIVE:
-            next->mach.offset = dd->ins.op[OP_1].value.s._32[I64LO32];
+            next->mach.offset = I64Low( dd->ins.op[OP_1].value );
             break;
         case DO_REG:
             next->mach.offset = RegValue( mr, dd->ins.op[OP_1].base );
@@ -533,7 +534,7 @@ static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *w
     }
     addr.sect_id = 0;
     addr.indirect = 0;
-    addr.mach.offset = op->value.s._32[I64LO32];
+    addr.mach.offset = I64Low( op->value );
     if( op->base != DR_NONE ) {
         addr.mach.offset += RegValue( mr, op->base );
     }
@@ -938,15 +939,15 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? 4 : 2;
         }
         MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-        MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], buff, &buff_size );
+        MCTypeToString( dd->radix, &mti, &I64Low( op->value ), buff, &buff_size );
         break;
     case DO_RELATIVE:
-        val.mach.offset += op->value.s._32[I64LO32];
+        val.mach.offset += I64Low( op->value );
         MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_ABSOLUTE:
         if( op->type & DO_EXTRA ) {
-            val.mach.offset = op->value.s._32[I64LO32];
+            val.mach.offset = I64Low( op->value );
             val.mach.segment = op->extra;
             MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR, MLK_CODE, buff, buff_size );
             break;
@@ -958,20 +959,20 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             // direct memory address
             size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], buff, &buff_size );
-        } else if( op->value.s._32[I64LO32] == 0 ) {
+            MCTypeToString( dd->radix, &mti, &I64Low( op->value ), buff, &buff_size );
+        } else if( I64Low( op->value ) == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
             char *p = buff;
             // indirect memory address with displacement
-            if( op->value.s._32[I64LO32] < 0 ) {
+            if( I64Low( op->value ) < 0 ) {
                 *( p++ ) = '-';
                 --buff_size;
-                op->value.s._32[I64LO32] = -op->value.s._32[I64LO32];
+                U64Low( op->value ) = -I64Low( op->value );
             }
-            size = GetValueByteSize( op->value.s._32[I64LO32] );
+            size = GetValueByteSize( I64Low( op->value ) );
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], p, &buff_size );
+            MCTypeToString( dd->radix, &mti, &I64Low( op->value ), p, &buff_size );
         }
         break;
     }

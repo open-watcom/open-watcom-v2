@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,8 @@
 
 #include "mips.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 /* Implementation Notes:
  *
@@ -57,8 +60,8 @@ mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address 
 
     out->mips = in->mips;
     //NYI: 64 bit
-    out->mips.u31.ra.u._32[I64LO32] = ret.mach.offset;
-    out->mips.pc.u._32[I64LO32] = rtn.mach.offset;
+    U64Low( out->mips.u31.ra ) = ret.mach.offset;
+    U64Low( out->mips.pc ) = rtn.mach.offset;
     return( MS_OK );
 }
 
@@ -91,9 +94,9 @@ unsigned MADIMPENTRY( CallUpStackSize )( void )
 
 mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
-    cud->ra = mr->mips.u31.ra.u._32[I64LO32];
-    cud->sp = mr->mips.u29.sp.u._32[I64LO32];
-    cud->fp = mr->mips.u30.r30.u._32[I64LO32];    // NYI: may not be used?
+    cud->ra = U64Low( mr->mips.u31.ra );
+    cud->sp = U64Low( mr->mips.u29.sp );
+    cud->fp = U64Low( mr->mips.u30.r30 );    // NYI: may not be used?
     cud->first_frame = true;
     return( MS_OK );
 }
@@ -209,23 +212,23 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
             /* first instruction is usually 'stwu sp, -framesize(sp)' */
             /* NYI: it could be stwux, and it needn't be the first instruction */
             if( dd.ins.type != DI_PPC_stwu ) return( MS_FAIL );
-            frame_size = -dd.ins.op[1].value.s._32[I64LO32];
+            frame_size = -I64Low( dd.ins.op[1].value );
         }
         switch( dd.ins.type ) {
         /* track fp saves */
         case DI_PPC_stw:
         case DI_PPC_stwu:
             if( dd.ins.op[0].base == DR_PPC_r31 ) {
-                prev_fp_off = dd.ins.op[1].value.s._32[I64LO32];
+                prev_fp_off = I64Low( dd.ins.op[1].value );
             }
             if( dd.ins.op[0].base == ra_save_gpr ) {
-                prev_ra_off = dd.ins.op[1].value.s._32[I64LO32];
+                prev_ra_off = I64Low( dd.ins.op[1].value );
                 ra_save_gpr = -1;
             }
             break;
         /* track ra saves (those have to go through a scratch GPR) */
         case DI_PPC_mfspr:
-            if( dd.ins.op[1].value.s._32[I64LO32] == 8 ) {
+            if( U64Low( dd.ins.op[1].value ) == 8 ) {
                 ra_save_gpr = dd.ins.op[0].base;
             }
             break;

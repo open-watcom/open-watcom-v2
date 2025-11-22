@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "axp.h"
 #include "madregs.h"
 #include "brkptcpu.h"
+#include "i64.h"
 
 
 unsigned MADIMPENTRY( TraceSize )( void )
@@ -111,7 +112,7 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     case MDC_JUMP:
     case MDC_CALL:
     case MDC_RET:
-        new = dd->ins.op[1].value.s._32[I64LO32];
+        new = I64Low( dd->ins.op[1].value );
         if( dd->ins.op[1].type == DO_RELATIVE ) {
             new += out->axp.pal.nt.fir.u._32[0];
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,8 @@
 
 #include "axp.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 mad_string MADIMPENTRY( CallStackGrowsUp )( void )
 {
@@ -144,22 +146,22 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
         if( ms != MS_OK ) return( ms );
         if( curr.mach.offset == (axp_pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
             if( dd.ins.type != DI_AXP_LDA ) return( MS_FAIL );
-            frame_size = -dd.ins.op[1].value.s._32[I64LO32];
+            frame_size = -I64Low( dd.ins.op[1].value );
         }
         switch( dd.ins.type ) {
         case DI_AXP_STQ:
             switch( dd.ins.op[0].base ) {
             case DR_AXP_ra:
             case DR_AXP_r26:
-                prev_ra_off = dd.ins.op[1].value.s._32[I64LO32];
+                prev_ra_off = I64Low( dd.ins.op[1].value );
                 break;
             case DR_AXP_sp:
             case DR_AXP_r30:
-                prev_sp_off = dd.ins.op[1].value.s._32[I64LO32];
+                prev_sp_off = I64Low( dd.ins.op[1].value );
                 break;
             case DR_AXP_fp:
             case DR_AXP_r15:
-                prev_fp_off = dd.ins.op[1].value.s._32[I64LO32];
+                prev_fp_off = I64Low( dd.ins.op[1].value );
                 break;
             }
             break;

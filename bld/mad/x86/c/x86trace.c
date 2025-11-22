@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "x86.h"
 #include "madregs.h"
 #include "brkptcpu.h"
+#include "i64.h"
 
 
 unsigned MADIMPENTRY( TraceSize )( void )
@@ -160,7 +161,7 @@ static mad_trace_how DoTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_tr
              * used under Linux to get the GOT pointer when compiled for
              * 386 processors.
              */
-            if( dd->ins.op[0].value.s._32[I64LO32] == dd->ins.size )
+            if( U64Low( dd->ins.op[0].value ) == dd->ins.size )
                 return( MTRH_STEP );
             /* Fall through for normal handling */
         case DI_X86_call2:

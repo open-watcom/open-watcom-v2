@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include "mips.h"
 #include "mpstypes.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 static dis_handle DH;
 
@@ -80,22 +82,22 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
-        val.mach.offset += ins->op[op].value.s._32[I64LO32];
+        val.mach.offset += I64Low( ins->op[op].value );
         //NYI: 64 bit
         MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_ABSOLUTE:
         if( dd->ins.type == DI_MIPS_J || dd->ins.type == DI_MIPS_JAL ) {
             // Handle j/jal as having pointer operand to show target symbol
-            val.mach.offset = ins->op[op].value.s._32[I64LO32];
+            val.mach.offset = I64Low( ins->op[op].value );
             MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, buff, buff_size );
             break;
         }
         // Fall through
     case DO_IMMED:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value.s._32[I64LO32] ) ), &mti );
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value.s._32[I64LO32], buff, &buff_size );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( I64Low( ins->op[0].value ) ) ), &mti );
+        MCTypeToString( dd->radix, &mti, &I64Low( ins->op[op].value ), buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
@@ -236,7 +238,7 @@ static int Cond1( mad_disasm_data *dd, const mad_registers *mr, unsigned conditi
     int                 cmp;
     unsigned_32         val;
 
-    val = TRANS_REG( mr, dd->ins.op[0].base )->u._32[I64LO32];
+    val = U64Low( *TRANS_REG( mr, dd->ins.op[0].base ) );
     if( val & 0x80000000 ) {     // check sign bit
         cmp = -1;
     } else if( val != 0 ) {
@@ -277,8 +279,8 @@ static int Cond2( mad_disasm_data *dd, const mad_registers *mr, unsigned conditi
     unsigned_32     sval;
     unsigned_32     tval;
 
-    sval = TRANS_REG( mr, dd->ins.op[0].base )->u._32[I64LO32];
-    tval = TRANS_REG( mr, dd->ins.op[1].base )->u._32[I64LO32];
+    sval = U64Low( *TRANS_REG( mr, dd->ins.op[0].base ) );
+    tval = U64Low( *TRANS_REG( mr, dd->ins.op[1].base ) );
     switch( condition ) {
     case DI_MIPS_BEQ:
     case DI_MIPS_BEQL:
@@ -322,7 +324,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     case DI_MIPS_BNEL:
         if( !Cond2( dd, mr, dd->ins.type ) )
             return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[2].value.s._32[I64LO32] < 0
+        return( I64Low( dd->ins.op[2].value ) < 0
             ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
             : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_MIPS_BGEZAL:
@@ -345,7 +347,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
             c = MDC_JUMP;
         if( !Cond1( dd, mr, dd->ins.type ) )
             return( c | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value.s._32[I64LO32] < 0
+        return( I64Low( dd->ins.op[1].value ) < 0
             ? (c | MDC_CONDITIONAL | MDC_TAKEN_BACK)
             : (c | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
 //    case DI_MIPS_SLT:
@@ -363,7 +365,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     case DI_MIPS_TNE:
     case DI_MIPS_TNEI:
         c = MDC_SYSRET | MDC_CONDITIONAL;
-//        if( TrapTest( dd, mr ) & dd->ins.op[0].value.s._32[I64LO32] ) {
+//        if( TrapTest( dd, mr ) & U64Low( dd->ins.op[0].value ) ) {
 //            c |= MDC_TAKEN;
 //        }
         return( c );
@@ -385,7 +387,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, mad_registers cons
     unsigned            op;
 
     memset( next, 0, sizeof( *next ) );
-    next->mach.offset = mr->mips.pc.u._32[I64LO32] + sizeof( unsigned_32 );
+    next->mach.offset = U64Low( mr->mips.pc ) + sizeof( unsigned_32 );
     dc = DisasmControl( dd, mr );
     if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
         return( MS_OK );
@@ -398,12 +400,12 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, mad_registers cons
             op = 0; // Target is the first operand, for other instructions it's the second operand
         else
             op = 1;
-        new = dd->ins.op[op].value.s._32[I64LO32];
+        new = I64Low( dd->ins.op[op].value );
         if( dd->ins.op[op].type == DO_RELATIVE ) {
-            new += mr->mips.pc.u._32[I64LO32];
+            new += U64Low( mr->mips.pc );
         }
         if( dd->ins.op[op].base != DR_NONE ) {
-            new += TRANS_REG( mr, dd->ins.op[op].base )->u._32[I64LO32];
+            new += U64Low( *TRANS_REG( mr, dd->ins.op[op].base ) );
         }
         next->mach.offset = new;
     }
@@ -427,9 +429,9 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
     a = dd->addr;
     for( i = 0; i < dd->ins.num_ops; ++i ) {
         if( dd->ins.op[i].type == DO_MEMORY_ABS ) {
-            a.mach.offset = dd->ins.op[i].value.s._32[I64LO32];
+            a.mach.offset = I64Low( dd->ins.op[i].value );
             if( dd->ins.op[i].base != DR_MIPS_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
+                a.mach.offset += U64Low( *TRANS_REG( mr, dd->ins.op[i].base ) );
             }
             mmk &= (MMK_READ | MMK_WRITE);
             if( dd->ins.op[i].base == DR_MIPS_sp ) {
@@ -440,9 +442,9 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
         } else if( dd->ins.op[i].extra & PE_XFORM ) {
             a.mach.offset = 0;
             if( dd->ins.op[i].base != DR_MIPS_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
+                a.mach.offset += U64Low( *TRANS_REG( mr, dd->ins.op[i].base ) );
             }
-            a.mach.offset += TRANS_REG( mr, dd->ins.op[i + 1].base )->u._32[I64LO32];
+            a.mach.offset += U64Low( *TRANS_REG( mr, dd->ins.op[i + 1].base ) );
             mmk &= (MMK_READ | MMK_WRITE);
             if( dd->ins.op[i].base == DR_MIPS_sp || dd->ins.op[i + 1].base == DR_MIPS_sp ) {
                 mmk |= MMK_VOLATILE;

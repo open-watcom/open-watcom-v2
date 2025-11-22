@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "ppc.h"
 #include "ppctypes.h"
 #include "madregs.h"
+#include "i64.h"
 
 
 #define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, ppc.who ) )
@@ -462,10 +463,10 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     if( ri->bit_start == BIT_OFF( iar ) ) {
         new_ip = old->ppc.iar;
         //NYI: 64 bit
-        new_ip.u._32[I64LO32] += sizeof( unsigned_32 );
-        if( new_ip.u._32[I64LO32] != cur->ppc.iar.u._32[I64LO32] ) {
+        U64Low( new_ip ) += sizeof( unsigned_32 );
+        if( U64Low( new_ip ) != U64Low( cur->ppc.iar ) ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->ppc.iar.u._32[I64LO32] != cur->ppc.iar.u._32[I64LO32] ) {
+        } else if( U64Low( old->ppc.iar ) != U64Low( cur->ppc.iar ) ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -492,14 +493,14 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, mad_registers 
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( iar ) ) {
-        a->mach.offset = mr->ppc.iar.u._32[I64LO32];
+        a->mach.offset = U64Low( mr->ppc.iar );
         return( MS_OK );
     }
     if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     p = (unsigned_64 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
-    a->mach.offset = p->u._32[I64LO32];
+    a->mach.offset = U64Low( *p );
     return( MS_OK );
 }
 
@@ -567,14 +568,14 @@ void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, mad_registers const *mr, 
     ma->segment = 0;
     switch( sr ) {
     case MSR_IP:
-        ma->offset = mr->ppc.iar.u._32[I64LO32];
+        ma->offset = U64Low( mr->ppc.iar );
         break;
     case MSR_SP:
-        ma->offset = mr->ppc.u1.sp.u._32[I64LO32];
+        ma->offset = U64Low( mr->ppc.u1.sp );
         break;
     case MSR_FP:
         //NYI: can actually float around
-        ma->offset = mr->ppc.r31.u._32[I64LO32];
+        ma->offset = U64Low( mr->ppc.r31 );
         break;
     }
 }
@@ -583,14 +584,14 @@ void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, addr_p
 {
     switch( sr ) {
     case MSR_IP:
-        mr->ppc.iar.u._32[I64LO32] = ma->offset;
+        U64Low( mr->ppc.iar ) = ma->offset;
         break;
     case MSR_SP:
-        mr->ppc.u1.sp.u._32[I64LO32] = ma->offset;
+        U64Low( mr->ppc.u1.sp ) = ma->offset;
         break;
     case MSR_FP:
         //NYI: can actually float around
-        mr->ppc.r31.u._32[I64LO32] = ma->offset;
+        U64Low( mr->ppc.r31 ) = ma->offset;
         break;
     }
 }

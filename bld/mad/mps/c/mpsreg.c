@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +34,20 @@
 #include "mips.h"
 #include "mpstypes.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 #define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, mips.who ) )
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
-#define MIPS_SWAP_REG_64(x)                         \
-    {                                               \
-        unsigned_32     temp;                       \
-        CONV_BE_32( (x).u._32[I64LO32] );           \
-        CONV_BE_32( (x).u._32[I64HI32] );           \
-        temp = (x).u._32[I64LO32];                  \
-        (x).u._32[I64LO32] = (x).u._32[I64HI32];    \
-        (x).u._32[I64HI32] = temp;                  \
+#define MIPS_SWAP_REG_64(x)             \
+    {                                   \
+        unsigned_32     temp;           \
+        CONV_BE_32( U64Low( (x) ) );    \
+        CONV_BE_32( U64High( (x) ) );   \
+        temp = U64Low( (x) );           \
+        U64Low( (x) ) = U64High( (x) ); \
+        U64High( (x) ) = temp;          \
     }
 
 enum {
@@ -520,10 +522,10 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     if( ri->bit_start == BIT_OFF( pc ) ) {
         new_ip = old->mips.pc;
         //NYI: 64 bit
-        new_ip.u._32[I64LO32] += sizeof( unsigned_32 );
-        if( new_ip.u._32[I64LO32] != cur->mips.pc.u._32[I64LO32] ) {
+        U64Low( new_ip ) += sizeof( unsigned_32 );
+        if( U64Low( new_ip ) != U64Low( cur->mips.pc ) ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->mips.pc.u._32[I64LO32] != cur->mips.pc.u._32[I64LO32] ) {
+        } else if( U64Low( old->mips.pc ) != U64Low( cur->mips.pc ) ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -550,14 +552,14 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, mad_registers 
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( pc ) ) {
-        a->mach.offset = mr->mips.pc.u._32[I64LO32];
+        a->mach.offset = U64Low( mr->mips.pc );
         return( MS_OK );
     }
     if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     p = (unsigned_64 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
-    a->mach.offset = p->u._32[I64LO32];
+    a->mach.offset = U64Low( *p );
     return( MS_OK );
 }
 
@@ -630,14 +632,14 @@ void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, mad_registers const *mr, 
     ma->segment = 0;
     switch( sr ) {
     case MSR_IP:
-        ma->offset = mr->mips.pc.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.pc );
         break;
     case MSR_SP:
-        ma->offset = mr->mips.u29.sp.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.u29.sp );
         break;
     case MSR_FP:
         //NYI: may not be used?
-        ma->offset = mr->mips.u30.r30.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.u30.r30 );
         break;
     }
 }
@@ -646,14 +648,14 @@ void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, addr_p
 {
     switch( sr ) {
     case MSR_IP:
-        mr->mips.pc.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.pc ) = ma->offset;
         break;
     case MSR_SP:
-        mr->mips.u29.sp.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.u29.sp ) = ma->offset;
         break;
     case MSR_FP:
         //NYI: may not be used?
-        mr->mips.u30.r30.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.u30.r30 ) = ma->offset;
         break;
     }
 }
