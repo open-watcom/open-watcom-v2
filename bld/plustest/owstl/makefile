@@ -134,10 +134,10 @@ mmwindef.$(exe): .SYMBOLIC
 # nominmax.cpp
 
 mmwin16.cpp : nominmax.cpp
-    copy nominmax.cpp mmwin16.cpp
+    %copy nominmax.cpp mmwin16.cpp
 
 mmwindef.cpp : nominmax.cpp
-    copy nominmax.cpp mmwindef.cpp
+    %copy nominmax.cpp mmwindef.cpp
 
 clean : .procedure
     @%make echo_clean
