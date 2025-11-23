@@ -1,3 +1,5 @@
+tree_depth = 2
+
 mathtest_name = result
 
 !include testenv.mif
