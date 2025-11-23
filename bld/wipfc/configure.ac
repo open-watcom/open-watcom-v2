@@ -2,7 +2,7 @@
 AC_INIT([wipfc], [2.0], [])
 AM_INIT_AUTOMAKE
 
-CPPFLAGS="-D __STDC_LIMIT_MACROS -D U_NOEXCEPT= -D U_DISABLE_RENAMING -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h -D _BLDVER=$OWBLDVERTOOL -D _CYEAR=`date +'%Y'`"
+CPPFLAGS="-D __STDC_LIMIT_MACROS -D U_DISABLE_RENAMING -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h -D _BLDVER=$OWBLDVERTOOL -D _CYEAR=`date +'%Y'`"
 CXXFLAGS="-pipe -g -Wall -std=c++98"
 
 AC_CONFIG_SRCDIR([cpp/main.cpp])

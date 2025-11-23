@@ -501,10 +501,10 @@ namespace std {
  * if the move constructor and the move operator are declared as not throwing exceptions.
  * @internal
  */
-#ifdef U_NOEXCEPT
-    /* Use the predefined value. */
-#else
+#ifdef U_NOEXCEPT_KEYWORD
 #   define U_NOEXCEPT noexcept
+#else
+#   define U_NOEXCEPT
 #endif
 
 /**
