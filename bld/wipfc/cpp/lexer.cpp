@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,9 +40,9 @@ Lexer::Lexer() : _charNum( 0 ), _lineNum( 0 ), _tagCode( BADTAG ), _cmdCode( BAD
     _inTag( false )
 {
     _buffer.reserve( 256 );
-    #undef PICK
     #define PICK(a,b) _tagIdMap.insert( std::map< std::wstring, TagId >::value_type( b, a ) );
     #include "tags.hpp"
+    #undef PICK
 }
 /*****************************************************************************/
 // Parsing relies on the std:isw* family of functions doing the "right thing"
