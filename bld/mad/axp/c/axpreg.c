@@ -265,14 +265,14 @@ mad_status GetPData( addr_off off, axp_pdata_struct *axp_pdata )
     memset( &a, 0, sizeof( a ) );
     a.mach.offset = off;
     MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
-    if( axp_pdata->pro_end_addr.u._32[0] < axp_pdata->beg_addr.u._32[0]
-      || axp_pdata->pro_end_addr.u._32[0] >= axp_pdata->end_addr.u._32[0] ) {
+    if( U64LowLE( axp_pdata->pro_end_addr ) < U64LowLE( axp_pdata->beg_addr )
+      || U64LowLE( axp_pdata->pro_end_addr ) >= U64LowLE( axp_pdata->end_addr ) ) {
         /*
            This is a procedure with different exception handlers for
            different portions - pro_end_addr is the address of the
            start of the procedure in this case.
         */
-        a.mach.offset = axp_pdata->pro_end_addr.u._32[0];
+        a.mach.offset = U64LowLE( axp_pdata->pro_end_addr );
         MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
     }
     return( MS_OK );
@@ -286,11 +286,11 @@ int VariableFrame( addr_off off )
 
     if( GetPData( off, &axp_pdata ) != MS_OK )
         return( 0 );
-    if( axp_pdata.pro_end_addr.u._32[0] == axp_pdata.beg_addr.u._32[0] ) {
+    if( U64LowLE( axp_pdata.pro_end_addr ) == U64LowLE( axp_pdata.beg_addr ) ) {
         return( 0 );
     }
     memset( &a, 0, sizeof( a ) );
-    a.mach.offset = axp_pdata.pro_end_addr.u._32[0] - sizeof( ins );
+    a.mach.offset = U64LowLE( axp_pdata.pro_end_addr ) - sizeof( ins );
     MCReadMem( a, sizeof( ins ), &ins );
     return( ins == INS_MOV_SP_FP );
 }
@@ -540,10 +540,10 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     if( ri->bit_start == BIT_OFF( pal.nt.fir ) ) {
         new_ip = old->axp.pal.nt.fir;
         //NYI: 64 bit
-        new_ip.u._32[0] += sizeof( unsigned_32 );
-        if( new_ip.u._32[0] != cur->axp.pal.nt.fir.u._32[0] ) {
+        U64LowLE( new_ip ) += sizeof( unsigned_32 );
+        if( U64LowLE( new_ip ) != U64LowLE( cur->axp.pal.nt.fir ) ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->axp.pal.nt.fir.u._32[0] != cur->axp.pal.nt.fir.u._32[0] ) {
+        } else if( U64LowLE( old->axp.pal.nt.fir ) != U64LowLE( cur->axp.pal.nt.fir ) ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -570,7 +570,7 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_regi
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( pal.nt.fir ) ) {
-        a->mach.offset = mr->axp.pal.nt.fir.u._32[0];
+        a->mach.offset = U64LowLE( mr->axp.pal.nt.fir );
         return( MS_OK );
     }
     if( IS_FP_BIT( bit_start ) ) {
@@ -662,16 +662,16 @@ void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, 
     switch( sr ) {
     case MSR_IP:
         /* doesn't matter what PAL is in control since always first field */
-        ma->offset = mr->axp.pal.nt.fir.u._32[0];
+        ma->offset = U64LowLE( mr->axp.pal.nt.fir );
         break;
     case MSR_SP:
-        ma->offset = mr->axp.u30.sp.u64.u._32[0];
+        ma->offset = U64LowLE( mr->axp.u30.sp.u64 );
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            ma->offset = mr->axp.u15.fp.u64.u._32[0];
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
+            ma->offset = U64LowLE( mr->axp.u15.fp.u64 );
         } else {
-            ma->offset = mr->axp.u30.sp.u64.u._32[0];
+            ma->offset = U64LowLE( mr->axp.u30.sp.u64 );
         }
         break;
     }
@@ -682,16 +682,16 @@ void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const 
     switch( sr ) {
     case MSR_IP:
         /* doesn't matter what PAL is in control since always first field */
-        mr->axp.pal.nt.fir.u._32[0] = ma->offset;
+        U64LowLE( mr->axp.pal.nt.fir ) = ma->offset;
         break;
     case MSR_SP:
-        mr->axp.u30.sp.u64.u._32[0] = ma->offset;
+        U64LowLE( mr->axp.u30.sp.u64 ) = ma->offset;
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            mr->axp.u15.fp.u64.u._32[0] = ma->offset;
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
+            U64LowLE( mr->axp.u15.fp.u64 ) = ma->offset;
         } else {
-            mr->axp.u30.sp.u64.u._32[0] = ma->offset;
+            U64LowLE( mr->axp.u30.sp.u64 ) = ma->offset;
         }
         break;
     }
@@ -726,7 +726,7 @@ size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *m
         idx = IDX_sp;
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
             idx = IDX_fp;
         } else {
             idx = IDX_sp;

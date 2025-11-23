@@ -54,8 +54,8 @@ mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address 
 
     out->axp = in->axp;
     //NYI: 64 bit
-    out->axp.u26.ra.u64.u._32[0] = ret.mach.offset;
-    out->axp.pal.nt.fir.u._32[0] = rtn.mach.offset;
+    U64LowLE( out->axp.u26.ra.u64 ) = ret.mach.offset;
+    U64LowLE( out->axp.pal.nt.fir ) = rtn.mach.offset;
     return( MS_OK );
 }
 
@@ -97,9 +97,9 @@ unsigned MADIMPENTRY( CallUpStackSize )( void )
 
 mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
-    cud->ra = mr->axp.u26.ra.u64.u._32[0];
-    cud->sp = mr->axp.u30.sp.u64.u._32[0];
-    cud->fp = mr->axp.u15.fp.u64.u._32[0];
+    cud->ra = U64LowLE( mr->axp.u26.ra.u64 );
+    cud->sp = U64LowLE( mr->axp.u30.sp.u64 );
+    cud->fp = U64LowLE( mr->axp.u15.fp.u64 );
     return( MS_OK );
 }
 
@@ -140,18 +140,18 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     prev_sp_off = NO_OFF;
     prev_fp_off = NO_OFF;
     curr = *execution;
-    curr.mach.offset = axp_pdata.beg_addr.u._32[0];
+    curr.mach.offset = U64LowLE( axp_pdata.beg_addr );
     if( curr.mach.offset == 0 )
         return( MS_FAIL );
     for( ;; ) {
         if( curr.mach.offset >= execution->mach.offset )
             break;
-        if( curr.mach.offset >= axp_pdata.pro_end_addr.u._32[0] )
+        if( curr.mach.offset >= U64LowLE( axp_pdata.pro_end_addr ) )
             break;
         ms = DisasmOne( &dd, &curr, 0 );
         if( ms != MS_OK )
             return( ms );
-        if( curr.mach.offset == (axp_pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
+        if( curr.mach.offset == (U64LowLE( axp_pdata.beg_addr ) + sizeof( unsigned_32 )) ) {
             if( dd.ins.type != DI_AXP_LDA )
                 return( MS_FAIL );
             frame_size = -I64Low( dd.ins.op[1].value );

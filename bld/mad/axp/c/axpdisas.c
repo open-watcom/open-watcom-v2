@@ -251,8 +251,7 @@ static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned conditio
         /* integer */
         if( reg->s64.u.sign.v ) {
             cmp = -1;
-        } else if( reg->u64.u._32[0] != 0
-          || reg->u64.u._32[1] != 0 ) {
+        } else if( U64isNonZero( reg->u64 ) ) {
             cmp = +1;
         } else {
             cmp = 0;
@@ -426,7 +425,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
     addr_off            new;
 
     memset( next, 0, sizeof( *next ) );
-    next->mach.offset = mr->axp.pal.nt.fir.u._32[0] + sizeof( unsigned_32 );
+    next->mach.offset = U64LowLE( mr->axp.pal.nt.fir ) + sizeof( unsigned_32 );
     dc = DisasmControl( dd, mr );
     if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
         return( MS_OK );
@@ -437,10 +436,10 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
     case MDC_RET:
         new = I64Low( dd->ins.op[1].value );
         if( dd->ins.op[1].type == DO_RELATIVE ) {
-            new += mr->axp.pal.nt.fir.u._32[0];
+            new += U64LowLE( mr->axp.pal.nt.fir );
         }
         if( dd->ins.op[1].base != DR_NONE ) {
-            new += TRANS_REG( mr, dd->ins.op[1].base )->u64.u._32[0];
+            new += U64LowLE( TRANS_REG( mr, dd->ins.op[1].base )->u64 );
         }
         next->mach.offset = new;
     }
@@ -471,7 +470,7 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
             a.mach.offset += dd->addr.mach.offset;
             /* fall through */
         case DO_MEMORY_ABS:
-            a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u64.u._32[0];
+            a.mach.offset += U64LowLE( TRANS_REG( mr, dd->ins.op[i].base )->u64 );
             mmk &= (MMK_READ|MMK_WRITE);
             if( dd->ins.op[i].base == DR_AXP_sp
               || dd->ins.op[i].base == DR_AXP_r30 ) {
