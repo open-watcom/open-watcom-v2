@@ -62,6 +62,11 @@ fflags_axp += -INCPath=source #-we-w0
 .for: source
 
 test : .SYMBOLIC start test.lnk $(positive_exes) test_set_result
+!ifdef __UNIX__
+    @cat fm923.map
+!else
+    @type fm923.map
+!endif
     -$(noecho)%make common_set_result_check
 
 check_result : .procedure
