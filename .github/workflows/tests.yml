@@ -39,6 +39,9 @@ jobs:
           - title: C run-time library tests
             path:   clibtest
             skip:   ''
+          - title: Math run-time library tests
+            path:   mathtest
+            skip:   ''
     timeout-minutes: 90
     runs-on: ${{inputs.image}}
     name: ${{matrix.title}}
