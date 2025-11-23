@@ -35,6 +35,7 @@
 #include "axp.h"
 #include "axptypes.h"
 #include "madregs.h"
+#include "i64.h"
 
 
 #define BIT_OFF(who)    BYTES2BITS( offsetof( mad_registers, axp.who ) )
