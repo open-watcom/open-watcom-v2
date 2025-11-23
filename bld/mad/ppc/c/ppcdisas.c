@@ -89,8 +89,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( I64Low( ins->op[0].value ) ) ), &mti );
-        MCTypeToString( dd->radix, &mti, &I64Low( ins->op[op].value ), buff, &buff_size );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( U64Low( ins->op[0].value ) ) ), &mti );
+        MCTypeToString( dd->radix, &mti, &U64Low( ins->op[op].value ), buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
