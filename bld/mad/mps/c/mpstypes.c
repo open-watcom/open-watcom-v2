@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,10 +89,11 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     mad_type_handle     mth;
     walk_result         wr;
 
-    if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
+    if( !(tk & MAS_MEMORY) )
+        return( WR_CONTINUE );
     for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
         if( (tk & TypeArray[mth].u.mti->b.kind)
-         && TypeArray[mth].name != MAD_MSTR_NIL ) {
+          && TypeArray[mth].name != MAD_MSTR_NIL ) {
             wr = wk( mth, data );
             if( wr != WR_CONTINUE ) {
                 return( wr );

@@ -152,8 +152,10 @@ mad_status DisasmOne( mad_disasm_data *dd, address *a, int adj )
     dd->addr = *a;
     //NYI: doesn't handle variable sized instructions
     new = dd->addr.mach.offset + adj * (int)sizeof( unsigned_32 );
-    if( (adj < 0 && new > dd->addr.mach.offset)
-     || (adj > 0 && new < dd->addr.mach.offset) ) {
+    if( (adj < 0
+      && new > dd->addr.mach.offset)
+      || (adj > 0
+      && new < dd->addr.mach.offset) ) {
         return( MS_FAIL );
     }
     dd->addr.mach.offset = new;

@@ -133,11 +133,13 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
         if( dd->ins.op[0].type == DO_ABSOLUTE ) {
             // takes care of 'j' and 'jal'
             new = I64Low( dd->ins.op[0].value );
-        } else if( dd->ins.num_ops == 3 && dd->ins.op[2].type == DO_RELATIVE ) {
+        } else if( dd->ins.num_ops == 3
+          && dd->ins.op[2].type == DO_RELATIVE ) {
             // takes care of all 'b' instructions with three operands
             new  = U64Low( out->mips.pc );
             new += I64Low( dd->ins.op[2].value );
-        } else if( dd->ins.num_ops == 2 && dd->ins.op[1].type == DO_RELATIVE ) {
+        } else if( dd->ins.num_ops == 2
+          && dd->ins.op[1].type == DO_RELATIVE ) {
             // takes care of all 'b' instructions with two operands
             new  = U64Low( out->mips.pc );
             new += I64Low( dd->ins.op[1].value );

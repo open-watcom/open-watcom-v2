@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,10 +90,11 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     mad_type_handle     mth;
     walk_result         wr;
 
-    if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
+    if( !(tk & MAS_MEMORY) )
+        return( WR_CONTINUE );
     for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
         if( (tk & TypeArray[mth].u.mti->b.kind)
-         && TypeArray[mth].name != MAD_MSTR_NIL ) {
+          && TypeArray[mth].name != MAD_MSTR_NIL ) {
             wr = wk( mth, data );
             if( wr != WR_CONTINUE ) {
                 return( wr );
@@ -168,13 +169,15 @@ static mad_status DoConvert( const mad_type_info *in_mti, const void *in_d, cons
     switch( out_mti->b.handler_code ) {
     case AXPT_F_FLOAT:
         ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RF_FLOAT].u.mti, temp, 0 );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         p2[1] = temp[0];
         p2[0] = temp[1];
         break;
     case AXPT_G_FLOAT:
         ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RG_FLOAT].u.mti, temp, 0 );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         p2[3] = temp[0];
         p2[2] = temp[1];
         p2[1] = temp[2];
@@ -182,7 +185,8 @@ static mad_status DoConvert( const mad_type_info *in_mti, const void *in_d, cons
         break;
     case AXPT_D_FLOAT:
         ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RD_FLOAT].u.mti, temp, 0 );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         p2[3] = temp[0];
         p2[2] = temp[1];
         p2[1] = temp[2];

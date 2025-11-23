@@ -112,8 +112,10 @@ mad_status DisasmOne( mad_disasm_data *dd, address *a, int adj )
 
     dd->addr = *a;
     new = dd->addr.mach.offset + adj * (int)sizeof( unsigned_32 );
-    if( (adj < 0 && new > dd->addr.mach.offset)
-     || (adj > 0 && new < dd->addr.mach.offset) ) {
+    if( (adj < 0
+      && new > dd->addr.mach.offset)
+      || (adj > 0
+      && new < dd->addr.mach.offset) ) {
         return( MS_FAIL );
     }
     dd->addr.mach.offset = new;
@@ -158,15 +160,18 @@ size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, ma
         olen = 0;
     }
     ff = DFF_NONE;
-    if( MADState->disasm_state & DT_PSUEDO_OPS ) ff |= DFF_PSEUDO;
-    if( MADState->disasm_state & DT_UPPER ) ff |= DFF_INS_UP | DFF_REG_UP;
+    if( MADState->disasm_state & DT_PSUEDO_OPS )
+        ff |= DFF_PSEUDO;
+    if( MADState->disasm_state & DT_UPPER )
+        ff |= DFF_INS_UP | DFF_REG_UP;
     dd->radix = radix;
     if( DisFormat( &DH, dd, &dd->ins, ff, np, nlen, op, olen ) != DR_OK ) {
         return( 0 );
     }
     olen = strlen( obuff );
     nlen = strlen( nbuff );
-    if( dp == MDP_ALL ) nbuff[ nlen++ ] = ' ';
+    if( dp == MDP_ALL )
+        nbuff[ nlen++ ] = ' ';
     len = nlen + olen;
     if( buff_size > 0 ) {
         --buff_size;
@@ -248,7 +253,8 @@ static int CTRZero( mad_registers const *mr )
 
 static int CRTest( mad_registers const *mr, mad_disasm_data *dd )
 {
-    if( mr->ppc.cr & (1 << (31 - I64Low( dd->ins.op[1].value ))) ) return( 1 );
+    if( mr->ppc.cr & (1 << (31 - I64Low( dd->ins.op[1].value ))) )
+        return( 1 );
     return( 0 );
 }
 
@@ -258,32 +264,44 @@ static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers const *mr,
     #define NOT_TAKEN   (MDC_CONDITIONAL | MDC_TAKEN_NOT)
     switch( I64Low( dd->ins.op[0].value ) >> 1 ) {
     case 0x0:
-        if( CTRZero( mr ) || CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( CTRZero( mr )
+          || CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x1:
-        if( !CTRZero( mr ) || CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( !CTRZero( mr )
+          || CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x2:
     case 0x3:
-        if( CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x4:
-        if( CTRZero( mr ) || !CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( CTRZero( mr )
+          || !CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x5:
-        if( !CTRZero( mr ) || !CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( !CTRZero( mr )
+          || !CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x6:
     case 0x7:
-        if( !CRTest( mr, dd ) ) return( NOT_TAKEN );
+        if( !CRTest( mr, dd ) )
+            return( NOT_TAKEN );
         break;
     case 0x8:
     case 0xc:
-        if( CTRZero( mr ) ) return( NOT_TAKEN );
+        if( CTRZero( mr ) )
+            return( NOT_TAKEN );
         break;
     case 0x9:
     case 0xd:
-        if( !CTRZero( mr ) ) return( NOT_TAKEN );
+        if( !CTRZero( mr ) )
+            return( NOT_TAKEN );
         break;
     case 0xa:
     case 0xb:
@@ -364,11 +382,16 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
         }
         break;
     default:
-        if( U64Low( a ) < U64Low( b ) ) bits |= 0x02;
-        if( U64Low( a ) > U64Low( b ) ) bits |= 0x01;
-        if( I64Low( a ) < I64Low( b ) ) bits |= 0x10;
-        if( I64Low( a ) > I64Low( b ) ) bits |= 0x08;
-        if( bits == 0 ) bits |= 0x04;
+        if( U64Low( a ) < U64Low( b ) )
+            bits |= 0x02;
+        if( U64Low( a ) > U64Low( b ) )
+            bits |= 0x01;
+        if( I64Low( a ) < I64Low( b ) )
+            bits |= 0x10;
+        if( I64Low( a ) > I64Low( b ) )
+            bits |= 0x08;
+        if( bits == 0 )
+            bits |= 0x04;
         break;
     }
     return( bits );
@@ -471,9 +494,11 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
     walk_result         wr;
     mad_memref_kind     mmk;
 
-    if( dd->ins.type >= DI_PPC_lbz && dd->ins.type <= DI_PPC_lwzx ) {
+    if( dd->ins.type >= DI_PPC_lbz
+      && dd->ins.type <= DI_PPC_lwzx ) {
         mmk = MMK_READ;
-    } else if( dd->ins.type >= DI_PPC_stb && dd->ins.type <= DI_PPC_stwx ) {
+    } else if( dd->ins.type >= DI_PPC_stb
+      && dd->ins.type <= DI_PPC_stwx ) {
         mmk = MMK_WRITE;
     } else {
         return( WR_CONTINUE );
@@ -498,7 +523,8 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
             }
             a.mach.offset += U64Low( *TRANS_REG( mr, dd->ins.op[i+1].base ) );
             mmk &= (MMK_READ|MMK_WRITE);
-            if( dd->ins.op[i].base == DR_PPC_r1 || dd->ins.op[i+1].base == DR_PPC_r1 ) {
+            if( dd->ins.op[i].base == DR_PPC_r1
+              || dd->ins.op[i+1].base == DR_PPC_r1 ) {
                 mmk |= MMK_VOLATILE;
             }
             wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );

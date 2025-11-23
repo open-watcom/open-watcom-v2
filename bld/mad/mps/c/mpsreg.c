@@ -302,11 +302,15 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 
     if( tk & MTK_INTEGER ) {
         wr = wk( &RegSet[CPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     if( tk & MTK_FLOAT ) {
         wr = wk( &RegSet[FPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -410,9 +414,13 @@ static mad_status CPUGetPiece( unsigned piece,
     unsigned    idx;
 
     if( MADState->reg_state[CPU_REG_SET] & CT_SYMBOLIC_NAMES ) {
-        if( !FindEntry( CPUSymbolic, piece, &idx, disp_mth ) ) return( MS_FAIL );
+        if( !FindEntry( CPUSymbolic, piece, &idx, disp_mth ) ) {
+            return( MS_FAIL );
+        }
     } else {
-        if( !FindEntry( CPUNumeric, piece, &idx, disp_mth ) ) return( MS_FAIL );
+        if( !FindEntry( CPUNumeric, piece, &idx, disp_mth ) ) {
+            return( MS_FAIL );
+        }
     }
     *reg = &RegList[idx].info;
     if( !(MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) ) {
@@ -582,7 +590,8 @@ unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsign
     *bits ^= toggle;
     *bits |= on & ~toggle;
     *bits &= ~off | toggle;
-    if( index == CPU_REG_SET && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
+    if( index == CPU_REG_SET
+      && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
         /* We've changed from numeric regs to symbolic or vice versa.
          * Have to force a redraw of the disassembly window.
          */
@@ -609,7 +618,8 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         if( curr != NULL ) {
             while( curr->info.name != NULL ) {
                 wr = wk( &curr->info, 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 ++curr;
             }
         }
@@ -619,7 +629,9 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
             if( curr->reg_set == reg_set ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
             ++curr;
         }
@@ -711,9 +723,11 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
         reg = &RegList[IDX_hi].info;
         break;
     default:
-        if( ci >= CI_MIPS_r0 && ci <= CI_MIPS_r31 ) {
+        if( ci >= CI_MIPS_r0
+          && ci <= CI_MIPS_r31 ) {
             reg = &RegList[ci - CI_MIPS_r0 + IDX_r0].info;
-        } else if( ci >= CI_MIPS_f0 && ci <= CI_MIPS_f31 ) {
+        } else if( ci >= CI_MIPS_f0
+          && ci <= CI_MIPS_f31 ) {
             reg = &RegList[ci - CI_MIPS_f0 + IDX_f0].info;
         }
     }
@@ -734,9 +748,11 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
+      ((bit) >= RegList[i].info.bit_start \
+      && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))) {
+        if( (IN_RANGE(i, bit_start)
+          || IN_RANGE( i, bit_end ))) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }

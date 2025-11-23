@@ -656,9 +656,11 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
         reg = &RegList[IDX_fpscr].info;
         break;
     default:
-        if( ci >= CI_PPC_r0 && ci <= CI_PPC_r31 ) {
+        if( ci >= CI_PPC_r0
+          && ci <= CI_PPC_r31 ) {
             reg = &RegList[ci - CI_PPC_r0 + IDX_r0].info;
-        } else if( ci >= CI_PPC_f0 && ci <= CI_PPC_f31 ) {
+        } else if( ci >= CI_PPC_f0
+          && ci <= CI_PPC_f31 ) {
             reg = &RegList[ci - CI_PPC_f0 + IDX_f0].info;
         }
     }
@@ -679,9 +681,11 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
+      ((bit) >= RegList[i].info.bit_start \
+      && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( IN_RANGE( i, bit_start ) || IN_RANGE( i, bit_end ) ) {
+        if( IN_RANGE( i, bit_start )
+          || IN_RANGE( i, bit_end ) ) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }

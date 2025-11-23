@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,11 @@ mad_status MADIMPENTRY( Init )(void)
     mad_status  ms;
 
     ms = RegInit();
-    if( ms != MS_OK ) return ( ms );
+    if( ms != MS_OK )
+        return ( ms );
     ms = DisasmInit();
-    if( ms == MS_OK ) return( ms );
+    if( ms == MS_OK )
+        return( ms );
     return( ms );
 }
 

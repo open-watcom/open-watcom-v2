@@ -452,10 +452,12 @@ static dword RegValue( const mad_registers *mr, int idx )
     dword       mask;
     unsigned_8  reg_idx;
 
-    if( idx >= DR_X86_es && idx <= DR_X86_gs ) {
+    if( idx >= DR_X86_es
+      && idx <= DR_X86_gs ) {
         reg_idx = idx - DR_X86_es + 8;
         mask = 0xffff;
-    } else if( idx >= DR_X86_ax && idx <= DR_X86_di ) {
+    } else if( idx >= DR_X86_ax
+      && idx <= DR_X86_di ) {
         reg_idx = idx - DR_X86_ax;
         mask = 0xffff;
     } else {
@@ -592,7 +594,8 @@ static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *w
         }
         break;
     default:
-        if( dd->ins.num_ops >= 2 && opnd == OP_1 ) {
+        if( dd->ins.num_ops >= 2
+          && opnd == OP_1 ) {
             mmk |= MMK_WRITE;
         }
         break;
@@ -709,7 +712,8 @@ static int RegAt( const char *from, const char *reg, unsigned len )
     }
     if( strnicmp( from, reg, len ) != 0 )
         return( 0 );
-    if( isalnum( from[len] ) || from[len] == '_' )
+    if( isalnum( from[len] )
+      || from[len] == '_' )
         return( 0 );
     return( 1 );
 }
@@ -738,7 +742,8 @@ mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, ma
         case '[':
             *to++ = '+';
             *to++ = '(';
-            if( RegAt( start, "bp", 2 ) || RegAt( start, "sp", 2 ) ) {
+            if( RegAt( start, "bp", 2 )
+              || RegAt( start, "sp", 2 ) ) {
                 to = StrCopyDst( "ss", to );
             } else {
                 to = StrCopyDst( "ds", to );
@@ -955,7 +960,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
         /* fall through for LEA instruction */
     case DO_MEMORY_ABS:
     case DO_MEMORY_REL:
-        if( op->base == DR_NONE && op->index == DR_NONE ) {
+        if( op->base == DR_NONE
+          && op->index == DR_NONE ) {
             // direct memory address
             size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );

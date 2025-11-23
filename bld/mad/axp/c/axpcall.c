@@ -126,10 +126,13 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     /* unused parameters */ (void)return_disp; (void)start; (void)rtn_characteristics; (void)in;
 
     *out = NULL;
-    if( cud->ra == 0 ) return( MS_FAIL );
-    if( cud->sp == 0 ) return( MS_FAIL );
+    if( cud->ra == 0 )
+        return( MS_FAIL );
+    if( cud->sp == 0 )
+        return( MS_FAIL );
     ms = GetPData( execution->mach.offset, &axp_pdata );
-    if( ms != MS_OK ) return( ms );
+    if( ms != MS_OK )
+        return( ms );
 
     frame_size = 0;
     frame_start = cud->sp;
@@ -138,14 +141,19 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     prev_fp_off = NO_OFF;
     curr = *execution;
     curr.mach.offset = axp_pdata.beg_addr.u._32[0];
-    if( curr.mach.offset == 0 ) return( MS_FAIL );
+    if( curr.mach.offset == 0 )
+        return( MS_FAIL );
     for( ;; ) {
-        if( curr.mach.offset >= execution->mach.offset ) break;
-        if( curr.mach.offset >= axp_pdata.pro_end_addr.u._32[0] ) break;
+        if( curr.mach.offset >= execution->mach.offset )
+            break;
+        if( curr.mach.offset >= axp_pdata.pro_end_addr.u._32[0] )
+            break;
         ms = DisasmOne( &dd, &curr, 0 );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         if( curr.mach.offset == (axp_pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
-            if( dd.ins.type != DI_AXP_LDA ) return( MS_FAIL );
+            if( dd.ins.type != DI_AXP_LDA )
+                return( MS_FAIL );
             frame_size = -I64Low( dd.ins.op[1].value );
         }
         switch( dd.ins.type ) {
@@ -167,28 +175,35 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
             break;
         case DI_AXP_BIS:
             if( dd.ins.op[0].type == DO_REG
-             && dd.ins.op[1].type == DO_REG
-             && dd.ins.op[2].type == DO_REG
-             && dd.ins.op[0].base == DR_AXP_r31 /* zero */
-             && dd.ins.op[1].base == DR_AXP_r30 /* sp */
-             && dd.ins.op[2].base == DR_AXP_r15 /* fp */ ) {
+              && dd.ins.op[1].type == DO_REG
+              && dd.ins.op[2].type == DO_REG
+              && dd.ins.op[0].base == DR_AXP_r31 /* zero */
+              && dd.ins.op[1].base == DR_AXP_r30 /* sp */
+              && dd.ins.op[2].base == DR_AXP_r15 /* fp */ ) {
                 /* variable frame routine, and we've done all the prolog */
                 frame_start = cud->fp;
             }
             break;
         }
     }
-    if( frame_start == 0 ) return( MS_FAIL );
+    if( frame_start == 0 )
+        return( MS_FAIL );
     if( prev_sp_off != NO_OFF ) {
-        if( !GetAnOffset( frame_start + prev_sp_off, &cud->sp ) ) return( MS_FAIL );
+        if( !GetAnOffset( frame_start + prev_sp_off, &cud->sp ) ) {
+            return( MS_FAIL );
+        }
     } else {
         cud->sp = frame_start + frame_size;
     }
     if( prev_fp_off != NO_OFF ) {
-        if( !GetAnOffset( frame_start + prev_fp_off, &cud->fp ) ) return( MS_FAIL );
+        if( !GetAnOffset( frame_start + prev_fp_off, &cud->fp ) ) {
+            return( MS_FAIL );
+        }
     }
     if( prev_ra_off != NO_OFF ) {
-        if( !GetAnOffset( frame_start + prev_ra_off, &cud->ra ) ) return( MS_FAIL );
+        if( !GetAnOffset( frame_start + prev_ra_off, &cud->ra ) ) {
+            return( MS_FAIL );
+        }
     }
     stack->mach.offset = cud->sp;
     execution->mach.offset = cud->ra;

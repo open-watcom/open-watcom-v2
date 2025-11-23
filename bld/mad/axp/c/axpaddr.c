@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,11 @@ int MADIMPENTRY( AddrComp )( const address *ap, const address *bp, mad_address_f
 {
     /* unused parameters */ (void)af;
 
-    if( ap->mach.offset == bp->mach.offset ) return(  0 );
-    if( ap->mach.offset >  bp->mach.offset ) return( +1 );
-                                             return( -1 );
+    if( ap->mach.offset == bp->mach.offset )
+        return(  0 );
+    if( ap->mach.offset >  bp->mach.offset )
+        return( +1 );
+    return( -1 );
 }
 
 long MADIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )

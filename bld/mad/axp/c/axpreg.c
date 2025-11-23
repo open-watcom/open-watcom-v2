@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,7 +266,7 @@ mad_status GetPData( addr_off off, axp_pdata_struct *axp_pdata )
     a.mach.offset = off;
     MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
     if( axp_pdata->pro_end_addr.u._32[0] < axp_pdata->beg_addr.u._32[0]
-     || axp_pdata->pro_end_addr.u._32[0] >= axp_pdata->end_addr.u._32[0] ) {
+      || axp_pdata->pro_end_addr.u._32[0] >= axp_pdata->end_addr.u._32[0] ) {
         /*
            This is a procedure with different exception handlers for
            different portions - pro_end_addr is the address of the
@@ -284,7 +284,8 @@ int VariableFrame( addr_off off )
     unsigned_32         ins;
     address             a;
 
-    if( GetPData( off, &axp_pdata ) != MS_OK ) return( 0 );
+    if( GetPData( off, &axp_pdata ) != MS_OK )
+        return( 0 );
     if( axp_pdata.pro_end_addr.u._32[0] == axp_pdata.beg_addr.u._32[0] ) {
         return( 0 );
     }
@@ -319,11 +320,15 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 
     if( tk & MTK_INTEGER ) {
         wr = wk( &RegSet[CPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     if( tk & MTK_FLOAT ) {
         wr = wk( &RegSet[FPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -598,7 +603,8 @@ unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsign
     *bits ^= toggle;
     *bits |= on & ~toggle;
     *bits &= ~off | toggle;
-    if( index == CPU_REG_SET && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
+    if( index == CPU_REG_SET
+      && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
         /*
            We've changed from numeric regs to symbolic or vis-versa.
            Have to force a redraw of the disassembly window.
@@ -636,7 +642,9 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         reg_set = (unsigned)( rsd - RegSet );
         curr = RegList;
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
-            if( curr->reg_set == reg_set && (curr->pal == PAL_all || curr->pal == CurrPAL) ) {
+            if( curr->reg_set == reg_set
+              && (curr->pal == PAL_all
+              || curr->pal == CurrPAL) ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
@@ -745,9 +753,11 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
     reg = NULL;
     if( ci == CI_AXP_fir ) {
         reg = &RegList[IDX_nt_fir].info;
-    } else if( ci >= CI_AXP_r0 && ci <= CI_AXP_r31 ) {
+    } else if( ci >= CI_AXP_r0
+      && ci <= CI_AXP_r31 ) {
         reg = &RegList[ci - CI_AXP_r0 + IDX_r0].info;
-    } else if( ci >= CI_AXP_f0 && ci <= CI_AXP_f31 ) {
+    } else if( ci >= CI_AXP_f0
+      && ci <= CI_AXP_f31 ) {
         reg = &RegList[ci - CI_AXP_f0 + IDX_f0].info;
     }
     return( reg );
@@ -769,10 +779,13 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
     memset( &mr->axp.f31, 0, sizeof( mr->axp.f31 ) );
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
+      ((bit) >= RegList[i].info.bit_start \
+      && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))
-         && (RegList[i].pal == PAL_all || RegList[i].pal == mr->axp.active_pal) ) {
+        if( (IN_RANGE(i, bit_start)
+          || IN_RANGE( i, bit_end ))
+          && (RegList[i].pal == PAL_all
+          || RegList[i].pal == mr->axp.active_pal) ) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }
