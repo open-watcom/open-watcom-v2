@@ -1462,11 +1462,11 @@ static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         }
         NodeIsIntConstant( op2, &icon );
         if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
-            val = icon.u.value;
+            val = icon.value;
         } else if( icon.type->id == TYP_ULONG || icon.type->id == TYP_UINT ) {
-            Set64ValU32( val, icon.u.uval );
+            Set64ValU32( val, U64Low( icon.value ) );
         } else {
-            Set64ValI32( val, icon.u.sval );
+            Set64ValI32( val, I64Low( icon.value ) );
         }
         ret = CheckMeaninglessCompare( rel
                                    , op1_size
@@ -4102,7 +4102,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                         expr = PTreeOp( &throw_exp );
                     } else {
                         INT_CONSTANT int_con;
-                        if( NodeIsIntConstant( throw_exp, &int_con ) && U64isZero( int_con.u.value ) ) {
+                        if( NodeIsIntConstant( throw_exp, &int_con ) && U64isZero( int_con.value ) ) {
                             rt_code = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );

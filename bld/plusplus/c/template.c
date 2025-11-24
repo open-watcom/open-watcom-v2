@@ -2099,7 +2099,7 @@ static bool sameConstantInt( SYMBOL s1, SYMBOL s2 )
 
     SymConstantValue( s1, &con1 );
     SymConstantValue( s2, &con2 );
-    return( U64Eq( con1.u.value, con2.u.value ) );
+    return( U64Eq( con1.value, con2.value ) );
 }
 
 bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
@@ -2131,7 +2131,7 @@ static bool parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
         switch( temp_parm->op ) {
         case PT_INT_CONSTANT:
             SymConstantValue( temp_arg, &con );
-            if( U64Eq( con.u.value, temp_parm->u.int64_constant ) ) {
+            if( U64Eq( con.value, temp_parm->u.int64_constant ) ) {
                 return( false );
             }
             break;

@@ -1359,14 +1359,14 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
 {
     pval->type = sym->sym_type;
     if( sym->flags & SYMF_CONSTANT_INT64 ) {
-        pval->u.value = sym->u.pval->u.int64_constant;
+        pval->value = sym->u.pval->u.int64_constant;
     } else if( sym->flags & SYMF_ENUM_UINT ) {
-        Set64ValU32( pval->u.value, sym->u.sval );
+        Set64ValU32( pval->value, sym->u.sval );
     } else {
         if( SignedIntType( sym->sym_type ) ) {
-            Set64ValI32( pval->u.value, sym->u.sval );
+            Set64ValI32( pval->value, sym->u.sval );
         } else {
-            Set64ValU32( pval->u.value, sym->u.sval );
+            Set64ValU32( pval->value, sym->u.sval );
         }
     }
     return( sym );
