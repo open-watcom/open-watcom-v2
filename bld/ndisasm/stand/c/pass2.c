@@ -224,7 +224,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
     return( RC_OKAY );
 }
 
-size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
+size_t HandleAReference( const unsigned_64 *value, int ins_size, ref_flags flags,
                            dis_sec_offset offset, dis_sec_size sec_size,
                            ref_entry *reference_entry, char *buff )
 // handle any references at this offset
@@ -238,7 +238,7 @@ size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
     buff[0] = '\0';
     for( ; r_entry != NULL && r_entry->offset == offset; r_entry = r_entry->next ) {
         if( r_entry->has_val ) {
-            nvalue = U64Low( value );
+            nvalue = U64Low( *value );
         } else if( r_entry->addend ) {
             nvalue = HandleAddend( r_entry );
         } else {
@@ -400,7 +400,7 @@ size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
         if( r_entry->has_val && nvalue != 0 ) {
             unsigned_64 tmp;
 
-            p = &buff[strlen(buff)];
+            p = &buff[strlen( buff )];
             if( nvalue < 0 ) {
                 *p++ = '-';
                 nvalue = -nvalue;
@@ -523,7 +523,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
             if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86 ) {
                 rf |= RFLAG_NO_FRAME;
             }
-            len = HandleAReference( op->value, ins->size, rf,
+            len = HandleAReference( &(op->value), ins->size, rf,
                         pd->loop + op->op_position, pd->size, &pd->r_entry, buff );
             if( len != 0 ) {
                 return( len );
@@ -548,7 +548,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     case DO_IMMED:
         if( pd->r_entry != NULL ) {
             rf |= RFLAG_IS_IMMED;
-            len = HandleAReference( op->value, ins->size, rf,
+            len = HandleAReference( &(op->value), ins->size, rf,
                         pd->loop + op->op_position, pd->size, &pd->r_entry, buff );
             if( len != 0 ) {
                 return( len );

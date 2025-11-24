@@ -494,7 +494,7 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
             BufferConcat( datatype );
         }
     }
-    HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
+    HandleAReference( &value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
     BufferConcat( buff );
     switch( rv ) {
     case 8:
