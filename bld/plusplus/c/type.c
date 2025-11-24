@@ -92,9 +92,22 @@ TYPE TypeCache[TYPC_LAST];
 
 #if defined( DEVBUILD ) || defined( XTRA_RPT )
 char const * const TypeIdNames[] = {
-    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
+    /*
+     * base types
+     */
+    #define pickb(id,promo,promo_asm,type_text) __STR( id ),
+    #define picke(id,promo,promo_asm,type_text)
     #include "_typdefs.h"
-    #undef pick
+    #undef picke
+    #undef pickb
+    /*
+     * extended types
+     */
+    #define pickb(id,promo,promo_asm,type_text)
+    #define picke(id,promo,promo_asm,type_text) __STR( id ),
+    #include "_typdefs.h"
+    #undef picke
+    #undef pickb
     "TYP_NONE",
 #if defined( XTRA_RPT )
     "Total"
@@ -8419,11 +8432,14 @@ static void initBasicTypes( void )
     int     i;
     type_id typ;
     static type_id basics_init_list[] = {
-        #define BASETYPES
-        #define pick(id,promo,promo_asm,type_text)  id,
+        /*
+         * base types only
+         */
+        #define pickb(id,promo,promo_asm,type_text) id,
+        #define picke(id,promo,promo_asm,type_text)
         #include "_typdefs.h"
-        #undef pick
-        #undef BASETYPES
+        #undef picke
+        #undef pickb
     };
 
     for( i = 0; i < ARRAY_SIZE( basics_init_list ); i++ ) {

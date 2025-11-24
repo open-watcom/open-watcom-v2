@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -368,9 +368,22 @@ TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
 
 
 static type_id intPromo[] = {   // Table of integral promotions
-    #define pick(id,promo,promo_asm,type_text)  promo,
+    /*
+     * base types
+     */
+    #define pickb(id,promo,promo_asm,type_text) promo,
+    #define picke(id,promo,promo_asm,type_text)
     #include "_typdefs.h"
-    #undef pick
+    #undef picke
+    #undef pickb
+    /*
+     * extended types
+     */
+    #define pickb(id,promo,promo_asm,type_text)
+    #define picke(id,promo,promo_asm,type_text) promo,
+    #include "_typdefs.h"
+    #undef picke
+    #undef pickb
     TYP_NONE
 };
 
