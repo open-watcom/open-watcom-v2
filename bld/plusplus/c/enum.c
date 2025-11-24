@@ -42,26 +42,10 @@
 #include "i64.h"
 
 
-union _us                   // to enable either signed or unsigned treatment
-{   signed_64 s64val;       // - signed/unsigned 64
-#if defined( WATCOM_BIG_ENDIAN )
-    struct {
-        unsigned pad_u;
-        unsigned uval;      // - unsigned
-    };
-    struct {
-        unsigned pad_i;
-        int sval;           // - signed
-    };
-#else
-    unsigned uval;          // - unsigned
-    int sval;               // - signed
-#endif
-};
-
 struct enum_range           // describe range for enum
-{   union _us lo;           // - low value
-    union _us hi;           // - high value
+{
+    signed_64 lo;           // - low value
+    signed_64 hi;           // - high value
     type_id id;             // - corresponding type
     unsigned :0;            // alignment
 };
@@ -161,19 +145,18 @@ static type_id figureOutBaseType( ENUM_DATA *edata )
     step = ( edata->has_sign ) ? 2 : 1;
     for( ; index < ENUM_RNG_MAX; index += step ) {
         if( edata->next_signed ) {
-            if( I64Cmp( &edata->next_value, &(range_table[index].lo.s64val) ) >= 0 ) {
+            if( I64Cmp( &edata->next_value, &(range_table[index].lo) ) >= 0 ) {
                 break;
             }
         } else {
-            if( U64Cmp( &edata->next_value, &(range_table[index].hi.s64val) ) <= 0 ) {
+            if( U64Cmp( &edata->next_value, &(range_table[index].hi) ) <= 0 ) {
                 break;
             }
         }
     }
     if( index >= ENUM_RNG_MAX ) {
         CErr1( ERR_NO_ENUM_TYPE_POSSIBLE );
-        edata->next_value.u._32[0] = 0;
-        edata->next_value.u._32[1] = 0;
+        Set64ValZero( edata->next_value );
         index = ENUM_RNG_MAX - 1;
     }
     edata->index = (uint_8)index;
@@ -192,8 +175,7 @@ void InitEnumState( ENUM_DATA *edata, PTREE id )
         edata->base_id = TYP_SCHAR;
         edata->index = 0;
     }
-    edata->next_value.u._32[0] = 0;
-    edata->next_value.u._32[1] = 0;
+    Set64ValZero( edata->next_value );
     edata->next_signed = false;
     edata->has_sign = false;
     SrcFileGetTokenLocn( &(edata->locn) );
@@ -350,12 +332,13 @@ DECL_SPEC *EnumReference( ENUM_DATA *edata )
     SYMBOL_NAME sym_name;
 
     name = NULL;
+    sym = NULL;
+    type = NULL;
     ref_type = TypeError;
 
     if( edata->id != NULL ) {
         if( edata->id->op == PT_ID ) {
             name = edata->id->u.id.name;
-
             result = ScopeFindLexicalEnumType( GetCurrScope(), name );
             if( result != NULL ) {
                 sym_name = result->sym_name;

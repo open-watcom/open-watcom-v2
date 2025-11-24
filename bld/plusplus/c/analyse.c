@@ -2301,7 +2301,7 @@ static unsigned getConstBits(   // GET SIGNIFICANT BITS IN CONSTANT NODE
     if( SignedIntType( con->type ) && value.u.sign.v ) {
         U64NegEq( &value );
     }
-    if( 0 == U64High( value ) ) {
+    if( U64High( value ) == 0 ) {
         bits = 0;
         sig = U64Low( value );
     } else {
