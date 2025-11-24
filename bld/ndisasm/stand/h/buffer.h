@@ -39,7 +39,7 @@ extern void             BufferQuoteText( const char *text, char quote );
 extern void             BufferQuoteName( const char * );
 extern void             BufferConcatChar( char );
 extern void             BufferConcatNL( void );
-extern void             BufferHex( unsigned prec, unsigned_64 value );
+extern void             BufferHex( unsigned prec, const unsigned_64 *value );
 extern void             BufferHexU32( unsigned prec, uint_32 value );
 extern void             BufferHex2( unsigned char value );
 extern void             BufferHex4( unsigned short value );
@@ -52,7 +52,7 @@ extern void             BufferAlignToTab( unsigned );
 extern void             BufferLabelNum( unsigned long value );
 extern void             BufferLinePrefixAddress( dis_sec_offset, bool );
 extern void             BufferLinePrefixData( unsigned_8 *, dis_sec_offset, dis_sec_offset, unsigned, unsigned );
-extern char             *FmtHexNum( char *buff, unsigned prec, unsigned_64 value );
+extern char             *FmtHexNum( char *buff, unsigned prec, const unsigned_64 *value );
 extern char             *FmtLabelNum( char *buff, unsigned long value );
 
 #endif

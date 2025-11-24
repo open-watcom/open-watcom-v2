@@ -50,7 +50,7 @@ static char             IntermedBuffer[30] = {0};
 
 static char             *buffer_pos = Buffer;
 
-char *FmtHexNum( char *buff, unsigned prec, unsigned_64 value )
+char *FmtHexNum( char *buff, unsigned prec, const unsigned_64 *value )
 {
     char        *src;
     char        *dst;
@@ -59,23 +59,23 @@ char *FmtHexNum( char *buff, unsigned prec, unsigned_64 value )
     bool        masm_src;
 
     masm_src = ( (DFormat & DFF_ASM) && IsMasmOutput );
-    if( ( U64Low( value ) == 0 ) && ( U64High( value ) == 0 ) && ( prec == 0 ) ) {
+    if( U64isZero( *value ) && ( prec == 0 ) ) {
         strcpy( buff, ( masm_src ) ? "0" : "0x0" );
     } else {
-        if( U64High( value ) == 0 ) {
+        if( U64High( *value ) == 0 ) {
             fmt = ( masm_src ) ? "0%*.*lxH" : "0x%*.*lx";
             len = 0;
         } else {
             fmt = ( masm_src ) ? "0%*.*lx" : "0x%*.*lx";
             if( prec > 8 ) {
-                len = sprintf( buff, fmt, prec - 8, prec - 8, U64High( value ) );
+                len = sprintf( buff, fmt, prec - 8, prec - 8, U64High( *value ) );
                 prec = 8;
             } else {
-                len = sprintf( buff, fmt, 0, 0, U64High( value ) );
+                len = sprintf( buff, fmt, 0, 0, U64High( *value ) );
             }
             fmt = ( masm_src ) ? "%*.*lxH" : "%*.*lx";
         }
-        sprintf( buff + len, fmt, prec, prec, U64Low( value ) );
+        sprintf( buff + len, fmt, prec, prec, U64Low( *value ) );
         if( masm_src ) {
             /* don't need the extra leading zero, squeeze it out */
             for ( src = dst = buff; *src != '\0'; src++ ) {
@@ -193,7 +193,7 @@ void BufferPrint( void )
     buffer_pos = Buffer;
 }
 
-void BufferHex( unsigned prec, unsigned_64 value )
+void BufferHex( unsigned prec, const unsigned_64 *value )
 {
     FmtHexNum( IntermedBuffer, prec, value );
     BufferConcat( IntermedBuffer );
@@ -203,9 +203,8 @@ void BufferHexU32( unsigned prec, uint_32 value )
 {
     unsigned_64     dvalue;
 
-    U64Low( dvalue ) = value;
-    U64High( dvalue ) = 0;
-    FmtHexNum( IntermedBuffer, prec, dvalue );
+    Set64ValU32( dvalue, value );
+    FmtHexNum( IntermedBuffer, prec, &dvalue );
     BufferConcat( IntermedBuffer );
 }
 

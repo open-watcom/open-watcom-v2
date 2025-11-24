@@ -773,7 +773,7 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
     oper = ins->num_ops++;
     ins->op[oper].type = DO_MEMORY_ABS;
     ins->op[oper].ref_type = ref_type;
-    U64Low( ins->op[oper].value ) = 0;
+    Set64ValZero( ins->op[oper].value );
     ins->op[oper].scale = 1;
     ins->op[oper].index = DR_NONE;
     ins->op[oper].base  = DR_NONE;
@@ -794,11 +794,11 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
                 if( sib.split.base == REG_RBP ) {
                     /*ins->op[oper].base = DR_NONE;
                     ins->op[oper].op_position = ins->size;
-                    U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+                    Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
                     ins->size += 4;*/
                     ins->op[oper].op_position = ins->size;
                     ins->op[oper].base = DR_NONE;
-                    U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+                    Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
                     ins->size += 4;
                     ins->op[oper].type = DO_MEMORY_REL;
                     // following line is no more required because pass1.c and pass2.c are doing
@@ -819,7 +819,7 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
         if( rm == REG_RBP || rm == REG_R13 ) {
             ins->op[oper].base = DR_NONE;
             ins->op[oper].op_position = ins->size;
-            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+            Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
             ins->size += 4;
             ins->op[oper].type = DO_MEMORY_REL;
 
@@ -830,15 +830,12 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
         break;
     case MOD_1:
         ins->op[oper].op_position = ins->size;
-        U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
+        Set64ValI32( ins->op[oper].value, GetSByte( d, ins->size ) );
         ins->size += 1;
-        if( I64Low( ins->op[oper].value ) < 0 ) {
-            U64High( ins->op[oper].value ) = -1;
-        }
         break;
     case MOD_2:
         ins->op[oper].op_position = ins->size;
-        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
         ins->size += 4;
         break;
     case MOD_3:
@@ -1036,19 +1033,16 @@ static void X64GetImmedVal( SBIT s, WBIT w, void *d, dis_dec_ins *ins )
         ins->op[oper].ref_type = DRT_X64_DWORD;
     }
     if( w == W_BYTE ) {
-        U64Low( ins->op[oper].value ) = GetUByte( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetUByte( d, ins->size ) );
         ins->size += 1;
     } else if( s == S_BYTE ) {
-        U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
+        Set64ValI32( ins->op[oper].value, GetSByte( d, ins->size ) );
         ins->size += 1;
-        if( I64Low( ins->op[oper].value ) < 0 ) {
-            U64High( ins->op[oper].value ) = -1;
-        }
     } else if( X64_IS_OPND_SIZE_16BIT() ) {
-        U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetUShort( d, ins->size ) );
         ins->size += 2;
     } else {
-        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
         ins->size += 4;
     }
 }
@@ -1068,10 +1062,10 @@ static void X64GetAbsVal( void *d, dis_dec_ins *ins )
     ins->op[oper].op_position = ins->size;
     ins->op[oper].type = DO_ABSOLUTE;
     if( X64_IS_OPND_SIZE_16BIT() ) {  // TODO: not right!
-        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
         ins->size += 4;
     } else {
-        U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetUShort( d, ins->size ) );
         ins->size += 2;
     }
 
@@ -1095,7 +1089,7 @@ static void X64GetRelVal_8( void *d, dis_dec_ins *ins )
     oper = ins->num_ops++;
     ins->op[oper].op_position = ins->size;
     ins->op[oper].type = DO_RELATIVE;
-    U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
+    Set64ValU32( ins->op[oper].value, GetSByte( d, ins->size ) );
     ins->size += 1;
     U64Low( ins->op[oper].value ) += ins->size;
 }
@@ -1110,7 +1104,7 @@ static void X64GetRelVal( void *d, dis_dec_ins *ins )
     oper = ins->num_ops++;
     ins->op[oper].op_position = ins->size;
     ins->op[oper].type = DO_RELATIVE;
-    U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+    Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
     ins->size += 4;
     U64Low( ins->op[oper].value ) += ins->size;
 }
@@ -1596,6 +1590,31 @@ dis_handler_return X64ImmAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
     return( DHR_DONE );
 }
 
+static void get_abs_memory( REGWIDTH rw_reg, dis_dec_ins *ins, void *d )
+{
+    unsigned    oper;
+
+    oper = ins->num_ops++;
+    ins->op[oper].type = DO_MEMORY_ABS;
+    ins->op[oper].ref_type = X64GetRefType( rw_reg, ins );
+    ins->op[oper].op_position = ins->size;
+    switch( rw_reg ) {
+    case RW_16BIT:
+        Set64ValU32( ins->op[oper].value, GetUShort( d, ins->size ) );
+        ins->size += 2;
+        break;
+    case RW_32BIT:
+        Set64ValU32( ins->op[oper].value, GetULong( d, ins->size ) );
+        ins->size += 4;
+        break;
+    case RW_64BIT:
+        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
+        U64High( ins->op[oper].value ) = GetULong( d, ins->size + 4 );
+        ins->size += 8;
+        break;
+    }
+}
+
 dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /****************************************************************************
  * Absolute Memory to Accumulator
@@ -1604,7 +1623,6 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8      code;
     REGWIDTH    rw_reg;
-    unsigned    oper;
 
     /* unused parameters */ (void)h;
 
@@ -1613,49 +1631,12 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size   += 1;
 
     rw_reg = X64DecodeWDef32Bit( code.type1.w, ins );
-
     if( code.type1.dir ) {
-        oper = ins->num_ops++;
-        ins->op[oper].type = DO_MEMORY_ABS;
-        ins->op[oper].ref_type = X64GetRefType( code.type1.w, ins );
-        ins->op[oper].op_position = ins->size;
-        switch( rw_reg ) {
-        case RW_16BIT:
-            U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
-            ins->size += 2;
-            break;
-        case RW_32BIT:
-            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
-            ins->size += 4;
-            break;
-        case RW_64BIT:
-            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
-            U64High( ins->op[oper].value ) = GetULong( d, ins->size + 4 );
-            ins->size += 8;
-            break;
-        }
-        X64GetReg( code.type1.w, REG_RAX, ins );
+        get_abs_memory( rw_reg, ins, d );
+        X64GetReg( rw_reg, REG_RAX, ins );
     } else {
-        X64GetReg( code.type1.w, REG_RAX, ins );
-        oper = ins->num_ops++;
-        ins->op[oper].type = DO_MEMORY_ABS;
-        ins->op[oper].ref_type = X64GetRefType( code.type1.w, ins );
-        ins->op[oper].op_position = ins->size;
-        switch( rw_reg ) {
-        case RW_16BIT:
-            U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
-            ins->size += 2;
-            break;
-        case RW_32BIT:
-            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
-            ins->size += 4;
-            break;
-        case RW_64BIT:
-            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
-            U64High( ins->op[oper].value ) = GetULong( d, ins->size + 4 );
-            ins->size += 8;
-            break;
-        }
+        X64GetReg( rw_reg, REG_RAX, ins );
+        get_abs_memory( rw_reg, ins, d );
     }
     return( DHR_DONE );
 }
@@ -1702,11 +1683,10 @@ dis_handler_return X64Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
         oper = ins->num_ops++;
         ins->op[oper].type = DO_IMMED;
         if( code.type3.w ) {
-            char intno = GetUByte( d, ins->size );
-            U64Low( ins->op[oper].value ) = intno;
+            Set64ValU32( ins->op[oper].value, GetUByte( d, ins->size ) );
             ins->size += 1;
         } else {
-            U64Low( ins->op[oper].value ) = 3;
+            Set64ValU32( ins->op[oper].value, 3 );
         }
         ins->op[oper].ref_type = DRT_X64_BYTE;
         break;
@@ -1714,7 +1694,7 @@ dis_handler_return X64Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_X64_retf2:
         oper = ins->num_ops++;
         ins->op[oper].type = DO_IMMED;
-        U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
+        Set64ValU32( ins->op[oper].value, GetUShort( d, ins->size ) );
         ins->op[oper].ref_type = DRT_X64_WORD;
         ins->size += 2;
         break;
@@ -1780,11 +1760,11 @@ dis_handler_return X64ImmImm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->num_ops = 2;
     ins->size   += 1;
-    U64Low( ins->op[0].value ) = GetUShort( d, ins->size );
+    Set64ValU32( ins->op[0].value, GetUShort( d, ins->size ) );
     ins->op[0].type = DO_IMMED;
     ins->op[0].ref_type = DRT_X64_WORD;
     ins->size   += 2;
-    U64Low( ins->op[1].value ) = GetUByte( d, ins->size );
+    Set64ValU32( ins->op[1].value, GetUByte( d, ins->size ) );
     ins->op[1].type = DO_IMMED;
     ins->op[1].ref_type = DRT_X64_BYTE;
     ins->size   += 1;

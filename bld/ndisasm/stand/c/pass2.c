@@ -171,13 +171,12 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
         frame_sep = "";
     }
 
-    U64High( value ) = 0;
     l_entry = r_entry->label;
     if( (Options & METAWARE_COMPATIBLE) || ( ext_pref[0] == '\0' && int_pref[0] == '\0' ) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
-            U64Low( value ) = l_entry->offset;
-            FmtHexNum( temp, 0, value );
+            Set64ValU32( value, l_entry->offset );
+            FmtHexNum( temp, 0, &value );
             if( r_entry->frame == NULL && (flags & RFLAG_NO_FRAME) == 0 )
                 frame = "ds:";
             sprintf( buff, "%s%s[%s]", frame, frame_sep, temp);
@@ -206,8 +205,8 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
             break;
 
         case LTYP_ABSOLUTE:
-            U64Low( value ) = l_entry->offset;
-            FmtHexNum( temp, 0, value );
+            Set64ValU32( value, l_entry->offset );
+            FmtHexNum( temp, 0, &value );
             if( *frame == '\0' && ( (flags & RFLAG_NO_FRAME) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s%s[%s]", int_pref, frame, frame_sep, temp);
@@ -399,6 +398,8 @@ size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
         // if( nvalue != 0 && r_entry->label->type != LTYP_UNNAMED ) {
         // not so - BBB Oct 28, 1996
         if( r_entry->has_val && nvalue != 0 ) {
+            unsigned_64 tmp;
+
             p = &buff[strlen(buff)];
             if( nvalue < 0 ) {
                 *p++ = '-';
@@ -406,9 +407,8 @@ size_t HandleAReference( unsigned_64 value, int ins_size, ref_flags flags,
             } else {
                 *p++ = '+';
             }
-            U64High( value ) = 0;
-            U64Low( value ) = nvalue;
-            FmtHexNum( p, 0, value );
+            Set64ValU32( tmp, nvalue );
+            FmtHexNum( p, 0, &tmp );
         }
     }
     *reference_entry = r_entry;
@@ -422,21 +422,20 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     unsigned_64         mask;
     unsigned_64         value;
 
-    U64High( mask ) = 0;
-    U64Low( mask ) = 0;
+    Set64ValZero( mask );
     value = ins->op[op_num].value;
     switch( ins->op[op_num].ref_type ) {
     case DRT_SPARC_BYTE:
     case DRT_X86_BYTE:
     case DRT_X64_BYTE:
         prec = 2;
-        U64Low( mask ) = 0x000000ff;
+        Set64ValU32( mask, 0x000000ff );
         break;
     case DRT_SPARC_HALF:
     case DRT_X86_WORD:
     case DRT_X64_WORD:
         prec = 4;
-        U64Low( mask ) = 0x0000ffff;
+        Set64ValU32( mask, 0x0000ffff );
         break;
     case DRT_SPARC_WORD:
     case DRT_SPARC_SFLOAT:
@@ -444,14 +443,13 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     case DRT_X86_DWORDF:
     case DRT_X64_DWORD:
         prec = 8;
-        U64Low( mask ) = 0xffffffff;
+        Set64ValU32( mask, 0xffffffff );
         break;
     case DRT_X64_QWORD:
     case DRT_SPARC_DWORD:
     case DRT_SPARC_DFLOAT:
         prec = 16;
-        U64High( mask ) = 0xffffffff;
-        U64Low( mask ) = 0xffffffff;
+        Set64Val( mask, 0xffffffff, 0xffffffff );
         break;
     default:
         prec = 0;
@@ -461,14 +459,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
             case DRT_X64_BYTE:
                 if( prec < 2 ) {
                     prec = 2;
-                    U64Low( mask ) = 0x000000ff;
+                    Set64ValU32( mask, 0x000000ff );
                 }
                 break;
             case DRT_X86_WORD:
             case DRT_X64_WORD:
                 if( prec < 4 ) {
                     prec = 4;
-                    U64Low( mask ) = 0x0000ffff;
+                    Set64ValU32( mask, 0x0000ffff );
                 }
                 break;
             case DRT_X86_DWORD:
@@ -476,14 +474,13 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
             case DRT_X64_DWORD:
                 if( prec < 8 ) {
                     prec = 8;
-                    U64Low( mask ) = 0xffffffff;
+                    Set64ValU32( mask, 0xffffffff );
                 }
                 break;
             case DRT_X64_QWORD:
                 if( prec < 16 ) {
                     prec = 16;
-                    U64High( mask ) = 0xffffffff;
-                    U64Low( mask ) = 0xffffffff;
+                    Set64Val( mask, 0xffffffff, 0xffffffff );
                 }
                 break;
             default:
@@ -492,13 +489,13 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
         }
         if( prec == 0 ) {
             prec = 8;
-            U64Low( mask ) = 0xffffffff;
+            Set64ValU32( mask, 0xffffffff );
         }
         break;
     }
     U64High( value ) &= U64High( mask );
     U64Low( value ) &= U64Low( mask );
-    FmtHexNum( buff, prec, value );
+    FmtHexNum( buff, prec, &value );
 }
 
 size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
@@ -541,12 +538,11 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
         } else if( I64Low( op->value ) > 0 ) {
-            FmtHexNum( buff, 0, op->value );
+            FmtHexNum( buff, 0, &(op->value) );
         } else if( I64Low( op->value ) < 0 ) {
             buff[0] = '-';
-            U64High( value ) = 0;
-            U64Low( value ) = -I64Low( op->value );
-            FmtHexNum( &buff[1], 0, value );
+            Set64ValU32( value, -I64Low( op->value ) );
+            FmtHexNum( &buff[1], 0, &value );
         }
         break;
     case DO_IMMED:
