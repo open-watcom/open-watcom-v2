@@ -32,7 +32,7 @@
 #include "wipfc.hpp"
 #include "errors.hpp"
 
-const char *ErrText[ ERR_LAST_ERR + 1 ] = {
+const char * const ErrText[ ERR_LAST_ERR + 1 ] = {
     "Not an error",
 #define PICK(a,b) b,
 #include "err.hpp"

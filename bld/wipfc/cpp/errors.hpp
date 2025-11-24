@@ -43,7 +43,7 @@ enum ErrCode {
     ERR_LAST_ERR
 };
 
-extern const char* ErrText[ ERR_LAST_ERR + 1 ];
+extern const char   * const ErrText[ ERR_LAST_ERR + 1 ];
 
 class FatalError {
 public:
