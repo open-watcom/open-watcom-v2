@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,9 +101,22 @@ static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 
 #ifdef WCPP_ASM
 static enum sym_type AsmDataType[] = {
-    #define pick(id,promo,promo_asm,type_text)  promo_asm,
+    /*
+     * base types
+     */
+    #define pickb(id,promo,promo_asm,type_text) promo_asm,
+    #define picke(id,promo,promo_asm,type_text)
     #include "_typdefs.h"
-    #undef pick
+    #undef picke
+    #undef pickb
+    /*
+     * extended types
+     */
+    #define pickb(id,promo,promo_asm,type_text)
+    #define picke(id,promo,promo_asm,type_text) promo_asm,
+    #include "_typdefs.h"
+    #undef picke
+    #undef pickb
 };
 #endif
 
