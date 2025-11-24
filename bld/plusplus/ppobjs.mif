@@ -137,7 +137,6 @@ common_objs = &
     $(_subdir_)gstack.obj &
     $(_subdir_)hfile.obj &
     $(_subdir_)hashtab.obj &
-    $(_subdir_)i64supp.obj &
     $(_subdir_)ialias.obj &
     $(_subdir_)icemit.obj &
     $(_subdir_)ideentry.obj &
