@@ -228,7 +228,7 @@ instruction      *rFSCONSCMP( instruction *ins )
     name                *name1;
 
     name1 = ins->operands[1];
-    if( CFTest( name1->c.value ) > 0 ) {
+    if( CFTest( name1->c.u.cfval ) > 0 ) {
         ChangeType( ins, I4 );
     } else {
         ChangeType( ins, U4 );

@@ -416,12 +416,12 @@ void    DoRelocConst( name *op, type_class_def type_class )
 
     ILen += 2;
     if( op->c.const_type == CONS_OFFSET ) {
-        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
+        DoSymRef( op->c.u.op, op->c.u.op->v.offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
-        if( op->c.value == NULL ) {
+        if( op->c.u.op == NULL ) {
             DoSegRef( op->c.lo.u.int_value );
         } else {
-            DoSymRef( op->c.value, 0, true );
+            DoSymRef( op->c.u.op, 0, true );
         }
     } else if( op->c.const_type == CONS_ADDRESS ) {
         _Zoiks( ZOIKS_045 );

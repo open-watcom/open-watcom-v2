@@ -765,7 +765,7 @@ static  bool    OkToInvert( name *div )
         return( false );
     if( div->c.const_type != CONS_ABSOLUTE )
         return( false );
-    if( !CFIs32( div->c.value ) )
+    if( !CFIs32( div->c.u.cfval ) )
         return( false );
     if( GetLog2( div->c.lo.u.int_value ) == -1 )
         return( false );
@@ -1054,7 +1054,7 @@ static bool FixOneStructRet( instruction *call )
         return( false );
     if( op->c.const_type != CONS_TEMP_ADDR )
         return( false );
-    if( op->c.value != res )
+    if( op->c.u.op != res )
         return( false );
     for( movr = call->head.next; movr->head.opcode == OP_NOP; ) {
         movr = movr->head.next;
@@ -1219,7 +1219,7 @@ static  bool    LinkableMove( instruction *ins )
         return( false );
     if( ins->operands[0]->n.class == N_CONSTANT ) {
         if( ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
-            ins->operands[0] = AllocConst( CnvCFToType( ins->operands[0]->c.value, TypeOfTypeClass( ins->type_class ) ) );
+            ins->operands[0] = AllocConst( CnvCFToType( ins->operands[0]->c.u.cfval, TypeOfTypeClass( ins->type_class ) ) );
         }
     }
     return( true );
@@ -1403,7 +1403,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                             if( opnd->i.base == NULL
                               || (opnd->i.index_flags & X_FAKE_BASE) ) {
                                 disp = opnd->i.constant;
-                                base = defop->c.value;
+                                base = defop->c.u.op;
                             }
                             break;
                         case CONS_HIGH_ADDR:

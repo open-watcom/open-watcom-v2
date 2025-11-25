@@ -248,16 +248,16 @@ an      AddrName( name *op, const type_def *tipe )
     addr->u.n.name = op;
     if( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE ) {
         addr->format = NF_CONS;
-        if( CFIsI16( op->c.value ) && tipe->length <= WORD_SIZE ) {
+        if( CFIsI16( op->c.u.cfval ) && tipe->length <= WORD_SIZE ) {
             addr->class = CL_CONS2;
-            addr->u.n.offset = CFCnvF16( op->c.value );
+            addr->u.n.offset = CFCnvF16( op->c.u.cfval );
         } else {
             addr->class = CL_VALUE4;
             addr->u.n.offset = 0;
 #if WORD_SIZE >= 4
-            if( CFIsI32( op->c.value ) ) {
+            if( CFIsI32( op->c.u.cfval ) ) {
                 addr->class = CL_CONS4;
-                addr->u.n.offset = CFCnvF32( op->c.value );
+                addr->u.n.offset = CFCnvF32( op->c.u.cfval );
             }
 #endif
         }

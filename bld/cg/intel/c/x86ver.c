@@ -73,8 +73,8 @@ bool    DoVerify( vertype kind, instruction *ins )
     case V_HIGHEQLOW:
         if( op1->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( !CFIsI32( op1->c.value )
-          && !CFIsU32( op1->c.value ) )
+        if( !CFIsI32( op1->c.u.cfval )
+          && !CFIsU32( op1->c.u.cfval ) )
             return(false);
         if( (op1->c.lo.u.int_value & 0x0000ffff) == (( op1->c.lo.u.int_value >> 16 ) & 0x0000ffff) )
             return( true );
@@ -400,7 +400,7 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         if( ins->operands[1]->n.class == N_CONSTANT
           && ins->operands[1]->c.const_type == CONS_ABSOLUTE
-          && CFTest( ins->operands[1]->c.value ) > 0 )
+          && CFTest( ins->operands[1]->c.u.cfval ) > 0 )
             return( true );
 #endif
         return( false );

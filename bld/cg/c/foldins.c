@@ -137,7 +137,7 @@ static  instruction *CmpRelocZero( instruction *ins, opcnt c, opcnt r )
         return( NULL );
     if( cons->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    if( CFTest( cons->c.value ) != 0 )
+    if( CFTest( cons->c.u.cfval ) != 0 )
         return( NULL );
     rel = ins->operands[r];
     if( rel->c.const_type == CONS_OFFSET
@@ -342,7 +342,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         /* change sub t1, k -> add t1, -k */
         if( ins->operands[1]->n.class == N_CONSTANT
           && ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
-            cf_value = OkToNegate( ins->operands[1]->c.value, tipe );
+            cf_value = OkToNegate( ins->operands[1]->c.u.cfval, tipe );
             if( cf_value != NULL ) {
                 new_const = AllocConst( cf_value );
                 new_ins = MakeBinary( OP_ADD, ins->operands[0], new_const, ins->result, ins->type_class );

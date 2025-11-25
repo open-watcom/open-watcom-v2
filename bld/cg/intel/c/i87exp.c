@@ -248,7 +248,7 @@ instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
         break;
     case OP_CONS:
         new_ins = MakeUnary( OP_MOV, opnd, ST0, FD );
-        if( CFTest( opnd->c.value ) ) {
+        if( CFTest( opnd->c.u.cfval ) ) {
             new_ins->u.gen_table = FLD1;
         } else {
             new_ins->u.gen_table = FLDZ;
@@ -482,7 +482,7 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         ins->u.gen_table = MFLD;
         break;
     case _Move( OP_CONS, RES_STK0 ):
-        if( CFTest( ins->operands[0]->c.value ) != 0 ) {
+        if( CFTest( ins->operands[0]->c.u.cfval ) != 0 ) {
             ins->u.gen_table = FLD1;
         } else {
             ins->u.gen_table = FLDZ;

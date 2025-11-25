@@ -104,7 +104,7 @@ static name *findConst64( uint_32 low, uint_32 high, float_handle cf_value )
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.lo.u.uint_value == low
               && new_c->c.hi.u.uint_value == high ) {
-                if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
+                if( CFCompare( new_c->c.u.cfval, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;
                     new_c->n.next_name = Names[N_CONSTANT];
@@ -155,7 +155,7 @@ name    *AllocConst( float_handle cf_value )
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.lo.u.int_value == int_value ) {
-                if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
+                if( CFCompare( new_c->c.u.cfval, cf_value ) == 0 ) {
                     CFFree( &cgh, cf_value );
                     // move constant found to front of list
                     *last = new_c->n.next_name;
@@ -168,7 +168,7 @@ name    *AllocConst( float_handle cf_value )
         last = &new_c->n.next_name;
     }
     new_c = AllocName( N_CONSTANT, XX, 0 );
-    new_c->c.value = cf_value;
+    new_c->c.u.cfval = cf_value;
     new_c->c.lo.u.int_value = int_value;
     if( test < 0 ) {
         new_c->c.hi.u.int_value = -1; //sign extend
@@ -199,21 +199,21 @@ name    *AllocConst( float_handle cf_value )
     return( new_c );
 }
 
-name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, type_class_def type_class )
-/********************************************************************************************************/
+name    *AllocAddrConst( name *op, int seg, constant_type_class const_type, type_class_def type_class )
+/*****************************************************************************************************/
 {
     name        *new_c;
 
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == const_type
-          && new_c->c.value == value
+          && new_c->c.u.op == op
           && new_c->n.type_class == type_class
           && new_c->c.lo.u.int_value == seg ) {
             return( new_c );
         }
     }
     new_c = AllocName( N_CONSTANT, type_class, 0 );
-    new_c->c.value = value;
+    new_c->c.u.op = op;
     new_c->c.lo.u.int_value = seg;
     new_c->c.static_defn = NULL;
     new_c->c.const_type = const_type;
@@ -289,7 +289,7 @@ name    *AllocS64Const( uint_32 low, uint_32 high )
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
-        new_c->c.value = cf_value;
+        new_c->c.u.cfval = cf_value;
         new_c->c.lo.u.uint_value = low;
         new_c->c.hi.u.uint_value = high;
         new_c->c.static_defn = NULL;
@@ -309,7 +309,7 @@ name    *AllocU64Const( uint_32 low, uint_32 high )
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
-        new_c->c.value = cf_value;
+        new_c->c.u.cfval = cf_value;
         new_c->c.lo.u.uint_value = low;
         new_c->c.hi.u.uint_value = high;
         new_c->c.static_defn = NULL;
@@ -333,7 +333,7 @@ constant_defn   *GetFloat( name *cons, type_class_def type_class )
     defn = AllocFrl( &ConstDefnFrl, sizeof( constant_defn ) );
     defn->const_class = type_class;
     defn->label = NULL;
-    CFCnvTarget( cons->c.value, &defn->buffer, TypeClassSize[type_class] );
+    CFCnvTarget( cons->c.u.cfval, &defn->buffer, TypeClassSize[type_class] );
     defn->next_defn = cons->c.static_defn;
     cons->c.static_defn = defn;
     return( defn );
@@ -697,7 +697,7 @@ void    FreeAName( name *op )
             ConstOne = NULL;
         }
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            CFFree( &cgh, op->c.value );
+            CFFree( &cgh, op->c.u.cfval );
             for( defn = op->c.static_defn; defn != NULL; defn = next ) {
                 next = defn->next_defn;
                 FrlFreeSize( &ConstDefnFrl, (pointer *)defn, sizeof( constant_defn ) );

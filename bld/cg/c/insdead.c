@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,7 +212,7 @@ static  bool    MarkUseful( name *op )
         }
     } else if( op->n.class == N_CONSTANT ) {
         if( op->c.const_type == CONS_TEMP_ADDR ) {
-            change |= MarkUseful( op->c.value );
+            change |= MarkUseful( op->c.u.op );
         }
     }
     return( change );

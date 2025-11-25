@@ -318,7 +318,7 @@ static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
     if( tipe->length > TypeClassSize[U4] )
         return( tipe );
     if( left->tipe->attr & TYPE_SIGNED ) {
-        if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
+        if( !CFSignedSize( rite->u.name->c.u.cfval, left->tipe->length ) ) {
             return( tipe );
         }
         if( rite->u.name->c.lo.u.int_value < 0 )
@@ -327,7 +327,7 @@ static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
             return( tipe );
         }
     } else {
-        if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
+        if( !CFUnSignedSize( rite->u.name->c.u.cfval, left->tipe->length ) )  {
             return( tipe );
         }
     }
@@ -1077,7 +1077,7 @@ tn  TGDuplicate( tn node )
     if( node != NULL ) {
         switch( node->class ) {
         case TN_CONS:
-            new_tn = TGConst( CFCopy( &cgh, node->u.name->c.value ), node->tipe );
+            new_tn = TGConst( CFCopy( &cgh, node->u.name->c.u.cfval ), node->tipe );
             break;
         case TN_LEAF:
             new_tn = TGLeaf( AddrCopy( node->u.addr ) );
@@ -1400,7 +1400,7 @@ static  void    Control( cg_op opcode, tn node, label_handle lbl, bool gen )
 
     addr = NotAddrGen( TGConvert( node, TypeBoolean ) );
     if( addr->format == NF_CONS ) { /* will either be NF_CONS or NF_BOOL*/
-        if( CFTest( addr->u.n.name->c.value ) != 0 ) {
+        if( CFTest( addr->u.n.name->c.u.cfval ) != 0 ) {
             if( opcode == O_IF_TRUE ) {
                 BGGenCtrl( O_GOTO, NULL, lbl, gen );
             }

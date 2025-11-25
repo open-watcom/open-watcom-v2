@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ void    KillMovAddrConsts( void )
                 if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
                     type_class = _OpClass( ins );
                     new_op = AllocTemp( type_class );
-                    new_ins = MakeUnary( OP_LA, op->c.value, new_op, type_class );
+                    new_ins = MakeUnary( OP_LA, op->c.u.op, new_op, type_class );
                     ins->operands[i] = new_op;
                     PrefixIns( ins, new_ins );
                 }

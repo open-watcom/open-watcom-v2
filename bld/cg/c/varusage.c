@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ static  void    Use( name *op, block *blk, var_usage usage )
 */
 {
     if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-        Use( (name*)op->c.value, blk, USE_ADDRESS );
+        Use( (name*)op->c.u.op, blk, USE_ADDRESS );
         return;
     }
     if( op->n.class == N_TEMP ) {
@@ -172,7 +172,7 @@ static void TransferOneTempBlockUsage( name *op )
     name        *alias;
 
     if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-        TransferOneTempBlockUsage( op->c.value );
+        TransferOneTempBlockUsage( op->c.u.op );
     } else if( op->n.class == N_INDEXED ) {
         TransferOneTempBlockUsage( op->i.index );
         if( HasTrueBase( op ) ) {

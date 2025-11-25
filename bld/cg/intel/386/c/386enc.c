@@ -539,13 +539,13 @@ void    DoRelocConst( name *op, type_class_def type_class )
 {
     if( op->c.const_type == CONS_OFFSET ) {
         ILen += 4;
-        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
+        DoSymRef( op->c.u.op, op->c.u.op->v.offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
-        if( op->c.value == NULL ) {
+        if( op->c.u.op == NULL ) {
             DoSegRef( (segment_id)op->c.lo.u.int_value );
         } else {
-            DoSymRef( op->c.value, 0, true );
+            DoSymRef( op->c.u.op, 0, true );
         }
         if( type_class == U4
           || type_class == I4 ) {        /* as in PUSH seg _x */

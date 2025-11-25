@@ -226,34 +226,34 @@ void    DumpOperand( name *operand )
                     Dump8h( operand->c.hi.u.int_value );
                 Dump8h( operand->c.lo.u.int_value );
             } else {
-                CFCnvFS( operand->c.value, buffer, 20 );
+                CFCnvFS( operand->c.u.cfval, buffer, 20 );
                 DumpXString( buffer );
             }
         } else {
             if( operand->c.const_type == CONS_SEGMENT ) {
                 DumpLiteral( "SEG(" );
-                if( operand->c.value == NULL ) {
+                if( operand->c.u.op == NULL ) {
                     DumpInt( operand->c.lo.u.int_value );
                 } else {
-                    DumpOperand( operand->c.value );
+                    DumpOperand( operand->c.u.op );
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
 #if _TARGET & _TARG_370
                 DumpInt( operand->c.lo.u.int_value );
 #else
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
 #endif
             } else if( operand->c.const_type == CONS_ADDRESS ) {
                 DumpLiteral( "ADDRESS(" );
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
             } else if( operand->c.const_type == CONS_TEMP_ADDR ) {
                 DumpLiteral( "TMPADDR(" );
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
             } else if( operand->c.const_type == CONS_HIGH_ADDR ) {
                 DumpLiteral( "HIGH_ADDR(h^" );
-                if( operand->c.value != NULL ) {
-                    DumpOperand( operand->c.value );
+                if( operand->c.u.op != NULL ) {
+                    DumpOperand( operand->c.u.op );
                 } else {
                     if( operand->c.lo.u.int_value != 0 ) {
                         DumpLong( operand->c.lo.u.int_value );

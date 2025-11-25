@@ -150,7 +150,10 @@ typedef struct value32 {
 
 typedef struct const_name {
     struct name_def         _n;
-    pointer                 value;
+    union {
+        float_handle        cfval;
+        union name          *op;
+    } u;
     value32                 lo;
     value32                 hi;             /* high part of 64-bit const */
     struct constant_defn    *static_defn;

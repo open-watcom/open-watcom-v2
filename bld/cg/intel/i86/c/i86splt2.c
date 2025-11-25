@@ -93,7 +93,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64LowLE( floatval->buffer.u64 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_part = AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -167,7 +167,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64HighLE( floatval->buffer.u64 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_part = AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -938,7 +938,7 @@ instruction     *rINTCOMP( instruction *ins )
     byte                first_idx;
     bool                rite_is_zero;
 
-    rite_is_zero = CFTest( ins->operands[1]->c.value ) == 0;
+    rite_is_zero = CFTest( ins->operands[1]->c.u.cfval ) == 0;
     half_type_class = HalfClass[ins->type_class];
     left = ins->operands[0];
     rite = ins->operands[1];

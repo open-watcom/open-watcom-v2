@@ -146,9 +146,9 @@ tn      FoldCnvRnd( cg_op opcode, tn name, const type_def *to_tipe )
 
     if( name->class == TN_CONS ) {
         if( name->tipe->refno == TY_DEFAULT ) {
-            cf = CFCopy( &cgh, name->u.name->c.value );
+            cf = CFCopy( &cgh, name->u.name->c.u.cfval );
         } else {
-            cf = CnvCFToType( name->u.name->c.value, name->tipe );
+            cf = CnvCFToType( name->u.name->c.u.cfval, name->tipe );
         }
         if( to_tipe->attr & TYPE_FLOAT ) {
             new_tn = TGConst( cf, to_tipe );

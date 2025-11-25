@@ -296,14 +296,14 @@ void    ScoreInfo( score_info *info, name *op )
             break;
         case CONS_OFFSET:
         case CONS_ADDRESS:
-            info->symbol.u.p = op->c.value;
+            info->symbol.u.p = op->c.u.op;
             info->offset = op->c.lo.u.int_value;
             break;
         case CONS_HIGH_ADDR:
             /* FIXME: not sure what to do here */
-            if( op->c.value != NULL ) {
+            if( op->c.u.op != NULL ) {
                 info->symbol.u.p = &HighAddrSymbol;
-                info->offset = (int_32)(pointer_uint)op->c.value;
+                info->offset = (int_32)(pointer_uint)op->c.u.op;
             } else {
                 info->symbol.u.p = &HighAddrConst;
                 info->offset = op->c.lo.u.int_value;

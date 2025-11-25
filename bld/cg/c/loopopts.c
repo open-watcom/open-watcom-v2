@@ -673,7 +673,7 @@ static value    OpLTZero( name *op, bool fp )
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
     if( fp
-      && CFTest( op->c.value ) < 0 )
+      && CFTest( op->c.u.cfval ) < 0 )
         return( CMP_TRUE );
     if( !fp
       && op->c.lo.u.int_value < 0 )
@@ -691,7 +691,7 @@ static value    OpEQZero( name *op, bool fp )
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
     if( fp
-      && CFTest( op->c.value ) == 0 )
+      && CFTest( op->c.u.cfval ) == 0 )
         return( CMP_TRUE );
     if( !fp
       && op->c.lo.u.int_value == 0 )
