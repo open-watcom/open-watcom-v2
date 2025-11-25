@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 
 typedef struct rtn_info {
     const char      *name;
-    opcode_defs     op;
+    opcode_defs     opcode;
     type_class_def  operand_class;
     reg_set_index   left;
     reg_set_index   right;

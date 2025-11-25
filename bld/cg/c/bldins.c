@@ -176,13 +176,13 @@ bool    NeedConvert( const type_def *from, const type_def *to )
 }
 
 
-static  an Unary( cg_op op, an left, const type_def *tipe )
-/*********************************************************/
+static  an Unary( cg_op opcode, an left, const type_def *tipe )
+/*************************************************************/
 {
     instruction *ins;
     an          res;
 
-    ins = MakeNary( (opcode_defs)op, GenIns( left ), NULL, NULL, TypeClass( tipe ), TypeClass( left->tipe ), 1 );
+    ins = MakeNary( (opcode_defs)opcode, GenIns( left ), NULL, NULL, TypeClass( tipe ), TypeClass( left->tipe ), 1 );
     res = InsName( ins, tipe );
     AddIns( ins );
     BGDone( left );
@@ -190,11 +190,11 @@ static  an Unary( cg_op op, an left, const type_def *tipe )
 }
 
 
-static  an      CnvRnd( an name, const type_def *tipe, cg_op op ) {
-/*****************************************************************/
-
+static  an      CnvRnd( an name, const type_def *tipe, cg_op opcode )
+/*******************************************************************/
+{
     if( NeedConvert( name->tipe, tipe ) ) {
-        name = Unary( op, name, tipe );
+        name = Unary( opcode, name, tipe );
     } else if( name->tipe != tipe ) {
         AddrDemote( name ); /* it's not quite the right type */
     }
@@ -265,7 +265,7 @@ an      Arithmetic( an name, const type_def *tipe )
     return( name );
 }
 
-an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_def *tipe )
+an      BGCompare( cg_op opcode, an left, an rite, label_handle entry, const type_def *tipe )
 /***************************************************************************************/
 {
     an                  new_an;
@@ -279,7 +279,7 @@ an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_de
     BGDone( left );
     BGDone( rite );
     NamesCrossBlocks();
-    ins = MakeCondition( (opcode_defs)op, newleft, newrite, 0, 1, TypeClass( tipe ) );
+    ins = MakeCondition( (opcode_defs)opcode, newleft, newrite, 0, 1, TypeClass( tipe ) );
     AddIns( ins );
     GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( NULL, false );
@@ -355,17 +355,17 @@ void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle g
 }
 
 
-void    BGControl( cg_op op, an expr, label_handle lbl )
-/******************************************************/
+void    BGControl( cg_op opcode, an expr, label_handle lbl )
+/**********************************************************/
 {
-    BGGenCtrl( op, expr, lbl, false );
+    BGGenCtrl( opcode, expr, lbl, false );
 }
 
 
-void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen )
-/****************************************************************/
+void    BGGenCtrl( cg_op opcode, an expr, label_handle lbl, bool gen )
+/********************************************************************/
 {
-    switch( op ) {
+    switch( opcode ) {
     case O_LABEL:
         if( HaveCurrBlock ) {
             GenBlock( BLK_JUMP, 1 );  /* block with 1 target*/
@@ -472,13 +472,13 @@ uint_32 BGUnrollCount( uint_32 unroll_count )
 }
 
 
-an      BGUnary( cg_op op, an left, const type_def *tipe )
-/********************************************************/
+an      BGUnary( cg_op opcode, an left, const type_def *tipe )
+/************************************************************/
 {
     an          new_an;
 
     new_an = NULL;
-    switch( op ) {
+    switch( opcode ) {
     case O_POINTS:
         new_an = MakePoints( left, tipe );
         break;
@@ -514,7 +514,7 @@ an      BGUnary( cg_op op, an left, const type_def *tipe )
         break;
     }
     if( new_an == NULL ) {
-        new_an = Unary( op, left, tipe );
+        new_an = Unary( opcode, left, tipe );
     }
     new_an->tipe = tipe;
     return( new_an );
@@ -530,14 +530,14 @@ static  an      CheckType( an op, const type_def *tipe ) {
 }
 
 
-an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_addr )
+an      BGBinary( cg_op opcode, an left, an rite, const type_def *tipe, bool fold_addr )
 /**********************************************************************************/
 {
     an          result;
     instruction *ins;
 
     result = NULL;
-    if( op == O_PLUS || op == O_MINUS
+    if( opcode == O_PLUS || opcode == O_MINUS
        && ( tipe->attr & TYPE_POINTER )
        && ( left->tipe->attr & TYPE_POINTER )
        && (rite->tipe->attr & (TYPE_POINTER | TYPE_FLOAT)) == 0 ) {
@@ -546,7 +546,7 @@ an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_ad
         left = CheckType( left, tipe );
         rite = CheckType( rite, tipe );
     }
-    switch( op ) {
+    switch( opcode ) {
     case O_PLUS:
         if( fold_addr ) {
             if( TGIsAddress() || CypAddrPlus( left, rite, tipe ) ) {
@@ -566,7 +566,7 @@ an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_ad
     }
     if( result == NULL ) {
         left = CheckType( left, tipe );
-        ins = MakeBinary( (opcode_defs)op, GenIns( left ), GenIns( rite ), NULL, TypeClass( tipe ) );
+        ins = MakeBinary( (opcode_defs)opcode, GenIns( left ), GenIns( rite ), NULL, TypeClass( tipe ) );
         result = InsName( ins, tipe );
         AddIns( ins );
         BGDone( left );
@@ -578,8 +578,8 @@ an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_ad
 
 
 
-an      BGOpGets( cg_op op, an left, an rite, const type_def *tipe, const type_def *optipe )
-/******************************************************************************************/
+an      BGOpGets( cg_op opcode, an left, an rite, const type_def *tipe, const type_def *optipe )
+/**********************************************************************************************/
 {
     an                  result;
     an                  leftp;
@@ -597,11 +597,11 @@ an      BGOpGets( cg_op op, an left, an rite, const type_def *tipe, const type_d
         temp = AllocTemp( op_type_class );
         ins = MakeConvert( left_name, temp, op_type_class, type_class );
         AddIns( ins );
-        AddIns( MakeBinary( (opcode_defs)op, temp, GenIns( rite ), temp, op_type_class ) );
+        AddIns( MakeBinary( (opcode_defs)opcode, temp, GenIns( rite ), temp, op_type_class ) );
         ins = MakeConvert( temp, left_name, type_class, op_type_class );
         AddIns( ins );
     } else {
-        ins = MakeBinary( (opcode_defs)op, left_name, GenIns( rite ), left_name, op_type_class );
+        ins = MakeBinary( (opcode_defs)opcode, left_name, GenIns( rite ), left_name, op_type_class );
         if( tipe != optipe ) {
             ins->ins_flags |= INS_DEMOTED; /* its not quite the right type */
         }
@@ -629,19 +629,19 @@ an      BGConvert( an left, const type_def *tipe )
 }
 
 
-an      BGFlow( cg_op op, an left, an rite )
-/******************************************/
+an      BGFlow( cg_op opcode, an left, an rite )
+/**********************************************/
 {
     an                  new_an = NULL;
     label_handle        *temp;
 
-    if( op == O_FLOW_NOT ) {
+    if( opcode == O_FLOW_NOT ) {
         temp = left->u.b.t;
         left->u.b.t = left->u.b.f;
         left->u.b.f = temp;
         new_an = left;
     } else {
-        switch( op ) {
+        switch( opcode ) {
         case O_FLOW_AND:
             *(left->u.b.t) = rite->u.b.e;
             *(left->u.b.f) = CurrBlock->label;

@@ -892,54 +892,54 @@ cg_name _CGAPI CGLVAssign( cg_name dest, cg_name source, cg_type tipe )
 }
 
 
-cg_name _CGAPI CGPostGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
-/****************************************************************************/
+cg_name _CGAPI CGPostGets( cg_op opcode, cg_name dest, cg_name src, cg_type tipe )
+/********************************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGPostGets( %o, %n, %n, %t )", op, dest, src, tipe );
+    EchoAPI( "CGPostGets( %o, %n, %n, %t )", opcode, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
-    retn = TGPostGets( op, dest, src, TypeAddress( tipe ) );
+    retn = TGPostGets( opcode, dest, src, TypeAddress( tipe ) );
     hdlAddBinary( CG_NAMES, retn, dest, src );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGPostGets( op, dest, src, TypeAddress( tipe ) ) );
+    return( TGPostGets( opcode, dest, src, TypeAddress( tipe ) ) );
 #endif
 }
 
-cg_name _CGAPI CGPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
-/***************************************************************************/
+cg_name _CGAPI CGPreGets( cg_op opcode, cg_name dest, cg_name src, cg_type tipe )
+/*******************************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGPreGets( %o, %n, %n, %t )", op, dest, src, tipe );
+    EchoAPI( "CGPreGets( %o, %n, %n, %t )", opcode, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
-    retn = TGPreGets( op, dest, src, TypeAddress( tipe ) );
+    retn = TGPreGets( opcode, dest, src, TypeAddress( tipe ) );
     hdlAddBinary( CG_NAMES, retn, dest, src );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGPreGets( op, dest, src, TypeAddress( tipe ) ) );
+    return( TGPreGets( opcode, dest, src, TypeAddress( tipe ) ) );
 #endif
 }
 
-cg_name _CGAPI CGLVPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
-/*****************************************************************************/
+cg_name _CGAPI CGLVPreGets( cg_op opcode, cg_name dest, cg_name src, cg_type tipe )
+/*********************************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGLVPreGets( %o, %n, %n, %t )", op, dest, src, tipe );
+    EchoAPI( "CGLVPreGets( %o, %n, %n, %t )", opcode, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
-    retn = TGLVPreGets( op, dest, src, TypeAddress( tipe ) );
+    retn = TGLVPreGets( opcode, dest, src, TypeAddress( tipe ) );
     hdlAddBinary( CG_NAMES, retn, dest, src );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGLVPreGets( op, dest, src, TypeAddress( tipe ) ) );
+    return( TGLVPreGets( opcode, dest, src, TypeAddress( tipe ) ) );
 #endif
 }
 
@@ -947,49 +947,49 @@ cg_name _CGAPI CGLVPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
 /* Arithmetic/logical operations*/
 /**/
 
-cg_name _CGAPI CGBinary( cg_op op, cg_name name1, cg_name name2, cg_type tipe )
-/*****************************************************************************/
+cg_name _CGAPI CGBinary( cg_op opcode, cg_name name1, cg_name name2, cg_type tipe )
+/*********************************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGBinary( %o, %n, %n, %t )", op, name1, name2, tipe );
+    EchoAPI( "CGBinary( %o, %n, %n, %t )", opcode, name1, name2, tipe );
     hdlUseOnce( CG_NAMES, name1 );
     hdlUseOnce( CG_NAMES, name2 );
-    if( op != O_COMMA ) {
+    if( opcode != O_COMMA ) {
         verifyNotUserType( tipe );
     }
 #endif
-    if( op == O_COMMA ) {
+    if( opcode == O_COMMA ) {
         name1 = TGTrash( name1 );
-    } else if( op == O_SIDE_EFFECT ) {
+    } else if( opcode == O_SIDE_EFFECT ) {
         name2 = TGTrash( name2 );
     }
 #ifdef DEVBUILD
-    retn = TGBinary( op, name1, name2, TypeAddress(tipe) );
+    retn = TGBinary( opcode, name1, name2, TypeAddress(tipe) );
     hdlAddBinary( CG_NAMES, retn, name1, name2 );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGBinary( op, name1, name2, TypeAddress( tipe ) ) );
+    return( TGBinary( opcode, name1, name2, TypeAddress( tipe ) ) );
 #endif
 }
 
-cg_name _CGAPI CGUnary( cg_op op, cg_name name, cg_type tipe )
-/************************************************************/
+cg_name _CGAPI CGUnary( cg_op opcode, cg_name name, cg_type tipe )
+/****************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGUnary( %o, %n, %t )", op, name, tipe );
+    EchoAPI( "CGUnary( %o, %n, %t )", opcode, name, tipe );
     hdlUseOnce( CG_NAMES, name );
-    if( op != O_POINTS ) {
+    if( opcode != O_POINTS ) {
         verifyNotUserType( tipe );
     }
-    retn = TGUnary( op, name, TypeAddress( tipe ) );
+    retn = TGUnary( opcode, name, TypeAddress( tipe ) );
     hdlAddUnary( CG_NAMES, retn, name );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGUnary( op, name, TypeAddress( tipe ) ) );
+    return( TGUnary( opcode, name, TypeAddress( tipe ) ) );
 #endif
 }
 
@@ -1053,39 +1053,39 @@ cg_name _CGAPI CGCall( call_handle call )
 /* Comparison/short-circuit operations*/
 /**/
 
-cg_name _CGAPI CGCompare( cg_op op, cg_name name1, cg_name name2, cg_type tipe )
-/******************************************************************************/
+cg_name _CGAPI CGCompare( cg_op opcode, cg_name name1, cg_name name2, cg_type tipe )
+/**********************************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGCompare( %o, %n, %n, %t )", op, name1, name2, tipe );
+    EchoAPI( "CGCompare( %o, %n, %n, %t )", opcode, name1, name2, tipe );
     hdlUseOnce( CG_NAMES, name1 );
     hdlUseOnce( CG_NAMES, name2 );
-    retn = TGCompare( op, name1, name2, TypeAddress( tipe ) );
+    retn = TGCompare( opcode, name1, name2, TypeAddress( tipe ) );
     hdlAddBinary( CG_NAMES, retn, name1, name2 );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGCompare( op, name1, name2, TypeAddress( tipe ) ) );
+    return( TGCompare( opcode, name1, name2, TypeAddress( tipe ) ) );
 #endif
 }
 
-cg_name _CGAPI CGFlow( cg_op op, cg_name name1, cg_name name2 )
-/*************************************************************/
+cg_name _CGAPI CGFlow( cg_op opcode, cg_name name1, cg_name name2 )
+/*****************************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
 
-    EchoAPI( "CGFlow( %o, %n, %n )", op, name1, name2 );
+    EchoAPI( "CGFlow( %o, %n, %n )", opcode, name1, name2 );
     hdlUseOnce( CG_NAMES, name1 );
     if( NULL != name2 ) {
         hdlUseOnce( CG_NAMES, name2 );
     }
-    retn = TGFlow( op, name1, name2 );
+    retn = TGFlow( opcode, name1, name2 );
     hdlAddBinary( CG_NAMES, retn, name1, name2 );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGFlow( op, name1, name2 ) );
+    return( TGFlow( opcode, name1, name2 ) );
 #endif
 }
 
@@ -1158,11 +1158,11 @@ void _CGAPI     CG3WayControl( cg_name expr, label_handle lt,
     TG3WayControl( expr, lt, eq, gt );  /* special TGen()*/
 }
 
-void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl )
-/*******************************************************************/
+void _CGAPI     CGControl( cg_op opcode, cg_name expr, label_handle lbl )
+/***********************************************************************/
 {
 #ifdef DEVBUILD
-    EchoAPI( "CGControl( %o, %n, %L )\n", op, expr, lbl );
+    EchoAPI( "CGControl( %o, %n, %L )\n", opcode, expr, lbl );
     if( NULL != expr ) {
         hdlUseOnce( CG_NAMES, expr );
         hdlAllUsed( CG_NAMES );
@@ -1171,7 +1171,7 @@ void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl )
         hdlExists( LABEL_HANDLE, lbl );
     }
 #endif
-    TGControl( op, expr, lbl );  /* special TGen()*/
+    TGControl( opcode, expr, lbl );  /* special TGen()*/
 }
 
 void _CGAPI     CGBigLabel( back_handle bck )

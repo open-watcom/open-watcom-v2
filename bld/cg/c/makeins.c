@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,13 +174,13 @@ instruction     *MakeMove( name *src, name *dst,
 }
 
 
-instruction     *MakeUnary( opcode_defs op, name *src,
+instruction     *MakeUnary( opcode_defs opcode, name *src,
                                     name *dst, type_class_def type_class )
 /**********************************************************************
- * Make a unary instruction (op  src => dst)
+ * Make a unary instruction (opcode  src => dst)
  */
 {
-    return( MakeNary( op, src, NULL, dst, type_class, XX, 1 ) );
+    return( MakeNary( opcode, src, NULL, dst, type_class, XX, 1 ) );
 }
 
 

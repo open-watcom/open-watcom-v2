@@ -137,7 +137,7 @@ void    TGDemote( tn name, const type_def *tipe )
 }
 
 
-tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
+tn      FoldCnvRnd( cg_op opcode, tn name, const type_def *to_tipe )
 /**************************************************************/
 {
     tn              new_tn;
@@ -152,7 +152,7 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
         }
         if( to_tipe->attr & TYPE_FLOAT ) {
             new_tn = TGConst( cf, to_tipe );
-        } else if( op == O_CONVERT ) {
+        } else if( opcode == O_CONVERT ) {
             junk = cf;
             cf = CFTrunc( &cgh, cf );
             CFFree( &cgh, junk );
@@ -162,7 +162,7 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
                 CFFree( &cgh, junk );
             }
             new_tn = TGConst( cf, to_tipe );
-        } else if( op == O_ROUND ) {
+        } else if( opcode == O_ROUND ) {
             junk = cf;
             cf = CFRound( &cgh, cf );
             CFFree( &cgh, junk );

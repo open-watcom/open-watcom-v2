@@ -264,8 +264,8 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'o' : {
-                    cg_op op = va_arg( args, cg_op );
-                    switch( op ) {
+                    cg_op opcode = va_arg( args, cg_op );
+                    switch( opcode ) {
 #define STR(x) #x
 #define STR1(x,y) x
 #define STR2(x,y) STR(y)
@@ -276,7 +276,7 @@ void EchoAPI              // EchoAPI ROUTINE
 #undef STR1
 #undef STR
                       default :
-                        sprintf( buffer, "O_0%d", op );
+                        sprintf( buffer, "O_0%d", opcode );
                         EchoAPIString( buffer );
                         break;
                     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -634,8 +634,8 @@ static  void    NoStackAcrossCalls( void )
     }
 }
 
-static  void   FindSinCos( instruction *ins, opcode_defs next_op )
-/****************************************************************/
+static  void   FindSinCos( instruction *ins, opcode_defs next_opcode )
+/********************************************************************/
 {
     instruction *next;
     instruction *new_ins;
@@ -646,14 +646,14 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op )
             return;
         if( _IsReDefinedBy( next, ins->operands[0] ) )
             return;
-        if( next->head.opcode == next_op ) {
+        if( next->head.opcode == next_opcode ) {
             if( next->operands[0] == ins->operands[0] && next->type_class == ins->type_class ) {
                 break;
             }
         }
     }
     temp = AllocTemp( ins->type_class );
-    new_ins = MakeUnary( next_op, ins->operands[0], temp, ins->type_class );
+    new_ins = MakeUnary( next_opcode, ins->operands[0], temp, ins->type_class );
     next->head.opcode = OP_MOV;
     next->operands[0] = temp;
     SuffixIns( ins, new_ins );

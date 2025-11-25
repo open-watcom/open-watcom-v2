@@ -390,7 +390,7 @@ instruction     *rSPLIT8( instruction *ins )
 /*******************************************/
 /* Used to split 8 byte push, pop and move */
 {
-    opcode_defs         op;
+    opcode_defs         opcode;
     instruction         *lo_ins;
     instruction         *mid_lo_ins;
     instruction         *mid_hi_ins;
@@ -405,16 +405,16 @@ instruction     *rSPLIT8( instruction *ins )
     }
     Split8Name( ins, ins->operands[0], &left );
     Split8Name( ins, ins->result, &result );
-    op = ins->head.opcode;
-    lo_ins = MakeUnary( op, left.low, result.low, U2 );
-    mid_lo_ins = MakeUnary( op, left.mid_low, result.mid_low, U2 );
-    mid_hi_ins = MakeUnary( op, left.mid_high, result.mid_high, U2 );
-    hi_ins = MakeUnary( op, left.high, result.high, U2 );
+    opcode = ins->head.opcode;
+    lo_ins = MakeUnary( opcode, left.low, result.low, U2 );
+    mid_lo_ins = MakeUnary( opcode, left.mid_low, result.mid_low, U2 );
+    mid_hi_ins = MakeUnary( opcode, left.mid_high, result.mid_high, U2 );
+    hi_ins = MakeUnary( opcode, left.high, result.high, U2 );
     DupSeg( ins, lo_ins );
     DupSeg( ins, mid_lo_ins );
     DupSeg( ins, mid_hi_ins );
     DupSeg( ins, hi_ins );
-    if( op == OP_POP ) {       /* do low first*/
+    if( opcode == OP_POP ) {       /* do low first*/
         first_ins = lo_ins;
         PrefixIns( ins, lo_ins );
         PrefixIns( ins, mid_lo_ins );
@@ -437,7 +437,7 @@ instruction     *rSPLIT8BIN( instruction *ins )
 /*********************************************/
 /*   Used to split 8 byte binary operations (ADD,SUB,Logicals) */
 {
-    opcode_defs         op;
+    opcode_defs         opcode;
     instruction         *lo_ins;
     instruction         *mid_lo_ins;
     instruction         *mid_hi_ins;
@@ -455,22 +455,22 @@ instruction     *rSPLIT8BIN( instruction *ins )
     Split8Name( ins, ins->operands[0], &left );
     Split8Name( ins, ins->operands[1], &rite );
     Split8Name( ins, ins->result, &result );
-    op = ins->head.opcode;
-    lo_ins = MakeBinary( op, left.low, rite.low, result.low, U2 );
-    switch( op ) {
+    opcode = ins->head.opcode;
+    lo_ins = MakeBinary( opcode, left.low, rite.low, result.low, U2 );
+    switch( opcode ) {
     case OP_ADD:
-        op = OP_EXT_ADD;
+        opcode = OP_EXT_ADD;
         break;
     case OP_SUB:
-        op = OP_EXT_SUB;
+        opcode = OP_EXT_SUB;
         break;
     default:
         break;
     }
-    mid_lo_ins = MakeBinary( op, left.mid_low, rite.mid_low, result.mid_low, U2 );
-    mid_hi_ins = MakeBinary( op, left.mid_high, rite.mid_high, result.mid_high, U2 );
-    hi_ins = MakeBinary( op, left.high, rite.high, result.high, U2 );
-    switch( op ) {
+    mid_lo_ins = MakeBinary( opcode, left.mid_low, rite.mid_low, result.mid_low, U2 );
+    mid_hi_ins = MakeBinary( opcode, left.mid_high, rite.mid_high, result.mid_high, U2 );
+    hi_ins = MakeBinary( opcode, left.high, rite.high, result.high, U2 );
+    switch( opcode ) {
     case OP_EXT_ADD:
     case OP_EXT_SUB:
         hi_ins->table = CodeTable( hi_ins );
@@ -520,7 +520,7 @@ instruction     *rSPLIT8TST( instruction *ins )
     eight_byte_name     rite;
     byte                true_idx;
     byte                false_idx;
-    opcode_defs         op;
+    opcode_defs         opcode;
     instruction         *lo_ins;
     instruction         *mid_lo_ins;
     instruction         *mid_hi_ins;
@@ -530,20 +530,20 @@ instruction     *rSPLIT8TST( instruction *ins )
     Split8Name( ins, ins->operands[1], &rite );
     true_idx = _TrueIndex( ins );
     false_idx = _FalseIndex( ins );
-    op = ins->head.opcode;
-    lo_ins = MakeCondition( op, left.low, rite.low, true_idx, false_idx, U2 );
-    switch( op ) {
+    opcode = ins->head.opcode;
+    lo_ins = MakeCondition( opcode, left.low, rite.low, true_idx, false_idx, U2 );
+    switch( opcode ) {
     case OP_BIT_TEST_FALSE:
-        op = OP_BIT_TEST_TRUE;
+        opcode = OP_BIT_TEST_TRUE;
         true_idx = false_idx;
         break;
     default:
         break;
     }
     false_idx = NO_JUMP;
-    mid_lo_ins = MakeCondition( op, left.mid_low, rite.mid_low, true_idx, false_idx, U2 );
-    mid_hi_ins = MakeCondition( op, left.mid_high, rite.mid_high, true_idx, false_idx, U2 );
-    hi_ins = MakeCondition( op, left.high, rite.high, true_idx, false_idx, U2 );
+    mid_lo_ins = MakeCondition( opcode, left.mid_low, rite.mid_low, true_idx, false_idx, U2 );
+    mid_hi_ins = MakeCondition( opcode, left.mid_high, rite.mid_high, true_idx, false_idx, U2 );
+    hi_ins = MakeCondition( opcode, left.high, rite.high, true_idx, false_idx, U2 );
     DupSeg( ins, lo_ins );
     DupSeg( ins, mid_lo_ins );
     DupSeg( ins, mid_hi_ins );

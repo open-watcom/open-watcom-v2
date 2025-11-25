@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,5 +39,5 @@ extern bool             AskIsFrameIndex( name *op );
 extern abspatch_handle  *NextFramePatch( void );
 extern void             PatchBigLabels( offset lc );
 extern an               PassProcParm( an rtn );
-extern void             SaveDisplay( opcode_defs op );
+extern void             SaveDisplay( opcode_defs opcode );
 extern void             SetDisplay( name *temp );
