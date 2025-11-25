@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 // AccModTab - access mode table
 //
 
-char *AccModTab[] = {
+static const char *AccModTab[] = {
         "sequential",
         "direct",
         "append",
@@ -57,7 +57,7 @@ char *AccModTab[] = {
 // FormTab - formatted or unformatted table
 //
 
-char *FormTab[] = {
+static const char *FormTab[] = {
         "formatted",
         "unformatted",
         NULL };
@@ -66,7 +66,7 @@ char *FormTab[] = {
 // OpStatTab - open status table
 //
 
-char *OpStatTab[] = {
+static const char *OpStatTab[] = {
         "unknown",
         "old",
         "new",
@@ -77,7 +77,7 @@ char *OpStatTab[] = {
 // BlnkTab - blank table
 //
 
-char *BlnkTab[] = {
+static const char *BlnkTab[] = {
         "null",
         "zero",
         NULL };
@@ -86,7 +86,7 @@ char *BlnkTab[] = {
 // RecFmTab - record format table
 //
 
-char *RecFmTab[] = {
+static const char *RecFmTab[] = {
         "fixed",
         "variable",
         "text",
@@ -96,7 +96,7 @@ char *RecFmTab[] = {
 // CCtrlTab - carriage control table
 //
 
-char *CCtrlTab[] = {
+static const char *CCtrlTab[] = {
         "yes",
         "no",
         NULL };
@@ -105,7 +105,7 @@ char *CCtrlTab[] = {
 // ActionTab - action table
 //
 
-char *ActionTab[] = {
+static const char *ActionTab[] = {
         "read",
         "write",
         "readwrite",
@@ -115,7 +115,7 @@ char *ActionTab[] = {
 // ShareTab - share table
 //
 
-char *ShareTab[] = {
+static const char *ShareTab[] = {
         "compat",
         "denyrw",
         "denywr",
