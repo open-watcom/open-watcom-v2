@@ -444,7 +444,7 @@ between the CGProcDecl call and the CGReturn call.
 The following routines are used for initializing, finalizing,
 defining and selecting segments.
 .*
-.section void BEDefSeg( segment_id segid, seg_attr attr, char *str, uint algn )
+.section void BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint algn )
 .*
 .ix BEDefSeg
 .ix segments
@@ -1175,7 +1175,7 @@ The 64-bit integer value.
 An integral type.
 .endnote
 .*
-.section cg_name CGFloat( char *num, cg_type type )
+.section cg_name CGFloat( const char *num, cg_type type )
 .*
 .ix CGFloat
 .ix 'floating point constant'
@@ -2080,7 +2080,7 @@ An 64-bit integer value.
 The integral type to be used.
 .endnote
 .*
-.section void DGFloat( char *value, cg_type type )
+.section void DGFloat( const char *value, cg_type type )
 .*
 .ix DGFloat
 .ix 'floating point constant'
@@ -2109,7 +2109,7 @@ Will be translated if cross compiling.
 A character value.
 .endnote
 .*
-.section void DGString( char *value, uint len )
+.section void DGString( const char *value, uint len )
 .*
 .ix DGString
 .ix character
@@ -2283,7 +2283,7 @@ A cg_sym_handle.
 A segment_id.
 .endnote
 .*
-.section char *FEModuleName( void )
+.section const char *FEModuleName( void )
 .*
 .ix FEModuleName
 .begnote
@@ -2315,7 +2315,7 @@ In Pascal, 1 indicates the level of the main program.
 Each nested procedures adds an additional level.
 .endnote
 .*
-.section char *FEName( cg_sym_handle sym )
+.section const char *FEName( cg_sym_handle sym )
 .*
 .ix FEName
 .begnote
@@ -2325,7 +2325,7 @@ A null string should be returned if the symbol has no name.
 NULL should never be returned.
 .endnote
 .*
-.section char *FEExtName( cg_sym_handle sym, int request )
+.section const char *FEExtName( cg_sym_handle sym, int request )
 .*
 .ix FEExtName
 .begnote
@@ -2944,13 +2944,13 @@ Open a new scope level.
 .np
 Close the current scope level.
 .*
-.section dbg_type DBScalar( char *name, cg_type tipe )
+.section dbg_type DBScalar( const char *name, cg_type tipe )
 .*
 .ix DBScalar
 .np
 Defines the string :HP2.name:eHP2. to have type :HP2.tipe:eHP2..
 .*
-.section dbg_type DBScope( char *name )
+.section dbg_type DBScope( const char *name )
 .*
 .ix DBScope
 .np
@@ -3017,19 +3017,19 @@ stack (needed for based on self pointers).
 .np
 start a structure type definition
 .*
-.section void DBAddField( dbg_struct st, unsigned_32 off, char *nm, dbg_type base )
+.section void DBAddField( dbg_struct st, unsigned_32 off, const char *nm, dbg_type base )
 .*
 .ix DBAddField
 .np
 add a field to a structure
 .*
-.section void DBAddBitField( dbg_struct st, unsigned_32 off, byte strt, byte len, char *nm, dbg_type base )
+.section void DBAddBitField( dbg_struct st, unsigned_32 off, byte strt, byte len, const char *nm, dbg_type base )
 .*
 .ix DBAddBitField
 .np
 add a bit field to a structure
 .*
-.section void DBAddLocField( dbg_struct st, dbg_loc loc, uint attr, byte strt, byte len, char *nm, dbg_type base )
+.section void DBAddLocField( dbg_struct st, dbg_loc loc, uint attr, byte strt, byte len, const char *nm, dbg_type base )
 .*
 .ix DBAddLocField
 .np
@@ -3126,7 +3126,7 @@ declare a parameter to the procedure
 .np
 end the current procedure
 .*
-.section dbg_type DBFtnType( char *name, dbg_ftn_type tipe )
+.section dbg_type DBFtnType( const char *name, dbg_ftn_type tipe )
 .*
 .ix DBFtnType
 .np
@@ -3242,7 +3242,7 @@ pop off (throw away) the top stack entry.
 .np
 the given location expression will not be used anymore.
 .*
-.section unsigned DBSrcFile( char *fname )
+.section unsigned DBSrcFile( const char *fname )
 .*
 .ix DBSrcFile
 .np
