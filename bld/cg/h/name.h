@@ -160,7 +160,7 @@ typedef struct const_name {
     constant_type_class     const_type;
 } const_name;
 
-typedef struct memory_name {                    /*  global name value or address */
+typedef struct memory_name {                /*  global name value or address */
     struct var_name         _v;
     union name              *same_sym;
     cg_class                memory_type;    /*  what the symbol points to */

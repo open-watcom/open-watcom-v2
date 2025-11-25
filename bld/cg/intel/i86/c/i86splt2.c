@@ -945,13 +945,12 @@ instruction     *rINTCOMP( instruction *ins )
     true_idx = _TrueIndex( ins );
     false_idx = _FalseIndex( ins );
     if( ins->head.opcode == OP_CMP_EQUAL ) {
-         first_idx = false_idx;
+        first_idx = false_idx;
     } else {
-         first_idx = true_idx;
+        first_idx = true_idx;
     }
     if( ins->type_class == FD ) {
         quarter_type_class = HalfClass[half_type_class];
-
         if( rite_is_zero ) {
             high = MakeCondition( OP_BIT_TEST_TRUE,
                         HighPart( HighPart( left, half_type_class ), quarter_type_class ),
