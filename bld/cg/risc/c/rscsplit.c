@@ -571,7 +571,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_name = AddrConst( tosplit->c.u.op, tosplit->c.lo.u.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -655,7 +655,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_name = AddrConst( tosplit->c.u.op, tosplit->c.lo.u.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );

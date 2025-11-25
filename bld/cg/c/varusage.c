@@ -48,7 +48,7 @@ static  void    Use( name *op, block *blk, var_usage usage )
 */
 {
     if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-        Use( (name*)op->c.u.op, blk, USE_ADDRESS );
+        Use( op->c.u.op, blk, USE_ADDRESS );
         return;
     }
     if( op->n.class == N_TEMP ) {
