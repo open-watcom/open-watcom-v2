@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,32 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  token/downscan operand constant tables data
 *
 ****************************************************************************/
 
 
-typedef enum {
-    #define pick(tok_id,dsopn_id) tok_id,
-    #include "tokencls.h"
-    #undef pick
-} TOKCLASS;
-
-typedef enum {
-    TK_EOL     = 1,
-    TK_LAST    = 2,
-    TK_LENSPEC = 4,
-    TK_INCLUDE = 8
-} TOKTYPE;
-
-typedef struct lex_token {
-    char        *start;
-    char        *stop;
-    int         line;
-    TOKCLASS    class;
-    TOKTYPE     flags;
-    byte        log;
-    byte        col;
-} lex_token;
-
+// It holds relationship for token class and operand indexes
+//
+//    tok_id    opn_id
+pick( TO_OPR,  DSOPN_PHI )      // null operand
+pick( TO_NAM,  DSOPN_NAM )      // name
+pick( TO_LIT,  DSOPN_LIT )      // literal
+pick( TO_LGL,  DSOPN_LGL )      // logical
+pick( TO_INT,  DSOPN_INT )      // integer
+pick( TO_REA,  DSOPN_REA )      // real
+pick( TO_DBL,  DSOPN_DBL )      // double
+pick( TO_EXT,  DSOPN_EXT )      // extended
+pick( TO_OCT,  DSOPN_OCT )      // octal constant
+pick( TO_HEX,  DSOPN_HEX )      // hexadecimal constant
+pick( TO_FMT,  DSOPN_FMT )      // FORMAT string
