@@ -412,7 +412,7 @@ PTREE PTreeIntConstant( int v, type_id id )
     if( SignedIntType( new_tree->type ) ) {
         Set64ValI32( new_tree->u.int64_constant, v );
     } else {
-        Set64ValU32( new_tree->u.int64_constant, (unsigned_32)v );
+        Set64ValU32( new_tree->u.int64_constant, v );
     }
     return( new_tree );
 }

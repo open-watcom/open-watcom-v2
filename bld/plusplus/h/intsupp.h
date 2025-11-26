@@ -39,8 +39,8 @@
 #include "i64.h"
 
 typedef struct {                // INTEGER CONSTANT
-    signed_64         value;    // - value
-    TYPE              type;     // - type (not modified)
+    signed_64       value;      // - 64-bit value
+    TYPE            type;       // - type (not modified)
 } INT_CONSTANT;
 
 
