@@ -55,6 +55,14 @@ jobs:
           verid: '2.0'
           tag:   '2023-01-01-Build'
           image: 'ubuntu-latest'
+        - name:  'OW 2.0 Windows'
+          verid: '2.0'
+          tag:   ''
+          image: 'windows-2025'
+        - name:  'OW 2.0 Linux'
+          verid: '2.0'
+          tag:   ''
+          image: 'ubuntu-latest'
     name: Bootstrap Test ${{matrix.name}}
     runs-on: ${{matrix.image}}
     steps:
