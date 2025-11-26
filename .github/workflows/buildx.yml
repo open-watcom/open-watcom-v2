@@ -82,7 +82,7 @@ jobs:
     name: Docs Build
     needs: boot-x
     runs-on: ${{inputs.image}}
-    timeout-minutes: 90
+    timeout-minutes: 40
     strategy:
       matrix:
         include:
