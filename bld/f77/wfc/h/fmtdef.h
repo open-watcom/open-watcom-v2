@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,8 +80,4 @@ typedef union fmt_desc {
     struct fmtstring    fmtstring;
 } fmt_desc;
 
-typedef union fmt_ptr {
-    obj_ptr             cp;     // compile-time pointer
-    char                *rt;    // run-time pointer
-} fmt_ptr;
 #endif /* __FMTDEF_H_INCLUDED */
