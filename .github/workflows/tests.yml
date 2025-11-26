@@ -42,7 +42,7 @@ jobs:
           - title: Math run-time library tests
             path:   mathtest
             skip:   ''
-    timeout-minutes: 90
+    timeout-minutes: 15
     runs-on: ${{inputs.image}}
     name: ${{matrix.title}}
 
