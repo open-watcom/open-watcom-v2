@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern const char   *SpecId[];
+extern const char   * const SpecId[];
 
-extern int      FindKWord( const char **table, int id, int def_id, string PGM *kw );
+extern int      FindKWord( const char * const *table, int id, int def_id, string PGM *kw );
 extern void     ClrBuff( void );

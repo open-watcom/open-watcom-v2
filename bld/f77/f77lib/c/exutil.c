@@ -41,7 +41,7 @@
 
 #define MAX_KW_LEN      15      // longest keyword in following tables
 
-const char    *SpecId[] = {
+const char    * const SpecId[] = {
     "STATUS",
     "ACCESS",
     "FORM",
@@ -55,8 +55,8 @@ const char    *SpecId[] = {
 };
 
 
-int     FindKWord( const char **table, int id, int def_id, string PGM *kw )
-//=========================================================================
+int     FindKWord( const char * const *table, int id, int def_id, string PGM *kw )
+//================================================================================
 {
     int         index;
     int         kw_len;

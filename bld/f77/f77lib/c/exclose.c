@@ -44,11 +44,12 @@
 // ClStatTab - close status table
 //
 
-static const char    *ClStatTab[] = {
-        "unknown",
-        "keep",
-        "delete",
-        NULL };
+static const char   * const ClStatTab[] = {
+    "unknown",
+    "keep",
+    "delete",
+    NULL
+};
 
 
 static  void    ExClose( void ) {
