@@ -46,8 +46,10 @@ void SysInit( int argc, char *argv[] )
     /* unused parameters */ (void)argc; (void)argv;
 
     setenv( "BLD_HOST", "UNIX", 1 );
-#ifdef BLD64BIT
-    setenv( "BLD64BIT", "1", 1 );
+#if defined( BLDX64 )
+    setenv( "BLD64BIT", "x64", 1 );
+#elif defined( BLDA64 )
+    setenv( "BLD64BIT", "a64", 1 );
 #endif
 }
 

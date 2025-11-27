@@ -37,8 +37,8 @@ srcs_haiku = sysposix.c
 srcs_osx   = sysposix.c
 builder_srcs = $(srcs_$(bld_os)) utils.c runit.c pmake.c builder.c clibext.c
 
-cpp_defines_x64 = -DBLD64BIT
-cpp_defines_a64 = -DBLD64BIT
+cpp_defines_x64 = -DBLDX64
+cpp_defines_a64 = -DBLDA64
 
 !ifdef __WATCOM_TOOLS__
 !else ifdef __NT__
