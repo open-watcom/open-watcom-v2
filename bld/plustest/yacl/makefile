@@ -16,7 +16,7 @@ test_flags = -op-d2
 alt_error=00
 !endif
 
-test_flags += -ei -I.. -w0 -D__OS2__
+test_flags += -ei -I.. -w0
 
 test_flags_i86 = -ml
 

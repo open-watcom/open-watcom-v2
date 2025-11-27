@@ -5,7 +5,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -53,12 +53,7 @@
 #include "base/memory.h"
 #endif
 
-#if defined(__BORLANDC__) && !defined(__OS2__)
-#define STRNCMP _fstrncmp
-#else
 #define STRNCMP strncmp
-#endif
-
 
 #ifdef __DEC_ULTRIX__
 extern "C" int gcvt (double, int, char*);
@@ -107,11 +102,11 @@ void int_to_as (long val, char out[], short minwidth, char padChar = ' ')
         for (; n < minwidth; n++) {
             tmp[n] = padChar;
         }
-        if (sign == -1) 
+        if (sign == -1)
             tmp[n++] = '-';
     }
     else {
-        if (sign == -1) 
+        if (sign == -1)
             tmp[n++] = '-';
         for (; n < minwidth; n++) {
             tmp[n] = padChar;
@@ -144,13 +139,13 @@ static char* strstr (char* s1, const char* s2)
     }
     return NULL;
 }
-#endif        
+#endif
 
-    
-        
+
+
 CL_DEFINE_CLASS(CL_String, _CL_String_CLASSID);
 
-CL_String::CL_String () 
+CL_String::CL_String ()
 {
     _Init (DEFAULT_START_SIZE);
 }
@@ -184,7 +179,7 @@ CL_String::CL_String (long value, short minwidth, char padChar)
 {
     if (!_Init ((minwidth > DEFAULT_START_SIZE ? minwidth :
                 DEFAULT_START_SIZE) + 1))
-        return; 
+        return;
     int_to_as (value, _string, minwidth, padChar);
     _size = strlen (_string);
 }
@@ -194,7 +189,7 @@ CL_String::CL_String (short value, short minwidth, char padChar)
 {
     if (!_Init ((minwidth > DEFAULT_START_SIZE ? minwidth :
                 DEFAULT_START_SIZE) + 1))
-        return; 
+        return;
     int_to_as ((long) value, _string, minwidth, padChar);
     _size = strlen (_string);
 }
@@ -232,8 +227,8 @@ CL_String::CL_String (char c, short count)
 
 
 
-    
-    
+
+
 CL_String::~CL_String()
 {
     if (_string)
@@ -338,7 +333,7 @@ bool CL_String::PadTo (long num_chars, char pad_char,
         return FALSE;
     memset (pad_strg, pad_char, num_chars);
     pad_strg[num_chars]  = '\0';
-    if (left_justified) 
+    if (left_justified)
         strncpy (pad_strg, _string, _size);
     else
         strncpy (pad_strg + num_chars - _size,
@@ -417,7 +412,7 @@ bool CL_String::WordCapitalize ()
 }
 
 
-        
+
 
 //
 // Substructure extraction
@@ -454,7 +449,7 @@ CL_Substring CL_String::operator () (long position, long size)
 
 
 
-         
+
 long CL_String::CharIndex (const char* s, long pos)  const
 {
     if (!s)
@@ -484,14 +479,14 @@ long CL_String::NCharIndex (const char* s, long pos) const
     }
     return -1;
 }
-    
 
-bool CL_String::IsPrefixOf (const char* p) const 
+
+bool CL_String::IsPrefixOf (const char* p) const
 {
     if (!p)
         return FALSE;
     long l = strlen (p);
-    
+
     if (_size > l)
         return FALSE;
     short b = STRNCMP (_string, p, _size);
@@ -733,26 +728,26 @@ bool CL_String::CompareWith (const CL_String& obj,
     switch (op) {
     case CL_Object::OP_EQUAL:
         return (strcmp (_string, obj._string) == 0);
-        
+
     case CL_Object::OP_LESSTHAN:
         return (strcmp (_string, obj._string) < 0);
-        
+
     case CL_Object::OP_GTRTHAN:
         return (strcmp (_string, obj._string) > 0);
-        
+
     case CL_Object::OP_LESSEQ:
         return (strcmp (_string, obj._string) <= 0);
-        
+
     case CL_Object::OP_GTREQ:
         return (strcmp (_string, obj._string) >= 0);
-        
+
     case CL_Object::OP_NOTEQUAL:
         return (strcmp (_string, obj._string) != 0);
-        
+
     case CL_Object::OP_PREFIX:
         return (obj._size <= _size &&
                 strncmp (_string, obj._string, obj._size) == 0);
-        
+
     case CL_Object::OP_CONTAINS:
         return (obj._size <= _size &&
                 strstr (_string, obj._string) != NULL);
@@ -799,7 +794,7 @@ void CL_String::operator= (const char* strg)
     Notify ();
 }
 
-    
+
 void CL_String::operator= (const CL_String& strg)
 {
     if (this == &strg || !PrepareToChange())
@@ -886,7 +881,7 @@ CL_String CL_String::operator+  (const char* strg) const
     return q;
 }
 
-        
+
 CL_String CL_String::operator+  (const CL_String& strg) const
 {
     long n = _size + strg.Size() + 1;
@@ -909,7 +904,7 @@ CL_String CL_String::operator+ (long v) const
     return *this + CL_String (v);
 }
 
-        
+
 CL_String& CL_String::operator+= (const char* strg)
 {
     if (!PrepareToChange())
@@ -959,7 +954,7 @@ CL_String& CL_String::operator+= (const CL_String& strg)
     return *this;
 }
 
-    
+
 
 
 
@@ -1123,7 +1118,7 @@ CL_Substring::CL_Substring (CL_String& s, long pos, long length)
         strncpy (_string, s._string + pos, _size);
         _string[_size] = '\0';
     }
-    else { 
+    else {
         _size = 0;
         _string[0] = '\0';
     }
@@ -1137,7 +1132,7 @@ CL_Substring::CL_Substring (const CL_Substring& s)
 }
 
 
-    
+
 
 // Modified: the method called to notify us when our value changes
 bool CL_Substring::_Modified (CL_Object&, long)

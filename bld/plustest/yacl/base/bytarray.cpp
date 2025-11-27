@@ -5,7 +5,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -38,20 +38,8 @@
 // #define NEW_OP new (__LINE__, __FILE__)
 #define NEW_OP new
 
-
-
-
-#ifdef __BORLANDC__
-#include <mem.h>
-#ifndef __OS2__
-#define MEMCMP _fmemcmp
-#else
-#define MEMCMP memcmp
-#endif
-#else
 #include <string.h>
 #define MEMCMP memcmp
-#endif
 
 #ifdef __GNUC__
 #pragma implementation
@@ -96,7 +84,7 @@ CL_ByteArray::~CL_ByteArray ()
 {
 }
 
-    
+
 
 
 void CL_ByteArray::SetAllBytesTo (uchar b)
@@ -113,7 +101,7 @@ void CL_ByteArray::SetAllBytesTo (uchar b)
 
 
 //
-// Retrieve the byte at the given index. As usual, 
+// Retrieve the byte at the given index. As usual,
 // zero-origin indexing is assumed. It is an error to specify an
 // index outside the legal range.
 uchar CL_ByteArray::operator[] (long index)
@@ -169,7 +157,7 @@ bool CL_ByteArray::operator!= (const CL_Object& b) const
     if (!IsA (b))
         return TRUE;
     return MEMCMP (_array, ((const CL_ByteArray&) b).AsPtr(),
-                   _size) != 0; 
+                   _size) != 0;
 }
 
 
@@ -217,7 +205,7 @@ bool CL_ByteArray::operator<= (const CL_Object& b) const
     if (!IsA (b))
         return this <= (CL_ByteArray*) &b;
     return MEMCMP (_array, ((const CL_ByteArray&) b).AsPtr(),
-                   _size) <= 0; 
+                   _size) <= 0;
 }
 
 bool CL_ByteArray::operator<= (const CL_ByteArray& o) const
@@ -320,7 +308,7 @@ CL_ByteArray CL_ByteArray::operator() (long start, long size) const
 
 
 
-        
+
 CL_ByteString CL_ByteArray::operator+ (const CL_ByteArray& b) const
 {
     CL_ByteString b1 (_size + b.Size());
@@ -342,7 +330,7 @@ long CL_ByteArray::CommonPrefixLength (const CL_ByteArray& b)
         return 0; // No memory
     long i;
     uchar* p = b.AsPtr();
-    for (i = 0; i < _size; i++) 
+    for (i = 0; i < _size; i++)
         if (_array[i] != p[i]) return i;
     return _size;
 }
@@ -353,7 +341,7 @@ long CL_ByteArray::CommonPrefixLength (const uchar* p)
     if (!_array)
         return 0; // No memory
     long i;
-    for (i = 0; i < _size; i++) 
+    for (i = 0; i < _size; i++)
         if (_array[i] != p[i]) return i;
     return _size;
 }
@@ -375,13 +363,13 @@ long CL_ByteArray::LongValueAt (long index) const
     if (!_array)
         return 0; // No memory
     long value;
-    
+
     memcpy ((uchar*) &value, &_array[index], sizeof (long));
     return value;
 }
 
-    
-    
+
+
 
 
 short CL_ByteArray::ShortValueAt (long index) const
@@ -389,7 +377,7 @@ short CL_ByteArray::ShortValueAt (long index) const
     if (!_array)
         return 0; // No memory
     short value  = 0;
-    
+
     if (_array)
         memcpy ((uchar*) &value, &_array[index], sizeof (short));
     return value;
@@ -407,7 +395,7 @@ long CL_ByteArray::CopyTo (uchar* buffer, long count, long pos)
 }
 
 
-    
+
 long CL_ByteArray::CopyFrom (uchar* buffer, long count, long pos) const
 {
     if (count > 0 && _array && pos >= 0 && pos < _size) {
@@ -419,7 +407,7 @@ long CL_ByteArray::CopyFrom (uchar* buffer, long count, long pos) const
 }
 
 
-    
+
 CL_String CL_ByteArray::AsString () const
 {
     if (!_array)
