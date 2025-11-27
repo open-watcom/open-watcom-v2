@@ -82,22 +82,29 @@ jobs:
     name: Docs Build
     needs: boot-x
     runs-on: ${{inputs.image}}
-    timeout-minutes: 40
     strategy:
       matrix:
         include:
         - title: DOS
           doctype: docdos
+          timeout: 35
         - title: OS/2
           doctype: docos2
+          timeout: 35
         - title: NT
           doctype: docnt
+          timeout: 30
         - title: CHM
           doctype: docchm
+          timeout: 30
         - title: PDF
           doctype: docpdf
+          timeout: 20
         - title: WIN
           doctype: docwin
+          timeout: 40
+    timeout-minutes: ${{matrix.timeout}}
+
     steps:
     - if: runner.os == 'Windows'
       name: Set EOL to LF
