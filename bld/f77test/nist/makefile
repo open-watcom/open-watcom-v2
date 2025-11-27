@@ -68,13 +68,6 @@ check_result : .procedure
     -diff -b error.out error.chk
 
 test_set_result : .SYMBOLIC
-!ifdef __UNIX__
-    @cat fm110.map
-    @cat fm923.map
-!else
-    @type fm110.map
-    @type fm923.map
-!endif
     -$(noecho)%write error.out OK
     -chk_exec exec.out >>error.out
 

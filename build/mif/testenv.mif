@@ -85,9 +85,9 @@ start : .SYMBOLIC .EXPLICIT
     $(noecho)%append $(log_file) TEST $(clibtest_name)
 !else
 ! ifeq verbose 0
-    @echo TEST $(arch)/$(alt_error)
+    @echo TEST $(arch)/$(alt_error) $(host_bits)
 ! endif
-    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
+    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error) $(host_bits)
 !endif
     $(noecho)%make clean
     $(noecho)%make __clean_sav
@@ -117,16 +117,18 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .for.obj:
     @set ERROR_MSG=failure to compile $@
-    @%make set_path_wfc
+#    @%make set_path_wfc
     @%make echo_wfc
     $(noecho)$(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
-    @%make set_old_path
+#    @%make set_old_path
 
 .asm.obj:
     @set ERROR_MSG=failure to compile $@
     %write xxxxxxxx.tmp  -zld -wx -nm=$[& $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+#    @%make set_path_wasm
     @%make echo_as
     -$(noecho)$(wasm_$(arch)) @xxxxxxxx.tmp
+#    @%make set_old_path
     @%create tmp.tmp
     @if not exist $^&.out @%create $^&.out
     @set CHK_CHECK=diff -i -b $^&.out tmp.tmp

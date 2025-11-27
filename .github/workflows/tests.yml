@@ -22,27 +22,34 @@ jobs:
       matrix:
         include:
           - title: Wmake tests
-            path:   wmaktest
-            skip:   ''
+            path:    wmaktest
+            timeout: 10
+            skip:    ''
           - title: Wasm tests
             path:   wasmtest
+            timeout: 10
             skip:   ''
           - title: C tests
             path:   ctest
+            timeout: 25
             skip:   ''
           - title: C++ tests
             path:   plustest
+            timeout: 40
             skip:   ''
           - title: Fortran tests
             path:   f77test
+            timeout: 10
             skip:   ''
           - title: C run-time library tests
             path:   clibtest
+            timeout: 10
             skip:   ''
           - title: Math run-time library tests
             path:   mathtest
+            timeout: 25
             skip:   ''
-    timeout-minutes: 25
+    timeout-minutes: ${{matrix.timeout}}
     runs-on: ${{inputs.image}}
     name: ${{matrix.title}}
 

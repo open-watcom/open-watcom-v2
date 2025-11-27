@@ -1,8 +1,7 @@
 [ BLOCK <BLDRULE> test ]
 #=======================
-    cdsay "<PROJDIR>"
-    wmake -h <TESTARG>
-[ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
-    cdsay "<PROJDIR>"
-    wmake -h arch=<EXTRA_ARCH> <TESTARG>
-[ ENDIF ]
+ [ INCLUDE "<OWROOT>/build/deftesth.ctl" ]
+ [ IFDEF <BLD_HOST> NT UNIX ]
+  set TESTARG=<TESTARG> host=386
+  [ INCLUDE "<OWROOT>/build/deftesth.ctl" ]
+ [ ENDIF ]
