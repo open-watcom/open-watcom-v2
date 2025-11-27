@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,9 @@ void SysInit( int argc, char *argv[] )
     /* unused parameters */ (void)argc; (void)argv;
 
     setenv( "BLD_HOST", "UNIX", 1 );
+#ifdef BLD64BIT
+    setenv( "BLD64BIT", "1", 1 );
+#endif
 }
 
 static int SysRunCommandPipe( const char *cmd, int *readpipe )

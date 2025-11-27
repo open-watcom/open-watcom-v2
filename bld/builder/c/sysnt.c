@@ -143,6 +143,9 @@ void SysInit( int argc, char *argv[] )
 {
     SysInitTitle( argc, argv );
     setenv( "BLD_HOST", "NT", 1 );
+#ifdef BLD64BIT
+    setenv( "BLD64BIT", "1", 1 );
+#endif
 }
 
 int SysChdir( const char *dir )

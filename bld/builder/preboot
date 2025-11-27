@@ -37,6 +37,9 @@ srcs_haiku = sysposix.c
 srcs_osx   = sysposix.c
 builder_srcs = $(srcs_$(bld_os)) utils.c runit.c pmake.c builder.c clibext.c
 
+cpp_defines_x64 = -DBLD64BIT
+cpp_defines_a64 = -DBLD64BIT
+
 !ifdef __WATCOM_TOOLS__
 !else ifdef __NT__
 cpp_defines_nt = -D__NT__
@@ -57,7 +60,7 @@ cpp_defines_bsd = -D__BSD__ -D__OPENBSD__
 cpp_defines_bsd = -D__BSD__
 !endif
 !endif
-cpp_defines = -DBOOTSTRAP -D_BLDVER=$(bld_ver) -D_CYEAR=$(curr_year) $(cpp_defines_$(bld_os)) $(cpp_defines_common)
+cpp_defines = -DBOOTSTRAP -D_BLDVER=$(bld_ver) -D_CYEAR=$(curr_year) $(cpp_defines_$(bld_cpu)) $(cpp_defines_$(bld_os)) $(cpp_defines_common)
 
 !ifdef __UNIX__
 target = $(build_dir)/$(%OWOBJDIR)/builder      # Remove .exe from working name
