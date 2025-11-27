@@ -2,6 +2,8 @@
 
 tree_depth = 2
 
+watcom_root = $+$(%WATCOM)$-
+
 !ifdef %BUILDTEST
 buildtest = 1
 !endif
@@ -21,17 +23,49 @@ tests = &
     finish
 
 !ifdef buildtest
-!ifdef __OS2__
+! ifdef __OS2__
 test_wmake = ..\..\wmake\os2386\wmk.exe
-!else ifdef __LINUX__
+! else ifdef __LINUX386__
 test_wmake = ../../wmake/linux386/wmk.exe
-!else ifdef __NT__
+! else ifdef __LINUXX64__
+!  ifeq host 386
+test_wmake = ../../wmake/linux386/wmk.exe
+!  else
+test_wmake = ../../wmake/linuxx64/wmk.exe
+!  endif
+! else ifdef __NT386__
 test_wmake = ..\..\wmake\nt386\wmk.exe
-!else	# DOS
+! else ifdef __NTX64__
+!  ifeq host 386
+test_wmake = ..\..\wmake\nt386\wmk.exe
+!  else
+test_wmake = ..\..\wmake\ntx64\wmk.exe
+!  endif
+! else	# DOS
 test_wmake = ..\..\wmake\dos386\wmk.exe
-!endif
+! endif
 !else
-test_wmake = wmake
+! ifdef __OS2__
+test_wmake = $(watcom_root)\binp\wmake
+! else ifdef __LINUX386__
+test_wmake = $(watcom_root)/binl/wmake
+! else ifdef __LINUXX64__
+!  ifeq host 386
+test_wmake = $(watcom_root)/binl/wmake
+!  else
+test_wmake = $(watcom_root)/binl64/wmake
+!  endif
+! else ifdef __NT386__
+test_wmake = $(watcom_root)\binnt\wmake
+! else ifdef __NTX64__
+!  ifeq host 386
+test_wmake = $(watcom_root)\binnt\wmake
+!  else
+test_wmake = $(watcom_root)\binnt64\wmake
+!  endif
+! else	# DOS
+test_wmake = $(watcom_root)\binw\wmake
+! endif
 !endif
 
 !ifdef __OS2__
@@ -52,6 +86,22 @@ from = $+$(%__CWD__)$-
     # ===========================
     # Build utilities first
     # ===========================
+    @echo *****************************************************************
+!ifdef __NTX64__
+! ifeq host 386
+    @echo Test wmake (32-bit)
+! else
+    @echo Test wmake (64-bit)
+! endif
+!else ifdef __LINUXX64__
+! ifeq host 386
+    @echo Test wmake (32-bit)
+! else
+    @echo Test wmake (64-bit)
+! endif
+!else
+    @echo Test wmake (32-bit)
+!endif
     @cd cmds
     @-wmake -h
     @cd $(from)
