@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,7 @@ file_handle     FStdOut = NULL;
 
 static b_file   _FStdOut = {0};
 
-static  int     IOBufferSize = { IO_BUFFER };
-
-void    InitFileIO( uint buff_size )
+void    InitFileIO( void )
 {
     // Initialize stdout i/o.
     _FStdOut.attrs     = REC_TEXT | WRITE_ONLY;
@@ -57,11 +55,6 @@ void    InitFileIO( uint buff_size )
     _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
-    // Initialize i/o buffer size.
-    if( buff_size < MIN_BUFFER ) {
-        buff_size = MIN_BUFFER;
-    }
-    IOBufferSize = buff_size;
 }
 
 b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
@@ -70,7 +63,6 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
     FILE        *fp;
     b_file      *io;
     struct stat info;
-    int         buff_size;
 
     fp = fopen( f, mode );
     if( fp == NULL ) {
@@ -90,13 +82,7 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
 //        attrs |= CHAR_DEVICE;
     } else {
         attrs |= BUFFERED;
-        buff_size = IOBufferSize;
-        io = FMemAlloc( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
-        if( ( io == NULL ) && ( IOBufferSize > MIN_BUFFER ) ) {
-            // buffer is too big (low on memory) so use small buffer
-            buff_size = MIN_BUFFER;
-            io = FMemAlloc( sizeof( b_file ) );
-        }
+        io = FMemAlloc( sizeof( b_file ) + IO_BUFFER - MIN_BUFFER );
     }
     if( io == NULL ) {
         fclose( fp );
@@ -110,7 +96,7 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
         if( attrs & BUFFERED ) {
             io->b_curs = 0;
             io->read_len = 0;
-            io->buff_size = buff_size;
+            io->buff_size = IO_BUFFER;
             io->high_water = 0;
         }
         FSetIOOk( io );

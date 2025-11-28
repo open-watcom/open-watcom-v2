@@ -35,11 +35,7 @@
 
 
 #define MIN_BUFFER      128
-#if _CPU == 8086
-#define IO_BUFFER       4*1024
-#else
-#define IO_BUFFER       16*1024
-#endif
+#define IO_BUFFER       (16*1024)
 
 typedef enum {
     #define pick(id,text)  FILEIO_ ## id,
