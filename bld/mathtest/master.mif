@@ -48,9 +48,9 @@
 
 t_rundos    = dos_s$(ext) dos_c$(ext) dos_m$(ext) dos_l$(ext) dos_h$(ext)
 t_runcw     = cw_3r$(ext) cw_3s$(ext)
-t_runpls    = #pls_3r$(ext) pls_3s$(ext)
+#t_runpls    = pls_3r$(ext) pls_3s$(ext)
 t_rund4g    = d4g_3r$(ext) d4g_3s$(ext)
-t_runx32    = #x32_3r$(ext) x32_3s$(ext)
+#t_runx32    = x32_3r$(ext) x32_3s$(ext)
 t_runos2    = os2_s$(ext) os2_c$(ext) os2_m$(ext) os2_l$(ext) os2_h$(ext) os2_mt$(ext)
 t_runos3    = os3_3r$(ext) os3_3s$(ext) os3pm_3r$(ext) os3pm_3s$(ext)
 t_runw16    = win_s$(ext) win_c$(ext) win_m$(ext) win_l$(ext)
@@ -566,10 +566,12 @@ $+$(t_rund4g)$- : .SYMBOLIC
     @set PATH=$(%OPATH)
     @set OPATH=
 
+!ifdef t_runpls
 # Run PharLap 386|DOS 32-bit DOS extended executables
 $+$(t_runpls)$- : .SYMBOLIC
     -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
+!endif
 
 # Run Windows 3.x 16-bit executables
 $+$(t_runw16)$- : .SYMBOLIC
