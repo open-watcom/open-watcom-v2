@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,8 @@ char *AsRegName( reg r )
     default:
         return( "EUR" );        /* ERROR: UNKNOWN REGISTER */
     }
-    for( s = buffer; *s; s++ );
+    for( s = buffer; *s != '\0'; s++ )
+        ;
     sprintf( s, "%d", RegIndex( r ) );
     return( buffer );
 }

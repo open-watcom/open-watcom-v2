@@ -57,7 +57,8 @@ char *AsRegName( reg r ) {
     default:
         return( "EUR" );        /* ERROR: UNKNOWN REGISTER */
     }
-    for( s = buffer; *s; s++ );
+    for( s = buffer; *s != '\0'; s++ )
+        ;
     sprintf( s, "%d", RegIndex( r ) );
     return( buffer );
 }
