@@ -77,11 +77,10 @@ static void PageFileIOErr( int error )
     Error( error, "temporary page file", strerror( errno ) );
 }
 
-void    InitObj( void ) {
-//=================
-
+void    InitObj( void )
+//=====================
 // Allocate memory for object code.
-
+{
     ObjCode = NULL; // in case FMemAlloc() fails
     ObjCode = FMemAlloc( WFC_PAGE_SIZE );
     ObjEnd = ObjCode + WFC_PAGE_SIZE;
@@ -99,11 +98,10 @@ void    InitObj( void ) {
     MaxPage = 0;
 }
 
-void    FiniObj( void ) {
-//=======================
-
+void    FiniObj( void )
+//=====================
 // Release memory allocated for object code.
-
+{
     if( ObjCode != NULL ) {
         FMemFree( ObjCode );
         ObjCode = NULL;
@@ -114,11 +112,10 @@ void    FiniObj( void ) {
     }
 }
 
-static  void    DumpCurrPage( void ) {
-//====================================
-
+static  void    DumpCurrPage( void )
+//==================================
 // Dump current page to disk.
-
+{
     if( PageFlags & PF_DIRTY ) {
         if( CurrPage > MaxPage ) {
             MaxPage = CurrPage;
@@ -152,11 +149,10 @@ static  void    LoadPage( unsigned_32 page )
     }
 }
 
-static  void    NewPage( void ) {
-//===============================
-
+static  void    NewPage( void )
+//=============================
 // Page for F-Codes is full. Dump it to disk and start a new one.
-
+{
     if( CurrPage < MaxPage ) {
         LoadPage( CurrPage + 1 );
     } else {
@@ -196,22 +192,20 @@ unsigned_16 ObjOffset( obj_ptr prev_obj )
 }
 
 
-void    AlignEven( void ) {
-//=========================
-
+void    AlignEven( void )
+//=======================
 // Align ObjPtr on an even boundary.
-
+{
     if( (int)(pointer_uint)ObjPtr & 0x0001 ) {
         OutByte( 0 );
     }
 }
 
 
-static  void    SplitValue( void *ptr, int size, int part_1 ) {
-//=============================================================
-
+static  void    SplitValue( void *ptr, int size, int part_1 )
+//===========================================================
 // Split value across pages.
-
+{
     memcpy( ObjPtr, ptr, part_1 );
     PageFlags |= PF_DIRTY;
     NewPage();
@@ -221,11 +215,10 @@ static  void    SplitValue( void *ptr, int size, int part_1 ) {
 }
 
 
-void    OutPtr( pointer val ) {
-//=============================
-
+void    OutPtr( pointer val )
+//===========================
 // Output a pointer to object memory.
-
+{
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( pointer ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
@@ -241,11 +234,10 @@ void    OutPtr( pointer val ) {
 }
 
 
-void    OutU16( unsigned_16 val ) {
-//=================================
-
+void    OutU16( unsigned_16 val )
+//===============================
 // Output 16-bit value to object memory.
-
+{
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( unsigned_16 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
@@ -261,11 +253,10 @@ void    OutU16( unsigned_16 val ) {
 }
 
 
-void    OutInt( inttarg val ) {
-//=============================
-
+void    OutInt( inttarg val )
+//===========================
 // Output target integer value to object memory.
-
+{
 #if _CPU == 8086
     OutU16( val );
 #else // _CPU == 386
@@ -274,11 +265,10 @@ void    OutInt( inttarg val ) {
 }
 
 
-void    OutConst32( signed_32 val ) {
-//===================================
-
+void    OutConst32( signed_32 val )
+//=================================
 // Output 32-bit constant to object memory.
-
+{
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
@@ -294,11 +284,10 @@ void    OutConst32( signed_32 val ) {
 }
 
 
-void    OutObjPtr( obj_ptr val ) {
-//================================
-
+void    OutObjPtr( obj_ptr val )
+//==============================
 // Output object code pointer to object memory.
-
+{
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( obj_ptr ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
@@ -314,11 +303,10 @@ void    OutObjPtr( obj_ptr val ) {
 }
 
 
-void    OutByte( byte val ) {
-//===========================
-
+void    OutByte( byte val )
+//=========================
 // Output a byte to object memory.
-
+{
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( byte ) ) {
             NewPage();
@@ -330,21 +318,19 @@ void    OutByte( byte val ) {
 }
 
 
-void    InitFCode( void ) {
-//=========================
-
+void    InitFCode( void )
+//=======================
 // Setup for accessing F-Codes from object memory.
-
+{
     LoadPage( 0 );
     ObjPtr = ObjCode;
 }
 
 
-static  void    JoinValue( void *ptr, int size, int part_1 ) {
-//============================================================
-
+static  void    JoinValue( void *ptr, int size, int part_1 )
+//==========================================================
 // Join value that is split across pages.
-
+{
     memcpy( ptr, ObjPtr, part_1 );
     LoadPage( CurrPage + 1 );
     ObjPtr = ObjCode;
@@ -353,11 +339,10 @@ static  void    JoinValue( void *ptr, int size, int part_1 ) {
 }
 
 
-void    *GetPtr( void ) {
-//=======================
-
+void    *GetPtr( void )
+//=====================
 // Get a pointer from object memory.
-
+{
     pointer     val;
 
     if( ObjEnd - ObjPtr < sizeof( pointer ) ) {
@@ -374,11 +359,10 @@ void    *GetPtr( void ) {
 }
 
 
-unsigned_16     GetU16( void ) {
-//==============================
-
+unsigned_16     GetU16( void )
+//============================
 // Get an unsigned 16-bit value from object memory.
-
+{
     unsigned_16 val;
 
     if( ObjEnd - ObjPtr < sizeof( unsigned_16 ) ) {
@@ -395,11 +379,10 @@ unsigned_16     GetU16( void ) {
 }
 
 
-signed_32       GetConst32( void ) {
-//==================================
-
+signed_32       GetConst32( void )
+//================================
 // Get 32-bit constant from object memory.
-
+{
     signed_32   val;
 
     if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
@@ -416,11 +399,10 @@ signed_32       GetConst32( void ) {
 }
 
 
-inttarg GetInt( void ) {
-//======================
-
+inttarg GetInt( void )
+//====================
 // Get integer from object memory.
-
+{
 #if _CPU == 8086
     return( GetU16() );
 #else // _CPU == 386
@@ -429,11 +411,10 @@ inttarg GetInt( void ) {
 }
 
 
-obj_ptr GetObjPtr( void ) {
-//=========================
-
+obj_ptr GetObjPtr( void )
+//=======================
 // Get object code pointer from object memory.
-
+{
     obj_ptr     val;
 
     if( ObjEnd - ObjPtr < sizeof( obj_ptr ) ) {
@@ -450,11 +431,10 @@ obj_ptr GetObjPtr( void ) {
 }
 
 
-byte    GetByte( void ) {
-//=======================
-
+byte    GetByte( void )
+//=====================
 // Get a byte from object memory.
-
+{
     byte        val;
 
     if( ObjEnd - ObjPtr < sizeof( byte ) ) {
@@ -467,11 +447,10 @@ byte    GetByte( void ) {
 }
 
 
-obj_ptr FCodeSeek( obj_ptr new_obj ) {
-//====================================
-
+obj_ptr FCodeSeek( obj_ptr new_obj )
+//==================================
 // Set ObjPtr to specified location.
-
+{
     obj_ptr     curr_obj;
 
     curr_obj = _MakeVirtual( CurrPage, ObjPtr );
@@ -481,11 +460,10 @@ obj_ptr FCodeSeek( obj_ptr new_obj ) {
 }
 
 
-obj_ptr FCodeTell( int offset ) {
-//===============================
-
+obj_ptr FCodeTell( int offset )
+//=============================
 // Return current ObjPtr + offset.
-
+{
     obj_ptr     new_obj;
 
     if( ObjEnd - ObjPtr < offset ) {
@@ -497,19 +475,17 @@ obj_ptr FCodeTell( int offset ) {
 }
 
 
-void    FCSeek( void ) {
-//======================
-
+void    FCSeek( void )
+//====================
 // Seek to ObjPtr + offset.
-
+{
     FCodeSeek( FCodeTell( GetU16() ) );
 }
 
 
-FCODE   GetFCode( void ) {
-//========================
-
+FCODE   GetFCode( void )
+//======================
 // Get an F-Code from object memory.
-
+{
     return( GetU16() );
 }
