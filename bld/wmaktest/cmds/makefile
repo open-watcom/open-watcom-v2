@@ -19,6 +19,8 @@ commands += rem$(exe)
 commands += prntdir$(exe)
 !endif
 
+!ifdef %BUILDTEST
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -26,3 +28,12 @@ commands += prntdir$(exe)
 $(commands) : .SYMBOLIC
     @echo Compile: $@
     $(bld_cl) $(c_dir)$^&.c -I"../../watcom/h" $(bld_clflags) $(bld_ldflags)
+
+!else
+
+$(commands) : .SYMBOLIC
+    @echo Compile: $@
+    wcl386 $(c_dir)$^&.c -I"../../watcom/h" -fe=$@
+
+!endif
+
