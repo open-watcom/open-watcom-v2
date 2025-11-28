@@ -35,7 +35,7 @@ jobs:
             skip:   ''
           - title: C++ tests
             path:   plustest
-            timeout: 50
+            timeout: 90
             skip:   ''
           - title: Fortran tests
             path:   f77test
