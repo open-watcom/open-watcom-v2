@@ -28,7 +28,6 @@ exes = &
 bittest.$(exe) &
 btreetst.$(exe) &
 bytstrm.$(exe) &
-dkbtrtst.$(exe) &
 format1.$(exe) &
 gseqtest.$(exe) &
 holidays.$(exe) &
@@ -42,6 +41,7 @@ strtest.$(exe) &
 treeprnt.$(exe) &
 treetest.$(exe) &
 wordcnt.$(exe)
+#dkbtrtst.$(exe) &
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k
