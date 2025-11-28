@@ -9,8 +9,8 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> test ]
 #=======================
-    cdsay .
-    wmake -h
+    set TESTARG=
+[ INCLUDE "<OWROOT>/build/deftest.ctl" ]
 
 [ BLOCK <BLDRULE> testclean ]
 #============================

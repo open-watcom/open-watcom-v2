@@ -2,7 +2,7 @@ mathtest_name = all
 
 extra_run = -v
 
-srcfile = $(mathlib_dir)/c/mathtest.c
+srcfile = ../c/mathtest.c
 
 test_flags = -za99-wx-we-oaxt
 
