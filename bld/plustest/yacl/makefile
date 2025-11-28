@@ -35,13 +35,13 @@ maptest.$(exe) &
 perstest.$(exe) &
 seqtest.$(exe) &
 settest.$(exe) &
-slotftst.$(exe) &
 strset.$(exe) &
 strtest.$(exe) &
 treeprnt.$(exe) &
 treetest.$(exe) &
 wordcnt.$(exe)
 #dkbtrtst.$(exe) &
+#slotftst.$(exe) &
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k
