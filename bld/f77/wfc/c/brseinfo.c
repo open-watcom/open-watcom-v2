@@ -74,7 +74,7 @@ static dw_handle        BIGetUnionType(sym_id);
 static void             BIOutSP(sym_id);
 static void             BISolidifyFunction(sym_id,dw_handle);
 static void             BIOutDummies(entry_pt *);
-static void             BIOutDeclareSP(sym_id,long);
+static void             BIOutDeclareSP(sym_id,dw_flags);
 static void             BIOutSF(sym_id);
 static void             BIOutSPDumInfo(sym_id);
 static void             BIOutVar(sym_id);
@@ -354,7 +354,7 @@ void    BIOutSymbol( sym_id ste_ptr ) {
                     BIRefSymbol( BIGetHandle( ste_ptr ) );
                 }
             } else if( (ste_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_REMOTE_BLOCK ) {
-                BIOutDeclareSP( ste_ptr, 0 );
+                BIOutDeclareSP( ste_ptr, DW_FLAG_NONE );
             } else {
                 if( (ste_ptr->u.ns.flags & SY_PS_ENTRY) == 0 ) {
                     BIOutDeclareSP( ste_ptr, DW_FLAG_GLOBAL );
