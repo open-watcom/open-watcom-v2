@@ -84,7 +84,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
 
     /* emit the TAG_compile_unit */
     abbrev = AB_COMPILE_UNIT | AB_SIBLING;
-    if( cu->flags != 0 ) {
+    if( cu->flags & DW_CU_FLAG_CONTIGUOUS ) {
         abbrev |= AB_LOWHIGH_PC;
     }
     DW_StartDIE( cli, abbrev );

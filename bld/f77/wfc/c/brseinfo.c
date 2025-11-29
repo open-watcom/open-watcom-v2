@@ -141,7 +141,7 @@ void    BIInit( void ) {
         justJunk = DWLocFini( cBIId, DWLocInit( cBIId ) );
         cu.source_filename=BIMKFullPath( CurrFile->name );
         cu.directory=".";
-        cu.flags = true;
+        cu.flags = DW_CU_FLAG_CONTIGUOUS;
         cu.offset_size = ARCHITECTURE;
         cu.segment_size = 0;
         cu.model = DW_MEM_MODEL_none;

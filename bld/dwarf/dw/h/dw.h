@@ -323,6 +323,12 @@ typedef struct {
 } dw_init_info;
 
 /* compilation units */
+enum {
+    DW_CU_FLAG_NONE          = 0,
+    DW_CU_FLAG_NONCONTIGUOUS = 0x00,
+    DW_CU_FLAG_CONTIGUOUS    = 0x01
+};
+
 typedef struct {
     char const      *source_filename;
     char const      *directory;

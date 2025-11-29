@@ -476,7 +476,7 @@ dw_client DwarfInit( void )
 #endif
     cu.source_filename = fname;
     cu.directory       = "";
-    cu.flags           = 1;
+    cu.flags           = DW_CU_FLAG_CONTIGUOUS;
     cu.offset_size     = TARGET_NEAR_POINTER;
     cu.segment_size    = 0;
     cu.model           = DW_MEM_MODEL_none;
