@@ -732,13 +732,13 @@ If this parm is NULL then no name is emitted.
 This is the offset from the low_pc value for the enclosing block that
 the declaration occurs at.
 This is most commonly 0.
-.note uint flags
+.note dw_flags flags
 Some routines have additional flags available here; but unless otherwise noted,
 the following are always available:
 .begnote
 .notehd1 Flag
 .notehd2 Description
-.note DW_DECLARATION
+.note DW_FLAG_DECLARATION
 The object is a declaration, not a definition
 .note DW_FLAG_PRIVATE
 The object has the C++ private attribute.
@@ -811,7 +811,7 @@ The object is a far16 object.
 .*
 .section DWTypedef
 .*
-.dwfunc dw_handle DWENTRY DWTypedef( dw_client cli, dw_handle base_type, const char *name, dw_addr_offset start_scope, uint flags )
+.dwfunc dw_handle DWENTRY DWTypedef( dw_client cli, dw_handle base_type, const char *name, dw_addr_offset start_scope, dw_flags flags )
 .np
 This function gives a name to a type.
 The
@@ -823,7 +823,7 @@ is not allowed.
 .*
 .section DWPointer
 .*
-.dwfunc dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, uint flags )
+.dwfunc dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, dw_flags flags )
 .np
 Declares a pointer type.
 .begnote
@@ -837,24 +837,24 @@ Only the following flags are available:
 .notehd2 Description
 .note DW_FLAG_REFERENCE
 Declare a pointer that is dereferenced automatically.
-.note DW_PTR_TYPE_NORMAL
+.note DW_FLAG_PTR_TYPE_NORMAL
 A normal pointer (i.e. a model dependant pointer).
-.note DW_PTR_TYPE_NEAR16
+.note DW_FLAG_PTR_TYPE_NEAR16
 A near 16-bit pointer.
-.note DW_PTR_TYPE_FAR16
+.note DW_FLAG_PTR_TYPE_FAR16
 A far 16-bit pointer.
-.note DW_PTR_TYPE_HUGE
+.note DW_FLAG_PTR_TYPE_HUGE
 A huge 16-bit pointer.
-.note DW_PTR_TYPE_NEAR32
+.note DW_FLAG_PTR_TYPE_NEAR32
 A near 32-bit pointer.
-.note DW_PTR_TYPE_FAR32
+.note DW_FLAG_PTR_TYPE_FAR32
 A far 32-bit pointer.
 .endnote
 .endnote
 .*
 .section DWString
 .*
-.dwfunc dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, uint flags )
+.dwfunc dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, dw_flags flags )
 .np
 Declares a type to be a block of characters.
 .begnote
@@ -883,7 +883,7 @@ Otherwise see
 .*
 .section DWMemberPointer
 .*
-.dwfunc dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle containing_struct, dw_loc_handle use_location, dw_handle base_type, const char *name, unsigned flags )
+.dwfunc dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle containing_struct, dw_loc_handle use_location, dw_handle base_type, const char *name, dw_flags flags )
 .np
 Declares a C++ pointer type to a data or function member of a class
 or structure.
@@ -909,7 +909,7 @@ The type of the member to which this object may point to.
 .*
 .section DWBeginArray
 .*
-.dwfunc dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset scope, uint flags )
+.dwfunc dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset scope, dw_flags flags )
 .np
 Begin the declaration of an array.
 This function call must be followed by calls to
@@ -963,7 +963,7 @@ The upper bound of the array.
 .*
 .section DWEndArray
 .*
-.dwfunc void DWENTRY DWEndArray( dw_client cli, dw_handle array_hdl, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset scope, uint flags )
+.dwfunc void DWENTRY DWEndArray( dw_client cli, dw_handle array_hdl, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset scope, dw_flags flags )
 .np
 This finishes the writing of the record to describe the array
 A sufficient number of calls to
@@ -999,7 +999,7 @@ A union type.
 .*
 .section DWBeginStruct
 .*
-.dwfunc void DWENTRY DWBeginStruct( dw_client cli, dw_handle struct_hdl, dw_size_t size, const char *name, dw_addr_offset scope, uint flags )
+.dwfunc void DWENTRY DWBeginStruct( dw_client cli, dw_handle struct_hdl, dw_size_t size, const char *name, dw_addr_offset scope, dw_flags flags )
 .np
 Begin the declaration of the structure reserved by a call to
 .id DWStruct
@@ -1031,7 +1031,7 @@ as a friend to the current structure.
 .*
 .section DWAddInheritance
 .*
-.dwfunc dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor, dw_loc_handle loc, uint flags )
+.dwfunc dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor, dw_loc_handle loc, dw_flags flags )
 .np
 Indicate the the current structure inherits from another structure.
 .begnote
@@ -1057,7 +1057,7 @@ is not allowed here.
 .*
 .section DWAddField
 .*
-.dwfunc dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, const char *name, uint flags )
+.dwfunc dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, const char *name, dw_flags flags )
 .np
 Add a data member to a structure.
 .begnote
@@ -1078,7 +1078,7 @@ may be used to indicate a static structure member.
 .*
 .section DWAddBitField
 .*
-.dwfunc dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, dw_size_t byte_size, uint bit_offset, uint bit_size, const char *name, uint flags )
+.dwfunc dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, dw_size_t byte_size, uint bit_offset, uint bit_size, const char *name, dw_flags flags )
 .np
 Add a bitfield member to a structure.
 .begnote
@@ -1118,7 +1118,7 @@ Client must ensure proper Begin/End matching.
 .*
 .section DWBeginEnumeration
 .*
-.dwfunc dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const char *name, dw_addr_offset scope, uint flags )
+.dwfunc dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const char *name, dw_addr_offset scope, dw_flags flags )
 .np
 Begin the definition of an enumerated type.
 .id byte_size
@@ -1167,7 +1167,7 @@ That is, their prototypes, or for use in creating function pointers.
 .*
 .section DWBeginSubroutineType
 .*
-.dwfunc dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, const char *name, dw_addr_offset scope, uint flags )
+.dwfunc dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, const char *name, dw_addr_offset scope, dw_flags flags )
 .np
 Begin the nested declaration of the subroutine type.
 All calls to the DW library after this, until
@@ -1293,7 +1293,7 @@ if non-null indicates which segment the expansion occurs in.
 .*
 .section DWBeginSubroutine
 .*
-.dwfunc dw_handle DWENTRY DWBeginSubroutine( dw_client cli, dw_call_type call_type, dw_handle return_type, dw_loc_handle return_addr_loc, dw_loc_handle frame_base_loc, dw_loc_handle structure_loc, dw_handle member_hdl, dw_loc_handle segment, const char *name, dw_addr_offset start_scope, uint flags )
+.dwfunc dw_handle DWENTRY DWBeginSubroutine( dw_client cli, dw_call_type call_type, dw_handle return_type, dw_loc_handle return_addr_loc, dw_loc_handle frame_base_loc, dw_loc_handle structure_loc, dw_handle member_hdl, dw_loc_handle segment, const char *name, dw_addr_offset start_scope, dw_flags flags )
 .np
 Begin a declaration/definition of a subroutine or entry point.
 This begins a nesting of the debugging information, and must be
@@ -1357,12 +1357,9 @@ This is a virtual subroutine.
 This is a pure virtual subroutine.
 .note DW_FLAG_MAIN
 For Fortran PROGRAM-type subroutines.
-.note DW_SUB_STATIC
+.note DW_FLAG_SUB_STATIC
 A file static subroutine or function.
 Also used for a static member function, and for nested subroutine declarations.
-.note DW_SUB_ENTRY
-A FORTRAN Entry point.
-DW requires only a DW_W_LOW_PC for this type of function.
 .note DW_FLAG_WAS_INLINED
 The function was generated inline by the compiler.
 .note DW_FLAG_DECLARED_INLINED
@@ -1440,7 +1437,7 @@ if non-null indicates which segment the label belongs to.
 .*
 .section DWVariable
 .*
-.dwfunc dw_handle DWENTRY DWVariable( dw_client cli, dw_handle type, dw_loc_handle loc, dw_handle member_of, dw_loc_handle segment, const char *name, dw_addr_offset start_scope, uint flags )
+.dwfunc dw_handle DWENTRY DWVariable( dw_client cli, dw_handle type, dw_loc_handle loc, dw_handle member_of, dw_loc_handle segment, const char *name, dw_addr_offset start_scope, dw_flags flags )
 .np
 Declare a variable.
 .begnote
@@ -1468,7 +1465,7 @@ is set then this is a variable that has been created by the compiler.
 .*
 .section DWConstant
 .*
-.dwfunc dw_handle DWENTRY DWConstant( dw_client cli, dw_handle type, const void *value, dw_size_t len, dw_handle member_of, const char *name, dw_addr_offset start_scope, uint flags )
+.dwfunc dw_handle DWENTRY DWConstant( dw_client cli, dw_handle type, const void *value, dw_size_t len, dw_handle member_of, const char *name, dw_addr_offset start_scope, dw_flags flags )
 .np
 Declare a named constant.
 .begnote
