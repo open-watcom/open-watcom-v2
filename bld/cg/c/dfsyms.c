@@ -646,7 +646,7 @@ void    DFObjLineInitDbgInfo( void )
         }
         InitCU( &cu );
         cu.dbg_pch = NULL;
-#if define( DWARF_CU_REC_NO_PCLO_PCHI ) || (_TARGET & _TARG_8086)
+#if defined( DWARF_CU_REC_NO_PCLO_PCHI ) || (_TARGET & _TARG_8086)
         cu.flags = DW_CU_FLAG_NONE;
 #elif (_TARGET & _TARG_80386)
         cu.flags = _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ? DW_CU_FLAG_NONE : DW_CU_FLAG_CONTIGUOUS;
