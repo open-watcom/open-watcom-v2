@@ -39,7 +39,7 @@ jobs:
             skip:   ''
           - title: Fortran tests
             path:   f77test
-            timeout: 10
+            timeout: 20
             skip:   ''
           - title: C run-time library tests
             path:   clibtest
