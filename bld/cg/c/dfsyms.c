@@ -769,7 +769,7 @@ static  dw_loc_handle   SegLoc( cg_sym_handle sym )
 void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
 /***************************************************/
 {
-    uint            flags;
+    dw_flags        flags;
     fe_attr         attr;
     const char      *name;
     dw_loc_handle   dw_loc;
@@ -781,7 +781,7 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     if( attr & FE_GLOBAL ) {
         flags = DW_FLAG_GLOBAL;
     } else {
-        flags = 0;
+        flags = DW_FLAG_NONE;
     }
     name = FEName( sym );
     dw_segloc = NULL;
@@ -956,13 +956,6 @@ static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
     DWLocTrash( Client, dw_entry );
 }
 
-#if _TARGET & _TARG_8086
-static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
-#elif _TARGET & _TARG_80386
-static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
-#endif
-
-
 
 static  void    DumpLocals( dbg_local *local )
 /********************************************/
@@ -996,7 +989,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     dbg_type            tipe;
     fe_attr             attr;
     const char          *name;
-    uint                flags;
+    dw_flags            flags;
     dw_loc_handle       dw_retloc;
     dw_loc_handle       dw_frameloc;
     dw_loc_handle       dw_segloc;
@@ -1009,10 +1002,14 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
 
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
-    flags = 0;
-#if _TARGET_INTEL
+    flags = DW_FLAG_NONE;
+#if _TARGET & _TARG_8086
     if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
-        flags |= DW_PTR_TYPE_FAR;
+        flags |= DW_FLAG_PTR_TYPE_FAR16;
+    }
+#elif _TARGET & _TARG_80386
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
+        flags |= DW_FLAG_PTR_TYPE_FAR32;
     }
 #endif
     attr = FEAttr( sym );
@@ -1020,7 +1017,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     if( attr & FE_GLOBAL ) {
         flags |= DW_FLAG_GLOBAL;
     } else {
-        flags |= DW_SUB_STATIC;
+        flags |= DW_FLAG_SUB_STATIC;
     }
     if( attr & FE_COMPILER ) {
         flags |= DW_FLAG_ARTIFICIAL;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,10 +98,10 @@ static void TestPointer( void )
 {
     /* const char * far *p */
     DWDeclPos( Client, 36, 12 );
-    DWPointer( Client, ConstCharStar, DW_PTR_TYPE_FAR16 );
+    DWPointer( Client, ConstCharStar, DW_FLAG_PTR_TYPE_FAR16 );
     /* same thing but a reference */
     DWDeclPos( Client, 36, 29 );
-    DWPointer( Client, ConstCharStar, DW_FLAG_REFERENCE | DW_PTR_TYPE_FAR32 );
+    DWPointer( Client, ConstCharStar, DW_FLAG_REFERENCE | DW_FLAG_PTR_TYPE_FAR32 );
 }
 
 
@@ -231,7 +232,7 @@ static void TestStruct1( void )
     */
     struct_foo = DWStruct( Client, DW_ST_STRUCT );
     DWBeginStruct( Client, struct_foo, 12, "foo", 0, 0 );
-    ptr_to_foo = DWPointer( Client, struct_foo, DW_PTR_TYPE_DEFAULT );
+    ptr_to_foo = DWPointer( Client, struct_foo, DW_FLAG_PTR_TYPE_DEFAULT );
     id = DWLocInit( Client );
     field_loc = DWLocFini( Client, id );
     DWAddField( Client, ptr_to_foo, field_loc, "next", 0 );

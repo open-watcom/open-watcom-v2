@@ -80,10 +80,10 @@ dw_handle DWENTRY DWBeginCommonBlock(
     dw_loc_handle   loc,
     dw_loc_handle   segment,
     const char      *name,
-    unsigned        flags )
+    dw_flags        flags )
 {
-    dw_handle                   new;
-    abbrev_code                 abbrev;
+    dw_handle       new;
+    abbrev_code     abbrev;
 
     new = DW_LabelNewHandle( cli );
     abbrev = AB_COMMON_BLOCK | AB_SIBLING | AB_START_REF;
@@ -190,7 +190,7 @@ dw_handle DWENTRY DWBeginSubroutine(
     dw_loc_handle   segment,
     const char      *name,
     dw_addr_offset  start_scope,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -245,7 +245,7 @@ dw_handle DWENTRY DWBeginSubroutine(
     /* AT_name */
     DW_InfoString( cli, name );
     /* AT_external */
-    DW_Info8( cli, (flags & DW_SUB_STATIC) == 0 );
+    DW_Info8( cli, (flags & DW_FLAG_SUB_STATIC) == 0 );
     /* AT_inline */
     DW_Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
     /* AT_calling_convention */
@@ -276,7 +276,7 @@ dw_handle DWENTRY DWBeginSubroutine(
         DW_InfoReloc( cli, DW_W_HIGH_PC );
     }
     /* AT_address_class */
-    DW_Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
+    DW_Info8( cli, (flags & DW_FLAG_PTR_TYPE_MASK) >> DW_FLAG_PTR_TYPE_SHIFT );
     /* AT_frame_base */
     if( frame_base_loc != NULL ){
         DW_InfoEmitLocExpr( cli, sizeof( uint_8 ),frame_base_loc );
@@ -295,7 +295,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
     dw_loc_handle   segment,
     const char      *name,
     dw_addr_offset  start_scope,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -330,7 +330,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
     /* AT_low_pc */
     DW_InfoReloc( cli, DW_W_LOW_PC );
     /* AT_address_class */
-    DW_Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
+    DW_Info8( cli, (flags & DW_FLAG_PTR_TYPE_MASK) >> DW_FLAG_PTR_TYPE_SHIFT );
     /* AT_name */
     DW_InfoString( cli, name );
     DW_EndDIE( cli );
@@ -343,7 +343,7 @@ static void MemFuncCommon(
     abbrev_code     abbrev,
     dw_handle       return_type,
     const char      *name,
-    uint            flags )
+    dw_flags        flags )
 {
     DW_StartDIE( cli, abbrev );
     if( flags & DW_FLAG_ARTIFICIAL ){
@@ -368,7 +368,7 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
     dw_loc_handle   segment,
     dw_loc_handle   loc,
     const char      *name,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -404,7 +404,7 @@ dw_handle DWENTRY DWBeginVirtMemFuncDecl(
     dw_handle       return_type,
     dw_loc_handle   vtable_loc,
     const char      *name,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -550,7 +550,7 @@ dw_handle DWENTRY DWVariable(
     dw_loc_handle   segment,
     const char      *name,
     dw_addr_offset  start_scope,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -606,7 +606,7 @@ dw_handle DWENTRY DWConstant(
     dw_handle       member_of,
     const char      *name,
     dw_addr_offset  start_scope,
-    uint            flags )
+    dw_flags        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;

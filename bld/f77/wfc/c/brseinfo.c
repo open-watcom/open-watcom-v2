@@ -516,7 +516,7 @@ static void BIOutSP( sym_id ste_ptr )
 //===================================
 // Dump the subprogram.
 {
-    uint        flags = 0;
+    dw_flags    flags;
     dw_handle   fret;
 
     DWDeclPos( cBIId, CurrFile->rec, 0 );
@@ -534,6 +534,7 @@ static void BIOutSP( sym_id ste_ptr )
     } else {
         fret = BIGetSPType( ste_ptr );
     }
+    flags = DW_FLAG_NONE;
     if( ste_ptr->u.ns.flags & SY_SENTRY ) {
         fret = DWBeginEntryPoint( cBIId, fret, justJunk, 0, ste_ptr->u.ns.name, 0, flags );
     } else {
@@ -600,8 +601,8 @@ static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static void BIOutDeclareSP( sym_id ste_ptr, long flags )
-//======================================================
+static void BIOutDeclareSP( sym_id ste_ptr, dw_flags flags )
+//==========================================================
 // Dump the name of an external or intrinsic function. and its data
 {
     dw_handle           handle;

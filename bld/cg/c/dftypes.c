@@ -332,41 +332,41 @@ dbg_type DFSubRange( int_32 lo, int_32 hi, dbg_type base )
     return( 0 );
 }
 
-static  uint   DFPtrClass( cg_type ptr_type )
-/*******************************************/
+static dw_flags DFPtrClass( cg_type ptr_type )
+/********************************************/
 {
     const type_def  *tipe_addr;
-    uint            flags;
+    dw_flags        flags;
 
+    flags = DW_FLAG_NONE;
 #if _TARGET_INTEL
     if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR)
       && _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
 #else
     if( ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR ) {
 #endif
-        flags = DW_PTR_TYPE_DEFAULT;
+        flags = DW_FLAG_PTR_TYPE_DEFAULT;
     } else {
-        flags = 0;
         tipe_addr = TypeAddress( ptr_type );
         switch( tipe_addr->refno ) {
         case TY_HUGE_POINTER:
-            flags = DW_PTR_TYPE_HUGE16;
-        //  flags = DW_PTR_TYPE_FAR16;
+            flags = DW_FLAG_PTR_TYPE_HUGE16;
+        //  flags = DW_FLAG_PTR_TYPE_FAR16;
             break;
         case TY_LONG_POINTER:
         case TY_LONG_CODE_PTR:
             if( tipe_addr->length == 6 ) {
-                flags = DW_PTR_TYPE_FAR32;
+                flags = DW_FLAG_PTR_TYPE_FAR32;
             } else {
-                flags = DW_PTR_TYPE_FAR16;
+                flags = DW_FLAG_PTR_TYPE_FAR16;
             }
             break;
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
             if( tipe_addr->length == 4 ) {
-                flags = DW_PTR_TYPE_NEAR32;
+                flags = DW_FLAG_PTR_TYPE_NEAR32;
             } else {
-                flags = DW_PTR_TYPE_NEAR16;
+                flags = DW_FLAG_PTR_TYPE_NEAR16;
             }
             break;
         }
@@ -379,7 +379,7 @@ dbg_type        DFDereference( cg_type ptr_type, dbg_type base )
 /**************************************************************/
 {
     dbg_type    ret;
-    uint        flags;
+    dw_flags    flags;
 
     flags = DFPtrClass( ptr_type );
     ret = DWPointer( Client, base, flags | DW_FLAG_REFERENCE  );
@@ -390,7 +390,7 @@ dbg_type        DFPtr( cg_type ptr_type, dbg_type base )
 /******************************************************/
 {
     dbg_type    ret;
-    uint        flags;
+    dw_flags    flags;
 
     flags = DFPtrClass( ptr_type );
     ret = DWPointer( Client, base, flags );
@@ -634,7 +634,7 @@ dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
 /* need support to get segment value */
 {
     dbg_type        ret;
-    uint            flags;
+    dw_flags        flags;
     dw_loc_handle   dw_segloc;
 
     dw_segloc = DBGLocBase2DF( loc_segment );
@@ -654,7 +654,7 @@ static int WVDFAccess( uint attr )
         attr &= ~FIELD_INTERNAL;
         ret = DW_FLAG_ARTIFICIAL;
     } else {
-        ret = 0;
+        ret = DW_FLAG_NONE;
     }
     switch( attr ) {
     case FIELD_PUBLIC:
@@ -673,12 +673,12 @@ static int WVDFAccess( uint attr )
 dbg_type        DFEndStruct( dbg_struct st )
 /******************************************/
 {
-    field_any      *field;
+    field_any       *field;
     dbg_type        ret;
     dw_loc_id       locid;
     dw_loc_handle   loc;
-    char           *name;
-    uint            flags;
+    char            *name;
+    dw_flags        flags;
 
     ret = st->me;
     if( st->name[0] != '\0' ) {
@@ -784,7 +784,7 @@ dbg_type        DFEndProc( dbg_proc pr )
 {
     parm_entry  *parm;
     dbg_type    proc_type;
-    uint        flags;
+    dw_flags    flags;
 
 
 //  flags = DFPtrClass( pr->call );
