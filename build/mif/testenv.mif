@@ -80,9 +80,9 @@ start : .SYMBOLIC .EXPLICIT
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
 !ifdef clibtest_name
 ! ifeq verbose 0
-    @echo TEST $(clibtest_name)
+    @echo TEST $(clibtest_name) $(host_bits)
 ! endif
-    $(noecho)%append $(log_file) TEST $(clibtest_name)
+    $(noecho)%append $(log_file) TEST $(clibtest_name) $(host_bits)
 !else
 ! ifeq verbose 0
     @echo TEST $(arch)/$(alt_error) $(host_bits)
