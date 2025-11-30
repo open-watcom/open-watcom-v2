@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "fio.h"
 
 
-#define MIN_BUFFER      128
 #define IO_BUFFER       (16*1024)
 
 typedef enum {
@@ -44,16 +43,13 @@ typedef enum {
 } io_status;
 
 typedef struct b_file {                 // file common
-    f_attrs         attrs;                  // file attributes
     FILE            *fp;                    // stream file structure pointer
     io_status       stat;                   // error status
-    long            phys_offset;            // physical offset in file
+    unsigned        buffered;               // file attributes
                                         // file with buffered i/o
     size_t          read_len;               // amount read from buffer
     size_t          b_curs;                 // position in buffer
-    size_t          high_water;             // highest byte written to in buffer
-    size_t          buff_size;              // size of buffer
-    char            buffer[MIN_BUFFER];     // read buffer (must be last field since
+    char            buffer[IO_BUFFER];      // read buffer (must be last field since
 } b_file;                               // bigger buffer may be allocated)
 
 extern void    FSetErr( io_status error, file_handle fp );

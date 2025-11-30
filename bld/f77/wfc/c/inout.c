@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ void    OpenSrc( void ) {
 
     erase_err = ErrFile == NULL;
     MakeName( SrcName, SrcExtn, bld_name );
-    fp = SDOpenText( bld_name, "rt" );
+    fp = SDOpen( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -251,7 +251,7 @@ void    Include( const char *inc_name )
     if( AlreadyOpen( bld_name ) )
         return;
     // try file called <include_name>.FOR.
-    fp = SDOpenText( bld_name, "rt" );
+    fp = SDOpen( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -359,7 +359,7 @@ void    OpenErr( void ) {
     if( (Options & OPT_ERRFILE) && ( (ProgSw & PS_ERR_OPEN_TRIED) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
-        ErrFile = SDOpenText( buffer, "wt" );
+        ErrFile = SDOpen( buffer, "wt" );
         if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, buffer, errmsg );
         }
@@ -550,7 +550,7 @@ static  void    OpenListingFile( bool reopen ) {
         // ignore other listing file options
     } else {
         GetLstName( name );
-        ListFile = SDOpenText( name, "wb" );
+        ListFile = SDOpen( name, "wb" );
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {

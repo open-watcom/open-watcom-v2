@@ -50,19 +50,19 @@ static b_file   _FStdOut = {0};
 void    InitFileIO( void )
 {
     // Initialize stdout i/o.
-    _FStdOut.attrs     = REC_TEXT | WRITE_ONLY;
+    _FStdOut.buffered  = false;
     _FStdOut.fp        = stdout;
-    _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
 }
 
-b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
+b_file  *Openf( const char *f, const char *mode )
 // Open a file.
 {
     FILE        *fp;
     b_file      *io;
     struct stat info;
+    bool        buffered;
 
     fp = fopen( f, mode );
     if( fp == NULL ) {
@@ -80,24 +80,20 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
         // a buggy NT dos box.  We NEVER want to truncate a device.
 //        attrs &= ~TRUNC_ON_WRITE;
 //        attrs |= CHAR_DEVICE;
+        buffered = false;
     } else {
-        attrs |= BUFFERED;
-        io = FMemAlloc( sizeof( b_file ) + IO_BUFFER - MIN_BUFFER );
+        io = FMemAlloc( sizeof( b_file ) );
+        buffered = true;
     }
     if( io == NULL ) {
         fclose( fp );
         FSetErr( FILEIO_NO_MEM, NULL );
     } else {
-        if( mode[0] == 'w' )
-            attrs |= WRITE_ONLY;
-        io->attrs = attrs;
         io->fp = fp;
-        io->phys_offset = 0;
-        if( attrs & BUFFERED ) {
+        io->buffered = buffered;
+        if( buffered ) {
             io->b_curs = 0;
             io->read_len = 0;
-            io->buff_size = IO_BUFFER;
-            io->high_water = 0;
         }
         FSetIOOk( io );
     }
