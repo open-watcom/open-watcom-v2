@@ -83,7 +83,7 @@ test_flags += $(add_br_$(no_br_$^*))
 
 .c: source
 
-test : .SYMBOLIC start test.lnk $(codegen_exes) test_set_result
+test : .SYMBOLIC start $(codegen_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure

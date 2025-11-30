@@ -56,13 +56,14 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .SYMBOLIC start base.lib io.lib test.lnk $(exes)
+test : .SYMBOLIC start base.lib io.lib $(exes)
     $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
@@ -77,6 +78,7 @@ perstest.$(exe) : perstest.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&

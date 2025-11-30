@@ -55,13 +55,14 @@ opt_prag01 = -fhq       # (1) write PCH
 opt_prag02 = -fhq       # (2) read PCH
 opt_thread01 = $(incl_sys_nt)
 
-!ifneq arch i86
-opt_link_opt32 = option stack=128k
-!endif
-
 #
 # architecture specific options
 #
+!ifneq arch i86
+# 32-bit specific
+opt_link_opt32 = option stack=128k
+!endif
+
 !ifeq arch axp
 # AXP specific
 !else ifeq arch 386

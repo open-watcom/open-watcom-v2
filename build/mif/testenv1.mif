@@ -77,14 +77,18 @@ failures_log = failures.log
 buildtest = 1
 !endif
 
-host_bits = (32-bit)
-!ifeq host 386
+!ifeq arch i86
+host_bits = (16-bit)
 !else
-!ifdef __NTX64__
+host_bits = (32-bit)
+! ifeq host 386
+! else
+!  ifdef __NTX64__
 host_bits = (64-bit)
-!else ifdef __LINUXX64__
+!  else ifdef __LINUXX64__
 host_bits = (64-bit)
-!endif
+!  endif
+! endif
 !endif
 
 !ifdef buildtest

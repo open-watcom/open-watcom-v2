@@ -95,11 +95,11 @@ start : .SYMBOLIC .EXPLICIT
     $(noecho)%create $(%ERROR_FILE)
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
-    $(noecho)%create $@
-    $(noecho)%append $@ $(targ_ldb_$(targ_env_$(arch)))
-    $(noecho)%append $@ $(targ_lnk_$(targ_env_$(arch)))
-    $(noecho)%append $@ $(lnk_any)
-    $(noecho)%append $@ $(stack_$(arch))
+    $(noecho)%create test.lnk
+    $(noecho)%append test.lnk $(targ_ldb_$(targ_env_$(arch)))
+    $(noecho)%append test.lnk $(targ_lnk_$(targ_env_$(arch)))
+    $(noecho)%append test.lnk $(lnk_any)
+    $(noecho)%append test.lnk $(stack_$(arch))
 
 .c.obj:
     @set ERROR_MSG=failure to compile $^&
@@ -263,6 +263,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&

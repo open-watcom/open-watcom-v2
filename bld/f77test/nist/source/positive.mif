@@ -9,7 +9,7 @@
 #opt_fm001 = -XTRAOPT
 
 !ifneq arch i86
-opt_link_opt32 = option stack=128k
+# 32-bit specific
 !endif
 
 !ifeq arch axp

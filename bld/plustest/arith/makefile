@@ -62,12 +62,13 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-test : .SYMBOLIC start test.lnk $(exes)
+test : .SYMBOLIC start $(exes)
     $(noecho)%make common_set_result
 
 dmc.$(exe) : dmc.obj
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------

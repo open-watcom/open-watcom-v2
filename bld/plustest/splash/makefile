@@ -46,7 +46,7 @@ exes = &
     justify.$(exe) &
     spltest.$(exe)
 
-test : .SYMBOLIC start test.lnk splash.obj regex.obj $(exes)
+test : .SYMBOLIC start splash.obj regex.obj $(exes)
     $(noecho)%make common_set_result
 
 regex.obj : regex.c

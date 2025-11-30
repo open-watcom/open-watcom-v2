@@ -52,7 +52,7 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .SYMBOLIC start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_result
+test : .SYMBOLIC start er01.lib er02b.obj er03.lib $(exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure

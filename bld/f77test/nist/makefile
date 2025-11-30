@@ -61,7 +61,7 @@ fflags_axp += -INCPath=source #-we-w0
 
 .for: source
 
-test : .SYMBOLIC start test.lnk $(positive_exes) test_set_result
+test : .SYMBOLIC start $(positive_exes) test_set_result
     -$(noecho)%make common_set_result_check
 
 check_result : .procedure

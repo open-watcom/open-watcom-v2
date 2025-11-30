@@ -22,7 +22,7 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -d plusplus.lex
 
-test : .SYMBOLIC start test.lnk re2c.$(exe) rename_result_file
+test : .SYMBOLIC start re2c.$(exe) rename_result_file
     $(noecho)%make common_set_result_check
 
 rename_result_file : .procedure

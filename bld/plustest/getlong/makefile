@@ -23,11 +23,12 @@ exes = ./opt.$(exe)
 test : .SYMBOLIC start $(exes)
     $(noecho)%make common_set_result
 
-./opt.$(exe) : $(objs) test.lnk
+./opt.$(exe) : $(objs)
     @set ERROR_MSG=failure to link $^*
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) @$]@ NAME $@ file {$(objs)}
+    @%make test.lnk
+    $(noecho)$(linker) @test.lnk NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
     @%make set_run_path
     $(run) $@ >>$(%ERROR_FILE)

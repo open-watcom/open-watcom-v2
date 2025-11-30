@@ -61,7 +61,7 @@ sav_file_2 = x$(arch)_$(alt_error).sav
 
 .c: source
 
-test : .SYMBOLIC start start_test test.lnk $(callconv_exes) test_set_result
+test : .SYMBOLIC start start_test $(callconv_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
