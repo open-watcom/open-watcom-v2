@@ -1003,13 +1003,13 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
     flags = DW_FLAG_NONE;
-#if _TARGET & _TARG_8086
+#if _TARGET_INTEL
     if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
-        flags |= DW_FLAG_PTR_TYPE_FAR16;
-    }
-#elif _TARGET & _TARG_80386
-    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
-        flags |= DW_FLAG_PTR_TYPE_FAR32;
+  #if _TARGET & _TARG_8086
+        flags = DW_FLAG_PTR_TYPE_FAR16;
+  #elif _TARGET & _TARG_80386
+        flags = DW_FLAG_PTR_TYPE_FAR32;
+  #endif
     }
 #endif
     attr = FEAttr( sym );

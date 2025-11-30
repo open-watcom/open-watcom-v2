@@ -49,19 +49,19 @@
 
 dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
 {
-    dw_handle                   new;
-    uint                        tmp;
-    abbrev_code                 abbrev;
+    dw_handle       new;
+    uint            tmp;
+    abbrev_code     abbrev;
+    dw_sectnum      sect;
 
-    {/* remember where all the sections start */
-        dw_sectnum                  sect;
-
-        for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
-            if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ) {
-                cli->section_base[sect] = 0;
-            } else {
-                cli->section_base[sect] = CLISectionAbs( cli, sect );
-            }
+    /*
+     * remember where all the sections start
+     */
+    for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
+        if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ) {
+            cli->section_base[sect] = 0;
+        } else {
+            cli->section_base[sect] = CLISectionAbs( cli, sect );
         }
     }
     cli->offset_size = cu->offset_size;
@@ -130,10 +130,10 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_REF );
     DW_EndDIE( cli );
     DW_StartChildren( cli );
-/*
- * these are done now so that the references to their starting point
- * actually point to the start, rather than midway through
-*/
+    /*
+     * these are done now so that the references to their starting point
+     * actually point to the start, rather than midway through
+     */
     DW_InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
     DW_InitDebugMacInfo( cli );
     return( new );
@@ -161,7 +161,7 @@ void DWENTRY DWEndCompileUnit( dw_client cli )
 
 dw_client DWENTRY DWInit( const dw_init_info *info )
 {
-    dw_client                   cli;
+    dw_client       cli;
 
     if( info == NULL )
         return( NULL );

@@ -574,7 +574,6 @@ static bool dwarfClassInfo( TYPE type )
             if( !InDebug ) {
                 dwarfLocation( curr );
             }
-            flags = DW_FLAG_NONE;
             if( curr->flags & SYMF_PRIVATE ) {
                 flags = DW_FLAG_PRIVATE;
             } else if( curr->flags & SYMF_PROTECTED ) {
@@ -705,7 +704,7 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
                        CgTypeSize( type ),
                        name,
                        0,
-                       (defined ? 0 : DW_FLAG_DECLARATION ) );
+                       (defined ? DW_FLAG_NONE : DW_FLAG_DECLARATION ) );
         check_friends = false;
         if( defined ) {
             check_friends = dwarfClassInfo( type );

@@ -646,28 +646,28 @@ dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
     return( ret );
 }
 
-static int WVDFAccess( uint attr )
+static dw_flags WVDFAccess( uint attr )
 {
-    int ret;
+    dw_flags    flags;
 
     if( attr & FIELD_INTERNAL ) {
         attr &= ~FIELD_INTERNAL;
-        ret = DW_FLAG_ARTIFICIAL;
+        flags = DW_FLAG_ARTIFICIAL;
     } else {
-        ret = DW_FLAG_NONE;
+        flags = DW_FLAG_NONE;
     }
     switch( attr ) {
     case FIELD_PUBLIC:
-        ret |= DW_FLAG_PRIVATE;
+        flags |= DW_FLAG_PRIVATE;
         break;
     case FIELD_PROTECTED:
-        ret |= DW_FLAG_PROTECTED;
+        flags |= DW_FLAG_PROTECTED;
         break;
     case FIELD_PRIVATE:
-        ret |= DW_FLAG_PRIVATE;
+        flags |= DW_FLAG_PRIVATE;
         break;
     }
-    return( ret );
+    return( flags );
 }
 
 dbg_type        DFEndStruct( dbg_struct st )
