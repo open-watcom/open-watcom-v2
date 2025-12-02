@@ -60,6 +60,7 @@ jobs:
       uses: ./.github/actions/setowenv
       with:
         suffix: ${{inputs.suffix}}
+        bits: '64'
     - name: ${{matrix.title}}
       uses: ./.github/actions/tests
       with:
@@ -78,6 +79,7 @@ jobs:
       uses: ./.github/actions/setowenv
       with:
         suffix: ${{inputs.suffix}}
+        bits: '32'
     - name: Test Bootstrap
       uses: ./.github/actions/testboot
       with:
