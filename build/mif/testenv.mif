@@ -59,22 +59,22 @@
 !ifdef clibtest_name
 sav_file = $(clibtest_name).sav
 !else
-sav_file = s$(arch)_$(alt_error).sav
+sav_file = s$(arch)$(alt_error)$(host_bits).sav
 !endif
 
 start : .SYMBOLIC .EXPLICIT
 !ifdef dll_loaded
 ! ifdef wasmtest_name
 ! else ifdef ctest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! else ifdef ftest_name
-    @echo using !loaddll $(dll_wfc_$(arch))
+    @echo using !loaddll $(comp_wfc_$(arch)) $(dll_wfc_$(arch))
 ! else ifdef plustest_name
-    @echo using !loaddll $(dll_wpp_$(arch))
+    @echo using !loaddll $(comp_wpp_$(arch)) $(dll_wpp_$(arch))
 ! else ifdef mathtest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! else ifdef clibtest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! endif
 !endif
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
@@ -85,9 +85,9 @@ start : .SYMBOLIC .EXPLICIT
     $(noecho)%append $(log_file) TEST $(clibtest_name) $(host_bits)
 !else
 ! ifeq verbose 0
-    @echo TEST $(arch)/$(alt_error) $(host_bits)
+    @echo TEST $(arch)/$(alt_error) $(host_bits_str)
 ! endif
-    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error) $(host_bits)
+    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error) $(host_bits_str)
 !endif
     $(noecho)%make clean
     $(noecho)%make __clean_sav
@@ -274,7 +274,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>&1
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
-    @%make set_old_run_path
+    @%make set_old_path
 !ifdef ftest_name
     @%make echo_diff
     $(noecho)diff $*.out expected/$*.chk >>exec.out

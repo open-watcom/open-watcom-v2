@@ -81,7 +81,7 @@ start_test : .SYMBOLIC
     %create exec.out
     @set ERROR_FILE=exec.out
     @set PATH=..\dnt386.dll;..\dnt386u.dll;..\nt386.dll;..\nt386u.dll;$(%PATH)
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @if exist s$(arch)$(alt_error)$(host_bits).sav rm s$(arch)$(alt_error)$(host_bits).sav
 
 test.lnk : makefile
     %create test.lnk
@@ -98,7 +98,7 @@ test.lnk : makefile
     @%append test.lnk LIBPATH ../nt386u.dll
 
 save : .SYMBOLIC
-    @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav
+    @if exist exec.out %ren exec.out s$(arch)$(alt_error)$(host_bits).sav
 
 global : .SYMBOLIC
     @%make common_clean

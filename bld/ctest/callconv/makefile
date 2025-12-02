@@ -54,7 +54,7 @@ test_flags_axp = -d1
 alt_error = 00
 !endif
 
-sav_file_2 = x$(arch)_$(alt_error).sav
+sav_file_2 = x$(arch)$(alt_error)$(host_bits).sav
 
 !include testenv.mif
 !include ../callconv.mif

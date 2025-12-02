@@ -12,7 +12,7 @@ test_flags_386 = -mf-3s
 test_flags_i86 = -ml -3
 test_flags_axp =
 
-sav_file_2 = x$(arch)_$(alt_error).sav
+sav_file_2 = x$(arch)$(alt_error)$(host_bits).sav
 
 !include testenv.mif
 

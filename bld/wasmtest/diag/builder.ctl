@@ -9,7 +9,7 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> test ]
 #=======================
-    set TESTARG=
+    set TESTARG=test0=1
 [ INCLUDE "<OWROOT>/build/deftest.ctl" ]
 
 [ BLOCK <BLDRULE> testclean ]
