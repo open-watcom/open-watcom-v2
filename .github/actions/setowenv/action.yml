@@ -58,11 +58,11 @@ runs:
     name: Setup OW Windows bits
     run: |
       if '${{inputs.bits}}' == '32' (
-        if '${{runner.arch}}' = 'X64' (
+        if '${{runner.arch}}' == 'X64' (
           echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
         )
       ) else (
-        if '${{runner.arch}}' = 'X64' (
+        if '${{runner.arch}}' == 'X64' (
           echo ${{github.workspace}}\rel\binnt64>> "%GITHUB_PATH%"
         )
       )
