@@ -15,6 +15,11 @@ inputs:
     required: false
     default: ''
     type: string
+  bits:
+    description: 'tools version'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -33,16 +38,16 @@ runs:
   - if: inputs.ow_version == '' && runner.os == 'Linux'
     name: Setup OW Linux bits
     run: |
-      if [ "${{inputs.bits}}" = "32" ]; then
-        if [ "${{runner.arch}}" = "ARM64" ]; then
+      if [ '${{inputs.bits}}' = '32' ]; then
+        if [ '${{runner.arch}}' = 'ARM64' ]; then
           echo "${{github.workspace}}/rel/arml" >> "$GITHUB_PATH"
-        elif [ "${{runner.arch}}" = "X64" ]; then
+        elif [ '${{runner.arch}}' = 'X64' ]; then
           echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
         fi
       else
-        if [ "${{runner.arch}}" = "ARM64" ]; then
+        if [ '${{runner.arch}}' = 'ARM64' ]; then
           echo "${{github.workspace}}/rel/arml64" >> "$GITHUB_PATH"
-        elif [ "${{runner.arch}}" = "X64" ]; then
+        elif [ '${{runner.arch}}' = 'X64' ]; then
           echo "${{github.workspace}}/rel/binl64" >> "$GITHUB_PATH"
         fi
       fi
@@ -52,12 +57,12 @@ runs:
   - if: inputs.ow_version == '' && runner.os == 'Windows'
     name: Setup OW Windows bits
     run: |
-      if "${{inputs.bits}}" == "32" (
-        if "${{runner.arch}}" = "X64" (
+      if '${{inputs.bits}}' == '32' (
+        if '${{runner.arch}}' = 'X64' (
           echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
         )
       ) else (
-        if "${{runner.arch}}" = "X64" (
+        if '${{runner.arch}}' = 'X64' (
           echo ${{github.workspace}}\rel\binnt64>> "%GITHUB_PATH%"
         )
       )
