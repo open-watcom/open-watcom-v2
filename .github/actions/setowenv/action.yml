@@ -36,13 +36,13 @@ runs:
       if [ "${{inputs.bits}}" = "32" ]; then
         if [ "${{runner.arch}}" = "ARM64" ]; then
           echo "${{github.workspace}}/rel/arml" >> "$GITHUB_PATH"
-        else if [ "${{runner.arch}}" = "X64" ]; then
+        elif [ "${{runner.arch}}" = "X64" ]; then
           echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
         fi
       else
         if [ "${{runner.arch}}" = "ARM64" ]; then
           echo "${{github.workspace}}/rel/arml64" >> "$GITHUB_PATH"
-        else if [ "${{runner.arch}}" = "X64" ]; then
+        elif [ "${{runner.arch}}" = "X64" ]; then
           echo "${{github.workspace}}/rel/binl64" >> "$GITHUB_PATH"
         fi
       fi
