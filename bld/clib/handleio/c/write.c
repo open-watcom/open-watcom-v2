@@ -142,7 +142,7 @@ static int _WCNEAR zero_pad( int handle )
         unsigned long long  len;
 
         memset( zeroBuf, 0, PAD_SIZE );
-        len = end_ptr._64 - cur_ptr._64;
+        len = cur_ptr._64 - end_ptr._64;
         write_amt = PAD_SIZE;
         while( len > 0 ) {
             if( len < PAD_SIZE ) {
