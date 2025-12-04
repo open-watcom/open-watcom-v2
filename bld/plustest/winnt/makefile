@@ -60,7 +60,8 @@ tomdll.dll : tomdll.obj
 
 tomdll.obj : tomdll.c
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
+    @%make echo_cxx
+    $(noecho)$(comp_wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)

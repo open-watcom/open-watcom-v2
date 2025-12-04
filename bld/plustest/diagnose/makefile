@@ -27,7 +27,8 @@ test00 : .SYMBOLIC $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(dia
 
 test01 : .SYMBOLIC source/diag0001.c
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001)
+    @%make echo_cxx
+    -$(noecho)$(comp_wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001)
     @%make set_old_path
     @$(fix_source_path) diag0001.err >>exec.out
 
