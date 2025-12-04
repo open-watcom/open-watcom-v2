@@ -57,12 +57,6 @@
 #include "stkoverf.h"
 
 
-#if defined(__NT__)
-#ifndef INVALID_SET_FILE_POINTER
-#define INVALID_SET_FILE_POINTER 0xFFFFFFFF
-#endif
-#endif
-
 /*
     The _lwrite function writes data to the specified file.
 
@@ -397,7 +391,8 @@ static int _WCNEAR os_write( int handle, const void *buffer, unsigned len, unsig
                     j = 0;
                 }
             }
-            if( j ) {
+            if( rc == 0
+              && j ) {
                 rc = os_write( handle, buf, j, &i );
                 if( rc == ENOSPC ) {
                     len_written += i;
