@@ -52,7 +52,7 @@ test : .SYMBOLIC start splash.obj regex.obj $(exes)
 regex.obj : regex.c
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(wcc_$(arch)) $[* $(test_flags) $(test_flags_$(arch)) -fo=.obj
+    $(noecho)$(comp_wcc_$(arch)) $[* $(test_flags) $(test_flags_$(arch)) -fo=.obj
     @%make set_old_path
 
 clean : .procedure

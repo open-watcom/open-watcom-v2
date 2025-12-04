@@ -601,7 +601,7 @@ wntw_3s.exe : $(srcfile)
 wnt_axp.exe : $(srcfile)
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
+    $(noecho)$(comp_wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_old_path
     @%make set_path_wlink
     @%make echo_link
@@ -611,7 +611,7 @@ wnt_axp.exe : $(srcfile)
 wntw_axp.exe : $(srcfile)
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
+    $(noecho)$(comp_wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_old_path
     @%make set_path_wlink
     @%make echo_link
