@@ -99,7 +99,9 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)%append test.lnk $(targ_ldb_$(targ_env_$(arch)))
     $(noecho)%append test.lnk $(targ_lnk_$(targ_env_$(arch)))
     $(noecho)%append test.lnk $(lnk_any)
+!ifdef stack_$(arch)
     $(noecho)%append test.lnk $(stack_$(arch))
+!endif
 
 .c.obj:
     @set ERROR_MSG=failure to compile $^&

@@ -1010,26 +1010,6 @@ bld_extra_defines = -DINLINETEST
 !        loaddll $(linker) wlinkd.dll
 !      endif
 !    endif
-!  else ifdef wasmtest_name
-!    ifdef %WASMTEST_LINKER
-!      define linker $+$(%WASMTEST_LINKER)$-
-!    endif
-!  else ifdef ctest_name
-!    ifdef %CTEST_LINKER
-!      define linker $+$(%CTEST_LINKER)$-
-!    endif
-!  else ifdef ftest_name
-!    ifdef %FTEST_LINKER
-!      define linker $+$(%FTEST_LINKER)$-
-!    endif
-!  else ifdef plustest_name
-!    ifdef %PLUSTEST_LINKER
-!      define linker $+$(%PLUSTEST_LINKER)$-
-!    endif
-#!  else ifdef mathtest_name
-#!    ifdef %MATHTEST_LINKER
-#!      define linker $+$(%MATHTEST_LINKER)$-
-#!    endif
 !  else
 !    define linker wlink
 !    ifdef use_dll
