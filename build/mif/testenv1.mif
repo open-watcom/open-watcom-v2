@@ -71,6 +71,9 @@
 
 watcom_root = $+$(%WATCOM)$-
 old_path    = $+$(%PATH)$-
+!ifdef __OS2__
+old_path_dll=$+$(%BEGINLIBPATH)$-
+!endif
 
 failures_log = failures.log
 
@@ -92,44 +95,39 @@ host_bits_str = ($(host_bits)-bit)
 
 !ifdef buildtest
 ! ifdef __OS2__
-old_os2_dll_path=$+$(%BEGINLIBPATH)$-
-path_rtdll = $(%OWROOT)\bld\clib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\clib\rtdll\os2.386\mf_s;&
-$(%OWROOT)\bld\cpplib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\cpplib\rtdll\os2.386\mf_s;&
-$(%OWROOT)\bld\mathlib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\mathlib\rtdll\os2.386\mf_s;&
-$(%OWROOT)\bld\mathlib\rtdll\os2.387\mf_r;$(%OWROOT)\bld\mathlib\rtdll\os2.387\mf_s
 path_wcc = $(%OWROOT)\bld\cc\386\os2386.dll\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\os2386.dll\$(%OWOBJDIR)
 path_wpp = $(%OWROOT)\bld\plusplus\386\os2386.dll;$(%OWROOT)\bld\plusplus\i86\os2386.dll
 path_wfc = $(%OWROOT)\bld\f77\wfc\386\os2386;$(%OWROOT)\bld\f77\wfc\i86\os2386
 path_wlib = $(%OWROOT)\bld\nwlib\os2386.dll
 path_wlink = $(%OWROOT)\bld\wl\os2386.dll
 path_wasm = $(%OWROOT)\bld\wasm\os2386
-os2_dll_path=$(path_wcc);$(path_wpp);$(path_wlib);$(path_wlink);
+path_dll=$(path_wcc);$(path_wpp);$(path_wlib);$(path_wlink);
+path_rtdll = $(%OWROOT)\bld\clib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\clib\rtdll\os2.386\mf_s;&
+$(%OWROOT)\bld\cpplib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\cpplib\rtdll\os2.386\mf_s;&
+$(%OWROOT)\bld\mathlib\rtdll\os2.386\mf_r;$(%OWROOT)\bld\mathlib\rtdll\os2.386\mf_s;&
+$(%OWROOT)\bld\mathlib\rtdll\os2.387\mf_r;$(%OWROOT)\bld\mathlib\rtdll\os2.387\mf_s
 ! else ifdef __NTAXP__
-path_rtdll = $(%OWROOT)\bld\clib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\clib\rtdll\winnt.axp\mf_s;&
-$(%OWROOT)\bld\cpplib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\cpplib\rtdll\winnt.axp\mf_s;&
-$(%OWROOT)\bld\mathlib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.axp\mf_s
 path_wcc = $(%OWROOT)\bld\cc\axp\ntaxp.dll\$(%OWOBJDIR)
 path_wpp = $(%OWROOT)\bld\plusplus\axp\ntaxp.dll
 path_wfc = $(%OWROOT)\bld\f77\wfc\axp\ntaxp
 path_wlib = $(%OWROOT)\bld\nwlib\ntaxp.dll
 path_wlink = $(%OWROOT)\bld\wl\ntaxp.dll
 path_wasm = $(%OWROOT)\bld\wasm\ntaxp
+path_rtdll = $(%OWROOT)\bld\clib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\clib\rtdll\winnt.axp\mf_s;&
+$(%OWROOT)\bld\cpplib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\cpplib\rtdll\winnt.axp\mf_s;&
+$(%OWROOT)\bld\mathlib\rtdll\winnt.axp\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.axp\mf_s
 ! else ifdef __NT386__
-path_rtdll = $(%OWROOT)\bld\clib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\clib\rtdll\winnt.386\mf_s;&
-$(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_s;&
-$(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_s;&
-$(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_s
 path_wcc = $(%OWROOT)\bld\cc\386\nt386.dll\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\nt386.dll\$(%OWOBJDIR)
 path_wpp = $(%OWROOT)\bld\plusplus\386\nt386.dll;$(%OWROOT)\bld\plusplus\i86\nt386.dll
 path_wfc = $(%OWROOT)\bld\f77\wfc\386\nt386;$(%OWROOT)\bld\f77\wfc\i86\nt386
 path_wlib = $(%OWROOT)\bld\nwlib\nt386.dll
 path_wlink = $(%OWROOT)\bld\wl\nt386.dll
 path_wasm = $(%OWROOT)\bld\wasm\nt386
-! else ifdef __NTX64__
 path_rtdll = $(%OWROOT)\bld\clib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\clib\rtdll\winnt.386\mf_s;&
 $(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_s;&
 $(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_s;&
 $(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_s
+! else ifdef __NTX64__
 !  ifeq host 386
 path_wcc = $(%OWROOT)\bld\cc\386\nt386.dll\$(%OWOBJDIR)
 path_wpp = $(%OWROOT)\bld\plusplus\386\nt386.dll
@@ -145,6 +143,10 @@ path_wlib = $(%OWROOT)\bld\nwlib\ntx64.dll
 path_wlink = $(%OWROOT)\bld\wl\ntx64.dll
 path_wasm = $(%OWROOT)\bld\wasm\ntx64
 !  endif
+path_rtdll = $(%OWROOT)\bld\clib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\clib\rtdll\winnt.386\mf_s;&
+$(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\cpplib\rtdll\winnt.386\mf_s;&
+$(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.386\mf_s;&
+$(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_r;$(%OWROOT)\bld\mathlib\rtdll\winnt.387\mf_s
 ! else ifdef __DOS__
 path_wcc = $(%OWROOT)\bld\cc\386\dos386\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\dos386\$(%OWOBJDIR)
 path_wpp = $(%OWROOT)\bld\plusplus\386\dos386;$(%OWROOT)\bld\plusplus\i86\dos386
@@ -178,28 +180,76 @@ path_wasm = $(%OWROOT)\bld\wasm\linuxx64
 ! endif
 !else
 ! ifdef __OS2__
-old_os2_dll_path=$+$(%BEGINLIBPATH)$-
-os2_dll_path=$(watcom_root)\binp\dll
-new_path = $(watcom_root)\binp
+path_wcc = $(watcom_root)\binp
+path_wpp = $(watcom_root)\binp
+path_wfc = $(watcom_root)\binp
+path_wlib = $(watcom_root)\binp
+path_wlink = $(watcom_root)\binp
+path_wasm = $(watcom_root)\binp
+path_rtdll = $(watcom_root)\binp\dll
+path_dll=$(watcom_root)\binp\dll
 ! else ifdef __NTAXP__
-new_path=$(watcom_root)\axpnt
+path_wcc = $(watcom_root)\axpnt
+path_wpp = $(watcom_root)\axpnt
+path_wfc = $(watcom_root)\axpnt
+path_wlib = $(watcom_root)\axpnt
+path_wlink = $(watcom_root)\axpnt
+path_wasm = $(watcom_root)\axpnt
+path_rtdll = $(watcom_root)\axpnt
 ! else ifdef __NT386__
-new_path=$(watcom_root)\binnt
+path_wcc = $(watcom_root)\binnt
+path_wpp = $(watcom_root)\binnt
+path_wfc = $(watcom_root)\binnt
+path_wlib = $(watcom_root)\binnt
+path_wlink = $(watcom_root)\binnt
+path_wasm = $(watcom_root)\binnt
+path_rtdll = $(watcom_root)\binnt
 ! else ifdef __NTX64__
 !  ifeq host 386
-new_path=$(watcom_root)\binnt
+path_wcc = $(watcom_root)\binnt
+path_wpp = $(watcom_root)\binnt
+path_wfc = $(watcom_root)\binnt
+path_wlib = $(watcom_root)\binnt
+path_wlink = $(watcom_root)\binnt
+path_wasm = $(watcom_root)\binnt
 !  else
-new_path=$(watcom_root)\binnt64
+path_wcc = $(watcom_root)\binnt64
+path_wpp = $(watcom_root)\binnt64
+path_wfc = $(watcom_root)\binnt64
+path_wlib = $(watcom_root)\binnt64
+path_wlink = $(watcom_root)\binnt64
+path_wasm = $(watcom_root)\binnt64
 !  endif
+path_rtdll = $(watcom_root)\binnt
 ! else ifdef __DOS__
-new_path=$(watcom_root)\binw
+path_wcc = $(watcom_root)\binw
+path_wpp = $(watcom_root)\binw
+path_wfc = $(watcom_root)\binw
+path_wlib = $(watcom_root)\binw
+path_wlink = $(watcom_root)\binw
+path_wasm = $(watcom_root)\binw
 ! else ifdef __LINUX386__
-new_path=$(watcom_root)/binl
+path_wcc = $(watcom_root)/binl
+path_wpp = $(watcom_root)/binl
+path_wfc = $(watcom_root)/binl
+path_wlib = $(watcom_root)/binl
+path_wlink = $(watcom_root)/binl
+path_wasm = $(watcom_root)/binl
 ! else ifdef __LINUXX64__
 !  ifeq host 386
-new_path=$(watcom_root)/binl
+path_wcc = $(watcom_root)/binl
+path_wpp = $(watcom_root)/binl
+path_wfc = $(watcom_root)/binl
+path_wlib = $(watcom_root)/binl
+path_wlink = $(watcom_root)/binl
+path_wasm = $(watcom_root)/binl
 !  else
-new_path=$(watcom_root)/binl64
+path_wcc = $(watcom_root)/binl64
+path_wpp = $(watcom_root)/binl64
+path_wfc = $(watcom_root)/binl64
+path_wlib = $(watcom_root)/binl64
+path_wlink = $(watcom_root)/binl64
+path_wasm = $(watcom_root)/binl64
 !  endif
 ! endif
 !endif
@@ -1368,105 +1418,64 @@ bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !endif
 
 set_path_wcc : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_wcc
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 #    @echo Set PATH for wcc DLL
-    $(noecho)set PATH=$(path_wcc);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wcc);$(%PATH)
 
 set_path_wpp : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_wpp
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 #    @echo Set PATH for wpp DLL
-    $(noecho)set PATH=$(path_wpp);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wpp);$(%PATH)
 
 set_path_wfc : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_wfc
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 #    @echo Set PATH for wfc DLL
-    $(noecho)set PATH=$(path_wfc);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wfc);$(%PATH)
 
 set_path_wlib : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_wlib
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 #    @echo Set PATH for wlib DLL
-    $(noecho)set PATH=$(path_wlib);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wlib);$(%PATH)
 
 set_path_wlink : .PROCEDURE .EXPLICIT
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 !ifdef buildtest
     $(noecho)set WLINK_LNK=bwlink.lnk
-! ifdef path_wlink
+!endif
 #    @echo Set PATH for wlink DLL
-    $(noecho)set PATH=$(path_wlink);$(path_wlib);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wlink);$(path_wlib);$(%PATH)
 
 set_path_wasm : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_wasm
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_dll)
+!endif
 #    @echo Set PATH for wasm
-    $(noecho)set PATH=$(path_wasm);$(old_path)
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
-!endif
-!ifdef os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
-!endif
+    $(noecho)set PATH=$(path_wasm);$(%PATH)
 
-set_run_path : .PROCEDURE .EXPLICIT
-!ifdef buildtest
-! ifdef path_rtdll
+set_path_run : .PROCEDURE .EXPLICIT
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(path_rtdll);$(%BEGINLIBPATH)
+!else ifdef path_rtdll
 #    @echo Set PATH for RTDLL
-    $(noecho)set PATH=$(path_rtdll);$(old_path)
-!  ifdef __OS2__
-    $(noecho)set BEGINLIBPATH=$(path_rtdll)
-!  endif
-! endif
-!else
-    $(noecho)set PATH=$(new_path);$(old_path)
+    $(noecho)set PATH=$(path_rtdll);$(%PATH)
 !endif
 
 set_old_path : .PROCEDURE .EXPLICIT
-!ifdef old_path
+!ifdef __OS2__
+    $(noecho)set BEGINLIBPATH=$(old_path_dll)
+!endif
 #    @echo Restore old PATH
     $(noecho)set PATH=$(old_path)
-!endif
-!ifdef old_os2_dll_path
-    $(noecho)set BEGINLIBPATH=$(old_os2_dll_path)
-!endif
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

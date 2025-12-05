@@ -71,13 +71,12 @@ dmc.$(exe) : dmc.obj
     @%make test.lnk
     @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
-    @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
     -$(noecho)crlf -u dmc.cpp dmctest.out
-    @%make set_run_path
+    @%make set_path_run
     -$(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
     -$(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
     -diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 clean : .procedure

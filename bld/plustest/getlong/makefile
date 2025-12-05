@@ -31,7 +31,7 @@ test : .SYMBOLIC start $(exes)
     @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
-    @%make set_run_path
+    @%make set_path_run
     $(run) $@ >>$(%ERROR_FILE)
     $(run) $@ -h >>$(%ERROR_FILE)
     -$(run) $@ -hopeless >>$(%ERROR_FILE)
@@ -39,7 +39,7 @@ test : .SYMBOLIC start $(exes)
     $(run) $@ -v >>$(%ERROR_FILE)
     -$(run) $@ -o >>$(%ERROR_FILE)
     -$(run) $@ -v=1 >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
 
 clean : .procedure
     @%make echo_clean

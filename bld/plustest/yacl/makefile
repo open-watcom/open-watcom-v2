@@ -68,11 +68,11 @@ dkbtrtst.$(exe) : dkbtrtst.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS executing $^&
 
 perstest.$(exe) : perstest.obj
@@ -84,11 +84,11 @@ perstest.$(exe) : perstest.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS executing $^&
 
 clean : .procedure

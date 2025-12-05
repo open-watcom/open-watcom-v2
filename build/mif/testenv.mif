@@ -286,7 +286,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&
-    @%make set_run_path
+    @%make set_path_run
 !ifdef dos_redirect
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
 !else

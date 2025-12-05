@@ -122,9 +122,9 @@ $(names) : .SYMBOLIC
     @%make test.lnk
     @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$^*.exe
-    @%make set_old_run_path
+    @%make set_old_path
     @echo PASS
 
 !ifdef __OS2__
