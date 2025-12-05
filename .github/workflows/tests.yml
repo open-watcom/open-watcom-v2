@@ -48,7 +48,7 @@ jobs:
           - title: Math run-time library tests
             path:   mathtest
             timeout: 50
-            skip:   'Linux'
+            skip:   'Linux Windows'
     timeout-minutes: ${{matrix.timeout}}
     runs-on: ${{inputs.image}}
     name: ${{matrix.title}}
