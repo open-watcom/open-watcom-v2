@@ -65,12 +65,14 @@ test_set_result : .SYMBOLIC
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) $@ $?
     @%make set_old_path
 
 er03.lib : er03b.obj er03c.obj
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) $@ +er03b.obj +er03c.obj
     @%make set_old_path
 

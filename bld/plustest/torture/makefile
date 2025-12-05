@@ -40,6 +40,7 @@ test_set_result : .SYMBOLIC
 tort.lib : tort.lbc $(objs)
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) @$[@
     @%make set_old_path
 
