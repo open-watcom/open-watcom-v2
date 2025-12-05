@@ -451,15 +451,9 @@ int SetEnvExt( ENV_TRACKER *env )
         return( rc );
     }
 #endif
-#if defined( _MSC_VER )
-    return( putenv( env->name ) );
-#else
-  #if !defined( __WATCOMC__ )
     if( env->value == NULL )
         return( unsetenv( env->name ) );
-  #endif
     return( setenv( env->name, env->value, true ) );
-#endif
 }
 
 int SetEnvSafe( const char *name, const char *value )
@@ -483,12 +477,7 @@ int SetEnvSafe( const char *name, const char *value )
     while( *name != NULLCHAR ) {
         *p++ = ctoupper( *name++ );
     }
-#ifdef _MSC_VER
-    *p++ = '=';
-    len++;  /* include '=' character to search */
-#else
     *p++ = NULLCHAR;
-#endif
     if( value == NULL ) {
         env->value = NULL;
         *p = NULLCHAR;
@@ -501,11 +490,7 @@ int SetEnvSafe( const char *name, const char *value )
         rc = 0;                     // we are deleting the envvar, ignore errors
     }
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
-#ifdef _MSC_VER
-        if( strncmp( (*walk)->name, env->name, len ) == 0 ) {
-#else
         if( strcmp( (*walk)->name, env->name ) == 0 ) {
-#endif
             break;
         }
     }

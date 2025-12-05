@@ -1422,9 +1422,6 @@ STATIC void restoreEnvironment( void )
         len = strlen( p->envVarName );
         env = MallocSafe( sizeof( ENV_TRACKER ) + len + strlen( p->envOldVal ) + 1 );
         strcpy( env->name, p->envVarName );
-#if defined( _MSC_VER )
-        env->name[len] = '=';
-#endif
         env->value = env->name + len + 1;
         strcpy( env->value, p->envOldVal );
         SetEnvExt( env );
