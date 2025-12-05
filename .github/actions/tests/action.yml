@@ -23,14 +23,12 @@ runs:
     with:
       gitpath:  'build binbuild'
       artifact: build ${{inputs.suffix}}
-  - if: runner.os == 'Linux'
+  - if: runner.os == 'Linux' && ! contains( inputs.skip, runner.os )
     name: try tests
     run: |
       echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
       if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
-        if [ ! '${{inputs.skip}}' = '1' ]; then
-          ci/buildx.sh
-        fi
+        ci/buildx.sh
       fi
     env:
       OWBUILD_STAGE: 'tests'
@@ -40,14 +38,12 @@ runs:
       OWDOSBOX:      'dosbox'
       OWVERBOSE:     1
     shell: bash
-  - if: runner.os == 'Windows'
+  - if: runner.os == 'Windows' && ! contains( inputs.skip, runner.os )
     name: try tests
     run: |
       echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
       if not '${{env.OWTESTMODE}}' == '1' (
-        if not '${{inputs.skip}}' == '1' (
-          ci\buildx.cmd ${{inputs.args}}
-        )
+        ci\buildx.cmd ${{inputs.args}}
       )
     env:
       OWBUILD_STAGE: 'tests'
@@ -58,7 +54,7 @@ runs:
       OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
       OWVERBOSE:     1
     shell: cmd
-  - if: runner.os == 'macOS'
+  - if: runner.os == 'macOS' && ! contains( inputs.skip, runner.os )
     name: try tests
     run: |
       echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}

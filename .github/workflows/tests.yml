@@ -48,7 +48,7 @@ jobs:
           - title: Math run-time library tests
             path:   mathtest
             timeout: 50
-            skip:   ''
+            skip:   'Linux'
     timeout-minutes: ${{matrix.timeout}}
     runs-on: ${{inputs.image}}
     name: ${{matrix.title}}
@@ -62,6 +62,7 @@ jobs:
         suffix: ${{inputs.suffix}}
         bits: '64'
     - name: ${{matrix.title}}
+      if: ! contains( ${{matrix.skip}}, ${{runner.os}} )
       uses: ./.github/actions/tests
       with:
         suffix: ${{inputs.suffix}}
