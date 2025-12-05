@@ -80,7 +80,7 @@ DECLARE_HANDLE( HGESTUREINFO );
 #define POINTSTOPOINT( p1, p2 ) \
     { \
         (p1).x = (LONG)(SHORT)LOWORD( *(LONG *)&p2 ); \
-        (p2).y = (LONG)(SHORT)HIWORD( *(LONG *)&p2 ); \
+        (p1).y = (LONG)(SHORT)HIWORD( *(LONG *)&p2 ); \
     }
 #define POINTTOPOINTS( p )  MAKELONG( (short)((p).x), (short)((p).y) )
 
