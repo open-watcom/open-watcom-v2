@@ -105,21 +105,24 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to compile $^&
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(comp_wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @which $(comp_wcc_$(arch))
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .cpp.obj:
     @set ERROR_MSG=failure to compile $@
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .for.obj:
     @set ERROR_MSG=failure to compile $@
     @%make set_path_wfc
     @%make echo_wfc
-    $(noecho)$(comp_wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
+    @which $(comp_wfc_$(arch))
+    $(noecho)$(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
     @%make set_old_path
 
 .asm.obj:
@@ -127,7 +130,8 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     %write xxxxxxxx.tmp  -zld -wx -nm=$[& $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
     @%make set_path_wasm
     @%make echo_as
-    -$(noecho)$(comp_wasm_$(arch)) @xxxxxxxx.tmp
+    @which $(comp_wasm_$(arch))
+    -$(noecho)$(wasm_$(arch)) @xxxxxxxx.tmp
     @%make set_old_path
     @%create tmp.tmp
     @if not exist $^&.out @%create $^&.out
@@ -142,10 +146,12 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to preprocess $@
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(comp_wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
+    @which $(comp_wcc_$(arch))
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
     @set ERROR_MSG=failure to compile $[&.i
     @%make echo_cc
-    $(noecho)$(comp_wcc_$(arch)) $[&.i $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @which $(comp_wcc_$(arch))
+    $(noecho)$(wcc_$(arch)) $[&.i $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .obj.dis:
@@ -196,7 +202,8 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to compile $^&
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(comp_wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    @which $(comp_wcc_$(arch))
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
@@ -204,7 +211,8 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to compile $^&
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
@@ -230,11 +238,13 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !ifdef plustest_name
     @%make set_path_wpp
     @%make echo_cxx
-    -$(noecho)$(comp_wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
+    @which $(comp_wpp_$(arch))
+    -$(noecho)$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
 !else
     @%make set_path_wcc
     @%make echo_cc
-    -$(noecho)$(comp_wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
+    @which $(comp_wcc_$(arch))
+    -$(noecho)$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -243,11 +253,13 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !ifdef plustest_name
     @%make set_path_wpp
     @%make echo_cxx
-    -$(noecho)$(comp_wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
+    @which $(comp_wpp_$(arch))
+    -$(noecho)$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !else
     @%make set_path_wcc
     @%make echo_cc
-    -$(noecho)$(comp_wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
+    @which $(comp_wcc_$(arch))
+    -$(noecho)$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -270,6 +282,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&

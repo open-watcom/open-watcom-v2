@@ -55,13 +55,15 @@ tomdll.dll : tomdll.obj
     @%make set_path_wlink
     @%make echo_link
     @%make tomdll.lnk
+    @which $(linker)
     $(noecho)$(linker) @tomdll.lnk NAME $@
     @%make set_old_path
 
 tomdll.obj : tomdll.c
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)

@@ -69,6 +69,7 @@ dmc.$(exe) : dmc.obj
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------

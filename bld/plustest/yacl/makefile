@@ -64,6 +64,7 @@ dkbtrtst.$(exe) : dkbtrtst.obj
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
@@ -79,6 +80,7 @@ perstest.$(exe) : perstest.obj
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&

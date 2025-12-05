@@ -9,7 +9,8 @@ alt_error=00
     %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
     @%make set_old_path
     cat $@ >>$(%ERROR_FILE)
 
@@ -17,7 +18,8 @@ alt_error=00
     %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
     @%make set_old_path
     cat $@ >>$(%ERROR_FILE)
 
@@ -25,7 +27,8 @@ alt_error=00
     %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
     @%make set_old_path
     cat $@ >>$(%ERROR_FILE)
 

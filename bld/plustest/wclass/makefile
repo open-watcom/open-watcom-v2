@@ -87,6 +87,7 @@ test.$(exe) : $(objs)
     @%make set_path_wlink
     @%make echo_link
     @%make test1.lnk
+    @which $(linker)
     $(noecho)$(linker) @test1.lnk NAME $@
     @%make set_old_path
 

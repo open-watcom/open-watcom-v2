@@ -80,7 +80,8 @@ $(callconv_all_objs) : source/obj.c
     @set ERROR_MSG=failure to compile $@
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(comp_wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=$@
+    @which $(comp_wcc_$(arch))
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=$@
     @%make set_old_path
     %append $(%RUN_FILE) **** $@ pubdef ****
     objxdef $@ >>$(%RUN_FILE)

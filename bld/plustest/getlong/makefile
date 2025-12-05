@@ -28,6 +28,7 @@ test : .SYMBOLIC start $(exes)
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
     @%make set_run_path

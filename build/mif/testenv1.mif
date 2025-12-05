@@ -466,11 +466,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for 386
 !    ifdef __LINUX386__
-!      define comp_wasm_386 $(buildtest_prefix)wasm.exe
+!      define comp_wasm_386 wasm.exe
 !    else ifdef __LINUXX64__
-!      define comp_wasm_386 $(buildtest_prefix)wasm.exe
+!      define comp_wasm_386 wasm.exe
 !    else
-!      define comp_wasm_386 $(buildtest_prefix)wasm
+!      define comp_wasm_386 wasm
 !    endif
 !  else ifdef %WASMTEST_WASM_386
 !    define comp_wasm_386 $+$(%WASMTEST_WASM_386)$-
@@ -483,11 +483,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for i86
 !    ifdef __DOS__
-!      define comp_wasm_i86 $(buildtest_prefix)wasm
+!      define comp_wasm_i86 wasm
 !    else ifdef __OS2__
-!      define comp_wasm_i86 $(buildtest_prefix)wasm
+!      define comp_wasm_i86 wasm
 !    else ifdef __NT386__
-!      define comp_wasm_i86 $(buildtest_prefix)wasm
+!      define comp_wasm_i86 wasm
 !    endif
 !  else ifdef %WASMTEST_WASM_I86
 !    define comp_wasm_i86 $+$(%WASMTEST_WASM_I86)$-
@@ -500,7 +500,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for axp
 !    ifdef __NTAXP__
-!      define comp_wasm_axp $(buildtest_prefix)wasaxp
+!      define comp_wasm_axp wasaxp
 !    endif
 !  else ifdef %WASMTEST_WASM_AXP
 !    define comp_wasm_axp $+$(%WASMTEST_WASM_AXP)$-
@@ -513,7 +513,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wasm_ppc $(buildtest_prefix)wasppc.exe
+!      define comp_wasm_ppc wasppc.exe
 !    endif
 !  else ifdef %WASMTEST_WASM_PPC
 !    define comp_wasm_ppc $+$(%WASMTEST_WASM_PPC)$-
@@ -526,7 +526,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wasm_mps $(buildtest_prefix)wasmps.exe
+!      define comp_wasm_mps wasmps.exe
 !    endif
 !  else ifdef %WASMTEST_WASM_MPS
 !    define comp_wasm_mps $+$(%WASMTEST_WASM_MPS)$-
@@ -539,11 +539,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for 386
 !    ifdef __LINUX386__
-!      define comp_wcc_386 $(buildtest_prefix)wcc386.exe
+!      define comp_wcc_386 wcc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wcc_386 $(buildtest_prefix)wcc386.exe
+!      define comp_wcc_386 wcc386.exe
 !    else
-!      define comp_wcc_386 $(buildtest_prefix)wcc386
+!      define comp_wcc_386 wcc386
 !    endif
 !  else ifdef %CTEST_WCC_386
 !    define comp_wcc_386 $+$(%CTEST_WCC_386)$-
@@ -556,11 +556,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for i86
 !    ifdef __DOS__
-!      define comp_wcc_i86 $(buildtest_prefix)wcc
+!      define comp_wcc_i86 wcc
 !    else ifdef __OS2__
-!      define comp_wcc_i86 $(buildtest_prefix)wcc
+!      define comp_wcc_i86 wcc
 !    else ifdef __NT386__
-!      define comp_wcc_i86 $(buildtest_prefix)wcc
+!      define comp_wcc_i86 wcc
 !    endif
 !  else ifdef %CTEST_WCC_I86
 !    define comp_wcc_i86 $+$(%CTEST_WCC_I86)$-
@@ -579,9 +579,9 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for axp
 !    ifdef __OS2__
-!      define comp_wcc_axp $(buildtest_prefix)wccaxp
+!      define comp_wcc_axp wccaxp
 !    else ifdef __NTAXP__
-!      define comp_wcc_axp $(buildtest_prefix)wccaxp
+!      define comp_wcc_axp wccaxp
 !    endif
 !  else ifdef %CTEST_WCC_AXP
 !    define comp_wcc_axp $+$(%CTEST_WCC_AXP)$-
@@ -594,7 +594,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wcc_ppc $(buildtest_prefix)wccppc.exe
+!      define comp_wcc_ppc wccppc.exe
 !    endif
 !  else ifdef %CTEST_WCC_PPC
 !    define comp_wcc_ppc $+$(%CTEST_WCC_PPC)$-
@@ -607,7 +607,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wcc_mps $(buildtest_prefix)wccmps.exe
+!      define comp_wcc_mps wccmps.exe
 !    endif
 !  else ifdef %CTEST_WCC_MPS
 !    define comp_wcc_mps $+$(%CTEST_WCC_MPS)$-
@@ -619,11 +619,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_386
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_386 $(buildtest_prefix)wccd386.dll
+!      define dll_wcc_386 wccd386.dll
 !    else ifdef __NT386__
-!      define dll_wcc_386 $(buildtest_prefix)wccd386.dll
+!      define dll_wcc_386 wccd386.dll
 !    else ifdef __NTX64__
-!      define dll_wcc_386 $(buildtest_prefix)wccd386.dll
+!      define dll_wcc_386 wccd386.dll
 !    endif
 !  else ifdef %CTEST_DLL_386
 !    define dll_wcc_386 $+$(%CTEST_DLL_386)$-
@@ -641,9 +641,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_i86
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_i86 $(buildtest_prefix)wccd.dll
+!      define dll_wcc_i86 wccd.dll
 !    else ifdef __NT386__
-!      define dll_wcc_i86 $(buildtest_prefix)wccd.dll
+!      define dll_wcc_i86 wccd.dll
 !    endif
 !  else ifdef %CTEST_DLL_I86
 !    define dll_wcc_i86 $+$(%CTEST_DLL_I86)$-
@@ -659,9 +659,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_axp
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_axp $(buildtest_prefix)wccdaxp.dll
+!      define dll_wcc_axp wccdaxp.dll
 !    else ifdef __NTAXP__
-!      define dll_wcc_axp $(buildtest_prefix)wccdaxp.dll
+!      define dll_wcc_axp wccdaxp.dll
 !    endif
 !  else ifdef %CTEST_DLL_AXP
 !    define dll_wcc_axp $+$(%CTEST_DLL_AXP)$-
@@ -674,11 +674,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for 386
 !    ifdef __LINUX386__
-!      define comp_wpp_386 $(buildtest_prefix)wpp386.exe
+!      define comp_wpp_386 wpp386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wpp_386 $(buildtest_prefix)wpp386.exe
+!      define comp_wpp_386 wpp386.exe
 !    else
-!      define comp_wpp_386 $(buildtest_prefix)wpp386
+!      define comp_wpp_386 wpp386
 !    endif
 !  else ifdef %PLUSTEST_WPP_386
 !    define comp_wpp_386 $+$(%PLUSTEST_WPP_386)$-
@@ -691,11 +691,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for i86
 !    ifdef __DOS__
-!      define comp_wpp_i86 $(buildtest_prefix)wpp
+!      define comp_wpp_i86 wpp
 !    else ifdef __OS2__
-!      define comp_wpp_i86 $(buildtest_prefix)wpp
+!      define comp_wpp_i86 wpp
 !    else ifdef __NT386__
-!      define comp_wpp_i86 $(buildtest_prefix)wpp
+!      define comp_wpp_i86 wpp
 !    endif
 !  else ifdef %PLUSTEST_WPP_I86
 !    define comp_wpp_i86 $+$(%PLUSTEST_WPP_I86)$-
@@ -714,9 +714,9 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for axp
 !    ifdef __OS2__
-!      define comp_wpp_axp $(buildtest_prefix)wppaxp
+!      define comp_wpp_axp wppaxp
 !    else ifdef __NTAXP__
-!      define comp_wpp_axp $(buildtest_prefix)wppaxp
+!      define comp_wpp_axp wppaxp
 !    endif
 !  else ifdef %PLUSTEST_WPP_AXP
 !    define comp_wpp_axp $+$(%PLUSTEST_WPP_AXP)$-
@@ -729,7 +729,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wpp_ppc $(buildtest_prefix)wppppc.exe
+!      define comp_wpp_ppc wppppc.exe
 !    endif
 !  else ifdef %PLUSTEST_WPP_PPC
 !    define comp_wpp_ppc $+$(%PLUSTEST_WPP_PPC)$-
@@ -742,7 +742,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wpp_mps $(buildtest_prefix)wppmps.exe
+!      define comp_wpp_mps wppmps.exe
 !    endif
 !  else ifdef %PLUSTEST_WPP_MPS
 !    define comp_wpp_mps $+$(%PLUSTEST_WPP_MPS)$-
@@ -754,11 +754,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wpp_386
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wpp_386 $(buildtest_prefix)wppd386.dll
+!      define dll_wpp_386 wppd386.dll
 !    else ifdef __NT386__
-!      define dll_wpp_386 $(buildtest_prefix)wppd386.dll
+!      define dll_wpp_386 wppd386.dll
 !    else ifdef __NTX64__
-!      define dll_wpp_386 $(buildtest_prefix)wppd386.dll
+!      define dll_wpp_386 wppd386.dll
 !    endif
 !  else ifdef %PLUSTEST_DLL_386
 !    define dll_wpp_386 $+$(%PLUSTEST_DLL_386)$-
@@ -776,9 +776,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wpp_i86
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wpp_i86 $(buildtest_prefix)wppdi86.dll
+!      define dll_wpp_i86 wppdi86.dll
 !    else ifdef __NT386__
-!      define dll_wpp_i86 $(buildtest_prefix)wppdi86.dll
+!      define dll_wpp_i86 wppdi86.dll
 !    endif
 !  else ifdef %PLUSTEST_DLL_I86
 !    define dll_wpp_i86 $+$(%PLUSTEST_DLL_I86)$-
@@ -794,9 +794,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wpp_axp
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wpp_axp $(buildtest_prefix)wppdaxp.dll
+!      define dll_wpp_axp wppdaxp.dll
 !    else ifdef __NTAXP__
-!      define dll_wpp_axp $(buildtest_prefix)wppdaxp.dll
+!      define dll_wpp_axp wppdaxp.dll
 !    endif
 !  else ifdef %PLUSTEST_DLL_AXP
 !    define dll_wpp_axp $+$(%PLUSTEST_DLL_AXP)$-
@@ -809,11 +809,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of F77 compiler for 386
 !    ifdef __LINUX386__
-!      define comp_wfc_386 $(buildtest_prefix)wfc386.exe
+!      define comp_wfc_386 wfc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wfc_386 $(buildtest_prefix)wfc386.exe
+!      define comp_wfc_386 wfc386.exe
 !    else
-!      define comp_wfc_386 $(buildtest_prefix)wfc386
+!      define comp_wfc_386 wfc386
 !    endif
 !  else ifdef %FTEST_WFC_386
 !    define comp_wfc_386 $+$(%FTEST_WFC_386)$-
@@ -826,11 +826,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of F77 compiler for i86
 !    ifdef __DOS__
-!      define comp_wfc_i86 $(buildtest_prefix)wfc
+!      define comp_wfc_i86 wfc
 !    else ifdef __OS2__
-!      define comp_wfc_i86 $(buildtest_prefix)wfc
+!      define comp_wfc_i86 wfc
 !    else ifdef __NT386__
-!      define comp_wfc_i86 $(buildtest_prefix)wfc
+!      define comp_wfc_i86 wfc
 !    endif
 !  else ifdef %FTEST_WFC_I86
 !    define comp_wfc_i86 $+$(%FTEST_WFC_I86)$-
@@ -843,9 +843,9 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of F77 compiler for axp
 !    ifdef __OS2__
-!      define comp_wfc_axp $(buildtest_prefix)wfcaxp
+!      define comp_wfc_axp wfcaxp
 !    else ifdef __NTAXP__
-!      define comp_wfc_axp $(buildtest_prefix)wfcaxp
+!      define comp_wfc_axp wfcaxp
 !    endif
 !  else ifdef %FTEST_WFC_AXP
 !    define comp_wfc_axp $+$(%FTEST_WFC_AXP)$-
@@ -857,11 +857,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wfc_386
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wfc_386 $(buildtest_prefix)wfcd386.dll
+!      define dll_wfc_386 wfcd386.dll
 !    else ifdef __NT386__
-!      define dll_wfc_386 $(buildtest_prefix)wfcd386.dll
+!      define dll_wfc_386 wfcd386.dll
 !    else ifdef __NTX64__
-!      define dll_wfc_386 $(buildtest_prefix)wfcd386.dll
+!      define dll_wfc_386 wfcd386.dll
 !    endif
 !  else ifdef %FTEST_DLL_386
 !    define dll_wfc_386 $+$(%FTEST_DLL_386)$-
@@ -879,11 +879,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wfc_i86
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wfc_i86 $(buildtest_prefix)wfcdi86.dll
+!      define dll_wfc_i86 wfcdi86.dll
 !    else ifdef __NT386__
-!      define dll_wfc_i86 $(buildtest_prefix)wfcdi86.dll
+!      define dll_wfc_i86 wfcdi86.dll
 !    else ifdef __NTX64__
-!      define dll_wfc_i86 $(buildtest_prefix)wfcdi86.dll
+!      define dll_wfc_i86 wfcdi86.dll
 !    endif
 !  else ifdef %FTEST_DLL_I86
 !    define dll_wfc_i86 $+$(%FTEST_DLL_I86)$-
@@ -901,9 +901,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wfc_axp
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wfc_axp $(buildtest_prefix)wfcdaxp.dll
+!      define dll_wfc_axp wfcdaxp.dll
 !    else ifdef __NTAXP__
-!      define dll_wfc_axp $(buildtest_prefix)wfcdaxp.dll
+!      define dll_wfc_axp wfcdaxp.dll
 !    endif
 !  else ifdef %FTEST_DLL_AXP
 !    define dll_wfc_axp $+$(%FTEST_DLL_AXP)$-
@@ -931,33 +931,33 @@ bld_extra_defines = -DINLINETEST
 !ifndef linker
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define linker $(buildtest_prefix)wlink
+!      define linker wlink
 !    else ifdef __DOS__
-!      define linker $(buildtest_prefix)wlink
+!      define linker wlink
 !    else ifdef __NTAXP__
-!      define linker $(buildtest_prefix)wlink
+!      define linker wlink
 !    else ifdef __NT386__
-!      define linker $(buildtest_prefix)wlink
+!      define linker wlink
 !    else ifdef __NTX64__
-!      define linker $(buildtest_prefix)wlink
+!      define linker wlink
 !    else ifdef __LINUXPPC__
-!      define linker $(buildtest_prefix)wlink.exe
+!      define linker wlink.exe
 !    else ifdef __LINUXMIPS__
-!      define linker $(buildtest_prefix)wlink.exe
+!      define linker wlink.exe
 !    else ifdef __LINUX386__
-!      define linker $(buildtest_prefix)wlink.exe
+!      define linker wlink.exe
 !    else ifdef __LINUXX64__
-!      define linker $(buildtest_prefix)wlink.exe
+!      define linker wlink.exe
 !    endif
 !    ifdef use_dll
 !      ifdef __OS2__
-!        loaddll $(linker) $(buildtest_prefix)wlinkd.dll
+!        loaddll $(linker) wlinkd.dll
 !      else ifdef __NTAXP__
-!        loaddll $(linker) $(buildtest_prefix)wlinkd.dll
+!        loaddll $(linker) wlinkd.dll
 !      else ifdef __NT386__
-!        loaddll $(linker) $(buildtest_prefix)wlinkd.dll
+!        loaddll $(linker) wlinkd.dll
 !      else ifdef __NTX64__
-!        loaddll $(linker) $(buildtest_prefix)wlinkd.dll
+!        loaddll $(linker) wlinkd.dll
 !      endif
 !    endif
 !  else ifdef wasmtest_name
@@ -998,25 +998,25 @@ bld_extra_defines = -DINLINETEST
 
 !ifdef buildtest
 !  ifdef __LINUXPPC__
-!    define wlib_any $(buildtest_prefix)wlib.exe
+!    define wlib_any wlib.exe
 !  else ifdef __LINUXMIPS__
-!    define wlib_any $(buildtest_prefix)wlib.exe
+!    define wlib_any wlib.exe
 !  else ifdef __LINUX386__
-!    define wlib_any $(buildtest_prefix)wlib.exe
+!    define wlib_any wlib.exe
 !  else ifdef __LINUXX64__
-!    define wlib_any $(buildtest_prefix)wlib.exe
+!    define wlib_any wlib.exe
 !  else
-!    define wlib_any $(buildtest_prefix)wlib
+!    define wlib_any wlib
 !  endif
 !  ifdef use_dll
 !    ifdef __OS2__
-!      loaddll "$(wlib_any)" $(buildtest_prefix)wlibd.dll
+!      loaddll "$(wlib_any)" wlibd.dll
 !    else ifdef __NTAXP__
-!      loaddll "$(wlib_any)" $(buildtest_prefix)wlibd.dll
+!      loaddll "$(wlib_any)" wlibd.dll
 !    else ifdef __NT386__
-!      loaddll "$(wlib_any)" $(buildtest_prefix)wlibd.dll
+!      loaddll "$(wlib_any)" wlibd.dll
 !    else ifdef __NTX64__
-!      loaddll "$(wlib_any)" $(buildtest_prefix)wlibd.dll
+!      loaddll "$(wlib_any)" wlibd.dll
 !    endif
 !  endif
 !else
@@ -1331,39 +1331,39 @@ bld_incl    = -I"$(hdr_dir)/linux/h"
 
 !ifdef __OS2__
 bld_sys     = os2v2
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=os2
+bld_cl      = wcl386 $(wcl_any) -bt=os2
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __DOS__
 bld_sys     = dos4g
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=dos
+bld_cl      = wcl386 $(wcl_any) -bt=dos
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NTAXP__
 bld_sys     = ntaxp
-bld_cl      = $(buildtest_prefix)wclaxp $(wcl_any) -bt=nt
+bld_cl      = wclaxp $(wcl_any) -bt=nt
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NT386__
 bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl      = wcl386 $(wcl_any) -bt=nt
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NTX64__
 bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl      = wcl386 $(wcl_any) -bt=nt
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXPPC__
 bld_sys     = linuxppc
-bld_cl      = $(buildtest_prefix)wclppc $(wcl_any) -bt=linux
+bld_cl      = wclppc $(wcl_any) -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXMIPS__
 bld_sys     = linuxmips
-bld_cl      = $(buildtest_prefix)wclmps $(wcl_any) -bt=linux
+bld_cl      = wclmps $(wcl_any) -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUX386__
 bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl      = wcl386 $(wcl_any) -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXX64__
 bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl      = wcl386 $(wcl_any) -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !endif
 

@@ -92,9 +92,11 @@ $(batch_cmp) : $(__MAKEFILES__)
 batch_build : .SYMBOLIC $(batch_lnk) $(batch_cmp)
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(comp_wpp_$(arch)) -fc=$(batch_cmp) $(test_flags) $(test_flags_$(arch))
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags) $(test_flags_$(arch))
     @%make set_path_wlink
     @%make echo_link
+    @which $(linker)
     $(noecho)$(linker) @$(batch_lnk)
     @%make set_old_path
 !endif

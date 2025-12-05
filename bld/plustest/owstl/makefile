@@ -120,6 +120,7 @@ $(names) : .SYMBOLIC
     @%make set_path_wlink
     @%make echo_link
     @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
     @%make set_run_path
     $(run) $(exec_prefix)$^*.exe
