@@ -155,24 +155,24 @@ path_wlib = $(%OWROOT)\bld\nwlib\dos386
 path_wlink = $(%OWROOT)\bld\wl\dos386
 path_wasm = $(%OWROOT)\bld\wasm\dos386
 ! else ifdef __LINUX386__
-path_wcc = $(%OWROOT)\bld\cc\386\linux386\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\linux386\$(%OWOBJDIR)
-path_wpp = $(%OWROOT)\bld\plusplus\386\linux386;$(%OWROOT)\bld\plusplus\i86\linux386
-path_wfc = $(%OWROOT)\bld\f77\wfc\386\linux386;$(%OWROOT)\bld\f77\wfc\i86\linux386
+path_wcc = $(%OWROOT)\bld\cc\386\linux386\$(%OWOBJDIR):$(%OWROOT)\bld\cc\i86\linux386\$(%OWOBJDIR)
+path_wpp = $(%OWROOT)\bld\plusplus\386\linux386:$(%OWROOT)\bld\plusplus\i86\linux386
+path_wfc = $(%OWROOT)\bld\f77\wfc\386\linux386:$(%OWROOT)\bld\f77\wfc\i86\linux386
 path_wlib = $(%OWROOT)\bld\nwlib\linux386
 path_wlink = $(%OWROOT)\bld\wl\linux386
 path_wasm = $(%OWROOT)\bld\wasm\linux386
 ! else ifdef __LINUXX64__
 !  ifeq host 386
-path_wcc = $(%OWROOT)\bld\cc\386\linux386\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\linux386\$(%OWOBJDIR)
-path_wpp = $(%OWROOT)\bld\plusplus\386\linux386;$(%OWROOT)\bld\plusplus\i86\linux386
-path_wfc = $(%OWROOT)\bld\f77\wfc\386\linux386;$(%OWROOT)\bld\f77\wfc\i86\linux386
+path_wcc = $(%OWROOT)\bld\cc\386\linux386\$(%OWOBJDIR):$(%OWROOT)\bld\cc\i86\linux386\$(%OWOBJDIR)
+path_wpp = $(%OWROOT)\bld\plusplus\386\linux386:$(%OWROOT)\bld\plusplus\i86\linux386
+path_wfc = $(%OWROOT)\bld\f77\wfc\386\linux386:$(%OWROOT)\bld\f77\wfc\i86\linux386
 path_wlib = $(%OWROOT)\bld\nwlib\linux386
 path_wlink = $(%OWROOT)\bld\wl\linux386
 path_wasm = $(%OWROOT)\bld\wasm\linux386
 !  else
-path_wcc = $(%OWROOT)\bld\cc\386\linuxx64\$(%OWOBJDIR);$(%OWROOT)\bld\cc\i86\linuxx64\$(%OWOBJDIR)
-path_wpp = $(%OWROOT)\bld\plusplus\386\linuxx64;$(%OWROOT)\bld\plusplus\i86\linuxx64
-path_wfc = $(%OWROOT)\bld\f77\wfc\386\linuxx64;$(%OWROOT)\bld\f77\wfc\i86\linuxx64
+path_wcc = $(%OWROOT)\bld\cc\386\linuxx64\$(%OWOBJDIR):$(%OWROOT)\bld\cc\i86\linuxx64\$(%OWOBJDIR)
+path_wpp = $(%OWROOT)\bld\plusplus\386\linuxx64:$(%OWROOT)\bld\plusplus\i86\linuxx64
+path_wfc = $(%OWROOT)\bld\f77\wfc\386\linuxx64:$(%OWROOT)\bld\f77\wfc\i86\linuxx64
 path_wlib = $(%OWROOT)\bld\nwlib\linuxx64
 path_wlink = $(%OWROOT)\bld\wl\linuxx64
 path_wasm = $(%OWROOT)\bld\wasm\linuxx64
@@ -1408,7 +1408,11 @@ set_path_wcc : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_dll)
 !endif
 #    @echo Set PATH for wcc DLL
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wcc):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wcc);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_wpp : .PROCEDURE .EXPLICIT
@@ -1416,7 +1420,11 @@ set_path_wpp : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_dll)
 !endif
 #    @echo Set PATH for wpp DLL
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wpp):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wpp);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_wfc : .PROCEDURE .EXPLICIT
@@ -1424,7 +1432,11 @@ set_path_wfc : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_dll)
 !endif
 #    @echo Set PATH for wfc DLL
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wfc):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wfc);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_wlib : .PROCEDURE .EXPLICIT
@@ -1432,7 +1444,11 @@ set_path_wlib : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_dll)
 !endif
 #    @echo Set PATH for wlib DLL
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wlib):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wlib);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_wlink : .PROCEDURE .EXPLICIT
@@ -1443,7 +1459,11 @@ set_path_wlink : .PROCEDURE .EXPLICIT
     $(noecho)set WLINK_LNK=bwlink.lnk
 !endif
 #    @echo Set PATH for wlink DLL
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wlink):$(path_wlib):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wlink);$(path_wlib);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_wasm : .PROCEDURE .EXPLICIT
@@ -1451,7 +1471,11 @@ set_path_wasm : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_dll)
 !endif
 #    @echo Set PATH for wasm
+!ifdef __UNIX__
+    $(noecho)set PATH=$(path_wasm):$(%PATH)
+!else
     $(noecho)set PATH=$(path_wasm);$(%PATH)
+!endif
     @%make echo_path
 
 set_path_run : .PROCEDURE .EXPLICIT
@@ -1459,7 +1483,11 @@ set_path_run : .PROCEDURE .EXPLICIT
     $(noecho)set BEGINLIBPATH=$(path_rtdll);$(%BEGINLIBPATH)
 !else ifdef path_rtdll
 #    @echo Set PATH for RTDLL
+! ifdef __UNIX__
+    $(noecho)set PATH=$(path_rtdll):$(%PATH)
+! else
     $(noecho)set PATH=$(path_rtdll);$(%PATH)
+! endif
 !endif
     @%make echo_path
 
