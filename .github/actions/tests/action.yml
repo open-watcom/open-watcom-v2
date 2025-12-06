@@ -33,6 +33,7 @@ runs:
     env:
       OWBUILD_STAGE: 'tests'
       OWTESTTARGET:  ${{inputs.path}}
+      OWTESTNOISY:   1
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox'
@@ -48,6 +49,7 @@ runs:
     env:
       OWBUILD_STAGE: 'tests'
       OWTESTTARGET:  ${{inputs.path}}
+      OWTESTNOISY:   1
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox.exe'

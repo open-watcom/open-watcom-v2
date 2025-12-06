@@ -1302,6 +1302,12 @@ targ_lnk_os2axp = system ntaxp
 targ_lnk_lnxppc = system linuxppc
 targ_lnk_lnxmps = system linuxmips
 
+!ifndef noisy
+!ifdef %OWTESTNOISY
+noisy = $(%OWTESTNOISY)
+!endif
+!endif
+
 wpp_any = -fzh -fzs
 !ifndef noisy
 was_any = -zq
