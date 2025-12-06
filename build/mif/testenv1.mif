@@ -1434,6 +1434,11 @@ set_path_wlink : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wlink DLL
     $(noecho)set PATH=$(path_wlink);$(path_wlib);$(%PATH)
+!ifdef __UNIX__
+    @env | sort
+!else
+    @!set
+!endif
 
 set_path_wasm : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
