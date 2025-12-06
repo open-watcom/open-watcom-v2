@@ -1501,9 +1501,9 @@ set_old_path : .PROCEDURE .EXPLICIT
 
 echo_path : .PROCEDURE .EXPLICIT
 !ifdef __UNIX__
-    @!echo "(sh PATH)=$$PATH"
+    $(noecho)!echo "(sh PATH)=$$PATH"
 !else
-    @!echo (cmd PATH)=%PATH%
+    $(noecho)!echo (cmd PATH)=%PATH%
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
