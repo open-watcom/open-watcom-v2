@@ -1403,6 +1403,7 @@ set_path_wcc : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wcc DLL
     $(noecho)set PATH=$(path_wcc);$(%PATH)
+    @%make echo_path
 
 set_path_wpp : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1410,6 +1411,7 @@ set_path_wpp : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wpp DLL
     $(noecho)set PATH=$(path_wpp);$(%PATH)
+    @%make echo_path
 
 set_path_wfc : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1417,6 +1419,7 @@ set_path_wfc : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wfc DLL
     $(noecho)set PATH=$(path_wfc);$(%PATH)
+    @%make echo_path
 
 set_path_wlib : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1424,6 +1427,7 @@ set_path_wlib : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wlib DLL
     $(noecho)set PATH=$(path_wlib);$(%PATH)
+    @%make echo_path
 
 set_path_wlink : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1434,11 +1438,7 @@ set_path_wlink : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wlink DLL
     $(noecho)set PATH=$(path_wlink);$(path_wlib);$(%PATH)
-!ifdef __UNIX__
-    @env | sort
-!else
-    @!set
-!endif
+    @%make echo_path
 
 set_path_wasm : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1446,6 +1446,7 @@ set_path_wasm : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Set PATH for wasm
     $(noecho)set PATH=$(path_wasm);$(%PATH)
+    @%make echo_path
 
 set_path_run : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1454,6 +1455,7 @@ set_path_run : .PROCEDURE .EXPLICIT
 #    @echo Set PATH for RTDLL
     $(noecho)set PATH=$(path_rtdll);$(%PATH)
 !endif
+    @%make echo_path
 
 set_old_path : .PROCEDURE .EXPLICIT
 !ifdef __OS2__
@@ -1461,6 +1463,14 @@ set_old_path : .PROCEDURE .EXPLICIT
 !endif
 #    @echo Restore old PATH
     $(noecho)set PATH=$(old_path)
+    @%make echo_path
+
+echo_path : .PROCEDURE .EXPLICIT
+!ifdef __UNIX__
+    @!echo "(sh PATH)=$PATH"
+!else
+    @!echo (cmd PATH)=%PATH%
+!endif
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
