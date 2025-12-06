@@ -451,14 +451,10 @@ int SetEnvExt( ENV_TRACKER *env )
         return( rc );
     }
 #endif
-    if( env->value == NULL )
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
-        /* OW 1.9 fix */
+    if( env->value == NULL ) {
         unsetenv( env->name );
         return( 0 );
-#else
-        return( unsetenv( env->name ) );
-#endif
+    }
     return( setenv( env->name, env->value, true ) );
 }
 
