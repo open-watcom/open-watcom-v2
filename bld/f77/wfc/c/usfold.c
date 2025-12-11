@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -450,35 +450,35 @@ void    XXPlus( ftn_type *opnd1, ftn_type *opnd2 ) {
 //-------------------------------------------- logical operators
 
 
-void    XLEqv( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XLEqv( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //=================================================
 
     opnd1->logstar1 = ( opnd1->logstar1 == opnd2->logstar1 );
 }
 
 
-void    XLNeqv( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XLNeqv( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //==================================================
 
     opnd1->logstar1 = ( opnd1->logstar1 != opnd2->logstar1 );
 }
 
 
-void    XLAnd( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XLAnd( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //=================================================
 
     opnd1->logstar1 = ( opnd1->logstar1 && opnd2->logstar1 );
 }
 
 
-void    XLOr( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XLOr( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //================================================
 
     opnd1->logstar1 = ( opnd1->logstar1 || opnd2->logstar1 );
 }
 
 
-void    XLNot( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XLNot( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //=================================================
 
     opnd1->logstar1 = !opnd2->logstar1;
@@ -488,35 +488,35 @@ void    XLNot( ftn_type *opnd1, ftn_type *opnd2 ) {
 //-------------------------------------------- bitwise operators
 
 
-void    XBitEqv( ftn_type *opnd1, ftn_type *opnd2 ) {
-//===================================================
-
+void    XBitEqv( ftn_type *opnd1, const ftn_type *opnd2 )
+//=======================================================
+{
     opnd1->intstar4 = ~( opnd1->intstar4 ^ opnd2->intstar4 );
 }
 
 
-void    XBitNeqv( ftn_type *opnd1, ftn_type *opnd2 ) {
-//====================================================
-
+void    XBitNeqv( ftn_type *opnd1, const ftn_type *opnd2 )
+//========================================================
+{
     opnd1->intstar4 = ( opnd1->intstar4 ^ opnd2->intstar4 );
 }
 
 
-void    XBitAnd( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XBitAnd( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //===================================================
 
     opnd1->intstar4 = (opnd1->intstar4 & opnd2->intstar4);
 }
 
 
-void    XBitOr( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XBitOr( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //==================================================
 
     opnd1->intstar4 = ( opnd1->intstar4 | opnd2->intstar4 );
 }
 
 
-void    XBitNot( ftn_type *opnd1, ftn_type *opnd2 ) {
+void    XBitNot( ftn_type *opnd1, const ftn_type *opnd2 ) {
 //===================================================
 
     opnd1->intstar4 = ~opnd2->intstar4;
@@ -526,9 +526,9 @@ void    XBitNot( ftn_type *opnd1, ftn_type *opnd2 ) {
 //------------------------------------------- CMP routines
 
 
-void    XICmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XICmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     if( opnd1->intstar4 < opnd2->intstar4 ) {
@@ -542,9 +542,9 @@ void    XICmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XRCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XRCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     if( opnd1->single < opnd2->single ) {
@@ -558,9 +558,9 @@ void    XRCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XDCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XDCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     if( opnd1->dble < opnd2->dble ) {
@@ -574,9 +574,9 @@ void    XDCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XECmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XECmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     if( opnd1->extended < opnd2->extended ) {
@@ -590,9 +590,9 @@ void    XECmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XCCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     cmp = 2;
@@ -604,9 +604,9 @@ void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XQCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XQCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     cmp = 2;
@@ -618,9 +618,9 @@ void    XQCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XXCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//============================================================================
-
+void    XXCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//==========================================================================
+{
     int         cmp;
 
     cmp = 2;
@@ -632,9 +632,9 @@ void    XXCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 }
 
 
-void    XChCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
-//=============================================================================
-
+void    XChCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
+//===========================================================================
+{
     opnd1->logstar4 = res[ 1 + LexStrCmp( opnd1->cstring.strptr,
                                           opnd1->cstring.len,
                                           opnd2->cstring.strptr,

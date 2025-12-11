@@ -123,11 +123,10 @@ void    FrNodeStr( char *str ) {
 }
 
 
-bool    CmpNode2Str( itnode *itptr, char *str ) {
-//===============================================
-
+bool    CmpNode2Str( itnode *itptr, const char *str )
+//===================================================
 // Compare the "opnd" field of an itnode to a string.
-
+{
     size_t      str_len;
 
     str_len = strlen( str );

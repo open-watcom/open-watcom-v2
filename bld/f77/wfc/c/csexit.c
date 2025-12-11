@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ void    CpExit(void) {
             ( csblock->typ == CS_REMOTEBLOCK ) ) {
             if( block_label->opnd_size == 0 )
                 break;
-            if( CmpNode2Str( block_label, &csblock->label ) ) {
+            if( CmpNode2Str( block_label, csblock->label ) ) {
                 break;
             }
         }

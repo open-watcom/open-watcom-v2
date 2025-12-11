@@ -137,7 +137,7 @@ static void CkRemBlkRec( void )
     while( node->typ != CS_REMOTEBLOCK ) {
         node = node->link;
     }
-    if( CmpNode2Str( CITNode, &node->label ) ) {
+    if( CmpNode2Str( CITNode, node->label ) ) {
         Error( SP_RECURSE );
     }
 }

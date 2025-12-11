@@ -59,7 +59,7 @@ void    CpQuit(void) {
     csblock = CSHead;
     if( block_label->opnd_size != 0 ) {
         for( ;; ) {
-            if( CmpNode2Str( block_label, &csblock->label ) )
+            if( CmpNode2Str( block_label, csblock->label ) )
                 break;
             if( csblock->link == NULL )
                 break;

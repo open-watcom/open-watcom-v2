@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ extern bool    RecEOS( void );
 extern bool    ReqEOS( void );
 extern bool    RecNOpn( void );
 extern bool    ReqNOpn( void );
-extern bool    RecKeyWord( char *key );
+extern bool    RecKeyWord( const char *key );
 extern bool    RecName( void );
 extern bool    ReqName( int index );
 extern bool    RecNWL( void );

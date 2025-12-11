@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,9 +234,9 @@ bool    ReqNOpn( void ) {
 }
 
 
-bool    RecKeyWord( char *key ) {
-//===============================
-
+bool    RecKeyWord( const char *key )
+//===================================
+{
     if( CITNode->opn.ds != DSOPN_NAM )
         return( false );
     return( CmpNode2Str( CITNode, key ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,19 +93,19 @@ static  void    (* const XArithTab[])(ftn_type *, ftn_type *) = {
            &AddX,   &SubX,    &MulX,    &DivX    // xcomplex
                                                  };
 
-static  void    (* const XCmpTab[])(ftn_type *, ftn_type *, const logstar1 *) = {
+static  void    (* const XCmpTab[])(ftn_type *, const ftn_type *, const logstar1 *) = {
 
 // int*1   int*2   integer real    double  extended complex dcomplex xcomplex character
    &XICmp, &XICmp, &XICmp, &XRCmp, &XDCmp, &XECmp,  &XCCmp, &XQCmp,  &XXCmp,  &XChCmp
           };
 
-static  void    (* const XLogicalTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XLogicalTab[])(ftn_type *, const ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XLEqv,    &XLNeqv,   &XLOr,     &XLAnd,    &XLNot
          };
 
-static  void    (* const XBitWiseTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XBitWiseTab[])(ftn_type *, const ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XBitEqv,  &XBitNeqv, &XBitOr,   &XBitAnd,  &XBitNot

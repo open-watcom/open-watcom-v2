@@ -82,7 +82,7 @@ csnode  *NewCSNode( size_t label_len )
     csptr->branch = 0;
     csptr->bottom = 0;
     csptr->block = 0;
-    csptr->label = NULLCHAR;
+    csptr->label[0] = NULLCHAR;
     return( csptr );
 }
 
@@ -121,7 +121,6 @@ void    AddCSNode( byte typ )
 {
     csnode      *new_cs_node;
     itnode      *label;
-    char        *label_ptr;
     size_t      label_len;
 
     if( typ == CS_REMOTEBLOCK ) {
@@ -135,9 +134,8 @@ void    AddCSNode( byte typ )
     CSHead = new_cs_node;
     CSHead->typ = typ;
     CSHead->block = ++BlockNum;
-    label_ptr = &CSHead->label;
-    memcpy( label_ptr, label->opnd, label_len );
-    label_ptr[label_len] = NULLCHAR;
+    memcpy( CSHead->label, label->opnd, label_len );
+    CSHead->label[label_len] = NULLCHAR;
 }
 
 void DelCSNode(void)
