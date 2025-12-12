@@ -753,7 +753,7 @@ The object has the C++ public attribute.
 .*
 .section DWFundamental
 .*
-.dwfunc dw_handle DWENTRY DWFundamental( dw_client cli, char * name, unsigned fund_idx, unsigned size )
+.dwfunc dw_handle DWENTRY DWFundamental( dw_client cli, char * name, dw_ftype fund_idx, unsigned size )
 .np
 Get a handle for a fundamental type.
 .id fund_idx

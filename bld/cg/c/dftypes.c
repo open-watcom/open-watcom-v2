@@ -69,7 +69,7 @@ dbg_type        DFScalar( const char *name, cg_type tipe )
 /********************************************************/
 {
     const type_def  *tipe_addr;
-    int             class;
+    dw_ftype        class;
     dbg_type        ret;
 
     tipe_addr = TypeAddress( tipe );

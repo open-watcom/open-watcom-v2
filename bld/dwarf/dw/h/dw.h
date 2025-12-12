@@ -65,9 +65,9 @@ enum {
 };
 
 /* fundamental types */
-enum {
-    DW_FT_MIN = 1,
-    DW_FT_ADDRESS = DW_FT_MIN,
+typedef enum {
+    DW_FT_NONE = 0,
+    DW_FT_ADDRESS,
     DW_FT_BOOLEAN,
     DW_FT_COMPLEX_FLOAT,
     DW_FT_FLOAT,
@@ -75,8 +75,9 @@ enum {
     DW_FT_SIGNED_CHAR,
     DW_FT_UNSIGNED,
     DW_FT_UNSIGNED_CHAR,
-    DW_FT_MAX
-};
+    DW_FT_MAX,
+    DW_FT_MIN = DW_FT_ADDRESS
+} dw_ftype;
 
 /* type modifiers */
 enum {
@@ -419,7 +420,7 @@ extern dw_handle    DWENTRY DWHandle( dw_client cli, dw_struct_type kind );
 extern void         DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl );
 
 /* typing information */
-extern dw_handle    DWENTRY DWFundamental( dw_client, char const * __name, unsigned __fund_idx, unsigned __size );
+extern dw_handle    DWENTRY DWFundamental( dw_client, char const * __name, dw_ftype __fund_idx, unsigned __size );
 extern dw_handle    DWENTRY DWModifier( dw_client, dw_handle __base_type, uint __modifiers );
 extern dw_handle    DWENTRY DWTypedef( dw_client, dw_handle __base_type, char const *__name,
                                 dw_addr_offset __scope, dw_flags __flags );

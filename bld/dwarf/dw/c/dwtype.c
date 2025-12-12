@@ -60,7 +60,7 @@ void DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl )
     cli->defset = set_hdl;
 }
 
-dw_handle DWENTRY DWFundamental( dw_client cli, char const *name, unsigned fund_idx, unsigned size )
+dw_handle DWENTRY DWFundamental( dw_client cli, char const *name, dw_ftype fund_idx, unsigned size )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;

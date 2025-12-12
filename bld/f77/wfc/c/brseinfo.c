@@ -549,7 +549,7 @@ static void BIOutSP( sym_id ste_ptr )
 }
 
 
-static int BIMapType( TYPE typ ) {
+static dw_ftype BIMapType( TYPE typ ) {
 //===============================
 
 // Map our type to a DWARF fundamental type
@@ -568,7 +568,7 @@ static int BIMapType( TYPE typ ) {
     case( FT_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
     case( FT_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
     }
-    return( 0 );
+    return( DW_FT_NONE );
 }
 
 
@@ -751,16 +751,6 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
 }
 
 
-static dw_handle BIGetBaseType( TYPE typ ) {
-//=========================================
-
-// Get initialized base type
-
-    DWDeclPos( cBIId, CurrFile->rec, 0 );
-    return( baseTypes[typ] );
-}
-
-
 static dw_handle BIGetArrayType( sym_id ste_ptr ) {
 //=================================================
 
@@ -772,7 +762,8 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
     dw_handle   ret;
 
     dim_cnt = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
-    data.index_type = BIGetBaseType( FT_INTEGER );
+    DWDeclPos( cBIId, CurrFile->rec, 0 );
+    data.index_type = baseTypes[FT_INTEGER];
     bounds = &ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo;
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
     while( dim_cnt-- > 0 ) {
