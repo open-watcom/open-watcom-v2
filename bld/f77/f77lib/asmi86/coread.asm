@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -83,7 +84,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_LOG_1             ; return LOGICAL*1 type
+        mov     AX,FPT_LOG_1            ; return LOGICAL*1 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpLOG1
 
@@ -100,7 +101,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_LOG_4             ; return LOGICAL*4 type
+        mov     AX,FPT_LOG_4            ; return LOGICAL*4 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpLOG4
 
@@ -117,7 +118,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_INT_1             ; return INTEGER*1 type
+        mov     AX,FPT_INT_1            ; return INTEGER*1 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpINT1
 
@@ -134,7 +135,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_INT_2             ; return INTEGER*2 type
+        mov     AX,FPT_INT_2            ; return INTEGER*2 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpINT2
 
@@ -151,7 +152,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_INT_4             ; return INTEGER*4 type
+        mov     AX,FPT_INT_4            ; return INTEGER*4 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpINT4
 
@@ -168,7 +169,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_REAL_4            ; return REAL*4 type
+        mov     AX,FPT_REAL_4           ; return REAL*4 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpREAL
 
@@ -185,7 +186,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_REAL_8            ; return REAL*8 type
+        mov     AX,FPT_REAL_8           ; return REAL*8 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpDBLE
 
@@ -202,7 +203,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_REAL_16           ; return REAL*16 type
+        mov     AX,FPT_REAL_16          ; return REAL*16 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpXTND
 
@@ -219,7 +220,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_CPLX_8            ; return COMPLEX*8 type
+        mov     AX,FPT_CPLX_8           ; return COMPLEX*8 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpCPLX
 
@@ -236,7 +237,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_CPLX_16           ; return COMPLEX*16 type
+        mov     AX,FPT_CPLX_16          ; return COMPLEX*16 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpDBCX
 
@@ -253,7 +254,7 @@ if _MODEL and _BIG_DATA
 endif
         pop     ES                      ; restore registers
         pop     DI                      ; ...
-        mov     AX,PT_CPLX_32           ; return COMPLEX*32 type
+        mov     AX,FPT_CPLX_32          ; return COMPLEX*32 type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@InpXTCX
 

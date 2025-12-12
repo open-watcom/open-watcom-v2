@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 /**************** IMPORTANT NOTE *******************************
 
-  data in files:  ptypes.inc, ptypes.h and ptypdefn.h 
-  
+  data in files:  ptypes.inc, ptypes.h and ptypdefn.h
+
   must corespond each to other
 
 ****************************************************************/
@@ -40,20 +41,21 @@
 #ifndef WF77_PTYPES_INCLUDED
 #define WF77_PTYPES_INCLUDED
 
-#define PT_NOTYPE       0            // no type
-#define PT_LOG_1        1            // logical*1
-#define PT_LOG_4        2            // logical*4
-#define PT_INT_1        3            // integer*1
-#define PT_INT_2        4            // integer*2
-#define PT_INT_4        5            // integer*4
-#define PT_REAL_4       6            // real*4
-#define PT_REAL_8       7            // real*8
-#define PT_REAL_16      8            // real*16
-#define PT_CPLX_8       9            // complex*8
-#define PT_CPLX_16      10           // complex*16
-#define PT_CPLX_32      11           // complex*32
-#define PT_CHAR         12           // character
-#define PT_STRUCT       13           // structure
-#define PT_ARRAY        14           // array
+#define FPT_NOTYPE      0           // no type
+#define FPT_LOG_1       1           // logical*1
+#define FPT_LOG_4       2           // logical*4
+#define FPT_INT_1       3           // integer*1
+#define FPT_INT_2       4           // integer*2
+#define FPT_INT_4       5           // integer*4
+#define FPT_REAL_4      6           // real*4
+#define FPT_REAL_8      7           // real*8
+#define FPT_REAL_16     8           // real*16
+#define FPT_CPLX_8      9           // complex*8
+#define FPT_CPLX_16     10          // complex*16
+#define FPT_CPLX_32     11          // complex*32
+#define FPT_CHAR        12          // character
+#define FPT_STRUCT      13          // structure
+#define FPT_ARRAY       14          // array
+#define FPT_NOT_STARTED 15          //
 
 #endif

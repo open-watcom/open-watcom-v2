@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -196,7 +197,7 @@ endif
         pop     dword ptr IORslt        ; ...
         push    4[EAX]                  ; ...
         pop     dword ptr IORslt+4      ; ...
-        mov     EAX,PT_CHAR             ; return CHARACTER*n type
+        mov     EAX,FPT_CHAR            ; return CHARACTER*n type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc IOChar
 
@@ -205,7 +206,7 @@ endif
         defn    IOStr
         mov     dword ptr IORslt,EAX    ; put SCB in IORslt
         mov     dword ptr IORslt+4,EDX  ; ...
-        mov     EAX,PT_CHAR             ; return CHARACTER*n type
+        mov     EAX,FPT_CHAR            ; return CHARACTER*n type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc IOStr
 
@@ -215,7 +216,7 @@ endif
         mov     dword ptr IORslt,EAX    ; ... data pointer
         mov     dword ptr IORslt+4,EDX  ; ... number of elements
         mov     byte ptr IORslt+12,BL   ; ... type of array
-        mov     EAX,PT_ARRAY            ; return ARRAY type
+        mov     EAX,FPT_ARRAY           ; return ARRAY type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc IOArr
 
@@ -225,16 +226,16 @@ endif
         mov     dword ptr IORslt,EAX    ; ... data pointer
         mov     dword ptr IORslt+4,EDX  ; ... number of elements
         mov     dword ptr IORslt+8,EBX  ; ... element size
-        mov     AL,PT_CHAR              ; ... type of array
+        mov     AL,FPT_CHAR             ; ... type of array
         mov     byte ptr IORslt+12,AL   ; ...
-        mov     EAX,PT_ARRAY            ; return ARRAY type
+        mov     EAX,FPT_ARRAY           ; return ARRAY type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc IOChArr
 
 
         xdefp   RT@EndIO
         defp    RT@EndIO
-        mov     EAX,PT_NOTYPE           ; return "no i/o items remaining"
+        mov     EAX,FPT_NOTYPE          ; return "no i/o items remaining"
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@EndIO
 

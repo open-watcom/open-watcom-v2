@@ -1406,7 +1406,7 @@ static  dbg_type        GetDbgType( sym_id sym )
             // character*(*) variable/array
             if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
-                sprintf( new_name, "%s*(*)", DBGNames[PT_CHAR] );
+                sprintf( new_name, "%s*(*)", DBGNames[FPT_CHAR] );
                 return( DBCharBlockNamed( new_name, 0 ) );
             }
             loc = DBLocInit();
@@ -1426,7 +1426,7 @@ static  dbg_type        GetDbgType( sym_id sym )
         return( sym->u.ns.xt.record->dbi );
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%lu", DBGNames[PT_CHAR], (unsigned long)sym->u.ns.xt.size );
+        sprintf( new_name, "%s*%lu", DBGNames[FPT_CHAR], (unsigned long)sym->u.ns.xt.size );
         return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
@@ -1449,7 +1449,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type )
     while( dim_cnt-- > 0 ) {
         lo = *bounds++;
         hi = *bounds++;
-        DBDimCon( db_arr, DBGTypes[PT_INT_4], lo, hi );
+        DBDimCon( db_arr, DBGTypes[FPT_INT_4], lo, hi );
     }
     return( DBEndArray( db_arr ) );
 }
@@ -1461,9 +1461,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
 {
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
-        return( DBGTypes[PT_INT_2] );
+        return( DBGTypes[FPT_INT_2] );
 #else
-        return( DBGTypes[PT_INT_4] );
+        return( DBGTypes[FPT_INT_4] );
 #endif
     } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1482,9 +1482,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
         // We must assign a return type to bar, assume that it is a subroutine
         // Since we don't really know what it is.
 #if _CPU == 8086
-        return( DBGTypes[PT_INT_2] );
+        return( DBGTypes[FPT_INT_2] );
 #else
-        return( DBGTypes[PT_INT_4] );
+        return( DBGTypes[FPT_INT_4] );
 #endif
     } else {
         return( DBG_NIL_TYPE );
@@ -1635,13 +1635,13 @@ static  void    InitDBGTypes( void )
 {
     int         typ;
 
-    if( DBGTypes[PT_LOG_1] == DBG_NIL_TYPE ) {
-        for( typ = PT_LOG_1; typ <= PT_REAL_16; ++typ ) {
+    if( DBGTypes[FPT_LOG_1] == DBG_NIL_TYPE ) {
+        for( typ = FPT_LOG_1; typ <= FPT_REAL_16; ++typ ) {
             DBGTypes[typ] = DBScalar( DBGNames[typ], MkCGType( typ ) );
         }
-        DBGTypes[PT_CPLX_8]  = DBFtnType( DBGNames[PT_CPLX_8],  T_DBG_COMPLEX );
-        DBGTypes[PT_CPLX_16] = DBFtnType( DBGNames[PT_CPLX_16], T_DBG_DCOMPLEX );
-        DBGTypes[PT_CPLX_32] = DBFtnType( DBGNames[PT_CPLX_32], T_DBG_XCOMPLEX );
+        DBGTypes[FPT_CPLX_8]  = DBFtnType( DBGNames[FPT_CPLX_8],  T_DBG_COMPLEX );
+        DBGTypes[FPT_CPLX_16] = DBFtnType( DBGNames[FPT_CPLX_16], T_DBG_DCOMPLEX );
+        DBGTypes[FPT_CPLX_32] = DBFtnType( DBGNames[FPT_CPLX_32], T_DBG_XCOMPLEX );
     }
 }
 
@@ -1676,7 +1676,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type )
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
         // an allocated array, until we get a decent db_loc system.
         while( dim_cnt-- > 0 ) {
-            DBDimCon( db_arr, DBGTypes[PT_INT_4], 1, 1 );
+            DBDimCon( db_arr, DBGTypes[FPT_INT_4], 1, 1 );
         }
         return( DBEndArray( db_arr ) );
     }

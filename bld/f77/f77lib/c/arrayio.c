@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +42,14 @@ static  void    NextArrayItem(void) {
 //===============================
 
     if( IOCB->flags & IOF_OUTPT ) {
-        if( IOCB->typ == PT_CHAR ) {
+        if( IOCB->typ == FPT_CHAR ) {
             IORslt.string.strptr = IOCB->arr_desc.data;
             IORslt.string.len = IOCB->arr_desc.elmt_size;
         } else {
             IOItemResult( IOCB->arr_desc.data, IOCB->typ );
         }
     } else {
-        if( IOCB->typ == PT_CHAR ) {
+        if( IOCB->typ == FPT_CHAR ) {
             IORslt.string.strptr = IOCB->arr_desc.data;
             IORslt.string.len = IOCB->arr_desc.elmt_size;
         } else {
@@ -70,11 +70,11 @@ void    ArrayIOType(void) {
         NextArrayItem();
     } else {
         IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == PT_ARRAY ) {
+        if( IOCB->typ == FPT_ARRAY ) {
             IOCB->typ = IORslt.arr_desc.typ;
             IOCB->flags |= IOF_ARRAY_IO;
             IOCB->arr_desc = IORslt.arr_desc;
-            if( IOCB->typ != PT_CHAR ) {
+            if( IOCB->typ != FPT_CHAR ) {
                 IOCB->arr_desc.elmt_size = SizeVars[ IOCB->typ ];
             }
             NextArrayItem();

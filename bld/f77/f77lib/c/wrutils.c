@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,39 +211,39 @@ void    IOItemResult( char PGM *src, PTYPE typ ) {
 //==============================================
 
     switch( typ ) {
-    case PT_LOG_1:
+    case FPT_LOG_1:
         *(logstar4 *)(&IORslt) = *(logstar1 *)src;
         break;
-    case PT_LOG_4:
+    case FPT_LOG_4:
         *(logstar4 *)(&IORslt) = *(logstar4 *)src;
         break;
-    case PT_INT_1:
+    case FPT_INT_1:
         *(intstar4 *)(&IORslt) = *(intstar1 *)src;
         break;
-    case PT_INT_2:
+    case FPT_INT_2:
         *(intstar4 *)(&IORslt) = *(intstar2 *)src;
         break;
-    case PT_INT_4:
+    case FPT_INT_4:
         *(intstar4 *)(&IORslt) = *(intstar4 *)src;
         break;
-    case PT_REAL_4:
+    case FPT_REAL_4:
         *(single *)(&IORslt) = *(single *)src;
         break;
-    case PT_REAL_8:
+    case FPT_REAL_8:
         *(double *)(&IORslt) = *(double *)src;
         break;
-    case PT_REAL_16:
+    case FPT_REAL_16:
         *(extended *)(&IORslt) = *(extended *)src;
         break;
-    case PT_CPLX_8:
+    case FPT_CPLX_8:
         ((scomplex *)(&IORslt))->imagpart = ((scomplex *)src)->imagpart;
         ((scomplex *)(&IORslt))->realpart = ((scomplex *)src)->realpart;
         break;
-    case PT_CPLX_16:
+    case FPT_CPLX_16:
         ((dcomplex *)(&IORslt))->imagpart = ((dcomplex *)src)->imagpart;
         ((dcomplex *)(&IORslt))->realpart = ((dcomplex *)src)->realpart;
         break;
-    case PT_CPLX_32:
+    case FPT_CPLX_32:
         ((xcomplex *)(&IORslt))->imagpart = ((xcomplex *)src)->imagpart;
         ((xcomplex *)(&IORslt))->realpart = ((xcomplex *)src)->realpart;
         break;

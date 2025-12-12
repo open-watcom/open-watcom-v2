@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,7 +285,7 @@ void            FCLoc( void ) {
 
     typ_info = GetU16();
     arg = XPop();
-    if( typ_info == PT_CHAR ) {
+    if( typ_info == FPT_CHAR ) {
         arg = SCBPointer( arg );
     } else {
         cg_typ = CGType( arg );

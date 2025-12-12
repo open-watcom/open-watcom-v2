@@ -238,14 +238,14 @@ void    FCDoneParenExpr( void ) {
     cg_cmplx    z;
 
     typ_info = GetU16();
-    if( (typ_info == PT_CPLX_8)
-      || (typ_info == PT_CPLX_16)
-      || (typ_info == PT_CPLX_32) ) {
+    if( (typ_info == FPT_CPLX_8)
+      || (typ_info == FPT_CPLX_16)
+      || (typ_info == FPT_CPLX_32) ) {
         XPopCmplx( &z, GetType( typ_info ) );
         val = z.imagpart;
         XPush( CGUnary( O_PARENTHESIS, z.imagpart, CGType( val ) ) );
         val = z.realpart;
-    } else if( typ_info == PT_CHAR ) {
+    } else if( typ_info == FPT_CHAR ) {
         val = XPop();
     } else {
         val = XPopValue( GetType( typ_info ) );

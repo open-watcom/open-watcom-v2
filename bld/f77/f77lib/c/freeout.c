@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,18 +158,18 @@ void    FreeOut( void ) {
     for(;;) {
         typ = IOTypeRtn();
         IOCB->typ = typ;
-        if( typ == PT_NOTYPE ) break;
-        if( typ == PT_ARRAY ) {
+        if( typ == FPT_NOTYPE ) break;
+        if( typ == FPT_ARRAY ) {
             IOCB->arr_desc = IORslt.arr_desc;
             typ = IOCB->arr_desc.typ;
             IOCB->typ = typ;
-            if( typ == PT_CHAR ) {
+            if( typ == FPT_CHAR ) {
                 IORslt.string.len = IOCB->arr_desc.elmt_size;
             } else {
                 IOCB->arr_desc.elmt_size = SizeVars[ typ ];
             }
             for(;;) {
-                if( typ == PT_CHAR ) {
+                if( typ == FPT_CHAR ) {
                     IORslt.string.strptr = IOCB->arr_desc.data;
                 } else {
                     IOItemResult( IOCB->arr_desc.data, typ );

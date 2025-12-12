@@ -78,7 +78,7 @@ void    IOPrologue( void ) {
     byte        form;
     byte        accm;
 
-    IOCB->typ = PT_NOT_STARTED;
+    IOCB->typ = FPT_NOT_STARTED;
     if( IOCB->flags & BAD_REC ) {
         IOErr( IO_IREC );
         // never return

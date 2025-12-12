@@ -126,14 +126,14 @@ void    DoFreeIn( void ) {
 
     fcb = IOCB->fileinfo;
     FreeIOType();
-    while( IOCB->typ != PT_NOTYPE ) {
+    while( IOCB->typ != FPT_NOTYPE ) {
         CheckEor();
         Blanks();
         RptNum();
         if( fcb->col >= fcb->len ) {
             while( IOCB->rptnum-- > 0 ) {
                 FreeIOType();
-                if( IOCB->typ == PT_NOTYPE ) {
+                if( IOCB->typ == FPT_NOTYPE ) {
                     break;
                 }
             }
@@ -146,7 +146,7 @@ void    DoFreeIn( void ) {
             case ' ':
                 for(;;) {
                     FreeIOType();
-                    if( IOCB->typ == PT_NOTYPE )
+                    if( IOCB->typ == FPT_NOTYPE )
                         break;
                     if( IOCB->rptnum-- <= 1 ) {
                         break;
@@ -252,7 +252,7 @@ void    CheckEor( void ) {
     fcb = IOCB->fileinfo;
     while( fcb->col >= fcb->len ) {
         NextRec();
-        if( IOCB->typ != PT_CHAR ) {
+        if( IOCB->typ != FPT_CHAR ) {
             Blanks();
         }
     }
@@ -293,16 +293,16 @@ static  void    InNumber( void ) {
     col = IOCB->fileinfo->col; // save position in case of repeat specifier
     for(;;) {
         IOCB->fileinfo->col = col;
-        if( IOCB->typ >= PT_REAL_4 ) {
-            GetFloat( &value, ( IOCB->typ - PT_REAL_4 ) );
+        if( IOCB->typ >= FPT_REAL_4 ) {
+            GetFloat( &value, ( IOCB->typ - FPT_REAL_4 ) );
             switch( IOCB->typ ) {
-            case PT_REAL_4:
+            case FPT_REAL_4:
                 *(single PGM *)(IORslt.pgm_ptr) = value;
                 break;
-            case PT_REAL_8:
+            case FPT_REAL_8:
                 *(double PGM *)(IORslt.pgm_ptr) = value;
                 break;
-            case PT_REAL_16:
+            case FPT_REAL_16:
                 *(extended PGM *)(IORslt.pgm_ptr) = value;
                 break;
             default:
@@ -312,13 +312,13 @@ static  void    InNumber( void ) {
         } else {
             GetInt( &intval );
             switch( IOCB->typ ) {
-            case PT_INT_1:
+            case FPT_INT_1:
                 *(intstar1 PGM *)(IORslt.pgm_ptr) = intval;
                 break;
-            case PT_INT_2:
+            case FPT_INT_2:
                 *(intstar2 PGM *)(IORslt.pgm_ptr) = intval;
                 break;
-            case PT_INT_4:
+            case FPT_INT_4:
                 *(intstar4 PGM *)(IORslt.pgm_ptr) = intval;
                 break;
             default:
@@ -327,7 +327,7 @@ static  void    InNumber( void ) {
             }
         }
         FreeIOType();
-        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == FPT_NOTYPE ) ) {
             break;
         }
     }
@@ -364,10 +364,10 @@ static  void    InLog( void ) {
 big_break:
     for(;;) {
         switch( IOCB->typ ) {
-        case PT_LOG_1:
+        case FPT_LOG_1:
             *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
             break;
-        case PT_LOG_4:
+        case FPT_LOG_4:
             *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
             break;
         default:
@@ -375,7 +375,7 @@ big_break:
             // never return
         }
         FreeIOType();
-        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == FPT_NOTYPE ) ) {
             break;
         }
     }
@@ -392,7 +392,7 @@ static  void    InCplx( void ) {
     fcb = IOCB->fileinfo;
     fcb->col++;
     Blanks();
-    GetFloat( &value.realpart, ( IOCB->typ - PT_CPLX_8 ) );
+    GetFloat( &value.realpart, ( IOCB->typ - FPT_CPLX_8 ) );
     Blanks();
     CheckEor();
     if( fcb->buffer[fcb->col] != ',' ) {
@@ -402,7 +402,7 @@ static  void    InCplx( void ) {
     fcb->col++;
     Blanks();
     CheckEor();
-    GetFloat( &value.imagpart, ( IOCB->typ - PT_CPLX_8 ) );
+    GetFloat( &value.imagpart, ( IOCB->typ - FPT_CPLX_8 ) );
     Blanks();
     if( fcb->buffer[fcb->col] != ')' ) {
         IOErr( IO_BAD_CHAR );
@@ -412,15 +412,15 @@ static  void    InCplx( void ) {
     rpt = IOCB->rptnum;
     for(;;) {
         switch( IOCB->typ ) {
-        case PT_CPLX_8:
+        case FPT_CPLX_8:
             ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
             ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
-        case PT_CPLX_16:
+        case FPT_CPLX_16:
             ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
             ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
-        case PT_CPLX_32:
+        case FPT_CPLX_32:
             ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
             ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
@@ -429,7 +429,7 @@ static  void    InCplx( void ) {
             // never return
         }
         FreeIOType();
-        if( ( rpt-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+        if( ( rpt-- <= 1 ) || ( IOCB->typ == FPT_NOTYPE ) ) {
             break;
         }
     }
@@ -442,7 +442,7 @@ static  void    InString( void ) {
     int         save_col;
 
     if( IOCB->rptnum == 0 ) {
-        if( IOCB->typ != PT_CHAR ) {
+        if( IOCB->typ != FPT_CHAR ) {
             IOErr( IO_FREE_MISMATCH );
             // never return
         }
@@ -451,14 +451,14 @@ static  void    InString( void ) {
     } else {
         save_col = IOCB->fileinfo->col;
         for(;;) {
-            if( IOCB->typ != PT_CHAR ) {
+            if( IOCB->typ != FPT_CHAR ) {
                 IOErr( IO_FREE_MISMATCH );
                 // never return
             }
             IOCB->fileinfo->col = save_col;
             GetString();
             FreeIOType();
-            if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+            if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == FPT_NOTYPE ) ) {
                 break;
             }
         }

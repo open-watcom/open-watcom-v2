@@ -422,7 +422,7 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
     arg = XPop();
     cg_typ = GetType( arg_type );
     if( !TypePointer( CGType( arg ) ) ) {
-        if( ( arg_type == PT_CPLX_8 ) || ( arg_type == PT_CPLX_16 ) || ( arg_type == PT_CPLX_32 ) ) {
+        if( ( arg_type == FPT_CPLX_8 ) || ( arg_type == FPT_CPLX_16 ) || ( arg_type == FPT_CPLX_32 ) ) {
             arg = CmplxAddr( arg, XPop() );
         } else {
             arg = TmpPtr( MkTmp( arg, cg_typ ), cg_typ );
@@ -581,7 +581,7 @@ void    FCCall( void ) {
                 }
             }
 #endif
-        } else if( arg_type == PT_CHAR ) {
+        } else if( arg_type == FPT_CHAR ) {
             // character data (including character arrays)
             if( Options & OPT_DESCRIPTOR ) {
                 pass_scb = true;
@@ -634,22 +634,22 @@ void    FCCall( void ) {
             }
         } else if( (arg_aux != NULL) && (arg_aux->info & PASS_BY_VALUE) ) {
             chk_foreign = false;
-            if( arg_type == PT_CPLX_8 ) {
+            if( arg_type == FPT_CPLX_8 ) {
                 XPopCmplx( &z, TY_COMPLEX );
                 CGAddParm( call, z.realpart, TY_SINGLE );
                 arg = z.imagpart;
                 cg_typ = TY_SINGLE;
-            } else if( arg_type == PT_CPLX_16 ) {
+            } else if( arg_type == FPT_CPLX_16 ) {
                 XPopCmplx( &z, TY_DCOMPLEX );
                 CGAddParm( call, z.realpart, TY_DOUBLE );
                 arg = z.imagpart;
                 cg_typ = TY_DOUBLE;
-            } else if( arg_type == PT_CPLX_32 ) {
+            } else if( arg_type == FPT_CPLX_32 ) {
                 XPopCmplx( &z, TY_XCOMPLEX );
                 CGAddParm( call, z.realpart, TY_LONGDOUBLE );
                 arg = z.imagpart;
                 cg_typ = TY_LONGDOUBLE;
-            } else if( arg_type == PT_STRUCT ) {
+            } else if( arg_type == FPT_STRUCT ) {
                 arg = ArgValue( arg_type, &cg_typ );
             } else {
                 arg = ArgValue( arg_type, &cg_typ );
@@ -662,7 +662,7 @@ void    FCCall( void ) {
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
                         new_typ = TY_INT_4;
                     }
-                } else if( ( arg_type == PT_LOG_1 ) || ( arg_type == PT_LOG_4 ) ) {
+                } else if( ( arg_type == FPT_LOG_1 ) || ( arg_type == FPT_LOG_4 ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
                         new_typ = TY_UINT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
@@ -670,7 +670,7 @@ void    FCCall( void ) {
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
                         new_typ = TY_UINT_4;
                     }
-                } else { // must be PT_REAL_4 or PT_REAL_8 or PT_REAL_16
+                } else { // must be FPT_REAL_4 or FPT_REAL_8 or FPT_REAL_16
                     if( arg_aux->info & ARG_SIZE_4 ) {
                         new_typ = TY_SINGLE;
                     } else if( arg_aux->info & ARG_SIZE_8 ) {

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -71,7 +72,7 @@ include mdef.inc
         xdefp   RT@InpLOG1
         defp    RT@InpLOG1              ; input LOGICAL*1 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_LOG_1            ; return LOGICAL*1 type
+        mov     EAX,FPT_LOG_1           ; return LOGICAL*1 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpLOG1
 
@@ -79,7 +80,7 @@ include mdef.inc
         xdefp   RT@InpLOG4
         defp    RT@InpLOG4              ; input LOGICAL*4 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_LOG_4            ; return LOGICAL*4 type
+        mov     EAX,FPT_LOG_4           ; return LOGICAL*4 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpLOG4
 
@@ -87,7 +88,7 @@ include mdef.inc
         xdefp   RT@InpINT1
         defp    RT@InpINT1              ; input INTEGER*1 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_INT_1            ; return INTEGER*1 type
+        mov     EAX,FPT_INT_1           ; return INTEGER*1 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpINT1
 
@@ -95,7 +96,7 @@ include mdef.inc
         xdefp   RT@InpINT2
         defp    RT@InpINT2              ; input INTEGER*2 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_INT_2            ; return INTEGER*2 type
+        mov     EAX,FPT_INT_2           ; return INTEGER*2 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpINT2
 
@@ -103,7 +104,7 @@ include mdef.inc
         xdefp   RT@InpINT4
         defp    RT@InpINT4              ; input INTEGER*4 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_INT_4            ; return INTEGER*4 type
+        mov     EAX,FPT_INT_4           ; return INTEGER*4 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpINT4
 
@@ -111,7 +112,7 @@ include mdef.inc
         xdefp   RT@InpREAL
         defp    RT@InpREAL              ; input REAL*4 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_REAL_4           ; return REAL*4 type
+        mov     EAX,FPT_REAL_4          ; return REAL*4 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpREAL
 
@@ -119,7 +120,7 @@ include mdef.inc
         xdefp   RT@InpDBLE
         defp    RT@InpDBLE              ; input REAL*8 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_REAL_8           ; return REAL*8 type
+        mov     EAX,FPT_REAL_8          ; return REAL*8 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpDBLE
 
@@ -127,7 +128,7 @@ include mdef.inc
         xdefp   RT@InpXTND
         defp    RT@InpXTND              ; input REAL*16 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_REAL_16          ; return REAL*16 type
+        mov     EAX,FPT_REAL_16         ; return REAL*16 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpXTND
 
@@ -135,7 +136,7 @@ include mdef.inc
         xdefp   RT@InpCPLX
         defp    RT@InpCPLX              ; input REAL*8 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_CPLX_8           ; return COMPLEX*8 type
+        mov     EAX,FPT_CPLX_8          ; return COMPLEX*8 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpCPLX
 
@@ -143,7 +144,7 @@ include mdef.inc
         xdefp   RT@InpDBCX
         defp    RT@InpDBCX              ; input COMPLEX*16 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_CPLX_16          ; return COMPLEX*16 type
+        mov     EAX,FPT_CPLX_16         ; return COMPLEX*16 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpDBCX
 
@@ -151,7 +152,7 @@ include mdef.inc
         xdefp   RT@InpXTCX
         defp    RT@InpXTCX              ; input COMPLEX*32 value
         mov     dword ptr IORslt,EAX    ; place destination in IORslt
-        mov     EAX,PT_CPLX_32          ; return COMPLEX*32 type
+        mov     EAX,FPT_CPLX_32         ; return COMPLEX*32 type
         jmp     SwitchToRT              ; return to caller of IOType()
         endproc RT@InpXTCX
 

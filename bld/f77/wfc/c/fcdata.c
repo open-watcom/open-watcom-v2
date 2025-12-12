@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -779,7 +779,7 @@ static  bool    Numeric( PTYPE typ )
 //==================================
 // Is given type numeric?
 {
-    return( ( typ >= PT_INT_1 ) && ( typ <= PT_CPLX_32 ) );
+    return( ( typ >= FPT_INT_1 ) && ( typ <= FPT_CPLX_32 ) );
 }
 
 
@@ -787,7 +787,7 @@ bool    IntType( PTYPE typ )
 //==========================
 // Is given type integer?
 {
-    return( ( typ >= PT_INT_1 ) && ( typ <= PT_INT_4 ) );
+    return( ( typ >= FPT_INT_1 ) && ( typ <= FPT_INT_4 ) );
 }
 
 static  void    DoDataInit( PTYPE var_type )
@@ -802,7 +802,7 @@ static  void    DoDataInit( PTYPE var_type )
     seg_offset  offset;
     byte        const_buff[sizeof( ftn_type )];
 
-    if( ( DtConstType == PT_CHAR ) || ( DtConstType == PT_NOTYPE ) ) {
+    if( ( DtConstType == FPT_CHAR ) || ( DtConstType == FPT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
         const_ptr = &DtConst->u.lt.value;
     } else {
@@ -813,20 +813,20 @@ static  void    DoDataInit( PTYPE var_type )
     segid = GetDataSegId( InitVar );
     offset = GetDataOffset( InitVar );
     DtInit( segid, offset );
-    if( DtConstType == PT_CHAR ) {
+    if( DtConstType == FPT_CHAR ) {
         if( const_size >= var_size ) {
             DtBytes( const_ptr, var_size );
         } else {
             DtBytes( const_ptr, const_size );
             DtIBytes( ' ', var_size - const_size );
         }
-    } else if( ( var_type == PT_CHAR ) && IntType( DtConstType ) ) {
+    } else if( ( var_type == FPT_CHAR ) && IntType( DtConstType ) ) {
         DtBytes( const_ptr, sizeof( char ) );
         if( var_size > sizeof( char ) ) {
             DtIBytes( ' ', var_size - sizeof( char ) );
         }
-    } else if( DtConstType == PT_NOTYPE ) {
-        if( var_type != PT_CHAR ) {
+    } else if( DtConstType == FPT_NOTYPE ) {
+        if( var_type != FPT_CHAR ) {
             size = var_size;
             while( size > const_size ) {
                 size--;
@@ -847,7 +847,7 @@ static  void    DoDataInit( PTYPE var_type )
             const_ptr += const_size - var_size;
         }
         DtBytes( const_ptr, var_size );
-    } else if( DtConstType <= PT_LOG_4 ) {
+    } else if( DtConstType <= FPT_LOG_4 ) {
         DtBytes( const_ptr, var_size );
     } else {
         cfstruct    f77h;
@@ -859,8 +859,8 @@ static  void    DoDataInit( PTYPE var_type )
         CFInit( &f77h );
 
         if( DtConstType != var_type ) {
-            DataCnvTab[( var_type - PT_INT_1 ) * CONST_TYPES +
-                        ( DtConstType - PT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
+            DataCnvTab[( var_type - FPT_INT_1 ) * CONST_TYPES +
+                        ( DtConstType - FPT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
         /*
@@ -870,39 +870,39 @@ static  void    DoDataInit( PTYPE var_type )
             char            fmt_buff[CONVERSION_BUFFER + 1];
             float_handle    cf;
 
-            if( (var_type == PT_REAL_4) || (var_type == PT_CPLX_8) ) {
+            if( (var_type == FPT_REAL_4) || (var_type == FPT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == PT_REAL_8) || (var_type == PT_CPLX_16) ) {
+            } else if( (var_type == FPT_REAL_8) || (var_type == FPT_CPLX_16) ) {
                 CnvD2S( (double *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == PT_REAL_16) || (var_type == PT_CPLX_32) ) {
+            } else if( (var_type == FPT_REAL_16) || (var_type == FPT_CPLX_32) ) {
                 CnvX2S( (extended *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( var_type == PT_CPLX_8 ) {
+            if( var_type == FPT_CPLX_8 ) {
                 CnvS2S( (single *)(const_ptr + sizeof( single )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( single ) ), BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == PT_CPLX_16 ) {
+            } else if( var_type == FPT_CPLX_16 ) {
                 CnvD2S( (double *)(const_ptr + sizeof( double )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( double ) ), BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == PT_CPLX_32 ) {
+            } else if( var_type == FPT_CPLX_32 ) {
                 CnvX2S( (extended *)(const_ptr + sizeof( extended )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( extended ) ), BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( (var_type >= PT_REAL_4) && (var_type <= PT_CPLX_32) ) {
+            if( (var_type >= FPT_REAL_4) && (var_type <= FPT_CPLX_32) ) {
                 const_ptr = const_buff;
             }
         }
@@ -929,10 +929,10 @@ static  void    AsnVal( PTYPE var_type )
         if( issue_err ) {
             Error( DA_NOT_ENOUGH );
         }
-    } else if( ( DtConstType == PT_NOTYPE ) ||
-        ( ( var_type <= PT_LOG_4 ) && ( DtConstType <= PT_LOG_4 ) ) ||
-        ( DtConstType == PT_CHAR ) ||
-        ( ( var_type == PT_CHAR ) && IntType( DtConstType ) ) ||
+    } else if( ( DtConstType == FPT_NOTYPE ) ||
+        ( ( var_type <= FPT_LOG_4 ) && ( DtConstType <= FPT_LOG_4 ) ) ||
+        ( DtConstType == FPT_CHAR ) ||
+        ( ( var_type == FPT_CHAR ) && IntType( DtConstType ) ) ||
         ( Numeric( var_type ) && Numeric( DtConstType ) ) ) {
         DoDataInit( var_type );
     } else {
@@ -1007,7 +1007,7 @@ void    DtInpLOG1( void )
 //=======================
 // Data initialize a LOGICAL*1 item.
 {
-    AsnVal( PT_LOG_1 );
+    AsnVal( FPT_LOG_1 );
 }
 
 
@@ -1015,7 +1015,7 @@ void    DtInpLOG4( void )
 //=======================
 // Data initialize a LOGICAL*4 item.
 {
-    AsnVal( PT_LOG_4 );
+    AsnVal( FPT_LOG_4 );
 }
 
 
@@ -1023,7 +1023,7 @@ void    DtInpINT1( void )
 //=======================
 // Data initialize a INTEGER*1 item.
 {
-    AsnVal( PT_INT_1 );
+    AsnVal( FPT_INT_1 );
 }
 
 
@@ -1031,7 +1031,7 @@ void    DtInpINT2( void )
 //=======================
 // Data initialize a INTEGER*2 item.
 {
-    AsnVal( PT_INT_2 );
+    AsnVal( FPT_INT_2 );
 }
 
 
@@ -1039,7 +1039,7 @@ void    DtInpINT4( void )
 //=======================
 // Data initialize a INTEGER*4 item.
 {
-    AsnVal( PT_INT_4 );
+    AsnVal( FPT_INT_4 );
 }
 
 
@@ -1047,7 +1047,7 @@ void    DtInpREAL( void )
 //=======================
 // Data initialize a REAL*4 item.
 {
-    AsnVal( PT_REAL_4 );
+    AsnVal( FPT_REAL_4 );
 }
 
 
@@ -1055,7 +1055,7 @@ void    DtInpDBLE( void )
 //=======================
 // Data initialize a REAL*8 item.
 {
-    AsnVal( PT_REAL_8 );
+    AsnVal( FPT_REAL_8 );
 }
 
 
@@ -1063,7 +1063,7 @@ void    DtInpXTND( void )
 //=======================
 // Data initialize a REAL*10 item.
 {
-    AsnVal( PT_REAL_16 );
+    AsnVal( FPT_REAL_16 );
 }
 
 
@@ -1071,7 +1071,7 @@ void    DtInpCPLX( void )
 //=======================
 // Data initialize a COMPLEX*8 item.
 {
-    AsnVal( PT_CPLX_8 );
+    AsnVal( FPT_CPLX_8 );
 }
 
 
@@ -1079,7 +1079,7 @@ void    DtInpDBCX( void )
 //=======================
 // Data initialize a COMPLEX*16 item.
 {
-    AsnVal( PT_CPLX_16 );
+    AsnVal( FPT_CPLX_16 );
 }
 
 
@@ -1087,7 +1087,7 @@ void    DtInpXTCX( void )
 //=======================
 // Data initialize a COMPLEX*20 item.
 {
-    AsnVal( PT_CPLX_32 );
+    AsnVal( FPT_CPLX_32 );
 }
 
 
@@ -1095,7 +1095,7 @@ void    DtInpCHAR( void )
 //=======================
 // Data initialize a CHARACTER item.
 {
-    AsnVal( PT_CHAR );
+    AsnVal( FPT_CHAR );
 }
 
 

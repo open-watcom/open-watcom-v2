@@ -38,18 +38,19 @@
 ;****************************************************************/
 
 
-PT_NOTYPE       equ 0            ; no type
-PT_LOG_1        equ 1            ; logical*1
-PT_LOG_4        equ 2            ; logical*4
-PT_INT_1        equ 3            ; integer*1
-PT_INT_2        equ 4            ; integer*2
-PT_INT_4        equ 5            ; integer*4
-PT_REAL_4       equ 6            ; real*4
-PT_REAL_8       equ 7            ; real*8
-PT_REAL_16      equ 8            ; real*16
-PT_CPLX_8       equ 9            ; complex*8
-PT_CPLX_16      equ 10           ; complex*16
-PT_CPLX_32      equ 11           ; complex*32
-PT_CHAR         equ 12           ; character
-PT_STRUCT       equ 13           ; structure
-PT_ARRAY        equ 14           ; array
+FPT_NOTYPE      equ 0           ; no type
+FPT_LOG_1       equ 1           ; logical*1
+FPT_LOG_4       equ 2           ; logical*4
+FPT_INT_1       equ 3           ; integer*1
+FPT_INT_2       equ 4           ; integer*2
+FPT_INT_4       equ 5           ; integer*4
+FPT_REAL_4      equ 6           ; real*4
+FPT_REAL_8      equ 7           ; real*8
+FPT_REAL_16     equ 8           ; real*16
+FPT_CPLX_8      equ 9           ; complex*8
+FPT_CPLX_16     equ 10          ; complex*16
+FPT_CPLX_32     equ 11          ; complex*32
+FPT_CHAR        equ 12          ; character
+FPT_STRUCT      equ 13          ; structure
+FPT_ARRAY       equ 14          ; array
+FPT_NOT_STARTED equ 15          ;

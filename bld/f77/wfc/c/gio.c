@@ -102,7 +102,7 @@ static  void    GIORoutine( TYPE typ, size_t size ) {
 
     FCODE   op_code;
 
-    op_code = ParmType( typ, size ) - PT_LOG_1;
+    op_code = ParmType( typ, size ) - FPT_LOG_1;
     if( StmtProc == PR_READ ) {
         EmitOp( op_code + FC_INP_LOG1 );
     } else {

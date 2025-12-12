@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -229,7 +229,7 @@ void    NmlExec( void ) {
     } else {
         NmlIn();
     }
-    IOCB->typ = PT_NOTYPE;
+    IOCB->typ = FPT_NOTYPE;
 }
 
 
@@ -264,7 +264,7 @@ static  void    NmlOut( void ) {
             if( info & NML_LG_ADV ) {
                 adv_ptr = *(lg_adv PGM * PGM *)nml;
                 num_elts = adv_ptr->num_elts;
-                if( typ == PT_CHAR ) {
+                if( typ == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                     scb.strptr = (char PGM *)adv_ptr->origin;
                 } else {
@@ -274,7 +274,7 @@ static  void    NmlOut( void ) {
                 num_elts = *(uint_32 PGM *)nml;
                 nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
                                    ( sizeof( uint_32 ) + sizeof( int ) );
-                if( typ == PT_CHAR ) {
+                if( typ == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml;
                     nml += sizeof( uint );
                     scb.strptr = *(char PGM * PGM *)nml;
@@ -283,7 +283,7 @@ static  void    NmlOut( void ) {
                 }
             }
             while( num_elts-- > 0 ) {
-                if( typ == PT_CHAR ) {
+                if( typ == FPT_CHAR ) {
                     IORslt.string = scb;
                     OutRtn[typ]();
                     Drop( ' ' );
@@ -296,40 +296,40 @@ static  void    NmlOut( void ) {
             }
         } else {
             switch( typ ) {
-            case PT_LOG_1:
+            case FPT_LOG_1:
                 IORslt.logstar4 = **(logstar1 PGM * PGM *)nml;
                 break;
-            case PT_LOG_4:
+            case FPT_LOG_4:
                 IORslt.logstar4 = **(logstar4 PGM * PGM *)nml;
                 break;
-            case PT_INT_1:
+            case FPT_INT_1:
                 IORslt.intstar4 = **(intstar1 PGM * PGM *)nml;
                 break;
-            case PT_INT_2:
+            case FPT_INT_2:
                 IORslt.intstar4 = **(intstar2 PGM * PGM *)nml;
                 break;
-            case PT_INT_4:
+            case FPT_INT_4:
                 IORslt.intstar4 = **(intstar4 PGM * PGM *)nml;
                 break;
-            case PT_REAL_4:
+            case FPT_REAL_4:
                 IORslt.single = **(single PGM * PGM *)nml;
                 break;
-            case PT_REAL_8:
+            case FPT_REAL_8:
                 IORslt.dble = **(double PGM * PGM *)nml;
                 break;
-            case PT_REAL_16:
+            case FPT_REAL_16:
                 IORslt.extended = **(extended PGM * PGM *)nml;
                 break;
-            case PT_CPLX_8:
+            case FPT_CPLX_8:
                 IORslt.scomplex = **(scomplex PGM * PGM *)nml;
                 break;
-            case PT_CPLX_16:
+            case FPT_CPLX_16:
                 IORslt.dcomplex = **(dcomplex PGM * PGM *)nml;
                 break;
-            case PT_CPLX_32:
+            case FPT_CPLX_32:
                 IORslt.xcomplex = **(xcomplex PGM * PGM *)nml;
                 break;
-            case PT_CHAR:
+            case FPT_CHAR:
                 IORslt.string = **(string PGM * PGM *)nml;
                 break;
             }
@@ -365,7 +365,7 @@ static  byte PGM *FindNmlEntry( char *name, uint len )
         if( _GetNMLSubScrs( info ) && (info & NML_LG_ADV) == 0 ) {
             nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
                                     ( sizeof( uint_32 ) + sizeof( int ) );
-            if( _GetNMLType( info ) == PT_CHAR ) {
+            if( _GetNMLType( info ) == FPT_CHAR ) {
                 nml += sizeof( int );
             }
         }
@@ -429,9 +429,9 @@ static PTYPE    NmlIOType( void ) {
     }
 
     if( NmlInCount == 0 )
-        return( PT_NOTYPE );
+        return( FPT_NOTYPE );
     --NmlInCount;
-    if( NmlInType == PT_CHAR ) {
+    if( NmlInType == FPT_CHAR ) {
         IORslt.string.len = ((string PGM *)NmlInAddr)->len;
         IORslt.string.strptr = ((string PGM *)NmlInAddr)->strptr;
         ((string PGM *)NmlInAddr)->strptr =
@@ -512,7 +512,7 @@ static  void    NmlIn( void ) {
             if( info & NML_LG_ADV ) {
                 adv_ptr = *(lg_adv PGM * PGM *)nml_entry;
                 NmlInAddr = (byte PGM *)adv_ptr->origin;
-                if( NmlInType == PT_CHAR ) {
+                if( NmlInType == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                 }
                 NmlInCount = adv_ptr->num_elts;
@@ -523,14 +523,14 @@ static  void    NmlIn( void ) {
                 adv_ss_ptr = nml_entry;
                 nml_entry += _GetNMLSubScrs( info ) *
                              ( sizeof( uint_32 ) + sizeof( int ) );
-                if( NmlInType == PT_CHAR ) {
+                if( NmlInType == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml_entry;
                     nml_entry += sizeof( uint );
                 }
                 NmlInAddr = *(byte PGM * PGM *)nml_entry;
             }
             if( ScanChar( '(' ) ) {
-                if( NmlInType == PT_CHAR ) {
+                if( NmlInType == FPT_CHAR ) {
                     size = scb.len;
                 } else {
                     size = SizeVars[NmlInType];
@@ -540,7 +540,7 @@ static  void    NmlIn( void ) {
                     // never return
                 }
             }
-            if( NmlInType == PT_CHAR ) {
+            if( NmlInType == FPT_CHAR ) {
                 scb.strptr = NmlInAddr;
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
@@ -553,7 +553,7 @@ static  void    NmlIn( void ) {
         } else { // variable
             NmlInCount = 1;
             NmlInAddr = *(byte PGM * PGM *)nml_entry;
-            if( NmlInType == PT_CHAR ) {
+            if( NmlInType == FPT_CHAR ) {
                 scb = *(string PGM *)NmlInAddr;
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
@@ -604,7 +604,7 @@ void    NmlAddrs( va_list args ) {
         if( _GetNMLSubScrs( info ) && (info & NML_LG_ADV) == 0 ) {
             nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
                                    ( sizeof( uint_32 ) + sizeof( int ) );
-            if( _GetNMLType( info ) == PT_CHAR ) {
+            if( _GetNMLType( info ) == FPT_CHAR ) {
                 nml += sizeof( int );
             }
         }

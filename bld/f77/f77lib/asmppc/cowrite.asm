@@ -78,7 +78,7 @@ __RT_IOWrite:
 __RT_OutLOG1:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stw     a0, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_LOG_1            // return LOGICAL*1 type
+        li      a0, FPT_LOG_1           // return LOGICAL*1 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutLOG1
 
@@ -88,7 +88,7 @@ __RT_OutLOG1:
 __RT_OutLOG4:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stw     a0, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_LOG_4            // return LOGICAL*4 type
+        li      a0, FPT_LOG_4           // return LOGICAL*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutLOG4
 
@@ -99,7 +99,7 @@ __RT_OutINT1:
         extsb   a0, a0                  // sign extend the integer
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stw     a0, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_INT_1            // return INTEGER*1 type
+        li      a0, FPT_INT_1           // return INTEGER*1 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutINT1
 
@@ -110,7 +110,7 @@ __RT_OutINT2:
         extsh   a0, a0                  // sign extend the integer
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stw     a0, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_INT_2            // return INTEGER*2 type
+        li      a0, FPT_INT_2           // return INTEGER*2 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutINT2
 
@@ -120,7 +120,7 @@ __RT_OutINT2:
 __RT_OutINT4:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stw     a0, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_INT_4            // return INTEGER*4 type
+        li      a0, FPT_INT_4           // return INTEGER*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutINT4
 
@@ -130,7 +130,7 @@ __RT_OutINT4:
 __RT_OutREAL:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stfs    f1, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_REAL_4           // return REAL*4 type
+        li      a0, FPT_REAL_4          // return REAL*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutREAL
 
@@ -140,7 +140,7 @@ __RT_OutREAL:
 __RT_OutDBLE:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stfd    f1, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_REAL_8           // return REAL*8 type
+        li      a0, FPT_REAL_8          // return REAL*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutDBLE
 
@@ -150,7 +150,7 @@ __RT_OutDBLE:
 __RT_OutXTND:
         lis     t0, h^IORslt            // load IORslt address (top part only)
         stfd    f1, l^IORslt(t0)        // place value in IORslt (using offset)
-        li      a0, PT_REAL_16          // return REAL*16 type
+        li      a0, FPT_REAL_16         // return REAL*16 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutXTND
 
@@ -162,7 +162,7 @@ __RT_OutCPLX:
         stfs    f1, l^IORslt(t0)        // place value in IORslt (using offset)
         addi    t1, t1, 0x04            // place imaginary
         stfs    f2, l^IORslt(t1)        // ...
-        li      a0, PT_CPLX_8           // return COMPLEX*8 type
+        li      a0, FPT_CPLX_8          // return COMPLEX*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutCPLX
 
@@ -174,7 +174,7 @@ __RT_OutDBCX:
         stfd    f1, l^IORslt(t1)        // place value in IORslt (using offset)
         addi    t1, t1, 0x08            // place imaginary
         stfd    f2, l^IORslt(t1)        // ...
-        li      a0, PT_CPLX_16          // return COMPLEX*8 type
+        li      a0, FPT_CPLX_16         // return COMPLEX*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutDBCX
 
@@ -186,7 +186,7 @@ __RT_OutXTCX:
         stfd    f1, l^IORslt(t1)        // place value in IORslt (using offset)
         addi    t1, t1, 0x10            // place imaginary
         stfd    f2, l^IORslt(t1)        // ...
-        li      a0, PT_CPLX_16          // return COMPLEX*8 type
+        li      a0, FPT_CPLX_16         // return COMPLEX*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_OutXTCX
 
