@@ -95,7 +95,7 @@ static unsigned_32      currState = 0;
 static sym_list         *fixStructs = NULL;
 static sym_list         *fixSubParms = NULL;
 
-static dw_handle        baseTypes[LAST_BASE_TYPE + 1];
+static dw_handle        baseTypes[FT_MAX];
 
 /* Forward declarations */
 static void BIRefSymbol( dw_handle handle );
@@ -118,9 +118,6 @@ static  bool            BrInitialized;
 #define _GenerateBrInfo()     ((Options & OPT_BROWSE) && \
                                  (BrInitialized) && \
                                  (ProgSw & PS_DONT_GENERATE))
-
-#define _isFundamentalType( typ ) \
-                        (((int)typ >= FIRST_BASE_TYPE) && ((int)typ <= LAST_BASE_TYPE))
 
 void    BIInit( void ) {
 //================
@@ -549,52 +546,22 @@ static void BIOutSP( sym_id ste_ptr )
 }
 
 
-static dw_ftype BIMapType( TYPE typ ) {
-//===============================
-
-// Map our type to a DWARF fundamental type
-
-    switch( typ ) {
-    case( FT_LOGICAL_1 ):
-    case( FT_LOGICAL ):         return( DW_FT_BOOLEAN );
-    case( FT_INTEGER_1 ):
-    case( FT_INTEGER_2 ):
-    case( FT_INTEGER ):         return( DW_FT_SIGNED );
-    case( FT_REAL ):
-    case( FT_DOUBLE ):
-    case( FT_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
-    case( FT_COMPLEX ):
-    case( FT_DCOMPLEX ):
-    case( FT_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
-    case( FT_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
-    }
-    return( DW_FT_NONE );
-}
-
-
-static dw_handle BIMakeFundamental( TYPE typ ) {
-//=============================================
-
-// create a new fundamental handle seperate from the one created at birth
-
-    return( DWFundamental(cBIId, TypeKW(typ), BIMapType(typ), TypeSize(typ)) );
-}
-
-
-static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
-//==================================================================
-
+static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle )
+//================================================================
 //  solidify the function type;
+{
+    TYPE typ;
 
     if( ste_ptr->u.ns.u1.s.typ != FT_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
-    if( _isFundamentalType( ste_ptr->u.ns.u1.s.typ ) ) {
+    typ = ste_ptr->u.ns.u1.s.typ;
+    if( _isFundamentalType( typ ) ) {
         // since we now emit our fundamentals at init time, we must explicitly
         // create another fundemntal handle rather than using the ones created
         // at birth.  This is necessary because we must set next handle emitted
         // to that type
-        BIMakeFundamental( ste_ptr->u.ns.u1.s.typ );
+        DWFundamental( cBIId, TypeKW( typ ), DWType( typ ), TypeSize( typ ) );
     } else {
         BIGetSPType( ste_ptr );
     }
@@ -829,7 +796,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
             }
         }
         if( data->u.ns.si.va.u.dim_ext ) {
-            DWAddField(cBIId, BIGetArrayType(data), justJunk, name, 0);
+            DWAddField( cBIId, BIGetArrayType( data ), justJunk, name, 0 );
         } else {
             DWAddField( cBIId, BIGetType( data ), justJunk, name, 0 );
         }
@@ -839,11 +806,10 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static dw_handle BIGetUnionType( sym_id ste_ptr ) {
-//=================================================
-
+static dw_handle BIGetUnionType( sym_id ste_ptr )
+//===============================================
 // get a union type of a non named symbol
-
+{
     struct fstruct      *fs;
     dw_handle           ret;
     sym_id              sym;
@@ -882,11 +848,10 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
 }
 
 
-static dw_handle BIStartStructType( sym_id ste_ptr, int add ) {
-//=============================================================
-
+static dw_handle BIStartStructType( sym_id ste_ptr, int add )
+//===========================================================
 // start a struct type of a function definition
-
+{
     dw_handle   ret;
 
     ret = DWStruct( cBIId, DW_ST_STRUCT );
@@ -897,9 +862,9 @@ static dw_handle BIStartStructType( sym_id ste_ptr, int add ) {
 }
 
 
-static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle ) {
-//===========================================================================
-
+static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle )
+//=========================================================================
+{
     sym_list    *tmp;
 
     tmp = FMemAlloc( sizeof( sym_list ) );
@@ -911,9 +876,9 @@ static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static void BIWalkList( sym_list **list, func action, int nuke_list ) {
-//=====================================================================
-
+static void BIWalkList( sym_list **list, func action, int nuke_list )
+//===================================================================
+{
     sym_list    *tmp;
 
     for( tmp = *list; tmp != NULL; ) {
@@ -927,22 +892,22 @@ static void BIWalkList( sym_list **list, func action, int nuke_list ) {
 }
 
 
-static char *BIMKFullPath( const char *path ) {
-//=============================================
-
+static char *BIMKFullPath( const char *path )
+//===========================================
+{
     return( _fullpath( fullPathName, path, PATH_MAX ) );
 }
 
 
-static void BIInitBaseTypes( void ) {
-//===================================
-
+static void BIInitBaseTypes( void )
+//=================================
+{
     TYPE    x;
 
     // assume that LAST_BASE_TYPE is the last fundamental type
     // and types from FIRST_BASE_TYPE to LAST_BASE_TYPE are all fundamental
     // base types
     for( x = FIRST_BASE_TYPE; x <= LAST_BASE_TYPE; x++ ) {
-        baseTypes[x] = BIMakeFundamental( x );
+        baseTypes[x] = DWFundamental( cBIId, TypeKW( x ), DWType( x ), TypeSize( x ) );
     }
 }

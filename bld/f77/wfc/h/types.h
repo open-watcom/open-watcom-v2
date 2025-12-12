@@ -30,13 +30,15 @@
 ****************************************************************************/
 
 
+#include "dw.h"
 #include "itdefn.h"
 
 
 #define SIZE_UNDEF  ((size_t)-1)
 
-extern uint         TypeSize( TYPE typ );
 extern uint         StorageSize( TYPE typ );
 extern intstar4     ITIntValue( itnode *it );
-extern char         *TypeKW( TYPE typ );
+extern uint         TypeSize( TYPE typ );
+extern dw_ftype     DWType( TYPE typ );
+extern const char   *TypeKW( TYPE typ );
 extern PTYPE        ParmType( TYPE typ, size_t size );
