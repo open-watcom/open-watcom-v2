@@ -546,22 +546,29 @@ static void BIOutSP( sym_id ste_ptr )
 }
 
 
+static dw_handle BIMakeFundamental( TYPE typ )
+//============================================
+// create a new handle for fundamental type
+{
+    return( DWFundamental( cBIId, TypeKW( typ ), DWType( typ ), TypeSize( typ ) ) );
+}
+
 static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle )
 //================================================================
 //  solidify the function type;
 {
     TYPE typ;
 
-    if( ste_ptr->u.ns.u1.s.typ != FT_STRUCTURE ) {
+    typ = ste_ptr->u.ns.u1.s.typ;
+    if( typ != FT_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
-    typ = ste_ptr->u.ns.u1.s.typ;
     if( _isFundamentalType( typ ) ) {
         // since we now emit our fundamentals at init time, we must explicitly
         // create another fundemntal handle rather than using the ones created
         // at birth.  This is necessary because we must set next handle emitted
         // to that type
-        DWFundamental( cBIId, TypeKW( typ ), DWType( typ ), TypeSize( typ ) );
+        BIMakeFundamental( typ );
     } else {
         BIGetSPType( ste_ptr );
     }
@@ -908,6 +915,6 @@ static void BIInitBaseTypes( void )
     // and types from FIRST_BASE_TYPE to LAST_BASE_TYPE are all fundamental
     // base types
     for( x = FIRST_BASE_TYPE; x <= LAST_BASE_TYPE; x++ ) {
-        baseTypes[x] = DWFundamental( cBIId, TypeKW( x ), DWType( x ), TypeSize( x ) );
+        baseTypes[x] = BIMakeFundamental( x );
     }
 }
