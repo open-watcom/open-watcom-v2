@@ -771,9 +771,8 @@ is one of the following:
 .np
 For convenience, DW_FT_MIN, and DW_FT_MAX are defined.
 A valid fundamental type is in the range DW_FT_MIN <= ft < DW_FT_MAX.
-The DW library will always return the same handle when called with the same
-fundamental type (so the client does not need to save fundamental type
-handles).
+The DW library will not return the same handle when called with the same base
+type (so the client must store the base type handlers).
 .begnote
 .notehdr Parameter
 .note name

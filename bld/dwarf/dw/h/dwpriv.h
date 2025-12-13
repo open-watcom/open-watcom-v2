@@ -55,6 +55,10 @@
 #define CLIAlloc( x, __size )          (x)->funcs.cli_alloc( __size )
 #define CLIFree( x, __ptr )            (x)->funcs.cli_free( __ptr )
 
+#define GET_FLAG_PTR_TYPE(f)    ((uint_8)(((f) & DW_FLAG_PTR_TYPE_MASK) >> DW_FLAG_PTR_TYPE_SHIFT))
+#define GET_FLAG_INLINE(f)      ((uint_8)(((f) & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT))
+#define GET_FLAG_VIRTUAL(f)     ((uint_8)(((f) & DW_FLAG_VIRTUAL_MASK) >> DW_FLAG_VIRTUAL_SHIFT))
+
 
 struct handles_private {
     uint_32             num_handles;

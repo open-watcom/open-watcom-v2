@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,7 +247,7 @@ dw_handle DWENTRY DWBeginSubroutine(
     /* AT_external */
     DW_Info8( cli, (flags & DW_FLAG_SUB_STATIC) == 0 );
     /* AT_inline */
-    DW_Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
+    DW_Info8( cli, GET_FLAG_INLINE( flags ) );
     /* AT_calling_convention */
     if( flags & DW_FLAG_MAIN ) {
         DW_Info8( cli, DW_CC_program );
@@ -257,7 +257,7 @@ dw_handle DWENTRY DWBeginSubroutine(
     /* AT_prototyped */
     DW_Info8( cli, (flags & DW_FLAG_PROTOTYPED) != 0 );
     /* AT_virtuality */
-    DW_Info8( cli, (flags & DW_FLAG_VIRTUAL_MASK) >> DW_FLAG_VIRTUAL_SHIFT );
+    DW_Info8( cli, GET_FLAG_VIRTUAL( flags ) );
     /* AT_artificial */
     DW_Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
     if( flags & DW_FLAG_DECLARATION ) {
@@ -276,7 +276,7 @@ dw_handle DWENTRY DWBeginSubroutine(
         DW_InfoReloc( cli, DW_W_HIGH_PC );
     }
     /* AT_address_class */
-    DW_Info8( cli, (flags & DW_FLAG_PTR_TYPE_MASK) >> DW_FLAG_PTR_TYPE_SHIFT );
+    DW_Info8( cli, GET_FLAG_PTR_TYPE( flags ) );
     /* AT_frame_base */
     if( frame_base_loc != NULL ){
         DW_InfoEmitLocExpr( cli, sizeof( uint_8 ),frame_base_loc );
@@ -330,7 +330,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
     /* AT_low_pc */
     DW_InfoReloc( cli, DW_W_LOW_PC );
     /* AT_address_class */
-    DW_Info8( cli, (flags & DW_FLAG_PTR_TYPE_MASK) >> DW_FLAG_PTR_TYPE_SHIFT );
+    DW_Info8( cli, GET_FLAG_PTR_TYPE( flags ) );
     /* AT_name */
     DW_InfoString( cli, name );
     DW_EndDIE( cli );
@@ -359,7 +359,7 @@ static void MemFuncCommon(
     /* AT_declaration */
     DW_Info8( cli, (flags & DW_FLAG_DECLARATION) != 0 );
     /* AT_inline */
-    DW_Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
+    DW_Info8( cli, GET_FLAG_INLINE( flags ) );
 }
 
 dw_handle DWENTRY DWBeginMemFuncDecl(
@@ -448,7 +448,7 @@ dw_handle DWENTRY DWFormalParameter(
     size_t                      len;
 
     new = DW_LabelNewHandle( cli );
-    _Validate( parm_type != 0 );
+    _ValidateHandle( parm_type );
     va_start( args, default_value_type );
     abbrev = default_value_type == DW_DEFAULT_NONE ? AB_FORMAL_PARAMETER
         : AB_FORMAL_PARAMETER_WITH_DEFAULT;
@@ -557,8 +557,8 @@ dw_handle DWENTRY DWVariable(
 
     /* unused parameters */ (void)start_scope;
 
-    _Validate( type != 0 );
-    _Validate( name !=NULL );
+    _ValidateHandle( type );
+    _Validate( name != NULL );
     new = DW_LabelNewHandle( cli );
     abbrev = AB_VARIABLE;
     if( member_of )
@@ -613,7 +613,7 @@ dw_handle DWENTRY DWConstant(
 
     /* unused parameters */ (void)start_scope;
 
-    _Validate( type != 0 );
+    _ValidateHandle( type );
     _Validate( name != NULL );
     new = DW_LabelNewHandle( cli );
     abbrev = AB_CONSTANT;

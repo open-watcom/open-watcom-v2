@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,18 +41,12 @@ typedef struct reloc_chain {
     dw_sectnum          section;        /* section to seek in */
 } reloc_chain;
 
-#ifdef _M_I86
-#define    HANDLE_MODIFIED     0x80000000    // handle is a type modifier
-#define    HANDLE_MASK         0x0fffffff    // only 2^28 handles ;)
-#else
-enum {
-    HANDLE_MODIFIED     = 0x80000000,   // handle is a type modifier
-    HANDLE_MASK         = 0x0fffffff    // only 2^28 handles ;)
-};
-#endif
 
-#define IS_FUNDAMENTAL( __h )   ( (__h) < DW_FT_MAX )
-#define GET_FUNDAMENTAL( __h )  ( __h )
+#define HANDLE_MASK             0x0fffffff    // only 2^28 handles ;)
+
+#define FIRST_HANDLE            DW_FT_MAX
+
+#define _ValidateHandle(__h)    _Assert(__h >= FIRST_HANDLE && __h <= HANDLE_MASK)
 
 #define GET_HANDLE_LOCATION(__c)        (((__c)->reloc.u.offset & 1) ? (__c)->reloc.u.offset >> 1 : 0)
 #define SET_HANDLE_LOCATION(__c,__o)    (__c)->reloc.u.offset = (1 | (__o << 1))
