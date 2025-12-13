@@ -1737,8 +1737,14 @@ static bool FORAddParam( drmem_hdl entry, int index, void *data )
 static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
 /***************************************************************/
 {
-    static const dw_tagnum  WalkTags[] = { DW_TAG_formal_parameter, 0 };
-    static const DRWLKBLK   WalkFns[] = { FORAddParam, NULL };
+    static const dw_tagnum  WalkTags[] = {
+        DW_TAG_formal_parameter,
+        0
+    };
+    static const DRWLKBLK   WalkFns[] = {
+        FORAddParam,
+        NULL
+    };
 
     String      func_name;
     List_T      parms = { NULL, NULL, LIST_TAIL };
@@ -1799,8 +1805,14 @@ static void FORDecEntryPoint( BrokenName_T *decname, Loc_T *loc )
     List_T      parms = { NULL, NULL, LIST_TAIL };
     drmem_hdl   tmp_abbrev;
     drmem_hdl   tmp_entry;
-    static const dw_tagnum   WalkTags[] = { DW_TAG_formal_parameter, 0 };
-    static const DRWLKBLK    WalkFns[] = { FORAddParam, NULL };
+    static const dw_tagnum   WalkTags[] = {
+        DW_TAG_formal_parameter,
+        0
+    };
+    static const DRWLKBLK    WalkFns[] = {
+        FORAddParam,
+        NULL
+    };
 
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
@@ -1885,8 +1897,14 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
 static void FORDecNameList( BrokenName_T *decname, Loc_T *loc )
 /*************************************************************/
 {
-    static const dw_tagnum  WalkTags[] = { DW_TAG_namelist_item, 0 };
-    static const DRWLKBLK   WalkFns[] = { FORAddNameListItem, NULL };
+    static const dw_tagnum  WalkTags[] = {
+        DW_TAG_namelist_item,
+        0
+    };
+    static const DRWLKBLK   WalkFns[] = {
+        FORAddNameListItem,
+        NULL
+    };
 
     String strucName;
 

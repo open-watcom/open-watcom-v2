@@ -37,81 +37,133 @@
 
 
 const dw_tagnum FunctionTags[] = {
-    DW_TAG_subprogram, 0
+    DW_TAG_subprogram,
+    0
 };
 
 const dw_tagnum ClassTags[] = {
-    DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
+    DW_TAG_class_type,
+    DW_TAG_union_type,
+    DW_TAG_structure_type,
+    0
 };
 
 const dw_tagnum TypedefTags[] = {
-    DW_TAG_typedef, 0
+    DW_TAG_typedef,
+    0
 };
 
 const dw_tagnum EnumTags[] = {
-    DW_TAG_enumeration_type, 0
+    DW_TAG_enumeration_type,
+    0
 };
 
 const dw_tagnum LabelTags[] = {
-    DW_TAG_label, 0
+    DW_TAG_label,
+    0
 };
 
 const dw_tagnum VariableTags[] = {
-    DW_TAG_common_block, DW_TAG_variable,
-    DW_TAG_formal_parameter, DW_TAG_member, 0
+    DW_TAG_common_block,
+    DW_TAG_variable,
+    DW_TAG_formal_parameter,
+    DW_TAG_member,
+    0
 };
 
-const dw_tagnum MacroTags[] = { 0 };
+const dw_tagnum MacroTags[] = {
+    0
+};
 
 const dw_tagnum *const SearchTags[] = {
-    FunctionTags, ClassTags, EnumTags,
-    TypedefTags, VariableTags,
-    MacroTags, LabelTags
+    FunctionTags,
+    ClassTags,
+    EnumTags,
+    TypedefTags,
+    VariableTags,
+    MacroTags,
+    LabelTags
 };
 
 const dw_tagnum SearchSymbolTags[] = {
-    DW_TAG_class_type, DW_TAG_common_block, DW_TAG_enumeration_type,
-    DW_TAG_subprogram, DW_TAG_variable, DW_TAG_member, DW_TAG_structure_type,
-    DW_TAG_typedef, DW_TAG_union_type, DW_TAG_label, 0
+    DW_TAG_class_type,
+    DW_TAG_common_block,
+    DW_TAG_enumeration_type,
+    DW_TAG_subprogram,
+    DW_TAG_variable,
+    DW_TAG_member,
+    DW_TAG_structure_type,
+    DW_TAG_typedef,
+    DW_TAG_union_type,
+    DW_TAG_label,
+    0
 };
 
 const dw_tagnum SearchFunctionTags[] = {
-    DW_TAG_subprogram, 0
+    DW_TAG_subprogram,
+    0
 };
 
 const dw_tagnum SearchClassTags[] = {
-    DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
+    DW_TAG_class_type,
+    DW_TAG_union_type,
+    DW_TAG_structure_type,
+    0
 };
 
 const dw_tagnum SearchTypeTags[] = {
-    DW_TAG_typedef, DW_TAG_enumeration_type, 0
+    DW_TAG_typedef,
+    DW_TAG_enumeration_type,
+    0
 };
 
 const dw_tagnum SearchVariableTags[] = {
-    DW_TAG_common_block, DW_TAG_variable, DW_TAG_member, 0
+    DW_TAG_common_block,
+    DW_TAG_variable,
+    DW_TAG_member,
+    0
 };
 
 const dw_tagnum SearchFriendTags[] = {
-    DW_TAG_friend, 0
+    DW_TAG_friend,
+    0
 };
 
 const dw_tagnum SearchBaseTags[] = {
-    DW_TAG_inheritance, 0
+    DW_TAG_inheritance,
+    0
 };
 
 const dw_tagnum ScanKidsTags[] = {
-    DW_TAG_compile_unit,  DW_TAG_lexical_block, 0
+    DW_TAG_compile_unit,
+    DW_TAG_lexical_block,
+    0
 };
 
 const dw_tagnum DeclarationTags[] = {
-    DW_TAG_array_type, DW_TAG_class_type, DW_TAG_common_block, DW_TAG_constant,
-    DW_TAG_enumeration_type, DW_TAG_member, DW_TAG_structure_type,
-    DW_TAG_subprogram, DW_TAG_union_type, DW_TAG_variable, 0
+    DW_TAG_array_type,
+    DW_TAG_class_type,
+    DW_TAG_common_block,
+    DW_TAG_constant,
+    DW_TAG_enumeration_type,
+    DW_TAG_member,
+    DW_TAG_structure_type,
+    DW_TAG_subprogram,
+    DW_TAG_union_type,
+    DW_TAG_variable,
+    0
 };
 
 const dw_tagnum *const SearchTypes[] = {
-    SearchSymbolTags, SearchFunctionTags, SearchClassTags,
-    SearchTypeTags, SearchVariableTags, SearchFriendTags, SearchBaseTags
+    SearchSymbolTags,       /* DR_SEARCH_ALL */
+    SearchFunctionTags,     /* DR_SEARCH_FUNCTIONS */
+    SearchClassTags,        /* DR_SEARCH_CLASSES */
+    SearchTypeTags,         /* DR_SEARCH_TYPES */
+    SearchVariableTags,     /* DR_SEARCH_VARIABLES */
+    SearchFriendTags,       /* DR_SEARCH_FRIENDS */
+    SearchBaseTags,         /* DR_SEARCH_BASE */
+                            /* DR_SEARCH_MACROS */
+                            /* DR_SEARCH_NOT_SYM should always be last */
 };
 
 
@@ -657,7 +709,10 @@ bool DR_ScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
     return( found );
 }
 
-static const dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
+static const dw_tagnum CompUnitTag[] = {
+    DW_TAG_compile_unit,
+    0
+};
 
 void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
