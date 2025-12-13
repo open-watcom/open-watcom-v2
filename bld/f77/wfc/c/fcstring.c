@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "tmpdefs.h"
 #include "cpopt.h"
@@ -146,12 +145,12 @@ void    FCChar1Move( void ) {
 
 // Perform single character assignment.
 
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     dest;
 
-    typ = GetType( GetU16() );
+    cgtyp = GetCGType( GetU16() );
     dest = XPop();
-    XPush( CGLVAssign( SCBPointer( dest ), GetChOp( typ ), typ ) );
+    XPush( CGLVAssign( SCBPointer( dest ), GetChOp( cgtyp ), cgtyp ) );
 }
 
 #if _CPU == 8086
@@ -250,7 +249,7 @@ void    FCSubString( void ) {
     char_var = GetPtr();
     typ_info = GetU16();
     src = XPop();
-    first_1 = XPopValue( GetType1( typ_info ) );
+    first_1 = XPopValue( GetCGTypes1( typ_info ) );
     len = 0;
     if( char_var == NULL ) { // i.e. chr(i:i)
         len = CGInteger( GetInt(), TY_INTEGER );
@@ -269,7 +268,7 @@ void    FCSubString( void ) {
             }
         } else {
             XPush( last );
-            last = XPopValue( GetType2( typ_info ) );
+            last = XPopValue( GetCGTypes2( typ_info ) );
         }
         if( (Options & OPT_BOUNDS) == 0 ) {
             CloneCGName( first_1, &first_1, &first_2 );

@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcdatad.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"
@@ -193,14 +192,14 @@ static  void    IOStatement( RTCODE stmt )
 }
 
 
-static  void    Output( RTCODE rtn, cg_type arg_type )
+static  void    Output( RTCODE rtn, cg_type arg_cgtyp )
 //====================================================
 // Call runtime routine to output elemental types value.
 {
     call_handle call;
 
     call = InitCall( rtn );
-    CGAddParm( call, XPopValue( arg_type ), PromoteToBaseType( arg_type ) );
+    CGAddParm( call, XPopValue( arg_cgtyp ), PromoteCGToBaseType( arg_cgtyp ) );
     CGDone( CGCall( call ) );
 }
 
@@ -367,7 +366,7 @@ void    FCOutXTND( void )
 }
 
 
-static  void    OutCplx( RTCODE rtn, cg_type typ )
+static  void    OutCplx( RTCODE rtn, cg_type cgtyp )
 //================================================
 // Call runtime routine to input COMPLEX value.
 {
@@ -375,10 +374,10 @@ static  void    OutCplx( RTCODE rtn, cg_type typ )
     cg_cmplx    z;
 
     call = InitCall( rtn );
-    XPopCmplx( &z, typ );
-    typ = CmplxBaseType( typ );
-    CGAddParm( call, z.imagpart, typ );
-    CGAddParm( call, z.realpart, typ );
+    XPopCmplx( &z, cgtyp );
+    cgtyp = CmplxBaseType( cgtyp );
+    CGAddParm( call, z.imagpart, cgtyp );
+    CGAddParm( call, z.realpart, cgtyp );
     CGDone( CGCall( call ) );
 }
 

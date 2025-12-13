@@ -62,99 +62,99 @@ void    FCConvert( void ) {
 // Perform type conversion.
 
     unsigned_16 typ_info;
-    cg_type     from;
-    cg_type     to;
+    cg_type     from_cgtyp;
+    cg_type     to_cgtyp;
     cg_cmplx    z;
 
     typ_info = GetU16();
-    from = GetType1( typ_info );
-    to = GetType2( typ_info );
-    if( from == TY_COMPLEX ) {
+    from_cgtyp = GetCGTypes1( typ_info );
+    to_cgtyp = GetCGTypes2( typ_info );
+    if( from_cgtyp == TY_COMPLEX ) {
         XPopCmplx( &z, TY_COMPLEX );
-        if( to == TY_DCOMPLEX ) {
+        if( to_cgtyp == TY_DCOMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_DOUBLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_DOUBLE ) );
-        } else if( to == TY_COMPLEX ) {
+        } else if( to_cgtyp == TY_COMPLEX ) {
             XPush( z.imagpart );
-        } else if( to == TY_XCOMPLEX ) {
+        } else if( to_cgtyp == TY_XCOMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_LONGDOUBLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_LONGDOUBLE ) );
         } else {
             CGTrash( z.imagpart );
-            if( to != TY_SINGLE ) {
-                z.realpart = CGUnary( O_CONVERT, z.realpart, to );
+            if( to_cgtyp != TY_SINGLE ) {
+                z.realpart = CGUnary( O_CONVERT, z.realpart, to_cgtyp );
             }
         }
         XPush( z.realpart );
-    } else if( from == TY_DCOMPLEX ) {
+    } else if( from_cgtyp == TY_DCOMPLEX ) {
         XPopCmplx( &z, TY_DCOMPLEX );
-        if( to == TY_COMPLEX ) {
+        if( to_cgtyp == TY_COMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_SINGLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_SINGLE ) );
-        } else if( to == TY_DCOMPLEX ) {
+        } else if( to_cgtyp == TY_DCOMPLEX ) {
             XPush( z.imagpart );
-        } else if( to == TY_XCOMPLEX ) {
+        } else if( to_cgtyp == TY_XCOMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_LONGDOUBLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_LONGDOUBLE ) );
         } else {
             CGTrash( z.imagpart );
-            if( to != TY_DOUBLE ) {
-                z.realpart = CGUnary( O_CONVERT, z.realpart, to );
+            if( to_cgtyp != TY_DOUBLE ) {
+                z.realpart = CGUnary( O_CONVERT, z.realpart, to_cgtyp );
             }
         }
         XPush( z.realpart );
-    } else if( from == TY_XCOMPLEX ) {
+    } else if( from_cgtyp == TY_XCOMPLEX ) {
         XPopCmplx( &z, TY_XCOMPLEX );
-        if( to == TY_COMPLEX ) {
+        if( to_cgtyp == TY_COMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_SINGLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_SINGLE ) );
-        } else if( to == TY_DCOMPLEX ) {
+        } else if( to_cgtyp == TY_DCOMPLEX ) {
             z.realpart = CGUnary( O_CONVERT, z.realpart, TY_DOUBLE );
             XPush( CGUnary( O_CONVERT, z.imagpart, TY_DOUBLE ) );
-        } else if( to == TY_XCOMPLEX ) {
+        } else if( to_cgtyp == TY_XCOMPLEX ) {
             XPush( z.imagpart );
         } else {
             CGTrash( z.imagpart );
-            if( to != TY_LONGDOUBLE ) {
-                z.realpart = CGUnary( O_CONVERT, z.realpart, to );
+            if( to_cgtyp != TY_LONGDOUBLE ) {
+                z.realpart = CGUnary( O_CONVERT, z.realpart, to_cgtyp );
             }
         }
         XPush( z.realpart );
     } else { // converting a scalar
-        z.realpart = XPopValue( from );
-        if( to == TY_COMPLEX ) {
-            to = TY_SINGLE;
-            XPush( CGInteger( 0, to ) );
-        } else if( to == TY_DCOMPLEX ) {
-            to = TY_DOUBLE;
-            XPush( CGInteger( 0, to ) );
-        } else if( to == TY_XCOMPLEX ) {
-            to = TY_LONGDOUBLE;
-            XPush( CGInteger( 0, to ) );
+        z.realpart = XPopValue( from_cgtyp );
+        if( to_cgtyp == TY_COMPLEX ) {
+            to_cgtyp = TY_SINGLE;
+            XPush( CGInteger( 0, to_cgtyp ) );
+        } else if( to_cgtyp == TY_DCOMPLEX ) {
+            to_cgtyp = TY_DOUBLE;
+            XPush( CGInteger( 0, to_cgtyp ) );
+        } else if( to_cgtyp == TY_XCOMPLEX ) {
+            to_cgtyp = TY_LONGDOUBLE;
+            XPush( CGInteger( 0, to_cgtyp ) );
         }
-        if( to != from ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, to );
+        if( to_cgtyp != from_cgtyp ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, to_cgtyp );
         }
         XPush( z.realpart );
     }
 }
 
 
-static  void    MakeComplex( cg_type to ) {
+static  void    MakeComplex( cg_type to_cgtyp ) {
 //=========================================
 
 // Make a COMPLEX/COMPLEX*16/COMPLEX*20 number from 2 scalars.
 
-    cg_type     arg_type;
+    cg_type     arg_cgtyp;
     cg_name     real_part;
     cg_name     imag_part;
 
-    arg_type = GetType( GetU16() );
-    real_part = XPopValue( arg_type );
-    imag_part = XPopValue( arg_type );
-    if( arg_type != to ) {
-        real_part = CGUnary( O_CONVERT, real_part, to );
-        imag_part = CGUnary( O_CONVERT, imag_part, to );
+    arg_cgtyp = GetCGType( GetU16() );
+    real_part = XPopValue( arg_cgtyp );
+    imag_part = XPopValue( arg_cgtyp );
+    if( arg_cgtyp != to_cgtyp ) {
+        real_part = CGUnary( O_CONVERT, real_part, to_cgtyp );
+        imag_part = CGUnary( O_CONVERT, imag_part, to_cgtyp );
     }
     XPush( imag_part );
     XPush( real_part );

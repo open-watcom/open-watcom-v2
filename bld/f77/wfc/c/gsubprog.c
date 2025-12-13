@@ -58,6 +58,8 @@
 #include "gtypes.h"
 
 
+#define _SetArgInfo(pcode,ptyp) ((((pcode) & 0xff) << 8) | ((ptyp) & 0xff))
+
 /* Forward declarations */
 static  int     DumpArgInfo( itnode *node );
 static  void    SetArgAddrs( void );
@@ -224,7 +226,7 @@ static  int     DumpArgInfo( itnode *node ) {
                     }
                 }
 #endif
-                arg_info = _SetTypeInfo( parm_code, parm_type );
+                arg_info = _SetArgInfo( parm_code, parm_type );
                 OutU16( arg_info );
                 ++num_args;
             }

@@ -33,8 +33,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77defs.h"
-#include "cg.h"
 #include "cgflags.h"
 #include "errcod.h"
 #include "types.h"
@@ -775,23 +773,23 @@ static  void            (*DataCnvTab[])(ftn_type *, ftn_type *) = {
 };
 
 
-static  bool    Numeric( PTYPE typ )
-//==================================
+static  bool    Numeric( PTYPE ptyp )
+//===================================
 // Is given type numeric?
 {
-    return( ( typ >= FPT_INT_1 ) && ( typ <= FPT_CPLX_32 ) );
+    return( ( ptyp >= FPT_INT_1 ) && ( ptyp <= FPT_CPLX_32 ) );
 }
 
 
-bool    IntType( PTYPE typ )
-//==========================
+bool    IntType( PTYPE ptyp )
+//===========================
 // Is given type integer?
 {
-    return( ( typ >= FPT_INT_1 ) && ( typ <= FPT_INT_4 ) );
+    return( ( ptyp >= FPT_INT_1 ) && ( ptyp <= FPT_INT_4 ) );
 }
 
-static  void    DoDataInit( PTYPE var_type )
-//==========================================
+static  void    DoDataInit( PTYPE ptyp )
+//======================================
 // Do data initialization.
 {
     size_t      const_size;
@@ -802,7 +800,8 @@ static  void    DoDataInit( PTYPE var_type )
     seg_offset  offset;
     byte        const_buff[sizeof( ftn_type )];
 
-    if( ( DtConstType == FPT_CHAR ) || ( DtConstType == FPT_NOTYPE ) ) {
+    if( ( DtConstType == FPT_CHAR )
+      || ( DtConstType == FPT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
         const_ptr = &DtConst->u.lt.value;
     } else {
@@ -820,13 +819,14 @@ static  void    DoDataInit( PTYPE var_type )
             DtBytes( const_ptr, const_size );
             DtIBytes( ' ', var_size - const_size );
         }
-    } else if( ( var_type == FPT_CHAR ) && IntType( DtConstType ) ) {
+    } else if( ( ptyp == FPT_CHAR )
+      && IntType( DtConstType ) ) {
         DtBytes( const_ptr, sizeof( char ) );
         if( var_size > sizeof( char ) ) {
             DtIBytes( ' ', var_size - sizeof( char ) );
         }
     } else if( DtConstType == FPT_NOTYPE ) {
-        if( var_type != FPT_CHAR ) {
+        if( ptyp != FPT_CHAR ) {
             size = var_size;
             while( size > const_size ) {
                 size--;
@@ -858,8 +858,8 @@ static  void    DoDataInit( PTYPE var_type )
         f77h.free  = FMemFree;
         CFInit( &f77h );
 
-        if( DtConstType != var_type ) {
-            DataCnvTab[( var_type - FPT_INT_1 ) * CONST_TYPES +
+        if( DtConstType != ptyp ) {
+            DataCnvTab[( ptyp - FPT_INT_1 ) * CONST_TYPES +
                         ( DtConstType - FPT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
@@ -870,39 +870,43 @@ static  void    DoDataInit( PTYPE var_type )
             char            fmt_buff[CONVERSION_BUFFER + 1];
             float_handle    cf;
 
-            if( (var_type == FPT_REAL_4) || (var_type == FPT_CPLX_8) ) {
+            if( (ptyp == FPT_REAL_4)
+              || (ptyp == FPT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == FPT_REAL_8) || (var_type == FPT_CPLX_16) ) {
+            } else if( (ptyp == FPT_REAL_8)
+              || (ptyp == FPT_CPLX_16) ) {
                 CnvD2S( (double *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == FPT_REAL_16) || (var_type == FPT_CPLX_32) ) {
+            } else if( (ptyp == FPT_REAL_16)
+              || (ptyp == FPT_CPLX_32) ) {
                 CnvX2S( (extended *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( var_type == FPT_CPLX_8 ) {
+            if( ptyp == FPT_CPLX_8 ) {
                 CnvS2S( (single *)(const_ptr + sizeof( single )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( single ) ), BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == FPT_CPLX_16 ) {
+            } else if( ptyp == FPT_CPLX_16 ) {
                 CnvD2S( (double *)(const_ptr + sizeof( double )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( double ) ), BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == FPT_CPLX_32 ) {
+            } else if( ptyp == FPT_CPLX_32 ) {
                 CnvX2S( (extended *)(const_ptr + sizeof( extended )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( extended ) ), BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( (var_type >= FPT_REAL_4) && (var_type <= FPT_CPLX_32) ) {
+            if( (ptyp >= FPT_REAL_4)
+              && (ptyp <= FPT_CPLX_32) ) {
                 const_ptr = const_buff;
             }
         }
@@ -917,8 +921,8 @@ static  void    DoDataInit( PTYPE var_type )
 }
 
 
-static  void    AsnVal( PTYPE var_type )
-//======================================
+static  void    AsnVal( PTYPE ptyp )
+//==================================
 // Do data initialization.
 {
     bool        issue_err;
@@ -929,14 +933,14 @@ static  void    AsnVal( PTYPE var_type )
         if( issue_err ) {
             Error( DA_NOT_ENOUGH );
         }
-    } else if( ( DtConstType == FPT_NOTYPE ) ||
-        ( ( var_type <= FPT_LOG_4 ) && ( DtConstType <= FPT_LOG_4 ) ) ||
-        ( DtConstType == FPT_CHAR ) ||
-        ( ( var_type == FPT_CHAR ) && IntType( DtConstType ) ) ||
-        ( Numeric( var_type ) && Numeric( DtConstType ) ) ) {
-        DoDataInit( var_type );
+    } else if( ( DtConstType == FPT_NOTYPE )
+      || ( ( ptyp <= FPT_LOG_4 ) && ( DtConstType <= FPT_LOG_4 ) )
+      || ( DtConstType == FPT_CHAR )
+      || ( ( ptyp == FPT_CHAR ) && IntType( DtConstType ) )
+      || ( Numeric( ptyp ) && Numeric( DtConstType ) ) ) {
+        DoDataInit( ptyp );
     } else {
-        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ var_type ], InitVar, MapType[ DtConstType ] );
+        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ ptyp ], InitVar, MapType[ DtConstType ] );
     }
 }
 

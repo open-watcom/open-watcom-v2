@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "cgdefs.h"
 #include "wf77aux.h"
 #include "wf77prag.h"
-#include "wf77defs.h"
 #include "fcgbls.h"
 #include "cgflags.h"
 #include "cpopt.h"
@@ -340,7 +339,7 @@ static  char    __RTIStrBlastNeOT[] =  {
 typedef struct inline_rtn {
     const char  *name;
     const char  *pragma;
-    cg_type     typ;
+    cg_type     cgtyp;
     sym_id      sym_ptr;
     aux_info    *info;
 } inline_rtn;
@@ -454,7 +453,7 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
         in_entry->sym_ptr = sym;
         in_entry->info = InfoLookup( sym );
     }
-    return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
+    return( CGInitCall( CGFEName( sym, in_entry->cgtyp ), in_entry->cgtyp, in_entry->sym_ptr ) );
 #else /* _RISC_CPU */
     /* unused parameters */ (void)rtn_id;
     return( 0 );

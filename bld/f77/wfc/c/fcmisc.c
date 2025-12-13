@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "tmpdefs.h"
 #include "fcgbls.h"

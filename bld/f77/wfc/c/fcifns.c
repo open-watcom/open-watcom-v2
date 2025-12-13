@@ -82,22 +82,22 @@ static  void    MinMax( cg_op cmp ) {
 //===================================
 
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
-    cg_type     func_typ;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
+    cg_type     func_cgtyp;
     cg_name     op1_1;
     cg_name     op1_2;
     cg_name     op2_1;
     cg_name     op2_2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    func_typ = GetType( GetU16() );
-    CloneCGName( XPopValue( typ1 ), &op1_1, &op1_2 );
-    CloneCGName( XPopValue( typ2 ), &op2_1, &op2_2 );
-    XPush( CGChoose( CGCompare( cmp, op1_1, op2_1, ResCGType( typ1, typ2 ) ),
-                     op1_2, op2_2, func_typ ) );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    func_cgtyp = GetCGType( GetU16() );
+    CloneCGName( XPopValue( cgtyp1 ), &op1_1, &op1_2 );
+    CloneCGName( XPopValue( cgtyp2 ), &op2_1, &op2_2 );
+    XPush( CGChoose( CGCompare( cmp, op1_1, op2_1, ResCGType( cgtyp1, cgtyp2 ) ),
+                     op1_2, op2_2, func_cgtyp ) );
 }
 
 
@@ -136,22 +136,22 @@ void            FCAbs( void ) {
 //=======================
 
     unsigned_16 typ_info;
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     op;
     cg_name     op_1;
     cg_name     op_2;
 
     typ_info = GetU16();
-    typ = GetType( typ_info );
-    op = XPopValue( typ );
+    cgtyp = GetCGType( typ_info );
+    op = XPopValue( cgtyp );
     if( IntType( typ_info ) ) {
         CloneCGName( op, &op, &op_1 );
         CloneCGName( op, &op, &op_2 );
-        XPush( CGChoose( CGCompare( O_LT, op, CGInteger( 0, typ ), typ ),
-                         CGUnary( O_UMINUS, op_1, typ ),
-                         op_2, typ ) );
+        XPush( CGChoose( CGCompare( O_LT, op, CGInteger( 0, cgtyp ), cgtyp ),
+                         CGUnary( O_UMINUS, op_1, cgtyp ),
+                         op_2, cgtyp ) );
     } else {
-        XPush( CGUnary( O_FABS, op, typ ) );
+        XPush( CGUnary( O_FABS, op, cgtyp ) );
     }
 }
 
@@ -257,22 +257,22 @@ void            FCExp( void ) {
 static  void    GUnaryMath( uint ifn ) {
 //======================================
 
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType( GetU16() );
-    XPush( CGUnary( ifn, XPopValue( typ ), typ ) );
+    cgtyp = GetCGType( GetU16() );
+    XPush( CGUnary( ifn, XPopValue( cgtyp ), cgtyp ) );
 }
 
 
 static  void    GBinaryMath( uint ifn ) {
 //=======================================
 
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     op1;
 
-    typ = GetType( GetU16() );
-    op1 = XPopValue( typ );
-    XPush( CGBinary( ifn, op1, XPopValue( typ ), typ ) );
+    cgtyp = GetCGType( GetU16() );
+    op1 = XPopValue( cgtyp );
+    XPush( CGBinary( ifn, op1, XPopValue( cgtyp ), cgtyp ) );
 }
 
 
@@ -280,7 +280,7 @@ void            FCLoc( void ) {
 //=======================
 
     PTYPE       typ_info;
-    cg_type     cg_typ;
+    cg_type     cgtyp;
     cg_name     arg;
 
     typ_info = GetU16();
@@ -288,9 +288,9 @@ void            FCLoc( void ) {
     if( typ_info == FPT_CHAR ) {
         arg = SCBPointer( arg );
     } else {
-        cg_typ = CGType( arg );
-        if( !TypePointer( cg_typ ) ) {
-            arg = TmpPtr( MkTmp( arg, cg_typ ), cg_typ );
+        cgtyp = CGType( arg );
+        if( !IsCGPointer( cgtyp ) ) {
+            arg = TmpPtr( MkTmp( arg, cgtyp ), cgtyp );
         }
     }
 #if _CPU == 8086
@@ -306,7 +306,7 @@ void            FCVolatile( void ) {
     cg_name     arg;
 
     arg = XPop();
-    if( TypePointer( CGType( arg ) ) ) {
+    if( IsCGPointer( CGType( arg ) ) ) {
         arg = CGVolatile( arg );
     }
     XPush( arg );

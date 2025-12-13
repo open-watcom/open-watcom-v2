@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "emitobj.h"
 #include "fctypes.h"
@@ -57,15 +56,15 @@ static  void    XCompare( cg_op op_code ) {
     cg_name     op1;
     cg_name     op2;
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
-    op2 = XPopValue( typ2 );
-    XPush( CGCompare( op_code, op1, op2, ResCGType( typ1, typ2 ) ) );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op1 = XPopValue( cgtyp1 );
+    op2 = XPopValue( cgtyp2 );
+    XPush( CGCompare( op_code, op1, op2, ResCGType( cgtyp1, cgtyp2 ) ) );
 }
 
 
@@ -122,7 +121,7 @@ void    FCCmpGE( void ) {
     XCompare( O_GE );
 }
 
-cg_name GetChOp( cg_type ch_type ) {
+cg_name GetChOp( cg_type cgtyp ) {
 //==================================
 
 // Get character operand.
@@ -136,7 +135,7 @@ cg_name GetChOp( cg_type ch_type ) {
         }
         return( IntegerConstant( (ftn_type *)(&lit->u.lt.value), lit->u.lt.length ) );
     } else {
-        return( CGUnary( O_POINTS, SCBPointer( XPop() ), ch_type ) );
+        return( CGUnary( O_POINTS, SCBPointer( XPop() ), cgtyp ) );
     }
 }
 
@@ -148,12 +147,12 @@ static  void    XChar1Compare( cg_op op ) {
 
     cg_name     op_1;
     cg_name     op_2;
-    cg_type     ch_type;
+    cg_type     cgtyp;
 
-    ch_type = GetType( GetU16() );
-    op_1 = GetChOp( ch_type );
-    op_2 = GetChOp( ch_type );
-    XPush( CGCompare( op, op_1, op_2, ch_type ) );
+    cgtyp = GetCGType( GetU16() );
+    op_1 = GetChOp( cgtyp );
+    op_2 = GetChOp( cgtyp );
+    XPush( CGCompare( op, op_1, op_2, cgtyp ) );
 }
 
 static  void    XCharCompare( cg_op op ) {

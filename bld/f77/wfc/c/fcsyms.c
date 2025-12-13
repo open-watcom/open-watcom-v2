@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77cg.h"
 #include "ecflags.h"
@@ -55,13 +54,13 @@
 #include "fcformat.h"
 #include "fcstring.h"
 #include "fcstruct.h"
-#include "fcsyms.h"
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fccall.h"
 #include "fcstack.h"
 #include "wf77info.h"
 #include "i64.h"
+#include "fcsyms.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
@@ -119,11 +118,11 @@ static  back_handle     MakeStaticSCB( int len ) {
 */
 
 
-static  void            CheckAutoSize( sym_id sym, cg_type typ ) {
+static  void            CheckAutoSize( sym_id sym, cg_type cgtyp ) {
 //================================================================
 
 #if _CPU == 8086
-    if( BETypeLength( typ ) <= 0x7fff )
+    if( BETypeLength( cgtyp ) <= 0x7fff )
         return;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
@@ -134,7 +133,7 @@ static  void            CheckAutoSize( sym_id sym, cg_type typ ) {
         FCMessage( FCMSG_VARIABLE_TOO_LARGE, sym );
     }
 #else
-    /* unused parameters */ (void)sym; (void)typ;
+    /* unused parameters */ (void)sym; (void)cgtyp;
 #endif
 
 }
@@ -289,7 +288,7 @@ static  void    InitSCB( sym_id sym, cg_name data ) {
 }
 
 
-static  void    DumpAutoSCB( sym_id sym, cg_type typ ) {
+static  void    DumpAutoSCB( sym_id sym, cg_type cgtyp ) {
 //======================================================
 
     if( _Allocatable( sym ) ) {
@@ -301,7 +300,7 @@ static  void    DumpAutoSCB( sym_id sym, cg_type typ ) {
         InitSCB( sym, CGInteger( 0, TY_POINTER ) );
         CGDone( CGAssign( SCBFlagsAddr( CGFEName( sym, TY_CHAR ) ), CGInteger( ALLOC_STRING, TY_UINT_2 ), TY_UINT_2 ) );
     } else {
-        InitSCB( sym, CGTempName( CGTemp( typ ), typ ) );
+        InitSCB( sym, CGTempName( CGTemp( cgtyp ), cgtyp ) );
     }
     sym->u.ns.si.va.u.dim_ext = NULL; // indicate NULL back handle
 }
@@ -379,13 +378,13 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                 eqv_set = FindEqSetShadow( leader );
                 if( (ce_ext->ec_flags & EQUIV_SET_LABELED) == 0 ) {
                     ce_ext->ec_flags |= EQUIV_SET_LABELED;
-                    CheckAutoSize( leader, eqv_set->u.ns.si.ms.u.cg_typ );
-                    CGAutoDecl( eqv_set, eqv_set->u.ns.si.ms.u.cg_typ );
+                    CheckAutoSize( leader, eqv_set->u.ns.si.ms.u.cgtyp );
+                    CGAutoDecl( eqv_set, eqv_set->u.ns.si.ms.u.cgtyp );
                 }
                 if( (typ == FT_CHAR) && (flags & SY_SUBSCRIPTED) == 0 ) {
                     CGAutoDecl( sym, TY_CHAR );
                     InitSCB( sym, CGBinary( O_PLUS,
-                                  CGFEName( eqv_set, eqv_set->u.ns.si.ms.u.cg_typ ),
+                                  CGFEName( eqv_set, eqv_set->u.ns.si.ms.u.cgtyp ),
                                   CGInteger( offset, TY_INT_4 ), TY_POINTER ) );
                 }
             } else {
@@ -466,8 +465,8 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                     // know it's not a dummy argument (no more ENTRYs)
                     sym->u.ns.si.va.u.dim_ext->dim_flags &= ~DIM_PVD;
                     if( !ForceStatic( flags ) && (Options & OPT_AUTOMATIC) ) {
-                        CheckAutoSize( sym, sym->u.ns.si.va.u.dim_ext->l.cg_typ );
-                        CGAutoDecl( sym, sym->u.ns.si.va.u.dim_ext->l.cg_typ );
+                        CheckAutoSize( sym, sym->u.ns.si.va.u.dim_ext->l.cgtyp );
+                        CGAutoDecl( sym, sym->u.ns.si.va.u.dim_ext->l.cgtyp );
                     } else {
                         g_offset += CheckThreshold( sym, g_offset );
                     }
@@ -488,7 +487,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                 }
             } else if( typ == FT_CHAR ) {
                 if( !ForceStatic( flags ) && (Options & OPT_AUTOMATIC) ) {
-                    DumpAutoSCB( sym, sym->u.ns.si.va.vi.cg_typ );
+                    DumpAutoSCB( sym, sym->u.ns.si.va.vi.cgtyp );
                 } else {
                     DumpGlobalSCB( sym, g_offset );
                     g_offset += size;
@@ -624,7 +623,7 @@ void    GenLocalSyms( void ) {
                 if( sym->u.ns.xt.size == 0 ) {
                     CGAutoDecl( sym, TY_CHAR );
                 } else if( Options & OPT_AUTOMATIC ) {
-                    DumpAutoSCB( sym, sym->u.ns.si.ms.u.cg_typ );
+                    DumpAutoSCB( sym, sym->u.ns.si.ms.u.cgtyp );
                 } else {
                     DumpGlobalSCB( sym, GSegOffset );
                     GSegOffset += sym->u.ns.xt.size;
@@ -897,7 +896,7 @@ static  void    CreateAllocatableADV( sym_id sym ) {
 
     cg_name     adv;
     cg_name     temp;
-    cg_type     typ;
+    cg_type     cgtyp;
 
     if( !ForceStatic( sym->u.ns.flags ) && (Options & OPT_AUTOMATIC) ) {
         if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
@@ -916,9 +915,9 @@ static  void    CreateAllocatableADV( sym_id sym ) {
         } else {
             adv = CGFEName( sym, TY_ARR_ALLOCATABLE );
         }
-        typ = ArrayPtrType( sym );
-        temp = CGInteger( 0, typ );
-        CGDone( CGAssign( adv, temp, typ ) );
+        cgtyp = ArrayPtrType( sym );
+        temp = CGInteger( 0, cgtyp );
+        CGDone( CGAssign( adv, temp, cgtyp ) );
     } else {
         DGLabel( FEBack( sym ) );
         if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
@@ -958,27 +957,27 @@ static  void    AssignStaticAdv( sym_id sym ) {
 }
 
 
-static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type part ) {
+static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type cgtyp ) {
 //===================================================================
 
     int         offset;
 
     offset = BETypeLength( TY_ADV_ENTRY ) * ( entry - 1 );
-    if( part == TY_ADV_HI ) {
+    if( cgtyp == TY_ADV_HI ) {
         offset += BETypeLength( TY_ADV_LO );
     }
     return( StructRef( adv, offset ) );
 }
 
 
-static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type part )
+static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type cgtyp )
 //==============================================================================
 {
     int         offset;
 
     offset = ( BETypeLength( TY_ADV_ENTRY_CV ) * entry ) +
              ( BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
-    if( part == TY_ADV_HI_CV ) {
+    if( cgtyp == TY_ADV_HI_CV ) {
         offset += BETypeLength( TY_ADV_LO );
     }
     if( Options & OPT_BOUNDS ) {
@@ -1465,14 +1464,14 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
 
 // Declare an argument.
 
-    cg_type     arg_type;
+    cg_type     arg_cgtyp;
     sym_id      arg_id;
 
     arg_id = arg->id;
     if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
-        arg_type = TY_CODE_PTR;
+        arg_cgtyp = TY_CODE_PTR;
     } else if( arg_id->u.ns.flags & SY_SUBSCRIPTED ) {
-        arg_type = ArrayPtrType( arg_id );
+        arg_cgtyp = ArrayPtrType( arg_id );
         if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
             if( arg_aux != NULL ) {
                 if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
@@ -1481,7 +1480,7 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
             }
         }
     } else {
-        arg_type = TY_POINTER;
+        arg_cgtyp = TY_POINTER;
         if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
             if( arg_aux != NULL ) {
                 if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
@@ -1491,18 +1490,18 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
         } else {
             if( arg_aux != NULL ) {
                 if( arg_aux->info & PASS_BY_VALUE ) {
-                    arg_type = F77ToCGType( arg_id );
+                    arg_cgtyp = F77ToCGType( arg_id );
                     arg_id->u.ns.flags |= SY_VALUE_PARM;
                     if( TypeCmplx( arg_id->u.ns.u1.s.typ ) ) {
-                        arg_type = CmplxBaseType( arg_type );
-                        CGParmDecl( arg_id, arg_type );
+                        arg_cgtyp = CmplxBaseType( arg_cgtyp );
+                        CGParmDecl( arg_id, arg_cgtyp );
                         arg_id = STArgShadow( arg_id );
                     }
                 }
             }
         }
     }
-    CGParmDecl( arg_id, arg_type );
+    CGParmDecl( arg_id, arg_cgtyp );
 }
 
 

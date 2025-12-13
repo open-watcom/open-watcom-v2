@@ -30,12 +30,14 @@
 ****************************************************************************/
 
 
+#include "wf77defs.h"
 #include "symdefs.h"
 #include "symflgs.h"
 #include "symtypes.h"
 #include "symacc.h"
 #include "ifdefs.h"
 #include "cg.h"
+
 
 #define SEG_NULL        0       // NULL segment id
 #if _INTEL_CPU
@@ -75,7 +77,7 @@ typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
     segment_id          segid;          //   variables not in common/equivalence
     void                *alt_scb;       // SCB for character arguments
-    unsigned short      cg_typ;         // cg-type for local character
+    cg_type             cgtyp;          // cg-type for local character
 } vi;
 
 typedef struct var {
@@ -197,7 +199,7 @@ typedef struct m_sym {
     sym_id              sym;            // shadowed symbol
     union {
         intstar4        *value;         // value of implied-DO variables
-        unsigned short  cg_typ;         // cg-type for character temporaries
+        cg_type         cgtyp;          // cg-type for character temporaries
     } u;                                //   and equivalence sets allocated
 } m_sym;
 

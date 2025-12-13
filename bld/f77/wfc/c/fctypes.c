@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,13 @@
 #include "ftnstd.h"
 #include "symtypes.h"
 #include "types.h"
-#include "wf77defs.h"
 #include "symbol.h"
 #include "fctypes.h"
+
+
+#define _GetArgInfoPtyp(x)      ((x) & 0xff)
+#define _GetArgInfoPtypes1(x)   (((x) >> 8) & 0xff)
+#define _GetArgInfoPtypes2(x)   ((x) & 0xff)
 
 #define NUM_TYPES       12
 #define L1              TY_UINT_1
@@ -80,33 +84,33 @@ static  cg_type         CGTypesMap[] = {
     #undef pick
 };
 
-cg_type MkCGType( PTYPE typ ) {
+cg_type MkCGType( PTYPE ptyp ) {
 //===========================
 
 // Map FORTRAN parameter type to CG-type.
 
-    return( CGTypesMap[ typ] );
+    return( CGTypesMap[ptyp] );
 }
 
 
-cg_type         GetType( unsigned_16 typ_info ) {
+cg_type GetCGType( unsigned_16 typ_info ) {
 //===============================================
 
-    return( MkCGType( _GetTypeInfo2( typ_info ) ) );
+    return( MkCGType( _GetArgInfoPtyp( typ_info ) ) );
 }
 
 
-cg_type         GetType1( unsigned_16 typ_info ) {
+cg_type GetCGTypes1( unsigned_16 typ_info ) {
 //================================================
 
-    return( MkCGType( _GetTypeInfo1( typ_info ) ) );
+    return( MkCGType( _GetArgInfoPtypes1( typ_info ) ) );
 }
 
 
-cg_type         GetType2( unsigned_16 typ_info ) {
+cg_type GetCGTypes2( unsigned_16 typ_info ) {
 //================================================
 
-    return( MkCGType( _GetTypeInfo2( typ_info ) ) );
+    return( MkCGType( _GetArgInfoPtypes2( typ_info ) ) );
 }
 
 
@@ -116,98 +120,117 @@ cg_type         F77ToCGType( sym_id sym ) {
 // Map a WATFOR-77 type to a CG type.
 
     if( sym->u.ns.u1.s.typ == FT_STRUCTURE )
-        return( sym->u.ns.xt.record->cg_typ );
+        return( sym->u.ns.xt.record->cgtyp );
     return( MkCGType( ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) ) );
 }
 
 
-static  int     CGIndex( cg_type typ ) {
+static  int     CGIndex( cg_type cgtyp ) {
 //======================================
 
 // Return index for a CG-type.
 
-    if( typ == TY_UINT_1 )
+    if( cgtyp == TY_UINT_1 )
         return( 0 );
-    if( typ == TY_UINT_2 )
+    if( cgtyp == TY_UINT_2 )
         return( 1 );
-    if( typ == TY_INT_1 )
+    if( cgtyp == TY_INT_1 )
         return( 2 );
-    if( typ == TY_INT_2 )
+    if( cgtyp == TY_INT_2 )
         return( 3 );
-    if( typ == TY_INT_4 )
+    if( cgtyp == TY_INT_4 )
         return( 4 );
-    if( typ == TY_SINGLE )
+    if( cgtyp == TY_SINGLE )
         return( 5 );
-    if( typ == TY_DOUBLE )
+    if( cgtyp == TY_DOUBLE )
         return( 6 );
-    if( typ == TY_LONGDOUBLE )
+    if( cgtyp == TY_LONGDOUBLE )
         return( 7 );
-    if( typ == TY_COMPLEX )
+    if( cgtyp == TY_COMPLEX )
         return( 8 );
-    if( typ == TY_DCOMPLEX )
+    if( cgtyp == TY_DCOMPLEX )
         return( 9 );
-    if( typ == TY_XCOMPLEX )
+    if( cgtyp == TY_XCOMPLEX )
         return( 10 );
-    return( 11 ); // typ == TY_CHAR
+    return( 11 ); // cgtyp == TY_CHAR
 }
 
 
-cg_type         ResCGType( cg_type typ1, cg_type typ2 ) {
+cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 ) {
 //=======================================================
 
 // For a binary operation of two operands of the given CG-types, return
 // the result CG-type.
 
-    return( MapCGTypes[ CGIndex( typ1 ) * NUM_TYPES + CGIndex( typ2 ) ] );
+    return( MapCGTypes[ CGIndex( cgtyp1 ) * NUM_TYPES + CGIndex( cgtyp2 ) ] );
 }
 
 
-bool                DataPointer( cg_type typ ) {
-//==============================================
-
-// Is CG-type a pointer?
-
-    return( ( typ == TY_NEAR_POINTER )  || ( typ == TY_LONG_POINTER ) ||
-            ( typ == TY_HUGE_POINTER )  || ( typ == TY_LOCAL_POINTER ) ||
-            ( typ == TY_COMPLEX )       || ( typ == TY_DCOMPLEX ) ||
-            ( typ == TY_XCOMPLEX )      ||
-            ( typ == TY_CHAR )          || ( typ >= TY_USER_DEFINED ) );
+bool    IsCGCodePointer( cg_type cgtyp )
+//====================================
+// Is CG-type a code pointer?
+{
+    return( ( cgtyp == TY_CODE_PTR )
+        || ( cgtyp == TY_LONG_CODE_PTR )
+        || ( cgtyp == TY_NEAR_CODE_PTR ) );
 }
 
 
-bool                TypeCGInteger( cg_type typ ) {
-//================================================
-
+bool    IsCGInteger( cg_type cgtyp )
+//================================
 // Is CG-type an integer?
-
-    return( ( typ == TY_UINT_1 ) || ( typ == TY_INT_1 ) ||
-            ( typ == TY_UINT_2 ) || ( typ == TY_INT_2 ) ||
-            ( typ == TY_UINT_4 ) || ( typ == TY_INT_4 ) ||
-            ( typ == TY_UINT_8 ) || ( typ == TY_INT_8 ) ||
-            ( typ == TY_INTEGER ) );
+{
+    switch( cgtyp ) {
+    case TY_UINT_1:
+    case TY_INT_1:
+    case TY_UINT_2:
+    case TY_INT_2:
+    case TY_UINT_4:
+    case TY_INT_4:
+    case TY_UINT_8:
+    case TY_INT_8:
+    case TY_INTEGER:
+        return( true );
+    }
+    return( false );
 }
 
 
-bool                TypePointer( cg_type typ ) {
-//==============================================
-
+bool    IsCGPointer( cg_type cgtyp )
+//================================
 // Is CG-type a pointer?
-
-    return( DataPointer( typ ) || ( typ == TY_CODE_PTR ) ||
-            ( typ == TY_LONG_CODE_PTR ) || ( typ == TY_NEAR_CODE_PTR ) );
+{
+    switch( cgtyp ) {
+    default:
+        if( cgtyp < TY_USER_DEFINED )
+            break;
+        /* fall through */
+    case TY_NEAR_POINTER:
+    case TY_LONG_POINTER:
+    case TY_HUGE_POINTER:
+    case TY_LOCAL_POINTER:
+    case TY_COMPLEX:
+    case TY_DCOMPLEX:
+    case TY_XCOMPLEX:
+    case TY_CHAR:
+    case TY_CODE_PTR:
+    case TY_LONG_CODE_PTR:
+    case TY_NEAR_CODE_PTR:
+        return( true );
+    }
+    return( false );
 }
 
 
-cg_type             PromoteToBaseType( cg_type typ ) {
-//====================================================
-
-// if type is integer TY_INT_1, TY_INT_2 under the _AXP or _PPC, we must promote
-// it in order to make a call
-
+cg_type PromoteCGToBaseType( cg_type cgtyp )
+//======================================
+// if type is integer TY_INT_1, TY_INT_2 under the _AXP or _PPC,
+// we must promote it in order to make a call
+{
 #if _RISC_CPU
-    if( ( typ == TY_INT_1 ) || ( typ == TY_INT_2 )  ) {
-        typ = TY_INT_4;
+    if( ( cgtyp == TY_INT_1 ) || ( cgtyp == TY_INT_2 )  ) {
+        cgtyp = TY_INT_4;
     }
 #endif
-    return( typ );
+    return( cgtyp );
 }

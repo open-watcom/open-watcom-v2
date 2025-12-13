@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +31,8 @@
 
 
 #include "ftnstd.h"
-#include "cg.h"
-#include "wf77defs.h"
-#include "tmpdefs.h"
 #include "global.h"
+#include "tmpdefs.h"
 #include "fcdatad.h"
 #include "fmemmgr.h"
 #include "chain.h"
@@ -66,7 +64,7 @@ void    FiniTmps( void ) {
 }
 
 
-tmp_handle      AllocTmp( cg_type typ ) {
+tmp_handle      AllocTmp( cg_type cgtyp ) {
 //=======================================
 
 // Allocate a temporary.
@@ -75,14 +73,14 @@ tmp_handle      AllocTmp( cg_type typ ) {
 
     for( tmp = TmpList; tmp != NULL; tmp = tmp->link ) {
         if( tmp->avail &&
-            ( BETypeLength( typ ) <= BETypeLength( tmp->typ ) ) ) {
+            ( BETypeLength( cgtyp ) <= BETypeLength( tmp->cgtyp ) ) ) {
             tmp->avail = false;
             return( tmp );
         }
     }
     tmp = FMemAlloc( sizeof( tmp_tracker ) );
-    tmp->tmp = CGTemp( typ );
-    tmp->typ = typ;
+    tmp->tmp = CGTemp( cgtyp );
+    tmp->cgtyp = cgtyp;
     tmp->avail = false;
     tmp->link = TmpList;
     TmpList = tmp;
@@ -103,34 +101,34 @@ void    FreeTmps( void ) {
 }
 
 
-cg_name TmpPtr( tmp_handle tmp, cg_type typ ) {
+cg_name TmpPtr( tmp_handle tmp, cg_type cgtyp ) {
 //=============================================
 
 // Return the pointer to a temporary.
 
-    return( CGTempName( tmp->tmp, typ ) );
+    return( CGTempName( tmp->tmp, cgtyp ) );
 }
 
 
-tmp_handle      MkTmp( cg_name val, cg_type typ ) {
+tmp_handle      MkTmp( cg_name val, cg_type cgtyp ) {
 //=================================================
 
 // Allocate a temporary and store into it.
 
     tmp_handle  tmp;
 
-    tmp = AllocTmp( typ );
-    CGTrash( CGAssign( TmpPtr( tmp, typ ), val, typ ) );
+    tmp = AllocTmp( cgtyp );
+    CGTrash( CGAssign( TmpPtr( tmp, cgtyp ), val, cgtyp ) );
     return( tmp );
 }
 
 
-cg_name TmpVal( tmp_handle tmp, cg_type typ ) {
+cg_name TmpVal( tmp_handle tmp, cg_type cgtyp ) {
 //=============================================
 
 // Return the value of a temporary.
 
-    return( CGUnary( O_POINTS, TmpPtr( tmp, typ ), typ ) );
+    return( CGUnary( O_POINTS, TmpPtr( tmp, cgtyp ), cgtyp ) );
 }
 
 

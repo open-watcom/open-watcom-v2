@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "fcodes.h"
 #include "cpopt.h"

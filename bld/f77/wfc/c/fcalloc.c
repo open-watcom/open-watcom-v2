@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77cg.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "fio.h"
 #include "cgflags.h"
@@ -64,16 +63,16 @@ static cg_name  getFlags( sym_id sym ) {
 
     uint                tlen;
     cg_name             fl;
-    cg_type             typ;
+    cg_type             cgtyp;
 
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-        typ = ArrayPtrType( sym );
-        tlen = BETypeLength( typ );
+        cgtyp = ArrayPtrType( sym );
+        tlen = BETypeLength( cgtyp );
     } else {
         tlen = BETypeLength( TY_CHAR );
-        typ = TY_CHAR;
+        cgtyp = TY_CHAR;
     }
-    fl = StructRef( CGFEName( sym, typ ), tlen );
+    fl = StructRef( CGFEName( sym, cgtyp ), tlen );
     return( CGUnary( O_POINTS, fl, TY_UINT_2 ) );
 }
 

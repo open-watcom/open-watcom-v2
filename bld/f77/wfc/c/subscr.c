@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include "wf77defs.h"
 #include "symdefs.h"
 #include "subscr.h"
 

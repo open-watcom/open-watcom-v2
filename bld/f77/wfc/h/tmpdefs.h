@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 typedef struct tmp_tracker {
     struct tmp_tracker  *link;          // must be first field
     temp_handle         tmp;
-    cg_type             typ;
+    cg_type             cgtyp;
     char                avail;
 } tmp_tracker;
 

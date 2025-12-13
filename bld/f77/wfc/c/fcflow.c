@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77defs.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"
 #include "wf77labe.h"
@@ -150,16 +149,16 @@ void    FCJmpFalse( void ) {
 //====================
 
     unsigned_16 typ_info;
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     bool_expr;
 
     typ_info = GetU16();
-    typ = GetType( typ_info );
+    cgtyp = GetCGType( typ_info );
     if( IntType( typ_info ) ) {
-        bool_expr = CGCompare( O_NE, XPopValue( typ ),
-                               CGInteger( 0, typ ), typ );
+        bool_expr = CGCompare( O_NE, XPopValue( cgtyp ),
+                               CGInteger( 0, cgtyp ), cgtyp );
     } else {
-        bool_expr = XPopValue( typ );
+        bool_expr = XPopValue( cgtyp );
     }
     CGControl( O_IF_FALSE, bool_expr, GetLabel( GetU16() ) );
 }
@@ -257,26 +256,26 @@ void    FCIfArith( void ) {
     sym_id      lt;
     sym_id      eq;
     sym_id      gt;
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType( GetU16() );
-    if_expr = XPopValue( typ );
+    cgtyp = GetCGType( GetU16() );
+    if_expr = XPopValue( cgtyp );
     lt = GetPtr();
     eq = GetPtr();
     gt = GetPtr();
     if( lt == gt ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_EQ, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_EQ, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( eq ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( lt ) );
     } else if( lt == eq ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_GT, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_GT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( gt ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
     } else if( eq == gt ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_LT, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_LT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( lt ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
     } else {
@@ -413,7 +412,7 @@ void    FCSFCall( void ) {
     sym_id      sf;
     sym_id      sf_arg;
     sym_id      tmp;
-    cg_type     sf_type;
+    cg_type     sf_cgtyp;
     cg_name     arg_list;
     cg_name     value;
     cg_cmplx    z;
@@ -422,22 +421,22 @@ void    FCSFCall( void ) {
     sf = GetPtr();
     arg_list = NULL;
     value = NULL;
-    sf_type = 0;
+    sf_cgtyp = 0;
     while( (sf_arg = GetPtr()) != NULL ) {
         if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
-            sf_type = F77ToCGType( sf_arg );
+            sf_cgtyp = F77ToCGType( sf_arg );
             if( TypeCmplx( sf_arg->u.ns.u1.s.typ ) ) {
-                XPopCmplx( &z, sf_type );
-                sf_type = CmplxBaseType( sf_type );
-                value = ImagPtr( SymAddr( sf_arg ), sf_type );
-                CGTrash( CGAssign( value, z.imagpart, sf_type ) );
-                value = CGFEName( sf_arg, sf_type );
-                value = CGAssign( value, z.realpart, sf_type );
+                XPopCmplx( &z, sf_cgtyp );
+                sf_cgtyp = CmplxBaseType( sf_cgtyp );
+                value = ImagPtr( SymAddr( sf_arg ), sf_cgtyp );
+                CGTrash( CGAssign( value, z.imagpart, sf_cgtyp ) );
+                value = CGFEName( sf_arg, sf_cgtyp );
+                value = CGAssign( value, z.realpart, sf_cgtyp );
             } else {
-                value = CGFEName( sf_arg, sf_type );
-                value = CGAssign( value, XPopValue( sf_type ), sf_type );
+                value = CGFEName( sf_arg, sf_cgtyp );
+                value = CGAssign( value, XPopValue( sf_cgtyp ), sf_cgtyp );
             }
         }
         if( arg_list == NULL ) {
@@ -457,9 +456,9 @@ void    FCSFCall( void ) {
         }
         value = CGFEName( tmp, TY_CHAR );
     } else {
-        sf_type = F77ToCGType( sf );
+        sf_cgtyp = F77ToCGType( sf );
         if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
-            value = CGUnary( O_POINTS, CGFEName( sf, sf_type ), sf_type );
+            value = CGUnary( O_POINTS, CGFEName( sf, sf_cgtyp ), sf_cgtyp );
         }
     }
     if( OZOpts & OZOPT_O_INLINE ) {
@@ -474,12 +473,12 @@ void    FCSFCall( void ) {
             CGTrash( XPop() );
             XPush( value );
         } else if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
-            XPopCmplx( &z, sf_type );
-            sf_type = CmplxBaseType( sf_type );
-            XPush( TmpVal( MkTmp( z.imagpart, sf_type ), sf_type ) );
-            XPush( TmpVal( MkTmp( z.realpart, sf_type ), sf_type ) );
+            XPopCmplx( &z, sf_cgtyp );
+            sf_cgtyp = CmplxBaseType( sf_cgtyp );
+            XPush( TmpVal( MkTmp( z.imagpart, sf_cgtyp ), sf_cgtyp ) );
+            XPush( TmpVal( MkTmp( z.realpart, sf_cgtyp ), sf_cgtyp ) );
         } else {
-            XPush( TmpVal( MkTmp( XPopValue( sf_type ), sf_type ), sf_type ) );
+            XPush( TmpVal( MkTmp( XPopValue( sf_cgtyp ), sf_cgtyp ), sf_cgtyp ) );
         }
     } else {
         value = CGWarp( arg_list, GetLabel( sf->u.ns.si.sf.u.location ), value );
@@ -488,7 +487,7 @@ void    FCSFCall( void ) {
         // arguments for outer reference
         value = CGEval( value );
         if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
-            SplitCmplx( TmpPtr( MkTmp( value, sf_type ), sf_type ), sf_type );
+            SplitCmplx( TmpPtr( MkTmp( value, sf_cgtyp ), sf_cgtyp ), sf_cgtyp );
         } else {
             XPush( value );
         }

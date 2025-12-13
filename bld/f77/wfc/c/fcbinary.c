@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@
 #include "ftnstd.h"
 #include "cgdefs.h"
 #include "wf77cg.h"
-#include "tmpdefs.h"
 #include "global.h"
+#include "tmpdefs.h"
 #include "cpopt.h"
 #include "types.h"
 #include "emitobj.h"
@@ -59,15 +60,15 @@ static  void    XBinary( int op_code ) {
     cg_name     op1;
     cg_name     op2;
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
-    op2 = XPopValue( typ2 );
-    XPush( CGBinary( op_code, op1, op2, ResCGType( typ1, typ2 ) ) );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op1 = XPopValue( cgtyp1 );
+    op2 = XPopValue( cgtyp2 );
+    XPush( CGBinary( op_code, op1, op2, ResCGType( cgtyp1, cgtyp2 ) ) );
 }
 
 
@@ -137,30 +138,30 @@ void    FCSign( void ) {
 // SIGN F-Code processor.
 
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
     cg_name     op;
     cg_name     op1;
     cg_name     op2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op = XPopValue( typ1 );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op = XPopValue( cgtyp1 );
 
-    if( TypeCGInteger( typ1 ) ) {
+    if( IsCGInteger( cgtyp1 ) ) {
         CloneCGName( op, &op, &op1 );
         CloneCGName( op, &op, &op2 );
-        op1 = CGChoose( CGCompare( O_LT, op, CGInteger( 0, typ1 ), typ1 ),
-                         CGUnary( O_UMINUS, op1, typ1 ),
-                         op2, typ1 );
-        op = CGCompare( O_LT, XPopValue( typ2 ), CGInteger( 0, typ2 ), typ2 );
+        op1 = CGChoose( CGCompare( O_LT, op, CGInteger( 0, cgtyp1 ), cgtyp1 ),
+                         CGUnary( O_UMINUS, op1, cgtyp1 ),
+                         op2, cgtyp1 );
+        op = CGCompare( O_LT, XPopValue( cgtyp2 ), CGInteger( 0, cgtyp2 ), cgtyp2 );
     } else {
-        op1 = CGUnary( O_FABS, op, typ1 );
-        op = CGCompare( O_LT, XPopValue(typ2), CGFloat( "0.0", typ2 ), typ2 );
+        op1 = CGUnary( O_FABS, op, cgtyp1 );
+        op = CGCompare( O_LT, XPopValue( cgtyp2 ), CGFloat( "0.0", cgtyp2 ), cgtyp2 );
     }
     CloneCGName( op1, &op1, &op2 );
-    XPush( CGChoose( op, CGUnary( O_UMINUS, op1, typ1 ), op2, typ1 ) );
+    XPush( CGChoose( op, CGUnary( O_UMINUS, op1, cgtyp1 ), op2, cgtyp1 ) );
 }
 
 
@@ -169,23 +170,23 @@ void    FCUnaryMul( void ) {
 
 // Unary multiplication (x * x );
 
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     base;
     cg_name     base_2;
     cg_name     result;
     int         power;
 
-    typ = GetType( GetU16() );
+    cgtyp = GetCGType( GetU16() );
     power = GetU16();
-    base = XPopValue( typ );
-    result = CGInteger( 1, typ );
+    base = XPopValue( cgtyp );
+    result = CGInteger( 1, cgtyp );
     while( power > 0 ) {
         CloneCGName( base, &base, &base_2 );
         if( power & 1 ) {
-            result = CGBinary( O_TIMES, result, base_2, typ );
+            result = CGBinary( O_TIMES, result, base_2, cgtyp );
             --power;
         } else {
-            base = CGBinary( O_TIMES, base, base_2, typ );
+            base = CGBinary( O_TIMES, base, base_2, cgtyp );
             power >>= 1;
         }
     }
@@ -199,10 +200,10 @@ void    FCUMinus( void ) {
 
 // Unary minus (-) F-Code processor.
 
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType( GetU16() );
-    XPush( CGUnary( O_UMINUS, XPopValue( typ ), typ ) );
+    cgtyp = GetCGType( GetU16() );
+    XPush( CGUnary( O_UMINUS, XPopValue( cgtyp ), cgtyp ) );
 }
 
 
@@ -211,22 +212,22 @@ void    FCPow( void ) {
 
 // Exponentiation.
 
-    cg_type     power_typ;
-    cg_type     base_typ;
+    cg_type     power_cgtyp;
+    cg_type     base_cgtyp;
     cg_name     base;
     cg_name     power;
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    base_typ = GetType1( typ_info );
-    power_typ = GetType2( typ_info );
-    base = XPopValue( base_typ );
-    power = XPopValue( power_typ );
-    base_typ = ResCGType( base_typ, power_typ );
-    if( ( base_typ == TY_INT_1 ) || ( base_typ == TY_INT_2 ) ) {
-        base_typ = TY_INT_4;
+    base_cgtyp = GetCGTypes1( typ_info );
+    power_cgtyp = GetCGTypes2( typ_info );
+    base = XPopValue( base_cgtyp );
+    power = XPopValue( power_cgtyp );
+    base_cgtyp = ResCGType( base_cgtyp, power_cgtyp );
+    if( ( base_cgtyp == TY_INT_1 ) || ( base_cgtyp == TY_INT_2 ) ) {
+        base_cgtyp = TY_INT_4;
     }
-    XPush( CGBinary( O_POW, base, power, base_typ ) );
+    XPush( CGBinary( O_POW, base, power, base_cgtyp ) );
 }
 
 
@@ -241,14 +242,14 @@ void    FCDoneParenExpr( void ) {
     if( (typ_info == FPT_CPLX_8)
       || (typ_info == FPT_CPLX_16)
       || (typ_info == FPT_CPLX_32) ) {
-        XPopCmplx( &z, GetType( typ_info ) );
+        XPopCmplx( &z, GetCGType( typ_info ) );
         val = z.imagpart;
         XPush( CGUnary( O_PARENTHESIS, z.imagpart, CGType( val ) ) );
         val = z.realpart;
     } else if( typ_info == FPT_CHAR ) {
         val = XPop();
     } else {
-        val = XPopValue( GetType( typ_info ) );
+        val = XPopValue( GetCGType( typ_info ) );
     }
     XPush( CGUnary( O_PARENTHESIS, val, CGType( val ) ) );
 }

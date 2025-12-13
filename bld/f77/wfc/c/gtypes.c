@@ -44,37 +44,36 @@
 #include "gtypes.h"
 
 
-void            DumpType( TYPE typ, size_t size ) {
-//===============================================
+#define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
+#define _SetArgInfoPtypes(p1,p2)    ((((p1) & 0xff) << 8) | ((p2) & 0xff))
 
+void    DumpType( TYPE typ, size_t size )
+//=======================================
 // Emit a single type.
-
-    OutU16( _SetTypeInfo( 0, ParmType( typ, size ) ) );
+{
+    OutU16( _SetArgInfoPtyp( ParmType( typ, size ) ) );
 }
 
 
-void            DumpTypes( TYPE typ1, size_t size1, TYPE typ2, size_t size2 ) {
-//=========================================================================
-
+void    DumpTypes( TYPE typ1, size_t size1, TYPE typ2, size_t size2 )
+//===================================================================
 // Emit 2 types.
-
-    OutU16( _SetTypeInfo( ParmType( typ1, size1 ), ParmType( typ2, size2 ) ) );
+{
+    OutU16( _SetArgInfoPtypes( ParmType( typ1, size1 ), ParmType( typ2, size2 ) ) );
 }
 
 
-void            GenType( itnode *op ) {
-//=====================================
-
+void    GenType( itnode *op )
+//===========================
 // Emit a single type.
-
-    OutU16( _SetTypeInfo( 0, ParmType( op->typ, op->size ) ) );
+{
+    OutU16( _SetArgInfoPtyp( ParmType( op->typ, op->size ) ) );
 }
 
 
-void            GenTypes( itnode *op1, itnode *op2 ) {
-//====================================================
-
+void    GenTypes( itnode *op1, itnode *op2 )
+//==========================================
 // Emit 2 types.
-
-    OutU16( _SetTypeInfo( ParmType( op1->typ, op1->size ), ParmType( op2->typ, op2->size ) ) );
+{
+    OutU16( _SetArgInfoPtypes( ParmType( op1->typ, op1->size ), ParmType( op2->typ, op2->size ) ) );
 }

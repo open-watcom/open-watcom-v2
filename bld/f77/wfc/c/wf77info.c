@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77prag.h"
 #include "wf77info.h"
@@ -115,7 +114,7 @@ static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
 static  segment_id      import_segid;
-static  cg_type         UserType;
+static  cg_type         user_cgtyp;
 
 static  dbg_type        DBGTypes[] = {
     #define ONLY_BASE_TYPES
@@ -883,12 +882,12 @@ void    DefStructs( void )
 {
     sym_id      sym;
 
-    UserType = TY_USER_DEFINED;
+    user_cgtyp = TY_USER_DEFINED;
     for( sym = RList; sym != NULL; sym = sym->u.sd.link ) {
-        BEDefType( UserType, ALIGN_BYTE, sym->u.sd.size );
-        sym->u.sd.cg_typ = UserType;
+        BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.sd.size );
+        sym->u.sd.cgtyp = user_cgtyp;
         sym->u.sd.dbi = DBG_NIL_TYPE;
-        ++UserType;
+        user_cgtyp++;
     }
     if( Options & OPT_AUTOMATIC ) {
         for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
@@ -909,29 +908,29 @@ void    DefStructs( void )
                 if( ce_ext->ec_flags & MEMBER_INITIALIZED )
                     continue;
                 eqv_set = STEqSetShadow( sym );
-                BEDefType( UserType, ALIGN_DWORD, ce_ext->high - ce_ext->low );
-                eqv_set->u.ns.si.ms.u.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_DWORD, ce_ext->high - ce_ext->low );
+                eqv_set->u.ns.si.ms.u.cgtyp = user_cgtyp;
+                user_cgtyp++;
             } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( _Allocatable( sym ) )
                     continue;
-                BEDefType( UserType, SymAlign( sym ),
+                BEDefType( user_cgtyp, SymAlign( sym ),
                    _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elts );
-                sym->u.ns.si.va.u.dim_ext->l.cg_typ = UserType;
-                ++UserType;
+                sym->u.ns.si.va.u.dim_ext->l.cgtyp = user_cgtyp;
+                user_cgtyp++;
             } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
-                sym->u.ns.si.va.vi.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.va.vi.cgtyp = user_cgtyp;
+                user_cgtyp++;
             }
         }
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
             if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) )
                 continue;
             if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size != 0) ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
-                sym->u.ns.si.ms.u.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.ms.u.cgtyp = user_cgtyp;
+                user_cgtyp++;
             }
         }
     }
@@ -1216,14 +1215,14 @@ int     FELexLevel( cg_sym_handle _sym )
 }
 
 
-cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
+cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type cgtyp )
 //======================================================================
 // Return the type that an argument of the given type should be converted
 // to.
 {
     /* unused parameters */ (void)parm; (void)fn;
 
-    switch( tipe ) {
+    switch( cgtyp ) {
 #if _CPU == 386
     case TY_UINT_2:
     case TY_INT_2:
@@ -1242,9 +1241,9 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
             }
         }
 #endif
-        tipe = TY_INTEGER;
+        cgtyp = TY_INTEGER;
     }
-    return( tipe );
+    return( cgtyp );
 }
 
 
@@ -1584,7 +1583,7 @@ static  void    DefDbgStruct( sym_id sym )
 
     if( sym->u.sd.dbi != DBG_NIL_TYPE )
         return;
-    db = DBBegStruct( sym->u.sd.cg_typ, true );
+    db = DBBegStruct( sym->u.sd.cgtyp, true );
     DefDbgFields( sym, db, 0 );
     sym->u.sd.dbi = DBEndStruct( db );
 }
@@ -1601,8 +1600,8 @@ static  dbg_type        DefCommonStruct( sym_id sym )
     dbg_type    db_type;
     com_eq      *com_ext;
 
-    BEDefType( UserType, ALIGN_BYTE, GetComBlkSize( sym ) );
-    db = DBBegNameStruct( "COMMON BLOCK", UserType, true );
+    BEDefType( user_cgtyp, ALIGN_BYTE, GetComBlkSize( sym ) );
+    db = DBBegNameStruct( "COMMON BLOCK", user_cgtyp, true );
     com_offset = 0;
     sym = sym->u.ns.si.cb.first;
     for( ;; ) {
@@ -1625,7 +1624,7 @@ static  dbg_type        DefCommonStruct( sym_id sym )
         com_offset += size;
         sym = com_ext->link_com;
     }
-    ++UserType;
+    user_cgtyp++;
     return( DBEndStruct( db ) );
 }
 
