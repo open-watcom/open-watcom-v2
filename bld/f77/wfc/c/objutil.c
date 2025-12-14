@@ -338,8 +338,8 @@ static  void    JoinValue( void *ptr, int size, int part_1 )
 }
 
 
-void    *GetPtr( void )
-//=====================
+pointer GetPtr( void )
+//====================
 // Get a pointer from object memory.
 {
     pointer     val;

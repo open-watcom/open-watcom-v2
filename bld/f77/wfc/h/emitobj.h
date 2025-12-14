@@ -71,7 +71,7 @@ extern  void            OutU32(unsigned_32 val);
 extern  void            OutObjPtr(obj_ptr val);
 extern  void            OutByte(byte val);
 extern  void            InitFCode(void);
-extern  void            *GetPtr(void);
+extern  pointer         GetPtr(void);
 extern  unsigned_16     GetU16(void);
 extern  unsigned_32     GetU32(void);
 extern  inttarg         GetInt(void);
