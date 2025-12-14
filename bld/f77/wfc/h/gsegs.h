@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,6 +29,10 @@
 *
 ****************************************************************************/
 
+
+#if _CPU == 8086
+    #define MAX_SEG16_SIZE      0x10000
+#endif
 
 extern void         InitGlobalSegs( void );
 extern void         FreeGlobalSegs( void );

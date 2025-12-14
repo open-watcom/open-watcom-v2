@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,8 +68,6 @@ gbl_defn unsigned_8             DtFlags;        // DATA intialization flags
 gbl_defn int                    EndEqLabel;     // END= label
 gbl_defn int                    ErrEqLabel;     // ERR= label
 gbl_defn obj_ptr                AtEndFCode;     // pointer to ATEND F-Code
-
-gbl_defn unsigned_32            MaxSegSize;     // maximum segment size
 
 gbl_defn uint                   DataThreshold;  // data threshold
 

@@ -53,22 +53,22 @@
 #include "fcstack.h"
 #include "fcjmptab.h"
 #include "wf77info.h"
+#include "gsegs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
-void    InitStack( void ) {
-//===================
-
+void    InitStack( void ) 
+//=======================
 // Initialize stack.
-
+{
     StkPtr = TokenBuff;
 }
 
 
-cg_type ArrayPtrType( sym_id sym ) {
-//==================================
-
+cg_type ArrayPtrType( sym_id sym ) 
+//================================
+{
     if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
 #if _CPU == 8086
         if( CGOpts & CGOPT_M_LARGE ) {
@@ -84,17 +84,12 @@ cg_type ArrayPtrType( sym_id sym ) {
 }
 
 
-cg_type SymPtrType( sym_id sym ) {
-//================================
-
+cg_type SymPtrType( sym_id sym ) 
+//==============================
 // Get type of pointer required to address given symbol.
-
-    sym_id      leader;
+{
     cg_type     cgtyp;
-    signed_32   offset;
-    com_eq      *ce_ext;
     unsigned_32 item_size;
-    segment_id  leader_segid;
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
@@ -108,6 +103,11 @@ cg_type SymPtrType( sym_id sym ) {
             cgtyp = TY_GLOBAL_POINTER;
         }
     } else if( flags & SY_IN_EQUIV ) {
+#if _CPU == 8086
+        com_eq      *ce_ext;
+        signed_32   offset;
+        sym_id      leader;
+
         leader = sym;
         offset = 0;
         for( ;; ) {
@@ -119,7 +119,7 @@ cg_type SymPtrType( sym_id sym ) {
         }
         if( ce_ext->ec_flags & MEMBER_IN_COMMON ) {
             offset += ce_ext->offset;
-            if( GetComBlkSize( ce_ext->com_blk ) <= MaxSegSize ) {
+            if( GetComBlkSize( ce_ext->com_blk ) <= MAX_SEG16_SIZE ) {
                 // common block fits in a segment
                 cgtyp = TY_GLOBAL_POINTER;
             } else {
@@ -127,7 +127,7 @@ cg_type SymPtrType( sym_id sym ) {
                 if( flags & SY_SUBSCRIPTED ) {
                     item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
                 }
-                if( offset + item_size <= MaxSegSize ) {
+                if( offset + item_size <= MAX_SEG16_SIZE ) {
                     // object fits in first segment of common block
                     // (common block label is at start of first segment)
                     cgtyp = TY_GLOBAL_POINTER;
@@ -136,18 +136,20 @@ cg_type SymPtrType( sym_id sym ) {
                 }
             }
         } else {
-            if( ce_ext->high - ce_ext->low <= MaxSegSize ) {
+            if( ce_ext->high - ce_ext->low <= MAX_SEG16_SIZE ) {
                 // equivalence set fits in a segment
                 cgtyp = TY_GLOBAL_POINTER;
             } else {
+                segment_id  leader_segid;
+
                 item_size = _SymSize( sym );
                 if( flags & SY_SUBSCRIPTED ) {
                     item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
                 }
                 leader_segid = GetGlobalSegId( ce_ext->offset );
                 offset += ce_ext->offset;
-                if( ( GetGlobalSegId( offset ) == leader_segid ) &&
-                    ( GetGlobalSegId( offset + item_size ) == leader_segid ) ) {
+                if( ( GetGlobalSegId( offset ) == leader_segid )
+                  && ( GetGlobalSegId( offset + item_size ) == leader_segid ) ) {
                     // the entire item is in the same segment as the leader
                     cgtyp = TY_GLOBAL_POINTER;
                 } else {
@@ -155,9 +157,15 @@ cg_type SymPtrType( sym_id sym ) {
                 }
             }
         }
+#else
+        cgtyp = TY_GLOBAL_POINTER;
+#endif
     } else if( flags & SY_IN_COMMON ) {
+#if _CPU == 8086
+        com_eq      *ce_ext;
+
         ce_ext = sym->u.ns.si.va.vi.ec_ext;
-        if( GetComBlkSize( ce_ext->com_blk ) <= MaxSegSize ) {
+        if( GetComBlkSize( ce_ext->com_blk ) <= MAX_SEG16_SIZE ) {
             // common block fits in a segment
             cgtyp = TY_GLOBAL_POINTER;
         } else {
@@ -166,7 +174,7 @@ cg_type SymPtrType( sym_id sym ) {
                 item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
             }
             if( ce_ext->com_blk->u.ns.flags & SY_EQUIVED_NAME ) {
-                if( ce_ext->offset + item_size <= MaxSegSize ) {
+                if( ce_ext->offset + item_size <= MAX_SEG16_SIZE ) {
                     // object fits in first segment of common block
                     // (common block label is at start of first segment)
                     cgtyp = TY_GLOBAL_POINTER;
@@ -176,7 +184,7 @@ cg_type SymPtrType( sym_id sym ) {
             } else {
                 // each symbol in common block gets a label at the offset into
                 // the common block
-                if( GetComOffset( ce_ext->offset ) + item_size <= MaxSegSize ) {
+                if( GetComOffset( ce_ext->offset ) + item_size <= MAX_SEG16_SIZE ) {
                     // object fits in a segment
                     cgtyp = TY_GLOBAL_POINTER;
                 } else {
@@ -184,6 +192,9 @@ cg_type SymPtrType( sym_id sym ) {
                 }
             }
         }
+#else
+        cgtyp = TY_GLOBAL_POINTER;
+#endif
     } else if( (flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
         cgtyp = ArrayPtrType( sym );
     } else if( (flags & SY_SUBSCRIPTED) || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
@@ -191,13 +202,21 @@ cg_type SymPtrType( sym_id sym ) {
         if( flags & SY_SUBSCRIPTED ) {
             item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
         }
-        if( item_size > MaxSegSize ) {
+#if _CPU == 8086
+        if( item_size > MAX_SEG16_SIZE ) {
             cgtyp = TY_HUGE_POINTER;
         } else if( item_size <= DataThreshold ) {
             cgtyp = TY_LOCAL_POINTER;
         } else {
             cgtyp = TY_GLOBAL_POINTER;
         }
+#else
+        if( item_size <= DataThreshold ) {
+            cgtyp = TY_LOCAL_POINTER;
+        } else {
+            cgtyp = TY_GLOBAL_POINTER;
+        }
+#endif
     } else {
         cgtyp = TY_LOCAL_POINTER;
     }
@@ -205,27 +224,22 @@ cg_type SymPtrType( sym_id sym ) {
 }
 
 
-void    XPush( cg_name cgname ) {
-//===============================
-
+void    XPush( cg_name cgname ) 
+//=============================
 // Push a CG-name on the stack.
-
+{
     *(cg_name *)StkPtr = cgname;
     StkPtr = (char *)StkPtr + sizeof( cg_name );
 }
 
 
-cg_name SymIndex( sym_id sym, cg_name i ) {
-//=========================================
-
+cg_name SymIndex( sym_id sym, cg_name i ) 
+//=======================================
 // Get address of symbol plus an index.
 // Merges offset of symbols in common or equivalence with index so that
 // we don't get two run-time calls for huge pointer arithmetic.
-
-    sym_id      leader;
+{
     cg_name     addr;
-    signed_32   offset;
-    com_eq      *ce_ext;
     cg_type     cgtyp;
     bool        data_reference;
 
@@ -300,6 +314,9 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             }
         }
     } else if( sym->u.ns.flags & SY_IN_EQUIV ) {
+        sym_id      leader;
+        signed_32   offset;
+
         leader = sym;
         offset = 0;
         for( ;; ) {
@@ -343,6 +360,8 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         // character variable, address of scb
         addr = CGFEName( sym, F77ToCGType( sym ) );
     } else if( sym->u.ns.flags & SY_IN_COMMON ) {
+        com_eq      *ce_ext;
+
         ce_ext = sym->u.ns.si.va.vi.ec_ext;
         if( i != NULL ) {
             i = CGBinary( O_PLUS, i, CGInteger( ce_ext->offset, TY_INT_4 ),
@@ -372,18 +391,17 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
 }
 
 
-cg_name SymAddr( sym_id sym ) {
-//=============================
-
+cg_name SymAddr( sym_id sym ) 
+//===========================
+{
     return( SymIndex( sym, NULL ) );
 }
 
 
-void    FCPush( void ) {
-//================
-
+void    FCPush( void ) 
+//====================
 // Process PUSH F-Code.
-
+{
     sym_id      sym;
 
     sym = GetPtr();
@@ -395,50 +413,45 @@ void    FCPush( void ) {
 }
 
 
-cg_name SymValue( sym_id sym ) {
-//==============================
-
+cg_name SymValue( sym_id sym ) 
+//============================
 // Generate value of a symbol.
-
+{
     return( CGUnary( O_POINTS, SymAddr( sym ), F77ToCGType( sym ) ) );
 }
 
 
-void    DXPush( intstar4 val ) {
-//==============================
-
+void    DXPush( intstar4 val ) 
+//============================
 // Push a constant on the stack for DATA statement expressions.
-
+{
     *(intstar4 *)StkPtr = val;
     StkPtr = (char *)StkPtr + sizeof( intstar4 );
 }
 
 
-void    SymPush( sym_id val ) {
-//=============================
-
+void    SymPush( sym_id val ) 
+//===========================
 // Push a symbol table entry on the stack.
-
+{
     *(sym_id *)StkPtr = val;
     StkPtr = (char *)StkPtr + sizeof( sym_id );
 }
 
 
-cg_name XPop( void ) {
-//==============
-
+cg_name XPop( void ) 
+//==================
 // Pop a CG-name from the stack.
-
+{
     StkPtr = (char *)StkPtr - sizeof( cg_name );
     return( *(cg_name *)StkPtr );
 }
 
 
-cg_name XPopValue( cg_type cgtyp ) {
+cg_name XPopValue( cg_type cgtyp ) 
 //================================
-
 // Pop a CG-name from the stack (its value).
-
+{
     cg_name     opn;
 
     opn = XPop();
@@ -449,11 +462,10 @@ cg_name XPopValue( cg_type cgtyp ) {
 }
 
 
-void    FCPop( void ) {
-//===============
-
+void    FCPop( void ) 
+//===================
 // Process POP F-Code.
-
+{
     sym_id      sym;
     cg_name     dst;
     unsigned_16 typ_info;
@@ -514,11 +526,10 @@ void    FCPop( void ) {
 }
 
 
-cg_name GetTypedValue( void ) {
-//=======================
-
+cg_name GetTypedValue( void ) 
+//===========================
 // Pop a CG-name from the stack (its value).
-
+{
     cg_name     opn;
     cg_type     cgtyp;
 
@@ -531,39 +542,35 @@ cg_name GetTypedValue( void ) {
 }
 
 
-cg_name         StkElement( int idx ) {
-//=====================================
-
+cg_name         StkElement( int idx ) 
+//===================================
 // Get idx'th stack element.
-
+{
     return(  *(cg_name * )((char *)StkPtr - idx * sizeof( cg_name )) );
 }
 
 
-void            PopStkElements( int num ) {
-//=========================================
-
+void            PopStkElements( int num ) 
+//=======================================
 // Pop stack elements from the stack.
-
+{
     StkPtr = (char *)StkPtr - num * sizeof( cg_name );
 }
 
 
-intstar4        DXPop( void ) {
-//=======================
-
+intstar4        DXPop( void ) 
+//===========================
 // Pop a constant from the stack for DATA statement expressions.
-
+{
     StkPtr = (char *)StkPtr - sizeof( intstar4 );
     return( *(intstar4 *)StkPtr );
 }
 
 
-sym_id          SymPop( void ) {
-//========================
-
+sym_id          SymPop( void ) 
+//============================
 // Pop a symbol table entry from the stack.
-
+{
     StkPtr = (char *)StkPtr - sizeof( sym_id );
     return( *(sym_id *)StkPtr );
 }
@@ -582,11 +589,10 @@ cg_name IntegerConstant( ftn_type *value, size_t size )
 }
 
 
-void    FCPushConst( void ) {
-//=====================
-
+void    FCPushConst( void ) 
+//=========================
 // Process PUSH_CONST F-Code.
-
+{
     sym_id      sym;
     char        fmt_buff[CONVERSION_BUFFER+1];
 
@@ -626,11 +632,10 @@ void    FCPushConst( void ) {
 }
 
 
-void    FCPushLit( void ) {
-//===================
-
+void    FCPushLit( void ) 
+//=======================
 // Process PUSH_LIT F-Code.
-
+{
     sym_id      sym;
 
     sym = GetPtr();

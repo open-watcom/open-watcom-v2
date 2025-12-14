@@ -62,6 +62,7 @@
 #include "fcgmain.h"
 #include "mkname.h"
 #include "rstutils.h"
+#include "gsegs.h"
 
 #include "langenvd.h"
 #if _INTEL_CPU
@@ -320,8 +321,10 @@ static  void    DefineCommonSegs( void )
 //======================================
 // Define segments for a common blocks.
 {
+#if _CPU == 8086
     uint_32     com_size;
     int         seg_count;
+#endif
     sym_id      sym;
     size_t      cb_len;
     int         private;
@@ -352,9 +355,11 @@ static  void    DefineCommonSegs( void )
         } else {
             BEDefSeg( sym->u.ns.si.cb.segid, COMMON | private, cb_name, ALIGN_BYTE );
         }
+#if _CPU == 8086
         cb_name[cb_len] = '@';
         seg_count = 0;
-        for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
+        com_size = GetComBlkSize( sym );
+        while( com_size > MAX_SEG16_SIZE ) {
             seg_count++;
             sprintf( &cb_name[cb_len + 1], "%d", seg_count );
             if( CGOpts & CGOPT_ALIGN ) {
@@ -362,7 +367,9 @@ static  void    DefineCommonSegs( void )
             } else {
                 BEDefSeg( AllocSegId(), COMMON | private , cb_name, ALIGN_BYTE );
             }
+            com_size -= MAX_SEG16_SIZE;
         }
+#endif
     }
 }
 
@@ -392,12 +399,15 @@ static  void    AllocComBlk( sym_id cb )
     BESetSeg( segid );
     cb->u.ns.u3.address = BENewBack( cb );
     DGLabel( cb->u.ns.u3.address );
-    for( size = GetComBlkSize( cb ); size > MaxSegSize; size -= MaxSegSize ) {
-        BESetSeg( segid );
-        SegBytes( MaxSegSize );
+    size = GetComBlkSize( cb );
+#if _CPU == 8086
+    while( size > MAX_SEG16_SIZE ) {
+        SegBytes( MAX_SEG16_SIZE );
         segid++;
+        BESetSeg( segid );
+        size -= MAX_SEG16_SIZE;
     }
-    BESetSeg( segid );
+#endif
     SegBytes( size );
 }
 
@@ -405,16 +415,13 @@ static  void    AllocComBlk( sym_id cb )
 static  void    SegBytes( uint_32 size )
 //======================================
 {
-#if _CPU == 386
-    DGUBytes( size );
-#else
-    if( size == MaxSegSize ) {
-        DGUBytes( size - 1 ); // back end can't handle value of 64k
-        DGUBytes( 1 );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGUBytes( size );
     }
 #endif
+    DGUBytes( size );
 }
 
 
@@ -495,14 +502,13 @@ void    DtInit( segment_id segid, seg_offset offset )
 //===================================================
 // Set to do DATA initialization.
 {
-    if( offset + DtOffset >= MaxSegSize ) {
+    DtSegOffset = offset + DtOffset;
+#if _CPU == 8086
+    while( DtSegOffset > MAX_SEG16_SIZE ) {
         segid++;
-        for( DtSegOffset = DtOffset - (MaxSegSize - offset); DtSegOffset >= MaxSegSize; DtSegOffset -= MaxSegSize ) {
-            segid++;
-        }
-    } else {
-        DtSegOffset = offset + DtOffset;
+        DtSegOffset -= MAX_SEG16_SIZE;
     }
+#endif
     DtSegId = segid;
 }
 
@@ -518,34 +524,26 @@ struct {
 static  void    InitBytes( unsigned long size, byte value )
 //=========================================================
 {
-#if _CPU == 386
-    DGIBytes( size, value );
-#else
-    if( size == MaxSegSize ) {
-        // back end can't handle size of 64k
-        DGIBytes( MaxSegSize / 2, value );
-        DGIBytes( MaxSegSize / 2, value );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGIBytes( size, value );
     }
 #endif
+    DGIBytes( size, value );
 }
 
 
 static  void    UndefBytes( unsigned long size, byte *data )
 //==========================================================
 {
-#if _CPU == 386
-    DGBytes( size, data );
-#else
-    if( size == MaxSegSize ) {
-        // back end can't handle size of 64k
-        DGBytes( MaxSegSize / 2, data );
-        DGBytes( MaxSegSize / 2, data );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGBytes( size, data );
     }
 #endif
+    DGBytes( size, data );
 }
 
 
@@ -574,16 +572,17 @@ void    DtIBytes( byte data, int size )
 //=====================================
 // Initialize with specified data.
 {
-    if( ( DtSegId == CurrDt.segid ) &&
-        (DtSegOffset == CurrDt.offset + CurrDt.size) &&
-        (data == CurrDt.byte_value) &&
-        (MaxSegSize >= (CurrDt.offset + CurrDt.size + size)) ) {
+#if _CPU == 8086
+    if( ( DtSegId == CurrDt.segid )
+      && ( DtSegOffset == CurrDt.offset + CurrDt.size )
+      && ( data == CurrDt.byte_value )
+      && ( (CurrDt.offset + CurrDt.size + size) <= MAX_SEG16_SIZE ) ) {
         // We are continuing where we left off
         CurrDt.size += size;
         DtSegOffset += size;
     } else {
         FlushCurrDt();
-        if( MaxSegSize > DtSegOffset + size ) {
+        if( DtSegOffset + size < MAX_SEG16_SIZE ) {
             CurrDt.segid = DtSegId;
             CurrDt.offset = DtSegOffset;
             CurrDt.byte_value = data;
@@ -592,8 +591,8 @@ void    DtIBytes( byte data, int size )
         } else {
             BESetSeg( DtSegId );
             DGSeek( DtSegOffset );
-            DGIBytes( MaxSegSize - DtSegOffset, data );
-            size -= MaxSegSize - DtSegOffset;
+            DGIBytes( MAX_SEG16_SIZE - DtSegOffset, data );
+            size -= MAX_SEG16_SIZE - DtSegOffset;
             DtSegId++;
             DtSegOffset = size;
             CurrDt.segid = DtSegId;
@@ -602,6 +601,22 @@ void    DtIBytes( byte data, int size )
             CurrDt.size = size;
         }
     }
+#else
+    if( ( DtSegId == CurrDt.segid )
+      && ( DtSegOffset == CurrDt.offset + CurrDt.size )
+      && ( data == CurrDt.byte_value ) ) {
+        // We are continuing where we left off
+        CurrDt.size += size;
+        DtSegOffset += size;
+    } else {
+        FlushCurrDt();
+        CurrDt.segid = DtSegId;
+        CurrDt.offset = DtSegOffset;
+        CurrDt.byte_value = data;
+        CurrDt.size = size;
+        DtSegOffset += size;
+    }
+#endif
 }
 
 
@@ -613,22 +628,27 @@ void    DtStreamBytes( byte *data, int size )
     InitCurrDt();
     BESetSeg( DtSegId );
     DGSeek( DtSegOffset );
-    if( MaxSegSize > DtSegOffset + size ) {
+#if _CPU == 8086
+    if( DtSegOffset + size < MAX_SEG16_SIZE ) {
         UndefBytes( size, data );
         DtSegOffset += size;
     } else {
-        UndefBytes( MaxSegSize - DtSegOffset, data );
-        size -= MaxSegSize - DtSegOffset;
+        UndefBytes( MAX_SEG16_SIZE - DtSegOffset, data );
+        size -= MAX_SEG16_SIZE - DtSegOffset;
         DtSegId++;
         if( size != 0 ) {
             BESetSeg( DtSegId );
             DGSeek( 0 );
-            UndefBytes( size, data + MaxSegSize - DtSegOffset );
+            UndefBytes( size, data + MAX_SEG16_SIZE - DtSegOffset );
             DtSegOffset = size;
         } else {
             DtSegOffset = 0;
         }
     }
+#else
+    UndefBytes( size, data );
+    DtSegOffset += size;
+#endif
 }
 
 
@@ -670,10 +690,17 @@ segment_id      GetComSegId( sym_id sym, uint_32 offset )
 {
     segment_id  segid;
 
+#if _CPU != 8086
+    (void)offset;
+#endif
     segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
-    for( offset += sym->u.ns.si.va.vi.ec_ext->offset; offset > MaxSegSize; offset -= MaxSegSize ) {
+#if _CPU == 8086
+    offset += sym->u.ns.si.va.vi.ec_ext->offset;
+    while( offset > MAX_SEG16_SIZE ) {
         segid++;
+        offset -= MAX_SEG16_SIZE;
     }
+#endif
     return( segid );
 }
 
@@ -736,9 +763,11 @@ seg_offset      GetComOffset( uint_32 offset )
 //============================================
 // Get segment offset in common block for variable in common.
 {
-    while( offset >= MaxSegSize ) {
-        offset -= MaxSegSize;
+#if _CPU == 8086
+    while( offset >= MAX_SEG16_SIZE ) {
+        offset -= MAX_SEG16_SIZE;
     }
+#endif
     return( offset );
 }
 
@@ -1793,7 +1822,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;
-#if _INTEL_CPU
+#if _CPU == 8086
     int         idx;
     uint_32     com_size;
 #endif
@@ -1978,12 +2007,18 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
             if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
+#if _CPU == 8086
             idx = 0;
-            for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
+            com_size = GetComBlkSize( sym );
+            while( com_size > MAX_SEG16_SIZE ) {
                 idx++;
+                com_size -= MAX_SEG16_SIZE;
             }
             if(( (segment_id)(pointer_uint)req_handle >= sym->u.ns.si.cb.segid )
               && ( (segment_id)(pointer_uint)req_handle <= sym->u.ns.si.cb.segid + idx )) {
+#else
+            if( (segment_id)(pointer_uint)req_handle == sym->u.ns.si.cb.segid ) {
+#endif
                 MangleCommonBlockName( sym, MangleSymBuff, true );
                 return( MangleSymBuff );
             }
