@@ -40,12 +40,6 @@
 #include "gsegs.h"
 
 
-#if _CPU == 8086
-  #define MAX_SEG_SIZE  0x10000
-#else
-  #define MAX_SEG_SIZE  0xffffffff
-#endif
-
 global_seg              *GlobalSeg;
 
 static  global_seg      *CurrGSeg;
@@ -99,13 +93,16 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
     if( ProgSw & PS_ERROR )
         return( SEG_FREE );
 #if _CPU == 8086
-    if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MAX_SEG16_SIZE ) ) {
+    if( ( CurrGSeg != NULL )
+      && ( CurrGSeg->size + g_size <= MAX_SEG16_SIZE ) ) {
 #else
-    if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size >= g_size ) ) {
+    if( ( CurrGSeg != NULL )
+      && ( CurrGSeg->size + g_size >= g_size ) ) {
 #endif
         // object will fit in current segment
 #if _INTEL_CPU
-        if( ( init == CurrGSeg->initialized ) || !_SmallDataModel( CGOpts ) ) {
+        if( ( init == CurrGSeg->initialized )
+          || !_SmallDataModel( CGOpts ) ) {
             CurrGSeg->size += g_size;
             return( CurrGSeg->segid );
         }

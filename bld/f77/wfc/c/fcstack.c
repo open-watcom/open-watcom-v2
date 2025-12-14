@@ -58,7 +58,7 @@
 #include "cgprotos.h"
 
 
-void    InitStack( void ) 
+void    InitStack( void )
 //=======================
 // Initialize stack.
 {
@@ -66,7 +66,7 @@ void    InitStack( void )
 }
 
 
-cg_type ArrayPtrType( sym_id sym ) 
+cg_type ArrayPtrType( sym_id sym )
 //================================
 {
     if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
@@ -84,7 +84,7 @@ cg_type ArrayPtrType( sym_id sym )
 }
 
 
-cg_type SymPtrType( sym_id sym ) 
+cg_type SymPtrType( sym_id sym )
 //==============================
 // Get type of pointer required to address given symbol.
 {
@@ -195,9 +195,11 @@ cg_type SymPtrType( sym_id sym )
 #else
         cgtyp = TY_GLOBAL_POINTER;
 #endif
-    } else if( (flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
+    } else if( (flags & SY_SUBSCRIPTED)
+      && _Allocatable( sym ) ) {
         cgtyp = ArrayPtrType( sym );
-    } else if( (flags & SY_SUBSCRIPTED) || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
+    } else if( (flags & SY_SUBSCRIPTED)
+      || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
         item_size = _SymSize( sym );
         if( flags & SY_SUBSCRIPTED ) {
             item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
@@ -224,7 +226,7 @@ cg_type SymPtrType( sym_id sym )
 }
 
 
-void    XPush( cg_name cgname ) 
+void    XPush( cg_name cgname )
 //=============================
 // Push a CG-name on the stack.
 {
@@ -233,7 +235,7 @@ void    XPush( cg_name cgname )
 }
 
 
-cg_name SymIndex( sym_id sym, cg_name i ) 
+cg_name SymIndex( sym_id sym, cg_name i )
 //=======================================
 // Get address of symbol plus an index.
 // Merges offset of symbols in common or equivalence with index so that
@@ -268,7 +270,8 @@ cg_name SymIndex( sym_id sym, cg_name i )
                 addr = CGFEName( ReturnValue, F77ToCGType( sym ) );
             }
         } else {
-            if( (sym->u.ns.u1.s.typ == FT_CHAR) && (Options & OPT_DESCRIPTOR) == 0 ) {
+            if( (sym->u.ns.u1.s.typ == FT_CHAR)
+              && (Options & OPT_DESCRIPTOR) == 0 ) {
                 addr = SubAltSCB( CommonEntry );
             } else {
                 addr = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ),
@@ -336,8 +339,8 @@ cg_name SymIndex( sym_id sym, cg_name i )
             if( shadow != NULL ) {
                 addr = CGFEName( shadow, shadow->u.ns.si.ms.u.cgtyp );
                 offset -= leader->u.ns.si.va.vi.ec_ext->low;
-            } else if( (leader->u.ns.u1.s.typ == FT_CHAR) &&
-                       (leader->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
+            } else if( (leader->u.ns.u1.s.typ == FT_CHAR)
+              && (leader->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
                 addr = CGBackName( leader->u.ns.si.va.u.bck_hdl, F77ToCGType( sym ) );
             } else {
                 addr = CGFEName( leader, F77ToCGType( sym ) );
@@ -349,14 +352,15 @@ cg_name SymIndex( sym_id sym, cg_name i )
             i = CGInteger( offset, TY_INT_4 );
         }
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
-        if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
+        if( (sym->u.ns.u1.s.typ == FT_CHAR)
+          && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
             // tell code generator where storage pointed to by SCB is located
             addr = CGBinary( O_COMMA, addr,
                              CGFEName( sym, F77ToCGType( sym ) ), TY_DEFAULT );
         }
         i = NULL;
-    } else if( ( sym->u.ns.u1.s.typ == FT_CHAR ) &&
-               ( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) ) {
+    } else if( ( sym->u.ns.u1.s.typ == FT_CHAR )
+      && ( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) ) {
         // character variable, address of scb
         addr = CGFEName( sym, F77ToCGType( sym ) );
     } else if( sym->u.ns.flags & SY_IN_COMMON ) {
@@ -374,15 +378,18 @@ cg_name SymIndex( sym_id sym, cg_name i )
         i = NULL;
     } else {
         addr = CGFEName( sym, F77ToCGType( sym ) );
-        if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
+        if( (sym->u.ns.flags & SY_SUBSCRIPTED)
+          && _Allocatable( sym ) ) {
             addr = CGUnary( O_POINTS, addr, ArrayPtrType( sym ) );
         }
     }
     if( i != NULL ) {
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
     }
-    if( (OZOpts & OZOPT_O_VOLATILE) && data_reference &&
-        ( ( sym->u.ns.u1.s.typ >= FT_REAL ) && ( sym->u.ns.u1.s.typ <= FT_XCOMPLEX ) ) ) {
+    if( (OZOpts & OZOPT_O_VOLATILE)
+      && data_reference
+      && ( ( sym->u.ns.u1.s.typ >= FT_REAL )
+      && ( sym->u.ns.u1.s.typ <= FT_XCOMPLEX ) ) ) {
         addr = CGVolatile( addr );
     } else if( sym->u.ns.u1.s.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
@@ -391,14 +398,14 @@ cg_name SymIndex( sym_id sym, cg_name i )
 }
 
 
-cg_name SymAddr( sym_id sym ) 
+cg_name SymAddr( sym_id sym )
 //===========================
 {
     return( SymIndex( sym, NULL ) );
 }
 
 
-void    FCPush( void ) 
+void    FCPush( void )
 //====================
 // Process PUSH F-Code.
 {
@@ -413,7 +420,7 @@ void    FCPush( void )
 }
 
 
-cg_name SymValue( sym_id sym ) 
+cg_name SymValue( sym_id sym )
 //============================
 // Generate value of a symbol.
 {
@@ -421,7 +428,7 @@ cg_name SymValue( sym_id sym )
 }
 
 
-void    DXPush( intstar4 val ) 
+void    DXPush( intstar4 val )
 //============================
 // Push a constant on the stack for DATA statement expressions.
 {
@@ -430,7 +437,7 @@ void    DXPush( intstar4 val )
 }
 
 
-void    SymPush( sym_id val ) 
+void    SymPush( sym_id val )
 //===========================
 // Push a symbol table entry on the stack.
 {
@@ -439,7 +446,7 @@ void    SymPush( sym_id val )
 }
 
 
-cg_name XPop( void ) 
+cg_name XPop( void )
 //==================
 // Pop a CG-name from the stack.
 {
@@ -448,7 +455,7 @@ cg_name XPop( void )
 }
 
 
-cg_name XPopValue( cg_type cgtyp ) 
+cg_name XPopValue( cg_type cgtyp )
 //================================
 // Pop a CG-name from the stack (its value).
 {
@@ -462,7 +469,7 @@ cg_name XPopValue( cg_type cgtyp )
 }
 
 
-void    FCPop( void ) 
+void    FCPop( void )
 //===================
 // Process POP F-Code.
 {
@@ -477,7 +484,9 @@ void    FCPop( void )
     typ_info = GetU16();
     dst_cgtyp = GetCGTypes1( typ_info );
     src_cgtyp = GetCGTypes2( typ_info );
-    if( ( dst_cgtyp == TY_COMPLEX ) || ( dst_cgtyp == TY_DCOMPLEX ) || ( dst_cgtyp == TY_XCOMPLEX ) ) {
+    if( ( dst_cgtyp == TY_COMPLEX )
+      || ( dst_cgtyp == TY_DCOMPLEX )
+      || ( dst_cgtyp == TY_XCOMPLEX ) ) {
         CmplxAssign( sym, dst_cgtyp, src_cgtyp );
     } else {
         dst = NULL;
@@ -515,18 +524,21 @@ void    FCPop( void )
                 return;
             }
         }
-        if( (src_cgtyp == TY_COMPLEX) || (src_cgtyp == TY_DCOMPLEX) || (src_cgtyp == TY_XCOMPLEX) ) {
+        if( (src_cgtyp == TY_COMPLEX)
+          || (src_cgtyp == TY_DCOMPLEX)
+          || (src_cgtyp == TY_XCOMPLEX) ) {
             Cmplx2Scalar();
             src_cgtyp = CmplxBaseType( src_cgtyp );
         }
-        if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) && (OZOpts & OZOPT_O_INLINE) )
+        if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM )
+          && (OZOpts & OZOPT_O_INLINE) )
             return;
         XPush( CGAssign( dst, XPopValue( src_cgtyp ), dst_cgtyp ) );
     }
 }
 
 
-cg_name GetTypedValue( void ) 
+cg_name GetTypedValue( void )
 //===========================
 // Pop a CG-name from the stack (its value).
 {
@@ -542,7 +554,7 @@ cg_name GetTypedValue( void )
 }
 
 
-cg_name         StkElement( int idx ) 
+cg_name         StkElement( int idx )
 //===================================
 // Get idx'th stack element.
 {
@@ -550,7 +562,7 @@ cg_name         StkElement( int idx )
 }
 
 
-void            PopStkElements( int num ) 
+void            PopStkElements( int num )
 //=======================================
 // Pop stack elements from the stack.
 {
@@ -558,7 +570,7 @@ void            PopStkElements( int num )
 }
 
 
-intstar4        DXPop( void ) 
+intstar4        DXPop( void )
 //===========================
 // Pop a constant from the stack for DATA statement expressions.
 {
@@ -567,7 +579,7 @@ intstar4        DXPop( void )
 }
 
 
-sym_id          SymPop( void ) 
+sym_id          SymPop( void )
 //============================
 // Pop a symbol table entry from the stack.
 {
@@ -589,7 +601,7 @@ cg_name IntegerConstant( ftn_type *value, size_t size )
 }
 
 
-void    FCPushConst( void ) 
+void    FCPushConst( void )
 //=========================
 // Process PUSH_CONST F-Code.
 {
@@ -632,7 +644,7 @@ void    FCPushConst( void )
 }
 
 
-void    FCPushLit( void ) 
+void    FCPushLit( void )
 //=======================
 // Process PUSH_LIT F-Code.
 {

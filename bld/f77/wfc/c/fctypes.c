@@ -81,52 +81,49 @@ static  cg_type         CGTypesMap[] = {
     #undef pick
 };
 
-cg_type MkCGType( PTYPE ptyp ) {
+cg_type MkCGType( PTYPE ptyp )
 //===========================
-
 // Map FORTRAN parameter type to CG-type.
-
+{
     return( CGTypesMap[ptyp] );
 }
 
 
-cg_type GetCGType( unsigned_16 typ_info ) {
-//===============================================
-
+cg_type GetCGType( unsigned_16 typ_info )
+//=======================================
+{
     return( MkCGType( _GetArgInfoPtyp( typ_info ) ) );
 }
 
 
-cg_type GetCGTypes1( unsigned_16 typ_info ) {
-//================================================
-
+cg_type GetCGTypes1( unsigned_16 typ_info )
+//=========================================
+{
     return( MkCGType( _GetArgInfoPtypes1( typ_info ) ) );
 }
 
 
-cg_type GetCGTypes2( unsigned_16 typ_info ) {
-//================================================
-
+cg_type GetCGTypes2( unsigned_16 typ_info )
+//=========================================
+{
     return( MkCGType( _GetArgInfoPtypes2( typ_info ) ) );
 }
 
 
-cg_type         F77ToCGType( sym_id sym ) {
+cg_type         F77ToCGType( sym_id sym )
 //========================================
-
 // Map a WATFOR-77 type to a CG type.
-
+{
     if( sym->u.ns.u1.s.typ == FT_STRUCTURE )
         return( sym->u.ns.xt.record->cgtyp );
     return( MkCGType( ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) ) );
 }
 
 
-static  int     CGIndex( cg_type cgtyp ) {
+static  int     CGIndex( cg_type cgtyp )
 //======================================
-
 // Return index for a CG-type.
-
+{
     if( cgtyp == TY_UINT_1 )
         return( 0 );
     if( cgtyp == TY_UINT_2 )
@@ -153,18 +150,17 @@ static  int     CGIndex( cg_type cgtyp ) {
 }
 
 
-cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 ) {
-//=======================================================
-
+cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 )
+//=========================================================
 // For a binary operation of two operands of the given CG-types, return
 // the result CG-type.
-
+{
     return( MapCGTypes[CGIndex( cgtyp1 ) * NUM_TYPES + CGIndex( cgtyp2 )] );
 }
 
 
 bool    IsCGCodePointer( cg_type cgtyp )
-//====================================
+//======================================
 // Is CG-type a code pointer?
 {
     switch( cgtyp ) {
@@ -229,7 +225,8 @@ cg_type PromoteCGToBaseType( cg_type cgtyp )
 // we must promote it in order to make a call
 {
 #if _RISC_CPU
-    if( ( cgtyp == TY_INT_1 ) || ( cgtyp == TY_INT_2 )  ) {
+    if( ( cgtyp == TY_INT_1 )
+      || ( cgtyp == TY_INT_2 )  ) {
         cgtyp = TY_INT_4;
     }
 #endif
