@@ -1964,8 +1964,8 @@ MS_COLUMN [   c0] column %d1,
 MS_COLUMN [j  c0] ｶﾗﾑ %d1,
 MS_IN [   c0] in %s1,
 MS_IN [j  c0] in %s1,
-MS_STATISTICS [   c0] %d1 statements, %i2 bytes, %d3 extensions, %d4 warnings, %d5 errors
-MS_STATISTICS [j  c0] %d1 ｽﾃｰﾄﾒﾝﾄ, %i2 ﾊﾞｲﾄ, %d3 拡張ﾒｯｾｰｼﾞ, %d4 警告ｴﾗｰ, %d5 ｴﾗｰ
+MS_STATISTICS [   c0] %d1 statements, %u2 bytes, %u3 extensions, %u4 warnings, %u5 errors
+MS_STATISTICS [j  c0] %d1 ｽﾃｰﾄﾒﾝﾄ, %u2 ﾊﾞｲﾄ, %u3 拡張ﾒｯｾｰｼﾞ, %u4 警告ｴﾗｰ, %u5 ｴﾗｰ
 MS_CODE_SIZE [   c0] Code size (in bytes):
 MS_CODE_SIZE [j  c0] ｺｰﾄﾞｻｲｽﾞ (ﾊﾞｲﾄ):
 MS_NUMBER_OF_ERRORS [   c0] Number of errors:

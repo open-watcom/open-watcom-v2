@@ -43,7 +43,7 @@
 //========================================================================
 
 gbl_defn pointer                StkPtr;         // F-Code stack pointer
-gbl_defn unsigned_32            CodeSize;       // size of program object code
+gbl_defn unsigned               CodeSize;       // size of program object code
 gbl_defn label_id               LabelIdx;       // label index
 gbl_defn sym_id                 WildLabel;      // label of a wild goto
 gbl_defn pointer                LabelList;      // list of labels
