@@ -66,10 +66,10 @@ uint            StorageSize( TYPE typ )
         if( typ == FT_REAL )
             return( sizeof( double ) );
         if( typ == FT_DOUBLE ) {
-            return( TypeInfo[ FT_EXTENDED ].size );
+            return( TypeInfo[FT_EXTENDED].size );
         }
     }
-    return( TypeInfo[ typ ].size );
+    return( TypeInfo[typ].size );
 }
 
 
@@ -100,7 +100,7 @@ uint        TypeSize( TYPE typ )
 //==============================
 // Get the size of the storage unit for the given data type.
 {
-    return( TypeInfo[ typ ].size );
+    return( TypeInfo[typ].size );
 }
 
 
@@ -108,7 +108,7 @@ dw_ftype    DWType( TYPE typ )
 //============================
 // Get the dwarf fundamental type for the given data type.
 {
-    return( TypeInfo[ typ ].dwtype );
+    return( TypeInfo[typ].dwtype );
 }
 
 
@@ -116,7 +116,7 @@ const char  *TypeKW( TYPE typ )
 //=============================
 // Get the keyword string for the given data type.
 {
-    return( TypeInfo[ typ ].text );
+    return( TypeInfo[typ].text );
 }
 
 PTYPE   ParmType( TYPE typ, size_t size )
@@ -124,5 +124,5 @@ PTYPE   ParmType( TYPE typ, size_t size )
 {
     /* unused parameters */ (void)size;
 
-    return( TypeInfo[ typ ].ptyp );
+    return( TypeInfo[typ].ptyp );
 }

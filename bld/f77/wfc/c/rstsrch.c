@@ -66,10 +66,10 @@ sym_id STNameSearch( const char *name, size_t len )
     sym_id      tail;
 
     HashValue = CalcHash( name, len );
-    head = HashTable[ HashValue ].h_head;
+    head = HashTable[HashValue].h_head;
     if( head == NULL )
         return( NULL );
-    tail = HashTable[ HashValue ].h_tail;
+    tail = HashTable[HashValue].h_tail;
     for( ;; ) {
         if( head->u.ns.u2.name_len == len ) {
             if( memcmp( name, &head->u.ns.name, len ) == 0 ) {

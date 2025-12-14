@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ void    CpEndUnion( void ) {
 
     CSExtn();
     if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_UNION ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[PR_UNION] );
     }
     SgmtSw &= ~SG_DEFINING_UNION;
     EndOfStatement();
@@ -107,7 +107,7 @@ void    CpEndMap( void ) {
 
     CSExtn();
     if( (SgmtSw & SG_DEFINING_MAP) == 0 ) {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_MAP ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[PR_MAP] );
     }
     SgmtSw &= ~SG_DEFINING_MAP;
     EndOfStatement();

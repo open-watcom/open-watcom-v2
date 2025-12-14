@@ -44,9 +44,6 @@
 #include "gtypes.h"
 
 
-#define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
-#define _SetArgInfoPtypes(p1,p2)    ((((p1) & 0xff) << 8) | ((p2) & 0xff))
-
 void    DumpType( TYPE typ, size_t size )
 //=======================================
 // Emit a single type.

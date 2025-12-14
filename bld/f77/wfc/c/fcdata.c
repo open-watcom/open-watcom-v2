@@ -800,8 +800,8 @@ static  void    DoDataInit( PTYPE ptyp )
     seg_offset  offset;
     byte        const_buff[sizeof( ftn_type )];
 
-    if( ( DtConstType == FPT_CHAR )
-      || ( DtConstType == FPT_NOTYPE ) ) {
+    if( ( DtConstPtyp == FPT_CHAR )
+      || ( DtConstPtyp == FPT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
         const_ptr = &DtConst->u.lt.value;
     } else {
@@ -812,7 +812,7 @@ static  void    DoDataInit( PTYPE ptyp )
     segid = GetDataSegId( InitVar );
     offset = GetDataOffset( InitVar );
     DtInit( segid, offset );
-    if( DtConstType == FPT_CHAR ) {
+    if( DtConstPtyp == FPT_CHAR ) {
         if( const_size >= var_size ) {
             DtBytes( const_ptr, var_size );
         } else {
@@ -820,21 +820,21 @@ static  void    DoDataInit( PTYPE ptyp )
             DtIBytes( ' ', var_size - const_size );
         }
     } else if( ( ptyp == FPT_CHAR )
-      && IntType( DtConstType ) ) {
+      && IntType( DtConstPtyp ) ) {
         DtBytes( const_ptr, sizeof( char ) );
         if( var_size > sizeof( char ) ) {
             DtIBytes( ' ', var_size - sizeof( char ) );
         }
-    } else if( DtConstType == FPT_NOTYPE ) {
+    } else if( DtConstPtyp == FPT_NOTYPE ) {
         if( ptyp != FPT_CHAR ) {
             size = var_size;
             while( size > const_size ) {
                 size--;
-                const_buff[ size ] = 0;
+                const_buff[size] = 0;
             }
             while( size > 0 ) {
                 size--;
-                const_buff[ size ] = *const_ptr;
+                const_buff[size] = *const_ptr;
                 const_ptr++;
             }
             const_ptr = const_buff;
@@ -847,7 +847,7 @@ static  void    DoDataInit( PTYPE ptyp )
             const_ptr += const_size - var_size;
         }
         DtBytes( const_ptr, var_size );
-    } else if( DtConstType <= FPT_LOG_4 ) {
+    } else if( DtConstPtyp <= FPT_LOG_4 ) {
         DtBytes( const_ptr, var_size );
     } else {
         cfstruct    f77h;
@@ -858,9 +858,9 @@ static  void    DoDataInit( PTYPE ptyp )
         f77h.free  = FMemFree;
         CFInit( &f77h );
 
-        if( DtConstType != ptyp ) {
+        if( DtConstPtyp != ptyp ) {
             DataCnvTab[( ptyp - FPT_INT_1 ) * CONST_TYPES +
-                        ( DtConstType - FPT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
+                        ( DtConstPtyp - FPT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
         /*
@@ -933,14 +933,14 @@ static  void    AsnVal( PTYPE ptyp )
         if( issue_err ) {
             Error( DA_NOT_ENOUGH );
         }
-    } else if( ( DtConstType == FPT_NOTYPE )
-      || ( ( ptyp <= FPT_LOG_4 ) && ( DtConstType <= FPT_LOG_4 ) )
-      || ( DtConstType == FPT_CHAR )
-      || ( ( ptyp == FPT_CHAR ) && IntType( DtConstType ) )
-      || ( Numeric( ptyp ) && Numeric( DtConstType ) ) ) {
+    } else if( ( DtConstPtyp == FPT_NOTYPE )
+      || ( ( ptyp <= FPT_LOG_4 ) && ( DtConstPtyp <= FPT_LOG_4 ) )
+      || ( DtConstPtyp == FPT_CHAR )
+      || ( ( ptyp == FPT_CHAR ) && IntType( DtConstPtyp ) )
+      || ( Numeric( ptyp ) && Numeric( DtConstPtyp ) ) ) {
         DoDataInit( ptyp );
     } else {
-        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ ptyp ], InitVar, MapType[ DtConstType ] );
+        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ptyp], InitVar, MapType[DtConstPtyp] );
     }
 }
 
@@ -1348,7 +1348,7 @@ void    DtFieldSubscript( void )
         DXPush( base + offset );
     } else {
         STFieldName( fd, name );
-        Error( EV_SSCR_INVALID, name, StmtKeywords[ PR_DATA ] );
+        Error( EV_SSCR_INVALID, name, StmtKeywords[PR_DATA] );
     }
 }
 
@@ -1378,7 +1378,7 @@ void    DtFieldSubstring( void )
         DtItemSize = last - first + 1;
     } else {
         STFieldName( fd, name );
-        Error( EV_SSTR_INVALID, name, StmtKeywords[ PR_DATA ] );
+        Error( EV_SSTR_INVALID, name, StmtKeywords[PR_DATA] );
     }
 }
 
@@ -1512,7 +1512,7 @@ static  void    GetDataConst( void )
             rep = GetPtr();
             if( rep != NULL ) {
                 DtRepCount = IntegerValue( rep );
-                DtConstType = GetU16();
+                DtConstPtyp = GetU16();
                 DtConst = GetPtr();
             } else {
                 DtFlags |= DT_NO_MORE_CONSTS;

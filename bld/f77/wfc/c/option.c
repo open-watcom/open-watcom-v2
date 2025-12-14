@@ -490,7 +490,7 @@ static opt_entry *GetOptn( const char *buff, bool *negated )
     opt_entry   *optn;
 
     *negated = false;
-    if( ( toupper( buff[ 0 ] ) == 'N' ) && ( toupper( buff[ 1 ] ) == 'O' ) ) {
+    if( ( toupper( buff[0] ) == 'N' ) && ( toupper( buff[1] ) == 'O' ) ) {
         *negated = true;
         buff += 2 * sizeof( char );
     }
@@ -563,7 +563,7 @@ static void ScanOpts( const char *buff )
     bool        first_opt;
 
     if( strlen( SrcBuff ) > LastColumn ) {
-        SrcBuff[ LastColumn ] = NULLCHAR;
+        SrcBuff[LastColumn] = NULLCHAR;
     }
     first_opt = true;
     for( ;; ) {
@@ -609,9 +609,9 @@ static int GetDirective( const char *buff )
     drctv = CompDrctvs;
     offset = 0;
     for( ;; ) {
-        if( drctv[ offset ] == NULL )
+        if( drctv[offset] == NULL )
             return( 0 );
-        if( OptMatch( buff, drctv[ offset ], false ) )
+        if( OptMatch( buff, drctv[offset], false ) )
             return( offset + 1 );
         offset++;
     }
@@ -673,7 +673,7 @@ void    SrcOption( void )
     int         directive;
     const char  *buff;
 
-    buff = &SrcBuff[ 2 ];
+    buff = &SrcBuff[2];
     directive = GetDirective( buff );
     if( directive == CD_INCLUDE ) {
         if( ProgSw & PS_SKIP_SOURCE )
@@ -742,7 +742,7 @@ void    PrtOptions( void )
 
     LFSkip();
     PrtLst( "Options:" );
-    buffer[ 0 ] = ' ';
+    buffer[0] = ' ';
     number = 0;
     for( optn = CompOptns; optn->option != NULL; optn++ ) {
         if( optn->flags & VAL ) {
@@ -762,7 +762,7 @@ void    PrtOptions( void )
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( IncludePath );
-                buffer[ 0 ] = ',';
+                buffer[0] = ',';
                 continue;
             }
             if( optn->value == CGOPT_OBJ_NAME ) {
@@ -771,12 +771,12 @@ void    PrtOptions( void )
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( ObjName );
-                buffer[ 0 ] = ',';
+                buffer[0] = ',';
                 continue;
             }
             buff += sprintf( buff, "%lu", (unsigned long)number );
             PrtLst( buffer );
-            buffer[ 0 ] = ',';
+            buffer[0] = ',';
         } else {
             if( optn->flags & CG ) {
                 if( optn->flags & NEG ) {
@@ -827,7 +827,7 @@ void    PrtOptions( void )
             }
             GetOptName( buffer, optn->option );
             PrtLst( buffer );
-            buffer[ 0 ] = ',';
+            buffer[0] = ',';
         }
     }
     PrtLstNL( "" );

@@ -203,7 +203,7 @@ void Match(void)
     if( CSHead->typ == CS_EMPTY_LIST ) {
         StmtErr( SP_INCOMPLETE );
     } else {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ CSWords[ CSHead->typ ] ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[CSWords[CSHead->typ]] );
     }
 }
 
@@ -222,7 +222,7 @@ bool CheckCSList( byte typ )
             break;
         if( head_typ == CS_EMPTY_LIST )
             break;
-        Error( SP_UNFINISHED, StmtKeywords[ CSWords[ head_typ ] ] );
+        Error( SP_UNFINISHED, StmtKeywords[CSWords[head_typ]] );
         DelCSNode();
     }
     return( head_typ == typ );

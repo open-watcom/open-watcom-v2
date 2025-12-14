@@ -1632,11 +1632,11 @@ static  dbg_type        DefCommonStruct( sym_id sym )
 static  void    InitDBGTypes( void )
 //==================================
 {
-    int         typ;
+    PTYPE       ptyp;
 
     if( DBGTypes[FPT_LOG_1] == DBG_NIL_TYPE ) {
-        for( typ = FPT_LOG_1; typ <= FPT_REAL_16; ++typ ) {
-            DBGTypes[typ] = DBScalar( DBGNames[typ], MkCGType( typ ) );
+        for( ptyp = FPT_LOG_1; ptyp <= FPT_REAL_16; ptyp++ ) {
+            DBGTypes[ptyp] = DBScalar( DBGNames[ptyp], MkCGType( ptyp ) );
         }
         DBGTypes[FPT_CPLX_8]  = DBFtnType( DBGNames[FPT_CPLX_8],  T_DBG_COMPLEX );
         DBGTypes[FPT_CPLX_16] = DBFtnType( DBGNames[FPT_CPLX_16], T_DBG_DCOMPLEX );

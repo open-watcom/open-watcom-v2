@@ -53,7 +53,7 @@ static void Comment( void )
 
     int old_srcrecnum;
 
-    if( ( SrcBuff[ 0 ] != NULLCHAR ) && ( SrcBuff[ 1 ] == '$' ) ) {
+    if( ( SrcBuff[0] != NULLCHAR ) && ( SrcBuff[1] == '$' ) ) {
         old_srcrecnum = SrcRecNum;
         SrcRecNum = CurrFile->rec; // in case we get an error processing comment
         SrcOption();
@@ -121,7 +121,7 @@ void ComRead( void )
             stmt_no = 0;
             stno_found = false;
             for( ;; ) {
-                chtype = CharSetInfo.character_set[ (unsigned char)ch ];
+                chtype = CharSetInfo.character_set[(unsigned char)ch];
                 if( chtype == C_EL )
                     break;
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {
@@ -210,11 +210,11 @@ void ProcInclude( void )
 
     ComPrint();
     if( strlen( SrcBuff ) > LastColumn ) {
-        SrcBuff[ LastColumn ] = NULLCHAR;
+        SrcBuff[LastColumn] = NULLCHAR;
     }
     old_srcrecnum = SrcRecNum;
     SrcRecNum = CurrFile->rec; // in case we get an error processing INCLUDE
-    Include( SkipBlanks( &SrcBuff[ 10 ] ) );
+    Include( SkipBlanks( &SrcBuff[10] ) );
     SrcRecNum = old_srcrecnum;
 }
 

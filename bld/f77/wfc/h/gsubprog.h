@@ -43,5 +43,5 @@ extern void    GRetIdx( void );
 extern void    GNullRetIdx( void );
 extern void    GCallNoArgs( void );
 extern void    GCallWithArgs( void );
-extern void    GArgList( entry_pt *arg_list, uint args, PTYPE typ );
-extern void    GArgInfo( sym_id sym, PCODE code, PTYPE typ );
+extern void    GArgList( entry_pt *arg_list, uint args, PTYPE ptyp );
+extern void    GArgInfo( sym_id sym, PCODE code, PTYPE ptyp );

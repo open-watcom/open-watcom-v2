@@ -399,7 +399,7 @@ void    FCodeSequence( void )
         f_code = GetFCode();
         if( f_code == FC_END_OF_SEQUENCE )
             break;
-        FCTablePtr[ f_code ]();
+        FCTablePtr[f_code]();
     }
 }
 

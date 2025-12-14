@@ -538,7 +538,7 @@ void    XICmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
     } else {
         cmp = 2;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -554,7 +554,7 @@ void    XRCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
     } else {
         cmp = 2;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -570,7 +570,7 @@ void    XDCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
     } else {
         cmp = 2;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -586,7 +586,7 @@ void    XECmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
     } else {
         cmp = 2;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -600,7 +600,7 @@ void    XCCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
         ( opnd1->scomplex.imagpart == opnd2->scomplex.imagpart ) ) {
         cmp = 1;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -614,7 +614,7 @@ void    XQCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
         ( opnd1->dcomplex.imagpart == opnd2->dcomplex.imagpart ) ) {
         cmp = 1;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
@@ -628,17 +628,17 @@ void    XXCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
         ( opnd1->xcomplex.imagpart == opnd2->xcomplex.imagpart ) ) {
         cmp = 1;
     }
-    opnd1->logstar4 = res[ cmp ];
+    opnd1->logstar4 = res[cmp];
 }
 
 
 void    XChCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
 //===========================================================================
 {
-    opnd1->logstar4 = res[ 1 + LexStrCmp( opnd1->cstring.strptr,
+    opnd1->logstar4 = res[1 + LexStrCmp( opnd1->cstring.strptr,
                                           opnd1->cstring.len,
                                           opnd2->cstring.strptr,
-                                          opnd2->cstring.len ) ];
+                                          opnd2->cstring.len )];
 }
 
 
@@ -653,7 +653,7 @@ void    GenExp( TYPE typ ) {
     AddConst( CITNode );
     AddConst( CITNode->link );
     op = OPTR_EXP;
-    GenOprTable[ op ]( typ, typ, op );
+    GenOprTable[op]( typ, typ, op );
 }
 
 
@@ -742,7 +742,7 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
         InitOne( typ, &result );
         if( exponent < 0 ) {
             // base == 1 / base
-            Div[ typ - FT_INTEGER_1 ]( &result, base );
+            Div[typ - FT_INTEGER_1]( &result, base );
             *base = result;
             InitOne( typ, &result );
             exponent = -exponent;
@@ -753,14 +753,14 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
         exponent /= 2;
         while( exponent != 0 ) {
             for( ;; ) {
-                Mul[ typ - FT_INTEGER_1 ]( base, base );
+                Mul[typ - FT_INTEGER_1]( base, base );
                 odd = ( (exponent & 1) != 0 );
                 exponent /= 2;
                 if( odd ) {
                     break;
                 }
             }
-            Mul[ typ - FT_INTEGER_1 ]( &result, base );
+            Mul[typ - FT_INTEGER_1]( &result, base );
         }
         *base = result;
     }

@@ -224,7 +224,7 @@ void CpAssign( void )
     AdvanceITPtr();
     opnd = CITNode->opnd;
     if( RecNOpr() && RecName() && ( CITNode->opnd_size >= 2 ) &&
-        ( opnd[ 0 ] == 'T' ) && ( opnd[ 1 ] == 'O' ) ) {
+        ( opnd[0] == 'T' ) && ( opnd[1] == 'O' ) ) {
         CITNode->opnd += 2;
         CITNode->opnd_size -= 2;
         CITNode->opnpos += 2;

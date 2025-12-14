@@ -629,7 +629,7 @@ static  void    StructIOItem( sym_id fd )
         if( fd->u.fd.typ == FT_CHAR ) {
             XPush( CGInteger( fd->u.fd.xt.size, TY_INTEGER ) );
         }
-        IORtnTable[ ParmType( fd->u.fd.typ, fd->u.fd.xt.size ) ]();
+        IORtnTable[ParmType( fd->u.fd.typ, fd->u.fd.xt.size )]();
         CGTrash( CGAssign( TmpPtr( TmpStructPtr, TY_POINTER ),
                            CGBinary( O_PLUS,
                                      TmpVal( TmpStructPtr, TY_POINTER ),

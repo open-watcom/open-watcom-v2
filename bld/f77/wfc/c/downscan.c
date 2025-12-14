@@ -425,7 +425,7 @@ void    GetConst( void ) {
 
 // Constant converting without downscan-upscan process.
 
-    DSTable[ CITNode->opn.ds ]();
+    DSTable[CITNode->opn.ds]();
     if( CITNode->opn.us != USOPN_CON ) {
         Error( SX_CONST );
     }
@@ -452,7 +452,7 @@ void    DownScan( void ) {
         if( CITNode->opr == OPR_EQU ) {
             OprEqu();
         }
-        DSTable[ CITNode->opn.ds ]();
+        DSTable[CITNode->opn.ds]();
         MoveDown();
         if( RecTrmOpr() ) {
             break;

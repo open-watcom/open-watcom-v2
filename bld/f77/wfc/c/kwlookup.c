@@ -57,7 +57,7 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
     low = 1;
     while( low <= high ) {
         mid = (low + high) / 2;    // find mid point
-        key = table[ mid ];
+        key = table[mid];
         ident = id;
         for( ;; ) {
             if( ident == id + id_len )
@@ -84,7 +84,7 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
         return( 0 );
     // Look sequentially through table (going backwards).
     for( mid = high; mid >= 0; mid-- ) {
-        key = table[ mid ];
+        key = table[mid];
         if( *id > *key )
             break;
         kw_len = strlen( key );

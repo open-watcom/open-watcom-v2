@@ -151,9 +151,9 @@ static  void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
     op -= OPTR_FIRST_LOGOP;
     if( _IsTypeInteger( typ2 ) ) {
         Convert();
-        XBitWiseTab[ op ]( &CITNode->value, &CITNode->link->value );
+        XBitWiseTab[op]( &CITNode->value, &CITNode->link->value );
     } else {
-        XLogicalTab[ op ]( &CITNode->value, &CITNode->link->value );
+        XLogicalTab[op]( &CITNode->value, &CITNode->link->value );
     }
     CITNode->opn.us = USOPN_CON; // this is required for .not. operator
 }
@@ -167,9 +167,9 @@ static  void    RelOp( TYPE typ1, TYPE typ2, OPTR op ) {
     if( ResultType != FT_CHAR ) {
         Convert();
     }
-    XCmpTab[ ResultType - FT_INTEGER_1 ]( &CITNode->value,
+    XCmpTab[ResultType - FT_INTEGER_1]( &CITNode->value,
                                         &CITNode->link->value,
-          &CmpValue[ ( CITNode->link->opr - OPR_FIRST_RELOP ) * 3 ] );
+          &CmpValue[( CITNode->link->opr - OPR_FIRST_RELOP ) * 3] );
     ResultType = FT_LOGICAL;
 }
 
@@ -185,12 +185,10 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
     index = (byte)( ResultType - FT_INTEGER_1 );
     if( typ1 != FT_NO_TYPE ) {
         Convert();
-        XArithTab[ index * AR_TAB_COLS + op ]
-                 ( &CITNode->value, &CITNode->link->value );
+        XArithTab[index * AR_TAB_COLS + op]( &CITNode->value, &CITNode->link->value );
     } else {
         CnvTo( CITNode->link , ResultType, TypeSize( ResultType ) );
-        XUArithTab[ index * UAR_TAB_COLS + op ]
-                  ( &CITNode->value, &CITNode->link->value );
+        XUArithTab[index * UAR_TAB_COLS + op]( &CITNode->value, &CITNode->link->value );
         CITNode->opn.us = USOPN_CON;
     }
 }

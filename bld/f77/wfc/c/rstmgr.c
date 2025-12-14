@@ -257,15 +257,15 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
                     sym_id *list, sym_id sym ) {
 //==============================================
 
-    if( hash_table[ hash_value ].h_head == NULL ) { // empty list
-        hash_table[ hash_value ].h_head = sym;
+    if( hash_table[hash_value].h_head == NULL ) { // empty list
+        hash_table[hash_value].h_head = sym;
         sym->u.ns.link = *list;
         *list = sym;
     } else {
-        sym->u.ns.link = hash_table[ hash_value ].h_tail->u.ns.link;
-        hash_table[ hash_value ].h_tail->u.ns.link = sym;
+        sym->u.ns.link = hash_table[hash_value].h_tail->u.ns.link;
+        hash_table[hash_value].h_tail->u.ns.link = sym;
     }
-    hash_table[ hash_value ].h_tail = sym;
+    hash_table[hash_value].h_tail = sym;
 }
 
 

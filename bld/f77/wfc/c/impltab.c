@@ -70,7 +70,7 @@ TYPE    ImplType( char chr ) {
 
     if( CharSetInfo.is_foreign( chr ) )
         return( FT_REAL );
-    return( ImplicitTab[ CharIndex( chr ) ].typ );
+    return( ImplicitTab[CharIndex( chr )].typ );
 }
 
 
@@ -82,7 +82,7 @@ uint      ImplSize( char chr ) {
 
     if( CharSetInfo.is_foreign( chr ) )
         return( StorageSize( FT_REAL ) );
-    return( ImplicitTab[ CharIndex( chr ) ].size );
+    return( ImplicitTab[CharIndex( chr )].size );
 }
 
 

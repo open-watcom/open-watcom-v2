@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,14 +98,14 @@ bool    Already( IOKW kw ) {
 static  byte    ExtnTest( IOKW kw ) {
 //===================================
 
-    return( PermTable[ TABLE_ENTRY * ( kw - 1 ) + 8 ] );
+    return( PermTable[TABLE_ENTRY * ( kw - 1 ) + 8] );
 }
 
 
 byte    PermTest( int kw ) {
 //==========================
 
-    return( PermTable[ TABLE_ENTRY * ( kw - 1 ) + IOIndex() ] );
+    return( PermTable[TABLE_ENTRY * ( kw - 1 ) + IOIndex()] );
 }
 
 
@@ -135,10 +135,10 @@ bool    Permission( IOKW kw ) {
         if( perm ) {
             KWRememb( kw );
             if( ExtnTest( kw ) == YES ) {
-                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[ kw ] );
+                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[kw] );
             }
         } else {
-            StmtPtrErr( IL_BAD_LIST, IOKeywords[ kw ] );
+            StmtPtrErr( IL_BAD_LIST, IOKeywords[kw] );
         }
     }
     return( perm );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,6 @@
 #include "gflow.h"
 #include "gtypes.h"
 
-
-#define _SetArgInfo(pcode,ptyp) ((((pcode) & 0xff) << 8) | ((ptyp) & 0xff))
 
 /* Forward declarations */
 static  int     DumpArgInfo( itnode *node );
@@ -200,8 +198,8 @@ static  int     DumpArgInfo( itnode *node ) {
 
     int         num_args;
     unsigned_16 arg_info;
-    PTYPE       parm_type;
-    PCODE       parm_code;
+    PTYPE       ptyp;
+    PCODE       pcode;
 #if _CPU == 386
     aux_info    *info;
 #endif
@@ -216,17 +214,17 @@ static  int     DumpArgInfo( itnode *node ) {
             if( node->opn.ds == DSOPN_PHI )
                 break;
             if( node->opn.us != USOPN_STN ) {
-                parm_type = ParmType( node->typ, node->size );
-                parm_code = ParmClass( node );
+                ptyp = ParmType( node->typ, node->size );
+                pcode = ParmClass( node );
 #if _CPU == 386
-                if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
+                if( (pcode == PC_PROCEDURE) || (pcode == PC_FN_OR_SUB) ) {
                     info = InfoLookup( node->sym_ptr );
                     if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
-                        parm_code |= PC_PROC_FAR16;
+                        pcode |= PC_PROC_FAR16;
                     }
                 }
 #endif
-                arg_info = _SetArgInfo( parm_code, parm_type );
+                arg_info = _SetArgInfo( pcode, ptyp );
                 OutU16( arg_info );
                 ++num_args;
             }
@@ -407,19 +405,19 @@ static  void    FinishCALL( itnode *sp ) {
 }
 
 
-void    GArgList( entry_pt *arg_list, uint args, PTYPE typ ) {
+void    GArgList( entry_pt *arg_list, uint args, PTYPE ptyp ) {
 //===========================================================
 
 // Dump start of an argument list.
 
-    /* unused parameters */ (void)arg_list; (void)args; (void)typ;
+    /* unused parameters */ (void)arg_list; (void)args; (void)ptyp;
 }
 
 
-void    GArgInfo( sym_id sym, PCODE code, PTYPE typ ) {
+void    GArgInfo( sym_id sym, PCODE code, PTYPE ptyp ) {
 //===================================================
 
 // Dump information for an argument.
 
-    /* unused parameters */ (void)sym; (void)code; (void)typ;
+    /* unused parameters */ (void)sym; (void)code; (void)ptyp;
 }

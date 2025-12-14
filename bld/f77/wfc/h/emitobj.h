@@ -35,6 +35,15 @@
 #include "fcodes.h"
 
 
+#define _GetArgInfoPcode(x)     (((x) >> 8) & 0xff)
+#define _GetArgInfoPtyp(x)      ((x) & 0xff)
+#define _GetArgInfoPtypes1(x)   (((x) >> 8) & 0xff)
+#define _GetArgInfoPtypes2(x)   ((x) & 0xff)
+
+#define _SetArgInfo(pcode,ptyp)     ((((unsigned_16)(pcode) & 0xff) << 8) | ((ptyp) & 0xff))
+#define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
+#define _SetArgInfoPtypes(p1,p2)    ((((unsigned_16)(p1) & 0xff) << 8) | ((p2) & 0xff))
+
 #define CAT_TEMP        0x8000
 
 // emit.c

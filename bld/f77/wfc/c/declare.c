@@ -79,7 +79,7 @@ bool    IsFunctionDefn( void ) {
 
     if( !RecName() )
         return( false );
-    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) )
+    if( memcmp( StmtKeywords[PR_FUNC], CITNode->opnd, 8 ) )
         return( false );
     // allow INTEGER FUNCTION(10)
     if( CITNode->opnd_size == 8 )

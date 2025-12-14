@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ typedef struct arr_desc {
     char                *data;
     unsigned long       num_elmts;
     uint                elmt_size;
-    PTYPE               typ;
+    PTYPE               ptyp;
 } arr_desc;
 
 #include "scb.h"

@@ -213,7 +213,7 @@ void    ReadSrc( void ) {
             }
         } else {
             CurrFile->rec++;
-            SrcBuff[ len ] = NULLCHAR;
+            SrcBuff[len] = NULLCHAR;
         }
     }
 }
@@ -728,7 +728,7 @@ static  void    PutLst( const char *string )
         }
         len = LIST_BUFF_SIZE - ListCursor - 1; // -1 for NULLCHAR
         len = CharSetInfo.extract_text( string, len );
-        len = CopyMaxStr( string, &ListBuff[ ListCursor ], len );
+        len = CopyMaxStr( string, &ListBuff[ListCursor], len );
         ListCursor += len;
         string += len;
         if( *string == NULLCHAR )

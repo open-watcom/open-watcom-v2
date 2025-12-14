@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -695,11 +695,11 @@ static  void    Generate( void ) {
                 return;
             }
         }
-        op = OprNum[ opr ];
+        op = OprNum[opr];
         if( typ1 == FT_NO_TYPE ) {
-            mask = LegalOprsU[ typ2 - FT_FIRST ];
+            mask = LegalOprsU[typ2 - FT_FIRST];
         } else {
-            mask = LegalOprsB[ ( typ2 - FT_FIRST ) * LEGALOPR_TAB_COLS + typ1 - FT_FIRST ];
+            mask = LegalOprsB[( typ2 - FT_FIRST ) * LEGALOPR_TAB_COLS + typ1 - FT_FIRST];
         }
         if( (( mask >> ( op - OPTR_FIRST ) ) & 1) == 0 ) {
             // illegal combination
@@ -723,7 +723,7 @@ static  void    Generate( void ) {
                 if( ( next->opn.us == USOPN_CON ) &&
                     ( ( CITNode->opn.us == USOPN_CON ) || ( typ1 == FT_NO_TYPE ) ) ) {
                     // we can do some constant folding
-                    ConstTable[ op ]( typ1, typ2, op );
+                    ConstTable[op]( typ1, typ2, op );
                 } else {
                     // we have to generate code
                     if( CITNode->opn.us == USOPN_CON ) {
@@ -731,7 +731,7 @@ static  void    Generate( void ) {
                     } else if( next->opn.us == USOPN_CON ) {
                         AddConst( next );
                     }
-                    GenOprTable[ op ]( typ1, typ2, op );
+                    GenOprTable[op]( typ1, typ2, op );
                 }
             }
             switch( opr ) {
@@ -1323,8 +1323,8 @@ void    UpScan( void ) {
         if( ( CITNode->opr == OPR_TRM ) &&
             ( CITNode->link->opr == OPR_TRM ) )
             break;
-        index = OprIndex[ CITNode->link->opr ];
-        index += OprIndex[ CITNode->opr ] * OPR_SEQ_MAT_COLS;
+        index = OprIndex[CITNode->link->opr];
+        index += OprIndex[CITNode->opr] * OPR_SEQ_MAT_COLS;
         RtnTable[OprSeqMat[index]]();
     }
     EndExpr();

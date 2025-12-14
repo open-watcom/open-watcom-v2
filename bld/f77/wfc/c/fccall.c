@@ -63,9 +63,6 @@
 #include "feprotos.h"
 
 
-#define _GetArgInfoPcode(x) (((x) >> 8) & 0xff)
-#define _GetArgInfoPtyp(x)  ((x) & 0xff)
-
 extern  void            FiniTmps(void);
 
 extern  back_handle     TraceEntry;
@@ -413,7 +410,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
 }
 
 
-static  cg_name     ArgAddr( PTYPE arg_type ) {
+static  cg_name     ArgAddr( PTYPE ptyp ) {
 //===========================================
 
 // Get address of actual argument.
@@ -422,9 +419,9 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
     cg_name     arg;
 
     arg = XPop();
-    cgtyp = GetCGType( arg_type );
+    cgtyp = GetCGType( ptyp );
     if( !IsCGPointer( CGType( arg ) ) ) {
-        if( ( arg_type == FPT_CPLX_8 ) || ( arg_type == FPT_CPLX_16 ) || ( arg_type == FPT_CPLX_32 ) ) {
+        if( ( ptyp == FPT_CPLX_8 ) || ( ptyp == FPT_CPLX_16 ) || ( ptyp == FPT_CPLX_32 ) ) {
             arg = CmplxAddr( arg, XPop() );
         } else {
             arg = TmpPtr( MkTmp( arg, cgtyp ), cgtyp );
@@ -434,7 +431,7 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
 }
 
 
-static  cg_name     ArgValue( PTYPE arg_type, cg_type *new_cgtyp ) {
+static  cg_name     ArgValue( PTYPE ptyp, cg_type *new_cgtyp ) {
 //==============================================================
 
 // Get value of actual argument.
@@ -446,11 +443,11 @@ static  cg_name     ArgValue( PTYPE arg_type, cg_type *new_cgtyp ) {
     cgtyp = CGType( arg );
     if( IsCGPointer( cgtyp ) ) {
         if( !IsCGCodePointer( cgtyp ) ) {
-            cgtyp = GetCGType( arg_type );
+            cgtyp = GetCGType( ptyp );
             arg = CGUnary( O_POINTS, arg, cgtyp );
         }
     } else {
-        cgtyp = GetCGType( arg_type );
+        cgtyp = GetCGType( ptyp );
     }
     *new_cgtyp = cgtyp;
     return( arg );
@@ -509,8 +506,8 @@ void    FCCall( void ) {
     aux_info    *info;
     cg_name     rtn;
     unsigned_16 arg_info;
-    PTYPE       arg_type;
-    PCODE       arg_code;
+    PTYPE       ptyp;
+    PCODE       pcode;
     pass_by     *arg_aux;
     cg_name     arg;
     cg_type     cgtyp;
@@ -562,14 +559,14 @@ void    FCCall( void ) {
     idx = 0;
     for( ; num_args != 0; --num_args ) {
         arg_info = GetU16();
-        arg_type = _GetArgInfoPtyp( arg_info );
-        arg_code = _GetArgInfoPcode( arg_info );
+        ptyp = _GetArgInfoPtyp( arg_info );
+        pcode = _GetArgInfoPcode( arg_info );
 #if _INTEL_CPU
-        arg_proc_far16 = ( (arg_code & PC_PROC_FAR16) != 0 );
-        arg_code &= ~PC_PROC_FAR16;
+        arg_proc_far16 = ( (pcode & PC_PROC_FAR16) != 0 );
+        pcode &= ~PC_PROC_FAR16;
 #endif
         chk_foreign = true;
-        if( arg_code == PC_PROCEDURE || arg_code == PC_FN_OR_SUB ) {
+        if( pcode == PC_PROCEDURE || pcode == PC_FN_OR_SUB ) {
             arg = XPop();
             cgtyp = TY_CODE_PTR;
 #if _INTEL_CPU
@@ -583,7 +580,7 @@ void    FCCall( void ) {
                 }
             }
 #endif
-        } else if( arg_type == FPT_CHAR ) {
+        } else if( ptyp == FPT_CHAR ) {
             // character data (including character arrays)
             if( Options & OPT_DESCRIPTOR ) {
                 pass_scb = true;
@@ -624,7 +621,7 @@ void    FCCall( void ) {
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
                 }
             }
-        } else if( arg_code == PC_ARRAY_NAME ) {
+        } else if( pcode == PC_ARRAY_NAME ) {
             arg = XPop();
             cgtyp = ArgPtrType( arg );
             if( arg_aux != NULL ) {
@@ -636,27 +633,27 @@ void    FCCall( void ) {
             }
         } else if( (arg_aux != NULL) && (arg_aux->info & PASS_BY_VALUE) ) {
             chk_foreign = false;
-            if( arg_type == FPT_CPLX_8 ) {
+            if( ptyp == FPT_CPLX_8 ) {
                 XPopCmplx( &z, TY_COMPLEX );
                 CGAddParm( call, z.realpart, TY_SINGLE );
                 arg = z.imagpart;
                 cgtyp = TY_SINGLE;
-            } else if( arg_type == FPT_CPLX_16 ) {
+            } else if( ptyp == FPT_CPLX_16 ) {
                 XPopCmplx( &z, TY_DCOMPLEX );
                 CGAddParm( call, z.realpart, TY_DOUBLE );
                 arg = z.imagpart;
                 cgtyp = TY_DOUBLE;
-            } else if( arg_type == FPT_CPLX_32 ) {
+            } else if( ptyp == FPT_CPLX_32 ) {
                 XPopCmplx( &z, TY_XCOMPLEX );
                 CGAddParm( call, z.realpart, TY_LONGDOUBLE );
                 arg = z.imagpart;
                 cgtyp = TY_LONGDOUBLE;
-            } else if( arg_type == FPT_STRUCT ) {
-                arg = ArgValue( arg_type, &cgtyp );
+            } else if( ptyp == FPT_STRUCT ) {
+                arg = ArgValue( ptyp, &cgtyp );
             } else {
-                arg = ArgValue( arg_type, &cgtyp );
+                arg = ArgValue( ptyp, &cgtyp );
                 new_cgtyp = cgtyp;
-                if( IntType( arg_type ) ) {
+                if( IntType( ptyp ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
                         new_cgtyp = TY_INT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
@@ -664,7 +661,7 @@ void    FCCall( void ) {
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
                         new_cgtyp = TY_INT_4;
                     }
-                } else if( ( arg_type == FPT_LOG_1 ) || ( arg_type == FPT_LOG_4 ) ) {
+                } else if( ( ptyp == FPT_LOG_1 ) || ( ptyp == FPT_LOG_4 ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
                         new_cgtyp = TY_UINT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
@@ -698,7 +695,7 @@ void    FCCall( void ) {
                 cgtyp = PromoteCGToBaseType( cgtyp );
             }
         } else {
-            arg = ArgAddr( arg_type );
+            arg = ArgAddr( ptyp );
             cgtyp = ArgPtrType( arg );
             if( arg_aux != NULL ) {
                 if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {

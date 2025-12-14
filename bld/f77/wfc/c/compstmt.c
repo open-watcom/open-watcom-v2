@@ -129,7 +129,7 @@ static  void    ProcStmt( void ) {
         return;
     if( CpError && (StmtProc == PR_NULL) )
         return;
-    ProcTable[ StmtProc ]();
+    ProcTable[StmtProc]();
 }
 
 static  void    InitStatement( void )
@@ -243,13 +243,13 @@ void Recurse( void )
     GetStmtType();
     SetCtrlFlgs();
     if( CtrlFlgOn( CF_NOT_SIMPLE_STMT ) ) { // controls recursion
-        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[proc] );
     } else {
         ProcStmt();
         ClearRem();
         TDStmtFini();
         if( CtrlFlgOn( CF_NOT_SIMPLE_STMT | CF_NOT_EXECUTABLE ) ) {
-            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[proc] );
         }
     }
     StmtProc = proc;
@@ -319,14 +319,14 @@ static void GetStmtType( void )
 
 static void SetCtrlFlgs( void )
 {
-    CtrlFlgs = CFTable[ StmtProc ];
+    CtrlFlgs = CFTable[StmtProc];
 }
 
 static void DefStmtType( void )
 {
     StmtProc = RecStmtKW();      // look up keyword, strip off if found
     if( StmtProc != 0 ) {
-        RemKeyword( CITNode, strlen( StmtKeywords[ StmtProc ] ) );
+        RemKeyword( CITNode, strlen( StmtKeywords[StmtProc] ) );
     }
 }
 
@@ -394,7 +394,7 @@ static void CheckOrder( void )
         if( !CtrlFlgOn( CF_SPECIFICATION ) ) {
             SgmtSw |= SG_NO_MORE_SPECS;
             if( SgmtSw & SG_DEFINING_STRUCTURE ) {
-                Error( SP_UNFINISHED, StmtKeywords[ PR_STRUCTURE ] );
+                Error( SP_UNFINISHED, StmtKeywords[PR_STRUCTURE] );
                 SgmtSw &= ~SG_DEFINING_STRUCTURE;
                 AError = false; // so we still process the statement
             }

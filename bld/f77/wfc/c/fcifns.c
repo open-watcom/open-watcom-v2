@@ -279,13 +279,13 @@ static  void    GBinaryMath( uint ifn ) {
 void            FCLoc( void ) {
 //=======================
 
-    PTYPE       typ_info;
+    PTYPE       ptyp;
     cg_type     cgtyp;
     cg_name     arg;
 
-    typ_info = GetU16();
+    ptyp = GetU16();
     arg = XPop();
-    if( typ_info == FPT_CHAR ) {
+    if( ptyp == FPT_CHAR ) {
         arg = SCBPointer( arg );
     } else {
         cgtyp = CGType( arg );

@@ -39,12 +39,9 @@
 #include "symtypes.h"
 #include "types.h"
 #include "symbol.h"
+#include "emitobj.h"
 #include "fctypes.h"
 
-
-#define _GetArgInfoPtyp(x)      ((x) & 0xff)
-#define _GetArgInfoPtypes1(x)   (((x) >> 8) & 0xff)
-#define _GetArgInfoPtypes2(x)   ((x) & 0xff)
 
 #define NUM_TYPES       12
 #define L1              TY_UINT_1
@@ -162,7 +159,7 @@ cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 ) {
 // For a binary operation of two operands of the given CG-types, return
 // the result CG-type.
 
-    return( MapCGTypes[ CGIndex( cgtyp1 ) * NUM_TYPES + CGIndex( cgtyp2 ) ] );
+    return( MapCGTypes[CGIndex( cgtyp1 ) * NUM_TYPES + CGIndex( cgtyp2 )] );
 }
 
 
@@ -170,9 +167,13 @@ bool    IsCGCodePointer( cg_type cgtyp )
 //====================================
 // Is CG-type a code pointer?
 {
-    return( ( cgtyp == TY_CODE_PTR )
-        || ( cgtyp == TY_LONG_CODE_PTR )
-        || ( cgtyp == TY_NEAR_CODE_PTR ) );
+    switch( cgtyp ) {
+    case TY_CODE_PTR:
+    case TY_LONG_CODE_PTR:
+    case TY_NEAR_CODE_PTR:
+        return( true );
+    }
+    return( false );
 }
 
 

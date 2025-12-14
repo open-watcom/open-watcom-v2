@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,8 @@
 // IFUSED    : Mark an intrinsic function as used.
 //             Each bit in the array IFUsed corresponds to an intrinsic
 //             function. ie : The bits of the arrary are numbered
-//             0 to 112 from the low order bit of IFUsed[ 0 ] to the high
-//             order bit of IFUsed[ 13 ]
+//             0 to 112 from the low order bit of IFUsed[0] to the high
+//             order bit of IFUsed[13]
 //
 
 extern void    IFInit( void );
