@@ -33,5 +33,5 @@
 gbl_defn iocb           *IOCB;                  // input/output control block
 gbl_defn ftnfile        *Files;                 // list of open files
 gbl_defn ftn_type       IORslt;                 // for i/o items
-gbl_defn char           *FmtBuff;
+gbl_defn char           PGM *FmtBuff;
 #include "iotype.h"

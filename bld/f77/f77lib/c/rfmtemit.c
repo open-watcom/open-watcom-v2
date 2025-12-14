@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +40,12 @@
 #include "rfmtemit.h"
 
 
-void    R_FEmInit( void ) {
-//===================
+static char PGM     *Fmt_revert;    // position to revert to if required
 
+void    R_FEmInit( void )
+//=======================
+{
+    Fmt_revert = FmtBuff;
 }
 
 static void CheckHole( uint size ) {
@@ -60,7 +63,7 @@ void    R_FEmCode( int code ) {
     CheckHole( sizeof( byte ) );
     if( ( code & REV_CODE ) == REV_CODE ) {
         code &= ~REV_CODE;
-        Fmt_revert.rt = (char PGM *)(IOCB->fmtptr);
+        Fmt_revert = (char PGM *)(IOCB->fmtptr);
     }
     if( IOCB->flags & IOF_EXTEND_FORMAT ) {
         code |= EXTEND_FORMAT;
@@ -89,7 +92,7 @@ void    R_FEmEnd( void ) {
 //==================
 
     R_FEmCode( END_FORMAT );
-    R_FEmNum( (char PGM *)(IOCB->fmtptr) - Fmt_revert.rt );
+    R_FEmNum( (char PGM *)(IOCB->fmtptr) - Fmt_revert );
 }
 
 void    R_FEmByte( int signed_num ) {

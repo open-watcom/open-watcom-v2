@@ -118,6 +118,7 @@ static void _FiniEx( void )
     CloseAllFiles();
     if( FmtBuff != NULL ) {
         RMemFree( FmtBuff );
+        FmtBuff = NULL;
     }
     if( IOCB != NULL ) {
         RMemFree( IOCB );

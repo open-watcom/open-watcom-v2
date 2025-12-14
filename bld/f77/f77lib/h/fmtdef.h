@@ -86,8 +86,4 @@ typedef union fmt_desc {
     struct fmtstring    fmtstring;
 } fmt_desc;
 
-typedef union fmt_ptr {
-    obj_ptr             cp;     // compile-time pointer
-    char PGM            *rt;    // run-time pointer
-} fmt_ptr;
 #endif /* __FMTDEF_H_INCLUDED */
