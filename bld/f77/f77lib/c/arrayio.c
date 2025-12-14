@@ -42,14 +42,14 @@ static  void    NextArrayItem(void) {
 //===============================
 
     if( IOCB->flags & IOF_OUTPT ) {
-        if( IOCB->typ == FPT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IORslt.string.strptr = IOCB->arr_desc.data;
             IORslt.string.len = IOCB->arr_desc.elmt_size;
         } else {
-            IOItemResult( IOCB->arr_desc.data, IOCB->typ );
+            IOItemResult( IOCB->arr_desc.data, IOCB->ptyp );
         }
     } else {
-        if( IOCB->typ == FPT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IORslt.string.strptr = IOCB->arr_desc.data;
             IORslt.string.len = IOCB->arr_desc.elmt_size;
         } else {
@@ -69,13 +69,13 @@ void    ArrayIOType(void) {
     if( IOCB->flags & IOF_ARRAY_IO ) {
         NextArrayItem();
     } else {
-        IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == FPT_ARRAY ) {
-            IOCB->typ = IORslt.arr_desc.typ;
+        IOCB->ptyp = IOTypeRtn();
+        if( IOCB->ptyp == FPT_ARRAY ) {
+            IOCB->ptyp = IORslt.arr_desc.ptyp;
             IOCB->flags |= IOF_ARRAY_IO;
             IOCB->arr_desc = IORslt.arr_desc;
-            if( IOCB->typ != FPT_CHAR ) {
-                IOCB->arr_desc.elmt_size = SizeVars[ IOCB->typ ];
+            if( IOCB->ptyp != FPT_CHAR ) {
+                IOCB->arr_desc.elmt_size = SizeVars[ IOCB->ptyp ];
             }
             NextArrayItem();
         }
