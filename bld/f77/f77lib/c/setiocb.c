@@ -68,6 +68,6 @@ void SetIOCB( void ) {
     IOCB->fileinfo = NULL;
     IOCB->set_flags = 0;
     IOCB->status = 0;
-    IOCB->typ = 0;
+    IOCB->ptyp = 0;
     IOCB->flags = IOF_ACTIVE | IOF_SETIOCB;
 }

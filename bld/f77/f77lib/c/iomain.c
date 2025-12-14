@@ -96,8 +96,8 @@ int     IOMain( void (*io_rtn)( void ) ) {
         *IOCB->iosptr = io_stat;
     }
     if( io_stat == 0 ) {
-        while( IOCB->typ != FPT_NOTYPE ) {     // flush the io list
-            IOCB->typ = IOTypeRtn();
+        while( IOCB->ptyp != FPT_NOTYPE ) {     // flush the io list
+            IOCB->ptyp = IOTypeRtn();
         }
     }
     if( io_stmt == IO_READ ) {

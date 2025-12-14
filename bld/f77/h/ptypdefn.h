@@ -59,5 +59,5 @@ pick( FPT_CHAR,        FT_CHAR,      DBG_NIL_TYPE, TY_LOCAL_POINTER, &InpString,
 #ifndef ONLY_BASE_TYPES
 pick( FPT_STRUCT,      FT_STRUCTURE, DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       "STRUCTURE" ) // STRUCTURE
 pick( FPT_ARRAY,       FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       "ARRAY"     ) // ARRAY
-pick( FPT_NOT_STARTED, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       ""          ) // IOCB->typ is initialized to this for i/o statements
+pick( FPT_NOT_STARTED, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       ""          ) // IOCB->ptyp is initialized to this for i/o statements
 #endif

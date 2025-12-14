@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ static void NextUnFmtRec( void )
 static  void    UnFmtItem( void *s )
 //==================================
 {
-    switch( IOCB->typ ) {
+    switch( IOCB->ptyp ) {
     case FPT_LOG_1:
         *(logstar1 PGM *)(IORslt.pgm_ptr) = *(logstar1 *)s;
         break;
@@ -136,18 +136,18 @@ static  void    RecordUnFmtIn( void ) {
     fcb = IOCB->fileinfo;
     NextRec();
     for(;;) {
-        IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == FPT_NOTYPE )
+        IOCB->ptyp = IOTypeRtn();
+        if( IOCB->ptyp == FPT_NOTYPE )
             break;
         if( fcb->col == fcb->len ) {
             NextUnFmtRec();
         }
-        if( IOCB->typ == FPT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IUnString();
-        } else if( IOCB->typ == FPT_ARRAY ) {
+        } else if( IOCB->ptyp == FPT_ARRAY ) {
             IUnArray();
         } else {
-            len = SizeVars[ IOCB->typ ];
+            len = SizeVars[ IOCB->ptyp ];
             if( fcb->col + len > fcb->len ) {
                 IOErr( IO_UNFMT_RECL );
                 // never return
@@ -189,23 +189,23 @@ static  void    StreamUnFmtIn( void ) {
 
     fcb = IOCB->fileinfo;
     for(;;) {
-        IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == FPT_NOTYPE )
+        IOCB->ptyp = IOTypeRtn();
+        if( IOCB->ptyp == FPT_NOTYPE )
             break;
-        if( IOCB->typ == FPT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IUnStream( IORslt.string.strptr, IORslt.string.len );
-        } else if( IOCB->typ == FPT_ARRAY ) {
+        } else if( IOCB->ptyp == FPT_ARRAY ) {
             uint        elmt_size;
 
-            if( IORslt.arr_desc.typ == FPT_CHAR ) {
+            if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
                 elmt_size = IORslt.arr_desc.elmt_size;
             } else {
-                elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+                elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
             }
             IUnStream( IORslt.arr_desc.data,
                        IORslt.arr_desc.num_elmts * elmt_size );
         } else {
-            fcb->len = SizeVars[ IOCB->typ ];
+            fcb->len = SizeVars[ IOCB->ptyp ];
             if( fcb->len > fcb->bufflen ) {
                 IOErr( IO_UNFMT_RECL );
                 // never return
@@ -252,10 +252,10 @@ static  void    IUnArray( void ) {
 
     uint        elmt_size;
 
-    if( IORslt.arr_desc.typ == FPT_CHAR ) {
+    if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
         elmt_size = IORslt.arr_desc.elmt_size;
     } else {
-        elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+        elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
     }
     IUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size );
 }
