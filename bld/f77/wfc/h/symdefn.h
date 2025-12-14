@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-//       id              keyword         size    ptype        dwtype
+//       id              keyword            size  ptype        dwtype
 pick( FT_NO_TYPE,       "",                  0,  FPT_NOTYPE,  DW_FT_NONE          ) // no type specified == FPT_NO_TYPE
 pick( FT_LOGICAL_1,     "LOGICAL*1",         1,  FPT_LOG_1,   DW_FT_BOOLEAN       ) // 0 LOGICAL*1
 pick( FT_LOGICAL,       "LOGICAL",           4,  FPT_LOG_4,   DW_FT_BOOLEAN       ) // 1 LOGICAL*4

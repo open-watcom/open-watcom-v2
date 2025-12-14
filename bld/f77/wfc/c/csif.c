@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,17 +52,17 @@
 #include "gflow.h"
 
 
-void    CpLogIf(void) {
-//=================
-
+void    CpLogIf( void )
+//=====================
 // Process a logical IF statement.
-
+{
     label_id    if_skip;
 
     if_skip = NextLabel();
     CSCond( if_skip );
-    if( RecKeyWord( "THEN" ) &&
-        ( RecNextOpr( OPR_TRM ) || RecNextOpr( OPR_COL ) ) ) {
+    if( RecKeyWord( "THEN" )
+      && ( RecNextOpr( OPR_TRM )
+      || RecNextOpr( OPR_COL ) ) ) {
         AddCSNode( CS_IF );
         CSHead->branch = if_skip;
         CSHead->bottom = NextLabel();
@@ -76,12 +77,12 @@ void    CpLogIf(void) {
 }
 
 
-void    CpElseIf(void) {
-//==================
-
+void    CpElseIf( void )
+//======================
 // Process an ELSEIF statement.
-
-    if( ( CSHead->typ == CS_IF ) || ( CSHead->typ == CS_ELSEIF ) ) {
+{
+    if( ( CSHead->typ == CS_IF )
+      || ( CSHead->typ == CS_ELSEIF ) ) {
         GBranch( CSHead->bottom );
         GLabel( CSHead->branch );
         FreeLabel( CSHead->branch );
@@ -103,12 +104,12 @@ void    CpElseIf(void) {
 }
 
 
-void    CpElse(void) {
-//================
-
+void    CpElse( void )
+//====================
 // Process an ELSE statement.
-
-    if( ( CSHead->typ == CS_IF ) || ( CSHead->typ == CS_ELSEIF ) ) {
+{
+    if( ( CSHead->typ == CS_IF )
+      || ( CSHead->typ == CS_ELSEIF ) ) {
         GBranch( CSHead->bottom );
         GLabel( CSHead->branch );
         FreeLabel( CSHead->branch );
@@ -123,12 +124,12 @@ void    CpElse(void) {
 }
 
 
-void    CpEndif(void) {
-//=================
-
+void    CpEndif( void )
+//=====================
 // Process an ENDIF statement.
-
-    if( ( CSHead->typ == CS_IF ) || ( CSHead->typ == CS_ELSEIF ) ) {
+{
+    if( ( CSHead->typ == CS_IF )
+      || ( CSHead->typ == CS_ELSEIF ) ) {
         GLabel( CSHead->branch );
         FreeLabel( CSHead->branch );
         GLabel( CSHead->bottom );
