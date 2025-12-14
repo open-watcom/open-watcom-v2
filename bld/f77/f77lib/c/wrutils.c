@@ -207,10 +207,10 @@ void    SendEOR( void ) {
 }
 
 
-void    IOItemResult( char PGM *src, PTYPE typ ) {
+void    IOItemResult( char PGM *src, PTYPE ptyp ) {
 //==============================================
 
-    switch( typ ) {
+    switch( ptyp ) {
     case FPT_LOG_1:
         *(logstar4 *)(&IORslt) = *(logstar1 *)src;
         break;

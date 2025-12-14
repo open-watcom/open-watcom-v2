@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ typedef struct iocb {                   // global iocb structure
     int                 status;         // status indicator
     unsigned_32         elmts;          // number of records in internal file
     byte                iostmt;         // indicates the current io operation
-    PTYPE               typ;            // type to be formatted
+    PTYPE               ptyp;           // type to be formatted
     unsigned_32         flags;          // i/o flags
     char                buffer[IO_FIELD_BUFF+1]; // buffer for formatting
     arr_desc            arr_desc;       // descriptor for array i/o

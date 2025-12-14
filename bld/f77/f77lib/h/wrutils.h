@@ -37,4 +37,4 @@ extern void    SendWSLStr( char *str );
 extern void    SendChar( char ch, int rep );
 extern void    Drop( char ch );
 extern void    SendEOR( void );
-extern void    IOItemResult( char PGM *src, PTYPE typ );
+extern void    IOItemResult( char PGM *src, PTYPE ptyp );

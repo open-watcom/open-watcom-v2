@@ -104,10 +104,10 @@ static const byte   __FAR DataSize[] = {
 };
 
 
-void    R_ChkType( PTYPE lower, PTYPE upper )
+void    R_ChkType( PTYPE lo_ptyp, PTYPE hi_ptyp )
 //===========================================
 {
-    if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
+    if( ( IOCB->ptyp < lo_ptyp ) || ( IOCB->ptyp > hi_ptyp ) ) {
         IOErr( IO_FMT_MISMATCH );
         // never return
     }
@@ -132,12 +132,12 @@ void    R_ChkIType( void )
 //========================
 // Check if type can be formatted using I format.
 {
-    if( ( IOCB->typ == FPT_REAL_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
+    if( ( IOCB->ptyp == FPT_REAL_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
         /*
          * allow REAL variable containing integer data to be
          * formatted using I edit descriptor
          */
-        IOCB->typ = FPT_INT_4;
+        IOCB->ptyp = FPT_INT_4;
     }
     R_ChkType( FPT_INT_1, FPT_INT_4 );
 }
@@ -148,10 +148,10 @@ void    R_ChkFType( void ) {
 
 // Check if type can be formatted using F, E, or D format.
 
-    if( ( IOCB->typ == FPT_INT_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
+    if( ( IOCB->ptyp == FPT_INT_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
         // allow INTEGER variable containing floating-point data to be
         // formatted using F, E, or D edit descriptors
-        IOCB->typ = FPT_REAL_4;
+        IOCB->ptyp = FPT_REAL_4;
     }
     R_ChkType( FPT_REAL_4, FPT_CPLX_32 );
 }
@@ -174,10 +174,10 @@ static uint GetLen( void ) {
 
     uint        len;
 
-    if( IOCB->typ == FPT_CHAR ) {
+    if( IOCB->ptyp == FPT_CHAR ) {
         len = IORslt.string.len;
     } else {
-        len = DataSize[ IOCB->typ ];
+        len = DataSize[IOCB->ptyp];
     }
     return( len );
 }
@@ -190,7 +190,7 @@ static void FOString( uint width ) {
     uint        length;
 
     fcb = IOCB->fileinfo;
-    if( IOCB->typ != FPT_CHAR ) {
+    if( IOCB->ptyp != FPT_CHAR ) {
         length = GetLen();
     } else {
         length = IORslt.string.len;
@@ -206,7 +206,7 @@ static void FOString( uint width ) {
         SendChar( ' ', width - length );
         width = length;
     }
-    if( IOCB->typ == FPT_CHAR ) {
+    if( IOCB->ptyp == FPT_CHAR ) {
         SendStrRtn( IORslt.string.strptr, width );
     } else {
         SendStrRtn( (char *)&IORslt, width );
@@ -233,7 +233,7 @@ void    R_FIStr( void ) {
 
     fcb   = IOCB->fileinfo;
     width = IOCB->fmtptr->fmt4.fld1;
-    if( IOCB->typ != FPT_CHAR ) {
+    if( IOCB->ptyp != FPT_CHAR ) {
         ptr = IORslt.pgm_ptr;
         length = GetLen();
     } else {
@@ -268,7 +268,7 @@ void    R_FOLog( void ) {
 static  void    SetLogValue( logstar4 value ) {
 //=============================================
 
-    if( IOCB->typ == FPT_LOG_1 ) {
+    if( IOCB->ptyp == FPT_LOG_1 ) {
         *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
     } else {
         *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
@@ -332,7 +332,7 @@ void    R_FIFloat( void )
     extended    value;
     fmt2 PGM    *fmtptr;
     ftnfile     *fcb;
-    PTYPE       typ;
+    PTYPE       ptyp;
     int         prec;
     int         status;
     bool        comma;
@@ -340,9 +340,9 @@ void    R_FIFloat( void )
 
     fcb = IOCB->fileinfo;
     fmtptr = &IOCB->fmtptr->fmt2;
-    typ = IOCB->typ;
+    ptyp = IOCB->ptyp;
     ChkBuffLen( fmtptr->fld1 );
-    switch( typ ) {
+    switch( ptyp ) {
     case( FPT_REAL_8 ):
     case( FPT_CPLX_16 ):
         prec = PRECISION_DOUBLE;
@@ -376,19 +376,19 @@ void    R_FIFloat( void )
     } else {
         fcb->col += fmtptr->fld1;
     }
-    if( typ  == FPT_REAL_4 ) {
+    if( ptyp  == FPT_REAL_4 ) {
         *(single PGM *)(IORslt.pgm_ptr) = value;
-    } else if( typ  == FPT_REAL_8 ) {
+    } else if( ptyp  == FPT_REAL_8 ) {
         *(double PGM *)(IORslt.pgm_ptr) = value;
-    } else if( typ  == FPT_REAL_16 ) {
+    } else if( ptyp  == FPT_REAL_16 ) {
         *(extended PGM *)(IORslt.pgm_ptr) = value;
-    } else if( typ  == FPT_CPLX_8 ) {
+    } else if( ptyp  == FPT_CPLX_8 ) {
         if( IOCB->flags & IOF_FMTREALPART ) {
             ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
         } else {
             ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
         }
-    } else if( typ  == FPT_CPLX_16 ) {
+    } else if( ptyp  == FPT_CPLX_16 ) {
         if( IOCB->flags & IOF_FMTREALPART ) {
             ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
         } else {
@@ -407,14 +407,14 @@ void    R_FIFloat( void )
 bool    GetReal( extended *value )
 //================================
 {
-    PTYPE       typ;
+    PTYPE       ptyp;
     single      *short_flt;
     bool        defined;
 
-    typ = IOCB->typ;
-    if( ( typ == FPT_REAL_4  ) || ( typ == FPT_CPLX_8 ) ) {
+    ptyp = IOCB->ptyp;
+    if( ( ptyp == FPT_REAL_4  ) || ( ptyp == FPT_CPLX_8 ) ) {
         SetMaxPrec( MAX_SP );
-        if( typ  == FPT_REAL_4 ) {
+        if( ptyp  == FPT_REAL_4 ) {
             short_flt = &IORslt.single;
         } else if( IOCB->flags & IOF_FMTREALPART ) {     // FPT_CPLX_8
             short_flt = &IORslt.scomplex.realpart;
@@ -423,9 +423,9 @@ bool    GetReal( extended *value )
         }
         *value = *short_flt;
         defined = !UndefRealRtn( short_flt );
-    } else if( ( typ == FPT_REAL_8 ) || ( typ == FPT_CPLX_16 ) ) {
+    } else if( ( ptyp == FPT_REAL_8 ) || ( ptyp == FPT_CPLX_16 ) ) {
         SetMaxPrec( MAX_DP );
-        if( typ == FPT_REAL_8 ) {
+        if( ptyp == FPT_REAL_8 ) {
             *value = IORslt.dble;
         } else if( IOCB->flags & IOF_FMTREALPART ) {    // FPT_CPLX_16
             *value = IORslt.dcomplex.realpart;
@@ -435,7 +435,7 @@ bool    GetReal( extended *value )
         defined = !UndefDoubleRtn( value );
     } else {
         SetMaxPrec( MAX_XP );
-        if( typ == FPT_REAL_16 ) {
+        if( ptyp == FPT_REAL_16 ) {
             *value = IORslt.extended;
         } else if( IOCB->flags & IOF_FMTREALPART ) {    // FPT_CPLX_32
             *value = IORslt.xcomplex.realpart;
@@ -524,7 +524,7 @@ void    R_FOE( int exp, char ch )
 }
 
 
-static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ )
+static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE ptyp )
 //============================================================================
 {
     char        ch1;
@@ -534,7 +534,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ )
 
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 #else
-    typ = typ;
+    (void)ptyp;
 #endif
     pgm_memset( dst, 0, len );
     if( width >= 2 * len ) {
@@ -552,7 +552,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ )
     ch2 = *src;
     src++;
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
-    if( typ != FPT_CHAR ) {
+    if( ptyp != FPT_CHAR ) {
         ++len;
         len &= ~1;
         len /= 2;
@@ -574,7 +574,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ )
         valid = true;
         *dst = ( Hex( ch1 ) << 4 ) + Hex( ch2 );
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
-        if( typ == FPT_CHAR ) {
+        if( ptyp == FPT_CHAR ) {
             ++dst;
         } else {
             --dst;
@@ -599,25 +599,25 @@ void    R_FIHex( void )
     uint        width;
     int         len;
     ftnfile     *fcb;
-    PTYPE       typ;
+    PTYPE       ptyp;
     void        PGM *ptr;
 
     fcb = IOCB->fileinfo;
     width = IOCB->fmtptr->fmt1.fld1;
     len =  GetLen();
-    typ = IOCB->typ;
+    ptyp = IOCB->ptyp;
     ChkBuffLen( width );
-    if( typ == FPT_CHAR ) {
+    if( ptyp == FPT_CHAR ) {
         ptr = IORslt.string.strptr;
     } else {
         ptr = IORslt.pgm_ptr;
-        if( typ == FPT_CPLX_8 ) {
+        if( ptyp == FPT_CPLX_8 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
                 ptr = &((scomplex *)ptr)->realpart;
             } else {
                 ptr = &((scomplex *)ptr)->imagpart;
             }
-        } else if( typ == FPT_CPLX_16 ) {
+        } else if( ptyp == FPT_CPLX_16 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
                 ptr = &((dcomplex *)ptr)->imagpart;
             } else {
@@ -625,7 +625,7 @@ void    R_FIHex( void )
             }
         }
     }
-    if( !FmtH2B( &fcb->buffer[ fcb->col ], width, ptr, len, typ ) ) {
+    if( !FmtH2B( &fcb->buffer[ fcb->col ], width, ptr, len, ptyp ) ) {
         IOErr( IO_BAD_CHAR );
         // never return
     }
@@ -639,11 +639,11 @@ static void FOHex( uint width )
     uint        len;
     int         trunc;
     ftnfile     *fcb;
-    PTYPE       typ;
+    PTYPE       ptyp;
     char        *buff;
 
     fcb = IOCB->fileinfo;
-    typ = IOCB->typ;
+    ptyp = IOCB->ptyp;
     len = GetLen();
     trunc = 0;
     /*
@@ -651,7 +651,7 @@ static void FOHex( uint width )
      *  one edit descriptor:
      */
 #if 0
-    if( ( IOCB->typ == FPT_CPLX_8 ) || ( IOCB->typ == FPT_CPLX_16 ) ) {
+    if( ( IOCB->ptyp == FPT_CPLX_8 ) || ( IOCB->ptyp == FPT_CPLX_16 ) ) {
         len *= 2;
         IOCB->flags &= ~IOF_FMTREALPART;  // we'll print both parts at once
     }
@@ -660,15 +660,15 @@ static void FOHex( uint width )
      *  Use this method when real and imaginary parts each require an
      *  edit descriptor:
      */
-    if( IOCB->typ == FPT_CPLX_8 ) {
+    if( IOCB->ptyp == FPT_CPLX_8 ) {
         if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.scomplex.realpart = IORslt.scomplex.imagpart;
         }
-    } else if( IOCB->typ == FPT_CPLX_16 ) {
+    } else if( IOCB->ptyp == FPT_CPLX_16 ) {
         if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.dcomplex.realpart = IORslt.dcomplex.imagpart;
         }
-    } else if( IOCB->typ == FPT_CPLX_32 ) {
+    } else if( IOCB->ptyp == FPT_CPLX_32 ) {
         if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.xcomplex.realpart = IORslt.xcomplex.imagpart;
         }
@@ -685,7 +685,7 @@ static void FOHex( uint width )
         trunc = 0;
     }
 
-    if( typ != FPT_CHAR ) {
+    if( ptyp != FPT_CHAR ) {
         len *= 2;
         HexFlip( (char *)&IORslt, len );
         BToHS( (char *)&IORslt , len, IOCB->buffer );
@@ -770,9 +770,9 @@ void    R_FIInt( void )
     } else {
         fcb->col += width;
     }
-    if( IOCB->typ == FPT_INT_1 ) {
+    if( IOCB->ptyp == FPT_INT_1 ) {
         *(intstar1 PGM *)(IORslt.pgm_ptr) = value;
-    } else if( IOCB->typ == FPT_INT_2 ) {
+    } else if( IOCB->ptyp == FPT_INT_2 ) {
         *(intstar2 PGM *)(IORslt.pgm_ptr) = value;
     } else {
         *(intstar4 PGM *)(IORslt.pgm_ptr) = value;
@@ -921,9 +921,9 @@ void    R_FOG( void )
     exp = IOCB->fmtptr->fmt3.fld3;
     fcb = IOCB->fileinfo;
     buf = &fcb->buffer[ fcb->col ];
-    if( IOCB->typ <= FPT_LOG_4 ) {
+    if( IOCB->ptyp <= FPT_LOG_4 ) {
         R_FOLog();
-    } else if( IOCB->typ <= FPT_INT_4 ) {
+    } else if( IOCB->ptyp <= FPT_INT_4 ) {
         OutInt( width, 1 );
     } else {
         if( GetRealRtn( &value, width ) ) {
@@ -933,9 +933,9 @@ void    R_FOG( void )
             }
             /* round to "dec" digits */
             absvalue = absvalue + .5 * pow( 10, -dec );
-            if( ( IOCB->typ == FPT_REAL_4 ) || ( IOCB->typ == FPT_CPLX_8 ) ) {
+            if( ( IOCB->ptyp == FPT_REAL_4 ) || ( IOCB->ptyp == FPT_CPLX_8 ) ) {
                 logval = Div10S( absvalue );
-            } else if((IOCB->typ == FPT_REAL_8) || (IOCB->typ == FPT_CPLX_16)) {
+            } else if((IOCB->ptyp == FPT_REAL_8) || (IOCB->ptyp == FPT_CPLX_16)) {
                 logval = Div10L( absvalue );
             } else {
                 logval = Div10X( absvalue );

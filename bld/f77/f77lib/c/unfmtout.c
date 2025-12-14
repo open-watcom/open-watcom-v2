@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,10 +48,10 @@ static  void    OUnString( void );
 static  void    OUnArray( void );
 
 
-static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
+static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE ptyp ) {
 //===================================================================
 
-    switch( typ ) {
+    switch( ptyp ) {
     case FPT_LOG_1:
         *(logstar1 *)(dst) = *(logstar1 *)src;
         break;
@@ -128,37 +128,37 @@ void    UnFmtOut( void ) {
 
     uint        len;
     char        *ptr;
-    PTYPE       typ;
+    PTYPE       ptyp;
     ftnfile     *fcb;
     char        *d;
 
     fcb = IOCB->fileinfo;
-    typ = IOTypeRtn();
-    while( typ != FPT_NOTYPE ) {
-        if( typ == FPT_CHAR ) {
+    ptyp = IOTypeRtn();
+    while( ptyp != FPT_NOTYPE ) {
+        if( ptyp == FPT_CHAR ) {
             OUnString();
-        } else if( typ == FPT_ARRAY ) {
+        } else if( ptyp == FPT_ARRAY ) {
             OUnArray();
         } else {
             ptr = (char *)&IORslt;
-            len = SizeVars[ typ ];
+            len = SizeVars[ptyp];
             if( IsFixed() ) {
                 OutChkRecPos( fcb, len );
             } else {
                 OutChkRecBuff( fcb, len );
             }
             d = fcb->buffer + fcb->col;
-            IOItemCopy( d, ptr, typ );
+            IOItemCopy( d, ptr, ptyp );
             fcb->col += len;
         }
-        typ = IOTypeRtn();
+        ptyp = IOTypeRtn();
     }
-    IOCB->typ = typ;
+    IOCB->ptyp = ptyp;
     SendEOR();
 }
 
 
-static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
+static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE ptyp ) {
 //============================================================================
 
     char        *dst;
@@ -173,7 +173,7 @@ static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
     for(;;) {
         amt = fcb->bufflen - fcb->col;
         // make sure an item does not cross a record boundary
-        switch( item_typ ) {
+        switch( ptyp ) {
         case FPT_LOG_1:
         case FPT_INT_1:
         case FPT_CHAR:
@@ -225,13 +225,12 @@ static  void    OUnArray( void ) {
 
     uint        elmt_size;
 
-    if( IORslt.arr_desc.typ == FPT_CHAR ) {
+    if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
         elmt_size = IORslt.arr_desc.elmt_size;
     } else {
-        elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+        elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
     }
-    OUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size,
-              IORslt.arr_desc.typ );
+    OUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size, IORslt.arr_desc.ptyp );
 }
 
 

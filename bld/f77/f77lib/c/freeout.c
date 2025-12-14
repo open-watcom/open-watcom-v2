@@ -152,35 +152,37 @@ void    (* __FAR OutRtn[])( void ) = {        // this is not const anymore
 void    FreeOut( void ) {
 //=================
 
-    PTYPE       typ;
+    PTYPE       ptyp;
 
     CheckCCtrl();
     for(;;) {
-        typ = IOTypeRtn();
-        IOCB->typ = typ;
-        if( typ == FPT_NOTYPE ) break;
-        if( typ == FPT_ARRAY ) {
+        ptyp = IOTypeRtn();
+        IOCB->ptyp = ptyp;
+        if( ptyp == FPT_NOTYPE )
+            break;
+        if( ptyp == FPT_ARRAY ) {
             IOCB->arr_desc = IORslt.arr_desc;
-            typ = IOCB->arr_desc.typ;
-            IOCB->typ = typ;
-            if( typ == FPT_CHAR ) {
+            ptyp = IOCB->arr_desc.ptyp;
+            IOCB->ptyp = ptyp;
+            if( ptyp == FPT_CHAR ) {
                 IORslt.string.len = IOCB->arr_desc.elmt_size;
             } else {
-                IOCB->arr_desc.elmt_size = SizeVars[ typ ];
+                IOCB->arr_desc.elmt_size = SizeVars[ptyp];
             }
             for(;;) {
-                if( typ == FPT_CHAR ) {
+                if( ptyp == FPT_CHAR ) {
                     IORslt.string.strptr = IOCB->arr_desc.data;
                 } else {
-                    IOItemResult( IOCB->arr_desc.data, typ );
+                    IOItemResult( IOCB->arr_desc.data, ptyp );
                 }
-                OutRtn[ typ ]();
+                OutRtn[ptyp]();
                 --IOCB->arr_desc.num_elmts;
-                if( IOCB->arr_desc.num_elmts == 0 ) break;
+                if( IOCB->arr_desc.num_elmts == 0 )
+                    break;
                 IOCB->arr_desc.data += IOCB->arr_desc.elmt_size;
             }
         } else {
-            OutRtn[ typ ]();
+            OutRtn[ptyp]();
         }
     }
     SendEOR();

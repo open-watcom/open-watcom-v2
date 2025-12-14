@@ -53,9 +53,9 @@
 #include "unfmtutl.h"
 
 
-static  uint_32         NmlInCount;
-static  PTYPE           NmlInType;
-static  void            PGM *NmlInAddr;
+static  uint_32         NmlIn_count;
+static  PTYPE           NmlIn_ptyp;
+static  void            PGM *NmlIn_addr;
 
 /* Forward declarations */
 static  void    NmlIn( void );
@@ -184,7 +184,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
         return( false );
     if( !DoSubscript( &dim_list, ss, &offset ) )
         return( false );
-    NmlInAddr = (char HPGM *)NmlInAddr + offset * size;
+    NmlIn_addr = (char HPGM *)NmlIn_addr + offset * size;
     return( true );
 }
 
@@ -229,7 +229,7 @@ void    NmlExec( void ) {
     } else {
         NmlIn();
     }
-    IOCB->typ = FPT_NOTYPE;
+    IOCB->ptyp = FPT_NOTYPE;
 }
 
 
@@ -239,7 +239,7 @@ static  void    NmlOut( void ) {
     byte        PGM *nml;
     byte        len;
     byte        info;
-    PTYPE       typ;
+    PTYPE       ptyp;
     uint_32     num_elts;
     byte        PGM *data;
     string      scb;
@@ -258,13 +258,13 @@ static  void    NmlOut( void ) {
         nml += len;
         SendWSLStr( " = " );
         info = *nml++;
-        typ = _GetNMLType( info );
-        IOCB->typ = typ;
+        ptyp = _GetNMLType( info );
+        IOCB->ptyp = ptyp;
         if( _GetNMLSubScrs( info ) ) {
             if( info & NML_LG_ADV ) {
                 adv_ptr = *(lg_adv PGM * PGM *)nml;
                 num_elts = adv_ptr->num_elts;
-                if( typ == FPT_CHAR ) {
+                if( ptyp == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                     scb.strptr = (char PGM *)adv_ptr->origin;
                 } else {
@@ -274,7 +274,7 @@ static  void    NmlOut( void ) {
                 num_elts = *(uint_32 PGM *)nml;
                 nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
                                    ( sizeof( uint_32 ) + sizeof( int ) );
-                if( typ == FPT_CHAR ) {
+                if( ptyp == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml;
                     nml += sizeof( uint );
                     scb.strptr = *(char PGM * PGM *)nml;
@@ -283,19 +283,19 @@ static  void    NmlOut( void ) {
                 }
             }
             while( num_elts-- > 0 ) {
-                if( typ == FPT_CHAR ) {
+                if( ptyp == FPT_CHAR ) {
                     IORslt.string = scb;
-                    OutRtn[typ]();
+                    OutRtn[ptyp]();
                     Drop( ' ' );
                     scb.strptr += scb.len;
                 } else {
-                    pgm_memget( &IORslt, data, SizeVars[typ] );
-                    OutRtn[typ]();
-                    data += SizeVars[typ];
+                    pgm_memget( &IORslt, data, SizeVars[ptyp] );
+                    OutRtn[ptyp]();
+                    data += SizeVars[ptyp];
                 }
             }
         } else {
-            switch( typ ) {
+            switch( ptyp ) {
             case FPT_LOG_1:
                 IORslt.logstar4 = **(logstar1 PGM * PGM *)nml;
                 break;
@@ -333,7 +333,7 @@ static  void    NmlOut( void ) {
                 IORslt.string = **(string PGM * PGM *)nml;
                 break;
             }
-            OutRtn[typ]();
+            OutRtn[ptyp]();
         }
         nml += sizeof( void PGM * );
         SendEOR();
@@ -420,28 +420,28 @@ static PTYPE    NmlIOType( void ) {
         if( len != 0 ) {
             Blanks();
             if( ScanChar( '=' ) )
-                NmlInCount = 0;
+                NmlIn_count = 0;
             if( ScanChar( '(' ) ) {
-                NmlInCount = 0; // may be an array element
+                NmlIn_count = 0; // may be an array element
             }
         }
         IOCB->fileinfo->col = save_col;
     }
 
-    if( NmlInCount == 0 )
+    if( NmlIn_count == 0 )
         return( FPT_NOTYPE );
-    --NmlInCount;
-    if( NmlInType == FPT_CHAR ) {
-        IORslt.string.len = ((string PGM *)NmlInAddr)->len;
-        IORslt.string.strptr = ((string PGM *)NmlInAddr)->strptr;
-        ((string PGM *)NmlInAddr)->strptr =
-            ((char HPGM *)((string PGM *)NmlInAddr)->strptr) +
-                                            ((string PGM *)NmlInAddr)->len;
+    --NmlIn_count;
+    if( NmlIn_ptyp == FPT_CHAR ) {
+        IORslt.string.len = ((string PGM *)NmlIn_addr)->len;
+        IORslt.string.strptr = ((string PGM *)NmlIn_addr)->strptr;
+        ((string PGM *)NmlIn_addr)->strptr =
+            ((char HPGM *)((string PGM *)NmlIn_addr)->strptr) +
+                                            ((string PGM *)NmlIn_addr)->len;
     } else { // numeric or logical
-        IORslt.pgm_ptr = NmlInAddr;
-        NmlInAddr = (char HPGM *)NmlInAddr + SizeVars[NmlInType];
+        IORslt.pgm_ptr = NmlIn_addr;
+        NmlIn_addr = (char HPGM *)NmlIn_addr + SizeVars[NmlIn_ptyp];
     }
-    return( NmlInType );
+    return( NmlIn_ptyp );
 }
 
 
@@ -507,64 +507,64 @@ static  void    NmlIn( void ) {
         }
         info = *nml_entry;
         ++nml_entry;
-        NmlInType = _GetNMLType( info );
+        NmlIn_ptyp = _GetNMLType( info );
         if( _GetNMLSubScrs( info ) ) {  // array
             if( info & NML_LG_ADV ) {
                 adv_ptr = *(lg_adv PGM * PGM *)nml_entry;
-                NmlInAddr = (byte PGM *)adv_ptr->origin;
-                if( NmlInType == FPT_CHAR ) {
+                NmlIn_addr = (byte PGM *)adv_ptr->origin;
+                if( NmlIn_ptyp == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                 }
-                NmlInCount = adv_ptr->num_elts;
+                NmlIn_count = adv_ptr->num_elts;
                 adv_ss_ptr = ((char PGM *)adv_ptr + ADV_BASE_SIZE);
             } else {
-                NmlInCount = *(uint_32 PGM *)nml_entry;
+                NmlIn_count = *(uint_32 PGM *)nml_entry;
                 nml_entry += sizeof( uint_32 );
                 adv_ss_ptr = nml_entry;
                 nml_entry += _GetNMLSubScrs( info ) *
                              ( sizeof( uint_32 ) + sizeof( int ) );
-                if( NmlInType == FPT_CHAR ) {
+                if( NmlIn_ptyp == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml_entry;
                     nml_entry += sizeof( uint );
                 }
-                NmlInAddr = *(byte PGM * PGM *)nml_entry;
+                NmlIn_addr = *(byte PGM * PGM *)nml_entry;
             }
             if( ScanChar( '(' ) ) {
-                if( NmlInType == FPT_CHAR ) {
+                if( NmlIn_ptyp == FPT_CHAR ) {
                     size = scb.len;
                 } else {
-                    size = SizeVars[NmlInType];
+                    size = SizeVars[NmlIn_ptyp];
                 }
                 if( !SubScr( info, adv_ss_ptr, size ) ) {
                     IOErr( IO_NML_BAD_SUBSCRIPT );
                     // never return
                 }
             }
-            if( NmlInType == FPT_CHAR ) {
-                scb.strptr = NmlInAddr;
+            if( NmlIn_ptyp == FPT_CHAR ) {
+                scb.strptr = NmlIn_addr;
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
                         IOErr( IO_NML_BAD_SUBSTRING );
                         // never return
                     }
                 }
-                NmlInAddr = &scb;
+                NmlIn_addr = &scb;
             }
         } else { // variable
-            NmlInCount = 1;
-            NmlInAddr = *(byte PGM * PGM *)nml_entry;
-            if( NmlInType == FPT_CHAR ) {
-                scb = *(string PGM *)NmlInAddr;
+            NmlIn_count = 1;
+            NmlIn_addr = *(byte PGM * PGM *)nml_entry;
+            if( NmlIn_ptyp == FPT_CHAR ) {
+                scb = *(string PGM *)NmlIn_addr;
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
                         IOErr( IO_NML_BAD_SUBSTRING );
                         // never return
                     }
                 }
-                NmlInAddr = &scb;
+                NmlIn_addr = &scb;
             }
         }
-        IOCB->typ = NmlInType;
+        IOCB->ptyp = NmlIn_ptyp;
         Blanks();
         if( !ScanChar( '=' ) ) {
             IOErr( IO_NML_BAD_SYNTAX );
