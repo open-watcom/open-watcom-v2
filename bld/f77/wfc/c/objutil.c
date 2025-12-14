@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,6 @@ void    InitObj( void )
 //=====================
 // Allocate memory for object code.
 {
-    ObjCode = NULL; // in case FMemAlloc() fails
     ObjCode = FMemAlloc( WFC_PAGE_SIZE );
     ObjEnd = ObjCode + WFC_PAGE_SIZE;
     ObjPtr = ObjCode;
@@ -117,7 +116,7 @@ static  void    DumpCurrPage( void )
 // Dump current page to disk.
 {
     if( PageFlags & PF_DIRTY ) {
-        if( CurrPage > MaxPage ) {
+        if( MaxPage < CurrPage ) {
             MaxPage = CurrPage;
         }
         if( fseek( PageFile, CurrPage * WFC_PAGE_SIZE, SEEK_SET ) )
@@ -260,25 +259,25 @@ void    OutInt( inttarg val )
 #if _CPU == 8086
     OutU16( val );
 #else // _CPU == 386
-    OutConst32( val );
+    OutU32( val );
 #endif
 }
 
 
-void    OutConst32( signed_32 val )
-//=================================
-// Output 32-bit constant to object memory.
+void    OutU32( unsigned_32 val )
+//===============================
+// Output 32-bit value to object memory.
 {
     if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
-        if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
+        if( ObjEnd - ObjPtr < sizeof( unsigned_32 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
-                SplitValue( &val, sizeof( signed_32 ), ObjEnd - ObjPtr );
+                SplitValue( &val, sizeof( unsigned_32 ), ObjEnd - ObjPtr );
                 return;
             }
             NewPage();
         }
-        *(signed_32 *)ObjPtr = val;
-        ObjPtr += sizeof( signed_32 );
+        *(unsigned_32 *)ObjPtr = val;
+        ObjPtr += sizeof( unsigned_32 );
         PageFlags |= PF_DIRTY;
     }
 }
@@ -379,22 +378,22 @@ unsigned_16     GetU16( void )
 }
 
 
-signed_32       GetConst32( void )
-//================================
-// Get 32-bit constant from object memory.
+unsigned_32     GetU32( void )
+//============================
+// Get 32-bit value from object memory.
 {
-    signed_32   val;
+    unsigned_32 val;
 
-    if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
+    if( ObjEnd - ObjPtr < sizeof( unsigned_32 ) ) {
         if( ObjPtr < ObjEnd ) {   // value split across pages
-            JoinValue( &val, sizeof( signed_32 ), ObjEnd - ObjPtr );
+            JoinValue( &val, sizeof( unsigned_32 ), ObjEnd - ObjPtr );
             return( val );
         }
         LoadPage( CurrPage + 1 );
         ObjPtr = ObjCode;
     }
-    val = *(signed_32 *)ObjPtr;
-    ObjPtr += sizeof( signed_32 );
+    val = *(unsigned_32 *)ObjPtr;
+    ObjPtr += sizeof( unsigned_32 );
     return( val );
 }
 
@@ -406,7 +405,7 @@ inttarg GetInt( void )
 #if _CPU == 8086
     return( GetU16() );
 #else // _CPU == 386
-    return( GetConst32() );
+    return( GetU32() );
 #endif
 }
 

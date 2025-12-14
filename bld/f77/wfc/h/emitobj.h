@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,13 +67,13 @@ extern  void            AlignEven(void);
 extern  void            OutPtr(pointer val);
 extern  void            OutU16(unsigned_16 val);
 extern  void            OutInt(inttarg val);
-extern  void            OutConst32(signed_32 val);
+extern  void            OutU32(unsigned_32 val);
 extern  void            OutObjPtr(obj_ptr val);
 extern  void            OutByte(byte val);
 extern  void            InitFCode(void);
 extern  void            *GetPtr(void);
 extern  unsigned_16     GetU16(void);
-extern  signed_32       GetConst32(void);
+extern  unsigned_32     GetU32(void);
 extern  inttarg         GetInt(void);
 extern  obj_ptr         GetObjPtr(void);
 extern  byte            GetByte(void);

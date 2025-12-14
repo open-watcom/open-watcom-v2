@@ -189,8 +189,8 @@ void    FiniSelect( void ) {
         } else {
             OutU16( ptr->label.g_label );
         }
-        OutConst32( ptr->high );
-        OutConst32( ptr->low );
+        OutU32( ptr->high );
+        OutU32( ptr->low );
         count++;
     }
     curr_obj = ObjSeek( curr_obj );

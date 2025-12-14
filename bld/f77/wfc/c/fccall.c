@@ -109,7 +109,7 @@ void    FCPrologue( void ) {
 
     sym_id              sym;
     entry_pt            *ep;
-        signed_64                       ep_count;
+    signed_64           ep_count;
     sel_handle          sel;
     label_handle        main_entry_label;
     unsigned_16         sp_type;

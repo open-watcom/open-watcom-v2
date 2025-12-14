@@ -68,7 +68,7 @@ void    FCDoBegin( void ) {
     do_var = GetPtr();
     increment = GetPtr();
     if( increment == NULL ) {
-        incr_value = GetConst32();
+        incr_value = GetU32();
         loop_ctrl = GetPtr();
     } else {
         loop_ctrl = GetPtr();
@@ -130,7 +130,7 @@ void    FCDoEnd( void ) {
     do_var = GetPtr();
     increment = GetPtr();
     if( increment == NULL ) {
-        incr_value = GetConst32();
+        incr_value = GetU32();
     } else {
         iteration = GetPtr();
     }

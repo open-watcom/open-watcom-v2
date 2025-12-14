@@ -160,11 +160,11 @@ static  void    CGStart( void )
         if( CGOpts & CGOPT_CONST_CODE ) {
             cg_target_opts |= CGSW_X86_CONST_IN_CODE;
         }
-        #if _CPU == 386
+    #if _CPU == 386
         if( OZOpts & OZOPT_O_BASE_PTR ) {
             cg_gen_opts |= CGSW_GEN_MEMORY_LOW_FAILS;
         }
-        #endif
+    #endif
 #endif
         if( OZOpts & OZOPT_O_SUPER_OPTIMAL ) {
             cg_gen_opts |= CGSW_GEN_SUPER_OPTIMAL;

@@ -79,8 +79,8 @@ void    DoSelect( FCODE kind ) {
         } else {
             label = GetLabel( GetU16() );
         }
-        U64Low( hi ) = GetConst32();
-        U64Low( lo ) = GetConst32();
+        U64Low( hi ) = GetU32();
+        U64Low( lo ) = GetU32();
         CGSelRange( s, lo, hi, label );
     }
     sel_sym = GetPtr();
@@ -96,8 +96,8 @@ void    DoSelect( FCODE kind ) {
         FCodeSeek( curr_obj );
         for( ; stmts != 0; stmts-- ) {
             RefStmtLabel( GetPtr() );
-            GetConst32();
-            GetConst32();
+            GetU32();
+            GetU32();
         }
         GetPtr(); // skip select variable
     }

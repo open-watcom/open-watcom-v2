@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +213,7 @@ static  void    DoLoop( TYPE do_type ) {
         OutPtr( doptr->increment );
         if( doptr->increment == NULL ) { // INTEGER do-loop with constant incr
             loop_ctrl = StaticAlloc( do_size, do_type );
-            OutConst32( doptr->incr_value );
+            OutU32( doptr->incr_value );
             OutPtr( loop_ctrl );
         } else {
             if( _IsTypeInteger( do_type ) ) {
@@ -298,7 +298,7 @@ static  void    DoLoopEnd( void ) {
     OutPtr( doptr->do_parm );
     OutPtr( doptr->increment );
     if( doptr->increment == NULL ) {
-        OutConst32( doptr->incr_value );
+        OutU32( doptr->incr_value );
     } else {
         OutPtr( doptr->iteration );
     }
