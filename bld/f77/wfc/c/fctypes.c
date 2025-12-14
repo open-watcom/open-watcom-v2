@@ -120,8 +120,8 @@ cg_type         F77ToCGType( sym_id sym )
 }
 
 
-static  int     CGIndex( cg_type cgtyp )
-//======================================
+static int  CGIndex( cg_type cgtyp )
+//==================================
 // Return index for a CG-type.
 {
     if( cgtyp == TY_UINT_1 )
@@ -150,8 +150,8 @@ static  int     CGIndex( cg_type cgtyp )
 }
 
 
-cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 )
-//=========================================================
+cg_type ResCGType( cg_type cgtyp1, cg_type cgtyp2 )
+//=================================================
 // For a binary operation of two operands of the given CG-types, return
 // the result CG-type.
 {
@@ -174,7 +174,7 @@ bool    IsCGCodePointer( cg_type cgtyp )
 
 
 bool    IsCGInteger( cg_type cgtyp )
-//================================
+//==================================
 // Is CG-type an integer?
 {
     switch( cgtyp ) {
@@ -194,7 +194,7 @@ bool    IsCGInteger( cg_type cgtyp )
 
 
 bool    IsCGPointer( cg_type cgtyp )
-//================================
+//==================================
 // Is CG-type a pointer?
 {
     switch( cgtyp ) {
@@ -220,7 +220,7 @@ bool    IsCGPointer( cg_type cgtyp )
 
 
 cg_type PromoteCGToBaseType( cg_type cgtyp )
-//======================================
+//==========================================
 // if type is integer TY_INT_1, TY_INT_2 under the _AXP or _PPC,
 // we must promote it in order to make a call
 {

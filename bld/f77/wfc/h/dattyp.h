@@ -75,13 +75,6 @@ typedef struct xcomplex {           // extended precision complex
     extended    imagpart;
 } xcomplex;
 
-typedef struct arr_desc {
-    char                *data;
-    unsigned long       num_elmts;
-    uint                elmt_size;
-    PTYPE               ptyp;
-} arr_desc;
-
 #include "scb.h"
 
 #define MAX_INT_SIZE    11          //  buffer for 32-bit integer strings
@@ -102,7 +95,6 @@ typedef union ftn_type {
     struct xcomplex     xcomplex;
     struct cstring      cstring;
     struct string       string;
-    struct arr_desc     arr_desc;
     struct {
         void            *struct_chain;
     } sc;

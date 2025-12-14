@@ -3194,8 +3194,8 @@
 :MSGJTXT. in %s1,
 :MSGATTR. 0
 :MSGSYM. MS_STATISTICS
-:MSGTXT. %d1 statements, %i2 bytes, %d3 extensions, %d4 warnings, %d5 errors
-:MSGJTXT. %d1 ｽﾃｰﾄﾒﾝﾄ, %i2 ﾊﾞｲﾄ, %d3 拡張ﾒｯｾｰｼﾞ, %d4 警告ｴﾗｰ, %d5 ｴﾗｰ
+:MSGTXT. %d1 statements, %u2 bytes, %u3 extensions, %u4 warnings, %u5 errors
+:MSGJTXT. %d1 ｽﾃｰﾄﾒﾝﾄ, %u2 ﾊﾞｲﾄ, %u3 拡張ﾒｯｾｰｼﾞ, %u4 警告ｴﾗｰ, %u5 ｴﾗｰ
 :MSGATTR. 0
 :MSGSYM. MS_CODE_SIZE
 :MSGTXT. Code size (in bytes):

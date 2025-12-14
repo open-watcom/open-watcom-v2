@@ -760,16 +760,18 @@ static  void    C16toC20( ftn_type *old, ftn_type *to )
 }
 
 
-static  void            (*DataCnvTab[])(ftn_type *, ftn_type *) = {
-    NULL,     &I2toI1,  &I4toI1,  &R4toI1,  &R8toI1,  &R10toI1,  &C8toI1,  &C16toI1,  &C20toI1,
-    &I1toI2,  NULL,     &I4toI2,  &R4toI2,  &R8toI2,  &R10toI2,  &C8toI2,  &C16toI2,  &C20toI2,
-    &I1toI4,  &I2toI4,  NULL,     &R4toI4,  &R8toI4,  &R10toI4,  &C8toI4,  &C16toI4,  &C20toI4,
-    &I1toR4,  &I2toR4,  &I4toR4,  NULL,     &R8toR4,  &R10toR4,  &C8toR4,  &C16toR4,  &C20toR4,
-    &I1toR8,  &I2toR8,  &I4toR8,  &R4toR8,  NULL,     &R10toR8,  &C8toR8,  &C16toR8,  &C20toR8,
-    &I1toR10, &I2toR10, &I4toR10, &R4toR10, &R8toR10, NULL,      &C8toR10, &C16toR10, &C20toR10,
-    &I1toC8,  &I2toC8,  &I4toC8,  &R4toC8,  &R8toC8,  &R10toC8,  NULL,     &C16toC8,  &C20toC8,
-    &I1toC16, &I2toC16, &I4toC16, &R4toC16, &R8toC16, &R10toC16, &C8toC16, NULL,      &C20toC16,
-    &I1toC20, &I2toC20, &I4toC20, &R4toC20, &R8toC20, &R10toC20, &C8toC20, &C16toC20, NULL
+static void     (*DataCnvTab[])(ftn_type *, ftn_type *) = {
+/* from                                                                                             to  */
+/*  I1          I2      I4          R4      R8          R10         C8      C16         C20             */
+    NULL,     &I2toI1,  &I4toI1,  &R4toI1,  &R8toI1,  &R10toI1,  &C8toI1,  &C16toI1,  &C20toI1,  /* I1  */
+    &I1toI2,  NULL,     &I4toI2,  &R4toI2,  &R8toI2,  &R10toI2,  &C8toI2,  &C16toI2,  &C20toI2,  /* I2  */
+    &I1toI4,  &I2toI4,  NULL,     &R4toI4,  &R8toI4,  &R10toI4,  &C8toI4,  &C16toI4,  &C20toI4,  /* I4  */
+    &I1toR4,  &I2toR4,  &I4toR4,  NULL,     &R8toR4,  &R10toR4,  &C8toR4,  &C16toR4,  &C20toR4,  /* R4  */
+    &I1toR8,  &I2toR8,  &I4toR8,  &R4toR8,  NULL,     &R10toR8,  &C8toR8,  &C16toR8,  &C20toR8,  /* R8  */
+    &I1toR10, &I2toR10, &I4toR10, &R4toR10, &R8toR10, NULL,      &C8toR10, &C16toR10, &C20toR10, /* R10 */
+    &I1toC8,  &I2toC8,  &I4toC8,  &R4toC8,  &R8toC8,  &R10toC8,  NULL,     &C16toC8,  &C20toC8,  /* C8  */
+    &I1toC16, &I2toC16, &I4toC16, &R4toC16, &R8toC16, &R10toC16, &C8toC16, NULL,      &C20toC16, /* C16 */
+    &I1toC20, &I2toC20, &I4toC20, &R4toC20, &R8toC20, &R10toC20, &C8toC20, &C16toC20, NULL       /* C20 */
 };
 
 

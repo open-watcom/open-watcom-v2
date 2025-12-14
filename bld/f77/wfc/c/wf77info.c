@@ -135,7 +135,7 @@ static  char * DBGNames[] = {
 
 
 /* Forward declarations */
-static  void    SegBytes( uint_32 size );
+static  void    SegBytes( uint size );
 static  void    DefineGlobalSeg( global_seg *seg );
 static  void    DefineGlobalSegs( void );
 static  void    DefineCommonSegs( void );
@@ -393,7 +393,7 @@ static  void    AllocComBlk( sym_id cb )
 // Allocate a common block.
 {
     segment_id  segid;
-    uint_32     size;
+    uint        size;
 
     segid = cb->u.ns.si.cb.segid;
     BESetSeg( segid );
@@ -412,8 +412,8 @@ static  void    AllocComBlk( sym_id cb )
 }
 
 
-static  void    SegBytes( uint_32 size )
-//======================================
+static  void    SegBytes( uint size )
+//===================================
 {
 #if _CPU == 8086
     if( size == MAX_SEG16_SIZE ) {
@@ -483,12 +483,12 @@ static  void    AllocGlobalSegs( void )
 }
 
 
-static  global_seg      *GSegDesc( uint_32 g_offset )
-//===================================================
+static  global_seg      *GSegDesc( uint g_offset )
+//================================================
 // Find global segment descriptor for given offset.
 {
     global_seg  *g_seg;
-    uint_32     g_size;
+    uint        g_size;
 
     g_size = 0;
     for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
@@ -521,8 +521,8 @@ struct {
 } CurrDt;
 
 
-static  void    InitBytes( unsigned long size, byte value )
-//=========================================================
+static void     InitBytes( uint size, byte value )
+//================================================
 {
 #if _CPU == 8086
     if( size == MAX_SEG16_SIZE ) {
@@ -534,8 +534,8 @@ static  void    InitBytes( unsigned long size, byte value )
 }
 
 
-static  void    UndefBytes( unsigned long size, byte *data )
-//==========================================================
+static void     UndefBytes( uint size, byte *data )
+//=================================================
 {
 #if _CPU == 8086
     if( size == MAX_SEG16_SIZE ) {
@@ -568,8 +568,8 @@ static  void    InitCurrDt( void )
 }
 
 
-void    DtIBytes( byte data, int size )
-//=====================================
+void    DtIBytes( byte data, uint size )
+//======================================
 // Initialize with specified data.
 {
 #if _CPU == 8086
@@ -620,8 +620,8 @@ void    DtIBytes( byte data, int size )
 }
 
 
-void    DtStreamBytes( byte *data, int size )
-//===========================================
+void    DtStreamBytes( byte *data, uint size )
+//============================================
 // Initialize with specified data.
 {
     FlushCurrDt();
@@ -652,12 +652,12 @@ void    DtStreamBytes( byte *data, int size )
 }
 
 
-void    DtBytes( byte *data, int size )
-//=====================================
+void    DtBytes( byte *data, uint size )
+//======================================
 // Initialize with specified data.
 {
     byte        byte_value;
-    int         i;
+    uint        i;
 
     byte_value = *data;
     for( i = 1; i < size; ++i ) {
@@ -684,8 +684,8 @@ void    DtFiniSequence( void )
 }
 
 
-segment_id      GetComSegId( sym_id sym, uint_32 offset )
-//=======================================================
+segment_id      GetComSegId( sym_id sym, uint offset )
+//====================================================
 // Get segment id of common block for variable in common.
 {
     segment_id  segid;
@@ -710,7 +710,7 @@ segment_id      GetDataSegId( sym_id sym )
 // Get segment containing data for given variable.
 {
     segment_id  segid;
-    uint_32     offset;
+    uint        offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
@@ -744,12 +744,12 @@ segment_id      GetDataSegId( sym_id sym )
 }
 
 
-seg_offset      GetGlobalOffset( uint_32 g_offset )
-//=================================================
+seg_offset      GetGlobalOffset( uint g_offset )
+//==============================================
 // Find offset in the global segment containing data at given offset.
 {
     global_seg  *g_seg;
-    uint_32     g_size;
+    uint        g_size;
 
     g_size = 0;
     for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
@@ -759,8 +759,8 @@ seg_offset      GetGlobalOffset( uint_32 g_offset )
 }
 
 
-seg_offset      GetComOffset( uint_32 offset )
-//============================================
+seg_offset      GetComOffset( uint offset )
+//=========================================
 // Get segment offset in common block for variable in common.
 {
 #if _CPU == 8086
@@ -792,7 +792,7 @@ seg_offset      GetDataOffset( sym_id sym )
 // Get offset in segment containing data for given variable.
 {
     seg_offset  seg_offset;
-    uint_32     offset;
+    uint        offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
@@ -822,8 +822,8 @@ seg_offset      GetDataOffset( sym_id sym )
 }
 
 
-segment_id  GetGlobalSegId( uint_32 g_offset )
-//============================================
+segment_id  GetGlobalSegId( uint g_offset )
+//=========================================
 // Find global segment containing data at given offset.
 {
     return( GSegDesc( g_offset )->segid );
@@ -834,9 +834,9 @@ void    DefTypes( void )
 //======================
 // Define FORTRAN 77 data types.
 {
-    int         adv_cnt;
-    int         adv_size;
-    int         total_size;
+    uint        adv_cnt;
+    uint        adv_size;
+    uint        total_size;
 
 #if _INTEL_CPU
     if( _BigDataModel( CGOpts ) ) {
@@ -1338,7 +1338,7 @@ void    FEMessage( fe_msg femsg, pointer x )
 #if _CPU == 8086
         CodeSize = (unsigned short)(pointer_uint)x;
 #else
-        CodeSize = (unsigned long)(pointer_uint)x;
+        CodeSize = (unsigned)(pointer_uint)x;
 #endif
         break;
     case FEMSG_DATA_SIZE :
@@ -1566,12 +1566,12 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type )
 }
 
 
-static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset )
-//========================================================================
+static  void    DefDbgFields( sym_id sd, dbg_struct db, uint f_offset )
+//=====================================================================
 {
     sym_id      map;
     sym_id      field;
-    uint_32     size;
+    uint        size;
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
@@ -1623,8 +1623,8 @@ static  dbg_type        DefCommonStruct( sym_id sym )
 // Define debugging information for a COMMON block.
 {
     dbg_struct  db;
-    uint_32     com_offset;
-    uint_32     size;
+    uint        com_offset;
+    uint        size;
     char        field_name[MAX_SYMLEN+1];
     dbg_type    db_type;
     com_eq      *com_ext;
@@ -1824,7 +1824,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
     uint_16     flags;
 #if _CPU == 8086
     int         idx;
-    uint_32     com_size;
+    uint        com_size;
 #endif
     sym_id      sym;
     char        *fn;

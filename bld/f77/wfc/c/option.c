@@ -268,11 +268,11 @@ void    FiniProcCmd( void )
 }
 
 
-static unsigned_32 OptV( opt_entry *optn, const char *ptr )
-//=========================================================
+static unsigned OptV( opt_entry *optn, const char *ptr )
+//======================================================
 // Process an option that requires a value.
 {
-    unsigned_32 number;
+    unsigned    number;
 
     if( !isdigit( *ptr ) ) {
         Warning( CO_WANT_NUMBER, optn->option );
@@ -738,7 +738,7 @@ void    PrtOptions( void )
     opt_entry   *optn;
     char        buffer[30];
     char        *buff;
-    unsigned_32 number;
+    unsigned    number;
 
     LFSkip();
     PrtLst( "Options:" );
@@ -774,7 +774,7 @@ void    PrtOptions( void )
                 buffer[0] = ',';
                 continue;
             }
-            buff += sprintf( buff, "%lu", (unsigned long)number );
+            buff += sprintf( buff, "%u", number );
             PrtLst( buffer );
             buffer[0] = ',';
         } else {
