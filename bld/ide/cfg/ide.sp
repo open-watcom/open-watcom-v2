@@ -784,7 +784,6 @@ Tool WCG "Code Generator"
     CSwitch -1, rb6??, "", -bt=rdos_bin16, ON
     CSwitch -1, rb2??, "", -bt=rdos_bin32, ON
     CSwitch -1, rm6??, "", -bt=rdos_mboot, ON
-    CSwitch -1, ?????, "", -fo=.obj, ON
 :segment C_FOR_PB
     CSwitch 1, n?2d?, WCG_mf32, -mf, ON
     SwitchText WCG_mf32, "32-bit flat model", "32bit Flat model"
@@ -1023,6 +1022,7 @@ Tool WCC "C Compiler"
     CSwitch -1, ??6??, "", "wcc $@", ON
     CSwitch -1, ??2??, "", "wcc386 $@", ON
     CSwitch -1, ??a??, "", "wccaxp $@", ON
+    CSwitch -1, ?????, "", -fo=.obj, ON
 
 Tool WPP "C++ Compiler"
   IncludeTool WLANG
@@ -1031,6 +1031,7 @@ Tool WPP "C++ Compiler"
     CSwitch -1, ??6??, "", "wpp $@", ON
     CSwitch -1, ??2??, "", "wpp386 $@", ON
     CSwitch -1, ??a??, "", "wppaxp $@", ON
+    CSwitch -1, ?????, "", -fo=.obj, ON
 ::
 :segment !C_FOR_PB
 ::
@@ -1040,6 +1041,7 @@ Tool WFOR "Fortran Compiler"
     CSwitch -1, ??6??, "", "wfc $@", ON
     CSwitch -1, ??2??, "", "wfc386 $@", ON
     CSwitch -1, ??a??, "", "wfcaxp $@", ON
+    CSwitch -1, ?????, "", -fo=.obj, ON
   Family "File Option"
     RGroup "Listing file"
       RSwitch 0, ?????, WFOR_def1, , ON
