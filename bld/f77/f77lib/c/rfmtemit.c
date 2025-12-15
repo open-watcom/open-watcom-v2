@@ -48,18 +48,18 @@ void    R_FEmInit( void )
     Fmt_revert = FmtBuff;
 }
 
-static void CheckHole( uint size ) {
-//==============================
-
+static void CheckHole( uint size )
+//================================
+{
     if( IOCB->fmtlen < size ) {
         RTErr( FM_TOO_LARGE );
     }
     IOCB->fmtlen -= size;
 }
 
-void    R_FEmCode( int code ) {
-//=============================
-
+void    R_FEmCode( int code )
+//===========================
+{
     CheckHole( sizeof( byte ) );
     if( ( code & REV_CODE ) == REV_CODE ) {
         code &= ~REV_CODE;
@@ -72,32 +72,32 @@ void    R_FEmCode( int code ) {
     IOCB->fmtptr = (fmt_desc PGM *)((byte PGM *)IOCB->fmtptr + 1);
 }
 
-void    R_FEmChar( char PGM *cur_char_ptr ) {
-//===========================================
-
+void    R_FEmChar( char PGM *cur_char_ptr )
+//=========================================
+{
     CheckHole( sizeof( char ) );
     *(char PGM *)IOCB->fmtptr = *cur_char_ptr;
     IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
 }
 
-void    R_FEmNum( int num ) {
-//===========================
-
+void    R_FEmNum( int num )
+//=========================
+{
     CheckHole( sizeof( int ) );
     *(int PGM *)IOCB->fmtptr = num;
     IOCB->fmtptr = (fmt_desc PGM *)((int PGM *)IOCB->fmtptr + 1);
 }
 
-void    R_FEmEnd( void ) {
-//==================
-
+void    R_FEmEnd( void )
+//======================
+{
     R_FEmCode( END_FORMAT );
     R_FEmNum( (char PGM *)(IOCB->fmtptr) - Fmt_revert );
 }
 
-void    R_FEmByte( int signed_num ) {
-//=============================
-
+void    R_FEmByte( int signed_num )
+//=================================
+{
     uint num = signed_num;      // needed to match signature
 
     CheckHole( sizeof( byte ) );

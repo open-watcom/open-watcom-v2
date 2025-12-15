@@ -105,9 +105,10 @@ static const byte   __FAR DataSize[] = {
 
 
 void    R_ChkType( PTYPE lo_ptyp, PTYPE hi_ptyp )
-//===========================================
+//===============================================
 {
-    if( ( IOCB->ptyp < lo_ptyp ) || ( IOCB->ptyp > hi_ptyp ) ) {
+    if( ( IOCB->ptyp < lo_ptyp )
+      || ( IOCB->ptyp > hi_ptyp ) ) {
         IOErr( IO_FMT_MISMATCH );
         // never return
     }
@@ -132,7 +133,8 @@ void    R_ChkIType( void )
 //========================
 // Check if type can be formatted using I format.
 {
-    if( ( IOCB->ptyp == FPT_REAL_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
+    if( ( IOCB->ptyp == FPT_REAL_4 )
+      && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
         /*
          * allow REAL variable containing integer data to be
          * formatted using I edit descriptor
@@ -143,12 +145,12 @@ void    R_ChkIType( void )
 }
 
 
-void    R_ChkFType( void ) {
-//====================
-
+void    R_ChkFType( void )
+//========================
 // Check if type can be formatted using F, E, or D format.
-
-    if( ( IOCB->ptyp == FPT_INT_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
+{
+    if( ( IOCB->ptyp == FPT_INT_4 )
+      && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
         // allow INTEGER variable containing floating-point data to be
         // formatted using F, E, or D edit descriptors
         IOCB->ptyp = FPT_REAL_4;
@@ -157,9 +159,9 @@ void    R_ChkFType( void ) {
 }
 
 
-void    R_ChkRecLen( void ) {
-//=====================
-
+void    R_ChkRecLen( void )
+//=========================
+{
     ftnfile     *fcb;
 
     fcb = IOCB->fileinfo;
@@ -169,9 +171,9 @@ void    R_ChkRecLen( void ) {
 }
 
 
-static uint GetLen( void ) {
-//==========================
-
+static uint GetLen( void )
+//========================
+{
     uint        len;
 
     if( IOCB->ptyp == FPT_CHAR ) {
@@ -183,9 +185,9 @@ static uint GetLen( void ) {
 }
 
 
-static void FOString( uint width ) {
-//==================================
-
+static void FOString( uint width )
+//================================
+{
     ftnfile     *fcb;
     uint        length;
 
@@ -214,16 +216,16 @@ static void FOString( uint width ) {
 }
 
 
-void    R_FOStr( void ) {
-//=================
-
+void    R_FOStr( void )
+//=====================
+{
     FOString( IOCB->fmtptr->fmt4.fld1 );
 }
 
 
-void    R_FIStr( void ) {
-//=================
-
+void    R_FIStr( void )
+//=====================
+{
     uint        width;
     byte        blanks;
     uint        length;
@@ -256,18 +258,18 @@ void    R_FIStr( void ) {
 }
 
 
-void    R_FOLog( void ) {
-//=================
-
+void    R_FOLog( void )
+//=====================
+{
     if( UndefLogRtn() )
         return;
     R_FmtLog( IOCB->fmtptr->fmt1.fld1 );
 }
 
 
-static  void    SetLogValue( logstar4 value ) {
-//=============================================
-
+static  void    SetLogValue( logstar4 value )
+//===========================================
+{
     if( IOCB->ptyp == FPT_LOG_1 ) {
         *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
     } else {
@@ -276,9 +278,9 @@ static  void    SetLogValue( logstar4 value ) {
 }
 
 
-void    R_FILog( void ) {
-//=================
-
+void    R_FILog( void )
+//=====================
+{
     ftnfile     *fcb;
     uint        width;
     char        ch;
@@ -366,7 +368,8 @@ void    R_FIFloat( void )
         IOErr( IO_FRANGE_EXCEEDED );
         // never return
     }
-    if( comma && ( fmtptr->fld1 != width ) ) {
+    if( comma
+      && ( fmtptr->fld1 != width ) ) {
         fcb->col += width;
         if( fcb->buffer[ fcb->col ] != ',' ) {
             IOErr( IO_BAD_CHAR );
@@ -412,7 +415,8 @@ bool    GetReal( extended *value )
     bool        defined;
 
     ptyp = IOCB->ptyp;
-    if( ( ptyp == FPT_REAL_4  ) || ( ptyp == FPT_CPLX_8 ) ) {
+    if( ( ptyp == FPT_REAL_4 )
+      || ( ptyp == FPT_CPLX_8 ) ) {
         SetMaxPrec( MAX_SP );
         if( ptyp  == FPT_REAL_4 ) {
             short_flt = &IORslt.single;
@@ -423,7 +427,8 @@ bool    GetReal( extended *value )
         }
         *value = *short_flt;
         defined = !UndefRealRtn( short_flt );
-    } else if( ( ptyp == FPT_REAL_8 ) || ( ptyp == FPT_CPLX_16 ) ) {
+    } else if( ( ptyp == FPT_REAL_8 )
+      || ( ptyp == FPT_CPLX_16 ) ) {
         SetMaxPrec( MAX_DP );
         if( ptyp == FPT_REAL_8 ) {
             *value = IORslt.dble;
@@ -462,8 +467,7 @@ void    R_FOF( void )
     fmt = &IOCB->fmtptr->fmt2;
     wid = fmt->fld1;
     if( GetRealRtn( &val, wid ) ) {
-        R_F2F( val, buf, wid, fmt->fld2, (IOCB->flags & IOF_PLUS) != 0,
-               IOCB->scale );
+        R_F2F( val, buf, wid, fmt->fld2, (IOCB->flags & IOF_PLUS) != 0, IOCB->scale );
     }
     fcb->col += wid;
 }
@@ -506,8 +510,9 @@ void    R_FOE( int exp, char ch )
                 bot = P1d_99;
             }
 
-            if( ( ( absvalue <= bot ) || ( absvalue >= top ) ) &&
-                ( absvalue != 0.0 ) ) {
+            if( ( ( absvalue <= bot )
+              || ( absvalue >= top ) )
+              && ( absvalue != 0.0 ) ) {
                 ch = NULLCHAR;   // no exponent letter
                 exp = 3;
             } else {
@@ -525,7 +530,7 @@ void    R_FOE( int exp, char ch )
 
 
 static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE ptyp )
-//============================================================================
+//=============================================================================
 {
     char        ch1;
     byte        ch2;
@@ -651,7 +656,8 @@ static void FOHex( uint width )
      *  one edit descriptor:
      */
 #if 0
-    if( ( IOCB->ptyp == FPT_CPLX_8 ) || ( IOCB->ptyp == FPT_CPLX_16 ) ) {
+    if( ( IOCB->ptyp == FPT_CPLX_8 )
+      || ( IOCB->ptyp == FPT_CPLX_16 ) ) {
         len *= 2;
         IOCB->flags &= ~IOF_FMTREALPART;  // we'll print both parts at once
     }
@@ -760,7 +766,8 @@ void    R_FIInt( void )
         IOErr( IO_IOVERFLOW );
         // never return
     }
-    if( comma && ( width != new_width ) ) { // use comma as field separator
+    if( comma
+      && ( width != new_width ) ) { // use comma as field separator
         fcb->col += new_width;
         if( fcb->buffer[ fcb->col ] != ',' ) {
             IOErr( IO_BAD_CHAR );
@@ -799,7 +806,8 @@ static  void    OutInt( uint width, uint min )
     if( UndefIntRtn( width ) )
         return;
     iorslt = IORslt.intstar4;
-    if( ( iorslt == 0 ) && ( min == 0 ) ) {
+    if( ( iorslt == 0 )
+      && ( min == 0 ) ) {
         SendChar( ' ', width );
     } else {
         minus = ( iorslt < 0 );
@@ -814,7 +822,8 @@ static  void    OutInt( uint width, uint min )
         }
         if( min <= width ) {
             space = width - min;
-            if( minus || ( IOCB->flags & IOF_PLUS ) ) {
+            if( minus
+              || ( IOCB->flags & IOF_PLUS ) ) {
                 if( space != 0 ) {
                     SendChar( ' ', space - 1 );
                     if( minus ) {
@@ -933,21 +942,25 @@ void    R_FOG( void )
             }
             /* round to "dec" digits */
             absvalue = absvalue + .5 * pow( 10, -dec );
-            if( ( IOCB->ptyp == FPT_REAL_4 ) || ( IOCB->ptyp == FPT_CPLX_8 ) ) {
+            if( ( IOCB->ptyp == FPT_REAL_4 )
+              || ( IOCB->ptyp == FPT_CPLX_8 ) ) {
                 logval = Div10S( absvalue );
-            } else if((IOCB->ptyp == FPT_REAL_8) || (IOCB->ptyp == FPT_CPLX_16)) {
+            } else if((IOCB->ptyp == FPT_REAL_8)
+              || (IOCB->ptyp == FPT_CPLX_16)) {
                 logval = Div10L( absvalue );
             } else {
                 logval = Div10X( absvalue );
             }
             //  use E format if less than 0.1 unless value is zero
             //  use E format if there are more digits than the width
-            if( ( ( absvalue < 0.1 ) || ( logval >= dec ) )
+            if( ( ( absvalue < 0.1 )
+              || ( logval >= dec ) )
               && ( value != 0.0 ) ) {
                 ch = 'E';
                 if( exp == 0 ) { // if Gw.d
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
-                    if( ( ( absvalue <= P1d_99 ) || ( absvalue >= P1d100 ) )
+                    if( ( ( absvalue <= P1d_99 )
+                      || ( absvalue >= P1d100 ) )
                       && ( absvalue != 0.0 ) ) {
                         ch = NULLCHAR;   // no exponent letter
                         exp = 3;
@@ -958,8 +971,7 @@ void    R_FOG( void )
                     }
 #endif
                 }
-                R_F2E( value, buf, width, dec, (IOCB->flags & IOF_PLUS) != 0,
-                       IOCB->scale, exp, ch );
+                R_F2E( value, buf, width, dec, (IOCB->flags & IOF_PLUS) != 0, IOCB->scale, exp, ch );
                 fcb->col += width;
             } else {
                 if( exp == 0 ) { // if Gw.d
@@ -970,9 +982,9 @@ void    R_FOG( void )
                 width -= exp;
                 if( width > 0 ) {
                     dec -= ( logval + 1 );
-                    if( ( dec <= width ) && ( dec >= 0 ) ) {
-                        R_F2F( value, buf, width, dec,
-                               ( IOCB->flags & IOF_PLUS ) != 0, 0 );
+                    if( ( dec <= width )
+                      && ( dec >= 0 ) ) {
+                        R_F2F( value, buf, width, dec, ( IOCB->flags & IOF_PLUS ) != 0, 0 );
                         fcb->col += width;
                         if( *buf == '*' ) {
                             // fill remaining field

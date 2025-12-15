@@ -45,8 +45,9 @@
 #include "sdfile.h"
 
 
-void    F_SendData( char *str, uint width ) {
-//===========================================
+void    F_SendData( char *str, uint width )
+//=========================================
+{
     int         blanks;
     ftnfile     *fcb;
 
@@ -64,17 +65,17 @@ void    F_SendData( char *str, uint width ) {
 }
 
 
-void    SendLine( char *str ) {
-//=============================
-
+void    SendLine( char *str )
+//===========================
+{
     SendWSLStr( str );
     SendEOR();
 }
 
 
-void    SendInt( intstar4 num ) {
-//===============================
-
+void    SendInt( intstar4 num )
+//=============================
+{
     char        num_buff[MAX_INT_SIZE+1];
 
     ltoa( num, num_buff, 10 );
@@ -82,9 +83,9 @@ void    SendInt( intstar4 num ) {
 }
 
 
-void    SendStr( char PGM *str, uint len ) {
-//==========================================
-
+void    SendStr( char PGM *str, uint len )
+//========================================
+{
     while( len > 0 ) {
         Drop( *str );
         str++;
@@ -93,9 +94,9 @@ void    SendStr( char PGM *str, uint len ) {
 }
 
 
-void    SendWSLStr( char *str ) {
-//===============================
-
+void    SendWSLStr( char *str )
+//=============================
+{
     while( *str != NULLCHAR ) {
         Drop( *str );
         ++str;
@@ -103,9 +104,9 @@ void    SendWSLStr( char *str ) {
 }
 
 
-void    SendChar( char ch, int rep ) {
-//====================================
-
+void    SendChar( char ch, int rep )
+//==================================
+{
     while( rep > 0 ) {
         Drop( ch );
         rep--;
@@ -113,9 +114,9 @@ void    SendChar( char ch, int rep ) {
 }
 
 
-void    Drop( char ch ) {
-//=======================
-
+void    Drop( char ch )
+//=====================
+{
     ftnfile     *fcb;
     bool        save;
     int         chr_size;
@@ -138,8 +139,9 @@ void    Drop( char ch ) {
         if( save ) {
             IOCB->flags |= IOF_NOCR;
         }
-        if( ( ( IOCB->flags & IOF_NOFMT ) == 0 ) &&
-            ( ( IOCB->set_flags & SET_FMTPTR ) == 0 ) && IsCarriage() ) {
+        if( ( ( IOCB->flags & IOF_NOFMT ) == 0 )
+          && ( ( IOCB->set_flags & SET_FMTPTR ) == 0 )
+          && IsCarriage() ) {
             strcpy( fcb->buffer, NormalCtrlSeq );
             fcb->col = strlen( NormalCtrlSeq );
         }
@@ -149,9 +151,9 @@ void    Drop( char ch ) {
 }
 
 
-void    SendEOR( void ) {
-//=================
-
+void    SendEOR( void )
+//=====================
+{
     ftnfile     *fcb;
     int         len;
     bool        ifile;
@@ -194,7 +196,8 @@ void    SendEOR( void ) {
         // suicide which will NOT return to ExWrite().
         // If we don't do this here, the next time a WRITE is executed
         // on this unit, we get IO_PAST_EOF error.
-        if( !ifile && !NoEOF( fcb ) ) {
+        if( !ifile
+          && !NoEOF( fcb ) ) {
             if( fcb->accmode <= ACCM_SEQUENTIAL ) {
                 fcb->eofrecnum = fcb->recnum;
             }
@@ -207,9 +210,9 @@ void    SendEOR( void ) {
 }
 
 
-void    IOItemResult( char PGM *src, PTYPE ptyp ) {
-//==============================================
-
+void    IOItemResult( char PGM *src, PTYPE ptyp )
+//===============================================
+{
     switch( ptyp ) {
     case FPT_LOG_1:
         *(logstar4 *)(&IORslt) = *(logstar1 *)src;

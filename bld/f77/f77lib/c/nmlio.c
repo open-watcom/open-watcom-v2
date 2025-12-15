@@ -62,11 +62,10 @@ static  void    NmlIn( void );
 static  void    NmlOut( void );
 
 
-static char *Scanner( void ) {
+static char *Scanner( void )
 //==========================
-
 // Point to where we are currently scanning.
-
+{
     ftnfile     *fcb;
 
     fcb = IOCB->fileinfo;
@@ -74,11 +73,10 @@ static char *Scanner( void ) {
 }
 
 
-static bool     ScanChar( char chr ) {
-//====================================
-
+static bool     ScanChar( char chr )
+//==================================
 // Scan a character.
-
+{
     if( *Scanner() == chr ) {
         IOCB->fileinfo->col++;
         return( true );
@@ -87,20 +85,18 @@ static bool     ScanChar( char chr ) {
 }
 
 
-static bool ScanEOL( void ) {
+static bool ScanEOL( void )
 //=========================
-
 // Check for end-of-line.
-
+{
     return( *Scanner() == NULLCHAR );
 }
 
 
-static char     *ScanName( uint *len ) {
-//======================================
-
+static char     *ScanName( uint *len )
+//====================================
 // Scan a name.
-
+{
     char        *name;
     char        *ptr;
     char        chr;
@@ -122,16 +118,16 @@ static char     *ScanName( uint *len ) {
 }
 
 
-static bool     ScanSNum( int_32 PGM *num ) {
-//==============================================
-
+static bool     ScanSNum( int_32 PGM *num )
+//=========================================
 // Scan a signed number.
-
+{
     char        *ptr;
 
     Blanks();
     ptr = Scanner();
-    if( ( *ptr == '+' ) || ( *ptr == '-' ) ) {
+    if( ( *ptr == '+' )
+      || ( *ptr == '-' ) ) {
         ++ptr;
     }
     if( isdigit( *ptr ) ) {
@@ -145,11 +141,10 @@ static bool     ScanSNum( int_32 PGM *num ) {
 }
 
 
-static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
-//==========================================================================
-
+static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size )
+//========================================================================
 // Get a subscript list.
-
+{
     int_32              ss[MAX_DIM];
     act_dim_list        dim_list;
     intstar4            PGM *bounds;
@@ -189,11 +184,10 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
 }
 
 
-static  bool    SubStr( string *scb ) {
-//=====================================
-
+static  bool    SubStr( string *scb )
+//===================================
 // Get a substring list.
-
+{
     intstar4    ss1;
     intstar4    ss2;
 
@@ -221,9 +215,9 @@ static  bool    SubStr( string *scb ) {
 }
 
 
-void    NmlExec( void ) {
-//=================
-
+void    NmlExec( void )
+//=====================
+{
     if( IOCB->flags & IOF_OUTPT ) {
         NmlOut();
     } else {
@@ -233,9 +227,9 @@ void    NmlExec( void ) {
 }
 
 
-static  void    NmlOut( void ) {
-//========================
-
+static  void    NmlOut( void )
+//============================
+{
     byte        PGM *nml;
     byte        len;
     byte        info;
@@ -272,8 +266,7 @@ static  void    NmlOut( void ) {
                 }
             } else {
                 num_elts = *(uint_32 PGM *)nml;
-                nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
-                                   ( sizeof( uint_32 ) + sizeof( int ) );
+                nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
                 if( ptyp == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml;
                     nml += sizeof( uint );
@@ -362,9 +355,9 @@ static  byte PGM *FindNmlEntry( char *name, uint len )
         }
         nml += nml_len;
         info = *nml++;
-        if( _GetNMLSubScrs( info ) && (info & NML_LG_ADV) == 0 ) {
-            nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
-                                    ( sizeof( uint_32 ) + sizeof( int ) );
+        if( _GetNMLSubScrs( info )
+          && (info & NML_LG_ADV) == 0 ) {
+            nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
             if( _GetNMLType( info ) == FPT_CHAR ) {
                 nml += sizeof( int );
             }
@@ -377,11 +370,10 @@ static  byte PGM *FindNmlEntry( char *name, uint len )
 
 static  io_type_rtn     NmlIOType;
 
-static PTYPE    NmlIOType( void ) {
-//===========================
-
+static PTYPE    NmlIOType( void )
+//===============================
 // Get the type of an input item.
-
+{
     uint        save_col;
     uint        len;
     char        *ptr;
@@ -434,9 +426,7 @@ static PTYPE    NmlIOType( void ) {
     if( NmlIn_ptyp == FPT_CHAR ) {
         IORslt.string.len = ((string PGM *)NmlIn_addr)->len;
         IORslt.string.strptr = ((string PGM *)NmlIn_addr)->strptr;
-        ((string PGM *)NmlIn_addr)->strptr =
-            ((char HPGM *)((string PGM *)NmlIn_addr)->strptr) +
-                                            ((string PGM *)NmlIn_addr)->len;
+        ((string PGM *)NmlIn_addr)->strptr = ((char HPGM *)((string PGM *)NmlIn_addr)->strptr) + ((string PGM *)NmlIn_addr)->len;
     } else { // numeric or logical
         IORslt.pgm_ptr = NmlIn_addr;
         NmlIn_addr = (char HPGM *)NmlIn_addr + SizeVars[NmlIn_ptyp];
@@ -445,9 +435,9 @@ static PTYPE    NmlIOType( void ) {
 }
 
 
-static  void    NmlIn( void ) {
-//=======================
-
+static  void    NmlIn( void )
+//===========================
+{
     char PGM    *nml;
     byte        nml_len;
     char        *ptr;
@@ -479,7 +469,9 @@ static  void    NmlIn( void ) {
             continue;
         if( pgm_memicmp( ptr, nml, len ) != 0 )
             continue;
-        if( ScanEOL() || ScanChar( ' ' ) || ScanChar( '\t' ) ) {
+        if( ScanEOL()
+          || ScanChar( ' ' )
+          || ScanChar( '\t' ) ) {
             break;
         }
     }
@@ -490,10 +482,11 @@ static  void    NmlIn( void ) {
         ptr = Scanner();
         if( *ptr == e_chr ) {
             ++ptr;
-            if( ( toupper( ptr[0] ) == 'E' ) &&
-                ( toupper( ptr[1] ) == 'N' ) &&
-                ( toupper( ptr[2] ) == 'D' ) )
+            if( ( toupper( ptr[0] ) == 'E' )
+              && ( toupper( ptr[1] ) == 'N' )
+              && ( toupper( ptr[2] ) == 'D' ) ) {
                 ptr += 3;
+            }
             if( *JmpBlanks( ptr ) == NULLCHAR ) {
                 break;
             }
@@ -586,11 +579,10 @@ static  void    NmlIn( void ) {
 }
 
 
-void    NmlAddrs( va_list args ) {
-//================================
-
+void    NmlAddrs( va_list args )
+//==============================
 // Get addresses of NAMELIST symbols.
-
+{
     byte PGM    *nml;
     byte        len;
     byte        info;
@@ -601,9 +593,9 @@ void    NmlAddrs( va_list args ) {
     for( ; (len = *nml++) != 0; ) {
         nml += len;
         info = *nml++;
-        if( _GetNMLSubScrs( info ) && (info & NML_LG_ADV) == 0 ) {
-            nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) *
-                                   ( sizeof( uint_32 ) + sizeof( int ) );
+        if( _GetNMLSubScrs( info )
+          && (info & NML_LG_ADV) == 0 ) {
+            nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
             if( _GetNMLType( info ) == FPT_CHAR ) {
                 nml += sizeof( int );
             }
