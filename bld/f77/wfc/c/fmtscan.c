@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +62,9 @@ static  void    FSkipSpaces( void )
     }
 }
 
-static  bool    R_FRecEos( void ) {
+static  bool    R_FRecEos( void )
 // Attempt to recognize the end of a format string.
+{
     FSkipSpaces();
     return( Fmt_charptr >= Fmt_end );
 }
@@ -83,10 +84,11 @@ static  bool    R_FR_Char( char test_char )
     return( true );
 }
 
-static  int     R_FConst( void ) {
+static  int     R_FConst( void )
 // Scan a non-negative constant in a format string.
 //     - blanks are ignored
 //     - returns -1 if no constant was found
+{
     char        *start_char;
     int         result;
     char        cur_char;
@@ -95,9 +97,11 @@ static  int     R_FConst( void ) {
     result = 0;
     start_char = Fmt_charptr;
     for( ;; ) {
-        if( R_FRecEos() ) break;
+        if( R_FRecEos() )
+            break;
         cur_char = *Fmt_charptr;
-        if( isdigit( cur_char ) == 0 ) break;
+        if( isdigit( cur_char ) == 0 )
+            break;
         result *= 10;
         if( result >= 0 ) {
             result += ( cur_char - '0' );
@@ -117,13 +121,16 @@ static  int     R_FConst( void ) {
     return( result );
 }
 
-static  void    GetRepSpec( void ) {
+static  void    GetRepSpec( void )
 // Get a possible repeat specification.
+{
     bool        minus;
 
-    if( ( *Fmt_charptr != '-' ) && ( *Fmt_charptr != '+' ) ) {
+    if( ( *Fmt_charptr != '-' )
+      && ( *Fmt_charptr != '+' ) ) {
         Fmt_rep_spec = R_FConst();
-        if( ( tolower( *Fmt_charptr ) == 'p' ) && ( Fmt_rep_spec == -1 ) ) {
+        if( ( tolower( *Fmt_charptr ) == 'p' )
+          && ( Fmt_rep_spec == -1 ) ) {
             FmtError( FM_CONST );
         }
     } else {
@@ -165,8 +172,9 @@ static  void    R_FSpec( void )
     GFEmCode( RP_FORMAT );
 }
 
-static  int     R_FRPConst( void ) {
+static  int     R_FRPConst( void )
 // Get a required positive constant in a format string.
+{
     int result;
 
     result = R_FConst();
@@ -255,7 +263,8 @@ static  void    R_FH( void )
 // the H format code.
 {
     FChkDelimiter();
-    if( ( Fmt_rep_spec <= 0 ) || ( Fmt_charptr + Fmt_rep_spec >= Fmt_end ) ) {
+    if( ( Fmt_rep_spec <= 0 )
+      || ( Fmt_charptr + Fmt_rep_spec >= Fmt_end ) ) {
         FmtError( FM_WIDTH );
     } else {
         GFEmCode( H_FORMAT );
@@ -274,8 +283,9 @@ static  void    R_FComma( void )
 // Process a comma format delimiter/code.
 {
     if( FNoRep() ) {
-        if( !R_FRecEos() && ( *Fmt_charptr != ',' ) &&
-            ( *Fmt_charptr != ')' ) ) {
+        if( !R_FRecEos()
+          && ( *Fmt_charptr != ',' )
+          && ( *Fmt_charptr != ')' ) ) {
             Fmt_delimited = YES_DELIM;
         } else {
             FmtError( FM_DELIM );
@@ -342,7 +352,8 @@ static  void    R_FI( void )
         if( fmt_width > 0 ) {
             if( R_FR_Char( '.' ) ) {
                 fmt_min = R_FConst();
-                if( ( fmt_width < fmt_min ) || ( fmt_min < 0 ) ) {
+                if( ( fmt_width < fmt_min )
+                  || ( fmt_min < 0 ) ) {
                     FmtError( FM_MODIFIER );
                 }
             } else {
@@ -498,14 +509,17 @@ static  void    FReal( byte format_code )
     if( !R_FReqChar( '.', FM_DECIMAL ) )
         return;
     fmt_modifier = R_FConst();
-    if( ( fmt_modifier < 0 ) || ( fmt_width < fmt_modifier ) ) {
+    if( ( fmt_modifier < 0 )
+      || ( fmt_width < fmt_modifier ) ) {
         FmtError( FM_MODIFIER );
         return;
     }
     fmt_exp = 0;
-    if( ( format_code == E_FORMAT ) || ( format_code == G_FORMAT ) ) {
+    if( ( format_code == E_FORMAT )
+      || ( format_code == G_FORMAT ) ) {
         if( isalpha( *Fmt_charptr ) ) {
-            if( ( format_code == E_FORMAT ) || R_FR_Char( 'e' ) ) {
+            if( ( format_code == E_FORMAT )
+              || R_FR_Char( 'e' ) ) {
                 if( format_code == E_FORMAT ) {
                     if( !R_FR_Char( 'e' ) ) {
                         if( !R_FR_Char( 'd' ) ) {
@@ -531,8 +545,10 @@ static  void    FReal( byte format_code )
     GFEmCode( format_code );
     GFEmByte( fmt_width );
     GFEmByte( fmt_modifier );
-    if( ( format_code == E_FORMAT )  || ( format_code == ED_FORMAT ) ||
-        ( format_code == EQ_FORMAT ) || ( format_code == G_FORMAT ) ) {
+    if( ( format_code == E_FORMAT )
+      || ( format_code == ED_FORMAT )
+      || ( format_code == EQ_FORMAT )
+      || ( format_code == G_FORMAT ) ) {
         GFEmByte( fmt_exp );
     }
 }
@@ -650,7 +666,8 @@ static  void    FCode( void )
             break;
         f_rtn++;
     }
-    if( ( current != '\'' ) && ( current != '(' ) ) {
+    if( ( current != '\'' )
+      && ( current != '(' ) ) {
         ++Fmt_charptr;
         if( current != 'h' ) {
             FSkipSpaces();

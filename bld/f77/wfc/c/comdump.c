@@ -59,9 +59,8 @@ static  int    ClassifyType( TYPE typ )
 }
 
 void    STComDump( void )
-{
 // Resolve common block offsets and check for errors.
-
+{
     sym_id      sym;
     int         common_type;
     sym_id      name_in_com;
@@ -74,8 +73,8 @@ void    STComDump( void )
     unsigned_32 size;
 
     for( com_blk = BList; com_blk != NULL; com_blk = com_blk->u.ns.link ) {
-        if( ( com_blk->u.ns.si.cb.first == NULL ) &&
-            (com_blk->u.ns.flags & SY_SAVED) ) {
+        if( ( com_blk->u.ns.si.cb.first == NULL )
+          && (com_blk->u.ns.flags & SY_SAVED) ) {
             NameErr( SA_COMBLK_EMPTY, com_blk );
         } else {
             extend_beg = NULL;
@@ -89,8 +88,8 @@ void    STComDump( void )
             common_type = ClassifyType( name_in_com->u.ns.u1.s.typ );
             for( ;; ) {
                 sym = name_in_com;
-                if( ( common_type != CT_MIXED ) &&
-                    ( common_type != ClassifyType( sym->u.ns.u1.s.typ ) ) ) {
+                if( ( common_type != CT_MIXED )
+                  && ( common_type != ClassifyType( sym->u.ns.u1.s.typ ) ) ) {
                     Extension( CM_MIXED_COMMON );
                     common_type = CT_MIXED;
                 }

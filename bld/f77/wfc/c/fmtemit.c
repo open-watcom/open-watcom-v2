@@ -91,7 +91,8 @@ void    GFEmNum( int num )
 void    GFEmByte( int num )
 //=========================
 {
-    if( ( num < 0 ) || ( num > 255 ) ) {
+    if( ( num < 0 )
+      || ( num > 255 ) ) {
         FmtError( FM_SPEC_256 );
     } else {
         OutByte( num );

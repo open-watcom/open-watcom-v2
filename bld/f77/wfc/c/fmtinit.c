@@ -73,7 +73,8 @@ static  void    FFinish( void )
                 break;
             }
         }
-        if( ( Fmt_charptr < Fmt_end ) && ( *Fmt_charptr != '!' ) ) {
+        if( ( Fmt_charptr < Fmt_end )
+          && ( *Fmt_charptr != '!' ) ) {
             FmtError( FM_NO_EOS );
         }
     }
