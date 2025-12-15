@@ -1269,6 +1269,7 @@ Tool WFOR "Fortran Compiler"
 Tool WASM "Assembler"
   Family "File Option"
     CSwitch -1, ?????, "", "wasm $@", ON
+    CSwitch -1, ?????, "", -fo=.obj, ON
     VSwitch 0, ?????, WASM_fi, -fi, =, MULTI, REQ, ""
     VSwitch 0, w????, WASM_i, -i, =, MULTI, REQ, "\"$(%watcom)/h;$(%watcom)/h/win\""
     VSwitch 0, d????, WASM_i, -i, =, MULTI, REQ, "\"$(%watcom)/h\""
