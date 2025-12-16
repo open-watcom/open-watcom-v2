@@ -233,16 +233,16 @@ void    NmlExec( void )
 static  void    NmlOut( void )
 //============================
 {
-    byte        PGM *nml;
+    char        PGM *nml;
     byte        len;
     byte        info;
     PTYPE       ptyp;
     uint_32     num_elts;
-    byte        PGM *data;
+    char        PGM *data;
     string      scb;
     lg_adv      PGM *adv_ptr;
 
-    nml = (byte PGM *)(IOCB->fmtptr);
+    nml = (char PGM *)(IOCB->fmtptr);
     len = *nml++; // get length of NAMELIST name
     Drop( ' ' );
     Drop( '&' );
@@ -265,7 +265,7 @@ static  void    NmlOut( void )
                     scb.len = adv_ptr->elt_size;
                     scb.strptr = (char PGM *)adv_ptr->origin;
                 } else {
-                    data = (byte PGM *)adv_ptr->origin;
+                    data = (char PGM *)adv_ptr->origin;
                 }
             } else {
                 num_elts = *(uint_32 PGM *)nml;
@@ -275,7 +275,7 @@ static  void    NmlOut( void )
                     nml += sizeof( uint );
                     scb.strptr = *(char PGM * PGM *)nml;
                 } else {
-                    data = *(byte PGM * PGM *)nml;
+                    data = *(char PGM * PGM *)nml;
                 }
             }
             while( num_elts-- > 0 ) {
@@ -339,15 +339,15 @@ static  void    NmlOut( void )
 }
 
 
-static  byte PGM *FindNmlEntry( char *name, uint len )
+static  char PGM *FindNmlEntry( char *name, uint len )
 //====================================================
 // Scan NAMELIST information for given NAMELIST entry.
 {
     byte        nml_len;
-    byte PGM    *nml;
+    char        PGM *nml;
     byte        info;
 
-    nml = (byte PGM *)(IOCB->fmtptr);
+    nml = (char PGM *)(IOCB->fmtptr);
     nml_len = *nml++;
     nml += nml_len;
     for( ; (nml_len = *nml++) != 0; ) {
@@ -365,16 +365,15 @@ static  byte PGM *FindNmlEntry( char *name, uint len )
                 nml += sizeof( int );
             }
         }
-        nml += sizeof( byte PGM * );
+        nml += sizeof( char PGM * );
     }
     return( NULL );
 }
 
 
-static  io_type_rtn     NmlIOType;
-
-static PTYPE    NmlIOType( void )
-//===============================
+static io_type_rtn  NmlIOType;
+static PTYPE        NmlIOType( void )
+//===================================
 // Get the type of an input item.
 {
     uint        save_col;
@@ -585,11 +584,11 @@ void    NmlAddrs( va_list args )
 //==============================
 // Get addresses of NAMELIST symbols.
 {
-    byte PGM    *nml;
+    char        PGM *nml;
     byte        len;
     byte        info;
 
-    nml = (byte PGM *)(IOCB->fmtptr);
+    nml = (char PGM *)(IOCB->fmtptr);
     len = *nml++;
     nml += len;
     for( ; (len = *nml++) != 0; ) {
@@ -602,7 +601,7 @@ void    NmlAddrs( va_list args )
                 nml += sizeof( int );
             }
         }
-        *(byte PGM * PGM *)nml = va_arg( args, byte PGM * );
-        nml += sizeof( byte PGM * );
+        *(char PGM * PGM *)nml = va_arg( args, char PGM * );
+        nml += sizeof( char PGM * );
     }
 }
