@@ -61,17 +61,14 @@ sym_id  FindNameList( const char *name, size_t len )
 {
     sym_id      head;
 
-    head = NmList;
-    for( ;; ) {
-        if( head == NULL )
-            return( NULL );
+    for( head = NmList; head != NULL; head = head->u.nl.link ) {
         if( head->u.nl.name_len == len ) {
             if( memcmp( name, &head->u.nl.name, len ) == 0 ) {
-                return( head );
+                break;
             }
         }
-        head = head->u.nl.link;
     }
+    return( head );
 }
 
 
@@ -95,11 +92,10 @@ sym_id  STNameList( const char *name, size_t length )
 }
 
 
-char    *STNmListName( sym_id sym, char *buff ) {
-//===============================================
-
+char    *STNmListName( sym_id sym, char *buff )
+//=============================================
 // Get name list name.
-
+{
     memcpy( buff, &sym->u.nl.name, sym->u.nl.name_len );
     buff += sym->u.nl.name_len;
     *buff = NULLCHAR;
