@@ -71,11 +71,13 @@ int     IOMain( void (*io_rtn)( void ) ) {
     // the time we call IOMain(), no one should be checking IOF_SETIOCB
     IOCB->flags &= ~IOF_SETIOCB;
     io_stmt = IOCB->iostmt;
-    if( ( RTSpawn( io_rtn ) != 0 ) && ( IOCB->fileinfo != NULL ) &&
-        ( ( io_stmt == IO_READ ) || ( io_stmt == IO_WRITE ) ) ) {
+    if( ( RTSpawn( io_rtn ) != 0 )
+      && ( IOCB->fileinfo != NULL )
+      && ( ( io_stmt == IO_READ )
+      || ( io_stmt == IO_WRITE ) ) ) {
         IOCB->fileinfo->col = 0; // so next statement starts new record
-        if( ( io_stmt == IO_READ ) &&
-                            _LogicalRecordOrganization( IOCB->fileinfo ) ) {
+        if( ( io_stmt == IO_READ )
+          && _LogicalRecordOrganization( IOCB->fileinfo ) ) {
             SkipLogicalRecord( IOCB->fileinfo );
         }
         IOCB->fileinfo->flags &= ~FTN_LOGICAL_RECORD; // in case we got EOF
@@ -107,7 +109,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
         // the record number got incremented, so if an EOF condition
         // was encounterd we must adjust the record number so that
         // we don't get IO_PAST_EOF on the write
-        if( ( IOCB->set_flags & SET_INTERNAL ) == 0 ) {
+        if( (IOCB->set_flags & SET_INTERNAL) == 0 ) {
             // Consider:    READ(5,*,IOSTAT=IOS) I
             //              READ(5,*) I
             // If the first read gets EOF, then we must clear eof before
@@ -120,8 +122,10 @@ int     IOMain( void (*io_rtn)( void ) ) {
 #if defined( __MT__ )
     // we cannot release the i/o system for READ/WRITE statements since
     // co-routines are not done yet
-    if( (io_stmt != IO_READ) && (io_stmt != IO_WRITE) )
+    if( (io_stmt != IO_READ)
+      && (io_stmt != IO_WRITE) ) {
         __ReleaseIOSys();
+    }
 #else
     __ReleaseIOSys();
 #endif
