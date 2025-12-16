@@ -45,7 +45,7 @@
 
 void            (*FmtRoutine)( void );
 
-void            SetFmt( void PGM *ptr )
+void            SetFmt( char PGM *ptr )
 //=====================================
 {
     _SetIOCB();
