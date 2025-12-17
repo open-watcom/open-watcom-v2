@@ -68,8 +68,8 @@ void    R_FEmCode( int code )
     if( IOCB->flags & IOF_EXTEND_FORMAT ) {
         code |= EXTEND_FORMAT;
     }
-    *(byte PGM *)IOCB->fmtptr = code;
-    IOCB->fmtptr = (fmt_desc PGM *)((byte PGM *)IOCB->fmtptr + 1);
+    *(char PGM *)IOCB->fmtptr = code;
+    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
 }
 
 void    R_FEmChar( char PGM *cur_char_ptr )
@@ -104,7 +104,7 @@ void    R_FEmByte( int signed_num )
     if( num > 256 ) {
         RTErr( FM_SPEC_256 );
     } else {
-        *(byte PGM *)IOCB->fmtptr = num;
-        IOCB->fmtptr = (fmt_desc PGM *)((byte PGM *)IOCB->fmtptr + 1);
+        *(char PGM *)IOCB->fmtptr = num;
+        IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
     }
 }

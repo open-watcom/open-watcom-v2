@@ -271,7 +271,7 @@ extern void     Alloc( uint_16 alloc_type, uint num, ... );
 extern void     DeAlloc( intstar4 PGM *stat, uint num, ... );
 extern void     SetRecType( string PGM *recfmptr );
 extern void     SetFmt( char PGM *ptr );
-extern void     SetNml( void PGM *nml, ... );
+extern void     SetNml( char PGM *nml, ... );
 extern void     SetUnit( intstar4 unitid );
 extern void     SetIntl( string PGM *internal, uint_32 elmts );
 extern void     SetErr( void );
