@@ -60,11 +60,6 @@ static union {
     string          PGM *s;
 } NmlIn_addr;
 
-/* Forward declarations */
-static void         NmlIn( void );
-static void         NmlOut( void );
-
-
 static char *Scanner( void )
 //==========================
 // Point to where we are currently scanning.
@@ -215,127 +210,6 @@ static  bool    SubStr( string *scb )
     scb->len = ss2 - ss1 + 1;
     scb->strptr = scb->strptr + ss1 - 1;
     return( true );
-}
-
-
-void    NmlExec( void )
-//=====================
-{
-    if( IOCB->flags & IOF_OUTPT ) {
-        NmlOut();
-    } else {
-        NmlIn();
-    }
-    IOCB->ptyp = FPT_NOTYPE;
-}
-
-
-static  void    NmlOut( void )
-//============================
-{
-    char        PGM *nml;
-    byte        len;
-    byte        info;
-    PTYPE       ptyp;
-    uint_32     num_elts;
-    char        PGM *data;
-    string      scb;
-    lg_adv      PGM *adv_ptr;
-
-    nml = (char PGM *)(IOCB->fmtptr);
-    len = *nml++; // get length of NAMELIST name
-    Drop( ' ' );
-    Drop( '&' );
-    SendStr( (char *)nml, len );
-    nml += len;
-    SendEOR();
-    for( ; (len = *nml++) != 0; ) {
-        Drop( ' ' );
-        SendStr( (char *)nml, len );
-        nml += len;
-        SendWSLStr( " = " );
-        info = *nml++;
-        ptyp = _GetNMLType( info );
-        IOCB->ptyp = ptyp;
-        if( _GetNMLSubScrs( info ) ) {
-            if( info & NML_LG_ADV ) {
-                adv_ptr = *(lg_adv PGM * PGM *)nml;
-                num_elts = adv_ptr->num_elts;
-                if( ptyp == FPT_CHAR ) {
-                    scb.len = adv_ptr->elt_size;
-                    scb.strptr = (char PGM *)adv_ptr->origin;
-                } else {
-                    data = (char PGM *)adv_ptr->origin;
-                }
-            } else {
-                num_elts = *(uint_32 PGM *)nml;
-                nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
-                if( ptyp == FPT_CHAR ) {
-                    scb.len = *(uint PGM *)nml;
-                    nml += sizeof( uint );
-                    scb.strptr = *(char PGM * PGM *)nml;
-                } else {
-                    data = *(char PGM * PGM *)nml;
-                }
-            }
-            while( num_elts-- > 0 ) {
-                if( ptyp == FPT_CHAR ) {
-                    IORslt.string = scb;
-                    OutRtn[ptyp]();
-                    Drop( ' ' );
-                    scb.strptr += scb.len;
-                } else {
-                    pgm_memget( &IORslt, data, SizeVars[ptyp] );
-                    OutRtn[ptyp]();
-                    data += SizeVars[ptyp];
-                }
-            }
-        } else {
-            switch( ptyp ) {
-            case FPT_LOG_1:
-                IORslt.logstar4 = **(logstar1 PGM * PGM *)nml;
-                break;
-            case FPT_LOG_4:
-                IORslt.logstar4 = **(logstar4 PGM * PGM *)nml;
-                break;
-            case FPT_INT_1:
-                IORslt.intstar4 = **(intstar1 PGM * PGM *)nml;
-                break;
-            case FPT_INT_2:
-                IORslt.intstar4 = **(intstar2 PGM * PGM *)nml;
-                break;
-            case FPT_INT_4:
-                IORslt.intstar4 = **(intstar4 PGM * PGM *)nml;
-                break;
-            case FPT_REAL_4:
-                IORslt.single = **(single PGM * PGM *)nml;
-                break;
-            case FPT_REAL_8:
-                IORslt.dble = **(double PGM * PGM *)nml;
-                break;
-            case FPT_REAL_16:
-                IORslt.extended = **(extended PGM * PGM *)nml;
-                break;
-            case FPT_CPLX_8:
-                IORslt.scomplex = **(scomplex PGM * PGM *)nml;
-                break;
-            case FPT_CPLX_16:
-                IORslt.dcomplex = **(dcomplex PGM * PGM *)nml;
-                break;
-            case FPT_CPLX_32:
-                IORslt.xcomplex = **(xcomplex PGM * PGM *)nml;
-                break;
-            case FPT_CHAR:
-                IORslt.string = **(string PGM * PGM *)nml;
-                break;
-            }
-            OutRtn[ptyp]();
-        }
-        nml += sizeof( void PGM * );
-        SendEOR();
-    }
-    SendWSLStr( " &END" );
-    SendEOR();
 }
 
 
@@ -575,6 +449,127 @@ static  void    NmlIn( void )
         }
     }
     IOTypeRtn = &IOType;
+}
+
+
+static  void    NmlOut( void )
+//============================
+{
+    char        PGM *nml;
+    byte        len;
+    byte        info;
+    PTYPE       ptyp;
+    uint_32     num_elts;
+    char        PGM *data;
+    string      scb;
+    lg_adv      PGM *adv_ptr;
+
+    nml = (char PGM *)(IOCB->fmtptr);
+    len = *nml++; // get length of NAMELIST name
+    Drop( ' ' );
+    Drop( '&' );
+    SendStr( (char *)nml, len );
+    nml += len;
+    SendEOR();
+    for( ; (len = *nml++) != 0; ) {
+        Drop( ' ' );
+        SendStr( (char *)nml, len );
+        nml += len;
+        SendWSLStr( " = " );
+        info = *nml++;
+        ptyp = _GetNMLType( info );
+        IOCB->ptyp = ptyp;
+        if( _GetNMLSubScrs( info ) ) {
+            if( info & NML_LG_ADV ) {
+                adv_ptr = *(lg_adv PGM * PGM *)nml;
+                num_elts = adv_ptr->num_elts;
+                if( ptyp == FPT_CHAR ) {
+                    scb.len = adv_ptr->elt_size;
+                    scb.strptr = (char PGM *)adv_ptr->origin;
+                } else {
+                    data = (char PGM *)adv_ptr->origin;
+                }
+            } else {
+                num_elts = *(uint_32 PGM *)nml;
+                nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
+                if( ptyp == FPT_CHAR ) {
+                    scb.len = *(uint PGM *)nml;
+                    nml += sizeof( uint );
+                    scb.strptr = *(char PGM * PGM *)nml;
+                } else {
+                    data = *(char PGM * PGM *)nml;
+                }
+            }
+            while( num_elts-- > 0 ) {
+                if( ptyp == FPT_CHAR ) {
+                    IORslt.string = scb;
+                    OutRtn[ptyp]();
+                    Drop( ' ' );
+                    scb.strptr += scb.len;
+                } else {
+                    pgm_memget( &IORslt, data, SizeVars[ptyp] );
+                    OutRtn[ptyp]();
+                    data += SizeVars[ptyp];
+                }
+            }
+        } else {
+            switch( ptyp ) {
+            case FPT_LOG_1:
+                IORslt.logstar4 = **(logstar1 PGM * PGM *)nml;
+                break;
+            case FPT_LOG_4:
+                IORslt.logstar4 = **(logstar4 PGM * PGM *)nml;
+                break;
+            case FPT_INT_1:
+                IORslt.intstar4 = **(intstar1 PGM * PGM *)nml;
+                break;
+            case FPT_INT_2:
+                IORslt.intstar4 = **(intstar2 PGM * PGM *)nml;
+                break;
+            case FPT_INT_4:
+                IORslt.intstar4 = **(intstar4 PGM * PGM *)nml;
+                break;
+            case FPT_REAL_4:
+                IORslt.single = **(single PGM * PGM *)nml;
+                break;
+            case FPT_REAL_8:
+                IORslt.dble = **(double PGM * PGM *)nml;
+                break;
+            case FPT_REAL_16:
+                IORslt.extended = **(extended PGM * PGM *)nml;
+                break;
+            case FPT_CPLX_8:
+                IORslt.scomplex = **(scomplex PGM * PGM *)nml;
+                break;
+            case FPT_CPLX_16:
+                IORslt.dcomplex = **(dcomplex PGM * PGM *)nml;
+                break;
+            case FPT_CPLX_32:
+                IORslt.xcomplex = **(xcomplex PGM * PGM *)nml;
+                break;
+            case FPT_CHAR:
+                IORslt.string = **(string PGM * PGM *)nml;
+                break;
+            }
+            OutRtn[ptyp]();
+        }
+        nml += sizeof( void PGM * );
+        SendEOR();
+    }
+    SendWSLStr( " &END" );
+    SendEOR();
+}
+
+
+void    NmlExec( void )
+//=====================
+{
+    if( IOCB->flags & IOF_OUTPT ) {
+        NmlOut();
+    } else {
+        NmlIn();
+    }
+    IOCB->ptyp = FPT_NOTYPE;
 }
 
 
