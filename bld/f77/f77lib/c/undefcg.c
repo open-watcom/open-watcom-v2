@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ static bool GetRealCG( extended *value, uint width ) {
 void    (*FmtRealRtn)(char *,single *)          = FmtRealCG;
 void    (*FmtDoubleRtn)(char *,double *)        = FmtDoubleCG;
 void    (*FmtExtendedRtn)(char *,extended *)    = FmtExtendedCG;
-void    (*SendStrRtn)(char PGM *,uint)          = SendStr;
+void    (*SendStrRtn)(const char PGM *,uint)    = SendStr;
 bool    (*UndefRealRtn)(single *)               = UndefRealCG;
 bool    (*UndefDoubleRtn)(double *)             = UndefDoubleCG;
 bool    (*UndefExtendedRtn)(extended *)         = UndefExtendedCG;
