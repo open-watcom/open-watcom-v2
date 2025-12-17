@@ -45,8 +45,8 @@
 #include "sdfile.h"
 
 
-void    F_SendData( char *str, uint width )
-//=========================================
+void    F_SendData( const char *str, uint width )
+//===============================================
 {
     int         blanks;
     ftnfile     *fcb;
@@ -65,8 +65,8 @@ void    F_SendData( char *str, uint width )
 }
 
 
-void    SendLine( char *str )
-//===========================
+void    SendLine( const char *str )
+//=================================
 {
     SendWSLStr( str );
     SendEOR();
@@ -83,8 +83,8 @@ void    SendInt( intstar4 num )
 }
 
 
-void    SendStr( char PGM *str, uint len )
-//========================================
+void    SendStr( const char PGM *str, uint len )
+//==============================================
 {
     while( len > 0 ) {
         Drop( *str );
@@ -94,8 +94,8 @@ void    SendStr( char PGM *str, uint len )
 }
 
 
-void    SendWSLStr( char *str )
-//=============================
+void    SendWSLStr( const char *str )
+//===================================
 {
     while( *str != NULLCHAR ) {
         Drop( *str );

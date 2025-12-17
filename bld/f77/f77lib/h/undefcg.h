@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,7 +36,7 @@ extern  void    OutIntCG( void );
 extern  void    (*FmtRealRtn)(char *,single *);
 extern  void    (*FmtDoubleRtn)(char *,double *);
 extern  void    (*FmtExtendedRtn)(char *,extended *);
-extern  void    (*SendStrRtn)(char PGM *,uint);
+extern  void    (*SendStrRtn)(const char PGM *,uint);
 extern  bool    (*UndefRealRtn)(single *);
 extern  bool    (*UndefDoubleRtn)(double *);
 extern  bool    (*UndefExtendedRtn)(extended *);

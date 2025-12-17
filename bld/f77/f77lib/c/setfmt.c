@@ -49,7 +49,7 @@ void            SetFmt( char PGM *ptr )
 //=====================================
 {
     _SetIOCB();
-    IOCB->fmtptr = ptr;
+    IOCB->fmtptr = (union fmt_desc PGM *)ptr;
     IOCB->set_flags |= SET_FMTPTR;
     FmtRoutine = &R_FExec;
 }

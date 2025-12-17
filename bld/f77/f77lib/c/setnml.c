@@ -50,7 +50,7 @@ void            SetNml( char PGM *nml, ... )
 
     _SetIOCB();
     IOCB->flags |= NML_DIRECTED;
-    IOCB->fmtptr = nml;
+    IOCB->fmtptr = (union fmt_desc PGM *)nml;
     IOCB->set_flags |= SET_FMTPTR;
     FmtRoutine = &NmlExec;
     va_start( args, nml );

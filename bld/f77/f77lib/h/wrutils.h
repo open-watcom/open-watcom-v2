@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-extern void    F_SendData( char *str, uint width );
-extern void    SendLine( char *str );
+extern void    F_SendData( const char *str, uint width );
+extern void    SendLine( const char *str );
 extern void    SendInt( intstar4 num );
-extern void    SendStr( char PGM *str, uint len );
-extern void    SendWSLStr( char *str );
+extern void    SendStr( const char PGM *str, uint len );
+extern void    SendWSLStr( const char *str );
 extern void    SendChar( char ch, int rep );
 extern void    Drop( char ch );
 extern void    SendEOR( void );
