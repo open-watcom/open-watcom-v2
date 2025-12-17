@@ -53,94 +53,8 @@
 #include "gsublist.h"
 
 
-/* forward declarations */
-static  void    AllocStat( void );
-static  void    AllocLoc( void );
-static  void    ChkStat( void );
-static  void    ChkLoc( void );
-static  void    DeallocStat( void );
-
-
 static  char            *StatKW = { "STAT" };
 static  char            *LocKW = { "LOCATION" };
-
-
-void    CpAllocate( void )
-//========================
-// Process ALLOCATE statement.
-//      ALLOCATE( arr([l:]u,...),...,[STAT=istat])
-//          or
-//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc)
-//          or
-//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc, [STAT=istat])
-{
-    sym_id      sym;
-
-    StmtExtension( SP_STRUCTURED_EXT );
-    if( RecTrmOpr()
-      && RecNOpn() ) {
-        AdvanceITPtr();
-    }
-    ReqOpenParen();
-    GBegAllocate();
-    for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
-            sym = LkSym();
-            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
-                if( (sym->u.ns.flags & SY_SUBSCRIPTED)
-                  && _Allocatable( sym )
-                  && !( (sym->u.ns.u1.s.typ == FT_CHAR)
-                  && (sym->u.ns.xt.size == 0) ) ) {
-                    AdvanceITPtr();
-                    ReqOpenParen();
-                    sym->u.ns.u1.s.xflags |= SY_DEFINED;
-                    GAllocate( sym );
-                } else if( (sym->u.ns.u1.s.typ == FT_CHAR)
-                  && (sym->u.ns.xt.size == 0)
-                  && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
-                    AdvanceITPtr();
-                    ReqMul();
-                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
-                    GAllocateString( sym );
-                } else {
-                    IllName( sym );
-                }
-            }
-        }
-        AdvanceITPtr();
-        if( !RecComma() ) {
-            GAllocEOL();
-            break;
-        }
-        if( RecNextOpr( OPR_EQU ) ) {
-            GAllocEOL();
-            if( RecKeyWord( LocKW ) ) {
-                AllocLoc();
-            }
-            if( RecKeyWord( StatKW ) ) {
-                AllocStat();
-            }
-            break;
-        }
-    }
-    GEndAllocate();
-    ReqCloseParen();
-    ReqNOpn();
-    AdvanceITPtr();
-    ReqEOS();
-}
-
-
-static  void    AllocStat( void )
-{
-    ChkStat();
-}
-
-
-static  void    AllocLoc( void )
-{
-    ChkLoc();
-}
 
 
 void    DimArray( sym_id sym )
@@ -208,6 +122,48 @@ void    LoadSCB( sym_id sym )
 }
 
 
+static  void    ChkStat( void )
+{
+    AdvanceITPtr();
+    IntSubExpr();
+    if( !AError ) {
+        CkSize4();
+        CkAssignOk();
+        GAllocStat();
+    }
+    AdvanceITPtr();
+}
+
+
+static  void    AllocStat( void )
+{
+    ChkStat();
+}
+
+
+static  void    DeallocStat( void )
+{
+    ChkStat();
+}
+
+
+static  void    ChkLoc( void )
+{
+    AdvanceITPtr();
+    IntSubExpr();
+    if( !AError ) {
+        GAllocLoc();
+    }
+    AdvanceITPtr();
+}
+
+
+static  void    AllocLoc( void )
+{
+    ChkLoc();
+}
+
+
 void    CpDeAllocate( void )
 //==========================
 // Process DEALLOCATE statement.
@@ -258,31 +214,67 @@ void    CpDeAllocate( void )
 }
 
 
-static  void    DeallocStat( void )
+void    CpAllocate( void )
+//========================
+// Process ALLOCATE statement.
+//      ALLOCATE( arr([l:]u,...),...,[STAT=istat])
+//          or
+//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc)
+//          or
+//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc, [STAT=istat])
 {
-    ChkStat();
-}
+    sym_id      sym;
 
-
-static  void    ChkStat( void )
-{
-    AdvanceITPtr();
-    IntSubExpr();
-    if( !AError ) {
-        CkSize4();
-        CkAssignOk();
-        GAllocStat();
+    StmtExtension( SP_STRUCTURED_EXT );
+    if( RecTrmOpr()
+      && RecNOpn() ) {
+        AdvanceITPtr();
     }
-    AdvanceITPtr();
-}
-
-
-static  void    ChkLoc( void )
-{
-    AdvanceITPtr();
-    IntSubExpr();
-    if( !AError ) {
-        GAllocLoc();
+    ReqOpenParen();
+    GBegAllocate();
+    for( ;; ) {
+        if( ReqName( NAME_ARRAY ) ) {
+            sym = LkSym();
+            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_SUBSCRIPTED)
+                  && _Allocatable( sym )
+                  && !( (sym->u.ns.u1.s.typ == FT_CHAR)
+                  && (sym->u.ns.xt.size == 0) ) ) {
+                    AdvanceITPtr();
+                    ReqOpenParen();
+                    sym->u.ns.u1.s.xflags |= SY_DEFINED;
+                    GAllocate( sym );
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR)
+                  && (sym->u.ns.xt.size == 0)
+                  && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
+                    AdvanceITPtr();
+                    ReqMul();
+                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
+                    GAllocateString( sym );
+                } else {
+                    IllName( sym );
+                }
+            }
+        }
+        AdvanceITPtr();
+        if( !RecComma() ) {
+            GAllocEOL();
+            break;
+        }
+        if( RecNextOpr( OPR_EQU ) ) {
+            GAllocEOL();
+            if( RecKeyWord( LocKW ) ) {
+                AllocLoc();
+            }
+            if( RecKeyWord( StatKW ) ) {
+                AllocStat();
+            }
+            break;
+        }
     }
+    GEndAllocate();
+    ReqCloseParen();
+    ReqNOpn();
     AdvanceITPtr();
+    ReqEOS();
 }
