@@ -71,7 +71,7 @@ static  void   R_FEH( uint dummy1 , char dummy2 )
         RTErr( FM_NOT_INP );
     }
     R_ChkRecLen();
-    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + sizeof( fmt4 ) + len * sizeof( char ));
+    IOCB->fmtptr = (fmt_desc PGM *)( (char PGM *)IOCB->fmtptr + sizeof( fmt4 ) + len );
 }
 
 
@@ -179,7 +179,7 @@ static  void    R_FET( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    fcb->col = IOCB->fmtptr->fmt4.fld1 - sizeof( char );
+    fcb->col = IOCB->fmtptr->fmt4.fld1 - 1;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
 }
 

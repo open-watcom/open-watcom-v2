@@ -823,9 +823,9 @@ static  void    DoDataInit( PTYPE ptyp )
         }
     } else if( ( ptyp == FPT_CHAR )
       && IntType( DtConstPtyp ) ) {
-        DtBytes( const_ptr, sizeof( char ) );
-        if( var_size > sizeof( char ) ) {
-            DtIBytes( ' ', var_size - sizeof( char ) );
+        DtBytes( const_ptr, 1 );
+        if( var_size > 1 ) {
+            DtIBytes( ' ', var_size - 1 );
         }
     } else if( DtConstPtyp == FPT_NOTYPE ) {
         if( ptyp != FPT_CHAR ) {

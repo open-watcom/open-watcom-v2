@@ -490,8 +490,7 @@ static  void    GetString( void ) {
             }
         }
         count++;
-        *ptr = fcb->buffer[fcb->col];
-        ptr = ptr + sizeof( char );
+        *ptr++ = fcb->buffer[fcb->col];
         fcb->col++;
     }
     if( count == len ) {

@@ -349,8 +349,7 @@ static  char PGM *FindNmlEntry( char *name, uint len )
 
     nml = (char PGM *)(IOCB->fmtptr);
     nml_len = *nml++;
-    nml += nml_len;
-    for( ; (nml_len = *nml++) != 0; ) {
+    for( nml += nml_len; (nml_len = *nml++) != 0; nml += sizeof( char PGM * ) ) {
         if( nml_len == len ) {
             if( pgm_memicmp( nml, name, len ) == 0 ) {
                 return( nml + len );
@@ -365,7 +364,6 @@ static  char PGM *FindNmlEntry( char *name, uint len )
                 nml += sizeof( int );
             }
         }
-        nml += sizeof( char PGM * );
     }
     return( NULL );
 }
@@ -590,8 +588,7 @@ void    NmlAddrs( va_list args )
 
     nml = (char PGM *)(IOCB->fmtptr);
     len = *nml++;
-    nml += len;
-    for( ; (len = *nml++) != 0; ) {
+    for( nml += len; (len = *nml++) != 0; nml += sizeof( char PGM * ) ) {
         nml += len;
         info = *nml++;
         if( _GetNMLSubScrs( info )
@@ -602,6 +599,5 @@ void    NmlAddrs( va_list args )
             }
         }
         *(char PGM * PGM *)nml = va_arg( args, char PGM * );
-        nml += sizeof( char PGM * );
     }
 }

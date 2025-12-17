@@ -71,14 +71,14 @@ static  void    OutCplx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.realpart );
+    *buff++ = '(';
+    FmtRealRtn( buff, &IORslt.scomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.imagpart );
+    *buff++ = ',';
+    FmtRealRtn( buff, &IORslt.scomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, COMPLEX_IO_WINDOW );
 }
 
@@ -89,14 +89,14 @@ static  void    OutDbcx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtDoubleRtn( buff + sizeof( char ), &IORslt.dcomplex.realpart );
+    *buff++ = '(';
+    FmtDoubleRtn( buff, &IORslt.dcomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtDoubleRtn( buff + sizeof( char ), &IORslt.dcomplex.imagpart );
+    *buff++ = ',';
+    FmtDoubleRtn( buff, &IORslt.dcomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, DCOMPLEX_IO_WINDOW );
 }
 
@@ -107,14 +107,14 @@ static  void    OutXtcx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtExtendedRtn( buff + sizeof( char ), &IORslt.xcomplex.realpart );
+    *buff++ = '(';
+    FmtExtendedRtn( buff, &IORslt.xcomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtExtendedRtn( buff + sizeof( char ), &IORslt.xcomplex.imagpart );
+    *buff++ = ',';
+    FmtExtendedRtn( buff, &IORslt.xcomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, XCOMPLEX_IO_WINDOW );
 }
 

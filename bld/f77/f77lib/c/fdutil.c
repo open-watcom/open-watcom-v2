@@ -64,6 +64,6 @@ void    ExtractInfo( char *handle, ftnfile *fcb ) {
 
 // Set the file name in the fcb.
 
-    fcb->filename = RChkAlloc( strlen( handle ) + sizeof( char ) );
+    fcb->filename = RChkAlloc( strlen( handle ) + 1 );
     strcpy( fcb->filename, handle );
 }

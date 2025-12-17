@@ -66,11 +66,11 @@ static ftnfile *_GetFtnFile( int unit, int mode, void *fp, char *fname ) {
     if( (unit == STANDARD_OUTPUT) && __DevicesCC() ) {
         fcb->cctrl = CC_YES;
     }
-    fcb->filename = RChkAlloc( strlen( fname ) + sizeof( char ) );
+    fcb->filename = RChkAlloc( strlen( fname ) + 1 );
     if( fcb->filename == NULL ) return( fcb );
     strcpy( fcb->filename, fname );
     GetSysIOInfo( fcb );
-    fcb->buffer = RChkAlloc( fcb->bufflen + sizeof( char ) );
+    fcb->buffer = RChkAlloc( fcb->bufflen + 1 );
     return( fcb );
 }
 

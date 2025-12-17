@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +46,9 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
     if( io->attrs & SEEK ) {
         if( io->attrs & REC_TEXT ) {
 #if defined( __UNIX__ )
-            recsize += sizeof( char );     // compensate for LF
+            recsize += 1;   // compensate for LF
 #else
-            recsize += 2 * sizeof( char ); // compensate for CR/LF
+            recsize += 2;   // compensate for CR/LF
 #endif
         } else if( io->attrs & REC_VARIABLE ) {
             recsize += 2 * sizeof( unsigned_32 ); // compensate for length tags

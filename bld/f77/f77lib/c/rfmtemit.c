@@ -75,7 +75,7 @@ void    R_FEmCode( int code )
 void    R_FEmChar( char PGM *cur_char_ptr )
 //=========================================
 {
-    CheckHole( sizeof( char ) );
+    CheckHole( 1 );
     *(char PGM *)IOCB->fmtptr = *cur_char_ptr;
     IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
 }

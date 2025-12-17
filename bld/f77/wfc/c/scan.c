@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -416,8 +416,8 @@ token:  LexToken.stop  = TkCrsr;
                 }
                 class = TO_LGL;
             } else {
-                State = SLG;               // remember logical collected
-                LexToken.stop = dpt;          // decimal not part of token
+                State = SLG;            // remember logical collected
+                LexToken.stop = dpt;    // decimal not part of token
                 class = TO_INT;
             }
             break;
@@ -430,8 +430,8 @@ token:  LexToken.stop  = TkCrsr;
             break;
         case SLX :
         case SLG :
-            LexToken.stop = dpt + sizeof( char ); // decimal is part of token
-            State = SAN;                       // remember alphanumeric started
+            LexToken.stop = dpt + 1;    // decimal is part of token
+            State = SAN;                // remember alphanumeric started
             if( old_state == SNS ) {
                 class = TO_OPR;
             } else {
@@ -521,7 +521,7 @@ static  void    LkUpLog( void ) {
     int         i;
     char        *ptr;
 
-    ptr = LexToken.start + sizeof( char ); // skip over "."
+    ptr = LexToken.start + 1;           // skip over "."
     *TkCrsr = NULLCHAR;
     for( i = 0; i < BAD_LOG; i++) {
         if( strcmp( LogTab[i], ptr ) == 0 ) {

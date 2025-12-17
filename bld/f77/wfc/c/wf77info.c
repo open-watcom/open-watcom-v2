@@ -1809,7 +1809,7 @@ char    *GetFullSrcName( void )
 {
     size_t      idx;
 
-    idx = MakeName( SrcName, SrcExtn, TokenBuff ) + sizeof( char );
+    idx = MakeName( SrcName, SrcExtn, TokenBuff ) + 1;
     if( _fullpath( &TokenBuff[idx], TokenBuff, TOKLEN-idx ) != NULL ) {
         return( &TokenBuff[idx] );
     } else {

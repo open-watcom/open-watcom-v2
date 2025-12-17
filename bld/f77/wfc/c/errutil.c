@@ -195,7 +195,7 @@ static void Substitute( const char *msg, char *buffer, va_list args )
             width = subs_len;
         }
         if( same_buff ) {
-            memmove( buffer + width, msg, strlen( msg ) + sizeof( char ) );
+            memmove( buffer + width, msg, strlen( msg ) + 1 );
             msg = buffer + width;
         }
         if( subs_len < width ) {

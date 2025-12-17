@@ -492,7 +492,7 @@ static opt_entry *GetOptn( const char *buff, bool *negated )
     *negated = false;
     if( ( toupper( buff[0] ) == 'N' ) && ( toupper( buff[1] ) == 'O' ) ) {
         *negated = true;
-        buff += 2 * sizeof( char );
+        buff += 2;
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
         if( OptMatch( buff, optn->option, (optn->flags & VAL) ) ) {
@@ -624,7 +624,7 @@ static char *GetOptName( char *buffer, const char *opt_name )
 {
     char        *buff;
 
-    buff = buffer + sizeof( char );
+    buff = buffer + 1;
     while( *opt_name != NULLCHAR ) {
         *buff = tolower( *opt_name );
         opt_name++;

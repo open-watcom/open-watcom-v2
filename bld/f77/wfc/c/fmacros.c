@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +143,7 @@ void MacroDEFINE( const char *macro, size_t macro_len )
 
     me = FindMacroEntry( macro, macro_len );
     if( me == NULL ) {
-        me = FMemAlloc( sizeof( macro_entry ) + macro_len - sizeof( char ) );
+        me = FMemAlloc( sizeof( macro_entry ) + macro_len - 1 );
         me->link = MacroList;
         me->name_len = macro_len;
         me->flags = MacroFlags;
