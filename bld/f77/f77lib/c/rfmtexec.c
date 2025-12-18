@@ -207,7 +207,7 @@ static  void    R_FET( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    fcb->col = IOCB->u.fmtptr->fmt4.fld1 - sizeof( char );
+    fcb->col = IOCB->u.fmtptr->fmt4.fld1 - 1;
     IOCB->u.ptr += sizeof( fmt4 );
 }
 

@@ -68,7 +68,7 @@ typedef struct iocb {                   // global iocb structure
     string              PGM *internal;  // pointer to internal file variable
     union {
         union fmt_desc  PGM *fmtptr;    // pointer for fmt=
-        char            PGM *ptr;       // pointer for fmt= (char *)
+        char            PGM *ptr;       // pointer for fmt= (char pointer)
     } u;
     intstar4            PGM *iosptr;    // pointer to iostat=
     string              PGM *accptr;    // pointer to access=

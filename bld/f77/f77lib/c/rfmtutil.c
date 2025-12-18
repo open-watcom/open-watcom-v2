@@ -379,19 +379,19 @@ void    R_FIFloat( void )
     } else {
         fcb->col += fmt->fld1;
     }
-    if( ptyp  == FPT_REAL_4 ) {
+    if( ptyp == FPT_REAL_4 ) {
         *(single PGM *)(IORslt.pgm_ptr) = value;
-    } else if( ptyp  == FPT_REAL_8 ) {
+    } else if( ptyp == FPT_REAL_8 ) {
         *(double PGM *)(IORslt.pgm_ptr) = value;
-    } else if( ptyp  == FPT_REAL_16 ) {
+    } else if( ptyp == FPT_REAL_16 ) {
         *(extended PGM *)(IORslt.pgm_ptr) = value;
-    } else if( ptyp  == FPT_CPLX_8 ) {
+    } else if( ptyp == FPT_CPLX_8 ) {
         if( IOCB->flags & IOF_FMTREALPART ) {
             ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
         } else {
             ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
         }
-    } else if( ptyp  == FPT_CPLX_16 ) {
+    } else if( ptyp == FPT_CPLX_16 ) {
         if( IOCB->flags & IOF_FMTREALPART ) {
             ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
         } else {

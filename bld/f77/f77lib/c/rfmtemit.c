@@ -40,7 +40,7 @@
 #include "rfmtemit.h"
 
 
-static char PGM     *Fmt_revert;    // position to revert to if required
+static char     PGM *Fmt_revert;    // position to revert to if required
 
 void    R_FEmInit( void )
 //=======================
@@ -74,7 +74,7 @@ void    R_FEmCode( int code )
 void    R_FEmChar( char PGM *cur_char_ptr )
 //=========================================
 {
-    CheckHole( sizeof( char ) );
+    CheckHole( 1 );
     *IOCB->u.ptr++ = *cur_char_ptr;
 }
 
