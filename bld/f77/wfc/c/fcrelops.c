@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +133,7 @@ cg_name GetChOp( cg_type cgtyp ) {
         if( lit->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE) ) {
             CGTrash( XPop() );
         }
-        return( IntegerConstant( (ftn_type *)(&lit->u.lt.value), lit->u.lt.length ) );
+        return( IntegerConstant( (ftn_type *)lit->u.lt.value, lit->u.lt.length ) );
     } else {
         return( CGUnary( O_POINTS, SCBPointer( XPop() ), cgtyp ) );
     }

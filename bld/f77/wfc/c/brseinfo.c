@@ -642,7 +642,7 @@ static void BIOutConst( sym_id ste_ptr )
     void                *value;
 
     if( ste_ptr->u.ns.u1.s.typ == FT_CHAR ) {
-        value = &(ste_ptr->u.ns.si.pc.value->u.lt.value);
+        value = ste_ptr->u.ns.si.pc.value->u.lt.value;
     } else {
         value = &(ste_ptr->u.ns.si.pc.value->u.cn.value);
     }

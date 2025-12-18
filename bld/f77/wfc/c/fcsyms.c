@@ -1169,7 +1169,7 @@ static  void    DumpLitSCBs( void ) {
         }
         data = BENewBack( NULL );
         DGLabel( data );
-        DGString( (char *)&sym->u.lt.value, sym->u.lt.length );
+        DGString( sym->u.lt.value, sym->u.lt.length );
         DumpSCB( ConstBack( sym ), data, sym->u.lt.length, false, 0 );
         FreeBackHandle( &data );
     }

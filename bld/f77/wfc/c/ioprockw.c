@@ -258,7 +258,7 @@ void    FormatIdd( void ) {
                 AddConst( CITNode ); // in case single constant
                 fmt_label.g_label = NextLabel();
                 FScan( CITNode->sym_ptr->u.lt.length,
-                       (char *)&CITNode->sym_ptr->u.lt.value, fmt_label );
+                       CITNode->sym_ptr->u.lt.value, fmt_label );
                 GPassLabel( fmt_label.g_label, RT_SET_FMT );
             } else {
                 GFmtExprSet();

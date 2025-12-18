@@ -240,7 +240,7 @@ void    ConstCat( size_t size )
     FreeITNodes( CITNode->link );
     CITNode->link = link_node;
     AddConst( CITNode );
-    CITNode->value.cstring.strptr = (char *)&CITNode->sym_ptr->u.lt.value;
+    CITNode->value.cstring.strptr = CITNode->sym_ptr->u.lt.value;
     FMemFree( string );
 }
 

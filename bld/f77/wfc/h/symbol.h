@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,7 +222,7 @@ typedef struct literal {
     void                *address;       // back handle
     size_t              length;         // length of literal
     unsigned_8          flags;          // constant appeared in DATA statement
-    byte                value;          // value of literal
+    char                value[1];       // value of literal
 } literal;
 
 #define LT_DATA_STMT            0x01    // literal used in DATA statement

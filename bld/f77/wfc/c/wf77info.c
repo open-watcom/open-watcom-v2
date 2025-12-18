@@ -534,8 +534,8 @@ static void     InitBytes( uint size, byte value )
 }
 
 
-static void     DefBytes( const byte *data, uint size )
-//===============================================
+static void DefBytes( const char *data, uint size )
+//=================================================
 {
 #if _CPU == 8086
     if( size == MAX_SEG16_SIZE ) {
@@ -621,8 +621,8 @@ void    DtIBytes( byte data, uint size )
 }
 
 
-void    DtStreamBytes( const byte *data, uint size )
-//============================================
+void    DtStreamBytes( const char *data, uint size )
+//==================================================
 // Initialize with specified data.
 {
     FlushCurrDt();
@@ -654,8 +654,8 @@ void    DtStreamBytes( const byte *data, uint size )
 }
 
 
-void    DtBytes( const byte *data, uint size )
-//======================================
+void    DtBytes( const char *data, uint size )
+//============================================
 // Initialize with specified data.
 {
     byte        byte_value;

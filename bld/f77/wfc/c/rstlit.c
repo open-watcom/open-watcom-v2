@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ sym_id  STLit( byte *string, size_t len )
 
     for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
         if( sym->u.lt.length == len ) {
-            if( memcmp( string, &sym->u.lt.value, len ) == 0 ) {
+            if( memcmp( string, sym->u.lt.value, len ) == 0 ) {
                 if( StmtSw & SS_DATA_INIT ) {
                     sym->u.lt.flags |= LT_DATA_STMT;
                 } else {
@@ -57,7 +57,7 @@ sym_id  STLit( byte *string, size_t len )
         }
     }
     sym = FMemAlloc( sizeof( literal ) - 1 + len );
-    memcpy( &sym->u.lt.value, string, len );
+    memcpy( sym->u.lt.value, string, len );
     sym->u.lt.length = len;
     if( StmtSw & SS_DATA_INIT ) {
         sym->u.lt.flags = LT_DATA_STMT;

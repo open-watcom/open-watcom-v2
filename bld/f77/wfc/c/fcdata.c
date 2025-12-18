@@ -797,18 +797,18 @@ static  void    DoDataInit( PTYPE ptyp )
     size_t      const_size;
     size_t      var_size;
     size_t      size;
-    byte        *const_ptr;
+    const char  *const_ptr;
     segment_id  segid;
     seg_offset  offset;
-    byte        const_buff[sizeof( ftn_type )];
+    char        const_buff[sizeof( ftn_type )];
 
     if( ( DtConstPtyp == FPT_CHAR )
       || ( DtConstPtyp == FPT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
-        const_ptr = &DtConst->u.lt.value;
+        const_ptr = DtConst->u.lt.value;
     } else {
         const_size = DtConst->u.cn.size;
-        const_ptr = (byte *)(&DtConst->u.cn.value);
+        const_ptr = (char *)(&DtConst->u.cn.value);
     }
     var_size = DtItemSize;
     segid = GetDataSegId( InitVar );
