@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,13 @@
 #include "errdat.h"
 
 
-static const unsigned char __FAR    *PGrpCodes = GrpCodes;
+static const byte   __FAR *PGrpCodes = GrpCodes;
 
 void    BldErrCode( unsigned int error_num, char *buffer )
 // Build error code.
 {
-    const unsigned char __FAR *group;
-    unsigned int        num;
+    const byte      __FAR *group;
+    unsigned int    num;
 
     group = &PGrpCodes[( error_num / 256 ) * 3];
     num = ( error_num % 256 ) + 1;
