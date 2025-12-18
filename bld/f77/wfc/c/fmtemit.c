@@ -39,7 +39,6 @@
 #include "format.h"
 #include "errcod.h"
 #include "global.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "cpopt.h"
 #include "emitobj.h"

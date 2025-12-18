@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "format.h"
 #include "global.h"

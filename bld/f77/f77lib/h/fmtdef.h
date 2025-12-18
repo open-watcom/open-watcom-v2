@@ -74,9 +74,6 @@ typedef struct fmtstring {
     char        str[1];
 } fmtstring;
 
-// Return packing to normal
-#include "poppck.h"
-
 typedef union fmt_desc {
     struct fmt          fmt;
     struct fmt1         fmt1;
@@ -85,5 +82,8 @@ typedef union fmt_desc {
     struct fmt4         fmt4;
     struct fmtstring    fmtstring;
 } fmt_desc;
+
+// Return packing to normal
+#include "poppck.h"
 
 #endif /* __FMTDEF_H_INCLUDED */

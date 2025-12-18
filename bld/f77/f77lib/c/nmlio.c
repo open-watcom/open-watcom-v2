@@ -221,7 +221,7 @@ static  char PGM *FindNmlEntry( char *name, uint len )
     char        PGM *nml;
     byte        info;
 
-    nml = (char PGM *)(IOCB->fmtptr);
+    nml = IOCB->u.ptr;
     nml_len = *nml++;
     for( nml += nml_len; (nml_len = *nml++) != 0; nml += sizeof( char PGM * ) ) {
         if( nml_len == len ) {
@@ -311,23 +311,22 @@ static PTYPE        NmlIOType( void )
 static  void    NmlIn( void )
 //===========================
 {
-    char PGM    *nml;
+    char        PGM *nml;
     byte        nml_len;
     char        *ptr;
     uint        len;
-    char PGM    *nml_entry;
+    char        PGM *nml_entry;
     byte        info;
     string      scb;
     char        e_chr;
-    lg_adv PGM  *adv_ptr;
-    char PGM    *adv_ss_ptr;
+    lg_adv      PGM *adv_ptr;
+    char        PGM *adv_ss_ptr;
     uint        size;
 
     IOTypeRtn = &NmlIOType;
     IOCB->rptnum = -1;  // initialize for first call to NmlIOType()
-    nml = (char PGM *)(IOCB->fmtptr);
-    nml_len = *nml; // get length of NAMELIST name
-    ++nml;
+    nml = IOCB->u.ptr;
+    nml_len = *nml++; // get length of NAMELIST name
     e_chr = '&';    // assume '&' used
     for( ;; ) {     // find the start of the NAMELIST information
         NextRec();
@@ -365,14 +364,13 @@ static  void    NmlIn( void )
             }
         }
         ptr = ScanName( &len );
-        nml_entry = (char PGM *)FindNmlEntry( ptr, len );
+        nml_entry = FindNmlEntry( ptr, len );
         if( nml_entry == NULL ) {
             ptr[len] = NULLCHAR;
             IOErr( IO_NML_NO_SUCH_NAME, ptr );
             // never return
         }
-        info = *nml_entry;
-        ++nml_entry;
+        info = *nml_entry++;
         NmlIn_ptyp = _GetNMLType( info );
         if( _GetNMLSubScrs( info ) ) {  // array
             if( info & NML_LG_ADV ) {
@@ -387,8 +385,7 @@ static  void    NmlIn( void )
                 NmlIn_count = *(uint_32 PGM *)nml_entry;
                 nml_entry += sizeof( uint_32 );
                 adv_ss_ptr = nml_entry;
-                nml_entry += _GetNMLSubScrs( info ) *
-                             ( sizeof( uint_32 ) + sizeof( int ) );
+                nml_entry += _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
                 if( NmlIn_ptyp == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml_entry;
                     nml_entry += sizeof( uint );
@@ -464,16 +461,15 @@ static  void    NmlOut( void )
     string      scb;
     lg_adv      PGM *adv_ptr;
 
-    nml = (char PGM *)(IOCB->fmtptr);
+    nml = IOCB->u.ptr;
     len = *nml++; // get length of NAMELIST name
     Drop( ' ' );
     Drop( '&' );
-    SendStr( (char *)nml, len );
-    nml += len;
+    SendStr( nml, len );
     SendEOR();
-    for( ; (len = *nml++) != 0; ) {
+    for( nml += len; (len = *nml++) != 0; nml += sizeof( void PGM * ) ) {
         Drop( ' ' );
-        SendStr( (char *)nml, len );
+        SendStr( nml, len );
         nml += len;
         SendWSLStr( " = " );
         info = *nml++;
@@ -553,7 +549,6 @@ static  void    NmlOut( void )
             }
             OutRtn[ptyp]();
         }
-        nml += sizeof( void PGM * );
         SendEOR();
     }
     SendWSLStr( " &END" );
@@ -577,11 +572,11 @@ void    NmlAddrs( va_list args )
 //==============================
 // Get addresses of NAMELIST symbols.
 {
-    char        PGM *nml;
+    char PGM    *nml;
     byte        len;
     byte        info;
 
-    nml = (char PGM *)(IOCB->fmtptr);
+    nml = IOCB->u.ptr;
     len = *nml++;
     for( nml += len; (len = *nml++) != 0; nml += sizeof( char PGM * ) ) {
         nml += len;

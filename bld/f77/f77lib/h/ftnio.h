@@ -66,7 +66,10 @@ typedef struct iocb {                   // global iocb structure
     unsigned_32         set_flags;      // what ptr's have been set
     string              PGM *filename;  // pointer to filename scb
     string              PGM *internal;  // pointer to internal file variable
-    union fmt_desc      PGM *fmtptr;    // pointer for fmt=
+    union {
+        union fmt_desc  PGM *fmtptr;    // pointer for fmt=
+        char            PGM *ptr;       // pointer for fmt= (char *)
+    } u;
     intstar4            PGM *iosptr;    // pointer to iostat=
     string              PGM *accptr;    // pointer to access=
     string              PGM *blnkptr;   // pointer to blank=

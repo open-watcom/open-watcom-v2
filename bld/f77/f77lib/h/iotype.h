@@ -46,7 +46,6 @@ typedef PTYPE (io_type_rtn)(void);
 #endif
 
 extern  io_type_rtn             IOType;         // for optimizing compiler
-extern  io_type_rtn             FC_IOType;      // for load'n go compiler
 
 gbl_defn io_type_rtn            *IOTypeRtn;
 

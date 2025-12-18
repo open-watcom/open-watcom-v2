@@ -133,14 +133,14 @@ void    Drop( char ch )
         }
     }
     if( fcb->col + chr_size > fcb->bufflen ) {
-        save = ( IOCB->flags & IOF_NOCR ) != 0;
+        save = ( (IOCB->flags & IOF_NOCR) != 0 );
         IOCB->flags &= ~IOF_NOCR;
         SendEOR();
         if( save ) {
             IOCB->flags |= IOF_NOCR;
         }
-        if( ( ( IOCB->flags & IOF_NOFMT ) == 0 )
-          && ( ( IOCB->set_flags & SET_FMTPTR ) == 0 )
+        if( ( (IOCB->flags & IOF_NOFMT) == 0 )
+          && ( (IOCB->set_flags & SET_FMTPTR) == 0 )
           && IsCarriage() ) {
             strcpy( fcb->buffer, NormalCtrlSeq );
             fcb->col = strlen( NormalCtrlSeq );
@@ -189,7 +189,7 @@ void    SendEOR( void )
     // will go at the beginning of the buffer.
     len = fcb->col;
     fcb->col = 0;
-    if( ( IOCB->flags & IOF_NOCR ) == 0 ) {
+    if( (IOCB->flags & IOF_NOCR) == 0 ) {
         UpdateRecNum( fcb );
         // eofrecnum used to be updated in ExWrite().
         // We MUST set eofrecnum here in case we abort the WRITE and

@@ -38,6 +38,7 @@
 #include "rtenv.h"
 #include "rfmtemit.h"
 #include "fmtscan.h"
+#include "setfmt.h"
 #include "setiocb.h"
 
 

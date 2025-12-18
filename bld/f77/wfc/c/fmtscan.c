@@ -34,7 +34,6 @@
 #include <ctype.h>
 #include "format.h"
 #include "errcod.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "fmterr.h"
 #include "fmtemit.h"

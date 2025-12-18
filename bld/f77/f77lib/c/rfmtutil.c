@@ -219,7 +219,7 @@ static void FOString( uint width )
 void    R_FOStr( void )
 //=====================
 {
-    FOString( IOCB->fmtptr->fmt4.fld1 );
+    FOString( IOCB->u.fmtptr->fmt4.fld1 );
 }
 
 
@@ -234,7 +234,7 @@ void    R_FIStr( void )
     char        PGM *ptr;
 
     fcb   = IOCB->fileinfo;
-    width = IOCB->fmtptr->fmt4.fld1;
+    width = IOCB->u.fmtptr->fmt4.fld1;
     if( IOCB->ptyp != FPT_CHAR ) {
         ptr = IORslt.pgm_ptr;
         length = GetLen();
@@ -263,7 +263,7 @@ void    R_FOLog( void )
 {
     if( UndefLogRtn() )
         return;
-    R_FmtLog( IOCB->fmtptr->fmt1.fld1 );
+    R_FmtLog( IOCB->u.fmtptr->fmt1.fld1 );
 }
 
 
@@ -286,7 +286,7 @@ void    R_FILog( void )
     char        ch;
 
     fcb = IOCB->fileinfo;
-    width = IOCB->fmtptr->fmt1.fld1;
+    width = IOCB->u.fmtptr->fmt1.fld1;
     ChkBuffLen( width );
     for( ;; ) {
         if( fcb->buffer[ fcb->col ] != ' ' )
@@ -332,7 +332,7 @@ void    R_FIFloat( void )
 // Input an real or complex variable in D, E, F, G format.
 {
     extended    value;
-    fmt2 PGM    *fmtptr;
+    fmt2 PGM    *fmt;
     ftnfile     *fcb;
     PTYPE       ptyp;
     int         prec;
@@ -341,9 +341,9 @@ void    R_FIFloat( void )
     uint        width;
 
     fcb = IOCB->fileinfo;
-    fmtptr = &IOCB->fmtptr->fmt2;
+    fmt = &IOCB->u.fmtptr->fmt2;
     ptyp = IOCB->ptyp;
-    ChkBuffLen( fmtptr->fld1 );
+    ChkBuffLen( fmt->fld1 );
     switch( ptyp ) {
     case( FPT_REAL_8 ):
     case( FPT_CPLX_16 ):
@@ -357,7 +357,7 @@ void    R_FIFloat( void )
         prec = PRECISION_SINGLE;
     }
     comma = __AllowCommaSep();
-    status = FmtS2F( fcb->buffer + fcb->col, fmtptr->fld1, fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
+    status = FmtS2F( fcb->buffer + fcb->col, fmt->fld1, fmt->fld2, ( fcb->blanks == BLANK_ZERO ),
                      IOCB->scale, prec, &value, comma, &width, false );
     if( status == FLT_INVALID ) {
         IOErr( IO_BAD_CHAR );
@@ -369,7 +369,7 @@ void    R_FIFloat( void )
         // never return
     }
     if( comma
-      && ( fmtptr->fld1 != width ) ) {
+      && ( fmt->fld1 != width ) ) {
         fcb->col += width;
         if( fcb->buffer[ fcb->col ] != ',' ) {
             IOErr( IO_BAD_CHAR );
@@ -377,7 +377,7 @@ void    R_FIFloat( void )
         }
         fcb->col++;
     } else {
-        fcb->col += fmtptr->fld1;
+        fcb->col += fmt->fld1;
     }
     if( ptyp  == FPT_REAL_4 ) {
         *(single PGM *)(IORslt.pgm_ptr) = value;
@@ -464,7 +464,7 @@ void    R_FOF( void )
 
     fcb = IOCB->fileinfo;
     buf = &fcb->buffer[ fcb->col ];
-    fmt = &IOCB->fmtptr->fmt2;
+    fmt = &IOCB->u.fmtptr->fmt2;
     wid = fmt->fld1;
     if( GetRealRtn( &val, wid ) ) {
         R_F2F( val, buf, wid, fmt->fld2, (IOCB->flags & IOF_PLUS) != 0, IOCB->scale );
@@ -489,7 +489,7 @@ void    R_FOE( int exp, char ch )
 
     fcb = IOCB->fileinfo;
     buf = &fcb->buffer[ fcb->col ];
-    fmt = &IOCB->fmtptr->fmt3;
+    fmt = &IOCB->u.fmtptr->fmt3;
     wid = fmt->fld1;
     if( GetRealRtn( &value, wid ) ) {
         // if Ew.d or Dw.d format, exp == 0
@@ -608,7 +608,7 @@ void    R_FIHex( void )
     void        PGM *ptr;
 
     fcb = IOCB->fileinfo;
-    width = IOCB->fmtptr->fmt1.fld1;
+    width = IOCB->u.fmtptr->fmt1.fld1;
     len =  GetLen();
     ptyp = IOCB->ptyp;
     ChkBuffLen( width );
@@ -716,7 +716,7 @@ static void FOHex( uint width )
 void    R_FOHex( void )
 //=====================
 {
-    FOHex( IOCB->fmtptr->fmt1.fld1 );
+    FOHex( IOCB->u.fmtptr->fmt1.fld1 );
 }
 
 
@@ -754,7 +754,7 @@ void    R_FIInt( void )
     bool        comma;
 
     fcb = IOCB->fileinfo;
-    width = IOCB->fmtptr->fmt2.fld1;
+    width = IOCB->u.fmtptr->fmt2.fld1;
     ChkBuffLen( width );
     comma = __AllowCommaSep();
     status = FmtS2I( fcb->buffer + fcb->col, width, ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
@@ -790,7 +790,7 @@ void    R_FIInt( void )
 void    R_FOInt( void )
 //=====================
 {
-    OutInt( IOCB->fmtptr->fmt2.fld1, IOCB->fmtptr->fmt2.fld2 );
+    OutInt( IOCB->u.fmtptr->fmt2.fld1, IOCB->u.fmtptr->fmt2.fld2 );
 }
 
 
@@ -925,9 +925,9 @@ void    R_FOG( void )
     extended    value;
     extended    absvalue;
 
-    width = IOCB->fmtptr->fmt3.fld1;
-    dec = IOCB->fmtptr->fmt3.fld2;
-    exp = IOCB->fmtptr->fmt3.fld3;
+    width = IOCB->u.fmtptr->fmt3.fld1;
+    dec = IOCB->u.fmtptr->fmt3.fld2;
+    exp = IOCB->u.fmtptr->fmt3.fld3;
     fcb = IOCB->fileinfo;
     buf = &fcb->buffer[ fcb->col ];
     if( IOCB->ptyp <= FPT_LOG_4 ) {

@@ -63,36 +63,34 @@ void    R_FEmCode( int code )
     CheckHole( sizeof( byte ) );
     if( ( code & REV_CODE ) == REV_CODE ) {
         code &= ~REV_CODE;
-        Fmt_revert = (char PGM *)(IOCB->fmtptr);
+        Fmt_revert = IOCB->u.ptr;
     }
     if( IOCB->flags & IOF_EXTEND_FORMAT ) {
         code |= EXTEND_FORMAT;
     }
-    *(char PGM *)IOCB->fmtptr = code;
-    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
+    *IOCB->u.ptr++ = code;
 }
 
 void    R_FEmChar( char PGM *cur_char_ptr )
 //=========================================
 {
-    CheckHole( 1 );
-    *(char PGM *)IOCB->fmtptr = *cur_char_ptr;
-    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
+    CheckHole( sizeof( char ) );
+    *IOCB->u.ptr++ = *cur_char_ptr;
 }
 
 void    R_FEmNum( int num )
 //=========================
 {
     CheckHole( sizeof( int ) );
-    *(int PGM *)IOCB->fmtptr = num;
-    IOCB->fmtptr = (fmt_desc PGM *)((int PGM *)IOCB->fmtptr + 1);
+    *(int PGM *)IOCB->u.ptr = num;
+    IOCB->u.ptr += sizeof( int );
 }
 
 void    R_FEmEnd( void )
 //======================
 {
     R_FEmCode( END_FORMAT );
-    R_FEmNum( (char PGM *)(IOCB->fmtptr) - Fmt_revert );
+    R_FEmNum( IOCB->u.ptr - Fmt_revert );
 }
 
 void    R_FEmByte( int signed_num )
@@ -104,7 +102,6 @@ void    R_FEmByte( int signed_num )
     if( num > 256 ) {
         RTErr( FM_SPEC_256 );
     } else {
-        *(char PGM *)IOCB->fmtptr = num;
-        IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
+        *IOCB->u.ptr++ = num;
     }
 }

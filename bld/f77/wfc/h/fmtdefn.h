@@ -35,8 +35,6 @@
 #define gbl_defn extern
 #endif
 
-#include "fmtdef.h"
-
 gbl_defn char           *Fmt_start;       // pointer to start of format string
 gbl_defn char           *Fmt_charptr;     // pointer to current format character
 gbl_defn char           *Fmt_end;         // pointer to end of format string
