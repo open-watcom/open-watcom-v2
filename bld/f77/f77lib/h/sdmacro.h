@@ -34,12 +34,14 @@
 // Define system dependent macros:
 // ================================
 
-#define PGM     // defines a pointer to program data
+// defines a pointer to program data
+#define PGM
 
-#if !defined( _M_I86 ) || defined( __MEDIUM__ )
-#define HPGM            // defines a huge pointer to program data
+// defines a huge pointer to program data
+#if defined( _M_I86 ) && defined( __LARGE__ )
+#define HPGM    __huge
 #else
-#define HPGM    __huge  // defines a huge pointer to program data
+#define HPGM
 #endif
 
 #define _LogValue( X ) X
