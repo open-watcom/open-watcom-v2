@@ -534,13 +534,14 @@ static void     InitBytes( uint size, byte value )
 }
 
 
-static void     UndefBytes( uint size, byte *data )
-//=================================================
+static void     DefBytes( const byte *data, uint size )
+//===============================================
 {
 #if _CPU == 8086
     if( size == MAX_SEG16_SIZE ) {
         size /= 2;
         DGBytes( size, data );
+        data += size;
     }
 #endif
     DGBytes( size, data );
@@ -620,7 +621,7 @@ void    DtIBytes( byte data, uint size )
 }
 
 
-void    DtStreamBytes( byte *data, uint size )
+void    DtStreamBytes( const byte *data, uint size )
 //============================================
 // Initialize with specified data.
 {
@@ -630,29 +631,30 @@ void    DtStreamBytes( byte *data, uint size )
     DGSeek( DtSegOffset );
 #if _CPU == 8086
     if( DtSegOffset + size < MAX_SEG16_SIZE ) {
-        UndefBytes( size, data );
+        DefBytes( data, size );
         DtSegOffset += size;
     } else {
-        UndefBytes( MAX_SEG16_SIZE - DtSegOffset, data );
-        size -= MAX_SEG16_SIZE - DtSegOffset;
+        uint    len;
+
+        len = MAX_SEG16_SIZE - DtSegOffset;
+        DefBytes( data, len );
+        size -= len;
         DtSegId++;
         if( size != 0 ) {
             BESetSeg( DtSegId );
             DGSeek( 0 );
-            UndefBytes( size, data + MAX_SEG16_SIZE - DtSegOffset );
-            DtSegOffset = size;
-        } else {
-            DtSegOffset = 0;
+            DefBytes( data + len, size );
         }
+        DtSegOffset = size;
     }
 #else
-    UndefBytes( size, data );
+    DefBytes( data, size );
     DtSegOffset += size;
 #endif
 }
 
 
-void    DtBytes( byte *data, uint size )
+void    DtBytes( const byte *data, uint size )
 //======================================
 // Initialize with specified data.
 {
