@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #define LGADV_H_INCLUDED
 
 typedef struct lg_adv {
-    void        PGM *origin;        // pointer to array storage
+    char        PGM *origin;        // pointer to array storage
     struct adv  PGM *adv_link;      // ADV link (chains all ADV's)
     int         elt_size;           // element size
     unsigned_32 num_elts;           // number of elements

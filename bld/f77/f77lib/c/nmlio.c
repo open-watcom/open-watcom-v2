@@ -323,7 +323,7 @@ static  void    NmlIn( void )
     char        PGM *adv_ss_ptr;
     uint        size;
 
-    IOTypeRtn = &NmlIOType;
+    IOTypeRtn = NmlIOType;
     IOCB->rptnum = -1;  // initialize for first call to NmlIOType()
     nml = IOCB->u.ptr;
     nml_len = *nml++; // get length of NAMELIST name
@@ -380,7 +380,7 @@ static  void    NmlIn( void )
                     scb.len = adv_ptr->elt_size;
                 }
                 NmlIn_count = adv_ptr->num_elts;
-                adv_ss_ptr = ((char PGM *)adv_ptr + ADV_BASE_SIZE);
+                adv_ss_ptr = (char PGM *)adv_ptr + ADV_BASE_SIZE;
             } else {
                 NmlIn_count = *(uint_32 PGM *)nml_entry;
                 nml_entry += sizeof( uint_32 );
@@ -467,7 +467,7 @@ static  void    NmlOut( void )
     Drop( '&' );
     SendStr( nml, len );
     SendEOR();
-    for( nml += len; (len = *nml++) != 0; nml += sizeof( void PGM * ) ) {
+    for( nml += len; (len = *nml++) != 0; nml += sizeof( char PGM * ) ) {
         Drop( ' ' );
         SendStr( nml, len );
         nml += len;
@@ -481,9 +481,9 @@ static  void    NmlOut( void )
                 num_elts = adv_ptr->num_elts;
                 if( ptyp == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
-                    scb.strptr = (char PGM *)adv_ptr->origin;
+                    scb.strptr = adv_ptr->origin;
                 } else {
-                    data = (char PGM *)adv_ptr->origin;
+                    data = adv_ptr->origin;
                 }
             } else {
                 num_elts = *(uint_32 PGM *)nml;
@@ -572,7 +572,7 @@ void    NmlAddrs( va_list args )
 //==============================
 // Get addresses of NAMELIST symbols.
 {
-    char PGM    *nml;
+    char        PGM *nml;
     byte        len;
     byte        info;
 

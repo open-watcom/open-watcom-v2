@@ -211,7 +211,7 @@ static void FOString( uint width )
     if( IOCB->ptyp == FPT_CHAR ) {
         SendStrRtn( IORslt.string.strptr, width );
     } else {
-        SendStrRtn( (char *)&IORslt, width );
+        SendStrRtn( (char PGM *)&IORslt, width );
     }
 }
 
@@ -529,13 +529,13 @@ void    R_FOE( int exp, char ch )
 }
 
 
-static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE ptyp )
-//=============================================================================
+static bool FmtH2B( const char *src, uint width, char PGM *dst, int len, PTYPE ptyp )
+//===================================================================================
 {
     char        ch1;
     byte        ch2;
     bool        valid;
-    char        *stop;
+    const char  *stop;
 
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 #else

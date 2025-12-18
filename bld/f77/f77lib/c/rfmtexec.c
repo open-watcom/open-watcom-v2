@@ -52,7 +52,7 @@ static void     R_FEH( uint dummy1, char dummy2 )
 {
     ftnfile     *fcb;
     uint        len;
-    char PGM    *str;
+    char        PGM *str;
 
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
