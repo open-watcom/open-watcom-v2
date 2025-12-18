@@ -109,8 +109,8 @@ static  char            ObjExtn[] = { "obj" };
 static  char            GData[] = { "GDATA@" };
 #if _INTEL_CPU
 static  char            *CSSuff = TS_SEG_CODE;
-static  unsigned char   CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
-static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
+static  byte            CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
+static  byte            DefCodeAlignSeq[] = { 2, 1, 1 };
 #endif
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
@@ -271,7 +271,7 @@ void    SubCodeSeg( void )
 
 
 #if _INTEL_CPU
-static  unsigned char   *AlignmentSeq( void )
+static  byte   *AlignmentSeq( void )
 //===========================================
 {
     if( OZOpts & OZOPT_O_TIME ) {
@@ -287,7 +287,7 @@ static  void    DefCodeSeg( void )
 // Define a code segment.
 {
     char            seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
-    unsigned char   *align_info_bytes;
+    byte            *align_info_bytes;
     int             i;
     int             alignment;
 

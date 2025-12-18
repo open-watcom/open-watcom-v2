@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ void ComRead( void )
             stmt_no = 0;
             stno_found = false;
             for( ;; ) {
-                chtype = CharSetInfo.character_set[(unsigned char)ch];
+                chtype = CharSetInfo.character_set[(byte)ch];
                 if( chtype == C_EL )
                     break;
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,16 +148,16 @@ static const byte CharSet[] = {
 static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
 {
-    return( ( *(unsigned char *)ptr == 0x81 ) && ( *(unsigned char *)(ptr + 1) == 0x40 ) );
+    return( ( *(byte *)ptr == 0x81 ) && ( *(byte *)(ptr + 1) == 0x40 ) );
 }
 
 
 static  bool    IsDoubleByteChar( char ch )
 // Determine if character is a double-byte character.
 {
-    if( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0x9f ) )
+    if( ( 0x81 <= (byte)ch ) && ( (byte)ch <= 0x9f ) )
         return( true );
-    if( ( 0xe0 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xfc ) )
+    if( ( 0xe0 <= (byte)ch ) && ( (byte)ch <= 0xfc ) )
         return( true );
     return( false );
 }
@@ -166,10 +166,10 @@ static  bool    IsDoubleByteChar( char ch )
 static size_t   CharacterWidth( const char *ptr )
 // Determine character width.
 {
-    unsigned char   ch;
+    byte   ch;
 
     if( IsDoubleByteChar( *ptr ) ) {
-        ch = *(unsigned char *)(ptr + 1);
+        ch = *(byte *)(ptr + 1);
         if( ( 0x40 <= ch ) && ( ch <= 0xfc ) ) {
             if( ch == 0x7f) {
                 return( 1 );
@@ -186,7 +186,7 @@ static  bool    IsForeign( char ch )
 {
     if( IsDoubleByteChar( ch ) )
         return( true );
-    if( ( 0xa0 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xdf ) )
+    if( ( 0xa0 <= (byte)ch ) && ( (byte)ch <= 0xdf ) )
         return( true );
     return( false );
 }

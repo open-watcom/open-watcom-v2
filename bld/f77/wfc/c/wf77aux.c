@@ -795,11 +795,11 @@ enum sym_type AsmQueryType( void *handle )
 }
 
 
-static void AsmInsertFixups( unsigned char *buff, size_t len )
+static void AsmInsertFixups( byte *buff, size_t len )
 //============================================================
 {
                         // additional slop in buffer to simplify the code
-    unsigned char       temp[MAXIMUM_BYTESEQ + 2];
+    byte                temp[MAXIMUM_BYTESEQ + 2];
     struct asmfixup     *fix;
     struct asmfixup     *head;
     struct asmfixup     *chk;
@@ -924,7 +924,7 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 }
 
 
-static void AsmInsertFixups( unsigned char *buff, size_t len )
+static void AsmInsertFixups( byte *buff, size_t len )
 //============================================================
 {
     byte_seq            *seq;
