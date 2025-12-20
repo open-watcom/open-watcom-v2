@@ -1213,10 +1213,18 @@ static void writepass1stuff( const char *file_name )
         AsmError( END_OF_PROCEDURE_NOT_FOUND );
         return;
     }
+#ifdef MULTI_THEADR
     write_header( GetModuleName() );
     if( file_name != NULL ) {
         write_header( file_name );
     }
+#else
+    if( Options.module_name != NULL ) {
+        write_header( Options.module_name );
+    } else {
+        write_header( file_name );
+    }
+#endif
     write_autodep();
     if( Globals.dosseg )
         write_dosseg();
