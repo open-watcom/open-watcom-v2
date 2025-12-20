@@ -93,7 +93,6 @@ typedef union ftn_type {
     struct scomplex     scomplex;
     struct dcomplex     dcomplex;
     struct xcomplex     xcomplex;
-    struct cstring      cstring;
     struct string       string;
     struct {
         void            *struct_chain;

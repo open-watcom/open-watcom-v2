@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,8 +222,8 @@ void    DSName( void ) {
                 } else {
                     CITNode->sym_ptr->u.lt.flags |= LT_EXEC_STMT;
                 }
-                CITNode->value.cstring.strptr = CITNode->sym_ptr->u.lt.value;
-                CITNode->value.cstring.len = CITNode->sym_ptr->u.lt.length;
+                CITNode->value.string.strptr = CITNode->sym_ptr->u.lt.value;
+                CITNode->value.string.len = CITNode->sym_ptr->u.lt.length;
             } else {
                 memcpy( &CITNode->value, &CITNode->sym_ptr->u.cn.value,
                         CITNode->size );

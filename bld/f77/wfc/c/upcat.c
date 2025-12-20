@@ -71,7 +71,7 @@ static  void    FoldCatSequence( itnode *cit )
         if( CITNode->typ != FT_CHAR ) {
             TypeErr( MD_ILL_OPR, CITNode->typ );
         } else {
-            size += CITNode->value.cstring.len;
+            size += CITNode->value.string.len;
         }
         AdvanceITPtr();
         if( CITNode->opr != OPR_CAT ) {

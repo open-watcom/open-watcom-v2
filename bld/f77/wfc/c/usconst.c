@@ -224,23 +224,23 @@ void    ConstCat( size_t size )
     size_left = size;
     dest = string;
     for( ;; ) {
-        opn_size = last_node->value.cstring.len;
-        memcpy( dest, last_node->value.cstring.strptr, opn_size );
+        opn_size = last_node->value.string.len;
+        memcpy( dest, last_node->value.string.strptr, opn_size );
         size_left -= opn_size;
         if( size_left == 0 )
             break;
         last_node = last_node->link;
         dest += opn_size;
     }
-    CITNode->value.cstring.strptr = (char *)string;
-    CITNode->value.cstring.len = size;
+    CITNode->value.string.strptr = (char *)string;
+    CITNode->value.string.len = size;
     CITNode->size = size;
     link_node = last_node->link;
     last_node->link = NULL;
     FreeITNodes( CITNode->link );
     CITNode->link = link_node;
     AddConst( CITNode );
-    CITNode->value.cstring.strptr = CITNode->sym_ptr->u.lt.value;
+    CITNode->value.string.strptr = CITNode->sym_ptr->u.lt.value;
     FMemFree( string );
 }
 

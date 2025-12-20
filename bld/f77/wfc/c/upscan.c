@@ -773,13 +773,13 @@ void    AddConst( itnode *node ) {
 
 // Add constant to symbol table.
 
-    cstring     *val_ptr;
+    string      *val_ptr;
 
-    val_ptr = &node->value.cstring;
+    val_ptr = &node->value.string;
     if( node->typ != FT_CHAR ) {
         node->sym_ptr = STConst( val_ptr, node->typ, node->size );
     } else {
-        if( node->value.cstring.len == 0 ) {
+        if( node->value.string.len == 0 ) {
             Error( CN_ZERO_LEN );
         }
         node->sym_ptr = STLit( (byte *)val_ptr->strptr, val_ptr->len );
@@ -904,7 +904,7 @@ static  void    IFPrmChk( void ) {
                 break;
             case USOPN_CON:
                 if( CITNode->typ == FT_CHAR ) {
-                    MkConst( CITNode->value.cstring.len );
+                    MkConst( CITNode->value.string.len );
                 } else if( CITNode->typ == FT_STRUCTURE ) {
                     MkConst( CITNode->value.intstar4 );
                 } else {
@@ -1092,9 +1092,16 @@ static  void    InlineCnvt( void ) {
                 Error( LI_CHAR_BOUND );
                 arg = '?';
             }
-            cit->value.cstring.data = arg;
-            cit->value.cstring.strptr = &cit->value.cstring.data;
-            cit->value.cstring.len = 1;
+            /*
+             * NOTE:
+             * value is union with members of various size
+             * this union size is suitable for string structure and single additional
+             * character, we doesn't create any special type for it and use string
+             * structure for it
+             */
+            cit->value.string.len = 1;
+            cit->value.string.strptr = (char *)&cit->value.string + sizeof( string );
+            *cit->value.string.strptr = arg;
             cit->opn.us = USOPN_CON;
             cit->flags = 0;
         } else {

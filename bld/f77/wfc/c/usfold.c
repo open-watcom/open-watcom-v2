@@ -635,10 +635,10 @@ void    XXCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
 void    XChCmp( ftn_type *opnd1, const ftn_type *opnd2, const logstar1 *res )
 //===========================================================================
 {
-    opnd1->logstar4 = res[1 + LexStrCmp( opnd1->cstring.strptr,
-                                          opnd1->cstring.len,
-                                          opnd2->cstring.strptr,
-                                          opnd2->cstring.len )];
+    opnd1->logstar4 = res[1 + LexStrCmp( opnd1->string.strptr,
+                                          opnd1->string.len,
+                                          opnd2->string.strptr,
+                                          opnd2->string.len )];
 }
 
 
