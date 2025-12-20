@@ -121,8 +121,8 @@ int     CompMain( void ) {
 }
 
 
-void ProcOpts( char **opt_array )
-//===============================
+void ProcOpts( const char **opt_array )
+//=====================================
 {
     InitOptions();
     NewOptions = Options;

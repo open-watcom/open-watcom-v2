@@ -782,7 +782,7 @@ void    AddConst( itnode *node ) {
         if( node->value.string.len == 0 ) {
             Error( CN_ZERO_LEN );
         }
-        node->sym_ptr = STLit( (byte *)val_ptr->strptr, val_ptr->len );
+        node->sym_ptr = STLit( val_ptr->ptr, val_ptr->len );
     }
 }
 
@@ -1095,13 +1095,13 @@ static  void    InlineCnvt( void ) {
             /*
              * NOTE:
              * value is union with members of various size
-             * this union size is suitable for string structure and single additional
-             * character, we doesn't create any special type for it and use string
-             * structure for it
+             * this union size is big enough for string structure and single additional
+             * character, we doesn't need any special type for it
+             * we use string data type to access this constant character
              */
             cit->value.string.len = 1;
-            cit->value.string.strptr = (char *)&cit->value.string + sizeof( string );
-            *cit->value.string.strptr = arg;
+            cit->value.string.ptr = (char *)&cit->value.string + sizeof( string );
+            *cit->value.string.ptr = arg;
             cit->opn.us = USOPN_CON;
             cit->flags = 0;
         } else {

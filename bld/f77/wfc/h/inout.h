@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +41,12 @@ extern  void    SrcInclude( const char *name );
 extern  void    Conclude( void );
 extern  void    OpenErr( void );
 extern  void    CompErr( uint msg );
-extern  void    PrintErr( const char *string );
+extern  void    PrintErr( const char *str );
 extern  void    PrtErrNL( void );
-extern  void    JustErr( const char *string );
+extern  void    JustErr( const char *str );
 extern  void    CloseErr( void );
-extern  void    TOutNL( const char *string );
-extern  void    TOut( const char *string );
+extern  void    TOutNL( const char *str );
+extern  void    TOut( const char *str );
 extern  void    OpenLst( void );
 extern  void    ReOpenLst( void );
 extern  void    ChkPntLst( void );
@@ -58,8 +58,8 @@ extern  void    GetTrademark( char *buff );
 extern  void    GetMoreInfo( char *buff );
 extern  void    PrtBanner( void );
 extern  void    GetLstName( char *buffer );
-extern  void    PrtLstNL( const char *string );
-extern  void    PrtLst( const char *string );
+extern  void    PrtLstNL( const char *str );
+extern  void    PrtLst( const char *str );
 extern  void    CloseLst( void );
 extern  void    LFEndSrc( void );
 extern  void    LFNewPage( void );

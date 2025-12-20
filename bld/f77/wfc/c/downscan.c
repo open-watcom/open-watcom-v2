@@ -61,7 +61,7 @@ static  void    AltReturn( void );
 static  void    LitC( void ) {
 //======================
 
-    CITNode->value.string.strptr = CITNode->opnd;
+    CITNode->value.string.ptr = CITNode->opnd;
     CITNode->value.string.len = CITNode->opnd_size;
     CITNode->typ = FT_CHAR;
     CITNode->size = CITNode->opnd_size;

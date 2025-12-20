@@ -49,8 +49,8 @@
 #endif
 
 
-bool MainCmdLine( char **fn, char **rest, char **opts, char *cmd )
-//================================================================
+bool MainCmdLine( char **fn, char **rest, const char **opts, char *cmd )
+//======================================================================
 {
     uint        opt_num;
     bool        scanning_file_name;

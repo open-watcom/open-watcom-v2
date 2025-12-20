@@ -213,26 +213,26 @@ void    ConstCat( size_t size )
 //=============================
 {
     itnode      *last_node;
-    byte        *dest;
+    char        *dest;
     size_t      opn_size;
     size_t      size_left;
-    byte        *string;
+    char        *str;
     itnode      *link_node;
 
     last_node = CITNode;
-    string = FMemAlloc( size );
+    str = FMemAlloc( size );
     size_left = size;
-    dest = string;
+    dest = str;
     for( ;; ) {
         opn_size = last_node->value.string.len;
-        memcpy( dest, last_node->value.string.strptr, opn_size );
+        memcpy( dest, last_node->value.string.ptr, opn_size );
         size_left -= opn_size;
         if( size_left == 0 )
             break;
         last_node = last_node->link;
         dest += opn_size;
     }
-    CITNode->value.string.strptr = (char *)string;
+    CITNode->value.string.ptr = str;
     CITNode->value.string.len = size;
     CITNode->size = size;
     link_node = last_node->link;
@@ -240,8 +240,8 @@ void    ConstCat( size_t size )
     FreeITNodes( CITNode->link );
     CITNode->link = link_node;
     AddConst( CITNode );
-    CITNode->value.string.strptr = CITNode->sym_ptr->u.lt.value;
-    FMemFree( string );
+    CITNode->value.string.ptr = CITNode->sym_ptr->u.lt.value;
+    FMemFree( str );
 }
 
 void    (* const ConstTable[])(TYPE, TYPE, OPTR) = {

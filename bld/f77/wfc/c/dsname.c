@@ -222,7 +222,7 @@ void    DSName( void ) {
                 } else {
                     CITNode->sym_ptr->u.lt.flags |= LT_EXEC_STMT;
                 }
-                CITNode->value.string.strptr = CITNode->sym_ptr->u.lt.value;
+                CITNode->value.string.ptr = CITNode->sym_ptr->u.lt.value;
                 CITNode->value.string.len = CITNode->sym_ptr->u.lt.length;
             } else {
                 memcpy( &CITNode->value, &CITNode->sym_ptr->u.cn.value,

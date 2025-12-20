@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ static void AddDig( canon_form *canon, char ch )
     }
 }
 
-static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bool blanks, byte flag )
+static int  Digits( canon_form *canon, const char *field, const char *stop, int decimals, bool blanks, byte flag )
 // Collect digits to the left or right of the decimal point. Take blanks
 // into consideration. Set "canon->exp" accordingly.
 {
@@ -123,12 +123,12 @@ static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bo
     return( count );
 }
 
-int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width )
+int     FmtS2I( const char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width )
 // Convert a FORTRAN I format string to an integer.
 {
     char        ch;
     bool        sign;
-    char        *strend;
+    const char  *strend;
     bool        minus;
     int         status;
     uint        wid;
@@ -197,14 +197,14 @@ int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok,
     return( status );
 }
 
-int FmtS2F( char *field, uint width, int decimals, bool blanks,
+int FmtS2F( const char *field, uint width, int decimals, bool blanks,
                 int scale, int prec, extended *result, bool stop_ok,
                 uint *new_width, bool extend_flt ) {
 // Format a string to floating point representation.
 
-    char        *stop;
+    const char  *stop;
     char        ch;
-    char        *start;
+    const char  *start;
     canon_form  canon;
     intstar4    exp;
 

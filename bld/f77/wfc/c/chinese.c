@@ -162,8 +162,8 @@ static size_t   CharacterWidth( const char *ptr )
 {
     byte   ch;
 
-    if( IsDoubleByteChar( *ptr ) ) {
-        ch = *(byte *)(ptr + 1);
+    if( IsDoubleByteChar( ptr[0] ) ) {
+        ch = ptr[1];
         if( ( 0x40 <= ch ) && ( ch <= 0xfc ) ) {
             if( ch == 0x7f) {
                 return( 1 );

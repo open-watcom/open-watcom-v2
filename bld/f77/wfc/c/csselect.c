@@ -151,7 +151,7 @@ static intstar4 CaseValue( void )
     } else if( _IsTypeLogical( CITNode->typ  ) ) {
         return( _LogValue( CITNode->value.logstar1 ) );
     } else { // if( CITNode->typ = FT_CHAR ) {
-        return( *CITNode->value.string.strptr );
+        return( (byte)*CITNode->value.string.ptr );
     }
 }
 

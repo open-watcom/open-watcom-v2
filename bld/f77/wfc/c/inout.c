@@ -380,11 +380,11 @@ void    CompErr( uint msg ) {
 }
 
 
-void    PrintErr( const char *string )
-//====================================
+void    PrintErr( const char *str )
+//=================================
 {
-    JustErr( string );
-    PrtLst( string );
+    JustErr( str );
+    PrtLst( str );
 }
 
 
@@ -458,22 +458,22 @@ static  void    SendBuff( const char *str, char *buff, size_t buff_size, size_t 
 }
 
 
-static  void    ErrOut( const char *string )
-//==========================================
+static  void    ErrOut( const char *str )
+//=======================================
 {
     if( ErrFile != NULL ) {
-        SendBuff( string, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile, &ChkErrErr );
+        SendBuff( str, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile, &ChkErrErr );
     }
 }
 
 
-void    JustErr( const char *string )
-//===================================
+void    JustErr( const char *str )
+//================================
 {
     if( ErrToTerm() ) {
-        TOut( string );
+        TOut( str );
     }
-    ErrOut( string );
+    ErrOut( str );
 }
 
 
@@ -514,19 +514,19 @@ static  void    ChkTermErr( void ) {
 }
 
 
-void    TOutNL( const char *string )
-//==================================
+void    TOutNL( const char *str )
+//===============================
 {
-    TOut( string );
+    TOut( str );
     SDWriteTextNL( TermFile, TermBuff, TermCursor );
     TermCursor = 0;
 }
 
 
-void    TOut( const char *string )
-//================================
+void    TOut( const char *str )
+//=============================
 {
-    SendBuff( string, TermBuff, TERM_BUFF_SIZE, &TermCursor, TermFile, &ChkTermErr );
+    SendBuff( str, TermBuff, TERM_BUFF_SIZE, &TermCursor, TermFile, &ChkTermErr );
 }
 
 
@@ -650,11 +650,11 @@ void    GetLstName( char *buffer ) {
 }
 
 
-void    PrtLstNL( const char *string )
-//====================================
+void    PrtLstNL( const char *str )
+//=================================
 {
     ListFlag |= LF_NEW_LINE;
-    PrtLst( string );
+    PrtLst( str );
     ListFlag &= LF_OFF;
 }
 
@@ -715,8 +715,8 @@ static  void    SetCtrlSeq( void ) {
 }
 
 
-static  void    PutLst( const char *string )
-//==========================================
+static  void    PutLst( const char *str )
+//=======================================
 {
     size_t      len;
     bool        newline;
@@ -727,11 +727,11 @@ static  void    PutLst( const char *string )
             SetCtrlSeq();
         }
         len = LIST_BUFF_SIZE - ListCursor - 1; // -1 for NULLCHAR
-        len = CharSetInfo.extract_text( string, len );
-        len = CopyMaxStr( string, &ListBuff[ListCursor], len );
+        len = CharSetInfo.extract_text( str, len );
+        len = CopyMaxStr( str, &ListBuff[ListCursor], len );
         ListCursor += len;
-        string += len;
-        if( *string == NULLCHAR )
+        str += len;
+        if( *str == NULLCHAR )
             break;
         SendRec();
     }
@@ -741,14 +741,14 @@ static  void    PutLst( const char *string )
 }
 
 
-void    PrtLst( const char *string )
-//==================================
+void    PrtLst( const char *str )
+//===============================
 {
     if( ListFlag & LF_QUIET )
         return;
     if( ListFile == NULL )
         return;
-    PutLst( string );
+    PutLst( str );
 }
 
 
