@@ -1206,7 +1206,7 @@ static void reset_seg_len( void )
     }
 }
 
-static void writepass1stuff( const char *file_name )
+static void writepass1stuff( const char *name )
 /**************************************************/
 {
     if( CurrProc != NULL ) {
@@ -1216,14 +1216,10 @@ static void writepass1stuff( const char *file_name )
 #ifdef MULTI_THEADR
     write_header( GetModuleName() );
     if( file_name != NULL ) {
-        write_header( file_name );
+        write_header( name );
     }
 #else
-    if( Options.module_name != NULL ) {
-        write_header( Options.module_name );
-    } else {
-        write_header( file_name );
-    }
+    write_header( name );
 #endif
     write_autodep();
     if( Globals.dosseg )
@@ -1284,7 +1280,7 @@ void WriteObjModule( void )
     char                *p;
     unsigned long       prev_total;
     unsigned long       curr_total;
-    const char          *src_name;
+    const char          *name;
 
     AsmCodeBuffer = codebuf;
 
@@ -1321,14 +1317,22 @@ void WriteObjModule( void )
         put_private_proc_in_public_table();
     }
 #endif
-    src_name = NULL;
+#ifdef MULTI_THEADR
+    name = NULL;
     if( Options.debug_info ) {
-        src_name = ModuleInfo.srcfile->fullname;
+        name = ModuleInfo.srcfile->fullname;
     }
+#else
+    if( Options.debug_info || Options.module_name == NULL ) {
+        name = ModuleInfo.srcfile->fullname;
+    } else {
+        name = Options.module_name;
+    }
+#endif
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )
             break;
-        writepass1stuff( src_name );
+        writepass1stuff( name );
         ++Parse_Pass;
         rewind( AsmFiles.file[ASM] );
         reset_seg_len();
