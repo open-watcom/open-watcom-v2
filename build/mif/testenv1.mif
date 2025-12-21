@@ -82,14 +82,16 @@ buildtest = 1
 buildtest_prefix = b
 !endif
 
-host_bits = 32
-!ifeq host 386
+!ifeq arch i86
+host_bits = 16
 !else
-!ifdef __NTX64__
+host_bits = 32
+! ifeq host 386
+! else ifdef __NTX64__
 host_bits = 64
-!else ifdef __LINUXX64__
+! else ifdef __LINUXX64__
 host_bits = 64
-!endif
+! endif
 !endif
 host_bits_str = ($(host_bits)-bit)
 
@@ -1500,10 +1502,12 @@ set_old_path : .PROCEDURE .EXPLICIT
     @%make echo_path
 
 echo_path : .PROCEDURE .EXPLICIT
-!ifdef __UNIX__
-    $(noecho)!echo "(sh PATH)=$$PATH"
-!else
-    $(noecho)!echo (cmd PATH)=%PATH%
+!ifeq verbose 1
+! ifdef __UNIX__
+    @!echo "(sh PATH)=$$PATH"
+! else
+    @!echo (cmd PATH)=%PATH%
+! endif
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
