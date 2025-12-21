@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,10 @@
 #include "cgmagic.h"
 
 
-label_id        NextLabel( void ) {
-//===========================
-
+label_id        NextLabel( void )
+//===============================
 // Return next label.
-
+{
     label_id    label;
 
     label = LabelIdx;
@@ -50,12 +49,11 @@ label_id        NextLabel( void ) {
 }
 
 
-sym_id  TmpVar( TYPE typ, size_t size ) {
-//====================================
-
+sym_id  TmpVar( TYPE typ, size_t size )
+//=====================================
 // Allocate a temporary symbol table entry that can be freed at the end
 // of the statement.
-
+{
     sym_id     temp;
 
     temp = FMemAlloc( sizeof( named_symbol ) );
@@ -72,10 +70,9 @@ sym_id  TmpVar( TYPE typ, size_t size ) {
 }
 
 
-sym_id  StaticAlloc( size_t size, TYPE typ ) {
-//=========================================
-
+sym_id  StaticAlloc( size_t size, TYPE typ )
+//==========================================
 // Allocate a static temporary symbol table entry.
-
+{
     return( TmpVar( typ, size ) );
 }

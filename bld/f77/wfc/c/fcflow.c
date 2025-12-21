@@ -69,20 +69,18 @@ static  void    RBReferenced( sym_id rb );
 static  void    RefStmtFunc( sym_id sf );
 
 
-void    InitLabels( void ) {
-//====================
-
+void    InitLabels( void )
+//========================
 // Initialize label processing.
-
+{
     LabelList = NULL;
 }
 
 
-void    FiniLabels( int label_type ) {
-//====================================
-
+void    FiniLabels( int label_type )
+//==================================
 // Free specified class of labels.
-
+{
     label_entry **owner;
     label_entry *curr;
 
@@ -107,11 +105,10 @@ void    FiniLabels( int label_type ) {
 }
 
 
-static  label_entry     *FindLabel( int label ) {
-//===============================================
-
+static  label_entry     *FindLabel( int label )
+//=============================================
 // Search for given label.
-
+{
     label_entry *le;
 
     for( le = LabelList; le != NULL; le = le->link ) {
@@ -130,11 +127,10 @@ static  label_entry     *FindLabel( int label ) {
 }
 
 
-label_handle    GetLabel( label_id label ) {
-//==========================================
-
+label_handle    GetLabel( label_id label )
+//========================================
 // Get a label.
-
+{
     label_entry *le;
 
     le = FindLabel( label );
@@ -145,9 +141,9 @@ label_handle    GetLabel( label_id label ) {
 }
 
 
-void    FCJmpFalse( void ) {
-//====================
-
+void    FCJmpFalse( void )
+//========================
+{
     unsigned_16 typ_info;
     cg_type     cgtyp;
     cg_name     bool_expr;
@@ -164,25 +160,24 @@ void    FCJmpFalse( void ) {
 }
 
 
-void    FCJmpAlways( void ) {
-//=====================
-
+void    FCJmpAlways( void )
+//=========================
+{
     CGControl( O_GOTO, NULL, GetLabel( GetU16() ) );
 }
 
 
-label_handle    GetStmtLabel( sym_id sn ) {
-//=========================================
-
+label_handle    GetStmtLabel( sym_id sn )
+//=======================================
 // Get a statement label.
-
+{
     return( GetLabel( sn->u.st.address ) );
 }
 
 
-void    FCStmtJmpAlways( void ) {
-//=========================
-
+void    FCStmtJmpAlways( void )
+//=============================
+{
     sym_id      sn;
 
     sn = GetPtr();
@@ -191,16 +186,16 @@ void    FCStmtJmpAlways( void ) {
 }
 
 
-void    FCDefineLabel( void ) {
-//=======================
-
+void    FCDefineLabel( void )
+//===========================
+{
     CGControl( O_LABEL, NULL, GetLabel( GetU16() ) );
 }
 
 
-void    FCStmtDefineLabel( void ) {
-//===========================
-
+void    FCStmtDefineLabel( void )
+//===============================
+{
     sym_id      sn;
 
     sn = GetPtr();
@@ -209,11 +204,10 @@ void    FCStmtDefineLabel( void ) {
 }
 
 
-back_handle     GetFmtLabel( label_id label ) {
-//=============================================
-
+back_handle     GetFmtLabel( label_id label )
+//===========================================
 // Get a format label.
-
+{
     label_entry *le;
 
     le = FindLabel( label );
@@ -225,11 +219,10 @@ back_handle     GetFmtLabel( label_id label ) {
 }
 
 
-void    FCAssign( void ) {
-//==================
-
+void    FCAssign( void )
+//======================
 // Process ASSIGN statement.
-
+{
     sym_id      stmt;
 
     stmt = GetPtr();
@@ -247,11 +240,10 @@ void    FCAssign( void ) {
 }
 
 
-void    FCIfArith( void ) {
-//===================
-
+void    FCIfArith( void )
+//=======================
 // Set up control structure for arithmetic if.
-
+{
     cg_name     if_expr;
     sym_id      lt;
     sym_id      eq;
@@ -288,11 +280,10 @@ void    FCIfArith( void ) {
 }
 
 
-void    FCAssignedGOTOList( void ) {
-//============================
-
+void    FCAssignedGOTOList( void )
+//================================
 // Perform assigned GOTO with list.
-
+{
     sel_handle      s;
     label_handle    label;
     sym_id          sn;
@@ -325,20 +316,18 @@ void    FCAssignedGOTOList( void ) {
 }
 
 
-void    FCComputedGOTO( void ) {
-//========================
-
+void    FCComputedGOTO( void )
+//============================
 // Perform computed GOTO.
-
+{
     DoSelect( FC_COMPUTED_GOTO );
 }
 
 
-void    FCStartRB( void ) {
-//===================
-
+void    FCStartRB( void )
+//=======================
 // Start a REMOTE BLOCK.
-
+{
     sym_id      rb;
 
     rb = GetPtr();
@@ -347,11 +336,10 @@ void    FCStartRB( void ) {
 }
 
 
-void    FCWarp( void ) {
-//================
-
+void    FCWarp( void )
+//====================
 // Process WARP F-Code.
-
+{
     sym_id      arr;
     warp_label  init_label;
 
@@ -361,20 +349,18 @@ void    FCWarp( void ) {
 }
 
 
-void    FCWarpReturn( void ) {
-//======================
-
+void    FCWarpReturn( void )
+//==========================
 // Return from a warp (array initialization).
-
+{
     FCodeSeek( WarpReturn );
 }
 
 
-void    FCExecute( void ) {
-//===================
-
+void    FCExecute( void )
+//=======================
 // Process EXECUTE F-Code (call remote block).
-
+{
     sym_id      rb;
 
     rb = GetPtr();
@@ -383,11 +369,10 @@ void    FCExecute( void ) {
 }
 
 
-static  void    RBReferenced( sym_id rb ) {
-//=========================================
-
+static  void    RBReferenced( sym_id rb )
+//=======================================
 // REMOTE BLOCK has been referenced.
-
+{
     rb->u.ns.si.rb.ref_count--;
     if( rb->u.ns.si.rb.ref_count == 0 ) {
         DoneLabel( rb->u.ns.si.rb.entry );
@@ -395,20 +380,18 @@ static  void    RBReferenced( sym_id rb ) {
 }
 
 
-void    FCEndRB( void ) {
-//=================
-
+void    FCEndRB( void )
+//=====================
 // Terminate a REMOTE BLOCK.
-
+{
     CGControl( O_LABEL_RETURN, NULL, NULL );
 }
 
 
-void    FCSFCall( void ) {
-//==================
-
+void    FCSFCall( void )
+//======================
 // Call a statement function.
-
+{
     sym_id      sf;
     sym_id      sf_arg;
     sym_id      tmp;
@@ -496,11 +479,10 @@ void    FCSFCall( void ) {
 }
 
 
-void            FCStartSF( void ) {
-//===========================
-
+void            FCStartSF( void )
+//===============================
 // Start definition of a statement function.
-
+{
     sym_id      sf;
 
     if( OZOpts & OZOPT_O_INLINE ) {
@@ -515,13 +497,12 @@ void            FCStartSF( void ) {
 }
 
 
-void            FCEndSF( void ) {
-//=========================
-
+void            FCEndSF( void )
+//=============================
 // End definition of a statement function.
 // This F-CODE is only generated if we are NOT generating statement
 // functions in-line.
-
+{
     sym_id      sf;
 
     sf = GetPtr();
@@ -532,11 +513,10 @@ void            FCEndSF( void ) {
 }
 
 
-void            FCSFReferenced( void ) {
-//================================
-
+void            FCSFReferenced( void )
+//====================================
 // Statement function has been referenced; check if its label can be freed.
-
+{
     sym_id      sf;
 
     for( sf = SFSymId; sf != NULL; sf = sf->u.ns.si.sf.header->link ) {
@@ -550,20 +530,18 @@ void            FCSFReferenced( void ) {
 }
 
 
-static  void    RefStmtFunc( sym_id sf ) {
-//========================================
-
+static  void    RefStmtFunc( sym_id sf )
+//======================================
 // A statement function has been referenced.
-
+{
     sf->u.ns.si.sf.header->ref_count--;
 }
 
 
-void    DoneLabel( label_id label ) {
-//===================================
-
+void    DoneLabel( label_id label )
+//=================================
 // Free specified label since it will no longer be referenced.
-
+{
     label_entry **owner;
     label_entry *curr;
 
@@ -581,20 +559,18 @@ void    DoneLabel( label_id label ) {
 }
 
 
-void    FCFreeLabel( void ) {
-//=====================
-
+void    FCFreeLabel( void )
+//=========================
 // Free specified label since it will no longer be referenced.
-
+{
     DoneLabel( GetU16() );
 }
 
 
-void    RefStmtLabel( sym_id sn ) {
-//=================================
-
+void    RefStmtLabel( sym_id sn )
+//===============================
 // Statement number has been referenced.
-
+{
     if( sn->u.st.ref_count == 0 ) {
         InfoError( CP_ERROR, "unaccounted referenced to label" );
     } else {

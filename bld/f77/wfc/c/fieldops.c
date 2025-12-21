@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,21 +48,19 @@
 #include "gtypes.h"
 
 
-void    GFieldSCB( inttarg size ) {
-//=================================
-
+void    GFieldSCB( inttarg size )
+//===============================
 // Setup an SCB for a character field.
-
+{
     PushConst( size );
     EmitOp( FC_FLIP );
 }
 
 
-void    FieldOp( TYPE typ1, TYPE typ2, OPTR op ) {
-//================================================
-
+void    FieldOp( TYPE typ1, TYPE typ2, OPTR op )
+//==============================================
 // Generate code for a field selection operator.
-
+{
     /* unused parameters */ (void)typ1; (void)op;
 
     PushOpn( CITNode->link );

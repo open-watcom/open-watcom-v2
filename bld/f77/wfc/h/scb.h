@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-typedef struct string {         //  run-time string control block
+typedef struct string {
     char        *ptr;
     uint        len;
 } string;
