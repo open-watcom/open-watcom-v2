@@ -48,7 +48,6 @@ gbl_defn label_id               LabelIdx;       // label index
 gbl_defn sym_id                 WildLabel;      // label of a wild goto
 gbl_defn pointer                LabelList;      // list of labels
 gbl_defn obj_ptr                FormatList;     // pointer to format list
-gbl_defn obj_ptr                PrologLabel;    // prologue location
 gbl_defn label_id               EpilogLabel;    // epilogue label
 gbl_defn sym_id                 CommonEntry;    // common entry point
 gbl_defn sym_id                 EPValue;        // entry point identifier
@@ -65,8 +64,8 @@ gbl_defn intstar4               DtOffset;       // offset relative to variable
                                                 // being initialized
 gbl_defn unsigned_8             DtFlags;        // DATA intialization flags
 
-gbl_defn int                    EndEqLabel;     // END= label
-gbl_defn int                    ErrEqLabel;     // ERR= label
+gbl_defn label_id               EndEqLabel;     // END= label
+gbl_defn label_id               ErrEqLabel;     // ERR= label
 gbl_defn obj_ptr                AtEndFCode;     // pointer to ATEND F-Code
 
 gbl_defn uint                   DataThreshold;  // data threshold

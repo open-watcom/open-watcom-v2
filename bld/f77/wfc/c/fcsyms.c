@@ -1276,7 +1276,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
         FreeBackHandle( &sym->u.nl.address );
     }
     FreeUsedBacks( true );
-    FiniLabels( FORMAT_LABEL );
+    FiniLabels( true );
     FreeBackHandle( &TraceEntry );
 }
 

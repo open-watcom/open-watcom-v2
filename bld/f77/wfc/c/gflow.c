@@ -63,8 +63,8 @@ void    GStmtAddr( sym_id stmt )
 }
 
 
-void    GLabel( int label )
-//=========================
+void    GLabel( label_id label )
+//==============================
 // Generate a label.
 {
     EmitOp( FC_DEFINE_LABEL );
@@ -90,8 +90,8 @@ void    GStmtBr( sym_id stmt )
 }
 
 
-void    GBranch( int label )
-//==========================
+void    GBranch( label_id label )
+//===============================
 // Generate a branch (non-conditional).
 {
     EmitOp( FC_JMP_ALWAYS );
@@ -99,8 +99,8 @@ void    GBranch( int label )
 }
 
 
-void    GBrFalse( int label )
-//===========================
+void    GBrFalse( label_id label )
+//================================
 // Generate a branch on false.
 {
     EmitOp( FC_JMP_FALSE );
@@ -337,8 +337,8 @@ void    GBlockLabel( void )
 }
 
 
-void    FreeLabel( int label )
-//============================
+void    FreeLabel( label_id label )
+//=================================
 // Generate F-Code indicating we are done with label.
 {
     EmitOp( FC_FREE_LABEL );

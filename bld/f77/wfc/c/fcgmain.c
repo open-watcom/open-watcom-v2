@@ -408,8 +408,8 @@ void    CGPurge( void )
 //=====================
 // Free up unallocated memory if code generator gave a fatal error.
 {
-    FiniLabels( 0 );
-    FiniLabels( FORMAT_LABEL );
+    FiniLabels( false );
+    FiniLabels( true );
     FiniTmps();
     FreeUsedBacks( false );
     FreeGlobalSegs();

@@ -190,7 +190,7 @@ void    FCEpilogue( void ) {
     if( StNumbers.wild_goto ) {
         DoneLabel( StNumbers.branches );
     }
-    FiniLabels( 0 );
+    FiniLabels( false );
     FiniTmps();
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
         CGReturn( NULL, TY_INTEGER );
@@ -215,13 +215,10 @@ bool    ChkForAltRets( entry_pt *ep ) {
 
     parameter   *args;
 
-    args = ep->parms;
-    for( ;; ) {
-        if( args == NULL )
-            break;
-        if( args->flags & ARG_STMTNO )
+    for( args = ep->parms; args != NULL; args = args->link ) {
+        if( args->flags & ARG_STMTNO ) {
             return( true );
-        args = args->link;
+        }
     }
     return( false );
 }
@@ -830,10 +827,7 @@ void    FCDArgInit( void ) {
             }
         }
     }
-    for( ;; ) {
-        sym = GetPtr();
-        if( sym == NULL )
-            break;
+    for( ; (sym = GetPtr()) != NULL; ) {
         if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
             continue;
         if( sym->u.ns.u1.s.typ != FT_CHAR )

@@ -77,8 +77,8 @@ void    InitLabels( void )
 }
 
 
-void    FiniLabels( int label_type )
-//==================================
+void    FiniLabels( bool format_label )
+//=====================================
 // Free specified class of labels.
 {
     label_entry **owner;
@@ -86,9 +86,9 @@ void    FiniLabels( int label_type )
 
     owner = (label_entry **)&LabelList;
     while( (curr = *owner) != NULL ) {
-        if( (curr->label & FORMAT_LABEL) == label_type ) {
+        if( curr->format_label == format_label ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
-                if( curr->label & FORMAT_LABEL ) {
+                if( curr->format_label ) {
                     BEFiniBack( curr->handle );
                     BEFreeBack( curr->handle );
                 } else {
@@ -105,20 +105,21 @@ void    FiniLabels( int label_type )
 }
 
 
-static  label_entry     *FindLabel( int label )
-//=============================================
+static  label_entry     *FindLabel( label_id label )
+//==================================================
 // Search for given label.
 {
     label_entry *le;
 
     for( le = LabelList; le != NULL; le = le->link ) {
-        if( (le->label & ~FORMAT_LABEL) == label ) {
+        if( le->label == label ) {
             break;
         }
     }
     if( le == NULL ) {
         le = FMemAlloc( sizeof( label_entry ) );
         le->label = label;
+        le->format_label = false;
         le->handle = NULL;
         le->link = LabelList;
         LabelList = le;
@@ -213,7 +214,7 @@ back_handle     GetFmtLabel( label_id label )
     le = FindLabel( label );
     if( le->handle == NULL ) {
         le->handle = BENewBack( NULL );
-        le->label |= FORMAT_LABEL;
+        le->format_label = true;
     }
     return( le->handle  );
 }
