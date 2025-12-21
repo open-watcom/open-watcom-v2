@@ -134,14 +134,14 @@ void    InitSelect( void )
             CSHead->cs_info.cases->sel_expr = CITNode->sym_ptr;
         } else {
             if( CITNode->typ == FT_CHAR ) {
-                sel_expr = StaticAlloc( 1, FT_CHAR );
+                sel_expr = TmpVar( FT_CHAR, 1 );
                 CSHead->cs_info.cases->sel_expr = sel_expr;
                 PushSym( sel_expr );
                 EmitOp( FC_CHAR_1_MOVE );
                 DumpType( FT_INTEGER_1, 1 );
                 OutPtr( NULL );
             } else {
-                sel_expr = StaticAlloc( CITNode->size, MapTypes( FT_INTEGER, CITNode->size ) );
+                sel_expr = TmpVar( MapTypes( FT_INTEGER, CITNode->size ), CITNode->size );
                 CSHead->cs_info.cases->sel_expr = sel_expr;
                 PushOpn( CITNode );
                 EmitOp( FC_POP );  // pop select expression into temporary
@@ -197,7 +197,7 @@ void    GAsgnGoTo( bool list )
 {
     if( !list ) {
         if( WildLabel == NULL ) {
-            WildLabel = StaticAlloc( sizeof( inttarg ), FT_INTEGER_TARG );
+            WildLabel = TmpVar( FT_INTEGER_TARG, sizeof( inttarg ) );
         }
         EmitOp( FC_PUSH );
         OutPtr( CITNode->sym_ptr );

@@ -80,7 +80,7 @@ void    FieldOp( TYPE typ1, TYPE typ2, OPTR op )
                         GFieldSCB( CITNode->link->size );
                     }
                     EmitOp( FC_MAKE_SCB );
-                    OutPtr( GTempString( 0 ) );
+                    OutPtr( TmpVar( FT_CHAR, 0 ) );
                 }
             }
         } else {

@@ -174,16 +174,16 @@ static  void    DoLoop( TYPE do_type ) {
                             limit = GetIntValue( e2_node );
                             if( NeedIncrement( limit, incr, do_type ) ) {
                                 PushOpn( CITNode );
-                                doptr->increment = StaticAlloc( do_size, do_type );
+                                doptr->increment = TmpVar( do_type, do_size );
                             }
                         } else {
                             PushOpn( CITNode );
-                            doptr->increment = StaticAlloc( do_size, do_type );
+                            doptr->increment = TmpVar( do_type, do_size );
                         }
                     }
                 } else {
                     PushOpn( CITNode );
-                    doptr->increment = StaticAlloc( do_size, do_type );
+                    doptr->increment = TmpVar( do_type, do_size );
                 }
                 AdvanceITPtr();
             }
@@ -196,30 +196,30 @@ static  void    DoLoop( TYPE do_type ) {
                         limit = GetIntValue( e2_node );
                         if( NeedIncrement( limit, 1, do_type ) ) {
                             PushConst( 1 );
-                            doptr->increment = StaticAlloc( do_size, do_type );
+                            doptr->increment = TmpVar( do_type, do_size );
                         }
                     } else {
                         PushConst( 1 );
-                        doptr->increment = StaticAlloc( do_size, do_type );
+                        doptr->increment = TmpVar( do_type, do_size );
                     }
                 }
             } else {
                 PushConst( 1 );
-                doptr->increment = StaticAlloc( do_size, do_type );
+                doptr->increment = TmpVar( do_type, do_size );
             }
         }
         EmitOp( FC_DO_BEGIN );
         OutPtr( doptr->do_parm );
         OutPtr( doptr->increment );
         if( doptr->increment == NULL ) { // INTEGER do-loop with constant incr
-            loop_ctrl = StaticAlloc( do_size, do_type );
+            loop_ctrl = TmpVar( do_type, do_size );
             OutU32( doptr->incr_value );
             OutPtr( loop_ctrl );
         } else {
             if( _IsTypeInteger( do_type ) ) {
-                loop_ctrl = StaticAlloc( do_size, do_type );
+                loop_ctrl = TmpVar( do_type, do_size );
             } else {
-                loop_ctrl = StaticAlloc( sizeof( intstar4 ), FT_INTEGER );
+                loop_ctrl = TmpVar( FT_INTEGER, sizeof( intstar4 ) );
             }
             doptr->iteration = loop_ctrl;
             OutPtr( loop_ctrl );

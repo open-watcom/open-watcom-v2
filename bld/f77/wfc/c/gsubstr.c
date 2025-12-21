@@ -119,7 +119,7 @@ void    GFiniSS( itnode *sym_node, itnode *ss_node ) {
         }
         if( (StmtSw & SS_DATA_INIT) == 0 ) {
             sym_node->value.st.ss_id = sym_node->sym_ptr;
-            sym_node->sym_ptr = GTempString( 0 );
+            sym_node->sym_ptr = TmpVar( FT_CHAR, 0 );
             OutPtr( sym_node->sym_ptr );
             sym_node->opn.us |= USOPN_ASY;
         }

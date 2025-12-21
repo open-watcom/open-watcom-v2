@@ -281,7 +281,7 @@ void    GArrIntlSet( void ) {
 
     EmitOp( FC_ARR_SET_INTL );
     OutPtr( CITNode->sym_ptr );
-    OutPtr( GTempString( 0 ) );
+    OutPtr( TmpVar( FT_CHAR, 0 ) );
 }
 
 

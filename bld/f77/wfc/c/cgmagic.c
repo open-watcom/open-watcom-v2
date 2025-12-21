@@ -68,11 +68,3 @@ sym_id  TmpVar( TYPE typ, size_t size )
     temp->u.ns.si.ms.sym = NULL;
     return( temp );
 }
-
-
-sym_id  StaticAlloc( size_t size, TYPE typ )
-//==========================================
-// Allocate a static temporary symbol table entry.
-{
-    return( TmpVar( typ, size ) );
-}

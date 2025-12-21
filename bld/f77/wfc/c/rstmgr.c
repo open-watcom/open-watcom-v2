@@ -116,7 +116,7 @@ sym_id    STAdvShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sizeof( inttarg ), FT_INTEGER_TARG );
+    shadow = TmpVar( FT_INTEGER_TARG, sizeof( inttarg ) );
     shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_SUBSCRIPTED;
     shadow->u.ns.si.ms.sym = sym;
     return( shadow );
@@ -148,7 +148,7 @@ sym_id    STArgShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sizeof( inttarg ), FT_INTEGER_TARG );
+    shadow = TmpVar( FT_INTEGER_TARG, sizeof( inttarg ) );
     shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_VALUE_PARM;
     shadow->u.ns.si.ms.sym = sym;
     return( shadow );
@@ -181,7 +181,7 @@ sym_id    STEqSetShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
+    shadow = TmpVar( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
     shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_IN_EQUIV;
     shadow->u.ns.si.ms.sym = sym;
     return( shadow );
@@ -213,7 +213,7 @@ sym_id    STFnShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
+    shadow = TmpVar( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
     shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_PS_ENTRY;
     shadow->u.ns.si.ms.sym = sym;
     return( shadow );
@@ -230,7 +230,7 @@ sym_id    STShadow( sym_id sym ) {
     if( StmtSw & SS_DATA_INIT ) { // implied do parm
         shadow = TmpVar( FT_INTEGER, TypeSize( FT_INTEGER ) );
     } else {
-        shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
+        shadow = TmpVar( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
     }
     shadow->u.ns.flags |= SY_SPECIAL_PARM;
     sym->u.ns.flags |= SY_SPECIAL_PARM;

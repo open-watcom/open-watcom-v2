@@ -84,7 +84,7 @@ void    GBegCall( itnode *itptr )
         if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             if( (sp->u.ns.flags & SY_INTRINSIC) == 0 ) {
                 if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-                    OutPtr( GTempString( sp->u.ns.xt.size ) );
+                    OutPtr( TmpVar( FT_CHAR, sp->u.ns.xt.size ) );
                 }
             }
         }
@@ -97,7 +97,7 @@ void    GBegCall( itnode *itptr )
         if( sp->u.ns.u1.s.typ == FT_CHAR ) {
             if( (Options & OPT_DESCRIPTOR)
               || (sp->u.ns.flags & SY_INTRINSIC) ) {
-                OutPtr( GTempString( sp->u.ns.xt.size ) );
+                OutPtr( TmpVar( FT_CHAR, sp->u.ns.xt.size ) );
             }
         }
     }
@@ -141,7 +141,7 @@ void    GArg( void )
           && (CITNode->typ == FT_CHAR) ) {
             EmitOp( FC_PASS_FIELD_CHAR_ARRAY );
             OutPtr( CITNode->value.st.field_id );
-            OutPtr( GTempString( 0 ) );
+            OutPtr( TmpVar( FT_CHAR, 0 ) );
         }
         return;
     }
@@ -154,7 +154,7 @@ void    GArg( void )
         if( CITNode->typ == FT_CHAR ) {
             EmitOp( FC_PASS_CHAR_ARRAY );
             SymRef( CITNode );
-            OutPtr( GTempString( 0 ) );
+            OutPtr( TmpVar( FT_CHAR, 0 ) );
         }
     } else {
         PushOpn( CITNode );

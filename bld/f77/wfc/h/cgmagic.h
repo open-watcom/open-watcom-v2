@@ -32,4 +32,3 @@
 
 extern label_id     NextLabel( void );
 extern sym_id       TmpVar( TYPE typ, size_t size );
-extern sym_id       StaticAlloc( size_t size, TYPE typ );

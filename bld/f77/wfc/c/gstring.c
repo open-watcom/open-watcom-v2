@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,25 +61,13 @@ sym_id  GStartCat( uint num_args, size_t size )
 }
 
 
-sym_id  GTempString( size_t size )
-//================================
-// Generate a static temporary string.
-{
-    sym_id     sym_ptr;
-
-    sym_ptr = StaticAlloc( sizeof( string ), FT_CHAR );
-    sym_ptr->u.ns.xt.size = size;
-    return( sym_ptr );
-}
-
-
 void    GStopCat( uint num_args, sym_id result )
 //==============================================
 // Finish concatenation into a temporary.
 {
     /* unused parameters */ (void)result;
 
-    CITNode->sym_ptr = GTempString( CITNode->size );
+    CITNode->sym_ptr = TmpVar( FT_CHAR, CITNode->size );
     CITNode->opn.us = USOPN_VAL;
     // Push the address of a static SCB so that we can modify its
     // length to correspond to the length concatenated so that
