@@ -46,6 +46,7 @@
 #include "gstring.h"
 #include "fieldops.h"
 #include "gtypes.h"
+#include "cgmagic.h"
 
 
 void    GFieldSCB( inttarg size )

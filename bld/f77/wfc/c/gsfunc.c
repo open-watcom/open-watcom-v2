@@ -42,6 +42,7 @@
 #include "emitobj.h"
 #include "gsfunc.h"
 #include "gstring.h"
+#include "cgmagic.h"
 
 
 void    GSFArg( sym_id sym ) {

@@ -44,6 +44,7 @@
 #include "gstring.h"
 #include "gsubscr.h"
 #include "gtypes.h"
+#include "cgmagic.h"
 
 
 void    GBegSubScr( itnode *array_node ) {
