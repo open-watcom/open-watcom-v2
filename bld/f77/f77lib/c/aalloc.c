@@ -105,18 +105,18 @@ static  bool    Allocated( void **arr, unsigned_16 flags )
 void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
 //======================================================
 
-    void PGM * PGM *    item;
-    struct string PGM * scb;
-    adv_entry PGM *     adv_ent;
-    int                 dim_cnt;
-    unsigned_32         size;
-    va_list             args;
-    intstar4 PGM *      stat;
-    intstar4            location;
-    unsigned_32         elt_size;
-    unsigned_16         alloc_flags;
+    void            PGM * PGM *item;
+    string          PGM *scb;
+    adv_entry       PGM *adv_ent;
+    int             dim_cnt;
+    unsigned_32     size;
+    va_list         args;
+    intstar4        PGM *stat;
+    intstar4        location;
+    unsigned_32     elt_size;
+    unsigned_16     alloc_flags;
 #if defined( __WINDOWS_386__ )
-    unsigned_16         seg;
+    unsigned_16     seg;
 #endif
 
     // Assumptions
