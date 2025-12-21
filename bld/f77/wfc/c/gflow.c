@@ -53,12 +53,12 @@
 #include "gtypes.h"
 
 
-void    GStmtAddr( sym_id stmtno )
-//================================
+void    GStmtAddr( sym_id stmt )
+//==============================
 // Generate an entry in the statement table.
 {
-    if( stmtno != NULL ) {
-        OutPtr( stmtno );
+    if( stmt != NULL ) {
+        OutPtr( stmt );
     }
 }
 

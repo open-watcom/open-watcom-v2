@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern void    GStmtAddr( sym_id stmtno );
+extern void    GStmtAddr( sym_id stmt );
 extern void    GLabel( int label );
 extern void    GStmtLabel( sym_id stmt );
 extern void    GStmtBr( sym_id stmt );
