@@ -1094,7 +1094,7 @@ static  void    InlineCnvt( void ) {
             }
             /*
              * NOTE:
-             * value is union with members of various size
+             * cit->value is union with members of various size
              * this union size is big enough for string structure and single additional
              * character, we doesn't need any special type for it
              * we use string data type to access this constant character

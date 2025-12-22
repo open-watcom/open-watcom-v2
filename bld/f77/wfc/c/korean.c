@@ -146,7 +146,7 @@ static const byte CharSet[] = {
 static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
 {
-    return( ( *(byte *)ptr == 0x81 ) && ( *(byte *)(ptr + 1) == 0x40 ) );
+    return( ( ((byte *)ptr)[0] == 0x81 ) && ( ((byte *)ptr)[1] == 0x40 ) );
 }
 
 
