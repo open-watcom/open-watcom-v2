@@ -39,7 +39,6 @@
 #include "global.h"
 #include "fcodes.h"
 #include "fcgbls.h"
-#include "fmthdr.h"
 #include "emitobj.h"
 #include "cgformat.h"
 

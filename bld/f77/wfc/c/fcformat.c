@@ -36,7 +36,6 @@
 
 #include "ftnstd.h"
 #include "fcgbls.h"
-#include "fmthdr.h"
 #include "cg.h"
 #include "fcflow.h"
 #include "fcformat.h"
@@ -61,7 +60,7 @@ void    DumpFormats( void ) {
     curr_fc = FCodeTell( 0 );
     while( FormatList ) {
         FCodeSeek( FormatList );
-        fmt_len = GetU16() - sizeof( fmt_header );
+        fmt_len = GetU16() - sizeof( obj_ptr ) - sizeof( unsigned_16 );
         FormatList = GetObjPtr();
         label = GetU16();
         if( label != 0 ) {
