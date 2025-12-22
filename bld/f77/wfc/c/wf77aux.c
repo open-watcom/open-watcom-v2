@@ -1283,7 +1283,7 @@ static void GetRetInfo( void )
 static void GetSaveInfo( void )
 //=============================
 {
-    hw_reg_set  modlist;
+    hw_reg_set  modlist = HW_D( HW_EMPTY );
     hw_reg_set  default_flt_n_seg;
     hw_reg_set  flt_n_seg;
 
