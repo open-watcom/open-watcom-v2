@@ -888,22 +888,24 @@ static  void    IFPrmChk( void )
             break;
         parm_code = ParmCode( CITNode );
         switch( func ) {
-        case IF_ALLOCATED: {
-            sym_id      sym = CITNode->sym_ptr;
+        case IF_ALLOCATED:
+          {
+            sym_id      symp;
 
+            symp = CITNode->sym_ptr;
             if( (parm_code == PC_ARRAY_NAME)
-              && _Allocatable( sym ) )
+              && _Allocatable( symp ) )
                 break;
             if( (parm_code == PC_VARIABLE)
-              && (sym->u.ns.u1.s.typ == FT_CHAR)
-              && (sym->u.ns.xt.size == 0)
-              && (sym->u.ns.flags & SY_SUB_PARM) == 0 ) {
-                sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
+              && (symp->u.ns.u1.s.typ == FT_CHAR)
+              && (symp->u.ns.xt.size == 0)
+              && (symp->u.ns.flags & SY_SUB_PARM) == 0 ) {
+                symp->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
                 break;
             }
             Error( LI_ARG_ALLOCATED );
             break;
-        }
+          }
         case IF_ISIZEOF:
             switch( CITNode->opn.us ) {
             case USOPN_NNL:
