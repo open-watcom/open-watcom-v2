@@ -47,11 +47,10 @@
 #include "cgprotos.h"
 
 
-void    FCDoBegin( void ) {
-//===================
-
+void    FCDoBegin( void )
+//=======================
 // Initialize DO loop processing.
-
+{
     cg_name             e1;
     cg_name             e2;
     cg_name             e3;
@@ -114,11 +113,10 @@ void    FCDoBegin( void ) {
 }
 
 
-void    FCDoEnd( void ) {
-//=================
-
+void    FCDoEnd( void )
+//=====================
 // Terminal DO loop processing.
-
+{
     sym_id              do_var;
     sym_id              increment;
     sym_id              iteration;

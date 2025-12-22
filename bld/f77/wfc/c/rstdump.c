@@ -65,11 +65,10 @@ static  void            CkDataOk( sym_id sym );
 
 
 
-void    STDump( void ) {
-//================
-
+void    STDump( void )
+//====================
 // Dump symbol table.
-
+{
     sym_id      sym;
 
     // Merge IFList with NList
@@ -95,11 +94,10 @@ void    STDump( void ) {
 
 
 
-static  bool    CkInCommon( sym_id sym ) {
-//========================================
-
+static  bool    CkInCommon( sym_id sym )
+//======================================
 // Check for variables in common.
-
+{
     sym_id      leader;
     com_eq      *eq_ext;
     unsigned_32 offset;
@@ -118,7 +116,8 @@ static  bool    CkInCommon( sym_id sym ) {
         }
         if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
             if( (eq_ext->ec_flags & EQUIV_SET_ALLOC) == 0 ) {
-                if( ForceStatic(sym->u.ns.flags) || (Options & OPT_AUTOMATIC) == 0 ) {
+                if( ForceStatic(sym->u.ns.flags)
+                  || (Options & OPT_AUTOMATIC) == 0 ) {
                     if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
                         AllocGlobal( eq_ext->high - eq_ext->low, (eq_ext->ec_flags & MEMBER_INITIALIZED) != 0 );
                         eq_ext->ec_flags |= EQUIV_SET_ALLOC;
@@ -131,11 +130,10 @@ static  bool    CkInCommon( sym_id sym ) {
 }
 
 
-static  bool    DumpVariable( sym_id sym ) {
-//==========================================
-
+static  bool    DumpVariable( sym_id sym )
+//========================================
 // Allocate space for the given variable.
-
+{
     unsigned_16         flags;
     act_dim_list        *dim_list;
     bool                global_item;
@@ -145,19 +143,21 @@ static  bool    DumpVariable( sym_id sym ) {
     flags = sym->u.ns.flags;
     CkDataOk( sym );
     if( (flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) == 0 ) {
-        if( (flags & SY_REFERENCED) && (sym->u.ns.u1.s.xflags & SY_DEFINED) == 0 ) {
+        if( (flags & SY_REFERENCED)
+          && (sym->u.ns.u1.s.xflags & SY_DEFINED) == 0 ) {
             NameWarn( VA_USED_NOT_DEFINED, sym );
         }
     }
-    if( (flags & SY_IN_EQUIV) &&
-        (sym->u.ns.si.va.vi.ec_ext->ec_flags & LEADER) &&
-        ( (sym->u.ns.si.va.vi.ec_ext->ec_flags & ES_TYPE) == ES_MIXED ) ) {
+    if( (flags & SY_IN_EQUIV)
+      && (sym->u.ns.si.va.vi.ec_ext->ec_flags & LEADER)
+      && ( (sym->u.ns.si.va.vi.ec_ext->ec_flags & ES_TYPE) == ES_MIXED ) ) {
         Extension( EV_MIXED_EQUIV );
     }
     if( flags & SY_SUBSCRIPTED ) {
         dim_list = sym->u.ns.si.va.u.dim_ext;
         cp_reloc = (flags & SY_SUB_PARM) == 0 && !_Allocatable( sym );
-        if( cp_reloc && ( dim_list->num_elts == 0 ) ) {
+        if( cp_reloc
+          && ( dim_list->num_elts == 0 ) ) {
             NameErr( SV_ARR_PARM, sym );
         } else {
             if( cp_reloc ) {
@@ -165,7 +165,8 @@ static  bool    DumpVariable( sym_id sym ) {
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
-                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
+                    if( ForceStatic( flags )
+                      || (Options & OPT_AUTOMATIC) == 0 ) {
                         if( _SymSize( sym ) * _ArrElements( sym ) > DataThreshold ) {
                             AllocGlobal( _SymSize( sym ) * _ArrElements( sym ), (flags & SY_DATA_INIT) != 0 );
                         }
@@ -175,14 +176,16 @@ static  bool    DumpVariable( sym_id sym ) {
         }
     } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
         if( (flags & SY_SUB_PARM) == 0 ) {
-            if( (flags & SY_IN_DIMEXPR) && (flags & SY_IN_COMMON) == 0 ) {
+            if( (flags & SY_IN_DIMEXPR)
+              && (flags & SY_IN_COMMON) == 0 ) {
                 NameErr( SV_ARR_DECL, sym );
             } else {
                 global_item = true;
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
-                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
+                    if( ForceStatic( flags )
+                      || (Options & OPT_AUTOMATIC) == 0 ) {
                         if( sym->u.ns.xt.record->size > DataThreshold ) {
                             AllocGlobal( sym->u.ns.xt.record->size, (flags & SY_DATA_INIT) != 0 );
                         }
@@ -193,7 +196,8 @@ static  bool    DumpVariable( sym_id sym ) {
     } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
         if( (flags & SY_SUB_PARM) == 0 ) {
             global_item = !_Allocatable( sym );
-            if( ( sym->u.ns.xt.size == 0 ) && !_Allocatable( sym ) ){
+            if( ( sym->u.ns.xt.size == 0 )
+              && !_Allocatable( sym ) ){
                 NameErr( CV_CHARSTAR_ILLEGAL, sym );
             } else {
                 if( _Allocatable( sym ) ) {
@@ -202,7 +206,8 @@ static  bool    DumpVariable( sym_id sym ) {
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
-                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
+                    if( ForceStatic( flags )
+                      || (Options & OPT_AUTOMATIC) == 0 ) {
                         AllocGlobal( sym->u.ns.xt.size, (flags & SY_DATA_INIT) != 0 );
                     }
                 }
@@ -221,11 +226,10 @@ static  bool    DumpVariable( sym_id sym ) {
 }
 
 
-static  void    DumpLocalVars( void ) {
-//===============================
-
+static  void    DumpLocalVars( void )
+//===================================
 // Dump local variables.
-
+{
     unsigned_16 flags;
     unsigned_16 class;
     unsigned_16 subprog_type;
@@ -235,7 +239,8 @@ static  void    DumpLocalVars( void ) {
         flags = sym->u.ns.flags;
         class = (flags & SY_CLASS);
         if( class == SY_VARIABLE ) {
-            if( (sym != ReturnValue) && (sym != EPValue) ) {
+            if( (sym != ReturnValue)
+              && (sym != EPValue) ) {
                 CkSymDeclared( sym );
                 if( (flags & (SY_REFERENCED | SY_IN_EC)) == 0 ) {
                     UnrefSym( sym );
@@ -271,7 +276,8 @@ static  void    DumpLocalVars( void ) {
     // detect whether common blocks appear in more than one block data
     // subprogram.
     for( sym = BList; sym != NULL; sym = STFreeName( sym ) ) {    // common block list
-        if( (SgmtSw & SG_BIG_SAVE) || (Options & OPT_SAVE) ) {
+        if( (SgmtSw & SG_BIG_SAVE)
+          || (Options & OPT_SAVE) ) {
             sym->u.ns.flags |= SY_SAVED;
         }
         AddCB2GList( sym );
@@ -285,11 +291,10 @@ static  void    DumpLocalVars( void ) {
 }
 
 
-static  void    UnrefSym( sym_id sym ) {
-//======================================
-
+static  void    UnrefSym( sym_id sym )
+//====================================
 // Issue a warning for unreferenced symbol.
-
+{
     if( (sym->u.ns.u1.s.xflags & SY_FAKE_REFERENCE) == 0 ) {
         NameWarn( VA_UNREFERENCED, sym );
     }
@@ -297,11 +302,10 @@ static  void    UnrefSym( sym_id sym ) {
 
 
 
-static  void    CkDataOk( sym_id sym ) {
-//======================================
-
+static  void    CkDataOk( sym_id sym )
+//====================================
 // Check that a data initialized variable in common is OK.
-
+{
     sym_id      name;
     com_eq      *eq_ext;
     unsigned_16 flags;
@@ -345,11 +349,10 @@ static  void    CkDataOk( sym_id sym ) {
 }
 
 
-bool    StmtNoRef( sym_id sn ) {
-//==============================
-
+bool    StmtNoRef( sym_id sn )
+//============================
 // Check if statement number has been referenced.
-
+{
     if( StNumbers.wild_goto )
         return( true );
     if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 )
@@ -360,11 +363,10 @@ bool    StmtNoRef( sym_id sn ) {
 }
 
 
-static  void    DumpStmtNos( void ) {
-//=============================
-
+static  void    DumpStmtNos( void )
+//=================================
 // Check that statement numbers are all defined.
-
+{
     sym_id      sn;
 
     for( sn = SList; sn != NULL; sn = STFree( sn ) ) {
@@ -381,23 +383,20 @@ static  void    DumpStmtNos( void ) {
 
 
 
-static  void    DumpConsts( void ) {
-//============================
-
+static  void    DumpConsts( void )
+//================================
 // Dump constants from the symbol table.
-
-
+{
     while( CList != NULL ) {
         CList = STFree( CList );
     }
 }
 
 
-static  void    DumpStrings( void ) {
-//=============================
-
+static  void    DumpStrings( void )
+//=================================
 // Dump constant literals and space for static temporaries.
-
+{
     while( LList != NULL ) {
         LList = STFree( LList );
     }
@@ -406,7 +405,8 @@ static  void    DumpStrings( void ) {
         if( MList->u.ns.flags & SY_PS_ENTRY )
             continue;
         if( MList->u.ns.u1.s.typ == FT_CHAR ) {
-            if( ( MList->u.ns.xt.size != 0 ) && (Options & OPT_AUTOMATIC) == 0 ) {
+            if( ( MList->u.ns.xt.size != 0 )
+              && (Options & OPT_AUTOMATIC) == 0 ) {
                 AllocGlobal( MList->u.ns.xt.size, false );
             }
         }
@@ -414,11 +414,10 @@ static  void    DumpStrings( void ) {
 }
 
 
-static  void    DumpNameLists( void ) {
-//===============================
-
+static  void    DumpNameLists( void )
+//===================================
 // Dump NAMELIST information.
-
+{
     char        buff1[MAX_SYMLEN+1];
     char        buff2[MAX_SYMLEN+1];
     sym_id      nl;
@@ -431,8 +430,10 @@ static  void    DumpNameLists( void ) {
             sym = ge->sym;
             flags = sym->u.ns.flags;
             // do error checks
-            if( ((flags & SY_CLASS) != SY_VARIABLE) || (flags & SY_SUB_PARM) ||
-                (sym->u.ns.u1.s.typ == FT_STRUCTURE) || _Allocatable( sym ) ) {
+            if( ((flags & SY_CLASS) != SY_VARIABLE)
+              || (flags & SY_SUB_PARM)
+              || (sym->u.ns.u1.s.typ == FT_STRUCTURE)
+              || _Allocatable( sym ) ) {
                 STGetName( sym, buff1 );
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );

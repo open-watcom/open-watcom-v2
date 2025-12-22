@@ -55,56 +55,50 @@
 #include "cgprotos.h"
 
 
-cg_name SCBPtrAddr( cg_name scb ) {
-//=================================
-
+cg_name SCBPtrAddr( cg_name scb )
+//===============================
 // Get pointer to pointer in SCB.
-
+{
     return( scb );
 }
 
 
-cg_name SCBPointer( cg_name scb ) {
-//=================================
-
+cg_name SCBPointer( cg_name scb )
+//===============================
 // Get pointer from SCB.
-
+{
     return( CGUnary( O_POINTS, SCBPtrAddr( scb ), TY_GLOBAL_POINTER ) );
 }
 
 
-cg_name SCBLenAddr( cg_name scb ) {
-//=================================
-
+cg_name SCBLenAddr( cg_name scb )
+//===============================
 // Get pointer to length in SCB.
-
+{
     return( StructRef( scb, BETypeLength( TY_GLOBAL_POINTER ) ) );
 }
 
 
-cg_name SCBFlagsAddr( cg_name scb ) {
-//===================================
-
+cg_name SCBFlagsAddr( cg_name scb )
+//=================================
 // Get pointer to flags in SCB.
-
+{
     return( StructRef( scb, BETypeLength( TY_CHAR ) ) );
 }
 
 
-cg_name SCBLength( cg_name scb ) {
-//================================
-
+cg_name SCBLength( cg_name scb )
+//==============================
 // Get length from SCB.
-
+{
     return( CGUnary( O_POINTS, SCBLenAddr( scb ), TY_UNSIGNED ) );
 }
 
 
-cg_name Concat( uint num_args, cg_name dest ) {
-//=============================================
-
+cg_name Concat( uint num_args, cg_name dest )
+//===========================================
 // Do concatenation operation.
-
+{
     uint        count;
     call_handle call;
     cg_name     dest_1;
@@ -131,20 +125,18 @@ cg_name Concat( uint num_args, cg_name dest ) {
 }
 
 
-void    FCCat( void ) {
-//===============
-
+void    FCCat( void )
+//===================
 // Do concatenation operation.
-
+{
     XPush( Concat( GetU16(), XPop() ) );
 }
 
 
-void    FCChar1Move( void ) {
-//=====================
-
+void    FCChar1Move( void )
+//=========================
 // Perform single character assignment.
-
+{
     cg_type     cgtyp;
     cg_name     dest;
 
@@ -161,11 +153,10 @@ void    FCChar1Move( void ) {
  #define TAIL_SHIFT     2
 #endif
 
-void    FCCharNMove( void ) {
-//=====================
-
+void    FCCharNMove( void )
+//=========================
 // Perform N character assignment of non optimal lengths.
-
+{
     int         src_len;
     int         dst_len;
     cg_name     dst;
@@ -185,7 +176,8 @@ void    FCCharNMove( void ) {
     dst = XPop();
     CloneCGName( dst, &dst, &dst2 );
 
-    if( (OZOpts & OZOPT_O_SPACE) || !equal ) {
+    if( (OZOpts & OZOPT_O_SPACE)
+      || !equal ) {
         CGAddParm( call, CGInteger( src_len, TY_INTEGER ), TY_INTEGER );
     } else {
         // Special but common case, so we optimize it.
@@ -202,11 +194,10 @@ void    FCCharNMove( void ) {
 }
 
 
-static cg_name CharArrLength( sym_id sym ) {
-//==========================================
-
+static cg_name CharArrLength( sym_id sym )
+//========================================
 // Get element size for character*(*) arrays.
-
+{
     if( sym->u.ns.flags & SY_VALUE_PARM ) {
         return( CGInteger( 0, TY_INTEGER ) );
     } else if( Options & OPT_DESCRIPTOR ) {
@@ -217,11 +208,10 @@ static cg_name CharArrLength( sym_id sym ) {
 }
 
 
-cg_name CharItemLen( sym_id sym ) {
-//=================================
-
+cg_name CharItemLen( sym_id sym )
+//===============================
 // Get element size for character*(*) variables, functions and arrays.
-
+{
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         return( CharArrLength( sym ) );
     } else {
@@ -230,11 +220,10 @@ cg_name CharItemLen( sym_id sym ) {
 }
 
 
-void    FCSubString( void ) {
-//=====================
-
+void    FCSubString( void )
+//=========================
 // Do substring operation.
-
+{
     sym_id      char_var;
     sym_id      dest;
     cg_name     src;
@@ -303,19 +292,18 @@ void    FCSubString( void ) {
 }
 
 
-void    FCPushSCBLen( void ) {
-//======================
-
+void    FCPushSCBLen( void )
+//==========================
 // NULL "last" means we need the length from the SCB in the character*(*) case.
 // See FCSubString().
-
+{
     XPush( NULL );
 }
 
 
-void    FCMakeSCB( void ) {
-//===================
-
+void    FCMakeSCB( void )
+//=======================
+{
     cg_name     len;
     cg_name     ptr;
 
@@ -326,11 +314,10 @@ void    FCMakeSCB( void ) {
 }
 
 
-void    FCSetSCBLen( void ) {
-//=====================
-
+void    FCSetSCBLen( void )
+//=========================
 // Fill scb length
-
+{
     sym_id              scb;
     cg_name             len;
 

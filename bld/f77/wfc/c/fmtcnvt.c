@@ -147,7 +147,8 @@ int     FmtS2I( const char *str, uint len, bool blanks, intstar4 *value, bool st
     sign = false;
     if( str != strend ) {
         ch = *str;
-        if( (ch == '+') || (ch == '-') ) {
+        if( (ch == '+')
+          || (ch == '-') ) {
             if( ch == '-' ) {
                 minus = true;
             }
@@ -185,7 +186,8 @@ int     FmtS2I( const char *str, uint len, bool blanks, intstar4 *value, bool st
     }
     wid = len;
     if( str != strend ) {
-        if( stop_ok && !sign ) {
+        if( stop_ok
+          && !sign ) {
             wid -= ( strend - str );
         } else {
             status = INT_INVALID;
@@ -199,9 +201,9 @@ int     FmtS2I( const char *str, uint len, bool blanks, intstar4 *value, bool st
 
 int FmtS2F( const char *field, uint width, int decimals, bool blanks,
                 int scale, int prec, extended *result, bool stop_ok,
-                uint *new_width, bool extend_flt ) {
+                uint *new_width, bool extend_flt )
 // Format a string to floating point representation.
-
+{
     const char  *stop;
     char        ch;
     const char  *start;
@@ -231,7 +233,8 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
 
     if( field != stop ) {
         ch = *field;
-        if( (ch == '-') || (ch == '+') ) {
+        if( (ch == '-')
+          || (ch == '+') ) {
             canon.flags |= FOUND_SIGN;
             field++;
             start++;
@@ -249,7 +252,8 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
 
     // collect optional decimal point
 
-    if( (field != stop) && (*field == '.') ) {
+    if( (field != stop)
+      && (*field == '.') ) {
         canon.exp = canon.col;
         field++;
         canon.flags |= DECIMAL;
@@ -263,8 +267,13 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
 
     if( field != stop ) {
         ch = tolower( *field );
-        if( (ch == 'e') || (ch == 'd') || (ch == 'q') || (ch == '+') || (ch == '-') ) {
-            if( ( ch == 'e' ) && extend_flt ) {
+        if( (ch == 'e')
+          || (ch == 'd')
+          || (ch == 'q')
+          || (ch == '+')
+          || (ch == '-') ) {
+            if( ( ch == 'e' )
+              && extend_flt ) {
                 canon.flags |= DOUBLE;
             } else if( ch == 'd' ) {
                 if( extend_flt ) {
@@ -284,7 +293,8 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
             }
             canon.flags |= EXPONENT;
             exp = 0;
-            if( (stop == field) || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
+            if( (stop == field)
+              || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
                 canon.flags |= BAD_EXPONENT;
             }
             canon.exp += exp;
@@ -300,11 +310,13 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
     if( new_width != NULL ) {
         *new_width = width - ( stop - field );
     }
-    if( !stop_ok && ( field != stop ) )
+    if( !stop_ok
+      && ( field != stop ) )
         return( FLT_INVALID );
     if( canon.flags & BAD_EXPONENT )
         return( FLT_INVALID );
-    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) && (canon.flags & (LEFT_DIGITS | RIGHT_DIGITS)) == 0 )
+    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT))
+      && (canon.flags & (LEFT_DIGITS | RIGHT_DIGITS)) == 0 )
         return( FLT_INVALID );
     canon.exp -= scale; // adjust for kP specifier
     if( (canon.flags & DECIMAL) == 0 ) { // if no '.' found
@@ -326,7 +338,8 @@ int FmtS2F( const char *field, uint width, int decimals, bool blanks,
     if( errno != 0 )
         return( FLT_RANGE_EXCEEDED );
     if( prec == PRECISION_SINGLE ) {
-        if( (canon.flags & DOUBLE) == 0 && (canon.flags & LONGDOUBLE) == 0 ) {
+        if( (canon.flags & DOUBLE) == 0
+          && (canon.flags & LONGDOUBLE) == 0 ) {
 
             single      volatile sresult;
 

@@ -86,7 +86,8 @@ stmt_num    GetStmtNo( void )
 
     stmt_no = 0;
     if( RecNumber() ) {
-        if( ( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &num, false, NULL ) == INT_OK ) && ( num <= 99999 ) ) {
+        if( ( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &num, false, NULL ) == INT_OK )
+          && ( num <= 99999 ) ) {
             if( num == 0 ) {
                 Error( ST_NUM_ZERO );
             }
@@ -117,18 +118,17 @@ sym_id  LookUp( stmt_num stmt_no )
 }
 
 
-void    Err( int errcod, sym_id sym_ptr ) {
-//=========================================
-
+void    Err( int errcod, sym_id sym_ptr )
+//=======================================
+{
     Error( errcod, sym_ptr->u.st.number, sym_ptr->u.st.line );
 }
 
 
-sym_id  LkUpStmtNo( void ) {
-//====================
-
+sym_id  LkUpStmtNo( void )
+//========================
 // Return the branch label of a statement number.
-
+{
     sym_id      sym_ptr;
     unsigned_16 flags;
     csnode      *csptr;
@@ -159,19 +159,20 @@ sym_id  LkUpStmtNo( void ) {
                     Err( SP_INTO_STRUCTURE, sym_ptr );
                 }
             }
-            if( StNumbers.in_remote && ( (flags & SN_IN_REMOTE) == 0 ) ) {
+            if( StNumbers.in_remote
+              && ( (flags & SN_IN_REMOTE) == 0 ) ) {
                 Err( SP_OUT_OF_BLOCK, sym_ptr );
             }
         } else {
-            if( ( sym_ptr->u.st.block > CSHead->block ) ||
-                ( (flags & SN_BRANCHED_TO) == 0 ) ||
+            if( ( sym_ptr->u.st.block > CSHead->block )
+              || ( (flags & SN_BRANCHED_TO) == 0 )
+              || (flags & SN_ONLY_DO_TERM) ) {
                 // Consider:      DO 10 I==1,2
                 //                  GOTO 10
                 //                  DO 10 J==1,2
                 //           10  CONTINUE
                 // When we compile "GOTO 10", 10 is no longer only
                 // a DO terminal statement number.
-                (flags & SN_ONLY_DO_TERM) ) {
                 sym_ptr->u.st.flags &= ~SN_ONLY_DO_TERM;
                 sym_ptr->u.st.block = CSHead->block;
                 sym_ptr->u.st.line = SrcRecNum;
@@ -186,11 +187,10 @@ sym_id  LkUpStmtNo( void ) {
 }
 
 
-sym_id  LkUpFormat( void ) {
-//====================
-
+sym_id  LkUpFormat( void )
+//========================
 // Return the label of a format statement number.
-
+{
     sym_id      sym_ptr;
 
     sym_ptr = LookUp( GetStmtNo() );
@@ -207,11 +207,10 @@ sym_id  LkUpFormat( void ) {
 }
 
 
-sym_id  FmtPointer( void ) {
-//====================
-
+sym_id  FmtPointer( void )
+//========================
 // Return the label of the current statement number.
-
+{
     sym_id      sym_ptr;
 
     sym_ptr = LookUp( StmtNo );
@@ -222,20 +221,19 @@ sym_id  FmtPointer( void ) {
 }
 
 
-sym_id  LkUpAssign( void ) {
-//====================
-
+sym_id  LkUpAssign( void )
+//========================
 // Return label for ASSIGN 10 TO I.
-
+{
     sym_id      sym_ptr;
 
     sym_ptr = LookUp( GetStmtNo() );
     if( sym_ptr != NULL ) {
         sym_ptr->u.st.ref_count++;
         sym_ptr->u.st.flags |= SN_ASSIGNED;
-        if( (sym_ptr->u.st.flags & SN_DEFINED) &&
-            ( (sym_ptr->u.st.flags & SN_FORMAT) == 0 ) &&
-            (sym_ptr->u.st.flags & SN_BAD_BRANCH) ) {
+        if( (sym_ptr->u.st.flags & SN_DEFINED)
+          && ( (sym_ptr->u.st.flags & SN_FORMAT) == 0 )
+          && (sym_ptr->u.st.flags & SN_BAD_BRANCH) ) {
             Err( GO_CANNOT_ASSIGN, sym_ptr );
             sym_ptr->u.st.flags &= ~SN_ASSIGNED;
         }
@@ -282,11 +280,10 @@ stmt_num    LkUpDoTerm( void )
 }
 
 
-void    DefStmtNo( stmt_num stmt_no ) {
-//====================================
-
+void    DefStmtNo( stmt_num stmt_no )
+//===================================
 // Generate label for statement number.
-
+{
     sym_id      sym_ptr;
 
     sym_ptr = LookUp( stmt_no );
@@ -331,7 +328,8 @@ void    Update( stmt_num stmt_no )
                     Err( SP_FROM_OUTSIDE, sym );
                 }
             }
-            if( !StNumbers.in_remote && (sym->u.st.flags & SN_IN_REMOTE) ) {
+            if( !StNumbers.in_remote
+              && (sym->u.st.flags & SN_IN_REMOTE) ) {
                 Err( SP_OUT_OF_BLOCK, sym );
             }
         }
@@ -343,7 +341,8 @@ void    Update( stmt_num stmt_no )
             StmtIntErr( ST_BAD_BRANCHED, sym->u.st.line );
         }
         sym->u.st.flags &= ~SN_AFTR_BRANCH;
-        if( (sym->u.st.flags & SN_ASSIGNED) && ( StmtProc != PR_FMT ) ) {
+        if( (sym->u.st.flags & SN_ASSIGNED)
+          && ( StmtProc != PR_FMT ) ) {
             StmtIntErr( GO_ASSIGNED_BAD, sym->u.st.line );
         }
     }
@@ -359,11 +358,10 @@ void    Update( stmt_num stmt_no )
 }
 
 
-void    InitStNumbers( void ) {
-//=======================
-
+void    InitStNumbers( void )
+//===========================
 // Intitialize statement number processing.
-
+{
     StNumbers.wild_goto  = false;
     StNumbers.var_format = false;
     StNumbers.in_remote  = false;

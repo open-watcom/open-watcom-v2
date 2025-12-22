@@ -122,7 +122,8 @@ static  void    chkIOErr( cg_name io_stat )
     label_handle        eq_label;
 
     io_stat = CGUnary( O_POINTS, io_stat, TY_INTEGER );
-    if( ( EndEqLabel != 0 ) && ( ErrEqLabel != 0 ) ) {
+    if( ( EndEqLabel != 0 )
+      && ( ErrEqLabel != 0 ) ) {
         eq_label = BENewLabel();
         CG3WayControl( io_stat, GetLabel( EndEqLabel ), eq_label,
                        GetLabel( ErrEqLabel ) );
@@ -185,7 +186,9 @@ static  void    IOStatement( RTCODE stmt )
 // don't need label generated for IOSTAT unless it's a READ or WRITE
 // statement that is not NAMELIST-directed
 {
-    if( ( (stmt != RT_EX_READ) && (stmt != RT_EX_WRITE) ) || NmlSpecified ) {
+    if( ( (stmt != RT_EX_READ)
+      && (stmt != RT_EX_WRITE) )
+      || NmlSpecified ) {
         IOStatSpecified = false;
     }
     chkIOErr( CGCall( InitCall( stmt ) ) );
@@ -552,7 +555,9 @@ void    FCEndIO( void )
 {
     CGDone( CGCall( InitCall( RT_ENDIO ) ) );
     FCChkIOStmtLabel();
-    if( ( ErrEqLabel == 0 ) && ( EndEqLabel == 0 ) && IOStatSpecified ) {
+    if( ( ErrEqLabel == 0 )
+      && ( EndEqLabel == 0 )
+      && IOStatSpecified ) {
         CGControl( O_LABEL, NULL, IOSLabel );
         BEFiniLabel( IOSLabel );
     }
