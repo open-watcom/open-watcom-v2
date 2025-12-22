@@ -583,7 +583,7 @@ static  bool    DoGenerate( TYPE typ1, TYPE typ2, size_t *res_size )
         if( (ASType & AST_ASF)
           || CkAssignOk() ) {
             return( true );
-          }
+        }
         return( false );
     } else {
         if( ( ( typ1 == FT_DOUBLE )
@@ -1338,8 +1338,9 @@ void    UpScan( void )
             break;
         }
         if( ( CITNode->opr == OPR_TRM )
-          && ( CITNode->link->opr == OPR_TRM ) )
+          && ( CITNode->link->opr == OPR_TRM ) ) {
             break;
+        }
         index = OprIndex[CITNode->link->opr];
         index += OprIndex[CITNode->opr] * OPR_SEQ_MAT_COLS;
         RtnTable[OprSeqMat[index]]();

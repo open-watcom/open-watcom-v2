@@ -46,7 +46,7 @@ typedef struct csnode {
     label_id            branch;
     label_id            bottom;
     label_id            cycle;
-    unsigned_16         block;
+    block_num           block;
     byte                typ;
     char                label[1];
 } csnode;

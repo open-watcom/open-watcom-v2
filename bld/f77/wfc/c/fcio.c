@@ -168,8 +168,8 @@ static  void    StructIO( struct field *fd )
         } else if( fd->typ == FT_UNION ) {
             size = 0;
             for( map = fd->xt.sym_record; map != NULL; map = map->u.sd.link ) { // find biggest map
-                if( map->u.sd.size > size ) {
-                    size = map->u.sd.size;        // 91/08/01 DJG
+                if( size < map->u.sd.size ) {
+                    size = map->u.sd.size;
                     big_map = map;
                 }
             }

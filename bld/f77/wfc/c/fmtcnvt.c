@@ -77,6 +77,7 @@ static int  Digits( canon_form *canon, const char *field, const char *stop, int 
 
     count = 0;
     for( ;; ) {
+        ch = '\0';
         for( ;; ) {
             if( field == stop )
                 break;

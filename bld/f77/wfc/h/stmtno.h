@@ -37,7 +37,7 @@ typedef struct stnumbers {
     bool                wild_goto;      //  true if assigned goto without list
     bool                var_format;     //  true if variable used for format
     bool                in_remote;      //  true if currently in REMOTE BLOCK
-    unsigned_16         blk_before;     //  CSHead->block before statement
+    block_num           blk_before;     //  CSHead->block before statement
 } stnumbers;
 
 #define SN_INIT         0x0000

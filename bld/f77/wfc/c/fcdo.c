@@ -69,7 +69,9 @@ void    FCDoBegin( void )
     if( increment == NULL ) {
         incr_value = GetU32();
         loop_ctrl = GetPtr();
+        e3 = NULL;
     } else {
+        incr_value = 0;
         loop_ctrl = GetPtr();
         e3 = CGEval( GetTypedValue() );
     }
@@ -129,7 +131,9 @@ void    FCDoEnd( void )
     increment = GetPtr();
     if( increment == NULL ) {
         incr_value = GetU32();
+        iteration = NULL;
     } else {
+        incr_value = 0;
         iteration = GetPtr();
     }
     top = GetLabel( GetU16() );

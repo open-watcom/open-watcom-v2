@@ -236,7 +236,7 @@ typedef struct literal {
 typedef struct stmtno {
     sym_id              link;           // link to next statement # entry
     uint                ref_count;      // reference count
-    unsigned_16         block;          // block # statement # appeared in
+    block_num           block;          // block # statement # appeared in
     unsigned_16         flags;          // statement # flags
     label_id            address;        // label of statement #
     int                 line;           // source line statement # appeared in

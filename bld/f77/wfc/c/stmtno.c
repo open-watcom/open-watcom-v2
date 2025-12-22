@@ -313,7 +313,7 @@ void    Update( stmt_num stmt_no )
 // Update the statement number after compiling the statement.
 {
     sym_id      sym;
-    unsigned_16 block;
+    block_num   block;
 
     sym = LookUp( stmt_no );
     if( (sym->u.st.flags & SN_DEFINED) == 0 ) {

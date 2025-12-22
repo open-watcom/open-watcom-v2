@@ -235,6 +235,7 @@ void    FCSubString( void )
     cg_name     ptr;
     call_handle call;
 
+    last = NULL;
     char_var = GetPtr();
     typ_info = GetU16();
     src = XPop();
