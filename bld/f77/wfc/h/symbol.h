@@ -240,7 +240,7 @@ typedef struct stmtno {
     unsigned_16         flags;          // statement # flags
     label_id            address;        // label of statement #
     int                 line;           // source line statement # appeared in
-    unsigned_16         number;         // statement #
+    stmt_num            number;         // statement #
 } stmtno;
 
 // union of all symbols:

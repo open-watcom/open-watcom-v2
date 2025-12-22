@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,44 +37,22 @@
 #include "cgmagic.h"
 
 
-unsigned_32     GetStmtNum( sym_id sn ) {
-//=======================================
-
-// Get statement number from statement number field.
-
-    unsigned_32 st_number;
-
-    st_number = sn->u.st.number;
-    if( sn->u.st.flags & SN_ADD_65535 ) {
-        st_number += 65535;
-    }
-    return( st_number );
-}
-
-
-sym_id  STStmtNo( unsigned_32 stmnt_no ) {
-//========================================
-
+sym_id  STStmtNo( stmt_num stmt_no )
+//===================================
 // Search the symbol table for a statement number. If it is not
 // already in the symbol table, add it to the symbol table.
-
+{
     sym_id      ste_ptr;
-    unsigned_32 st_number;
 
     for( ste_ptr = SList; ste_ptr != NULL; ste_ptr = ste_ptr->u.st.link ) {
-        st_number = GetStmtNum( ste_ptr );
-        if( st_number == stmnt_no ) {
+        if( ste_ptr->u.st.number == stmt_no ) {
             return( ste_ptr );
         }
     }
     ste_ptr = FMemAlloc( sizeof( stmtno ) );
     ste_ptr->u.st.block = CSHead->block;
     ste_ptr->u.st.flags = SN_INIT;
-    if( stmnt_no > 65535 ) {
-        stmnt_no -= 65535;
-        ste_ptr->u.st.flags |= SN_ADD_65535;
-    }
-    ste_ptr->u.st.number = stmnt_no;
+    ste_ptr->u.st.number = stmt_no;
     ste_ptr->u.st.address = NextLabel();
     ste_ptr->u.st.ref_count = 0;
     ste_ptr->u.st.link = SList;

@@ -110,6 +110,8 @@ typedef unsigned_32     obj_ptr;
 typedef obj_ptr         warp_label;
 typedef unsigned_32     seg_offset;
 
-typedef unsigned        label_id;
+typedef unsigned_16     label_id;
+typedef unsigned_32     stmt_num;
+typedef unsigned_16     block_num;
 
 #endif

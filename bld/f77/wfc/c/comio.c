@@ -70,8 +70,8 @@ void ComRead( void )
     char        ch;
     byte        chtype;
     uint        stmt_type;
-    unsigned_32 stmt_no;
-    bool        stno_found;
+    stmt_num    stmt_no;
+    bool        found;
     byte        cont_type;
     bool        done_scan;
     ftnoption   save_options;
@@ -92,7 +92,7 @@ void ComRead( void )
     cursor = 0;
     column = FIRST_COL - 1;
     stmt_no = 0;
-    stno_found = false;
+    found = false;
     done_scan = false;
     for( ;; ) {
         ReadSrc();
@@ -119,7 +119,7 @@ void ComRead( void )
             // not a comment (but it might be a blank line)
             // try for a statement number
             stmt_no = 0;
-            stno_found = false;
+            found = false;
             for( ;; ) {
                 chtype = CharSetInfo.character_set[(byte)ch];
                 if( chtype == C_EL )
@@ -148,7 +148,7 @@ void ComRead( void )
                             break;
                         }
                         stmt_no = 10 * stmt_no + ch - '0';
-                        stno_found = true;
+                        found = true;
                     } else {
                         stmt_type = STMT_START;
                         if( column != CONT_COL ) {
@@ -197,7 +197,7 @@ void ComRead( void )
     Cursor = cursor;
     Column = column - 1;
     NextStmtNo = stmt_no;
-    StmtNoFound = stno_found;
+    StmtNoFound = found;
     StmtType = stmt_type;
     ContType = cont_type;
     Options = save_options;

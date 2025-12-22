@@ -156,35 +156,35 @@ void CpUntil( void )
     CSNoMore();
 }
 
-static unsigned_32 DoLabel( void )
+static stmt_num DoLabel( void )
 {
-    unsigned_32 term;
+    stmt_num    term_stmt_no;
 
     if( RecNumber() ) {
-        term = LkUpDoTerm();
+        term_stmt_no = LkUpDoTerm();
         AdvanceITPtr();
         if( !RecNOpr()
           && !RecComma() ) {
             Error( DO_NO_COMMA_OR_VAR );
         }
     } else {
-        term = 0;
+        term_stmt_no = 0;
     }
-    return( term );
+    return( term_stmt_no );
 }
 
 void CpDo( void )
 //===============
 // Compile a DO statement.
 {
-    signed_32   term;
+    stmt_num    term_stmt_no;
 
     AddCSNode( CS_DO );
-    term = DoLabel();
-    if( term == 0 ) {
+    term_stmt_no = DoLabel();
+    if( term_stmt_no == 0 ) {
         Extension( DO_DO_EXT );
     }
-    InitDo( term );
+    InitDo( term_stmt_no );
     ColonLabel();
 }
 
@@ -236,8 +236,8 @@ void CpEndDo( void )
     CSNoMore();
 }
 
-void InitDo( signed_32 term )
-//===========================
+void InitDo( stmt_num term_stmt_no )
+//==================================
 // Initialize a DO or implied DO.
 // Process "do i=e1,e2,e3" where e1, e2 and e3 are numeric expressions.
 {
@@ -251,7 +251,7 @@ void InitDo( signed_32 term )
     }
     do_pointer = FMemAlloc( sizeof( do_entry ) );
     CSHead->cs_info.do_parms = do_pointer;
-    do_pointer->do_term = term;
+    do_pointer->do_term = term_stmt_no;
     do_pointer->do_parm = NULL;
     if( ReqDoVar() ) {
         CkTypeDeclared();

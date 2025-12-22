@@ -366,17 +366,13 @@ static  void    DumpStmtNos( void ) {
 // Check that statement numbers are all defined.
 
     sym_id      sn;
-    unsigned_16 sn_flags;
-    unsigned_32 st_number;
 
     for( sn = SList; sn != NULL; sn = STFree( sn ) ) {
-        sn_flags = sn->u.st.flags;
-        st_number = GetStmtNum( sn );
-        if( (sn_flags & SN_DEFINED) == 0 ) {
-            Error( ST_UNDEFINED, st_number, sn->u.st.line );
+        if( (sn->u.st.flags & SN_DEFINED) == 0 ) {
+            Error( ST_UNDEFINED, sn->u.st.number, sn->u.st.line );
         } else {
             if( !StmtNoRef( sn ) ) {
-                Warning( ST_UNREFERENCED, st_number );
+                Warning( ST_UNREFERENCED, sn->u.st.number );
             }
         }
     }

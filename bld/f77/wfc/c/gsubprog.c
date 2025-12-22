@@ -104,8 +104,8 @@ void    GBegCall( itnode *itptr )
 }
 
 
-void    GEndCall( itnode *itptr, int num_stmts )
-//==============================================
+void    GEndCall( itnode *itptr, unsigned_16 num_stmts )
+//======================================================
 // Finish off a subprogram invocation.
 {
     itnode      *arg;
@@ -162,11 +162,11 @@ void    GArg( void )
 }
 
 
-int     GParms( itnode *sp )
-//==========================
+unsigned_16 GParms( itnode *sp )
+//==============================
 // Process argument list.
 {
-    int         num_stmts;
+    unsigned_16     num_stmts;
 
     /* unused parameters */ (void)sp;
 
