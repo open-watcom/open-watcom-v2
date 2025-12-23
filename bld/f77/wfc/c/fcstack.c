@@ -58,6 +58,8 @@
 #include "cgprotos.h"
 
 
+static char     *StkPtr;         // F-Code stack pointer
+
 void    InitStack( void )
 //=======================
 // Initialize stack.
@@ -231,7 +233,7 @@ void    XPush( cg_name cgname )
 // Push a CG-name on the stack.
 {
     *(cg_name *)StkPtr = cgname;
-    StkPtr = (char *)StkPtr + sizeof( cg_name );
+    StkPtr += sizeof( cg_name );
 }
 
 
@@ -355,8 +357,7 @@ cg_name SymIndex( sym_id sym, cg_name i )
         if( (sym->u.ns.u1.s.typ == FT_CHAR)
           && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
             // tell code generator where storage pointed to by SCB is located
-            addr = CGBinary( O_COMMA, addr,
-                             CGFEName( sym, F77ToCGType( sym ) ), TY_DEFAULT );
+            addr = CGBinary( O_COMMA, addr, CGFEName( sym, F77ToCGType( sym ) ), TY_DEFAULT );
         }
         i = NULL;
     } else if( ( sym->u.ns.u1.s.typ == FT_CHAR )
@@ -368,13 +369,11 @@ cg_name SymIndex( sym_id sym, cg_name i )
 
         ce_ext = sym->u.ns.si.va.vi.ec_ext;
         if( i != NULL ) {
-            i = CGBinary( O_PLUS, i, CGInteger( ce_ext->offset, TY_INT_4 ),
-                          TY_INT_4 );
+            i = CGBinary( O_PLUS, i, CGInteger( ce_ext->offset, TY_INT_4 ), TY_INT_4 );
         } else {
             i = CGInteger( ce_ext->offset, TY_INT_4 );
         }
-        addr = CGBinary( O_PLUS, CGFEName( ce_ext->com_blk, F77ToCGType( sym ) ),
-                         i, SymPtrType( sym ) );
+        addr = CGBinary( O_PLUS, CGFEName( ce_ext->com_blk, F77ToCGType( sym ) ), i, SymPtrType( sym ) );
         i = NULL;
     } else {
         addr = CGFEName( sym, F77ToCGType( sym ) );
@@ -433,7 +432,7 @@ void    DXPush( intstar4 val )
 // Push a constant on the stack for DATA statement expressions.
 {
     *(intstar4 *)StkPtr = val;
-    StkPtr = (char *)StkPtr + sizeof( intstar4 );
+    StkPtr += sizeof( intstar4 );
 }
 
 
@@ -442,7 +441,7 @@ void    SymPush( sym_id val )
 // Push a symbol table entry on the stack.
 {
     *(sym_id *)StkPtr = val;
-    StkPtr = (char *)StkPtr + sizeof( sym_id );
+    StkPtr += sizeof( sym_id );
 }
 
 
@@ -450,7 +449,7 @@ cg_name XPop( void )
 //==================
 // Pop a CG-name from the stack.
 {
-    StkPtr = (char *)StkPtr - sizeof( cg_name );
+    StkPtr -= sizeof( cg_name );
     return( *(cg_name *)StkPtr );
 }
 
@@ -558,7 +557,7 @@ cg_name         StkElement( int idx )
 //===================================
 // Get idx'th stack element.
 {
-    return(  *(cg_name * )((char *)StkPtr - idx * sizeof( cg_name )) );
+    return(  *(cg_name * )( StkPtr - idx * sizeof( cg_name ) ) );
 }
 
 
@@ -566,7 +565,7 @@ void            PopStkElements( int num )
 //=======================================
 // Pop stack elements from the stack.
 {
-    StkPtr = (char *)StkPtr - num * sizeof( cg_name );
+    StkPtr -= num * sizeof( cg_name );
 }
 
 
@@ -574,7 +573,7 @@ intstar4        DXPop( void )
 //===========================
 // Pop a constant from the stack for DATA statement expressions.
 {
-    StkPtr = (char *)StkPtr - sizeof( intstar4 );
+    StkPtr -= sizeof( intstar4 );
     return( *(intstar4 *)StkPtr );
 }
 
@@ -583,7 +582,7 @@ sym_id          SymPop( void )
 //============================
 // Pop a symbol table entry from the stack.
 {
-    StkPtr = (char *)StkPtr - sizeof( sym_id );
+    StkPtr -= sizeof( sym_id );
     return( *(sym_id *)StkPtr );
 }
 
