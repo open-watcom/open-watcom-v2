@@ -69,11 +69,10 @@ static  void    CkFlags( void );
 static  void    GetSConst( void );
 
 
-void    CpData(void) {
-//================
-
+void    CpData(void)
+//==================
 // Compile DATA statement.
-
+{
     label_id    end_data;
     int         data_sets;
     bool        error;
@@ -94,7 +93,8 @@ void    CpData(void) {
                 break;
             ReqComma();
         }
-        if( RecTrmOpr() || error ) {
+        if( RecTrmOpr()
+          || error ) {
             break;
         }
     }
@@ -106,11 +106,10 @@ void    CpData(void) {
 }
 
 
-void    DataInit( itnode *var_node ) {
-//====================================
-
+void    DataInit( itnode *var_node )
+//==================================
 // Process data within a type declaration statement.
-
+{
     label_id    end_data;
 
     Free2CIT( var_node );
@@ -128,17 +127,17 @@ void    DataInit( itnode *var_node ) {
 }
 
 
-static  void    Free2CIT( itnode *node ) {
-//========================================
-
+static  void    Free2CIT( itnode *node )
+//======================================
 // Free all nodes between "node" and "CITNode".
-
+{
     itnode      *junk;
     itnode      *chaser;
 
-// this code makes a(3)/3*5/ from a type declaration look like
-// a/3*5/ as in a DATA statement so we can call DoData().
-
+    /*
+     * this code makes a(3)/3*5/ from a type declaration look like
+     * a/3*5/ as in a DATA statement so we can call DoData().
+     */
     junk = node->link;
     node->link = CITNode;
     chaser = junk;
@@ -150,11 +149,10 @@ static  void    Free2CIT( itnode *node ) {
 }
 
 
-static  void    DoData( void ) {
-//========================
-
+static  void    DoData( void )
+//============================
 // Process one vlist/dlist/ pair.
-
+{
     STMT    save_stmtproc;
 
     StmtSw |= SS_DATA_INIT;
@@ -172,11 +170,10 @@ static  void    DoData( void ) {
 }
 
 
-static  OPR    FindSlash( itnode **itptr_ptr ) {
-//===============================================
-
+static  OPR    FindSlash( itnode **itptr_ptr )
+//============================================
 // Scan ahead for an OPN_DIV and replace it with OPN_TRM.
-
+{
     int         level;
     itnode      *cit;
     OPR         opr;
@@ -190,7 +187,10 @@ static  OPR    FindSlash( itnode **itptr_ptr ) {
             level--;
         }
         AdvanceITPtr();
-        if( ( (RecDiv() || RecCat()) && (level == 0) ) || RecTrmOpr() ) {
+        if( ( (RecDiv()
+          || RecCat())
+          && (level == 0) )
+          || RecTrmOpr() ) {
             break;
         }
     }
@@ -202,11 +202,10 @@ static  OPR    FindSlash( itnode **itptr_ptr ) {
 }
 
 
-static  void    VarList( void ) {
-//=========================
-
+static  void    VarList( void )
+//=============================
 // Process one variable list in a DATA statement.
-
+{
     OPR         last_opr;
     OPR         opr;
     int         do_level;
@@ -217,7 +216,8 @@ static  void    VarList( void ) {
     while( CITNode != last_node ) {
         if( AError )
             break;
-        if( RecTrmOpr() && ( CITNode != ITHead ) ) {
+        if( RecTrmOpr()
+          && ( CITNode != ITHead ) ) {
             --do_level;
             FinishImpDo();
         } else if( StartImpDo() ) {
@@ -256,11 +256,10 @@ static  void    VarList( void ) {
 }
 
 
-static  bool    HexConst(void) {
-//==========================
-
+static  bool    HexConst(void)
+//============================
 // Check for a hexadecimal constant specifier.
-
+{
     char        *hex_data;
     size_t      hex_len;
     sym_id      sym;
@@ -294,11 +293,10 @@ static  bool    HexConst(void) {
 }
 
 
-static  void    ConList( void ) {
-//=========================
-
+static  void    ConList( void )
+//=============================
 // Collect constants for data initialization.
-
+{
     OPR         opr;
     itnode      *last_node;
 
@@ -329,11 +327,10 @@ static  void    ConList( void ) {
 }
 
 
-static  void    DumpDataSets( int num, itnode *node ) {
-//=====================================================
-
+static  void    DumpDataSets( int num, itnode *node )
+//===================================================
 // Dump the constants for data initialization.
-
+{
     itnode      *rpt;
 
     GStopIO();
@@ -368,19 +365,18 @@ static  void    DumpDataSets( int num, itnode *node ) {
 }
 
 
-static  void    GetSConst( void ) {
-//===========================
-
+static  void    GetSConst( void )
+//===============================
 // Signed constant converting without downscan-upscan process.
-
+{
     int         sign;
 
     if( RecNOpn() ) {
         sign = 1;
         if( RecNextOpr( OPR_MIN ) ) {
             sign = -1;
-        } else if( !RecNextOpr( OPR_PLS ) ||
-                   ( CITNode->link->opn.ds < DSOPN_INT ) ) {
+        } else if( !RecNextOpr( OPR_PLS )
+          || ( CITNode->link->opn.ds < DSOPN_INT ) ) {
             ProcDataIExpr();
             return;
         }
@@ -440,7 +436,8 @@ size_t MkHexConst( const char *src, char *dst, size_t src_len )
         src_len--;
     }
     while( src_len != 0 ) {
-        if( isxdigit( (unsigned char)src[0] ) == 0 || isxdigit( (unsigned char)src[1] ) == 0 )
+        if( isxdigit( (unsigned char)src[0] ) == 0
+          || isxdigit( (unsigned char)src[1] ) == 0 )
             break;
         if( dst != NULL ) {
             *dst++ = Hex( src[0] ) * 0x10 + Hex( src[1] );
@@ -455,14 +452,15 @@ size_t MkHexConst( const char *src, char *dst, size_t src_len )
 }
 
 
-static  void    CkFlags( void ) {
-//=========================
-
+static  void    CkFlags( void )
+//=============================
+{
     if( (InitVar->u.ns.flags & SY_CLASS) != SY_VARIABLE ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
     } else if( (InitVar->u.ns.flags & SY_SUB_PARM) != 0 ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if( (InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar ) ) {
+    } else if( (InitVar->u.ns.flags & SY_SUBSCRIPTED)
+      && _Allocatable( InitVar ) ) {
         IllName( InitVar );
     } else {
         // Don't set SY_TYPE otherwise we won't be able to detect whether
