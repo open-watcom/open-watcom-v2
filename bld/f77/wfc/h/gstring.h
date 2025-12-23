@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern sym_id  GStartCat( uint num_args, size_t size );
-extern void    GStopCat( uint num_args, sym_id result );
+extern sym_id  GStartCat( args_num argc, size_t size );
+extern void    GStopCat( args_num argc, sym_id result );
 extern void    GCatArg( itnode *itptr );
 extern void    AsgnChar( void );

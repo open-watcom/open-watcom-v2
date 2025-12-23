@@ -194,7 +194,7 @@ void CpDoWhile( void )
 {
     Extension( DO_DO_EXT );
     InitLoop( CS_DO_WHILE );
-    CSHead->cs_info.do_term = DoLabel();
+    CSHead->cs_info.term_stmt_no = DoLabel();
     if( RecKeyWord( "WHILE" ) ) {
         RemKeyword( CITNode, 5 );
         CSCond( CSHead->bottom );
@@ -219,13 +219,13 @@ void CpEndDo( void )
 // Compile an ENDDO statement.
 {
     if( CSHead->typ == CS_DO ) {
-        if( CSHead->cs_info.do_parms->do_term == 0 ) {
+        if( CSHead->cs_info.do_parms->term_stmt_no == 0 ) {
             TermDo();
         } else {
             BadDoEnd();
         }
     } else if( CSHead->typ == CS_DO_WHILE ) {
-        if( CSHead->cs_info.do_term == 0 ) {
+        if( CSHead->cs_info.term_stmt_no == 0 ) {
             TermDoWhile();
         } else {
             BadDoEnd();
@@ -251,7 +251,7 @@ void InitDo( stmt_num term_stmt_no )
     }
     do_pointer = FMemAlloc( sizeof( do_entry ) );
     CSHead->cs_info.do_parms = do_pointer;
-    do_pointer->do_term = term_stmt_no;
+    do_pointer->term_stmt_no = term_stmt_no;
     do_pointer->do_parm = NULL;
     if( ReqDoVar() ) {
         CkTypeDeclared();

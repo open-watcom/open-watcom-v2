@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 
 extern void     CatOpn( void );
 extern void     FiniCat( void );
-extern uint     AsgnCat( void );
+extern args_num AsgnCat( void );
 extern void     CatBack( void );
 extern void     CatAxeParens( void );
 extern void     ParenCat( void );
 extern void     CatParen( void );
 extern void     ChkCatOpn( void );
-extern void     CatArgs( uint num );
+extern void     CatArgs( args_num argc );

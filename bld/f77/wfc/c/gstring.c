@@ -51,17 +51,17 @@
 #include "gtypes.h"
 
 
-sym_id  GStartCat( uint num_args, size_t size )
+sym_id  GStartCat( args_num argc, size_t size )
 //=============================================
 // Start cconcatenation into a temporary.
 {
-    /* unused parameters */ (void)num_args; (void)size;
+    /* unused parameters */ (void)argc; (void)size;
 
     return( NULL );
 }
 
 
-void    GStopCat( uint num_args, sym_id result )
+void    GStopCat( args_num argc, sym_id result )
 //==============================================
 // Finish concatenation into a temporary.
 {
@@ -79,7 +79,7 @@ void    GStopCat( uint num_args, sym_id result )
     // was indexed as WORD(I:J).
     PushOpn( CITNode );
     EmitOp( FC_CAT );
-    OutU16( (uint_16)( num_args | CAT_TEMP ) ); // indicate concatenating into a static temp
+    OutU16( argc | CAT_TEMP ); // indicate concatenating into a static temp
 }
 
 
@@ -139,17 +139,21 @@ void    AsgnChar( void )
 // Perform character assignment.
 {
     itnode      *save_cit;
-    uint        num_args;
+    args_num    argc;
     size_t      i;
     size_t      j;
 
     save_cit = CITNode;
     AdvanceITPtr();
-    num_args = AsgnCat();
+    argc = AsgnCat();
     i = SrcChar( CITNode );
     j = TargChar( save_cit );
-    if( ( num_args == 1 ) && ( i > 0 ) && ( j > 0 ) ) {
-        if( OptimalChSize( i ) && OptimalChSize( j ) && ( i == j ) ) {
+    if( ( argc == 1 )
+      && ( i > 0 )
+      && ( j > 0 ) ) {
+        if( OptimalChSize( i )
+          && OptimalChSize( j )
+          && ( i == j ) ) {
             PushOpn( save_cit );
             EmitOp( FC_CHAR_1_MOVE );
             DumpType( MapTypes( FT_INTEGER, i ), i );
@@ -169,18 +173,18 @@ void    AsgnChar( void )
             OutInt( i );
             OutInt( j );
 #else /* _RISC_CPU */
-            CatArgs( num_args );
+            CatArgs( argc );
             CITNode = save_cit;
             PushOpn( CITNode );
             EmitOp( FC_CAT );
-            OutU16( (uint_16)num_args );
+            OutU16( argc );
 #endif
         }
     } else {
-        CatArgs( num_args );
+        CatArgs( argc );
         CITNode = save_cit;
         PushOpn( CITNode );
         EmitOp( FC_CAT );
-        OutU16( (uint_16)num_args );
+        OutU16( argc );
     }
 }

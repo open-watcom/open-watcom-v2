@@ -113,5 +113,6 @@ typedef unsigned_32     seg_offset;
 typedef unsigned_16     label_id;
 typedef unsigned_32     stmt_num;
 typedef unsigned_16     block_num;
+typedef unsigned_16     args_num;
 
 #endif

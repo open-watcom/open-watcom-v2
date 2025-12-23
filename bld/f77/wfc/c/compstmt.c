@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -430,11 +430,11 @@ static void CheckDoEnd( void )
 
     for( ;; ) {
         if( CSHead->typ == CS_DO ) {
-            if( CSHead->cs_info.do_parms->do_term != StmtNo ) {
+            if( CSHead->cs_info.do_parms->term_stmt_no != StmtNo ) {
                 break;
             }
         } else if( CSHead->typ == CS_DO_WHILE ) {
-            if( CSHead->cs_info.do_term != StmtNo ) {
+            if( CSHead->cs_info.term_stmt_no != StmtNo ) {
                 break;
             }
         } else {
@@ -444,11 +444,11 @@ static void CheckDoEnd( void )
     }
     for( cs_node = CSHead; cs_node != NULL; cs_node = cs_node->link ) {
         if( cs_node->typ == CS_DO ) {
-            if( cs_node->cs_info.do_parms->do_term == StmtNo ) {
+            if( cs_node->cs_info.do_parms->term_stmt_no == StmtNo ) {
                 Error( DO_NESTING_BAD );
             }
         } else if( cs_node->typ == CS_DO_WHILE ) {
-            if( cs_node->cs_info.do_term == StmtNo ) {
+            if( cs_node->cs_info.term_stmt_no == StmtNo ) {
                 Error( DO_NESTING_BAD );
             }
         }

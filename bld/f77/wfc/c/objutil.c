@@ -195,7 +195,7 @@ void    AlignEven( void )
 //=======================
 // Align ObjPtr on an even boundary.
 {
-    if( (int)(pointer_uint)ObjPtr & 0x0001 ) {
+    if( (pointer_uint)ObjPtr & 0x0001 ) {
         OutByte( 0 );
     }
 }

@@ -37,7 +37,7 @@ typedef union cs_info {
     struct do_entry     *do_parms;      // iterative DO-loop
     struct case_entry   *cases;         // SELECT statement and computed GOTO
     sym_id              rb;             // REMOTE BLOCKs
-    stmt_num            do_term;        // for DO WHILE
+    stmt_num            term_stmt_no;   // for DO WHILE
 } cs_info;
 
 typedef struct csnode {
@@ -68,7 +68,7 @@ typedef struct case_entry {
 
 typedef struct do_entry {
     sym_id              do_parm;
-    stmt_num            do_term;
+    stmt_num            term_stmt_no;
     sym_id              increment;
     sym_id              iteration;
     intstar4            incr_value;
