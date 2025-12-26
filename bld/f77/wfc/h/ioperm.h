@@ -31,7 +31,6 @@
 
 
 extern bool    IOPermChk( IOKW kw );
-extern byte    PermTest( IOKW kw );
 extern void    IOPermSet( IOKW kw );
 extern bool    Permission( IOKW kw );
 extern void    CheckList( void );

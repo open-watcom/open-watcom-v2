@@ -128,17 +128,17 @@ TYPE    IFType( IFF func ) {
 }
 
 
-IFF     IFSpecific( TYPE typ ) {
+bool    IFSpecific( TYPE typ ) {
 //==============================
 
     IFF         func;
-    IFF         magic;
+    bool        magic;
     sym_id      sym;
 
-    magic = 0;
+    magic = false;
     func = CITNode->sym_ptr->u.ns.si.fi.index;
     if( IFFlags[func].next == MAGIC ) {
-        magic = MAGIC;
+        magic = true;
     } else if( IFFlags[func].flags & IF_GENERIC ) {
         for( ; IFFlags[func].arg_typ != typ; ) {
             func = IFFlags[func].next;
@@ -163,12 +163,12 @@ IFF     IFSpecific( TYPE typ ) {
         sym->u.ns.si.fi.index = func;
         CITNode->sym_ptr = sym;
         if( IFFlags[func].flags & IF_IN_LINE ) {
-            magic = MAGIC;
+            magic = true;
         } else {
             MarkIFUsed( func );
         }
     } else if( IFFlags[func].flags & IF_IN_LINE ) {
-        magic = MAGIC;
+        magic = true;
     } else {
         MarkIFUsed( func );
     }

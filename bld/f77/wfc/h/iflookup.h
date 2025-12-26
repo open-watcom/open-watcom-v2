@@ -38,7 +38,7 @@ extern IFF          IFLookUp( void );
 extern bool         IFIsGeneric( IFF func );
 extern bool         IFIsMagic( IFF func );
 extern TYPE         IFType( IFF func );
-extern IFF          IFSpecific( TYPE typ );
+extern bool         IFSpecific( TYPE typ );
 extern bool         IsIFMax( IFF func );
 extern bool         IsIFMin( IFF func );
 extern bool         IsIntrinsic( unsigned_16 flags );

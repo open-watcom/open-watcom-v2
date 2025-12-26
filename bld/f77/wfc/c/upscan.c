@@ -817,7 +817,7 @@ static  void    Call( void )
     } else if( ClassIs( SY_SUBPROGRAM ) ) {
         if( BitOn( SY_INTRINSIC ) ) {
             if( CITNode->link->opn.ds != DSOPN_PHI ) {  // consider IFIX()
-                if( IFSpecific( IFPromote( CITNode->link->typ ) ) == MAGIC ) {
+                if( IFSpecific( IFPromote( CITNode->link->typ ) ) ) {
                     DetCallList();
                     IFPrmChk();     // must do before InLineCnvt and ...
                                     // ... after IFSpecific, DetCallList
