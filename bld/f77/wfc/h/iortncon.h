@@ -39,7 +39,7 @@ enum {
    EX_BK_SPACE,
    EX_END_FILE,
    EX_REWIND,
-   EX_INQUIRE
+   EX_INQUIRE,
    EX_Extension,
    EX_COUNT
 };

@@ -44,6 +44,7 @@
 #include "ioperm.h"
 #include "ioutls.h"
 #include "iokwlist.h"
+#include "iortncon.h"
 
 
 #define NO      0
