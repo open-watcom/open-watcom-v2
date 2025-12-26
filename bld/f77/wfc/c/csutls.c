@@ -48,22 +48,9 @@
 
 
 static  const STMT  CSWords[] = {
-        0,
-        PR_IF,
-        PR_ELSEIF,
-        PR_ELSE,
-        PR_GUESS,
-        PR_ADMIT,
-        PR_SELECT,
-        PR_CASE,
-        PR_OTHERWISE,
-        PR_ATEND,
-        PR_REMBLK,
-        PR_LOOP,
-        PR_WHILE,
-        PR_DO,
-        PR_GOTO,
-        PR_DO       // DO WHILE
+    #define CSTYP(id,stmt) stmt,
+    CSTYPES
+    #undef CSTYP
 };
 
 
@@ -108,7 +95,7 @@ itnode *GetBlockLabel(void)
     itnode      *citnode;
 
     citnode = CITNode;
-    while(  citnode->link->opr != OPR_TRM ) {
+    while( citnode->link->opr != OPR_TRM ) {
         citnode = citnode->link;
     }
     if( citnode->opr != OPR_COL ) {
@@ -117,7 +104,7 @@ itnode *GetBlockLabel(void)
     return( citnode );
 }
 
-void    AddCSNode( byte typ )
+void    AddCSNode( cstype typ )
 {
     csnode      *new_cs_node;
     itnode      *label;
@@ -212,9 +199,9 @@ void CSExtn(void)
     StmtExtension( SP_STRUCTURED_EXT );
 }
 
-bool CheckCSList( byte typ )
+bool CheckCSList( cstype typ )
 {
-    byte        head_typ;
+    cstype      head_typ;
 
     for( ;; ) {
         head_typ = CSHead->typ;

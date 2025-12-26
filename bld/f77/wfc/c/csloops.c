@@ -54,7 +54,7 @@
 #include "brseinfo.h"
 
 
-static void InitLoop( int loop_type )
+static void InitLoop( cstype loop_type )
 {
     AddCSNode( loop_type );
     CSHead->branch = NextLabel();

@@ -33,6 +33,30 @@
 
 #include "symtypes.h"
 
+#define CSTYPES \
+CSTYP( CS_IF,            PR_IF ) \
+CSTYP( CS_ELSEIF,        PR_ELSEIF ) \
+CSTYP( CS_ELSE,          PR_ELSE ) \
+CSTYP( CS_GUESS,         PR_GUESS ) \
+CSTYP( CS_ADMIT,         PR_ADMIT ) \
+CSTYP( CS_SELECT,        PR_SELECT ) \
+CSTYP( CS_CASE,          PR_CASE ) \
+CSTYP( CS_OTHERWISE,     PR_OTHERWISE ) \
+CSTYP( CS_ATEND,         PR_ATEND ) \
+CSTYP( CS_REMOTEBLOCK,   PR_REMBLK ) \
+CSTYP( CS_LOOP,          PR_LOOP ) \
+CSTYP( CS_WHILE,         PR_WHILE ) \
+CSTYP( CS_DO,            PR_DO ) \
+CSTYP( CS_COMPUTED_GOTO, PR_GOTO ) \
+CSTYP( CS_DO_WHILE,      PR_DO )
+
+typedef enum cstype {
+    #define CSTYP(id,stmt) id,
+    CSTYPES
+    #undef CSTYP
+    CS_EMPTY_LIST
+} cstype;
+
 typedef union cs_info {
     struct do_entry     *do_parms;      // iterative DO-loop
     struct case_entry   *cases;         // SELECT statement and computed GOTO
@@ -47,7 +71,7 @@ typedef struct csnode {
     label_id            bottom;
     label_id            cycle;
     block_num           block;
-    byte                typ;
+    cstype              typ;
     char                label[1];
 } csnode;
 
@@ -73,22 +97,3 @@ typedef struct do_entry {
     sym_id              iteration;
     intstar4            incr_value;
 } do_entry;
-
-enum {
-    CS_EMPTY_LIST,
-    CS_IF,
-    CS_ELSEIF,
-    CS_ELSE,
-    CS_GUESS,
-    CS_ADMIT,
-    CS_SELECT,
-    CS_CASE,
-    CS_OTHERWISE,
-    CS_ATEND,
-    CS_REMOTEBLOCK,
-    CS_LOOP,
-    CS_WHILE,
-    CS_DO,
-    CS_COMPUTED_GOTO,
-    CS_DO_WHILE
-};
