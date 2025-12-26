@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 //      id                 keyword
-pick( IO_NULL,            ""                )
+pick( IO_NONE,            ""                )
 pick( IO_ACCESS,          "ACCESS"          )
 pick( IO_ACTION,          "ACTION"          )
 pick( IO_BLANK,           "BLANK"           )

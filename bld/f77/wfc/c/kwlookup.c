@@ -43,18 +43,20 @@
 #include "kwlookup.h"
 
 
-int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool exact )
-//=====================================================================================
+int KwLookUp( const char **table, int count, const char *id, size_t id_len, bool exact )
+//======================================================================================
 {
     const char  *key;
     const char  *ident;
     int         mid;
     int         low;
+    int         high;
     size_t      kw_len;
 
     // index 0 is reserved
     // each keyword table has blank first item
     low = 1;
+    high = count - 1;
     while( low <= high ) {
         mid = (low + high) / 2;    // find mid point
         key = table[mid];

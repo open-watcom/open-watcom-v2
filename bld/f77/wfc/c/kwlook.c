@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +42,11 @@
 STMT    RecStmtKW( void ) {
 //=============================
 
-    return( KwLookUp( StmtKeywords, PR_KW_MAX, CITNode->opnd, CITNode->opnd_size, false ) );
+    return( KwLookUp( StmtKeywords, PR_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, false ) );
 }
 
 IOKW    RecIOKW( void ) {
 //=======================
 
-    return( KwLookUp( IOKeywords, IO_KW_MAX, CITNode->opnd, CITNode->opnd_size, true ) );
+    return( KwLookUp( IOKeywords, IO_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
 }

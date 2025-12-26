@@ -76,17 +76,11 @@ static iff_data     IFFlags[] = {
     #undef pick
 };
 
-int IFIndex( const char *name )
-//=============================
-{
-    return( KwLookUp( IFNames, IF_MAX_NAME, name, strlen( name ), true ) );
-}
-
 
 IFF     IFLookUp( void ) {
 //========================
 
-    return( KwLookUp( IFNames, IF_MAX_NAME, CITNode->opnd, CITNode->opnd_size, true ) );
+    return( KwLookUp( IFNames, IF_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
 }
 
 

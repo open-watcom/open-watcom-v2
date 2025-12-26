@@ -1084,7 +1084,7 @@ static hw_reg_set RegSet( void )
         for( i = 0; i < TokEnd - TokStart; i++ ) {
             regname_buf[i] = toupper( TokStart[i] );
         }
-        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ) - 1, regname_buf, TokEnd - TokStart, true );
+        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ), regname_buf, TokEnd - TokStart, true );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );

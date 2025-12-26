@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 //        that need changing: PRDEFN.H, KWLIST.C, PROCTBL.C, CFTABLE.C
 
 //      id              keyword                          processor         flags
-pick( PR_NULL,         "",                              &CpBadStmt,      0                          )
+pick( PR_NONE,         "",                              &CpBadStmt,      0                          )
 pick( PR_ADMIT,        "ADMIT",                         &CpAdmit,        BD|NS|BB                   )
 pick( PR_ALLOCATE,     "ALLOCATE",                      &CpAllocate,     SL|DB                      )
 pick( PR_ASSIGN,       "ASSIGN",                        &CpAssign,       SL|DB                      )

@@ -391,7 +391,7 @@ static  void    CkIntrinsic( void ) {
     if( (CITNode->flags & SY_SUB_PARM) == 0 ) {
         typ = CITNode->typ;
         func = IFLookUp();
-        if( func > 0 ) {
+        if( func != IF_NONE ) {
             sym_ptr->u.ns.si.fi.index = func;
             if( func == IF_ISIZEOF ) {
                 ASType |= AST_ISIZEOF;

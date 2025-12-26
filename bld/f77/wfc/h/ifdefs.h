@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,8 @@ typedef enum {
     #define pick(id,text,next,res,arg,flags) id,
     #include "ifdefn.h"
     #undef pick
+    IF_NAMES_COUNT,
 
-    IF_NAME_COUNT,
-
-    IF_MAX_NAME = IF_NAME_COUNT - 1,
     IF_NO_MORE  = 0xfe,
     MAGIC       = 0xff
 } IFF;
