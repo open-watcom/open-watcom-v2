@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,4 +40,6 @@ enum {
    EX_END_FILE,
    EX_REWIND,
    EX_INQUIRE
+   EX_Extension,
+   EX_COUNT
 };

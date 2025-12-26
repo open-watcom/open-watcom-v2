@@ -52,11 +52,9 @@
 // This table is used to determine if a control list item is permissible in
 // a particular i/o statement.
 
-#define TABLE_ENTRY     9
+static  const byte          PermTable[][EX_COUNT] = {
 
-static  const byte          PermTable[] = {
-
-//     READ WRT  OPEN CLS  BKSP ENDF REWD INQ  extension
+//     READ WRT  OPEN CLS  BKSP ENDF REWD INQ  Extension
 
        NO,  NO,  YES, NO,  NO,  NO,  NO,  YES, NO,  // "ACCESS"
        NO,  NO,  YES, NO,  NO,  NO,  NO,  YES, YES, // "ACTION"
@@ -95,14 +93,10 @@ bool    IOPermChk( IOKW kw ) {
 }
 
 
-void    IOPermSet( IOKW kw ) {
-//===========================
-
-    unsigned_32 i;
-
-    i = 1;
-    i = i << ( kw - 1 );
-    IOData |= i;
+void    IOPermSet( IOKW kw )
+//==========================
+{
+    IOData |= 1U << ( kw - 1 );
 }
 
 
@@ -117,10 +111,10 @@ bool    Permission( IOKW kw ) {
     } else if( IOPermChk( kw ) ) {
         OpndErr( IL_DUP_LIST );
     } else {
-        perm = ( PermTable[TABLE_ENTRY * ( kw - 1 ) + IOIndex()] != NO );
+        perm = ( PermTable[kw - 1][IOIndex()] != NO );
         if( perm ) {
             IOPermSet( kw );
-            if( PermTable[TABLE_ENTRY * ( kw - 1 ) + 8] == YES ) {
+            if( PermTable[kw - 1][EX_Extension] == YES ) {
                 Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[kw] );
             }
         } else {
