@@ -2,7 +2,6 @@
 host_os  = nt
 host_cpu = 386
 
-orl_dll = 1
 orl_rtdll = 1
 
 !include ../master.mif
