@@ -77,7 +77,7 @@ void    GStartIO( void ) {
     // statement labels when RT_ENDIO is generated; auxilliary i/o
     // statements don't generate RT_ENDIO so generate F-Code to check
     // for statement labels.
-    if( AuxIOStmt() || Already( IO_NAMELIST ) ) {
+    if( AuxIOStmt() || IOPermChk( IO_NAMELIST ) ) {
         EmitOp( FC_CHK_IO_STMT_LABEL );
     }
 }
@@ -161,7 +161,7 @@ void    GStopIO( void ) {
 // Generate code to return a null i/o item to run-time i/o.
 // This is done for only PRINT, WRITE and READ statements.
 
-    if( !Already( IO_NAMELIST ) ) {
+    if( !IOPermChk( IO_NAMELIST ) ) {
         EmitOp( FC_ENDIO );
     }
 }

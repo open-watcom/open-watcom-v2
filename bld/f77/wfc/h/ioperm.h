@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-extern bool    Already( IOKW kw );
-extern byte    PermTest( int kw );
-extern void    KWRememb( IOKW kw );
+extern bool    IOPermChk( IOKW kw );
+extern byte    PermTest( IOKW kw );
+extern void    IOPermSet( IOKW kw );
 extern bool    Permission( IOKW kw );
 extern void    CheckList( void );

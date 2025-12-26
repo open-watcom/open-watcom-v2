@@ -88,28 +88,14 @@ static  const byte          PermTable[] = {
 };
 
 
-bool    Already( IOKW kw ) {
+bool    IOPermChk( IOKW kw ) {
 //==========================
 
     return( ( ( IOData >> ( kw - 1 ) ) & 1 ) != 0 );
 }
 
 
-static  byte    ExtnTest( IOKW kw ) {
-//===================================
-
-    return( PermTable[TABLE_ENTRY * ( kw - 1 ) + 8] );
-}
-
-
-byte    PermTest( int kw ) {
-//==========================
-
-    return( PermTable[TABLE_ENTRY * ( kw - 1 ) + IOIndex()] );
-}
-
-
-void    KWRememb( IOKW kw ) {
+void    IOPermSet( IOKW kw ) {
 //===========================
 
     unsigned_32 i;
@@ -128,13 +114,13 @@ bool    Permission( IOKW kw ) {
     perm = false;
     if( kw == IO_NONE ) {
         OpndErr( IL_CTRL_LIST );
-    } else if( Already( kw ) ) {
+    } else if( IOPermChk( kw ) ) {
         OpndErr( IL_DUP_LIST );
     } else {
-        perm = ( PermTest( kw ) != NO );
+        perm = ( PermTable[TABLE_ENTRY * ( kw - 1 ) + IOIndex()] != NO );
         if( perm ) {
-            KWRememb( kw );
-            if( ExtnTest( kw ) == YES ) {
+            IOPermSet( kw );
+            if( PermTable[TABLE_ENTRY * ( kw - 1 ) + 8] == YES ) {
                 Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[kw] );
             }
         } else {
@@ -150,26 +136,26 @@ void    CheckList( void ) {
 
     bool        have_unit;
 
-    have_unit = Already( IO_UNIT );
+    have_unit = IOPermChk( IO_UNIT );
     if( StmtProc == PR_INQ ) {
         if( have_unit ) {
-            if( Already( IO_FILE ) ) {
+            if( IOPermChk( IO_FILE ) ) {
                 Error( IL_UNIT_AND_FILE );
             }
-        } else if( !Already( IO_FILE ) ) {
+        } else if( !IOPermChk( IO_FILE ) ) {
             Error( IL_NO_FILE_OR_UNIT );
         }
     } else if( !have_unit ) {
         Error( IL_NO_UNIT_ID );
     }
-    if( Already( IO_INTERNAL ) && Already( IO_REC ) ) {
+    if( IOPermChk( IO_INTERNAL ) && IOPermChk( IO_REC ) ) {
         Error( IL_AINTL );
     }
-    if( Already( IO_END ) && Already( IO_REC ) ) {
+    if( IOPermChk( IO_END ) && IOPermChk( IO_REC ) ) {
         Extension( IL_END_REC );
     }
-    if( Already( IO_LIST_DIR ) && Already( IO_INTERNAL ) ) {
+    if( IOPermChk( IO_LIST_DIR ) && IOPermChk( IO_INTERNAL ) ) {
         Extension( IL_ILST );
     }
-    Remember.end_equals = Already( IO_END );
+    Remember.end_equals = IOPermChk( IO_END );
 }

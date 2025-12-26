@@ -62,7 +62,7 @@ void    IOList( void ) {
     if( CITNode->link != NULL ) {
         if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
             AdvanceITPtr();                   // WRITE(6,3)
-        } else if( Already( IO_NAMELIST ) ) {
+        } else if( IOPermChk( IO_NAMELIST ) ) {
             Error( IL_NO_IOLIST );
         }
         for( ;; ) {

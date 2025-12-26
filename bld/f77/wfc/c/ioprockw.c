@@ -229,13 +229,13 @@ void    FormatIdd( void ) {
             ge->sym->u.ns.flags |= SY_REFERENCED;
         }
         GSetNameList( FC_SET_NML );
-        KWRememb( IO_NAMELIST );
+        IOPermSet( IO_NAMELIST );
     } else if( RecNumber() ) {
         GPassStmtNo( LkUpFormat(), FC_SET_FMT );
     } else if( RecNOpn() && RecNextOpr( OPR_MUL ) ) {
         if( CITNode->link->opn.ds == DSOPN_PHI ) {
             AdvanceITPtr();   // nothing needs to be loaded for default
-            KWRememb( IO_LIST_DIR );
+            IOPermSet( IO_LIST_DIR );
         }
     } else if( RecNOpn() && RecNextOpr( OPR_COM ) ) {
         Extension( IL_NO_ASTERISK );
@@ -283,7 +283,7 @@ void    Unit(void) {
             if( _IsTypeInteger( CITNode->typ ) && !RecArrName() ) {
                 GPassValue( FC_SET_UNIT );
             } else if( CITNode->typ == FT_CHAR ) {
-                KWRememb( IO_INTERNAL );
+                IOPermSet( IO_INTERNAL );
                 CkAssignOk();
                 if( RecArrName() ) {
                     ChkAssumed();
