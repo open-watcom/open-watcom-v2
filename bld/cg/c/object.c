@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ void    GenObject( void )
                     align = DepthAlign( blk->depth );
                 }
                 CodeLabel( blk->label, align );
-                if( (blk->edge[0].flags & BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
+                if( (blk->edge[0].flags & BEF_BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
                     TellCondemnedLabel( blk->label );
                 }
             }
@@ -179,11 +179,11 @@ void    GenObject( void )
                 for( targets = blk->targets; targets-- > 0; ) {
                     lbl = blk->edge[targets].destination.u.lbl;
                     TellReachedLabel( lbl );
-                    if( (blk->edge[targets].flags & DEST_LABEL_DIES) && BlocksUnTrimmed ) {
+                    if( (blk->edge[targets].flags & BEF_DEST_LABEL_DIES) && BlocksUnTrimmed ) {
                         TellCondemnedLabel( lbl );
                         for( i = targets; i-- > 0; ) {
                             if( blk->edge[i].destination.u.lbl == lbl ) {
-                                blk->edge[i].flags &= ~DEST_LABEL_DIES;
+                                blk->edge[i].flags &= ~BEF_DEST_LABEL_DIES;
                             }
                         }
                     }

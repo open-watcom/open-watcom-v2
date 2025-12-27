@@ -213,10 +213,10 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
                 }
             }
             edge = &copy->edge[i];
-            edge->flags = DEST_IS_BLOCK;
-//            edge->flags &= ~ONE_ITER_EXIT;
+            edge->flags = BEF_DEST_IS_BLOCK;
+//            edge->flags &= ~BEF_ONE_ITER_EXIT;
             if( dest == old_header ) {
-                edge->flags |= DEST_IS_HEADER;
+                edge->flags |= BEF_DEST_IS_HEADER;
             }
             edge->source->targets++;
             PointEdge( edge, dest );
@@ -239,7 +239,7 @@ static  void    MarkHeaderEdges( block *loop, block *head )
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
             if( edge->destination.u.blk == head ) {
-                edge->flags |= DEST_IS_HEADER;
+                edge->flags |= BEF_DEST_IS_HEADER;
             }
         }
     }
@@ -258,7 +258,7 @@ static  void    RedirectHeaderEdges( block *loop, block *new_head )
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
-            if( edge->flags & DEST_IS_HEADER ) {
+            if( edge->flags & BEF_DEST_IS_HEADER ) {
                 MoveEdge( edge, new_head );
                 edge->source = blk;
             }
@@ -276,7 +276,7 @@ static  void    UnMarkHeaderEdges( block *loop )
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
-            edge->flags &= ~DEST_IS_HEADER;
+            edge->flags &= ~BEF_DEST_IS_HEADER;
         }
     }
 }
@@ -702,7 +702,7 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
         blki->next_block = blk;
         blk->loop_head = Head;
         edge = &blk->edge[0];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, edgei->destination.u.blk );
         MoveEdge( edgei, blk );
@@ -999,11 +999,11 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
         SuffixIns( new_blk->ins.head.prev, ins );
         edge = &new_blk->edge[0];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, cleanup_copy->head );
         edge = &new_blk->edge[1];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, loop->loop_head );
         MoveEdge( &PreHead->edge[0], new_blk );
@@ -1048,11 +1048,11 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
                 AddBlocks( loop, blk );
                 MoveEdge( &loop->edge[0], blk );
                 edge = &blk->edge[0];
-                edge->flags = DEST_IS_BLOCK;
+                edge->flags = BEF_DEST_IS_BLOCK;
                 edge->source->targets++;
                 PointEdge( edge, Head->edge[0].destination.u.blk );
                 edge = &blk->edge[1];
-                edge->flags = DEST_IS_BLOCK;
+                edge->flags = BEF_DEST_IS_BLOCK;
                 edge->source->targets++;
                 PointEdge( edge, Head->edge[1].destination.u.blk );
                 blk->u.loop = loop;

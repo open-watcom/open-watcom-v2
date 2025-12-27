@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ void    RemoveEdge( block_edge *edge )
     /*
      * unhook edge from its old destination's input list
      */
-    if( edge->flags & DEST_IS_BLOCK ) {
+    if( edge->flags & BEF_DEST_IS_BLOCK ) {
         owner = &edge->destination.u.blk->input_edges;
         for( ;; ) {
             curr = *owner;
@@ -89,7 +89,7 @@ void    MoveEdge( block_edge *edge, block *new_dest )
  */
 {
     RemoveEdge( edge );
-    edge->flags = DEST_IS_BLOCK;
+    edge->flags = BEF_DEST_IS_BLOCK;
     edge->source->targets++;
     PointEdge( edge, new_dest );
 }
@@ -120,7 +120,7 @@ block   *SplitBlock( block *blk, instruction *ins )
     new_blk->id = NO_BLOCK_ID;
     blk->targets = 1;
     edge = &blk->edge[0];
-    edge->flags = DEST_IS_BLOCK;
+    edge->flags = BEF_DEST_IS_BLOCK;
     edge->source->targets++;
     PointEdge( edge, new_blk );
     edge = &new_blk->edge[0];

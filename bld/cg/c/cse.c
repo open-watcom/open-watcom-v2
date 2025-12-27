@@ -395,7 +395,7 @@ static  void    FindPartition( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[0];
         for( i = blk->targets; i > 0; --i ) {
-            if( edge->flags & DEST_IS_BLOCK ) {
+            if( edge->flags & BEF_DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
                 if( !_IsBlkVisited( oth )
                   && oth->inputs == 1 ) {

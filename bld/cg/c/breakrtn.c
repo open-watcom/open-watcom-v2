@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,7 @@ bool    CreateBreak( void )
         if( AskIfReachedLabel( blk->label )
           && blk != HeadBlock )
             break;
-        if( (blk->edge[0].flags & BLOCK_LABEL_DIES) == 0
+        if( (blk->edge[0].flags & BEF_BLOCK_LABEL_DIES) == 0
           && blk != HeadBlock ) {
             _MarkBlkVisited( blk );
             ++pending;
@@ -113,8 +113,8 @@ bool    CreateBreak( void )
         }
         edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
-            if( edge->flags & DEST_IS_BLOCK ) {
-                if( edge->flags & DEST_LABEL_DIES ) {
+            if( edge->flags & BEF_DEST_IS_BLOCK ) {
+                if( edge->flags & BEF_DEST_LABEL_DIES ) {
                     if( _IsBlkVisited( edge->destination.u.blk ) ) {
                         _MarkBlkUnVisited( edge->destination.u.blk );
                         if( --pending == 0 ) {
@@ -170,7 +170,7 @@ bool    CreateBreak( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
-            if( (edge->flags & DEST_IS_BLOCK) == 0
+            if( (edge->flags & BEF_DEST_IS_BLOCK) == 0
               || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
                 exit_edge->edge = edge;
@@ -187,13 +187,13 @@ bool    CreateBreak( void )
      */
     for( exit_edge = BranchOuts; exit_edge != NULL; exit_edge = exit_edge->next ) {
         edge = exit_edge->edge;
-        if( edge->flags & DEST_IS_BLOCK ) {
+        if( edge->flags & BEF_DEST_IS_BLOCK ) {
             exit_edge->lbl = edge->destination.u.blk->label;
             RemoveInputEdge( edge );
         } else {
             exit_edge->lbl = edge->destination.u.lbl;
         }
-        edge->flags |= DEST_IS_BLOCK;
+        edge->flags |= BEF_DEST_IS_BLOCK;
         PointEdge( edge, exit_blk );
     }
 
@@ -215,7 +215,7 @@ bool    CreateBreak( void )
         if( edge->source->gen_id >= break_blk->gen_id ) {
             RemoveInputEdge( edge );
             edge->destination.u.lbl = edge->destination.u.blk->label;
-            edge->flags &= ~DEST_IS_BLOCK;
+            edge->flags &= ~BEF_DEST_IS_BLOCK;
         }
     }
     /*
@@ -237,7 +237,7 @@ bool    CreateBreak( void )
     _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
     _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
     edge = &blk->edge[0];
-    edge->flags = DEST_IS_BLOCK;
+    edge->flags = BEF_DEST_IS_BLOCK;
     edge->source = blk;
     PointEdge( edge, HeadBlock );
     HeadBlock->prev_block = blk;
@@ -271,7 +271,7 @@ void    FixBreak( void )
             if( blk->gen_id == exit_edge->gen_id ) {
                 RemoveInputEdge( exit_edge->edge );
                 exit_edge->edge->destination.u.lbl = exit_edge->lbl;
-                exit_edge->edge->flags &= ~DEST_IS_BLOCK;
+                exit_edge->edge->flags &= ~BEF_DEST_IS_BLOCK;
                 break;
             }
         }

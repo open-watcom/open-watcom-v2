@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,12 +217,12 @@ static  block *ScanForLabelReturn( block *blk )
 
     if( _IsBlkAttr( blk, BLK_RETURN | BLK_CALL_LABEL ) )
         return( NULL );
-    blk->edge[0].flags |= DOWN_ONE_CALL;
+    blk->edge[0].flags |= BEF_DOWN_ONE_CALL;
     if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) )
         return( blk );
     for( i = 0; i < blk->targets; ++i ) {
         son = blk->edge[i].destination.u.blk;
-        if( son->edge[0].flags & DOWN_ONE_CALL )
+        if( son->edge[0].flags & BEF_DOWN_ONE_CALL )
             continue;
         if( SafeRecurseCG( (func_sr)ScanForLabelReturn, son ) == NULL ) {
             return( NULL );
@@ -1083,7 +1083,7 @@ void    GenProlog( void )
 void    InitStackDepth( block *blk )
 /**********************************/
 {
-    if( blk->edge[0].flags & DOWN_ONE_CALL ) {
+    if( blk->edge[0].flags & BEF_DOWN_ONE_CALL ) {
         StackDepth = WORD_SIZE;
     } else {
         StackDepth = 0;

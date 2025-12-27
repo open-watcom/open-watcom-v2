@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,12 +99,12 @@ static  void    NoBlocksToSelf( void )
                  * retarget edge to point to new block
                  */
                 edge->destination.u.blk = new_blk;
-                edge->flags &= ~DEST_LABEL_DIES;
+                edge->flags &= ~BEF_DEST_LABEL_DIES;
                 /*
                  * set new block to jump from new_blk to blk
                  */
                 new_edge = &new_blk->edge[0];
-                new_edge->flags |= DEST_IS_BLOCK;
+                new_edge->flags |= BEF_DEST_IS_BLOCK;
                 new_edge->destination.u.blk = blk;
                 new_edge->source = new_blk;
                 /*

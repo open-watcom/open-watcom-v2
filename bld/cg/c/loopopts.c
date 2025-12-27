@@ -204,7 +204,7 @@ block    *AddPreBlock( block *postblk )
     preblk->targets = 1;
     edge = &preblk->edge[0];
     edge->source = preblk;
-    edge->flags = SOURCE_IS_PREHEADER | DEST_IS_BLOCK;
+    edge->flags = BEF_SOURCE_IS_PREHEADER | BEF_DEST_IS_BLOCK;
     PointEdge( edge, postblk );
     postblk->label = AskForNewLabel();
     FixBlockIds();
@@ -244,7 +244,7 @@ static bool     IsPreHeader( block *test )
             }
         }
     }
-    test->edge[0].flags |= SOURCE_IS_PREHEADER;
+    test->edge[0].flags |= BEF_SOURCE_IS_PREHEADER;
     return( true );
 }
 
@@ -259,7 +259,7 @@ static block    *FindPreHeader( void )
     block_edge  *edge;
 
     for( edge = Head->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( edge->flags & SOURCE_IS_PREHEADER ) {
+        if( edge->flags & BEF_SOURCE_IS_PREHEADER ) {
             return( edge->source );
         }
     }
@@ -391,7 +391,7 @@ static bool     KillOneTrippers( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( i = blk->targets; i-- > 0; ) {
-            if( blk->edge[i].flags & ONE_ITER_EXIT ) {
+            if( blk->edge[i].flags & BEF_ONE_ITER_EXIT ) {
                 for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                     next = ins->head.next;
                     if( _OpIsCondition( ins->head.opcode )
@@ -2287,13 +2287,13 @@ void    MoveDownLoop( block *cond )
         }
     }
     cond->gen_id = after_id;
-    cond->edge[0].flags &= ~BLOCK_LABEL_DIES;
+    cond->edge[0].flags &= ~BEF_BLOCK_LABEL_DIES;
     for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
-        edge->flags &= ~DEST_LABEL_DIES;
+        edge->flags &= ~BEF_DEST_LABEL_DIES;
     }
     for( i = cond->targets; i-- > 0; ) {
-        cond->edge[i].flags &= ~DEST_LABEL_DIES;
-        cond->edge[i].destination.u.blk->edge[0].flags &= ~BLOCK_LABEL_DIES;
+        cond->edge[i].flags &= ~BEF_DEST_LABEL_DIES;
+        cond->edge[i].destination.u.blk->edge[0].flags &= ~BEF_BLOCK_LABEL_DIES;
     }
 }
 
@@ -3479,7 +3479,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
       && Head->iterations == 1 ) {
         if( cond_blk != Head
           || Loop->u.loop == NULL ) {
-            exit_edge->flags |= ONE_ITER_EXIT;
+            exit_edge->flags |= BEF_ONE_ITER_EXIT;
         }
     }
     if( unroll ) {
@@ -3546,10 +3546,10 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
                                      _FalseIndex( cond ), cond->type_class );
             SuffixPreHeader( dupcond );
             edge = &PreHead->edge[0];
-            edge->flags = DEST_IS_BLOCK;
+            edge->flags = BEF_DEST_IS_BLOCK;
             PointEdge( edge, cond_blk->edge[0].destination.u.blk );
             edge = &PreHead->edge[1];
-            edge->flags = DEST_IS_BLOCK;
+            edge->flags = BEF_DEST_IS_BLOCK;
             PointEdge( edge, cond_blk->edge[1].destination.u.blk );
             MoveDownLoop( cond_blk );
             new_head = loop_edge->destination.u.blk;

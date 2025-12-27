@@ -200,7 +200,7 @@ static  void    DumpBlkLabel( block *b )
         DumpPtr( b->label );
         DumpChar( ' ' );
         DumpXString( AskName( AskForLblSym( b->label ), CG_FE ) );
-        if( b->edge[0].flags & BLOCK_LABEL_DIES ) {
+        if( b->edge[0].flags & BEF_BLOCK_LABEL_DIES ) {
             DumpLiteral( " label dies" );
         }
     }
@@ -307,10 +307,10 @@ static  void    DumpGotos( block *b, bool all )
     DumpPtr( &b->edge[0] );
     DumpLiteral( "           Destinations: " );
     if( b->targets > 0 ) {
-        if( ( b->edge[0].flags & DEST_LABEL_DIES ) && all ) {
+        if( ( b->edge[0].flags & BEF_DEST_LABEL_DIES ) && all ) {
             DumpLiteral( "(kills) " );
         }
-        if( b->edge[0].flags & DEST_IS_BLOCK ) {
+        if( b->edge[0].flags & BEF_DEST_IS_BLOCK ) {
             DumpBlkId( b->edge[0].destination.u.blk );
         } else {
             DumpChar( 'L' );
@@ -318,10 +318,10 @@ static  void    DumpGotos( block *b, bool all )
         }
         for( i = 1; i < b->targets; ++i ) {
             DumpLiteral( ", " );
-            if( ( b->edge[i].flags & DEST_LABEL_DIES ) && all ) {
+            if( ( b->edge[i].flags & BEF_DEST_LABEL_DIES ) && all ) {
                 DumpLiteral( "(kills) " );
             }
-            if( b->edge[i].flags & DEST_IS_BLOCK ) {
+            if( b->edge[i].flags & BEF_DEST_IS_BLOCK ) {
                 DumpBlkId( b->edge[i].destination.u.blk );
             } else {
                 DumpChar( 'L' );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,9 +96,9 @@ block   *NewBlock( label_handle label, bool label_dies )
 
     blk = MakeBlock( label, 1 );
     if( label_dies ) {
-        blk->edge[0].flags = BLOCK_LABEL_DIES;
+        blk->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     } else {
-        blk->edge[0].flags = 0;
+        blk->edge[0].flags = BEF_NONE;
     }
     return( blk );
 }
@@ -222,7 +222,7 @@ void    GenBlock( block_class class, int targets )
         class |= BLK_BIG_LABEL;
     CurrBlock->class = class;
     while( --targets >= 1 ) {
-        CurrBlock->edge[targets].flags = 0;
+        CurrBlock->edge[targets].flags = BEF_NONE;
     }
 }
 
@@ -238,7 +238,7 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     new_blk = CGAlloc( BLOCK_SIZE( targets ) );
     Copy( blk, new_blk, BLOCK_SIZE( targets - 1 ) );
     new_blk->edge[targets - 1].destination.u.lbl = lbl;
-    new_blk->edge[targets - 1].flags = 0;
+    new_blk->edge[targets - 1].flags = BEF_NONE;
     new_blk->targets = targets;
     /*
      * Move all references to blk
@@ -301,7 +301,7 @@ void    AddTarget( label_handle dest, bool dest_label_dies )
     edge->destination.u.lbl = dest;
     edge->next_source = NULL;
     if( dest_label_dies ) {
-        edge->flags |= DEST_LABEL_DIES;
+        edge->flags |= BEF_DEST_LABEL_DIES;
     }
 }
 
@@ -334,7 +334,7 @@ void    FixEdges( void )
                 edge = &blk->edge[targets];
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
-                    edge->flags |= DEST_IS_BLOCK;
+                    edge->flags |= BEF_DEST_IS_BLOCK;
                     PointEdge( edge, dest );
                 }
             }
@@ -438,10 +438,10 @@ void    UnFixEdges( void )
         if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[targets];
-                if( edge->flags & DEST_IS_BLOCK ) {
+                if( edge->flags & BEF_DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );
                     edge->destination.u.lbl = edge->destination.u.blk->label;
-                    edge->flags &= ~DEST_IS_BLOCK;
+                    edge->flags &= ~BEF_DEST_IS_BLOCK;
                 }
             }
         }

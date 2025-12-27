@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ void    RemoveInputEdge( block_edge *edge )
     block       *dest;
     block_edge  *prev;
 
-    if( (edge->flags & DEST_IS_BLOCK) == 0 )
+    if( (edge->flags & BEF_DEST_IS_BLOCK) == 0 )
         return;
     dest = edge->destination.u.blk;
     dest->inputs --;

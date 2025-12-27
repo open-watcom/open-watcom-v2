@@ -130,12 +130,12 @@ bool    FiniLabel( label_handle lbl, block *blk )
 
     for( i = blk->targets; i-- > 0; ) {
         if( blk->edge[i].destination.u.lbl == lbl ) {
-            blk->edge[i].flags |= DEST_LABEL_DIES;
+            blk->edge[i].flags |= BEF_DEST_LABEL_DIES;
             return( true );
         }
     }
     if( blk->label == lbl ) {
-        blk->edge[0].flags |= BLOCK_LABEL_DIES;
+        blk->edge[0].flags |= BEF_BLOCK_LABEL_DIES;
         return( true );
     }
     return( false );

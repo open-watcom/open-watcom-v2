@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,123 +54,122 @@
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
-typedef uint_32                 block_flags;
+typedef enum {
+    BEF_NONE                    = 0x00,
+    BEF_BLOCK_LABEL_DIES        = 0x01,
+    BEF_DEST_LABEL_DIES         = 0x02,
+    BEF_SOURCE_IS_PREHEADER     = 0x04,
+    BEF_DEST_IS_BLOCK           = 0x08,
+    BEF_DOWN_ONE_CALL           = 0x10,
+    BEF_ONE_ITER_EXIT           = 0x20,
+    BEF_DEST_IS_HEADER          = 0x40,
+} block_flags;
 
 typedef enum {
-        BLOCK_LABEL_DIES        = 0x01,
-        DEST_LABEL_DIES         = 0x02,
-        SOURCE_IS_PREHEADER     = 0x04,
-        DEST_IS_BLOCK           = 0x08,
-        DOWN_ONE_CALL           = 0x10,
-        ONE_ITER_EXIT           = 0x20,
-        DEST_IS_HEADER          = 0x40
-} block_flags_consts;
+    BLK_RETURN                  = 0x00000001,
+    BLK_JUMP                    = 0x00000002,
+    BLK_CONDITIONAL             = 0x00000004,
+    BLK_SELECT                  = 0x00000008,
 
-typedef enum {
-        BLK_RETURN                  = 0x00000001,
-        BLK_JUMP                    = 0x00000002,
-        BLK_CONDITIONAL             = 0x00000004,
-        BLK_SELECT                  = 0x00000008,
+    BLK_ITERATIONS_KNOWN        = 0x00000010,
+    BLK_BIG_LABEL               = 0x00000020,
+    BLK_CALL_LABEL              = 0x00000040,
+    BLK_LABEL_RETURN            = 0x00000080,
 
-        BLK_ITERATIONS_KNOWN        = 0x00000010,
-        BLK_BIG_LABEL               = 0x00000020,
-        BLK_CALL_LABEL              = 0x00000040,
-        BLK_LABEL_RETURN            = 0x00000080,
+    BLK_LOOP_HEADER             = 0x00000100,
+    BLK_IN_LOOP                 = 0x00000200,
+    BLK_LOOP_EXIT               = 0x00000400,
+    BLK_BLOCK_VISITED           = 0x00000800,
 
-        BLK_LOOP_HEADER             = 0x00000100,
-        BLK_IN_LOOP                 = 0x00000200,
-        BLK_LOOP_EXIT               = 0x00000400,
-        BLK_BLOCK_VISITED           = 0x00000800,
+    BLK_RETURNED_TO             = 0x00001000,
+    BLK_UNKNOWN_DESTINATION     = 0x00002000,
+    BLK_BLOCK_MARKED            = 0x00004000,
+    BLK_MULTIPLE_EXITS          = 0x00008000,
 
-        BLK_RETURNED_TO             = 0x00001000,
-        BLK_UNKNOWN_DESTINATION     = 0x00002000,
-        BLK_BLOCK_MARKED            = 0x00004000,
-        BLK_MULTIPLE_EXITS          = 0x00008000,
+    BLK_DONT_UNROLL             = 0x00010000,
+    BLK_IGNORE                  = 0x00020000,
+    BLK_FLOODED                 = 0x00040000,
 
-        BLK_DONT_UNROLL             = 0x00010000,
-        BLK_IGNORE                  = 0x00020000,
-        BLK_FLOODED                 = 0x00040000,
-
-        BLK_BIG_JUMP                = 0x00000000    /* no longer supported */
+    BLK_BIG_JUMP                = 0x00000000    /* no longer supported */
 } block_class;
 
 
 typedef struct block            *block_pointer;
 
 typedef struct block_edge {
-        struct destination {
-            union {
-                block_pointer   blk;
-                label_handle    lbl;
-            } u;
-        }                       destination;    /* target */
-        struct block            *source;        /* source of edge */
-        struct block_edge       *next_source;   /* next source to same target */
-        level_depth             join_level;     /* interval levels joined */
-        block_flags             flags;
+    struct destination {
+        union {
+            block_pointer   blk;
+            label_handle    lbl;
+        } u;
+    }                       destination;    /* target */
+    struct block            *source;        /* source of edge */
+    struct block_edge       *next_source;   /* next source to same target */
+    level_depth             join_level;     /* interval levels joined */
+    block_flags             flags;
 } block_edge;
 
 typedef struct interval_def {
-        struct interval_def     *parent;
-        struct block            *first_block;
-        struct block            *last_block;
-        struct interval_def     *sub_int;
-        struct interval_def     *next_sub_int;
-        struct interval_def     *link;
-        level_depth             level;
+    struct interval_def     *parent;
+    struct block            *first_block;
+    struct block            *last_block;
+    struct interval_def     *sub_int;
+    struct interval_def     *next_sub_int;
+    struct interval_def     *link;
+    level_depth             level;
 } interval_def;
 
 typedef struct data_flow_def {
-        global_bit_set  in;
-        global_bit_set  out;
-        global_bit_set  def;
-        global_bit_set  use;
-        global_bit_set  call_exempt;
-        global_bit_set  need_load;
-        global_bit_set  need_store;
+    global_bit_set          in;
+    global_bit_set          out;
+    global_bit_set          def;
+    global_bit_set          use;
+    global_bit_set          call_exempt;
+    global_bit_set          need_load;
+    global_bit_set          need_store;
 } data_flow_def;
 
 typedef struct block_ins {
-        struct ins_header       head;
-        struct block            *blk;
+    struct ins_header       head;
+    struct block            *blk;
 } block_ins;
 
 #define _BLOCK( ins ) ( ( (block_ins *)ins)->blk )
 
-typedef struct cc_control       cc_control;
-typedef struct score            score;
+typedef struct cc_control   cc_control;
+typedef struct score        score;
 
 typedef struct block {
-        struct block_ins        ins;
-        struct block            *next_block;    /* used for DFS */
-        struct block            *prev_block;
-        union {
-            struct interval_def *interval;
-            struct block        *partition;
-            struct block        *loop;
-        } u;
-        struct block            *loop_head;
-        struct data_flow_def    *dataflow;
-        struct block_edge       *input_edges;
-        union {
-            cc_control          *cc;            /* used by condition control */
-            score               *scoreboard;    /* used by score */
-        } u1;
-        dominator_info          dom;            /* least node in dominator set */
-        type_length             stack_depth;    /* set by FlowSave stuff */
-        union {
-            struct block        *alter_ego;     /* used in loop unrolling */
-            struct block        *next;          /* used for CALL_LABEL kludge */
-        } u2;
-        label_handle            label;          /* front end identification */
-        local_bit_set           available_bit;
-        level_depth             depth;          /* loop nesting depth */
-        block_num               id;             /* internal identification */
-        block_num               gen_id;
-        block_num               inputs;         /* number of input edges */
-        block_num               targets;        /* number of target blocks */
-        block_class             class;
-        int_32                  iterations;
-        uint_32                 unroll_count;
-        struct block_edge       edge[1];
+    struct block_ins        ins;
+    struct block            *next_block;    /* used for DFS */
+    struct block            *prev_block;
+    union {
+        struct interval_def *interval;
+        struct block        *partition;
+        struct block        *loop;
+    } u;
+    struct block            *loop_head;
+    struct data_flow_def    *dataflow;
+    struct block_edge       *input_edges;
+    union {
+        cc_control          *cc;            /* used by condition control */
+        score               *scoreboard;    /* used by score */
+    } u1;
+    dominator_info          dom;            /* least node in dominator set */
+    type_length             stack_depth;    /* set by FlowSave stuff */
+    union {
+        struct block        *alter_ego;     /* used in loop unrolling */
+        struct block        *next;          /* used for CALL_LABEL kludge */
+    } u2;
+    label_handle            label;          /* front end identification */
+    local_bit_set           available_bit;
+    level_depth             depth;          /* loop nesting depth */
+    block_num               id;             /* internal identification */
+    block_num               gen_id;
+    block_num               inputs;         /* number of input edges */
+    block_num               targets;        /* number of target blocks */
+    block_class             class;
+    int_32                  iterations;
+    uint_32                 unroll_count;
+    struct block_edge       edge[1];
 } block;
