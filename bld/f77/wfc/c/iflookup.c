@@ -77,9 +77,9 @@ static iff_data     IFFlags[] = {
 };
 
 
-IFF     IFLookUp( void ) {
-//========================
-
+IFF     IFLookUp( void )
+//======================
+{
     return( KwLookUp( IFNames, IF_KW_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
 }
 
@@ -107,30 +107,30 @@ static sym_id IFSymLookup( const char *name, size_t len )
 }
 
 
-bool    IFIsGeneric( IFF func ) {
-//================================
-
+bool    IFIsGeneric( IFF func )
+//=============================
+{
     return( (IFFlags[func].flags & IF_GENERIC) != 0 );
 }
 
 
-bool    IFIsMagic( IFF func ) {
-//==============================
-
+bool    IFIsMagic( IFF func )
+//===========================
+{
     return( IFFlags[func].next == MAGIC );
 }
 
 
-TYPE    IFType( IFF func ) {
-//===========================
-
+TYPE    IFType( IFF func )
+//========================
+{
     return( IFFlags[func].ret_typ );
 }
 
 
-bool    IFSpecific( TYPE typ ) {
-//==============================
-
+bool    IFSpecific( TYPE typ )
+//============================
+{
     IFF         func;
     bool        magic;
     sym_id      sym;
@@ -179,61 +179,59 @@ bool    IFSpecific( TYPE typ ) {
 }
 
 
-bool    IsIFMax( IFF func ) {
-//==========================
-
+bool    IsIFMax( IFF func )
+//=========================
 // Any changes here should be made in InlineCnvt in upscan.c
-
-    return( (func == IF_AMAX0) || (func == IF_AMAX1) || (func == IF_DMAX1) ||
-            (func == IF_QMAX1) || (func == IF_I1MAX0) || (func == IF_I2MAX0) ||
-            ( func == IF_MAX0 ) || ( func == IF_MAX1 ) );
+{
+    return( (func == IF_AMAX0) || (func == IF_AMAX1) || (func == IF_DMAX1)
+        || (func == IF_QMAX1) || (func == IF_I1MAX0) || (func == IF_I2MAX0)
+        || ( func == IF_MAX0 ) || ( func == IF_MAX1 ) );
 }
 
 
-bool    IsIFMin( IFF func ) {
-//==========================
-
+bool    IsIFMin( IFF func )
+//=========================
 // Any changes here should be made in InlineCnvt in upscan.c
-
-    return( (func == IF_AMIN0) || (func == IF_AMIN1) || (func == IF_DMIN1) ||
-            (func == IF_QMIN1) || (func == IF_I1MIN0) || (func == IF_I2MIN0) ||
-            (func == IF_MIN0) || (func == IF_MIN1) );
+{
+    return( (func == IF_AMIN0) || (func == IF_AMIN1) || (func == IF_DMIN1)
+        || (func == IF_QMIN1) || (func == IF_I1MIN0) || (func == IF_I2MIN0)
+        || (func == IF_MIN0) || (func == IF_MIN1) );
 }
 
 
-bool    IsIntrinsic( unsigned_16 flags ) {
-//========================================
-
-    return( ( (flags & SY_CLASS) == SY_SUBPROGRAM ) &&
-            ( (flags & SY_INTRINSIC) != 0 ) );
+bool    IsIntrinsic( unsigned_16 flags )
+//======================================
+{
+    return( ( (flags & SY_CLASS) == SY_SUBPROGRAM )
+        && ( (flags & SY_INTRINSIC) != 0 ) );
 }
 
 
-bool    IFAsArg( IFF func ) {
-//==============================
-
+bool    IFAsArg( IFF func )
+//=========================
+{
     return( IFFlags[func].flags & IF_ARG_OK );
 }
 
-bool    IFVarArgs( IFF func ) {
-//==============================
-
+bool    IFVarArgs( IFF func )
+//===========================
+{
     return( (IFFlags[func].flags & IF_COUNT_MASK) == TWO_OR_MORE );
 }
 
 
-void    IFChkExtension( IFF func ) {
-//==================================
-
+void    IFChkExtension( IFF func )
+//================================
+{
     if( IFFlags[func].flags & IF_EXTENSION ) {
         Extension( LI_IF_NOT_STANDARD, IFNames[func] );
     }
 }
 
 
-void    IFCntPrms( IFF func, int actual_cnt ) {
-//===============================================
-
+void    IFCntPrms( IFF func, int actual_cnt )
+//===========================================
+{
     int         need;
 
     need = (IFFlags[func].flags & IF_COUNT_MASK);
@@ -254,16 +252,16 @@ void    IFCntPrms( IFF func, int actual_cnt ) {
 }
 
 
-bool    IFGenInLine( IFF func ) {
-//================================
-
+bool    IFGenInLine( IFF func )
+//=============================
+{
     return( (IFFlags[func].flags & IF_IN_LINE) != 0 );
 }
 
 
-TYPE    IFArgType( IFF func ) {
-//==============================
-
+TYPE    IFArgType( IFF func )
+//===========================
+{
     return( IFFlags[func].arg_typ );
 }
 
