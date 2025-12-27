@@ -67,7 +67,7 @@ void    CpIntrinsic(void) {
     for( ;; ) {
         if( ReqName( NAME_INTRINSIC ) ) {
             func = IFLookUp();
-            if( func != IF_NONE ) {
+            if( func != IF_KW_NONE ) {
                 func_typ = IFType( func );
                 sym_ptr = LkSym();
                 flags = sym_ptr->u.ns.flags;

@@ -127,7 +127,7 @@ static  void    ProcStmt( void ) {
 
     if( AError )
         return;
-    if( CpError && (StmtProc == PR_NONE) )
+    if( CpError && ( StmtProc == PR_KW_NONE ) )
         return;
     ProcTable[StmtProc]();
 }
@@ -140,7 +140,7 @@ static  void    InitStatement( void )
     CpError = false;
     MakeITList();
     StmtSw &= ~SS_SCANNING;
-    StmtProc = PR_NONE;
+    StmtProc = PR_KW_NONE;
 }
 
 static void FiniStatement( void )
@@ -169,7 +169,7 @@ void    CompStatement( void )
         //          CHARACTER A, B(79)
         //          EQUIVALENCE (A,B(1))
         //          END
-        if( !scan_error && (StmtProc != PR_NONE) ) {
+        if( !scan_error && ( StmtProc != PR_KW_NONE ) ) {
             ChkStatementSequence();
         }
     }
@@ -183,7 +183,7 @@ void    CompStatement( void )
         CheckOrder();
         if( (ProgSw & PS_BLOCK_DATA) && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
             // if statement wasn't decodeable, don't issue an error
-            if( StmtProc != PR_NONE ) {
+            if( StmtProc != PR_KW_NONE ) {
                 StmtErr( BD_IN_BLOCK_DATA );
             }
         } else if( CtrlFlgOn( CF_NOT_EXECUTABLE ) ) {
@@ -205,13 +205,13 @@ void    CompStatement( void )
         CheckDoEnd();
     }
     // The following must include a check for scanning errors since it is
-    // possible to get a scanning error and "StmtProc != PR_NONE" as in the
+    // possible to get a scanning error and "StmtProc != PR_KW_NONE" as in the
     // following example:       integer*2 fwinmain( hInstance
     // If the check for a scanning error is not performed, then SubProgId
     // will not be properly set when we compile the RETURN statement in the
     // following example:       integer*2 fwinmain( hInstance
     //                          return
-    if( !scan_error && (StmtProc != PR_NONE) && (StmtProc != PR_INCLUDE) ) {
+    if( !scan_error && (StmtProc != PR_KW_NONE) && (StmtProc != PR_INCLUDE) ) {
         SgmtSw |= SG_STMT_PROCESSED;
     }
     FiniStatement();
@@ -277,7 +277,7 @@ static void GetStmtType( void )
     curr_opnd = CITNode->opnd;
     if( CITNode->opn.ds != DSOPN_NAM ) {
         Error( ST_WANT_NAME );
-        StmtProc = PR_NONE;
+        StmtProc = PR_KW_NONE;
     } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd + 1) == 'O' ) &&
                (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
         StmtProc = PR_DO;
@@ -325,7 +325,7 @@ static void SetCtrlFlgs( void )
 static void DefStmtType( void )
 {
     StmtProc = RecStmtKW();      // look up keyword, strip off if found
-    if( StmtProc != PR_NONE ) {
+    if( StmtProc != PR_KW_NONE ) {
         RemKeyword( CITNode, strlen( StmtKeywords[StmtProc] ) );
     }
 }
@@ -458,7 +458,7 @@ static void CheckDoEnd( void )
 
 static void FiniDo( void )
 {
-    if( ( StmtProc != PR_NONE ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
+    if( ( StmtProc != PR_KW_NONE ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
         StmtErr( DO_ENDING_BAD );
     }
     if( CSHead->typ == CS_DO ) {

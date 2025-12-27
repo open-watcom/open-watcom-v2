@@ -38,5 +38,8 @@ typedef enum {
     #define pick(id,text,proc,flags) id,
     #include "stmtdefn.h"
     #undef pick
-    PR_NAMES_COUNT = PR_WRITE + 1
+
+    PR_KW_COUNT = PR_WRITE + 1
 } STMT;
+
+#define PR_KW_NONE  PR_KW_COUNT

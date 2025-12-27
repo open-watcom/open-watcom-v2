@@ -37,10 +37,12 @@ typedef enum {
     #define pick(id,text,next,res,arg,flags) id,
     #include "ifdefn.h"
     #undef pick
-    IF_NAMES_COUNT,
+    IF_KW_COUNT,
 
     IF_NO_MORE  = 0xfe,
     MAGIC       = 0xff
 } IFF;
+
+#define IF_KW_NONE  IF_KW_COUNT
 
 #endif

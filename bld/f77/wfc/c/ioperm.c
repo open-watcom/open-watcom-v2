@@ -90,14 +90,14 @@ static  const byte          PermTable[][EX_COUNT] = {
 bool    IOPermChk( IOKW kw ) {
 //==========================
 
-    return( ( ( IOData >> ( kw - 1 ) ) & 1 ) != 0 );
+    return( ( ( IOData >> kw ) & 1 ) != 0 );
 }
 
 
 void    IOPermSet( IOKW kw )
-//==========================
+//===========================
 {
-    IOData |= 1U << ( kw - 1 );
+    IOData |= 1U << kw;
 }
 
 
@@ -107,15 +107,15 @@ bool    Permission( IOKW kw ) {
     bool        perm;
 
     perm = false;
-    if( kw == IO_NONE ) {
+    if( kw == IO_KW_NONE ) {
         OpndErr( IL_CTRL_LIST );
     } else if( IOPermChk( kw ) ) {
         OpndErr( IL_DUP_LIST );
     } else {
-        perm = ( PermTable[kw - 1][IOIndex()] != NO );
+        perm = ( PermTable[kw][IOIndex()] != NO );
         if( perm ) {
             IOPermSet( kw );
-            if( PermTable[kw - 1][EX_Extension] == YES ) {
+            if( PermTable[kw][EX_Extension] == YES ) {
                 Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[kw] );
             }
         } else {

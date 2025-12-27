@@ -1069,6 +1069,8 @@ static void ReqToken( const char *tok )
 
 #if _INTEL_CPU
 
+#define REGNAMES_COUNT  (sizeof( RegNames ) / sizeof( RegNames[0] ))
+
 static hw_reg_set RegSet( void )
 //==============================
 {
@@ -1084,8 +1086,8 @@ static hw_reg_set RegSet( void )
         for( i = 0; i < TokEnd - TokStart; i++ ) {
             regname_buf[i] = toupper( TokStart[i] );
         }
-        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ), regname_buf, TokEnd - TokStart, true );
-        if( reg == 0 )
+        reg = KwLookUp( RegNames, REGNAMES_COUNT, regname_buf, TokEnd - TokStart, true );
+        if( reg == REGNAMES_COUNT )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );
         ScanToken();

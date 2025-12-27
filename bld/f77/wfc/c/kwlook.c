@@ -42,11 +42,11 @@
 STMT    RecStmtKW( void ) {
 //=============================
 
-    return( KwLookUp( StmtKeywords, PR_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, false ) );
+    return( KwLookUp( StmtKeywords, PR_KW_COUNT, CITNode->opnd, CITNode->opnd_size, false ) );
 }
 
 IOKW    RecIOKW( void ) {
 //=======================
 
-    return( KwLookUp( IOKeywords, IO_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
+    return( KwLookUp( IOKeywords, IO_KW_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
 }

@@ -32,7 +32,6 @@
 
 
 //      id                 keyword
-pick( IO_NONE,            ""                )
 pick( IO_ACCESS,          "ACCESS"          )
 pick( IO_ACTION,          "ACTION"          )
 pick( IO_BLANK,           "BLANK"           )

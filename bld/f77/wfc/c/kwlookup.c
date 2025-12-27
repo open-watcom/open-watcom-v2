@@ -53,9 +53,7 @@ int KwLookUp( const char **table, int count, const char *id, size_t id_len, bool
     int         high;
     size_t      kw_len;
 
-    // index 0 is reserved
-    // each keyword table has blank first item
-    low = 1;
+    low = 0;
     high = count - 1;
     while( low <= high ) {
         mid = (low + high) / 2;    // find mid point
@@ -83,7 +81,7 @@ int KwLookUp( const char **table, int count, const char *id, size_t id_len, bool
         }
     }
     if( exact )
-        return( 0 );
+        return( count );
     // Look sequentially through table (going backwards).
     for( mid = high; mid >= 0; mid-- ) {
         key = table[mid];
@@ -96,5 +94,5 @@ int KwLookUp( const char **table, int count, const char *id, size_t id_len, bool
             }
         }
     }
-    return( 0 );
+    return( count );
 }

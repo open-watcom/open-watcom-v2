@@ -35,9 +35,11 @@ typedef enum {
     #define pick(id,text) id,
     #include "iodefn.h"
     #undef pick
-    IO_NAMES_COUNT,
+    IO_KW_COUNT,
 
-    IO_LIST_DIR = IO_NAMES_COUNT,   // fmt=*
-    IO_INTERNAL,                    // internal file
-    IO_NAMELIST                     // NAMELIST-directed
+    IO_LIST_DIR = IO_KW_COUNT,  // fmt=*
+    IO_INTERNAL,                // internal file
+    IO_NAMELIST                 // NAMELIST-directed
 } IOKW;
+
+#define IO_KW_NONE  IO_KW_COUNT

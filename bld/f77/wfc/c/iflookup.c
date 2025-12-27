@@ -80,7 +80,7 @@ static iff_data     IFFlags[] = {
 IFF     IFLookUp( void ) {
 //========================
 
-    return( KwLookUp( IFNames, IF_NAMES_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
+    return( KwLookUp( IFNames, IF_KW_COUNT, CITNode->opnd, CITNode->opnd_size, true ) );
 }
 
 
