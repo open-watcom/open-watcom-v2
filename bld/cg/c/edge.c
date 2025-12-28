@@ -105,9 +105,12 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_edge  *edge;
     instruction *next;
     block_num   i;
+    block_num   targets;
 
-    new_blk = MakeBlock( AskForNewLabel(), blk->targets );
-    Copy( blk, new_blk, BLOCK_SIZE( blk->targets ) );
+    targets = blk->targets;
+    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
+//    new_blk = MakeBlock( AskForNewLabel(), targets );
+    Copy( blk, new_blk, BLOCK_SIZE( targets ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
@@ -123,16 +126,14 @@ block   *SplitBlock( block *blk, instruction *ins )
     edge->flags = BEF_DEST_IS_BLOCK;
     edge->source->targets++;
     PointEdge( edge, new_blk );
-    edge = &new_blk->edge[0];
-    for( i = 0; i < new_blk->targets; ++i ) {
-        edge->source = new_blk;
-        edge++;
+    for( i = 0; i < targets; ++i ) {
+        new_blk->edge[i].source = new_blk;
     }
     for( ; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         RemoveIns( ins );
         SuffixIns( new_blk->ins.head.prev, ins );
-    };
+    }
     FixBlockIds();
     return( new_blk );
 }

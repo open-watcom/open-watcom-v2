@@ -100,7 +100,7 @@ void    GenObject( void )
     block               *next_block;
     instruction         *ins;
     source_line_number  last_line;
-    block_num           targets;
+    block_num           j;
     block_num           i;
     label_handle        lbl;
     unsigned            align;
@@ -176,12 +176,12 @@ void    GenObject( void )
                 GenLabelReturn();
             }
             if( !_IsBlkAttr( blk, BLK_LABEL_RETURN ) ) { /* maybe pointer to dead label */
-                for( targets = blk->targets; targets-- > 0; ) {
-                    lbl = blk->edge[targets].destination.u.lbl;
+                for( j = blk->targets; j-- > 0; ) {
+                    lbl = blk->edge[j].destination.u.lbl;
                     TellReachedLabel( lbl );
-                    if( (blk->edge[targets].flags & BEF_DEST_LABEL_DIES) && BlocksUnTrimmed ) {
+                    if( (blk->edge[j].flags & BEF_DEST_LABEL_DIES) && BlocksUnTrimmed ) {
                         TellCondemnedLabel( lbl );
-                        for( i = targets; i-- > 0; ) {
+                        for( i = j; i-- > 0; ) {
                             if( blk->edge[i].destination.u.lbl == lbl ) {
                                 blk->edge[i].flags &= ~BEF_DEST_LABEL_DIES;
                             }

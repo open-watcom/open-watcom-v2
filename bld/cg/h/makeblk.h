@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@ extern  void            FreeABlock( block * blk );
 extern  void            FreeBlock( void );
 extern  void            EnLink( label_handle label, bool label_dies );
 extern  void            AddIns( instruction *ins );
-extern  void            GenBlock( block_class class, int targets );
+extern  void            GenBlock( block_class class, block_num targets );
 extern  block           *ReGenBlock( block *blk, label_handle lbl );
 extern  type_class_def  InitCallState( const type_def *tipe );
 extern  type_class_def  CallState( aux_handle aux, const type_def *tipe, call_state *state );

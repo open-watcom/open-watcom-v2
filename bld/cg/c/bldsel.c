@@ -279,7 +279,7 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def type_clas
 /*****************************************************************************************************/
 {
     uint                i;
-    uint                targets;
+    block_num           targets;
     name                *value;
 
     value = GenIns( node );
@@ -344,7 +344,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
 /****************************************************************************/
 {
     uint                i;
-    uint                targets;
+    block_num           targets;
 
     MkSelOp( SelIdx( table, node ), U2 );
     i = 0;

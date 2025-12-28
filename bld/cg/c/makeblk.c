@@ -55,7 +55,6 @@ block   *MakeBlock( label_handle label, block_num edges )
 /*******************************************************/
 {
     block       *blk;
-    block_edge  *edge;
     block_num   i;
 
     blk = CGAlloc( BLOCK_SIZE( edges ) );
@@ -82,8 +81,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     blk->depth = 0;
     _DBitInit( blk->dom.id, 0U );
     for( i = 0; i < edges; i++ ) {
-        edge = &blk->edge[i];
-        edge->source = blk;
+        blk->edge[i].source = blk;
     }
     return( blk );
 }
@@ -95,11 +93,7 @@ block   *NewBlock( label_handle label, bool label_dies )
     block       *blk;
 
     blk = MakeBlock( label, 1 );
-    if( label_dies ) {
-        blk->edge[0].flags = BEF_BLOCK_LABEL_DIES;
-    } else {
-        blk->edge[0].flags = BEF_NONE;
-    }
+    blk->edge[0].flags = ( label_dies ) ? BEF_BLOCK_LABEL_DIES : BEF_NONE;
     return( blk );
 }
 
@@ -157,8 +151,8 @@ void    AddIns( instruction *ins )
 }
 
 
-void    GenBlock( block_class class, int targets )
-/************************************************/
+void    GenBlock( block_class class, block_num targets )
+/******************************************************/
 {
     block       *new_blk;
     block_edge  *edge;
@@ -325,13 +319,13 @@ void    FixEdges( void )
 {
     block       *blk;
     block       *dest;
-    block_num   targets;
+    block_num   i;
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
-            for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[targets];
+            for( i = blk->targets; i-- > 0; ) {
+                edge = &blk->edge[i];
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
                     edge->flags |= BEF_DEST_IS_BLOCK;
@@ -431,13 +425,13 @@ void    UnFixEdges( void )
 /************************/
 {
     block       *blk;
-    block_num   targets;
+    block_num   i;
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
-            for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[targets];
+            for( i = blk->targets; i-- > 0; ) {
+                edge = &blk->edge[i];
                 if( edge->flags & BEF_DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );
                     edge->destination.u.lbl = edge->destination.u.blk->label;

@@ -203,7 +203,7 @@ void    RemoveInputEdge( block_edge *edge )
     if( (edge->flags & BEF_DEST_IS_BLOCK) == 0 )
         return;
     dest = edge->destination.u.blk;
-    dest->inputs --;
+    dest->inputs--;
     prev = dest->input_edges;
     if( prev == edge ) {
         dest->input_edges = edge->next_source;
