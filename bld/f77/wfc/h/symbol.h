@@ -217,18 +217,21 @@ typedef struct constant {
 // symbol table structure for literals:
 // ====================================
 
+typedef enum {
+    LT_NONE               = 0x00,
+    LT_DATA_STMT          = 0x01,   // literal used in DATA statement
+    LT_EXEC_STMT          = 0x02,   // literal used in executable statement
+    LT_SCB_TMP_REFERENCE  = 0x04,   // temporary reference to SCB
+    LT_SCB_REQUIRED       = 0x08,   // SCB required
+} lt_flags;
+
 typedef struct literal {
     sym_id              link;           // pointer to next literal in chain
     void                *address;       // back handle
     size_t              length;         // length of literal
-    unsigned_8          flags;          // constant appeared in DATA statement
+    lt_flags            flags;          // constant appeared in DATA statement
     char                value[1];       // value of literal
 } literal;
-
-#define LT_DATA_STMT            0x01    // literal used in DATA statement
-#define LT_EXEC_STMT            0x02    // literal used in executable statement
-#define LT_SCB_TMP_REFERENCE    0x04    // temporary reference to SCB
-#define LT_SCB_REQUIRED         0x08    // SCB required
 
 // symbol table structure for statement numbers:
 // =============================================

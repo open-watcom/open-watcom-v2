@@ -61,14 +61,11 @@
 
 static  unsigned_32     CurrPage;
 static  unsigned_32     MaxPage;
-static  unsigned_8      PageFlags;
+static  bool            PageDirty;
 static  FILE            *PageFile;
 static  char            *ObjPtr;
 static  char            *ObjCode;
 static  char            *ObjEnd;
-
-#define PF_INIT         0x00    // initial page flags
-#define PF_DIRTY        0x01    // page has been updated
 
 static void PageFileIOErr( int error )
 //====================================
@@ -92,7 +89,7 @@ void    InitObj( void )
             PageFileIOErr( SM_OPENING_FILE );
         }
     }
-    PageFlags = PF_INIT;
+    PageDirty = false;
     CurrPage = 0;
     MaxPage = 0;
 }
@@ -115,7 +112,7 @@ static  void    DumpCurrPage( void )
 //==================================
 // Dump current page to disk.
 {
-    if( PageFlags & PF_DIRTY ) {
+    if( PageDirty ) {
         if( MaxPage < CurrPage ) {
             MaxPage = CurrPage;
         }
@@ -123,7 +120,7 @@ static  void    DumpCurrPage( void )
             PageFileIOErr( SM_IO_WRITE_ERR );
         if( fwrite( ObjCode, WFC_PAGE_SIZE, 1, PageFile ) != 1 )
             PageFileIOErr( SM_IO_WRITE_ERR );
-        PageFlags &= ~PF_DIRTY;
+        PageDirty = false;
     }
 }
 
@@ -144,7 +141,7 @@ static  void    LoadPage( unsigned_32 page )
             }
         }
         CurrPage = page;
-        PageFlags = PF_INIT;
+        PageDirty = false;
     }
 }
 
@@ -156,7 +153,7 @@ static  void    NewPage( void )
         LoadPage( CurrPage + 1 );
     } else {
         DumpCurrPage();
-        PageFlags = PF_INIT;
+        PageDirty = false;
         CurrPage++;
     }
     ObjPtr = ObjCode;
@@ -206,10 +203,10 @@ static  void    SplitValue( void *ptr, int size, int part_1 )
 // Split value across pages.
 {
     memcpy( ObjPtr, ptr, part_1 );
-    PageFlags |= PF_DIRTY;
+    PageDirty = true;
     NewPage();
     memcpy( ObjPtr, (char *)ptr + part_1, size - part_1 );
-    PageFlags |= PF_DIRTY;
+    PageDirty = true;
     ObjPtr += size - part_1;
 }
 
@@ -228,7 +225,7 @@ void    OutPtr( pointer val )
         }
         *(pointer *)ObjPtr = val;
         ObjPtr += sizeof( pointer );
-        PageFlags |= PF_DIRTY;
+        PageDirty = true;
     }
 }
 
@@ -247,7 +244,7 @@ void    OutU16( unsigned_16 val )
         }
         *(unsigned_16 *)ObjPtr = val;
         ObjPtr += sizeof( unsigned_16 );
-        PageFlags |= PF_DIRTY;
+        PageDirty = true;
     }
 }
 
@@ -278,7 +275,7 @@ void    OutU32( unsigned_32 val )
         }
         *(unsigned_32 *)ObjPtr = val;
         ObjPtr += sizeof( unsigned_32 );
-        PageFlags |= PF_DIRTY;
+        PageDirty = true;
     }
 }
 
@@ -297,7 +294,7 @@ void    OutObjPtr( obj_ptr val )
         }
         *(obj_ptr *)ObjPtr = val;
         ObjPtr += sizeof( obj_ptr );
-        PageFlags |= PF_DIRTY;
+        PageDirty = true;
     }
 }
 
@@ -312,7 +309,7 @@ void    OutByte( byte val )
         }
         *(byte *)ObjPtr = val;
         ObjPtr += sizeof( byte );
-        PageFlags |= PF_DIRTY;
+        PageDirty = true;
     }
 }
 
