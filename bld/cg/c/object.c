@@ -204,7 +204,7 @@ void    GenObject( void )
 static  bool    GenId( block *blk, block *next )
 /**********************************************/
 {
-    return( blk->gen_id > next->gen_id );
+    return( blk->gen_blk_id > next->gen_blk_id );
 }
 
 
@@ -784,7 +784,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk )
         break;
     case BLK_CALL_LABEL:
         for( curr = BQFirst( unplaced ); curr != NULL; curr = BQNext( unplaced, curr ) ) {
-            if( curr->gen_id == ( blk->gen_id + 1 ) ) {
+            if( curr->gen_blk_id == ( blk->gen_blk_id + 1 ) ) {
                 best = curr;
                 break;
             }

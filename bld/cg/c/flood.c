@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,10 @@ static void *doFloodForward( flood_parms *fp )
 {
     block       *next;
     block_num   i;
-    block_num   n;
     flood_parms new_parms;
 
     new_parms = *fp;
-    n = fp->blk->targets;
-    for( i = 0; i < n; i++ ) {
+    for( i = 0; i < fp->blk->targets; i++ ) {
         next = fp->blk->edge[i].destination.u.blk;
         if( _IsBlkVisited( next ) )
             continue;

@@ -104,13 +104,13 @@ int     CountIns( block *blk )
 }
 
 
-static  bool    FindBlock( block *target )
-/****************************************/
+static  bool    FindBlock( block *blk )
+/*************************************/
 {
-    block       *blk;
+    block       *curr;
 
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk == target ) {
+    for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
+        if( curr == blk ) {
             return( true );
         }
     }
@@ -157,7 +157,7 @@ void    RemoveBlock( block *blk )
      * have a line number on it.
      */
     if( blk->next_block != NULL
-      && blk->next_block->gen_id == (blk->gen_id + 1) ) {
+      && blk->next_block->gen_blk_id == (blk->gen_blk_id + 1) ) {
         /*
          * quick check to see if following block is next one in src order
          */
@@ -166,9 +166,9 @@ void    RemoveBlock( block *blk )
         next = NULL;
         for( chk = HeadBlock; chk != NULL; chk = chk->next_block ) {
             if( (chk != blk)
-              && (chk->gen_id > blk->gen_id)
+              && (chk->gen_blk_id > blk->gen_blk_id)
               && (next == NULL
-              || next->gen_id > chk->gen_id) ) {
+              || next->gen_blk_id > chk->gen_blk_id) ) {
                 next = chk;
             }
         }
@@ -377,7 +377,7 @@ static  bool    DoBlockTrim( void )
     instruction *ins;
     bool        change;
     bool        any_change;
-    block_num   blk_id;
+    block_id    blk_id;
 
     _MarkBlkAllUnVisited();
     any_change = false;
@@ -428,7 +428,7 @@ static  bool    DoBlockTrim( void )
     } while( change );
     blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->id = blk_id++;
+        blk->blk_id = blk_id++;
     }
     return( any_change );
 }

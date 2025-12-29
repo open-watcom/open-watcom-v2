@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern  block           *MakeBlock( label_handle label, block_num edges );
+extern  block           *MakeBlock( label_handle label, block_num targets );
 extern  block           *NewBlock( label_handle label, bool label_dies );
 extern  void            FreeABlock( block * blk );
 extern  void            FreeBlock( void );

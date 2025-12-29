@@ -175,8 +175,8 @@ block    *AddPreBlock( block *postblk )
      * set up new block to look like it was generated after postblk
      */
     _SetBlkAttr( preblk, BLK_JUMP );
-    preblk->id = NO_BLOCK_ID;
-    preblk->gen_id = postblk->gen_id;
+    preblk->blk_id = BLK_ID_NONE;
+    preblk->gen_blk_id = postblk->gen_blk_id;
     preblk->ins.head.line_num = postblk->ins.head.line_num;
     postblk->ins.head.line_num = 0;
     preblk->loop_head = postblk->loop_head; /**/
@@ -304,7 +304,7 @@ void     MarkLoop( void )
  */
 {
     block       *other_blk;
-    block_num   targets;
+    block_num   i;
     block_edge  *edge;
 
     Loop = NULL;
@@ -317,7 +317,7 @@ void     MarkLoop( void )
     }
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
         edge = &other_blk->edge[0];
-        for( targets = other_blk->targets; targets > 0; --targets ) {
+        for( i = other_blk->targets; i > 0; --i ) {
             if( !_IsBlkAttr( edge->destination.u.blk, BLK_IN_LOOP ) ) {
                 _MarkBlkAttrSet( other_blk, BLK_LOOP_EXIT );
             }
@@ -2259,12 +2259,12 @@ static  bool    InstructionWillExec( instruction *ins )
 void    MoveDownLoop( block *cond )
 /**********************************
  * Muck about so that "cond" will come out after the blocks which jump
- * to it when we sort the blocks into original order (gen_id) prior to
+ * to it when we sort the blocks into original order (gen_blk_id) prior to
  * actual code dumping.
  */
 {
-    block_num   cond_id;
-    block_num   after_id;
+    block_id    cond_blk_id;
+    block_id    after_blk_id;
     block       *blk;
     block_edge  *edge;
     block       *after;
@@ -2272,21 +2272,21 @@ void    MoveDownLoop( block *cond )
 
     after = cond->input_edges->source;
     for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( edge->source->gen_id > after->gen_id ) {
+        if( edge->source->gen_blk_id > after->gen_blk_id ) {
             after = edge->source;
         }
     }
-    if( cond->gen_id > after->gen_id )
+    if( cond->gen_blk_id > after->gen_blk_id )
         return;
-    cond_id = cond->gen_id;
-    after_id = after->gen_id;
+    cond_blk_id = cond->gen_blk_id;
+    after_blk_id = after->gen_blk_id;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->gen_id >= cond_id
-          && blk->gen_id <= after_id ) {
-            blk->gen_id--;
+        if( blk->gen_blk_id >= cond_blk_id
+          && blk->gen_blk_id <= after_blk_id ) {
+            blk->gen_blk_id--;
         }
     }
-    cond->gen_id = after_id;
+    cond->gen_blk_id = after_blk_id;
     cond->edge[0].flags &= ~BEF_BLOCK_LABEL_DIES;
     for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
         edge->flags &= ~BEF_DEST_LABEL_DIES;
@@ -3524,7 +3524,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
             new_head = loop_edge->destination.u.blk;
 //            DupNoncondInstrs( cond_blk, cond, PreHead );
         } else if( OptForSize < 50
-          && PreHead->gen_id < cond_blk->gen_id ) {
+          && PreHead->gen_blk_id < cond_blk->gen_blk_id ) {
             RemoveInputEdge( edge );
             old_prehead = PreHead;
             PreHead = ReGenBlock( PreHead, NULL );

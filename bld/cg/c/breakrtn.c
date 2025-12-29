@@ -45,7 +45,7 @@ typedef struct  edge_list {
         block_edge              *edge;
         struct edge_list        *next;
         label_handle            lbl;
-        block_num               gen_id;
+        block_id                gen_blk_id;
 } edge_list;
 
 static  block           *Curr;
@@ -76,7 +76,7 @@ bool    CreateBreak( void )
     block       *exit_blk;
     block_edge  *edge;
     block_edge  *next_edge;
-    block_num   targets;
+    block_num   i;
     int         pending;
     edge_list   *exit_edge;
 
@@ -112,7 +112,7 @@ bool    CreateBreak( void )
             break_blk = blk;
         }
         edge = &blk->edge[0];
-        for( targets = blk->targets; targets > 0; --targets ) {
+        for( i = blk->targets; i > 0; --i ) {
             if( edge->flags & BEF_DEST_IS_BLOCK ) {
                 if( edge->flags & BEF_DEST_LABEL_DIES ) {
                     if( _IsBlkVisited( edge->destination.u.blk ) ) {
@@ -154,8 +154,8 @@ bool    CreateBreak( void )
     Curr = CurrBlock;
     Tail = BlockList;
     exit_blk = NewBlock( NULL, false );
-    exit_blk->gen_id = BlockList->gen_id + 1;
-    exit_blk->id = BlockList->id + 1;
+    exit_blk->gen_blk_id = BlockList->gen_blk_id + 1;
+    exit_blk->blk_id = BlockList->blk_id + 1;
     exit_blk->ins.head.line_num = 0;
     BlockList = exit_blk;
     exit_blk->prev_block = break_blk->prev_block;
@@ -169,13 +169,13 @@ bool    CreateBreak( void )
      */
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[0];
-        for( targets = blk->targets; targets > 0; --targets ) {
+        for( i = blk->targets; i > 0; --i ) {
             if( (edge->flags & BEF_DEST_IS_BLOCK) == 0
-              || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
+              || edge->destination.u.blk->gen_blk_id >= break_blk->gen_blk_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
                 exit_edge->edge = edge;
                 exit_edge->next = BranchOuts;
-                exit_edge->gen_id = blk->gen_id;
+                exit_edge->gen_blk_id = blk->gen_blk_id;
                 BranchOuts = exit_edge;
             }
             ++edge;
@@ -212,7 +212,7 @@ bool    CreateBreak( void )
      */
     for( edge = HeadBlock->input_edges; edge != NULL; edge = next_edge ) {
         next_edge = edge->next_source;
-        if( edge->source->gen_id >= break_blk->gen_id ) {
+        if( edge->source->gen_blk_id >= break_blk->gen_blk_id ) {
             RemoveInputEdge( edge );
             edge->destination.u.lbl = edge->destination.u.blk->label;
             edge->flags &= ~BEF_DEST_IS_BLOCK;
@@ -230,8 +230,8 @@ bool    CreateBreak( void )
     blk->label = HeadBlock->label;
     blk->ins.head.line_num = HeadBlock->ins.head.line_num;
     HeadBlock->ins.head.line_num = 0;
-    blk->gen_id = 0;
-    blk->id = 0;
+    blk->gen_blk_id = 0;
+    blk->blk_id = 0;
     HeadBlock->label = AskForNewLabel();
     blk->targets = 1;
     _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
@@ -268,7 +268,7 @@ void    FixBreak( void )
 
     for( exit_edge = BranchOuts; exit_edge != NULL; exit_edge = exit_edge->next ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( blk->gen_id == exit_edge->gen_id ) {
+            if( blk->gen_blk_id == exit_edge->gen_blk_id ) {
                 RemoveInputEdge( exit_edge->edge );
                 exit_edge->edge->destination.u.lbl = exit_edge->lbl;
                 exit_edge->edge->flags &= ~BEF_DEST_IS_BLOCK;

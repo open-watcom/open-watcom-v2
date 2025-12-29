@@ -164,8 +164,8 @@ typedef struct block {
     label_handle            label;          /* front end identification */
     local_bit_set           available_bit;
     level_depth             depth;          /* loop nesting depth */
-    block_num               id;             /* internal identification */
-    block_num               gen_id;
+    block_id                blk_id;         /* internal identification */
+    block_id                gen_blk_id;
     block_num               inputs;         /* number of input edges */
     block_num               targets;        /* number of target blocks */
     block_class             class;

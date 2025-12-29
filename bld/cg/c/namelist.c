@@ -455,7 +455,7 @@ name    *STempOffset( name *temp, type_length offset, type_class_def type_class,
     new_t->v.usage = temp->v.usage;
     new_t->v.block_usage = 0;
     new_t->v.conflict = temp->v.conflict;
-    new_t->t.u.block_id = temp->t.u.block_id;
+    new_t->t.u.blk_id = temp->t.u.blk_id;
     new_t->t.alias = temp->t.alias;
     temp->t.alias = new_t;
     new_t->t.temp_flags = ALIAS;
@@ -482,7 +482,7 @@ name    *SAllocTemp( type_class_def type_class, type_length size )
     new_t->v.usage = 0;
     new_t->v.block_usage = 0;
     new_t->v.conflict = NULL;
-    new_t->t.u.block_id = NO_BLOCK_ID;
+    new_t->t.u.blk_id = BLK_ID_NONE;
     new_t->t.location = NO_LOCATION;
     new_t->t.alias = new_t;
     new_t->t.temp_flags = 0;

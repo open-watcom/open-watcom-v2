@@ -224,9 +224,9 @@ void    DumpBlkId( block *b )
 /***************************/
 {
     DumpLiteral( "Block " );
-    DumpInt( b->id );
+    DumpInt( b->blk_id );
     DumpChar( '(' );
-    DumpInt( b->gen_id );
+    DumpInt( b->gen_blk_id );
     DumpChar( ')' );
 }
 

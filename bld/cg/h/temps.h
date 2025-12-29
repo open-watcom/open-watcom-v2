@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,6 @@ extern void     AssignOtherLocals( void );
 extern void     ParmPropagate( void );
 extern void     AllocALocal( name *name );
 extern void     FiniStackMap( void );
-extern void     AssgnMoreTemps( block_num curr_id );
+extern void     AssgnMoreTemps( block_id curr_id );
 extern void     CountTempRefs( void );
 extern void     AssignTemps( void );

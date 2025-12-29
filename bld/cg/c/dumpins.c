@@ -529,7 +529,7 @@ void    DumpSym( name *sym )
             DumpLiteral( "  location " );
             DumpLong( sym->t.location );
             DumpLiteral( "  block id " );
-            DumpInt( sym->t.u.block_id );
+            DumpInt( sym->t.u.blk_id );
             // DumpPossible( sym->t.possible );
             if( sym->t.temp_flags & ALIAS ) {
                 DumpLiteral( " ALIAS " );

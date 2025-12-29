@@ -108,7 +108,7 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_num   targets;
 
     targets = blk->targets;
-    new_blk = MakeBlock( AskForNewLabel(), targets );
+    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
     Copy( blk, new_blk, BLOCK_SIZE( targets ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
@@ -119,7 +119,7 @@ block   *SplitBlock( block *blk, instruction *ins )
     _MarkBlkAttrClr( new_blk, BLK_LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
-    new_blk->id = NO_BLOCK_ID;
+    new_blk->blk_id = BLK_ID_NONE;
     blk->targets = 1;
     edge = &blk->edge[0];
     edge->flags = BEF_DEST_IS_BLOCK;

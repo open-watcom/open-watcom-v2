@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ typedef struct call_state {
 typedef struct label_id {
     struct label_id     *next;
     label_handle        label;
-    block_num           block_id;
+    block_id            blk_id;
 } label_id;
 
 typedef struct proc_def {

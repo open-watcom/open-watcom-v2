@@ -179,7 +179,7 @@ typedef struct temp_name {
         type_length         alt_location;
     } v;
     union {
-        block_num           block_id;       /* AKA block_num */
+        block_id            blk_id;         /* AKA block_num */
         uint_16             ref_count;      /* for counting references */
     } u;
     t_flags                 temp_flags;

@@ -290,7 +290,8 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def type_clas
         if( table->cases[i] != other ) {
             ++targets;
         }
-        if( ++i == table->size ) {
+        i++;
+        if( i == table->size ) {
             break;
         }
     }
@@ -303,7 +304,8 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def type_clas
         if( table->cases[i] != other ) {
             AddTarget( table->cases[i], false );
         }
-        if( ++i == table->size ) {
+        i++;
+        if( i == table->size ) {
             break;
         }
     }
@@ -353,7 +355,8 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
         if( table->cases[i] != other ) {
             ++targets;
         }
-        if( ++i == table->size ) {
+        i++;
+        if( i == table->size ) {
             break;
         }
     }
@@ -366,7 +369,8 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
         if( table->cases[i] != other ) {
             AddTarget( table->cases[i], false );
         }
-        if( ++i == table->size ) {
+        i++;
+        if( i == table->size ) {
             break;
         }
     }

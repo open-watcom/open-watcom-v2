@@ -108,9 +108,9 @@ static  conflict_node   *AddOne( name *opnd, block *blk )
             if( (opnd->v.usage & USE_IN_ANOTHER_BLOCK) == 0 ) {
                 if( (opnd->t.temp_flags & HAD_CONFLICT) == 0 ) {
                     if( opnd->t.temp_flags & CROSSES_BLOCKS ) {
-                        opnd->t.u.block_id = NO_BLOCK_ID;
+                        opnd->t.u.blk_id = BLK_ID_NONE;
                     } else {
-                        opnd->t.u.block_id = blk->id;
+                        opnd->t.u.blk_id = blk->blk_id;
                     }
                 }
             }
@@ -135,8 +135,8 @@ static  conflict_node   *FindConf( name *opnd, block *blk, instruction *ins )
         _INS_NOT_BLOCK( conf->ins_range.first );
         _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->start_block != NULL
-         && ins->id >= conf->ins_range.first->id
-         && ins->id <= conf->ins_range.last->id ) {
+          && ins->id >= conf->ins_range.first->id
+          && ins->id <= conf->ins_range.last->id ) {
             return( conf );
         }
     }
@@ -400,13 +400,13 @@ void    FreeAConflict( conflict_node *conf )
         prev->next_conflict = conf->next_conflict;
     }
     if( opnd->n.class == N_TEMP ) {
-        opnd->t.u.block_id = NO_BLOCK_ID;
+        opnd->t.u.blk_id = BLK_ID_NONE;
         if( !_FrontEndTmp( opnd )
-         && opnd->v.conflict == NULL
-         && ( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
-         && conf->start_block != NULL
-         && ( opnd->t.temp_flags & CROSSES_BLOCKS ) == 0 ) {
-            opnd->t.u.block_id = conf->start_block->id;
+          && opnd->v.conflict == NULL
+          && ( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
+          && conf->start_block != NULL
+          && ( opnd->t.temp_flags & CROSSES_BLOCKS ) == 0 ) {
+            opnd->t.u.blk_id = conf->start_block->blk_id;
         }
     }
     FreePossibleForAlias( conf );

@@ -76,32 +76,31 @@ typedef struct loop_condition {
 
 void    FixBlockIds( void )
 /**************************
- * Fix up the block_id field of temps.
+ * Fix up the blk_id field of temps.
  */
 {
-    block_num   id;
+    block_id    blk_id;
     block       *blk;
     name        *temp;
 
-    id = 0;
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->t.u.block_id == NO_BLOCK_ID ) {
+        if( temp->t.u.blk_id == BLK_ID_NONE ) {
             temp->t.temp_flags |= VISITED;
         } else {
             temp->t.temp_flags &= ~VISITED;
         }
     }
+    blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ++id;
         for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
             if( temp->t.temp_flags & VISITED )
                 continue;
-            if( temp->t.u.block_id != blk->id )
+            if( temp->t.u.blk_id != blk->blk_id )
                 continue;
             temp->t.temp_flags |= VISITED;
-            temp->t.u.block_id = id;
+            temp->t.u.blk_id = blk_id;
         }
-        blk->id = id;
+        blk->blk_id = blk_id++;
     }
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.temp_flags &= ~VISITED;
@@ -121,9 +120,9 @@ block   *DupBlock( block *blk )
     copy = MakeBlock( AskForNewLabel(), blk->targets );
     _SetBlkAttr( copy, blk->class );
     _MarkBlkAttrClr( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
-    copy->id = NO_BLOCK_ID;
+    copy->blk_id = BLK_ID_NONE;
     copy->depth = blk->depth;
-    copy->gen_id = blk->gen_id;
+    copy->gen_blk_id = blk->gen_blk_id;
     copy->ins.head.line_num = 0;
     DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
     return( copy );
@@ -691,8 +690,8 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
     if( _IsBlkAttr( blki, BLK_CONDITIONAL ) ) {
         blk = MakeBlock( AskForNewLabel(), 1 );
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
-        blk->id = NO_BLOCK_ID;
-        blk->gen_id = blki->gen_id;
+        blk->blk_id = BLK_ID_NONE;
+        blk->gen_blk_id = blki->gen_blk_id;
         blk->ins.head.line_num = 0;
         blk->next_block = blki->next_block;
         if( blk->next_block != NULL ) {
@@ -989,8 +988,8 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
         new_blk->loop_head = PreHead->loop_head;
         new_blk->input_edges = NULL;
-        new_blk->id = NO_BLOCK_ID;
-        new_blk->gen_id = PreHead->gen_id;
+        new_blk->blk_id = BLK_ID_NONE;
+        new_blk->gen_blk_id = PreHead->gen_blk_id;
         new_blk->ins.head.line_num = 0;
         temp = AllocTemp( comp_type_class );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );

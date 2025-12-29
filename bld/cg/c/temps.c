@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -252,7 +252,7 @@ static  void    CalcRange( stack_temp *new_stk, name *temp )
 {
     block       *blk;
 
-    for( blk = HeadBlock; blk->id != temp->t.u.block_id; ) {
+    for( blk = HeadBlock; blk->blk_id != temp->t.u.blk_id; ) {
         blk = blk->next_block;
     }
     ScanForFirstDefn( blk, new_stk, temp );
@@ -389,7 +389,7 @@ static  void    AllocNewLocal( name *temp )
 #endif
     size = _RoundUp( temp->n.size, REG_SIZE ); /* align size*/
     if( (temp->v.usage & (USE_IN_ANOTHER_BLOCK | USE_ADDRESS)) == 0
-     && temp->t.u.block_id != NO_BLOCK_ID ) {
+     && temp->t.u.blk_id != BLK_ID_NONE ) {
         CalcRange( &st_temp, temp );
         if( st_temp.first != st_temp.last ) { /*% actually needed*/
             stack = ReUsableStack( &st_temp, temp );
@@ -569,8 +569,8 @@ void    AllocALocal( name *name )
 }
 
 
-static void AssgnATemp( name *temp, block_num curr_id )
-/*****************************************************/
+static void AssgnATemp( name *temp, block_id blk_id )
+/***************************************************/
 {
     if( temp->n.class == N_INDEXED && temp->i.base != NULL ) {
         temp = temp->i.base;
@@ -584,9 +584,9 @@ static void AssgnATemp( name *temp, block_num curr_id )
     }
     if( (temp->v.usage & NEEDS_MEMORY) == 0 )
         return;
-    if( ( curr_id == NO_BLOCK_ID )
-      || ( temp->t.u.block_id == curr_id )
-      || ( temp->t.u.block_id == NO_BLOCK_ID ) ) {
+    if( ( blk_id == BLK_ID_NONE )
+      || ( temp->t.u.blk_id == blk_id )
+      || ( temp->t.u.blk_id == BLK_ID_NONE ) ) {
         AllocALocal( temp );
     }
 }
@@ -622,8 +622,8 @@ void    FiniStackMap( void )
 }
 
 
-void    AssgnMoreTemps( block_num curr_id )
-/*****************************************/
+void    AssgnMoreTemps( block_id blk_id )
+/***************************************/
 /* run the block list. It's faster if we're using /od */
 {
     instruction *ins;
@@ -633,14 +633,14 @@ void    AssgnMoreTemps( block_num curr_id )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                AssgnATemp( ins->operands[i], curr_id );
+                AssgnATemp( ins->operands[i], blk_id );
             }
             if( ins->result != NULL ) {
-                AssgnATemp( ins->result, curr_id );
+                AssgnATemp( ins->result, blk_id );
             }
         }
     }
-    if( curr_id == NO_BLOCK_ID ) {
+    if( blk_id == BLK_ID_NONE ) {
         FiniStackMap();
         InitStackMap();
     } else {

@@ -51,13 +51,13 @@
 #include "feprotos.h"
 
 
-block   *MakeBlock( label_handle label, block_num edges )
-/*******************************************************/
+block   *MakeBlock( label_handle label, block_num targets )
+/*********************************************************/
 {
     block       *blk;
     block_num   i;
 
-    blk = CGAlloc( BLOCK_SIZE( edges ) );
+    blk = CGAlloc( BLOCK_SIZE( targets ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -80,7 +80,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     blk->stack_depth = 0;
     blk->depth = 0;
     _DBitInit( blk->dom.id, 0U );
-    for( i = 0; i < edges; i++ ) {
+    for( i = 0; i < targets; i++ ) {
         blk->edge[i].source = blk;
     }
     return( blk );
@@ -161,12 +161,12 @@ void    GenBlock( block_class class, block_num targets )
     NamesCrossBlocks();
     if( HeadBlock == NULL ) {
         HeadBlock = CurrBlock;
-        CurrBlock->id = 1;
-        CurrBlock->gen_id = 1;
+        CurrBlock->blk_id = 1;
+        CurrBlock->gen_blk_id = 1;
     } else {
         BlockList->next_block = CurrBlock;
-        CurrBlock->id = BlockList->id + 1;
-        CurrBlock->gen_id = BlockList->gen_id + 1;
+        CurrBlock->blk_id = BlockList->blk_id + 1;
+        CurrBlock->gen_blk_id = BlockList->gen_blk_id + 1;
     }
     if( SrcLine != 0 ) {
         /*
@@ -227,12 +227,14 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block       *new_blk;
     block_edge  *edge;
     block_num   targets;
+    block_num   last_target;
 
-    targets = blk->targets + 1;
+    last_target = blk->targets;
+    targets = last_target + 1;
     new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-    Copy( blk, new_blk, BLOCK_SIZE( targets - 1 ) );
-    new_blk->edge[targets - 1].destination.u.lbl = lbl;
-    new_blk->edge[targets - 1].flags = BEF_NONE;
+    Copy( blk, new_blk, BLOCK_SIZE( last_target ) );
+    new_blk->edge[last_target].destination.u.lbl = lbl;
+    new_blk->edge[last_target].flags = BEF_NONE;
     new_blk->targets = targets;
     /*
      * Move all references to blk
