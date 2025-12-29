@@ -108,8 +108,7 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_num   targets;
 
     targets = blk->targets;
-    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-//    new_blk = MakeBlock( AskForNewLabel(), targets );
+    new_blk = MakeBlock( AskForNewLabel(), targets );
     Copy( blk, new_blk, BLOCK_SIZE( targets ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
