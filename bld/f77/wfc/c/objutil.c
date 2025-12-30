@@ -59,13 +59,13 @@
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
 #define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
-static  unsigned_32     CurrPage;
-static  unsigned_32     MaxPage;
-static  bool            PageDirty;
-static  FILE            *PageFile;
-static  char            *ObjPtr;
-static  char            *ObjCode;
-static  char            *ObjEnd;
+static unsigned_32      CurrPage;
+static unsigned_32      MaxPage;
+static bool             PageDirty;
+static FILE             *PageFile;
+static char             *ObjPtr;
+static char             *ObjCode;
+static char             *ObjEnd;
 
 static void PageFileIOErr( int error )
 //====================================
@@ -108,7 +108,7 @@ void    FiniObj( void )
     }
 }
 
-static  void    DumpCurrPage( void )
+static void     DumpCurrPage( void )
 //==================================
 // Dump current page to disk.
 {
@@ -124,7 +124,7 @@ static  void    DumpCurrPage( void )
     }
 }
 
-static  void    LoadPage( unsigned_32 page )
+static void     LoadPage( unsigned_32 page )
 //=========================================
 // Load a page into memory.
 {
@@ -145,7 +145,7 @@ static  void    LoadPage( unsigned_32 page )
     }
 }
 
-static  void    NewPage( void )
+static void     NewPage( void )
 //=============================
 // Page for F-Codes is full. Dump it to disk and start a new one.
 {
@@ -198,7 +198,7 @@ void    AlignEven( void )
 }
 
 
-static  void    SplitValue( void *ptr, int size, int part_1 )
+static void     SplitValue( void *ptr, int size, int part_1 )
 //===========================================================
 // Split value across pages.
 {
@@ -323,7 +323,7 @@ void    InitFCode( void )
 }
 
 
-static  void    JoinValue( void *ptr, int size, int part_1 )
+static void     JoinValue( void *ptr, int size, int part_1 )
 //==========================================================
 // Join value that is split across pages.
 {

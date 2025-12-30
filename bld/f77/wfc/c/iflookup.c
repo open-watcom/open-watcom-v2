@@ -67,7 +67,6 @@ static const char   *IFNames[] = {
     #define pick(id,text,next,res,arg,flags) text,
     #include "ifdefn.h"
     #undef pick
-    NULL
 };
 
 static iff_data     IFFlags[] = {
