@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ struct initialize_info {                // size and offset of current item
         } a;                            // - array specific
         struct {
             TYPE            type;       // type of bitfield
-            target_ulong    mask;       // initialized bits
+            unsigned_64     mask;       // initialized bits
         } b;                            // - bitfield specific
         struct {
             bool            bitf;       // part of a bitfield
