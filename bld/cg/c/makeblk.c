@@ -215,7 +215,7 @@ void    GenBlock( block_class class, block_num targets )
     if( _IsBlkAttr( CurrBlock, BLK_BIG_LABEL ) )        /* the only one that sticks*/
         class |= BLK_BIG_LABEL;
     CurrBlock->class = class;
-    while( targets-- > 0 ) {
+    while( targets-- > 1 ) {
         CurrBlock->edge[targets].flags = BEF_NONE;
     }
 }

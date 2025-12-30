@@ -37,6 +37,6 @@ extern void     AssignOtherLocals( void );
 extern void     ParmPropagate( void );
 extern void     AllocALocal( name *name );
 extern void     FiniStackMap( void );
-extern void     AssgnMoreTemps( block_id curr_id );
+extern void     AssgnMoreTemps( block_id blk_id );
 extern void     CountTempRefs( void );
 extern void     AssignTemps( void );
