@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,7 @@
 #include "convctl.h"
 #include "template.h"
 #include "class.h"
-#include "dumpapi.h"
-#ifdef DEVBUILD
-    #include "dbg.h"
-#endif
+#include "dbg.h"
 
 
 static CNV_DIAG diagImpossible  // DIAGNOSIS FOR IMPOSSIBLE CONVERT FAILURE

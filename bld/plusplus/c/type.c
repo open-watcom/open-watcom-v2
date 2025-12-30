@@ -62,10 +62,9 @@
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #include "compinfo.h"
 #ifdef DEVBUILD
-    #include "dbg.h"
     #include "togglesd.h"
 #endif
 

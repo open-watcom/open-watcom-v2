@@ -40,11 +40,8 @@
 #include "initdefs.h"
 #include "yydriver.h"
 #include "carve.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #include "cscanbuf.h"
-#ifdef DEVBUILD
-    #include "dbg.h"
-#endif
 
 
 #define FUNCTION_not_expandable (CompFlags.cpp_output)

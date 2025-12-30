@@ -39,7 +39,7 @@
 #include "stack.h"
 #include "initdefs.h"
 #include "carve.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"

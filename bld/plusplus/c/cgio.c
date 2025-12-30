@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +44,9 @@
 #include "ioptypes.h"
 #include "stats.h"
 #include "module.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #ifdef DEVBUILD
     #include "togglesd.h"
-    #include "dbg.h"
     #include "pragdefn.h"
 #endif
 
