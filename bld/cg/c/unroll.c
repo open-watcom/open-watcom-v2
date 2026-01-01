@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,8 @@ void    FixBlockIds( void )
             temp->t.temp_flags |= VISITED;
             temp->t.u.blk_id = blk_id;
         }
-        blk->blk_id = blk_id++;
+        blk->blk_id = blk_id;
+        blk_id++;
     }
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.temp_flags &= ~VISITED;
@@ -120,10 +121,8 @@ block   *DupBlock( block *blk )
     copy = MakeBlock( AskForNewLabel(), blk->targets );
     _SetBlkAttr( copy, blk->class );
     _MarkBlkAttrClr( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
-    copy->blk_id = BLK_ID_NONE;
     copy->depth = blk->depth;
     copy->gen_blk_id = blk->gen_blk_id;
-    copy->ins.head.line_num = 0;
     DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
     return( copy );
 }
@@ -690,9 +689,7 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
     if( _IsBlkAttr( blki, BLK_CONDITIONAL ) ) {
         blk = MakeBlock( AskForNewLabel(), 1 );
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
-        blk->blk_id = BLK_ID_NONE;
         blk->gen_blk_id = blki->gen_blk_id;
-        blk->ins.head.line_num = 0;
         blk->next_block = blki->next_block;
         if( blk->next_block != NULL ) {
             blk->next_block->prev_block = blk;
@@ -987,10 +984,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         new_blk = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
         new_blk->loop_head = PreHead->loop_head;
-        new_blk->input_edges = NULL;
-        new_blk->blk_id = BLK_ID_NONE;
         new_blk->gen_blk_id = PreHead->gen_blk_id;
-        new_blk->ins.head.line_num = 0;
         temp = AllocTemp( comp_type_class );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );
         SuffixIns( new_blk->ins.head.prev, ins );

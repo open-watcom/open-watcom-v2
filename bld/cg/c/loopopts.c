@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +175,6 @@ block    *AddPreBlock( block *postblk )
      * set up new block to look like it was generated after postblk
      */
     _SetBlkAttr( preblk, BLK_JUMP );
-    preblk->blk_id = BLK_ID_NONE;
     preblk->gen_blk_id = postblk->gen_blk_id;
     preblk->ins.head.line_num = postblk->ins.head.line_num;
     postblk->ins.head.line_num = 0;
@@ -196,8 +195,6 @@ block    *AddPreBlock( block *postblk )
     if( preblk->prev_block != NULL ) {
         preblk->prev_block->next_block = preblk;
     }
-    preblk->input_edges = NULL;
-    preblk->inputs = 0;
     /*
      * make preblk go to postblk
      */

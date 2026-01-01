@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,6 +62,7 @@ block   *MakeBlock( label_handle label, block_num targets )
     blk->prev_block = NULL;
     blk->label = label;
     blk->class = 0;
+    blk->ins.head.line_num = 0;
     blk->ins.head.next = (instruction *)&blk->ins;
     blk->ins.head.prev = (instruction *)&blk->ins;
     blk->ins.head.opcode = OP_BLOCK;
@@ -83,6 +84,8 @@ block   *MakeBlock( label_handle label, block_num targets )
     for( i = 0; i < targets; i++ ) {
         blk->edge[i].source = blk;
     }
+    blk->blk_id = BLK_ID_NONE;
+    blk->gen_blk_id = BLK_ID_NONE;
     return( blk );
 }
 
