@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -330,8 +330,8 @@ instruction     *rSPLITCMP( instruction *ins )
     instruction         *not_equal = NULL;
     type_class_def      high_type_class;
     type_class_def      low_type_class;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
 
     high_type_class = HalfClass[ins->type_class];
     low_type_class  = Unsigned[high_type_class];

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1650,12 +1650,12 @@ an FoldConsCompare( cg_op opcode, tn left, tn rite, const type_def *tipe )
             case O_LE:
                 fold = Flip( fold, compare <= 0, compare_true <= 0 );
                 break;
-            case OP_BIT_TEST_TRUE:
+            case (cg_op)OP_BIT_TEST_TRUE:
                 if( !HasBigConst( tipe ) ) {
                     fold = Flip( fold, false, (rite->u.name->c.lo.u.int_value & FETrue()) != 0 );
                 }
                 break;
-            case OP_BIT_TEST_FALSE:
+            case (cg_op)OP_BIT_TEST_FALSE:
                 if( !HasBigConst( tipe ) ) {
                     fold = Flip( fold, true, (rite->u.name->c.lo.u.int_value & FETrue()) == 0 );
                 }

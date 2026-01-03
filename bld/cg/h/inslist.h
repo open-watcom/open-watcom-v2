@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@ typedef int                     instruction_id;
 typedef uint_32                 source_line_number;
 
 typedef byte                    opcnt;
+typedef byte                    cond_dst_idx;
 
 typedef enum {
         INS_NEEDS_WORK,
@@ -123,7 +124,7 @@ typedef struct instruction {
         uint_16                 sequence;
         struct {
             union {
-                byte            byte;
+                cond_dst_idx    dest_idx;
                 bool            bool_flag;
                 call_flags      call_flags;
                 nop_flags       nop_flags;
@@ -157,9 +158,9 @@ typedef struct instruction {
 #define MAX_OPS_PER_INS 4
 #define INS_SIZE        ( offsetof( instruction, operands ) + MAX_OPS_PER_INS * sizeof( name * ) )
 
-#define _TrueIndex( i )              ( (i)->flags.u.byte & 0x0f )
-#define _FalseIndex( i )             ( ( (i)->flags.u.byte & 0xf0 ) >> 4 )
-#define _SetBlockIndex( i, t, f )    (i)->flags.u.byte = (t) | ( (f) << 4 )
+#define _TrueIndex( i )              ( (i)->flags.u.dest_idx & 0x0f )
+#define _FalseIndex( i )             ( ( (i)->flags.u.dest_idx & 0xf0 ) >> 4 )
+#define _SetBlockIndex( i, t, f )    (i)->flags.u.dest_idx = (t) | ( (f) << 4 )
 
 #define _IsConvert( ins )            ( (ins)->head.opcode == OP_CONVERT || \
                                        (ins)->head.opcode == OP_ROUND )

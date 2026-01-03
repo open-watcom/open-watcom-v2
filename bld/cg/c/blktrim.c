@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -433,8 +433,8 @@ static  bool    DoBlockTrim( void )
     return( any_change );
 }
 
-void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
-/**************************************************************
+void KillCondBlk( block *blk, instruction *ins, cond_dst_idx dest_idx )
+/**********************************************************************
  * Assume blk is a conditional with compare ins
  * Make dest the destination and delete the unused edge
  * Change blk to a JMP to dest edge
@@ -459,10 +459,10 @@ void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
 bool    DeadBlocks( void )
 /************************/
 {
-    block       *blk;
-    instruction *ins;
-    byte        dest_idx;
-    bool        change;
+    block           *blk;
+    instruction     *ins;
+    cond_dst_idx    dest_idx;
+    bool            change;
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

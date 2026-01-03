@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -446,8 +446,8 @@ instruction     *rMAKEU4( instruction *ins )
     instruction         *low;
     instruction         *high;
     instruction         *first;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
     name                *lseg;
     name                *rseg;
     name                *temp;
@@ -559,9 +559,9 @@ instruction     *rINTCOMP( instruction *ins )
     instruction         *low;
     instruction         *high;
     type_class_def      half_type_class;
-    byte                true_idx;
-    byte                false_idx;
-    byte                first_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
+    cond_dst_idx        first_idx;
     bool                rite_is_zero;
 
     rite_is_zero = CFTest( ins->operands[1]->c.u.cfval ) == 0;

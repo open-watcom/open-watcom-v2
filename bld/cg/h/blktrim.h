@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,6 @@ extern int      CountIns( block *blk );
 extern void     RemoveBlock( block *blk );
 extern void     RemoveInputEdge( block_edge *edge );
 extern void     MoveHead( block *old, block *new );
-extern void     KillCondBlk( block *blk, instruction *ins, byte dest_idx );
+extern void     KillCondBlk( block *blk, instruction *ins, cond_dst_idx dest_idx );
 extern bool     DeadBlocks( void );
 extern bool     BlockTrim( void );
