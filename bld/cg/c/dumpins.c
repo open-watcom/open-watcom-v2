@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ void    DumpInsOffsets( void )
     DO_DUMPOFFSET( "type_class", offsetof( instruction, type_class ) );
     DO_DUMPOFFSET( "base_type_class", offsetof( instruction, base_type_class ) );
     DO_DUMPOFFSET( "sequence", offsetof( instruction, sequence ) );
-    DO_DUMPOFFSET( "flags.u.byte", offsetof( instruction, flags.u.byte ) );
+    DO_DUMPOFFSET( "flags.u.dest_idx", offsetof( instruction, flags.u.dest_idx ) );
     DO_DUMPOFFSET( "flags.u.bool_flag", offsetof( instruction, flags.u.bool_flag ) );
     DO_DUMPOFFSET( "flags.u.call_flag", offsetof( instruction, flags.u.call_flags ) );
     DO_DUMPOFFSET( "flags.u.nop_flags", offsetof( instruction, flags.u.nop_flags ) );
@@ -446,20 +446,20 @@ void DumpInstrsOnly( block *blk )
 void    DumpCond( instruction *ins, block *blk )
 /**********************************************/
 {
-    byte    dst_idx;
+    cond_dst_idx    dest_idx;
 
     if( !_OpIsCondition( ins->head.opcode ) )
         return;
     if( ins->result == NULL ) {
-        dst_idx = _TrueIndex( ins );
-        if( dst_idx != NO_JUMP ) {
+        dest_idx = _TrueIndex( ins );
+        if( dest_idx != NO_JUMP ) {
             DumpLiteral( " then " );
-            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
+            DumpBlkId( blk->edge[dest_idx].destination.u.blk );
         }
-        dst_idx = _FalseIndex( ins );
-        if( dst_idx != NO_JUMP ) {
+        dest_idx = _FalseIndex( ins );
+        if( dest_idx != NO_JUMP ) {
             DumpLiteral( " else " );
-            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
+            DumpBlkId( blk->edge[dest_idx].destination.u.blk );
         }
     }
 }

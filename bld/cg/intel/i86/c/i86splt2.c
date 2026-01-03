@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -518,8 +518,8 @@ instruction     *rSPLIT8TST( instruction *ins )
 {
     eight_byte_name     left;
     eight_byte_name     rite;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
     opcode_defs         opcode;
     instruction         *lo_ins;
     instruction         *mid_lo_ins;
@@ -562,8 +562,8 @@ instruction     *rSPLIT8CMP( instruction *ins )
 {
     eight_byte_name     left;
     eight_byte_name     rite;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
     instruction         *new_ins[8];
     type_class_def      high_type_class;
     unsigned            i;
@@ -933,9 +933,9 @@ instruction     *rINTCOMP( instruction *ins )
     instruction         *high;
     type_class_def      half_type_class;
     type_class_def      quarter_type_class;
-    byte                true_idx;
-    byte                false_idx;
-    byte                first_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
+    cond_dst_idx        first_idx;
     bool                rite_is_zero;
 
     rite_is_zero = CFTest( ins->operands[1]->c.u.cfval ) == 0;

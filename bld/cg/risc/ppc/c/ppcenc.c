@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -971,12 +971,12 @@ byte    ReverseCondition( byte cond )
 }
 
 
-static label_handle LocateLabel( instruction *ins, byte dst_idx )
-/***************************************************************/
+static label_handle LocateLabel( instruction *ins, cond_dst_idx dest_idx )
+/************************************************************************/
 {
-    if( dst_idx == NO_JUMP )
+    if( dest_idx == NO_JUMP )
         return( NULL );
-    return( InsBlock( ins->head.next )->edge[dst_idx].destination.u.lbl );
+    return( InsBlock( ins->head.next )->edge[dest_idx].destination.u.lbl );
 }
 
 

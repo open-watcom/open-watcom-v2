@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,9 +217,10 @@ instruction     *MakeBinary( opcode_defs opcode, name *left,
 }
 
 
-instruction     *MakeCondition( opcode_defs opcode, name *left,
-                                        name *right, byte t, byte f,
-                                        type_class_def type_class )
+instruction     *MakeCondition( opcode_defs opcode,
+                                name *left, name *right,
+                                cond_dst_idx t, cond_dst_idx f,
+                                type_class_def type_class )
 /***************************************************************
  * Make a conditional (IF ( left opcode right ) goto "t" else goto "f")
  */
