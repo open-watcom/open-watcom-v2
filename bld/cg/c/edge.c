@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,8 +108,7 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_num   targets;
 
     targets = blk->targets;
-    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-    Copy( blk, new_blk, BLOCK_SIZE( targets ) );
+    new_blk = MakeBlockCopy( targets, blk, targets );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
     blk->next_block = new_blk;

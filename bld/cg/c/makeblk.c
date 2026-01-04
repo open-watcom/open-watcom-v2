@@ -51,6 +51,8 @@
 #include "feprotos.h"
 
 
+#define BLOCK_SIZE(n)   (sizeof( block ) + (n - 1) * sizeof( block_edge ))
+
 block   *MakeBlock( label_handle label, block_num targets )
 /*********************************************************/
 {
@@ -86,6 +88,16 @@ block   *MakeBlock( label_handle label, block_num targets )
     }
     blk->blk_id = BLK_ID_NONE;
     blk->gen_blk_id = BLK_ID_NONE;
+    return( blk );
+}
+
+
+block   *MakeBlockCopy( block_num targets, block *src, block_num src_targets )
+{
+    block       *blk;
+
+    blk = CGAlloc( BLOCK_SIZE( targets ) );
+    Copy( src, blk, BLOCK_SIZE( src_targets ) );
     return( blk );
 }
 
@@ -184,8 +196,7 @@ void    GenBlock( block_class class, block_num targets )
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-        Copy( CurrBlock, new_blk, BLOCK_SIZE( 1 ) );
+        new_blk = MakeBlockCopy( targets, CurrBlock, 1 );
         if( CurrBlock->ins.head.next == (instruction *)&CurrBlock->ins ) {
             new_blk->ins.head.next = (instruction *)&new_blk->ins;
             new_blk->ins.head.prev = (instruction *)&new_blk->ins;
@@ -230,14 +241,11 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block       *new_blk;
     block_edge  *edge;
     block_num   targets;
-    block_num   last_target;
 
-    last_target = blk->targets;
-    targets = last_target + 1;
-    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-    Copy( blk, new_blk, BLOCK_SIZE( last_target ) );
-    new_blk->edge[last_target].destination.u.lbl = lbl;
-    new_blk->edge[last_target].flags = BEF_NONE;
+    targets = blk->targets + 1;
+    new_blk = MakeBlockCopy( targets, blk, targets - 1 );
+    new_blk->edge[targets - 1].destination.u.lbl = lbl;
+    new_blk->edge[targets - 1].flags = BEF_NONE;
     new_blk->targets = targets;
     /*
      * Move all references to blk

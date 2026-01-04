@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 extern block            *MakeBlock( label_handle label, block_num targets );
+extern block            *MakeBlockCopy( block_num targets, block *src, block_num src_targets );
 extern block            *NewBlock( label_handle label, bool label_dies );
 extern void             FreeABlock( block *blk );
 extern void             FreeBlock( void );
