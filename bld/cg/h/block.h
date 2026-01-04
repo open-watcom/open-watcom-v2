@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +48,6 @@
 
 #define _MarkBlkAllAttrClr( a ) ClearBlocksBitsMask( ~(a) )
 #define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
-
-#define BLOCK_SIZE(n)           (sizeof( block ) + (n - 1) * sizeof( block_edge ))
 
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
