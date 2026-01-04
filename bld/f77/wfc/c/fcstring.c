@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,31 +95,31 @@ cg_name SCBLength( cg_name scb )
 }
 
 
-cg_name Concat( uint num_args, cg_name dest )
+cg_name Concat( args_num argc, cg_name dest )
 //===========================================
 // Do concatenation operation.
 {
-    uint        count;
+    args_num    i;
     call_handle call;
     cg_name     dest_1;
     cg_name     dest_2;
 
-    if( num_args & CAT_TEMP ) {
+    if( argc & CAT_TEMP ) {
         call = InitCall( RT_TCAT );
-        num_args &= ~CAT_TEMP;
-    } else if( num_args == 1 ) {
+        argc &= ~CAT_TEMP;
+    } else if( argc == 1 ) {
         call = InitCall( RT_MOVE );
     } else {
         call = InitCall( RT_CAT );
     }
-    for( count = num_args; count > 0; --count ) {
-        CGAddParm( call, StkElement( count ), TY_LOCAL_POINTER );
+    for( i = argc; i > 0; --i ) {
+        CGAddParm( call, StkElement( i ), TY_LOCAL_POINTER );
     }
-    PopStkElements( num_args );
+    PopStkElements( argc );
     CloneCGName( dest, &dest_1, &dest_2 );
     CGAddParm( call, dest_1, TY_LOCAL_POINTER );
-    if( num_args != 1 ) {
-        CGAddParm( call, CGInteger( num_args, TY_UNSIGNED ), TY_UNSIGNED );
+    if( argc != 1 ) {
+        CGAddParm( call, CGInteger( argc, TY_UNSIGNED ), TY_UNSIGNED );
     }
     return( CGBinary( O_COMMA, CGCall( call ), dest_2, TY_LOCAL_POINTER ) );
 }

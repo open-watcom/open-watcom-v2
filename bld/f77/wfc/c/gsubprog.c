@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ void    GBegCall( itnode *itptr )
 {
     sym_id      sp;
     obj_ptr     curr_obj;
-    int         num_args;
+    args_num    argc;
 
     sp = itptr->sym_ptr;
 #if _CPU == 386
@@ -89,9 +89,9 @@ void    GBegCall( itnode *itptr )
             }
         }
     }
-    num_args = DumpArgInfo( itptr->list );
+    argc = DumpArgInfo( itptr->list );
     curr_obj = ObjSeek( curr_obj );
-    OutU16( num_args );
+    OutU16( argc );
     ObjSeek( curr_obj );
     if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( sp->u.ns.u1.s.typ == FT_CHAR ) {

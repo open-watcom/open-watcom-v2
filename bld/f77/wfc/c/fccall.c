@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -486,7 +486,7 @@ void    FCCall( void )
 {
     sym_id      sp;
     sym_id      scb;
-    uint        num_args;
+    args_num    argc;
     uint        idx;
     call_handle call;
     cg_type     sp_cgtyp;
@@ -518,17 +518,17 @@ void    FCCall( void )
     } else {
         rtn = CGFEName( sp, sp_cgtyp );
     }
-    num_args = GetU16();
-    if( num_args == 0 ) {
+    argc = GetU16();
+    if( argc == 0 ) {
         arg_vec = NULL;
     } else {
-        // We need num_args + 1 because we use NULL at the end
-        arg_vec = FMemAlloc( ( num_args + 1 ) * sizeof( cg_name ) );
+        // We need argc + 1 because we use NULL at the end
+        arg_vec = FMemAlloc( ( argc + 1 ) * sizeof( cg_name ) );
     }
     call = CGInitCall( rtn, sp_cgtyp, sp );
     if( sp->u.ns.flags & SY_INTRINSIC ) {
         if( IFVarArgs( sp->u.ns.si.fi.index ) ) {
-            CGAddParm( call, CGInteger( num_args, TY_INTEGER ), TY_INTEGER );
+            CGAddParm( call, CGInteger( argc, TY_INTEGER ), TY_INTEGER );
         }
     } else if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( (Options & OPT_DESCRIPTOR) == 0
@@ -545,7 +545,7 @@ void    FCCall( void )
         }
     }
     idx = 0;
-    for( ; num_args != 0; --num_args ) {
+    for( ; argc != 0; --argc ) {
         arg_info = GetU16();
         ptyp = _GetArgInfoPtyp( arg_info );
         pcode = _GetArgInfoPcode( arg_info );
