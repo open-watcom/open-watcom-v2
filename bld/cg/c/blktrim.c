@@ -354,10 +354,9 @@ static  bool    SameTarget( block *blk )
     if( targ1 != targ2 )
         return( false );
     if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION )
-      || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
+      || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) ) {
         return( false );
-    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
-    _MarkBlkAttrSet( blk, BLK_JUMP );
+    }
     RemoveEdge( &blk->edge[1] );
     ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -394,7 +393,11 @@ static  bool    DoBlockTrim( void )
                 RemoveBlock( blk );
                 change = true;
             } else if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
-                change |= SameTarget( blk );
+                if( SameTarget( blk ) ) {
+                    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+                    _MarkBlkAttrSet( blk, BLK_JUMP );
+                    change = true;
+                }
             } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk
