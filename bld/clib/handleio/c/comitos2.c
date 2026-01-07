@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <io.h>
 #include <dos.h>
 #include <wos2.h>
-#include "rterrno.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -47,7 +46,7 @@ _WCRTLINK int _commit( int handle )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( 0 );
     }
     rc = DosBufReset( handle );

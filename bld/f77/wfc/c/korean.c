@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,24 +146,24 @@ static const byte CharSet[] = {
 static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
 {
-    return( ( *(unsigned char *)ptr == 0x81 ) && ( *(unsigned char *)(ptr + 1) == 0x40 ) );
+    return( ( ((byte *)ptr)[0] == 0x81 ) && ( ((byte *)ptr)[1] == 0x40 ) );
 }
 
 
 static  bool    IsDoubleByteChar( char ch )
 // Determine if character is a double-byte character.
 {
-    return( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xbf ) );
+    return( ( 0x81 <= (byte)ch ) && ( (byte)ch <= 0xbf ) );
 }
 
 
 static size_t   CharacterWidth( const char *ptr )
 // Determine character width.
 {
-    unsigned char   ch;
+    byte   ch;
 
-    if( IsDoubleByteChar( *ptr ) ) {
-        ch = *(unsigned char *)(ptr + 1);
+    if( IsDoubleByteChar( ptr[0] ) ) {
+        ch = ptr[1];
         if( ( 0x40 <= ch ) && ( ch <= 0xfc ) ) {
             if( ch == 0x7f) {
                 return( 1 );

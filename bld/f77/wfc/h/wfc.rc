@@ -6,7 +6,7 @@
 
 STRINGTABLE
 BEGIN
-    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [e]
 
     #include "wfcmsgs.gh"
 #if _INTEL_CPU
@@ -16,7 +16,7 @@ BEGIN
 
     #undef pick
 
-    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [j]
 
     #include "wfcmsgs.gh"
 #if _INTEL_CPU

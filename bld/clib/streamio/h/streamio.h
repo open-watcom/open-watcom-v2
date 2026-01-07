@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,10 +30,10 @@
 ****************************************************************************/
 
 
-extern FILE *__allocfp( void );
-extern void __freefp( FILE * );
-extern void __purgefp( void );
-extern void __chktty( FILE *fp );
-extern void __ioalloc( FILE * );
-extern int  __doclose( FILE *fp, int close_handle );
-extern int  __shutdown_stream( FILE *fp, int close_handle );
+extern FILE * _WCNEAR __allocfp( void );
+extern void _WCNEAR __freefp( FILE * );
+extern void _WCNEAR __purgefp( void );
+extern void _WCNEAR __chktty( FILE *fp );
+extern void _WCNEAR __ioalloc( FILE * );
+extern int  _WCNEAR __doclose( FILE *fp, int close_handle );
+extern int  _WCNEAR __shutdown_stream( FILE *fp, int close_handle );

@@ -52,7 +52,7 @@
 #endif
 
 
-static void __LibCKeyValueDestructor( void * pPerThreadData )
+static void _WCNEAR __LibCKeyValueDestructor( void * pPerThreadData )
 {
     /* what to do here with the data! */
 
@@ -144,8 +144,8 @@ void __LibCRemoveThread( int close_handle )
 
 #if !defined (_NETWARE_LIBC)
 might still need this!
-static void __ThreadExit( void )
-/******************************/
+static void _WCNEAR __ThreadExit( void )
+/**************************************/
 {
     __LibCRemoveThread( TRUE );
     __LibCThreadFini();
@@ -163,7 +163,7 @@ typedef struct {
     NXContext_t         cx;         /* NKS Context */
 } begin_thread_data;
 
-static void begin_thread_helper( void *the_arg )
+static void _WCNEAR begin_thread_helper( void *the_arg )
 {
     __thread_fn         *start_addr;
     void                *arglist;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ static bool         Hflag = false;      /* half hearted algorithm       */
 static bool         nflag = false;      /* Edit script requested        */
 static bool         eflag = false;      /* Edit script requested        */
 static bool         bflag = false;      /* Blank supress requested      */
-static bool         cflag = false;      /* Context printout             */
+static int          cflag = 0;          /* Context printout             */
 static bool         iflag = false;      /* Ignore case requested        */
 static bool         tflag = false;      /* Test for enough memory flag  */
 static int          diff_rc = DIFF_NO_DIFFS;
@@ -910,7 +910,7 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
     }
 
     if( c == 'a'
-      && !cflag ) {
+      && cflag == 0 ) {
         /*
          * Addition: just print one odd #
          */
@@ -921,7 +921,7 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
          */
         range( astart, aend, FIL_A );
     }
-    if( !cflag ) {
+    if( cflag == 0 ) {
         putchar( c );
         if( !eflag ) {
             if( c == 'd' ) {
@@ -1180,7 +1180,7 @@ int main( int argc, char **argv )
         while( *ap != EOS ) {
             switch( ( *ap++ ) ) {
             case 'b':
-                bflag++;
+                bflag = true;
                 break;
             case 'c':
                 if( *ap > '0'
@@ -1223,7 +1223,7 @@ int main( int argc, char **argv )
         error( cmdusage );
         return( DIFF_NOT_COMPARED );
     }
-    if( nflag + ( cflag != 0 ) + eflag > 1 ) {
+    if( nflag + ( ( cflag ) ? 1 : 0 ) + eflag > 1 ) {
         error( " -c, -n and -e are incompatible.\n" );
         return( DIFF_NOT_COMPARED );
     }

@@ -42,7 +42,7 @@ test : .SYMBOLIC start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .SYMBOLIC start test.lnk $(exes)
+test : .SYMBOLIC start $(exes)
     $(noecho)%make common_set_result_display
 !endif
 

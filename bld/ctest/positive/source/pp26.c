@@ -2,7 +2,7 @@
 
 #define ppn1 0xae+0x51
 
-unsigned x = ppn1;	// should evaluate to 0xff
+unsigned x = ppn1;      // should evaluate to 0xff
 
 int main() {
     if( x != 0xff ) fail(__LINE__);

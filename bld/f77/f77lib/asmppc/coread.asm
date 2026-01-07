@@ -76,7 +76,7 @@ __RT_IORead:
 __RT_InpLOG1:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_LOG_1            // return LOGICAL*1 type
+        li      a0, FPT_LOG_1           // return LOGICAL*1 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpLOG1
 
@@ -86,7 +86,7 @@ __RT_InpLOG1:
 __RT_InpLOG4:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_LOG_4            // return LOGICAL*4 type
+        li      a0, FPT_LOG_4           // return LOGICAL*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpLOG4
 
@@ -96,7 +96,7 @@ __RT_InpLOG4:
 __RT_InpINT1:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_INT_1            // return INTEGER*1 type
+        li      a0, FPT_INT_1           // return INTEGER*1 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpINT1
 
@@ -106,7 +106,7 @@ __RT_InpINT1:
 __RT_InpINT2:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_INT_2            // return INTEGER*2 type
+        li      a0, FPT_INT_2           // return INTEGER*2 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpINT2
 
@@ -116,7 +116,7 @@ __RT_InpINT2:
 __RT_InpINT4:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_INT_4            // return INTEGER*4 type
+        li      a0, FPT_INT_4           // return INTEGER*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpINT4
 
@@ -126,7 +126,7 @@ __RT_InpINT4:
 __RT_InpREAL:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_REAL_4           // return REAL*4 type
+        li      a0, FPT_REAL_4          // return REAL*4 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpREAL
 
@@ -136,7 +136,7 @@ __RT_InpREAL:
 __RT_InpDBLE:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_REAL_8           // return REAL*8 type
+        li      a0, FPT_REAL_8          // return REAL*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpDBLE
 
@@ -146,7 +146,7 @@ __RT_InpDBLE:
 __RT_InpXTND:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_REAL_16          // return REAL*16 type
+        li      a0, FPT_REAL_16         // return REAL*16 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpXTND
 
@@ -156,7 +156,7 @@ __RT_InpXTND:
 __RT_InpCPLX:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_CPLX_8           // return COMPLEX*8 type
+        li      a0, FPT_CPLX_8          // return COMPLEX*8 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpCPLX
 
@@ -166,7 +166,7 @@ __RT_InpCPLX:
 __RT_InpDBCX:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_CPLX_16          // return COMPLEX*16 type
+        li      a0, FPT_CPLX_16         // return COMPLEX*16 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpDBCX
 
@@ -176,7 +176,7 @@ __RT_InpDBCX:
 __RT_InpXTCX:
         lis     t0, h^IORslt            // prepare loading register
         stw     a0, l^IORslt(t0)        // load result pointer
-        li      a0, PT_CPLX_32          // return COMPLEX*32 type
+        li      a0, FPT_CPLX_32         // return COMPLEX*32 type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_InpXTCX
 

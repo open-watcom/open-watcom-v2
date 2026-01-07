@@ -6,33 +6,25 @@ inputs:
     required: false
     default: ''
     type: string
-  relpath:
-    description: 'binary release path'
-    required: false
-    default: 'rel'
+  gitpath:
+    description: 'git subdirectory'
+    required: true
     type: string
   owtarget:
     description: 'OW builder additional cmd line arguments'
     required: false
     default: ''
     type: string
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
+  suffix:
+    description: 'artifact name suffix'
+    required: true
     type: string
-  suffixi:
-    description: 'run-time artifact suffix'
-    required: false
-    default: ''
+  doc_suffix:
+    description: 'documentation artifact name suffix'
+    required: true
     type: string
-  suffixo:
-    description: 'documentation artifact suffix'
-    required: false
-    default: ''
-    type: string
-  buildcmd:
-    description: 'build command'
+  args:
+    description: 'build command arguments'
     required: false
     default: ''
     type: string
@@ -41,45 +33,28 @@ inputs:
     required: false
     default: ''
     type: string
-  noarchive:
-    description: 'not use tar archive for artifacts'
-    required: false
-    default: ''
-    type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
-  - uses: "./.github/actions/dosboxin"
+  - uses: ./.github/actions/artfload
     with:
-      hostos:       ${{ inputs.hostos }}
-  - uses: "./.github/actions/artfload"
-    with:
-      hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.suffixi }}"
-      noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
+      artifact:     build ${{inputs.suffix}}
   - name: Documentation Build
-    run: ${{ inputs.buildcmd }}
+    run: |
+      if not '${{env.OWTESTMODE}}' == '1' (
+        ci\buildx.cmd ${{inputs.args}}
+      )
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
+      OWDOCTARGET:   ${{inputs.target}} ${{inputs.owtarget}}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox.exe'
-      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
-      OWDEBUG:       ${{ inputs.owdebug }}
+      OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
       OWVERBOSE:     1
     shell: cmd
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
-      hostos:       ${{ inputs.hostos }}
-      gitpath:      ${{ inputs.relpath }}
-      artifact:     "rel ${{ inputs.suffixo }}"
-      noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
+      gitpath:       ${{inputs.gitpath}}
+      artifact:      rel ${{inputs.doc_suffix}}

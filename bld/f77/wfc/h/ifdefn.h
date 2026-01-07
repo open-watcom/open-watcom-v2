@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 //      id         keyword      next       ret_typ        args_typ       flags
-pick( IF_NONE,     "",         0,          0,              0,            0 )
 pick( IF_ABS,      "ABS",      IF_IABS,    FT_REAL,       FT_REAL,      ONE_ARG|IF_IN_LINE|IF_GENERIC|IF_ARG_OK )
 pick( IF_ACOS,     "ACOS",     IF_DACOS,   FT_REAL,       FT_REAL,      ONE_ARG|IF_IN_LINE|IF_GENERIC|IF_ARG_OK )
 pick( IF_AIMAG,    "AIMAG",    IF_DIMAG,   FT_REAL,       FT_COMPLEX,   ONE_ARG|IF_IN_LINE|IF_NOT_GEN|IF_ARG_OK )

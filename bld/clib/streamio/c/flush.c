@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -43,10 +44,10 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "qwrite.h"
 #include "lseek.h"
+#include "_flush.h"
 #include "clibsupp.h"
 #include "thread.h"
 
@@ -54,14 +55,14 @@
 #if defined( __NETWARE__ ) && defined( _THIN_LIB )
 
 /* Take flush from LibC */
-_WCRTLINK int __flush( FILE *fp )
+int _WCNEAR __flush( FILE *fp )
 {
     return( fflush( fp ) );
 }
 
 #else
 
-_WCRTLINK int __flush( FILE *fp )
+int _WCNEAR __flush( FILE *fp )
 {
     int             len;
     long            offset;
@@ -84,7 +85,7 @@ _WCRTLINK int __flush( FILE *fp )
                     ret = EOF;
 #ifndef __UNIX__
                 } else if( len == 0 ) {
-                    _RWD_errno = ENOSPC;
+                    lib_set_errno( ENOSPC );
                     fp->_flag |= _SFERR;
                     ret = EOF;
 #endif
@@ -119,6 +120,11 @@ _WCRTLINK int __flush( FILE *fp )
 #endif
     _ReleaseFile( fp );
     return( ret );
+}
+
+_WCRTLINK int __clib_flush( FILE *fp )
+{
+    return( __flush( fp ) );
 }
 
 #endif

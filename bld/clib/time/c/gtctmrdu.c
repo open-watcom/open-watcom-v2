@@ -36,7 +36,7 @@
 #include "getctime.h"
 
 
-int __getctime( struct tm *t )
+int _WCNEAR __getctime( struct tm *t )
 {
     unsigned long msb;
     unsigned long lsb;
@@ -56,14 +56,14 @@ int __getctime( struct tm *t )
         movzx edx,ch
         mov month,edx
         movzx edx,cl
-        mov day,edx        
+        mov day,edx
         movzx edx,bh
         mov hour,edx
         movzx edx,bl
         mov min,edx
         movzx edx,ah
         mov sec,edx
-    }        
+    }
 
     t->tm_year = year;
     t->tm_mon = month;

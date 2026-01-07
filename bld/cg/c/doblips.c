@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +108,9 @@ static  void    SetNextTickCount( void )
 /**************************************/
 {
     NextTickCount = NextTickCount + BRK_CHECK_TICKS;
-    if( NextTickCount < BRK_CHECK_TICKS )  NextTickCount = ~0;
+    if( NextTickCount < BRK_CHECK_TICKS ) {
+        NextTickCount = ~0;
+    }
 }
 
 
@@ -116,7 +118,9 @@ static  void    SetNextBlipCount( void )
 /**************************************/
 {
     NextBlipCount = LastBlipCount + BLIP_TICKS;
-    if( NextBlipCount < BLIP_TICKS )  NextBlipCount = ~0;
+    if( NextBlipCount < BLIP_TICKS ) {
+        NextBlipCount = ~0;
+    }
 }
 
 

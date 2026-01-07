@@ -62,10 +62,9 @@
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #include "compinfo.h"
 #ifdef DEVBUILD
-    #include "dbg.h"
     #include "togglesd.h"
 #endif
 
@@ -92,9 +91,22 @@ TYPE TypeCache[TYPC_LAST];
 
 #if defined( DEVBUILD ) || defined( XTRA_RPT )
 char const * const TypeIdNames[] = {
-    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
+    /*
+     * base types
+     */
+    #define pickb(id,promo,promo_asm,type_text) __STR( id ),
+    #define picke(id,promo,promo_asm,type_text)
     #include "_typdefs.h"
-    #undef pick
+    #undef picke
+    #undef pickb
+    /*
+     * extended types
+     */
+    #define pickb(id,promo,promo_asm,type_text)
+    #define picke(id,promo,promo_asm,type_text) __STR( id ),
+    #include "_typdefs.h"
+    #undef picke
+    #undef pickb
     "TYP_NONE",
 #if defined( XTRA_RPT )
     "Total"
@@ -7868,7 +7880,7 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
 
         if( (*u_top)->op == PT_INT_CONSTANT ) {
             if( (*b_top)->op == PT_INT_CONSTANT ) {
-                if( !I64Cmp( &(*u_top)->u.int64_constant, &(*b_top)->u.int64_constant ) ) {
+                if( U64Eq( (*u_top)->u.int64_constant, (*b_top)->u.int64_constant ) ) {
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
                     continue;
@@ -8419,11 +8431,14 @@ static void initBasicTypes( void )
     int     i;
     type_id typ;
     static type_id basics_init_list[] = {
-        #define BASETYPES
-        #define pick(id,promo,promo_asm,type_text)  id,
+        /*
+         * base types only
+         */
+        #define pickb(id,promo,promo_asm,type_text) id,
+        #define picke(id,promo,promo_asm,type_text)
         #include "_typdefs.h"
-        #undef pick
-        #undef BASETYPES
+        #undef picke
+        #undef pickb
     };
 
     for( i = 0; i < ARRAY_SIZE( basics_init_list ); i++ ) {

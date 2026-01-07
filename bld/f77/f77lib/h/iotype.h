@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +46,8 @@ typedef PTYPE (io_type_rtn)(void);
   #pragma aux ( io_type_rtn, io_type_decl )
 #endif
 
-extern  io_type_rtn             IOType;         // for optimizing compiler
-extern  io_type_rtn             FC_IOType;      // for load'n go compiler
+extern  io_type_rtn         IOType;         // for optimizing compiler
 
-gbl_defn io_type_rtn            *IOTypeRtn;
+gbl_defn io_type_rtn        *IOTypeRtn;
 
 #endif

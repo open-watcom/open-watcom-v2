@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,9 +61,9 @@ _WCRTLINK errno_t __F_NAME(freopen_s,_wfreopen_s)(
     /* newstreamptr  not null */
     /* mode          not null */
     /* stream        not null */
-    if( __check_constraint_nullptr_msg( msg, newstreamptr )  &&
-        __check_constraint_nullptr_msg( msg, mode ) &&
-        __check_constraint_nullptr_msg( msg, stream ) ) {
+    if( __check_constraint_nullptr_msg( msg, newstreamptr )
+      && __check_constraint_nullptr_msg( msg, mode )
+      && __check_constraint_nullptr_msg( msg, stream ) ) {
 
         /* ua.. and uw.. are treated as a.. and w.. */
         if( (*mode == STRING( 'u' )) &&

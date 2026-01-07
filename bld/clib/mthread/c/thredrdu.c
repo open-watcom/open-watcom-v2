@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,12 +31,12 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <process.h>
 #include <string.h>
 #include <rdos.h>
 #include "roundmac.h"
-#include "rterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
 #include "thread.h"
@@ -122,7 +122,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1L );
     }
 

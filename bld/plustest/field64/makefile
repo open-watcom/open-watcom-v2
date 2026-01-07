@@ -42,7 +42,7 @@ extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
-test : .SYMBOLIC start test.lnk field.obj $(exes)
+test : .SYMBOLIC start field.obj $(exes)
     $(noecho)%make common_set_result
 
 clean : .procedure

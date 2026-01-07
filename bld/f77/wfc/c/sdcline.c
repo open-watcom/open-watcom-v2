@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,8 @@
 #endif
 
 
-bool MainCmdLine( char **fn, char **rest, char **opts, char *cmd )
-//================================================================
+bool MainCmdLine( char **fn, char **rest, const char **opts, char *cmd )
+//======================================================================
 {
     uint        opt_num;
     bool        scanning_file_name;
@@ -59,7 +59,7 @@ bool MainCmdLine( char **fn, char **rest, char **opts, char *cmd )
     *fn = NULL;
     *rest = NULL;
     opt_num = 0;
-    for(;;) {
+    for( ;; ) {
         scanning_file_name = false;
         quoted = false;
         cmd = SkipBlanks( cmd );

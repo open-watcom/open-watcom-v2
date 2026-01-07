@@ -37,38 +37,42 @@ test : .SYMBOLIC start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else ifeq targ_env_386 wnt386
-test : .SYMBOLIC start tomdll.dll test.lnk tomexe.$(exe) test_set_result
+test : .SYMBOLIC start tomdll.dll tomexe.$(exe) test_set_result
     $(noecho)%make common_set_result_display
 !else ifdef __NT386__
 test : .SYMBOLIC start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .SYMBOLIC start tomdll.dll test.lnk tomexe.$(exe) test_set_result
+test : .SYMBOLIC start tomdll.dll tomexe.$(exe) test_set_result
     $(noecho)%make common_set_result_display
 !endif
 
 test_set_result : .SYMBOLIC
     cat tom.out >>$(%ERROR_FILE)
 
-tomdll.dll : tomdll.obj tomdll.lnk
+tomdll.dll : tomdll.obj
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) @$]@ NAME $@
+    @%make tomdll.lnk
+    @which $(linker)
+    $(noecho)$(linker) @tomdll.lnk NAME $@
     @%make set_old_path
 
 tomdll.obj : tomdll.c
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
+    @%make echo_cxx
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)
-    $(noecho)%create $@
-    @%append $@ $(ldebug_$(arch))
-    @%append $@ $(lnk_any)
-    @%append $@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
-    @%append $@ OPTION map, caseexact, stack=128k, quiet
-    @%append $@ FILE tomdll.obj
+    $(noecho)%create tomdll.lnk
+    @%append tomdll.lnk $(ldebug_$(arch))
+    @%append tomdll.lnk $(lnk_any)
+    @%append tomdll.lnk SYSTEM nt dll initinstance terminstance reference __DLLstart_
+    @%append tomdll.lnk OPTION map, caseexact, stack=128k, quiet
+    @%append tomdll.lnk FILE tomdll.obj
 
 clean : .procedure
     @%make echo_clean

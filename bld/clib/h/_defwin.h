@@ -42,23 +42,23 @@
 struct window_data;
 typedef struct window_data _WCI86FAR *LPWDATA;
 
-extern int      (*_WindowsStdin)( LPWDATA, void *, unsigned );
-extern int      (*_WindowsStdout)( LPWDATA, const void *, unsigned );
-extern bool     (*_WindowsKbhit)( LPWDATA );
-extern int      (*_WindowsGetch)( LPWDATA );
-extern int      (*_WindowsGetche)( LPWDATA );
-extern void     (*_WindowsPutch)( LPWDATA, int );
-extern void     (*_WindowsExitRtn)( void );
-extern bool     (*_WindowsNewWindow)( const char *, ... );
-extern bool     (*_WindowsCloseWindow)( LPWDATA );
-extern LPWDATA  (*_WindowsIsWindowedHandle)( int );
-extern void     (*_WindowsRemoveWindowedHandle)( int );
-extern bool     (*_WindowsSetAbout)( const char *, const char * );
-extern bool     (*_WindowsSetAppTitle)( const char * );
-extern bool     (*_WindowsSetConTitle)( LPWDATA, const char * );
-extern bool     (*_WindowsDestroyOnClose)( LPWDATA );
-extern bool     (*_WindowsYieldControl)( void );
-extern bool     (*_WindowsShutDown)( void );
+extern int      (_WCNEAR *_WindowsStdin)( LPWDATA, void *, unsigned );
+extern int      (_WCNEAR *_WindowsStdout)( LPWDATA, const void *, unsigned );
+extern bool     (_WCNEAR *_WindowsKbhit)( LPWDATA );
+extern int      (_WCNEAR *_WindowsGetch)( LPWDATA );
+extern int      (_WCNEAR *_WindowsGetche)( LPWDATA );
+extern void     (_WCNEAR *_WindowsPutch)( LPWDATA, int );
+extern void     (_WCNEAR *_WindowsExitRtn)( void );
+extern bool     (_WCNEAR *_WindowsNewWindow)( const char *, ... );
+extern bool     (_WCNEAR *_WindowsCloseWindow)( LPWDATA );
+extern LPWDATA  (_WCNEAR *_WindowsIsWindowedHandle)( int );
+extern void     (_WCNEAR *_WindowsRemoveWindowedHandle)( int );
+extern bool     (_WCNEAR *_WindowsSetAbout)( const char *, const char * );
+extern bool     (_WCNEAR *_WindowsSetAppTitle)( const char * );
+extern bool     (_WCNEAR *_WindowsSetConTitle)( LPWDATA, const char * );
+extern bool     (_WCNEAR *_WindowsDestroyOnClose)( LPWDATA );
+extern bool     (_WCNEAR *_WindowsYieldControl)( void );
+extern bool     (_WCNEAR *_WindowsShutDown)( void );
 
 #endif
 #endif

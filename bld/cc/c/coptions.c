@@ -230,7 +230,7 @@ static bool scanDefine( OPT_STRING **p )
 {
     /* unused parameters */ (void)p;
 
-    CmdScanInit( Define_UserMacro( CmdScanAddr(), CompFlags.extended_defines ) );
+    CmdScanLineInit( Define_UserMacro( CmdScanAddr(), CompFlags.extended_defines ) );
     switch_start = CmdScanAddr();
     return( true );
 }
@@ -242,7 +242,7 @@ static bool scanDefinePlus( OPT_STRING **p )
     if( CmdScanSwEnd() ) {
         CompFlags.extended_defines = true;
     } else {
-        CmdScanInit( Define_UserMacro( CmdScanAddr(), true ) );
+        CmdScanLineInit( Define_UserMacro( CmdScanAddr(), true ) );
         switch_start = CmdScanAddr();
     }
     return( true );
@@ -892,7 +892,7 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
 
     if( str != NULL ) {
         level = -1;
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for( ;; ) {
             CmdScanSkipWhiteSpace();
             ch = CmdScanChar();
@@ -911,7 +911,7 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
                             penv = ptr;
                         }
                         if( penv != NULL ) {
-                            save[level] = CmdScanInit( penv );
+                            save[level] = CmdScanLineInit( penv );
                             buffers[level] = ptr;
                         }
                     }
@@ -926,13 +926,19 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
                 if( level < 0 )
                     break;
                 CMemFree( buffers[level] );
-                CmdScanInit( save[level] );
+                CmdScanLineInit( save[level] );
                 level--;
                 continue;
             }
-            if( _IS_SWITCH_CHAR( ch ) ) {
+            if( CmdScanSwitchChar( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
-                OPT_PROCESS( data );
+                if( OPT_PROCESS( data ) ) {
+                    /*
+                     * incorrect option
+                     */
+                    CBanner();
+                    BadCmdLineOption();
+                }
             } else {  /* collect  file name */
                 CmdScanUngetChar();
                 switch_start = CmdScanAddr();

@@ -32,18 +32,18 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <limits.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
 #include "qread.h"
 
 
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)
 
-int __qread( int file, void *buffer, unsigned len )
+int _WCNEAR __qread( int file, void *buffer, unsigned len )
 {
     unsigned    total;
     unsigned    amount;

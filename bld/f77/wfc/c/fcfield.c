@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,6 @@
 
 #include "ftnstd.h"
 #include "symbol.h"
-#include "wf77defs.h"
-#include "cg.h"
 #include "emitobj.h"
 #include "fctypes.h"
 #include "fcsubscr.h"
@@ -58,19 +56,19 @@ void            FCFieldOp( void ) {
 
     sym_id      sym;
     cg_name     base;
-    cg_type     ptr_type;
+    cg_type     ptr_cgtyp;
     cg_name     addr;
 
     sym = GetPtr();
     base = XPop();
     if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         // function returning a structure
-        ptr_type = TY_LOCAL_POINTER;
+        ptr_cgtyp = TY_LOCAL_POINTER;
     } else {
-        ptr_type = SymPtrType( sym );
+        ptr_cgtyp = SymPtrType( sym );
     }
     // add offset of field
-    addr = CGBinary( O_PLUS, base, XPopValue( TY_INT_4 ), ptr_type );
+    addr = CGBinary( O_PLUS, base, XPopValue( TY_INT_4 ), ptr_cgtyp );
     if( sym->u.ns.u1.s.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
     }
@@ -119,7 +117,7 @@ void    FCFieldSubstring( void ) {
     fd = GetPtr();   // skip the field name
     len = GetInt();
     typ_info = GetU16();
-    start_1 =  XPopValue( GetType1( typ_info ) );
+    start_1 =  XPopValue( GetCGTypes1( typ_info ) );
     if( len == 0 ) {
         CloneCGName( start_1, &start_1, &start_2 );
         end = XPop();
@@ -127,7 +125,7 @@ void    FCFieldSubstring( void ) {
             end = CGInteger( fd->u.fd.xt.size, TY_INTEGER );
         } else {
             XPush( end );
-            end = XPopValue( GetType2( typ_info ) );
+            end = XPopValue( GetCGTypes2( typ_info ) );
         }
         XPush( CGBinary( O_PLUS, CGInteger( 1, TY_INTEGER ),
                          CGBinary( O_MINUS, end, start_2, TY_INTEGER ),

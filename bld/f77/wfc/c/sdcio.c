@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 void    SDInitIO(void)
 //====================
 {
-    InitFileIO( 0 );    // minimum buffer size
+    InitFileIO();
 }
 
 
@@ -62,14 +62,7 @@ void    SDScratch( const char *name )
 file_handle SDOpen( const char *name, const char *mode )
 //======================================================
 {
-    return( Openf( name, mode, REC_FIXED | SEEK ) );
-}
-
-
-file_handle SDOpenText( const char *name, const char *mode )
-//==========================================================
-{
-    return( Openf( name, mode, REC_TEXT ) );
+    return( Openf( name, mode ) );
 }
 
 

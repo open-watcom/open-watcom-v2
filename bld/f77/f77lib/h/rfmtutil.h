@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern void    R_ChkType( PTYPE lower, PTYPE upper );
+extern void    R_ChkType( PTYPE lo_ptyp, PTYPE hi_ptyp );
 extern void    R_NewRec( void );
 extern void    R_ChkIType( void );
 extern void    R_ChkFType( void );

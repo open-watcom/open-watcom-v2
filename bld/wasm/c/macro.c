@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,20 +337,20 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
 static bool macro_exam( token_buffer *tokbuf, token_idx i )
 /*********************************************************/
 {
-    macro_info          *info;
-    char                *line;
-    char                *name;
-    char                buffer[ MAX_LINE_LEN ];
-    dir_node            *dir;
-    uint                nesting_depth = 0;
-    bool                store_data;
+    macro_info      *info;
+    char            *line;
+    char            *name;
+    char            buffer[ MAX_LINE_LEN ];
+    dir_node_handle dir;
+    uint            nesting_depth = 0;
+    bool            store_data;
 
     if( Options.mode & MODE_IDEAL ) {
         name = tokbuf->tokens[i+1].string_ptr;
     } else {
         name = tokbuf->tokens[i].string_ptr;
     }
-    dir = (dir_node *)AsmGetSymbol( name );
+    dir = (dir_node_handle)AsmGetSymbol( name );
     info = dir->e.macroinfo;
 
     store_data = ( Parse_Pass == PASS_1 || info->lines.head == NULL );
@@ -610,20 +610,20 @@ static void reset_paramslist( parm_list *param )
 bool ExpandMacro( token_buffer *tokbuf )
 /**************************************/
 {
-    char        buffer[MAX_LINE_LEN];
-    dir_node    *dir;
-    asm_sym     *sym = NULL;
-    macro_info  *info;
-    parm_list   *param;
-    asmline     *lineinfo;
-    char        *line;
-    token_idx   i;
-    token_idx   macro_name_loc;
-    bool        expansion_flag = false;
-    token_idx   expr_start = 0;
-    char        *p;
-    size_t      len;
-    local_label *locallabel;
+    char            buffer[MAX_LINE_LEN];
+    dir_node_handle dir;
+    asm_sym_handle  sym = NULL;
+    macro_info      *info;
+    parm_list       *param;
+    asmline         *lineinfo;
+    char            *line;
+    token_idx       i;
+    token_idx       macro_name_loc;
+    bool            expansion_flag = false;
+    token_idx       expr_start = 0;
+    char            *p;
+    size_t          len;
+    local_label     *locallabel;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
         return( RC_OK );
@@ -682,7 +682,7 @@ bool ExpandMacro( token_buffer *tokbuf )
      * they should alternate: param /  comma
      */
     DebugMsg(( "Macro expansion:  %s \n", tokbuf->tokens[i - 1].string_ptr ));
-    dir = (dir_node *)sym;
+    dir = (dir_node_handle)sym;
     info = dir->e.macroinfo;
 
     for( param = info->params.head; param != NULL; param = param->next ) {
@@ -834,9 +834,9 @@ bool ExpandMacro( token_buffer *tokbuf )
 bool MacroDef( token_buffer *tokbuf, token_idx i, bool hidden )
 /*************************************************************/
 {
-    char        *name;
-    token_idx   n;
-    dir_node    *currproc;
+    char            *name;
+    token_idx       n;
+    dir_node_handle currproc;
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
@@ -852,7 +852,7 @@ bool MacroDef( token_buffer *tokbuf, token_idx i, bool hidden )
         return( RC_ERROR );
     }
     name = tokbuf->tokens[n].string_ptr;
-    currproc = (dir_node *)AsmGetSymbol( name );
+    currproc = (dir_node_handle)AsmGetSymbol( name );
     if( currproc == NULL ) {
         currproc = dir_insert( name, TAB_MACRO );
         currproc->e.macroinfo->srcfile = get_curr_srcfile();

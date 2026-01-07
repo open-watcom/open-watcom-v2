@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 /**************** IMPORTANT NOTE *******************************
 
-  data in files:  ptypes.inc, ptypes.h and ptypdefn.h 
-  
+  data in files:  ptypes.inc, ptypes.h and ptypdefn.h
+
   must corespond each to other
 
 ****************************************************************/
@@ -50,7 +51,3 @@ typedef enum PARAM_TYPES {
 
     VAR_LEN_CHAR = 0x80
 } PTYPE;
-
-#define _GetTypeInfo1(x)    (((x) >> 8) & 0xff)
-#define _GetTypeInfo2(x)    ((x) & 0xff)
-#define _SetTypeInfo(d1,d2) ((((d1) & 0xff) << 8) | ((d2) & 0xff))

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include "dis.h"
 #include "distypes.h"
+#include "i64.h"
 #include "disppc.h"
 
 
@@ -381,10 +382,10 @@ dis_handler_return PPCImmediate( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_oris:
     case DI_PPC_xori:
     case DI_PPC_xoris: // These take unsigned values.
-        ins->op[2].value.s._32[I64LO32] = code.i.lo.immediate;
+        U64Low( ins->op[2].value ) = code.i.lo.immediate;
         break;
     default:
-        ins->op[2].value.s._32[I64LO32] = DisSEX(code.i.lo.immediate, 15 );
+        U64Low( ins->op[2].value ) = DisSEX(code.i.lo.immediate, 15 );
         break;
     }
     return( DHR_DONE );
@@ -512,7 +513,7 @@ dis_handler_return PPCFloato( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_mtfsf:
         ins->op[0].type = DO_IMMED;
         ins->op[0].base = DR_NONE;
-        ins->op[0].value.s._32[I64LO32] = code.i.hi.math.FM;
+        U64Low( ins->op[0].value ) = code.i.hi.math.FM;
         break;
     default:
         break;
@@ -532,7 +533,7 @@ dis_handler_return PPCMem1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.i.hi.general.second + DR_PPC_r0;
     ins->op[1].type = DO_MEMORY_ABS;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
-    ins->op[1].value.s._32[I64LO32] = DisSEX( code.i.lo.immediate, 15 );
+    U64Low( ins->op[1].value ) = DisSEX( code.i.lo.immediate, 15 );
 
     if( code.i.hi.general.floating ) {
         if( code.i.hi.general.type & 0x2 ) {
@@ -575,7 +576,7 @@ dis_handler_return PPCMemD1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.i.hi.general.second + DR_PPC_r0;
     ins->op[1].type = DO_MEMORY_ABS;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
-    ins->op[1].value.s._32[I64LO32] = DisSEX( code.i.lo.immediate & ~0x3, 15 );
+    U64Low( ins->op[1].value ) = DisSEX( code.i.lo.immediate & ~0x3, 15 );
     ins->op[1].ref_type = DRT_PPC_DWORD;
     return( DHR_DONE );
 }
@@ -677,7 +678,7 @@ dis_handler_return PPCMem3( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value.s._32[I64LO32] = code.i.lo.general.third;
+    U64Low( ins->op[2].value ) = code.i.lo.general.third;
 
     ins->op[1].ref_type = DRT_PPC_SWORD;
 
@@ -732,19 +733,19 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     }
     switch( ins->type ) {
     case DI_PPC_b:
-        ins->op[0].value.s._32[I64LO32] = DisSEX( code.b.LI, 23 ) << 2;
+        U64Low( ins->op[0].value ) = DisSEX( code.b.LI, 23 ) << 2;
         break;
     case DI_PPC_bc:
-        ins->op[2].value.s._32[I64LO32] = DisSEX( code.i.lo.branch.BD, 13 ) << 2;
+        U64Low( ins->op[2].value ) = DisSEX( code.i.lo.branch.BD, 13 ) << 2;
         ins->op[2].op_position = 0;
         /* fall through */
     case DI_PPC_bcctr:
     case DI_PPC_bclr:
         ins->op[0].type = DO_IMMED;
-        ins->op[0].value.s._32[I64LO32] = code.i.hi.general.second;
+        U64Low( ins->op[0].value ) = code.i.hi.general.second;
         ins->op[0].op_position = 3;
         ins->op[1].type = DO_IMMED;
-        ins->op[1].value.s._32[I64LO32] = code.i.hi.general.first;
+        U64Low( ins->op[1].value ) = code.i.hi.general.first;
         ins->op[1].op_position = 2;
         break;
     default:
@@ -764,7 +765,7 @@ dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.i.hi.compare.crfD + DR_PPC_cr0;
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value.s._32[I64LO32] = code.i.hi.compare.L;
+    U64Low( ins->op[1].value ) = code.i.hi.compare.L;
     ins->op[2].type = DO_REG;
     ins->op[2].base = code.i.hi.compare.rA + DR_PPC_r0;
 
@@ -776,11 +777,11 @@ dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
         break;
     case DI_PPC_cmpi:
         ins->op[3].type = DO_IMMED;
-        ins->op[3].value.s._32[I64LO32] = DisSEX( code.i.lo.immediate, 15 );
+        U64Low( ins->op[3].value ) = DisSEX( code.i.lo.immediate, 15 );
         break;
     case DI_PPC_cmpli:
         ins->op[3].type = DO_IMMED;
-        ins->op[3].value.s._32[I64LO32] = code.i.lo.immediate;
+        U64Low( ins->op[3].value ) = code.i.lo.immediate;
         /* fall through */
     default:
         break;
@@ -841,7 +842,7 @@ dis_handler_return PPCConditionField( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_mtfsfi:
         ins->num_ops = 2;
         ins->op[1].type = DO_IMMED;
-        ins->op[1].value.s._32[I64LO32] = code.i.lo.condition.IMM;
+        U64Low( ins->op[1].value ) = code.i.lo.condition.IMM;
         break;
     default:
         break;
@@ -879,14 +880,14 @@ dis_handler_return PPCSpecial( dis_handle *h, void *d, dis_dec_ins *ins )
     switch( ins->type ) {
     case DI_PPC_mfspr:
     case DI_PPC_mtspr:
-        ins->op[magic].value.s._32[I64LO32] = MK_SPR( code.i.lo.general.third, code.i.hi.general.first );
+        U64Low( ins->op[magic].value ) = MK_SPR( code.i.lo.general.third, code.i.hi.general.first );
         break;
     case DI_PPC_mfsr:
     case DI_PPC_mtsr:
-        ins->op[magic].value.s._32[I64LO32] = code.i.hi.general.first;
+        U64Low( ins->op[magic].value ) = code.i.hi.general.first;
         break;
     case DI_PPC_mtcrf:
-        ins->op[magic].value.s._32[I64LO32] = code.CRM.CRM;
+        U64Low( ins->op[magic].value ) = code.CRM.CRM;
         break;
     default:
         break;
@@ -901,7 +902,7 @@ dis_handler_return PPCShiftImmed( dis_handle *h, void *d, dis_dec_ins *ins )
     PPCImmed2( h, d, ins );
     code.full = ins->opcode;
 
-    ins->op[2].value.s._32[I64LO32] = code.i.lo.general.third;
+    U64Low( ins->op[2].value ) = code.i.lo.general.third;
 
     if( code.i.lo.general.Rc ) {
         ins->flags.u.ppc |= DIF_PPC_RC;
@@ -915,7 +916,7 @@ dis_handler_return PPCShiftImmedD( dis_handle *h, void *d, dis_dec_ins *ins )
     PPCImmed2( h, d, ins );
     code.full = ins->opcode;
 
-    ins->op[2].value.s._32[I64LO32] = code.i.lo.xs_form.sh | (code.i.lo.xs_form.sh_5 << 5);
+    U64Low( ins->op[2].value ) = code.i.lo.xs_form.sh | (code.i.lo.xs_form.sh_5 << 5);
 
     if( code.i.lo.general.Rc ) {
         ins->flags.u.ppc |= DIF_PPC_RC;
@@ -936,16 +937,16 @@ dis_handler_return PPCRotate( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_rlwinm:
         ins->op[2].type = DO_IMMED;
         ins->op[2].base = DR_NONE;
-        ins->op[2].value.s._32[I64LO32] = code.i.lo.general.third;
+        U64Low( ins->op[2].value ) = code.i.lo.general.third;
         break;
     default:
         break;
     }
 
     ins->op[3].type = DO_IMMED;
-    ins->op[3].value.s._32[I64LO32] = code.i.lo.general.second;
+    U64Low( ins->op[3].value ) = code.i.lo.general.second;
     ins->op[4].type = DO_IMMED;
-    ins->op[4].value.s._32[I64LO32] = code.i.lo.general.first;
+    U64Low( ins->op[4].value ) = code.i.lo.general.first;
 
     if( code.i.lo.general.Rc ) {
         ins->flags.u.ppc |= DIF_PPC_RC;
@@ -962,7 +963,7 @@ dis_handler_return PPCRotateD( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->num_ops = 4;
 
     ins->op[3].type = DO_IMMED;
-    ins->op[3].value.s._32[I64LO32] = code.i.lo.mds_form.mb;
+    U64Low( ins->op[3].value ) = code.i.lo.mds_form.mb;
 
     if( code.i.lo.general.Rc ) {
         ins->flags.u.ppc |= DIF_PPC_RC;
@@ -980,10 +981,10 @@ dis_handler_return PPCRotateImmD( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->op[2].type = DO_IMMED;
     ins->op[2].base = DR_NONE;
-    ins->op[2].value.s._32[I64LO32] = code.i.lo.md_form.sh | (code.i.lo.md_form.sh_5 << 5);
+    U64Low( ins->op[2].value ) = code.i.lo.md_form.sh | (code.i.lo.md_form.sh_5 << 5);
 
     ins->op[3].type = DO_IMMED;
-    ins->op[3].value.s._32[I64LO32] = code.i.lo.mds_form.mb;
+    U64Low( ins->op[3].value ) = code.i.lo.mds_form.mb;
 
     if( code.i.lo.general.Rc ) {
         ins->flags.u.ppc |= DIF_PPC_RC;
@@ -1000,7 +1001,7 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->num_ops = 3;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value.s._32[I64LO32] = code.i.hi.general.second;
+    U64Low( ins->op[0].value ) = code.i.hi.general.second;
     ins->op[0].op_position = 3;
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
@@ -1014,7 +1015,7 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_twi:
     case DI_PPC_tdi:
         ins->op[2].type = DO_IMMED;
-        ins->op[2].value.s._32[I64LO32] = DisSEX( code.i.lo.immediate, 15 );
+        U64Low( ins->op[2].value ) = DisSEX( code.i.lo.immediate, 15 );
         break;
     default:
         break;
@@ -1045,7 +1046,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     switch( ins->type ) {
     // Comparison statements.
     case DI_PPC_cmpi:
-        if( ins->op[1].value.s._32[I64LO32] == 0 ) {
+        if( U64Low( ins->op[1].value ) == 0 ) {
             ins->num_ops = 3;
             ins->op[1] = ins->op[2];
             ins->op[2] = ins->op[3];
@@ -1053,7 +1054,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_PPC_cmp:
-        if( ins->op[1].value.s._32[I64LO32] == 0 ) {
+        if( U64Low( ins->op[1].value ) == 0 ) {
             ins->num_ops = 3;
             ins->op[1] = ins->op[2];
             ins->op[2] = ins->op[3];
@@ -1061,7 +1062,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_PPC_cmpli:
-        if( ins->op[1].value.s._32[I64LO32] == 0 ) {
+        if( U64Low( ins->op[1].value ) == 0 ) {
             ins->num_ops = 3;
             ins->op[1] = ins->op[2];
             ins->op[2] = ins->op[3];
@@ -1069,7 +1070,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_PPC_cmpl:
-        if( ins->op[1].value.s._32[I64LO32] == 0 ) {
+        if( U64Low( ins->op[1].value ) == 0 ) {
             ins->num_ops = 3;
             ins->op[1] = ins->op[2];
             ins->op[2] = ins->op[3];
@@ -1080,7 +1081,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     //NYI: handle trap double extended stuff
     case DI_PPC_twi:
         ins->num_ops = 2;
-        switch( ins->op[0].value.s._32[I64LO32] ) {
+        switch( U64Low( ins->op[0].value ) ) {
         case 1:  new = "twlgti"; break;
         case 2:  new = "twllti"; break;
         case 4:  new = "tweqi";  break;
@@ -1101,7 +1102,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     case DI_PPC_tw:
         ins->num_ops = 2;
-        switch( ins->op[0].value.s._32[I64LO32] ) {
+        switch( U64Low( ins->op[0].value ) ) {
         case 1:  new = "twlgt"; break;
         case 2:  new = "twllt"; break;
         case 4:  new = "tweq";  break;
@@ -1132,9 +1133,9 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             break;
         }
         // adding negative value.
-        if( ins->op[2].value.s._32[I64LO32] < 0 ) {
+        if( I64Low( ins->op[2].value ) < 0 ) {
             new = "subi";
-            ins->op[2].value.s._32[I64LO32] = -ins->op[2].value.s._32[I64LO32];
+            U64Low( ins->op[2].value ) = -I64Low( ins->op[2].value );
         }
         break;
     // load 16-bit shifted immediate value.
@@ -1172,7 +1173,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         /* fall through */
     case DI_PPC_mfspr:
         ins->num_ops--; // ins->num_ops = 0 for mtspr, 1 for mfspr.
-        switch( ins->op[ins->num_ops].value.s._32[I64LO32] ) {
+        switch( U64Low( ins->op[ins->num_ops].value ) ) {
         case 1:
             more = "xer";
             break;
@@ -1205,7 +1206,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case 274:
         case 275:
             more = "sprg";
-            ins->op[ins->num_ops].value.s._32[I64LO32] -= 272;
+            U64Low( ins->op[ins->num_ops].value ) -= 272;
             ins->num_ops += 3; // To be fixed below
             break;
         case 282:
@@ -1223,7 +1224,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case 532:
         case 534:
             more = "ibatu";
-            ins->op[ins->num_ops].value.s._32[I64LO32] = (ins->op[ins->num_ops].value.s._32[I64LO32] - 528)/2;
+            U64Low( ins->op[ins->num_ops].value ) = (U64Low( ins->op[ins->num_ops].value ) - 528)/2;
             ins->num_ops += 3;
             break;
         case 529:
@@ -1231,7 +1232,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case 533:
         case 535:
             more = "ibatl";
-            ins->op[ins->num_ops].value.s._32[I64LO32] = (ins->op[ins->num_ops].value.s._32[I64LO32] - 529)/2;
+            U64Low( ins->op[ins->num_ops].value ) = (U64Low( ins->op[ins->num_ops].value ) - 529)/2;
             ins->num_ops += 3;
             break;
         default:
@@ -1257,7 +1258,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     // Branch statements
     case DI_PPC_bc:
-        if( (ins->op[0].value.s._32[I64LO32] & 0x14) == 0x14 ) {
+        if( (U64Low( ins->op[0].value ) & 0x14) == 0x14 ) {
             new = "b";
             ins->op[0] = ins->op[2];
             ins->num_ops = 1;
@@ -1265,13 +1266,13 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         /* fall through */
     case DI_PPC_bclr:
-        if( (ins->op[0].value.s._32[I64LO32] & 0x14) == 0x14 ) {
+        if( (U64Low( ins->op[0].value ) & 0x14) == 0x14 ) {
             new = "blr";
             ins->num_ops = 0;
             break;
         }
         ins->num_ops = 2;
-        switch( ins->op[0].value.s._32[I64LO32] >> 1 ) {
+        switch( U64Low( ins->op[0].value ) >> 1 ) {
         case 0:
             new = "bdnzf";
             break;
@@ -1300,8 +1301,8 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         if( ins->num_ops == 2 ) {
             ins->op[0] = ins->op[1];
             ins->op[1] = ins->op[2];
-            ins->op[0].base = (ins->op[0].value.s._32[I64LO32] / 4) + DR_PPC_cr0;
-            ins->op[0].value.s._32[I64LO32] %= 4;
+            ins->op[0].base = (U64Low( ins->op[0].value ) / 4) + DR_PPC_cr0;
+            U64Low( ins->op[0].value ) %= 4;
         }
         if( ins->num_ops <= 2 ) {
             if( ins->type == DI_PPC_bclr ) {
@@ -1312,14 +1313,14 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         /* fall through */
     case DI_PPC_bcctr:
-        if( (ins->op[0].value.s._32[I64LO32] & 0x14) == 0x14 ) {
+        if( (U64Low( ins->op[0].value ) & 0x14) == 0x14 ) {
             new = "bctr";
             ins->num_ops = 0;
             break;
         }
-        if( (ins->op[0].value.s._32[I64LO32] & 12) == 12 ) {
+        if( (U64Low( ins->op[0].value ) & 12) == 12 ) {
             ins->num_ops = 2;
-            switch( ins->op[1].value.s._32[I64LO32] % 4 ) {
+            switch( U64Low( ins->op[1].value ) % 4 ) {
             case 0:
                 new = "blt";
                 break;
@@ -1333,9 +1334,9 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 new = "bso";
                 break;
             }
-        } else if( (ins->op[0].value.s._32[I64LO32] & 4) == 4 ) {
+        } else if( (U64Low( ins->op[0].value ) & 4) == 4 ) {
             ins->num_ops = 2;
-            switch( ins->op[1].value.s._32[I64LO32] % 4 ) {
+            switch( U64Low( ins->op[1].value ) % 4 ) {
             case 0:
                 new = "bge";
                 break;
@@ -1354,8 +1355,8 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             ins->op[0] = ins->op[1];
             ins->op[1] = ins->op[2];
             ins->op[0].type = DO_REG;
-            ins->op[0].base = (ins->op[0].value.s._32[I64LO32] / 4) + DR_PPC_cr0;
-            ins->op[0].value.s._32[I64LO32] = 0;
+            ins->op[0].base = (U64Low( ins->op[0].value ) / 4) + DR_PPC_cr0;
+            U64Low( ins->op[0].value ) = 0;
             if( ins->op[0].base == DR_PPC_cr0 ) {
                 ins->num_ops = 1;
                 ins->op[0] = ins->op[1];
@@ -1434,7 +1435,7 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case DI_PPC_cmpli:
             if( op_num == 1 ) {
                 // The 1-bit L parameter.
-                val = ins->op[op_num].value.s._32[I64LO32] & 1;
+                val = U64Low( ins->op[op_num].value ) & 1;
                 *p++ = val + '0';
                 *p='\0';
             }
@@ -1442,7 +1443,7 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case DI_PPC_bc:
         case DI_PPC_bcctr:
         case DI_PPC_bclr:
-            val = ins->op[op_num].value.s._32[I64LO32] & 0x1f;
+            val = U64Low( ins->op[op_num].value ) & 0x1f;
             if( (flags & DFF_PSEUDO) && op_num == 0 ) {
                 // pretty-printed BI parameter
                 if( ins->op[op_num].base != DR_PPC_cr0 ) {

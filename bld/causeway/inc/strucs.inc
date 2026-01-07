@@ -275,54 +275,54 @@ PSP_Struc       struc
 ;First the standard DOS PSP structure. Won't use any of existing entries for
 ;extended info incase currently un-used entries get used at a later data.
 ;
-PSP_INT20       dw ?            ;INT 20 instruction for CP/M CALL 0 program
-                                ;termination the CDh 20h here is often used as a
-                                ;signature for a valid PSP
-PSP_MemTop      dw ?            ;segment of first byte beyond memory allocated to
-                                ;program. N/A
-PSP_Filler1     db ?            ;unused filler
+PSP_INT20       dw ?            ;+00 INT 20 instruction for CP/M CALL 0 program
+                                ;   termination the CDh 20h here is often used as a
+                                ;   signature for a valid PSP
+PSP_MemTop      dw ?            ;+02 segment of first byte beyond memory allocated to
+                                ;   program. N/A
+PSP_Filler1     db ?            ;+04 unused filler
 
-PSP_CPM         db ?            ;CP/M CALL 5 service request (FAR JMP to 000C0h)
-                                ;BUG: (DOS 2+) PSPs created by INT 21/AH=4Bh
-                                ;point at 000BEh
-                dw ?            ;CP/M compatibility--size of first segment for
-                                ;.COM files
-                dw ?            ;remainder of FAR JMP at 05h
-PSP_INT22       dd ?            ;stored INT 22 termination address
-PSP_INT23       dd ?            ;stored INT 23 control-Break handler address
-PSP_INT24       dd ?            ;DOS 1.1+ stored INT 24 critical error handler
-                                ;address
-PSP_Parent      dw ?            ;segment of parent PSP
-PSP_HandleList  db 20 dup (?)   ;DOS 2+ Job File Table, one byte per file
-                                ;handle, FFh = closed
-PSP_Environment dw ?            ;segment of environment for process
-PSP_INT21SSSP   dd ?            ;N/A
-PSP_Handles     dw ?            ;DOS 3+ number of entries in JFT (default 20)
-PSP_HandlePtr   dd ?            ;DOS 3+ pointer to JFT (default PSP:0018h)
-PSP_Previous    dd ?            ;DOS 3+ pointer to previous PSP (default
-                                ;FFFFFFFFh in 3.x) used by SHARE in DOS 3.3.
-PSP_Filler2     dd ?            ;unused by DOS versions <= 6.00
-                                ;reportedly used by Novell NetWare shell 3.x
-PSP_DOSVersion  dw ?            ;DOS 5+ version to return on INT 21/AH=30h
-PSP_NextPSP     dw ?            ;(MSWin3) selector of next PSP (PDB) in linked
-                                ;list Windows keeps a linked list of Windows
-                                ;programs only
-PSP_Filler3     dd ?            ;unused by DOS versions <= 6.00
-PSP_WinOldAp    db ?            ;(MSWindows3) bit 0 set if non-Windows
-                                ;application (WINOLDAP)
-PSP_Filler4     db 7 dup (?)    ;unused by DOS versions <= 6.00
-PSP_INT21       db 3 dup (?)    ;DOS 2+ service request (INT 21/RETF instructions)
-PSP_Filler5     db 9 dup (?)    ;unused in DOS versions <= 6.00
-PSP_FCB1        db 16 dup (?)   ;first default FCB, filled in from first
-                                ;commandline argument overwrites second FCB if
-                                ;opened
-PSP_FCB2        db 16 dup (?)   ;second default FCB, filled in from second
-                                ;commandline argument overwrites beginning of
-                                ;commandline if opened
-PSP_Filler6     dd ?            ;unused
-PSP_CommandTail db 128 dup (?)  ;commandline / default DTA
-                                ;command tail is BYTE for length of tail, N BYTEs
-                                ;for the tail, followed by a BYTE containing 0Dh
+PSP_CPM         db ?            ;+05 CP/M CALL 5 service request (FAR JMP to 000C0h)
+                                ;   BUG: (DOS 2+) PSPs created by INT 21/AH=4Bh
+                                ;   point at 000BEh
+                dw ?            ;+06 CP/M compatibility--size of first segment for
+                                ;   .COM files
+                dw ?            ;+08 remainder of FAR JMP at 05h
+PSP_INT22       dd ?            ;+0A stored INT 22 termination address
+PSP_INT23       dd ?            ;+0E stored INT 23 control-Break handler address
+PSP_INT24       dd ?            ;+12 DOS 1.1+ stored INT 24 critical error handler
+                                ;   address
+PSP_Parent      dw ?            ;+16 segment of parent PSP
+PSP_HandleList  db 20 dup (?)   ;+18 DOS 2+ Job File Table, one byte per file
+                                ;   handle, FFh = closed
+PSP_Environment dw ?            ;+2C segment of environment for process
+PSP_INT21SSSP   dd ?            ;+2E N/A
+PSP_Handles     dw ?            ;+32 DOS 3+ number of entries in JFT (default 20)
+PSP_HandlePtr   dd ?            ;+34 DOS 3+ pointer to JFT (default PSP:0018h)
+PSP_Previous    dd ?            ;+38 DOS 3+ pointer to previous PSP (default
+                                ;   FFFFFFFFh in 3.x) used by SHARE in DOS 3.3.
+PSP_Filler2     dd ?            ;+3C unused by DOS versions <= 6.00
+                                ;   reportedly used by Novell NetWare shell 3.x
+PSP_DOSVersion  dw ?            ;+40 DOS 5+ version to return on INT 21/AH=30h
+PSP_NextPSP     dw ?            ;+42 (MSWin3) selector of next PSP (PDB) in linked
+                                ;   list Windows keeps a linked list of Windows
+                                ;   programs only
+PSP_Filler3     dd ?            ;+44 unused by DOS versions <= 6.00
+PSP_WinOldAp    db ?            ;+48 (MSWindows3) bit 0 set if non-Windows
+                                ;   application (WINOLDAP)
+PSP_Filler4     db 7 dup (?)    ;+49 unused by DOS versions <= 6.00
+PSP_INT21       db 3 dup (?)    ;+50 DOS 2+ service request (INT 21/RETF instructions)
+PSP_Filler5     db 9 dup (?)    ;+53 unused in DOS versions <= 6.00
+PSP_FCB1        db 16 dup (?)   ;+5C first default FCB, filled in from first
+                                ;   commandline argument overwrites second FCB if
+                                ;   opened
+PSP_FCB2        db 16 dup (?)   ;+6C second default FCB, filled in from second
+                                ;   commandline argument overwrites beginning of
+                                ;   commandline if opened
+PSP_Filler6     dd ?            ;+7C unused
+PSP_CommandTail db 128 dup (?)  ;+80 commandline / default DTA
+                                ;   command tail is BYTE for length of tail, N BYTEs
+                                ;   for the tail, followed by a BYTE containing 0Dh
 PSP_Struc       ends
 
 

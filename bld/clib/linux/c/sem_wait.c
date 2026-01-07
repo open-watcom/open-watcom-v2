@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <semaphore.h>
 #include <time.h>
 #include <sched.h>
@@ -39,39 +40,39 @@
 #include "linuxsys.h"
 
 
-static int __decrement_if_positive( volatile int *dest )
+static int _WCNEAR __decrement_if_positive( volatile int *dest )
 {
-int value;
+    int             value;
 
     value = *dest;
     if( value > 0 ) {
-        return (__atomic_compare_and_swap(dest, value, value-1));
+        return( __atomic_compare_and_swap( dest, value, value - 1 ) );
     }
     return( 0 );
 }
 
 _WCRTLINK int sem_wait( sem_t *sem )
 {
-int res;
-struct timespec timer;
+    int             res;
+    struct timespec timer;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     timer.tv_sec = 0;
     timer.tv_nsec = 1E+5;
 
-    while( !__decrement_if_positive( &sem->value ) ) {
-
-        if(sem->value <= 0)
+    while( __decrement_if_positive( &sem->value ) == 0 ) {
+        if( sem->value <= 0 ) {
             res = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &timer, 0 );
-        else
+        } else {
             res = 0;
+        }
     }
 
-    if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
+    if( sem->value == 0 )
+        __atomic_compare_and_swap( &sem->futex, 0, 1 );
 
     return( 0 );
 }
@@ -82,8 +83,7 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
     struct timespec reltime;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     while( !__decrement_if_positive( &sem->value ) ) {
@@ -91,24 +91,25 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
         clock_gettime( CLOCK_MONOTONIC, &reltime );
         reltime.tv_sec = abstime->tv_sec - reltime.tv_sec;
         reltime.tv_nsec = abstime->tv_nsec - reltime.tv_nsec;
-        if(reltime.tv_nsec < 0) {
+        if( reltime.tv_nsec < 0 ) {
             reltime.tv_sec--;
             reltime.tv_nsec += 1E+9;
         }
 
-        if(sem->value <= 0)
+        if( sem->value <= 0 ) {
             ret = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &reltime, 0 );
-        else
+        } else {
             ret = 0;
-
-        if(ret == -ETIMEDOUT) {
-            _RWD_errno = ETIMEDOUT;
+        }
+        if( ret == -ETIMEDOUT ) {
+            lib_set_errno( ETIMEDOUT );
             return( -1 );
         }
 
     }
 
-    if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
+    if( sem->value == 0 )
+        __atomic_compare_and_swap( &sem->futex, 0, 1 );
 
     return( 0 );
 }
@@ -119,31 +120,28 @@ _WCRTLINK int sem_trywait( sem_t *sem )
     int             ret;
 
     if( sem == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
     timer.tv_sec = 0;
     timer.tv_nsec = 0;
 
     ret = 0;
 
-    if( !__decrement_if_positive( &sem->value ) ) {
-
-        if(sem->value <= 0)
+    if( __decrement_if_positive( &sem->value ) == 0 ) {
+        if( sem->value <= 0 ) {
             ret = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &timer, 0 );
-        else
+        } else {
             ret = 0;
-
+        }
     } else {
-
-        if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
+        if( sem->value == 0 )
+            __atomic_compare_and_swap( &sem->futex, 0, 1 );
         return( 0 );
-
     }
 
     if( __decrement_if_positive( &sem->value ) )
         return( 0 );
 
-    _RWD_errno = EAGAIN;
+    lib_set_errno( EAGAIN );
     return( -1 );
 }

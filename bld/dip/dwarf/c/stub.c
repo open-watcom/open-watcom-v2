@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,15 @@
 #if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
 
 #include "clibsupp.h"
+#include "clibint.h"
+
 
 #if defined( _M_IX86 )
+
+#pragma aux nomangle "*"
+
 #if !defined( __NT__ )
-void __set_ERANGE() {};
+void __set_ERANGE( void ) {};
 #endif
 
 #if defined( _M_I86 )
@@ -54,32 +59,33 @@ void __FPE_exception( void ) {};
  */
 #if !defined( __NT__ )
 int __nullarea;
-#pragma aux __nullarea "*";
+#pragma aux (nomangle) __nullarea
 #endif
 
-#elif defined(__AXP__)
-int DllMainCRTStartup()
+#elif defined(__AXP__)  /* !_M_IX86 */
+
+int DllMainCRTStartup( void )
 {
     return( 1 );
 }
-#endif
+
+#endif  /* _M_IX86 */
 
 #endif
 
-#if defined( _M_IX86 )
-int fltused_;
-#elif defined(__AXP__)
 int _fltused_;
+#if defined( _M_IX86 )
+int _fltused_80bit_;
 #endif
 
 #ifndef __WINDOWS__
 #if defined( _M_I86 )
 extern void __STK( int );
-#pragma aux __STK "*" __parm [__ax];
+#pragma aux (nomangle) __STK __parm [__ax];
 void __STK( int x ) { (void)x; }
 #elif defined( _M_IX86 )
 extern void __CHK( int );
-#pragma aux __CHK "*" __parm [];
+#pragma aux (nomangle) __CHK __parm [];
 void __CHK( int x ) { (void)x; }
 #endif
 #endif

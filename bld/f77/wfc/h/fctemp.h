@@ -31,9 +31,9 @@
 
 extern void         InitTmps( void );
 extern void         FiniTmps( void );
-extern tmp_handle   AllocTmp( cg_type typ );
+extern tmp_handle   AllocTmp( cg_type cgtyp );
 extern void         FreeTmps( void );
-extern cg_name      TmpPtr( tmp_handle tmp, cg_type typ );
-extern tmp_handle   MkTmp( cg_name val, cg_type typ );
-extern cg_name      TmpVal( tmp_handle tmp, cg_type typ );
+extern cg_name      TmpPtr( tmp_handle tmp, cg_type cgtyp );
+extern tmp_handle   MkTmp( cg_name val, cg_type cgtyp );
+extern cg_name      TmpVal( tmp_handle tmp, cg_type cgtyp );
 extern void         CloneCGName( cg_name original, cg_name *clone_1, cg_name *clone_2 );

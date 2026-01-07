@@ -97,12 +97,12 @@
 *ytab.*
 
 /*/
+!/.github/
 !/bld/
 !/build/
 !/ci/
 !/ci/nt386/*
 !/ci/ntx64/*
-!/ci/ow/**
 !/contrib/
 !/distrib/
 !/docs/
@@ -218,7 +218,7 @@
 /bld/wipfc/*/stamp-h1
 /bld/wipfc/test/*/*.inf
 #
-/bld/wmake/regress/cmds/*
+/bld/wmaktest/cmds/*
 #
 /bld/wprof/os2386.gui/*.dlg
 #
@@ -239,3 +239,5 @@ failures.log
 !makefile
 !afile
 !binmake
+
+.DS_Store

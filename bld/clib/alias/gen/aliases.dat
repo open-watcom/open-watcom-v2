@@ -202,6 +202,7 @@ tcsupr        _mbsupr           _tcsupr           d16 d32 nt  nta ntm ntp       
 tempna        tempnam           _tempnam          d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tell__        _tell             tell              d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tell_0        tell              _tell                                     nvc ncl nvl nll
+timegm        _mkgmtime         timegm            d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tolowe        tolower           _tolower          d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 touppe        toupper           _toupper          d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tzset_        tzset             _tzset            d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk

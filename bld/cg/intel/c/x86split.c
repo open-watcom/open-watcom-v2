@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "system.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -60,6 +59,7 @@
 #include "x86splt2.h"
 #include "_x86rtrn.h"
 #include "_x86half.h"
+#include "i64.h"
 
 
 instruction *(* const ReduceTab[])( instruction * ) = {
@@ -207,19 +207,19 @@ instruction      *rDIVREGISTER( instruction *ins )
 name    *IntEquivalent( name *name )
 /**********************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FS );
-    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( *(uint_32 *)( defn->value + 0 ) ) ) ) );
+    floatval = GetFloat( name, FS );
+    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( U64LowLE( floatval->buffer.u64 ) ) ) ) );
 }
 
 name    *Int64Equivalent( name *name )
 /************************************/
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FD );
-    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
+    floatval = GetFloat( name, FD );
+    return( AllocU64Const( U64LowLE( floatval->buffer.u64 ), U64HighLE( floatval->buffer.u64 ) ) );
 }
 
 instruction      *rFSCONSCMP( instruction *ins )
@@ -228,7 +228,7 @@ instruction      *rFSCONSCMP( instruction *ins )
     name                *name1;
 
     name1 = ins->operands[1];
-    if( CFTest( name1->c.value ) > 0 ) {
+    if( CFTest( name1->c.u.cfval ) > 0 ) {
         ChangeType( ins, I4 );
     } else {
         ChangeType( ins, U4 );
@@ -355,7 +355,7 @@ static name *FakeIndex( name *op, hw_reg_set index )
         base = NULL;
         flags = EMPTY;
     }
-    return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, 0, flags ) );
+    return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, SCALE_NONE, flags ) );
 }
 
 static  bool    SegmentFloats( name *op )

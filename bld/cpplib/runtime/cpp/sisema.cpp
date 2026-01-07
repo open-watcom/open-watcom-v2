@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 // 93/03/95  -- Greg Bentz      -- integrated with front end
 // 95/06/14  -- Greg Bentz      -- dll linkage
 
-#ifdef __SW_BM
+#ifdef __MT__
 
 #include "cpplib.h"
 

@@ -49,7 +49,7 @@ unsigned long   __ibm_biosint_get_ticks( void );
     __modify __exact __nomemory [__eax __ecx __edx]
 
 
-static unsigned long __ibm_bios_get_ticks( void )
+static unsigned long _WCNEAR __ibm_bios_get_ticks( void )
 {
     volatile unsigned long  *tick_count_ptr;
 
@@ -68,7 +68,7 @@ static unsigned long __ibm_bios_get_ticks( void )
 
 #include <dos.h>
 
-static unsigned long __ibm_bios_get_ticks( void )
+static unsigned long _WCNEAR __ibm_bios_get_ticks( void )
 {
     volatile unsigned short _WCFAR  *tick_count_ptr;
     unsigned short                  lo_word, hi_word;
@@ -86,7 +86,7 @@ static unsigned long __ibm_bios_get_ticks( void )
 
 static unsigned long    init_milliseconds;
 
-static unsigned long __get_tick( void )
+static unsigned long _WCNEAR __get_tick( void )
 {
     static unsigned long    prev_count = 0;
     static unsigned long    tick_offset = 0;
@@ -117,9 +117,9 @@ _WCRTLINK clock_t clock( void )
     return( (clock_t)(__get_tick() - init_milliseconds) );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     init_milliseconds = __get_tick();
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

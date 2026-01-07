@@ -110,9 +110,9 @@ static MEPTR defineStringMacro( const char *name )
     MEPTR mentry;
     char const *save = CmdScanAddr();
 
-    CmdScanInit( name );
+    CmdScanLineInit( name );
     mentry = DefineCmdLineMacro( false );
-    CmdScanInit( save );
+    CmdScanLineInit( save );
     return( mentry );
 }
 

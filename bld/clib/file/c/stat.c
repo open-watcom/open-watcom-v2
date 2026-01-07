@@ -33,6 +33,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -51,12 +52,11 @@
     #include <ctype.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "tinyio.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"
 #include "dosdir.h"
-#include "d2ttime.h"
+#include "d2timet.h"
 #include "thread.h"
 #include "pathmac.h"
 
@@ -97,8 +97,8 @@
 
 #else
 
-static unsigned short at2mode( int attr, char *fname )
-/****************************************************/
+static unsigned short _WCNEAR at2mode( int attr, char *fname )
+/************************************************************/
 {
     unsigned short  mode;
     unsigned char   *ext;
@@ -128,7 +128,6 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 {
     struct find_t       fdta;
     const CHAR_TYPE     *ptr;
-    unsigned            rc;
     CHAR_TYPE           fullpath[_MAX_PATH];
     int                 isrootdir = 0;
 
@@ -138,7 +137,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #else
     if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
@@ -188,14 +187,15 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
             bool        canread = false;
             bool        canwrite = false;
             bool        fstatok = false;
+            int         errno_num;
 
             // Try getting information another way.
-            rc = 0;
+            errno_num = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle != -1 ) {
                 canwrite = true;
                 if( fstat( handle, buf ) == -1 ) {
-                    rc = _RWD_errno;
+                    errno_num = lib_get_errno();
                 } else {
                     fstatok = true;
                 }
@@ -206,18 +206,18 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
                 canread = true;
                 if( !fstatok ) {
                     if( fstat( handle, buf ) == -1 ) {
-                        rc = _RWD_errno;
+                        errno_num = lib_get_errno();
                     }
                 }
             }
             close( handle );
             if( !canread
               && !canwrite ) {
-                _RWD_errno = ENOENT;
+                lib_set_errno( ENOENT );
                 return( -1 );
             }
-            _RWD_errno = rc;
-            if( rc != 0 ) {
+            lib_set_errno( errno_num );
+            if( errno_num != 0 ) {
                 return( -1 );
             }
             if( canread ) {
@@ -242,12 +242,12 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
     buf->st_size = fdta.size;
     buf->st_mode = at2mode( fdta.attrib, fdta.name );
 
-    buf->st_mtime = _d2ttime( fdta.wr_date, fdta.wr_time );
+    buf->st_mtime = __dos2timet( fdta.wr_date, fdta.wr_time );
     buf->st_btime = buf->st_mtime;
 #ifdef __WATCOM_LFN__
     if( IS_LFN( fdta.reserved ) && DTALFN_CRTIME_OF( fdta.reserved ) ) {
-        buf->st_atime = _d2ttime( DTALFN_ACDATE_OF( fdta.reserved ), DTALFN_ACTIME_OF( fdta.reserved ) );
-        buf->st_ctime = _d2ttime( DTALFN_CRDATE_OF( fdta.reserved ), DTALFN_CRTIME_OF( fdta.reserved ) );
+        buf->st_atime = __dos2timet( DTALFN_ACDATE_OF( fdta.reserved ), DTALFN_ACTIME_OF( fdta.reserved ) );
+        buf->st_ctime = __dos2timet( DTALFN_CRDATE_OF( fdta.reserved ), DTALFN_CRTIME_OF( fdta.reserved ) );
     } else {
 #endif
         buf->st_atime = buf->st_mtime;

@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -47,7 +48,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "iomode.h"
 #include "streamio.h"
 #include "thread.h"
@@ -56,9 +56,9 @@
 
 #ifndef __NETWARE__
 
-static int __iomode( int handle, unsigned amode )
+static int _WCNEAR __iomode( int handle, unsigned amode )
 {
-    int             __errno;
+    int             errno_num;
 #ifdef __UNIX__
     int             flags;
 
@@ -66,18 +66,18 @@ static int __iomode( int handle, unsigned amode )
         return( -1 );
     }
 
-    __errno = EOK;
+    errno_num = 0;
     if( (flags & O_APPEND)
       && (amode & _APPEND) == 0 ) {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
     if( (flags & O_ACCMODE) == O_RDONLY ) {
         if( amode & _WRITE ) {
-            __errno = EACCES;
+            errno_num = EACCES;
         }
     } else if( (flags & O_ACCMODE) == O_WRONLY ) {
         if( amode & _READ ) {
-            __errno = EACCES;
+            errno_num = EACCES;
         }
     }
 #else
@@ -85,21 +85,21 @@ static int __iomode( int handle, unsigned amode )
 
     /* make sure the handle has the same text/binary mode */
     iomode_flags = __GetIOMode( handle );
-    __errno = 0;
+    errno_num = 0;
     if( (amode ^ iomode_flags) & (_BINARY | _APPEND) ) {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
     if( (amode & _READ)
       && (iomode_flags & _READ) == 0 ) {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
     if( (amode & _WRITE)
       && (iomode_flags & _WRITE) == 0 ) {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
 #endif
-    if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+    if( errno_num == EACCES ) {
+        lib_set_errno( errno_num );
         return( -1 );
     }
     return( 0 );
@@ -114,7 +114,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
     int             extflags;
 
     if( handle == -1 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( NULL );
     }
     file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );

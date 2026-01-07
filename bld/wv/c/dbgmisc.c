@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -454,14 +454,14 @@ void ProcIf( void )
     for( ;; ) {
         if( have_true ) {
             ChkExpr();
-            U64Clear( res );
+            Set64ValZero( res );
         } else {
             res = ReqU64Expr();
         }
         if( !ScanQuote( &start, &len ) ) {
             Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
         }
-        if( U64Test( &res ) != 0 ) {
+        if( U64isNonZero( res ) ) {
             true_start = start;
             true_len   = len;
             have_true  = true;
@@ -502,7 +502,7 @@ void ProcWhile( void )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     }
     ReqEOC();
-    if( U64Test( &res ) != 0 ) {
+    if( U64isNonZero( res ) ) {
         cmd = AllocCmdList( start, len );
         ReScan( CmdStart );
         PushCmdList( cmd );

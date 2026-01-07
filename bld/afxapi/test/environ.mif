@@ -27,6 +27,8 @@
 !ifndef targ_env_386
 !  ifdef __NT386__
 !    define targ_env_386 wnt386
+!  else ifdef __NTX64__
+!    define targ_env_386 wnt386
 !  endif
 !endif
 
@@ -110,8 +112,8 @@ start : .SYMBOLIC
 !ifdef dll_loaded
     @echo using !loaddll $(dll_$(arch))
 !endif
-    @cdsay
-    @cdsay >> $(log_file)
+    @echo $(__CWD__)
+    %append $(log_file) $(__CWD__)
     %append $(log_file) TEST $(arch)/$(alt_error)
 
 clean : .SYMBOLIC global

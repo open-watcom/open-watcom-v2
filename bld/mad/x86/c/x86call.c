@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,8 @@
 
 #include "x86.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 #define OP_1 0
 #define OP_2 1
@@ -309,7 +311,8 @@ static int FindCall( address *ip_value, address *return_addr_location )
         if( GetDisasmPrev( &DbgAddr ) != MS_OK )
             return( 0 );
         DisAsm( &dd );
-        if( dd.ins.type == DI_X86_push3 && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
+        if( dd.ins.type == DI_X86_push3
+          && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
             *ip_value = GetFarAddr( return_addr_location );
         } else {
             ip_value->mach.offset = GetAnOffset( return_addr_location );
@@ -330,7 +333,8 @@ static int FindCall( address *ip_value, address *return_addr_location )
         if( GetDisasmPrev( &DbgAddr ) != MS_OK )
             return( 0 );
         DisAsm( &dd );
-        if( dd.ins.type == DI_X86_push3 && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
+        if( dd.ins.type == DI_X86_push3
+          && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
             *ip_value = GetFarAddr( return_addr_location );
             return( 0 );
         }
@@ -368,17 +372,21 @@ static int HeuristicTraceBack(
 
     DbgAddr = *execution;
     DisAsm( &dd );
-    if( dd.ins.type == DI_X86_retf || dd.ins.type == DI_X86_retf2 ) {
+    if( dd.ins.type == DI_X86_retf
+      || dd.ins.type == DI_X86_retf2 ) {
         *execution = GetFarAddr( &sp_value );
         found_call = 1;
-    } else if( dd.ins.type == DI_X86_ret || dd.ins.type == DI_X86_ret2 ) {
+    } else if( dd.ins.type == DI_X86_ret
+      || dd.ins.type == DI_X86_ret2 ) {
         execution->mach.offset = GetAnOffset( &sp_value );
         found_call = 1;
     } else {
         // Check for ADD SP,n right after current ip and adjust SP if its there
         // because it must be popping parms
-        if( dd.ins.type == DI_X86_add3 && ConstOp( dd.ins.op[OP_2] ) && IsSPReg( dd.ins.op[OP_1] ) ){
-            sp_value.mach.offset += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
+        if( dd.ins.type == DI_X86_add3
+          && ConstOp( dd.ins.op[OP_2] )
+          && IsSPReg( dd.ins.op[OP_1] ) ){
+            sp_value.mach.offset += I64Low( dd.ins.op[ OP_2 ].value );
         }
         // Run through code from the known symbol until and collect prolog info
         word_size = Is32BitSegment ? 4 : 2;
@@ -394,12 +402,12 @@ static int HeuristicTraceBack(
             case DI_INVALID:
                 return( 0 );
             case DI_X86_call3:
-                jmplabel = ToSegStr( dd.ins.op[ OP_1 ].value.s._32[I64LO32], dd.ins.op[ OP_1 ].extra, 0 );
+                jmplabel = ToSegStr( I64Low( dd.ins.op[ OP_1 ].value ), dd.ins.op[ OP_1 ].extra, 0 );
                 if( IdentifyFunc( jmplabel, &sp_adjust ) )
                     continue;
                 break;
             case DI_X86_call:
-                jmplabel = JmpLabel( dd.ins.op[ OP_1 ].value.s._32[I64LO32], 0 );
+                jmplabel = JmpLabel( I64Low( dd.ins.op[ OP_1 ].value ), 0 );
                 if( IdentifyFunc( jmplabel, &sp_adjust ) )
                     continue;
                 break;
@@ -409,7 +417,7 @@ static int HeuristicTraceBack(
                 bp_to_ra_offset = sp_adjust; // mov bp,sp
                 found_mov_bp_sp = 1;
                 saved_bp_loc = 0; // 0[bp]
-                sp_adjust -= dd.ins.op[ OP_1 ].value.s._32[I64LO32]; // sub sp,n
+                sp_adjust -= I64Low( dd.ins.op[ OP_1 ].value ); // sub sp,n
                 break;
             case DI_X86_inc2:
                 if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
@@ -418,7 +426,8 @@ static int HeuristicTraceBack(
                 }
                 break;
             case DI_X86_mov:
-                if( IsBPReg( dd.ins.op[ OP_1 ] ) && IsSPReg( dd.ins.op[ OP_2 ] ) ) {
+                if( IsBPReg( dd.ins.op[ OP_1 ] )
+                  && IsSPReg( dd.ins.op[ OP_2 ] ) ) {
                     found_mov_bp_sp = 1;
                     bp_to_ra_offset = sp_adjust;
                     saved_bp_loc -= sp_adjust;
@@ -448,16 +457,16 @@ static int HeuristicTraceBack(
                 }
                 continue;
             case DI_X86_sub:
-                dd.ins.op[ OP_2 ].value.s._32[I64LO32] = -dd.ins.op[ OP_2 ].value.s._32[I64LO32];
+                U64Low( dd.ins.op[ OP_2 ].value ) = -I64Low( dd.ins.op[ OP_2 ].value );
                 /* fall through */
             case DI_X86_add:
                 if( !ConstOp( dd.ins.op[ OP_2 ] ) )
                     break;
                 if( IsSPReg( dd.ins.op[ OP_1 ] ) ) {
-                    sp_adjust += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
+                    sp_adjust += I64Low( dd.ins.op[ OP_2 ].value );
                     continue;
                 } else if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
-                    bp_adjust += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
+                    bp_adjust += I64Low( dd.ins.op[ OP_2 ].value );
                     continue;
                 }
                 break;
@@ -547,7 +556,8 @@ static int BPTraceBack( address *execution, address *frame,
 
     where = *frame;
     is_far = GetBPFromStack( &where, frame );
-    if( frame->mach.offset == 0 ) return( 0 );
+    if( frame->mach.offset == 0 )
+        return( 0 );
     execution->mach.offset = (unsigned short)GetDataWord();
     if( is_far ) {
         execution->mach.segment = GetDataWord();
@@ -586,11 +596,13 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     *out = NULL;
     Is32BitSegment = BIG_SEG( *execution );
     start = *startp;
-    if( MCSystemConfig()->os == DIG_OS_WINDOWS && !Is32BitSegment ) {
+    if( MCSystemConfig()->os == DIG_OS_WINDOWS
+      && !Is32BitSegment ) {
         memset( &start, 0, sizeof( start ) );
     }
     prev_sp_value = *stack;
-    if( start.mach.segment == 0 && start.mach.offset == 0 ) {
+    if( start.mach.segment == 0
+      && start.mach.offset == 0 ) {
         if( Is32BitSegment )
             return( MS_FAIL );
         if( !BPTraceBack( execution, frame, stack ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,10 +64,10 @@ void    CpIntrinsic(void) {
     sym_id      sym_ptr;
     TYPE        func_typ;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_INTRINSIC ) ) {
             func = IFLookUp();
-            if( func > 0 ) {
+            if( func != IF_KW_NONE ) {
                 func_typ = IFType( func );
                 sym_ptr = LkSym();
                 flags = sym_ptr->u.ns.flags;

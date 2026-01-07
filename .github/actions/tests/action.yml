@@ -1,18 +1,17 @@
 name: tests
 description: 'Process OW tests'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   suffix:
-    description: 'run-time artifact suffix'
+    description: 'artifact name suffix'
+    required: true
+    type: string
+  path:
+    description: 'path where tests are located'
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
+  skip:
+    description: 'ignore tests'
     required: false
     default: ''
     type: string
@@ -20,9 +19,43 @@ runs:
   using: composite
   steps:
   - name: Load Artifact
-    uses: "./.github/actions/artfload"
+    uses: ./.github/actions/artfload
     with:
-      hostos:   ${{ inputs.hostos }}
       gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.suffix }}"
-      owdebug:  ${{ inputs.owdebug }}
+      artifact: build ${{inputs.suffix}}
+  - if: runner.os == 'Linux' && ! contains( inputs.skip, runner.os )
+    name: try tests
+    run: |
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh
+      fi
+    env:
+      OWBUILD_STAGE: 'tests'
+      OWTESTTARGET:  ${{inputs.path}}
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{github.workspace}}
+      OWDOSBOX:      'dosbox'
+      OWVERBOSE:     1
+    shell: bash
+  - if: runner.os == 'Windows' && ! contains( inputs.skip, runner.os )
+    name: try tests
+    run: |
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
+      if not '${{env.OWTESTMODE}}' == '1' (
+        ci\buildx.cmd ${{inputs.args}}
+      )
+    env:
+      OWBUILD_STAGE: 'tests'
+      OWTESTTARGET:  ${{inputs.path}}
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{github.workspace}}
+      OWDOSBOX:      'dosbox.exe'
+      OWDOSBOXPATH:  ${{github.workspace}}\ci\nt386
+      OWVERBOSE:     1
+    shell: cmd
+  - if: runner.os == 'macOS' && ! contains( inputs.skip, runner.os )
+    name: try tests
+    run: |
+      echo OS=${{runner.os}}, path=${{inputs.path}}, skip=${{inputs.skip}}
+    shell: bash

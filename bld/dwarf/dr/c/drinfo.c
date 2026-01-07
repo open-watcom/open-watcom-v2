@@ -298,7 +298,7 @@ char * DRENTRY DRGetFileName( drmem_hdl entry )
 void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 /**************************************************************/
 {
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
     dr_fileidx          fileidx;
     filetab_idx         ftidx;
     char                *name;
@@ -321,7 +321,7 @@ void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 char * DRENTRY DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
 /******************************************************************/
 {
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
     char                *name;
     filetab_idx         ftidx;
 
@@ -521,11 +521,16 @@ static bool CheckAFunc( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void 
 }
 
 static const dw_tagnum BlockTags[] = {
-    DW_TAG_subprogram, DW_TAG_lexical_block, 0
+    DW_TAG_subprogram,
+    DW_TAG_lexical_block,
+    0
 };
 
 static const dw_tagnum EntryTags[] = {
-    DW_TAG_subprogram, DW_TAG_label, DW_TAG_variable, 0
+    DW_TAG_subprogram,
+    DW_TAG_label,
+    DW_TAG_variable,
+    0
 };
 
 bool DRENTRY DRWalkModFunc( drmem_hdl mod, bool blocks, DRWLKMODF wlk, void *d )
@@ -565,6 +570,7 @@ static const dw_tagnum TypeTags[] = { // any type
     DW_TAG_volatile_type,
     DW_TAG_packed_type,
     DW_TAG_typedef,
+    0
 };
 
 bool DRENTRY DRWalkModTypes( drmem_hdl mod, DRWLKMODF wlk, void *d )
@@ -584,35 +590,45 @@ bool DRENTRY DRWalkScope( drmem_hdl mod, DRWLKBLK wlk, void *d )
 }
 
 static const dw_tagnum CodeDataTags[] = {
-    DW_TAG_subprogram, DW_TAG_variable, DW_TAG_label,
-    DW_TAG_WATCOM_namespace, DW_TAG_formal_parameter, 0
+    DW_TAG_subprogram,
+    DW_TAG_variable,
+    DW_TAG_label,
+    DW_TAG_WATCOM_namespace,
+    DW_TAG_formal_parameter,
+    0
 };
 
 static const dw_tagnum ParmTags[] = {
-    DW_TAG_formal_parameter, 0
+    DW_TAG_formal_parameter,
+    0
 };
 
 static const dw_tagnum CTypeTags[] = {    // visible c type names
-    DW_TAG_typedef, 0
+    DW_TAG_typedef,
+    0
 };
 
 static const dw_tagnum CPPTypeTags[] = {  // visible c++ type names
-    DW_TAG_base_type, DW_TAG_typedef,
-    DW_TAG_enumeration_type, DW_TAG_class_type,
-    DW_TAG_union_type, DW_TAG_structure_type, 0
+    DW_TAG_base_type,
+    DW_TAG_typedef,
+    DW_TAG_enumeration_type,
+    DW_TAG_class_type,
+    DW_TAG_union_type,
+    DW_TAG_structure_type,
+    0
 };
 
 static const dw_tagnum * const SrchTags[DR_SRCH_LAST] = {
-    CodeDataTags,
-    FunctionTags,
-    ClassTags,
-    EnumTags,
-    TypedefTags,
-    CTypeTags,
-    CPPTypeTags,
-    VariableTags,
-    ParmTags,
-    LabelTags,
+    CodeDataTags,       /* DR_SRCH_func_var */
+    FunctionTags,       /* DR_SRCH_func */
+    ClassTags,          /* DR_SRCH_class */
+    EnumTags,           /* DR_SRCH_enum */
+    TypedefTags,        /* DR_SRCH_typedef */
+    CTypeTags,          /* DR_SRCH_ctypes */
+    CPPTypeTags,        /* DR_SRCH_cpptypes */
+    VariableTags,       /* DR_SRCH_var */
+    ParmTags,           /* DR_SRCH_parm */
+    LabelTags,          /* DR_SRCH_label */
 };
 
 #define MAX_TAG_WLK   8   //check max size of tag search array

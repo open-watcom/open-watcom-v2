@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "data.h"
 #include "intrface.h"
 #include "rgtbl.h"
@@ -78,7 +77,7 @@ void    DumpInsOffsets( void )
     DO_DUMPOFFSET( "type_class", offsetof( instruction, type_class ) );
     DO_DUMPOFFSET( "base_type_class", offsetof( instruction, base_type_class ) );
     DO_DUMPOFFSET( "sequence", offsetof( instruction, sequence ) );
-    DO_DUMPOFFSET( "flags.u.byte", offsetof( instruction, flags.u.byte ) );
+    DO_DUMPOFFSET( "flags.u.dest_idx", offsetof( instruction, flags.u.dest_idx ) );
     DO_DUMPOFFSET( "flags.u.bool_flag", offsetof( instruction, flags.u.bool_flag ) );
     DO_DUMPOFFSET( "flags.u.call_flag", offsetof( instruction, flags.u.call_flags ) );
     DO_DUMPOFFSET( "flags.u.nop_flags", offsetof( instruction, flags.u.nop_flags ) );
@@ -112,7 +111,9 @@ void    DumpInOut( instruction *ins )
 void    DumpITab( instruction *ins )
 /**********************************/
 {
-    if( ins->u.gen_table != NULL ) DumpTab( ins->u.gen_table );
+    if( ins->u.gen_table != NULL ) {
+        DumpTab( ins->u.gen_table );
+    }
 }
 
 
@@ -193,7 +194,7 @@ void    DumpOperand( name *operand )
         } else {
             DumpOperand( operand->i.index );
         }
-        if( operand->i.scale > 0 ) {
+        if( operand->i.scale != SCALE_NONE ) {
             DumpChar( '*' );
             DumpInt( 1 << operand->i.scale );
         }
@@ -225,34 +226,34 @@ void    DumpOperand( name *operand )
                     Dump8h( operand->c.hi.u.int_value );
                 Dump8h( operand->c.lo.u.int_value );
             } else {
-                CFCnvFS( operand->c.value, buffer, 20 );
+                CFCnvFS( operand->c.u.cfval, buffer, 20 );
                 DumpXString( buffer );
             }
         } else {
             if( operand->c.const_type == CONS_SEGMENT ) {
                 DumpLiteral( "SEG(" );
-                if( operand->c.value == NULL ) {
+                if( operand->c.u.op == NULL ) {
                     DumpInt( operand->c.lo.u.int_value );
                 } else {
-                    DumpOperand( operand->c.value );
+                    DumpOperand( operand->c.u.op );
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
 #if _TARGET & _TARG_370
                 DumpInt( operand->c.lo.u.int_value );
 #else
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
 #endif
             } else if( operand->c.const_type == CONS_ADDRESS ) {
                 DumpLiteral( "ADDRESS(" );
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
             } else if( operand->c.const_type == CONS_TEMP_ADDR ) {
                 DumpLiteral( "TMPADDR(" );
-                DumpOperand( operand->c.value );
+                DumpOperand( operand->c.u.op );
             } else if( operand->c.const_type == CONS_HIGH_ADDR ) {
                 DumpLiteral( "HIGH_ADDR(h^" );
-                if( operand->c.value != NULL ) {
-                    DumpOperand( operand->c.value );
+                if( operand->c.u.op != NULL ) {
+                    DumpOperand( operand->c.u.op );
                 } else {
                     if( operand->c.lo.u.int_value != 0 ) {
                         DumpLong( operand->c.lo.u.int_value );
@@ -445,20 +446,20 @@ void DumpInstrsOnly( block *blk )
 void    DumpCond( instruction *ins, block *blk )
 /**********************************************/
 {
-    byte    dst_idx;
+    cond_dst_idx    dest_idx;
 
     if( !_OpIsCondition( ins->head.opcode ) )
         return;
     if( ins->result == NULL ) {
-        dst_idx = _TrueIndex( ins );
-        if( dst_idx != NO_JUMP ) {
+        dest_idx = _TrueIndex( ins );
+        if( dest_idx != NO_JUMP ) {
             DumpLiteral( " then " );
-            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
+            DumpBlkId( blk->edge[dest_idx].destination.u.blk );
         }
-        dst_idx = _FalseIndex( ins );
-        if( dst_idx != NO_JUMP ) {
+        dest_idx = _FalseIndex( ins );
+        if( dest_idx != NO_JUMP ) {
             DumpLiteral( " else " );
-            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
+            DumpBlkId( blk->edge[dest_idx].destination.u.blk );
         }
     }
 }
@@ -490,7 +491,7 @@ void    DumpVUsage( name *v )
     DumpLiteral( "  Usage " );
     i = 0;
     j = 0;
-    for(;;) {
+    for( ;; ) {
         if( u & 1 ) {
             j += 14;
             if( j > 71 ) {
@@ -528,7 +529,7 @@ void    DumpSym( name *sym )
             DumpLiteral( "  location " );
             DumpLong( sym->t.location );
             DumpLiteral( "  block id " );
-            DumpInt( sym->t.u.block_id );
+            DumpInt( sym->t.u.blk_id );
             // DumpPossible( sym->t.possible );
             if( sym->t.temp_flags & ALIAS ) {
                 DumpLiteral( " ALIAS " );

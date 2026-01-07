@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,9 +286,9 @@ static file_list *push_flist( const char *name, bool is_a_file )
     new->is_a_file = is_a_file;
     new->hidden = false;
     if( !is_a_file ) {
-        dir_node *dir;
+        dir_node_handle dir;
 
-        dir = (dir_node *)AsmGetSymbol( name );
+        dir = (dir_node_handle)AsmGetSymbol( name );
         LineNumber = dir->line_num;
         new->srcfile = dir->e.macroinfo->srcfile;
     } else {

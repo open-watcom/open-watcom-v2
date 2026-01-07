@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,35 +51,23 @@
 #include "gtypes.h"
 
 
-sym_id  GStartCat( uint num_args, size_t size )
+sym_id  GStartCat( args_num argc, size_t size )
 //=============================================
 // Start cconcatenation into a temporary.
 {
-    /* unused parameters */ (void)num_args; (void)size;
+    /* unused parameters */ (void)argc; (void)size;
 
     return( NULL );
 }
 
 
-sym_id  GTempString( size_t size )
-//================================
-// Generate a static temporary string.
-{
-    sym_id     sym_ptr;
-
-    sym_ptr = StaticAlloc( sizeof( string ), FT_CHAR );
-    sym_ptr->u.ns.xt.size = size;
-    return( sym_ptr );
-}
-
-
-void    GStopCat( uint num_args, sym_id result )
+void    GStopCat( args_num argc, sym_id result )
 //==============================================
 // Finish concatenation into a temporary.
 {
     /* unused parameters */ (void)result;
 
-    CITNode->sym_ptr = GTempString( CITNode->size );
+    CITNode->sym_ptr = TmpVar( FT_CHAR, CITNode->size );
     CITNode->opn.us = USOPN_VAL;
     // Push the address of a static SCB so that we can modify its
     // length to correspond to the length concatenated so that
@@ -91,7 +79,7 @@ void    GStopCat( uint num_args, sym_id result )
     // was indexed as WORD(I:J).
     PushOpn( CITNode );
     EmitOp( FC_CAT );
-    OutU16( (uint_16)( num_args | CAT_TEMP ) ); // indicate concatenating into a static temp
+    OutU16( argc | CAT_TEMP ); // indicate concatenating into a static temp
 }
 
 
@@ -151,17 +139,21 @@ void    AsgnChar( void )
 // Perform character assignment.
 {
     itnode      *save_cit;
-    uint        num_args;
+    args_num    argc;
     size_t      i;
     size_t      j;
 
     save_cit = CITNode;
     AdvanceITPtr();
-    num_args = AsgnCat();
+    argc = AsgnCat();
     i = SrcChar( CITNode );
     j = TargChar( save_cit );
-    if( ( num_args == 1 ) && ( i > 0 ) && ( j > 0 ) ) {
-        if( OptimalChSize( i ) && OptimalChSize( j ) && ( i == j ) ) {
+    if( ( argc == 1 )
+      && ( i > 0 )
+      && ( j > 0 ) ) {
+        if( OptimalChSize( i )
+          && OptimalChSize( j )
+          && ( i == j ) ) {
             PushOpn( save_cit );
             EmitOp( FC_CHAR_1_MOVE );
             DumpType( MapTypes( FT_INTEGER, i ), i );
@@ -181,18 +173,18 @@ void    AsgnChar( void )
             OutInt( i );
             OutInt( j );
 #else /* _RISC_CPU */
-            CatArgs( num_args );
+            CatArgs( argc );
             CITNode = save_cit;
             PushOpn( CITNode );
             EmitOp( FC_CAT );
-            OutU16( (uint_16)num_args );
+            OutU16( argc );
 #endif
         }
     } else {
-        CatArgs( num_args );
+        CatArgs( argc );
         CITNode = save_cit;
         PushOpn( CITNode );
         EmitOp( FC_CAT );
-        OutU16( (uint_16)num_args );
+        OutU16( argc );
     }
 }

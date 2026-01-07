@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -44,11 +45,11 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
 #include "thread.h"
+
 
 _WCRTLINK int _setmode( int handle, int mode )
 {
@@ -61,7 +62,7 @@ _WCRTLINK int _setmode( int handle, int mode )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( -1 );
     }
     old_mode = (iomode_flags & _BINARY) ? O_BINARY : O_TEXT;
@@ -88,8 +89,7 @@ _WCRTLINK int _setmode( int handle, int mode )
             }
             _ReleaseFileH( handle );
         } else {
-            _RWD_errno = EINVAL;
-            old_mode = -1;
+            return( lib_set_EINVAL() );
         }
     }
     return( old_mode );

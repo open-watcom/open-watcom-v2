@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,12 +377,15 @@ static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, u
 {
     unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
-    unsigned int copy_stride = min( dst_stride, src_stride );
+    unsigned int copy_stride;
 
     unsigned char *newbmp;
     unsigned int img_sz;
     unsigned int y;
 
+    copy_stride = dst_stride;
+    if( copy_stride > src_stride )
+        copy_stride = src_stride;
     /*
      * This code assumes the caller has already read past the DIB header
      *
@@ -437,14 +440,20 @@ static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int He
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
     unsigned int dstm_stride = (((Width+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int srcm_stride = (((Width+31u)&(~31u))/8u)/*DWORD align*/;
-    unsigned int copy_stride = min( dst_stride, src_stride );
-    unsigned int copym_stride = min( dstm_stride, srcm_stride );
+    unsigned int copy_stride;
+    unsigned int copym_stride;
 
     unsigned char *newbmp;
     unsigned int mask_sz;
     unsigned int img_sz;
     unsigned int y;
 
+    copy_stride = dst_stride;
+    if( copy_stride > src_stride )
+        copy_stride = src_stride;
+    copym_stride = dstm_stride;
+    if( copym_stride > srcm_stride )
+        copym_stride = srcm_stride;
     /*
      * This code assumes the caller has already read past the DIB header
      *

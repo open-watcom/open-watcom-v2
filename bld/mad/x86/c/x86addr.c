@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,9 +57,11 @@ int MADIMPENTRY( AddrComp )( const address *ap, const address *bp, mad_address_f
     a = ap->mach;
     b = bp->mach;
     if( af == MAF_OFFSET ) {
-        if( a.offset == b.offset ) return(  0 );
-        if( a.offset >  b.offset ) return( +1 );
-                                   return( -1 );
+        if( a.offset == b.offset )
+            return( 0 );
+        if( a.offset >  b.offset )
+            return( +1 );
+        return( -1 );
     }
     if( REAL_SEG( *ap ) ) {
         a.segment = (addr_seg)( a.segment + ( a.offset >> 4 ) );
@@ -133,7 +135,8 @@ mad_status MADIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const
         return( MS_FAIL );
     start = ((unsigned_32)a->segment << 4) + a->offset;
     end = start + size;
-    if( start < 0x400 || end < 0x400 )
+    if( start < 0x400
+      || end < 0x400 )
         return( MS_OK );
     return( MS_FAIL );
 }

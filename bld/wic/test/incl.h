@@ -12,22 +12,22 @@ int a; DECLARE_C; TYPE b;
 int another_and_last_declaration;
 #include <incl1.h>
 
-#define VOID void
-#define DECL_D			int unsigned  long   d1 ,d2;
+#define VOID        void
+#define DECL_D      int unsigned  long   d1 ,d2;
 int errorInclMain2 =;errorInclMain2;
 struct s1_name {
     int unsigned i;
     float f;
     struct inside_s1_name {
-	long char ch;
-	VOID x1;
-	VOID x2;
-	DECL_D
+        long char ch;
+        VOID x1;
+        VOID x2;
+        DECL_D
     } inside_s1;
     struct s_name inside_s2;
 //    float f2 = 1.12*23 >> 2 +   23 & (!!~23) ^ 9 - -1
-//	    + 23;  float f3, f4;
-    
+//      + 23;  float f3, f4;
+
 }  s1;
 
 struct s2;

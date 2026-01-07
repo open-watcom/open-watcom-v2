@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ intstar4        __fortran FSYSTEM( string PGM *command )
 
     for( len = command->len; len > 0; --len ) {
         if( command->strptr[len - 1] != ' ' ) {
-            buff = alloca( len + sizeof( char ) );
+            buff = alloca( len + 1 );
             if( buff == NULL )
                 break;
             pgm_memget( buff, command->strptr, len );

@@ -109,6 +109,14 @@ void    lay_xmp( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    left_indent     :1;
+        unsigned    right_indent    :1;
+        unsigned    pre_skip        :1;
+        unsigned    post_skip       :1;
+        unsigned    spacing         :1;
+        unsigned    font            :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

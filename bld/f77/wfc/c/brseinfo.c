@@ -74,7 +74,7 @@ static dw_handle        BIGetUnionType(sym_id);
 static void             BIOutSP(sym_id);
 static void             BISolidifyFunction(sym_id,dw_handle);
 static void             BIOutDummies(entry_pt *);
-static void             BIOutDeclareSP(sym_id,long);
+static void             BIOutDeclareSP(sym_id,dw_flags);
 static void             BIOutSF(sym_id);
 static void             BIOutSPDumInfo(sym_id);
 static void             BIOutVar(sym_id);
@@ -95,7 +95,7 @@ static unsigned_32      currState = 0;
 static sym_list         *fixStructs = NULL;
 static sym_list         *fixSubParms = NULL;
 
-static dw_handle        baseTypes[LAST_BASE_TYPE + 1];
+static dw_handle        baseTypes[FT_MAX];
 
 /* Forward declarations */
 static void BIRefSymbol( dw_handle handle );
@@ -119,9 +119,6 @@ static  bool            BrInitialized;
                                  (BrInitialized) && \
                                  (ProgSw & PS_DONT_GENERATE))
 
-#define _isFundamentalType( typ ) \
-                        (((int)typ >= FIRST_BASE_TYPE) && ((int)typ <= LAST_BASE_TYPE))
-
 void    BIInit( void ) {
 //================
 
@@ -141,7 +138,7 @@ void    BIInit( void ) {
         justJunk = DWLocFini( cBIId, DWLocInit( cBIId ) );
         cu.source_filename=BIMKFullPath( CurrFile->name );
         cu.directory=".";
-        cu.flags = true;
+        cu.flags = DW_CU_FLAG_CONTIGUOUS;
         cu.offset_size = ARCHITECTURE;
         cu.segment_size = 0;
         cu.model = DW_MEM_MODEL_none;
@@ -354,7 +351,7 @@ void    BIOutSymbol( sym_id ste_ptr ) {
                     BIRefSymbol( BIGetHandle( ste_ptr ) );
                 }
             } else if( (ste_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_REMOTE_BLOCK ) {
-                BIOutDeclareSP( ste_ptr, 0 );
+                BIOutDeclareSP( ste_ptr, DW_FLAG_NONE );
             } else {
                 if( (ste_ptr->u.ns.flags & SY_PS_ENTRY) == 0 ) {
                     BIOutDeclareSP( ste_ptr, DW_FLAG_GLOBAL );
@@ -516,7 +513,7 @@ static void BIOutSP( sym_id ste_ptr )
 //===================================
 // Dump the subprogram.
 {
-    uint        flags = 0;
+    dw_flags    flags;
     dw_handle   fret;
 
     DWDeclPos( cBIId, CurrFile->rec, 0 );
@@ -534,6 +531,7 @@ static void BIOutSP( sym_id ste_ptr )
     } else {
         fret = BIGetSPType( ste_ptr );
     }
+    flags = DW_FLAG_NONE;
     if( ste_ptr->u.ns.flags & SY_SENTRY ) {
         fret = DWBeginEntryPoint( cBIId, fret, justJunk, 0, ste_ptr->u.ns.name, 0, flags );
     } else {
@@ -548,60 +546,37 @@ static void BIOutSP( sym_id ste_ptr )
 }
 
 
-static int BIMapType( TYPE typ ) {
-//===============================
-
-// Map our type to a DWARF fundamental type
-
-    switch( typ ) {
-    case( FT_LOGICAL_1 ):
-    case( FT_LOGICAL ):         return( DW_FT_BOOLEAN );
-    case( FT_INTEGER_1 ):
-    case( FT_INTEGER_2 ):
-    case( FT_INTEGER ):         return( DW_FT_SIGNED );
-    case( FT_REAL ):
-    case( FT_DOUBLE ):
-    case( FT_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
-    case( FT_COMPLEX ):
-    case( FT_DCOMPLEX ):
-    case( FT_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
-    case( FT_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
-    }
-    return( 0 );
+static dw_handle BIMakeFundamental( TYPE typ )
+//============================================
+// create a new handle for fundamental type
+{
+    return( DWFundamental( cBIId, TypeKW( typ ), DWType( typ ), TypeSize( typ ) ) );
 }
 
-
-static dw_handle BIMakeFundamental( TYPE typ ) {
-//=============================================
-
-// create a new fundamental handle seperate from the one created at birth
-
-    return( DWFundamental(cBIId, TypeKW(typ), BIMapType(typ), TypeSize(typ)) );
-}
-
-
-static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
-//==================================================================
-
+static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle )
+//================================================================
 //  solidify the function type;
+{
+    TYPE typ;
 
-    if( ste_ptr->u.ns.u1.s.typ != FT_STRUCTURE ) {
+    typ = ste_ptr->u.ns.u1.s.typ;
+    if( typ != FT_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
-    if( _isFundamentalType( ste_ptr->u.ns.u1.s.typ ) ) {
+    if( _isFundamentalType( typ ) ) {
         // since we now emit our fundamentals at init time, we must explicitly
         // create another fundemntal handle rather than using the ones created
         // at birth.  This is necessary because we must set next handle emitted
         // to that type
-        BIMakeFundamental( ste_ptr->u.ns.u1.s.typ );
+        BIMakeFundamental( typ );
     } else {
         BIGetSPType( ste_ptr );
     }
 }
 
 
-static void BIOutDeclareSP( sym_id ste_ptr, long flags )
-//======================================================
+static void BIOutDeclareSP( sym_id ste_ptr, dw_flags flags )
+//==========================================================
 // Dump the name of an external or intrinsic function. and its data
 {
     dw_handle           handle;
@@ -667,7 +642,7 @@ static void BIOutConst( sym_id ste_ptr )
     void                *value;
 
     if( ste_ptr->u.ns.u1.s.typ == FT_CHAR ) {
-        value = &(ste_ptr->u.ns.si.pc.value->u.lt.value);
+        value = ste_ptr->u.ns.si.pc.value->u.lt.value;
     } else {
         value = &(ste_ptr->u.ns.si.pc.value->u.cn.value);
     }
@@ -750,16 +725,6 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
 }
 
 
-static dw_handle BIGetBaseType( TYPE typ ) {
-//=========================================
-
-// Get initialized base type
-
-    DWDeclPos( cBIId, CurrFile->rec, 0 );
-    return( baseTypes[typ] );
-}
-
-
 static dw_handle BIGetArrayType( sym_id ste_ptr ) {
 //=================================================
 
@@ -771,7 +736,8 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
     dw_handle   ret;
 
     dim_cnt = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
-    data.index_type = BIGetBaseType( FT_INTEGER );
+    DWDeclPos( cBIId, CurrFile->rec, 0 );
+    data.index_type = baseTypes[FT_INTEGER];
     bounds = &ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo;
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
     while( dim_cnt-- > 0 ) {
@@ -837,7 +803,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
             }
         }
         if( data->u.ns.si.va.u.dim_ext ) {
-            DWAddField(cBIId, BIGetArrayType(data), justJunk, name, 0);
+            DWAddField( cBIId, BIGetArrayType( data ), justJunk, name, 0 );
         } else {
             DWAddField( cBIId, BIGetType( data ), justJunk, name, 0 );
         }
@@ -847,11 +813,10 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static dw_handle BIGetUnionType( sym_id ste_ptr ) {
-//=================================================
-
+static dw_handle BIGetUnionType( sym_id ste_ptr )
+//===============================================
 // get a union type of a non named symbol
-
+{
     struct fstruct      *fs;
     dw_handle           ret;
     sym_id              sym;
@@ -890,11 +855,10 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
 }
 
 
-static dw_handle BIStartStructType( sym_id ste_ptr, int add ) {
-//=============================================================
-
+static dw_handle BIStartStructType( sym_id ste_ptr, int add )
+//===========================================================
 // start a struct type of a function definition
-
+{
     dw_handle   ret;
 
     ret = DWStruct( cBIId, DW_ST_STRUCT );
@@ -905,9 +869,9 @@ static dw_handle BIStartStructType( sym_id ste_ptr, int add ) {
 }
 
 
-static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle ) {
-//===========================================================================
-
+static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle )
+//=========================================================================
+{
     sym_list    *tmp;
 
     tmp = FMemAlloc( sizeof( sym_list ) );
@@ -919,9 +883,9 @@ static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static void BIWalkList( sym_list **list, func action, int nuke_list ) {
-//=====================================================================
-
+static void BIWalkList( sym_list **list, func action, int nuke_list )
+//===================================================================
+{
     sym_list    *tmp;
 
     for( tmp = *list; tmp != NULL; ) {
@@ -935,16 +899,16 @@ static void BIWalkList( sym_list **list, func action, int nuke_list ) {
 }
 
 
-static char *BIMKFullPath( const char *path ) {
-//=============================================
-
+static char *BIMKFullPath( const char *path )
+//===========================================
+{
     return( _fullpath( fullPathName, path, PATH_MAX ) );
 }
 
 
-static void BIInitBaseTypes( void ) {
-//===================================
-
+static void BIInitBaseTypes( void )
+//=================================
+{
     TYPE    x;
 
     // assume that LAST_BASE_TYPE is the last fundamental type

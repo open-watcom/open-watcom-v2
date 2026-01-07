@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ void    CpParameter( void ) {
 //     PARAMETER (P1=E1,...,Pn=En), n > 0
 
     size_t      parm_size;
-    byte        *lit;
-    byte        *string;
+    char        *lit;
+    char        *str;
     size_t      lit_len;
     sym_id      sym;
     sym_id      value_id;
@@ -68,7 +68,7 @@ void    CpParameter( void ) {
     ReqNOpn();
     AdvanceITPtr();
     ReqOpenParen();
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_VARIABLE ) ) {
             sym = LkSym();
             typ = sym->u.ns.u1.s.typ;
@@ -96,11 +96,11 @@ void    CpParameter( void ) {
             }
             if( !AError && assign_val ) {
                 if( typ == FT_CHAR ) {
-                    string = (byte *)CITNode->value.cstring.strptr;
+                    str = CITNode->value.string.ptr;
                     if( parm_size > CITNode->size ) {
                         lit = FMemAlloc( parm_size );
                         lit_len = CITNode->size;
-                        memcpy( lit, string, lit_len );
+                        memcpy( lit, str, lit_len );
                         memset( lit + lit_len, ' ', parm_size - lit_len );
                         value_id = STLit( lit, parm_size );
                         FMemFree( lit );
@@ -108,7 +108,7 @@ void    CpParameter( void ) {
                         if( parm_size == 0 ) { // *(*)
                             parm_size = CITNode->size;
                         }
-                        value_id = STLit( string, parm_size );
+                        value_id = STLit( str, parm_size );
                     }
                 } else {
                     if( !_IsTypeLogical( typ ) ) {

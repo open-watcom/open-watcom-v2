@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "langenv.h"
 #include "jmpbuf.h"
+#include "i64.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
@@ -64,8 +65,8 @@ typedef struct  try_table_back_handles {
 } try_table_back_handles;
 #endif
 
-extern  SYM_LIST_HEADS  *SymListHeads;
-extern  LABEL_INDEX     LabelIndex;
+extern SYM_LIST_HEADS   *SymListHeads;
+extern LABEL_INDEX      LabelIndex;
 
 static local_vars       *LocalVarList;
 static label_handle     *CGLabelHandles;

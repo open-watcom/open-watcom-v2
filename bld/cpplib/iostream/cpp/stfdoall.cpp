@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,8 @@
 #include <streambu>
 #endif
 #include "lock.h"
-#include "liballoc.h"
+#include "clibsupp.h"
+
 
 namespace std {
 
@@ -50,7 +52,7 @@ namespace std {
     char *buf;
 
     __lock_it( __b_lock );
-    buf = (char *)_plib_malloc( DEFAULT_BUF_SIZE );
+    buf = (char *)__clib_malloc( DEFAULT_BUF_SIZE );
     if( buf == NULL ) {
         return( EOF );
     }

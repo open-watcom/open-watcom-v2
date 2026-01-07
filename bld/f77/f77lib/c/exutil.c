@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 #define MAX_KW_LEN      15      // longest keyword in following tables
 
-char    *SpecId[] = {
+const char    * const SpecId[] = {
     "STATUS",
     "ACCESS",
     "FORM",
@@ -55,8 +55,8 @@ char    *SpecId[] = {
 };
 
 
-int     FindKWord( char **table, int id, int def_id, string PGM *kw )
-//===================================================================
+int     FindKWord( const char * const *table, int id, int def_id, string PGM *kw )
+//================================================================================
 {
     int         index;
     int         kw_len;

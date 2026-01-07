@@ -52,7 +52,6 @@
 #define _DOS16M_HELP    MSG_DOS16_HELP_0,   MSG_DOS16_HELP_15
 #define _QNX_HELP       MSG_QNX_HELP_0,     MSG_QNX_HELP_15
 #define _ELF_HELP       MSG_ELF_HELP_0,     MSG_ELF_HELP_15
-#define _ZDOS_HELP      MSG_ZDOS_HELP_0,    MSG_ZDOS_HELP_15
 #define _RDOS_HELP      MSG_RDOS_HELP_0,    MSG_RDOS_HELP_15
 #define _RAW_HELP       MSG_RAW_HELP_0,     MSG_RAW_HELP_15
 
@@ -176,15 +175,6 @@ static bool ProcELFHelp( void )
 }
 #endif
 
-#ifdef _ZDOS
-static bool ProcZdosHelp( void )
-/*****************************/
-{
-    WRITE_HELP_FULL( ZDOS );
-    return( true );
-}
-#endif
-
 #ifdef _RDOS
 static bool ProcRdosHelp( void )
 /*****************************/
@@ -228,9 +218,6 @@ static  parse_entry FormatHelp[] = {
 #ifdef _ELF
     "ELF",          ProcELFHelp,            MK_ALL,     0,
 #endif
-#ifdef _ZDOS
-    "ZDos",         ProcZdosHelp,           MK_ALL,     0,
-#endif
 #ifdef _RDOS
     "RDos",         ProcRdosHelp,           MK_ALL,     0,
 #endif
@@ -270,9 +257,6 @@ void DisplayOptions( void )
 #endif
 #ifdef _ELF
     WRITE_HELP_ONE( ELF );
-#endif
-#ifdef _ZDOS
-    WRITE_HELP_ONE( ZDOS );
 #endif
 #ifdef _RDOS
     WRITE_HELP_ONE( RDOS );

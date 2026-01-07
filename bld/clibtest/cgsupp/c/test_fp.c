@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "xfloat.h"
+#ifdef _LONG_DOUBLE_
+    #include "rtcntrl.h"
+#endif
+
 
 #ifdef __SW_BW
     #include <wdefwin.h>
@@ -16,6 +20,11 @@
             printf( "Line: %d\n", num );    \
             exit( EXIT_FAILURE );           \
         }
+#endif
+
+#ifdef _LONG_DOUBLE_
+    #define SETLD80BIT()    *__get_rt_control_ptr() |= RTFLG_LD_80BIT
+    #define SETLD64BIT()    *__get_rt_control_ptr() &= ~RTFLG_LD_80BIT
 #endif
 
 typedef union
@@ -64,6 +73,8 @@ static void OutputF10(F10 f, char *desc)
 static void OutputLongDoubleSeries(void)
 {
     F10 f3;
+
+    SETLD80BIT();
 
     f3.llbits = 0xFFFFFFFFFFFFFFFFUI64;
     f3.d.exponent = 0xFFFF;
@@ -136,6 +147,8 @@ static void OutputLongDoubleSeries(void)
     f3.llbits = 0xFFFFFFFFFFFFFFFFUI64;
     f3.d.exponent = 0x7FFF;
     OutputF10(f3, "Greatest NAN");
+
+    SETLD64BIT();
 }
 
 #endif

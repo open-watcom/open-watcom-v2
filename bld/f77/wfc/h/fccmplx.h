@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-extern cg_name ImagPtr( cg_name dest, cg_type typ );
-extern cg_type CmplxBaseType( cg_type typ );
-extern void    SplitCmplx( cg_name cmplx_addr, cg_type typ );
-extern void    XPopCmplx( cg_cmplx *z, cg_type typ );
+extern cg_name ImagPtr( cg_name dest, cg_type cgtyp );
+extern cg_type CmplxBaseType( cg_type cgtyp );
+extern void    SplitCmplx( cg_name cmplx_addr, cg_type cgtyp );
+extern void    XPopCmplx( cg_cmplx *z, cg_type cgtyp );
 extern void    PushComplex( sym_id sym );
 extern void    PushCmplxConst( sym_id sym );
-extern void    CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ );
+extern void    CmplxAssign( sym_id sym, cg_type dst_cgtyp, cg_type src_cgtyp );
 extern cg_name CmplxAddr( cg_name real, cg_name imag );
 extern void    Cmplx2Scalar( void );

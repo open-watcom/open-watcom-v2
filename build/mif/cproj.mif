@@ -1,9 +1,13 @@
 # Perform basic sanity checks
-!ifeq host_os #nothing
+!ifndef host_os
 !error The host_os macro must be defined!
+!else ifeq host_os #nothing
+!error The host_os macro must have a value!
 !endif
-!ifeq host_cpu #nothing
+!ifndef host_cpu
 !error The host_cpu macro must be defined!
+!else ifeq host_cpu #nothing
+!error The host_cpu macro must have a value!
 !endif
 
 host = $(host_os)$(host_cpu)
@@ -13,21 +17,7 @@ bin_host = $(bin_subdir)
 bin_host = $(host_os)$(host_cpu)
 !endif
 
-use_for_target_bsdx64   = clang_gcc
-use_for_target_haikux64 = clang_gcc
-use_for_target_linuxarm = clang_gcc
-use_for_target_linuxa64 = clang_gcc
-use_for_target_linuxx64 = clang_gcc
-use_for_target_ntx64    = msvc_intel
-use_for_target_osxarm   = clang_gcc
-use_for_target_osxa64   = clang_gcc
-use_for_target_osxx64   = clang_gcc
-
-!ifndef bootstrap
-!ifdef use_for_target_$(host)
-!undef __WATCOM_TOOLS__
-!endif
-!endif
+!include cpuoscfg.mif
 
 !ifdef bootstrap
 
@@ -175,6 +165,9 @@ ppflags_debug = -DDEVBUILD
 ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
 !ifdef bootstrap
 ppflags_common += -DBOOTSTRAP
+!  ifdef testbootstrap
+ppflags_common += -DTESTBOOT
+!  endif
 !endif
 
 !ifdef __WATCOM_TOOLS__
@@ -292,7 +285,6 @@ model_switch_i86 = -m$(memory_model_i86)
 !endif
 
 default_memory_model_386_dos     = s
-default_memory_model_386_zdos    = s
 default_memory_model_386_qnx     = s
 default_memory_model_386_nov     = s
 default_memory_model_386_rdosdev = c
@@ -350,9 +342,6 @@ def_fpu_flags_linux386 = -fpi
   ######
   # NOVELL ?????
 def_fpu_flags_nov386   = -fpc
-  ######
-  # ZDOS doesn't have emulator support
-def_fpu_flags_zdos386  = -fpc
   ######
 def_fpu_flags_nto386   = -fpi
 
@@ -443,7 +432,6 @@ cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_dos      = -bt=dos
-cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
 cflags_rdosdev  = -bt=rdosdev -bm -zu
 cflags_nov      = -bt=netware
@@ -471,18 +459,21 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!if !defined( bootstrap ) || ( $(%OWTOOLSVER) > 1300 )
-# this can be used for OW 2.1 because older versions of OW 2.0
-# not support these new options
-watcom_common_cflags   = -wx-wce=C310
-watcom_common_cxxflags = -w8-wce=P579
-c_flags          = $(watcom_common_cflags) -zastd=c99
-!else
+!ifdef __WATCOM_TOOLS__
+!  ifdef bootstrap
+!    ifndef testbootstrap
 watcom_common_cflags   = -wx-wce=310
 watcom_common_cxxflags = -w8-wce=579
-c_flags          = $(watcom_common_cflags)
-!endif
+c_flags = $(watcom_common_cflags)
+!    endif
+!  endif
+!  ifndef watcom_common_cflags
+watcom_common_cflags   = -wx-wce=C310
+watcom_common_cxxflags = -w8-wce=P579
+c_flags = $(watcom_common_cflags) -zastd=c99
+!  endif
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+!endif
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host))
 cppflags         = $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
@@ -514,7 +505,6 @@ clflags_qnxi86     = -l=qnx
 clflags_qnx386     = -l=qnx
 clflags_dosi86     = -l=dos $(clflags_doslfn_i86)
 clflags_dos386     = -l=$(dos_extender) $(clflags_doslfn_386)
-clflags_zdos386    = -l=zdos
 clflags_rdos386    = -l=rdos
 clflags_rdosdev386 = -l=rdosdev
 clflags_nov386     = -l=netware
@@ -580,7 +570,6 @@ aflags_win      = -bt=windows
 aflags_os2      = -bt=os2
 aflags_qnx      = -bt=qnx
 aflags_dos      = -bt=dos
-aflags_zdos     = -bt=zdos
 aflags_rdos     = -bt=rdos
 aflags_rdosdev  = -bt=rdosdev
 aflags_nov      = -bt=netware
@@ -625,7 +614,6 @@ lflags_rdos386     = sys rdos
 lflags_rdosdev386  = sys rdosdev
 lflags_win386      = sys win386
 lflags_wini86      = sys windows
-lflags_zdos386     = sys zdos
 
 # windowed application macros
 lflags_wind_nt386   = sys nt_win
@@ -652,7 +640,6 @@ lflags_dll_rdos386    = sys rdos_dll
 lflags_dll_rdosdev386 = $(lflags_rdosdev386)
 lflags_dll_win386     = $(lflags_win386)
 lflags_dll_wini86     = sys windows_dll
-lflags_dll_zdos386    = $(lflags_zdos386)
 
 proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags_$(host)) $(extra_l_flags)
 proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll_$(host)) $(extra_l_flags_dll)
@@ -693,7 +680,6 @@ libflags_qnx       = -io
 libflags_rdos      = -io
 libflags_rdosdev   = -io
 libflags_win       = -io
-libflags_zdos      = -io
 
 proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 
@@ -716,7 +702,6 @@ inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_rdos  =
 inc_dirs_sys_rdosdev =
-inc_dirs_sys_zdos  =
 
 inc_dirs_lang_dos  =
 
@@ -735,7 +720,6 @@ inc_dirs_sys_linux   =
 inc_dirs_sys_nto     =
 inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
-inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 
 inc_dirs_lang_dos     = -I"$(hdr_dir)/dos/h"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx/h"
@@ -794,6 +778,8 @@ rc_cpp_i86      = -D_M_I86
 rc_cpp_mps      = -D__MIPS__
 rc_cpp_ppc      = -D__PPC__
 rc_cpp_x64      = -D_M_X64
+rc_cpp_arm      = -D_M_ARM
+rc_cpp_a64      = -D_M_ARM64
 
 rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 

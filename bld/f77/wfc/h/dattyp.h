@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,13 +75,6 @@ typedef struct xcomplex {           // extended precision complex
     extended    imagpart;
 } xcomplex;
 
-typedef struct arr_desc {
-    char                *data;
-    unsigned long       num_elmts;
-    uint                elmt_size;
-    PTYPE               typ;
-} arr_desc;
-
 #include "scb.h"
 
 #define MAX_INT_SIZE    11          //  buffer for 32-bit integer strings
@@ -100,9 +93,7 @@ typedef union ftn_type {
     struct scomplex     scomplex;
     struct dcomplex     dcomplex;
     struct xcomplex     xcomplex;
-    struct cstring      cstring;
     struct string       string;
-    struct arr_desc     arr_desc;
     struct {
         void            *struct_chain;
     } sc;
@@ -119,6 +110,9 @@ typedef unsigned_32     obj_ptr;
 typedef obj_ptr         warp_label;
 typedef unsigned_32     seg_offset;
 
-typedef unsigned        label_id;
+typedef unsigned_16     label_id;
+typedef unsigned_32     stmt_num;
+typedef unsigned_16     block_num;
+typedef unsigned_16     args_num;
 
 #endif

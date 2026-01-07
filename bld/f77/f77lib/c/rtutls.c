@@ -168,7 +168,7 @@ void    GetFileInfo( void ) {
         }
     } else {
         TrimStr( IOCB->filename, &name );
-        fname = RChkAlloc( name.len + sizeof( char ) );
+        fname = RChkAlloc( name.len + 1 );
         GetStr( &name, fname );
     }
     IOCB->fileinfo->filename = fname;

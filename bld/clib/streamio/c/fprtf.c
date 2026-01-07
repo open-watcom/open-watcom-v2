@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "printf.h"
 #include "fprtf.h"
 #include "orient.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "streamio.h"
 
 
@@ -58,7 +58,7 @@ static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_cha
 }
 
 
-int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args )
+int _WCNEAR __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args )
 {
     int             not_buffered;
     int             amount_written;

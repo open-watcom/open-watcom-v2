@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,26 +83,26 @@ mad_registers * StatGetMadRegisters( HWND stat )
  */
 static void DisplayAsmLines( HWND hwnd, address *paddr )
 {
-    int         i;
-    address     addr;
-    address     flagaddr;
-    char        buff[256];
-    HWND        hscrl;
-    DWORD       max;
-    int         curr;
+    int             i;
+    address         addr;
+    address         flagaddr;
+    char            buff[256];
+    HWND            hscrl;
+    DWORD           max;
+    int             curr;
     mad_registers   *regs;
 
     addr = *paddr;
     regs = StatGetMadRegisters( hwnd );
     GetCurrAddr( &flagaddr, regs );
 
-    for( i = STAT_DISASM_1;i <= STAT_DISASM_8; i++ ) {
+    for( i = STAT_DISASM_1; i <= STAT_DISASM_8; i++ ) {
         buff[0] = ' ';
         if( MADAddrComp( &addr, &flagaddr, MAF_FULL ) == 0 ) {
             buff[0] = '*';
         }
 
-        Disassemble( &addr, buff+1, FALSE, 255 );
+        Disassemble( &addr, buff + 1, FALSE, 255 );
         SetDlgItemText( hwnd, i, buff );
     }
 
@@ -113,7 +113,7 @@ static void DisplayAsmLines( HWND hwnd, address *paddr )
     SetScrollRange( hscrl, SB_CTL, 0, 2, FALSE );
     SetScrollPos( hscrl, SB_CTL, 1, TRUE );
 #else
-    max = GetASelectorLimit( paddr->mach.segment );
+    max = GetASelectorSize( paddr->mach.segment );
     if( max > MAXRANGE ) {
         curr = ( MAXRANGE * paddr->mach.offset ) / max;
         max = MAXRANGE;
@@ -121,7 +121,7 @@ static void DisplayAsmLines( HWND hwnd, address *paddr )
         curr = paddr->mach.offset;
     }
     hscrl = GetDlgItem( hwnd, STAT_SCROLL );
-    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE );
     SetScrollPos( hscrl, SB_CTL, curr, TRUE );
 #endif
 } /* DisplayAsmLines */
@@ -262,7 +262,7 @@ static void InitStatDialog( HWND hwnd )
     }
 #endif
     InstructionBackward( 2, &( statdata->curr_addr ) );
-    for( i = STAT_DISASM_1;i <= STAT_DISASM_8; i++ ) {
+    for( i = STAT_DISASM_1; i <= STAT_DISASM_8; i++ ) {
         SetDlgCourierFont( hwnd, i );
     }
     DisplayAsmLines( hwnd, &( statdata->curr_addr ) );

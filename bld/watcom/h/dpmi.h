@@ -75,6 +75,8 @@
 #define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
 #define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
 #define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
+#define DPMIGetSegmentLimit                     _DPMIGetSegmentLimit
+#define DPMIGetSegmentSize                      _DPMIGetSegmentSize
 #define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
 #define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
 #define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
@@ -123,8 +125,10 @@
 
 #define GetSelectorLimitB                       _GetSelectorLimitB
 #define GetDataSelectorLimitB                   _GetDataSelectorLimitB
-#define IsReadSelectorB                         _IsReadSelectorB
-#define IsWriteSelectorB                        _IsWriteSelectorB
+#define GetSelectorSize                         _GetSelectorSize
+#define GetDataSelectorSize                     _GetDataSelectorSize
+#define IsReadSelector                          _IsReadSelector
+#define IsWriteSelector                         _IsWriteSelector
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -285,6 +289,8 @@ extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetSegmentLimit( uint_16, uint_16 hiw, uint_16 low );
+extern uint_32  _DPMIGetSegmentLimit( uint_16 );
+extern uint_32  _DPMIGetSegmentSize( uint_16 );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
 extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw, uint_16 low );
 extern int      _DPMIResizeMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
@@ -330,8 +336,10 @@ extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
 extern unsigned _GetSelectorLimitB( unsigned short sel );
 extern unsigned _GetDataSelectorLimitB( void );
-extern uint_8   _IsReadSelectorB( unsigned short sel );
-extern uint_8   _IsWriteSelectorB( unsigned short sel );
+extern unsigned _GetSelectorSize( unsigned short sel );
+extern unsigned _GetDataSelectorSize( void );
+extern uint_8   _IsReadSelector( unsigned short sel );
+extern uint_8   _IsWriteSelector( unsigned short sel );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -382,8 +390,19 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
 #define DPMI_0501       0x01 0x05
 #define DPMI_0502       0x02 0x05
 #define DPMI_0503       0x03 0x05
+//#define DPMI_0504       0x04 0x05   /* not in DOS/4GW */
+//#define DPMI_0505       0x05 0x05   /* not in DOS/4GW */
+//#define DPMI_0506       0x06 0x05   /* not in DOS/4GW */
+//#define DPMI_0507       0x07 0x05   /* not in DOS/4GW */
+//#define DPMI_0508       0x08 0x05   /* not in DOS/4GW */
+//#define DPMI_0509       0x09 0x05   /* not in DOS/4GW */
+//#define DPMI_050A       0x0A 0x05   /* not in DOS/4GW */
 #define DPMI_0600       0x00 0x06
 #define DPMI_0601       0x01 0x06
+//#define DPMI_0700       0x00 0x07
+//#define DPMI_0701       0x01 0x07
+//#define DPMI_0702       0x02 0x07   /* not in DOS/4GW */
+//#define DPMI_0703       0x03 0x07   /* not in DOS/4GW */
 #define DPMI_0A00       0x00 0x0A
 #define DPMI_0B00       0x00 0x0B
 #define DPMI_0B01       0x01 0x0B
@@ -410,13 +429,50 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __modify __exact [__eax __ecx]
 #endif
 
+#if defined( _M_I86 ) && ( _M_IX86 < 300 )
 #pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_ES_AX      \
         _MOV_AX_W DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] \
-    __value         [_DPMI_AX] \
-    __modify __exact [_DPMI_AX]
+    __value         [__ax] \
+    __modify __exact [__ax __es]
+#elif defined( _M_I86 )
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_ES_AX      \
+        _MOV_FS_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__ax] \
+    __modify __exact [__ax __es __fs __gs]
+#elif defined( __WINDOWS_386__ )
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_FS_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__eax] \
+    __modify __exact [__eax __fs __gs]
+#else
+#pragma aux _DPMIFreeLDTDescriptor = \
+        _XOR_AX_AX      \
+        _MOV_GS_AX      \
+        _MOV_AX_W DPMI_0001 \
+        _INT_31         \
+        _SBB_AX_AX      \
+    __parm __caller [__bx] \
+    __value         [__eax] \
+    __modify __exact [__eax __gs]
+#endif
 
 #ifdef _M_I86
 #pragma aux _DPMISegmentToDescriptor = \
@@ -485,6 +541,41 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __parm __caller [__bx] [__cx] [__dx] \
     __value         [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
+
+#pragma aux _DPMIGetSegmentLimit = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+    __parm      [__dx] \
+    __value     [_DPMI_AX] \
+    __modify __exact [_DPMI_AX]
+
+#ifdef _M_I86
+#pragma aux _DPMIGetSegmentSize = \
+        _PROTECTED  \
+        _MOVZX_EDX_AX \
+        _USE32 _XOR_AX_AX \
+        _USE32 _LSL_AX_DX \
+        _JNZ 3      \
+        _USE32 _INC_AX \
+    /* label */     \
+        _MOV_DX_AX  \
+        _SHR_EDX_16 \
+    __parm      [__ax] \
+    __value     [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _DPMIGetSegmentSize = \
+        _PROTECTED  \
+        _MOVZX_EDX_AX  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+        _JNZ 2      \
+        _INC_AX     \
+    __parm      [__ax] \
+    __value     [__eax] \
+    __modify __exact [__eax __edx]
+#endif
 
 #pragma aux _DPMISetDescriptorAccessRights = \
         _MOV_AX_W DPMI_0009 \
@@ -1209,7 +1300,28 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
 
-#pragma aux _IsReadSelectorB = \
+#pragma aux _GetSelectorSize = \
+        _PROTECTED  \
+        _XOR_DX_DX  \
+        _LSL_DX_AX  \
+        _JNZ 2      \
+        _INC_DX     \
+    __parm      [__ax] \
+    __value     [_DPMI_DX] \
+    __modify __exact [_DPMI_DX]
+
+#pragma aux _GetDataSelectorSize = \
+        _PROTECTED  \
+        _XOR_DX_DX  \
+        _MOV_AX_DS  \
+        _LSL_DX_AX  \
+        _JNZ 2      \
+        _INC_DX     \
+    __parm      [] \
+    __value     [_DPMI_DX] \
+    __modify __exact [_DPMI_DX]
+
+#pragma aux _IsReadSelector = \
         _PROTECTED \
         _VERR_AX \
         _MOV_AL 0 \
@@ -1219,7 +1331,7 @@ extern uint_8   _IsWriteSelectorB( unsigned short sel );
     __value     [__al] \
     __modify    []
 
-#pragma aux _IsWriteSelectorB = \
+#pragma aux _IsWriteSelector = \
         _PROTECTED \
         _VERW_AX \
         _MOV_AL 0 \

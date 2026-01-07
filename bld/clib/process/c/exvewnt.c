@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,19 +34,20 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <process.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "_process.h"
 #include "_int23.h"
 #include "thread.h"
+
 
 _WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
 {
     int         rc;
 
     rc = __F_NAME(spawnve,_wspawnve)( P_NOWAIT, path, argv, envp );
-    if( _RWD_errno == 0 ) {
+    if( lib_get_errno() == 0 ) {
         __int23_exit();
         ExitProcess( rc );
         // never return

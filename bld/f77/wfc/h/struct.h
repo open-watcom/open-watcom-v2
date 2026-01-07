@@ -43,7 +43,7 @@ typedef struct fstruct {
         sym_id          sym_fields;             // sym_id type pointer
     } fl;
     intstar4            size;                   // size of structure
-    unsigned short      cg_typ;                 // type for code generator
+    cg_type             cgtyp;                  // type for code generator
     unsigned short      dbi;                    // for debugging information
     unsigned_32         dbh;                    // browsing info handle
     size_t              name_len;               // length of structure name

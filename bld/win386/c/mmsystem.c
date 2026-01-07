@@ -97,7 +97,7 @@ UINT FAR PASCAL __midiInAddBuffer( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr,
     }
     odata = GETALIAS( &lpMidiInHdr->lpData );
     rc = mmsystemmidiInAddBuffer( hMidiIn, lpMidiInHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiInHdr->lpData );
+    RELEASEALIAS( &lpMidiInHdr->lpData, odata );
     return( rc );
 
 } /* __midiInAddBuffer */
@@ -119,7 +119,7 @@ UINT FAR PASCAL __midiInPrepareHeader( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr,
     }
     odata = GETALIAS( &lpMidiInHdr->lpData );
     rc = mmsystemmidiInPrepareHeader( hMidiIn, lpMidiInHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiInHdr->lpData );
+    RELEASEALIAS( &lpMidiInHdr->lpData, odata );
     return( rc );
 
 } /* __midiInPrepareHeader */
@@ -141,7 +141,7 @@ UINT FAR PASCAL __midiInUnprepareHeader( HMIDIIN hMidiIn,
     }
     odata = GETALIAS( &lpMidiInHdr->lpData );
     rc = mmsystemmidiInUnprepareHeader( hMidiIn, lpMidiInHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiInHdr->lpData );
+    RELEASEALIAS( &lpMidiInHdr->lpData, odata );
     return( rc );
 
 } /* __midiInUnprepareHeader */
@@ -163,7 +163,7 @@ UINT FAR PASCAL __midiOutLongMsg( HMIDIOUT hMidiOut, LPMIDIHDR lpMidiOutHdr,
     }
     odata = GETALIAS( &lpMidiOutHdr->lpData );
     rc = mmsystemmidiOutLongMsg( hMidiOut, lpMidiOutHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiOutHdr->lpData );
+    RELEASEALIAS( &lpMidiOutHdr->lpData, odata );
     return( rc );
 
 } /* __midiOutLongMsg */
@@ -185,7 +185,7 @@ UINT FAR PASCAL __midiOutPrepareHeader( HMIDIOUT hMidiOut,
     }
     odata = GETALIAS( &lpMidiOutHdr->lpData );
     rc = mmsystemmidiOutPrepareHeader( hMidiOut, lpMidiOutHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiOutHdr->lpData );
+    RELEASEALIAS( &lpMidiOutHdr->lpData, odata );
     return( rc );
 
 } /* __midiOutPrepareHeader */
@@ -207,7 +207,7 @@ UINT FAR PASCAL __midiOutUnprepareHeader( HMIDIOUT hMidiOut,
     }
     odata = GETALIAS( &lpMidiOutHdr->lpData );
     rc = mmsystemmidiOutUnprepareHeader( hMidiOut, lpMidiOutHdr, uSize );
-    RELEASEALIAS( odata, &lpMidiOutHdr->lpData );
+    RELEASEALIAS( &lpMidiOutHdr->lpData, odata );
     return( rc );
 
 } /* __midiOutUnprepareHeader */
@@ -426,7 +426,7 @@ UINT FAR PASCAL __waveInAddBuffer( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
     }
     odata = GETALIAS( &lpWaveInHdr->lpData );
     rc = mmsystemwaveInAddBuffer( hWaveIn, lpWaveInHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveInHdr->lpData );
+    RELEASEALIAS( &lpWaveInHdr->lpData, odata );
     return( rc );
 
 } /* __waveInAddBuffer */
@@ -448,7 +448,7 @@ UINT FAR PASCAL __waveInPrepareHeader( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
     }
     odata = GETALIAS( &lpWaveInHdr->lpData );
     rc = mmsystemwaveInPrepareHeader( hWaveIn, lpWaveInHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveInHdr->lpData );
+    RELEASEALIAS( &lpWaveInHdr->lpData, odata );
     return( rc );
 
 } /* __waveInPrepareHeader */
@@ -470,7 +470,7 @@ UINT FAR PASCAL __waveInUnprepareHeader( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
     }
     odata = GETALIAS( &lpWaveInHdr->lpData );
     rc = mmsystemwaveInUnprepareHeader( hWaveIn, lpWaveInHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveInHdr->lpData );
+    RELEASEALIAS( &lpWaveInHdr->lpData, odata );
     return( rc );
 
 } /* __waveInUnprepareHeader */
@@ -492,7 +492,7 @@ UINT FAR PASCAL __waveOutPrepareHeader( HWAVEOUT hWaveOut,
     }
     odata = GETALIAS( &lpWaveOutHdr->lpData );
     rc = mmsystemwaveOutPrepareHeader( hWaveOut, lpWaveOutHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveOutHdr->lpData );
+    RELEASEALIAS( &lpWaveOutHdr->lpData, odata );
     return( rc );
 
 } /* __waveOutPrepareHeader */
@@ -514,7 +514,7 @@ UINT FAR PASCAL __waveOutUnprepareHeader( HWAVEOUT hWaveOut,
     }
     odata = GETALIAS( &lpWaveOutHdr->lpData );
     rc = mmsystemwaveOutUnprepareHeader( hWaveOut, lpWaveOutHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveOutHdr->lpData );
+    RELEASEALIAS( &lpWaveOutHdr->lpData, odata );
     return( rc );
 
 } /* __waveOutUnprepareHeader */
@@ -536,7 +536,7 @@ UINT FAR PASCAL __waveOutWrite( HWAVEOUT hWaveOut, LPWAVEHDR lpWaveOutHdr,
     }
     odata = GETALIAS( &lpWaveOutHdr->lpData );
     rc = mmsystemwaveOutWrite( hWaveOut, lpWaveOutHdr, uSize );
-    RELEASEALIAS( odata, &lpWaveOutHdr->lpData );
+    RELEASEALIAS( &lpWaveOutHdr->lpData, odata );
     return( rc );
 
 } /* __waveOutWrite */

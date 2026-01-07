@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,14 +45,14 @@ extern  tn      FoldMod( tn left, tn rite, const type_def *tipe );
 extern  tn      Fold1sComp( tn left, const type_def *tipe );
 extern  tn      FoldUMinus( tn left, const type_def *tipe );
 extern  tn      FoldSqrt( tn left, const type_def *tipe );
-extern  tn      FoldLog( cg_op op, tn left, const type_def *tipe );
+extern  tn      FoldLog( cg_op opcode, tn left, const type_def *tipe );
 extern  tn      FoldFlAnd( tn left, tn rite );
 extern  tn      FoldFlOr( tn left, tn rite );
 extern  tn      FoldFlNot( tn left );
-extern  tn      FoldBitCompare( cg_op op, tn left, tn rite );
+extern  tn      FoldBitCompare( cg_op opcode, tn left, tn rite );
 extern  float_handle CnvCFToType( float_handle cf, const type_def *tipe );
-extern  tn      FoldCompare( cg_op op, tn left, tn rite, const type_def *tipe );
-extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, const type_def *tipe );
-extern  an      FoldConsCompare( cg_op op, tn left, tn rite, const type_def *tipe );
+extern  tn      FoldCompare( cg_op opcode, tn left, tn rite, const type_def *tipe );
+extern  tn      FoldPostGetsCompare( cg_op opcode, tn left, tn rite, const type_def *tipe );
+extern  an      FoldConsCompare( cg_op opcode, tn left, tn rite, const type_def *tipe );
 extern  bool    FoldIfTrue( tn left, label_handle lbl );
 extern  bool    FoldIfFalse( tn left, label_handle lbl );

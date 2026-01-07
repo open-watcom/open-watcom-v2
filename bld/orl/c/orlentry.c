@@ -40,6 +40,7 @@
 #include "exedos.h"
 #include "pcobj.h"
 #include "exedos.h"
+#include "i64.h"
 
 
 orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
@@ -457,18 +458,15 @@ orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *sec
         case( ORL_ELF ):
             return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd, sec_base ) );
         case( ORL_COFF ):
-            sec_base->u._32[I64HI32] = 0;
-            sec_base->u._32[I64LO32] = CoffSecGetBase( (coff_sec_handle)orl_sec_hnd );
+            Set64ValU32( *sec_base, CoffSecGetBase( (coff_sec_handle)orl_sec_hnd ) );
             return( ORL_OKAY );
         case( ORL_OMF ):
-            sec_base->u._32[I64HI32] = 0;
-            sec_base->u._32[I64LO32] = OmfSecGetBase( (omf_sec_handle)orl_sec_hnd );
+            Set64ValU32( *sec_base, OmfSecGetBase( (omf_sec_handle)orl_sec_hnd ) );
             return( ORL_OKAY );
         default:    // ORL_UNRECOGNIZED_FORMAT
             break;
         }
-        sec_base->u._32[I64HI32] = 0;
-        sec_base->u._32[I64LO32] = 0;
+        Set64ValZero( *sec_base );
     }
     return( ORL_ERROR );
 }
@@ -803,18 +801,15 @@ orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_sym
         case( ORL_ELF ):
             return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd, sym_value ) );
         case( ORL_COFF ):
-            sym_value->u._32[I64HI32] = 0;
-            sym_value->u._32[I64LO32] = CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd );
+            Set64ValU32( *sym_value, CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd ) );
             return( ORL_OKAY );
         case( ORL_OMF ):
-            sym_value->u._32[I64HI32] = 0;
-            sym_value->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
+            Set64ValU32( *sym_value, OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd ) );
             return( ORL_OKAY );
         default:     //ORL_UNRECOGNIZED_FORMAT
             break;
         }
-        sym_value->u._32[I64HI32] = 0;
-        sym_value->u._32[I64LO32] = 0;
+        Set64ValZero( *sym_value );
     }
     return( ORL_ERROR );
 }

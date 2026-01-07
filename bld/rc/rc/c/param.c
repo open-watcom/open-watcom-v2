@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -794,7 +794,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
 
     if( str != NULL ) {
         level = -1;
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for( ;; ) {
             CmdScanSkipWhiteSpace();
             ch = CmdScanChar();
@@ -813,7 +813,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
                             penv = ptr;
                         }
                         if( penv != NULL ) {
-                            save[level] = CmdScanInit( penv );
+                            save[level] = CmdScanLineInit( penv );
                             buffers[level] = ptr;
                         }
                     }
@@ -828,11 +828,11 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
                 if( level < 0 )
                     break;
                 RcMemFree( buffers[level] );
-                CmdScanInit( save[level] );
+                CmdScanLineInit( save[level] );
                 level--;
                 continue;
             }
-            if( _IS_SWITCH_CHAR( ch ) ) {
+            if( CmdScanSwitchChar( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
                 OPT_PROCESS( data );
             } else {  /* collect file name */

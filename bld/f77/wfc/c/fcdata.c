@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77defs.h"
-#include "cg.h"
 #include "cgflags.h"
 #include "errcod.h"
 #include "types.h"
@@ -762,79 +760,83 @@ static  void    C16toC20( ftn_type *old, ftn_type *to )
 }
 
 
-static  void            (*DataCnvTab[])(ftn_type *, ftn_type *) = {
-    NULL,     &I2toI1,  &I4toI1,  &R4toI1,  &R8toI1,  &R10toI1,  &C8toI1,  &C16toI1,  &C20toI1,
-    &I1toI2,  NULL,     &I4toI2,  &R4toI2,  &R8toI2,  &R10toI2,  &C8toI2,  &C16toI2,  &C20toI2,
-    &I1toI4,  &I2toI4,  NULL,     &R4toI4,  &R8toI4,  &R10toI4,  &C8toI4,  &C16toI4,  &C20toI4,
-    &I1toR4,  &I2toR4,  &I4toR4,  NULL,     &R8toR4,  &R10toR4,  &C8toR4,  &C16toR4,  &C20toR4,
-    &I1toR8,  &I2toR8,  &I4toR8,  &R4toR8,  NULL,     &R10toR8,  &C8toR8,  &C16toR8,  &C20toR8,
-    &I1toR10, &I2toR10, &I4toR10, &R4toR10, &R8toR10, NULL,      &C8toR10, &C16toR10, &C20toR10,
-    &I1toC8,  &I2toC8,  &I4toC8,  &R4toC8,  &R8toC8,  &R10toC8,  NULL,     &C16toC8,  &C20toC8,
-    &I1toC16, &I2toC16, &I4toC16, &R4toC16, &R8toC16, &R10toC16, &C8toC16, NULL,      &C20toC16,
-    &I1toC20, &I2toC20, &I4toC20, &R4toC20, &R8toC20, &R10toC20, &C8toC20, &C16toC20, NULL
+static void     (*DataCnvTab[])(ftn_type *, ftn_type *) = {
+/* from                                                                                             to  */
+/*  I1          I2      I4          R4      R8          R10         C8      C16         C20             */
+    NULL,     &I2toI1,  &I4toI1,  &R4toI1,  &R8toI1,  &R10toI1,  &C8toI1,  &C16toI1,  &C20toI1,  /* I1  */
+    &I1toI2,  NULL,     &I4toI2,  &R4toI2,  &R8toI2,  &R10toI2,  &C8toI2,  &C16toI2,  &C20toI2,  /* I2  */
+    &I1toI4,  &I2toI4,  NULL,     &R4toI4,  &R8toI4,  &R10toI4,  &C8toI4,  &C16toI4,  &C20toI4,  /* I4  */
+    &I1toR4,  &I2toR4,  &I4toR4,  NULL,     &R8toR4,  &R10toR4,  &C8toR4,  &C16toR4,  &C20toR4,  /* R4  */
+    &I1toR8,  &I2toR8,  &I4toR8,  &R4toR8,  NULL,     &R10toR8,  &C8toR8,  &C16toR8,  &C20toR8,  /* R8  */
+    &I1toR10, &I2toR10, &I4toR10, &R4toR10, &R8toR10, NULL,      &C8toR10, &C16toR10, &C20toR10, /* R10 */
+    &I1toC8,  &I2toC8,  &I4toC8,  &R4toC8,  &R8toC8,  &R10toC8,  NULL,     &C16toC8,  &C20toC8,  /* C8  */
+    &I1toC16, &I2toC16, &I4toC16, &R4toC16, &R8toC16, &R10toC16, &C8toC16, NULL,      &C20toC16, /* C16 */
+    &I1toC20, &I2toC20, &I4toC20, &R4toC20, &R8toC20, &R10toC20, &C8toC20, &C16toC20, NULL       /* C20 */
 };
 
 
-static  bool    Numeric( PTYPE typ )
-//==================================
+static  bool    Numeric( PTYPE ptyp )
+//===================================
 // Is given type numeric?
 {
-    return( ( typ >= PT_INT_1 ) && ( typ <= PT_CPLX_32 ) );
+    return( ( ptyp >= FPT_INT_1 ) && ( ptyp <= FPT_CPLX_32 ) );
 }
 
 
-bool    IntType( PTYPE typ )
-//==========================
+bool    IntType( PTYPE ptyp )
+//===========================
 // Is given type integer?
 {
-    return( ( typ >= PT_INT_1 ) && ( typ <= PT_INT_4 ) );
+    return( ( ptyp >= FPT_INT_1 ) && ( ptyp <= FPT_INT_4 ) );
 }
 
-static  void    DoDataInit( PTYPE var_type )
-//==========================================
+static  void    DoDataInit( PTYPE ptyp )
+//======================================
 // Do data initialization.
 {
     size_t      const_size;
     size_t      var_size;
     size_t      size;
-    byte        *const_ptr;
+    const char  *const_ptr;
     segment_id  segid;
     seg_offset  offset;
-    byte        const_buff[sizeof( ftn_type )];
+    char        const_buff[sizeof( ftn_type )];
 
-    if( ( DtConstType == PT_CHAR ) || ( DtConstType == PT_NOTYPE ) ) {
+    if( ( DtConstPtyp == FPT_CHAR )
+      || ( DtConstPtyp == FPT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
-        const_ptr = &DtConst->u.lt.value;
+        const_ptr = DtConst->u.lt.value;
     } else {
         const_size = DtConst->u.cn.size;
-        const_ptr = (byte *)(&DtConst->u.cn.value);
+        const_ptr = (char *)(&DtConst->u.cn.value);
     }
     var_size = DtItemSize;
     segid = GetDataSegId( InitVar );
     offset = GetDataOffset( InitVar );
     DtInit( segid, offset );
-    if( DtConstType == PT_CHAR ) {
+    if( DtConstPtyp == FPT_CHAR ) {
         if( const_size >= var_size ) {
             DtBytes( const_ptr, var_size );
         } else {
             DtBytes( const_ptr, const_size );
             DtIBytes( ' ', var_size - const_size );
         }
-    } else if( ( var_type == PT_CHAR ) && IntType( DtConstType ) ) {
-        DtBytes( const_ptr, sizeof( char ) );
-        if( var_size > sizeof( char ) ) {
-            DtIBytes( ' ', var_size - sizeof( char ) );
+    } else if( ( ptyp == FPT_CHAR )
+      && IntType( DtConstPtyp ) ) {
+        DtBytes( const_ptr, 1 );
+        if( var_size > 1 ) {
+            DtIBytes( ' ', var_size - 1 );
         }
-    } else if( DtConstType == PT_NOTYPE ) {
-        if( var_type != PT_CHAR ) {
+    } else if( DtConstPtyp == FPT_NOTYPE ) {
+        if( ptyp != FPT_CHAR ) {
             size = var_size;
             while( size > const_size ) {
                 size--;
-                const_buff[ size ] = 0;
+                const_buff[size] = 0;
             }
             while( size > 0 ) {
                 size--;
-                const_buff[ size ] = *const_ptr;
+                const_buff[size] = *const_ptr;
                 const_ptr++;
             }
             const_ptr = const_buff;
@@ -847,7 +849,7 @@ static  void    DoDataInit( PTYPE var_type )
             const_ptr += const_size - var_size;
         }
         DtBytes( const_ptr, var_size );
-    } else if( DtConstType <= PT_LOG_4 ) {
+    } else if( DtConstPtyp <= FPT_LOG_4 ) {
         DtBytes( const_ptr, var_size );
     } else {
         cfstruct    f77h;
@@ -858,9 +860,9 @@ static  void    DoDataInit( PTYPE var_type )
         f77h.free  = FMemFree;
         CFInit( &f77h );
 
-        if( DtConstType != var_type ) {
-            DataCnvTab[( var_type - PT_INT_1 ) * CONST_TYPES +
-                        ( DtConstType - PT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
+        if( DtConstPtyp != ptyp ) {
+            DataCnvTab[( ptyp - FPT_INT_1 ) * CONST_TYPES +
+                        ( DtConstPtyp - FPT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
         /*
@@ -870,39 +872,43 @@ static  void    DoDataInit( PTYPE var_type )
             char            fmt_buff[CONVERSION_BUFFER + 1];
             float_handle    cf;
 
-            if( (var_type == PT_REAL_4) || (var_type == PT_CPLX_8) ) {
+            if( (ptyp == FPT_REAL_4)
+              || (ptyp == FPT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == PT_REAL_8) || (var_type == PT_CPLX_16) ) {
+            } else if( (ptyp == FPT_REAL_8)
+              || (ptyp == FPT_CPLX_16) ) {
                 CnvD2S( (double *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( (var_type == PT_REAL_16) || (var_type == PT_CPLX_32) ) {
+            } else if( (ptyp == FPT_REAL_16)
+              || (ptyp == FPT_CPLX_32) ) {
                 CnvX2S( (extended *)const_ptr, fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( var_type == PT_CPLX_8 ) {
+            if( ptyp == FPT_CPLX_8 ) {
                 CnvS2S( (single *)(const_ptr + sizeof( single )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( single ) ), BETypeLength( TY_SINGLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == PT_CPLX_16 ) {
+            } else if( ptyp == FPT_CPLX_16 ) {
                 CnvD2S( (double *)(const_ptr + sizeof( double )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( double ) ), BETypeLength( TY_DOUBLE ) );
                 CFFree( &f77h, cf );
-            } else if( var_type == PT_CPLX_32 ) {
+            } else if( ptyp == FPT_CPLX_32 ) {
                 CnvX2S( (extended *)(const_ptr + sizeof( extended )), fmt_buff );
                 cf = CFCnvSF( &f77h, fmt_buff );
                 CFCnvTarget( cf, (flt *)( const_buff + sizeof( extended ) ), BETypeLength( TY_LONGDOUBLE ) );
                 CFFree( &f77h, cf );
             }
-            if( (var_type >= PT_REAL_4) && (var_type <= PT_CPLX_32) ) {
+            if( (ptyp >= FPT_REAL_4)
+              && (ptyp <= FPT_CPLX_32) ) {
                 const_ptr = const_buff;
             }
         }
@@ -917,8 +923,8 @@ static  void    DoDataInit( PTYPE var_type )
 }
 
 
-static  void    AsnVal( PTYPE var_type )
-//======================================
+static  void    AsnVal( PTYPE ptyp )
+//==================================
 // Do data initialization.
 {
     bool        issue_err;
@@ -929,14 +935,14 @@ static  void    AsnVal( PTYPE var_type )
         if( issue_err ) {
             Error( DA_NOT_ENOUGH );
         }
-    } else if( ( DtConstType == PT_NOTYPE ) ||
-        ( ( var_type <= PT_LOG_4 ) && ( DtConstType <= PT_LOG_4 ) ) ||
-        ( DtConstType == PT_CHAR ) ||
-        ( ( var_type == PT_CHAR ) && IntType( DtConstType ) ) ||
-        ( Numeric( var_type ) && Numeric( DtConstType ) ) ) {
-        DoDataInit( var_type );
+    } else if( ( DtConstPtyp == FPT_NOTYPE )
+      || ( ( ptyp <= FPT_LOG_4 ) && ( DtConstPtyp <= FPT_LOG_4 ) )
+      || ( DtConstPtyp == FPT_CHAR )
+      || ( ( ptyp == FPT_CHAR ) && IntType( DtConstPtyp ) )
+      || ( Numeric( ptyp ) && Numeric( DtConstPtyp ) ) ) {
+        DoDataInit( ptyp );
     } else {
-        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ var_type ], InitVar, MapType[ DtConstType ] );
+        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ptyp], InitVar, MapType[DtConstPtyp] );
     }
 }
 
@@ -1007,7 +1013,7 @@ void    DtInpLOG1( void )
 //=======================
 // Data initialize a LOGICAL*1 item.
 {
-    AsnVal( PT_LOG_1 );
+    AsnVal( FPT_LOG_1 );
 }
 
 
@@ -1015,7 +1021,7 @@ void    DtInpLOG4( void )
 //=======================
 // Data initialize a LOGICAL*4 item.
 {
-    AsnVal( PT_LOG_4 );
+    AsnVal( FPT_LOG_4 );
 }
 
 
@@ -1023,7 +1029,7 @@ void    DtInpINT1( void )
 //=======================
 // Data initialize a INTEGER*1 item.
 {
-    AsnVal( PT_INT_1 );
+    AsnVal( FPT_INT_1 );
 }
 
 
@@ -1031,7 +1037,7 @@ void    DtInpINT2( void )
 //=======================
 // Data initialize a INTEGER*2 item.
 {
-    AsnVal( PT_INT_2 );
+    AsnVal( FPT_INT_2 );
 }
 
 
@@ -1039,7 +1045,7 @@ void    DtInpINT4( void )
 //=======================
 // Data initialize a INTEGER*4 item.
 {
-    AsnVal( PT_INT_4 );
+    AsnVal( FPT_INT_4 );
 }
 
 
@@ -1047,7 +1053,7 @@ void    DtInpREAL( void )
 //=======================
 // Data initialize a REAL*4 item.
 {
-    AsnVal( PT_REAL_4 );
+    AsnVal( FPT_REAL_4 );
 }
 
 
@@ -1055,7 +1061,7 @@ void    DtInpDBLE( void )
 //=======================
 // Data initialize a REAL*8 item.
 {
-    AsnVal( PT_REAL_8 );
+    AsnVal( FPT_REAL_8 );
 }
 
 
@@ -1063,7 +1069,7 @@ void    DtInpXTND( void )
 //=======================
 // Data initialize a REAL*10 item.
 {
-    AsnVal( PT_REAL_16 );
+    AsnVal( FPT_REAL_16 );
 }
 
 
@@ -1071,7 +1077,7 @@ void    DtInpCPLX( void )
 //=======================
 // Data initialize a COMPLEX*8 item.
 {
-    AsnVal( PT_CPLX_8 );
+    AsnVal( FPT_CPLX_8 );
 }
 
 
@@ -1079,7 +1085,7 @@ void    DtInpDBCX( void )
 //=======================
 // Data initialize a COMPLEX*16 item.
 {
-    AsnVal( PT_CPLX_16 );
+    AsnVal( FPT_CPLX_16 );
 }
 
 
@@ -1087,7 +1093,7 @@ void    DtInpXTCX( void )
 //=======================
 // Data initialize a COMPLEX*20 item.
 {
-    AsnVal( PT_CPLX_32 );
+    AsnVal( FPT_CPLX_32 );
 }
 
 
@@ -1095,7 +1101,7 @@ void    DtInpCHAR( void )
 //=======================
 // Data initialize a CHARACTER item.
 {
-    AsnVal( PT_CHAR );
+    AsnVal( FPT_CHAR );
 }
 
 
@@ -1344,7 +1350,7 @@ void    DtFieldSubscript( void )
         DXPush( base + offset );
     } else {
         STFieldName( fd, name );
-        Error( EV_SSCR_INVALID, name, StmtKeywords[ PR_DATA ] );
+        Error( EV_SSCR_INVALID, name, StmtKeywords[PR_DATA] );
     }
 }
 
@@ -1374,7 +1380,7 @@ void    DtFieldSubstring( void )
         DtItemSize = last - first + 1;
     } else {
         STFieldName( fd, name );
-        Error( EV_SSTR_INVALID, name, StmtKeywords[ PR_DATA ] );
+        Error( EV_SSTR_INVALID, name, StmtKeywords[PR_DATA] );
     }
 }
 
@@ -1508,7 +1514,7 @@ static  void    GetDataConst( void )
             rep = GetPtr();
             if( rep != NULL ) {
                 DtRepCount = IntegerValue( rep );
-                DtConstType = GetU16();
+                DtConstPtyp = GetU16();
                 DtConst = GetPtr();
             } else {
                 DtFlags |= DT_NO_MORE_CONSTS;

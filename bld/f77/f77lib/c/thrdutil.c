@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,20 +46,25 @@
 #include "thread.h"
 
 
-#pragma off (check_stack)
-
 static unsigned         OtherStackLow;
 static bool             Init = false;   // have we initialized it to ASTACKLOW
 
+/*
+ * WARNING: Following routines manipulate with stack therefore
+ * stack checking must be turned off at all times.
+ */
+#pragma off( check_stack );
 
 // Do not switch stacks unless we have to.
-static  void    __NullSwitchStackLow(void) {}
+static  void    __NullSwitchStackLow(void)
+{
+}
+
 void            (*__SwitchStkLow)(void) = &__NullSwitchStackLow;
 
-
-static void     SwitchThreadStackLow( void ) {
-//============================================
-
+static void     SwitchThreadStackLow( void )
+//==========================================
+{
         thread_data     *tdata;
         unsigned        tmp;
 
@@ -76,8 +81,10 @@ static void     SwitchThreadStackLow( void ) {
 }
 
 
-void            __InitMultiThreadIO( void ) {
-//===========================================
-
+void            __InitMultiThreadFIO( void )
+//=========================================
+{
     __SwitchStkLow = &SwitchThreadStackLow;
 }
+
+#pragma pop( check_stack );

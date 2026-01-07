@@ -1,11 +1,6 @@
 name: artifact-save
 description: 'Upload Artifact (tar file), first create it from git subdirectory'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   gitpath:
     description: 'git subdirectory'
     required: true
@@ -16,62 +11,55 @@ inputs:
     required: false
     default: ''
     type: string
-  noarchive:
-    description: 'not use tar archive for artifact'
-    required: false
-    default: ''
-    type: string
   retention_days:
     description: 'how many days artifact is preserved before deletion'
     required: false
     default: 3
-    type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
     type: string
 runs:
   using: composite
   steps:
   - name: Get Artifact name
     id: artifact_name
-    run: >
-      -Split "${{ inputs.artifact }}"
-      | Join-String -Separator '-' -OutputPrefix 'id='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      -Split "${{inputs.artifact}}" `
+      | Join-String -Separator '-' -OutputPrefix 'id=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.noarchive == ''
+  - if: env.OWUSETARARCHIVE == '1'
     id: tarname
-    run: >
-      Join-Path ${{ github.workspace }} owartifact.tar.xz
-      | Join-String -OutputPrefix 'fullname='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: |
+      Join-Path ${{github.workspace}} owartifact.tar.xz `
+      | Join-String -OutputPrefix 'fullname=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.noarchive == ''
-    uses: "./.github/actions/tarsave"
+  - if: env.OWUSETARARCHIVE == '1'
+    uses: ./.github/actions/tarsave
     with:
-      hostos:   ${{ inputs.hostos }}
-      gitpath:  ${{ inputs.gitpath }}
-      fullname: ${{ steps.tarname.outputs.fullname }}
-      owdebug:  ${{ inputs.owdebug }}
+      gitpath:  ${{inputs.gitpath}}
+      fullname: ${{steps.tarname.outputs.fullname}}
   - name: Get source
     id: srcpath
     run: |
-      if( '${{ inputs.noarchive }}' -eq '' ) {
-        "${{ steps.tarname.outputs.fullname }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      if( '${{env.OWUSETARARCHIVE}}' -eq '1' ) {
+        "${{steps.tarname.outputs.fullname}}" `
+        | Join-String -OutputPrefix 'path=' `
+        | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       } else {
-        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        Join-Path ${{github.workspace}} ${{inputs.gitpath}} `
+        | Join-String -OutputPrefix 'path=' `
+        | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
       }
     shell: pwsh
-  - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
+  - if: env.OWTESTMODE != '1'
+    name: Upload Artifact ${{steps.artifact_name.outputs.id}}
     uses: actions/upload-artifact@v4
     with:
-      name:             ${{ steps.artifact_name.outputs.id }}
-      path:             ${{ steps.srcpath.outputs.path }}
-      retention-days:   ${{ inputs.retention_days }}
+      name:             ${{steps.artifact_name.outputs.id}}
+      path:             ${{steps.srcpath.outputs.path}}
+      retention-days:   ${{inputs.retention_days}}
       overwrite:        true
-  - if: inputs.noarchive == ''
+  - if: env.OWUSETARARCHIVE == '1'
     name: Delete Temporary Artifact tar file
-    run: rm -f ${{ steps.tarname.outputs.fullname }}
+    run: rm -f ${{steps.tarname.outputs.fullname}}
     shell: bash

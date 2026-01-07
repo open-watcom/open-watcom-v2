@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 ****************************************************************************/
 
 
-extern char __hook387( D16INFO __far *_d16infop );
+extern char _INTERNAL __hook387( D16INFO __far *_d16infop );
 #pragma aux __hook387 "*" __parm __caller [__dx __eax];
 
-extern char __unhook387( D16INFO __far *_d16infop );
+extern char _INTERNAL __unhook387( D16INFO __far *_d16infop );
 #pragma aux __unhook387 "*" __parm __caller [__dx __eax];

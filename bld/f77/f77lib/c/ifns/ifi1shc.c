@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +39,14 @@
 #include "ifenv.h"
 
 #if defined( _M_IX86 )
-unsigned char   _crotl(unsigned char,char);
+byte   _crotl(byte,char);
 #pragma aux _crotl = \
         "rol  al,cl"    \
     __parm      [__al] [__cl] \
     __value     [__al] \
     __modify    []
 
-unsigned char   _crotr( unsigned char, char );
+byte   _crotr( byte, char );
 #pragma aux _crotr =                                    \
         "ror  al,cl"    \
     __parm      [__al] [__cl] \

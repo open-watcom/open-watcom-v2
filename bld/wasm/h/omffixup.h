@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,25 +71,25 @@ extern fixinfo *FixBegin( void );
     information to deal with threads.
 */
 
-extern fixuprec *FixGetFix( fixinfo *info, obj_rec *objr );
+extern fixuprec *FixGetFix( fixinfo *info, obj_rec_handle objr );
 /*
     Read a fixup.
 */
 
 
-extern void FixGetLRef( fixinfo *info, obj_rec *objr, logref *log );
+extern void FixGetLRef( fixinfo *info, obj_rec_handle objr, logref *log );
 /*
     Read a logical reference.
 */
 
 
-extern void FixGetPRef( fixinfo *info, obj_rec *objr, physref *phys );
+extern void FixGetPRef( fixinfo *info, obj_rec_handle objr, physref *phys );
 /*
     Read a physical reference.
 */
 
 
-extern void FixGetRef( fixinfo *info, obj_rec *objr, logphys *lp, int is_logical );
+extern void FixGetRef( fixinfo *info, obj_rec_handle objr, logphys *lp, int is_logical );
 /*
     Read a logical or a physical reference depending on is_logical.
 */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,13 +174,13 @@ instruction     *MakeMove( name *src, name *dst,
 }
 
 
-instruction     *MakeUnary( opcode_defs op, name *src,
+instruction     *MakeUnary( opcode_defs opcode, name *src,
                                     name *dst, type_class_def type_class )
 /**********************************************************************
- * Make a unary instruction (op  src => dst)
+ * Make a unary instruction (opcode  src => dst)
  */
 {
-    return( MakeNary( op, src, NULL, dst, type_class, XX, 1 ) );
+    return( MakeNary( opcode, src, NULL, dst, type_class, XX, 1 ) );
 }
 
 
@@ -217,9 +217,10 @@ instruction     *MakeBinary( opcode_defs opcode, name *left,
 }
 
 
-instruction     *MakeCondition( opcode_defs opcode, name *left,
-                                        name *right, byte t, byte f,
-                                        type_class_def type_class )
+instruction     *MakeCondition( opcode_defs opcode,
+                                name *left, name *right,
+                                cond_dst_idx t, cond_dst_idx f,
+                                type_class_def type_class )
 /***************************************************************
  * Make a conditional (IF ( left opcode right ) goto "t" else goto "f")
  */

@@ -52,7 +52,7 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .SYMBOLIC start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_result
+test : .SYMBOLIC start er01.lib er02b.obj er03.lib $(exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -65,12 +65,14 @@ test_set_result : .SYMBOLIC
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) $@ $?
     @%make set_old_path
 
 er03.lib : er03b.obj er03c.obj
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) $@ +er03b.obj +er03c.obj
     @%make set_old_path
 

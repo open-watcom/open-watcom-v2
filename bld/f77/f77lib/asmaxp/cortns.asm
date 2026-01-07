@@ -62,11 +62,6 @@ SaveRegs: // assembler does not support .quad directive
 #define FRAME_SIZE      0x90            // define stack frame to discard when restoring
                                         // state (8 registers and return address)
 
-.globl  SwitchToGen
-// .ent SwitchToGen
-        br      zero, j^SwitchToRT      // Use same routine as to switch in
-// .end SwitchToGen
-
 .globl  SwitchToRT
 // .ent SwitchToRT
 SwitchToRT:
@@ -230,7 +225,7 @@ IOChar:
         lda     t0, l^IORslt(t0)        // ...
         ldq     a0, (a0)                // Load SCB (its only 8 bytes :)
         stq     a0, (t0)                // Store SCB in IORslt
-        lda     v0, PT_CHAR(zero)       // return CHARACTER*n type
+        lda     v0, FPT_CHAR(zero)      // return CHARACTER*n type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end IOChar
 
@@ -241,7 +236,7 @@ IOStr:
         ldah    t0, h^IORslt(zero)      // load IORslt pointer
         lda     t0, l^IORslt(t0)        // ...
         stq     a0, (t0)                // Store SCB in IORslt
-        lda     v0, PT_CHAR(zero)       // return CHARACTER*n type
+        lda     v0, FPT_CHAR(zero)      // return CHARACTER*n type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end IOStr
 
@@ -254,7 +249,7 @@ IOArr:
         stl     a0, 0x00(t0)            // Store array record in IORslt (address)
         stl     a1, 0x04(t0)            // number of elements
         stl     a2, 0x0c(t0)            // type
-        lda     v0, PT_ARRAY(zero)      // return ARRAY type
+        lda     v0, FPT_ARRAY(zero)     // return ARRAY type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end IOArr
 
@@ -267,9 +262,9 @@ IOChArr:
         stl     a0, (t0)                // Store array record in IORslt (address)
         stl     a1, 0x04(t0)            // number of elements
         stl     a2, 0x08(t0)            // element size
-        lda     a1, PT_CHAR(zero)       // set type
+        lda     a1, FPT_CHAR(zero)      // set type
         stl     a1, 0x0c(t0)            // ...
-        lda     v0, PT_ARRAY(zero)      // return ARRAY type
+        lda     v0, FPT_ARRAY(zero)     // return ARRAY type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end IOChArr
 
@@ -277,6 +272,6 @@ IOChArr:
 .globl  __RT_EndIO
 // .ent __RT_EndIO
 __RT_EndIO:
-        lda     v0, PT_NOTYPE           // return "no i/o items remaining"
+        lda     v0, FPT_NOTYPE          // return "no i/o items remaining"
         bsr     zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_EndIO

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1373,7 +1373,7 @@ void DumpInitInfo( void *v_info )
         case DT_BITFIELD:
             printf( "(BITFIELD)"
                     " mask"         F_HEX_4 F_EOL
-                  , info->u.b.mask
+                  , U64Low( info->u.b.mask )
                   );
             break;
         case DT_SCALAR:

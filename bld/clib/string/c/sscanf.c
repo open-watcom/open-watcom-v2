@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "scanf.h"
 
 
-static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cget_string( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
@@ -52,7 +52,7 @@ static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 }
 
 
-static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+static void _WCNEAR uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     /* unused parameters */ (void)c;
 

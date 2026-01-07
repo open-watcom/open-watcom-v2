@@ -64,8 +64,8 @@
  * any memory allocated for the words.  Returns -1 on error.
  */
 
-static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
-/*******************************************************************/
+static int _WCNEAR parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
+/***************************************************************************/
 {
     int                 numWords = 0;
     const CHAR_TYPE     *p = command;
@@ -119,8 +119,8 @@ static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
 
 /* Returns non-zero on success */
 
-static int spawn_it( FILE *fp, const CHAR_TYPE *command )
-/*******************************************************/
+static int _WCNEAR spawn_it( FILE *fp, const CHAR_TYPE *command )
+/***************************************************************/
 {
     int                 pid;
     int                 numWords;
@@ -169,9 +169,9 @@ static int spawn_it( FILE *fp, const CHAR_TYPE *command )
 
 /* Returns non-zero on success */
 
-static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
-                         bool readOrWrite, bool textOrBinary )
-/************************************************************************/
+static int _WCNEAR connect_pipe( FILE *fp, const CHAR_TYPE *command,
+                    int *handles, bool readOrWrite, bool textOrBinary )
+/*********************************************************************/
 {
 #if defined( __NT__ )
     HANDLE              osfh;

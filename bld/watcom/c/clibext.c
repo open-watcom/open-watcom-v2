@@ -29,34 +29,6 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-    /*
-     * We don't need any of this stuff, but being able to build this
-     * module simplifies makefiles.
-     */
-#else
-
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#if defined(__UNIX__)
-  #if defined(__QNX__)
-    #include <sys/io_msg.h>
-  #endif
-#elif defined( _MSC_VER )
-    #include <windows.h>
-    #include "_dtaxxx.h"
-#endif
-#include "wio.h"
-#include "wreslang.h"
-#if defined( _MSC_VER )
-    #include "ntext.h"
-#endif
-
-#include "clibint.h"
-#include "clibext.h"
-
-
 /****************************************************************************
 *
 * Notes:
@@ -64,6 +36,50 @@
 *   multi-byte encodings or wide character support
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+    #include <stddef.h> /* need to load _comdef.h */
+  #if __WATCOMC__ == 1290           /* OW 1.9 fix */
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
+  #endif
+  #if ( __WATCOMC__ == 1290 ) && defined( __NT__ ) /* OW 1.9 fix */
+    #include <errno.h>
+    #include <time.h>
+    #include <windows.h>
+    #include "_dtaxxx.h"
+    #include "ntext.h"
+    #include "wio.h"
+  #endif
+
+#else /* !__WATCOMC__ */
+
+  #if defined( __UNIX__ ) && !defined( __OSX__ )
+    /*
+     * following definition is necessary to access timegm function
+     * in GNU C library
+     */
+    #define _DEFAULT_SOURCE
+    #define _BSD_SOURCE
+  #endif
+    #include <string.h>
+    #include <ctype.h>
+    #include <errno.h>
+  #if defined( _MSC_VER )
+    #include <windows.h>
+    #include "_dtaxxx.h"
+    #include "ntext.h"
+  #endif
+    #include "wio.h"
+    #include "wreslang.h"
+
+#endif /* !__WATCOMC__ */
+
+#include "clibint.h"
+#include "clibext.h"
+
 
 /****************************************************************************
 *
@@ -79,14 +95,12 @@
 #define CHAR2DRIVE(x)       (tolower(x) - 'a')
 
 #if defined(__UNIX__)
-  #define PC '/'
-  #define ISPS(c)   ((c)==PC)
+    #define PC '/'
+    #define ISPS(c)   ((c)==PC)
 #else   /* DOS, OS/2, Windows */
-  #define PC '\\'
-  #define ISPS(c)   ((c)==PC || (c)=='/')
+    #define PC '\\'
+    #define ISPS(c)   ((c)==PC || (c)=='/')
 #endif
-
-
 
 /****************************************************************************
 *
@@ -94,6 +108,10 @@
 *               must be setup by main
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#else /* !__WATCOMC__ */
 
 char **_argv;
 int  _argc;
@@ -145,11 +163,11 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
      * process node/drive/UNC specification
      */
     startp = inp;
-#ifdef __UNIX__
+  #ifdef __UNIX__
     if( TEST_NODE( inp ) ) {
-#else
+  #else
     if( TEST_UNC( inp ) ) {
-#endif
+  #endif
         inp += 2;
         for( ;; ) {
             if( *inp == '\0' )
@@ -161,7 +179,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
             inp++;
         }
         outp = pcopy( drive, outp, startp, inp );
-#if !defined(__UNIX__)
+  #ifndef __UNIX__
     } else if( TEST_DRIVE( inp ) ) {
         /*
          * process drive specification
@@ -173,7 +191,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
             *outp++ = '\0';
         }
         inp += 2;
-#endif
+  #endif
     } else if( drive != NULL ) {
         *drive = outp;
         *outp++ = '\0';
@@ -210,7 +228,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
     outp = pcopy( ext, outp, dotp, inp );
 }
 
-#if defined(__UNIX__)
+#endif /* !__WATCOMC__ */
 
 /****************************************************************************
 *
@@ -218,6 +236,9 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 *
 ****************************************************************************/
 
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 /* create full Unix style path name from the components */
 
@@ -287,6 +308,7 @@ void _makepath(
     *path = '\0';
 }
 
+#endif
 
 /****************************************************************************
 *
@@ -294,6 +316,10 @@ void _makepath(
 *               pathname of a file.
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 #define _WILL_FIT( c )          \
     if(( (c) + 1 ) > size ) {   \
@@ -405,11 +431,17 @@ char *_fullpath( char *buff, const char *path, size_t size )
     return( buff );
 }
 
+#endif
+
 /****************************************************************************
 *
 * Description:  Implementation of strlwr().
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 char *strlwr( char *str )
 {
@@ -425,11 +457,18 @@ char *strlwr( char *str )
     }
     return( str );
 }
+
+#endif
+
 /****************************************************************************
 *
 * Description:  Implementation of strupr().
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 char *strupr( char *str )
 {
@@ -446,12 +485,17 @@ char *strupr( char *str )
     return( str );
 }
 
+#endif
+
 /****************************************************************************
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strrev().
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 char *strrev( char *str )
 /* reverse characters in string */
@@ -482,7 +526,9 @@ char *strrev( char *str )
 *
 ****************************************************************************/
 
-#ifdef __OSX__
+#ifdef __WATCOMC__
+
+#elif defined( __OSX__ )
 
 #include <mach-o/dyld.h>
 
@@ -498,9 +544,9 @@ char *_cmdname( char *name )
 
 #elif defined( __BSD__ )
 
-#if defined( __FREEBSD__ )
+ #if defined( __FREEBSD__ )
 
-#include <sys/sysctl.h>
+    #include <sys/sysctl.h>
 
 char *_cmdname( char *name )
 {
@@ -516,10 +562,10 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined( __OPENBSD__ )
+ #elif defined( __OPENBSD__ )
 
 extern const char *__progname;
-#include <sys/stat.h>
+    #include <sys/stat.h>
 
 static int _cmdname_sub( char *out, const char *path, const char *name )
 {
@@ -615,7 +661,7 @@ fin0:
     return( result );
 }
 
-#else
+ #else
 
 char *_cmdname( char *name )
 {
@@ -626,11 +672,11 @@ char *_cmdname( char *name )
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
-#if defined( __NETBSD__ )
+  #if defined( __NETBSD__ )
         result = readlink( "/proc/curproc/exe", name, PATH_MAX );
-#else
+  #else
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
-#endif
+  #endif
     }
     errno = save_errno;
 
@@ -644,11 +690,11 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#endif
+ #endif
 
 #elif defined (__HAIKU__)
 
-#include <image.h>
+    #include <image.h>
 
 char *_cmdname( char *name )
 {
@@ -724,7 +770,9 @@ char *_cmdname( char *name )
 *
 ****************************************************************************/
 
-#if defined( _MSC_VER )
+#ifdef __WATCOMC__
+
+#elif defined( _MSC_VER )
 
 int _bgetcmd( char *buffer, int len )
 {
@@ -773,7 +821,7 @@ int _bgetcmd( char *buffer, int len )
     return( cmdlen );
 }
 
-#else   /* _MSC_VER */
+#else   /* others */
 
 int (_bgetcmd)( char *buffer, int len )
 {
@@ -846,7 +894,9 @@ int (_bgetcmd)( char *buffer, int len )
 *
 ****************************************************************************/
 
-#ifdef __UNIX__
+#ifdef __WATCOMC__
+
+#elif defined(__UNIX__)
 
 int spawnvp( int mode, const char *cmd, const char * const *args )
 {
@@ -895,9 +945,11 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#ifdef __WATCOMC__
 
-#define LIST_SEPARATOR ':'
+#elif defined(__UNIX__)
+
+    #define LIST_SEPARATOR ':'
 
 void _searchenv( const char *name, const char *env_var, char *buffer )
 {
@@ -978,7 +1030,6 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 
 #endif /* __UNIX__ */
 
-#ifdef _MSC_VER
 
 /****************************************************************************
 *
@@ -990,6 +1041,10 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 * (but not in the pattern) are considered to be path separators and
 * identical to forward slashes when FNM_PATHNAME is set.
 */
+
+#ifdef __WATCOMC__
+
+#elif defined(_MSC_VER)
 
 static const struct my_wctypes {
     const char  *name;
@@ -1008,7 +1063,7 @@ static const struct my_wctypes {
     { "xdigit", _HEX }
 };
 
-#define WCTYPES_SIZE (sizeof( my_wctypes ) / sizeof( my_wctypes[0] ))
+    #define WCTYPES_SIZE (sizeof( my_wctypes ) / sizeof( my_wctypes[0] ))
 
 static int my_wctype( const char *name )
 {
@@ -1034,7 +1089,7 @@ static int icase( int ch, int flags )
 /* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
-#define CCL_NAME_MAX    8
+    #define CCL_NAME_MAX    8
 
 /* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
@@ -1230,6 +1285,18 @@ int   fnmatch( const char *patt, const char *s, int flags )
     return( *s != '\0' ? FNM_NOMATCH : 0 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX environment setenv
+*
+****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(_MSC_VER)
+
 int setenv( const char *name, const char *newvalue, int overwrite )
 /*****************************************************************/
 {
@@ -1245,6 +1312,32 @@ int setenv( const char *name, const char *newvalue, int overwrite )
     return( 0 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX environment unsetenv
+*
+****************************************************************************/
+
+#if defined( __WATCOMC__ ) \
+  && ( __WATCOMC__ == 1290 )        /* OW 1.9 fix */
+
+void unsetenv( const char *name )
+/*******************************/
+{
+    char    *buff;
+    size_t  len;
+
+    len = strlen( name ) + 16;
+    buff = malloc( len );
+    sprintf( buff, "%s=", name );
+    putenv( buff );
+    free( buff );
+}
+
+#elif defined(_MSC_VER)
+
 int unsetenv( const char *name )
 /******************************/
 {
@@ -1259,26 +1352,49 @@ int unsetenv( const char *name )
     return( 0 );
 }
 
-#define _DIR_ISFIRST            0
-#define _DIR_NOTFIRST           1
-#define _DIR_CLOSED             2
+#endif
 
-#define OPENMODE_ACCESS_MASK    0x0007
-#define OPENMODE_SHARE_MASK     0x0070
+/****************************************************************************
+*
+* Description:  Implementation of POSIX opendir/readdir/closedir
+*
+****************************************************************************/
 
-#define OPENMODE_ACCESS_RDONLY  0x0000
+#if defined(_MSC_VER) \
+  || defined( __WATCOMC__ ) \
+  && ( __WATCOMC__ == 1290 ) \
+  && defined( __NT__ )      /* OW 1.9 fix */
 
-#define OPENMODE_DENY_COMPAT    0x0000
-#define OPENMODE_DENY_ALL       0x0010
-#define OPENMODE_DENY_WRITE     0x0020
-#define OPENMODE_DENY_READ      0x0030
-#define OPENMODE_DENY_NONE      0x0040
+    #define _DIR_ISFIRST            0
+    #define _DIR_NOTFIRST           1
+    #define _DIR_CLOSED             2
+
+    #define OPENMODE_ACCESS_MASK    0x0007
+    #define OPENMODE_SHARE_MASK     0x0070
+
+    #define OPENMODE_ACCESS_RDONLY  0x0000
+
+    #define OPENMODE_DENY_COMPAT    0x0000
+    #define OPENMODE_DENY_ALL       0x0010
+    #define OPENMODE_DENY_WRITE     0x0020
+    #define OPENMODE_DENY_READ      0x0030
+    #define OPENMODE_DENY_NONE      0x0040
+
+  #if defined(_MSC_VER)
+    #define MAKEDOSDTXX     __MakeDOSDT
+    #define FROMDOSDTXX     __FromDOSDT
+    #define GETNTDIRINFOXX  __GetNTDirInfo
+  #else
+    #define MAKEDOSDTXX     __MakeDOSDT20
+    #define FROMDOSDTXX     __FromDOSDT20
+    #define GETNTDIRINFOXX  __GetNTDirInfo20
+  #endif
 
 void __NT_timet_to_filetime( time_t t, FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
-    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
+    ulint.QuadPart = t * WINDOWS_TICK_PER_SEC + TICK_TO_UNIX_EPOCH;
     ft->dwLowDateTime = ulint.u.LowPart;
     ft->dwHighDateTime = ulint.u.HighPart;
 }
@@ -1289,7 +1405,7 @@ time_t __NT_filetime_to_timet( const FILETIME *ft )
 
     ulint.u.LowPart   =   ft->dwLowDateTime;
     ulint.u.HighPart  =   ft->dwHighDateTime;
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart - TICK_TO_UNIX_EPOCH ) / WINDOWS_TICK_PER_SEC );
 }
 
 void __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib )
@@ -1359,7 +1475,7 @@ void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
     }
 }
 
-void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
+void FROMDOSDTXX( unsigned short d, unsigned short t, FILETIME *NT_stamp )
 /************************************************************************/
 {
     FILETIME local_ft;
@@ -1368,7 +1484,7 @@ void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
     LocalFileTimeToFileTime( &local_ft, NT_stamp );
 }
 
-void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
+void MAKEDOSDTXX( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 /**************************************************************************/
 {
     FILETIME local_ft;
@@ -1377,7 +1493,7 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
     FileTimeToDosDateTime( &local_ft, d, t );
 }
 
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+    #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
 bool __NTFindNextFileWithAttr( HANDLE osffh, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
 /**************************************************************************************/
@@ -1426,19 +1542,19 @@ static int is_directory( const char *name )
     return( -1 );
 }
 
-void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
-/***************************************************************/
+void GETNTDIRINFOXX( struct DIRENTXX *dirp, LPWIN32_FIND_DATA ffd )
+/*****************************************************************/
 {
     DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
-    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    MAKEDOSDTXX( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = NT2DOSATTR( ffd->dwFileAttributes );
     dirp->d_size = ffd->nFileSizeLow;
     strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
 }
 
-static DIR *__opendir( const char *dirname, DIR *dirp )
-/*****************************************************/
+static DIRXX *__opendir( const char *dirname, DIRXX *dirp )
+/*********************************************************/
 {
     WIN32_FIND_DATA     ffd;
     HANDLE              osffh;
@@ -1453,20 +1569,20 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
         return( NULL );
     }
     DTAXXX_HANDLE_OF( dirp->d_dta ) = osffh;
-    __GetNTDirInfo( dirp, &ffd );
+    GETNTDIRINFOXX( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
 
-DIR *opendir( const char *dirname )
-/*********************************/
+DIRXX *OPENDIRXX( const char *dirname )
+/*************************************/
 {
-    DIR         tmp;
-    DIR         *dirp;
+    DIRXX       tmp;
+    DIRXX       *dirp;
     int         i;
     char        pathname[MAX_PATH + 6];
 
-    memset( &tmp, 0, sizeof( DIR ) );
+    memset( &tmp, 0, sizeof( tmp ) );
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     i = is_directory( dirname );
@@ -1491,7 +1607,7 @@ DIR *opendir( const char *dirname )
         }
         dirname = pathname;
     }
-    dirp = malloc( sizeof( DIR ) );
+    dirp = malloc( sizeof( *dirp ) );
     if( dirp == NULL ) {
         FindClose( DTAXXX_HANDLE_OF( tmp.d_dta ) );
         errno = ENOMEM;
@@ -1502,8 +1618,8 @@ DIR *opendir( const char *dirname )
     return( dirp );
 }
 
-struct dirent *readdir( DIR *dirp )
-/*********************************/
+struct DIRENTXX *READDIRXX( DIRXX *dirp )
+/***************************************/
 {
     WIN32_FIND_DATA     ffd;
 
@@ -1517,13 +1633,13 @@ struct dirent *readdir( DIR *dirp )
             errno = ENOENT;
             return( NULL );
         }
-        __GetNTDirInfo( dirp, &ffd );
+        GETNTDIRINFOXX( dirp, &ffd );
     }
     return( dirp );
 }
 
-int closedir( DIR *dirp )
-/***********************/
+int CLOSEDIRXX( DIRXX *dirp )
+/***************************/
 {
     if( dirp == NULL
       || dirp->d_first == _DIR_CLOSED ) {
@@ -1540,6 +1656,18 @@ int closedir( DIR *dirp )
     return( 0 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX getopt
+*
+****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(_MSC_VER)
+
 char        *optarg;            /* pointer to option argument */
 int         optind = 1;         /* current argv[] index */
 int         optopt;             /* currently processed chracter */
@@ -1550,9 +1678,9 @@ char        __optchar;          /* matched option char ('-' or altoptchar) */
 
 static int  opt_offset = 0;     /* position in currently parsed argument */
 
-/* Error messages suggested by Single UNIX Specification */
-#define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
-#define BAD_OPT_MSG     "%s: illegal option -- %c\n"
+    /* Error messages suggested by Single UNIX Specification */
+    #define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
+    #define BAD_OPT_MSG     "%s: illegal option -- %c\n"
 
 int getopt( int argc, char * const argv[], const char *optstring )
 /****************************************************************/
@@ -1639,6 +1767,18 @@ int getopt( int argc, char * const argv[], const char *optstring )
     }
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX mkstemp
+*
+****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(_MSC_VER)
+
 static int is_valid_template( char *template_str, char **xs )
 {
     size_t              len;
@@ -1695,6 +1835,18 @@ int mkstemp( char *template_str )
     return( -1 );
 }
 
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of sleep function
+*
+****************************************************************************/
+
+#ifdef __WATCOMC__
+
+#elif defined(_MSC_VER)
+
 unsigned sleep( unsigned time )
 {
     Sleep( time * 1000UL );
@@ -1709,11 +1861,16 @@ unsigned sleep( unsigned time )
 *
 ****************************************************************************/
 
+#ifdef __WATCOMC__
+
+#else
+
 wres_lang_id _WResLanguage( void )
 {
     return( RLE_ENGLISH );
 }
 
+#endif /* ! __WATCOMC__ */
 
 /****************************************************************************
 *
@@ -1721,18 +1878,123 @@ wres_lang_id _WResLanguage( void )
 *
 ****************************************************************************/
 
+#ifdef __WATCOMC__
+
+#else
+
 char *get_dllname( char *buf, int len )
 {
-#ifdef _MSC_VER
+  #ifdef _MSC_VER
     HMODULE hnd = NULL;
-#endif
+  #endif
 
     *buf = '\0';
-#ifdef _MSC_VER
+  #ifdef _MSC_VER
     GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)&optind, &hnd);
     GetModuleFileName( hnd, buf, len );
-#endif
+  #endif
     return( buf );
 }
 
-#endif /* ! __WATCOMC__ */
+#endif
+
+/****************************************************************************
+*
+* Description:  Implementation of _mkgmtime.
+*
+****************************************************************************/
+
+#if defined( __OSX__ ) \
+  || defined( __WATCOMC__ ) \
+  && defined( BOOTSTRAP ) \
+  && !defined( TESTBOOT ) \
+  && ( __WATCOMC__ <= 1300 )
+
+    #define SECONDS_FROM_1900_TO_1970   2208988800UL
+    #define SECONDS_PER_DAY             (24UL * 60UL * 60UL)
+    #define DAYS_FROM_1900_TO_1970      (SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY)
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
+
+static short const month_start_days[] = {
+    0,                                                          /* Jan */
+    31,                                                         /* Feb */
+    31 + 28,                                                    /* Mar */
+    31 + 28 + 31,                                               /* Apr */
+    31 + 28 + 31 + 30,                                          /* May */
+    31 + 28 + 31 + 30 + 31,                                     /* Jun */
+    31 + 28 + 31 + 30 + 31 + 30,                                /* Jul */
+    31 + 28 + 31 + 30 + 31 + 30 + 31,                           /* Aug */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,                      /* Sep */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,                 /* Oct */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,            /* Nov */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,       /* Dec */
+    31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
+};
+
+static int is_leapyear( unsigned year )
+{
+    if( year & 3 )
+        return( 0 );
+    if( ( year % 100 ) != 0 )
+        return( 1 );
+    if( ( year % 400 ) == 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static unsigned long years_days( unsigned year )
+{
+    return( year * 365L                         /* # of days in the years */
+        + ( ( year + 3L ) / 4L )                /* add # of leap years before year */
+        - ( ( year + 99L ) / 100L )             /* sub # of leap centuries */
+        + ( ( year + 399L - 100L ) / 400L ) );  /* add # of leap 4 centuries */
+                                                /* adjust for 1900 offset */
+                                                /* note: -100 == 300 (mod 400) */
+}
+
+  #if defined( __OSX__ )
+time_t _mkgmtime( struct tm *t )
+  #else
+time_t _mkgmtime20( struct tm *t )
+  #endif
+/*********************************************
+ * used internaly then no checks to simplify
+ * it suppose tm structure contains valid data
+ */
+{
+    unsigned long   days;
+    unsigned        month_start;
+
+    month_start = month_start_days[t->tm_mon];
+    if( t->tm_mon > 1
+      && is_leapyear( t->tm_year + 1900U ) ) {
+        month_start++;
+    }
+    days = years_days( t->tm_year ) /* # of days in the years + leap years days */
+        + month_start               /* # of days to 1st of month*/
+        + t->tm_mday - 1;           /* day of the month */
+    if( days < ( DAYS_FROM_1900_TO_1970 - 1 ) )
+        return( (time_t)-1 );
+    return( ( days - DAYS_FROM_1900_TO_1970 ) * SECONDS_PER_DAY
+            + ( t->tm_hour * 60UL + t->tm_min ) * 60UL + t->tm_sec );
+}
+
+#endif
+

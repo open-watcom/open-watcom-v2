@@ -722,7 +722,7 @@ bool CheckZeroConstant( TREEPTR tree )
 {
     uint64  val64 = LongValue64( tree );
 
-    return( (val64.u._32[I64LO32] | val64.u._32[I64HI32]) == 0 );
+    return( U64isZero( val64 ) );
 }
 
 bool CheckZero( TREEPTR tree )
@@ -732,7 +732,7 @@ bool CheckZero( TREEPTR tree )
     if( tree->op.opr == OPR_PUSHINT ) {
         uint64  val64 = LongValue64( tree );
 
-        rc = ( (val64.u._32[I64LO32] | val64.u._32[I64HI32]) == 0 );
+        rc = U64isZero( val64 );
     }
     return( rc );
 }
@@ -746,29 +746,27 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
  */
 {
     uint64      max;
+    uint64      tmp;
     bool        overflow;
 
     overflow = false;
     /*
      * max = ( 1 << width ) - 1;
      */
-    max.u._32[I64LO32] = 1;
-    max.u._32[I64HI32] = 0;
+    Set64Val1p( max );
     U64ShiftL( &max, width, &max );
-    if( max.u._32[I64LO32] == 0 )
-        max.u._32[I64HI32]--;
-    max.u._32[I64LO32]--;
+    U64IncDec( &max, -1 );
     /*
      * if( val > max )
      */
-    if( val->u._32[I64HI32] > max.u._32[I64HI32]
-      || val->u._32[I64HI32] == max.u._32[I64HI32]
-      && val->u._32[I64LO32] > max.u._32[I64LO32] ) {
+    if( U64Cmp( val, &max ) > 0 ) {
         /*
          * if( (val | ( max >> 1 )) != ~0U )
          */
-        if( (val->u._32[I64HI32] | ( max.u._32[I64HI32] >> 1 )) != ~0U
-          || (val->u._32[I64LO32] | ( max.u._32[I64LO32] >> 1 ) | ( max.u._32[I64HI32] << 31 )) != ~0U ) {
+        U64ShiftR( &max, 1, &tmp );
+        U64OrEq( tmp, *val );
+        U64IncDec( &tmp, 1 );
+        if( U64isNonZero( tmp ) ) {
             overflow = true;
         }
     }
@@ -776,8 +774,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
         /*
          * if mask is true then val &= max;
          */
-        val->u._32[I64HI32] &= max.u._32[I64HI32];
-        val->u._32[I64LO32] &= max.u._32[I64LO32];
+        U64AndEq( *val, max );
     }
     return( overflow );
 }
@@ -800,11 +797,9 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
         }
         if( opnd2->u.expr_type->decl_type == TYP_LONG64
           || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
-            val64.u._32[I64LO32] = opnd2->op.u2.ulong64_value.u._32[I64LO32];
-            val64.u._32[I64HI32] = opnd2->op.u2.ulong64_value.u._32[I64HI32];
+            val64 = opnd2->op.u2.ulong64_value;
         } else {
-            val64.u._32[I64LO32] = opnd2->op.u2.ulong_value;
-            val64.u._32[I64HI32] = ( opnd2->op.u2.long_value < 0 ) ? -1 : 0;
+            Set64ValI32( val64, opnd2->op.u2.long_value );
         }
         switch( typ1->decl_type ) {
         case TYP_FIELD:

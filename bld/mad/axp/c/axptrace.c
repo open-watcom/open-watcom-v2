@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "axp.h"
 #include "madregs.h"
 #include "brkptcpu.h"
+#include "i64.h"
 
 
 unsigned MADIMPENTRY( TraceSize )( void )
@@ -50,7 +51,7 @@ void MADIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 
 mad_status MADIMPENTRY( TraceHaveRecursed )( address watch_stack, const mad_registers *mr )
 {
-    if( mr->axp.u30.sp.u64.u._32[0] < watch_stack.mach.offset ) {
+    if( U64LowLE( mr->axp.u30.sp.u64 ) < watch_stack.mach.offset ) {
         return( MS_OK );
     }
     return( MS_FAIL );
@@ -63,7 +64,7 @@ mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, 
 
     dc = DisasmControl( dd, mr );
     ra = td->ra;
-    td->ra = mr->axp.pal.nt.fir.u._32[0] + sizeof( unsigned_32 );
+    td->ra = U64LowLE( mr->axp.pal.nt.fir ) + sizeof( unsigned_32 );
     switch( tk ) {
     case MTRK_OUT:
         memset( brk, 0, sizeof( *brk ) );
@@ -104,28 +105,28 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     dc = DisasmControl( dd, in );
     out->axp = in->axp;
     if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
-        out->axp.pal.nt.fir.u._32[0] += sizeof( unsigned_32 );
+        U64LowLE( out->axp.pal.nt.fir ) += sizeof( unsigned_32 );
         return( MS_OK );
     }
     switch( dc & MDC_TYPE_MASK ) {
     case MDC_JUMP:
     case MDC_CALL:
     case MDC_RET:
-        new = dd->ins.op[1].value.s._32[I64LO32];
+        new = U64Low( dd->ins.op[1].value );
         if( dd->ins.op[1].type == DO_RELATIVE ) {
-            new += out->axp.pal.nt.fir.u._32[0];
+            new += U64LowLE( out->axp.pal.nt.fir );
         }
         if( dd->ins.op[1].base != DR_NONE ) {
-            new += TRANS_REG( out, dd->ins.op[1].base )->u64.u._32[0];
+            new += U64LowLE( TRANS_REG( out, dd->ins.op[1].base )->u64 );
         }
         if( !(dc & MDC_CONDITIONAL) ) {
             if( dd->ins.op[0].base != DR_AXP_r31 ) {
                 reg = TRANS_REG( out, dd->ins.op[0].base );
                 reg->u64 = out->axp.pal.nt.fir;
-                reg->u64.u._32[0] += sizeof( unsigned_32 );
+                U64LowLE( reg->u64 ) += sizeof( unsigned_32 );
             }
         }
-        out->axp.pal.nt.fir.u._32[0] = new;
+        U64LowLE( out->axp.pal.nt.fir ) = new;
         return( MS_OK );
     }
     return( MS_UNSUPPORTED );
@@ -157,17 +158,17 @@ mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t
     if( buff_size > 0 )
         buff[0] = '\0';
     memset( &a, 0, sizeof( a ) );
-    a.mach.offset = mr->axp.pal.nt.fir.u._32[0];
+    a.mach.offset = U64LowLE( mr->axp.pal.nt.fir );
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data ), &data );
     if( data.brk != BRKPOINT )
         return( MS_FAIL );
-    mr->axp.pal.nt.fir.u._32[0] += sizeof( unsigned_32 );
+    U64LowLE( mr->axp.pal.nt.fir ) += sizeof( unsigned_32 );
     if( data.br != JMP_SHORT )
         return( MS_OK );
     if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 )
         return( MS_OK );
-    a.mach.offset = mr->axp.u16.a0.u64.u._32[0];
+    a.mach.offset = U64LowLE( mr->axp.u16.a0.u64 );
     len = 0;
     while( MCReadMem( a, sizeof( ch ), &ch ) != 0 ) {
         if( len + 1 < buff_size )

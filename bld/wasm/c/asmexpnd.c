@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,13 +77,13 @@ void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
 bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *expanded )
 /*************************************************************************************/
 {
-    dir_node            *dir;
+    dir_node_handle     dir;
     token_idx           j;
     token_idx           count;
 
     *expanded = false;
     /* expand constant */
-    dir = (dir_node *)AsmGetSymbol( tokbuf->tokens[i].string_ptr );
+    dir = (dir_node_handle)AsmGetSymbol( tokbuf->tokens[i].string_ptr );
     if( dir != NULL && dir->sym.state == SYM_CONST ) {
         if( dir->e.constinfo->expand_early || !early_only ) {
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
@@ -305,8 +305,8 @@ static void FreeConstData( const_info *constinfo )
 bool StoreConstantNumber( const char *name, long value, bool redefine )
 {
     asm_tok         *new;
-    dir_node        *dir;
-    asm_sym         *sym;
+    dir_node_handle dir;
+    asm_sym_handle  sym;
 
     sym = AsmGetSymbol( name );
 
@@ -320,7 +320,7 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
         dir->e.constinfo->expand_early = false;
     } else {
         /* check if it can be redefined */
-        dir = (dir_node *)sym;
+        dir = (dir_node_handle)sym;
         if( sym->state == SYM_UNDEFINED ) {
             dir_change( dir, TAB_CONST );
             dir->e.constinfo->redefine = redefine;
@@ -348,7 +348,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
 /*********************************************************************************************************************************/
 {
     asm_tok             *new;
-    dir_node            *dir;
+    dir_node_handle     dir;
     token_idx           i;
     token_idx           count;
     token_idx           counta;
@@ -356,7 +356,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
     bool                new_constant;
 
     new_constant = false;
-    dir = (dir_node *)AsmGetSymbol( name );
+    dir = (dir_node_handle)AsmGetSymbol( name );
 
     /* if we've never seen it before, put it in */
     if( dir == NULL ) {

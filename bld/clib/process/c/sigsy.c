@@ -118,7 +118,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
 
 #endif
 
-static  void    __restore_int( void );
+static  void    _WCNEAR __restore_int( void );
 // __int23_exit is now a multi-state pointer:
 // __null_int23_exit        -> implies no vectors are hooked
 // __restore_int23          -> implies only int 23 is hooked
@@ -210,7 +210,7 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
  *       SIZE OF __int_ctrl_break_handler()!!!
  */
 
-void __restore_int23( void )
+void _WCNEAR __restore_int23( void )
 {
 #ifdef _M_I86
     if( __old_int23 == 0 ) {
@@ -241,7 +241,7 @@ void __restore_int23( void )
 #endif
 }
 
-void __restore_int_ctrl_break( void )
+void _WCNEAR __restore_int_ctrl_break( void )
 {
 #ifdef _M_I86
     if( __old_int_ctrl_break == 0 ) {
@@ -272,13 +272,13 @@ void __restore_int_ctrl_break( void )
 #endif
 }
 
-static void __restore_int( void )
+static void _WCNEAR __restore_int( void )
 {
     __restore_int23();
     __restore_int_ctrl_break();
 }
 
-void __grab_int23( void )
+void _WCNEAR __grab_int23( void )
 {
 #ifdef _M_I86
     if( __old_int23 == 0 ) {
@@ -309,7 +309,7 @@ void __grab_int23( void )
     }
 }
 
-void __grab_int_ctrl_break( void )
+void _WCNEAR __grab_int_ctrl_break( void )
 {
 #ifdef _M_I86
     if( __old_int_ctrl_break == 0 ) {

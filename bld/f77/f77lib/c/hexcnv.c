@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ static const char __FAR HexDigits[ 16 ] = {
 char    Hex( char data ) {
 //========================
 
-    if( isdigit( (unsigned char)data ) == 0 ) {
+    if( isdigit( (byte)data ) == 0 ) {
         data += 9;
     }
     data &= 0x0f;
@@ -62,11 +62,11 @@ char    *BToHS( char *mem, int length, char *fmt_buf ) {
             break;
         data = *mem;
         ++mem;
-        *fmt_buf = HexDigits[( (unsigned char)data >> 4 ) & 0x0f];
+        *fmt_buf = HexDigits[( (byte)data >> 4 ) & 0x0f];
         ++fmt_buf;
         if( --length < 0 )
             break;
-        *fmt_buf = HexDigits[(unsigned char)data & 0x0f];
+        *fmt_buf = HexDigits[(byte)data & 0x0f];
         ++fmt_buf;
     }
     *fmt_buf = NULLCHAR;

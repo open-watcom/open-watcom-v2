@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -63,9 +63,9 @@ public:
         BADCMD
     };
     enum TagId {
-        #undef PICK
         #define PICK(a,b) a,
         #include "tags.hpp"
+        #undef PICK
         BADTAG
     };
     Lexer();

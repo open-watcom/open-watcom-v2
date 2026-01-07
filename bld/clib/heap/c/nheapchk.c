@@ -38,7 +38,7 @@
 
 freelist_nptr __nheapchk_current;
 
-static int checkFreeList( size_t *free_size )
+static int _WCNEAR checkFreeList( size_t *free_size )
 {
     freelist_nptr   frl;
     freelist_nptr   end_frl;
@@ -85,7 +85,7 @@ static int checkFreeList( size_t *free_size )
     return( _HEAPOK );
 }
 
-static int checkFree( freelist_nptr frl )
+static int _WCNEAR checkFree( freelist_nptr frl )
 {
     freelist_nptr next;
     freelist_nptr prev;

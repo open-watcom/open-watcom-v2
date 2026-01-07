@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -48,13 +48,13 @@ _WCRTLINK int ttyname_r( int fd, char *buf, size_t buflen )
     char linkpath[MAX_TTY_NAME];
 
     if( isatty( fd ) == 0 ) {
-        _RWD_errno = ENOTTY;
-        return( _RWD_errno );
+        lib_set_errno( ENOTTY );
+        return( ENOTTY );
     }
 
     snprintf( linkpath, MAX_TTY_NAME, "%s%d", BASE_LINK, fd );
     if( readlink( linkpath, buf, buflen ) < 0 ) {
-        return( _RWD_errno );
+        return( lib_get_errno() );
     }
 
     return( 0 );

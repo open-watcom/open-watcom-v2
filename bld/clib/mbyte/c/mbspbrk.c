@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,15 +47,16 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbspbrk,_fmbspbrk)( const unsigned char
 //    if( !__IsDBCS )  return( strpbrk( string, charset ) );
 
     /*** Find first char from 'charset' in 'string' ***/
-    while( !_NEARFAR(_mbterm,_fmbterm)(string) ) {
-        #ifdef __FARFUNC__
-        if( _fmbschr(charset,_fmbsnextc(string)) == NULL )
-        #else
-        if( _mbschr(charset,_mbsnextc(string)) == NULL )
-        #endif
+    while( _NEARFAR(_mbterm,_fmbterm)( string ) == 0 ) {
+#ifdef __FARFUNC__
+        if( _fmbschr( charset, _fmbsnextc( string ) ) == NULL ) {
+#else
+        if( _mbschr( charset, _mbsnextc( string ) ) == NULL ) {
+#endif
             string = _NEARFAR(_mbsinc,_fmbsinc)( string );  /* not found */
-        else
-            return( (unsigned char _FFAR*) string );        /* found */
+        } else {
+            return( (unsigned char _FFAR *)string );        /* found */
+        }
     }
 
     return( NULL );                             /* signal not found */

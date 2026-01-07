@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +42,20 @@ extern  bool    NeedConvert( const type_def *from, const type_def *to );
 extern  name    *BGNewTemp( const type_def *tipe );
 extern  name    *BGGlobalTemp( const type_def *tipe );
 extern  an      Arithmetic( an name, const type_def *tipe );
-extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_def *tipe );
+extern  an      BGCompare( cg_op opcode, an left, an rite, label_handle entry, const type_def *tipe );
 extern  an      Boolean( an node, label_handle entry );
 extern  label_handle BGGetEntry( void );
 extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle gt );
-extern  void    BGControl( cg_op op, an expr, label_handle lbl );
-extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen );
+extern  void    BGControl( cg_op opcode, an expr, label_handle lbl );
+extern  void    BGGenCtrl( cg_op opcode, an expr, label_handle lbl, bool gen );
 extern  void    BGBigLabel( back_handle bck );
 extern  void    BGBigGoto( label_handle lbl, level_depth level );
 extern  uint_32 BGUnrollCount( uint_32 unroll_count );
-extern  an      BGUnary( cg_op op, an left, const type_def *tipe );
-extern  an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_addr );
-extern  an      BGOpGets( cg_op op, an left, an rite, const type_def *tipe, const type_def *optipe );
+extern  an      BGUnary( cg_op opcode, an left, const type_def *tipe );
+extern  an      BGBinary( cg_op opcode, an left, an rite, const type_def *tipe, bool fold_addr );
+extern  an      BGOpGets( cg_op opcode, an left, an rite, const type_def *tipe, const type_def *optipe );
 extern  an      BGConvert( an left, const type_def *tipe );
-extern  an      BGFlow( cg_op op, an left, an rite );
+extern  an      BGFlow( cg_op opcode, an left, an rite );
 extern  an      BGAssign( an dst, an src, const type_def *tipe );
 extern  an      BGCopy( an node );
 extern  an      BGDuplicate( an node );

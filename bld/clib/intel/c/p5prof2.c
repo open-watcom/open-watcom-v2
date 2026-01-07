@@ -97,7 +97,7 @@ extern  int ___begtext;
 static union tsc                final_tsc;
 static union tsc                initial_tsc;
 
-static FILE *OpenPrfFile( int isInit )
+static FILE * _WCNEAR OpenPrfFile( int isInit )
 {
     pgroup2             pg;
     char                pname[ _MAX_PATH2 ];
@@ -134,7 +134,7 @@ static FILE *OpenPrfFile( int isInit )
     return( out );
 }
 
-static void new_p5_profile_init( void )
+static void _WCNEAR new_p5_profile_init( void )
 /*
  * Create profiling data file, enable profiling
  */
@@ -164,8 +164,8 @@ enum {
 
 #define LONG_BUFF_LEN   (PROFILE_LONG_FORMAT_LEN+4)
 
-static char *FormatLong( void *pu, char *buff )
-/*********************************************/
+static char * _WCNEAR FormatLong( void *pu, char *buff )
+/******************************************************/
 {
     int                 i;
     char                *lastspace;
@@ -180,8 +180,8 @@ static char *FormatLong( void *pu, char *buff )
     return( lastspace );
 }
 
-static void dumpOneCallThing( FILE *out, new_P5_timing_info *curr )
-/*****************************************************************/
+static void _WCNEAR dumpOneCallThing( FILE *out, new_P5_timing_info *curr )
+/*************************************************************************/
 {
     char                tickBuff[LONG_BUFF_LEN];
     char                countBuff[LONG_BUFF_LEN];
@@ -205,8 +205,8 @@ static void dumpOneCallThing( FILE *out, new_P5_timing_info *curr )
     }
 }
 
-static void dumpOneBlockThing( FILE *out, block_count_info *curr )
-/****************************************************************/
+static void _WCNEAR dumpOneBlockThing( FILE *out, block_count_info *curr )
+/************************************************************************/
 {
     char        countBuff[LONG_BUFF_LEN];
 
@@ -214,8 +214,8 @@ static void dumpOneBlockThing( FILE *out, block_count_info *curr )
     fprintf( out, "%s %8.8x %8.8x\n", countBuff, curr->address, curr->function );
 }
 
-static void dumpOneBlock( FILE *out, new_P5_timing_info *curr, int todump )
-/*************************************************************************/
+static void _WCNEAR dumpOneBlock( FILE *out, new_P5_timing_info *curr, int todump )
+/*********************************************************************************/
 {
     char                *lastspace;
     new_P5_timing_info  *dynamic;
@@ -256,7 +256,7 @@ static void dumpOneBlock( FILE *out, new_P5_timing_info *curr, int todump )
 }
 
 
-static void new_p5_profile_fini( void )
+static void _WCNEAR new_p5_profile_fini( void )
 /*
  * Disable profiling, save all data to file
  */

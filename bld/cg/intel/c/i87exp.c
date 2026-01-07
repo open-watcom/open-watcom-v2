@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "cgaux.h"
 #include "data.h"
 #include "makeins.h"
@@ -249,7 +248,7 @@ instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
         break;
     case OP_CONS:
         new_ins = MakeUnary( OP_MOV, opnd, ST0, FD );
-        if( CFTest( opnd->c.value ) ) {
+        if( CFTest( opnd->c.u.cfval ) ) {
             new_ins->u.gen_table = FLD1;
         } else {
             new_ins->u.gen_table = FLDZ;
@@ -483,7 +482,7 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         ins->u.gen_table = MFLD;
         break;
     case _Move( OP_CONS, RES_STK0 ):
-        if( CFTest( ins->operands[0]->c.value ) != 0 ) {
+        if( CFTest( ins->operands[0]->c.u.cfval ) != 0 ) {
             ins->u.gen_table = FLD1;
         } else {
             ins->u.gen_table = FLDZ;
@@ -531,7 +530,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
         HW_CAsgn( avail_index, HW_IDX16 );
         HW_TurnOff( avail_index, ins->head.live.regs );
         idx = IdxRegs();
-        for(;;) {
+        for( ;; ) {
             if( HW_CEqual( *idx, HW_EMPTY ) ) {
                 HW_CAsgn( avail_index, HW_xBP );
                 break;

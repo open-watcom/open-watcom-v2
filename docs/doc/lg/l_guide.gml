@@ -47,7 +47,6 @@
 :INCLUDE file='tutmain'.
 :INCLUDE file='lnkmain'.
 :INCLUDE file='spdos'.
-:INCLUDE file='spzdos'.
 :INCLUDE file='spraw'.
 :INCLUDE file='spelf'.
 :INCLUDE file='spnov'.

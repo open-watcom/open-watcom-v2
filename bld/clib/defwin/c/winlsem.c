@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,25 +40,25 @@
 
 static HANDLE __WinLines_sem;
 
-static void __InitWinLinesSem( void )
+static void _WCNEAR __InitWinLinesSem( void )
 {
     __WinLines_sem = CreateMutex( NULL, FALSE, NULL );
 }
 
-static void __FiniWinLinesSem( void )
+static void _WCNEAR __FiniWinLinesSem( void )
 {
     CloseHandle( __WinLines_sem );
 }
 
-void _AccessWinLines( void )
+void _WCNEAR _AccessWinLines( void )
 {
     WaitForSingleObject( __WinLines_sem, INFINITE );
 }
 
-void _ReleaseWinLines( void )
+void _WCNEAR _ReleaseWinLines( void )
 {
     ReleaseMutex( __WinLines_sem );
 }
 
-AXI( __InitWinLinesSem, INIT_PRIORITY_LIBRARY )
-AYI( __FiniWinLinesSem, INIT_PRIORITY_LIBRARY )
+AXIN( __InitWinLinesSem, INIT_PRIORITY_LIBRARY )
+AYIN( __FiniWinLinesSem, INIT_PRIORITY_LIBRARY )

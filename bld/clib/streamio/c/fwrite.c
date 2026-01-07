@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -42,10 +43,9 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "qwrite.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "streamio.h"
 #include "thread.h"
 
@@ -58,7 +58,7 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
     _ValidFile( fp, 0 );
     _AccessFile( fp );
     if( (fp->_flag & _WRITE) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( 0 );        /* POSIX says return 0 */
@@ -96,7 +96,7 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
                     fp->_flag |= _SFERR;
 #if !defined( __UNIX__ )
                 } else if( n == 0 ) {
-                    _RWD_errno = ENOSPC;
+                    lib_set_errno( ENOSPC );
                     fp->_flag |= _SFERR;
 #endif
                 }

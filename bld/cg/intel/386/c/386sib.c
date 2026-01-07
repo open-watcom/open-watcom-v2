@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ bool FoldIntoIndex( instruction *ins )
             return( false );
         if( cons->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( cons->c.lo.u.int_value > 3 )
+        if( cons->c.lo.u.int_value > SCALE_8 )
             return( false );
         /*
          * found SHL R1,n => R1
@@ -150,7 +150,7 @@ bool FoldIntoIndex( instruction *ins )
                 sib.offset = value;
             } else {
                 if( is_base ) {
-                    if( sib.index->i.scale != 0 )
+                    if( sib.index->i.scale != SCALE_NONE )
                         break;
                     /*
                      * flip base and index
@@ -158,7 +158,7 @@ bool FoldIntoIndex( instruction *ins )
                     sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE );
                 }
                 sib.scale = (scale_typ)cons->c.lo.u.int_value + sib.index->i.scale;
-                if( sib.scale > 3 )
+                if( sib.scale > SCALE_8 )
                     break;
                 if( ins->operands[0] == ins->result ) {
                     sib.reg = sib.index->i.index;
@@ -199,7 +199,7 @@ bool FoldIntoIndex( instruction *ins )
                 break;
             }
             sib.scale = sib.index->i.scale;
-            if( sib.scale != 0 )
+            if( sib.scale != SCALE_NONE )
                 break;
             if( ins->operands[0] == ins->result ) {
                 HW_Asgn( tmp, base_reg );

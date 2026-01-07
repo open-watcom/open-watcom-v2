@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <signal.h>
 #include <float.h>
@@ -42,7 +44,6 @@
 #include "mthread.h"
 #include "semapsx.h"
 #include "cthread.h"
-#include "rterrno.h"
 #include "owqnx.h"
 
 
@@ -94,7 +95,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         }
         stack_bottom = lib_calloc( stack_size, 1 );
         if( stack_bottom == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( -1 );
         }
     }

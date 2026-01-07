@@ -44,7 +44,7 @@ namespace std {
 
   streambuf::streambuf( char *buf, streamsize len ) {
 
-#ifdef __SW_BM
+#ifdef __MT__
     __b_lock = __get_next_streambuf_lock();
 #else
     __b_lock = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,20 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  ..WinMain function delcaration.
+* Description:  ..WinMain function declaration.
 *
 ****************************************************************************/
 
 
 #if defined( __NT__ )
-    extern void __WinMain( void );
-    extern void __wWinMain( void );
+    extern _WCNORETURN void __WinMain( void );
+    extern _WCNORETURN void __wWinMain( void );
   #if defined( _M_IX86 )
     #pragma aux __WinMain "*";
     #pragma aux __wWinMain "*";
   #endif
   #if defined( __AXP__ ) || defined( __PPC__ ) || defined(__MIPS__)
-    void WinMainCRTStartup( void );
-    void wWinMainCRTStartup( void );
+    extern _WCNORETURN void WinMainCRTStartup( void );
+    extern _WCNORETURN void wWinMainCRTStartup( void );
   #endif
 #endif

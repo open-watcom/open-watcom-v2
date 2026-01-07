@@ -70,7 +70,7 @@ __RT_IORead:
 __RT_InpLOG1:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_LOG_1(zero)      // return LOGICAL*1 type
+        lda     v0, FPT_LOG_1(zero)     // return LOGICAL*1 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpLOG1
 
@@ -80,7 +80,7 @@ __RT_InpLOG1:
 __RT_InpLOG4:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_LOG_4(zero)      // return LOGICAL*4 type
+        lda     v0, FPT_LOG_4(zero)     // return LOGICAL*4 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpLOG4
 
@@ -90,7 +90,7 @@ __RT_InpLOG4:
 __RT_InpINT1:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_INT_1(zero)      // return INTEGER*1 type
+        lda     v0, FPT_INT_1(zero)     // return INTEGER*1 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpINT1
 
@@ -100,7 +100,7 @@ __RT_InpINT1:
 __RT_InpINT2:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_INT_2(zero)      // return INTEGER*2 type
+        lda     v0, FPT_INT_2(zero)     // return INTEGER*2 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpINT2
 
@@ -110,7 +110,7 @@ __RT_InpINT2:
 __RT_InpINT4:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_INT_4(zero)      // return INTEGER*4 type
+        lda     v0, FPT_INT_4(zero)     // return INTEGER*4 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpINT4
 
@@ -120,7 +120,7 @@ __RT_InpINT4:
 __RT_InpREAL:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_REAL_4(zero)     // return REAL*4 type
+        lda     v0, FPT_REAL_4(zero)    // return REAL*4 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpREAL
 
@@ -130,7 +130,7 @@ __RT_InpREAL:
 __RT_InpDBLE:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_REAL_8(zero)     // return REAL*8 type
+        lda     v0, FPT_REAL_8(zero)    // return REAL*8 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpDBLE
 
@@ -140,7 +140,7 @@ __RT_InpDBLE:
 __RT_InpXTND:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_REAL_16(zero)    // return REAL*16 type
+        lda     v0, FPT_REAL_16(zero)   // return REAL*16 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpXTND
 
@@ -150,7 +150,7 @@ __RT_InpXTND:
 __RT_InpCPLX:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_CPLX_8(zero)     // return COMPLEX*8 type
+        lda     v0, FPT_CPLX_8(zero)    // return COMPLEX*8 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpCPLX
 
@@ -160,7 +160,7 @@ __RT_InpCPLX:
 __RT_InpDBCX:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_CPLX_16(zero)    // return COMPLEX*16 type
+        lda     v0, FPT_CPLX_16(zero)   // return COMPLEX*16 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpDBCX
 
@@ -170,7 +170,7 @@ __RT_InpDBCX:
 __RT_InpXTCX:
         ldah    t0, h^IORslt(zero)      // prepare loading register
         stl     a0, l^IORslt(t0)        // load result pointer
-        lda     v0, PT_CPLX_32(zero)    // return COMPLEX*32 type
+        lda     v0, FPT_CPLX_32(zero)   // return COMPLEX*32 type
         br      zero, j^SwitchToRT      // return to caller of IOType()
 // .end __RT_InpXTCX
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <time.h>
 #include "linuxsys.h"
 

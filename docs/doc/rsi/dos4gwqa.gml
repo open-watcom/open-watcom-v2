@@ -13,8 +13,6 @@ In most cases, the information is applicable to both products.
 This chapter covers the following topics:
 .begbull
 .bull
-Access to technical support
-.bull
 Differences within the DOS/4G product line
 .bull
 Addressing
@@ -32,68 +30,9 @@ Debugging
 Compatibility
 .endbull
 .*
-.section Access to Technical Support
-.*
 .begnote $setptnt 2
 .*
-.note 1a. How to reach technical support.
-.*
-.np
-.ix 'technical support' 'Tenberry Software'
-Here are the various ways you may contact Tenberry Software for
-technical support.
-.millust begin
-WWW:    http://www.tenberry.com/dos4g/
-Email:  4gwhelp@tenberry.com
-Phone:  1.480.767.8868
-Fax:    1.480.767.8709
-Mail:   Tenberry Software, Inc.
-        PO Box 20050
-        Fountain Hills, Arizona
-        U.S.A  85269-0050
-.millust end
-.bi PLEASE GIVE YOUR SERIAL NUMBER WHEN YOU CONTACT TENBERRY.
-.np
-.*
-.keep
-.note 1b. When to contact &company, when to contact Tenberry.
-.*
-.np
-.ix '&dos4gprd' 'contacting Tenberry'
-Since &dos4gprd Professional is intended to be completely compatible
-with &dos4gprd, you may wish to ascertain whether your program works
-properly under &dos4gprd before contacting Tenberry Software for
-technical support. (This is likely to be the second question we ask
-you, after your serial number.)
-.np
-If your program fails under both &dos4gprd and &dos4gprd Professional,
-and you suspect your own code or a problem compiling or linking, you
-may wish to contact &company first. Tenberry Software support
-personnel are not able to help you with most programming questions, or
-questions about using the &company tools.
-.np
-If your program only fails with &dos4gprd Professional, you have
-probably found a bug in &dos4gprd Professional, so please contact us
-right away.
-.*
-.keep
-.note 1c. Telephone support.
-.*
-.np
-.ix '&dos4gprd' 'telephone support'
-Tenberry Software's hours for telephone support are 9am-6pm EST.
-Please note that telephone support is free for the first 30 days only.
-A one-year contract for continuing telephone support on &dos4gprd
-Professional is US$500 per developer, including an update subscription
-for one year, to customers in the United States and Canada; for
-overseas customers, the price is $600. Site licenses may be
-negotiated.
-.np
-There is no time limit on free support by fax, mail, or electronic
-means.
-.*
-.keep
-.note 1d. References.
+.note 1a. References.
 .*
 .np
 .ix '&dos4gprd' 'documentation'
@@ -101,17 +40,7 @@ The &dos4gprd documentation from &company is the primary reference for
 &dos4gprd Professional as well.
 .ix 'DPMI specification'
 Another useful reference is the DPMI specification.
-In the past, the DPMI specification could be obtained free of charge
-by contacting Intel Literature.
-We have been advised that the DPMI specification is no longer
-available in printed form.
-.np
-However, the DPMI 1.0 specification can be obtained at:
-.code begin
-http://www.delorie.com/djgpp/doc/dpmi/
-.code end
-.pc
-Online HTML as well as a downloadable archive are provided.
+:INCLUDE file='dpmiinfo'.
 .endnote
 .*
 .section Differences Within the DOS/4G Product Line
@@ -497,7 +426,7 @@ You should also lock the code and data of a mouse callback function.
 .*
 .ix '&dos4gprd' 'Ctrl-Break handling'
 .np
-In earlier versions of the &company C/C++ library, there was a bug
+In earlier versions of the Watcom C/C++ library, there was a bug
 that caused signal(SIGBREAK) not to work.
 Calling signal(SIGBREAK) did not actually install an interrupt handler
 for Ctrl-Break (INT 1Bh), so Ctrl-Break would terminate the
@@ -505,7 +434,7 @@ application rather than invoking the signal handler.
 .np
 With these earlier versions of the library, you could work around this
 problem by hooking INT 1Bh directly.
-With release 10.0, this problem has been fixed.
+With Watcom release 10.0, this problem has been fixed.
 .*
 .keep
 .note 4e. More tips on writing hardware interrupt handlers.
@@ -604,9 +533,9 @@ overflows of the kind described above.
 .*
 .ix '&dos4gprd' 'realloc'
 .np
-In versions of &company C/C++ prior to 9.5b, there was a bug in the
+In versions of Watcom C/C++ prior to 9.5b, there was a bug in the
 library implementation of realloc() under &dos4gprd and &dos4gprd
-Professional. This bug was corrected by &company in the 9.5b release.
+Professional. This bug was corrected by Watcom in the 9.5b release.
 .*
 .keep
 .note 5b. Using all of physical memory.
@@ -776,7 +705,7 @@ another; see (7b) above.
 .np
 &dos4gprd demand-loading feature normally cuts the load time of a
 large program drastically. However, if your program has large amounts
-of global, zero-initialized data (storage class BSS), the &company
+of global, zero-initialized data (storage class BSS), the Watcom
 startup code will explicitly zero it (version 9.5a or earlier).
 Because the zeroing operation touches every page of the data, the
 benefits of demand-loading are lost.
@@ -789,7 +718,7 @@ listing the modified object module first when you link your program.
 .np
 Here are the changes for
 .fi \watcom\src\startup\386\cstart3r.asm
-(startup module from the C/C++ 9.5 compiler, library using register
+(startup module from the Watcom C/C++ 9.5 compiler, library using register
 calling conventions). You can modify the workaround easily for other
 &company compilers:
 .code begin
@@ -818,7 +747,7 @@ allzero:                        ;
         ...
 .code end
 .np
-Note that the 9.5b and later versions of the &company C library
+Note that the Watcom 9.5b and later versions of the &company C library
 already contain this enhancement.
 .*
 .keep
@@ -886,7 +815,7 @@ application so that you can debug it:
 .millust end
 .*
 .keep
-.note 8b. Debugging with an old version of the &company debugger.
+.note 8b. Debugging with an old version of the Watcom debugger.
 .*
 .ix '&dos4gprd' 'debugger version'
 .np

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,10 +54,10 @@ void ObjRecFini( void )
     CarveDestroy( myCarver );
 }
 
-obj_rec *ObjNewRec( uint_8 command )
-/**********************************/
+obj_rec_handle ObjNewRec( uint_8 command )
+/****************************************/
 {
-    obj_rec *new;
+    obj_rec_handle  new;
 
     new = CarveAlloc( myCarver );
     new->command = command;
@@ -69,8 +69,8 @@ obj_rec *ObjNewRec( uint_8 command )
     return( new );
 }
 
-void ObjKillRec( obj_rec *objr )
-/******************************/
+void ObjKillRec( obj_rec_handle objr )
+/************************************/
 {
 /**/myassert( objr != NULL );
     if( objr->free_data && objr->data != NULL ) {
@@ -112,8 +112,8 @@ void ObjKillRec( obj_rec *objr )
     CarveFree( myCarver, objr );
 }
 
-void ObjAllocData( obj_rec *objr, uint_16 len )
-/*********************************************/
+void ObjAllocData( obj_rec_handle objr, uint_16 len )
+/***************************************************/
 {
 /**/myassert( objr->data == NULL );
     objr->data = AsmAlloc( len );
@@ -121,8 +121,8 @@ void ObjAllocData( obj_rec *objr, uint_16 len )
     objr->free_data = 1;
 }
 
-void ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len )
-/************************************************************/
+void ObjAttachData( obj_rec_handle objr, uint_8 *data, uint_16 len )
+/******************************************************************/
 {
 /**/myassert( objr->data == NULL );
     objr->data = data;
@@ -130,8 +130,8 @@ void ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len )
     objr->free_data = 0;
 }
 
-void ObjDetachData( obj_rec *objr )
-/*********************************/
+void ObjDetachData( obj_rec_handle objr )
+/***************************************/
 {
 /**/myassert( objr != NULL );
 /**/myassert( objr->data != NULL );
@@ -142,15 +142,15 @@ void ObjDetachData( obj_rec *objr )
     objr->length = 0;
 }
 
-uint_8 ObjGet8( obj_rec *objr )
-/*****************************/
+uint_8 ObjGet8( obj_rec_handle objr )
+/***********************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     return( objr->data[ objr->curoff++ ] );
 }
 
-uint_16 ObjGet16( obj_rec *objr )
-/*******************************/
+uint_16 ObjGet16( obj_rec_handle objr )
+/*************************************/
 {
     uint_8  *p;
 
@@ -159,8 +159,8 @@ uint_16 ObjGet16( obj_rec *objr )
     return( MGET_LE_16( p ) );
 }
 
-uint_32 ObjGet32( obj_rec *objr )
-/*******************************/
+uint_32 ObjGet32( obj_rec_handle objr )
+/*************************************/
 {
     uint_8  *p;
 
@@ -170,8 +170,8 @@ uint_32 ObjGet32( obj_rec *objr )
     return( MGET_LE_32( p ) );
 }
 
-uint_32 ObjGetEither( obj_rec *objr )
-/***********************************/
+uint_32 ObjGetEither( obj_rec_handle objr )
+/*****************************************/
 {
 /**/myassert( objr != NULL );
     if( objr->is_32 ) {
@@ -181,8 +181,8 @@ uint_32 ObjGetEither( obj_rec *objr )
     }
 }
 
-uint_16 ObjGetIndex( obj_rec *objr )
-/**********************************/
+uint_16 ObjGetIndex( obj_rec_handle objr )
+/****************************************/
 {
     uint_16 index;
 
@@ -195,8 +195,8 @@ uint_16 ObjGetIndex( obj_rec *objr )
     return( index );
 }
 
-uint_8 *ObjGet( obj_rec *objr, uint_16 len )
-/******************************************/
+uint_8 *ObjGet( obj_rec_handle objr, uint_16 len )
+/************************************************/
 {
     uint_8  *p;
 
@@ -208,15 +208,15 @@ uint_8 *ObjGet( obj_rec *objr, uint_16 len )
     return( p );
 }
 
-void ObjPut8( obj_rec *objr, uint_8 byte )
-/****************************************/
+void ObjPut8( obj_rec_handle objr, uint_8 byte )
+/**********************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     objr->data[ objr->curoff++ ] = byte;
 }
 
-void ObjPut16( obj_rec *objr, uint_16 word )
-/******************************************/
+void ObjPut16( obj_rec_handle objr, uint_16 word )
+/************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
@@ -224,8 +224,8 @@ void ObjPut16( obj_rec *objr, uint_16 word )
     objr->curoff += 2;
 }
 
-void ObjPut32( obj_rec *objr, uint_32 dword )
-/*******************************************/
+void ObjPut32( obj_rec_handle objr, uint_32 dword )
+/*************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
@@ -234,8 +234,8 @@ void ObjPut32( obj_rec *objr, uint_32 dword )
 }
 
 #if 0
-void ObjPutEither( obj_rec *objr, uint_32 data )
-/**********************************************/
+void ObjPutEither( obj_rec_handle objr, uint_32 data )
+/****************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     if( objr->is_32 ) {
@@ -246,8 +246,8 @@ void ObjPutEither( obj_rec *objr, uint_32 data )
 }
 #endif
 
-void ObjPutIndex( obj_rec *objr, uint_16 idx )
-/********************************************/
+void ObjPutIndex( obj_rec_handle objr, uint_16 idx )
+/**************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     if( idx > 0x7f ) {
@@ -256,16 +256,16 @@ void ObjPutIndex( obj_rec *objr, uint_16 idx )
     ObjPut8( objr, idx & 0xff );
 }
 
-void ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len )
-/***********************************************************/
+void ObjPut( obj_rec_handle objr, const uint_8 *data, uint_16 len )
+/*****************************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     memcpy( objr->data + objr->curoff, data, len );
     objr->curoff += len;
 }
 
-void ObjPutName( obj_rec *objr, const char *name, uint_8 len )
-/************************************************************/
+void ObjPutName( obj_rec_handle objr, const char *name, uint_8 len )
+/******************************************************************/
 {
 /**/myassert( objr != NULL && objr->data != NULL );
     ObjPut8( objr, len );

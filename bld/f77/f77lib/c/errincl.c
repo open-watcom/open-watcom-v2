@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +40,14 @@
 #define CARET_SHIFT  6
 #define LENGTH_MASK  (1 << CARET_SHIFT) - 1
 
-static const unsigned char __FAR * const __FAR  *PGroupTable = GroupTable;
+static const byte __FAR * const __FAR  *PGroupTable = GroupTable;
 static const char __FAR                         *PErrWord = ErrWord;
 
-static const unsigned char  __FAR *GetMsg( unsigned int err )
+static const byte  __FAR *GetMsg( unsigned int err )
 // Get pointer to message.
 {
     unsigned int        num;
-    const unsigned char __FAR *msg;
+    const byte __FAR *msg;
 
     msg = PGroupTable[err / 256];
     for( num = err % 256; num != 0; --num ) {
@@ -63,7 +63,7 @@ static const char   __FAR *GetWord( unsigned int index )
 
     word = PErrWord;
     while( index-- > 0 ) {
-        word += *(unsigned char __FAR *)word + 1;
+        word += *(byte __FAR *)word + 1;
     }
     return( word );
 }
@@ -72,7 +72,7 @@ static void BldErrMsg( unsigned int err, char *buffer, va_list args )
 // Build error message.
 {
     const char          __FAR *char_ptr;
-    const unsigned char __FAR *phrase_ptr;
+    const byte          __FAR *phrase_ptr;
     char                *buff_start;
     unsigned int        word_count;
     unsigned int        index;
@@ -106,7 +106,7 @@ static void BldErrMsg( unsigned int err, char *buffer, va_list args )
         }
         if( word_count == 0 )
             break;
-#if _CSET != _KANJI
+#ifndef _CSET_KANJI
         *buffer = ' ';
         buffer++;
 #endif

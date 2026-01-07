@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,18 +38,16 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "format.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "global.h"
 #include "ferror.h"
 #include "fmterr.h"
 
 
-static  unsigned_16     SetCaret(void) {
+static unsigned_16  SetCaret( void )
 //==================================
-
 // Set position of caret in format string.
-
+{
     int         column;
     int         contline;
     int         scanned;
@@ -77,17 +75,16 @@ static  unsigned_16     SetCaret(void) {
 }
 
 
-void    FmtError( int err_code ) {
-//================================
-
+void    FmtError( int err_code )
+//==============================
 // Issue a format statement error message.
-
+{
     unsigned_16 opnpos;
 
     opnpos = SetCaret();
     Error( err_code );
     if( err_code != FM_DELIM ) {
-        for(;;) {
+        for( ;; ) {
             if( *Fmt_charptr == ',' )
                 break;
             if( *Fmt_charptr == '/' )
@@ -108,11 +105,10 @@ void    FmtError( int err_code ) {
 }
 
 
-void    FmtExtension( int ext_code ) {
-//====================================
-
+void    FmtExtension( int ext_code )
+//==================================
 // Issue a format statement extension message.
-
+{
     unsigned_16 opnpos;
 
     opnpos = SetCaret();

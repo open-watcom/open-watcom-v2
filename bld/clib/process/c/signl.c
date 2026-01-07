@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <signal.h>
 #include <float.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
 #include "sigtab.h"
@@ -86,7 +86,7 @@ static void __sigabort( void )
 
 static FPEhandler   *__old_FPE_handler = NULL;
 
-static void __restore_FPE_handler( void )
+static void _WCNEAR __restore_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
         return;
@@ -95,7 +95,7 @@ static void __restore_FPE_handler( void )
     __old_FPE_handler = NULL;
 }
 
-static void __grab_FPE_handler( void )
+static void _WCNEAR __grab_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
         __old_FPE_handler = _RWD_FPE_handler;
@@ -140,7 +140,7 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
     __sig_func  prev_func;
 
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( SIG_ERR );
     }
     _RWD_abort = __sigabort;           /* change the abort rtn address */

@@ -2304,13 +2304,13 @@ unsigned calc_hash( char *id, size_t *plen )
     h += h + h;
     for(;;) {
         /* ( h & ~0x0fff ) == 0 is always true here */
-	c = *(id++);
+        c = *(id++);
         if( c == '\0' ) break;
-	++len;
-	h = ( h << 4 ) + c;
+        ++len;
+        h = ( h << 4 ) + c;
         g = h & ~0x0fff;
-	h ^= g;
-	h ^= (g >> 12)&0x0f;
+        h ^= g;
+        h ^= (g >> 12)&0x0f;
     }
     *plen = len;
     return( h );
@@ -2325,10 +2325,10 @@ int main()
 
     hash = 0;
     for( p = results; *p != NULL; ++p ) {
-	hash += calc_hash( *p, &len );
-	hash %= 10000;
-	hash += len;
-	hash %= 10000;
+        hash += calc_hash( *p, &len );
+        hash %= 10000;
+        hash += len;
+        hash %= 10000;
     }
     if( hash != 2012 ) fail(__LINE__);
     _PASS;

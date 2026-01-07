@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
@@ -40,7 +41,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "farfunc.h"
 #include "thread.h"
 
@@ -58,7 +58,7 @@ _WCRTLINK size_t _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate
     /*** Check for a valid wide character ***/
     rc = _NEARFAR(wctomb,_fwctomb)( s, wc );
     if( rc == -1 ) {
-        _RWD_errno = EILSEQ;
+        lib_set_errno( EILSEQ );
         return( (size_t)-1 );
     }
     if( rc == 0 ) {

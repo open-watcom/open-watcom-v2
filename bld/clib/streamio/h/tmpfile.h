@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,6 @@
 ****************************************************************************/
 
 
-extern void     __MkTmpFile( char *buf, int num );
-extern void     __RmTmpFile( FILE *fp );
-extern void     (*__RmTmpFileFn)( FILE *fp );
+extern void     _WCNEAR __MkTmpFile( char *buf, int num );
+extern void     _WCNEAR __RmTmpFile( FILE *fp );
+extern void     _WCNEAR (*__RmTmpFileFn)( FILE *fp );

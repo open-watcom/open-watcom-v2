@@ -218,7 +218,7 @@ exes = $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
 
 .cpp : source
 
-test : .SYMBOLIC start start_test memchk.obj test.lnk $(exes)
+test : .SYMBOLIC start start_test memchk.obj $(exes)
     $(noecho)%make common_set_result
 
 start_test : .SYMBOLIC

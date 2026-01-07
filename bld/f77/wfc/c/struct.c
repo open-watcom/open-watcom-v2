@@ -120,7 +120,7 @@ void    CpEndStructure( void ) {
         }
         SgmtSw &= ~SG_DEFINING_STRUCTURE;
     } else {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_STRUCTURE ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[PR_STRUCTURE] );
     }
     EndOfStatement();
 }

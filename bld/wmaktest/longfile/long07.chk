@@ -1,0 +1,10 @@
+mkdir testpath
+Creating "testpath\myfile.tmp"
+Creating "testpath\my second file.tmp"
+%copy "testpath\myfile.tmp" "myfile.out"
+%copy "testpath\my second file.tmp" "my second file.out"
+rm -f testpath\myfile.tmp
+rm -f "testpath\my second file.tmp"
+rm -f myfile.out
+rm -f "my second file.out"
+rmdir testpath

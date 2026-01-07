@@ -359,7 +359,7 @@ zerobss:mov     dl,cl                   ; save bottom 2 bits of count in edx
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
         mov     eax,0FFH                ; run all initalizers
         call    __InitRtns              ; call initializer routines
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code
@@ -377,7 +377,7 @@ endif
 ;       EAX - pointer to message to print
 ;       EDX - exit code
 
-__do_exit_with_msg_:                    ; never return
+__do_exit_with_msg_ proc near           ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -406,6 +406,8 @@ L7:
         pop     eax                     ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

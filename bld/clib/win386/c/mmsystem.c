@@ -66,8 +66,9 @@ HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlag
     LPMMINFOLIST        curr;
 
     alias = 0;
-    if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP) ) ) {
-        if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
+    if( (dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP)) == 0 ) {
+        if( lpmmioinfo->cchBuffer != 0
+          && lpmmioinfo->pchBuffer != NULL ) {
             WDPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
             lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
@@ -75,7 +76,8 @@ HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlag
 
     rc = __mmioOpen( szFileName, lpmmioinfo, dwOpenFlags );
 
-    if( rc != NULL && alias ) {
+    if( rc != NULL
+      && alias ) {
         curr = malloc( sizeof( mminfo_list ) );
         if( curr != NULL ) {
             curr->next = mminfoListHead;

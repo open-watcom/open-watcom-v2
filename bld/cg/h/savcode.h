@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,21 +142,21 @@
     } else {
         flows_in = false;
     }
-    for(;;) {
+    for( ;; ) {
         flow = blk->dataflow;
-/*  for each block in conflict range */
+        /*  for each block in conflict range */
         final_defn = NULL;
-/*  the very last definition */
+        /*  the very last definition */
         last_defn = NULL;
-/*  the previous reaching definition */
+        /*  the previous reaching definition */
         first_use = NULL;
-/*  the very first use */
-        for(;;) {
-/*  for each instruction in conflict range */
+        /*  the very first use */
+        for( ;; ) {
+            /*  for each instruction in conflict range */
             if( ins->head.opcode == OP_BLOCK )
                 break;
             next = ins->head.next;
-/*  reload volatile names after calls */
+            /*  reload volatile names after calls */
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ( ( opnd->v.usage & USE_ADDRESS )
                    || ( ( opnd->v.usage & NEEDS_MEMORY )

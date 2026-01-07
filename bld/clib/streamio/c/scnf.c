@@ -97,13 +97,13 @@
 
 #endif
 
-static INTCHAR_TYPE cget( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cget( PTR_SCNF_SPECS specs )
 {
     return( (*((specs)->cget_rtn))( specs ) );
 }
 
 
-static void uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+static void _WCNEAR uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     ((*((specs)->uncget_rtn))( c, specs ));
 }
@@ -113,7 +113,7 @@ static void uncget( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
  * cgetw -- cget which keeps track of field width.
  *          returns INTCHAR_EOF on end of field or end of file.
  */
-static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cgetw( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
@@ -129,7 +129,7 @@ static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
  *            and fills in the SCNF_SPECS structure.
  *            returns advanced format string pointer.
  */
-static const UCHAR_TYPE *get_opt( const UCHAR_TYPE *opt_str, PTR_SCNF_SPECS specs )
+static const UCHAR_TYPE * _WCNEAR get_opt( const UCHAR_TYPE *opt_str, PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE        c;
     int                 width;
@@ -225,7 +225,7 @@ static const UCHAR_TYPE *get_opt( const UCHAR_TYPE *opt_str, PTR_SCNF_SPECS spec
 /*
  * scan_white -- scan white space from input stream
  */
-static int scan_white( PTR_SCNF_SPECS specs )
+static int _WCNEAR scan_white( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
     int             len;
@@ -245,7 +245,7 @@ static int scan_white( PTR_SCNF_SPECS specs )
 /*
  * scan_char -- handles %c and %C
  */
-static int scan_char( PTR_SCNF_SPECS specs, va_list *pargs )
+static int _WCNEAR scan_char( PTR_SCNF_SPECS specs, va_list *pargs )
 {
     int             len;
     int             width;
@@ -335,7 +335,7 @@ static int scan_char( PTR_SCNF_SPECS specs, va_list *pargs )
 /*
  * scan_string -- handles %s and %S
  */
-static int scan_string( PTR_SCNF_SPECS specs, va_list *pargs )
+static int _WCNEAR scan_string( PTR_SCNF_SPECS specs, va_list *pargs )
 {
     INTCHAR_TYPE            c;
     int                     len;
@@ -448,7 +448,7 @@ done:
 /*
  * report_scan -- handles %n
  */
-static void report_scan( PTR_SCNF_SPECS specs, va_list *pargs, int match )
+static void _WCNEAR report_scan( PTR_SCNF_SPECS specs, va_list *pargs, int match )
 {
     FAR_INT         iptr;
 
@@ -484,7 +484,7 @@ static void report_scan( PTR_SCNF_SPECS specs, va_list *pargs, int match )
  * makelist -- create scanset for %[ directive.
  *             scanset is stored as 256 bit flags in a 32 byte array.
  */
-static const unsigned char *makelist( const unsigned char *format, unsigned char *scanset )
+static const unsigned char * _WCNEAR makelist( const unsigned char *format, unsigned char *scanset )
 {
     int     c;
 
@@ -505,7 +505,7 @@ static const unsigned char *makelist( const unsigned char *format, unsigned char
 /*
  * scan_arb -- handles %[
  */
-static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const UCHAR_TYPE **format )
+static int _WCNEAR scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const UCHAR_TYPE **format )
 {
     unsigned            width;
     FAR_STRING          str;
@@ -591,7 +591,7 @@ static int scan_arb( PTR_SCNF_SPECS specs, va_list *pargs, const UCHAR_TYPE **fo
  * scan_float -- handles floating point numerical conversion
  *               *** should implement buffer overflow protection ***
  */
-static int scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
+static int _WCNEAR scan_float( PTR_SCNF_SPECS specs, va_list *pargs )
 {
     double          value;
     char            *num_str, buf[80];
@@ -740,7 +740,7 @@ done:
 }
 
 
-static int radix_value( INTCHAR_TYPE c )
+static int _WCNEAR radix_value( INTCHAR_TYPE c )
 {
     if( c >= STRING( '0' )
       && c <= STRING( '9' ) )
@@ -756,7 +756,7 @@ static int radix_value( INTCHAR_TYPE c )
 /*
  * scan_int -- handles integer numeric conversion
  */
-static int scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, bool sign_flag )
+static int _WCNEAR scan_int( PTR_SCNF_SPECS specs, va_list *pargs, int base, bool sign_flag )
 {
     long                value;
     int                 len;
@@ -940,7 +940,7 @@ done:
 /*
  * null_arg -- check for a null pointer passed in arguments
  */
-static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
+static int _WCNEAR null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 {
     FAR_STRING      str;
     va_list         args_copy;
@@ -990,9 +990,9 @@ static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 
 
 #ifdef __STDC_WANT_LIB_EXT1__
-int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
+int _INTERNAL __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, const char **msg, va_list args )
 #else
-int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
+int _INTERNAL __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *_format, va_list args )
 #endif
 {
     int                 char_match;

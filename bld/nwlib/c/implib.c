@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "coffimpc.h"
 #include "roundmac.h"
 #include "exedos.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -95,8 +96,8 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
         orl_sec_base    base;
 
         ORLSecGetBase( sec, &base );
-        if( ( base.u._32[I64LO32] <= export_table_rva )
-          && ( base.u._32[I64LO32] + ORLSecGetSize( sec ) > export_table_rva ) ) {
+        if( ( U64Low( base ) <= export_table_rva )
+          && ( U64Low( base ) + ORLSecGetSize( sec ) > export_table_rva ) ) {
             found_sec_handle = sec;
         }
     }
@@ -418,15 +419,15 @@ static void peAddImport( libfile io, long header_offset, const arch_header *arch
     ORLSecGetBase( export_sec, &export_base );
 
     if( export_table_rva != 0 ) {
-        adjust = export_base.u._32[I64LO32] - export_table_rva;
-        edata += export_table_rva - export_base.u._32[I64LO32];
+        adjust = U64Low( export_base ) - export_table_rva;
+        edata += export_table_rva - U64Low( export_base );
     } else {
         adjust = 0;
     }
 
     export_header = (Coff32_Export *)edata;
-    name_table = (Coff32_EName *)(edata + export_header->NamePointerTableRVA - export_base.u._32[I64LO32] + adjust);
-    ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
+    name_table = (Coff32_EName *)(edata + export_header->NamePointerTableRVA - U64Low( export_base ) + adjust);
+    ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - U64Low( export_base ) + adjust);
     ordinal_base = export_header->ordBase;
 
     tmp_arch.date = arch->date;
@@ -436,7 +437,7 @@ static void peAddImport( libfile io, long header_offset, const arch_header *arch
     tmp_arch.size = arch->size;
     tmp_arch.libtype = arch->libtype;
 
-    dllName.name = tmp_arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
+    dllName.name = tmp_arch.name = edata + export_header->nameRVA - U64Low( export_base ) + adjust;
     dllName.len = strlen( dllName.name );
     tmp_arch.ffname = NULL;
 
@@ -444,7 +445,7 @@ static void peAddImport( libfile io, long header_offset, const arch_header *arch
         coffAddImportOverhead( &tmp_arch, &dllName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
-        sym_name = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
+        sym_name = &(edata[name_table[i] - U64Low( export_base ) + adjust]);
         if( coff_obj ) {
             CoffMKImport( &tmp_arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, processor );
             AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );

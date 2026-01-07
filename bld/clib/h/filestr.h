@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,11 @@
 #include <stddef.h>
 
 
-_WCRTLINK extern char *     __FormPosixHandleStr( void );
-_WCRTLINK extern void       __ParsePosixHandleStr( void );
+extern char     * _WCNEAR __FormPosixHandleStr( void );
+extern void     _WCNEAR __ParsePosixHandleStr( void );
 
-_WCRTLINK extern wchar_t *  __wFormPosixHandleStr( void );
-_WCRTLINK extern void       __wParsePosixHandleStr( void );
+extern wchar_t  * _WCNEAR __wFormPosixHandleStr( void );
+extern void     _WCNEAR __wParsePosixHandleStr( void );
 
 
 #ifdef __NT__

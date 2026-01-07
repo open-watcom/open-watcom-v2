@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "treeprot.h"
 #include "treefold.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "utils.h"
 #include "makeaddr.h"
 #include "procdef.h"
@@ -138,7 +137,7 @@ void    TGDemote( tn name, const type_def *tipe )
 }
 
 
-tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
+tn      FoldCnvRnd( cg_op opcode, tn name, const type_def *to_tipe )
 /**************************************************************/
 {
     tn              new_tn;
@@ -147,13 +146,13 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
 
     if( name->class == TN_CONS ) {
         if( name->tipe->refno == TY_DEFAULT ) {
-            cf = CFCopy( &cgh, name->u.name->c.value );
+            cf = CFCopy( &cgh, name->u.name->c.u.cfval );
         } else {
-            cf = CnvCFToType( name->u.name->c.value, name->tipe );
+            cf = CnvCFToType( name->u.name->c.u.cfval, name->tipe );
         }
         if( to_tipe->attr & TYPE_FLOAT ) {
             new_tn = TGConst( cf, to_tipe );
-        } else if( op == O_CONVERT ) {
+        } else if( opcode == O_CONVERT ) {
             junk = cf;
             cf = CFTrunc( &cgh, cf );
             CFFree( &cgh, junk );
@@ -163,7 +162,7 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
                 CFFree( &cgh, junk );
             }
             new_tn = TGConst( cf, to_tipe );
-        } else if( op == O_ROUND ) {
+        } else if( opcode == O_ROUND ) {
             junk = cf;
             cf = CFRound( &cgh, cf );
             CFFree( &cgh, junk );

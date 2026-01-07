@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #if defined(__NT__)
@@ -38,7 +39,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"

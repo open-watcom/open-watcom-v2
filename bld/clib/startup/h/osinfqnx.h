@@ -14,4 +14,4 @@
 extern unsigned char    __87;
 extern unsigned char    __r87;
 
-extern void __DetOSInfo( void );
+extern void _WCNEAR __DetOSInfo( void );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ typedef struct cmd_scan_ctl {
 
 static cmd_scan_ctl cmd;
 
-char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+char const *CmdScanLineInit(    // INITIALIZE FOR COMMAND SCANNING
     char const *cmd_line )      // - new command line
 {                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
     char const *old;
@@ -90,7 +90,7 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
     if( isspace( ch ) ) {
         return( true );
     }
-    if( _IS_SWITCH_CHAR( ch ) ) {
+    if( CmdScanSwitchChar( ch ) ) {
         return( true );
     }
     return( false );
@@ -322,4 +322,13 @@ void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     while( isspace( *(unsigned char *)cmd.curr_ptr ) ) {
         cmd.curr_ptr++;
     }
+}
+
+bool CmdScanSwitchChar( char c )
+{
+#ifdef __UNIX__
+    return( c == '-' );
+#else
+    return( c == '-' || c == '/' );
+#endif
 }

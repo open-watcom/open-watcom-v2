@@ -38,7 +38,7 @@
 #include "pathmac.h"
 
 
-static int IsMatch( struct dirent *dir, const char *fname )
+static int _WCNEAR IsMatch( struct dirent *dir, const char *fname )
 {
     char       tmp[NAME_MAX + 1];
     const char *sptr = dir->d_match_mask;
@@ -125,7 +125,7 @@ static int IsMatch( struct dirent *dir, const char *fname )
     }
 }
 
-static int GetSingleFile( struct dirent *dir )
+static int _WCNEAR GetSingleFile( struct dirent *dir )
 {
     struct RdosDirEntry *entry;
 

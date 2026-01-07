@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,11 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #include <direct.h>
 #include <windows.h>
 #include "libwin32.h"
-#include "seterrno.h"
 
 _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
 {
@@ -47,7 +48,8 @@ _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
         return( __set_errno_nt() );
     }
 
-    if( ( pmode & ACCESS_WR ) && ( attr & FILE_ATTRIBUTE_READONLY ) ) {
+    if( (pmode & ACCESS_WR)
+      && (attr & FILE_ATTRIBUTE_READONLY) ) {
         return( __set_errno_dos( ERROR_ACCESS_DENIED ) );
     }
     return( 0 );

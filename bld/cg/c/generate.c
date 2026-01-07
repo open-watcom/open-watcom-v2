@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -301,8 +301,8 @@ static  void            PostOptimize( void )
 }
 
 
-static  void    FreeExtraTemps( name *last, block_num id )
-/********************************************************/
+static  void    FreeExtraTemps( name *last, block_id blk_id )
+/***********************************************************/
 {
     name        **owner;
     name        *temp;
@@ -314,7 +314,7 @@ static  void    FreeExtraTemps( name *last, block_num id )
             break;
         if( (temp->v.usage & USE_IN_ANOTHER_BLOCK) == 0
           && !_FrontEndTmp( temp )
-          && temp->t.u.block_id == id ) {
+          && temp->t.u.blk_id == blk_id ) {
             *owner = temp->n.next_name;
             FreeAName( temp );
         } else {
@@ -363,7 +363,7 @@ static  void    BlockToCode( bool partly_done )
     conflict_node       *curr;
     conflict_node       **owner;
     conflict_node       *conflist;
-    block_num           id;
+    block_id            blk_id;
 
 
 
@@ -456,8 +456,8 @@ static  void    BlockToCode( bool partly_done )
         GenProlog();
     }
 
-    id = CurrBlock->id;
-    AssgnMoreTemps( id );
+    blk_id = CurrBlock->blk_id;
+    AssgnMoreTemps( blk_id );
     OptSegs();
 
     /* generate the code for the block*/
@@ -470,9 +470,9 @@ static  void    BlockToCode( bool partly_done )
         GenObject();
     }
     if( partly_done ) {
-        FreeExtraTemps( NULL, id );
+        FreeExtraTemps( NULL, blk_id );
     } else {
-        FreeExtraTemps( LastTemp, id );
+        FreeExtraTemps( LastTemp, blk_id );
     }
 }
 
@@ -517,7 +517,7 @@ static  void    FreeExtraSyms( name *last )
     name        *next;
 
     owner = &Names[N_TEMP];
-    for(;;) {
+    for( ;; ) {
         temp = *owner;
         if( temp == last )
             break;
@@ -594,7 +594,7 @@ static  void    Panic( bool partly_done )
     SortBlocks();
     UnFixEdges();
     InitStackMap();
-    AssgnMoreTemps( NO_BLOCK_ID );
+    AssgnMoreTemps( BLK_ID_NONE );
     curr_proc = CurrProc;
     FlushBlocks( partly_done );
     if( curr_proc == CurrProc /* if not freed (dummy!) */

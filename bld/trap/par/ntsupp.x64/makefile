@@ -60,7 +60,7 @@ debug_linker=-debug:none -debugtype:both /pdb:none
 #
 .c : ../c
 
-extra_cpp_flags = -D_WIN32 -DWIN32
+extra_cpp_flags = -DWIN32
 
 dbginst.exe : dbginst.obj
         $(cl) $(clflags) $< $(ldflags)

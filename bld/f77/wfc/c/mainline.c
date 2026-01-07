@@ -116,7 +116,7 @@ int     main( int argc, char *argv[] )
 // FORTRAN compiler main line.
 {
     int         ret_code;
-    char        *opts[MAX_OPTIONS+1];
+    const char  *opts[MAX_OPTIONS+1];
     char        *wfc_env;
     int         cmd_len;
     char        *cmd_line;

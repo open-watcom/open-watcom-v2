@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_de
             ins->zap = &AllocRegName( HW_R0 )->r;
         }
     }
-    op = ScaleIndex( temp, NULL, 0, type_class, memory->n.size, 0, flags );
+    op = ScaleIndex( temp, NULL, 0, type_class, memory->n.size, SCALE_NONE, flags );
     return( op );
 }
 
@@ -177,7 +177,7 @@ static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_
         PrefixIns( mem_ins, ins );
         ins = MakeBinary( OP_ADD, temp, index->i.index, temp, U4 );
         PrefixIns( mem_ins, ins );
-        op = ScaleIndex( temp, NULL, index->i.constant, type_class, index->n.size, 0, index->i.index_flags );
+        op = ScaleIndex( temp, NULL, index->i.constant, type_class, index->n.size, SCALE_NONE, index->i.index_flags );
     }
     return( TruncImmediate( mem_ins, op ) );
 }

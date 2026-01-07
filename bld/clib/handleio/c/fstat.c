@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -80,9 +81,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
-#include "seterrno.h"
-#include "d2ttime.h"
+#include "d2timet.h"
 #include "tinyio.h"
 #include "_doslfn.h"
 
@@ -194,7 +193,7 @@ extern lfn_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
   #endif
 #endif
 
-static long _cvt_stamp2dos_lfn( long long *timestamp )
+static long _WCNEAR _cvt_stamp2dos_lfn( long long *timestamp )
 {
   #ifdef _M_I86
     return( __cvt_stamp2dos_lfn( timestamp ) );
@@ -213,7 +212,7 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
   #endif
 }
 
-static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
+static lfn_ret_t _WCNEAR _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
 {
   #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );
@@ -293,19 +292,19 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
                 t = 0;
                 rc1 = _cvt_stamp2dos_lfn( &lfni.writetimestamp );
                 if( rc1 != -1 ) {
-                    t = _d2ttime( rc1 >> 16, rc1 );
+                    t = __dos2timet( rc1 >> 16, rc1 );
                 }
                 buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = t;
                 if( lfni.creattimestamp ) {
                     rc1 = _cvt_stamp2dos_lfn( &lfni.creattimestamp );
                     if( rc1 != -1 ) {
-                        buf->st_ctime = _d2ttime( rc1 >> 16, rc1 );
+                        buf->st_ctime = __dos2timet( rc1 >> 16, rc1 );
                     }
                 }
                 if( lfni.accesstimestamp ) {
                     rc1 = _cvt_stamp2dos_lfn( &lfni.accesstimestamp );
                     if( rc1 != -1 ) {
-                        buf->st_atime = _d2ttime( rc1 >> 16, rc1 );
+                        buf->st_atime = __dos2timet( rc1 >> 16, rc1 );
                     }
                 }
                 buf->st_size = lfni.lfilesize;
@@ -323,7 +322,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         if( rc == -1 ) {
             return( -1 );
         }
-        buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = _d2ttime( rc >> 16, rc );
+        buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = __dos2timet( rc >> 16, rc );
         buf->st_size = _filelength( handle );
         buf->st_mode |= S_IFREG;
         return( 0 );

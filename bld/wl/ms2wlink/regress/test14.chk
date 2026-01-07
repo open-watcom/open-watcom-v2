@@ -3,3 +3,4 @@ system dos
 file obj.obj
 name 1.exe
 option map=2.map
+option nocaseexact

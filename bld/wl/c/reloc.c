@@ -498,12 +498,6 @@ void SetRelocSize( void )
         return;
     }
 #endif
-#ifdef _ZDOS
-    if( FmtData.type & MK_ZDOS ) {
-        FmtRelocSize = sizeof( zdos_reloc_item );
-        return;
-    }
-#endif
     FmtRelocSize = sizeof( dos_addr );
 }
 

@@ -33,6 +33,7 @@
 
 #include "dll.h"        // needs to be first
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -52,7 +53,6 @@
 #include "roundmac.h"
 #include "heap.h"
 #include "heapacc.h"
-#include "seterrno.h"
 
 
 int __HeapMin( __segment seg, __segment one_heap )

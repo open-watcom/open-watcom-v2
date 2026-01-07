@@ -34,9 +34,9 @@
 #include "rtdata.h"
 #include "timedata.h"
 
-static int time_less( const struct tm *t1, const struct tm *t2 );
+static int _WCNEAR time_less( const struct tm *t1, const struct tm *t2 );
 
-static int calc_yday( const struct tm *timetm, int year )
+static int _WCNEAR calc_yday( const struct tm *timetm, int year )
 {
     struct tm   tmptm;
     int         month_days;
@@ -73,7 +73,7 @@ static int calc_yday( const struct tm *timetm, int year )
 }
 
 /* determine if in souther hemisphere -> start is after end */
-static int check_order( const struct tm *start, const struct tm *end, int year )
+static int _WCNEAR check_order( const struct tm *start, const struct tm *end, int year )
 {
     int start_day;
     int end_day;
@@ -95,7 +95,7 @@ static int check_order( const struct tm *start, const struct tm *end, int year )
 }
 
 /* determine if daylight savings time */
-int __isindst( struct tm *t )
+int _INTERNAL __isindst( struct tm *t )
 {
     int                 month;
     int                 dst;
@@ -141,9 +141,9 @@ int __isindst( struct tm *t )
      * d = start->tm_wday (week day 0-6)
      */
     if( start->tm_isdst == 0 ) { /* if Mm.n.d form */
-        if( month > start->tm_mon )
+        if( month > start->tm_mon ) {
             dst = 1;                        /* assume dst for now */
-        else if( month == start->tm_mon ) {
+        } else if( month == start->tm_mon ) {
             /* calculate for current day */
             n1 = t->tm_mday - ( t->tm_wday + 7 - start->tm_wday ) % 7;
             /* calculate for previous day */
@@ -193,9 +193,9 @@ int __isindst( struct tm *t )
     /* now see if it is after daylight saving */
     time_check = 0;
     if( end->tm_isdst == 0 ) { /* if Mm.n.d form */
-        if( month > end->tm_mon )
+        if( month > end->tm_mon ) {
             dst = 0;                        /* not dst */
-        else if( month == end->tm_mon ) {
+        } else if( month == end->tm_mon ) {
             dst = 0;
             /* calculate for current day */
             n1 = t->tm_mday - ( t->tm_wday + 7 - end->tm_wday ) % 7;
@@ -203,15 +203,17 @@ int __isindst( struct tm *t )
             n2 = t->tm_mday - 1 -
                 ( t->tm_wday - 1 + 7 - end->tm_wday ) % 7;
             if( end->tm_mday == 5 ) {
-                if( n1 <= month_days - 7 )
+                if( n1 <= month_days - 7 ) {
                     dst = 1;
-                else if( n2 <= month_days - 7 )
+                } else if( n2 <= month_days - 7 ) {
                     time_check = 1;
+                }
             } else {
-                if( n1 < 7 * ( end->tm_mday - 1 ) + 1 )
+                if( n1 < 7 * ( end->tm_mday - 1 ) + 1 ) {
                     dst = 1;
-                else if( n2 < 7 * ( end->tm_mday - 1 ) + 1 )
+                } else if( n2 < 7 * ( end->tm_mday - 1 ) + 1 ) {
                     time_check = 1;
+                }
             }
         }
     } else {
@@ -237,7 +239,7 @@ int __isindst( struct tm *t )
     return( t->tm_isdst = dst );
 }
 
-static int time_less( const struct tm *t1, const struct tm *t2 )
+static int _WCNEAR time_less( const struct tm *t1, const struct tm *t2 )
 {
     int before;
 

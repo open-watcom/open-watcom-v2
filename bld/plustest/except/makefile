@@ -77,7 +77,7 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-test : .SYMBOLIC start $(batch_sym) test.lnk $(exes)
+test : .SYMBOLIC start $(batch_sym) $(exes)
     $(noecho)%make common_set_result
 
 !ifdef BATCH_TEST
@@ -89,11 +89,14 @@ $(batch_cmp) : $(__MAKEFILES__)
     $(noecho)%create $(batch_cmp)
     @for %i in ( $(srcs) ) do %append $(batch_cmp) %i
 
-batch_build : .SYMBOLIC test.lnk $(batch_lnk) $(batch_cmp)
+batch_build : .SYMBOLIC $(batch_lnk) $(batch_cmp)
     @%make set_path_wpp
-    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags) $(test_flags_$(arch))
+    @%make echo_cxx
+    @which $(comp_wpp_$(arch))
+    $(noecho)$(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags) $(test_flags_$(arch))
     @%make set_path_wlink
     @%make echo_link
+    @which $(linker)
     $(noecho)$(linker) @$(batch_lnk)
     @%make set_old_path
 !endif

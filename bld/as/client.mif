@@ -1,30 +1,59 @@
-# AS in-line library finder.
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
+as_targ_objs_axp = $(_subdir_)alphafmt.obj $(_subdir_)alphains.obj
+as_targ_objs_mps = $(_subdir_)mipsfmt.obj $(_subdir_)mipsins.obj
+as_targ_objs_ppc = $(_subdir_)ppcfmt.obj $(_subdir_)ppcins.obj
+as_comm_objs = &
+    $(_subdir_)asexpr.obj &
+    $(_subdir_)asopernd.obj &
+    $(_subdir_)asmem.obj &
+    $(_subdir_)asutils.obj &
+    $(_subdir_)asregs.obj &
+    $(_subdir_)assymbol.obj &
+    $(_subdir_)asdrectv.obj &
+    $(_subdir_)asdirop.obj &
+    $(_subdir_)asnumlab.obj &
+    $(_subdir_)ashash.obj &
+    $(_subdir_)asmsg.obj
+as_stand_objs = &
+    $(_subdir_)cmdlnprs.obj &
+    $(_subdir_)cmdscan.obj &
+    $(_subdir_)main.obj &
+    $(_subdir_)obj.obj &
+    $(_subdir_)sections.obj &
+    $(_subdir_)options.obj &
+    $(_subdir_)ppenv.obj &
+    $(_subdir_)ppmem.obj
+as_inline_objs = &
+    $(_subdir_)asinline.obj &
+    $(_subdir_)asiobj.obj
 
-!ifdef bootstrap
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(bin_subdir)/asinline.lib
-!else ifdef $(proj_name)_rtdll
-#
-# AS in-line run-time DLL used
-#
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host).rtd/asinline.lib
-!else ifdef $(proj_name)_dll
-#
-# AS in-line DLL used
-#
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host).dll/asinline.lib
-!else
-#
-# AS in-line library used
-#
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host)/asinline.lib
-!endif
+as_wsplice_opts_axp = -kAS_ALPHA
+as_wsplice_opts_mps = -kAS_MIPS
+as_wsplice_opts_ppc = -kAS_PPC
 
-#
-cli_asminline_c =
-cli_asminline_inc_dirs = -I"$(as_dir)/h"
-cli_asminline_deps =
-cli_asminline_objs =
+cli_asminline_c = $(as_dir)/$(target_cpu)/c;$(as_dir)/c
+cli_asminline_inc_dirs = -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h"
+cli_asminline_deps = asi_msg.grh asilexyy.gc asiytab.gc
+cli_asminline_objs = $(as_comm_objs) $(as_targ_objs_$(target_cpu)) $(as_inline_objs)
 cli_asminline_rc_inc_dirs =
 cli_asminline_rc_deps =
+
+asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__) .EXPLICIT
+    @%make echo_cpp
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
+    @%make echo_awk
+    $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
+
+asiytab.gc : $(as_dir)/y/as.y $(as_dir)/y/yydriver.c $(__MAKEFILES__) .EXPLICIT
+    @rm -f tmp.tmp asiytab.gh asiytab.gc
+    @%make echo_wsplice
+    $(noecho)*wsplice -u $(as_wsplice_opts_$(target_cpu)) $[@ tmp.tmp
+    @%make echo_yacc
+    $(noecho)$(yacc) -b asiy -d -db -dd tmp.tmp $(as_dir)/y/yydriver.c > $(nulldevice)
+    %ren asiytab.c asiytab.gc
+    %ren asiytab.h asiytab.gh
+
+asilexyy.gc : $(as_dir)/y/scan.re $(__MAKEFILES__) .EXPLICIT
+    @%make echo_wsplice
+    $(noecho)*wsplice -u $(as_wsplice_opts_$(target_cpu)) $[@ tmp.tmp
+    @%make echo_re2c
+    $(noecho)re2c tmp.tmp > $@

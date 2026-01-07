@@ -55,10 +55,10 @@ _WCRTLINK clock_t clock( void )
     return( milliseconds - init_milliseconds );
 }
 
-static void __clock_init( void )
+static void _WCNEAR __clock_init( void )
 {
     DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT,
                      &init_milliseconds, sizeof( init_milliseconds ) );
 }
 
-AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+AXIN( __clock_init, INIT_PRIORITY_LIBRARY )

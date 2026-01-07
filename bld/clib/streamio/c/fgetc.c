@@ -33,6 +33,7 @@
 #define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -51,11 +52,10 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "qread.h"
 #include "orient.h"
-#include "flushall.h"
+#include "_flush.h"
 #include "streamio.h"
 #include "thread.h"
 #include "fillbuf.h"
@@ -65,7 +65,7 @@
 
 #ifndef __WIDECHAR__
 
-int __fill_buffer( FILE *fp )
+int _WCNEAR __fill_buffer( FILE *fp )
 {
     if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );
@@ -106,7 +106,7 @@ int __fill_buffer( FILE *fp )
     return( fp->_cnt );
 }
 
-static int __filbuf( FILE *fp )
+static int _WCNEAR __filbuf( FILE *fp )
 {
     if( __fill_buffer( fp ) == 0 ) {
         return( EOF );
@@ -128,7 +128,7 @@ _WCRTLINK int fgetc( FILE *fp )
     ORIENT_STREAM( fp, EOF );
 
     if( (fp->_flag & _READ) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         c = EOF;
     } else {
@@ -167,8 +167,8 @@ _WCRTLINK int fgetc( FILE *fp )
 
 #else
 
-static int __read_wide_char( FILE *fp, wchar_t *wc )
-/**************************************************/
+static int _WCNEAR __read_wide_char( FILE *fp, wchar_t *wc )
+/**********************************************************/
 {
     if( fp->_flag & _BINARY ) {
         /*** Read a wide character ***/
@@ -194,7 +194,7 @@ static int __read_wide_char( FILE *fp, wchar_t *wc )
             *wc = wcTemp;
             return( 1 );
         } else {
-            _RWD_errno = EILSEQ;
+            lib_set_errno( EILSEQ );
             return( 0 );
         }
     }

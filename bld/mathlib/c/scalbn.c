@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (C) 1993 by Sun Microsystems, Inc.
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2014-2025 The Open Watcom Contributors. All Rights Reserved.
+* Portions Copyright (C) 1993 by Sun Microsystems, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,13 +29,13 @@
 *
 *    Developed at SunSoft, a Sun Microsystems, Inc. business.
 *    Permission to use, copy, modify, and distribute this
-*    software is freely granted, provided that this notice 
+*    software is freely granted, provided that this notice
 *    is preserved.
 *
 *  ========================================================================
 *
-* Description:  Returns  x*(2**n) computed by exponent manipulation rather 
-*               than by actually performing an exponentiation or a 
+* Description:  Returns  x*(2**n) computed by exponent manipulation rather
+*               than by actually performing an exponentiation or a
 *               multiplication.
 *
 ****************************************************************************/
@@ -54,47 +53,47 @@ tiny   = 1.0e-300;
 _WMRTLINK double scalbn (double x, int n)
 {
     u4 k,hx,lx;
-    
+
     float_double fdx;
-    
+
     fdx.u.value = x;
-    
-	hx = fdx.u.word[1];
-	lx = fdx.u.word[0];
-    
+
+    hx = fdx.u.word[1];
+    lx = fdx.u.word[0];
+
     /* extract exponent */
     k = (hx & ((u4)0x7ff00000)) >> 20;
-    
-    if (k==0) 				/* 0 or subnormal x */
+
+    if (k==0)                           /* 0 or subnormal x */
     {
         if ((lx|(hx&((u4)0x7fffffff)))==0) /* +-0 */
-            return x; 
-        x *= two54; 
+            return x;
+        x *= two54;
         fdx.u.value = x;
         hx = fdx.u.word[1];
         k = ((hx & ((u4)0x7ff00000)) >> 20) - 54;
     }
-    if (k==0x7ff) 
-        return x+x;		/* NaN or Inf */
-        
-    k = k+n; 
-    if (k >  0x7fe) 
+    if (k==0x7ff)
+        return x+x;             /* NaN or Inf */
+
+    k = k+n;
+    if (k >  0x7fe)
         return huge_*copysign(huge_,x); /* overflow  */
-        
-    if (k > 0) 				/* normal result */
+
+    if (k > 0)                          /* normal result */
     {
         fdx.u.word[1] = (hx & ((u4)0x800fffff)) | (k<<20);
         return fdx.u.value;
     }
-    
+
     if (k <= -54)
     {
-        return tiny*copysign(tiny,x); 	/*underflow*/
+        return tiny*copysign(tiny,x);   /*underflow*/
     }
-    
-    k += 54;				/* subnormal result */
-    
+
+    k += 54;                            /* subnormal result */
+
     fdx.u.word[1] = (hx & ((u4)0x800fffff)) | (k << 20);
-    
+
     return fdx.u.value*twom54;
 }

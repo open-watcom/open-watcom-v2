@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <pwd.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -42,7 +42,7 @@ _WCRTLINK struct passwd *getpwnam( const char *name )
     struct passwd *res = NULL;
 
     if( name == NULL ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
     setpwent();

@@ -12,7 +12,7 @@ test_flags_386 = -mf-3s
 test_flags_i86 = -ml -3
 test_flags_axp =
 
-sav_file_2 = x$(arch)_$(alt_error).sav
+sav_file_2 = x$(arch)$(alt_error)$(host_bits).sav
 
 !include testenv.mif
 
@@ -22,7 +22,7 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -d plusplus.lex
 
-test : .SYMBOLIC start test.lnk re2c.$(exe) rename_result_file
+test : .SYMBOLIC start re2c.$(exe) rename_result_file
     $(noecho)%make common_set_result_check
 
 rename_result_file : .procedure

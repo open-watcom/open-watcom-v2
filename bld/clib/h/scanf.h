@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,8 @@
 #define PTR_SCNF_SPECS SCNF_SPECS SCNF_FAR *
 
 typedef struct _SCNF_SPECS {
-    INTCHAR_TYPE    (*cget_rtn)( struct _SCNF_SPECS SCNF_FAR *specs );                      /* character get rtn */
-    void            (*uncget_rtn)( INTCHAR_TYPE c, struct _SCNF_SPECS SCNF_FAR *specs );    /* unget a character rtn */
+    INTCHAR_TYPE    _WCNEAR (*cget_rtn)( struct _SCNF_SPECS SCNF_FAR *specs );                      /* character get rtn */
+    void            _WCNEAR (*uncget_rtn)( INTCHAR_TYPE c, struct _SCNF_SPECS SCNF_FAR *specs );    /* unget a character rtn */
     CHAR_TYPE       *ptr;               /* file or string pointer */
     int             width;              /* conversion field width */
     unsigned        assign         : 1; /* assignment flag for current argument */
@@ -61,9 +62,9 @@ typedef struct _SCNF_SPECS {
 } SCNF_SPECS;
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
-    extern int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
+    extern int _INTERNAL __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
 #else
-    extern int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
+    extern int _INTERNAL __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
 #endif
 
 #endif

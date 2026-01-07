@@ -2,5 +2,8 @@
 
 tree_depth = 4
 
+host_cpu = generic
+host_os  = generic
+
 !include cproj.mif
 !include $(lib_misc_dir)/alias.mif

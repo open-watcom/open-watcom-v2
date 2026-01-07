@@ -39,7 +39,7 @@
 /*
  * copyString - copy from string to memory
  */
-static WPCHAR copyString( WPCHAR mem, const char *str, int len )
+static WPCHAR _WCNEAR copyString( WPCHAR mem, const char *str, int len )
 {
     if( str == NULL )
         str = "";
@@ -66,7 +66,7 @@ static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 /*
  * copyWord - copy from word to memory
  */
-static WPCHAR copyWord( WPCHAR mem, WORD word )
+static WPCHAR _WCNEAR copyWord( WPCHAR mem, WORD word )
 {
     *mem++ = word;
     *mem++ = word >> 8;
@@ -75,7 +75,7 @@ static WPCHAR copyWord( WPCHAR mem, WORD word )
 } /* copyWord */
 
 
-static unsigned char getClassOrdinal( const char *classname )
+static unsigned char _WCNEAR getClassOrdinal( const char *classname )
 {
     unsigned char   class_ordinal;
 
@@ -102,7 +102,7 @@ static unsigned char getClassOrdinal( const char *classname )
 /*
  * _DialogTemplate - build a dialog template
  */
-TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
+TEMPLATE_HANDLE _WCNEAR _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                               const char *menuname, const char *classname, const char *captiontext,
                               WORD pointsize, const char *facename, size_t *templatelen )
 {
@@ -193,7 +193,7 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 /*
  * _AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
+TEMPLATE_HANDLE _WCNEAR _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
         const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -297,7 +297,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int 
 /*
  * _DoneAddingControls - called when there are no more controls
  */
-void _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
+void _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 {
     GlobalUnlock( dlgtemplate );
 
@@ -306,7 +306,7 @@ void _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+INT_PTR _WCNEAR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;

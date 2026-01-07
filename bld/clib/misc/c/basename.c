@@ -45,7 +45,7 @@
  */
 static char     path_buf[FILENAME_MAX];
 
-static bool is_final_sep_seq( const char *p )
+static bool _WCNEAR is_final_sep_seq( const char *p )
 {
     while( *p != NULLCHAR && IS_DIR_SEP( *p ) )
         ++p;

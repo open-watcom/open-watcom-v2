@@ -54,14 +54,14 @@ test_flags_axp = -d1
 alt_error = 00
 !endif
 
-sav_file_2 = x$(arch)_$(alt_error).sav
+sav_file_2 = x$(arch)$(alt_error)$(host_bits).sav
 
 !include testenv.mif
 !include ../callconv.mif
 
 .c: source
 
-test : .SYMBOLIC start start_test test.lnk $(callconv_exes) test_set_result
+test : .SYMBOLIC start start_test $(callconv_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -80,6 +80,7 @@ $(callconv_all_objs) : source/obj.c
     @set ERROR_MSG=failure to compile $@
     @%make set_path_wcc
     @%make echo_cc
+    @which $(comp_wcc_$(arch))
     $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=$@
     @%make set_old_path
     %append $(%RUN_FILE) **** $@ pubdef ****

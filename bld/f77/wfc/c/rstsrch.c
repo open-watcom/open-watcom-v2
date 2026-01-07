@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,15 +44,12 @@ sym_id STSearch( const char *name, size_t len, sym_id head )
 //==========================================================
 // Search symbol table for given name.
 {
-    for(;;) {
-        if( head == NULL )
-            break;
+    for( ; head != NULL; head = head->u.ns.link ) {
         if( head->u.ns.u2.name_len == len ) {
             if( memcmp( name, &head->u.ns.name, len ) == 0 ) {
                 break;
             }
         }
-        head = head->u.ns.link;
     }
     return( head );
 }
@@ -66,11 +63,11 @@ sym_id STNameSearch( const char *name, size_t len )
     sym_id      tail;
 
     HashValue = CalcHash( name, len );
-    head = HashTable[ HashValue ].h_head;
+    head = HashTable[HashValue].h_head;
     if( head == NULL )
         return( NULL );
-    tail = HashTable[ HashValue ].h_tail;
-    for(;;) {
+    tail = HashTable[HashValue].h_tail;
+    for( ;; ) {
         if( head->u.ns.u2.name_len == len ) {
             if( memcmp( name, &head->u.ns.name, len ) == 0 ) {
                 return( head );

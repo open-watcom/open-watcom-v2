@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,34 +45,31 @@
 
 
 /* Forward declarations */
-static  void    FmtPrepOp( void );
-static  void    FmtIOType( void );
 static  void    ExecCode( void );
 
-static  void   R_FEH( uint dummy1 , char dummy2 )
+static void     R_FEH( uint dummy1, char dummy2 )
 //===============================================
 {
     ftnfile     *fcb;
     uint        len;
-    char PGM    *str;
+    char        PGM *str;
 
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     if( IOCB->flags & IOF_OUTPT ) {
-        len = IOCB->fmtptr->fmtstring.fld1;
+        len = IOCB->u.fmtptr->fmtstring.fld1;
         if( fcb->col + len > fcb->bufflen ) {
             IOErr( IO_BUFF_LEN );
             // never return
         }
-        str = IOCB->fmtptr->fmtstring.str;
+        str = IOCB->u.fmtptr->fmtstring.str;
         SendStr( str, len );
     } else {
         RTErr( FM_NOT_INP );
     }
     R_ChkRecLen();
-    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + sizeof( fmt4 ) +
-                           len * sizeof( char ));
+    IOCB->u.ptr += sizeof( fmt4 ) + len;
 }
 
 
@@ -81,11 +78,13 @@ static  void    R_FESlash( uint rep_spec, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
+    for( ;; ) {
         R_NewRec();
-        if( --rep_spec == 0 ) break;
+        if( --rep_spec == 0 ) {
+            break;
+        }
     }
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -97,8 +96,38 @@ static  void    R_FEX( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    fcb->col += IOCB->fmtptr->fmt4.fld1;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    fcb->col += IOCB->u.fmtptr->fmt4.fld1;
+    IOCB->u.ptr += sizeof( fmt4 );
+}
+
+
+static  void    FmtIOType( void )
+//===============================
+{
+    if( IOCB->flags & IOF_FMTREALPART ) {
+        IOCB->flags &= ~IOF_FMTREALPART;
+    } else {
+        ArrayIOType();
+        if( (IOCB->ptyp >= FPT_CPLX_8)
+          && (IOCB->ptyp <= FPT_CPLX_32) ) {
+            IOCB->flags |= IOF_FMTREALPART;
+        }
+    }
+}
+
+
+static  void    FmtPrepOp( void )
+//===============================
+{
+    ftnfile     *fcb;
+    byte        width;
+
+    fcb = IOCB->fileinfo;
+    width = IOCB->u.fmtptr->fmt1.fld1;
+    if( width + fcb->col > fcb->bufflen ) {
+        IOErr( IO_BUFF_LEN );
+        // never return
+    }
 }
 
 
@@ -107,11 +136,12 @@ static  void    R_FEI( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         R_ChkIType();
         if( IOCB->flags & IOF_OUTPT ) {
@@ -121,10 +151,12 @@ static  void    R_FEI( uint rep, char dummy2 )
             R_FIInt();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt2 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt2 );
 }
 
 
@@ -133,23 +165,24 @@ static  void    R_FEColon( uint dummy1 , char dummy2 )
 {
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
-    if( IOCB->typ == PT_NOTYPE ) {
+    if( IOCB->ptyp == FPT_NOTYPE ) {
         IOCB->flags |= IOF_FMTDONE;
     }
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
-static  void    R_FEA( uint rep , char dummy2)
-//============================================
+static  void    R_FEA( uint rep , char dummy2 )
+//=============================================
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         if( IOCB->flags & IOF_OUTPT ) {
             R_FOStr();
             R_ChkRecLen();
@@ -157,10 +190,12 @@ static  void    R_FEA( uint rep , char dummy2)
             R_FIStr();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt4 );
 }
 
 
@@ -172,8 +207,8 @@ static  void    R_FET( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    fcb->col = IOCB->fmtptr->fmt4.fld1 - sizeof( char );
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    fcb->col = IOCB->u.fmtptr->fmt4.fld1 - 1;
+    IOCB->u.ptr += sizeof( fmt4 );
 }
 
 
@@ -186,13 +221,13 @@ static  void    R_FETL( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    offset = IOCB->fmtptr->fmt4.fld1;
+    offset = IOCB->u.fmtptr->fmt4.fld1;
     if( fcb->col < offset ) {
         fcb->col = 0;
     } else {
         fcb->col -= offset;
     }
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt4 );
 }
 
 
@@ -204,8 +239,8 @@ static  void    R_FETR( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
-    fcb->col += IOCB->fmtptr->fmt4.fld1;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    fcb->col += IOCB->u.fmtptr->fmt4.fld1;
+    IOCB->u.ptr += sizeof( fmt4 );
 }
 
 
@@ -215,7 +250,7 @@ static  void    R_FES( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags &= ~IOF_PLUS;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -225,7 +260,7 @@ static  void    R_FESP( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags |= IOF_PLUS;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -235,7 +270,7 @@ static  void    R_FESS( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags &= ~IOF_PLUS;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -245,7 +280,7 @@ static  void    R_FEBN( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->fileinfo->blanks = BLANK_NULL;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -255,7 +290,7 @@ static  void    R_FEBZ( uint dummy1 , char dummy2 )
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->fileinfo->blanks = BLANK_ZERO;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -264,13 +299,14 @@ static  void    R_FEL( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
-        R_ChkType( PT_LOG_1, PT_LOG_4 );
+        R_ChkType( FPT_LOG_1, FPT_LOG_4 );
         if( IOCB->flags & IOF_OUTPT ) {
             R_FOLog();
             R_ChkRecLen();
@@ -278,10 +314,12 @@ static  void    R_FEL( uint rep, char dummy2 )
             R_FILog();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt1 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt1 );
 }
 
 
@@ -290,11 +328,12 @@ static  void    R_FEF( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         R_ChkFType();
         if( IOCB->flags & IOF_OUTPT ) {
@@ -304,10 +343,12 @@ static  void    R_FEF( uint rep, char dummy2 )
             R_FIFloat();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt2 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt2 );
 }
 
 
@@ -316,11 +357,12 @@ static  void    R_FED( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         R_ChkFType();
         if( IOCB->flags & IOF_OUTPT ) {
@@ -330,10 +372,12 @@ static  void    R_FED( uint rep, char dummy2 )
             R_FIFloat();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt2 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt2 );
 }
 
 
@@ -342,11 +386,12 @@ static  void    R_FEQ( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         R_ChkFType();
         if( IOCB->flags & IOF_OUTPT ) {
@@ -356,34 +401,39 @@ static  void    R_FEQ( uint rep, char dummy2 )
             R_FIFloat();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt2 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt2 );
 }
 
 
-static  void    R_FEE( uint rep, char ch ) {
-//==========================================
-
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+static  void    R_FEE( uint rep, char ch )
+//========================================
+{
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         R_ChkFType();
         if( IOCB->flags & IOF_OUTPT ) {
-            R_FOE( IOCB->fmtptr->fmt3.fld3, ch );
+            R_FOE( IOCB->u.fmtptr->fmt3.fld3, ch );
             R_ChkRecLen();
         } else {
             R_FIFloat();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt3 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt3 );
 }
 
 
@@ -392,13 +442,14 @@ static  void    R_FEG( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
-        R_ChkType( PT_LOG_1, PT_CPLX_32 );
+        R_ChkType( FPT_LOG_1, FPT_CPLX_32 );
         if( IOCB->flags & IOF_OUTPT ) {
             R_FOG();
             R_ChkRecLen();
@@ -406,10 +457,12 @@ static  void    R_FEG( uint rep, char dummy2 )
             R_FIFloat();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt3 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt3 );
 }
 
 
@@ -418,31 +471,36 @@ static  void    R_FEP( uint dummy1 , char dummy2 )
 {
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
-    IOCB->scale = IOCB->fmtptr->fmt4.fld1;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    IOCB->scale = IOCB->u.fmtptr->fmt4.fld1;
+    IOCB->u.ptr += sizeof( fmt4 );
 }
 
 
 static  void    R_FELParen( uint rep_spec, char dummy2 )
 //======================================================
 {
-    fmt_desc PGM *revert;
+    char    PGM *revert;
 
     /* unused parameters */ (void)dummy2;
 
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
-    revert = IOCB->fmtptr;
-    for(;;) {
-        IOCB->fmtptr = revert;
-        for(;;) {
-            if( (IOCB->fmtptr->fmt.code & ~EXTEND_FORMAT) == RP_FORMAT ) break;
-            if( IOCB->flags & IOF_FMTDONE ) break;
+    IOCB->u.ptr += sizeof( fmt );
+    revert = IOCB->u.ptr;
+    for( ;; ) {
+        IOCB->u.ptr = revert;
+        for( ;; ) {
+            if( (IOCB->u.fmtptr->fmt.code & ~EXTEND_FORMAT) == RP_FORMAT )
+                break;
+            if( IOCB->flags & IOF_FMTDONE )
+                break;
             ExecCode();
         }
-        if( IOCB->flags & IOF_FMTDONE ) break;
-        if( --rep_spec == 0 ) break;
+        if( IOCB->flags & IOF_FMTDONE )
+            break;
+        if( --rep_spec == 0 ) {
+            break;
+        }
     }
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -451,7 +509,7 @@ static  void    R_FERParen( uint dummy1 , char dummy2 )
 {
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -462,13 +520,13 @@ static  void    R_FEnd( uint dummy1 , char dummy2 )
 
     /* unused parameters */ (void)dummy1; (void)dummy2;
 
-    if( IOCB->typ != PT_NOTYPE ) {
+    if( IOCB->ptyp != FPT_NOTYPE ) {
         if( ( IOCB->flags & IOF_FMTREP ) == 0 ) {
             RTErr( FM_REP );
         }
         IOCB->flags &= ~IOF_FMTREP;
-        revert = IOCB->fmtptr->fmt4.fld1;
-        IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr - revert + sizeof( fmt ));
+        revert = IOCB->u.fmtptr->fmt4.fld1;
+        IOCB->u.ptr += sizeof( fmt ) - revert;
         R_NewRec();
     } else {
         IOCB->flags |= IOF_FMTDONE;
@@ -481,11 +539,12 @@ static  void    R_FEZ( uint rep, char dummy2 )
 {
     /* unused parameters */ (void)dummy2;
 
-    for(;;) {
-        if( IOCB->typ == PT_NOTYPE ) {
+    for( ;; ) {
+        if( IOCB->ptyp == FPT_NOTYPE ) {
             IOCB->flags |= IOF_FMTDONE;
         }
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->ptyp == FPT_NOTYPE )
+            break;
         FmtPrepOp();
         if( IOCB->flags & IOF_OUTPT ) {
             R_FOHex();
@@ -494,10 +553,12 @@ static  void    R_FEZ( uint rep, char dummy2 )
             R_FIHex();
         }
         FmtIOType();
-        if( --rep == 0 ) break;
+        if( --rep == 0 ) {
+            break;
+        }
     }
     IOCB->flags |= IOF_FMTREP;
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt1 PGM *)IOCB->fmtptr + 1);
+    IOCB->u.ptr += sizeof( fmt1 );
 }
 
 
@@ -509,36 +570,7 @@ static  void    R_FEM( uint dummy1 , char dummy2 )
     if( IOCB->flags & IOF_OUTPT ) {
         IOCB->flags |= IOF_NOCR;
     }
-    IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
-}
-
-
-static  void    FmtPrepOp( void ) {
-//===========================
-
-    ftnfile     *fcb;
-    byte        width;
-
-    fcb = IOCB->fileinfo;
-    width = IOCB->fmtptr->fmt1.fld1;
-    if( width + fcb->col > fcb->bufflen ) {
-        IOErr( IO_BUFF_LEN );
-        // never return
-    }
-}
-
-
-static  void    FmtIOType( void ) {
-//===========================
-
-    if( IOCB->flags & IOF_FMTREALPART ) {
-        IOCB->flags &= ~IOF_FMTREALPART;
-    } else {
-        ArrayIOType();
-        if( (IOCB->typ >= PT_CPLX_8) && (IOCB->typ <= PT_CPLX_32) ) {
-            IOCB->flags |= IOF_FMTREALPART;
-        }
-    }
+    IOCB->u.ptr += sizeof( fmt );
 }
 
 
@@ -575,39 +607,21 @@ static  const void (* const __FAR FmtExec[])( uint , char ) = {
 };
 
 
-static  void    ExecInit( void ) {
-//==========================
-
-    ftnfile     *fcb;
-
-    fcb = IOCB->fileinfo;
-    IOCB->flags &= ~IOF_FMTDONE;
-    IOCB->flags &= ~IOF_FMTREP;
-    IOCB->flags &= ~IOF_FMTREALPART;
-    IOCB->fmtlen = fcb->col;
-    IOCB->scale = 0;
-    FmtIOType();
-    if( ( IOCB->flags & IOF_OUTPT ) == 0 ) {
-        R_NewRec();
-    }
-}
-
-
-static  void    ExecCode( void ) {
-//==========================
-
+static  void    ExecCode( void )
+//==============================
+{
     byte        code;
     uint        repeat;
     char        ch;
 
-    if( (IOCB->fmtptr->fmt4.code & ~EXTEND_FORMAT) == REP_FORMAT ) {
-        repeat = IOCB->fmtptr->fmt4.fld1;
-        IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
+    if( (IOCB->u.fmtptr->fmt4.code & ~EXTEND_FORMAT) == REP_FORMAT ) {
+        repeat = IOCB->u.fmtptr->fmt4.fld1;
+        IOCB->u.ptr += sizeof( fmt4 );
     } else {
         repeat = 1;
     }
     IOCB->flags &= ~IOF_EXTEND_FORMAT;
-    code = IOCB->fmtptr->fmt.code;
+    code = IOCB->u.fmtptr->fmt.code;
     if( code & EXTEND_FORMAT ) {
         IOCB->flags |= IOF_EXTEND_FORMAT;
         code &= ~EXTEND_FORMAT;
@@ -623,13 +637,33 @@ static  void    ExecCode( void ) {
 }
 
 
-void    R_FExec( void ) {
-//=================
+static  void    ExecInit( void )
+//==============================
+{
+    ftnfile     *fcb;
 
+    fcb = IOCB->fileinfo;
+    IOCB->flags &= ~IOF_FMTDONE;
+    IOCB->flags &= ~IOF_FMTREP;
+    IOCB->flags &= ~IOF_FMTREALPART;
+    IOCB->fmtlen = fcb->col;
+    IOCB->scale = 0;
+    FmtIOType();
+    if( ( IOCB->flags & IOF_OUTPT ) == 0 ) {
+        R_NewRec();
+    }
+}
+
+
+void    R_FExec( void )
+//=====================
+{
     ExecInit();
-    for(;;) {
+    for( ;; ) {
         ExecCode();
-        if( IOCB->flags & IOF_FMTDONE ) break;
+        if( IOCB->flags & IOF_FMTDONE ) {
+            break;
+        }
     }
     if( IOCB->flags & IOF_OUTPT ) {
         R_NewRec();

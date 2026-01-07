@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,24 +47,26 @@
 #include "clibext.h"
 
 
-static  file_handle FindSrcFile( char *fname ) {
-//=============================================
+static file_handle check_file( char *buff, char *path, const char *name )
+{
+    file_handle fp;
 
-// Find a source file.
-
-    file_handle  fp;
-
-    MakeName( fname, SDSplitSrcExtn( fname ), fname );
-    fp = SDOpenText( fname, "rt" );
+    if( path == buff )
+        return( NULL );
+    if( !IS_PATH_SEP( path[-1] ) ) {
+        *path++ = DIR_SEP;
+    }
+    strcpy( path, name );
+    MakeName( path, SDSplitSrcExtn( path ), path );
+    fp = SDOpen( buff, "rt" );
     if( fp != NULL ) {
-        SrcInclude( fname );
+        SrcInclude( buff );
     }
     return( fp );
 }
 
-
-static file_handle doSearchPath( char *path_list, const char *name )
-//==================================================================
+static file_handle doSearchPath( const char *path_list, const char *name )
+//========================================================================
 {
     char        *p;
     file_handle fp;
@@ -72,25 +74,19 @@ static file_handle doSearchPath( char *path_list, const char *name )
     char        c;
 
     fp = NULL;
-    while( (c = *path_list) != NULLCHAR ) {
-        p = buff;
-        do {
-            ++path_list;
-            if( IS_PATH_LIST_SEP( c ) )
-                break;
+    p = buff;
+    while( (c = *path_list++) != NULLCHAR ) {
+        if( IS_PATH_LIST_SEP( c ) ) {
+            fp = check_file( buff, p, name );
+            if( fp != NULL ) {
+                return( fp );
+            }
+            p = buff;
+        } else {
             *p++ = c;
-        } while( (c = *path_list) != NULLCHAR );
-        c = p[-1];
-        if( !IS_PATH_SEP( c ) ) {
-            *p++ = DIR_SEP;
-        }
-        strcpy( p, name );
-        fp = FindSrcFile( buff );
-        if( fp != NULL ) {
-            break;
         }
     }
-    return( fp );
+    return( check_file( buff, p, name ) );
 }
 
 file_handle IncSearch( const char *name )

@@ -10,9 +10,9 @@ int main() {
     fp = fopen( __FILE__, "r" );
     pc = '\n';
     for(;;) {
-	c = fgetc( fp );
-	if( c == EOF ) break;
-	pc = c;
+        c = fgetc( fp );
+        if( c == EOF ) break;
+        pc = c;
     }
     fclose( fp );
     // this source file tests terminating C++ comments

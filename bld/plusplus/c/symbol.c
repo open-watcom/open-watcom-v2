@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1343,7 +1343,7 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
 {
     if( NULL != sym ) {
         if( NULL == Integral64Type( sym->sym_type ) ) {
-            sym->u.sval = con.u._32[I64LO32];
+            sym->u.sval = I64Low( con );
         } else {
             sym->u.pval = ConPoolInt64Add( con );
             sym->flags |= SYMF_CONSTANT_INT64;
@@ -1359,11 +1359,15 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
 {
     pval->type = sym->sym_type;
     if( sym->flags & SYMF_CONSTANT_INT64 ) {
-        pval->u.value = sym->u.pval->u.int64_constant;
+        pval->value = sym->u.pval->u.int64_constant;
     } else if( sym->flags & SYMF_ENUM_UINT ) {
-        Int64FromU32( sym->u.sval, &pval->u.value );
+        Set64ValU32( pval->value, sym->u.sval );
     } else {
-        Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );
+        if( SignedIntType( sym->sym_type ) ) {
+            Set64ValI32( pval->value, sym->u.sval );
+        } else {
+            Set64ValU32( pval->value, sym->u.sval );
+        }
     }
     return( sym );
 }

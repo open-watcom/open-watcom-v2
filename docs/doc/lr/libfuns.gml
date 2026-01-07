@@ -888,6 +888,7 @@
 .fnw _wmkdir                  mkdir                    mkdir.gml     DOS       WIN32
 .fnc mkfifo                   mkfifo                   mkfifo.gml        QXO
 .fnc MK_FP                    MK_FP                    mk_fp.gml     DOS QNX W WIN32
+.fnc _mkgmtime                _mkgmtime                mkgmtime.gml  DOS QNX W WIN32
 .fnc mknod                    mknod                    mknod.gml         QXO
 .fnc mkstemp                  mkstemp                  mkstemp.gml   DOS QNX W WIN32
 .fn7 _mktemp                  _mktemp                  mktemp.gml    DOS       WIN32
@@ -1604,6 +1605,7 @@
 .fnc term_video_on            term_video_on            vid_on.trm        QX40
 .fnc tgamma                   tgamma                   tgamma.gml    DOS QNX W WIN32
 .fnc time                     time                     time.gml      DOS QNX W WIN32
+.fnc timegm                   timegm                   timegm.gml    DOS QNX W WIN32
 .fnc timer_create             timer_create             timercre.gml      QXO
 .fnc timer_delete             timer_delete             timerdel.gml      QXO
 .fnc timer_gettime            timer_gettime            timerget.gml      QXO

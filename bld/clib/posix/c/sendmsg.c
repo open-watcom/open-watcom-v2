@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Copyright (c) 2018 The Open Watcom Contributors. All Rights Reserved.
+*    Copyright (c) 2-2025he Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 

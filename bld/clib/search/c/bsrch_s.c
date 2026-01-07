@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +58,12 @@ _WCRTLINK void * bsearch_s( const void * key, const void * base,
     // nmemb <= RSIZE_MAX
     // size  <= RSIZE_MAX
     // if nmemb > 0 then key, base, compar not NULL
-    if( __check_constraint_maxsize( nmemb ) &&
-        __check_constraint_maxsize( size ) &&
-        ( ( nmemb == 0 ) || __check_constraint_nullptr( key ) &&
-                          __check_constraint_nullptr( base ) &&
-                          __check_constraint_nullptr( compar )) ) {
+    if( __check_constraint_maxsize( nmemb )
+      && __check_constraint_maxsize( size )
+      && ( ( nmemb == 0 )
+      || __check_constraint_nullptr( key )
+      && __check_constraint_nullptr( base )
+      && __check_constraint_nullptr( compar ) ) ) {
 
         if( nmemb == 0 ) {                      /* empty array - nothing to do */
             return( NULL );

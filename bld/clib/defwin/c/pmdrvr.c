@@ -56,7 +56,7 @@ static char  *AboutMsg = DefaultAboutMsg;
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-bool    _SetAboutDlg( const char *title, const char *text )
+bool    _WCNEAR _SetAboutDlg( const char *title, const char *text )
 //=========================================================
 {
     if( title != NULL ) {
@@ -80,8 +80,8 @@ bool    _SetAboutDlg( const char *title, const char *text )
     return( true );
 }
 
-static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
-//===================================================
+static USHORT _WCNEAR _VirtualKey( MPARAM mp1, MPARAM mp2 )
+//=========================================================
 {
     unsigned short      vk;
 

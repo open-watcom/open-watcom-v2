@@ -122,10 +122,6 @@ typedef struct {
 } qnx_linear_item;
 
 typedef struct {
-    unsigned_32 reloc_offset;
-} zdos_reloc_item;
-
-typedef struct {
     unsigned_8          nr_stype;
     unsigned_8          nr_flags;
     signed_16           r32_soff;
@@ -176,7 +172,6 @@ typedef union {
     pe_reloc_item       pe;
     high_pe_reloc_item  hpe;
     elf_reloc_item      elf;
-    zdos_reloc_item     zdos;
 } reloc_item;
 
 typedef struct reloc_info RELOC_INFO;

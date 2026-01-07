@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,15 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
+#include <string.h>
 #include "wresall.h"
-#include "autodep.h"
+#include "wresauto.h"
 #include "reserr.h"
 #include "wresrtns.h"
 
-DepInfo *WResGetAutoDep( const char *fname )
+
+char *WResGetAutoDep( const char *fname )
 {
     FILE            *fp;
     WResDir         dir;
@@ -44,7 +48,7 @@ DepInfo *WResGetAutoDep( const char *fname )
     WResID          *type;
     WResDirWindow   window;
     WResLangInfo    *info;
-    DepInfo         *ret;
+    char            *ret;
     size_t          numread;
 
     ret = NULL;
@@ -89,7 +93,7 @@ DepInfo *WResGetAutoDep( const char *fname )
     return( ret );
 }
 
-void WResFreeAutoDep( DepInfo *ptr )
+void WResFreeAutoDep( char *ptr )
 {
     WRESFREE( ptr );
 }

@@ -81,14 +81,14 @@ DWORD GetAlias( LPDWORD ptr )
 } /* GetAlias */
 
 /*
- * ReleaseAlias - give back a 16 bit alias to 32 bit memory
+ * ReleaseAlias - give back a orig data to 32 bit memory
  */
-void ReleaseAlias( DWORD orig, LPDWORD ptr )
+void ReleaseAlias( LPDWORD ptr, DWORD orig )
 {
     DWORD   alias;
 
     alias = *ptr;
-    if( orig != alias ) {
+    if( alias != orig ) {
         *ptr = orig;
         _WDPMI_FreeAlias( alias );
     }
@@ -137,8 +137,8 @@ BOOL  FAR PASCAL __RegisterClass( LPWNDCLASS wc )
     odata1 = GETALIAS( &wc->lpszMenuName );
     odata2 = GETALIAS( &wc->lpszClassName );
     rc = RegisterClass( wc );
-    RELEASEALIAS( odata2, &wc->lpszClassName );
-    RELEASEALIAS( odata1, &wc->lpszMenuName );
+    RELEASEALIAS( &wc->lpszClassName, odata2 );
+    RELEASEALIAS( &wc->lpszMenuName, odata1 );
 
     return( rc );
 
@@ -225,7 +225,7 @@ int FAR PASCAL __Escape( HDC a, int b, int c, LPSTR d, LPSTR e )
     } else {
         odata = GETALIAS( &d );
         rc = Escape( a, b, c, d, e );
-        RELEASEALIAS( odata, &d );
+        RELEASEALIAS( &d, odata );
     }
     return( rc );
 
@@ -312,8 +312,8 @@ int FAR PASCAL __StartDoc( HDC hdc, LPDOCINFO di )
     odata1 = GETALIAS( &di->lpszDocName );
     odata2 = GETALIAS( &di->lpszOutput );
     rc = StartDoc( hdc, di );
-    RELEASEALIAS( odata2, &di->lpszOutput );
-    RELEASEALIAS( odata1, &di->lpszDocName );
+    RELEASEALIAS( &di->lpszOutput, odata2 );
+    RELEASEALIAS( &di->lpszDocName, odata1 );
     return( rc );
 
 } /* __StartDoc */
@@ -334,7 +334,7 @@ BOOL FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data )
     case HELP_SETWINPOS:
         odata = GETALIAS( &data );
         rc = WinHelp( hwnd, hfile, cmd, data );
-        RELEASEALIAS( odata, &data );
+        RELEASEALIAS( &data, odata );
         break;
     default:
         rc = WinHelp( hwnd, hfile, cmd, data );

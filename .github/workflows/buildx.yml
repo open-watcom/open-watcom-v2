@@ -1,0 +1,135 @@
+name: X-Build
+run-name: Build for single Platform
+on:
+  workflow_call:
+    inputs:
+      args:
+        required: true
+        type: string
+      suffix:
+        required: true
+        type: string
+      gitpath:
+        required: true
+        type: string
+      owtools:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      docbuild:
+        required: false
+        default: ''
+        type: string
+      run_tests:
+        required: false
+        default: ''
+        type: string
+
+env:
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
+  OWUSETARARCHIVE:  '1'
+
+jobs:
+  boot-x:
+    name: Bootstrap
+    runs-on: ${{inputs.image}}
+
+    steps:
+    - if: runner.os == 'Windows'
+      name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Bootstrap
+      uses: ./.github/actions/boot
+      with:
+        args:       ${{inputs.args}}
+        suffix:     ${{inputs.suffix}}
+        owtools:    ${{inputs.owtools}}
+
+  build-x:
+    name: Build
+    needs: boot-x
+    runs-on: ${{inputs.image}}
+    timeout-minutes: 120
+
+    steps:
+    - if: runner.os == 'Windows'
+      name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: ./.github/actions/dosboxin
+    - name: Build
+      uses: ./.github/actions/build
+      with:
+        args:       ${{inputs.args}}
+        gitpath:    ${{inputs.gitpath}}
+        suffix:     ${{inputs.suffix}}
+        owtools:    ${{inputs.owtools}}
+
+  docsbuild-x:
+    if: inputs.docbuild == '1'
+    name: Docs Build
+    needs: boot-x
+    runs-on: ${{inputs.image}}
+    strategy:
+      matrix:
+        include:
+        - title: DOS
+          doctype: docdos
+          timeout: 35
+        - title: OS/2
+          doctype: docos2
+          timeout: 35
+        - title: NT
+          doctype: docnt
+          timeout: 30
+        - title: CHM
+          doctype: docchm
+          timeout: 30
+        - title: PDF
+          doctype: docpdf
+          timeout: 20
+        - title: WIN
+          doctype: docwin
+          timeout: 40
+    timeout-minutes: ${{matrix.timeout}}
+
+    steps:
+    - if: runner.os == 'Windows'
+      name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Install DOSBOX
+      uses: ./.github/actions/dosboxin
+    - name: Build
+      uses: ./.github/actions/docbuild
+      with:
+        args:       ${{inputs.args}}
+        gitpath:    ${{inputs.gitpath}}
+        target:     ${{matrix.doctype}}
+        suffix:     ${{inputs.suffix}}
+        doc_suffix: ${{matrix.doctype}} ${{inputs.args}}
+        owtools:    ${{inputs.owtools}}
+
+  tests-x:
+    if: inputs.run_tests == '1'
+    needs: build-x
+    name: Tests
+    uses: ./.github/workflows/tests.yml
+    with:
+      suffix:   ${{inputs.suffix}}
+      image:    ${{inputs.image}}

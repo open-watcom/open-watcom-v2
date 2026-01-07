@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,11 +236,11 @@ STATIC bool fillBuffer( void )
 static bool needQuotes( const char *name )
 /****************************************/
 {
-	return( strchr( name, ' ' ) != NULL );
+    return( strchr( name, ' ' ) != NULL );
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 bool InsFile( const char *name, bool envsearch )
 /***********************************************
@@ -283,7 +283,7 @@ bool InsFile( const char *name, bool envsearch )
     return( false );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 void InsOpenFile( FILE *fp )

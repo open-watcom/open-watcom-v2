@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <unistd.h>
 #include <process.h>
@@ -39,7 +40,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -65,13 +65,16 @@ _WCRTLINK char *_cmdname( char *name )
 
 _WCRTLINK char *_cmdname( char *name )
 {
-    int save_errno = _RWD_errno;
-    int result = readlink( "/proc/self/exe", name, PATH_MAX );
+    int             errno_save;
+    int             result;
+
+    errno_save = lib_get_errno();
+    result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
     }
-    _RWD_errno = save_errno;
+    lib_set_errno( errno_save );
 
     /* fall back to argv[0] if readlink doesn't work */
     if( result == -1 || result == PATH_MAX )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,6 @@
  * High 32-bit contains value/error flag and low 32-bit contains value.
  */
 
-#include "rterrno.h"
-
 typedef unsigned long long      syscall_res;
 
 /* macros to access sys_call.. routines return/error value */
@@ -52,7 +50,7 @@ typedef unsigned long long      syscall_res;
 
 #define __syscall_retcode( res, val )                   \
     if( __syscall_iserror( res ) ) {                    \
-        _RWD_errno = __syscall_errno( res );            \
+        lib_set_errno( __syscall_errno( res ) );        \
         res = (syscall_res)(val);                       \
     }
 

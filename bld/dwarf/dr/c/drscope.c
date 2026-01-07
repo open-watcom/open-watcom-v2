@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
 // Walk in to of starting at ccu
 //************************************************************
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = DR_FindCompileInfo( of );
     ScopeCtlInit( &container->ctl );

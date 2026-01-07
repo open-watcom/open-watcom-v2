@@ -1,0 +1,10 @@
+#pmake: binmake
+
+host_os  = $(bld_os)
+host_cpu = $(bld_cpu)
+
+!ifndef testbootstrap
+! include ../master.mif
+!endif
+
+nothing: .SYMBOLIC

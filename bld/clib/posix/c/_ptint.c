@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <pthread.h>
 #include <process.h>
 #include <stdio.h>
@@ -38,7 +39,6 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
-#include "rterrno.h"
 #include "thread.h"
 #include "rtinit.h"
 #include "atomic.h"
@@ -189,7 +189,7 @@ pthread_key_t __register_pkey( void (*destructor)(void*) )
 
     newkey = (struct __ptkeylist_struct *)malloc(sizeof(struct __ptkeylist_struct));
     if( newkey == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (pthread_key_t)(-1) );
     }
 
@@ -507,7 +507,7 @@ pthread_t __register_thread( void )
 
     newthread = (__ptcatalog_node *)malloc(sizeof(__ptcatalog_node));
     if( newthread == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (pthread_t)-1 );
     }
 
@@ -561,7 +561,7 @@ pthread_t __register_thread( void )
         }
         __ptcatalog_unlock();
     } else {
-        _RWD_errno = EBUSY;
+        lib_set_errno( EBUSY );
         return( (pthread_t)-1 );
     }
 

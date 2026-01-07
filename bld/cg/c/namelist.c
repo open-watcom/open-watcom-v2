@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "hwreg.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "zoiks.h"
 #include "namelist.h"
 #include "data.h"
@@ -43,6 +42,7 @@
 #include "intrface.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "i64.h"
 
 
 static  pointer         *FrlHead[N_CLASS_MAX];
@@ -102,8 +102,9 @@ static name *findConst64( uint_32 low, uint_32 high, float_handle cf_value )
     last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
-            if( new_c->c.lo.u.uint_value == low && new_c->c.hi.u.uint_value == high ) {
-                if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
+            if( new_c->c.lo.u.uint_value == low
+              && new_c->c.hi.u.uint_value == high ) {
+                if( CFCompare( new_c->c.u.cfval, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;
                     new_c->n.next_name = Names[N_CONSTANT];
@@ -140,11 +141,13 @@ name    *AllocConst( float_handle cf_value )
 
     int_value = CFCnvF32( cf_value );
     test = CFTest( cf_value );
-    if( test == 0 && ConstZero != NULL ) {
+    if( test == 0
+      && ConstZero != NULL ) {
         CFFree( &cgh, cf_value );
         return( ConstZero );
     }
-    if( int_value == 1 && ConstOne != NULL ) {
+    if( int_value == 1
+      && ConstOne != NULL ) {
         CFFree( &cgh, cf_value );
         return( ConstOne );
     }
@@ -152,7 +155,7 @@ name    *AllocConst( float_handle cf_value )
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.lo.u.int_value == int_value ) {
-                if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
+                if( CFCompare( new_c->c.u.cfval, cf_value ) == 0 ) {
                     CFFree( &cgh, cf_value );
                     // move constant found to front of list
                     *last = new_c->n.next_name;
@@ -165,7 +168,7 @@ name    *AllocConst( float_handle cf_value )
         last = &new_c->n.next_name;
     }
     new_c = AllocName( N_CONSTANT, XX, 0 );
-    new_c->c.value = cf_value;
+    new_c->c.u.cfval = cf_value;
     new_c->c.lo.u.int_value = int_value;
     if( test < 0 ) {
         new_c->c.hi.u.int_value = -1; //sign extend
@@ -174,39 +177,43 @@ name    *AllocConst( float_handle cf_value )
     }
     new_c->c.static_defn = NULL;
     new_c->c.const_type = CONS_ABSOLUTE;
-    if( ConstOne == NULL && new_c->c.lo.u.int_value == 1 ) {
+    if( ConstOne == NULL
+      && new_c->c.lo.u.int_value == 1 ) {
         ConstOne = new_c;
     }
-    if( ConstZero == NULL && new_c->c.lo.u.int_value == 0 && test == 0 ) {
+    if( ConstZero == NULL
+      && new_c->c.lo.u.int_value == 0
+      && test == 0 ) {
         ConstZero = new_c;
     }
     if( int_value == 0 ) {
-        if( CFIsI64( cf_value ) || CFIsU64( cf_value ) ) {
+        if( CFIsI64( cf_value )
+          || CFIsU64( cf_value ) ) {
             unsigned_64         i64val;
 
             i64val = CFCnvF64( cf_value );
-            new_c->c.lo.u.int_value = i64val.u._32[I64LO32];
-            new_c->c.hi.u.int_value = i64val.u._32[I64HI32];
+            new_c->c.lo.u.int_value = I64Low( i64val );
+            new_c->c.hi.u.int_value = I64High( i64val );
         }
     }
     return( new_c );
 }
 
-name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, type_class_def type_class )
-/********************************************************************************************************/
+name    *AllocAddrConst( name *op, int seg, constant_type_class const_type, type_class_def type_class )
+/*****************************************************************************************************/
 {
     name        *new_c;
 
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == const_type
-          && new_c->c.value == value
+          && new_c->c.u.op == op
           && new_c->n.type_class == type_class
           && new_c->c.lo.u.int_value == seg ) {
             return( new_c );
         }
     }
     new_c = AllocName( N_CONSTANT, type_class, 0 );
-    new_c->c.value = value;
+    new_c->c.u.op = op;
     new_c->c.lo.u.int_value = seg;
     new_c->c.static_defn = NULL;
     new_c->c.const_type = const_type;
@@ -217,9 +224,11 @@ name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, t
 name    *FindIntValue( int_32 value )
 /***********************************/
 {
-    if( value == 0 && ConstZero != NULL )
+    if( value == 0
+      && ConstZero != NULL )
         return( ConstZero );
-    if( value == 1 && ConstOne != NULL )
+    if( value == 1
+      && ConstOne != NULL )
         return( ConstOne );
     return( NULL );
 }
@@ -280,7 +289,7 @@ name    *AllocS64Const( uint_32 low, uint_32 high )
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
-        new_c->c.value = cf_value;
+        new_c->c.u.cfval = cf_value;
         new_c->c.lo.u.uint_value = low;
         new_c->c.hi.u.uint_value = high;
         new_c->c.static_defn = NULL;
@@ -300,7 +309,7 @@ name    *AllocU64Const( uint_32 low, uint_32 high )
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
-        new_c->c.value = cf_value;
+        new_c->c.u.cfval = cf_value;
         new_c->c.lo.u.uint_value = low;
         new_c->c.hi.u.uint_value = high;
         new_c->c.static_defn = NULL;
@@ -324,7 +333,7 @@ constant_defn   *GetFloat( name *cons, type_class_def type_class )
     defn = AllocFrl( &ConstDefnFrl, sizeof( constant_defn ) );
     defn->const_class = type_class;
     defn->label = NULL;
-    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[type_class] );
+    CFCnvTarget( cons->c.u.cfval, &defn->buffer, TypeClassSize[type_class] );
     defn->next_defn = cons->c.static_defn;
     cons->c.static_defn = defn;
     return( defn );
@@ -342,17 +351,21 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
     other = NULL;
     xx = NULL;
     for( new_m = Names[N_MEMORY]; new_m != NULL; new_m = new_m->n.next_name ) {
-        if( new_m->v.symbol == symbol && new_m->m.memory_type == class ) {
+        if( new_m->v.symbol == symbol
+          && new_m->m.memory_type == class ) {
             if( new_m->v.offset != offset ) {
                 other = new_m;
                 new_m->v.usage |= USE_MEMORY | NEEDS_MEMORY;
             } else {
-                if( type_class == XX && size == 0 )
-                    return( &( new_m->m ) ); /* 89-07-07 */
-                if( new_m->n.type_class == type_class && type_class != XX ) {/*exact!*/
+                if( type_class == XX
+                  && size == 0 )
+                    return( &( new_m->m ) );
+                if( new_m->n.type_class == type_class   /*exact!*/
+                  && type_class != XX ) {
                     return( &( new_m->m ) );
                 }
-                if( new_m->n.type_class == XX && new_m->n.size == size ) {
+                if( new_m->n.type_class == XX
+                  && new_m->n.size == size ) {
                     xx = new_m;
                 }
                 other = new_m;
@@ -381,12 +394,14 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
         new_m->v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
     }
-    if( class == CG_FE && _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
+    if( class == CG_FE
+      && _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         new_m->v.usage |= USE_MEMORY;
     }
     new_m->v.block_usage = 0;
     new_m->v.conflict = NULL;
-    if( class == CG_LBL || class == CG_CLB ) {
+    if( class == CG_LBL
+      || class == CG_CLB ) {
         new_m->v.usage |= USE_MEMORY; /* so not put in conflict graph*/
     }
     return( &( new_m->m ) );
@@ -411,13 +426,17 @@ name    *STempOffset( name *temp, type_length offset, type_class_def type_class,
     new_t = temp->t.alias;
     xx = NULL;
     for( ;; ) {
-        if( new_t->t.v.id == temp->t.v.id && new_t->v.offset == offset ) {
-            if( type_class == XX && size == 0 )
+        if( new_t->t.v.id == temp->t.v.id
+          && new_t->v.offset == offset ) {
+            if( type_class == XX
+              && size == 0 )
                 return( new_t ); /* 89-07-07 */
-            if( new_t->n.type_class == type_class && type_class != XX ) {
+            if( new_t->n.type_class == type_class
+              && type_class != XX ) {
                 return( new_t ); /* exact match */
             }
-            if( new_t->n.type_class == XX && new_t->n.size == size ) {
+            if( new_t->n.type_class == XX
+              && new_t->n.size == size ) {
                 xx = new_t; /* an XX with the right size */
             }
         }
@@ -436,7 +455,7 @@ name    *STempOffset( name *temp, type_length offset, type_class_def type_class,
     new_t->v.usage = temp->v.usage;
     new_t->v.block_usage = 0;
     new_t->v.conflict = temp->v.conflict;
-    new_t->t.u.block_id = temp->t.u.block_id;
+    new_t->t.u.blk_id = temp->t.u.blk_id;
     new_t->t.alias = temp->t.alias;
     temp->t.alias = new_t;
     new_t->t.temp_flags = ALIAS;
@@ -463,7 +482,7 @@ name    *SAllocTemp( type_class_def type_class, type_length size )
     new_t->v.usage = 0;
     new_t->v.block_usage = 0;
     new_t->v.conflict = NULL;
-    new_t->t.u.block_id = NO_BLOCK_ID;
+    new_t->t.u.blk_id = BLK_ID_NONE;
     new_t->t.location = NO_LOCATION;
     new_t->t.alias = new_t;
     new_t->t.temp_flags = 0;
@@ -501,7 +520,8 @@ name    *SAllocUserTemp( pointer symbol, type_class_def type_class, type_length 
         LkAddBackUserTemp( symbol, new_t );
         return( new_t );
     } else {
-        if( new_t->n.type_class == type_class && type_class != XX )
+        if( new_t->n.type_class == type_class
+          && type_class != XX )
             return( new_t );
         return( STempOffset( new_t, 0, type_class, size ) );
     }
@@ -569,8 +589,10 @@ name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def
           && new_x->i.constant == offset
           && new_x->i.scale == scale
           && new_x->i.index_flags == flags
-          && ( ( new_x->n.type_class == type_class && new_x->n.type_class != XX )
-          || ( new_x->n.type_class == XX && new_x->n.size == size ) ) ) {
+          && ( ( new_x->n.type_class == type_class
+          && new_x->n.type_class != XX )
+          || ( new_x->n.type_class == XX
+          && new_x->n.size == size ) ) ) {
             if( type_class != XX ) {
                 new_x->n.type_class = type_class;
                 new_x->n.size = TypeClassSize[type_class];
@@ -598,7 +620,7 @@ name    *SAllocIndex( name *index, name *base, type_length offset,
                             type_class_def type_class, type_length size )
 /***********************************************************************/
 {
-    return( ScaleIndex( index, base, offset, type_class, size, 0, EMPTY ) );
+    return( ScaleIndex( index, base, offset, type_class, size, SCALE_NONE, EMPTY ) );
 }
 
 
@@ -675,7 +697,7 @@ void    FreeAName( name *op )
             ConstOne = NULL;
         }
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            CFFree( &cgh, op->c.value );
+            CFFree( &cgh, op->c.u.cfval );
             for( defn = op->c.static_defn; defn != NULL; defn = next ) {
                 next = defn->next_defn;
                 FrlFreeSize( &ConstDefnFrl, (pointer *)defn, sizeof( constant_defn ) );

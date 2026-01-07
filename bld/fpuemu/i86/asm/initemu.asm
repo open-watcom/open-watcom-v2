@@ -139,7 +139,7 @@ xchg_vects      endp
 ;       __no87 is not 0 if NO87 environment variable is present
 
 public  __init_87_emulator
-__init_87_emulator proc
+__init_87_emulator proc near
         push    bx                      ; save bx
         call    __x87id
         mov     __dos87real,al          ; set installed 80x87
@@ -192,7 +192,7 @@ __init_87_emulator endp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 public __fini_87_emulator
-__fini_87_emulator proc
+__fini_87_emulator proc near
         mov     word ptr __dos87emucall,0
         call    xchg_vects
         ret
@@ -301,7 +301,7 @@ _TEXT   ends
 
 include xinit.inc
 
-        xinit   __init_87_emulator,INIT_PRIORITY_FPU
-        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
+        xinitn  __init_87_emulator, INIT_PRIORITY_FPU
+        xfinin  __fini_87_emulator, INIT_PRIORITY_FPU
 
         end

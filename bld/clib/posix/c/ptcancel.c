@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -38,7 +39,6 @@
 #ifdef __UNIX__
 #include <signal.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
 
 #include "_ptint.h"
@@ -78,7 +78,6 @@ _WCRTLINK int pthread_cancel( pthread_t __thread )
 {
     pid_t internal;
     int   cancel_status;
-    int   ret;
 
     cancel_status = __get_thread_cancel_status( __thread );
 
@@ -88,19 +87,17 @@ _WCRTLINK int pthread_cancel( pthread_t __thread )
     if( CANCEL_DEFERED( cancel_status ) ) {
         cancel_status |= PTHREAD_CANCEL_SET;
         __set_thread_cancel_status( __thread, cancel_status );
-    } else {
-#ifdef __UNIX__
-        internal = __get_thread_id( __thread );
-        ret = kill( internal, SIGCANCEL );
-        if( ret != 0 ) {
-            ret = _RWD_errno;
-        }
-#else
-        ret = ENOSYS;
-#endif
+        return( 0 );
     }
-
-    return( ret );
+#ifdef __UNIX__
+    internal = __get_thread_id( __thread );
+    if( kill( internal, SIGCANCEL ) ) {
+        return( lib_get_errno() );
+    }
+    return( 0 );
+#else
+    return( ENOSYS );
+#endif
 }
 
 _WCRTLINK int pthread_setcancelstate( int __state, int *__oldstate )

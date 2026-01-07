@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
 #include "thread.h"
-#include "rterrno.h"
 #include "_ptint.h"
 #ifdef __LINUX__
 #include "tgkill.h"
@@ -58,13 +58,10 @@ _WCRTLINK int pthread_kill(pthread_t thread, int sig)
 #ifdef __LINUX__
         return( __tgkill(ppid, tpid, sig) );
 #else
-        _RWD_errno = ENOSYS;
+        lib_set_errno( ENOSYS );
         return( -1 );
 #endif
     }
-
-    _RWD_errno = EINVAL;
-
-    return( -1 );
+    return( lib_set_EINVAL() );
 }
 

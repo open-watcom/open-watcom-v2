@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,15 @@
 #ifndef _INITARG_H_INCLUDED
 #define _INITARG_H_INCLUDED
 
-extern int         __F_NAME(_argc,_wargc);    /* argument count  */
-extern CHAR_TYPE **__F_NAME(_argv,_wargv);    /* argument vector */
+#include "clibint.h"
 
-extern void __F_NAME(__Init_Argv,__wInit_Argv)( void );
-extern void __F_NAME(__Fini_Argv,__wFini_Argv)( void );
+
+extern int          _wargc;         /* wide arguments count */
+extern wchar_t      **_wargv;       /* wide argument vector */
+
+
+extern void _WCNEAR __F_NAME(__Init_Argv,__wInit_Argv)( void );
+extern void _WCNEAR __F_NAME(__Fini_Argv,__wFini_Argv)( void );
 
 _WCRTDATA extern int        __F_NAME(___Argc,___wArgc); /* argument count */
 _WCRTDATA extern CHAR_TYPE**__F_NAME(___Argv,___wArgv); /* argument vector */

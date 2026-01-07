@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +32,13 @@
 
 #include <ctype.h>
 #include "cvars.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "pdefn2.h"
 #include "caux.h"
 #include "cfeinfo.h"
 #include "asmstmt.h"
+#include "scan.h"
 #include "toggles.h"
 #ifdef DEVBUILD
     #include "togglesd.h"
@@ -873,7 +875,7 @@ static void getPackArgs( void )
         if( CurToken == T_COMMA ) {
             PPNextToken();
             if( ExpectingConstant() ) {
-                SetPackAmount( Constant );
+                SetPackAmount( U32FetchTrunc( Constant64 ) );
             }
             PPNextToken();
         }
@@ -904,7 +906,7 @@ static void pragPack( void )
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         if( CurToken == T_CONSTANT ) {
-            SetPackAmount( Constant );
+            SetPackAmount( U32FetchTrunc( Constant64 ) );
             PPNextToken();
         } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
             getPackArgs();
@@ -1044,10 +1046,13 @@ static void changeStatus( bool enabled, int msg_index )
 bool GetMsgNum( const char *str, msg_codes *val )
 /***********************************************/
 {
+    int     c;
+
     /*
      * skip, C++ compiler messages, prefixed by 'P' character
      */
-    if( tolower( *(unsigned char *)str ) == 'p' ) {
+    c = *(unsigned char *)str;
+    if( ONE_CASE_EQUAL( c, 'P' ) ) {
         *val = 0;
         return( true );
     }
@@ -1056,7 +1061,7 @@ bool GetMsgNum( const char *str, msg_codes *val )
      * or old messages without prefix which can be C or C++ message
      * it is for backward compatibility
      */
-    if( tolower( *(unsigned char *)str ) == 'c' )
+    if( ONE_CASE_EQUAL( c, 'C' ) )
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
         *val = atol( str );
@@ -1069,7 +1074,7 @@ static bool getMessageNum( msg_codes *val )
 /*****************************************/
 {
     if( CurToken == T_CONSTANT ) {
-        *val = Constant;
+        *val = U32FetchTrunc( Constant64 );
         return( true );
     } else if( CurToken == T_ID ) {
         return( GetMsgNum( Buffer, val ) );
@@ -1184,7 +1189,7 @@ static bool pragWarning( void )
     if( !ignore ) {
         NextToken();
         if( CurToken == T_CONSTANT ) {
-            level = Constant;
+            level = U32FetchTrunc( Constant64 );
             NextToken();
             if( change_all ) {
                 warnChangeLevels( level );
@@ -1440,7 +1445,11 @@ static void pragUnroll( void )
         unroll_count = 0;
         PPNextToken();
         if( CurToken == T_CONSTANT ) {
-            unroll_count = ( Constant > 255 ) ? 255 : (unroll_type)Constant;
+            if( U64CmpU32( Constant64, 255 ) > 0 ) {
+                unroll_count = (unroll_type)255;
+            } else {
+                unroll_count = (unroll_type)U8FetchTrunc( Constant64 );
+            }
             PPNextToken();
         }
         UnrollCount = unroll_count;

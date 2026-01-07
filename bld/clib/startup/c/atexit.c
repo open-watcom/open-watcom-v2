@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ _WRTLFCONV int atexit( void (_WCCALLBACK * func)( void ) )
     return( -1 );                   /* indicate no room */
 }
 
-static void _Full_at_exit_rtn( void )
+static void _WCNEAR _Full_at_exit_rtn( void )
 {
     int         count;
 
@@ -73,4 +73,4 @@ static void _Full_at_exit_rtn( void )
     }
 }
 
-AYI( _Full_at_exit_rtn, INIT_PRIORITY_PROGRAM + 32 );
+AYIN( _Full_at_exit_rtn, INIT_PRIORITY_PROGRAM + 32 );

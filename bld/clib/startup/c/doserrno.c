@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,23 +37,46 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
+#include "doserrno.h"
 #include "thread.h"
 
 
-#undef _doserrno
+#if defined( __NETWARE__ )
+#elif defined( __QNX__ )
+#elif defined( __LINUX__ )
+#elif defined( __RDOSDEV__ )
 
-#if !defined(__UNIX__) && !defined( __NETWARE__ )
-
-#if !defined( __SW_BM ) || defined( __RDOSDEV__ )
-
-_WCRTDATA int   _doserrno;
-
-#endif
+int   _WCNEAR _doserrno;
 
 _WCRTLINK int (*__get_doserrno_ptr( void ))
 {
-    return( &_RWD_doserrno );
+    return( &_doserrno );
+}
+
+#elif defined( __MT__ )
+
+void _WCNEAR __set_doserrno( int err )
+{
+    __THREADDATAPTR->__doserrnoP = err;
+}
+
+int _WCNEAR __get_doserrno( void )
+{
+    return( __THREADDATAPTR->__doserrnoP );
+}
+
+_WCRTLINK int (*__get_doserrno_ptr( void ))
+{
+    return( &(__THREADDATAPTR->__doserrnoP) );
+}
+
+#else
+
+int   _WCNEAR _doserrno;
+
+_WCRTLINK int (*__get_doserrno_ptr( void ))
+{
+    return( &_doserrno );
 }
 
 #endif

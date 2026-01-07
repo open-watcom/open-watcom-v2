@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <time.h>
 #include <process.h>
@@ -39,7 +40,6 @@
 #include <dos.h>
 #include <windows.h>
 #include "roundmac.h"
-#include "rterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
 #include "ntext.h"
@@ -110,7 +110,7 @@ unsigned long __CBeginThreadEx(
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( 0 );
     }
 

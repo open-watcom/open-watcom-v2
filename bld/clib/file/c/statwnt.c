@@ -33,6 +33,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 /* most includes should go after this line */
 #include <stddef.h>
 #include <sys/types.h>
@@ -47,19 +48,15 @@
 #include <dos.h>
 #include <mbstring.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
-#include "seterrno.h"
 #include "thread.h"
 #include "pathmac.h"
-#include "i64.h"
+#include "libi64.h"
 
 
-#define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
-
-static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
+static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
     DWORD               mode = 0L;
     CHAR_TYPE *         ext;
@@ -166,7 +163,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 #else
     if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
@@ -190,7 +187,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
         if( __lib_GetDriveType( fullpath ) == DRIVE_UNKNOWN ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( -1 );
         }
 
@@ -218,7 +215,8 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     buf->st_rdev = buf->st_dev;
 
 #ifdef __INT64__
-    MAKE_SIZE64( buf->st_size, ffd.nFileSizeHigh, ffd.nFileSizeLow );
+    LIB_LODWORD( buf->st_size ) = ffd.nFileSizeLow;
+    LIB_HIDWORD( buf->st_size ) = ffd.nFileSizeHigh;
 #else
     buf->st_size = ffd.nFileSizeLow;
 #endif

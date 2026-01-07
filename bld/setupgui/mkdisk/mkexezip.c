@@ -38,7 +38,7 @@
 #include "wzipcdir.h"
 
 
-#define BUFFER_SIZE 		65536
+#define BUFFER_SIZE         65536
 
 #define SEEK_POSBACK(p)     (-(long)(p))
 

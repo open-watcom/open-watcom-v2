@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ void DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl )
     cli->defset = set_hdl;
 }
 
-dw_handle DWENTRY DWFundamental( dw_client cli, char const *name, unsigned fund_idx, unsigned size )
+dw_handle DWENTRY DWFundamental( dw_client cli, char const *name, dw_ftype fund_idx, unsigned size )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -86,7 +86,7 @@ dw_handle DWENTRY DWModifier( dw_client cli, dw_handle hdl, uint modifiers )
     dw_handle                   new_hdl = 0;
     abbrev_code                 abbrev;
 
-    _Validate( hdl != 0 );
+    _ValidateHandle( hdl );
     while( modifiers != 0 ) {
         if( modifiers & DW_MOD_CONSTANT ) {
             abbrev = AB_CONST_TYPE;
@@ -111,7 +111,7 @@ dw_handle DWENTRY DWModifier( dw_client cli, dw_handle hdl, uint modifiers )
 }
 
 
-void DW_EmitAccessFlags( dw_client cli, uint access_flags )
+void DW_EmitAccessFlags( dw_client cli, dw_flags access_flags )
 {
     access_flags &= DW_FLAG_ACCESS_MASK;
     switch( access_flags ) {
@@ -127,7 +127,7 @@ void DW_EmitAccessFlags( dw_client cli, uint access_flags )
 }
 
 
-static void emitCommonTypeInfo( dw_client cli, abbrev_code abbrev, const char *name, uint access_flags )
+static void emitCommonTypeInfo( dw_client cli, abbrev_code abbrev, const char *name, dw_flags access_flags )
 {
     if( name != NULL )
         abbrev |= AB_NAME;
@@ -140,7 +140,7 @@ static void emitCommonTypeInfo( dw_client cli, abbrev_code abbrev, const char *n
 }
 
 
-dw_handle DWENTRY DWTypedef( dw_client cli, dw_handle base_type, const char *name, dw_addr_offset start_scope, uint flags )
+dw_handle DWENTRY DWTypedef( dw_client cli, dw_handle base_type, const char *name, dw_addr_offset start_scope, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -148,7 +148,7 @@ dw_handle DWENTRY DWTypedef( dw_client cli, dw_handle base_type, const char *nam
     /* unused parameters */ (void)start_scope;
 
     _Validate( name != NULL );
-    _Validate( base_type != 0 );
+    _ValidateHandle( base_type );
     new_hdl = DW_GetHandle( cli );
     abbrev = AB_TYPEDEF_TYPE | AB_START_REF;
     emitCommonTypeInfo( cli, abbrev , name, flags );
@@ -171,21 +171,20 @@ dw_handle DWENTRY DWRefPCH( dw_client cli, uint_32 ref )
     return( new_hdl );
 }
 
-void DW_WriteAddressClass( dw_client cli, uint flags )
+void DW_WriteAddressClass( dw_client cli, dw_flags flags )
 {
-    flags &= DW_PTR_TYPE_MASK;
-    if( flags ) {
-        DW_Info8( cli, flags >> DW_PTR_TYPE_SHIFT );
+    if( GET_FLAG_PTR_TYPE( flags ) ) {
+        DW_Info8( cli, GET_FLAG_PTR_TYPE( flags ) );
     }
 }
 
 
-dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, uint flags )
+dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    _Validate( base_type != 0 );
+    _ValidateHandle( base_type );
     new_hdl = DW_GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
     if( flags & DW_FLAG_REFERENCE )
@@ -201,12 +200,12 @@ dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, uint flags )
 }
 
 
-dw_handle DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_handle seg, uint flags )
+dw_handle DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_handle seg, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    _Validate( base_type != 0 );
+    _ValidateHandle( base_type );
     new_hdl = DW_GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
     if( seg )
@@ -229,7 +228,7 @@ dw_handle DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_coun
     abbrev_code                 abbrev;
 
     new_hdl = DW_GetHandle( cli );
-    _Validate( elt_type != 0 );
+    _ValidateHandle( elt_type );
     abbrev = AB_SIMPLE_ARRAY_TYPE;
     DW_StartDIE( cli, abbrev );
     DW_InfoULEB128( cli, elt_count );
@@ -238,7 +237,7 @@ dw_handle DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_coun
     return( new_hdl );
 }
 
-dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint_32 stride_size, const char *name, dw_addr_offset start_scope, uint access_flags )
+dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint_32 stride_size, const char *name, dw_addr_offset start_scope, dw_flags access_flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -246,7 +245,7 @@ dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint_32 strid
     /* unused parameters */ (void)start_scope;
 
     new_hdl = DW_GetHandle( cli );
-    _Validate( elt_type != 0 );
+    _ValidateHandle( elt_type );
     abbrev = AB_SIBLING;
     if( stride_size != 0 ) {
         abbrev |= AB_ARRAY_TYPE_WITH_STRIDE;
@@ -318,7 +317,7 @@ dw_handle DWENTRY DWStruct( dw_client cli, dw_struct_type kind )
 }
 
 
-void DWENTRY DWBeginStruct( dw_client cli, dw_handle struct_hdl, dw_size_t size, const char *name, dw_addr_offset start_scope, uint flags )
+void DWENTRY DWBeginStruct( dw_client cli, dw_handle struct_hdl, dw_size_t size, const char *name, dw_addr_offset start_scope, dw_flags flags )
 {
     abbrev_code                 abbrev;
     dw_struct_type              kind;
@@ -357,7 +356,7 @@ void DWENTRY DWAddFriend( dw_client cli, dw_handle friend )
 }
 
 
-dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_loc_handle loc, uint flags )
+dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_loc_handle loc, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -386,23 +385,23 @@ dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_lo
 
 
 
-dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, const char *name, uint flags )
+dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, const char *name, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    _Validate( field_hdl );
-    _Validate( !(flags & DW_FLAG_STATIC) ); // use DWVariable dummy
+    _ValidateHandle( field_hdl );
+    _Validate( (flags & DW_FLAG_STATIC) == 0 ); // use DWVariable dummy
     new_hdl = DW_LabelNewHandle( cli );
     abbrev = AB_FIELD;
     if( (flags & DW_FLAG_ACCESS_MASK) != DW_FLAG_PUBLIC ){ // not the default
         abbrev |= AB_OPACCESS;
     }
-    if( flags & DW_FLAG_ARTIFICIAL ){
+    if( flags & DW_FLAG_ARTIFICIAL ) {
         abbrev |= AB_ARTIFICIAL;
     }
     DW_StartDIE( cli, abbrev );
-    if( abbrev & AB_OPACCESS ){
+    if( abbrev & AB_OPACCESS ) {
         /* AT_accessibility */
         DW_EmitAccessFlags( cli, flags );
     }
@@ -428,12 +427,12 @@ dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle 
 }
 
 
-dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, dw_size_t byte_size, uint bit_offset, uint bit_size, const char *name, uint flags )
+dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_handle loc, dw_size_t byte_size, uint bit_offset, uint bit_size, const char *name, dw_flags flags )
 {
     abbrev_code                 abbrev;
     dw_handle                   new_hdl;
 
-    _Validate( field_hdl );
+    _ValidateHandle( field_hdl );
     new_hdl = DW_LabelNewHandle( cli );
     abbrev = AB_BITFIELD;
     if( byte_size )
@@ -476,7 +475,7 @@ void DWENTRY DWEndStruct( dw_client cli )
 }
 
 
-dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, uint flags )
+dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -509,17 +508,17 @@ void DWENTRY DWEndEnumeration( dw_client cli )
 }
 
 
-dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, const char *name, dw_addr_offset start_scope, uint flags )
+dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, const char *name, dw_addr_offset start_scope, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
     /* unused parameters */ (void)start_scope;
 
-    _Validate( return_type != 0 );
+    _ValidateHandle( return_type );
     new_hdl = DW_GetHandle( cli );
     abbrev = AB_SUBROUTINE_TYPE | AB_SIBLING;
-    if( flags & DW_PTR_TYPE_MASK )
+    if( flags & DW_FLAG_PTR_TYPE_MASK )
         abbrev |= AB_ADDRESS_CLASS;
     emitCommonTypeInfo( cli, abbrev, name, flags );
     if( abbrev & AB_ADDRESS_CLASS ) {
@@ -543,7 +542,7 @@ dw_handle DWENTRY DWAddParmToSubroutineType( dw_client cli, dw_handle parm_type,
 
     //TODO: change interface
 
-    _Validate( parm_type != 0 );
+    _ValidateHandle( parm_type );
     new_hdl = DW_LabelNewHandle( cli );
     abbrev = AB_FORMAL_PARM_TYPE;
     if( name != NULL )
@@ -576,7 +575,7 @@ void DWENTRY DWEndSubroutineType( dw_client cli )
 }
 
 
-dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, uint flags )
+dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, dw_flags flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -601,7 +600,7 @@ dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_
 }
 
 
-dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_handle loc, dw_handle base_type, const char *name, unsigned flags )
+dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_handle loc, dw_handle base_type, const char *name, dw_flags flags )
 {
     abbrev_code                 abbrev;
     dw_handle                   new_hdl;
@@ -610,7 +609,7 @@ dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_
     abbrev = AB_MEMBER_POINTER;
     if( name != NULL )
         abbrev |= AB_NAME;
-    if( flags & DW_PTR_TYPE_MASK )
+    if( flags & DW_FLAG_PTR_TYPE_MASK )
         abbrev |= AB_ADDRESS_CLASS;
     DW_StartDIE( cli, abbrev );
     /* AT_name */

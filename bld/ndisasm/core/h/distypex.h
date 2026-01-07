@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,20 +43,6 @@ typedef struct dis_range        dis_range;
 typedef struct dis_handle       dis_handle;
 
 typedef unsigned_32             dis_opcode;
-typedef union {
-    union {
-        unsigned_8  _8[8];
-        unsigned_16 _16[4];
-        unsigned_32 _32[2];
-        uint_64     _64[1];
-    } u;
-    union {
-        signed_8    _8[8];
-        signed_16   _16[4];
-        signed_32   _32[2];
-        int_64      _64[1];
-    } s;
-} dis_value;
 typedef unsigned                dis_cpu;
 
 typedef enum {
@@ -383,7 +369,7 @@ typedef enum {
 } ppc_extra_flags;
 
 typedef struct {
-    dis_value           value;
+    unsigned_64         value;
     dis_register        base;
     dis_register        index;
     unsigned_8          scale;

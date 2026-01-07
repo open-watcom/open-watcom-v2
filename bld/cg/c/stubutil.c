@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,7 +348,7 @@ char    *Label( l *lb )
 void    VDefLabel( l *lb )
 //========================
 {
-    if( ( lb->cref && !lb->cdef ) || ( lb->dref && !( lb->ddef||lb->idef) ) ) {
+    if( ( lb->cref && !lb->cdef ) || ( lb->dref && !( lb->ddef || lb->idef) ) ) {
         CGError( "Label %s used but not defined\n", Label(lb) );
     }
 }
@@ -717,7 +717,9 @@ extern  void    DumpSubTree( n *t ) {
             Code( ") ]" );
             NodeFree( t->l );
         } else if( t->o == O_GETS || t->o == O_LV_GETS ) {
-            if( t->o == O_GETS ) Code( "@" );
+            if( t->o == O_GETS ) {
+                Code( "@" );
+            }
             Code( "(" );
             DumpSubTree( t->l );
             Code( "=" );
@@ -732,7 +734,9 @@ extern  void    DumpSubTree( n *t ) {
             Code( "%s%s", Op( t->r->o ), Op( t->r->o ) );
             NodeFree( t->r );
         } else if( t->o == O_PRE_GETS || t->o == O_LV_PRE_GETS ) {
-            if( t->o == O_PRE_GETS ) Code( "@" );
+            if( t->o == O_PRE_GETS ) {
+                Code( "@" );
+            }
             Code( "(" );
             DumpSubTree( t->r->l );
             Code( "%s", Op( t->r->o ) );
@@ -741,7 +745,9 @@ extern  void    DumpSubTree( n *t ) {
             Code( ")" );
             NodeFree( t->r );
         } else if( t->o == O_CALL ) {
-            if( !CheckInLine( t ) ) DumpCallTree( t );
+            if( !CheckInLine( t ) ) {
+                DumpCallTree( t );
+            }
         } else {
             if( LkUpOp( t->o, FunkyOps ) ) {
                 Code( "%s(", Op( t->o ) );

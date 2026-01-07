@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "wdpmhelp.h"
 
-int main()
+int main( void )
 {
     char        done = FALSE;
 

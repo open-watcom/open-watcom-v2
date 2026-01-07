@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,23 +41,22 @@
 #include "printf.h"
 #include "fprtf_s.h"
 #include "orient.h"
-#include "clibsupp.h"
+#include "_flush.h"
+#include "streamio.h"
 
-
-extern  void    __ioalloc( FILE * );
 
 /*
  * file_putc -- write a character to a file
  */
 static prtf_callback_t file_putc; // setup calling convention
-static void file_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
+static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
 {
     __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPECS_DEST( FILE, specs ) );
     specs->_output_count++;
 }
 
 
-int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
+int _WCNEAR __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
                          const CHAR_TYPE * __restrict format, va_list args )
 {
     int             not_buffered;
@@ -68,8 +67,8 @@ int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
     /* Check for runtime-constraints before grabbing file lock */
     /* stream   not null */
     /* format   not null */
-    if( __check_constraint_nullptr_msg( msg, stream )  &&
-        __check_constraint_nullptr_msg( msg, format ) ) {
+    if( __check_constraint_nullptr_msg( msg, stream )
+      && __check_constraint_nullptr_msg( msg, format ) ) {
 
         _ValidFile( stream, 0 );
         _AccessFile( stream );

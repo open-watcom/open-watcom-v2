@@ -44,7 +44,7 @@ namespace std {
 
   void ios::init( streambuf *sb ) {
 
-#ifdef __SW_BM
+#ifdef __MT__
     __i_lock = __get_next_ios_lock();
 #else
     __i_lock = NULL;

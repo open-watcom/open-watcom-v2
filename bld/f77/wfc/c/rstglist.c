@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include "ecflags.h"
 #include "errcod.h"
-#include "undef.h"
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
@@ -87,7 +86,7 @@ sym_id        SearchGList( sym_id local ) {
     if( head == NULL )
         return( NULL );
     tail = GHashTable[HashValue].h_tail;
-    for(;;) {
+    for( ;; ) {
         if( ( head->u.ns.u2.name_len == name_len ) &&
             ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
             ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {

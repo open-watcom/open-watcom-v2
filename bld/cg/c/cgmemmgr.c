@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,13 +80,6 @@ essentially no worst case performance scenario.
 #include "memsydep.h"
 #include "feprotos.h"
 
-#ifdef __DOS__
-
-extern short    __psp;
-#pragma aux __psp "*";
-
-#endif
-
 #define ALLOCATED       1
 
 #define MAX_SIZE        14  /* 16384 (2 ^ 14) */
@@ -113,13 +106,13 @@ extern short    __psp;
 
 typedef pointer_uint    tag;
 
-static  pointer     MemFromSys( size_t );
+static pointer          MemFromSys( size_t );
 
-static pointer_uint AllocSize = 0;
-static pointer_uint MemorySize;
-static int          Initialized = 0;
+static pointer_uint     AllocSize = 0;
+static pointer_uint     MemorySize;
+static int              Initialized = 0;
 #ifdef MEMORY_STATS
-static pointer_uint PeakAlloc    = 0;
+static pointer_uint     PeakAlloc = 0;
 #endif
 
 
@@ -234,7 +227,7 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * __far *)_MK_FP( __psp, 0x60 ) - sbrk( 0 );
+                memory_available = *(char * __far *)_MK_FP( _psp, 0x60 ) - sbrk( 0 );
             }
             if( memory_available < _1M ) {
                 memory_available = _1M;
@@ -300,7 +293,7 @@ static  void    CalcMemSize( void )
 static  void    memInit( void )
 /*****************************/
 {
-    if( !Initialized ) {
+    if( Initialized == 0 ) {
         int i;
 
         for( i = 0; i <= MAX_CLASS; ++i ) {
@@ -399,7 +392,7 @@ pointer  MemAlloc( size_t amount )
     char        *chunk;
     int         mem_class;
 
-    if( !Initialized )
+    if( Initialized == 0 )
         memInit();
     if( amount == 0 )
         return( NULL );
@@ -464,7 +457,7 @@ void     MemCoalesce( void )
 pointer_uint     MemInUse( void )
 /*******************************/
 {
-    if( !Initialized )
+    if( Initialized == 0 )
         memInit();
     return( AllocSize );
 }

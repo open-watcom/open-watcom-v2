@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,6 @@ static  list    *Obj_List;              // linked list of object filenames
 static  list    *File_List;             // list of filenames from Cmd
 static  list    *Lib_List;               // list of libraries from Cmd
 static  list    *Directive_List;        // list of libraries from Cmd
-static  char    SwitchChars[3];         // valid switch characters
 static  char    *Exe_Name = NULL;       // name of executable
 static  char    *Obj_Name = NULL;       // object file name pattern
 static  char    *SystemName = NULL;     // system name
@@ -708,6 +707,15 @@ static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
     return( un_quoted );
 }
 
+static bool CmdScanSwitchChar( char c )
+{
+#ifdef __UNIX__
+    return( c == '-' );
+#else
+    return( c == '-' || c == '/' );
+#endif
+}
+
 static  int     Parse( char *cmd )
 /********************************/
 {
@@ -739,7 +747,7 @@ static  int     Parse( char *cmd )
     cmp_opt_index = 0;
     while( *cmd != '\0' ) {
         opt = *cmd;
-        if( ( opt == SwitchChars[0] ) || ( opt == SwitchChars[1] ) ) {
+        if( CmdScanSwitchChar( opt ) ) {
             cmd++;
         } else {
             opt = ' ';
@@ -754,9 +762,7 @@ static  int     Parse( char *cmd )
             if( !in_quotes ) {
                 if( c == ' '  )
                     break;
-                if( c == SwitchChars[0] )
-                    break;
-                if( c == SwitchChars[1] ) {
+                if( CmdScanSwitchChar( c ) ) {
                     break;
                 }
             }
@@ -1152,12 +1158,21 @@ static  int     CompLink( void )
 
 static bool check_y_opt( const char *cmdl )
 {
-    while( (cmdl = strpbrk( cmdl, SwitchChars )) != NULL ) {
+#ifdef __UNIX__
+    while( (cmdl = strpbrk( cmdl, "-" )) != NULL ) {
         ++cmdl;
         if( tolower( *cmdl ) == 'y' ) {
             return( true );
         }
     }
+#else
+    while( (cmdl = strpbrk( cmdl, "-/" )) != NULL ) {
+        ++cmdl;
+        if( tolower( *cmdl ) == 'y' ) {
+            return( true );
+        }
+    }
+#endif
     return( false );
 }
 
@@ -1180,10 +1195,6 @@ int     main( int argc, char *argv[] )
     ErrorInit( argv[0] );
 
     CmpOpts[0] = NULL;
-
-    SwitchChars[0] = '-';
-    SwitchChars[1] = _dos_switch_char();
-    SwitchChars[2] = '\0';
 
     Word = MemAlloc( MAX_CMD );
     /*

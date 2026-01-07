@@ -93,7 +93,6 @@ exetarg_res           = $(proj_name).res
 #
 dlltarg_prebuild_objs = $(dll_subdir) rcstr.grh
 dlltarg_objs          = $(dll_subdir)/spydll.obj
-dlltarg_no_ntverrc    = 1
 dlltarg_name          = $(dllname)
 !include dlltarg.mif
 

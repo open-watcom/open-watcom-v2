@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,8 +184,8 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
     unsigned_64 remainder;
 
     ptr = &internal[64];
-    U32ToU64( radix, &big_radix );
-    while( (len > 0) || (U64Test( value ) != 0) ) {
+    Set64ValU32( big_radix, radix );
+    while( (len > 0) || U64isNonZero( *value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
@@ -205,10 +205,10 @@ static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class
     const char  *prefix;
     size_t      prefix_len;
 
-    if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
+    if( sign_type == NUM_SIGNED && I64Test( num ) < 0 ) {
         *buff = '-';
         ++buff;
-        U64Neg( &num, &num );
+        U64NegEq( &num );
     }
     prefix = NULL;
     prefix_len = 0;
@@ -303,7 +303,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
         {
             signed_64   tmp;
 
-            I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
+            Set64ValI32( tmp, LDToD( &ExprSP->v.real ) );
             ptr = FmtNum( tmp, FMT2RADIX( radixfmt ), base_letter, NUM_SIGNED, ptr, 1 );
         }
         break;
@@ -762,7 +762,7 @@ static void PrintArray( void )
         EndSubscript();
         ExprValue( ExprSP );
         buff[0] = '[';
-        I32ToI64( ai.low_bound, &tmp );
+        Set64ValI32( tmp, ai.low_bound );
         ptr = FmtNum( tmp, CurrRadix, 'A', NUM_SIGNED, &buff[1], 1 );
         *ptr++ = ']';
         *ptr++ = '=';
@@ -791,10 +791,10 @@ static walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    U64Clear( val );
+    Set64ValZero( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
-    if( U64Cmp( &val, &vd->value ) != 0 )
+    if( !U64Eq( val, vd->value ) )
         return( WR_CONTINUE );
     HDLAssign( sym, vd->sh, sh );
     vd->found = true;
@@ -809,13 +809,13 @@ static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    U64Clear( val );
+    Set64ValZero( val );
     if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
         return( WR_STOP );
-    if( U64Test( &val ) == 0 )
+    if( U64isZero( val ) )
         return( WR_CONTINUE );
-    U64And( &val, &vd->value, &tmp );
-    if( U64Cmp( &tmp, &val ) == 0 ) {
+    U64And( tmp, val, vd->value );
+    if( U64Eq( tmp, val ) ) {
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
             HDLAssign( sym, vd->sh, sh );
             vd->best_value = val;
@@ -841,13 +841,13 @@ static unsigned ValueToName( char *buff, unsigned len )
         return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
-    while( U64Test( &d.value ) != 0 ) {
+    while( U64isNonZero( d.value ) ) {
         d.found = false;
         DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )
             return( 0 );
-        U64Not( &d.best_value, &d.best_value );
-        U64And( &d.value, &d.best_value, &d.value );
+        U64NotEq( d.best_value );
+        U64AndEq( d.value, d.best_value );
         if( p != buff ) {
             if( len == 0 )
                 return( 0 );

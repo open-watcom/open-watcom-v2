@@ -67,7 +67,7 @@
 /*
  * Handle _CRTDBG_MODE_WNDW reporting.
  */
-static int window_report( int reporttype, const char *filename,
+static int _WCNEAR window_report( int reporttype, const char *filename,
                           int linenumber, const char *modulename,
                           const char *usermsg )
 /***************************************************************/

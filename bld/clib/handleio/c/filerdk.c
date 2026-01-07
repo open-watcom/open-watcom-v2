@@ -66,7 +66,7 @@ int handle_count;
 
 static struct TKernelSection handle_section;
 
-static rdos_handle_type *AllocHandleObj( void )
+static rdos_handle_type * _WCNEAR AllocHandleObj( void )
 {
     rdos_handle_type *h;
 
@@ -78,7 +78,7 @@ static rdos_handle_type *AllocHandleObj( void )
     return( h );
 }
 
-static void FreeHandleObj( rdos_handle_type *h)
+static void _WCNEAR FreeHandleObj( rdos_handle_type *h)
 {
     h->ref_count--;
 
@@ -89,7 +89,7 @@ static void FreeHandleObj( rdos_handle_type *h)
     }
 }
 
-static void GrowHandleArr( void )
+static void _WCNEAR GrowHandleArr( void )
 {
     int                 i;
     int                 new_count;
@@ -109,7 +109,7 @@ static void GrowHandleArr( void )
     handle_count = new_count;
 }
 
-static int AllocHandleEntry( rdos_handle_type *obj )
+static int _WCNEAR AllocHandleEntry( rdos_handle_type *obj )
 {
     int i;
 
@@ -130,7 +130,7 @@ static int AllocHandleEntry( rdos_handle_type *obj )
     return( i );
 }
 
-static rdos_handle_type *FreeHandleEntry( int handle )
+static rdos_handle_type * _WCNEAR FreeHandleEntry( int handle )
 {
     rdos_handle_type *obj = 0;
 
@@ -149,7 +149,7 @@ static rdos_handle_type *FreeHandleEntry( int handle )
     return( obj );
 }
 
-static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
+static int _WCNEAR ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
 {
     int                 ok = 0;
     rdos_handle_type   *obj = 0;
@@ -173,7 +173,7 @@ static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
     return ( ok );
 }
 
-static int GetHandle( int handle )
+static int _WCNEAR GetHandle( int handle )
 {
     int rdos_handle = -1;
 
@@ -191,7 +191,7 @@ static int GetHandle( int handle )
     return( rdos_handle );
 }
 
-static long long GetHandlePos( int handle )
+static long long _WCNEAR GetHandlePos( int handle )
 {
     long long pos = 0;
 
@@ -209,7 +209,7 @@ static long long GetHandlePos( int handle )
     return( pos );
 }
 
-static void SetHandlePos( int handle, long long pos )
+static void _WCNEAR SetHandlePos( int handle, long long pos )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -223,7 +223,7 @@ static void SetHandlePos( int handle, long long pos )
     RdosLeaveKernelSection( &handle_section );
 }
 
-static void InitHandle( void )
+static void _WCNEAR InitHandle( void )
 {
     int i;
 
@@ -246,7 +246,7 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     return( -1 );
 }
 
-unsigned __GetIOMode( int handle )
+unsigned _WCNEAR __GetIOMode( int handle )
 {
     unsigned mode = 0;
 
@@ -264,7 +264,7 @@ unsigned __GetIOMode( int handle )
     return( mode );
 }
 
-void __SetIOMode( int handle, unsigned value )
+void _WCNEAR __SetIOMode( int handle, unsigned value )
 {
     RdosEnterKernelSection( &handle_section );
 
@@ -278,7 +278,7 @@ void __SetIOMode( int handle, unsigned value )
     RdosLeaveKernelSection( &handle_section );
 }
 
-int __SetIOMode_grow( int handle, unsigned value )
+int _WCNEAR __SetIOMode_grow( int handle, unsigned value )
 {
     int ret = -1;
 
@@ -297,7 +297,7 @@ int __SetIOMode_grow( int handle, unsigned value )
     return( ret );
 }
 
-static int open_base( const CHAR_TYPE *name, int mode )
+static int _WCNEAR open_base( const CHAR_TYPE *name, int mode )
 {
     int                 handle;
     rdos_handle_type   *obj;
@@ -607,7 +607,7 @@ _WCRTLINK off_t _tell( int handle )
     return( GetHandlePos( handle ) );
 }
 
-int __qread( int handle, void *buffer, unsigned len )
+int _WCNEAR __qread( int handle, void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;
@@ -625,7 +625,7 @@ int __qread( int handle, void *buffer, unsigned len )
     return( -1 );
 }
 
-int __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     int         rdos_handle;
     long        pos;
@@ -653,4 +653,4 @@ _WCRTLINK int write( int handle, const void *buffer, unsigned len )
     return( __qwrite( handle, buffer, len ) );
 }
 
-AXI(InitHandle,INIT_PRIORITY_LIBRARY);
+AXIN(InitHandle,INIT_PRIORITY_LIBRARY);

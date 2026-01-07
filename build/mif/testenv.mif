@@ -59,35 +59,35 @@
 !ifdef clibtest_name
 sav_file = $(clibtest_name).sav
 !else
-sav_file = s$(arch)_$(alt_error).sav
+sav_file = s$(arch)$(alt_error)$(host_bits).sav
 !endif
 
 start : .SYMBOLIC .EXPLICIT
 !ifdef dll_loaded
 ! ifdef wasmtest_name
 ! else ifdef ctest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! else ifdef ftest_name
-    @echo using !loaddll $(dll_wfc_$(arch))
+    @echo using !loaddll $(comp_wfc_$(arch)) $(dll_wfc_$(arch))
 ! else ifdef plustest_name
-    @echo using !loaddll $(dll_wpp_$(arch))
+    @echo using !loaddll $(comp_wpp_$(arch)) $(dll_wpp_$(arch))
 ! else ifdef mathtest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! else ifdef clibtest_name
-    @echo using !loaddll $(dll_wcc_$(arch))
+    @echo using !loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 ! endif
 !endif
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
 !ifdef clibtest_name
 ! ifeq verbose 0
-    @echo TEST $(clibtest_name)
+    @echo TEST $(clibtest_name) $(host_bits_str)
 ! endif
-    $(noecho)%append $(log_file) TEST $(clibtest_name)
+    $(noecho)%append $(log_file) TEST $(clibtest_name) $(host_bits_str)
 !else
 ! ifeq verbose 0
-    @echo TEST $(arch)/$(alt_error)
+    @echo TEST $(arch)/$(alt_error) $(host_bits_str)
 ! endif
-    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
+    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error) $(host_bits_str)
 !endif
     $(noecho)%make clean
     $(noecho)%make __clean_sav
@@ -95,11 +95,13 @@ start : .SYMBOLIC .EXPLICIT
     $(noecho)%create $(%ERROR_FILE)
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
-    $(noecho)%create $@
-    @%append $@ $(targ_ldb_$(targ_env_$(arch)))
-    @%append $@ $(targ_lnk_$(targ_env_$(arch)))
-    @%append $@ $(lnk_any)
-    @%append $@ $(stack_$(arch))
+    $(noecho)%create test.lnk
+    $(noecho)%append test.lnk $(targ_ldb_$(targ_env_$(arch)))
+    $(noecho)%append test.lnk $(targ_lnk_$(targ_env_$(arch)))
+    $(noecho)%append test.lnk $(lnk_any)
+!ifdef stack_$(arch)
+    $(noecho)%append test.lnk $(stack_$(arch))
+!endif
 
 .c.obj:
     @set ERROR_MSG=failure to compile $^&
@@ -124,9 +126,11 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .asm.obj:
     @set ERROR_MSG=failure to compile $@
-    %write xxxxxxxx.tmp  -zld -wx -nm=$[@ $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+    %write xxxxxxxx.tmp  -zld -wx -nm=$[& $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+    @%make set_path_wasm
     @%make echo_as
     -$(noecho)$(wasm_$(arch)) @xxxxxxxx.tmp
+    @%make set_old_path
     @%create tmp.tmp
     @if not exist $^&.out @%create $^&.out
     @set CHK_CHECK=diff -i -b $^&.out tmp.tmp
@@ -139,9 +143,11 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .p.obj:
     @set ERROR_MSG=failure to preprocess $@
     @%make set_path_wcc
-    $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
+    @%make echo_cc
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
     @set ERROR_MSG=failure to compile $[&.i
-    $(wcc_$(arch)) $[&.i $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @%make echo_cc
+    $(noecho)$(wcc_$(arch)) $[&.i $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .obj.dis:
@@ -225,10 +231,12 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .c.err:
 !ifdef plustest_name
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
+    @%make echo_cxx
+    -$(noecho)$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
 !else
     @%make set_path_wcc
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
+    @%make echo_cc
+    -$(noecho)$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -236,10 +244,12 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .c.ser:
 !ifdef plustest_name
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
+    @%make echo_cxx
+    -$(noecho)$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !else
     @%make set_path_wcc
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
+    @%make echo_cc
+    -$(noecho)$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -261,17 +271,18 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&
-    @%make set_run_path
+    @%make set_path_run
 !ifdef dos_redirect
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
 !else
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>&1
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
-    @%make set_old_run_path
+    @%make set_old_path
 !ifdef ftest_name
     @%make echo_diff
     $(noecho)diff $*.out expected/$*.chk >>exec.out

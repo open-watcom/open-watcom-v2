@@ -61,7 +61,6 @@ global char         *g_tok_start;       // start of scanned token
 global unsigned     arg_flen;           // arg length
 global locflags     rs_loc;             // restricted location
 
-global int          switch_char;        // DOS switch character
 global char         *alt_ext;           // alternate extension
 global char         *def_ext;           // default extension
 global char         ampchar;            // symbol substitution/attribute/function marker
@@ -132,8 +131,6 @@ global line_number  research_to;        // line no end   for research output
 global global_flags GlobalFlags;        // global flags
 
 global proc_flags   ProcFlags;          // processing flags
-
-global attr_flags   AttrFlags;          // attribute flags
 
 global char         *token_buf;
 

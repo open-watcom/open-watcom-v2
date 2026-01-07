@@ -32,9 +32,9 @@
  ****************************************************************************/
 
 /*
- *	lib_napms.c
+ *  lib_napms.c
  *
- *	The routine napms.
+ *  The routine napms.
  *
  */
 
@@ -43,7 +43,7 @@
 #if HAVE_NANOSLEEP
 #include <time.h>
 #if HAVE_SYS_TIME_H
-#include <sys/time.h>		/* needed for MacOS X DP3 */
+#include <sys/time.h>       /* needed for MacOS X DP3 */
 #endif
 #endif
 
@@ -56,10 +56,10 @@ napms(int ms)
 
 #if HAVE_NANOSLEEP
     {
-	struct timespec ts;
-	ts.tv_sec = ms / 1000;
-	ts.tv_nsec = (ms % 1000) * 1000000;
-	nanosleep(&ts, NULL);
+        struct timespec ts;
+        ts.tv_sec = ms / 1000;
+        ts.tv_nsec = (ms % 1000) * 1000000;
+        nanosleep(&ts, NULL);
     }
 #else
     _nc_timed_wait(0, ms, (int *) 0 EVENTLIST_2nd(0));

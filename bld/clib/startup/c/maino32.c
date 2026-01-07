@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     __InitRtns( INIT_PRIORITY_LIBRARY );
     __XCPTHANDLER = xcpt;
     __sig_init_rtn();
-#ifndef __SW_BM
+#ifndef __MT__
     _STACKLOW = (unsigned)&_end;
 #endif
     __InitRtns( 255 );
@@ -183,7 +183,7 @@ void __OS2Init( int is_dll, thread_data *tdata )
     _RWD_osmajor = _sysinfo.version_major;
     _RWD_osminor = _sysinfo.version_minor;
     __saved_CS = GetCS();
-#ifndef __SW_BM
+#ifndef __MT__
     #undef _STACKLOW
     _STACKLOW = (unsigned)&_end;            // cortns in F77
 #endif
@@ -198,9 +198,9 @@ void __OS2Fini( void )
     __FirstThreadData = NULL;
 }
 
-_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
+_WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {

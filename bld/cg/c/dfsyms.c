@@ -250,7 +250,9 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
             break;
         case DW_W_ARANGE_ADDR:
             DoLblReloc( ARange, 0 );
-    #if _TARGET_INTEL
+    #if (_TARGET & _TARG_8086)
+            DoSegLblReloc( ARange );
+    #elif (_TARGET & _TARG_80386)
             if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
                 DoSegLblReloc( ARange );
             }
@@ -396,11 +398,12 @@ static int InitCU( dw_cu_info *cu )
     cu->inc_list_len = 0;
     tipe_addr = TypeAddress( TY_NEAR_POINTER );
     cu->offset_size = tipe_addr->length;
+#if (_TARGET & _TARG_8086)
+    cu->segment_size = 2;
+#elif (_TARGET & _TARG_80386)
+    cu->segment_size = ( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) ? 2 : 0;
+#else
     cu->segment_size = 0;
-#if _TARGET_INTEL
-    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
-        cu->segment_size = 2;
-    }
 #endif
     switch( GetMemModel() ) {
     case 'h':
@@ -472,7 +475,7 @@ void    DFSegRange( void )
 
 void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
 /***************************************************************
- * Call when codeseg hase been defined
+ * Call when codeseg has been defined
  */
 {
     dw_cu_info      cu;
@@ -489,45 +492,40 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
     if( CcuDef ) {
         InitCU( &cu );
         cu.dbg_pch = dbg_pch;
-#ifdef DWARF_CU_REC_NO_PCLO_PCHI
+        cu.flags = DW_CU_FLAG_NONE;
+#if defined( DWARF_CU_REC_NO_PCLO_PCHI ) || (_TARGET & _TARG_8086)
         Pc_Low = NULL;
         Pc_High = NULL;
         bck = NULL;
-        cu.flags = false;
 #else
-        PUSH_OP( code_segid );
-    #if _TARGET_INTEL
-            if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
+    #if (_TARGET & _TARG_80386)
+        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
+    #endif
+            // Emitting DW_AT_low_pc and DW_AT_high_pc is valid *only* if the
+            // compilation unit's code is in a single contiguous block (see
+            // DWARF 2, section 3.1).
+            // I don't know how to find out at the time of this call if there's
+            // only one code segment or not, hence these attributes are always
+            // disabled. The low/high pc attribs should probably be handled by
+            // the linker.
+            cu.flags |= DW_CU_FLAG_CONTIGUOUS;
+            PUSH_OP( code_segid );
                 bck = MakeLabel();
                 OutLabel( bck->lbl );
                 Pc_Low = bck;
                 Pc_High = MakeLabel();
-                // Emitting DW_AT_low_pc and DW_AT_high_pc is valid *only* if the
-                // compilation unit's code is in a single contiguous block (see
-                // DWARF 2, section 3.1).
-                // I don't know how to find out at the time of this call if there's
-                // only one code segment or not, hence these attributes are always
-                // disabled. The low/high pc attribs should probably be handled by
-                // the linker.
-                cu.flags = false;
-            } else {
-                bck = NULL;
-                cu.flags = false;
-                Pc_Low = NULL;
-                Pc_High = NULL;
-            }
-    #else
-            bck = MakeLabel();
-            OutLabel( bck->lbl );
-            Pc_Low = bck;
-            Pc_High = MakeLabel();
-            cu.flags = true;
+            POP_OP();
+    #if (_TARGET & _TARG_80386)
+        } else {
+            Pc_Low = NULL;
+            Pc_High = NULL;
+            bck = NULL;
+        }
     #endif
-        POP_OP();
 #endif
         Comp_High = Pc_High;
         DWBeginCompileUnit( Client, &cu );
-        if( cu.flags ) {
+        if( cu.flags & DW_CU_FLAG_CONTIGUOUS ) {
             BEFreeBack( bck );
         }
     } else {
@@ -648,18 +646,12 @@ void    DFObjLineInitDbgInfo( void )
         }
         InitCU( &cu );
         cu.dbg_pch = NULL;
-#ifdef DWARF_CU_REC_NO_PCLO_PCHI
-        cu.flags = false;
+#if defined( DWARF_CU_REC_NO_PCLO_PCHI ) || (_TARGET & _TARG_8086)
+        cu.flags = DW_CU_FLAG_NONE;
+#elif (_TARGET & _TARG_80386)
+        cu.flags = _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ? DW_CU_FLAG_NONE : DW_CU_FLAG_CONTIGUOUS;
 #else
-#if _TARGET_INTEL
-        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
-            cu.flags = true;
-        } else {
-            cu.flags = false;
-        }
-#else
-        cu.flags = true;
-#endif
+        cu.flags = DW_CU_FLAG_CONTIGUOUS;
 #endif
         DWInitDebugLine( Client, &cu );
     } else {
@@ -742,7 +734,9 @@ void     DFLineNum( cue_state *state, offset lc )
         bck = MakeLabel();
         OutLabel( bck->lbl );
         DWLineAddr( Client, (dw_sym_handle)bck, lc );
-#if _TARGET_INTEL
+#if (_TARGET & _TARG_8086)
+        DWLineSeg( Client, (dw_sym_handle)bck );
+#elif (_TARGET & _TARG_80386)
         if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             DWLineSeg( Client, (dw_sym_handle)bck );
         }
@@ -775,7 +769,7 @@ static  dw_loc_handle   SegLoc( cg_sym_handle sym )
 void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
 /***************************************************/
 {
-    uint            flags;
+    dw_flags        flags;
     fe_attr         attr;
     const char      *name;
     dw_loc_handle   dw_loc;
@@ -787,11 +781,15 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     if( attr & FE_GLOBAL ) {
         flags = DW_FLAG_GLOBAL;
     } else {
-        flags = 0;
+        flags = DW_FLAG_NONE;
     }
     name = FEName( sym );
     dw_segloc = NULL;
-#if _TARGET_INTEL
+#if (_TARGET & _TARG_8086)
+    if( attr & FE_STATIC ) {
+        dw_segloc = SegLoc( sym );
+    }
+#elif (_TARGET & _TARG_80386)
     if( attr & FE_STATIC ) {
         if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
@@ -958,13 +956,6 @@ static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
     DWLocTrash( Client, dw_entry );
 }
 
-#if _TARGET & _TARG_8086
-static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
-#elif _TARGET & _TARG_80386
-static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
-#endif
-
-
 
 static  void    DumpLocals( dbg_local *local )
 /********************************************/
@@ -998,7 +989,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     dbg_type            tipe;
     fe_attr             attr;
     const char          *name;
-    uint                flags;
+    dw_flags            flags;
     dw_loc_handle       dw_retloc;
     dw_loc_handle       dw_frameloc;
     dw_loc_handle       dw_segloc;
@@ -1011,10 +1002,14 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
 
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
-    flags = 0;
+    flags = DW_FLAG_NONE;
 #if _TARGET_INTEL
     if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
-        flags |= DW_PTR_TYPE_FAR;
+  #if _TARGET & _TARG_8086
+        flags = DW_FLAG_PTR_TYPE_FAR16;
+  #elif _TARGET & _TARG_80386
+        flags = DW_FLAG_PTR_TYPE_FAR32;
+  #endif
     }
 #endif
     attr = FEAttr( sym );
@@ -1022,7 +1017,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     if( attr & FE_GLOBAL ) {
         flags |= DW_FLAG_GLOBAL;
     } else {
-        flags |= DW_SUB_STATIC;
+        flags |= DW_FLAG_SUB_STATIC;
     }
     if( attr & FE_COMPILER ) {
         flags |= DW_FLAG_ARTIFICIAL;
@@ -1039,18 +1034,18 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         }
     }
     DBLocFini( rtn->obj_loc );
-#if _TARGET_INTEL
+#if (_TARGET & _TARG_8086)
     dw_retloc = RetLoc( rtn->ret_offset );
     dw_frameloc = FrameLoc();
+    dw_segloc = SegLoc( sym );
+#elif (_TARGET & _TARG_80386)
+    dw_retloc = RetLoc( rtn->ret_offset );
+    dw_frameloc = FrameLoc();
+    dw_segloc = ( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) ? SegLoc( sym ) : NULL;
 #else
     dw_retloc = NULL;
     dw_frameloc = NULL;
-#endif
     dw_segloc = NULL;
-#if _TARGET_INTEL
-    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
-        dw_segloc = SegLoc( sym );
-    }
 #endif
     rtn->end_lbl = MakeLabel();
     Pc_Low  = FEBack( sym );

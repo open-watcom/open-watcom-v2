@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,6 @@
 #include "cguimem.h"
 
 
-#define CUIMemAlloc(s)	     MemAlloc(s)
+#define CUIMemAlloc(s)       MemAlloc(s)
 #define CUIMemFree(p)        MemFree(p)
-#define CUIMemRealloc(p,s)	 MemRealloc(p,s)
+#define CUIMemRealloc(p,s)   MemRealloc(p,s)

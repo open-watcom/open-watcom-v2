@@ -4,8 +4,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +31,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines some bindery functions.
@@ -42,21 +43,21 @@
 CPP_START
 
 extern LONG ReadProperty(
-		LONG Station,
-		LONG ObjectID,
-		BYTE *PropertyName,
-		LONG SetNumber,
-		void *DataBuffer,
-		BYTE *MoreDataByte,
-		BYTE *PropertyFlagByte,
-		LONG CheckAccess);
+        LONG Station,
+        LONG ObjectID,
+        BYTE *PropertyName,
+        LONG SetNumber,
+        void *DataBuffer,
+        BYTE *MoreDataByte,
+        BYTE *PropertyFlagByte,
+        LONG CheckAccess);
 
 extern LONG MapNameToID(
-		LONG Station,
-		BYTE *Name,
-		LONG Type,
-		LONG *ID,
-		LONG CheckAccess);
+        LONG Station,
+        BYTE *Name,
+        LONG Type,
+        LONG *ID,
+        LONG CheckAccess);
 
 
 CPP_END

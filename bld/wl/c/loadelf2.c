@@ -173,8 +173,11 @@ static void SetElfSym( ElfHdr *hdr, Elf32_Sym *elfsym, symbol *sym )
     bind = STB_GLOBAL;
     if( sym->info & SYM_STATIC ) {       // determine binding
         bind = STB_LOCAL;
-    } else if( IS_SYM_REGULAR( sym ) || IS_SYM_IMPORTED( sym ) ||
-               IS_SYM_ALIAS( sym ) || IS_SYM_COMMUNAL( sym ) ) {
+    } else if( IS_SYM_REGULAR( sym )
+      || IS_SYM_IMPORTED( sym )
+      || IS_SYM_ALIAS( sym )
+      || IS_SYM_COMMUNAL( sym ) ) {
+        /* nothing */
     } else if( IS_SYM_WEAK_REF( sym ) ) {
         bind = STB_WEAK;
     } else {
@@ -217,7 +220,8 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, unsigned hashidx,
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
         elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name.u.ptr );
-        if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
+        if( tableSH->sh_info == 0
+          && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }
         SetElfSym( hdr, &elfsym, sym );

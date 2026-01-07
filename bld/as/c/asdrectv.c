@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,8 @@
 
 
 #include "as.h"
+#include "i64.h"
+
 
 #define MAX_ALIGNMENT   6       // 64 byte alignment
 
@@ -732,11 +734,12 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
             break;
         case DT_VAL_INT64:
             assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT );
+            U64High( u.quad ) = 0;
             if( dirop->type == DIROP_INTEGER ) {
-                u.quad.u._32[I64LO32] = NUMBER_INTEGER( dirop );
+                U64Low( u.quad ) = NUMBER_INTEGER( dirop );
             } else { // repeat
                 rep = REPEAT_COUNT( dirop );
-                u.quad.u._32[I64LO32] = REPEAT_INTEGER( dirop );
+                U64Low( u.quad ) = REPEAT_INTEGER( dirop );
             }
             break;
         case DT_VAL_DOUBLE:

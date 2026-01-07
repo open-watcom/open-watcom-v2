@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -50,7 +51,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -76,7 +76,7 @@ static unsigned long long nearly_overflowing[] = {
     ULLONG_MAX / 34, ULLONG_MAX / 35, ULLONG_MAX / 36
 };
 
-static int radix_value( CHAR_TYPE c )
+static int _WCNEAR radix_value( CHAR_TYPE c )
 {
     if( c >= STRING( '0' ) && c <= STRING( '9' ) )
         return( c - STRING( '0' ) );
@@ -92,7 +92,7 @@ static int radix_value( CHAR_TYPE c )
 
 #define hexstr(p) (p[0] == STRING( '0' ) && (p[1] == STRING( 'x' ) || p[1] == STRING( 'X' )))
 
-static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
+static unsigned long long _WCNEAR _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
     const CHAR_TYPE     *p;
     const CHAR_TYPE     *startp;
@@ -112,7 +112,7 @@ static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int
     switch( *p ) {
     case STRING( '-' ):
         minus = true;
-        // fall down
+        /* fall through */
     case STRING( '+' ):
         ++p;
         break;
@@ -127,7 +127,7 @@ static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int
         }
     }
     if( base < 2 || base > 36 ) {
-        _RWD_errno = EDOM;
+        lib_set_errno( EDOM );
         return( 0 );
     }
     if( base == 16 ) {
@@ -155,7 +155,7 @@ static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)p;
     if( who ) {
-        if( value >= 0x8000000000000000 ) {
+        if( value & 0x8000000000000000 ) {
             if( value == 0x8000000000000000 && minus ) {
                 ;  /* OK */
             } else {
@@ -164,7 +164,7 @@ static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int
         }
     }
     if( overflow ) {
-        _RWD_errno = ERANGE;
+        lib_set_errno( ERANGE );
         if( !who )
             return( ULLONG_MAX );
         if( minus )

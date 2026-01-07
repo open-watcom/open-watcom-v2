@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,43 +48,43 @@ static  void    OUnString( void );
 static  void    OUnArray( void );
 
 
-static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
+static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE ptyp ) {
 //===================================================================
 
-    switch( typ ) {
-    case PT_LOG_1:
+    switch( ptyp ) {
+    case FPT_LOG_1:
         *(logstar1 *)(dst) = *(logstar1 *)src;
         break;
-    case PT_LOG_4:
+    case FPT_LOG_4:
         *(logstar4 *)(dst) = *(logstar4 *)src;
         break;
-    case PT_INT_1:
+    case FPT_INT_1:
         *(intstar1 *)(dst) = *(intstar1 *)src;
         break;
-    case PT_INT_2:
+    case FPT_INT_2:
         *(intstar2 *)(dst) = *(intstar2 *)src;
         break;
-    case PT_INT_4:
+    case FPT_INT_4:
         *(intstar4 *)(dst) = *(intstar4 *)src;
         break;
-    case PT_REAL_4:
+    case FPT_REAL_4:
         *(single *)(dst) = *(single *)src;
         break;
-    case PT_REAL_8:
+    case FPT_REAL_8:
         *(double *)(dst) = *(double *)src;
         break;
-    case PT_REAL_16:
+    case FPT_REAL_16:
         *(extended *)(dst) = *(extended *)src;
         break;
-    case PT_CPLX_8:
+    case FPT_CPLX_8:
         ((scomplex *)(dst))->imagpart = ((scomplex *)src)->imagpart;
         ((scomplex *)(dst))->realpart = ((scomplex *)src)->realpart;
         break;
-    case PT_CPLX_16:
+    case FPT_CPLX_16:
         ((dcomplex *)(dst))->imagpart = ((dcomplex *)src)->imagpart;
         ((dcomplex *)(dst))->realpart = ((dcomplex *)src)->realpart;
         break;
-    case PT_CPLX_32:
+    case FPT_CPLX_32:
         ((xcomplex *)(dst))->imagpart = ((xcomplex *)src)->imagpart;
         ((xcomplex *)(dst))->realpart = ((xcomplex *)src)->realpart;
         break;
@@ -128,37 +128,37 @@ void    UnFmtOut( void ) {
 
     uint        len;
     char        *ptr;
-    PTYPE       typ;
+    PTYPE       ptyp;
     ftnfile     *fcb;
     char        *d;
 
     fcb = IOCB->fileinfo;
-    typ = IOTypeRtn();
-    while( typ != PT_NOTYPE ) {
-        if( typ == PT_CHAR ) {
+    ptyp = IOTypeRtn();
+    while( ptyp != FPT_NOTYPE ) {
+        if( ptyp == FPT_CHAR ) {
             OUnString();
-        } else if( typ == PT_ARRAY ) {
+        } else if( ptyp == FPT_ARRAY ) {
             OUnArray();
         } else {
             ptr = (char *)&IORslt;
-            len = SizeVars[ typ ];
+            len = SizeVars[ptyp];
             if( IsFixed() ) {
                 OutChkRecPos( fcb, len );
             } else {
                 OutChkRecBuff( fcb, len );
             }
             d = fcb->buffer + fcb->col;
-            IOItemCopy( d, ptr, typ );
+            IOItemCopy( d, ptr, ptyp );
             fcb->col += len;
         }
-        typ = IOTypeRtn();
+        ptyp = IOTypeRtn();
     }
-    IOCB->typ = typ;
+    IOCB->ptyp = ptyp;
     SendEOR();
 }
 
 
-static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
+static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE ptyp ) {
 //============================================================================
 
     char        *dst;
@@ -173,36 +173,36 @@ static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
     for(;;) {
         amt = fcb->bufflen - fcb->col;
         // make sure an item does not cross a record boundary
-        switch( item_typ ) {
-        case PT_LOG_1:
-        case PT_INT_1:
-        case PT_CHAR:
+        switch( ptyp ) {
+        case FPT_LOG_1:
+        case FPT_INT_1:
+        case FPT_CHAR:
             break;
-        case PT_INT_2:
+        case FPT_INT_2:
             amt &= -sizeof( intstar2 );
             break;
-        case PT_LOG_4:
+        case FPT_LOG_4:
             amt &= -sizeof( logstar4 );
             break;
-        case PT_INT_4:
+        case FPT_INT_4:
             amt &= -sizeof( intstar4 );
             break;
-        case PT_REAL_4:
+        case FPT_REAL_4:
             amt &= -sizeof( single );
             break;
-        case PT_REAL_8:
+        case FPT_REAL_8:
             amt &= -sizeof( double );
             break;
-        case PT_REAL_16:
+        case FPT_REAL_16:
             amt &= -sizeof( extended );
             break;
-        case PT_CPLX_8:
+        case FPT_CPLX_8:
             amt &= -sizeof( scomplex );
             break;
-        case PT_CPLX_16:
+        case FPT_CPLX_16:
             amt &= -sizeof( dcomplex );
             break;
-        case PT_CPLX_32:
+        case FPT_CPLX_32:
             amt &= -sizeof( xcomplex );
             break;
         }
@@ -225,18 +225,17 @@ static  void    OUnArray( void ) {
 
     uint        elmt_size;
 
-    if( IORslt.arr_desc.typ == PT_CHAR ) {
+    if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
         elmt_size = IORslt.arr_desc.elmt_size;
     } else {
-        elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+        elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
     }
-    OUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size,
-              IORslt.arr_desc.typ );
+    OUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size, IORslt.arr_desc.ptyp );
 }
 
 
 static  void    OUnString( void ) {
 //===========================
 
-    OUnBytes( IORslt.string.strptr, IORslt.string.len, PT_CHAR );
+    OUnBytes( IORslt.string.strptr, IORslt.string.len, FPT_CHAR );
 }

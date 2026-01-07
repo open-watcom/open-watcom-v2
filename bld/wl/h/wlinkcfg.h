@@ -38,6 +38,5 @@
 #define _NOVELL         4
 #define _DOS16M         5
 #define _ELF            6
-#define _ZDOS           7
-#define _RAW            8
-#define _RDOS           9
+#define _RAW            7
+#define _RDOS           8

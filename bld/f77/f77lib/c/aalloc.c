@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,18 +105,18 @@ static  bool    Allocated( void **arr, unsigned_16 flags )
 void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
 //======================================================
 
-    void PGM * PGM *    item;
-    struct string PGM * scb;
-    adv_entry PGM *     adv_ent;
-    int                 dim_cnt;
-    unsigned_32         size;
-    va_list             args;
-    intstar4 PGM *      stat;
-    intstar4            location;
-    unsigned_32         elt_size;
-    unsigned_16         alloc_flags;
+    void            PGM * PGM *item;
+    string          PGM *scb;
+    adv_entry       PGM *adv_ent;
+    int             dim_cnt;
+    unsigned_32     size;
+    va_list         args;
+    intstar4        PGM *stat;
+    intstar4        location;
+    unsigned_32     elt_size;
+    unsigned_16     alloc_flags;
 #if defined( __WINDOWS_386__ )
-    unsigned_16         seg;
+    unsigned_16     seg;
 #endif
 
     // Assumptions
@@ -189,7 +189,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
                     ++adv_ent;
                 }
             }
-#if defined( _M_I86 ) && !defined( __MEDIUM__ )
+#if defined( _M_I86 ) && defined( __LARGE__ )
             *item = (void PGM *)halloc( size, elt_size );
 #else
     #if defined( _M_IX86 )
@@ -252,7 +252,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
 #if defined( _M_IX86 )
             if( (alloc_flags & ALLOC_LOC) == 0 ) {
 #endif
-#if defined( _M_I86 ) && !defined( __MEDIUM__ )
+#if defined( _M_I86 ) && defined( __LARGE__ )
                 hfree( *item );
 #else
     #if defined( _M_IX86 )
@@ -274,7 +274,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
 #endif
 #if defined( _M_IX86 )
             if( alloc_flags & ALLOC_EXTENDED ) {
-    #if defined( _M_I86 ) && !defined( __MEDIUM__ )
+    #if defined( _M_I86 ) && defined( __LARGE__ )
                 *item = NULL;
     #else
                 (*(void __far **)item) = NULL;

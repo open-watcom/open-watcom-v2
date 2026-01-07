@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,11 +61,11 @@ int         (*__raise_func)( int )              = NULL;
 unsigned char   __ExceptionHandled;
 unsigned char   __ReportInvoked;
 
-#ifndef __SW_BM
+#ifndef __MT__
 __EXCEPTION_RECORD  *__XCPTHANDLER;
 #endif
 
-static int _my_GetActiveWindow( void )
+static int _WCNEAR _my_GetActiveWindow( void )
 {
     HANDLE hdl;
     typedef HWND (__stdcall *gaw_type)( void );
@@ -82,7 +82,7 @@ static int _my_GetActiveWindow( void )
     return( rc != 0 );
 }
 
-static void fmt_hex( char *buf, char *fmt, void *hex ) {
+static void _WCNEAR fmt_hex( char *buf, char *fmt, void *hex ) {
 
     char *ptr = NULL;
     unsigned long value;
@@ -99,10 +99,12 @@ static void fmt_hex( char *buf, char *fmt, void *hex ) {
      */
     for( ;; ) {
         *buf = *fmt;
-        if( *fmt == '\0' ) break;
-        if( *fmt == '0' && *(fmt+1) == 'x' ) {
+        if( *fmt == '\0' )
+            break;
+        if( fmt[0] == '0'
+          && fmt[1] == 'x' ) {
             /* memorize the location of the hex field */
-            ptr = buf+9;
+            ptr = buf + 9;
         }
         buf++;
         fmt++;
@@ -145,7 +147,8 @@ LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec )
     /*
      * Test to see if there is an active window.
      */
-    if( _my_GetActiveWindow() || ( __NTConsoleOutput() == INVALID_HANDLE_VALUE )) {
+    if( _my_GetActiveWindow()
+      || ( __NTConsoleOutput() == INVALID_HANDLE_VALUE ) ) {
         return( EXCEPTION_CONTINUE_SEARCH );
     }
 
@@ -285,17 +288,17 @@ LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec )
         sp = (DWORD *)context->Esp;
         fmt_hex( buff, "Stack dump (SS:ESP)\n", 0 );
         for( i = 1; i <= 72; i++) {
-            if(( (long)sp & 0x0000FFFF ) == 0 ) {
+            if( ((long)sp & 0x0000FFFF) == 0 ) {
                 fmt_hex( buff, "-stack end\n", 0 );
             } else {
                 fmt_hex( buff, "0x00000000 ", GetFromSS( sp ) );
             }
-            if(( i % 6 ) == 0 ) {
+            if( ( i % 6 ) == 0 ) {
                 fmt_hex( buff, "\n", 0 );
             }
             WriteFile( NT_STDERR_FILENO, buff, strlen( buff ), &written, NULL );
             buff[0] = '\0';
-            if(( (long)sp & 0x0000FFFF ) == 0 )
+            if( ((long)sp & 0x0000FFFF) == 0 )
                 break;
             sp++;
         }
@@ -399,17 +402,18 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
         } else if( *(unsigned short *)eip == 0xf5d9 ) { // caused by "fprem1"
             fpe_type = FPE_MODERR;
         } else {
-            if(( eip[0] == (char)0xdb ) || ( eip[0] == (char)0xdf )) {
-                if(( eip[1] & 0x30 ) == 0x10 ) {        // caused by "fist(p)"
+            if( ( eip[0] == (char)0xdb )
+              || ( eip[0] == (char)0xdf ) ) {
+                if( (eip[1] & 0x30) == 0x10 ) {         // caused by "fist(p)"
                     fpe_type = FPE_IOVERFLOW;
                 }
             }
-            if( !( eip[0] & 0x01 ) ) {
-                if(( eip[1] & 0x30 ) == 0x30 ) {        // "fdiv" or "fidiv"
+            if( (eip[0] & 0x01) == 0 ) {
+                if( (eip[1] & 0x30) == 0x30 ) {         // "fdiv" or "fidiv"
                     fp_tw    = context->FloatSave.TagWord & 0x0000ffff;
                     fp_sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
 
-                    if((( fp_tw >> (fp_sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
+                    if( ( fp_tw >> (fp_sw.b.st << 1) ) & 0x01 ) {
                         fpe_type = FPE_ZERODIVIDE;
                     }
                 }
@@ -458,7 +462,9 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
         for( sig = 1; sig <= __SIGLAST; sig++ ) {
             func = __oscode_check_func( sig, ex->ExceptionCode );
             if( func != NULL ) {
-                if(( func == SIG_IGN ) || ( func == SIG_DFL ) || ( func == SIG_ERR )) {
+                if( ( func == SIG_IGN )
+                  || ( func == SIG_DFL )
+                  || ( func == SIG_ERR ) ) {
                     break;
                 }
                 __ExceptionHandled = 1;
@@ -517,6 +523,7 @@ void __DoneExceptionFilter( void )
 {
 #if defined( __386__ )
     REGISTRATION_RECORD *rr;
+
     rr = __XCPTHANDLER;
     if( rr ) {
         PutToFS( (DWORD)rr->RegistrationRecordPrev, 0 );

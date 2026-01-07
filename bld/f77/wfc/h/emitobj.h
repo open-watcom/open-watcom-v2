@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,16 @@
 #include "fcodes.h"
 
 
-#define CAT_TEMP        0x8000
+#define _GetArgInfoPcode(x)     (((x) >> 8) & 0xff)
+#define _GetArgInfoPtyp(x)      ((x) & 0xff)
+#define _GetArgInfoPtypes1(x)   (((x) >> 8) & 0xff)
+#define _GetArgInfoPtypes2(x)   ((x) & 0xff)
+
+#define _SetArgInfo(pcode,ptyp)     ((((unsigned_16)(pcode) & 0xff) << 8) | ((ptyp) & 0xff))
+#define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
+#define _SetArgInfoPtypes(p1,p2)    ((((unsigned_16)(p1) & 0xff) << 8) | ((p2) & 0xff))
+
+#define CAT_TEMP        0x8000U
 
 // emit.c
 extern  void            EmitOp(FCODE);
@@ -57,13 +67,13 @@ extern  void            AlignEven(void);
 extern  void            OutPtr(pointer val);
 extern  void            OutU16(unsigned_16 val);
 extern  void            OutInt(inttarg val);
-extern  void            OutConst32(signed_32 val);
+extern  void            OutU32(unsigned_32 val);
 extern  void            OutObjPtr(obj_ptr val);
 extern  void            OutByte(byte val);
 extern  void            InitFCode(void);
-extern  void            *GetPtr(void);
+extern  pointer         GetPtr(void);
 extern  unsigned_16     GetU16(void);
-extern  signed_32       GetConst32(void);
+extern  unsigned_32     GetU32(void);
 extern  inttarg         GetInt(void);
 extern  obj_ptr         GetObjPtr(void);
 extern  byte            GetByte(void);

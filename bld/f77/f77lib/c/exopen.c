@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,85 +47,93 @@
 // AccModTab - access mode table
 //
 
-char *AccModTab[] = {
-        "sequential",
-        "direct",
-        "append",
-        NULL };
+static const char   * const AccModTab[] = {
+    "sequential",
+    "direct",
+    "append",
+    NULL
+};
 
 //
 // FormTab - formatted or unformatted table
 //
 
-char *FormTab[] = {
-        "formatted",
-        "unformatted",
-        NULL };
+static const char   * const FormTab[] = {
+    "formatted",
+    "unformatted",
+    NULL
+};
 
 //
 // OpStatTab - open status table
 //
 
-char *OpStatTab[] = {
-        "unknown",
-        "old",
-        "new",
-        "scratch",
-        NULL };
+static const char * const OpStatTab[] = {
+    "unknown",
+    "old",
+    "new",
+    "scratch",
+    NULL
+};
 
 //
 // BlnkTab - blank table
 //
 
-char *BlnkTab[] = {
-        "null",
-        "zero",
-        NULL };
+static const char * const BlnkTab[] = {
+    "null",
+    "zero",
+    NULL
+};
 
 //
 // RecFmTab - record format table
 //
 
-char *RecFmTab[] = {
-        "fixed",
-        "variable",
-        "text",
-        NULL };
+static const char * const RecFmTab[] = {
+    "fixed",
+    "variable",
+    "text",
+    NULL
+};
 
 //
 // CCtrlTab - carriage control table
 //
 
-char *CCtrlTab[] = {
-        "yes",
-        "no",
-        NULL };
+static const char * const CCtrlTab[] = {
+    "yes",
+    "no",
+    NULL
+};
 
 //
 // ActionTab - action table
 //
 
-char *ActionTab[] = {
-        "read",
-        "write",
-        "readwrite",
-        NULL };
+static const char * const ActionTab[] = {
+    "read",
+    "write",
+    "readwrite",
+    NULL
+};
 
 //
 // ShareTab - share table
 //
 
-char *ShareTab[] = {
-        "compat",
-        "denyrw",
-        "denywr",
-        "denyrd",
-        "denynone",
-        NULL };
+static const char * const ShareTab[] = {
+    "compat",
+    "denyrw",
+    "denywr",
+    "denyrd",
+    "denynone",
+    NULL
+};
 
-static  void    ExOpen( void ) {
-//========================
-
+static  void    ExOpen( void )
+//============================
+{
     ftnfile     *fcb;
     byte        accmode;
     byte        form;
@@ -207,8 +215,8 @@ static  void    ExOpen( void ) {
                 DiscoFile( IOCB->fileinfo );
                 IOCB->fileinfo = fcb;
             }
-        } else if( (IOCB->set_flags & SET_FILENAME) &&
-                   !SameFile( IOCB->fileinfo->filename, fcb->filename ) ) {
+        } else if( (IOCB->set_flags & SET_FILENAME)
+          && !SameFile( IOCB->fileinfo->filename, fcb->filename ) ) {
             // if OPENing a new file, close the old one
             temp = IOCB->fileinfo;
             IOCB->fileinfo = fcb;
@@ -333,7 +341,8 @@ static  void    ExOpen( void ) {
         }
     }
     if( cctrl == CC_DEFAULT ) {
-        if( IsDevice( fcb ) && __DevicesCC() ) {
+        if( IsDevice( fcb )
+          && __DevicesCC() ) {
             cctrl = CC_YES;
         } else {
             cctrl = CC_NO;
@@ -346,8 +355,10 @@ static  void    ExOpen( void ) {
         share = SHARE_COMPAT;
     }
     // check for status/file existence errors
-    if( ((status == STATUS_OLD) && (fcb->flags & FTN_FSEXIST) == 0) ||
-        ((status == STATUS_NEW) && (fcb->flags & FTN_FSEXIST)) ) {
+    if( ((status == STATUS_OLD)
+      && (fcb->flags & FTN_FSEXIST) == 0)
+      || ((status == STATUS_NEW)
+      && (fcb->flags & FTN_FSEXIST)) ) {
         if( !connected ) {
             DiscoFile( fcb );
         }
@@ -397,9 +408,9 @@ static  void    ExOpen( void ) {
 }
 
 
-int     IOOpen( void ) {
-//================
-
+int     IOOpen( void )
+//====================
+{
     IOCB->iostmt = IO_OPEN;
     return( IOMain( &ExOpen ) );
 }

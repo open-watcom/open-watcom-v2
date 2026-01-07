@@ -55,8 +55,8 @@
 #include "wreslang.h"
 
 
-static wres_lang_id check_code_page( void )
-/*****************************************/
+static wres_lang_id _WCNEAR check_code_page( void )
+/*************************************************/
 {
     unsigned    codepage;
 #if defined __OS2__

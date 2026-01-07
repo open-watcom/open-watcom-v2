@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "elflwlv.h"
 #include "elforl.h"
 #include "orlhash.h"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -145,7 +146,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
     Elf64_Sym           *current_sym64;
     unsigned_32         st_name;
 
-    num_syms = elf_sec_hnd->size.u._32[I64LO32] / elf_sec_hnd->entsize.u._32[I64LO32];
+    num_syms = U64Low( elf_sec_hnd->size ) / U64Low( elf_sec_hnd->entsize );
     elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, ORL_STRUCT_SIZEOF( elf_symbol_handle ) * num_syms );
     if( elf_sec_hnd->assoc.sym.symbols == NULL )
         return( ORL_OUT_OF_MEMORY );
@@ -156,16 +157,15 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             current_sym64 = (Elf64_Sym *)current_sym;
             fix_sym64_byte_order( elf_sec_hnd->elf_file_hnd, current_sym64 );
             st_name = current_sym64->st_name;
-            current->value.u._32[I64HI32] = current_sym64->st_value.u._32[I64HI32];
-            current->value.u._32[I64LO32] = current_sym64->st_value.u._32[I64LO32];
+            U64High( current->value ) = U64High( current_sym64->st_value );
+            U64Low( current->value ) = U64Low( current_sym64->st_value );
             current->info = current_sym64->st_info;
             current->shndx = current_sym64->st_shndx;
         } else {
             current_sym32 = (Elf32_Sym *)current_sym;
             fix_sym_byte_order( elf_sec_hnd->elf_file_hnd, current_sym32 );
             st_name = current_sym32->st_name;
-            current->value.u._32[I64HI32] = 0;
-            current->value.u._32[I64LO32] = current_sym32->st_value;
+            Set64ValU32( current->value, current_sym32->st_value );
             current->info = current_sym32->st_info;
             current->shndx = current_sym32->st_shndx;
         }
@@ -219,7 +219,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             break;
         }
         current++;
-        current_sym += elf_sec_hnd->entsize.u._32[I64LO32];
+        current_sym += U64Low( elf_sec_hnd->entsize );
     }
     return( ORL_OKAY );
 }
@@ -489,7 +489,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     }
     switch( reloc_sec->type ) {
     case ORL_SEC_TYPE_RELOCS:
-        num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
+        num_relocs = U64Low( reloc_sec->size ) / U64Low( reloc_sec->entsize );
         orel = _ClientSecAlloc( reloc_sec, ORL_STRUCT_SIZEOF( orl_reloc ) * num_relocs );
         reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
@@ -502,9 +502,9 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
                 Elf64_Rel *irel64 = (Elf64_Rel *)irel;
                 fix_rel64_byte_order( reloc_sec->elf_file_hnd, irel64 );
-                orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + irel64->r_info.u._32[I64HI32] );
-                orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)irel64->r_info.u._32[I64LO32] );
-                orel->offset = irel64->r_offset.u._32[I64LO32];
+                orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + U64High( irel64->r_info ) );
+                orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)U64Low( irel64->r_info ) );
+                orel->offset = U64Low( irel64->r_offset );
             } else {
                 Elf32_Rel *irel32 = (Elf32_Rel *)irel;
                 fix_rel_byte_order( reloc_sec->elf_file_hnd, irel32 );
@@ -512,12 +512,12 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( irel32->r_info ) );
                 orel->offset = irel32->r_offset;
             }
-            irel += reloc_sec->entsize.u._32[I64LO32];
+            irel += U64Low( reloc_sec->entsize );
             orel++;
         }
         break;
     case ORL_SEC_TYPE_RELOCS_EXPADD:
-        num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
+        num_relocs = U64Low( reloc_sec->size ) / U64Low( reloc_sec->entsize );
         orel = _ClientSecAlloc( reloc_sec, ORL_STRUCT_SIZEOF( orl_reloc ) * num_relocs );
         reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
@@ -529,10 +529,10 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
                 Elf64_Rela *irela64 = (Elf64_Rela *)irel;
                 fix_rela64_byte_order( reloc_sec->elf_file_hnd, irela64 );
-                orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + irela64->r_info.u._32[I64HI32] );
-                orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)irela64->r_info.u._32[I64LO32] );
-                orel->offset = irela64->r_offset.u._32[I64LO32];
-                orel->addend = irela64->r_addend.u._32[I64LO32];
+                orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + U64High( irela64->r_info ) );
+                orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)U64Low( irela64->r_info ) );
+                orel->offset = U64Low( irela64->r_offset );
+                orel->addend = U64Low( irela64->r_addend );
             } else {
                 Elf32_Rela *irela32 = (Elf32_Rela *)irel;
                 fix_rela_byte_order( reloc_sec->elf_file_hnd, irela32 );
@@ -541,7 +541,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 orel->offset = irela32->r_offset;
                 orel->addend = irela32->r_addend;
             }
-            irel += reloc_sec->entsize.u._32[I64LO32];
+            irel += U64Low( reloc_sec->entsize );
             orel++;
         }
         break;

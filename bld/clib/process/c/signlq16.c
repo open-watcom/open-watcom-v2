@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <stdio.h>
 #include <signal.h>
@@ -39,7 +40,6 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "owqnx.h"
 
 
@@ -118,8 +118,7 @@ _WCRTLINK int sigaction(
     }
 
     if( (sig < _SIGMIN) || (sig > _SIGMAX) ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     /*
@@ -143,7 +142,7 @@ _WCRTLINK int sigaction(
     if( act ) {
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
         if( msg.r.status != EOK ) {
-            _RWD_errno = msg.r.status;
+            lib_set_errno( msg.r.status );
             return( -1 );
         }
     }

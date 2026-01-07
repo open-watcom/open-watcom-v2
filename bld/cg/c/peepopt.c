@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -392,8 +392,8 @@ static bool OpConst( instruction *ins )
 
 static  instruction     *FindInsPair( instruction *ins,
                                      instruction **stopper,
-                                     bool *pchange, opcode_defs op,
-                                     opcode_defs op2,
+                                     bool *pchange, opcode_defs opcode,
+                                     opcode_defs opcode2,
                                      ONE_OP *oprtn )
 /*****************************************************************/
 {
@@ -402,14 +402,14 @@ static  instruction     *FindInsPair( instruction *ins,
     if( stopper != NULL )
         *stopper = NULL;
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-        if( next->head.opcode == op && SameOpWithConst( ins, next ) ) {
+        if( next->head.opcode == opcode && SameOpWithConst( ins, next ) ) {
             if( oprtn( ins, next ) ) {
                 *pchange = true;
                 return( ins );
             }
         }
         if( InsOrderDependant( ins, next ) ) {
-            if( stopper != NULL && next->head.opcode == op2 &&
+            if( stopper != NULL && next->head.opcode == opcode2 &&
                 SameOpWithConst( ins, next ) ) {
                 *stopper = next;
             }
@@ -421,7 +421,7 @@ static  instruction     *FindInsPair( instruction *ins,
 
 
 static instruction *FindInsTriple( instruction *ins, bool *pchange,
-                                   opcode_defs op1, opcode_defs op2,
+                                   opcode_defs opcode1, opcode_defs opcode2,
                                    ONE_OP *op1rtn, ONE_OP *op2rtn,
                                    TWO_OP *op12rtn, THREE_OP *op121rtn )
 /**********************************************************************/
@@ -432,12 +432,12 @@ static instruction *FindInsTriple( instruction *ins, bool *pchange,
     instruction *next;
 
     change = false;
-    next = FindInsPair( ins, &ins2, &change, op1, op2, op1rtn );
+    next = FindInsPair( ins, &ins2, &change, opcode1, opcode2, op1rtn );
     if( change ) {
         *pchange = true;
         return( next );
     } else if( ins2 != NULL ) {
-        FindInsPair( ins2, &ins3, &change, op2, op1, op2rtn );
+        FindInsPair( ins2, &ins3, &change, opcode2, opcode1, op2rtn );
         if( change ) {
             *pchange = true;
             return( ins );

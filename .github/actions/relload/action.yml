@@ -1,92 +1,130 @@
 name: release-load-all
 description: 'Load all artifact for OW Release'
 inputs:
-  tools_nt:
+  asset:
+    description: 'asset name'
+    required: false
+    default: ''
+    type: string
+  suffix_nt:
     description: 'used compiler toolchain (for Windows)'
     required: false
     default: ''
     type: string
-  tools_lnx:
+  suffix_lnx:
     description: 'used compiler toolchain (for Linux)'
     required: false
     default: ''
     type: string
-  tools_osx:
+  suffix_osx:
     description: 'used compiler toolchain (for OSX)'
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
+  isrelrel:
+    description: 'is release release'
     required: false
     default: ''
     type: string
+outputs:
+  fullname:
+    description: 'snapshot file full name'
+    value: ${{steps.snapshot.outputs.fullname}}
 runs:
   using: composite
   steps:
-  - uses: "./.github/actions/artfload"
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
-      gitpath:  'rel'
-      artifact: "rel nt x64 ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      gitpath:  'build binbuild'
+      artifact: 'build lnx x64 ${{inputs.suffix_lnx}}'
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
-      gitpath:  'rel'
-      artifact: "rel lnx x64 ${{ inputs.tools_lnx }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui nt x64 ${{inputs.suffix_nt}}'
+  - if: inputs.asset != 'snapshot'
+    uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
-      gitpath:  'rel'
-      artifact: "rel lnx a64 ${{ inputs.tools_lnx }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui lnx x64 ${{inputs.suffix_lnx}}'
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
+      gitpath:  'rel arml64'
+      artifact: rel lnx a64 ${{inputs.suffix_lnx}}
+  - uses: ./.github/actions/artfload
+    with:
       gitpath:  'rel bino64'
-      artifact: "rel osx x64 ${{ inputs.tools_osx }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel osx x64 ${{inputs.suffix_osx}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel armo64'
-      artifact: "rel osx a64 ${{ inputs.tools_osx }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel osx a64 ${{inputs.suffix_osx}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docdos ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel nt x64 ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docchm ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel lnx x64 ${{inputs.suffix_lnx}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docnt ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel docdos ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docos2 ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel docchm ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docpdf ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfload"
+      artifact: rel docnt ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
     with:
-      hostos:   'lnx'
       gitpath:  'rel'
-      artifact: "rel docwin ${{ inputs.tools_nt }}"
-      owdebug:  ${{ inputs.owdebug }}
+      artifact: rel docos2 ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
+    with:
+      gitpath:  'rel'
+      artifact: rel docpdf ${{inputs.suffix_nt}}
+  - uses: ./.github/actions/artfload
+    with:
+      gitpath:  'rel'
+      artifact: rel docwin ${{inputs.suffix_nt}}
+  - if: inputs.asset != 'snapshot'
+    name: Build Installer
+    run: |
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh gcc
+      fi
+    env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       'GCC'
+      OWROOT:        ${{github.workspace}}
+      OWINSTTARGET:  ${{inputs.asset}}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.asset == 'snapshot'
+    name: Create snapshot directory and get tar file name
+    id: snapshot
+    run: |
+      $dstpath = Join-Path ${{github.workspace}} distrib ow bin
+      New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path $dstpath > $null
+      Join-Path $dstpath ow-snapshot.tar.xz `
+      | Join-String -OutputPrefix 'fullname=' `
+      | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
+    shell: pwsh
+  - if: inputs.asset == 'snapshot'
+    name: OW snapshot save (tar)
+    uses: ./.github/actions/tarsave
+    with:
+      gitpath:  'rel'
+      fullname: ${{steps.snapshot.outputs.fullname}}
+  # save asset as artifacts for distribution
+  # use full content of directory, cannot specify individual files
+  - if: inputs.isrelrel == '1'
+    uses: ./.github/actions/artfsave
+    with:
+      gitpath:    'distrib ow bin'
+      artifact:   install ${{inputs.asset}}

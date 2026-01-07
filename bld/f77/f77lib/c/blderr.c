@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ void Substitute( const char *msg, char *buffer, va_list args )
             width = subs_len;
         }
         if( same_buff ) {
-            memmove( buffer + width, msg, strlen( msg ) + sizeof( char ) );
+            memmove( buffer + width, msg, strlen( msg ) + 1 );
             msg = buffer + width;
         }
         if( subs_len < width ) {

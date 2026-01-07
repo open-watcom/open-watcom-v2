@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,8 +72,8 @@ static const OPR        LogOpr[] = {
 };
 
 static const DSOPN lexDsOpn[] = {
-    #define pick(tok_id,dsopn_id,opn_proc) dsopn_id,
-    #include "tokdsopn.h"
+    #define pick(tok_id,dsopn_id)   dsopn_id,
+    #include "tokencls.h"
     #undef pick
 };
 
@@ -137,7 +137,7 @@ void    MakeITList( void ) {
         return;
     }
     CITNode = ITHead;
-    for(;;) {
+    for( ;; ) {
         if( LexToken.flags & TK_EOL )
             break;
         GetOpr();
@@ -185,7 +185,7 @@ void    MakeITList( void ) {
 static  void FlushStatement( void ) {
 //========================================
 
-    for(;;) {
+    for( ;; ) {
         ComRead();
         if( ProgSw & PS_SOURCE_EOF )
             break;

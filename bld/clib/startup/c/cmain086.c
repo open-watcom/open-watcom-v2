@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "initarg.h"
 #include "cmain.h"
 #include "initdll.h"
+#include "xmain.h"
+
 
 /*
         ___Argc, ___Argv will be filled in by an initializer routine
@@ -44,16 +47,18 @@
 */
 
 #if defined(__SW_BD)
-int _CMain( void )
+
+int _WCNEAR _CMain( void )
 {
     return( __dll_initialize() );
 }
-#else
-extern int     main( int, char ** );
 
-void _CMain( void )
+#else
+
+_WCNORETURN void _WCNEAR _CMain( void )
 {
     exit( main( ___Argc, ___Argv ) );
     // never return
 }
+
 #endif

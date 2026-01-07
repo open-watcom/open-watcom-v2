@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,19 +130,28 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
 
     iol = LN;
     meml = LN;
-    if( ( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) < X86_386 ) {
-        if( tk & MAS_IO ) iol = L1;
-        if( tk & MAS_MEMORY ) meml = L1;
+    if( (MCSystemConfig()->cpu.x86 & X86_CPU_MASK) < X86_386 ) {
+        if( tk & MAS_IO )
+            iol = L1;
+        if( tk & MAS_MEMORY ) {
+            meml = L1;
+        }
     } else {
-        if( tk & MAS_IO ) iol = L3;
-        if( tk & MAS_MEMORY ) meml = L3;
+        if( tk & MAS_IO )
+            iol = L3;
+        if( tk & MAS_MEMORY ) {
+            meml = L3;
+        }
     }
 
     for( mth = 0; mth < X86T_LAST_ONE; ++mth ) {
-        if( (int)TypeArray[mth].io <= iol || (int)TypeArray[mth].mem <= meml ) {
+        if( (int)TypeArray[mth].io <= iol
+          || (int)TypeArray[mth].mem <= meml ) {
             if( tk & TypeArray[mth].u.mti->b.kind ) {
                 wr = wk( mth, data );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
         }
     }
@@ -162,7 +171,9 @@ mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
     memcpy( mti, TypeArray[mth].u.mti, sizeof( *mti ) );
-    if( TypeArray[mth].u.b == &BIT.b || TypeArray[mth].u.b == &MMX_TITLE || TypeArray[mth].u.b == &XMM_TITLE ) {
+    if( TypeArray[mth].u.b == &BIT.b
+      || TypeArray[mth].u.b == &MMX_TITLE
+      || TypeArray[mth].u.b == &XMM_TITLE ) {
         mti->b.handler_code = (unsigned_8)mth;
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,18 +119,19 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
         _LpDllName = DllName;
     } else {
         _LpCmdLine = (char *)RdosGetCmdLine();
-        if( _LpCmdLine == 0 )
+        if( _LpCmdLine == 0 ) {
             _LpCmdLine = "";
-        else {
-           while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 )
-               _LpCmdLine++;
+        } else {
+            while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 ) {
+                _LpCmdLine++;
+            }
         }
     }
 
     return( 1 );
 }
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     thread_data         *tdata;
 
@@ -144,5 +146,5 @@ _WCRTLINK _WCNORETURN void __exit( int ret_code )
     }
     // !TO DO
     // here is missing call to system exit procedure
-    // should never return
+    // __exit should never return
 }

@@ -26,7 +26,7 @@ public:
     // Conversions
     _Block word(unsigned n = 0) const
       {return n < NWORDS ? _bits[n] : 0;}
-    
+
     // Assignment
     bits& operator=(const bits&);
 
@@ -58,7 +58,7 @@ public:
     int count() const;
     int size() const
       {return nbits;}
-    
+
     // Shift
     const bits& operator<<=(unsigned);
     bits operator<<(unsigned) const;
@@ -86,8 +86,9 @@ typedef bits<128> dbits; //grb
 template<int nbits>
 bits<nbits>::bits(const bits<nbits>& b)
 {
-    for (int i = 0; i < NWORDS; ++i)
-	    _bits[i] = b._bits[i];
+    for (int i = 0; i < NWORDS; ++i) {
+        _bits[i] = b._bits[i];
+    }
 }
 
 template<int nbits>

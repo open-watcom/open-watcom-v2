@@ -45,27 +45,7 @@ How do I get information about free memory with DOS/4GW?
 Please refer to the
 .book DOS Protected-Mode Interface (DPMI) Specification
 for information on DPMI services.
-In the past, the DPMI specification could be obtained free of charge
-by contacting Intel Literature JP26 at 800-548-4725 or by writing
-to the address below.
-We have been advised that the DPMI specification is no longer
-available in printed form.
-.illust begin
-Intel Literature JP26
-3065 Bowers Avenue
-P.O. Box 58065
-Santa Clara, California
-U.S.A. 95051-8065
-.illust end
-.np
-However, the DPMI 1.0 specification can be obtained from the Intel ftp
-site.
-Here is the URL.
-.code begin
-ftp://ftp.intel.com/pub/IAL/software_specs/dpmiv1.zip
-.code end
-.pc
-This ZIP file contains a Postscript version of the DPMI 1.0 specification.
+:INCLUDE file='dpmiinfo'.
 .*
 .section How can I write directly to video memory using a DOS extender?
 .*
@@ -645,27 +625,7 @@ void main()
 Please refer to the
 .book DOS Protected-Mode Interface (DPMI) Specification
 for information on DPMI services.
-In the past, the DPMI specification could be obtained free of charge
-by contacting Intel Literature JP26 at 800-548-4725 or by writing
-to the address below.
-We have been advised that the DPMI specification is no longer
-available in printed form.
-.illust begin
-Intel Literature JP26
-3065 Bowers Avenue
-P.O. Box 58065
-Santa Clara, California
-U.S.A. 95051-8065
-.illust end
-.np
-However, the DPMI 1.0 specification can be obtained from the Intel ftp
-site.
-Here is the URL.
-.code begin
-ftp://ftp.intel.com/pub/IAL/software_specs/dpmiv1.zip
-.code end
-.pc
-This ZIP file contains a Postscript version of the DPMI 1.0 specification.
+:INCLUDE file='dpmiinfo'.
 .*
 .endlevel
 .do end

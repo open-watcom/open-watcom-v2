@@ -31,7 +31,7 @@
  ****************************************************************************/
 
 /*
- *	home_terminfo.c -- return the $HOME/.terminfo string, expanded
+ *  home_terminfo.c -- return the $HOME/.terminfo string, expanded
  */
 
 #include <curses_p.h>
@@ -50,16 +50,16 @@ _nc_home_terminfo(void)
     static char *temp = 0;
 
     if (use_terminfo_vars()) {
-	if (temp == 0) {
-	    if ((home = getenv("HOME")) != 0
-		&& my_length <= PATH_MAX) {
-		temp = typeMalloc(char, my_length);
-		if (temp == 0)
-		    _nc_err_abort(MSG_NO_MEMORY);
-		(void) sprintf(temp, PRIVATE_INFO, home);
-	    }
-	}
-	return temp;
+        if (temp == 0) {
+            if ((home = getenv("HOME")) != 0
+              && my_length <= PATH_MAX) {
+                temp = typeMalloc(char, my_length);
+                if (temp == 0)
+                    _nc_err_abort(MSG_NO_MEMORY);
+                (void) sprintf(temp, PRIVATE_INFO, home);
+            }
+        }
+        return temp;
     }
     return 0;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "system.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"
@@ -51,6 +50,7 @@
 #include "opctable.h"
 #include "rscsplit.h"
 #include "_split.h"
+#include "i64.h"
 #include "_rscsplt.h"
 
 
@@ -342,7 +342,7 @@ static void     UseAddress( name *op ) {
     switch( op->n.class ) {
     case N_TEMP:
         next = op->t.alias;
-        for(;;) {
+        for( ;; ) {
             next->v.usage |= USE_ADDRESS;
             if( next == op )
                 break;
@@ -522,10 +522,10 @@ name    *Int64Equivalent( name *name )
 * Return a U64 equivalent of a double value
 */
 {
-    constant_defn       *defn;
+    constant_defn       *floatval;
 
-    defn = GetFloat( name, FD );
-    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
+    floatval = GetFloat( name, FD );
+    return( AllocU64Const( U64LowLE( floatval->buffer.u64 ), U64HighLE( floatval->buffer.u64 ) ) );
 }
 
 name    *LowPart( name *tosplit, type_class_def type_class )
@@ -567,20 +567,22 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64LowLE( floatval->buffer.u64 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_name = AddrConst( tosplit->c.u.op, tosplit->c.lo.u.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
-        if( type_class == U1 || type_class == I1 ) {
+        if( type_class == U1
+          || type_class == I1 ) {
             new_name = AllocRegName( Low16Reg( tosplit->r.reg ) );
-        } else if( type_class == U2 || type_class == I2 ) {
+        } else if( type_class == U2
+          || type_class == I2 ) {
             new_name = AllocRegName( Low32Reg( tosplit->r.reg ) );
         } else {
             new_name = AllocRegName( Low64Reg( tosplit->r.reg ) );
@@ -649,20 +651,22 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64HighLE( floatval->buffer.u64 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_name = AddrConst( tosplit->c.u.op, tosplit->c.lo.u.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
-        if( type_class == U1 || type_class == I1 ) {
+        if( type_class == U1
+          || type_class == I1 ) {
             new_name = AllocRegName( High16Reg( tosplit->r.reg ) );
-        } else if( type_class == U2 || type_class == I2 ) {
+        } else if( type_class == U2
+          || type_class == I2 ) {
             new_name = AllocRegName( High32Reg( tosplit->r.reg ) );
         } else {
             new_name = AllocRegName( High64Reg( tosplit->r.reg ) );
@@ -793,7 +797,8 @@ instruction     *rMOVEXX_4( instruction *ins )
             first_ins = new_ins;
         }
         new_ins = MakeMove( temp, dst, U4 );
-        if( words == 0 && rem == 0 ) {
+        if( words == 0
+          && rem == 0 ) {
             ReplIns( ins, new_ins );
             last_ins = new_ins;
         } else {

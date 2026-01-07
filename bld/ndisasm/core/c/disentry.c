@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "dis.h"
 #include "distypes.h"
 #include "distbls.gh"
+#include "i64.h"
 
 #include "clibext.h"
 
@@ -279,7 +280,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
                      && ( DO_MEMORY_ABS == (ins->op[i].type & DO_MASK ) ) ) {
                     // ASI stuff
                 } else if( ins->op[i].index == DR_NONE
-                            && ins->op[i].value.s._32[I64LO32] != 0 ) {
+                            && U64Low( ins->op[i].value ) != 0 ) {
                     // always add offset to base reg
                     // offset > 0 dissassembles like %reg + offset
                     // offset < 0 dissassembles like %reg + -offset

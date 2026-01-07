@@ -48,13 +48,14 @@ _WCRTLINK int __F_NAME(creat,_wcreat)( const CHAR_TYPE *name, mode_t pmode )
     int             acc;
 
     acc = O_CREAT | O_TRUNC;
-    if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
+    if( (pmode & S_IWRITE)
+      && (pmode & S_IREAD) ) {
         acc |= O_RDWR;
     } else if( pmode & S_IWRITE ) {
         acc |= O_WRONLY;
     } else if( pmode & S_IREAD ) {
         acc |= O_RDONLY;
-    } else if( !pmode ) {
+    } else if( pmode == 0 ) {
         acc |= O_RDWR;
     }
     return( __F_NAME(open,_wopen)( name, acc, pmode ) );

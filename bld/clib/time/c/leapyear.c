@@ -65,7 +65,7 @@ short const __dilyr[] = { /* days in leap year array */
     31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31   /* Jan, next year */
 };
 
-int __leapyear( unsigned year )
+int _INTERNAL __leapyear( unsigned year )
 {
     if( year & 3 )
         return( 0 );

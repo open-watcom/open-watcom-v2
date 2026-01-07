@@ -41,7 +41,7 @@
 
 /* This routine will be called by cstart if "_fltused" is referenced. */
 
-void __setEFGfmt( void )
+void _WCNEAR __setEFGfmt( void )
 {
 #ifdef __SW_BR
     __EFG_printf = __get_EFG_Format();

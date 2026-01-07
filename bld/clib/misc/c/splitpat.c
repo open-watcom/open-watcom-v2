@@ -65,7 +65,7 @@
 #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
 
-static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
+static void _WCNEAR copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
 {
     if( buf != NULL ) {
         if( len > maxlen )

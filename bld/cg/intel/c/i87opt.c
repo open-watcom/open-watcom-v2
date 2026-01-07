@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +231,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
     opcnt       i;
 
     next = ins->head.next;
-    for(;;) {
+    for( ;; ) {
         for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 if( _IsReDefinedBy( next, ins->operands[i] ) ) {

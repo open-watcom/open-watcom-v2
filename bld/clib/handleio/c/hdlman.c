@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,12 +51,10 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "rterrno.h"
 #include "liballoc.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtinit.h"
-#include "seterrno.h"
 #include "handleio.h"
 #include "thread.h"
 
@@ -68,7 +67,7 @@ static HANDLE   *__FakeHandles = NULL;
 static HANDLE   *__OSHandles = NULL;
 static int      __topFakeHandle = 0;
 
-unsigned __growPOSIXHandles( unsigned num )
+unsigned _INTERNAL __growPOSIXHandles( unsigned num )
 {
     HANDLE      *os_handles;
     unsigned    i;
@@ -81,7 +80,7 @@ unsigned __growPOSIXHandles( unsigned num )
             os_handles = lib_realloc( __OSHandles, num * sizeof( *os_handles ) );
         }
         if( os_handles == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
         } else {
             for( i = __NHandles; i < num; i++ ) {
                 os_handles[i] = INVALID_HANDLE_VALUE;
@@ -94,7 +93,7 @@ unsigned __growPOSIXHandles( unsigned num )
     return( __NHandles );
 }
 
-int __allocPOSIXHandle( HANDLE osfh )
+int _INTERNAL __allocPOSIXHandle( HANDLE osfh )
 {
     int i;
 
@@ -130,18 +129,18 @@ int __allocPOSIXHandle( HANDLE osfh )
     return( i );
 }
 
-void __freePOSIXHandle( int handle )
+void _INTERNAL __freePOSIXHandle( int handle )
 {
     __OSHandles[handle] = INVALID_HANDLE_VALUE;
 }
 
 
-HANDLE __getOSHandle( int handle )
+HANDLE _INTERNAL __getOSHandle( int handle )
 {
     return( __OSHandles[handle] );
 }
 
-int __setOSHandle( int handle, HANDLE osfh )
+int _INTERNAL __setOSHandle( int handle, HANDLE osfh )
 {
     // call the Win32 API for a standard file handle
     switch( handle ) {
@@ -162,7 +161,7 @@ int __setOSHandle( int handle, HANDLE osfh )
     return( -1 );           // this should never happen
 }
 
-HANDLE __NTGetFakeHandle( void )
+HANDLE _INTERNAL __NTGetFakeHandle( void )
 {
     static DWORD    fakeHandle = 0x80000000L;
     HANDLE          osfh;
@@ -184,7 +183,7 @@ HANDLE __NTGetFakeHandle( void )
 
 // called from library startup code
 
-static void __init_STD_POSIXHandle( DWORD stdhandle )
+static void _WCNEAR __init_STD_POSIXHandle( DWORD stdhandle )
 {
     HANDLE osfh;
 
@@ -196,7 +195,7 @@ static void __init_STD_POSIXHandle( DWORD stdhandle )
     __allocPOSIXHandle( osfh );
 }
 
-void __initPOSIXHandles( void )
+void _INTERNAL __initPOSIXHandles( void )
 {
     // __OSHandles = NULL;
     // __NHandles = 0;
@@ -207,7 +206,7 @@ void __initPOSIXHandles( void )
     __init_STD_POSIXHandle( STD_ERROR_HANDLE );
 }
 
-static void __finiPOSIXHandles( void )
+static void _WCNEAR __finiPOSIXHandles( void )
 {
     int     i;
 
@@ -229,7 +228,7 @@ AYI( __finiPOSIXHandles, INIT_PRIORITY_LIBRARY-1 )
 #endif
 
 
-void __set_handles( int num )
+void _INTERNAL __set_handles( int num )
 {
     __NHandles = num;
 }
@@ -260,7 +259,7 @@ _WCRTLINK int _grow_handles( int num )
 
             new_handles = (char *)lib_nmalloc( num );
             if( new_handles == 0 ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 num = __NHandles;
             } else {
                 _fmemset( new_handles, 0xFF, num );

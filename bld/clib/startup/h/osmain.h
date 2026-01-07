@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,38 +32,42 @@
 #if defined( __OS2__ )
 
   #if defined( _M_I86 )
-    extern int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
-    #pragma aux _OS2Main "_*" __parm __caller [__dx __ax] [__cx __bx]
+    #if defined(__SW_BD)
+        extern int _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
+    #else
+        extern _WCNORETURN void _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
+    #endif
+        #pragma aux _OS2Main "_*" __parm __caller [__dx __ax] [__cx __bx]
   #else
-    extern void __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
-    extern void __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+        extern _WCNORETURN void _WCNEAR __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+        extern _WCNORETURN void _WCNEAR __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
     #if defined(_M_IX86)
-      #pragma aux __wOS2Main "*" __parm __caller []
-      #pragma aux __OS2Main "*" __parm __caller []
+        #pragma aux __wOS2Main "*" __parm __caller []
+        #pragma aux __OS2Main "*" __parm __caller []
     #endif
   #endif
 
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
-  extern void __RdosMain( void );
-  #pragma aux __RdosMain  "*"
+    extern _WCNORETURN void __RdosMain( void );
+    #pragma aux __RdosMain  "*"
 
 #elif defined( __LINUX__ )
 
-  extern void __cdecl _LinuxMain( int argc, char **argv, char **arge );
+    extern _WCNORETURN void __cdecl _LinuxMain( int argc, char **argv, char **arge );
 
 #elif defined( __NT__ )
 
-    extern void __NTMain( void );
-    extern void __wNTMain( void );
+    extern _WCNORETURN void __NTMain( void );
+    extern _WCNORETURN void __wNTMain( void );
   #if defined(_M_IX86)
     #pragma aux __NTMain "*"
     #pragma aux __wNTMain "*"
   #endif
 
   #if defined( __AXP__ ) || defined( __PPC__ ) || defined(__MIPS__)
-    extern void mainCRTStartup( void );
-    extern void wmainCRTStartup( void );
+    extern _WCNORETURN void mainCRTStartup( void );
+    extern _WCNORETURN void wmainCRTStartup( void );
   #endif
 
 #endif

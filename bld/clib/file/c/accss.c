@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,12 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
-#include <errno.h>
+//#include <errno.h>
 #include <unistd.h>
 #include <dos.h>
 #include "tinyio.h"
-#include "seterrno.h"
 #include "msdos.h"
 
 _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *pathname, int pmode )

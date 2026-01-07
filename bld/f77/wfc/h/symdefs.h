@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,8 +86,8 @@ typedef enum {
 
 typedef struct dim_list {
     union {
-        warp_label      init_label;     // initialization label for arrays
-        unsigned short  cg_typ;         // cg-type for local arrays on stack
+        warp_label      init_label; // initialization label for arrays
+        cg_type         cgtyp;      // cg-type for local arrays on stack
     } l;
     dim_flags_type  dim_flags;      //  dimension flags
     pointer         adv;            //  address of ADV
@@ -97,7 +97,7 @@ typedef struct dim_list {
 typedef struct act_dim_list {
     union {
         warp_label      init_label;     // initialization label for arrays
-        unsigned short  cg_typ;         // cg-type for local arrays on stack
+        cg_type         cgtyp;          // cg-type for local arrays on stack
     } l;
     dim_flags_type      dim_flags;      //  dimension flags
     pointer             adv;            //  address of ADV

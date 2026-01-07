@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -41,6 +41,7 @@
 #include "rtinit.h"
 #include "rdos.h"
 #include "_rdos.h"
+
 
 /* timer structures are shared with kernel so do not modify the following types! */
 
@@ -86,7 +87,7 @@ static int                    id_arr[TIMER_ENTRIES];
 static int                    FCurrIndex = 0;
 static struct RdosTimerEntry *FCurrEntry = 0;
 
-static void UpdateTimers(  )
+static void _WCNEAR UpdateTimers( void )
 {
     int                    i;
     int                    bit;
@@ -97,7 +98,7 @@ static void UpdateTimers(  )
             mask = 1;
             for( bit = 0; bit < 32; bit++ ) {
                 if( timer->Active.CompletedBitmap[i] & mask ) {
-                    if( ( timer->Req.DoneBitmap[i] & mask ) == 0 ) {
+                    if( (timer->Req.DoneBitmap[i] & mask) == 0 ) {
                         timer->Req.DoneBitmap[i] |= mask;
                         FCurrIndex = 32 * i + bit;
                         FCurrEntry = &timer->Req.EntryArr[FCurrIndex - 4];
@@ -112,12 +113,12 @@ static void UpdateTimers(  )
     }
 }
 
-static void TimerThread( void *param )
+static void _WCNEAR TimerThread( void *param )
 {
     timer = (struct RdosTimer *)param;
 
     for( ;; ) {
-        if( __wait_timer_event( ) ) {
+        if( __wait_timer_event() ) {
             RdosEnterFutex( &timer_futex );
             UpdateTimers();
             RdosLeaveFutex( &timer_futex );
@@ -128,16 +129,17 @@ static void TimerThread( void *param )
     timer = 0;
 }
 
-static void CreateTimerThread( )
+static void _WCNEAR CreateTimerThread( void )
 {
     int retry;
 
     _begintimerthread( &TimerThread );
-    for( retry = 0; retry < 100 && !timer; retry++ )
+    for( retry = 0; retry < 100 && !timer; retry++ ) {
         RdosWaitMilli( 10 );
+    }
 }
 
-static int StartTimer( void (*callback)( void *param ), void *param, long long timeout )
+static int _WCNEAR StartTimer( void (*callback)( void *param ), void *param, long long timeout )
 {
     int                    i;
     int                    bit;
@@ -152,7 +154,7 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
         if( active != -1 ) {
             mask = 1;
             for( bit = 0; bit < 32; bit++ ) {
-                if( ( active & mask ) == 0 ) {
+                if( (active & mask) == 0 ) {
                     index = 32 * i + bit;
                     entry = &timer->Req.EntryArr[index - 4];
                     entry->timeout = timeout;
@@ -167,36 +169,41 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
         }
     }
 
-    if( done )
+    if( done ) {
         return( index );
-    else
+    } else {
         return( 0 );
+    }
 }
 
-static int StopTimer( int index )
+static int _WCNEAR StopTimer( int index )
 {
     int                    i;
     int                    bit;
     int                    mask;
 
-    if( index < 4 || index >= 256 )
+    if( index < 4
+      || index >= 256 )
         return( 0 );
 
     i = index / 32;
     bit = index % 32;
     mask = 1 << bit;
-    if( timer->Req.DoneBitmap[i] & mask )
+    if( timer->Req.DoneBitmap[i] & mask ) {
         return( 0 );
-    else {
-        if( ( timer->Req.ReqBitmap[i] & mask ) || ( timer->Active.PendingBitmap[i] & mask ) || ( timer->Active.CompletedBitmap[i] & mask ) ) {
+    } else {
+        if( (timer->Req.ReqBitmap[i] & mask)
+          || (timer->Active.PendingBitmap[i] & mask)
+          || (timer->Active.CompletedBitmap[i] & mask) ) {
             timer->Req.DoneBitmap[i] |= mask;
             return( 1 );
-        } else
+        } else {
             return( 0 );
+        }
     }
 }
 
-static int RestartCurrTimer( long long timeout )
+static int _WCNEAR RestartCurrTimer( long long timeout )
 {
     int                    i;
     int                    bit;
@@ -215,32 +222,34 @@ static int RestartCurrTimer( long long timeout )
     return( 1 );
 }
 
-static int ResetTimer( int index, long long timeout )
+static int _WCNEAR ResetTimer( int index, long long timeout )
 {
     int                    i;
     int                    bit;
     int                    mask;
     struct RdosTimerEntry *entry;
 
-    if( index < 4 || index >= 256 )
+    if( index < 4
+      || index >= 256 )
         return( 0 );
 
     i = index / 32;
     bit = index % 32;
     mask = 1 << bit;
-    if( timer->Req.DoneBitmap[i] & mask )
+    if( timer->Req.DoneBitmap[i] & mask ) {
         return( 0 );
-    else {
+    } else {
         if( timer->Active.PendingBitmap[i] & mask ) {
             entry = &timer->Req.EntryArr[index - 4];
             entry->timeout = timeout;
             return( 1 );
-        } else
+        } else {
             return( 0 );
+        }
     }
 }
 
-int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
+int RdosStartAppTimer( void (*Start)(void *Param), void *Param, int Ms )
 {
     int index;
     int id = 0;
@@ -248,7 +257,7 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
 
     RdosEnterFutex( &timer_futex );
 
-    if( !timer )
+    if( timer == 0 )
         CreateTimerThread( );
 
     index = StartTimer( Start, Param, timeout );
@@ -269,7 +278,7 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
     return( id );
 }
 
-int RdosStopAppTimer(int id)
+int RdosStopAppTimer( int id )
 {
     int i;
     int res = 0;
@@ -288,7 +297,7 @@ int RdosStopAppTimer(int id)
     return( res );
 }
 
-int RdosRestartCurrentAppTimer(int Ms)
+int RdosRestartCurrentAppTimer( int Ms )
 {
     int  res;
     long long timeout = RdosUserGetLongSysTime() + 1193 * Ms;
@@ -300,7 +309,7 @@ int RdosRestartCurrentAppTimer(int Ms)
     return( res );
 }
 
-int RdosResetAppTimer(int id, int Ms)
+int RdosResetAppTimer( int id, int Ms )
 {
     int  i;
     int  res = 0;
@@ -320,14 +329,15 @@ int RdosResetAppTimer(int id, int Ms)
     return( res );
 }
 
-static void init( void )
+static void _WCNEAR init( void )
 {
     int i;
 
     RdosInitFutex( &timer_futex, "App.Timer" );
 
-    for( i = 0; i < TIMER_ENTRIES; i++ )
+    for( i = 0; i < TIMER_ENTRIES; i++ ) {
         id_arr[i] = 0;
+    }
 }
 
-AXI( init, INIT_PRIORITY_RUNTIME )
+AXIN( init, INIT_PRIORITY_RUNTIME )

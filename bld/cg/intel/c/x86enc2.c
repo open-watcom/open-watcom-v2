@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
+#include "i64.h"
 #include "x86enc.h"
 #include "x86enc2.h"
 #include "feprotos.h"
@@ -521,6 +522,24 @@ void    Gen4ByteValue( uint_32 value )
     AddByte( ( value >> 8 ) & 0xFF );
     AddByte( ( value >> 16 ) & 0xFF );
     AddByte( ( value >> 24 ) & 0xFF );
+    _Emit;
+}
+
+
+void    Gen8ByteValue( unsigned_64 *value )
+/*****************************************
+ * Drop a 64 bit integer into the queue.
+ */
+{
+    _Code;
+    AddByte( U64Byte( *value, I64B0 ) );
+    AddByte( U64Byte( *value, I64B1 ) );
+    AddByte( U64Byte( *value, I64B2 ) );
+    AddByte( U64Byte( *value, I64B3 ) );
+    AddByte( U64Byte( *value, I64B4 ) );
+    AddByte( U64Byte( *value, I64B5 ) );
+    AddByte( U64Byte( *value, I64B6 ) );
+    AddByte( U64Byte( *value, I64B7 ) );
     _Emit;
 }
 

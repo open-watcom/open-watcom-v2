@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,14 +39,13 @@
 #include <ctype.h>
 #include <direct.h>
 #include <rdos.h>
-#include "rterrno.h"
 #include "liballoc.h"
 #include "thread.h"
 #include "pathmac.h"
 
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            _RWD_errno = ERANGE;        \
+                            lib_set_errno( ERANGE );        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -62,7 +63,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
         size = _MAX_PATH;
         buff = lib_malloc( size );
         if( buff == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
     }
@@ -86,7 +87,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
     q += 2;
     if( !IS_DIR_SEP( p[0] ) ) {
         if( !RdosGetCurDir( path_drive_idx, curr_dir ) ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( NULL );
         }
         len = strlen( curr_dir );
@@ -119,12 +120,13 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
             if( p[0] == NULLCHAR )
                 break;
             if( p[0] == '.' ) {
-                if( IS_DIR_SEP( p[1] ) )
+                if( IS_DIR_SEP( p[1] ) ) {
                     p += 2;
-                else {
+                } else {
                     p += 1;
-                    if( p[0] != NULLCHAR )
+                    if( p[0] != NULLCHAR ) {
                         return( NULL );
+                    }
                 }
 
                 /* go up a directory for a "../" */

@@ -108,8 +108,8 @@ endif
 _TEXT   segment word public 'CODE'
 
         extrn   "C",exit            : proc
-        extrn   __InitRtns          : proc
-        extrn   __FiniRtns          : proc
+        extrn   __InitRtns          : near
+        extrn   __FiniRtns          : near
         extrn   WINMAIN             : proc
 
 FAR_DATA segment byte public 'FAR_DATA'
@@ -230,7 +230,7 @@ around: call    INITTASK                ; initialize
         jne     l1                      ; then exit error
 
         public  "C",__exit
-__exit  proc
+__exit  proc near
         push    ax                      ; save return code
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit

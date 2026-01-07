@@ -63,9 +63,9 @@ beginner            FBeginThread;
 ender               FEndThread;
 initializer         FInitDataThread;
 
-static  beginner    *__BeginThread;
-static  ender       *__EndThread;
-static  initializer *__InitThreadData;
+static  beginner    *_FBeginThread;
+static  ender       *_FEndThread;
+static  initializer *_FInitThreadData;
 
 static  bool        ThreadsInitialized;
 
@@ -123,7 +123,10 @@ static  void    ThreadHelper( void *arg_fti )
     RMemFree( fti );
     RTSpawn( ThreadStarter );
     FThreadFini();
-    __EndThread();
+    /*
+     * it calls original C run-time library function
+     */
+    _FEndThread();
 }
 
 
@@ -139,8 +142,10 @@ int FBeginThread( thread_fn *rtn, void *stack, unsigned stk_size, void *arglist 
         return( -1 );
     fti->rtn = (fthread_fn *)rtn;
     fti->arglist = arglist;
-
-    return( __BeginThread( ThreadHelper, stack, stk_size, fti ) );
+    /*
+     * it calls original C run-time library function
+     */
+    return( _FBeginThread( ThreadHelper, stack, stk_size, fti ) );
 }
 
 
@@ -156,7 +161,10 @@ int  FInitDataThread( void *td )
 //==============================
 {
     __InitFThreadData( td );
-    return( __InitThreadData( td ) );
+    /*
+     * it calls original C run-time library function
+     */
+    return( _FInitThreadData( td ) );
 }
 
 
@@ -192,19 +200,25 @@ unsigned        __fortran THREADID( void )
 // --------------------------------------------
 
 
-void    __FiniBeginThread( void )
+void    __FiniBeginFThread( void )
 //===============================
 {
     FiniFThreads();
 }
 
-#pragma off (check_stack)
-void    __InitBeginThread( void )
+#pragma off( check_stack );
+void    __InitBeginFThread( void )
 //===============================
 {
-    __BeginThread = &FBeginThread;
-    __EndThread = &FEndThread;
-    __InitThreadData = &FInitDataThread;
-    __RegisterThreadData( &__BeginThread, &__EndThread, &__InitThreadData );
+    _FBeginThread = FBeginThread;
+    _FEndThread = FEndThread;
+    _FInitThreadData = FInitDataThread;
+    /*
+     * Registers Fortran thread data-related functions and returns
+     * the original C runtime functions in _FBeginThread, _FEndThread, and
+     * _FInitThreadData.
+     */
+    __RegisterThreadData( &_FBeginThread, &_FEndThread, &_FInitThreadData );
     ThreadsInitialized = false;
 }
+#pragma pop( check_stack );

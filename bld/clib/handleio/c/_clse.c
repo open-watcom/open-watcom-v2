@@ -31,19 +31,19 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "tinyio.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"
 
-int __close( int handle )
+
+int _WCNEAR __close( int handle )
 {
     tiny_ret_t rc;
     int     rv;

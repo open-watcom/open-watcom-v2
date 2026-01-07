@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #include "as.h"
 #include "asinline.h"
+#include "lexyacc.h"
+#include "asiytab.gh"
 #include "asparser.h"
 
 #ifdef _STANDALONE_
@@ -41,6 +44,8 @@
 
 const char *AsmInStr;
 
+#include "asilexyy.gc"
+#include "asiytab.gc"
 
 void AsmInit( void )
 //******************

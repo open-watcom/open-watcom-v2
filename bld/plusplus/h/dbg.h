@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 
 #include "dbgzap.h"
 #include "iosupp.h"
+#include "dumpapi.h"
 
 // PROTOTYPES:
 
@@ -186,5 +187,18 @@ void DumpTemplateInfo(          // DUMP A TEMPLATE INFO
 void DumpTemplateSpecialization(// DUMP A TEMPLATE SPECIALIZATION
     TEMPLATE_SPECIALIZATION *tspec )// - template specialization
 ;
+
+extern void     CallGraphDump( void );
+extern void     DumpBlkPosns( void );
+extern void     FnctlDump( void );
+extern void     IbpDump( void );
+extern void     DumpUnresolved( void );
+extern void     CgFileDump( void );
+extern void     DumpClasses( void );
+extern void     DumpNestedMacros( void );
+extern void     DbgDumpOperatorStack( void );
+extern void     DbgDumpOperandStack( void );
+extern void     DumpTypeTables( void );
+extern void     DumpOfRefs( void );
 
 #endif

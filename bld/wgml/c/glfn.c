@@ -156,6 +156,17 @@ void    lay_fn( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    line_indent     :1;
+        unsigned    align           :1;
+        unsigned    pre_lines       :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    font            :1;
+        unsigned    number_font     :1;
+        unsigned    number_style    :1;
+        unsigned    frame           :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;
@@ -282,6 +293,10 @@ void    lay_fnref( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    font            :1;
+        unsigned    number_style    :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

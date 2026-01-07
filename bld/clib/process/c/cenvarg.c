@@ -34,6 +34,7 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -48,7 +49,7 @@
 #endif
 #include "roundmac.h"
 #include "rtdata.h"
-#include "rterrno.h"
+#include "doserrno.h"
 #include "liballoc.h"
 #include "msdos.h"
 #include "_process.h"
@@ -56,7 +57,7 @@
 #include "_environ.h"
 
 
-static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
+static CHAR_TYPE * _WCNEAR stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
 {
     while( (*dest = *src) != '\0' ) {
         ++dest;
@@ -66,7 +67,7 @@ static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
 }
 
 
-int __F_NAME(__cenvarg,__wcenvarg)(
+int _INTERNAL __F_NAME(__cenvarg,__wcenvarg)(
 /*
  *  Build environment and command line for new process.  Length of environment
  *  (in bytes) is returned on success.  -1 is returned on failure.
@@ -121,8 +122,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     if( np == NULL ) {
         p = lib_malloc( length );
         if( p == NULL ) {
-            _RWD_errno = ENOMEM;
-            _RWD_doserrno = E_nomem;
+            lib_set_errno( ENOMEM );
+            lib_set_doserrno( E_nomem );
             _RWD_amblksiz = old_amblksiz;
             return( -1 );
         }
@@ -174,8 +175,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     len += _MAX_PATH2 + 1;
 #else       /* __DOS__ */
     if( len > 126 ) {
-        _RWD_errno = E2BIG;
-        _RWD_doserrno = E_badenv;
+        lib_set_errno( E2BIG );
+        lib_set_doserrno( E_badenv );
         lib_free( *_envptr );
         return( -1 );
     }
@@ -188,7 +189,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 }
 
 
-void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const argv[],
+void _INTERNAL __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const argv[],
                                       CHAR_TYPE *buffer, int just_args )
 {
 /*

@@ -37,6 +37,8 @@
 #include "elflwlv.h"
 #include "elforl.h"
 #include "orlhash.h"
+#include "i64.h"
+
 
 elf_handle ELFENTRY ElfInit( orl_funcs *funcs )
 {
@@ -156,14 +158,14 @@ const char * ELFENTRY ElfSecGetName( elf_sec_handle elf_sec_hnd )
 
 orl_return ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd, orl_sec_base *sec_base )
 {
-    sec_base->u._32[I64HI32] = elf_sec_hnd->base.u._32[I64HI32];
-    sec_base->u._32[I64LO32] = elf_sec_hnd->base.u._32[I64LO32];
+    U64High( *sec_base ) = U64High( elf_sec_hnd->base );
+    U64Low( *sec_base ) = U64Low( elf_sec_hnd->base );
     return( ORL_OKAY );
 }
 
 orl_sec_size ELFENTRY ElfSecGetSize( elf_sec_handle elf_sec_hnd )
 {
-    return( elf_sec_hnd->size.u._32[I64LO32] );
+    return( U64Low( elf_sec_hnd->size ) );
 }
 
 orl_sec_type ELFENTRY ElfSecGetType( elf_sec_handle elf_sec_hnd )
@@ -251,7 +253,7 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < reloc_sec_hnd->size.u._32[I64LO32]; index += reloc_sec_hnd->entsize.u._32[I64LO32] ) {
+    for( index = 0; index < U64Low( reloc_sec_hnd->size ); index += U64Low( reloc_sec_hnd->entsize ) ) {
         if( reloc->offset == sec_offset ) {
             return_val = return_func( reloc );
             if( return_val != ORL_OKAY ) {
@@ -284,7 +286,7 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < reloc_sec_hnd->size.u._32[I64LO32]; index += reloc_sec_hnd->entsize.u._32[I64LO32] ) {
+    for( index = 0; index < U64Low( reloc_sec_hnd->size ); index += U64Low( reloc_sec_hnd->entsize ) ) {
         return_val = return_func( reloc );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -341,7 +343,7 @@ orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = elf_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < elf_sec_hnd->size.u._32[I64LO32]; index += elf_sec_hnd->entsize.u._32[I64LO32] ) {
+    for( index = 0; index < U64Low( elf_sec_hnd->size ); index += U64Low( elf_sec_hnd->entsize ) ) {
         return_val = return_func( reloc );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -370,7 +372,7 @@ orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_ret
     default:
         return( ORL_ERROR );
     }
-    for( index = 0; index < elf_sec_hnd->size.u._32[I64LO32]; index += elf_sec_hnd->entsize.u._32[I64LO32] ) {
+    for( index = 0; index < U64Low( elf_sec_hnd->size ); index += U64Low( elf_sec_hnd->entsize ) ) {
         return_val = return_func( (orl_symbol_handle)elf_symbol_hnd );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -386,9 +388,9 @@ orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle elf_sec_hnd, orl_note_callbac
         return( ORL_ERROR );
     if( strcmp( elf_sec_hnd->name, ".drectve" ) != 0 )
         return( ORL_OKAY );
-    if( elf_sec_hnd->size.u._32[I64LO32] == 0 )
+    if( U64Low( elf_sec_hnd->size ) == 0 )
         return( ORL_OKAY );
-    return( ElfParseDrectve( (char *)elf_sec_hnd->contents, elf_sec_hnd->size.u._32[I64LO32], cbs, cookie ) );
+    return( ElfParseDrectve( (char *)elf_sec_hnd->contents, U64Low( elf_sec_hnd->size ), cbs, cookie ) );
 }
 
 const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
@@ -398,8 +400,8 @@ const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
 
 orl_return ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd, orl_symbol_value *sym_value )
 {
-    sym_value->u._32[I64HI32] = elf_symbol_hnd->value.u._32[I64HI32];
-    sym_value->u._32[I64LO32] = elf_symbol_hnd->value.u._32[I64LO32];
+    U64High( *sym_value ) = U64High( elf_symbol_hnd->value );
+    U64Low( *sym_value ) = U64Low( elf_symbol_hnd->value );
     return( ORL_OKAY );
 }
 

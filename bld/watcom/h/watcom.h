@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,19 +50,51 @@
 /* Macros for low/high end access on little and big endian machines */
 
 #if defined( __BIG_ENDIAN__ )
-    #define I64LO32     1
-    #define I64HI32     0
-    #define I64LO16     3
-    #define I64HI16     0
-    #define I64LO8      7
-    #define I64HI8      0
+    #define I64LO32 1
+    #define I64HI32 0
+    #define I64LO16 3
+    #define I64W0   3
+    #define I64W1   2
+    #define I64W2   1
+    #define I64W3   0
+    #define I64HI16 0
+    #define I64LO8  7
+    #define I64B0   7
+    #define I64B1   6
+    #define I64B2   5
+    #define I64B3   4
+    #define I64B4   3
+    #define I64B5   2
+    #define I64B6   1
+    #define I64B7   0
+    #define I64HI8  0
 #else
-    #define I64LO32     0
-    #define I64HI32     1
-    #define I64LO16     0
-    #define I64HI16     3
-    #define I64LO8      0
-    #define I64HI8      7
+    #define I64LO32 0
+    #define I64HI32 1
+    #define I64LO16 0
+    #define I64W0   0
+    #define I64W1   1
+    #define I64W2   2
+    #define I64W3   3
+    #define I64HI16 3
+    #define I64LO8  0
+    #define I64B0   0
+    #define I64B1   1
+    #define I64B2   2
+    #define I64B3   3
+    #define I64B4   4
+    #define I64B5   5
+    #define I64B6   6
+    #define I64B7   7
+    #define I64HI8  7
+#endif
+
+#if defined( __BIG_ENDIAN__ )
+    #define I16LO8  1
+    #define I16HI8  0
+#else
+    #define I16LO8  0
+    #define I16HI8  1
 #endif
 
 /*  Macros for little/big endian conversion; These exist to simplify writing

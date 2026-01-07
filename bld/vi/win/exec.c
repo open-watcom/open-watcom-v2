@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,8 +97,8 @@ long MySpawn( const char *cmd )
             moduleHandle = GetModuleHandle( buffer );
 #endif
             // waiting doesn't work under win-os2 so don't wait!
+            memset( &in_regs, 0, sizeof( in_regs ) );
             in_regs.h.ah = 0x30;
-            in_regs.h.al = 0x0;
             intdos( &in_regs, &out_regs );
             if( out_regs.h.al == 20 ) {
                 doneExec = true;

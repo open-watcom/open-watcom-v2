@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -41,8 +42,8 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
 #include "thread.h"
+
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t)-1)
@@ -60,8 +61,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
     char    *buff;
 
     if( n == NULL || s == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     buff = *s;
@@ -75,7 +75,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
             size = linelength * 2 | 0x7F;
             buff = realloc( buff, size );
             if( buff == NULL ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 return( -1 );
             }
             *s = buff;

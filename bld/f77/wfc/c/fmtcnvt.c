@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ static void AddDig( canon_form *canon, char ch )
     }
 }
 
-static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bool blanks, byte flag )
+static int  Digits( canon_form *canon, const char *field, const char *stop, int decimals, bool blanks, byte flag )
 // Collect digits to the left or right of the decimal point. Take blanks
 // into consideration. Set "canon->exp" accordingly.
 {
@@ -77,6 +77,7 @@ static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bo
 
     count = 0;
     for( ;; ) {
+        ch = '\0';
         for( ;; ) {
             if( field == stop )
                 break;
@@ -123,12 +124,12 @@ static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bo
     return( count );
 }
 
-int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width )
+int     FmtS2I( const char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width )
 // Convert a FORTRAN I format string to an integer.
 {
     char        ch;
     bool        sign;
-    char        *strend;
+    const char  *strend;
     bool        minus;
     int         status;
     uint        wid;
@@ -147,7 +148,8 @@ int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok,
     sign = false;
     if( str != strend ) {
         ch = *str;
-        if( (ch == '+') || (ch == '-') ) {
+        if( (ch == '+')
+          || (ch == '-') ) {
             if( ch == '-' ) {
                 minus = true;
             }
@@ -185,7 +187,8 @@ int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok,
     }
     wid = len;
     if( str != strend ) {
-        if( stop_ok && !sign ) {
+        if( stop_ok
+          && !sign ) {
             wid -= ( strend - str );
         } else {
             status = INT_INVALID;
@@ -197,14 +200,14 @@ int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok,
     return( status );
 }
 
-int FmtS2F( char *field, uint width, int decimals, bool blanks,
+int FmtS2F( const char *field, uint width, int decimals, bool blanks,
                 int scale, int prec, extended *result, bool stop_ok,
-                uint *new_width, bool extend_flt ) {
+                uint *new_width, bool extend_flt )
 // Format a string to floating point representation.
-
-    char        *stop;
+{
+    const char  *stop;
     char        ch;
-    char        *start;
+    const char  *start;
     canon_form  canon;
     intstar4    exp;
 
@@ -231,7 +234,8 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
 
     if( field != stop ) {
         ch = *field;
-        if( (ch == '-') || (ch == '+') ) {
+        if( (ch == '-')
+          || (ch == '+') ) {
             canon.flags |= FOUND_SIGN;
             field++;
             start++;
@@ -249,7 +253,8 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
 
     // collect optional decimal point
 
-    if( (field != stop) && (*field == '.') ) {
+    if( (field != stop)
+      && (*field == '.') ) {
         canon.exp = canon.col;
         field++;
         canon.flags |= DECIMAL;
@@ -263,8 +268,13 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
 
     if( field != stop ) {
         ch = tolower( *field );
-        if( (ch == 'e') || (ch == 'd') || (ch == 'q') || (ch == '+') || (ch == '-') ) {
-            if( ( ch == 'e' ) && extend_flt ) {
+        if( (ch == 'e')
+          || (ch == 'd')
+          || (ch == 'q')
+          || (ch == '+')
+          || (ch == '-') ) {
+            if( ( ch == 'e' )
+              && extend_flt ) {
                 canon.flags |= DOUBLE;
             } else if( ch == 'd' ) {
                 if( extend_flt ) {
@@ -284,7 +294,8 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
             }
             canon.flags |= EXPONENT;
             exp = 0;
-            if( (stop == field) || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
+            if( (stop == field)
+              || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
                 canon.flags |= BAD_EXPONENT;
             }
             canon.exp += exp;
@@ -300,11 +311,13 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
     if( new_width != NULL ) {
         *new_width = width - ( stop - field );
     }
-    if( !stop_ok && ( field != stop ) )
+    if( !stop_ok
+      && ( field != stop ) )
         return( FLT_INVALID );
     if( canon.flags & BAD_EXPONENT )
         return( FLT_INVALID );
-    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) && (canon.flags & (LEFT_DIGITS | RIGHT_DIGITS)) == 0 )
+    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT))
+      && (canon.flags & (LEFT_DIGITS | RIGHT_DIGITS)) == 0 )
         return( FLT_INVALID );
     canon.exp -= scale; // adjust for kP specifier
     if( (canon.flags & DECIMAL) == 0 ) { // if no '.' found
@@ -326,7 +339,8 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
     if( errno != 0 )
         return( FLT_RANGE_EXCEEDED );
     if( prec == PRECISION_SINGLE ) {
-        if( (canon.flags & DOUBLE) == 0 && (canon.flags & LONGDOUBLE) == 0 ) {
+        if( (canon.flags & DOUBLE) == 0
+          && (canon.flags & LONGDOUBLE) == 0 ) {
 
             single      volatile sresult;
 

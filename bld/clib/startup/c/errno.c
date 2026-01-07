@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined(__QNX__)
@@ -39,11 +40,18 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
 
 
-#if defined(__QNX__)
+#if defined(__NETWARE__)
+/*
+ * use either
+ * __get_errno_ptr for Netware CLib
+ * or use
+ * ___errno for Netware LibC
+ * to get pointer to Netware internal errno value
+ */
+#elif defined(__QNX__)
 
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
@@ -57,19 +65,27 @@ _WCRTLINK int (*__get_errno_ptr( void ))
 #endif
 }
 
-#else
-
-#undef errno
-
-#if !defined( __SW_BM ) || defined( __RDOSDEV__ )
+#elif defined( __RDOSDEV__ )
 
 _WCRTDATA int       errno;
+_WCRTLINK int (*__get_errno_ptr( void ))
+{
+    return( &errno );
+}
 
-#endif
+#elif defined( __MT__ )
 
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-    return( &_RWD_errno );
+    return( &(__THREADDATAPTR->__errnoP) );
+}
+
+#else
+
+_WCRTDATA int       errno;
+_WCRTLINK int (*__get_errno_ptr( void ))
+{
+    return( &errno );
 }
 
 #endif

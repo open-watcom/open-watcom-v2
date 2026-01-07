@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
-#include "dostimet.h"
+#include "mmisc.h"
 #include "pcobj.h"
 
 #include "clibext.h"
@@ -45,22 +45,12 @@
 
 typedef struct {
     FILE    *fp;            // file handle of open obj file
-    time_t  time_stamp;     // time stamp of next dependancy comment
+    time_t  timestamp;      // time stamp of next dependancy comment
     char    *name;          // point to nameBuffer - name of next dependancy comment
 } omf_info;
 
 static omf_info fileHandle;
 static char     nameBuffer[_MAX_PATH2 + 1];
-
-#include "pushpck1.h"
-typedef struct {
-    UINT8   bits;
-    UINT8   type;
-    UINT16  dos_time;
-    UINT16  dos_date;
-    UINT8   name_len;
-} omf_comment;
-#include "poppck.h"
 
 static bool verifyObjFile( FILE *fp )
 /***********************************/
@@ -112,10 +102,11 @@ STATIC handle OMFInitFile( const char *name )
 static bool getOMFCommentRecord( omf_info *info )
 /***********************************************/
 {
-    omf_record  header;
-    omf_comment comment;
-    FILE        *fp;
-    size_t      len;
+    omf_record      header;
+    omf_coment      cmt;
+    omf_coment_dep  dep;
+    FILE            *fp;
+    size_t          len;
 
     fp = info->fp;
     while( fread( &header, 1, sizeof( header ), fp ) == sizeof( header ) ) {
@@ -127,24 +118,37 @@ static bool getOMFCommentRecord( omf_info *info )
             fseek( fp, header.length, SEEK_CUR );
             continue;
         }
-        if( fread( &comment, 1, sizeof( comment ), fp ) != sizeof( comment ) ) {
+        if( fread( &cmt, 1, sizeof( cmt ), fp ) != sizeof( cmt ) ) {
             break;
         }
-        if( comment.type != CMT_DEPENDENCY ) {
-            fseek( fp, header.length - sizeof( comment ), SEEK_CUR );
+        if( cmt.type != CMT_DEPENDENCY ) {
+            fseek( fp, header.length - sizeof( cmt ), SEEK_CUR );
             continue;
         }
+        if( fread( &dep, 1, sizeof( dep ), fp ) != sizeof( dep ) ) {
+            break;
+        }
         // NULL dependency means end of dependency info
-        if( header.length < sizeof( comment ) ) {
+        if( header.length < sizeof( cmt ) + sizeof( dep ) ) {
             break;
         }
         // we have a dependency comment! hooray!
-        len = comment.name_len + 1;
+        len = dep.name_len + 1;
         if( fread( nameBuffer, 1, len, fp ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
-        info->time_stamp = _dos2timet( comment.dos_date * 0x10000L + comment.dos_time );
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 ) && defined( PREBOOT )
+        /*
+         * OW 1.9 use DOS local time
+         */
+        info->timestamp = dos2timet( dep.dos_date, dep.dos_time );
+#else
+        /*
+         * OW 2.x use UTC
+         */
+        info->timestamp = dosu2timet( dep.dos_date, dep.dos_time );
+#endif
         info->name = nameBuffer;
         return( true );
     }
@@ -166,7 +170,7 @@ STATIC void OMFTransDep( dep_handle info, char **name, time_t *stamp )
     omf_info *o = (void*)info;
 
     *name  = o->name;
-    *stamp = o->time_stamp;
+    *stamp = o->timestamp;
 }
 
 

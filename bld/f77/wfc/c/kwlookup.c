@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,23 +43,23 @@
 #include "kwlookup.h"
 
 
-int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool exact )
-//=====================================================================================
+int KwLookUp( const char **table, int count, const char *id, size_t id_len, bool exact )
+//======================================================================================
 {
     const char  *key;
     const char  *ident;
     int         mid;
     int         low;
+    int         high;
     size_t      kw_len;
 
-    // index 0 is reserved
-    // each keyword table has blank first item
-    low = 1;
+    low = 0;
+    high = count - 1;
     while( low <= high ) {
         mid = (low + high) / 2;    // find mid point
-        key = table[ mid ];
+        key = table[mid];
         ident = id;
-        for(;;) {
+        for( ;; ) {
             if( ident == id + id_len )
                 break;
             if( *ident != *key )
@@ -81,10 +81,10 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
         }
     }
     if( exact )
-        return( 0 );
+        return( count );
     // Look sequentially through table (going backwards).
     for( mid = high; mid >= 0; mid-- ) {
-        key = table[ mid ];
+        key = table[mid];
         if( *id > *key )
             break;
         kw_len = strlen( key );
@@ -94,5 +94,5 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
             }
         }
     }
-    return( 0 );
+    return( count );
 }

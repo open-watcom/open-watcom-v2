@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
         c_ptr->logstar4 = c_ptr->logstar1;
     }
     hash_value = CalcHash( ptr, size );
-    head = ConstHashTable[ hash_value ].h_head;
+    head = ConstHashTable[hash_value].h_head;
     if( head != NULL ) {
-        tail = ConstHashTable[ hash_value ].h_tail;
-        for(;;) {
+        tail = ConstHashTable[hash_value].h_tail;
+        for( ;; ) {
             if( head->u.cn.typ == typ ) {
                 if( memcmp( c_ptr, &head->u.cn.value, size ) == 0 ) {
                     return( head );

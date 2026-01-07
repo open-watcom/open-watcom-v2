@@ -33,14 +33,13 @@
 #include "bool.h"
 
 
-#ifdef __WINDOWS__
-  #ifdef _M_I86
+#ifdef _M_I86
     #define WINFAR16        __far
     #define WINDPMIFN(x)    __pascal __far __ ## x
-  #else
+#else
     #define WINFAR16
     #define WINDPMIFN(x)    __pascal x
-  #endif
+#endif
 
 extern DWORD    WINDPMIFN( WDPMIAlloc )( DWORD size );
 extern bool     WINDPMIFN( WDPMIFree )( DWORD ptr );
@@ -51,5 +50,3 @@ extern void     WINDPMIFN( WDPMIFreeHugeAlias )( DWORD alias, DWORD size );
 extern DWORD    WINDPMIFN( WDPMIAliasToFlat )( DWORD alias );
 // not implemented functions
 extern bool     WINDPMIFN( WDPMIResizeDS )( DWORD size );
-
-#endif

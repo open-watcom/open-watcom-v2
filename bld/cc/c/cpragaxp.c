@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "cvars.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
 #include "scan.h"
-#include <ctype.h>
 
 
 static  aux_info        AuxInfo;
@@ -136,7 +137,7 @@ static bool GetByteSeq( aux_info *info )
                 NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
-            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
+            AsmCodeBuffer[AsmCodeAddress++] = U8FetchTrunc( Constant64 );
             NextToken();
         } else {
             break;

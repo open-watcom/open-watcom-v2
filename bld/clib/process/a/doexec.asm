@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,8 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  doexec implementation for DOS
-;*               (16-bit code only)
+;* Description:  doexec implementation for DOS (16-bit code only)
 ;*
 ;*****************************************************************************
 
@@ -100,7 +100,7 @@ nomem     db    'Not enough memory on exec',CR,NL,'$'
         endm
 
         extrn   execve_         : proc
-        extrn   __init_execve_  : proc
+        extrn   __init_execve_  : near
 
 fake    proc    far                     ; Force returns to be far returns.
 exebeg:
@@ -285,6 +285,6 @@ _TEXT   ends
 
 include xinit.inc
 
-        xinit   __init_execve_,DEF_PRIORITY
+        xinitn  __init_execve_, DEF_PRIORITY
 
         end

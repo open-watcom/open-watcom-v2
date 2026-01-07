@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,12 +49,13 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
 #include "thread.h"
 
-/* Note: This code is similar to _mktemp() but intended for POSIX usage */
 
-static int is_valid_template( char *template, char **xs )
+/*
+ * Note: This code is similar to _mktemp() but intended for POSIX usage
+ */
+static int _WCNEAR is_valid_template( char *template, char **xs )
 {
     int                 len;
     char                *p;
@@ -108,7 +110,7 @@ _WCRTLINK int mkstemp( char *template )
              * the creation failed for some other reason, it will almost
              * certainly fail again no matter how many times we try. So don't.
              */
-            if( _RWD_errno != EEXIST ) {
+            if( lib_get_errno() != EEXIST ) {
                 return( -1 );
             }
         }

@@ -1,0 +1,191 @@
+name: CI-Build
+run-name: CI Build
+
+on:
+  pull_request:
+    branches: '*'
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!README.md'
+  push:
+    branches:
+      - master
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+env:
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
+  OWUSETARARCHIVE:  '1'
+
+jobs:
+  start-start:
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
+    name: Check if to run
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+
+  bootstrap-prev:
+    needs: start-start
+    strategy:
+      matrix:
+        include:
+        - name:  'OW 1.9 Windows'
+          verid: '1.9'
+          image: 'windows-2025'
+        - name:  'OW 1.9 Linux'
+          verid: '1.9'
+          image: 'ubuntu-latest'
+        - name:  'OW 2.0 (2023) Windows'
+          verid: '2.0'
+          tag:   '2023-01-01-Build'
+          image: 'windows-2025'
+        - name:  'OW 2.0 (2023) Linux'
+          verid: '2.0'
+          tag:   '2023-01-01-Build'
+          image: 'ubuntu-latest'
+        - name:  'OW 2.0 Windows'
+          verid: '2.0'
+          tag:   ''
+          image: 'windows-2025'
+        - name:  'OW 2.0 Linux'
+          verid: '2.0'
+          tag:   ''
+          image: 'ubuntu-latest'
+    name: Bootstrap Test ${{matrix.name}}
+    runs-on: ${{matrix.image}}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        ow_version: ${{matrix.verid}}
+        ow_tag:     ${{matrix.tag}}
+    - name: Test OW bootstrap
+      uses: ./.github/actions/testboot
+
+  builds:
+    needs:
+    - bootstrap-prev
+    strategy:
+      matrix:
+        include:
+        # LINUX X64 gcc
+        - name:         'Linux x64'
+          suffix:       'lnx x64'
+          docbuild:     ''
+          run_tests:    '1'
+          image:        'ubuntu-latest'
+          owtools:      'GCC'
+          args:         'gcc'
+          gitpath:      'rel'
+        # LINUX X64 clang
+        - name:         'Linux x64'
+          suffix:       'lnx x64'
+          docbuild:     ''
+          run_tests:    '1'
+          image:        'ubuntu-latest'
+          owtools:      'CLANG'
+          args:         'clang'
+          gitpath:      'rel'
+        # LINUX ARM64
+        - name:         'Linux arm64'
+          suffix:       'lnx a64'
+          docbuild:     ''
+          run_tests:    ''
+          image:        'ubuntu-24.04-arm'
+          owtools:      'GCC'
+          args:         'gcc'
+          gitpath:      'rel arml64'
+        # WINDOWS X64
+        - name:         'Windows x64'
+          suffix:       'nt x64'
+          docbuild:     '1'
+          run_tests:    '1'
+          image:        'windows-2025'
+          owtools:      'VISUALC'
+          args:         'vs2022'
+          gitpath:      'rel'
+        # OSX X64
+        - name:         'OSX x64'
+          suffix:       'osx x64'
+          docbuild:     ''
+          run_tests:    ''
+          image:        'macos-15-intel'
+          owtools:      'CLANG'
+          args:         'clang'
+          gitpath:      'rel bino64'
+        # OSX ARM64
+        - name:         'OSX arm64'
+          suffix:       'osx a64'
+          docbuild:     ''
+          run_tests:    ''
+          image:        'macos-15'
+          owtools:      'CLANG'
+          args:         'clang'
+          gitpath:      'rel armo64'
+    name: ${{matrix.name}} ${{matrix.args}}
+    uses: ./.github/workflows/buildx.yml
+    with:
+      args:         ${{matrix.args}}
+      suffix:       ${{matrix.suffix}} ${{matrix.args}}
+      gitpath:      ${{matrix.gitpath}}
+      owtools:      ${{matrix.owtools}}
+      image:        ${{matrix.image}}
+      docbuild:     ${{matrix.docbuild}}
+      run_tests:    ${{matrix.run_tests}}
+
+  snapshot-both:
+    needs:
+    - builds
+    name: CI Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Load all release files and create snapshot
+      id:   snapshot
+      uses: ./.github/actions/relload
+      with:
+        asset:      'snapshot'
+        suffix_nt:  'vs2022'
+        suffix_lnx: 'gcc'
+        suffix_osx: 'clang'
+    - if: github.event_name == 'pull_request' && env.OWTESTMODE != '1'
+      name: Upload snapshot (Pull Request)
+      uses: actions/upload-artifact@v4
+      with:
+        name:           'owsnapshot'
+        path:           ${{steps.snapshot.outputs.fullname}}
+        retention-days: 14
+        overwrite:      true
+    - if: github.event_name != 'pull_request'
+      id: relrel
+      name: GitHub CI-build Release
+      uses: ./.github/actions/release
+    - if: github.event_name != 'pull_request'
+      run: echo "relid=${{steps.relrel.outputs.relid}}"
+      shell: bash
+    - if: github.event_name != 'pull_request'
+      name: Upload asset files
+      uses: ./.github/actions/ghassets
+      with:
+        relid:    ${{steps.relrel.outputs.relid}}
+        gitpath:  'distrib ow bin'
+    - if: vars.DELETEARTIFACTS == '1'
+      name: Call to delete Artifacts ${{github.event_name == 'pull_request' && '(Pull Request)' || '(Last CI Build)'}}
+      uses: ./.github/actions/artfdelc
+      with:
+        exclude:    ${{github.event_name == 'pull_request' && 'owsnapshot' || ''}}

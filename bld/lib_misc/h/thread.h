@@ -107,7 +107,7 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-#ifdef __SW_BM
+#ifdef __MT__
   #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
     __EXCEPTION_RECORD          *xcpt_handler;
   #endif

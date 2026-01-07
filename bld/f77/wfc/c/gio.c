@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "gstring.h"
 #include "gflow.h"
 #include "gtypes.h"
+#include "cgmagic.h"
 
 
 void    GSetIOCB( void ) {
@@ -76,7 +77,7 @@ void    GStartIO( void ) {
     // statement labels when RT_ENDIO is generated; auxilliary i/o
     // statements don't generate RT_ENDIO so generate F-Code to check
     // for statement labels.
-    if( AuxIOStmt() || Already( IO_NAMELIST ) ) {
+    if( AuxIOStmt() || IOPermChk( IO_NAMELIST ) ) {
         EmitOp( FC_CHK_IO_STMT_LABEL );
     }
 }
@@ -102,7 +103,7 @@ static  void    GIORoutine( TYPE typ, size_t size ) {
 
     FCODE   op_code;
 
-    op_code = ParmType( typ, size ) - PT_LOG_1;
+    op_code = ParmType( typ, size ) - FPT_LOG_1;
     if( StmtProc == PR_READ ) {
         EmitOp( op_code + FC_INP_LOG1 );
     } else {
@@ -160,7 +161,7 @@ void    GStopIO( void ) {
 // Generate code to return a null i/o item to run-time i/o.
 // This is done for only PRINT, WRITE and READ statements.
 
-    if( !Already( IO_NAMELIST ) ) {
+    if( !IOPermChk( IO_NAMELIST ) ) {
         EmitOp( FC_ENDIO );
     }
 }
@@ -281,7 +282,7 @@ void    GArrIntlSet( void ) {
 
     EmitOp( FC_ARR_SET_INTL );
     OutPtr( CITNode->sym_ptr );
-    OutPtr( GTempString( 0 ) );
+    OutPtr( TmpVar( FT_CHAR, 0 ) );
 }
 
 

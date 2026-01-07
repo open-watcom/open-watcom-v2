@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #ifdef __WIDECHAR__
@@ -46,10 +47,9 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "orient.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "streamio.h"
 #include "thread.h"
 
@@ -67,7 +67,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
     ORIENT_STREAM( fp, EOF );
 
     if( (fp->_flag & _WRITE) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( EOF );
@@ -112,8 +112,8 @@ _WCRTLINK int fputc( int c, FILE *fp )
 #else
 
 
-static int __write_wide_char( FILE *fp, wchar_t wc )
-/**************************************************/
+static int _WCNEAR __write_wide_char( FILE *fp, wchar_t wc )
+/**********************************************************/
 {
     if( fp->_flag & _BINARY ) {
         /*** Dump the wide character ***/
@@ -126,10 +126,9 @@ static int __write_wide_char( FILE *fp, wchar_t wc )
         rc = wctomb( mbc, wc );
         if( rc > 0 ) {
             return( fwrite( mbc, rc, 1, fp ) );
-        } else {
-            _RWD_errno = EILSEQ;
-            return( 0 );
         }
+        lib_set_errno( EILSEQ );
+        return( 0 );
     }
 }
 

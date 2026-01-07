@@ -61,11 +61,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strtok_s,wcstok_s)( CHAR_TYPE * __restrict s1,
     // ptr   not NULL
     // *s1max <= RSIZE_MAX
     // if s1 == NULL then *ptr != NULL
-    if( __check_constraint_nullptr_msg( msg, s1max ) &&
-        __check_constraint_nullptr_msg( msg, s2 ) &&
-        __check_constraint_nullptr_msg( msg, ptr ) &&
-        __check_constraint_maxsize_msg( msg, *s1max ) &&
-       ((s1 != NULL) || __check_constraint_nullptr_msg( msg, *ptr )) ) {
+    if( __check_constraint_nullptr_msg( msg, s1max )
+      && __check_constraint_nullptr_msg( msg, s2 )
+      && __check_constraint_nullptr_msg( msg, ptr )
+      && __check_constraint_maxsize_msg( msg, *s1max )
+      && ( (s1 != NULL)
+      || __check_constraint_nullptr_msg( msg, *ptr ) ) ) {
 
         /* if necessary, continue from where we left off */
         if( s1 == NULL ) {

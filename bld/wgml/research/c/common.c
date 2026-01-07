@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,6 @@
 
 void initialize_globals( void )
 {
-    dos_switch_char     = _dos_switch_char();
 }
 
 /*  Function skip_spaces().

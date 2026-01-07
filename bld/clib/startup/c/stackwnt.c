@@ -59,10 +59,10 @@ _WCRTLINK _WCNORETURN void __STKOVERFLOW( void )
     // never return
 }
 
-static void _init_stk( void )
+static void _WCNEAR _init_stk( void )
 {
 }
 
-AXI( _init_stk, INIT_PRIORITY_LIBRARY )
+AXIN( _init_stk, INIT_PRIORITY_LIBRARY )
 #endif
 

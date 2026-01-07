@@ -51,9 +51,10 @@
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
-#include "d2ttime.h"
 #include "pathgrp2.h"
-#if defined(__NT__)
+#if defined( __RDOS__ )
+    #include "rdos.h"
+#elif defined(__NT__)
     #include <windows.h>
     #include "_dtaxxx.h"
 #endif
@@ -67,6 +68,24 @@ enum {
     #define pick(num,eng,jap)   + 1
         #include "usage.gh"
     #undef pick
+};
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
 };
 
 extern touchflags   TouchFlags;
@@ -221,15 +240,43 @@ static void incTouchTime( void )
     mktime( &touchTime );
 }
 
-static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
-/***************************************************************************************/
+#if !defined( __UNIX__ ) && !defined( __NT__ )
+static time_t dos2timet( unsigned short dos_date, unsigned short dos_time )
+/*************************************************************************/
 {
-    time_t      ftime;
-    struct tm  *ptime;
+    struct tm t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( mktime( &t ) );
+}
+#endif
+
+static void incFilesOwnTime( char *full_name, struct dirent *dire, struct utimbuf *stamp )
+/****************************************************************************************/
+{
+    time_t          ftime;
+    struct tm       *ptime;
+#if defined( __RDOS__ )
+    unsigned short  dos_date;
+    unsigned short  dos_time;
+    unsigned long   msb;
+    unsigned long   lsb;
+#endif
 
     /* unused parameters */ (void)full_name;
 #if defined( __UNIX__ ) && !defined( __QNX__ )
-    /* unused parameters */ (void)dir;
+    /* unused parameters */ (void)dire;
 #endif
 
     /* check for the case of only specifying '/i' with nothing else */
@@ -247,7 +294,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     }
     /* we need to access the file's time stamp and increment it */
 #if defined( __QNX__ )
-    ftime = dir->d_stat.st_mtime;
+    ftime = dire->d_stat.st_mtime;
 #elif defined( __UNIX__ )
     {
         struct stat buf;
@@ -255,9 +302,17 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
         ftime = buf.st_mtime;
     }
 #elif defined( __NT__ )
-    ftime = DTAXXX_TSTAMP_OF( dir->d_dta );
+    ftime = DTAXXX_TSTAMP_OF( dire->d_dta );
+#elif defined( __RDOS__ )
+    msb = ( dire->d_modify_time >> 32 ) & 0xFFFFFFFF;
+    lsb = dire->d_modify_time & 0xFFFFFFFF;
+    RdosTicsToDosTimeDate( msb, lsb, &dos_date, &dos_time );
+    ftime = dos2timet( dos_date, dos_time );
 #else
-    ftime = _d2ttime( dir->d_date, dir->d_time );
+    /*
+     * DOS date/time format
+     */
+    ftime = dos2timet( dire->d_date, dire->d_time );
 #endif
     ptime = localtime( &ftime );
     touchTime = *ptime;
@@ -293,7 +348,9 @@ static int processOptions( int argc, char **argv )
 #ifndef __UNIX__
         case '/':
 #endif
-            if( ( isalpha( p[1] ) || p[1] == '?' ) && p[2] == '\0' ) {
+            if( ( isalpha( p[1] )
+              || p[1] == '?' )
+              && p[2] == '\0' ) {
                 switch( tolower( p[1] ) ) {
                 case '?':
                     Usage();
@@ -318,7 +375,8 @@ static int processOptions( int argc, char **argv )
                     TouchFlags.recursive = 1;
                     break;
                 case 'd':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         DoDOption( argv[1] );
                         ++argv;
                         --argc;
@@ -327,7 +385,8 @@ static int processOptions( int argc, char **argv )
                     }
                     break;
                 case 'f':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         doFOption( argv[1] );
                         ++argv;
                         --argc;
@@ -336,7 +395,8 @@ static int processOptions( int argc, char **argv )
                     }
                     break;
                 case 't':
-                    if( ( argc - 1 ) != 0 && argv[1] != NULL ) {
+                    if( ( argc - 1 ) != 0
+                      && argv[1] != NULL ) {
                         DoTOption( argv[1] );
                         ++argv;
                         --argc;
@@ -363,9 +423,8 @@ static int processOptions( int argc, char **argv )
     return( 1 );
 }
 
-static int doTouchFile( char *full_name, struct dirent *dire,
-                        struct utimbuf *stamp )
-/*********************************************/
+static int doTouchFile( char *full_name, struct dirent *dire, struct utimbuf *stamp )
+/***********************************************************************************/
 {
     int utime_rc;
     int stat_rc;
@@ -375,16 +434,18 @@ static int doTouchFile( char *full_name, struct dirent *dire,
     utime_rc = utime( full_name, stamp );
     if( utime_rc == -1 ) {
         stat_rc = stat( full_name, &sb );
-        if( stat_rc == -1 ) return 0;
-        if( TouchFlags.allow_read_only && stat_rc == 0 ) {
+        if( stat_rc == -1 )
+            return 0;
+        if( TouchFlags.allow_read_only
+          && stat_rc == 0 ) {
             chmod( full_name, sb.st_mode | S_IWRITE );
             utime_rc = utime( full_name, stamp );
             chmod( full_name, sb.st_mode );
         }
         if( utime_rc == -1 ) {
             if( !TouchFlags.quiet ) {
-                if( stat( full_name, &sb ) == 0 &&
-                    ( sb.st_mode & S_IWRITE ) == 0 ) {
+                if( stat( full_name, &sb ) == 0
+                  && (sb.st_mode & S_IWRITE) == 0 ) {
                     writeMsg( MSG_READ_ONLY, full_name );
                     return 1;
                 } else {
@@ -442,13 +503,16 @@ static void doTouch( void )
 #ifdef __UNIX__
         if( item[len - 1] == '/' ) {
 #else
-        if( item[len - 1] == '\\' || item[len - 1] == '/' ) {
+        if( item[len - 1] == '\\'
+          || item[len - 1] == '/' ) {
 #endif
             strcpy( dir_name, item );
             dir_name[len] = '.';
             dir_name[len + 1] = '\0';
             item = dir_name;
-        } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) && S_ISDIR( sb.st_mode ) ) {
+        } else if( ( strpbrk( item, "*?" ) == NULL )
+          && !stat( item, &sb )
+          && S_ISDIR( sb.st_mode ) ) {
             strcpy( dir_name, item );
 #ifdef __UNIX__
             dir_name[len] = '/';
@@ -478,7 +542,7 @@ static void doTouch( void )
                 if( S_ISREG( attr ) ) {
     #else
                 attr = dire->d_attr;
-                if( !( dire->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
+                if( (dire->d_attr & (_A_VOLID | _A_SUBDIR)) == 0 ) {
     #endif
                     number_of_successful_touches +=
                         doTouchFile( full_name, dire, &stamp );
@@ -499,7 +563,8 @@ static void doTouch( void )
                         if ( '.' != *dire->d_name ) {
 #ifdef __UNIX__
                             _makepath( full_name, pg.drive, pg.dir, dire->d_name, NULL );
-                            if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
+                            if( !stat( full_name, &sb )
+                              && S_ISDIR( sb.st_mode) ) {
 #else
                             if( dire->d_attr & _A_SUBDIR ) {
 

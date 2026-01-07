@@ -33,10 +33,10 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <windows.h>
 #include <direct.h>
 #include "libwin32.h"
-#include "seterrno.h"
 
 
 _WCRTLINK int __F_NAME(rmdir,_wrmdir)( const CHAR_TYPE *path )

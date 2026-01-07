@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/utsname.h>
 #include "linuxsys.h"
 #include "rtinit.h"
@@ -52,7 +54,7 @@ _WCRTDATA unsigned char     _osmajor = 0;   /* major number of the Linux kernel 
 _WCRTDATA unsigned char     _osminor = 0;   /* minor number of the Linux kernel version */
           unsigned char     _osrev = 0;     /* revision number of the Linux kernel version */
 
-static void __get_osversion( void )
+static void _WCNEAR __get_osversion( void )
 {
     union {
         struct utsname  new;
@@ -92,4 +94,4 @@ static void __get_osversion( void )
     }
 }
 
-AXI( __get_osversion, INIT_PRIORITY_THREAD )
+AXIN( __get_osversion, INIT_PRIORITY_THREAD )

@@ -44,10 +44,10 @@
 
 _WCRTLINK void _NEARFAR(_mbccpy,_fmbccpy)( unsigned char _FFAR *dest, const unsigned char _FFAR *ch )
 {
-    if( _ismbblead(*ch) ) {                     /* is it a lead byte? */
+    if( _ismbblead( *ch ) ) {                   /* is it a lead byte? */
         dest[0] = ch[0];                        /* yes, copy two bytes */
         dest[1] = ch[1];
-    }
-    else
+    } else {
         dest[0] = ch[0];                        /* no, copy one bytes */
+    }
 }

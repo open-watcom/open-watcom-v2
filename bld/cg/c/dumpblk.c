@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ static  void    DumpBlkLabel( block *b )
         DumpPtr( b->label );
         DumpChar( ' ' );
         DumpXString( AskName( AskForLblSym( b->label ), CG_FE ) );
-        if( b->edge[0].flags & BLOCK_LABEL_DIES ) {
+        if( b->edge[0].flags & BEF_BLOCK_LABEL_DIES ) {
             DumpLiteral( " label dies" );
         }
     }
@@ -224,9 +224,9 @@ void    DumpBlkId( block *b )
 /***************************/
 {
     DumpLiteral( "Block " );
-    DumpInt( b->id );
+    DumpInt( b->blk_id );
     DumpChar( '(' );
-    DumpInt( b->gen_id );
+    DumpInt( b->gen_blk_id );
     DumpChar( ')' );
 }
 
@@ -241,7 +241,7 @@ static  void    DumpInputs( block *b )
     if( b->input_edges != NULL ) {
         i = 0;
         edge = b->input_edges;
-        for(;;) {
+        for( ;; ) {
             if( FindBlock( edge->source ) ) {
                 DumpBlkId( edge->source );
             } else {
@@ -307,10 +307,10 @@ static  void    DumpGotos( block *b, bool all )
     DumpPtr( &b->edge[0] );
     DumpLiteral( "           Destinations: " );
     if( b->targets > 0 ) {
-        if( ( b->edge[0].flags & DEST_LABEL_DIES ) && all ) {
+        if( ( b->edge[0].flags & BEF_DEST_LABEL_DIES ) && all ) {
             DumpLiteral( "(kills) " );
         }
-        if( b->edge[0].flags & DEST_IS_BLOCK ) {
+        if( b->edge[0].flags & BEF_DEST_IS_BLOCK ) {
             DumpBlkId( b->edge[0].destination.u.blk );
         } else {
             DumpChar( 'L' );
@@ -318,10 +318,10 @@ static  void    DumpGotos( block *b, bool all )
         }
         for( i = 1; i < b->targets; ++i ) {
             DumpLiteral( ", " );
-            if( ( b->edge[i].flags & DEST_LABEL_DIES ) && all ) {
+            if( ( b->edge[i].flags & BEF_DEST_LABEL_DIES ) && all ) {
                 DumpLiteral( "(kills) " );
             }
-            if( b->edge[i].flags & DEST_IS_BLOCK ) {
+            if( b->edge[i].flags & BEF_DEST_IS_BLOCK ) {
                 DumpBlkId( b->edge[i].destination.u.blk );
             } else {
                 DumpChar( 'L' );
@@ -373,7 +373,7 @@ void    DumpFlowGraph( block *blk )
             DumpLiteral( " loop depth " );
             DumpInt( curr->first_block->depth );
             DumpNL();
-            for(;;) {
+            for( ;; ) {
                 if( curr->next_sub_int != NULL )
                     break;
                 if( curr == head )
@@ -384,7 +384,7 @@ void    DumpFlowGraph( block *blk )
                 DumpLiteral( "|     " );
             }
             if( level > 0 ) {
-                for(;;) {
+                for( ;; ) {
                     DumpLiteral( "End   " );
                     if( --level == 0 ) {
                         break;

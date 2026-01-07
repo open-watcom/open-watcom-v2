@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -248,22 +248,23 @@ static TREEPTR ConstLeaf( void )
 #else
         leaf->op.u1.const_type = TYP_USHORT;
 #endif
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_CHAR:
+    case TYP_UCHAR:
         leaf->op.u1.const_type = TYP_INT;
         /* fall through */
     case TYP_INT:
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = I32FetchTrunc( Constant64 );
         break;
     case TYP_UINT:
-        leaf->op.u2.ulong_value = Constant;
+        leaf->op.u2.ulong_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_LONG:
-        leaf->op.u2.long_value = Constant;
+        leaf->op.u2.long_value = I32FetchTrunc( Constant64 );
         break;
     case TYP_ULONG:
-        leaf->op.u2.ulong_value = Constant;
+        leaf->op.u2.ulong_value = U32FetchTrunc( Constant64 );
         break;
     case TYP_LONG64:
         leaf->op.u2.long64_value = Constant64;
@@ -341,7 +342,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         /* fall through */
     case TYP_INT:
     case TYP_LONG:
-        leaf->op.u2.long_value = (signed_32)ep->value.u._32[I64LO32];
+        leaf->op.u2.long_value = (signed_32)U64Low( ep->value );
         break;
     case TYP_UCHAR:
     case TYP_USHORT:
@@ -349,7 +350,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         /* fall through */
     case TYP_UINT:
     case TYP_ULONG:
-        leaf->op.u2.long_value = ep->value.u._32[I64LO32];
+        leaf->op.u2.long_value = U64Low( ep->value );
         break;
     case TYP_LONG64:
     case TYP_ULONG64:
@@ -1191,10 +1192,10 @@ bool ConstExprAndType( const_val *val )
             break;
         case TYP_ULONG:
         case TYP_UINT:
-            U32ToU64( tree->op.u2.long_value, &val->value );
+            Set64ValU32( val->value, tree->op.u2.long_value );
             break;
         default:
-            I32ToI64( tree->op.u2.long_value, &val->value );
+            Set64ValI32( val->value, tree->op.u2.long_value );
             break;
         }
         ret = true;
@@ -1208,7 +1209,7 @@ bool ConstExprAndType( const_val *val )
         if( tree->op.opr != OPR_ERROR ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
-        U64Clear( val->value );
+        Set64ValZero( val->value );
         ret = false;
         break;
     }
@@ -1385,7 +1386,8 @@ static TREEPTR GetExpr( void )
                 break;
             case TC_SIZEOF:
                 typ = tree->u.expr_type;
-                if ( typ != NULL && typ->decl_type == TYP_FUNCTION ) {
+                if( typ != NULL
+                  && typ->decl_type == TYP_FUNCTION ) {
                     tree = AddrOp( tree );
                     typ = tree->u.expr_type;
                 }
@@ -1861,7 +1863,7 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         index_expr->op.u2.long_value *= SizeOfArg( typ );
         tree = ExprNode( tree, OPR_DOT, index_expr );
 #if _CPU == 8086
-        if( index_expr->op.u2.long_value > 0x7FFF ) {
+        if( index_expr->op.u2.long_value > TARGET_INT_MAX ) {
             index_expr->op.u1.const_type = TYP_LONG;
             index_expr->u.expr_type = GetType( TYP_LONG );
         }
@@ -2051,7 +2053,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 /*
  * This really ought to be defined somewhere else...
  */
-  #if (_CPU == _AXP)
+  #if _CPU == _AXP
     #define REG_SIZE    8
   #else
     #define REG_SIZE    4
@@ -2308,7 +2310,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( strcmp( sym_name, "__builtin_alloca" ) == 0 ) {
                     return( GenAllocaNode( last_parm ) );
                 }
-    #if  _CPU == _PPC
+    #if _CPU == _PPC
                 if( strcmp( sym_name, "__builtin_va_arg" ) == 0 ) {
                     return( GenVaArgNode( last_parm ) );
                 }
@@ -2607,7 +2609,7 @@ static TREEPTR NotOp( TREEPTR tree )
             break;
         case TYP_LONG64:
         case TYP_ULONG64:
-            if( (tree->op.u2.long64_value.u._32[I64LO32] | tree->op.u2.long64_value.u._32[I64HI32]) == 0 ) {
+            if( U64isZero( tree->op.u2.long64_value ) ) {
                 tree->op.u2.long_value = 1;
             } else {
                 tree->op.u2.long_value = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "cvars.h"
+#include "i64.h"
 #include "scan.h"
 #include "cfeinfo.h"
 #include "dumpapi.h"
@@ -402,7 +403,7 @@ TOKEN SpecialMacro( MEPTR mentry )
     switch( (special_macros)mentry->parm_count ) {
     case MACRO_LINE:
         TokenLen = sprintf( Buffer, "%u", TokenLoc.line );
-        Constant = TokenLoc.line;
+        Set64ValU32( Constant64, TokenLoc.line );
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_FILE:
@@ -418,22 +419,22 @@ TOKEN SpecialMacro( MEPTR mentry )
     case MACRO_STDC:
     case MACRO_STDC_HOSTED:
         WriteBufferString( "1" );
-        Constant = 1;
+        Set64Val1p( Constant64 );
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompVars.cstd < STD_C99 ) {
             WriteBufferString( "199409L" );
-            Constant = 199409;
+            Set64ValU32( Constant64, 199409 );
         } else {
             WriteBufferString( "199901L" ); /* C99 */
 //            WriteBufferString( "201112L" ); /* C11 */
 //            WriteBufferString( "201710L" ); /* C17 */
 //            WriteBufferString( "202311L" ); /* C23 */
-            Constant = 199901;  /* C99 */
-//            Constant = 201112;  /* C11 */
-//            Constant = 201710;  /* C17 */
-//            Constant = 202311;  /* C23 */
+            Set64ValU32( Constant64, 199901 );  /* C99 */
+//            Set64ValU32( Constant64, 201112 );  /* C11 */
+//            Set64ValU32( Constant64, 201710 );  /* C17 */
+//            Set64ValU32( Constant64, 202311 );  /* C23 */
         }
         ConstType = TYP_LONG;
         return( T_CONSTANT );

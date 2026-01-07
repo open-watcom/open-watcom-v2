@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +30,20 @@
 ****************************************************************************/
 
 
-typedef int_32      cost_val;
+#if _TARGET_INTEL
+#define MAX_COST        0x7FFFFFFF
+#else
+#define MAX_COST        0x7FFF
+#endif
 
-extern  cost_val        IfCost(sel_handle,int);
-extern  name            *ScanCall(tbl_control*,name*,type_class_def);
-extern  cost_val        JumpCost(sel_handle);
-extern  cost_val        ScanCost(sel_handle);
-extern  tbl_control     *MakeScanTab(select_list *,int_32,label_handle,cg_type,cg_type);
-extern  tbl_control     *MakeJmpTab(select_list *,int_32,int_32,label_handle);
-extern  name            *SelIdx(tbl_control *,an);
-extern  const type_def  *SelNodeType(an,bool);
-extern  void            MkSelOp( name *idx, type_class_def type_class );
+typedef int_32          cost_val;
+
+extern cost_val         IfCost( sel_handle s_node, uint_32 );
+extern name             *ScanCall( tbl_control *, name *, type_class_def );
+extern cost_val         JumpCost( sel_handle s_node );
+extern cost_val         ScanCost( sel_handle s_node );
+extern tbl_control      *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_type );
+extern tbl_control      *MakeJmpTab( sel_handle s_node );
+extern name             *SelIdx( tbl_control *, an );
+extern const type_def   *SelNodeType( an, bool );
+extern void             MkSelOp( name *idx, type_class_def type_class );

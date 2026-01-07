@@ -30,12 +30,18 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
+
+env:
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
+  OWUSETARARCHIVE:  '0'
 
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2'
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:
@@ -46,19 +52,18 @@ jobs:
     name: Bootstrap
     runs-on: windows-2022
     steps:
-    - run: git config --global core.eol lf
-    - run: git config --global core.autocrlf input
+    - name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
-      uses: "./.github/actions/boot"
+      uses: ./.github/actions/boot
       with:
-        hostos:         'nt'
-        buildcmd:       'ci/buildx.cmd vs2022'
+        args:           'vs2022'
         suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
-        noarchive:      '1'
-        owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
     # run: git config --local --list
@@ -76,59 +81,68 @@ jobs:
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
-    - run: git config --global core.eol lf
-    - run: git config --global core.autocrlf input
+    - name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - name: Build ${{ matrix.title }}
-      uses: "./.github/actions/docbuild"
+    - name: Install DOSBOX
+      uses: ./.github/actions/dosboxin
+    - name: Build ${{matrix.title}}
+      uses: ./.github/actions/docbuild
       with:
-        hostos:     'nt'
-        buildcmd:   'ci/buildx.cmd vs2022'
-        target:     ${{ matrix.doctype }}
-        relpath:    'docs wiki'
-        suffixi:    'nt x64 vs2022'
-        suffixo:    "${{ matrix.doctype }} vs2022"
+        args:       'vs2022'
+        target:     ${{matrix.doctype}}
+        gitpath:    'docs wiki'
+        suffix:     'nt x64 vs2022'
+        doc_suffix: ${{matrix.doctype}} vs2022
         owtools:    'VISUALC'
-        owtarget:   ${{ matrix.owtarget }}
-        owdebug:    ${{ vars.OWDEBUG }}
-        noarchive:  '1'
+        owtarget:   ${{matrix.owtarget}}
     # run: git config --local --list
   wiki-update:
     name: Update Wiki
     needs: wiki-build
     runs-on: windows-2022
     steps:
-    - run: git config --global core.eol lf
-    - run: git config --global core.autocrlf input
+    - name: Set EOL to LF
+      run: |
+        git config --global core.eol lf
+        git config --global core.autocrlf input
     - name: Setup Git User
-      shell: cmd
       run: |
         git config --global user.email "openwatcom.github@gmail.com"
         git config --global user.name "Open Watcom GitHub"
-    - name: Wiki Repo clone
       shell: cmd
+    - name: Wiki Repo clone
       run: |
         git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
-        OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
+        OWGHTOKEN: ${{secrets.OWGHTOKEN}}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
-    - name: Download Artifact html
-      uses: actions/download-artifact@v4
+      shell: cmd
+    - if: env.OWTESTMODE != '1'
+      name: Download Artifact html
+      uses: actions/download-artifact@v5
       with:
         name: 'rel-wikihtml-vs2022'
         path: docs
-    - name: Download Artifact pdf
-      uses: actions/download-artifact@v4
+    - if: env.OWTESTMODE != '1'
+      name: Download Artifact pdf
+      uses: actions/download-artifact@v5
       with:
         name: 'rel-wikipdf-vs2022'
         path: docs
     - name: Wiki Repo Update
-      shell: cmd
       run: |
-        git add -v -f .
-        git commit -v -m "GitHub Workflow build"
-        git push -v
+        if '${{github.repository}}' == 'open-watcom/open-watcom-v2' (
+          if not '${{env.OWTESTMODE}}' == '1' (
+            git add -v -f .
+            git commit -v -m "GitHub Workflow build"
+            git push -v
+          )
+        )
+      shell: cmd
     # run: git config --list
   cleanup:
     needs: wiki-update
@@ -137,9 +151,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.OWDELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacts
-      uses: "./.github/actions/artfdelc"
-      with:
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+      uses: ./.github/actions/artfdelc

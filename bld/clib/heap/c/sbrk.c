@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #if defined(__WINDOWS__)
     #include <windows.h>
@@ -44,7 +45,6 @@
 #endif
 #include "roundmac.h"
 #include "rtstack.h"
-#include "rterrno.h"
 #include "rtdata.h"
 #include "heap.h"
 
@@ -106,11 +106,10 @@ _WCRTLINK void_nptr sbrk( int increment )
         if( hmem != NULL ) {
             return( (void_nptr)hmem );
         }
-        _RWD_errno = ENOMEM;
-    } else {
-        _RWD_errno = EINVAL;
+        lib_set_errno( ENOMEM );
+        return( (void_nptr)-1 );
     }
-    return( (void_nptr)-1 );
+    return( (void_nptr)lib_set_EINVAL() );
   #else
     increment = __ROUND_UP_SIZE_4K( increment );
     return( (void_nptr)WDPMIAlloc( increment ) );
@@ -126,7 +125,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     unsigned        num_of_paras;
 
     if( brk_value < _STACKTOP ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (void_nptr)-1 );
     }
     segm = _DGroup();
@@ -150,7 +149,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         parent = SegInfo( segm );
         if( parent < 0 ) {
             if( TINY_ERROR( TinySetBlock( parent & 0xffff, num_of_paras ) ) ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 return( (void_nptr)-1 );
             }
         }
@@ -165,7 +164,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     }
   #endif
     if( TINY_ERROR( TinySetBlock( segm, num_of_paras ) ) ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (void_nptr)-1 );
     }
     old_brk_value = _curbrk;        /* return old value of _curbrk */
@@ -196,16 +195,15 @@ _WCRTLINK void_nptr sbrk( int increment )
                 cstg = CodeBuilderAlloc( increment );
             }
             if( cstg == NULL ) {
-                _RWD_errno = ENOMEM;
+                lib_set_errno( ENOMEM );
                 cstg = (void_nptr)-1;
             }
-        } else {
-            _RWD_errno = EINVAL;
-            cstg = (void_nptr)-1;
+            return( cstg );
         }
-        return( cstg );
-    } else if( _IsPharLap() ) {
-        _curbrk = GetDataSelectorLimitB() + 1;
+        return( (void_nptr)lib_set_EINVAL() );
+    }
+    if( _IsPharLap() ) {
+        _curbrk = GetDataSelectorSize();
     }
   #endif
     return( __brk( _curbrk + increment ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +43,14 @@
 #include "nmlio.h"
 
 
-void            SetNml( void PGM *nml, ... )
+void            SetNml( char PGM *nml, ... )
 //==========================================
 {
     va_list     args;
 
     _SetIOCB();
     IOCB->flags |= NML_DIRECTED;
-    IOCB->fmtptr = nml;
+    IOCB->u.ptr = nml;
     IOCB->set_flags |= SET_FMTPTR;
     FmtRoutine = &NmlExec;
     va_start( args, nml );

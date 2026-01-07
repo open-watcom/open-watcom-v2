@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ STATIC void getStats( TARGET *targ )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC bool targExists( TARGET *targ )
 /************************************/
@@ -170,7 +170,7 @@ STATIC bool targExists( TARGET *targ )
     return( false );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -199,7 +199,7 @@ STATIC void getDate( TARGET *targ )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
 /******************************************************************/
@@ -207,7 +207,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     CLIST               *err;
     int                 i;
     struct utimbuf      times;
-    char                msg[max( MAX_RESOURCE_SIZE, _MAX_PATH )];
+    char                msg[_MAX_PATH];
 
     assert( targ != NULL
         && clist != NULL );
@@ -281,7 +281,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     return( RET_ERROR );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

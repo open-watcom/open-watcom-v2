@@ -150,13 +150,14 @@ opt_rtti08 = -xr -xbnm
 opt_thread01 = -i"$(watcom_root)/h/nt"
 opt_vf18 = -za
 
-!ifneq arch i86
-opt_link_opt32 = option stack=128k
-!endif
-
 #
 # architecture specific options
 #
+!ifneq arch i86
+# 32-bit specific
+opt_link_opt32 = option stack=128k
+!endif
+
 !ifeq arch axp
 # AXP specific
 !else ifeq arch 386

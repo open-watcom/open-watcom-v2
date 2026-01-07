@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,8 @@ instruction *rMOVEXX_8( instruction *ins )
             first_ins = new_ins;
         }
         new_ins = MakeMove( temp, dst, U8 );
-        if( quads == 0 && rem == 0 ) {
+        if( quads == 0
+          && rem == 0 ) {
             ReplIns( ins, new_ins );
             last_ins = new_ins;
         } else {
@@ -269,7 +270,8 @@ instruction *rALLOCA( instruction *ins )
     type_class = WD;
     check = true;
     CurrProc->targ.base_is_fp = true;
-    if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
+    if( amount->n.class == N_CONSTANT
+      && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.lo.u.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
@@ -340,7 +342,7 @@ instruction      *rM_SIMPCMP( instruction *ins )
         opcode = OP_SET_LESS_EQUAL;
         /* Special reduction: use OP_SET_LESS but increment constant */
         if( (ins->operands[1]->n.class == N_CONSTANT)
-            && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) ) {
+          && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) ) {
             int_32      value;
 
             opcode = OP_SET_LESS;
@@ -453,7 +455,8 @@ instruction     *rSPLITOP( instruction *ins )
     instruction *ins2;
     name        *temp;
 
-    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
+    if( IndexOverlaps( ins, 0 )
+      || IndexOverlaps( ins, 1 ) ) {
         temp = AllocTemp( LONG_WORD );
         HalfType( ins );
         new_ins = MakeBinary( ins->head.opcode,
@@ -539,8 +542,8 @@ instruction *rSPLITMOVE( instruction *ins )
         ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
         ins->result = HighPart( ins->result, ins->type_class );
         if( new_ins->result->n.class == N_REGISTER
-         && ins->operands[0]->n.class == N_REGISTER
-         && HW_Ovlap( new_ins->result->r.reg, ins->operands[0]->r.reg ) ) {
+          && ins->operands[0]->n.class == N_REGISTER
+          && HW_Ovlap( new_ins->result->r.reg, ins->operands[0]->r.reg ) ) {
             SuffixIns( ins, new_ins );
             new_ins = ins;
         } else {
@@ -631,8 +634,8 @@ instruction     *rSPLITCMP( instruction *ins )
     instruction         *not_equal = NULL;
     type_class_def      high_type_class;
     type_class_def      low_type_class;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
 
     high_type_class = HalfClass[ins->type_class];
     low_type_class  = Unsigned[high_type_class];
@@ -701,9 +704,9 @@ instruction     *rSPLITCMP( instruction *ins )
                         false_idx, NO_JUMP,
                         high_type_class );
         if( high_type_class == WD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
+          && right->n.class == N_CONSTANT
+          && right->c.const_type == CONS_ABSOLUTE
+          && HIGH_WORD( right ) == 0 ) {
             high = NULL;
         } else {
             high = MakeCondition( OP_CMP_LESS,
@@ -725,9 +728,9 @@ instruction     *rSPLITCMP( instruction *ins )
                         false_idx, NO_JUMP,
                         high_type_class );
         if( high_type_class == WD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
+          && right->n.class == N_CONSTANT
+          && right->c.const_type == CONS_ABSOLUTE
+          && HIGH_WORD( right ) == 0 ) {
             _SetBlockIndex( not_equal, true_idx, NO_JUMP );
             high = NULL;
         } else {

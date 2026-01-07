@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,5 +35,5 @@ extern cg_name SCBPointer( cg_name scb );
 extern cg_name SCBLenAddr( cg_name scb );
 extern cg_name SCBFlagsAddr( cg_name scb );
 extern cg_name SCBLength( cg_name scb );
-extern cg_name Concat( uint num_args, cg_name dest );
+extern cg_name Concat( args_num argc, cg_name dest );
 extern cg_name CharItemLen( sym_id sym );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #if defined(__NT__)
@@ -41,9 +42,9 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
 #include "errstr.h"
 #include "thread.h"
+
 
 #ifdef __WIDECHAR__
 #define ERROR_MSG   Wide_Error_String
@@ -230,17 +231,17 @@ _WCRTDATA int _WCDATA _sys_nerr = ( sizeof( _sys_errlist ) / sizeof( *_sys_errli
 
 #endif
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strerror,_wcserror)( int errnum )
+_WCRTLINK CHAR_TYPE *__F_NAME(strerror,_wcserror)( int errno_num )
 {
 #ifdef __WIDECHAR__
     static wchar_t  wide_msg[40];
 #endif
     char            *msg;
 
-    if( errnum < 0 || errnum >= _sys_nerr ) {
+    if( errno_num < 0 || errno_num >= _sys_nerr ) {
         msg = UNKNOWN_ERROR;
     } else {
-        msg = _sys_errlist[ errnum ];
+        msg = _sys_errlist[errno_num];
     }
 #ifdef __WIDECHAR__
     return( _atouni( wide_msg, msg ) );
@@ -291,30 +292,30 @@ static  CHAR_TYPE ERROR_MSG[FORMAT_MESSAGE_MAX_WIDTH_MASK+1];
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_strerror,__wcserror)( const CHAR_TYPE *strErrMsg )
 {
-    int errnum;
+    int errno_num;
 
-    errnum = _RWD_errno;
+    errno_num = lib_get_errno();
     ERROR_MSG[0] = NULLCHAR;
     if( strErrMsg != NULL ) {
         __F_NAME(strncpy,wcsncpy)( ERROR_MSG, strErrMsg, 94 );
         ERROR_MSG[94] = NULLCHAR;    // just in case more than 94
         __F_NAME(strcat,wcscat)( ERROR_MSG, STRING(": ") );
     }
-    __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,_wcserror)( errnum ) );
+    __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,_wcserror)( errno_num ) );
     __F_NAME(strcat,wcscat)( ERROR_MSG, STRING("\n") );
     return( ERROR_MSG );
 }
 
 #if defined(__NT__)
 
-_WCRTLINK CHAR_TYPE *__F_NAME(_doserror,_wdoserror)( int errnum )
+_WCRTLINK CHAR_TYPE *__F_NAME(_doserror,_wdoserror)( int errno_num )
 {
     ERROR_MSG[0] = NULLCHAR;
     FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS |
                     FORMAT_MESSAGE_FROM_SYSTEM |
                     FORMAT_MESSAGE_MAX_WIDTH_MASK,
                     NULL,
-                    errnum,
+                    errno_num,
                     0,
                     ERROR_MSG,
                     FORMAT_MESSAGE_MAX_WIDTH_MASK,

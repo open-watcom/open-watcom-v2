@@ -54,7 +54,7 @@
 #include "cspawn.h"
 
 
-extern  unsigned_32     CompTime;
+extern unsigned     CompTime;
 
 
 void    DoCompile( void ) {
@@ -64,8 +64,8 @@ void    DoCompile( void ) {
 }
 
 
-static  void    FmtU32( char *buff, unsigned_32 num, size_t len )
-//===============================================================
+static  void    FmtUint( char *buff, unsigned num, size_t len )
+//=============================================================
 {
     size_t      offset;
     size_t      num_len;
@@ -74,7 +74,7 @@ static  void    FmtU32( char *buff, unsigned_32 num, size_t len )
 
     memset( buff, ' ', len );
     num_ptr = num_buff;
-    sprintf( num_ptr, "%lu", (unsigned long)num );
+    sprintf( num_ptr, "%u", num );
     num_len = strlen( num_ptr );
     if( num_len > len ) {
         num_ptr += num_len - len;
@@ -100,7 +100,7 @@ void    StatProg( void ) {
         stats[len] = ':';
         ++len;
         MsgBuffer( MS_STATISTICS, &stats[len],
-                   ISNNumber, CodeSize, NumExtens, NumWarns, NumErrors );
+                   (int)ISNNumber, CodeSize, NumExtens, NumWarns, NumErrors );
         TOutNL( stats );
     }
     LFSkip();
@@ -111,7 +111,7 @@ void    StatProg( void ) {
         ++ptr; // don't include leading space
     }
     len = strlen( ptr );
-    FmtU32( &ptr[len], CodeSize, COLUMN_WIDTH - len - 1 );
+    FmtUint( ptr + len, CodeSize, COLUMN_WIDTH - len - 1 );
     ptr[COLUMN_WIDTH - 1] = ' ';
     MsgBuffer( MS_NUMBER_OF_ERRORS, &ptr[COLUMN_WIDTH] );
     len = strlen( &ptr[COLUMN_WIDTH] );
@@ -124,7 +124,7 @@ void    StatProg( void ) {
         ++ptr; // don't include leading space
     }
     len = strlen( ptr );
-    FmtU32( &ptr[len], CompTime, COLUMN_WIDTH - len - 1 );
+    FmtUint( ptr + len, CompTime, COLUMN_WIDTH - len - 1 );
     ptr[COLUMN_WIDTH - 1] = ' ';
     MsgBuffer( MS_NUMBER_OF_WARNINGS, &ptr[COLUMN_WIDTH] );
     len = strlen( &ptr[COLUMN_WIDTH] );
@@ -137,7 +137,7 @@ void    StatProg( void ) {
         ++ptr; // don't include leading space
     }
     len = strlen( ptr );
-    FmtInteger( &ptr[len], ISNNumber, COLUMN_WIDTH - len - 1 );
+    FmtInteger( &ptr[len], (int)ISNNumber, COLUMN_WIDTH - len - 1 );
     ptr[COLUMN_WIDTH - 1] = ' ';
     MsgBuffer( MS_NUMBER_OF_EXTENSIONS, &ptr[COLUMN_WIDTH] );
     len = strlen( &ptr[COLUMN_WIDTH] );

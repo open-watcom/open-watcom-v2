@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -60,11 +61,6 @@ SaveRegs: // assembler does not support .quad directive
 #define FRAME_SIZE      0xf0            // define stack frame to discard when restoring
                                         // state (20 registers*4 + 18 fp regs*8
                                         // + link*4 + cr*4) align 8 boundary
-
-.globl  SwitchToGen
-// .ent SwitchToGen
-        b       j^SwitchToRT            // Use same routine as to switch in
-// .end SwitchToGen
 
 .globl  SwitchToRT
 // .ent SwitchToRT
@@ -353,7 +349,7 @@ IOChar:
         lwz     a0, 0x00(a0)            // ...
         stw     a0, 0x00(t1)            // Store SCB in IORslt
         stw     a1, 0x04(t1)            // ...
-        li      a0, PT_CHAR             // return CHARACTER*n type
+        li      a0, FPT_CHAR            // return CHARACTER*n type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end IOChar
 
@@ -365,7 +361,7 @@ IOStr:
         addi    t1, t1, l^IORslt        // ...
         stw     a0, 0x00(t1)            // Store SCB in IORslt
         stw     a1, 0x04(t1)            // ...
-        li      a0, PT_CHAR             // return CHARACTER*n type
+        li      a0, FPT_CHAR            // return CHARACTER*n type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end IOStr
 
@@ -378,7 +374,7 @@ IOArr:
         stw     a0, 0x00(t1)            // Store array record in IORslt (address)
         stw     a1, 0x04(t1)            // number of elements
         stw     a2, 0x0c(t1)            // type
-        li      a0, PT_ARRAY            // return ARRAY type
+        li      a0, FPT_ARRAY           // return ARRAY type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end IOArr
 
@@ -391,9 +387,9 @@ IOChArr:
         stw     a0, 0x00(t1)            // Store array record in IORslt (address)
         stw     a1, 0x04(t1)            // number of elements
         stw     a2, 0x08(t1)            // element size
-        li      a1, PT_CHAR             // set type
+        li      a1, FPT_CHAR            // set type
         stw     a1, 0x0c(t1)            // ...
-        li      a0, PT_ARRAY            // return ARRAY type
+        li      a0, FPT_ARRAY           // return ARRAY type
         b       j^SwitchToRT            // return to caller of IOType()
 // .end IOChArr
 
@@ -401,6 +397,6 @@ IOChArr:
 .globl  __RT_EndIO
 // .ent __RT_EndIO
 __RT_EndIO:
-        li      a0, PT_NOTYPE           // return "no i/o items remaining"
+        li      a0, FPT_NOTYPE          // return "no i/o items remaining"
         b       j^SwitchToRT            // return to caller of IOType()
 // .end __RT_EndIO

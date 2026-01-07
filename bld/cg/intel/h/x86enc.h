@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ extern void             LayRegRM( hw_reg_set r );
 extern void             LayRegAC( hw_reg_set r );
 extern void             GenSeg( hw_reg_set regs );
 extern type_class_def   OpndSize( hw_reg_set reg );
-extern void             QuickSave( hw_reg_set reg, opcode_defs op );
+extern void             QuickSave( hw_reg_set reg, opcode_defs opcode );
 extern void             GenRegXor( hw_reg_set src, hw_reg_set dst );
 extern void             GenRegNeg( hw_reg_set src );
 extern void             GenRegMove( hw_reg_set src, hw_reg_set dst );

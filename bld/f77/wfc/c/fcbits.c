@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,10 +49,10 @@
 static  cg_name BitPosition( unsigned_16 typ_info ) {
 //===================================================
 
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType2( typ_info );
-    return( CGBinary( O_LSHIFT, CGInteger( 1, typ ), XPopValue( typ ), typ ) );
+    cgtyp = GetCGTypes2( typ_info );
+    return( CGBinary( O_LSHIFT, CGInteger( 1, cgtyp ), XPopValue( cgtyp ), cgtyp ) );
 }
 
 
@@ -59,13 +60,13 @@ static  void    BitOperation( cg_op bit_op ) {
 //============================================
 
     cg_name     op;
-    cg_type     typ;
+    cg_type     cgtyp;
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    typ = GetType1( typ_info );
-    op = XPopValue( typ );
-    XPush( CGBinary( bit_op, op, BitPosition( typ_info ), typ ) );
+    cgtyp = GetCGTypes1( typ_info );
+    op = XPopValue( cgtyp );
+    XPush( CGBinary( bit_op, op, BitPosition( typ_info ), cgtyp ) );
 }
 
 
@@ -73,14 +74,14 @@ void    FCBitTest( void ) {
 //===================
 
     cg_name     op;
-    cg_type     typ;
+    cg_type     cgtyp;
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    typ = GetType1( typ_info );
-    op = XPopValue( typ );
-    XPush( CGCompare( O_NE, CGBinary( O_AND, op, BitPosition( typ_info ), typ ),
-                            CGInteger( 0, TY_INTEGER ), typ ) );
+    cgtyp = GetCGTypes1( typ_info );
+    op = XPopValue( cgtyp );
+    XPush( CGCompare( O_NE, CGBinary( O_AND, op, BitPosition( typ_info ), cgtyp ),
+                            CGInteger( 0, TY_INTEGER ), cgtyp ) );
 }
 
 
@@ -102,25 +103,25 @@ void    FCBitClear( void ) {
 //====================
 
     cg_name     op;
-    cg_type     typ;
+    cg_type     cgtyp;
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    typ = GetType1( typ_info );
-    op = XPopValue( typ );
+    cgtyp = GetCGTypes1( typ_info );
+    op = XPopValue( cgtyp );
     XPush( CGBinary( O_AND, op,
-                     CGUnary( O_COMPLEMENT, BitPosition( typ_info ), typ ),
-                     typ ) );
+                     CGUnary( O_COMPLEMENT, BitPosition( typ_info ), cgtyp ),
+                     cgtyp ) );
 }
 
 
 void    FCBitNot( void ) {
 //==================
 
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType( GetU16() );
-    XPush( CGUnary( O_COMPLEMENT, XPopValue( typ ), typ ) );
+    cgtyp = GetCGType( GetU16() );
+    XPush( CGUnary( O_COMPLEMENT, XPopValue( cgtyp ), cgtyp ) );
 }
 
 
@@ -128,17 +129,17 @@ static  cg_type BitWise( cg_op op ) {
 //===================================
 
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
     cg_name     op1;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
-    typ2 = ResCGType( typ1, typ2 );
-    XPush( CGBinary( op, op1, XPopValue( typ2 ), typ2 ) );
-    return( typ2 );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op1 = XPopValue( cgtyp1 );
+    cgtyp2 = ResCGType( cgtyp1, cgtyp2 );
+    XPush( CGBinary( op, op1, XPopValue( cgtyp2 ), cgtyp2 ) );
+    return( cgtyp2 );
 }
 
 
@@ -166,10 +167,10 @@ void    FCBitExclOr( void ) {
 void    FCBitEquiv( void ) {
 //====================
 
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = BitWise( O_XOR );
-    XPush( CGUnary( O_COMPLEMENT, XPop(), typ ) );
+    cgtyp = BitWise( O_XOR );
+    XPush( CGUnary( O_COMPLEMENT, XPop(), cgtyp ) );
 }
 
 

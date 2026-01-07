@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
+#include "i64.h"
 #include "wf77aux.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"
@@ -63,7 +63,6 @@
 #include "feprotos.h"
 
 
-extern  cg_name         CmplxAddr(cg_name,cg_name);
 extern  void            FiniTmps(void);
 
 extern  back_handle     TraceEntry;
@@ -78,11 +77,10 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called );
 
 
 
-cg_type SPType( sym_id sym ) {
+cg_type SPType( sym_id sym )
 //============================
-
 // Return subprogram cg type.
-
+{
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM )
         return( TY_INTEGER );
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE )
@@ -94,23 +92,21 @@ cg_type SPType( sym_id sym ) {
 }
 
 
-static  cg_type    CommonEntryType( void ) {
-//====================================
-
+static cg_type      CommonEntryType( void )
+//=========================================
 // Generate return value for common entry point.
-
+{
     return( TY_INTEGER );
 }
 
 
-void    FCPrologue( void ) {
+void    FCPrologue( void )
 //====================
-
 // Start a subprogram.
-
+{
     sym_id              sym;
     entry_pt            *ep;
-    int                 ep_count;
+    signed_64           ep_count;
     sel_handle          sel;
     label_handle        main_entry_label;
     unsigned_16         sp_type;
@@ -146,10 +142,10 @@ void    FCPrologue( void ) {
     }
     if( CommonEntry != NULL ) {
         sel = CGSelInit();
-        ep_count = 1;
+        Set64Val1p( ep_count );
         for( ep = Entries->link; ep != NULL; ep = ep->link ) {
             CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
-            ep_count++;
+            U64Low( ep_count )++;
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
@@ -162,9 +158,9 @@ void    FCPrologue( void ) {
 }
 
 
-static  void    GenTraceback( void ) {
-//==============================
-
+static  void    GenTraceback( void )
+//==================================
+{
     call_handle         call;
 
     if( Options & OPT_TRACE ) {
@@ -175,11 +171,10 @@ static  void    GenTraceback( void ) {
 }
 
 
-void    FCEpilogue( void ) {
-//====================
-
+void    FCEpilogue( void )
+//========================
 // End a subprogram.
-
+{
     sym_id      sym;
     unsigned_16 sp_type;
 
@@ -191,7 +186,7 @@ void    FCEpilogue( void ) {
     if( StNumbers.wild_goto ) {
         DoneLabel( StNumbers.branches );
     }
-    FiniLabels( 0 );
+    FiniLabels( false );
     FiniTmps();
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
         CGReturn( NULL, TY_INTEGER );
@@ -209,30 +204,25 @@ void    FCEpilogue( void ) {
 }
 
 
-bool    ChkForAltRets( entry_pt *ep ) {
-//=====================================
-
+bool    ChkForAltRets( entry_pt *ep )
+//===================================
 // Check to see if the specified entry point has an alternate return.
-
+{
     parameter   *args;
 
-    args = ep->parms;
-    for(;;) {
-        if( args == NULL )
-            break;
-        if( args->flags & ARG_STMTNO )
+    for( args = ep->parms; args != NULL; args = args->link ) {
+        if( args->flags & ARG_STMTNO ) {
             return( true );
-        args = args->link;
+        }
     }
     return( false );
 }
 
 
-bool    EntryWithAltRets( void ) {
-//==========================
-
+bool    EntryWithAltRets( void )
+//==============================
 // Check to see if there's at least one entry with an alternate return.
-
+{
     entry_pt    *ep;
 
     for( ep = Entries; ep != NULL; ep = ep->link ) {
@@ -244,14 +234,13 @@ bool    EntryWithAltRets( void ) {
 }
 
 
-static  void    GenReturnValue( sym_id sym ) {
-//============================================
-
+static  void    GenReturnValue( sym_id sym )
+//==========================================
 // Generate return value.
+{
+    cg_type     cgtyp;
 
-    cg_type     typ;
-
-    typ = SPType( sym );
+    cgtyp = SPType( sym );
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         if( !EntryWithAltRets() ) {
             CGReturn( NULL, TY_INTEGER );
@@ -263,15 +252,14 @@ static  void    GenReturnValue( sym_id sym ) {
             return;
         }
     }
-    CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, typ ), typ ), typ );
+    CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, cgtyp ), cgtyp ), cgtyp );
 }
 
 
-static  void    GenCommonReturnValue( void ) {
-//======================================
-
+static  void    GenCommonReturnValue( void )
+//==========================================
 // Generate return value for common entry point.
-
+{
     if( EntryWithAltRets() ) {
         CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, TY_INTEGER ),
                            TY_INTEGER ), TY_INTEGER );
@@ -281,32 +269,31 @@ static  void    GenCommonReturnValue( void ) {
 }
 
 
-static  void    DefineEntries( void ) {
-//===============================
-
+static  void    DefineEntries( void )
+//===================================
 // Define entry points into subprogram.
-
+{
     entry_pt    *ep;
     int         ep_count;
     call_handle call;
-    cg_type     sp_type;
-    cg_type     common_type;
+    cg_type     sp_cgtyp;
+    cg_type     common_cgtyp;
     cg_name     val;
 
-    common_type = CommonEntryType();
+    common_cgtyp = CommonEntryType();
     ep_count = 0;
     for( ep = Entries; ep != NULL; ep = ep->link ) {
         FreeLocalBacks( false );
-        sp_type = SPType( ep->id );
-        CGProcDecl( ep->id, sp_type );
+        sp_cgtyp = SPType( ep->id );
+        CGProcDecl( ep->id, sp_cgtyp );
         if( CGOpts & CGOPT_DB_LOCALS ) {
             DBModSym( ep->id, TY_DEFAULT );
         }
         DefineEntryPoint( ep );
-        call = CGInitCall( CGFEName( CommonEntry, common_type ), common_type, NULL );
+        call = CGInitCall( CGFEName( CommonEntry, common_cgtyp ), common_cgtyp, NULL );
         PassCommonArgs( call, ep );
         if( (ep->id->u.ns.flags & SY_SUBPROG_TYPE) != SY_SUBROUTINE ) {
-            val = CGFEName( ReturnValue, sp_type );
+            val = CGFEName( ReturnValue, sp_cgtyp );
             if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 val = CGUnary( O_POINTS, val, TY_POINTER );
                 CGAddParm( call, val, TY_POINTER );
@@ -322,18 +309,18 @@ static  void    DefineEntries( void ) {
         CGAddParm( call, CGInteger( ep_count, TY_INTEGER ), TY_INTEGER );
         if( (ep->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
             if( EntryWithAltRets() ) {
-                val = CGUnary( O_POINTS, CGCall( call ), sp_type );
-                CGReturn( val, sp_type );
+                val = CGUnary( O_POINTS, CGCall( call ), sp_cgtyp );
+                CGReturn( val, sp_cgtyp );
             } else {
                 CGDone( CGCall( call ) );
-                CGReturn( NULL, sp_type );
+                CGReturn( NULL, sp_cgtyp );
             }
         } else {
             CGDone( CGCall( call ) );
             if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 CGReturn( NULL, TY_INTEGER );
             } else {
-                CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, sp_type ), sp_type ), sp_type );
+                CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, sp_cgtyp ), sp_cgtyp ), sp_cgtyp );
             }
         }
         ep_count++;
@@ -341,9 +328,9 @@ static  void    DefineEntries( void ) {
 }
 
 
-static  bool    NeedShadowArg( pass_by *arg_aux ) {
-//=================================================
-
+static  bool    NeedShadowArg( pass_by *arg_aux )
+//===============================================
+{
     if( Options & OPT_DESCRIPTOR )
         return( false );
     if( arg_aux == NULL )
@@ -354,15 +341,14 @@ static  bool    NeedShadowArg( pass_by *arg_aux ) {
 }
 
 
-static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
-//=======================================================================
-
+static  void    PassCommonArgs( call_handle call, entry_pt *ep_called )
+//=====================================================================
 // Pass arguments to common entry point.
-
+{
     entry_pt    *ep;
     parameter   *arg;
     cg_name     cg;
-    cg_type     arg_type;
+    cg_type     arg_cgtyp;
     aux_info    *info;
     pass_by     *arg_aux;
 
@@ -372,30 +358,31 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
                 if( (arg->id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
-                    arg_type = TY_CODE_PTR;
+                    arg_cgtyp = TY_CODE_PTR;
                 } else if( arg->id->u.ns.flags & SY_SUBSCRIPTED ) {
-                    arg_type = TY_POINTER;
+                    arg_cgtyp = TY_POINTER;
                 } else if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
-                    arg_type = TY_POINTER;
-                } else if( ( arg_aux != NULL ) && (arg_aux->info & PASS_BY_VALUE) ) {
-                    arg_type = F77ToCGType( arg->id );
+                    arg_cgtyp = TY_POINTER;
+                } else if( ( arg_aux != NULL )
+                  && (arg_aux->info & PASS_BY_VALUE) ) {
+                    arg_cgtyp = F77ToCGType( arg->id );
                 } else {
-                    arg_type = TY_POINTER;
+                    arg_cgtyp = TY_POINTER;
                 }
                 if( InArgList( ep_called, arg->id ) ) {
-                    cg = CGUnary( O_POINTS, CGFEName( arg->id, arg_type ), arg_type );
+                    cg = CGUnary( O_POINTS, CGFEName( arg->id, arg_cgtyp ), arg_cgtyp );
                     if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
-                        CGAddParm( call, cg, PromoteToBaseType( arg_type ) );
+                        CGAddParm( call, cg, PromoteCGToBaseType( arg_cgtyp ) );
                         if( NeedShadowArg( arg_aux ) ) {
                             cg = CGFEName( FindArgShadow( arg->id ), TY_INTEGER );
                             cg = CGUnary( O_POINTS, cg, TY_INTEGER );
                             CGAddParm( call, cg, TY_INTEGER );
                         }
                     } else {
-                        CGAddParm( call, cg, PromoteToBaseType( arg_type ) );
+                        CGAddParm( call, cg, PromoteCGToBaseType( arg_cgtyp ) );
                     }
                 } else {
-                    CGAddParm( call, CGInteger( 0, arg_type ), PromoteToBaseType( arg_type ) );
+                    CGAddParm( call, CGInteger( 0, arg_cgtyp ), PromoteCGToBaseType( arg_cgtyp ) );
                     if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                         if( NeedShadowArg( arg_aux ) ) {
                             CGAddParm( call, CGInteger( 0, TY_INTEGER ), TY_INTEGER );
@@ -403,7 +390,8 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                     }
                 }
             }
-            if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
+            if( ( arg_aux != NULL )
+              && ( arg_aux->link != NULL ) ) {
                 arg_aux = arg_aux->link;
             }
         }
@@ -411,71 +399,70 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
 }
 
 
-static  cg_name     ArgAddr( PTYPE arg_type ) {
-//===========================================
-
+static  cg_name     ArgAddr( PTYPE ptyp )
+//=======================================
 // Get address of actual argument.
-
-    cg_type     cg_typ;
+{
+    cg_type     cgtyp;
     cg_name     arg;
 
     arg = XPop();
-    cg_typ = GetType( arg_type );
-    if( !TypePointer( CGType( arg ) ) ) {
-        if( ( arg_type == PT_CPLX_8 ) || ( arg_type == PT_CPLX_16 ) || ( arg_type == PT_CPLX_32 ) ) {
+    cgtyp = GetCGType( ptyp );
+    if( !IsCGPointer( CGType( arg ) ) ) {
+        if( ( ptyp == FPT_CPLX_8 )
+          || ( ptyp == FPT_CPLX_16 )
+          || ( ptyp == FPT_CPLX_32 ) ) {
             arg = CmplxAddr( arg, XPop() );
         } else {
-            arg = TmpPtr( MkTmp( arg, cg_typ ), cg_typ );
+            arg = TmpPtr( MkTmp( arg, cgtyp ), cgtyp );
         }
     }
     return( arg );
 }
 
 
-static  cg_name     ArgValue( PTYPE arg_type, cg_type *new_typ ) {
-//==============================================================
-
+static  cg_name     ArgValue( PTYPE ptyp, cg_type *new_cgtyp )
+//============================================================
 // Get value of actual argument.
-
+{
     cg_name     arg;
-    cg_type     cg_typ;
+    cg_type     cgtyp;
 
     arg = XPop();
-    cg_typ = CGType( arg );
-    if( TypePointer( cg_typ ) ) {
-        if( DataPointer( cg_typ ) ) {
-            cg_typ = GetType( arg_type );
-            arg = CGUnary( O_POINTS, arg, cg_typ );
+    cgtyp = CGType( arg );
+    if( IsCGPointer( cgtyp ) ) {
+        if( !IsCGCodePointer( cgtyp ) ) {
+            cgtyp = GetCGType( ptyp );
+            arg = CGUnary( O_POINTS, arg, cgtyp );
         }
     } else {
-        cg_typ = GetType( arg_type );
+        cgtyp = GetCGType( ptyp );
     }
-    *new_typ = cg_typ;
+    *new_cgtyp = cgtyp;
     return( arg );
 }
 
 
-static  cg_type ArgPtrType( cg_name arg ) {
-//=========================================
-
+static  cg_type ArgPtrType( cg_name arg )
+//=======================================
 // Get argument pointer type.
+{
+    cg_type     cgtyp;
 
-    cg_type     typ;
-
-    typ = CGType( arg );
-    if( typ >= TY_USER_DEFINED )
+    cgtyp = CGType( arg );
+    if( cgtyp >= TY_USER_DEFINED )
         return( TY_POINTER );
-    if( BETypeLength( typ ) < BETypeLength( TY_POINTER ) )
+    if( BETypeLength( cgtyp ) < BETypeLength( TY_POINTER ) )
         return( TY_POINTER );
-    return( typ );
+    return( cgtyp );
 }
 
 
 #if _CPU == 386
 
-static  cg_name MkSCB16( cg_name src ) {
-//======================================
-
+static  cg_name MkSCB16( cg_name src )
+//====================================
+{
     cg_name     src_2;
     cg_name     dst;
     cg_name     dst_2;
@@ -493,26 +480,25 @@ static  cg_name MkSCB16( cg_name src ) {
 #endif
 
 
-void    FCCall( void ) {
-//================
-
+void    FCCall( void )
+//====================
 // Process CALL F-Code.
-
+{
     sym_id      sp;
     sym_id      scb;
-    uint        num_args;
+    args_num    argc;
     uint        idx;
     call_handle call;
-    cg_type     sp_type;
+    cg_type     sp_cgtyp;
     aux_info    *info;
     cg_name     rtn;
     unsigned_16 arg_info;
-    PTYPE       arg_type;
-    PCODE       arg_code;
+    PTYPE       ptyp;
+    PCODE       pcode;
     pass_by     *arg_aux;
     cg_name     arg;
-    cg_type     cg_typ;
-    cg_type     new_typ;
+    cg_type     cgtyp;
+    cg_type     new_cgtyp;
     cg_cmplx    z;
     bool        chk_foreign;
     bool        pass_scb;
@@ -524,28 +510,29 @@ void    FCCall( void ) {
 
     scb = NULL;
     sp = GetPtr();
-    sp_type = SPType( sp );
+    sp_cgtyp = SPType( sp );
     info = InfoLookup( sp );
     arg_aux = info->arg_info;
     if( sp->u.ns.flags & SY_SUB_PARM ) {
         rtn = CGUnary( O_POINTS, CGFEName( sp, TY_CODE_PTR ), TY_CODE_PTR );
     } else {
-        rtn = CGFEName( sp, sp_type );
+        rtn = CGFEName( sp, sp_cgtyp );
     }
-    num_args = GetU16();
-    if( num_args == 0 ) {
+    argc = GetU16();
+    if( argc == 0 ) {
         arg_vec = NULL;
     } else {
-        // We need num_args + 1 because we use NULL at the end
-        arg_vec = FMemAlloc( ( num_args + 1 ) * sizeof( cg_name ) );
+        // We need argc + 1 because we use NULL at the end
+        arg_vec = FMemAlloc( ( argc + 1 ) * sizeof( cg_name ) );
     }
-    call = CGInitCall( rtn, sp_type, sp );
+    call = CGInitCall( rtn, sp_cgtyp, sp );
     if( sp->u.ns.flags & SY_INTRINSIC ) {
         if( IFVarArgs( sp->u.ns.si.fi.index ) ) {
-            CGAddParm( call, CGInteger( num_args, TY_INTEGER ), TY_INTEGER );
+            CGAddParm( call, CGInteger( argc, TY_INTEGER ), TY_INTEGER );
         }
     } else if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( (Options & OPT_DESCRIPTOR) == 0 && (sp->u.ns.u1.s.typ == FT_CHAR) ) {
+        if( (Options & OPT_DESCRIPTOR) == 0
+          && (sp->u.ns.u1.s.typ == FT_CHAR) ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
@@ -558,30 +545,32 @@ void    FCCall( void ) {
         }
     }
     idx = 0;
-    for( ; num_args != 0; --num_args ) {
+    for( ; argc != 0; --argc ) {
         arg_info = GetU16();
-        arg_type = _GetTypeInfo2( arg_info );
-        arg_code = _GetTypeInfo1( arg_info );
+        ptyp = _GetArgInfoPtyp( arg_info );
+        pcode = _GetArgInfoPcode( arg_info );
 #if _INTEL_CPU
-        arg_proc_far16 = ( (arg_code & PC_PROC_FAR16) != 0 );
-        arg_code &= ~PC_PROC_FAR16;
+        arg_proc_far16 = ( (pcode & PC_PROC_FAR16) != 0 );
+        pcode &= ~PC_PROC_FAR16;
 #endif
         chk_foreign = true;
-        if( arg_code == PC_PROCEDURE || arg_code == PC_FN_OR_SUB ) {
+        if( pcode == PC_PROCEDURE
+          || pcode == PC_FN_OR_SUB ) {
             arg = XPop();
-            cg_typ = TY_CODE_PTR;
+            cgtyp = TY_CODE_PTR;
 #if _INTEL_CPU
-            if( (info->cclass_target & FECALL_X86_FAR16_CALL) && arg_proc_far16 ) {
+            if( (info->cclass_target & FECALL_X86_FAR16_CALL)
+              && arg_proc_far16 ) {
                 chk_foreign = false;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
-                    cg_typ = TY_LONG_CODE_PTR;
+                    cgtyp = TY_LONG_CODE_PTR;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_CODE_PTR );
                     chk_foreign = false;
                 }
             }
 #endif
-        } else if( arg_type == PT_CHAR ) {
+        } else if( ptyp == FPT_CHAR ) {
             // character data (including character arrays)
             if( Options & OPT_DESCRIPTOR ) {
                 pass_scb = true;
@@ -603,13 +592,14 @@ void    FCCall( void ) {
                 }
             }
             arg = XPop();
-            cg_typ = TY_POINTER;
+            cgtyp = TY_POINTER;
             if( pass_len ) {
                 CloneCGName( arg, &arg, &arg_vec[idx] );
                 ++idx;
             }
 #if _CPU == 386
-            if( pass_scb && (info->cclass_target & FECALL_X86_FAR16_CALL) ) {
+            if( pass_scb
+              && (info->cclass_target & FECALL_X86_FAR16_CALL) ) {
                 arg = MkSCB16( arg );
             }
 #endif
@@ -618,101 +608,108 @@ void    FCCall( void ) {
             }
             if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
-                    cg_typ = TY_LONG_POINTER;
+                    cgtyp = TY_LONG_POINTER;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
                 }
             }
-        } else if( arg_code == PC_ARRAY_NAME ) {
+        } else if( pcode == PC_ARRAY_NAME ) {
             arg = XPop();
-            cg_typ = ArgPtrType( arg );
+            cgtyp = ArgPtrType( arg );
             if( arg_aux != NULL ) {
-                if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
-                    cg_typ = TY_LONG_POINTER;
+                if( (arg_aux->info & PASS_BY_REFERENCE)
+                  && (arg_aux->info & ARG_FAR) ) {
+                    cgtyp = TY_LONG_POINTER;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
                     chk_foreign = false;
                 }
             }
-        } else if( (arg_aux != NULL) && (arg_aux->info & PASS_BY_VALUE) ) {
+        } else if( (arg_aux != NULL)
+          && (arg_aux->info & PASS_BY_VALUE) ) {
             chk_foreign = false;
-            if( arg_type == PT_CPLX_8 ) {
+            if( ptyp == FPT_CPLX_8 ) {
                 XPopCmplx( &z, TY_COMPLEX );
                 CGAddParm( call, z.realpart, TY_SINGLE );
                 arg = z.imagpart;
-                cg_typ = TY_SINGLE;
-            } else if( arg_type == PT_CPLX_16 ) {
+                cgtyp = TY_SINGLE;
+            } else if( ptyp == FPT_CPLX_16 ) {
                 XPopCmplx( &z, TY_DCOMPLEX );
                 CGAddParm( call, z.realpart, TY_DOUBLE );
                 arg = z.imagpart;
-                cg_typ = TY_DOUBLE;
-            } else if( arg_type == PT_CPLX_32 ) {
+                cgtyp = TY_DOUBLE;
+            } else if( ptyp == FPT_CPLX_32 ) {
                 XPopCmplx( &z, TY_XCOMPLEX );
                 CGAddParm( call, z.realpart, TY_LONGDOUBLE );
                 arg = z.imagpart;
-                cg_typ = TY_LONGDOUBLE;
-            } else if( arg_type == PT_STRUCT ) {
-                arg = ArgValue( arg_type, &cg_typ );
+                cgtyp = TY_LONGDOUBLE;
+            } else if( ptyp == FPT_STRUCT ) {
+                arg = ArgValue( ptyp, &cgtyp );
             } else {
-                arg = ArgValue( arg_type, &cg_typ );
-                new_typ = cg_typ;
-                if( IntType( arg_type ) ) {
+                arg = ArgValue( ptyp, &cgtyp );
+                new_cgtyp = cgtyp;
+                if( IntType( ptyp ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
-                        new_typ = TY_INT_1;
+                        new_cgtyp = TY_INT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
-                        new_typ = TY_INT_2;
+                        new_cgtyp = TY_INT_2;
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
-                        new_typ = TY_INT_4;
+                        new_cgtyp = TY_INT_4;
                     }
-                } else if( ( arg_type == PT_LOG_1 ) || ( arg_type == PT_LOG_4 ) ) {
+                } else if( ( ptyp == FPT_LOG_1 )
+                  || ( ptyp == FPT_LOG_4 ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
-                        new_typ = TY_UINT_1;
+                        new_cgtyp = TY_UINT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
-                        new_typ = TY_UINT_2;
+                        new_cgtyp = TY_UINT_2;
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
-                        new_typ = TY_UINT_4;
+                        new_cgtyp = TY_UINT_4;
                     }
-                } else { // must be PT_REAL_4 or PT_REAL_8 or PT_REAL_16
+                } else { // must be FPT_REAL_4 or FPT_REAL_8 or FPT_REAL_16
                     if( arg_aux->info & ARG_SIZE_4 ) {
-                        new_typ = TY_SINGLE;
+                        new_cgtyp = TY_SINGLE;
                     } else if( arg_aux->info & ARG_SIZE_8 ) {
-                        new_typ = TY_DOUBLE;
+                        new_cgtyp = TY_DOUBLE;
                     } else if( arg_aux->info & ARG_SIZE_16 ) {
-                        new_typ = TY_LONGDOUBLE;
+                        new_cgtyp = TY_LONGDOUBLE;
                     }
                 }
-                if( cg_typ != new_typ ) {
-                    arg = CGUnary( O_CONVERT, arg, new_typ );
-                    cg_typ = new_typ;
-                } else if( (sp->u.ns.flags & SY_INTRINSIC) &&
-                           ( IFArgType( sp->u.ns.si.fi.index ) == FT_INTEGER ) ) {
+                if( cgtyp != new_cgtyp ) {
+                    arg = CGUnary( O_CONVERT, arg, new_cgtyp );
+                    cgtyp = new_cgtyp;
+                } else if( (sp->u.ns.flags & SY_INTRINSIC)
+                  && ( IFArgType( sp->u.ns.si.fi.index ) == FT_INTEGER ) ) {
                     // The following code is only useful when the intrinsic
                     // promotion switch is activated.  We don't need to check
                     // for the switch because if the switch was not set then
                     // an error would be issued before we ever reach this code.
-                    if( ( cg_typ == TY_INT_1 ) || ( cg_typ == TY_INT_2 ) ) {
-                        cg_typ = TY_INT_4;
+                    if( ( cgtyp == TY_INT_1 )
+                      || ( cgtyp == TY_INT_2 ) ) {
+                        cgtyp = TY_INT_4;
                         arg = CGUnary( O_CONVERT, arg, TY_INT_4 );
                     }
                 }
-                cg_typ = PromoteToBaseType( cg_typ );
+                cgtyp = PromoteCGToBaseType( cgtyp );
             }
         } else {
-            arg = ArgAddr( arg_type );
-            cg_typ = ArgPtrType( arg );
+            arg = ArgAddr( ptyp );
+            cgtyp = ArgPtrType( arg );
             if( arg_aux != NULL ) {
-                if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
-                    cg_typ = TY_LONG_POINTER;
+                if( (arg_aux->info & PASS_BY_REFERENCE)
+                  && (arg_aux->info & ARG_FAR) ) {
+                    cgtyp = TY_LONG_POINTER;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
                     chk_foreign = false;
                 }
             }
         }
 #if _INTEL_CPU
-        if( (info->cclass_target & FECALL_X86_FAR16_CALL) && chk_foreign ) {
-            arg = CGUnary( O_PTR_TO_FOREIGN, arg, cg_typ );
+        if( (info->cclass_target & FECALL_X86_FAR16_CALL)
+          && chk_foreign ) {
+            arg = CGUnary( O_PTR_TO_FOREIGN, arg, cgtyp );
         }
 #endif
-        CGAddParm( call, arg, cg_typ );
-        if( (arg_aux != NULL) && (arg_aux->link != NULL) ) {
+        CGAddParm( call, arg, cgtyp );
+        if( (arg_aux != NULL)
+          && (arg_aux->link != NULL) ) {
             arg_aux = arg_aux->link;
         }
     }
@@ -724,10 +721,11 @@ void    FCCall( void ) {
         FMemFree( arg_vec );
     }
     if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
-        XPush( CGUnary( O_POINTS, CGCall( call ), sp_type ) );
+        XPush( CGUnary( O_POINTS, CGCall( call ), sp_cgtyp ) );
     } else {
         if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-            if( (Options & OPT_DESCRIPTOR) || (sp->u.ns.flags & SY_INTRINSIC) ) {
+            if( (Options & OPT_DESCRIPTOR)
+              || (sp->u.ns.flags & SY_INTRINSIC) ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
@@ -740,33 +738,33 @@ void    FCCall( void ) {
             }
             XPush( CGBinary( O_COMMA, CGCall( call ), CGFEName( scb, TY_CHAR ), TY_LOCAL_POINTER ) );
         } else {
-            if( (sp_type == TY_COMPLEX) || (sp_type == TY_DCOMPLEX) || (sp_type == TY_XCOMPLEX) ) {
-                SplitCmplx( CGCall( call ), sp_type );
-            } else if( sp_type >= TY_USER_DEFINED ) { // structure
+            if( (sp_cgtyp == TY_COMPLEX)
+              || (sp_cgtyp == TY_DCOMPLEX)
+              || (sp_cgtyp == TY_XCOMPLEX) ) {
+                SplitCmplx( CGCall( call ), sp_cgtyp );
+            } else if( sp_cgtyp >= TY_USER_DEFINED ) { // structure
                 XPush( CGCall( call ) );
             } else {
-                XPush( CGUnary( O_POINTS, CGCall( call ), sp_type ) );
+                XPush( CGUnary( O_POINTS, CGCall( call ), sp_cgtyp ) );
             }
         }
     }
 }
 
 #if 0
-void        FCEvalArg( void ) {
-//=======================
-
+void        FCEvalArg( void )
+//===========================
 // Force evaluation of an argument.
-
+{
     XPush( CGEval( XPop() ) );
 }
 #endif
 
-cg_name VarAltSCB( sym_id sym ) {
-//===============================
-
+cg_name VarAltSCB( sym_id sym )
+//=============================
 // This function is called for character variables that are dummy arguments
 // and SCBRequired() is true.
-
+{
     /*
     for dummy arguments, the SCB is always allocated on the stack
     so we have no problems with recursion
@@ -781,12 +779,11 @@ cg_name VarAltSCB( sym_id sym ) {
 }
 
 
-cg_name SubAltSCB( sym_id sym ) {
-//===============================
-
+cg_name SubAltSCB( sym_id sym )
+//=============================
 // This function is called for function return values when
 // the /nodescriptor option is specified
-
+{
     /*
     for function return values, the SCB is always allocated on the stack
     so we have no problems with recursion
@@ -801,11 +798,10 @@ cg_name SubAltSCB( sym_id sym ) {
 }
 
 
-void    FCDArgInit( void ) {
-//====================
-
+void    FCDArgInit( void )
+//========================
 // Initialize dummy arguments.
-
+{
     sym_id      sym;
     cg_name     arg;
     cg_name     dst;
@@ -831,10 +827,7 @@ void    FCDArgInit( void ) {
             }
         }
     }
-    for(;;) {
-        sym = GetPtr();
-        if( sym == NULL )
-            break;
+    for( ; (sym = GetPtr()) != NULL; ) {
         if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
             continue;
         if( sym->u.ns.u1.s.typ != FT_CHAR )
@@ -846,7 +839,8 @@ void    FCDArgInit( void ) {
         // character variable
         arg = CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ), TY_POINTER );
         dst = SCBPtrAddr( VarAltSCB( sym ) );
-        if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 && (Options & OPT_DESCRIPTOR) ) {
+        if( (sym->u.ns.flags & SY_VALUE_PARM) == 0
+          && (Options & OPT_DESCRIPTOR) ) {
             arg = SCBPointer( arg );
         }
         CGDone( CGAssign( dst, arg, TY_POINTER ) );
@@ -868,12 +862,11 @@ void    FCDArgInit( void ) {
 }
 
 
-void    FCPassFieldCharArray( void ) {
-//==============================
-
+void    FCPassFieldCharArray( void )
+//==================================
 // Pass character array, array element, or substring array element to
 // subprogram.  Character array is a field within a structure.
-
+{
     sym_id      fd;
     sym_id      scb;
 
@@ -883,12 +876,11 @@ void    FCPassFieldCharArray( void ) {
 }
 
 
-void    FCPassCharArray( void ) {
-//=========================
-
+void    FCPassCharArray( void )
+//=============================
 // Pass character array, array element, or substring array element to
 // subprogram.
-
+{
     sym_id      arr;
     sym_id      scb;
 
@@ -898,24 +890,23 @@ void    FCPassCharArray( void ) {
 }
 
 
-void    FCAltReturn( void ) {
-//=====================
-
+void    FCAltReturn( void )
+//=========================
 // Process alternate return.
-
-    sel_handle          sel;
-    int                 num_alts;
-    int                 alt_ret;
-    sym_id              sn;
-    obj_ptr             curr_obj;
-    label_handle        other;
+{
+    sel_handle      sel;
+    int             num_alts;
+    signed_64       alt_ret;
+    obj_ptr         curr_obj;
+    label_handle    other;
 
     curr_obj = FCodeTell( 0 );
-    num_alts = GetU16();
     sel = CGSelInit();
-    for( alt_ret = 1; alt_ret <= num_alts; alt_ret++ ) {
-        sn = GetPtr();
-        CGSelCase( sel, GetStmtLabel( sn ), alt_ret );
+    Set64Val1p( alt_ret );
+    num_alts = GetU16();
+    while( num_alts-- > 0 ) {
+        CGSelCase( sel, GetStmtLabel( GetPtr() ), alt_ret );
+        U64Low( alt_ret )++;
     }
     other = BENewLabel();
     CGSelOther( sel, other );
@@ -924,17 +915,17 @@ void    FCAltReturn( void ) {
     BEFiniLabel( other );
     // mark all referenced statements
     FCodeSeek( curr_obj );
-    for( num_alts = GetU16(); num_alts != 0; num_alts-- ) {
+    num_alts = GetU16();
+    while( num_alts-- > 0 ) {
         RefStmtLabel( GetPtr() );
     }
 }
 
 
-void    FCAssignAltRet( void ) {
-//========================
-
+void    FCAssignAltRet( void )
+//============================
 // Assign alternate return value to result of subroutine.
-
+{
     cg_name     alt_ret;
 
     alt_ret = GetTypedValue();

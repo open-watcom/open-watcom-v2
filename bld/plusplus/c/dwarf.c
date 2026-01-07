@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,6 @@ typedef enum
 } DC_CONTROL;
 
 
-static uint      dwarfMarkInternalName( SYMBOL, uint );
 static bool      dwarfClassInfoFriend( TYPE, bool );
 static bool      dwarfClassInfo( TYPE );
 static dw_handle dwarfClass( TYPE, DC_CONTROL );
@@ -184,8 +183,8 @@ static void dwarfLocation( SYMBOL sym )
     }
 }
 
-static uint dwarfMarkInternalName( SYMBOL sym, uint flags )
-/*********************************************************/
+static dw_flags dwarfMarkInternalName( SYMBOL sym, dw_flags flags )
+/*****************************************************************/
 {
     if( !IsCppNameInterestingDebug( sym ) ) {
         flags |= DW_FLAG_ARTIFICIAL;
@@ -243,25 +242,26 @@ static dw_loc_handle dwarfDebugStaticSeg( SYMBOL sym )
 }
 #endif
 
-static uint  dwarfAddressClassFlags( TYPE type ) {
-/**********************************/
-    uint    flags;
-    cg_type ptr_type;
-    cg_type offset_type;
+static dw_flags dwarfAddressClassFlags( TYPE type )
+/*************************************************/
+{
+    dw_flags    flags;
+    cg_type     ptr_type;
+    cg_type     offset_type;
 
-    flags = 0;
+    flags = DW_FLAG_NONE;
     ptr_type = CgTypeOutput( type );
     switch( ptr_type ) {
     case TY_HUGE_POINTER:
-        flags = DW_PTR_TYPE_HUGE16;
+        flags = DW_FLAG_PTR_TYPE_HUGE16;
         break;
     case TY_LONG_POINTER:
     case TY_LONG_CODE_PTR:
         offset_type = CgTypeOffset();
         if( offset_type == TY_UINT_4 ) {
-            flags = DW_PTR_TYPE_FAR32;
+            flags = DW_FLAG_PTR_TYPE_FAR32;
         } else {
-            flags = DW_PTR_TYPE_FAR16;
+            flags = DW_FLAG_PTR_TYPE_FAR16;
         }
         break;
     case TY_NEAR_POINTER:
@@ -269,17 +269,17 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
     case TY_POINTER:
 #if _INTEL_CPU
         if( IsFlat() ) {
-            flags = DW_PTR_TYPE_DEFAULT;
+            flags = DW_FLAG_PTR_TYPE_DEFAULT;
         } else {
             offset_type = CgTypeOffset();
             if( offset_type == TY_UINT_4 ) {
-                flags = DW_PTR_TYPE_NEAR32;
+                flags = DW_FLAG_PTR_TYPE_NEAR32;
             } else {
-                flags = DW_PTR_TYPE_NEAR16;
+                flags = DW_FLAG_PTR_TYPE_NEAR16;
             }
         }
 #else
-        flags = DW_PTR_TYPE_DEFAULT;
+        flags = DW_FLAG_PTR_TYPE_DEFAULT;
 #endif
         break;
     default:
@@ -291,17 +291,17 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
 static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
 /********************************************************************/
 {
-    TYPE        base;
-    type_flag   tf;
-    dw_handle   return_dh;
-    dw_handle   dh;
-    uint        call_type;
-    uint        flags;
+    TYPE            base;
+    type_flag       tf;
+    dw_handle       return_dh;
+    dw_handle       dh;
+    uint            call_type;
+    dw_flags        flags;
     dw_loc_id       locid;
     dw_loc_handle   dl;
     dw_loc_handle   dl_virt;
     dw_loc_handle   dl_seg;
-    char           *name;
+    char            *name;
 
     call_type = 0;
     base = TypeModFlags( sym->sym_type, &tf );
@@ -320,7 +320,7 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
     }
     flags |= DW_FLAG_PROTOTYPED;
     if( SymIsStaticMember( sym ) ) {
-        flags |= DW_SUB_STATIC;
+        flags |= DW_FLAG_SUB_STATIC;
     }
     if( sym->flags & SYMF_PRIVATE ) {
         flags |= DW_FLAG_PRIVATE;
@@ -466,7 +466,9 @@ static bool dwarfClassInfo( TYPE type )
     // define all the bases
     info = type->u.c.info;
     RingIterBeg( ScopeInherits( type->u.c.scope ), base ) {
-        uint flags = 0;
+        dw_flags flags;
+
+        flags = DW_FLAG_NONE;
         switch( base->flag & IN_ACCESS_SPECIFIED ) {
         case IN_PRIVATE:
             flags |= DW_FLAG_PRIVATE;
@@ -566,8 +568,8 @@ static bool dwarfClassInfo( TYPE type )
         } else if( SymIsTypedef( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
         } else if( SymIsData( curr ) ) {
-            uint    flags;
-            TYPE    pt;
+            dw_flags    flags;
+            TYPE        pt;
 
             if( !InDebug ) {
                 dwarfLocation( curr );
@@ -702,7 +704,7 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
                        CgTypeSize( type ),
                        name,
                        0,
-                       (defined ? 0 : DW_FLAG_DECLARATION ) );
+                       (defined ? DW_FLAG_NONE : DW_FLAG_DECLARATION ) );
         check_friends = false;
         if( defined ) {
             check_friends = dwarfClassInfo( type );
@@ -765,7 +767,8 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
         dw_handle of_hdl;
         TYPE      of_type;
         SYMBOL    sym;
-        uint      flags;
+        dw_flags  flags;
+
         type_update( type, TF2_DWARF_DEF, dh );
         sym = type->u.t.sym;
         of_type = ClassType( type->of );
@@ -785,7 +788,7 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
                 of_hdl = dwarfType( type->of, DC_DEFAULT );
             }
         }
-        flags = 0;
+        flags = DW_FLAG_NONE;
         if( control & DC_FAKE ) {
             flags |= DW_FLAG_ARTIFICIAL;
         }
@@ -818,7 +821,7 @@ static dw_handle dwarfTypeFunction( TYPE type )
     dw_handle   dh;
     arg_list    *alist;
     unsigned    i;
-    uint        flags;
+    dw_flags    flags;
 
     type_reset( type );
     if( type->dbgflag & TF2_DWARF )
@@ -870,8 +873,8 @@ static bool dwarfRefSymLoc( dw_loc_id locid, SYMBOL sym ) {
    | offset | seg | on location stack sets offset and seg
    for the based pointer
 */
-static dbg_type dwarfBasedPointerType( TYPE type, uint flags )
-/************************************************************/
+static dbg_type dwarfBasedPointerType( TYPE type, dw_flags flags )
+/****************************************************************/
 {
     dw_loc_id       locid;
     dw_loc_handle   dl_seg;
@@ -1121,7 +1124,8 @@ static dw_handle dwarfType( TYPE type, DC_CONTROL control )
         dh = dwarfEnum( type, control );
         break;
     case TYP_POINTER:
-    {   uint        flags;
+    {
+        dw_flags    flags;
         type_flag   bflag;
 
         flags = dwarfAddressClassFlags( type );
@@ -1418,7 +1422,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
     dw_handle   return_dh;
     dw_handle   dh;
     uint        call_type;
-    uint        flags;
+    dw_flags    flags;
     int         ctor_or_dtor;
 
     ctor_or_dtor = 0;
@@ -1438,7 +1442,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
     if( SymIsClassMember( sym ) ) {
         class_dh = dwarfType( SymClass( sym ), DC_DEFAULT );
         if( SymIsStaticMember( sym ) ) {
-            flags |= DW_SUB_STATIC;
+            flags |= DW_FLAG_SUB_STATIC;
         }
         if( SymIsVirtual( sym ) ) {
             flags |= DW_FLAG_VIRTUAL;
@@ -1458,7 +1462,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
         }
     } else {
         if( SYMC_STATIC == SymDefaultBase( sym )->id ) {
-            flags |= DW_SUB_STATIC;
+            flags |= DW_FLAG_SUB_STATIC;
         }
         class_dh = 0;
     }
@@ -1519,17 +1523,17 @@ static dw_handle dwarfFunction( SYMBOL sym, DC_CONTROL control )
 static dw_handle dwarfData( SYMBOL sym )
 /**************************************/
 {
-    dw_handle dh;
-    dw_handle class_dh;
-    uint      flags;
+    dw_handle   dh;
+    dw_handle   class_dh;
+    dw_flags    flags;
 
-    #ifdef DEVBUILD
-        if( sym->flags2 & SYMF2_DW_HANDLE_DEF ) {
-            DumpSymbol( sym );
-            CFatal( "dwarf: data symbol already defined" );
-        }
-    #endif
-    flags = 0;
+#ifdef DEVBUILD
+    if( sym->flags2 & SYMF2_DW_HANDLE_DEF ) {
+        DumpSymbol( sym );
+        CFatal( "dwarf: data symbol already defined" );
+    }
+#endif
+    flags = DW_FLAG_NONE;
     class_dh = 0;
     if( SymIsClassMember( sym ) ) {
         if( SymIsStaticDataMember( sym ) ) {
@@ -1565,7 +1569,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
     dw_handle       class_dh;
     dw_loc_handle   dl;
     dw_loc_handle   dl_seg;
-    uint            flags;
+    dw_flags        flags;
     char            *name;
 
     sym_reset( sym );
@@ -1575,7 +1579,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
         CFatal( "dwarf: data symbol already defined" );
     }
 #endif
-    flags = 0;
+    flags = DW_FLAG_NONE;
     class_dh = 0;
     if( SymIsClassMember( sym ) ) {
         if( SymIsStaticDataMember( sym ) ) {

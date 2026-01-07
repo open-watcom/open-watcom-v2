@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include "_resolve.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include "rterrno.h"
 #ifdef __RDOS__
 #include "rdos.h"
 #else
@@ -49,7 +49,7 @@
 
 #define DNSRESOLV   "/etc/resolv.conf"
 
-static struct hostent *__check_hostdb( const char *name )
+static struct hostent * _WCNEAR __check_hostdb( const char *name )
 {
     int             i;
     struct hostent  *one;
@@ -77,7 +77,7 @@ static struct hostent *__check_hostdb( const char *name )
 /* Messy function for retrieving the "last" indexed nameserver
  * from the DNS resolution config file
  */
-static int __get_nameserver( int last, in_addr_t *dnsaddr )
+static int _WCNEAR __get_nameserver( int last, in_addr_t *dnsaddr )
 {
     FILE    *fp;
     int     ret;
@@ -135,7 +135,7 @@ static int __get_nameserver( int last, in_addr_t *dnsaddr )
     return( ret );
 }
 
-static struct hostent *__check_dns_4( const char *name )
+static struct hostent * _WCNEAR __check_dns_4( const char *name )
 {
     in_addr_t               dnsaddr;
     int                     servercount;

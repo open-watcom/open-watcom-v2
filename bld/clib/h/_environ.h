@@ -64,16 +64,16 @@ extern int      __wsetenv( const wchar_t *name, const wchar_t *newvalue, int ove
 extern int      __wputenv( const wchar_t *env_string );
 #endif
 
-extern void     __setenvp( void );
+extern void     _WCNEAR __setenvp( void );
 #if !defined(__NETWARE__)
-extern void     __freeenvp( void );
+extern void     _WCNEAR __freeenvp( void );
 #endif
 
 #ifdef CLIB_UPDATE_OS_ENV
 #if defined( __NT__ )
-extern int      __os_env_update_wide( const wchar_t *name, const wchar_t *value );
+extern int      _WCNEAR __os_env_update_wide( const wchar_t *name, const wchar_t *value );
 #endif
-extern int      __os_env_update_narrow( const char *name, const char *value );
+extern int      _WCNEAR __os_env_update_narrow( const char *name, const char *value );
 #endif
 
 #endif

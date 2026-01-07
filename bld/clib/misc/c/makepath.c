@@ -117,7 +117,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)(
     we want to return a consistent path character.
 */
 
-static char pickup( char c, char *pc_of_choice )
+static char _WCNEAR pickup( char c, char *pc_of_choice )
 {
     if( IS_DIR_SEP( c ) ) {
         if( *pc_of_choice == NULLCHAR )
@@ -192,7 +192,7 @@ _WCRTLINK void _makepath( char *path, const char *volume,
     we want to return a consistent path character.
 */
 
-static UINT_WC_TYPE pickup( UINT_WC_TYPE c, UINT_WC_TYPE *pc_of_choice )
+static UINT_WC_TYPE _WCNEAR pickup( UINT_WC_TYPE c, UINT_WC_TYPE *pc_of_choice )
 {
     if( IS_DIR_SEP( c ) ) {
         if( *pc_of_choice == NULLCHAR )

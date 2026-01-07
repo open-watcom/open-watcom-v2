@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,20 +38,12 @@
 #include "exedos.h"
 #include "trpld.h"
 #include "roundmac.h"
+#include "trpdoshd.h"
 
-
-#define TRAP_SIGNATURE          0xDEAF
 
 #define NUM_BUFF_RELOCS         16
 
-typedef struct {
-    unsigned_16         signature;
-    unsigned_16         init_off;
-    unsigned_16         req_off;
-    unsigned_16         fini_off;
-} trap_header;
-
-static trap_header      __far *TrapCode = NULL;
+static dos_trap_header  __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
 static digld_error ReadInTrap( FILE *fp )

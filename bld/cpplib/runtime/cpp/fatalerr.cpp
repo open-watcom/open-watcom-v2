@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "cpplib.h"
 #include <cstdlib>
-#include "exitwmsg.h"
+#include "clibsupp.h"
 
 
 extern "C"
@@ -41,9 +42,6 @@ void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 {
-    if( __EnterWVIDEO( msg ) )
-        std::exit( code );
-        // never return
-    __exit_with_msg( msg, code );
+    __clib_fatal( msg, code );
     // never return
 }

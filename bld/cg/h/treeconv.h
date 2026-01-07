@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern tn       FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe );
+extern tn       FoldCnvRnd( cg_op opcode, tn name, const type_def *to_tipe );
 extern void     TGDemote( tn name, const type_def *tipe );

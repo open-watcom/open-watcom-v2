@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -401,7 +401,7 @@ static bool DrWatEndOfSegment( void )
     if( !IsValidSelector( currentAddr.seg ) ) {
         return( TRUE );
     }
-    if( currentAddr.offset >= GetASelectorLimit( currentAddr.seg ) ) {
+    if( currentAddr.offset >= GetASelectorSize( currentAddr.seg ) ) {
         return( TRUE );
     }
     return( FALSE );

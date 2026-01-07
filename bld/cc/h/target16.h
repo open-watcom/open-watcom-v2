@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,42 +34,47 @@
  * target16.h: target types for 16-bit machine
  */
 
-#define TARGET_CHAR     1
-#define TARGET_SHORT    2
-#define TARGET_INT      2
-#define TARGET_POINTER  2
+#define TARGET_CHAR         1
+#define TARGET_SHORT        2
+#define TARGET_INT          2
+#define TARGET_POINTER      2
 #define TARGET_NEAR_POINTER 2
 #define TARGET_FAR_POINTER  4
-#define TARGET_LONG     4
-#define TARGET_ULONG    4
-#define TARGET_LONG64   8
-#define TARGET_ULON64   8
-#define TARGET_UINT     2
-#define TARGET_FLOAT    4
-#define TARGET_DOUBLE   8
-#define TARGET_LDOUBLE     10
+#define TARGET_LONG         4
+#define TARGET_ULONG        4
+#define TARGET_LONG64       8
+#define TARGET_ULON64       8
+#define TARGET_UINT         2
+#define TARGET_FLOAT        4
+#define TARGET_DOUBLE       8
+#define TARGET_LDOUBLE      10
 #define TARGET_FCOMPLEX     8
-#define TARGET_DCOMPLEX    16
-#define TARGET_LDCOMPLEX   20
+#define TARGET_DCOMPLEX     16
+#define TARGET_LDCOMPLEX    20
 #define TARGET_FIMAGINARY   4
 #define TARGET_DIMAGINARY   8
-#define TARGET_LDIMAGINARY 10
-#define TARGET_BOOL     1
-#define TARGET_WCHAR    2
-#define TARGET_BITFIELD 8
+#define TARGET_LDIMAGINARY  10
+#define TARGET_BOOL         1
+#define TARGET_WCHAR        2
+#define TARGET_BITFIELD     8
 
-#define TARGET_INT_MAX  32767
-#define TARGET_INT_MIN  (-32767-1)
-#define TARGET_UINT_MAX 65535
-#define TARGET_LONG_MAX 2147483647
-#define TARGET_FLT_MAX  3.402823466e+38f
+#define TARGET_CHAR_MAX     127
+#define TARGET_UCHAR_MAX    255U
+#define TARGET_SHORT_MAX    32767
+#define TARGET_USHORT_MAX   65535U
+#define TARGET_INT_MAX      32767
+#define TARGET_INT_MIN      (-32767-1)
+#define TARGET_UINT_MAX     65535U
+#define TARGET_LONG_MAX     2147483647
+#define TARGET_ULONG_MAX    4294967295U
+#define TARGET_FLT_MAX      3.402823466e+38f
 
-typedef short           target_short;
-typedef unsigned short  target_ushort;
-typedef short           target_int;
-typedef unsigned short  target_uint;
-typedef int             target_long;
-typedef unsigned int    target_ulong;
+typedef short               target_short;
+typedef unsigned short      target_ushort;
+typedef short               target_int;
+typedef unsigned short      target_uint;
+typedef int                 target_long;
+typedef unsigned int        target_ulong;
 
-typedef int             target_ssize;
-typedef unsigned int    target_size;
+typedef int                 target_ssize;
+typedef unsigned int        target_size;

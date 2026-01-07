@@ -31,24 +31,22 @@
 
 
 #include <sys/types.h>
-#if defined( __RDOS__ )
-    #include "rdos.h"
-#endif
 #include "wdirent.h"
 #include "make.h"
 #include "wio.h"
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
-#include "dostimet.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "pathgrp2.h"
 #include "mcache.h"
-#if defined( USE_DIR_CACHE ) && defined( __NT__ )
-	#include <windows.h>
-	#include "_dtaxxx.h"
+#if defined( __NT__ ) && defined( USE_DIR_CACHE )
+    #include <windows.h>
+    #include "_dtaxxx.h"
+#elif defined( __RDOS__ )
+    #include "rdos.h"
 #endif
 
 #include "clibext.h"
@@ -152,27 +150,22 @@ STATIC void freeDirectList( DHEADPTR dhead )
 #endif
 }
 
-static time_t get_direntry_timestamp( struct dirent *entry )
+static time_t get_direntry_timestamp( struct DIRENTXX *entry )
 {
 #if defined( __UNIX__ )
     return( YOUNGEST_DATE );
-#elif defined( __WATCOMC__ ) && __WATCOMC__ < 1300
-    /*
-     * OW1.x bootstrap compiler workaround
-     */
-    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
 #elif defined( __NT__ )
     return( DTAXXX_TSTAMP_OF( entry->d_dta ) );
 #elif defined( __RDOS__ )
-    unsigned short date;
-    unsigned short time;
-    unsigned long msb = (entry->d_modify_time >> 32) & 0xFFFFFFFF;
+    unsigned short dos_date;
+    unsigned short dos_time;
+    unsigned long msb = ( entry->d_modify_time >> 32 ) & 0xFFFFFFFF;
     unsigned long lsb = entry->d_modify_time & 0xFFFFFFFF;
 
-    RdosTicsToDosTimeDate(msb, lsb, &date, &time);
-    return( _dos2timet( date * 0x10000L + time ) );
+    RdosTicsToDosTimeDate( msb, lsb, &dos_date, &dos_time );
+    return( dos2timet( dos_date, dos_time ) );
 #else
-    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
+    return( dos2timet( entry->d_date, entry->d_time ) );
 #endif
 }
 
@@ -184,8 +177,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
  */
 {
     CENTRYPTR       cnew;       /* new cacheEntry struct */
-    DIR             *dirp;      /* parent directory entry */
-    struct dirent   *dire;      /* current directory entry */
+    DIRXX           *dirp;      /* parent directory entry */
+    struct DIRENTXX *dire;      /* current directory entry */
     HASH_T          h;          /* hash value */
     size_t          len;
     char            *name_ptr;
@@ -217,7 +210,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
     memcpy( name_ptr, "*.*", 4 );
 #endif
-    dirp = opendir( path );
+    dirp = OPENDIRXX( path );
     if( dirp == NULL ) {
 #ifdef CACHE_STATS
         if( Glob.cachestat ) {
@@ -227,7 +220,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         return( CACHE_OK );     /* an empty, or nonexistent directory */
     }
 
-    while( (dire = readdir( dirp )) != NULL ) {
+    while( (dire = READDIRXX( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
         if( dire->d_attr & IGNORE_MASK )
             continue;
@@ -236,7 +229,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         h = Hash( FixName( dire->d_name ), HASH_PRIME );
         cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
-            closedir( dirp );
+            CLOSEDIRXX( dirp );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
@@ -264,7 +257,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         }
 #endif
     }
-    closedir( dirp );
+    CLOSEDIRXX( dirp );
 
 #ifdef CACHE_STATS
     if( Glob.cachestat ) {
@@ -329,7 +322,7 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
 /********************************************************************/
@@ -380,7 +373,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     return( CACHE_OK );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 #endif  /* USE_DIR_CACHE */

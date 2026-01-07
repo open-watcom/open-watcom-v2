@@ -56,7 +56,7 @@
 !inject emainrdu.obj                                                                                    rdu
 !inject dpmihost.obj        d32
 !inject dllmncwd.obj        d32
-!inject doserrno.obj    d16 d32     nt  nta ntp ntm                 o16 o32         w16 w32
+!inject doserrno.obj    d16 d32     nt  nta ntp ntm                 o16 o32         w16 w32             rdu
 !inject dstrt386.obj                nt                                  o32                             rdu
 !inject dstrtaxp.obj                    nta
 !inject dstrtmps.obj                            ntm
@@ -86,10 +86,11 @@
 !inject lgjpxaxp.obj                    nta
 !inject lgjmpmps.obj                            ntm                                                 lmp
 !inject liballoc.obj    d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject libexit.obj     d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject libmno16.obj                                                o16
 !inject libmno32.obj                                                    o32
 !inject libterm.obj                                                     o32
-!inject libcstrt.obj                                    nvl nll
+!inject libcstrt.obj                                        nvl nll
 !inject ljmphdl.obj     d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject lmaino32.obj                                                    o32
 !inject lmainwnt.obj                nt  nta ntp ntm
@@ -132,7 +133,7 @@
 !inject segq32.obj                                                              q32
 !inject seh386.obj                  nt                                  o32
 !inject seh386v2.obj                nt                                  o32
-!inject seterrno.obj    d16 d32 dpm nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject seterrno.obj    d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject stack086.obj    d16                                         o16     q16     w16
 !inject stack386.obj        d32                                         o32     q32     w32 l32         rdu rdk
 !inject stacklnx.obj                                                                            lpc lmp
@@ -140,7 +141,7 @@
 !inject stjmpaxp.obj                    nta
 !inject stjmpmps.obj                            ntm                                                 lmp
 !inject stjmp086.obj    d16                                         o16     q16     w16
-!inject stjmp386.obj        d32     nt          nvc     nvl nll         o32     q32     w32 l32         rdu rdk
+!inject stjmp386.obj        d32     nt              nvc     nvl nll     o32     q32     w32 l32         rdu rdk
 !inject stjpxaxp.obj                    nta
 !inject stk086.obj      d16                                                         w16
 !inject stk386.obj          d32                                                         w32

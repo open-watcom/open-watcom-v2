@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <stdarg.h>
 #include <process.h>
@@ -60,11 +61,11 @@ static void __callfn( int (*__fn)(void *), void *args, void *tls )
     /* If tls has been specified, we need to set it via a
      * system call for the child now.
      */
-    if(tls != NULL)
-        sys_call1(SYS_set_thread_area, (u_long)tls);
+    if( tls != NULL )
+        sys_call1( SYS_set_thread_area, (u_long)tls );
 
     /* Call the user function */
-    ret = __fn(args);
+    ret = __fn( args );
 
     /* Kill this cloned process now, using __fn's return value as an
      * exit code
@@ -94,22 +95,22 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
      * on flags
      */
     n = 0;
-    if(__flags & (CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID))
+    if( __flags & (CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID) ) {
         n = 3;
-    else if(__flags & CLONE_SETTLS)
+    } else if( __flags & CLONE_SETTLS ) {
         n = 2;
-    else if(__flags & CLONE_PARENT_SETTID)
+    } else if( __flags & CLONE_PARENT_SETTID ) {
         n = 1;
-
+    }
     /* Process optional arguments, if any */
-    va_start(args, arg);
-    if(n > 0)
-        ppid = va_arg(args, pid_t *);
-    if(n > 1)
-        tls = va_arg(args, struct user_desc *);
-    if(n > 2)
-        ctid = va_arg(args, pid_t *);
-    va_end(args);
+    va_start( args, arg );
+    if( n > 0 )
+        ppid = va_arg( args, pid_t * );
+    if( n > 1 )
+        tls = va_arg( args, struct user_desc * );
+    if( n > 2 )
+        ctid = va_arg( args, pid_t * );
+    va_end( args );
 
     /* Store what we need in our stack space.  Once clone occurs, our
      * stack should be positioned just beyond these three arguments.
@@ -120,12 +121,12 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
     *STACK_PTR( __child_stack, 2 ) = tls;
 
     /* Call the actual clone operation */
-    res = sys_call5( SYS_clone, (u_long)__flags, (u_long)__child_stack, (u_long)ppid, (u_long)ctid, (u_long)NULL);
+    res = sys_call5( SYS_clone, (u_long)__flags, (u_long)__child_stack, (u_long)ppid, (u_long)ctid, (u_long)NULL );
 
-    if(!__syscall_iserror(res)) {
+    if( __syscall_iserror( res ) == 0 ) {
 
         /* If we're the child... */
-        if(__syscall_val( pid_t, res ) == 0) {
+        if( __syscall_val( pid_t, res ) == 0 ) {
 
             /* The arguments for __callfn are actually on the stack, but
              * we don't have access to them at this point.  What we can

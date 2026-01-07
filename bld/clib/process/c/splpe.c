@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
 #include "_process.h"
 #include "_environ.h"
@@ -74,7 +74,7 @@ _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, co
 
     argv = tmp = alloca( num * sizeof( ARGS_TYPE ) );
     if( argv == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
 

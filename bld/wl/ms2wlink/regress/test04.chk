@@ -4,3 +4,4 @@ file 1.obj
 file 2.obj
 name 1.exe
 option map=3.map
+option nocaseexact

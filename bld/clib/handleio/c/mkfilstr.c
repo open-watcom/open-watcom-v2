@@ -58,7 +58,7 @@
  * freeing the allocated memory.  The returned string begins with
  * "C_FILE_INFO=", and so forms a valid environment string.
  */
-_WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
+CHAR_TYPE * _WCNEAR __F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
 /*******************************************************************************/
 {
     CHAR_TYPE           *p;

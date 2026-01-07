@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,11 @@
 #include "sbcsutil.h"
 
 
-size_t  ExtractTextSBCS( const char *string, size_t len )
+size_t  ExtractTextSBCS( const char *str, size_t len )
 // Given a string of text, extract as much text as possible up to a maximum
 // of "len" bytes so that we don't split double-byte characters.
 {
-    /* unused parameters */ (void)string;
+    /* unused parameters */ (void)str;
 
     return( len );
 }

@@ -48,7 +48,7 @@ extern short __get_ds( void );
 unsigned short          _ExtenderRealModeSelector;
 static unsigned char    dpmi_sel = 0;
 
-static void init( void )
+static void _WCNEAR init( void )
 {
 #ifdef __DOS__
     if( _IsFlashTek() ) {
@@ -83,12 +83,12 @@ static void init( void )
 #endif
 }
 
-static void fini( void )
+static void _WCNEAR fini( void )
 {
     if( dpmi_sel ) {
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
     }
 }
 
-AXI( init, INIT_PRIORITY_FPU )
-AYI( fini, INIT_PRIORITY_FPU )
+AXIN( init, INIT_PRIORITY_FPU )
+AYIN( fini, INIT_PRIORITY_FPU )

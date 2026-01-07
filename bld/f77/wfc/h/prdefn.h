@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@ typedef enum {
     #define pick(id,text,proc,flags) id,
     #include "stmtdefn.h"
     #undef pick
+
+    PR_KW_COUNT = PR_WRITE + 1
 } STMT;
 
-#define PR_KW_MAX       PR_WRITE
+#define PR_KW_NONE  PR_KW_COUNT

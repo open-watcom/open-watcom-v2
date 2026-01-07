@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <jstring.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -40,23 +41,26 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
+
 
 /**
 *
-*  Name:        jperror -- ?G?‰?[???b?Z?[?W‚Ì•\¦
+*  Name:        jperror -- ?G?ï¿½?[???b?Z?[?Wï¿½Ì•\ï¿½ï¿½
 *
 *  Synopsis:    void jperror( msg );
 *
-*               unsigned char *msg;     ?†?[?U?[???b?Z?[?W‚Ì•¶š—ñ
+*               unsigned char *msg;     ?ï¿½?[?U?[???b?Z?[?Wï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½
 *
-*  Description: ‚±‚ÌŠÖ?”‚Í•Ï?” errno ‚É‚ ‚é?G?‰?[?R?[?h‚É‘Î‰‚·‚é?G?‰?[
-*               ???b?Z?[?W‚ğ•\¦‚µ‚Ü‚·?B?ø?” msg ‚Å—^‚¦‚ç‚ê‚é•¶š—ñ‚ª
-*               ‚Ü‚¸?An‚ß‚É•\¦‚³‚ê‚Ü‚·?B‚»‚ê‚É‚Â‚Ã‚¢‚Ä?R??“?i?F?j‚Æ?A
-*               ?G?‰?[???b?Z?[?W‚ª•\¦‚³‚ê‚Ü‚·?B‚à‚µ?G?‰?[”Ô†‚ª•s“KŠi
-*               ‚È”Ô†‚Å‚ ‚é‚ ‚é‚É‚Í?A?G?‰?[?R?[?h‚O‚Ì???b?Z?[?W‚ª
-*               •\¦‚³‚ê‚Ü‚·?B
+*  Description: ï¿½ï¿½ï¿½ÌŠï¿½?ï¿½ï¿½Í•ï¿½?ï¿½ errno ï¿½É‚
+ï¿½ï¿½?G?ï¿½?[?R?[?hï¿½É‘Î‰ï¿½ï¿½ï¿½ï¿½ï¿½?G?ï¿½?[
+*               ???b?Z?[?Wï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½?B?ï¿½?ï¿½ msg ï¿½Å—^ï¿½ï¿½ï¿½ï¿½ï¿½é•¶ï¿½ï¿½ï¿½ï¿½
+*               ï¿½Ü‚ï¿½?Aï¿½nï¿½ß‚É•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½?Bï¿½ï¿½ï¿½ï¿½É‚Â‚Ã‚ï¿½ï¿½ï¿½?R?ï¿½?ï¿½?i?F?jï¿½ï¿½?A
+*               ?G?ï¿½?[???b?Z?[?Wï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½?Bï¿½ï¿½ï¿½ï¿½?G?ï¿½?[ï¿½Ôï¿½ï¿½ï¿½ï¿½sï¿½Kï¿½i
+*               ï¿½È”Ôï¿½ï¿½Å‚
+ï¿½ï¿½
+ï¿½éï¿½É‚ï¿½?A?G?ï¿½?[?R?[?hï¿½Oï¿½ï¿½???b?Z?[?Wï¿½ï¿½
+*               ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½?B
 *
 *
 *  Name:        jperror -- print error message
@@ -79,6 +83,6 @@ _WCRTLINK void jperror( const char *s )
         fputs( s, stderr );
         fputs( ": ", stderr );
     }
-    fputs( (char *)jstrerror( _RWD_errno ), stderr );
+    fputs( (char *)jstrerror( lib_get_errno() ), stderr );
     fputc( '\n', stderr );
 }

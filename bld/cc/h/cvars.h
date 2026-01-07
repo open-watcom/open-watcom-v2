@@ -147,7 +147,6 @@ global source_loc   SrcFileLoc;         /* duplicate of SrcFile->src_line */
 global source_loc   CommentLoc;
 global int          CurrChar;
 global DATA_TYPE    ConstType;
-global unsigned     Constant;
 global uint64       Constant64;
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFiles;
@@ -304,7 +303,6 @@ global int          OptSize;            /* 100 => make pgm small as possible */
 global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
 
-global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
 global char         CLIB_Name[10];      /* "1CLIBMT3x" */
 global char         MATHLIB_Name[10];   /* "5MATHx" or "8MATH87x" */

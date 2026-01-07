@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,6 @@
 #include "iflookup.h"
 #include "rstutils.h"
 #include "types.h"
-#include "wf77defs.h"
 #include "wf77info.h"
 #include "symtab.h"
 #include "fctypes.h"
@@ -796,11 +795,11 @@ enum sym_type AsmQueryType( void *handle )
 }
 
 
-static void AsmInsertFixups( unsigned char *buff, size_t len )
+static void AsmInsertFixups( byte *buff, size_t len )
 //============================================================
 {
                         // additional slop in buffer to simplify the code
-    unsigned char       temp[MAXIMUM_BYTESEQ + 2];
+    byte                temp[MAXIMUM_BYTESEQ + 2];
     struct asmfixup     *fix;
     struct asmfixup     *head;
     struct asmfixup     *chk;
@@ -925,7 +924,7 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 }
 
 
-static void AsmInsertFixups( unsigned char *buff, size_t len )
+static void AsmInsertFixups( byte *buff, size_t len )
 //============================================================
 {
     byte_seq            *seq;
@@ -990,7 +989,7 @@ static void GetByteSeq( void )
 
     AsmInit();
     seq_len = 0;
-    for(;;) {
+    for( ;; ) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
                 CSuicide();
@@ -1070,6 +1069,8 @@ static void ReqToken( const char *tok )
 
 #if _INTEL_CPU
 
+#define REGNAMES_COUNT  (sizeof( RegNames ) / sizeof( RegNames[0] ))
+
 static hw_reg_set RegSet( void )
 //==============================
 {
@@ -1079,14 +1080,14 @@ static hw_reg_set RegSet( void )
     int         i;
 
     HW_CAsgn( reg_set, HW_EMPTY );
-    for(;;) {
+    for( ;; ) {
         if( TokEnd - TokStart > REGNAME_MAX_LEN )
             break;
         for( i = 0; i < TokEnd - TokStart; i++ ) {
             regname_buf[i] = toupper( TokStart[i] );
         }
-        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ) - 1, regname_buf, TokEnd - TokStart, true );
-        if( reg == 0 )
+        reg = KwLookUp( RegNames, REGNAMES_COUNT, regname_buf, TokEnd - TokStart, true );
+        if( reg == REGNAMES_COUNT )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );
         ScanToken();
@@ -1128,7 +1129,7 @@ static void GetArgList( pass_by **curr_arg )
     FreeChain( curr_arg );
     if( RecToken( ")" ) )
         return;
-    for(;;) {
+    for( ;; ) {
         arg_pass_info = 0;
         if( RecToken( "VALUE" ) ) {
             arg_pass_info |= PASS_BY_VALUE;
@@ -1223,7 +1224,7 @@ static void GetSTRetInfo( void )
     have.f_struct = false;
     have.f_allocs = false;
     have.f_list   = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_float && RecToken( "FLOAT" ) ) {
             CurrAux->cclass_target |= FECALL_X86_NO_FLOAT_REG_RETURNS;
             have.f_float = true;
@@ -1262,7 +1263,7 @@ static void GetRetInfo( void )
     // "3s" default is FECALL_X86_NO_8087_RETURNS - turn off FECALL_X86_NO_8087_RETURNS
     // flag so that "3s" model programs can use 387 pragmas
     CurrAux->cclass_target &= ~FECALL_X86_NO_8087_RETURNS;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_no8087 && RecToken( "NO8087" ) ) {
             CurrAux->cclass_target |= FECALL_X86_NO_8087_RETURNS;
             HW_CTurnOff( CurrAux->returns, HW_FLTS );
@@ -1284,7 +1285,7 @@ static void GetRetInfo( void )
 static void GetSaveInfo( void )
 //=============================
 {
-    hw_reg_set  modlist;
+    hw_reg_set  modlist = HW_D( HW_EMPTY );
     hw_reg_set  default_flt_n_seg;
     hw_reg_set  flt_n_seg;
 
@@ -1297,7 +1298,7 @@ static void GetSaveInfo( void )
     have.f_exact    = false;
     have.f_nomemory = false;
     have.f_list     = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_exact && RecToken( "EXACT" ) ) {
             CurrAux->cclass_target |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
@@ -1350,7 +1351,7 @@ static void GetParmInfo( void )
     have.f_list          = false;
 #endif
     have.f_args          = false;
-    for(;;) {
+    for( ;; ) {
         if( !have.f_args && RecToken( "(" ) ) {
             GetArgList( &CurrAux->arg_info );
             have.f_args = true;

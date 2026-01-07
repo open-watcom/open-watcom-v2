@@ -356,7 +356,7 @@ error_exit:
 ; may be only called from startup code, after that there is
 ; nowhere to exit to!
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -386,6 +386,7 @@ exit_code_eax2:
         push    eax                     ; don't destroy error code
         call    __CommonTerm            ; terminate the runtime
         pop     eax
+__do_exit_with_msg_ endp
 
 do_exit:
         mov     si,DGROUP
@@ -393,10 +394,11 @@ do_exit:
         lss     esp,caller_stack
         mov     caller_ss,0             ; caller_ss is used as a flag if do_exit can be jumped to
         ret
+
 __DLLstart_ endp
 
-__exit  proc    far
         public  "C",__exit
+__exit  proc    near
 ifdef __STACK__
         pop     eax                     ; get return code into eax
 endif
@@ -408,7 +410,6 @@ endif
 ;--- optionally display an error msg here?
         mov     ah,4Ch
         int     21h
-
 __exit  endp
 
         public  __GETDS

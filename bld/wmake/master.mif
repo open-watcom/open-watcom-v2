@@ -14,10 +14,11 @@ wmake_ntverrc = ../h
 wmake_trmem = 1
 
 !ifdef bootstrap
-wmake_wreslib_cli = incl_msgtext
+wmake_wreslib_cli  = incl_msgtext
 !else
-wmake_wreslib_cli = text
+wmake_wreslib_cli  = text
 wmake_wreslib_incl = 1
+exetarg_res        = $(proj_name).res
 !endif
 
 # DOS code will not fit in 64k with /d2
@@ -87,6 +88,11 @@ extra_l_flags_dos386 = opt stack=8k
 extra_l_flags_dos386 = opt stack=8k
 !endif
 
+.BEFORE
+!ifdef bootstrap
+    rm -f *.obj *.exe
+!endif
+
 # explicit rules
 #################
 
@@ -99,7 +105,6 @@ exetarg_objs          = $(objs)
 !else
 exetarg_libs          = $(cli_orl_libs)
 !endif
-exetarg_res           = $(proj_name).res
 exetarg_name          = wmk
 !include exetarg.mif
 

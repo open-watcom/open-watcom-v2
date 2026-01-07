@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <io.h>
 #ifdef __OS2__
@@ -39,10 +40,8 @@
 #else
     #include "tinyio.h"
 #endif
-#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

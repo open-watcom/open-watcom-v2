@@ -22,7 +22,7 @@
 !inject egrep     all     boot      # build doc test
 !inject env       all qnx           #
 !inject expand    all qnx           #
-!inject false     all qnx           #
+!inject false     all qnx boot      # build     test
 !inject fgrep     all               #
 !inject fmt       all qnx           #
 !inject fold      all qnx           #

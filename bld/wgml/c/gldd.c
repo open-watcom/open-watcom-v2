@@ -76,6 +76,10 @@ void    lay_dd( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    line_left       :1;
+        unsigned    font            :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

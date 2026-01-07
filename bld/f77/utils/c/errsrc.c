@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,27 +257,31 @@ static  void    Finalize( void )
     fclose( RCFile );
 }
 
-static int      IsTarget( char target ) {
-//=======================================
-
-    if( (sw_target == target) || (target == ' ') ) {
+static int      IsTarget( char target )
+//=====================================
+{
+    if( (sw_target == target)
+      || (target == ' ') ) {
         return( 1 );
-    } else if( (sw_target == 'i') || (sw_target =='3') ) {
+    } else if( (sw_target == 'i')
+      || (sw_target =='3') ) {
         return( target == '8' );
     }
     return( 0 );
 }
 
-static  char    UseMessage( char cmp, char target, char used_at ) {
-//=================================================================
-
+static  char    UseMessage( char cmp, char target, char used_at )
+//===============================================================
+{
     if( sw_compiler == 'o' ) {
-        if( (cmp != 'o') && (cmp != ' ') ) {
+        if( (cmp != 'o')
+          && (cmp != ' ') ) {
             return( 0 );
         }
     }
     if( IsTarget( target ) ) {
-        if( (sw_used_at == used_at) || (used_at == ' ') ) {
+        if( (sw_used_at == used_at)
+          || (used_at == ' ') ) {
             return( 1 );
         }
     }
@@ -376,7 +380,8 @@ static  word_list       *ProcessWord( char *text )
             break;
         prev_word = curr_word;
     }
-    if( ( curr_word != NULL ) && ( *w1 == *w2 ) ) {
+    if( ( curr_word != NULL )
+      && ( *w1 == *w2 ) ) {
         curr_word->ref_count++;
     } else {
         new_word = malloc( sizeof( word_list ) );
@@ -399,10 +404,10 @@ static  word_list       *ProcessWord( char *text )
 }
 
 
-static  int     PhraseCount( msg_list *curr_msg, msg_word *curr_word,
-                             word_list *word1, word_list *word2 ) {
-//===================================================================
-
+static int  PhraseCount( msg_list *curr_msg, msg_word *curr_word,
+                             word_list *word1, word_list *word2 )
+//===============================================================
+{
     int         n;
 
     n = 0;
@@ -427,9 +432,9 @@ static  int     PhraseCount( msg_list *curr_msg, msg_word *curr_word,
 }
 
 
-static  void    Combine( word_list *word1, word_list *word2 ) {
-//=============================================================
-
+static  void    Combine( word_list *word1, word_list *word2 )
+//===========================================================
+{
     msg_list    *curr_msg;
     msg_word    *curr_word;
     msg_word    *next_word;
@@ -466,7 +471,9 @@ static  void    Combine( word_list *word1, word_list *word2 ) {
                 this_word->link = word2->link;
             }
             this_word = this_word->link;
-            if( this_word == NULL ) break;
+            if( this_word == NULL ) {
+                break;
+            }
         }
     }
     free( word2 );
@@ -487,9 +494,9 @@ static  void    FindPhrases( void )
             if( word->link == NULL )
                 break;
             w2 = word->link->word;
-            if( ( w1 != w2 ) &&
-                ( w1->ref_count == w2->ref_count ) &&
-                ( PhraseCount( msg, word, w1, w2 ) == w1->ref_count ) ) {
+            if( ( w1 != w2 )
+              && ( w1->ref_count == w2->ref_count )
+              && ( PhraseCount( msg, word, w1, w2 ) == w1->ref_count ) ) {
                 Combine( w1, w2 );
             } else {
                 word = word->link;
@@ -509,7 +516,8 @@ static  void    DumpMsg( void )
     char        delim;
     size_t      msg_len;
 
-    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+    if( (sw_compiler == 'o')
+      && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "const caret_type __FAR CaretTable[] = {\n" );
     }
     msg = HeadMsg;
@@ -540,7 +548,8 @@ static  void    DumpMsg( void )
             }
             fputc( '\n', ErrFile );
             fprintf( ErrMsg, "%c", delim );
-            if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+            if( (sw_compiler == 'o')
+              && (sw_used_at == 'c') ) {
                 fprintf( ErrCaret, "%d,\n", msg->caret );
             }
             fprintf( ErrMsg, "%d", word_index );
@@ -558,10 +567,12 @@ static  void    DumpMsg( void )
         fprintf( ErrMsg, "};\n" );
     }
     fprintf( ErrMsg, "\n\n" );
-    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+    if( (sw_compiler == 'o')
+      && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "};\n" );
     }
-    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+    if( (sw_compiler == 'o')
+      && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "\n" );
     }
 }
@@ -591,9 +602,9 @@ static  void    DumpGroupTable( void )
     fprintf( ErrGrp, "};\n" );
 }
 
-static  group_list      *NextGroup( group_list *group ) {
-//=======================================================
-
+static  group_list      *NextGroup( group_list *group )
+//=====================================================
+{
     if( group == NULL ) {
         group = HeadGroup;
     } else {
@@ -607,9 +618,9 @@ static  group_list      *NextGroup( group_list *group ) {
     return( group );
 }
 
-static  void    PrtRefs( word_list *this_word ) {
-//===============================================
-
+static  void    PrtRefs( word_list *this_word )
+//=============================================
+{
     int         n;
     int         group_index;
     msg_list    *a_msg;
@@ -640,7 +651,7 @@ static  void    PrtRefs( word_list *this_word ) {
                 break;
             first = 0;
         }
-        if( ++group_index >= a_group->end_msg_num % 256 ) {
+        if( ++group_index >= ( a_group->end_msg_num % 256 ) ) {
             group_index = 0;
             a_group = NextGroup( a_group );
         }
@@ -695,7 +706,9 @@ static  void    DumpErrWord( void )
                 fprintf( ErrMsg, ",'%c'", *word );
             }
             ++word;
-            if( *word == NULLCHAR ) break;
+            if( *word == NULLCHAR ) {
+                break;
+            }
         }
         fprintf( ErrMsg, "\n" );
         fprintf( ErrMsg, "/* count=%3d", cw->ref_count );
@@ -710,16 +723,16 @@ static  void    DumpErrWord( void )
 }
 
 
-static  int     FindMax( int upper_bound ) {
-//==========================================
-
+static  int     FindMax( int upper_bound )
+//========================================
+{
     word_list   *curr_word;
     int         curr_max;
 
     curr_max = 0;
     for( curr_word = HeadWord; curr_word != NULL; curr_word = curr_word->link ) {
-        if( ( curr_word->ref_count > curr_max ) &&
-            ( curr_word->ref_count < upper_bound ) ) {
+        if( ( curr_word->ref_count > curr_max )
+          && ( curr_word->ref_count < upper_bound ) ) {
             curr_max = curr_word->ref_count;
             SortPtr = curr_word;
         }
@@ -741,7 +754,8 @@ static  void    SortByRef( void )
     first_word = 1;
     for(;;) {
         ceiling = FindMax( ceiling );
-        if( ceiling == 0 ) break;
+        if( ceiling == 0 )
+            break;
         curr_word = SortPtr;
         if( first_word == 1 ) {
             SortHead = SortPtr;
@@ -772,7 +786,9 @@ static  void    ReNumber( void )
         curr_word->word_num = index;
         ++index;
         curr_word = curr_word->sortlink;
-        if( curr_word == NULL ) break;
+        if( curr_word == NULL ) {
+            break;
+        }
     }
 }
 
@@ -820,7 +836,8 @@ static  void    BuildLists( void )
                 return;
             }
             ++RecNum;
-            if( ( strlen( rec ) > 2 ) && ( rec[2] == ' ' ) )
+            if( ( strlen( rec ) > 2 )
+              && ( rec[2] == ' ' ) )
                 // Group record
                 break;
             index = 3;

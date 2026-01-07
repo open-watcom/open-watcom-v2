@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -47,17 +48,15 @@
 #include <wos2.h>
 #include "os2fil64.h"
 #include "rtdata.h"
-#include "rterrno.h"
 #include "rtumask.h"
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "thread.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     OS_UINT     error, actiontaken;
     OS_UINT     fileattr, openflag, openmode;
@@ -93,7 +92,8 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     }
     rwmode = mode & OPENMODE_ACCESS_MASK;
 #ifdef _M_I86
-    if( rwmode == OPEN_ACCESS_WRITEONLY && _osmode_REALMODE() ) {
+    if( rwmode == OPEN_ACCESS_WRITEONLY
+      && _osmode_REALMODE() ) {
         /* Can't open WRONLY file in bound application under DOS */
         rwmode = OPEN_ACCESS_READWRITE;
     }
@@ -104,7 +104,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     openmode = shflag | rwmode;
 
     perm &= ~_RWD_umaskval;
-/*      if( ( perm & S_IREAD ) && (perm & S_IWRITE) == 0 )  */
+/*    if( (perm & S_IREAD) && (perm & S_IWRITE) == 0 )  */
     if( (perm & S_IWRITE) == 0 ) {
         fileattr = FILE_READONLY;
     } else {
@@ -128,7 +128,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
     if( handle >= __NFiles ) {
         DosClose( handle );
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
     iomode_flags = 0;

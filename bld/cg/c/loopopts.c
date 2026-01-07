@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
-#include "_cfloat.h"
 #include "stackcg.h"
 #include "zoiks.h"
 #include "i64.h"
@@ -176,8 +175,7 @@ block    *AddPreBlock( block *postblk )
      * set up new block to look like it was generated after postblk
      */
     _SetBlkAttr( preblk, BLK_JUMP );
-    preblk->id = NO_BLOCK_ID;
-    preblk->gen_id = postblk->gen_id;
+    preblk->gen_blk_id = postblk->gen_blk_id;
     preblk->ins.head.line_num = postblk->ins.head.line_num;
     postblk->ins.head.line_num = 0;
     preblk->loop_head = postblk->loop_head; /**/
@@ -197,15 +195,13 @@ block    *AddPreBlock( block *postblk )
     if( preblk->prev_block != NULL ) {
         preblk->prev_block->next_block = preblk;
     }
-    preblk->input_edges = NULL;
-    preblk->inputs = 0;
     /*
      * make preblk go to postblk
      */
     preblk->targets = 1;
     edge = &preblk->edge[0];
     edge->source = preblk;
-    edge->flags = SOURCE_IS_PREHEADER | DEST_IS_BLOCK;
+    edge->flags = BEF_SOURCE_IS_PREHEADER | BEF_DEST_IS_BLOCK;
     PointEdge( edge, postblk );
     postblk->label = AskForNewLabel();
     FixBlockIds();
@@ -245,7 +241,7 @@ static bool     IsPreHeader( block *test )
             }
         }
     }
-    test->edge[0].flags |= SOURCE_IS_PREHEADER;
+    test->edge[0].flags |= BEF_SOURCE_IS_PREHEADER;
     return( true );
 }
 
@@ -260,7 +256,7 @@ static block    *FindPreHeader( void )
     block_edge  *edge;
 
     for( edge = Head->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( edge->flags & SOURCE_IS_PREHEADER ) {
+        if( edge->flags & BEF_SOURCE_IS_PREHEADER ) {
             return( edge->source );
         }
     }
@@ -305,7 +301,7 @@ void     MarkLoop( void )
  */
 {
     block       *other_blk;
-    block_num   targets;
+    block_num   i;
     block_edge  *edge;
 
     Loop = NULL;
@@ -318,7 +314,7 @@ void     MarkLoop( void )
     }
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
         edge = &other_blk->edge[0];
-        for( targets = other_blk->targets; targets > 0; --targets ) {
+        for( i = other_blk->targets; i > 0; --i ) {
             if( !_IsBlkAttr( edge->destination.u.blk, BLK_IN_LOOP ) ) {
                 _MarkBlkAttrSet( other_blk, BLK_LOOP_EXIT );
             }
@@ -392,7 +388,7 @@ static bool     KillOneTrippers( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( i = blk->targets; i-- > 0; ) {
-            if( blk->edge[i].flags & ONE_ITER_EXIT ) {
+            if( blk->edge[i].flags & BEF_ONE_ITER_EXIT ) {
                 for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                     next = ins->head.next;
                     if( _OpIsCondition( ins->head.opcode )
@@ -674,7 +670,7 @@ static value    OpLTZero( name *op, bool fp )
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
     if( fp
-      && CFTest( op->c.value ) < 0 )
+      && CFTest( op->c.u.cfval ) < 0 )
         return( CMP_TRUE );
     if( !fp
       && op->c.lo.u.int_value < 0 )
@@ -692,7 +688,7 @@ static value    OpEQZero( name *op, bool fp )
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
     if( fp
-      && CFTest( op->c.value ) == 0 )
+      && CFTest( op->c.u.cfval ) == 0 )
         return( CMP_TRUE );
     if( !fp
       && op->c.lo.u.int_value == 0 )
@@ -2260,12 +2256,12 @@ static  bool    InstructionWillExec( instruction *ins )
 void    MoveDownLoop( block *cond )
 /**********************************
  * Muck about so that "cond" will come out after the blocks which jump
- * to it when we sort the blocks into original order (gen_id) prior to
+ * to it when we sort the blocks into original order (gen_blk_id) prior to
  * actual code dumping.
  */
 {
-    block_num   cond_id;
-    block_num   after_id;
+    block_id    cond_blk_id;
+    block_id    after_blk_id;
     block       *blk;
     block_edge  *edge;
     block       *after;
@@ -2273,28 +2269,28 @@ void    MoveDownLoop( block *cond )
 
     after = cond->input_edges->source;
     for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( edge->source->gen_id > after->gen_id ) {
+        if( edge->source->gen_blk_id > after->gen_blk_id ) {
             after = edge->source;
         }
     }
-    if( cond->gen_id > after->gen_id )
+    if( cond->gen_blk_id > after->gen_blk_id )
         return;
-    cond_id = cond->gen_id;
-    after_id = after->gen_id;
+    cond_blk_id = cond->gen_blk_id;
+    after_blk_id = after->gen_blk_id;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->gen_id >= cond_id
-          && blk->gen_id <= after_id ) {
-            blk->gen_id--;
+        if( blk->gen_blk_id >= cond_blk_id
+          && blk->gen_blk_id <= after_blk_id ) {
+            blk->gen_blk_id--;
         }
     }
-    cond->gen_id = after_id;
-    cond->edge[0].flags &= ~BLOCK_LABEL_DIES;
+    cond->gen_blk_id = after_blk_id;
+    cond->edge[0].flags &= ~BEF_BLOCK_LABEL_DIES;
     for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
-        edge->flags &= ~DEST_LABEL_DIES;
+        edge->flags &= ~BEF_DEST_LABEL_DIES;
     }
     for( i = cond->targets; i-- > 0; ) {
-        cond->edge[i].flags &= ~DEST_LABEL_DIES;
-        cond->edge[i].destination.u.blk->edge[0].flags &= ~BLOCK_LABEL_DIES;
+        cond->edge[i].flags &= ~BEF_DEST_LABEL_DIES;
+        cond->edge[i].destination.u.blk->edge[0].flags &= ~BEF_BLOCK_LABEL_DIES;
     }
 }
 
@@ -2857,8 +2853,8 @@ static  bool    DangerousTypeChange( induction *var, induction *other )
     return( true );
 }
 
-static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
-/*************************************************************************
+static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_class )
+/************************************************************************************
  * Return true if the given (signed) constant is too big or too small for
  * the given type_class.
  */
@@ -2876,21 +2872,21 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
       || type_class == U8 )
         return( false );
     len = TypeClassSize[type_class] * 8;
-    I32ToI64( 1, &one );
+    Set64Val1p( one );
     if( _IsSigned( type_class ) ) {
         /*
          * signed type of length 'len' bits
          */
         U64ShiftL( &one, len - 1, &max );
         U64Neg( &max, &min );
-        U64Sub( &max, &one, &max );
+        U64SubEq( &max, &one );
     } else {
         /*
          * unsigned type of length 'len' bits
          */
-        I32ToI64( 0, &min );
+        Set64ValZero( min );
         U64ShiftL( &one, len, &max );
-        U64Sub( &max, &one, &max );
+        U64SubEq( &max, &one );
     }
     if( I64Cmp( val, &min ) < 0 )
         return( true );
@@ -2925,22 +2921,22 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         /*
          * if we are going to overflow our type, bail!
          */
-        I32ToI64( non_ind_op->c.lo.u.int_value, &big_cons );
-        I32ToI64( rep->times, &temp );
-        U64Mul( &big_cons, &temp, &big_cons );
-        I32ToI64( rep->plus, &temp );
-        U64Add( &big_cons, &temp, &big_cons );
+        Set64ValI32( big_cons, non_ind_op->c.lo.u.int_value );
+        Set64ValI32( temp, rep->times );
+        U64MulEq( &big_cons, &temp );
+        Set64ValI32( temp, rep->plus );
+        U64AddEq( &big_cons, &temp );
         /*
          * make sure we always allow negative values - hack for BMark
          */
-        if( (big_cons.u._32[I64HI32] & 0x80000000) == 0 ) {
+        if( big_cons.u.sign.v == 0 ) {
             if( ConstOverflowsType( &big_cons, type_class ) ) {
                 return( false );
             }
         }
         ins->type_class = type_class;
         ins->operands[ind] = rep->name;
-        ins->operands[non_ind] = AllocS64Const( big_cons.u._32[I64LO32], big_cons.u._32[I64HI32] );
+        ins->operands[non_ind] = AllocS64Const( U64Low( big_cons ), U64High( big_cons ) );
     } else {
         ins->type_class = type_class;
         ins->operands[ind] = rep->name;
@@ -3480,7 +3476,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
       && Head->iterations == 1 ) {
         if( cond_blk != Head
           || Loop->u.loop == NULL ) {
-            exit_edge->flags |= ONE_ITER_EXIT;
+            exit_edge->flags |= BEF_ONE_ITER_EXIT;
         }
     }
     if( unroll ) {
@@ -3525,7 +3521,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
             new_head = loop_edge->destination.u.blk;
 //            DupNoncondInstrs( cond_blk, cond, PreHead );
         } else if( OptForSize < 50
-          && PreHead->gen_id < cond_blk->gen_id ) {
+          && PreHead->gen_blk_id < cond_blk->gen_blk_id ) {
             RemoveInputEdge( edge );
             old_prehead = PreHead;
             PreHead = ReGenBlock( PreHead, NULL );
@@ -3547,10 +3543,10 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
                                      _FalseIndex( cond ), cond->type_class );
             SuffixPreHeader( dupcond );
             edge = &PreHead->edge[0];
-            edge->flags = DEST_IS_BLOCK;
+            edge->flags = BEF_DEST_IS_BLOCK;
             PointEdge( edge, cond_blk->edge[0].destination.u.blk );
             edge = &PreHead->edge[1];
-            edge->flags = DEST_IS_BLOCK;
+            edge->flags = BEF_DEST_IS_BLOCK;
             PointEdge( edge, cond_blk->edge[1].destination.u.blk );
             MoveDownLoop( cond_blk );
             new_head = loop_edge->destination.u.blk;

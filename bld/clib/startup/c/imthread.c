@@ -45,7 +45,7 @@
 
 
 #if defined(__OS2_16BIT__) || defined(__NETWARE__)
-  #ifdef __SW_BM
+  #ifdef __MT__
         int __imthread;
   #endif
 #else
@@ -53,7 +53,7 @@
   #if defined(__NT__)
         if( !__NTThreadInit() )
             return;
-  #elif defined(_NETWARE_LIB)
+  #elif defined(_NETWARE_LIBC)
         if( !__LibCThreadInit() )
             return;
   #elif defined(__QNX__)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,21 +35,7 @@
 
 static __rt_flag    __rt_control = RTFLG_NONE;
 
-#ifdef _M_IX86
-
-_WCRTLINK void _SetLD64bit( void )
+_WCRTLINK __rt_flag *__get_rt_control_ptr( void )
 {
-    __rt_control &= ~RTFLG_LD_80BIT;
-}
-
-_WCRTLINK void _SetLD80bit( void )
-{
-    __rt_control |= RTFLG_LD_80BIT;
-}
-
-#endif
-
-_WCRTLINK int _LDisDouble( void )
-{
-    return( (__rt_control & RTFLG_LD_80BIT) == 0 );
+    return( &__rt_control );
 }

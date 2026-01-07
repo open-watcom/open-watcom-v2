@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,11 +210,11 @@ enum fixgen_types {
 /*
  * forward declaration
  */
-typedef struct obj_rec      obj_rec;
+typedef struct obj_rec      *obj_rec_handle;
 
 typedef struct fixup_info {
-    obj_rec     *data_rec;  /* ptr to the data record this belongs to   */
-    fixuprec    *fixup;     /* linked list of processed fixups          */
+    obj_rec_handle  data_rec;   /* ptr to the data record this belongs to   */
+    fixuprec        *fixup;     /* linked list of processed fixups          */
 } fixup_info;
 /*
     No data should be attached to these records; all information is in
@@ -286,14 +286,14 @@ typedef union objrec_info {
 } objrec_info;
 
 typedef struct obj_rec {
-    obj_rec     *next;
-    uint_16     length;     /* the length field for this record  (PRIVATE)  */
-    uint_16     curoff;     /* offset of next read within record (PRIVATE)  */
-    uint_8      *data;      /* data for this record              (PRIVATE)  */
-    uint_8      command;    /* the command field for this record            */
-    uint_8      is_32   : 1;/* is this a Microsoft 32bit record             */
-    uint_8      free_data:1;/* should we AsmFree( data )??       (PRIVATE)  */
-    objrec_info u;          /* data depending on record type                */
+    struct obj_rec  *next;
+    uint_16         length;     /* the length field for this record  (PRIVATE)  */
+    uint_16         curoff;     /* offset of next read within record (PRIVATE)  */
+    uint_8          *data;      /* data for this record              (PRIVATE)  */
+    uint_8          command;    /* the command field for this record            */
+    uint_8          is_32   : 1;/* is this a Microsoft 32bit record             */
+    uint_8          free_data:1;/* should we AsmFree( data )??       (PRIVATE)  */
+    objrec_info     u;          /* data depending on record type                */
 } obj_rec;
 
 typedef struct lifix {

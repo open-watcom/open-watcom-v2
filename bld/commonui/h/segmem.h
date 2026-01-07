@@ -34,7 +34,7 @@
 
 #include "descript.h"
 
-DWORD       GetASelectorLimit( WORD );
+DWORD       GetASelectorSize( WORD );
 bool        IsValidSelector( WORD );
 void        GetADescriptor( WORD seg, descriptor *desc );
 bool        IsSeg32( WORD seg );

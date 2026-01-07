@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,13 @@
   #endif
 #else
     #define PRTF_CHAR_TYPE  CHAR_TYPE
+  #if defined(_M_I86)
+    #define PRTF_CALLBACK _WCNEAR
+    typedef void _WCNEAR prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
+  #else
     #define PRTF_CALLBACK
     typedef void prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
+  #endif
   #if defined( __WINDOWS_386__ )
     #ifdef __SW_3S
         #pragma aux prtf_callback_t __modify [__eax __edx __ecx __fs __gs]

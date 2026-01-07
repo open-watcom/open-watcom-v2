@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +109,7 @@ type_class_def  CallState( aux_handle aux, const type_def *tipe, call_state *sta
     i = 0;
     parm_src = ParmRegs();
     parm_dst = &parms[0];
-    for(;;) {
+    for( ;; ) {
         *parm_dst = *parm_src;
         if( HW_CEqual( *parm_dst, HW_EMPTY ) )
             break;

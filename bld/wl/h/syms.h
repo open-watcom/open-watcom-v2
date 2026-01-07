@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@ typedef enum {
 
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.
- * OVL_NO_VECTOR == 1 && OVL_FORCE == 0 means tenatively no vector generated.
+ * OVL_NO_VECTOR == 1 && OVL_FORCE == 0 means tentatively no vector generated.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 1 means generate a vector
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 1 means do not generate a vector
 */

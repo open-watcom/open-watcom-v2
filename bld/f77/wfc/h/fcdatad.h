@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +42,18 @@
 //
 //========================================================================
 
-gbl_defn pointer                StkPtr;         // F-Code stack pointer
-gbl_defn unsigned_32            CodeSize;       // size of program object code
+gbl_defn unsigned               CodeSize;       // size of program object code
 gbl_defn label_id               LabelIdx;       // label index
 gbl_defn sym_id                 WildLabel;      // label of a wild goto
 gbl_defn pointer                LabelList;      // list of labels
 gbl_defn obj_ptr                FormatList;     // pointer to format list
-gbl_defn obj_ptr                PrologLabel;    // prologue location
 gbl_defn label_id               EpilogLabel;    // epilogue label
 gbl_defn sym_id                 CommonEntry;    // common entry point
 gbl_defn sym_id                 EPValue;        // entry point identifier
 gbl_defn sym_id                 ReturnValue;    // function return value
 gbl_defn void            (**FCTablePtr)(void);  // pointer to F-Code jump table
 gbl_defn obj_ptr                DtConstList;    // DATA statement constants
-gbl_defn PTYPE                  DtConstType;    // type of DATA constant
+gbl_defn PTYPE                  DtConstPtyp;    // type of DATA constant
 gbl_defn intstar4               DtRepCount;     // repitition count
 gbl_defn sym_id                 DtConst;        // DATA constant
 gbl_defn segment_id             DtSegId;        // DATA initialization segment
@@ -65,11 +63,9 @@ gbl_defn intstar4               DtOffset;       // offset relative to variable
                                                 // being initialized
 gbl_defn unsigned_8             DtFlags;        // DATA intialization flags
 
-gbl_defn int                    EndEqLabel;     // END= label
-gbl_defn int                    ErrEqLabel;     // ERR= label
+gbl_defn label_id               EndEqLabel;     // END= label
+gbl_defn label_id               ErrEqLabel;     // ERR= label
 gbl_defn obj_ptr                AtEndFCode;     // pointer to ATEND F-Code
-
-gbl_defn unsigned_32            MaxSegSize;     // maximum segment size
 
 gbl_defn uint                   DataThreshold;  // data threshold
 

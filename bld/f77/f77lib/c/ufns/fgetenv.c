@@ -57,7 +57,7 @@ intstar4        __fortran FGETENV( string PGM *env_var, string PGM *value ) {
     }
     if( len == 0 )
         return( 0 );
-    buff = alloca( len + sizeof( char ) );
+    buff = alloca( len + 1 );
     if( buff != NULL ) {
         pgm_memget( buff, env_var->strptr, len );
         buff[ len ] = NULLCHAR;

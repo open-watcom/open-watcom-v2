@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -583,12 +583,12 @@ static bool GetNum( unsigned base )
     int         dig;
 
     ok = false;
-    U32ToU64( base, &big_base );
-    U64Clear( num );
+    Set64ValU32( big_base, base );
+    Set64ValZero( num );
     while( (dig = GetDig( base )) >= 0 ) {
-        U32ToU64( dig, &big_dig );
-        U64Mul( &num, &big_base, &num );
-        U64Add( &num, &big_dig, &num );
+        Set64ValU32( big_dig, dig );
+        U64MulEq( &num, &big_base );
+        U64AddEq( &num, &big_dig );
         ++ScanPtr;
         ok = true;
     }
@@ -612,7 +612,7 @@ static bool ScanNumber( void )
     hold_scan = ScanPtr;
     if( ScanCCharNum && (*ScanPtr == '\'') ) {
         if( ScanPtr[1] != NULLCHAR && ScanPtr[2] == '\'' ) {
-            U32ToU64( ScanPtr[1], &TokenVal.int_val );
+            Set64ValU32( TokenVal.int_val, ScanPtr[1] );
             ScanPtr += 3;
             CurrToken = T_INT_NUM;
             return( true );

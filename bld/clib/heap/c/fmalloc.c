@@ -137,12 +137,12 @@ release_heap:
 }
 
 #if defined(__DOS__) && defined(__BIG_DATA__)
-static void ___nheapgrow( void )
+static void _WCNEAR ___nheapgrow( void )
 {
     /* near heap growing routine in large data models. */
     /* grow near heap to 64K */
     _nheapgrow();
 }
 
-AXI( ___nheapgrow, INIT_PRIORITY_PROGRAM - 8 )
+AXIN( ___nheapgrow, INIT_PRIORITY_PROGRAM - 8 )
 #endif

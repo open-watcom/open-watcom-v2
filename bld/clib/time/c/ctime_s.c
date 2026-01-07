@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +51,11 @@ _WCRTLINK errno_t __F_NAME(ctime_s,_wctime_s)( CHAR_TYPE *s,
     // timer not NULL
     // 26 <= maxsize <= RSIZE_MAX
     // localtime_s(...) not NULL
-    if( __check_constraint_nullptr_msg( msg, s ) &&
-        __check_constraint_nullptr_msg( msg, timer ) &&
-        __check_constraint_maxsize_msg( msg, maxsize ) &&
-        __check_constraint_a_gt_b_msg( msg, 26, maxsize ) &&
-        __check_constraint_nullptr_msg( msg, localtime_s( timer, &tm ) ) ) {
+    if( __check_constraint_nullptr_msg( msg, s )
+      && __check_constraint_nullptr_msg( msg, timer )
+      && __check_constraint_maxsize_msg( msg, maxsize )
+      && __check_constraint_a_gt_b_msg( msg, 26, maxsize )
+      && __check_constraint_nullptr_msg( msg, localtime_s( timer, &tm ) ) ) {
 
         __F_NAME(_asctime,__wasctime)( &tm, s );
         rc = 0;
@@ -63,7 +63,9 @@ _WCRTLINK errno_t __F_NAME(ctime_s,_wctime_s)( CHAR_TYPE *s,
 
     if( msg != NULL ) {
         // Runtime-constraint violated, store zero in receiving field if possible
-        if( (s != NULL) && (maxsize > 0) && __lte_rsizmax( maxsize ) ) {
+        if( (s != NULL)
+          && (maxsize > 0)
+          && __lte_rsizmax( maxsize ) ) {
             *s = NULLCHAR;
         }
         // Now call the handler

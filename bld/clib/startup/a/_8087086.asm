@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -34,7 +35,7 @@ include mdef.inc
 
         modstart    _8087
 
-        xrefp   "C",__chk8087
+        xrefn   "C",__chk8087
 
 datasegment
         public  __8087
@@ -56,6 +57,6 @@ enddata
 
 include xinit.inc
 
-        xinit   __chk8087,INIT_PRIORITY_FPU + 3
+        xinitn  __chk8087, INIT_PRIORITY_FPU + 3
 
         end

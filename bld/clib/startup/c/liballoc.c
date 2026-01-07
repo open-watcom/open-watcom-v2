@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +32,15 @@
 
 #include "variety.h"
 #include "liballoc.h"
+#include "clibsupp.h"
 
-_WCRTLINK void *_plib_malloc( size_t size )
+
+_WCRTLINK void *__clib_malloc( size_t size )
 {
     return( lib_malloc( size ) );
 }
 
-_WCRTLINK void _plib_free( void *ptr )
+_WCRTLINK void __clib_free( void *ptr )
 {
     lib_free( ptr );
 }

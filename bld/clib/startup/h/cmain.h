@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,7 @@
 
 #if defined( __QNX__ )
   #if defined( _M_I86 )
-    extern void _CMain(
+    extern _WCNORETURN void _WCNEAR _CMain(
         void __near                     *free,      /* [bx] start of free space    */
         unsigned short                  n,          /* [cx] number of bytes        */
         struct _proc_spawn __near       *cmd,       /* [di] pointer to spawn msg   */
@@ -39,20 +39,20 @@
         pid_t                           pid );      /* [ax] process id             */
     #pragma aux _CMain "_*" __parm [__bx] [__cx] [__di] [__dx] [__ax]
   #else
-    extern void _CMain( int argc, char **argv, char **arge );
+    extern _WCNORETURN void _WCNEAR _CMain( int argc, char **argv, char **arge );
     #pragma aux _CMain "_*" __parm [__eax] [__edx] [__ebx]
   #endif
 #else
   #if defined( _M_I86 )
     #if defined(__SW_BD)
-        extern int  _CMain( void );
+    extern int _WCNEAR _CMain( void );
     #else
-        extern void _CMain( void );
+    extern _WCNORETURN void _WCNEAR _CMain( void );
     #endif
     #pragma aux _CMain  "_*"
   #else
-    extern void  __CMain( void );
-    extern void  __wCMain( void );
+    extern _WCNORETURN void  _WCNEAR __CMain( void );
+    extern _WCNORETURN void  _WCNEAR __wCMain( void );
     #if defined( _M_IX86 )
       #pragma aux __CMain  "*"
       #pragma aux __wCMain "*"

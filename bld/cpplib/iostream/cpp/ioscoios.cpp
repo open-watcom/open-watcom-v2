@@ -45,7 +45,7 @@ namespace std {
   ios::ios( const ios &is ) {
 
     __lock_it( is.__i_lock );
-#ifdef __SW_BM
+#ifdef __MT__
     __i_lock =  __get_next_ios_lock();
 #else
     __i_lock = NULL;

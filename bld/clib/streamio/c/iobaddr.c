@@ -32,105 +32,31 @@
 
 #include "variety.h"
 #include <stddef.h>
+#if defined( __NETWARE__ )
+    #include <io.h>
+#endif
 #include "clibsupp.h"
 #include "rtdata.h"
 
 
-#if defined( __NETWARE__ )
-  #if !defined( _THIN_LIB ) || defined( _NETWARE_CLIB )
-    extern FILE   **__get_stdin ( void );
-    extern FILE   **__get_stdout( void );
-    extern FILE   **__get_stderr( void );
-  #endif
-  #if defined( _THIN_LIB ) && defined( _NETWARE_LIBC )
-    extern FILE   **___stdin ( void );
-    extern FILE   **___stdout( void );
-    extern FILE   **___stderr( void );
-    extern FILE   **___cin   ( void );
-    extern FILE   **___cout  ( void );
-  #endif
-#endif
-
-#if !defined( __NETWARE__ ) || !defined( _THIN_LIB )
-
+#if defined( __NETWARE__ ) && defined( _THIN_LIB ) && defined( _NETWARE_LIBC )
 /*
- *  This code should be included on non-netware platforms and in cases where thin lib is not defined
- *  This will ensure that fat netware libraries will be calling the Watcom version of __get_std_stream
+ * from Netware LIBC library, not implemented by Open Watcom
  */
-
-_WCRTLINK FILE *__get_std_stream( unsigned handle )
-{
-    if( handle < NUM_STD_STREAMS ) {
-        return( &_RWD_iob[handle] );
-    } else {
-        return( NULL );
-    }
-}
-
-_WCRTLINK FILE *__get_std_file( unsigned handle )
-{
-    return( __get_std_stream( handle ) );
-}
-
-#else
-
-#include <io.h>
-
-#if defined( _NETWARE_LIBC )
-    _WCRTLINK FILE *__get_std_stream( unsigned handle )
-    {
-        FILE    *pFile = NULL;
-
-        switch( handle ) {
-        case STDIN_FILENO:
-            pFile = *___stdin();
-            break;
-        case STDOUT_FILENO:
-            pFile = *___stdout();
-            break;
-        case STDERR_FILENO:
-            pFile = *___stderr();
-            break;
-        default:
-            break;
-        }
-        return( pFile );
-    }
-#elif defined( _NETWARE_CLIB )
-    _WCRTLINK FILE *__get_std_stream( unsigned handle )
-    {
-        FILE    *pFile = NULL;
-
-        switch( handle ) {
-        case STDIN_FILENO:
-            pFile = *__get_stdin();
-            break;
-        case STDOUT_FILENO:
-            pFile = *__get_stdout();
-            break;
-        case STDERR_FILENO:
-            pFile = *__get_stderr();
-            break;
-        default:
-            break;
-        }
-        return( pFile );
-    }
+_WCRTLINK extern FILE   **___stdin ( void );
+_WCRTLINK extern FILE   **___stdout( void );
+_WCRTLINK extern FILE   **___stderr( void );
+_WCRTLINK extern FILE   **___cin   ( void );
+_WCRTLINK extern FILE   **___cout  ( void );
 #endif
-
-#endif
-
 
 #if defined( __NETWARE__ ) && !defined( _THIN_LIB )
-
 /*
- *  This code is for fat netware libraries. We are using the Watcom FILE *'s
- *  so this will be calling __get_std_stream from the top of this file.
+ * This code is for "fat" Netware libraries.
+ * We are using the Open Watcom FILE *'s so this will be
+ * calling Open Watcom __get_std_stream.
  */
-
-#include <io.h>
-
-FILE **__get_stdin( void )
+_WCRTLINK FILE **__get_stdin( void )
 {
     static FILE         *stdin_ptr;
 
@@ -138,7 +64,7 @@ FILE **__get_stdin( void )
     return( &stdin_ptr );
 }
 
-FILE **__get_stdout( void )
+_WCRTLINK FILE **__get_stdout( void )
 {
     static FILE         *stdout_ptr;
 
@@ -146,12 +72,69 @@ FILE **__get_stdout( void )
     return( &stdout_ptr );
 }
 
-FILE **__get_stderr( void )
+_WCRTLINK FILE **__get_stderr( void )
 {
     static FILE         *stderr_ptr;
 
     stderr_ptr = __get_std_stream( STDERR_FILENO );
     return( &stderr_ptr );
 }
+#endif
 
+/*
+ * Implementation notes for __get_std_stream:
+ *
+ * __get_std_stream name must not be changed, it must be the same as the function
+ * name in the Netware C run-time library.  This ensures that Netware libraries
+ * will call the Open Watcom library version of __get_std_stream instead of
+ * the Netware C run-time library version.
+ */
+
+_WCRTLINK FILE *__get_std_stream( unsigned handle )
+{
+    FILE    *pFile = NULL;
+
+#if defined( __NETWARE__ ) && defined( _THIN_LIB )
+  #if defined( _NETWARE_LIBC )
+    switch( handle ) {
+    case STDIN_FILENO:
+        pFile = *___stdin();
+        break;
+    case STDOUT_FILENO:
+        pFile = *___stdout();
+        break;
+    case STDERR_FILENO:
+        pFile = *___stderr();
+        break;
+    default:
+        break;
+    }
+  #elif defined( _NETWARE_CLIB )
+    switch( handle ) {
+    case STDIN_FILENO:
+        pFile = *__get_stdin();
+        break;
+    case STDOUT_FILENO:
+        pFile = *__get_stdout();
+        break;
+    case STDERR_FILENO:
+        pFile = *__get_stderr();
+        break;
+    default:
+        break;
+    }
+  #endif
+#else
+    if( handle < NUM_STD_STREAMS ) {
+        pFile = &_RWD_iob[handle];
+    }
+#endif
+    return( pFile );
+}
+
+#if !defined( __NETWARE__ ) || !defined( _THIN_LIB )
+_WCRTLINK FILE *__get_std_file( unsigned handle )
+{
+    return( __get_std_stream( handle ) );
+}
 #endif

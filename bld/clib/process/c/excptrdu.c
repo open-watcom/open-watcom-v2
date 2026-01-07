@@ -60,7 +60,7 @@ int         (*__raise_func)( int )              = NULL;
 unsigned char   __ExceptionHandled;
 unsigned char   __ReportInvoked;
 
-static void fmt_hex( char *buf, char *fmt, void *hex ) {
+static void _WCNEAR fmt_hex( char *buf, char *fmt, void *hex ) {
 
     char *ptr = NULL;
     unsigned long value;

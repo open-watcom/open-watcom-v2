@@ -34,11 +34,11 @@
 #ifndef _LOCK_H_INCLUDED
 #define _LOCK_H_INCLUDED
 
-#ifdef __SW_BM
+#ifdef __MT__
 
 #include "osdep.h"
 #include "_lock.h"
 
-#endif  /* __SW_BM */
+#endif  /* __MT__ */
 
 #endif

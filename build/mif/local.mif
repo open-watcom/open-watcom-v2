@@ -6,62 +6,11 @@
 
 bld = $(bld_os)$(bld_cpu)
 
-##################################################
-# check for MS Visual Studio and Intel toolchains
-##################################################
-!ifeq use_for_build_$(bld) msvc_intel
-! if !( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
-# skip, configuration mismatch
-skip = 1
-! else ifeq use_for_target_$(host) msvc_intel
-!  if "$(bld)" != "$(host)"
-# skip, target mismatch
-skip = 2
-!  endif
-! else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 3
-! endif
-##################################################
-# check for Clang and GCC toolchains
-##################################################
-!else ifeq use_for_build_$(bld) clang_gcc
-! if !( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
-# skip, configuration mismatch
-skip = 4
-! else ifeq use_for_target_$(host) clang_gcc
-!  if "$(bld)" != "$(host)"
-# skip, target mismatch
-skip = 5
-!  endif
-! else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 6
-! endif
-##################################################
-# check for WATCOM toolchain
-##################################################
-!else ifdef use_for_build_$(bld)
-# skip, current host requires toolchain other then configured
-skip = 7
-!else ifdef use_for_target_$(host)
-# skip, current target requires toolchain other then configured
-skip = 8
-!endif
-##############################################################################
-!ifdef skip
-skip_build: .SYMBOLIC
-!  ifeq verbose 1
-    @echo skip $(skip) : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!  endif
-!endif
-##############################################################################
-
 # bootstrap overrides
 ######################
 
 !ifdef bootstrap
-! ifdef __WATCOM_TOOLS__
+! ifdef __BLD_WATCOM_TOOLS__
 !  ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
@@ -76,7 +25,7 @@ skip_build: .SYMBOLIC
 ! endif
 !endif
 
-!ifeq use_for_build_$(bld) msvc_intel
+!if ( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
 ##############################################################################
 ##############################################################################
 #
@@ -84,6 +33,8 @@ skip_build: .SYMBOLIC
 #
 ##############################################################################
 ##############################################################################
+
+!if !defined( __BLD_WATCOM_TOOLS__ )
 
 additional_clean_sys = *.pdb *.exp
 
@@ -124,14 +75,14 @@ common_flags = $(common_flags_rel)
 common_flags = $(common_flags_dbg)
 ! endif
 
-# C4013	"'???' undefined; assuming extern returning int"
+# C4013 "'???' undefined; assuming extern returning int"
 # C4020 "'???': too many actual parameters"
 # C4024 "'???': different types for formal and actual parameter"
 # C4028 "formal parameter ?? different from declaration"
 # C4047 "'???': 'type1' differs in levels of indirection from 'type2'"
-# C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
-# C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
-# C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
+# C4061 "enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
+# C4062 "enumerator 'identifier' in switch of enum 'enumeration' is not handled"
+# C4063 "case 'identifier' is not a valid value for switch of enum 'enumeration'"
 # C4068 "unknown pragma"
 # C4090 "different 'const' qualifiers"
 # C4101 "'???': unreferenced local variable"
@@ -141,17 +92,18 @@ common_flags = $(common_flags_dbg)
 # C4214 "bit field types other than int"
 # C4244 "conversion ....., possible loss of data"
 # C4306 "type cast: conversion ...... of greater size"
-# C4574	"'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
+# C4514 "'???': unreferenced inline function has been removed"
+# C4574 "'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
 # C4702 "unreachable code"
-# C4710	"'function': function not inlined"
-# C4711	"function 'function' selected for automatic inline expansion"
-# C4774	"'string' : format string expected in argument number is not a string literal"
-# C4820	"'bytes' bytes padding added after construct 'member_name'"
-# C5045	"Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
+# C4710 "'function': function not inlined"
+# C4711 "function 'function' selected for automatic inline expansion"
+# C4774 "'string' : format string expected in argument number is not a string literal"
+# C4820 "'bytes' bytes padding added after construct 'member_name'"
+# C5045 "Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
 #
-!ifeq proj_name builder
+! ifeq proj_name builder
 common_cflags_wng = -W4 -wd4214
-!else
+! else
 common_cflags_wng = -Wall &
     -we4013 &
     -we4020 &
@@ -166,13 +118,14 @@ common_cflags_wng = -Wall &
     -we4133 &
     -wd4214 &
     -wd4306 &
+    -wd4514 &
     -wd4574 &
     -wd4710 &
     -wd4711 &
     -wd4774 &
     -wd4820 &
     -wd5045
-!endif
+! endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -205,12 +158,12 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-! ifeq bld_cpu x64
-cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-! else
+! ifdef bootstrap
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else ifeq bld $(host)
+cl_extra_libs_gen = $(watcom_dir)/$(host)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host)/clibexts.lib
 ! endif
 
 ! ifdef sys_dll
@@ -240,8 +193,13 @@ bld_ppflags_sys = $(common_ppflags)
 # extra objects for linking via cl
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
+! ifdef bootstrap
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bld)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bld)/clibexts.lib
+! endif
 
 ! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
@@ -279,10 +237,13 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
+!endif
+
 #
 # target definitions for VISUALC and INTEL toolchains
 #
-! ifeq use_for_target_$(host) msvc_intel
+
+! ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
@@ -342,7 +303,8 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -FI
 
 ! endif
-!else ifeq use_for_build_$(bld) clang_gcc
+
+!else if ( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
 ##############################################################################
 ##############################################################################
 #
@@ -350,6 +312,8 @@ incl_file_opts = -FI
 #
 ##############################################################################
 ##############################################################################
+
+!if !defined( __BLD_WATCOM_TOOLS__ )
 
 # librarian settings
 ############################
@@ -477,12 +441,12 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-! ifeq bld_cpu x64
-cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-! else
+! ifdef bootstrap
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else ifeq bld $(host)
+cl_extra_libs_gen = $(watcom_dir)/$(host)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host)/clibexts.lib
 ! endif
 
 ! ifdef sys_dll
@@ -531,8 +495,13 @@ bld_ppflags_sys = $(common_ppflags)
 
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
+! ifdef bootstrap
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+! else
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bld)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bld)/clibexts.lib
+! endif
 
 ! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
@@ -589,10 +558,13 @@ bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 # options for linking
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
+!endif
+
 #
 # target definitions for Clang and GCC toolchains
 #
-! ifeq use_for_target_$(host) clang_gcc
+
+! ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
@@ -665,6 +637,7 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -include
 
 ! endif
+
 !else
 ##############################################################################
 ##############################################################################
@@ -673,10 +646,6 @@ incl_file_opts = -include
 #
 ##############################################################################
 ##############################################################################
-
-! if !( defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__") )
-!error "OS is unsupported by OW build system for this toolchain"
-! endif
 
 # librarian settings
 ############################
@@ -725,14 +694,23 @@ bld_cxx_flags   = #-zastd=c++98
 
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-! if $(%OWTOOLSVER) > 1300
-# this can be used for OW 2.1 because older versions of OW 2.0
-# not support these new options
-bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
-bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
-! else
+! ifdef __BLD_WATCOM_TOOLS__
+!   if $(__BLD_WATCOM_TOOLS__) <= 1300
+!     ifndef testbootstrap
 bld_watcom_common_cflags   =-wx-wce=310-za99
 bld_watcom_common_cxxflags =-w8-wce=579
+!     endif
+!   endif
+!   ifndef bld_watcom_common_cflags
+bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
+bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
+!   endif
+!   ifdef bootstrap
+# OW bootstrap compiler requires watcom library
+# this library add missing functions or fix bug for older OW
+watcom_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+watcom_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+!   endif
 ! endif
 
 ! ifeq debug 0
@@ -761,6 +739,7 @@ bld_ldflags     =
 #
 
 !endif
+
 ##############################################################################
 ##############################################################################
 

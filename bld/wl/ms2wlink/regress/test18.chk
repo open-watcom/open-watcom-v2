@@ -4,3 +4,4 @@ file file.obj
 name file.exe
 option map=file.map
 library file.lib
+option nocaseexact

@@ -53,8 +53,8 @@ unsigned short          __lfn_rm_tb_segment = 0;
 
 static unsigned short   __lfn_rm_tb_selector = 0;
 
-static void init( void )
-/**********************/
+static void _WCNEAR init( void )
+/******************************/
 {
     dpmi_dos_mem_block  dos_mem;
 
@@ -70,13 +70,13 @@ static void init( void )
     __lfn_rm_tb_linear = (char *)DPMIGetSegmentBaseAddress( __lfn_rm_tb_selector );
 }
 
-static void fini( void )
-/**********************/
+static void _WCNEAR fini( void )
+/******************************/
 {
     if( _DPMI ) {
         DPMIFreeDOSMemoryBlock( __lfn_rm_tb_selector );
     }
 }
 
-AXI( init, INIT_PRIORITY_RUNTIME )
-AYI( fini, INIT_PRIORITY_RUNTIME )
+AXIN( init, INIT_PRIORITY_RUNTIME )
+AYIN( fini, INIT_PRIORITY_RUNTIME )

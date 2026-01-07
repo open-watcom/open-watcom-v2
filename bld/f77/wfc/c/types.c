@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,33 +36,25 @@
 #include "cpopt.h"
 #include "types.h"
 
+
 typedef struct type_info {
-    char    *text;
-    uint    size;
-    PTYPE   ptyp;
+    const char  *text;
+    uint        size;
+    PTYPE       ptyp;
+    dw_ftype    dwtype;
 } type_info;
 
-static type_info TypeInfo[] = {
-    #define pick(id,text,size,ptype) {text,size,ptype},
+static const type_info TypeInfo[] = {
+    #define pick(id,text,size,ptype,dwtype) {text,size,ptype,dwtype},
     #include "symdefn.h"
     #undef pick
 };
 
-uint            TypeSize( TYPE typ ) {
-//====================================
-
-// Get the size of the storage unit for the given data type.
-
-    return( TypeInfo[ typ ].size );
-}
-
-
-uint            StorageSize( TYPE typ ) {
-//=======================================
-
+uint            StorageSize( TYPE typ )
+//=====================================
 // Get the size of the storage unit for a the given data type.
 // This function is sensitive to the "short" option.
-
+{
     if( Options & OPT_SHORT ) {
         if( typ == FT_INTEGER )
             return( sizeof( intstar2 ) );
@@ -74,18 +66,17 @@ uint            StorageSize( TYPE typ ) {
         if( typ == FT_REAL )
             return( sizeof( double ) );
         if( typ == FT_DOUBLE ) {
-            return( TypeInfo[ FT_EXTENDED ].size );
+            return( TypeInfo[FT_EXTENDED].size );
         }
     }
-    return( TypeInfo[ typ ].size );
+    return( TypeInfo[typ].size );
 }
 
 
-intstar4        ITIntValue( itnode *it ) {
-//========================================
-
+intstar4        ITIntValue( itnode *it )
+//======================================
 // Get integer value from i.t. node.
-
+{
     if( it->size == sizeof( intstar1 ) ) {
         if( it->is_unsigned ) {
             return( (unsigned_8)it->value.intstar1 );
@@ -105,18 +96,33 @@ intstar4        ITIntValue( itnode *it ) {
 }
 
 
-char    *TypeKW( TYPE typ ) {
-//===========================
-
-// Get the keyword string for the given data type.
-
-    return( TypeInfo[ typ ].text );
+uint        TypeSize( TYPE typ )
+//==============================
+// Get the size of the storage unit for the given data type.
+{
+    return( TypeInfo[typ].size );
 }
 
-PTYPE   ParmType( TYPE typ, size_t size ) {
-//=======================================
 
+dw_ftype    DWType( TYPE typ )
+//============================
+// Get the dwarf fundamental type for the given data type.
+{
+    return( TypeInfo[typ].dwtype );
+}
+
+
+const char  *TypeKW( TYPE typ )
+//=============================
+// Get the keyword string for the given data type.
+{
+    return( TypeInfo[typ].text );
+}
+
+PTYPE   ParmType( TYPE typ, size_t size )
+//=======================================
+{
     /* unused parameters */ (void)size;
 
-    return( TypeInfo[ typ ].ptyp );
+    return( TypeInfo[typ].ptyp );
 }

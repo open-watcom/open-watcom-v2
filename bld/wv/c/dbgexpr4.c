@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ void DoPlus( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Add( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64AddEq( &left->v.uint, &ExprSP->v.uint );
         break;
     case TK_POINTER:
     case TK_ADDRESS:
@@ -141,7 +141,7 @@ void DoMinus( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Sub( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64SubEq( &left->v.uint, &ExprSP->v.uint );
         left->ti.modifier = TM_SIGNED;
         break;
     case TK_POINTER:
@@ -156,7 +156,7 @@ void DoMinus( void )
             break;
         case TK_POINTER:
         case TK_ADDRESS:
-            I32ToI64( AddrDiff( left->v.addr, ExprSP->v.addr ), &left->v.sint );
+            Set64ValI32( left->v.sint, AddrDiff( left->v.addr, ExprSP->v.addr ) );
             left->ti.kind = TK_INTEGER;
             left->ti.modifier = TM_SIGNED;
             left->ti.size = sizeof( signed_64 );
@@ -197,7 +197,7 @@ void DoMul( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Mul( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64MulEq( &left->v.uint, &ExprSP->v.uint );
         break;
     case TK_REAL:
         LDMul( &left->v.real, &ExprSP->v.real, &left->v.real );
@@ -237,7 +237,7 @@ void DoDiv( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( U64Test( &ExprSP->v.uint ) == 0 ) {
+        if( U64isZero( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
@@ -302,7 +302,7 @@ void DoMod( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( U64Test( &ExprSP->v.uint ) == 0 ) {
+        if( U64isZero( ExprSP->v.uint ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
         if( left->ti.modifier == TM_UNSIGNED ) {
@@ -334,7 +334,7 @@ void DoAnd( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64And( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64AndEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -359,7 +359,7 @@ void DoOr( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Or( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64OrEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -384,7 +384,7 @@ void DoXor( void )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        U64Xor( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
+        U64XorEq( left->v.uint, ExprSP->v.uint );
         break;
     default:
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );

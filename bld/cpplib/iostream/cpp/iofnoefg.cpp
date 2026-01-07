@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +40,16 @@
 #ifdef __QNX__
     #include "slibqnx.h"
 #endif
-#include "exitwmsg.h"
+#include "clibsupp.h"
 #include "iofhdr.h"
 #include "fltsupp.h"
+
 
 extern "C" {
 
 static void _no_support_loaded( void )
 {
-    __fatal_runtime_error( "C++ floating-point support not loaded", 1 );
+    __clib_fatal( "C++ floating-point support not loaded", 1 );
     // never return
 }
 

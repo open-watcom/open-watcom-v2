@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,18 +52,19 @@ _WCRTLINK errno_t __F_NAME(memmove_s,wmemmove_s)( VOID_WC_TYPE * __restrict s1,
     // s1max <= RSIZE_MAX
     // n     <= RSIZE_MAX
     // n     <= s1max
-    if( __check_constraint_nullptr_msg( msg, s1 ) &&
-        __check_constraint_nullptr_msg( msg, s2 ) &&
-        __check_constraint_maxsize_msg( msg, s1max ) &&
-        __check_constraint_maxsize_msg( msg, n ) &&
-        __check_constraint_a_gt_b_msg( msg, n, s1max ) ) {
+    if( __check_constraint_nullptr_msg( msg, s1 )
+      && __check_constraint_nullptr_msg( msg, s2 )
+      && __check_constraint_maxsize_msg( msg, s1max )
+      && __check_constraint_maxsize_msg( msg, n )
+      && __check_constraint_a_gt_b_msg( msg, n, s1max ) ) {
 
         /* now it's safe to use memmove */
          __F_NAME(memmove,wmemmove)( s1, s2, n );
          rc = 0;
     } else {
         // Runtime-constraints violated, zero out destination array
-        if( (s1 != NULL) && __lte_rsizmax( s1max ) ) {
+        if( (s1 != NULL)
+          && __lte_rsizmax( s1max ) ) {
             __F_NAME(memset,wmemset)( s1, 0, s1max );
         }
         // Now call the handler

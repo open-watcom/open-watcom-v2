@@ -162,8 +162,8 @@ endif
         extrn   LIBMAIN     : far       ; startup code
         extrn   LOCALINIT   : far       ; Windows heap init routine
 
-        extrn   __InitRtns  : proc      ; initializer
-        extrn   __FiniRtns  : proc      ; finalizer
+        extrn   __InitRtns  : near      ; initializer
+        extrn   __FiniRtns  : near      ; finalizer
 
 public          _large_code_
 _large_code_    equ 0
@@ -243,7 +243,7 @@ __DLLstart_ endp
 LibEntry    endp
 
         public  "C",__exit
-__exit  proc
+__exit  proc near
         push    ax                      ; save return code
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit

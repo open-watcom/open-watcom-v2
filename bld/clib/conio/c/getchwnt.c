@@ -48,7 +48,7 @@ enum {
     KS_HANDLE_SECOND_CALL       = 2,
 };
 
-static int do_getch( HANDLE conin )
+static int _WCNEAR do_getch( HANDLE conin )
 {
     INPUT_RECORD ir;
     DWORD n;

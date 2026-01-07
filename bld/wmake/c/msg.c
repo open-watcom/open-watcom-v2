@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -359,7 +359,7 @@ void PrintBanner( void )
 }
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 void PrtMsg( enum MsgClass num, ... )
 /*******************************************
@@ -462,7 +462,7 @@ void PrtMsg( enum MsgClass num, ... )
     fflush( fp );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 #ifdef DEVBUILD
@@ -497,7 +497,7 @@ void Usage( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 bool GetYes( enum MsgClass querymsg )
 /************************************
@@ -517,7 +517,7 @@ bool GetYes( enum MsgClass querymsg )
     return( ctoupper( buf[0] ) == YES_CHAR );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

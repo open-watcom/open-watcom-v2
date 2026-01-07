@@ -16,8 +16,8 @@ void dummy( struct xx **p )
 int main()
 {
     union {
-	double d;
-	struct xx *p;
+        double d;
+        struct xx *p;
     } uu;
     e.x = 1.0;
     dummy( &uu.p );

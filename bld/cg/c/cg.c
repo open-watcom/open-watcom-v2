@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ static void dumpAutoLocn( void )
     AUTO_LOCN* curr;
 
     if( auto_locations ) {
-        for( ; ; ) {
+        for( ;; ) {
             curr = auto_locations;
             if( curr == NULL )
                 break;
@@ -470,8 +470,8 @@ extern  n       *CGFlow( cg_op o, n *l, n *r ) {
     Action( " -> %t%n", new_n );
     return( new_n );
 }
-extern  sh      *CGSelInit() {
-/****************************/
+extern  sh      *CGSelInit( void ) {
+/**********************************/
 
     sh  *s;
 
@@ -483,49 +483,48 @@ extern  sh      *CGSelInit() {
     Action( " -> %d%n", SelId );
     return(s);
 }
-extern  void    CGSelCase( sh *s, l *lb, int_32 v ) {
-/*************************************************/
-
-    Action( "CGSelCase" );
-    Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
-    CRefLabel( lb );
-    SelRange(s,v,v,lb);
-}
-extern  void    CGSelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
-/**************************************************************/
-
-    Action( "CGSelRange" );
-    Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
-    CRefLabel( lb );
-    SelRange(s,lo,hi,lb);
-}
-
-extern  void    SelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
-/************************************************************/
+extern  void    SelRange( sh *s, const signed_64 *lo, const signed_64 *hi, l *lb ) {
+/**********************************************************************************/
 
     rh  **or;
     rh  *n;
 
     VerLabel( lb );
     CRefLabel( lb );
-    if( lo > hi )
+    if( I64Cmp( lo, hi ) > 0 )
         CGError( "lo bound > hi bound" );
     or = &s->r;
     for( ;; ) {
         if( *or == NULL )
             break;
-        if( hi < (*or)->l )
+        if( I64Cmp( hi, &(*or)->l ) < 0 )
             break;
-        if( lo <= (*or)->h )
+        if( I64Cmp( lo, &(*or)->h ) <= 0 )
             CGError( "case range overlap" );
         or = &(*or)->n;
     }
     n = CGAlloc( sizeof( rh ) );
-    n->l = lo;
-    n->h = hi;
+    n->l = *lo;
+    n->h = *hi;
     n->lb = lb;
     n->n = *or;
     *or = n;
+}
+extern  void    CGSelCase( sh *s, l *lb, signed_64 v ) {
+/******************************************************/
+
+    Action( "CGSelCase" );
+    Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
+    CRefLabel( lb );
+    SelRange(s,&v,&v,lb);
+}
+extern  void    CGSelRange( sh *s, signed_64 lo, signed_64 hi, l *lb ) {
+/**********************************************************************/
+
+    Action( "CGSelRange" );
+    Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
+    CRefLabel( lb );
+    SelRange(s,&lo,&hi,lb);
 }
 extern  void    CGSelOther( sh *s, l *lb ) {
 /******************************************/
@@ -533,7 +532,9 @@ extern  void    CGSelOther( sh *s, l *lb ) {
     Action( "CGSelOther" );
     Action( "( %d, %s )%n", s->i, Label( lb ) );
     CRefLabel(lb);
-    if( s->o != NULL ) { CGError( "Otherwise already defined" ); }
+    if( s->o != NULL ) {
+        CGError( "Otherwise already defined" );
+    }
     s->o=lb;
 }
 extern  void    CGSelect( sh *s, n *e ) {
@@ -555,7 +556,9 @@ extern  void    CGSelect( sh *s, n *e ) {
         s->r=r->n;
         CGFree(r);
     }
-    if( s->o != NULL ) { Code( "default: %s%n", Label(s->o) ); }
+    if( s->o != NULL ) {
+        Code( "default: %s%n", Label(s->o) );
+    }
     Code("}%n");
     CGFree(s);
 }
@@ -809,7 +812,9 @@ extern  n       *CGUnary( cg_op o, n *r, cg_type t ) {
     Action( "CGUnary" );
     VerNode( r ); VerOp( o, UnaryOps );
     Action( "( %s, %t, %s )", Op(o), r, Tipe(t) );
-    if( o == O_POINTS ) { NotDefault( t ); }
+    if( o == O_POINTS ) {
+        NotDefault( t );
+    }
     new_n = Unary( o, r, t );
     Action( " -> %t%n", new_n );
     return( new_n );
@@ -876,7 +881,8 @@ extern  n       *CGCall( n *r ) {
         Action( "%n" );
     }
     VerNode( r );
-    if( r->r != NULL ) r->r->i++;
+    if( r->r != NULL )
+        r->r->i++;
     return( r );
 }
 extern  void    CGReturn( n *r, cg_type t ) {

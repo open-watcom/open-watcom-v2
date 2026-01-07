@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -516,7 +516,7 @@ noi3:   pop     es
 endif
 
         sub     ebp,ebp                 ; ebp=0 indicates end of ebp chain
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 
 
@@ -551,7 +551,7 @@ __exit   proc near                      ; never return
 ;       EAX - pointer to message to print
 ;       EDX - exit code
 
-__do_exit_with_msg_:                    ; never return
+__do_exit_with_msg_ proc near           ; never return
         push    edx                     ; save return code on stack
         push    eax                     ; save msg
         mov     edx,offset ConsoleName
@@ -585,6 +585,7 @@ else    ; ACAD
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 endif   ; ACAD
+__do_exit_with_msg_ endp
 
 __exit   endp
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,14 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <process.h>
 #define INCL_DOSPROCESS
 #include <wos2.h>
-#include "rterrno.h"
 #include "_process.h"
 #include "_int23.h"
 #include "thread.h"
+
 
 int __p_overlay = 2;
 
@@ -49,7 +50,7 @@ _WCRTLINK int execve( const char *path, const char *const argv[],
     int         rc;
 
     rc = spawnve( P_NOWAIT, path, argv, envp );
-    if( _RWD_errno == 0 ) {
+    if( lib_get_errno() == 0 ) {
         __int23_exit();
         DosExit( EXIT_PROCESS, rc );
         // never return

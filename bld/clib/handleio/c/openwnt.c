@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -48,11 +49,10 @@
 #include "ntext.h"
 #include "openmode.h"
 #include "libwin32.h"
-#include "seterrno.h"
 #include "defwin.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     DWORD               create_disp, exists_disp;
     mode_t              perm;

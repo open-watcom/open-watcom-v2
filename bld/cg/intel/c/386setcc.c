@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "data.h"
 #include "i64.h"
 #include "makeins.h"
@@ -67,7 +66,7 @@ static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
     if( op->n.class != N_CONSTANT || op->c.const_type != CONS_ABSOLUTE ) {
         return( NULL );
     }
-    U64Set( pcons, op->c.lo.u.int_value, op->c.hi.u.int_value );
+    Set64Val( *pcons, op->c.lo.u.int_value, op->c.hi.u.int_value );
     return( ins );
 }
 
@@ -132,16 +131,16 @@ static  bool    FindFlowOut( block *blk ) {
     if( ins1 == NULL )
         return( false );
 
-    I32ToI64( 1, &one );
-    I32ToI64( -1, &neg_one );
+    Set64Val1p( one );
+    Set64Val1m( neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
-    if( U64Cmp( &diff, &neg_one ) == 0 ) {
+    if( U64Eq( diff, neg_one ) ) {
         U64IncDec( &false_cons, -1 );
         reverse = true;
-    } else {
-        if( U64Cmp( &diff, &one ) != 0 )
-            return( false );
+    } else if( U64Eq( diff, one ) ) {
         reverse = false;
+    } else {
+        return( false );
     }
     result = ins0->result;
     if( result != ins1->result )
@@ -161,8 +160,8 @@ static  bool    FindFlowOut( block *blk ) {
     SuffixIns( ins, ins1 );
     ins = ins1;
 
-    if( I64Test( &false_cons ) != 0 ) {
-        konst = AllocS64Const( false_cons.u._32[I64LO32], false_cons.u._32[I64HI32] );
+    if( U64isNonZero( false_cons ) ) {
+        konst = AllocS64Const( U64Low( false_cons ), U64High( false_cons ) );
         ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {
         ins1 = MakeMove( temp, result, type_class );

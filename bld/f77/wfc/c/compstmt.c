@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,9 +127,9 @@ static  void    ProcStmt( void ) {
 
     if( AError )
         return;
-    if( CpError && (StmtProc == PR_NULL) )
+    if( CpError && ( StmtProc == PR_KW_NONE ) )
         return;
-    ProcTable[ StmtProc ]();
+    ProcTable[StmtProc]();
 }
 
 static  void    InitStatement( void )
@@ -140,7 +140,7 @@ static  void    InitStatement( void )
     CpError = false;
     MakeITList();
     StmtSw &= ~SS_SCANNING;
-    StmtProc = 0;
+    StmtProc = PR_KW_NONE;
 }
 
 static void FiniStatement( void )
@@ -169,7 +169,7 @@ void    CompStatement( void )
         //          CHARACTER A, B(79)
         //          EQUIVALENCE (A,B(1))
         //          END
-        if( !scan_error && (StmtProc != PR_NULL) ) {
+        if( !scan_error && ( StmtProc != PR_KW_NONE ) ) {
             ChkStatementSequence();
         }
     }
@@ -183,7 +183,7 @@ void    CompStatement( void )
         CheckOrder();
         if( (ProgSw & PS_BLOCK_DATA) && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
             // if statement wasn't decodeable, don't issue an error
-            if( StmtProc != PR_NULL ) {
+            if( StmtProc != PR_KW_NONE ) {
                 StmtErr( BD_IN_BLOCK_DATA );
             }
         } else if( CtrlFlgOn( CF_NOT_EXECUTABLE ) ) {
@@ -205,13 +205,13 @@ void    CompStatement( void )
         CheckDoEnd();
     }
     // The following must include a check for scanning errors since it is
-    // possible to get a scanning error and "StmtProc != PR_NULL" as in the
+    // possible to get a scanning error and "StmtProc != PR_KW_NONE" as in the
     // following example:       integer*2 fwinmain( hInstance
     // If the check for a scanning error is not performed, then SubProgId
     // will not be properly set when we compile the RETURN statement in the
     // following example:       integer*2 fwinmain( hInstance
     //                          return
-    if( !scan_error && (StmtProc != PR_NULL) && (StmtProc != PR_INCLUDE) ) {
+    if( !scan_error && (StmtProc != PR_KW_NONE) && (StmtProc != PR_INCLUDE) ) {
         SgmtSw |= SG_STMT_PROCESSED;
     }
     FiniStatement();
@@ -243,13 +243,13 @@ void Recurse( void )
     GetStmtType();
     SetCtrlFlgs();
     if( CtrlFlgOn( CF_NOT_SIMPLE_STMT ) ) { // controls recursion
-        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[proc] );
     } else {
         ProcStmt();
         ClearRem();
         TDStmtFini();
         if( CtrlFlgOn( CF_NOT_SIMPLE_STMT | CF_NOT_EXECUTABLE ) ) {
-            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[proc] );
         }
     }
     StmtProc = proc;
@@ -277,7 +277,7 @@ static void GetStmtType( void )
     curr_opnd = CITNode->opnd;
     if( CITNode->opn.ds != DSOPN_NAM ) {
         Error( ST_WANT_NAME );
-        StmtProc = PR_NULL;
+        StmtProc = PR_KW_NONE;
     } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd + 1) == 'O' ) &&
                (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
         StmtProc = PR_DO;
@@ -319,14 +319,14 @@ static void GetStmtType( void )
 
 static void SetCtrlFlgs( void )
 {
-    CtrlFlgs = CFTable[ StmtProc ];
+    CtrlFlgs = CFTable[StmtProc];
 }
 
 static void DefStmtType( void )
 {
     StmtProc = RecStmtKW();      // look up keyword, strip off if found
-    if( StmtProc != 0 ) {
-        RemKeyword( CITNode, strlen( StmtKeywords[ StmtProc ] ) );
+    if( StmtProc != PR_KW_NONE ) {
+        RemKeyword( CITNode, strlen( StmtKeywords[StmtProc] ) );
     }
 }
 
@@ -394,7 +394,7 @@ static void CheckOrder( void )
         if( !CtrlFlgOn( CF_SPECIFICATION ) ) {
             SgmtSw |= SG_NO_MORE_SPECS;
             if( SgmtSw & SG_DEFINING_STRUCTURE ) {
-                Error( SP_UNFINISHED, StmtKeywords[ PR_STRUCTURE ] );
+                Error( SP_UNFINISHED, StmtKeywords[PR_STRUCTURE] );
                 SgmtSw &= ~SG_DEFINING_STRUCTURE;
                 AError = false; // so we still process the statement
             }
@@ -428,13 +428,13 @@ static void CheckDoEnd( void )
 {
     csnode      *cs_node;
 
-    for(;;) {
+    for( ;; ) {
         if( CSHead->typ == CS_DO ) {
-            if( CSHead->cs_info.do_parms->do_term != StmtNo ) {
+            if( CSHead->cs_info.do_parms->term_stmt_no != StmtNo ) {
                 break;
             }
         } else if( CSHead->typ == CS_DO_WHILE ) {
-            if( CSHead->cs_info.do_term != StmtNo ) {
+            if( CSHead->cs_info.term_stmt_no != StmtNo ) {
                 break;
             }
         } else {
@@ -444,11 +444,11 @@ static void CheckDoEnd( void )
     }
     for( cs_node = CSHead; cs_node != NULL; cs_node = cs_node->link ) {
         if( cs_node->typ == CS_DO ) {
-            if( cs_node->cs_info.do_parms->do_term == StmtNo ) {
+            if( cs_node->cs_info.do_parms->term_stmt_no == StmtNo ) {
                 Error( DO_NESTING_BAD );
             }
         } else if( cs_node->typ == CS_DO_WHILE ) {
-            if( cs_node->cs_info.do_term == StmtNo ) {
+            if( cs_node->cs_info.term_stmt_no == StmtNo ) {
                 Error( DO_NESTING_BAD );
             }
         }
@@ -458,7 +458,7 @@ static void CheckDoEnd( void )
 
 static void FiniDo( void )
 {
-    if( ( StmtProc != 0 ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
+    if( ( StmtProc != PR_KW_NONE ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
         StmtErr( DO_ENDING_BAD );
     }
     if( CSHead->typ == CS_DO ) {
@@ -494,7 +494,7 @@ void RemKeyword( itnode *itptr, size_t remove_len )
         itptr->opnd_size -= remove_len;
         curr_char = itptr->opnd;
         curr_size = itptr->opnd_size;
-        for(;;) {
+        for( ;; ) {
             if( curr_char == itptr->opnd + curr_size )
                 break;
             if( isdigit( *curr_char ) == 0 )

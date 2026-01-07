@@ -126,7 +126,7 @@ static  char    *GetSysName( ftnfile *fcb )
         p = _fullpath( buff, fcb->filename, _MAX_PATH );
     }
     if( p != NULL ) {
-        p = RMemAlloc( strlen( buff ) + sizeof( char ) );
+        p = RMemAlloc( strlen( buff ) + 1 );
         strcpy( p, buff );
     }
     return( p );

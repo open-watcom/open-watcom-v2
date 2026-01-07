@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -47,7 +47,7 @@ include exitwmsg.inc
 
         assume  nothing
 
-        extrn   __CMain                 : proc
+        extrn   __CMain                 : near
         extrn   __qnx_exit_             : proc
 
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
@@ -153,8 +153,8 @@ _cstart_ endp
 
 ;       don't touch AX in __exit, it has the return code
 
-__exit  proc near
         public  "C",__exit
+__exit  proc near
         push    ax                      ; save return code on the stack
         mov     dx,DGROUP
         mov     ds,dx

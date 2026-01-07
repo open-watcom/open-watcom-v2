@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <dos.h>
 #include <windows.h>
 #include "osver.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_setdate( struct dosdate_t *date )

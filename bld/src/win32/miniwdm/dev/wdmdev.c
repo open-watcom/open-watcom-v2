@@ -23,7 +23,7 @@
 #define DEVICE_NAME     L"\\Device\\boxsys"
 #define PUBLIC_NAME     L"\\DosDevices\\boxsys"
 
-/* The device extension. This sturcture contains the driver's 
+/* The device extension. This sturcture contains the driver's
  * private data.
  */
 typedef struct {
@@ -93,7 +93,7 @@ NTSTATUS NTAPI HwAddDevice( IN PDRIVER_OBJECT DriverObject,
 
     /* A remove lock prevents removal during IRP processing. */
     IoInitializeRemoveLock( &DevExt->RemoveLock, DRV_TAG, 0, 0 );
-                            
+
     /* Attach to lower driver so we can pass IRPs down. */
     DevExt->LowerDevObj = IoAttachDeviceToDeviceStack( DeviceObject, PhysDevObject );
 
@@ -102,7 +102,7 @@ NTSTATUS NTAPI HwAddDevice( IN PDRIVER_OBJECT DriverObject,
 
     /* Done initializing. */
     DeviceObject->Flags &= ~DO_DEVICE_INITIALIZING;
-	
+
     return( STATUS_SUCCESS );
 }
 
@@ -136,15 +136,15 @@ NTSTATUS NTAPI HwDefaultDispatch( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
         IoReleaseRemoveLock( &DevExt->RemoveLock, Irp );
         return( status );
     }
-    
+
     Stack = IoGetCurrentIrpStackLocation( Irp );
 
-	switch( Stack->MajorFunction ) {
+    switch( Stack->MajorFunction ) {
         case IRP_MJ_CREATE:
         case IRP_MJ_CLOSE:
             status = STATUS_SUCCESS;
             break;
-        default: 
+        default:
             status = STATUS_NOT_IMPLEMENTED;
         break;
     }
@@ -167,7 +167,7 @@ NTSTATUS NTAPI HwDispatchIoctl( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
     PULONG              IdBuff;
     NTSTATUS            status;
     ULONG               info;
-	
+
     DbgPrint( DRV_NAME ": HwDispatchIoctl\n" );
     PAGED_CODE();
 
@@ -189,9 +189,9 @@ NTSTATUS NTAPI HwDispatchIoctl( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
         IoReleaseRemoveLock( &DevExt->RemoveLock, Irp );
         return( status );
     }
-    
+
     Stack = IoGetCurrentIrpStackLocation( Irp );
-    
+
     /* Process an IOCTL. */
     switch( Stack->Parameters.DeviceIoControl.IoControlCode ) {
     case IOCTL_BOXDEV_GET_IDS:
@@ -205,7 +205,7 @@ NTSTATUS NTAPI HwDispatchIoctl( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
         info    = 0;
         break;
     }
- 
+
     Irp->IoStatus.Information = info;
     Irp->IoStatus.Status      = status;
 
@@ -229,7 +229,7 @@ NTSTATUS NTAPI CompletionRoutine( PDEVICE_OBJECT DeviceObject, PIRP Irp, PVOID C
 }
 
 
-/* 
+/*
  * Read a given number of bytes at specified offset from the PCI configuration
  * space of our device. Calls the underlying PCI bus driver to do the work.
  */
@@ -336,14 +336,14 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
     NTSTATUS            status;
 
     DbgPrint( DRV_NAME ": HwDispatchPnP\n" );
-    PAGED_CODE(); 
+    PAGED_CODE();
 
     DevExt = DeviceObject->DeviceExtension;
     Stack  = IoGetCurrentIrpStackLocation( Irp );
 
     status = IoAcquireRemoveLock( &DevExt->RemoveLock, Irp );
     if( !NT_SUCCESS( status ) ) {
-        Irp->IoStatus.Status = status;	
+        Irp->IoStatus.Status = status;
         IoCompleteRequest( Irp, IO_NO_INCREMENT );
         return( status );
     }
@@ -356,10 +356,10 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 
         IoSetCompletionRoutine( Irp, CompletionRoutine,
                                 &Event, TRUE, TRUE, TRUE );
-		                
+
         status = IoCallDriver( DevExt->LowerDevObj, Irp );
         if( status == STATUS_PENDING ) {
-            KeWaitForSingleObject( &Event, Executive, 
+            KeWaitForSingleObject( &Event, Executive,
                                    KernelMode, FALSE, NULL );
         }
         if( NT_SUCCESS( status ) && NT_SUCCESS( Irp->IoStatus.Status ) ) {
@@ -371,18 +371,18 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
             }
         }
         Irp->IoStatus.Status      = status;
-        Irp->IoStatus.Information = 0; 
+        Irp->IoStatus.Information = 0;
         IoCompleteRequest( Irp, IO_NO_INCREMENT );
-        break;  
+        break;
 
     case IRP_MN_QUERY_STOP_DEVICE:
         /* Don't allow device stop. */
         status = STATUS_UNSUCCESSFUL;
         Irp->IoStatus.Status      = status;
-        Irp->IoStatus.Information = 0; 
+        Irp->IoStatus.Information = 0;
         IoCompleteRequest( Irp, IO_NO_INCREMENT );
         break;
-        
+
     case IRP_MN_QUERY_REMOVE_DEVICE:
         /* Allow device removal. */
         Irp->IoStatus.Status = STATUS_SUCCESS;
@@ -405,7 +405,7 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
         }
 
         IoReleaseRemoveLockAndWait( &DevExt->RemoveLock, Irp );
-			
+
         Irp->IoStatus.Status = STATUS_SUCCESS;
         IoSkipCurrentIrpStackLocation( Irp );
         status = IoCallDriver( DevExt->LowerDevObj, Irp );
@@ -421,8 +421,8 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 
     case IRP_MN_STOP_DEVICE:
         /* Shouldn't happen - we failed query stop. */
-    case IRP_MN_CANCEL_REMOVE_DEVICE: 
-    case IRP_MN_CANCEL_STOP_DEVICE: 
+    case IRP_MN_CANCEL_REMOVE_DEVICE:
+    case IRP_MN_CANCEL_STOP_DEVICE:
         /* Cancel remove/stop need no special handling. */
         Irp->IoStatus.Status = STATUS_SUCCESS;
         /* Fall through! */
@@ -438,7 +438,7 @@ NTSTATUS NTAPI HwDispatchPnP( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 
 
 /* Dispatch Power IRPs. Simply passes IRP down the stack. */
-NTSTATUS NTAPI HwDispatchPower( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp ) 
+NTSTATUS NTAPI HwDispatchPower( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 {
     PDEVICE_EXTENSION       DevExt;
 
@@ -466,13 +466,13 @@ NTSTATUS NTAPI DriverEntry( IN PDRIVER_OBJECT DriverObject,
     DbgPrint( DRV_NAME ": DriverEntry\n" );
 
     /* Fill in the callbacks in the driver object. */
-    DriverObject->DriverUnload                         = HwDriverUnload; 
-    DriverObject->DriverExtension->AddDevice           = HwAddDevice;	
+    DriverObject->DriverUnload                         = HwDriverUnload;
+    DriverObject->DriverExtension->AddDevice           = HwAddDevice;
     DriverObject->MajorFunction[IRP_MJ_CREATE]         = HwDefaultDispatch;
     DriverObject->MajorFunction[IRP_MJ_CLOSE]          = HwDefaultDispatch;
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = HwDispatchIoctl;
     DriverObject->MajorFunction[IRP_MJ_PNP]            = HwDispatchPnP;
-    DriverObject->MajorFunction[IRP_MJ_POWER]          = HwDispatchPower; 
-	    
+    DriverObject->MajorFunction[IRP_MJ_POWER]          = HwDispatchPower;
+
     return( STATUS_SUCCESS );
 }

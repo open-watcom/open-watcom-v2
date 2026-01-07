@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -42,7 +43,6 @@
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "rterrno.h"
 #include "openmode.h"
 #include "iomode.h"
 #include "rtcheck.h"
@@ -52,65 +52,65 @@
 
 #if !defined(__NETWARE__)
 
-static int check_mode( int handle, int mode )
-/*******************************************/
+static int _WCNEAR check_mode( int handle, int mode )
+/***************************************************/
 {
   #if defined(__UNIX__)
-    int     __errno;
+    int     errno_num;
     int     flags;
 
     if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
         return( -1 );
     }
-    __errno = EOK;
+    errno_num = 0;
     if( (flags & O_APPEND)
       && (mode & O_APPEND) == 0 ) {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
     if( (flags & O_ACCMODE) == O_RDONLY ) {
         if( ( (mode & O_RDWR)
           && (mode & O_RDONLY) == 0 )
           || (mode & O_WRONLY) ) {
-            __errno = EACCES;
+            errno_num = EACCES;
         }
     } else if( (flags & O_ACCMODE) == O_WRONLY ) {
         if( ( (mode & O_RDWR)
           && (mode & O_WRONLY) == 0 )
           || (mode & O_RDONLY) ) {
-            __errno = EACCES;
+            errno_num = EACCES;
         }
     }
-    if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+    if( errno_num == EACCES ) {
+        lib_set_errno( errno_num );
         return( -1 );
     }
   #elif defined(__OS2_32BIT__)
-    int     __errno;
+    int     errno_num;
     ULONG   state;
     int     rc;
 
-    __errno = EZERO;
+    errno_num = 0;
     rc = DosQueryFHState( (HFILE)handle, &state );
     if( rc == 0 ) {
         if( (state & OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_RDONLY ) {
             if( ( (mode & O_RDWR)
               && (mode & O_RDONLY) == 0 )
               || (mode & O_WRONLY) ) {
-                __errno = EACCES;
+                errno_num = EACCES;
             }
         }
         if( (state & OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_WRONLY ) {
             if( ( (mode & O_RDWR)
               && (mode & O_WRONLY) == 0 )
               || (mode & O_RDONLY) ) {
-                __errno = EACCES;
+                errno_num = EACCES;
             }
         }
     } else {
-        __errno = EACCES;
+        errno_num = EACCES;
     }
-    if( __errno == EACCES ) {
-        _RWD_errno = __errno;
+    if( errno_num == EACCES ) {
+        lib_set_errno( errno_num );
         return( -1 );
     }
   #elif defined(__OS2_16BIT__)

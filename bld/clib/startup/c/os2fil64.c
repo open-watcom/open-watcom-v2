@@ -49,7 +49,7 @@ pfn_DosSetFileSizeL     __os2_DosSetFileSizeL = NULL;
 pfn_DosSetFileLocksL    __os2_DosSetFileLocksL = NULL;
 
 
-static void __init_fileapi64( void )
+static void _WCNEAR __init_fileapi64( void )
 {
     HDIR            handle;
 
@@ -70,4 +70,4 @@ static void __init_fileapi64( void )
     }
 }
 
-AXI( __init_fileapi64, INIT_PRIORITY_RUNTIME )
+AXIN( __init_fileapi64, INIT_PRIORITY_RUNTIME )

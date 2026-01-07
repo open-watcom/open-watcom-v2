@@ -54,14 +54,14 @@ void ParseOneLineAr( const char *cmd, OPT_STORAGE_A *data, bool comment )
 
     /* unused parameters */ (void)comment;
 
-    old_cmd = CmdScanInit( cmd );
+    old_cmd = CmdScanLineInit( cmd );
     done_options = false;
     for( ;; ) {
         CmdScanSkipWhiteSpace();
         option_start = CmdScanAddr();
         switch( CmdPeekChar() ) {
         case '\0':
-            CmdScanInit( old_cmd );
+            CmdScanLineInit( old_cmd );
             return;
         case '-':
             if( !done_options ) {

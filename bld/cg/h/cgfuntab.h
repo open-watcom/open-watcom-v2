@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,8 +108,8 @@ CGAPIDEF( CGTemp,       temp_handle,    (cg_type) )
 CGAPIDEF( CGAutoDecl,   void,           (cg_sym_handle,cg_type) )
 
 CGAPIDEF( CGSelInit,    sel_handle,     (void) )
-CGAPIDEF( CGSelCase,    void,           (sel_handle,label_handle,signed_32) )
-CGAPIDEF( CGSelRange,   void,           (sel_handle,signed_32,signed_32,label_handle) )
+CGAPIDEF( CGSelCase,    void,           (sel_handle,label_handle,signed_64) )
+CGAPIDEF( CGSelRange,   void,           (sel_handle,signed_64,signed_64,label_handle) )
 CGAPIDEF( CGSelOther,   void,           (sel_handle,label_handle) )
 CGAPIDEF( CGSelect,     void,           (sel_handle,cg_name) )
 

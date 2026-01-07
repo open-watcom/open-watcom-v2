@@ -10,7 +10,6 @@
 # dlltarg_opts                  extra OW wlink directive or options used to link DLL
 # dlltarg_export                list of files containing symbols to export from DLL
 # dlltarg_res                   native resource file added to DLL
-# dlltarg_no_ntverrc            don't emit NT version resource to DLL
 #
 # All resource macros are include in dependant list
 #
@@ -20,21 +19,15 @@ dlltarg_name = $(proj_name)
 !ifndef dlltarg_ext
 dlltarg_ext = .dll
 !endif
-!undef ntverrc_res
-!ifdef ntverrc_dll_res
-! ifndef dlltarg_no_ntverrc
-ntverrc_res = $(ntverrc_dll_res)
-! endif
-!endif
 $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) &
-  $(cli_wres_libs) $(dlltarg_res) $(ntverrc_res) $(dlltarg_export)$- $(__MAKEFILES__)
+  $(cli_wres_libs) $(dlltarg_res) $(ntverrc_dll_res) $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs) $(cli_wres_libs)$- $(ldflags_dll)
 !else
     $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_opts)$-
     @for %f in ($+$(dlltarg_objs)$-) do @%append $^&.lnd file %f
-    @for %l in ($+$(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
+    @for %l in ($+$(watcom_extra_libs_dll) $(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif
@@ -47,20 +40,20 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 !undef dlltarg_res_wrc
 !ifdef dlltarg_res
 ! ifeq wreslib_cli 1
-!  ifdef ntverrc_res
-dlltarg_res_wrc = $(ntverrc_res)
+!  ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(ntverrc_dll_res)
 !  else
 #dlltarg_res_wrc =
 !  endif
 ! else
-!  ifdef ntverrc_res
-dlltarg_res_wrc = $(dlltarg_res) -fr=$(ntverrc_res)
+!  ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(dlltarg_res) -fr=$(ntverrc_dll_res)
 !  else
 dlltarg_res_wrc = $(dlltarg_res)
 !  endif
 ! endif
-!else ifdef ntverrc_res
-dlltarg_res_wrc = $(ntverrc_res)
+!else ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(ntverrc_dll_res)
 !else
 #dlltarg_res_wrc =
 !endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,20 +39,19 @@
 #include "ifenv.h"
 
 
-intstar4        LEN( string PGM *arg ) {
-//======================================
-
+intstar4        LEN( string PGM *arg )
+//====================================
 // Return the length of the arg.
-
+{
     return( arg->len );
 }
 
 
-intstar4        XLEN( char PGM *arg, int len ) {
-//==============================================
-
+intstar4        XLEN( char PGM *arg, int len )
+//============================================
 // Return the length of the arg.
+{
+    (void)arg; /* unused parameters */
 
-    arg = arg;
     return( len );
 }

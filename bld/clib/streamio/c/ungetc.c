@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #ifdef __WIDECHAR__
@@ -45,7 +46,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"
@@ -99,7 +99,7 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
 
         /*** Convert the character to multibyte form ***/
         if( wctomb( (char *)mbc, c ) == -1 ) {
-            _RWD_errno = EILSEQ;
+            lib_set_errno( EILSEQ );
             return( WEOF );
         }
         mbcLen = _mbclen( mbc );

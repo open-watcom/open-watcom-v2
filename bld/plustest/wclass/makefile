@@ -83,29 +83,31 @@ test : .SYMBOLIC start
     @%append $(log_file) PASS $(%__CWD__)
     @%make clean
 
-test.$(exe) : $(objs) test1.lnk
+test.$(exe) : $(objs)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) @$]@ NAME $@
+    @%make test1.lnk
+    @which $(linker)
+    $(noecho)$(linker) @test1.lnk NAME $@
     @%make set_old_path
 
 test1.lnk : makefile $(objs)
-    $(noecho)%create $@
-    @%append $@ DEBUG line
+    $(noecho)%create test1.lnk
+    @%append test1.lnk DEBUG line
 !ifndef noisy
-    @%append $@ opt quiet
+    @%append test1.lnk opt quiet
 !endif
-    @%append $@ $(lnk_any)
-    @%append $@ $(stack_$(arch))
+    @%append test1.lnk $(lnk_any)
+    @%append test1.lnk $(stack_$(arch))
 !ifeq arch i86
-    @%append $@ SYSTEM windows
-    @%append $@ OPTION rwreloccheck
-    @%append $@ LIBRARY $(%WATCOM)/lib286/win/ddeml.lib
-    @%append $@ LIBRARY $(%WATCOM)/lib286/win/commdlg.lib
+    @%append test1.lnk SYSTEM windows
+    @%append test1.lnk OPTION rwreloccheck
+    @%append test1.lnk LIBRARY $(%WATCOM)/lib286/win/ddeml.lib
+    @%append test1.lnk LIBRARY $(%WATCOM)/lib286/win/commdlg.lib
 !else
-    @%append $@ SYSTEM nt_win
+    @%append test1.lnk SYSTEM nt_win
 !endif
-    @for %i in ( $(objs) ) do @%append $@ FILE %i
+    @for %i in ( $(objs) ) do @%append test1.lnk FILE %i
 
 clean : .procedure
     @%make echo_clean

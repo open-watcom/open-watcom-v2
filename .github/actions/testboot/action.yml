@@ -1,40 +1,37 @@
 name: test-boot
-description: 'Process test bootstrap build by OW (for test compatibility)'
+description: 'Process test bootstrap build by OW (compatibility test)'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
+  testnewow:
+    description: 'use with new OW'
     required: false
     default: ''
     type: string
 runs:
   using: composite
   steps:
-  - if: inputs.hostos == 'lnx'
+  - if: runner.os == 'Linux'
     name: Test Bootstrap OW
     run: |
-      env | sort
-      ci/buildx.sh
+      if [ ! '${{env.OWTESTMODE}}' = '1' ]; then
+        ci/buildx.sh
+      fi
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
+      OWTESTBOOT:    ${{inputs.testnewow}}
     shell: bash
-  - if: inputs.hostos == 'nt'
+  - if: runner.os == 'Windows'
     name: Test Bootstrap OW
     run: |
-      set
-      ci/buildx.cmd
+      if not '${{env.OWTESTMODE}}' == '1' (
+        ci\buildx.cmd
+      )
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
+      OWTESTBOOT:    ${{inputs.testnewow}}
     shell: cmd

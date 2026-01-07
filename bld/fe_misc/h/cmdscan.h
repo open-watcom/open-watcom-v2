@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +36,6 @@
 
 #include <stdlib.h>
 
-
-#ifdef __UNIX__
-#define _IS_SWITCH_CHAR(c)  ((c) == '-')
-#else
-#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,7 +77,7 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
 ;
-char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+char const *CmdScanLineInit(    // INITIALIZE FOR COMMAND SCANNING
     char const *cmd_line )      // - new command line
 ;                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
@@ -113,6 +107,9 @@ char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
 ;
 void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
+;
+bool CmdScanSwitchChar(         // TEST IF SWITCH CHAR
+    char )
 ;
 
 #ifdef __cplusplus

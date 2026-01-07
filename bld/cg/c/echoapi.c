@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,13 +253,19 @@ void EchoAPI              // EchoAPI ROUTINE
                     EchoAPIString( buffer );
                     break;
                   }
+                  case 'l' : {
+                    long long val64 = va_arg( args, long long );
+                    sprintf( buffer, "%ll", val64 );
+                    EchoAPIString( buffer );
+                    break;
+                  }
                   case 'L' : {
                     EchoAPIHandle( (int)(pointer_uint)va_arg( args, label_handle ), "lh" );
                     break;
                   }
                   case 'o' : {
-                    cg_op op = va_arg( args, cg_op );
-                    switch( op ) {
+                    cg_op opcode = va_arg( args, cg_op );
+                    switch( opcode ) {
 #define STR(x) #x
 #define STR1(x,y) x
 #define STR2(x,y) STR(y)
@@ -270,7 +276,7 @@ void EchoAPI              // EchoAPI ROUTINE
 #undef STR1
 #undef STR
                       default :
-                        sprintf( buffer, "O_0%d", op );
+                        sprintf( buffer, "O_0%d", opcode );
                         EchoAPIString( buffer );
                         break;
                     }

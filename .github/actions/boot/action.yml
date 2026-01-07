@@ -1,18 +1,12 @@
 name: boot
 description: 'Process OW bootstrap build'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
   suffix:
-    description: 'run-time artifact suffix'
-    required: false
-    default: ''
+    description: 'artifact name suffix'
+    required: true
     type: string
-  buildcmd:
-    description: 'build command'
+  args:
+    description: 'build command arguments'
     required: false
     default: ''
     type: string
@@ -21,50 +15,34 @@ inputs:
     required: false
     default: ''
     type: string
-  noarchive:
-    description: 'not use tar archive for artifacts'
-    required: false
-    default: ''
-    type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
-  - if: inputs.hostos == 'lnx' || inputs.hostos == 'osx'
+  - if: runner.os == 'Linux' || runner.os == 'macOS'
     name: Bootstrap
-    run: ${{ inputs.buildcmd }}
+    run: |
+      ci/buildx.sh ${{inputs.args}}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
     shell: bash
-  - if: inputs.hostos == 'nt'
+  - if: runner.os == 'Windows'
     name: Bootstrap
-    run: ${{ inputs.buildcmd }}
+    run: |
+      ci\buildx.cmd ${{inputs.args}}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
+      OWTOOLS:       ${{inputs.owtools}}
+      OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
     shell: cmd
-  - uses: "./.github/actions/artfsave"
+  - uses: ./.github/actions/artfsave
     with:
-      hostos:       ${{ inputs.hostos }}
-      gitpath:      'bld watcom binbuild'
-      artifact:     "bld watcom ${{ inputs.suffix }}"
-      noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
-  - uses: "./.github/actions/artfsave"
+      gitpath:       'bld watcom binbuild'
+      artifact:      bld watcom ${{inputs.suffix}}
+  - uses: ./.github/actions/artfsave
     with:
-      hostos:       ${{ inputs.hostos }}
-      gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.suffix }}"
-      noarchive:    ${{ inputs.noarchive }}
-      owdebug:      ${{ inputs.owdebug }}
+      gitpath:       'build binbuild'
+      artifact:      build ${{inputs.suffix}}

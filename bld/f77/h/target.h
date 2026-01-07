@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,14 @@
 // maximum precision (number of digits) achievable for exponent when
 // converting a binary floating point number to a string
 #define EXP_LEN 3
+//#define EXP_LEN 4
 
 // maximum precision (number of digits) achievable when converting a binary
 // floating-point number to a string
 #define MAX_SP  7       // single precision
 #define MAX_DP  16      // double precision
 #define MAX_XP  16      // extended precision
+//#define MAX_XP  20      // extended precision
 
 // number of digits required to accurately convert a floating-point string
 // to its binary representation

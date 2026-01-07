@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,6 @@
 #include "fio.h"
 
 
-extern void         InitFileIO( uint buff_size );
-extern file_handle  Openf( const char *f, const char *mode, f_attrs attrs );
+extern void         InitFileIO( void );
+extern file_handle  Openf( const char *f, const char *mode );
 extern void         Closef( file_handle fp );

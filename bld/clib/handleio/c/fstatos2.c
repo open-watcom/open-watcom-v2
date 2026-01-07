@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <io.h>
@@ -40,12 +41,9 @@
 #define INCL_LONGLONG
 #include <wos2.h>
 #include "os2fil64.h"
-#include "rterrno.h"
-#include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
-#include "d2ttime.h"
+#include "d2timet.h"
 #include "thread.h"
 
 
@@ -62,8 +60,8 @@
 #endif
 
 
-static unsigned short attr2mode( OS_UINT attr )
-/*********************************************/
+static unsigned short _WCNEAR attr2mode( OS_UINT attr )
+/*****************************************************/
 {
     register unsigned short         mode;
 
@@ -115,11 +113,11 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         }
         buf->st_dev = buf->st_rdev = 0;
         /* handle timestamps */
-        buf->st_ctime = _d2ttime( TODDATE( info.fdateCreation ),
+        buf->st_ctime = __dos2timet( TODDATE( info.fdateCreation ),
                                   TODTIME( info.ftimeCreation ) );
-        buf->st_atime = _d2ttime( TODDATE( info.fdateLastAccess ),
+        buf->st_atime = __dos2timet( TODDATE( info.fdateLastAccess ),
                                   TODTIME( info.ftimeLastAccess ) );
-        buf->st_mtime = _d2ttime( TODDATE( info.fdateLastWrite ),
+        buf->st_mtime = __dos2timet( TODDATE( info.fdateLastWrite ),
                                   TODTIME( info.ftimeLastWrite ) );
         buf->st_btime = buf->st_mtime;
 #if defined( __INT64__ ) && !defined( _M_I86 )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ unsigned char    _WCNEAR __ctrl_break_int = 0;
 ***** which will initialize some global variables.
 ****/
 
-static void init_on_startup( void )
+static void _WCNEAR init_on_startup( void )
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         __ctrl_break_int = 0x06;    /* INT 0x06 */
@@ -53,4 +53,4 @@ static void init_on_startup( void )
     }
 }
 
-AXI( init_on_startup, INIT_PRIORITY_LIBRARY + 1 )
+AXIN( init_on_startup, INIT_PRIORITY_LIBRARY + 1 )

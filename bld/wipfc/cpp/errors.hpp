@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,10 +39,11 @@ enum ErrCode {
     ERR_NO_ERR = 0,
     #define PICK(a,b) a,
     #include "err.hpp"
+    #undef PICK
     ERR_LAST_ERR
 };
 
-extern const char* ErrText[ ERR_LAST_ERR + 1 ];
+extern const char   * const ErrText[ ERR_LAST_ERR + 1 ];
 
 class FatalError {
 public:

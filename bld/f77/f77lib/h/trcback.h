@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,21 +34,10 @@
 // traceback is a load 'n go traceback
 
 typedef struct traceback {
-    struct traceback PGM    *link;          // pointer to previous traceback
-    uint                    line;           // current line
-    char                    *name;          // current module
+    struct traceback    PGM *link;      // pointer to previous traceback
+    uint                line;           // current line
+    char                *name;          // current module
 } traceback;
 
 #define TB_LG           (~(uint)0)
 #define TB_LG_DB        (~(uint)0-1)
-
-#ifdef __SW_BM
-
-    #define _EXCURR         (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
-
-#else
-
-    extern traceback PGM    *ExCurr;        // head of traceback list
-    #define _EXCURR         (ExCurr)
-
-#endif

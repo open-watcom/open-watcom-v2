@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,27 +31,15 @@
 
 
 #include "variety.h"
+#include <stdio.h>
 #include "rtdata.h"
 #include "rtinit.h"
 #include "commode.h"
 
-/*
- * __set_commode function is actually a _WCRTLINK function. It's prototyped
- * incorrectly so that this module will work correctly with both dynamic
- * and static versions of the C library.
- *
- * The pragma is there so that this module will work with both stack and
- * register calling conventions, eliminating the need to have a separate
- * object file for each.
- *
- * Similarly, __set_commode is declared _WCI86FAR so that the same object
- * file will work in any 16-bit memory model.
- */
 
-static void do_it( void )
+static void _WCNEAR do_it( void )
 {
-    __set_commode();
+    _RWD_commode = _COMMIT;
 }
 
-
-AXI( do_it, INIT_PRIORITY_LIBRARY )
+AXIN( do_it, INIT_PRIORITY_LIBRARY )

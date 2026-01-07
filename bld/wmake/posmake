@@ -4,7 +4,7 @@
 # tabs, too!
 
 INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -DINCL_MSGTEXT -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx $(EXTRADEF)
 CFLAGS = -g -O2 $(INCS)
 
 all: ../../../build/$(OWOBJDIR)/wmake
@@ -63,7 +63,7 @@ mupdate.o: ../c/mupdate.c
 	$(CC) $(CFLAGS) -c $?
 mvecstr.o: ../c/mvecstr.c
 	$(CC) $(CFLAGS) -c $?
-dostimet.o: ../../watcom/c/dostimet.c
+depinfo.o: ../../watcom/c/depinfo.c
 	$(CC) $(CFLAGS) -c $?
 wsplice.o: ../../builder/c/wsplice.c
 	$(CC) $(CFLAGS) -c $?
@@ -73,7 +73,7 @@ clibext.o: ../../watcom/c/clibext.c
 OBJS = macros.o main.o mautodep.o mautoomf.o mautoorl.o mautores.o \
  mcache.o memory.o mexec.o mglob.o mhash.o misc.o mlex.o mlexmac.o mlexprs.o \
  mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
- mtarget.o mupdate.o mvecstr.o dostimet.o clibext.o
+ mtarget.o mupdate.o mvecstr.o depinfo.o clibext.o
 
 wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@

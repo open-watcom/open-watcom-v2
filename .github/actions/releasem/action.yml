@@ -1,0 +1,48 @@
+name: monthly-release
+description: 'Create month Release on GitHub'
+outputs:
+  relid:
+    description: 'month release ID'
+    value: ${{steps.newrel.outputs.relid}}
+runs:
+  using: composite
+  steps:
+  - name: Setup curl options
+    id: curlcmd
+    uses: ./.github/actions/curlcmd
+##############################################
+# create monthly release, only if not exists
+##############################################
+  - name: 'Prepare information for monthly Release'
+    id: reldata
+    run: |
+      tagstamp=$(date +'%Y-%m-%d')
+      echo "mtag=$(date +'%Y-%m-')" >> ${{github.output}}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{github.output}}
+      echo "tag=$tagstamp-Build" >> ${{github.output}}
+      echo "tagmsg=$tagstamp $tagstamp-Build" >> ${{github.output}}
+      echo "title=$tagstamp Build" >> ${{github.output}}
+    shell: bash
+  - name: 'Check monthly Release exists'
+    id: oldrel
+    run: |
+      $response = ${{steps.curlcmd.outputs.gh1}} `
+      "${{steps.curlcmd.outputs.gh2}}/git/matching-refs/tags/${{steps.reldata.outputs.mtag}}"
+      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
+      $sha = $response | jq -r .[].object.sha
+      if( "$sha" -eq 'null' ) { $sha = '' }
+      "sha=$sha" | Out-File -FilePath ${{github.output}} -Encoding utf8 -Append
+    shell: pwsh
+  - if: steps.oldrel.outputs.sha == ''
+    id: newrel
+    name: 'Create monthly Release'
+    uses: ./.github/actions/ghrelcre
+    with:
+      note:    "Created ${{steps.reldata.outputs.timestamp}} UTC"
+      title:   ${{steps.reldata.outputs.title}}
+      tag:     ${{steps.reldata.outputs.tag}}
+      tagmsg:  ${{steps.reldata.outputs.tagmsg}}
+  - if: steps.oldrel.outputs.sha == ''
+    id: mdata
+    run: echo "tag=${{steps.reldata.outputs.tag}}" >> ${{github.output}}
+    shell: bash

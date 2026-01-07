@@ -2,7 +2,7 @@
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
-:cmt * Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+:cmt * Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -546,6 +546,12 @@ or
 
 #warning my very own warning
 :eerrbad.
+:MSGSYM. ERR_INT_IS_UNSIGNED
+:MSGTXT. integer constant is so large that it is unsigned
+:MSGJTXT. 整数定数が大きすぎるため符号なしです
+:WARNING. 1
+This warning indicates that the number is too large to fit into the standard 
+signed integer type, so the compiler treats it as an unsigned integer type.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2

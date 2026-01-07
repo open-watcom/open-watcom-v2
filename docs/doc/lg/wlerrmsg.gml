@@ -93,7 +93,7 @@ represents integers in the range -32768 and 32767.
 represents integers in the range -2147483648 and 2147483647.
 .note
 .id %f
-represents an executable file format such as DOS, ZDOS, WINDOWS, PHARLAP,
+represents an executable file format such as DOS, WINDOWS, PHARLAP,
 NOVELL, OS2, QNX or ELF.
 .endnote
 .np
@@ -784,8 +784,7 @@ If it is issued, please report this problem.
 .errnote 2068 absolute segment fixup not valid in protected mode
 .np
 A reference to an absolute location is not allowed in protected mode.
-A protected-mode application is one that is being generated for ZDOS,
-OS/2,
+A protected-mode application is one that is being generated for OS/2,
 CauseWay DOS extender,
 Tenberry Software's DOS/4G or DOS/4GW DOS extender,
 FlashTek's DOS extender,

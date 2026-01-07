@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,22 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  token/downscan operand constant tables data
+* Description:  downscan operand constant tables data
 *
 ****************************************************************************/
 
 
-// It holds relationship for token class and operand indexes
+// It holds operand indexes
 //
-//    tok_id    opn_id     opn_proc
-pick( TO_OPR,  DSOPN_PHI,  &Phi       )      // null operand
-pick( TO_NAM,  DSOPN_NAM,  &DSName    )      // name
-pick( TO_LIT,  DSOPN_LIT,  &LitC      )      // literal
-pick( TO_LGL,  DSOPN_LGL,  &LogC      )      // logical
-pick( TO_INT,  DSOPN_INT,  &IntC      )      // integer
-pick( TO_REA,  DSOPN_REA,  &RealC     )      // real
-pick( TO_DBL,  DSOPN_DBL,  &DoubleC   )      // double
-pick( TO_EXT,  DSOPN_EXT,  &ExtendedC )      // extended
-pick( TO_OCT,  DSOPN_OCT,  &OctalC    )      // octal constant
-pick( TO_HEX,  DSOPN_HEX,  &HexC      )      // hexadecimal constant
-pick( TO_FMT,  DSOPN_FMT,  NULL       )      // FORMAT string
+//     opn_id     opn_proc
+pick( DSOPN_PHI,  &Phi       )      // null operand
+pick( DSOPN_NAM,  &DSName    )      // name
+pick( DSOPN_LIT,  &LitC      )      // literal
+pick( DSOPN_LGL,  &LogC      )      // logical
+pick( DSOPN_INT,  &IntC      )      // integer
+pick( DSOPN_REA,  &RealC     )      // real
+pick( DSOPN_DBL,  &DoubleC   )      // double
+pick( DSOPN_EXT,  &ExtendedC )      // extended
+pick( DSOPN_OCT,  &OctalC    )      // octal constant
+pick( DSOPN_HEX,  &HexC      )      // hexadecimal constant
+pick( DSOPN_FMT,  NULL       )      // FORMAT string

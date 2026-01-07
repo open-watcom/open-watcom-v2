@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -258,7 +258,7 @@ static void generateCallRefICs( // GENERATE IC'S FOR REFERENCE PARAMETERS
                     INT_CONSTANT icon;
                     right = arg->u.subtree[1];
                     if( NodeIsIntConstant( right, &icon ) ) {
-                        off = icon.u.uval;
+                        off = U64Low( icon.value );
                         arg = getChildNode( &arg->u.subtree[0] );
                         if( arg->op == PT_SYMBOL ) {
                             generateRargOffset( arg, arg_no, off );

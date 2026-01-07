@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,8 @@ void InitStmt( void )
 void SwitchPurge( void )
 {
     SWITCHPTR   sw;
-    CASEPTR     c_entry, c_tmp;
+    CASEPTR     c_entry;
+    CASEPTR     c_tmp;
 
     while( (sw = SwitchStack) != NULL ) {
         SwitchStack = sw->prev_switch;
@@ -182,7 +183,8 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.u2.func.sym_handle = sym_handle;
     tree->op.u2.func.flags = FUNC_NONE;
-    if( TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
+    if( TOGGLE( inline )
+      || (sym->mods & FLAG_INLINE) ) {
         if( !sym->attribs.naked ) {
             if( strcmp( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
@@ -417,7 +419,8 @@ static void ReturnStmt( SYM_HANDLE func_result_handle, struct return_info *info 
         CErr1( ERR_INCONSISTENT_USE_OF_RETURN );
     }
     for( block = BlockStack; block != NULL; block = block->prev_block ) {
-        if( (block->block_type == T__TRY) || (block->block_type == T___TRY) ) {
+        if( (block->block_type == T__TRY)
+          || (block->block_type == T___TRY) ) {
             UnWindTry( TRYSCOPE_NONE );
             break;
         }
@@ -432,7 +435,8 @@ static void SetFuncReturnNode( TREEPTR tree )
     typ = CurFunc->sym_type->object;
     tree->u.expr_type = typ;
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
+    if( typ->decl_type == TYP_STRUCT
+      || typ->decl_type == TYP_UNION ) {
         tree->right = LeafNode( OPR_NOP );      // place holder
         tree->right->u.expr_type = NULL;
     }
@@ -553,7 +557,8 @@ static void BreakStmt( void )
         while( block != LoopStack ) {
             if( block->block_type == T_SWITCH )
                 break;
-            if( (block->block_type == T__TRY) || (block->block_type == T___TRY) ) {
+            if( (block->block_type == T__TRY)
+              || (block->block_type == T___TRY) ) {
                 try_scope = block->parent_index;
             }
             block = block->prev_block;
@@ -579,7 +584,8 @@ static void LeaveStmt( void )
     NextToken();
     block = BlockStack;
     while( block != NULL ) {
-        if( (block->block_type == T__TRY) || (block->block_type == T___TRY) )
+        if( (block->block_type == T__TRY)
+          || (block->block_type == T___TRY) )
             break;
         block = block->prev_block;
     }
@@ -604,7 +610,8 @@ static void ContinueStmt( void )
             try_scope = TRYSCOPE_UNDEF;
             block = BlockStack;
             while( block != LoopStack ) {
-                if( ( block->block_type == T__TRY ) || ( block->block_type == T___TRY ) ) {
+                if( ( block->block_type == T__TRY )
+                  || ( block->block_type == T___TRY ) ) {
                     try_scope = block->parent_index;
                 }
                 block = block->prev_block;
@@ -765,10 +772,13 @@ static void StmtExpr( void )
 }
 
 
-static void AddCaseLabel( unsigned value )
+static void AddCaseLabel( signed_64 value )
 {
-    CASEPTR         ce, prev_ce, new_ce;
-    unsigned        old_value, converted_value;
+    CASEPTR         ce;
+    CASEPTR         prev_ce;
+    CASEPTR         new_ce;
+    signed_64       old_value;
+    signed_64       converted_value;
     TREEPTR         tree;
     char            buffer[12];
 
@@ -782,15 +792,19 @@ static void AddCaseLabel( unsigned value )
 #else
     converted_value = value;
 #endif
-    old_value = converted_value + 1;  /* make old_value different */
+    old_value = converted_value;
+    U64IncDec( &old_value, 1 ); /* make old_value different */
     for( ce = SwitchStack->case_list; ce != NULL; ce = ce->next_case ) {
         old_value = ce->value;
-        if( old_value >= converted_value )
+        if( I64Cmp( &old_value, &converted_value ) >= 0 )
             break;
         prev_ce = ce;
     }
-    if( converted_value == old_value ) {   /* duplicate case value found */
-        sprintf( buffer, SwitchStack->case_format, value );
+    if( U64Eq( converted_value, old_value ) ) {
+        /*
+         * duplicate case value found
+         */
+        sprintf( buffer, "%lld", value.u._64[0] );
         CErr2p( ERR_DUPLICATE_CASE_VALUE, buffer );
     } else {
         new_ce = (CASEPTR)CMemAlloc( sizeof( CASEDEFN ) );
@@ -805,7 +819,9 @@ static void AddCaseLabel( unsigned value )
         /* Check if the previous statement was a 'case'. If so, reuse the label, as generating
          * too many labels seriously slows down code generation.
          */
-        if( prev_ce && LastStmt->op.opr == OPR_STMT && LastStmt->right->op.opr == OPR_CASE ) {
+        if( prev_ce
+          && LastStmt->op.opr == OPR_STMT
+          && LastStmt->right->op.opr == OPR_CASE ) {
             new_ce->label = SwitchStack->last_case_label;
             new_ce->gen_label = false;
         } else {
@@ -813,10 +829,10 @@ static void AddCaseLabel( unsigned value )
             new_ce->gen_label = true;
         }
         SwitchStack->number_of_cases++;
-        if( converted_value < SwitchStack->low_value ) {
+        if( I64Cmp( &converted_value, &SwitchStack->low_value ) < 0 ) {
             SwitchStack->low_value = converted_value;
         }
-        if( converted_value > SwitchStack->high_value ) {
+        if( I64Cmp( &converted_value, &SwitchStack->high_value ) > 0 ) {
             SwitchStack->high_value = converted_value;
         }
         SwitchStack->last_case_label = new_ce->label;
@@ -834,16 +850,7 @@ static void CaseStmt( void )
     NextToken();
     if( SwitchStack ) {
         if( ConstExprAndType( &val ) ) {
-            if( val.type == TYP_ULONG64 ) {
-                if( !U64IsU32( val.value ) ) {
-                    CErr1( ERR_CONSTANT_TOO_BIG );
-                }
-            } else if( val.type == TYP_LONG64 ) {
-                if( !I64IsI32( val.value ) ) {
-                    CErr1( ERR_CONSTANT_TOO_BIG );
-                }
-            }
-            AddCaseLabel( U32FetchTrunc( val.value) );
+            AddCaseLabel( val.value );
         }
         MustRecog( T_COLON );
         if( CurToken == T_RIGHT_BRACE ) {
@@ -918,7 +925,8 @@ static bool EndTry( void )
     tree->op.u2.st.u.try_index = BlockStack->try_index;
     tree->op.u2.st.parent_scope = parent_scope;
     AddStmt( tree );
-    if( (CurToken == T__EXCEPT) || (CurToken == T___EXCEPT) ) {
+    if( (CurToken == T__EXCEPT)
+      || (CurToken == T___EXCEPT) ) {
         NextToken();
         BlockStack->block_type = T__EXCEPT;
         BlockStack->break_label = NextLabel();
@@ -948,7 +956,8 @@ static bool EndTry( void )
         tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
         return( true );
-    } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
+    } else if( (CurToken == T__FINALLY)
+      || (CurToken == T___FINALLY) ) {
         CompFlags.in_finally_block = true;
         NextToken();
         BlockStack->block_type = T__FINALLY;
@@ -989,44 +998,30 @@ static void SwitchStmt( void )
     SWITCHPTR   sw;
     TREEPTR     tree;
     TYPEPTR     typ;
-//    int         switch_type;
 
     StartNewBlock();
     NextToken();
     sw = (SWITCHPTR)CMemAlloc( sizeof( SWITCHDEFN ) );
     sw->prev_switch = SwitchStack;
-    sw->low_value = ~0U;
-    sw->high_value = 0U;
-    sw->case_format = "%ld";        /* assume signed cases */
+    Set64Val1m( sw->low_value );
+    Set64ValZero( sw->high_value );
     SwitchStack = sw;
-//    switch_type = TYP_INT;         /* assume int */
     tree = RValue( BracketExpr() );
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
-    if( typ->decl_type == TYP_UFIELD ) {
-        if( typ->u.f.field_width == (TARGET_INT * CHAR_BIT) ) {
-            sw->case_format = "%lu";
-//            switch_type = TYP_UINT;
-        }
-    }
     switch( typ->decl_type ) {
     case TYP_USHORT:
     case TYP_UINT:
-        sw->case_format = "%lu";
-//        switch_type = TYP_UINT;
     case TYP_CHAR:
     case TYP_UCHAR:
     case TYP_SHORT:
     case TYP_INT:
     case TYP_FIELD:
     case TYP_UFIELD:
-        break;
     case TYP_ULONG:
-        sw->case_format = "%lu";
-//        switch_type = TYP_ULONG;
-        break;
     case TYP_LONG:
-//        switch_type = TYP_LONG;
+    case TYP_ULONG64:
+    case TYP_LONG64:
         break;
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
@@ -1146,42 +1141,22 @@ static bool IsDeclarator( TOKEN token )
 
     /* If token class is storage class or qualifier, it's a declaration */
     if( TokenClass[token] == TC_STG_CLASS
-      || TokenClass[token] == TC_QUALIFIER
+      || TokenClass[token] == TC_TYPE_QUALIFIER
+      || TokenClass[token] == TC_TYPE_SPECIFIER
       || TokenClass[token] == TC_DECLSPEC ) {
         return( true );
     }
 
-    /* If token is one of the following, it's a declaration */
-    switch( token ) {
-    case T_VOID:
-    case T_CHAR:
-    case T_SHORT:
-    case T_INT:
-    case T_LONG:
-    case T_FLOAT:
-    case T_DOUBLE:
-    case T_SIGNED:
-    case T_UNSIGNED:
-    case T__COMPLEX:
-    case T__IMAGINARY:
-    case T__BOOL:
-    case T___INT64:
-    case T_STRUCT:
-    case T_UNION:
-    case T_ENUM:
-        return( true );
-    default:
-        break;
-    }
-
     /* If token is an ID, it might be a typedef */
-    if( (CurToken == T_ID) || (CurToken == T_SAVED_ID) ) {
+    if( (CurToken == T_ID)
+      || (CurToken == T_SAVED_ID) ) {
         if( CurToken == T_ID ) {
             sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
         } else {    /* T_SAVED_ID */
             sym_handle = SymLookTypedef( CalcHashID( SavedId ), SavedId, &sym );
         }
-        if( sym_handle != SYM_NULL && sym.attribs.stg_class == SC_TYPEDEF ) {
+        if( sym_handle != SYM_NULL
+          && sym.attribs.stg_class == SC_TYPEDEF ) {
             return( true );
         }
     }
@@ -1257,7 +1232,9 @@ void Statement( void )
     SymReplace( &sym, func_result_handle );
     for( ;; ) {
         CompFlags.pending_dead_code = false;
-        if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
+        if( GrabLabels() == 0
+          && declaration_allowed
+          && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
         if( CompVars.cstd > STD_C89 ) {
@@ -1271,7 +1248,9 @@ void Statement( void )
             BlockStack->break_label = NextLabel();
             JumpFalse( BracketExpr(), BlockStack->break_label );
             /* only issue msg if ';' is on same line as 'if' */
-            if( CurToken == T_SEMI_COLON && SrcLoc.line == TokenLoc.line && SrcLoc.fno == TokenLoc.fno ) {
+            if( CurToken == T_SEMI_COLON
+              && SrcLoc.line == TokenLoc.line
+              && SrcLoc.fno == TokenLoc.fno ) {
                 SetErrLoc( &TokenLoc );
                 NextToken();    /* look ahead for else keyword */
                 if( CurToken != T_ELSE ) {
@@ -1355,7 +1334,8 @@ void Statement( void )
                 return_at_outer_level = true;
             }
             MustRecog( T_SEMI_COLON );
-            if( SymLevel != 1 || CurToken != T_RIGHT_BRACE
+            if( SymLevel != 1
+              || CurToken != T_RIGHT_BRACE
               || BlockStack->block_type != T_LEFT_BRACE ) {
                 if( end_of_func_label == 0 ) {
                     end_of_func_label = NextLabel();
@@ -1440,18 +1420,21 @@ void Statement( void )
         }
     }
     /* C99 has special semantics for return value of main() */
-    if( ( CompVars.cstd > STD_C89 ) && strcmp( CurFunc->name, "main" ) == 0 ) {
+    if( ( CompVars.cstd > STD_C89 )
+      && strcmp( CurFunc->name, "main" ) == 0 ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = true;
         }
     }
     if( !return_info.with_expr ) {   /* no return values present */
-        if( DeadCode == 0 && !CurFunc->attribs.naked ) {
+        if( DeadCode == 0
+          && !CurFunc->attribs.naked ) {
             CheckRetValue();
         }
     } else if( !return_at_outer_level ) {
-        if( DeadCode == 0 && !CurFunc->attribs.naked ) {
+        if( DeadCode == 0
+          && !CurFunc->attribs.naked ) {
             CWarn2p( ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
@@ -1479,7 +1462,8 @@ void Statement( void )
         if( DefFile == NULL ) {
             OpenDefFile();
         }
-        if( DefFile != NULL && CurFunc->attribs.stg_class == SC_NONE ) {
+        if( DefFile != NULL
+          && CurFunc->attribs.stg_class == SC_NONE ) {
             /* function exported */
             DumpFuncDefn();
         }

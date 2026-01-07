@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,14 @@
 #pragma off (unreferenced);
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
+
 
 _WCRTLINK int (_setmode)( int handle, int mode )
 {

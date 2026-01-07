@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,7 @@
     #include <wos2.h>
 #endif
 #include "rtstack.h"
-#include "frtdata.h"
 #include "fthread.h"
-#include "xfflags.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "fapptype.h"
@@ -57,22 +55,24 @@
   #if defined( __386__ )
     // so compile-generated symbol "__fthread_init" is defined
     // when we link a 32-bit Windows DLL
-    #pragma aux         __fthread_init "*";
-    char                __fthread_init = { 0 };
+    #pragma aux __fthread_init "*";
+    char        __fthread_init = { 0 };
   #endif
-  char          __FAppType = { FAPP_GUI };
+    char        __FAppType = { FAPP_GUI };
 #else
-  char          __FAppType = { FAPP_CHARACTER_MODE };
+    char        __FAppType = { FAPP_CHARACTER_MODE };
 #endif
 
 void            (* _ExceptionInit)( void ) = { &R_TrapInit };
 void            (* _ExceptionFini)( void ) = { &R_TrapFini };
 
-static  char            RTSysInitialized = { 0 };
+static char     RTSysInitialized = { 0 };
 
-#ifdef __SW_BM
+#ifdef __MT__
 
-static  void    __NullFIOAccess( void ) {}
+static void     __NullFIOAccess( void )
+{
+}
 
 void            (*_AccessFIO)( void )         = &__NullFIOAccess;
 void            (*_ReleaseFIO)( void )        = &__NullFIOAccess;
@@ -85,7 +85,7 @@ void    __InitFThreadData( void *td )
 {
     fthread_data *ftd;
 
-    ftd = THREADPTR2FTHREADPTR( td );
+    ftd = C2F_THREADDATAPTR( td );
 
     // Must match __InitRTData().
 
@@ -93,14 +93,10 @@ void    __InitFThreadData( void *td )
     ftd->__XceptionFlags = 0;
 }
 
-#else
-
-volatile unsigned short __XcptFlags;
-
 #endif
 
 
-static  void    __InitRTData( void )
+static void     __InitRTData( void )
 //==============================
 {
     // Must match __InitFThreadData().
@@ -110,17 +106,17 @@ static  void    __InitRTData( void )
 }
 
 
-static void RTSysFini( void ) {
-//=============================
-
+static void RTSysFini( void )
+//===========================
+{
     _ExceptionFini();
     // WATFOR-77 calls __ErrorFini() when it terminates
     __ErrorFini();
 }
 
-unsigned        RTSysInit( void ) {
-//===========================
-
+unsigned        RTSysInit( void )
+//===============================
+{
     if( RTSysInitialized )
         return( 0 );
 #if defined( __OS2__ ) && defined( __386__ )
@@ -157,16 +153,11 @@ unsigned        RTSysInit( void ) {
 }
 
 
-// WARNING: ALL routines below this point are XI initialization routines with no
-// stack checking on at all times.  do not place routines below this point
-// unless stack checking must be turned off at all times.
-#pragma off (check_stack)
+#ifdef __MT__
 
-#ifdef __SW_BM
-
-static  void    __InitThreadDataSize( void ) {
-//======================================
-
+static  void    __InitThreadDataSize( void )
+//==========================================
+{
     __FThreadDataOffset = __RegisterThreadDataSize( sizeof( fthread_data ) );
 }
 
@@ -179,12 +170,19 @@ XI( __fthread_data_size, __InitThreadDataSize, INIT_PRIORITY_THREAD )
 
 #define F77_ALT_STACK_SIZE      8 * 1024
 
-static void     __InitAlternateStack( void ) {
-//======================================
+/*
+ * WARNING: Following routine manipulate with stack therefore
+ * stack checking must be turned off at all times.
+ */
 
+#pragma off( check_stack );
+static void     _WCNEAR __InitAlternateStack( void )
+//==================================================
+{
         __ASTACKSIZ = F77_ALT_STACK_SIZE;
 }
+#pragma pop( check_stack );
 
-AXI( __InitAlternateStack, INIT_PRIORITY_LIBRARY );
+AXIN( __InitAlternateStack, INIT_PRIORITY_LIBRARY );
 
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,8 @@
 #include <iostream>
 #include <streambu>
 #endif
-#include "liballoc.h"
+#include "clibsupp.h"
+
 
 namespace std {
 
@@ -43,7 +45,7 @@ namespace std {
 
   streambuf::~streambuf() {
     if( __delete_reserve ) {
-        _plib_free( __reserve_base );
+        __clib_free( __reserve_base );
     }
   }
 

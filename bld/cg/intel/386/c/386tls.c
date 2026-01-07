@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,7 @@ static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def typ
     temp_index = AllocIndex( t1, NULL, 0, WD );
     new_ins = MakeMove( temp_index, t3, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( t3, op, op->v.offset, type_class, TypeClassSize[type_class], 0, 0 );
+    result_index = ScaleIndex( t3, op, op->v.offset, type_class, TypeClassSize[type_class], SCALE_NONE, 0 );
     return( result_index );
 }
 
@@ -149,7 +149,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
     temp = AllocTemp( WD );
     new_ins = MakeMove( tls, temp, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( temp, op, op->v.offset, type_class, TypeClassSize[type_class], 0, 0 );
+    result_index = ScaleIndex( temp, op, op->v.offset, type_class, TypeClassSize[type_class], SCALE_NONE, 0 );
     return( result_index );
 }
 
@@ -209,9 +209,10 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
             new_ins = MakeUnary( OP_LA, tls_data, temp, WD );
             PrefixIns( ins, new_ins );
             index = op->i.index;
-            if( op->i.scale != 0 ) {
+            if( op->i.scale != SCALE_NONE ) {
                 const int_32 values[] = { 1, 2, 4, 8, 16 };
-                if( op->i.scale > 4 ) _Zoiks( ZOIKS_134 );
+                if( op->i.scale > SCALE_16 )
+                    _Zoiks( ZOIKS_134 );
                 index = AllocTemp( WD );
                 new_ins = MakeBinary( OP_MUL, op->i.index,
                                 AllocS32Const( values[op->i.scale] ),
@@ -223,7 +224,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
             *pop = ScaleIndex( temp, NULL, 0,
                             _OpClass(ins),
                             TypeClassSize[_OpClass(ins)],
-                            0, 0 );
+                            SCALE_NONE, 0 );
         }
         break;
     }

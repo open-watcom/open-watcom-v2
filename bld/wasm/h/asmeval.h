@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,8 @@ typedef struct expr_list {
     bool            abs;
     memtype         mem_type;       // Whether expr is BYTE, WORD, DWORD, etc.
     uint_8          scale;          // scaling factor 1, 2, 4, or 8 - 386 code only
-    asm_sym         *sym;
-    asm_sym         *mbr;
+    asm_sym_handle  sym;
+    asm_sym_handle  mbr;
 } expr_list;
 
 extern token_idx    EvalExpr( token_buffer *tokbuf, token_idx start, token_idx end, bool );

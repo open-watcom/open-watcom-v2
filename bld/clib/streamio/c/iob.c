@@ -54,5 +54,5 @@ _WCRTDATA FILE _WCDATA __iob[_NFILES] = {
 __stream_link *__ClosedStreams;
 __stream_link *__OpenStreams;
 
-AXI(__InitFiles,INIT_PRIORITY_LIBRARY);
-AYI(__full_io_exit,INIT_PRIORITY_LIBRARY);
+AXIN( __InitFiles, INIT_PRIORITY_LIBRARY );
+AYIN( __full_io_exit, INIT_PRIORITY_LIBRARY );

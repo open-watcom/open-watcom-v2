@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -409,7 +409,11 @@ PTREE PTreeIntConstant( int v, type_id id )
     PTREE new_tree;
 
     new_tree = allocConstant( PT_INT_CONSTANT, id );
-    Int64From32( new_tree->type, v, &new_tree->u.int64_constant );
+    if( SignedIntType( new_tree->type ) ) {
+        Set64ValI32( new_tree->u.int64_constant, v );
+    } else {
+        Set64ValU32( new_tree->u.int64_constant, v );
+    }
     return( new_tree );
 }
 

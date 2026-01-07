@@ -58,9 +58,10 @@
 #include "intrface.h"
 #include "x86obj.h"
 #include "i87data.h"
-#include "dostimet.h"
 #include "cgsegids.h"
 #include "feprotos.h"
+
+#include "clibext.h"
 
 
 #define _NIDX_NULL      1   /* lname "" */
@@ -103,6 +104,24 @@
 #define altCodeSegId    codeSegId
 
 #define OMFNAMELEN(s)   *(unsigned char *)(s)
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
 
 typedef struct lname_cache {
     struct lname_cache  *next;
@@ -1125,6 +1144,24 @@ static omf_idx getImportHdl( void )
     return( ImportHdl++ );
 }
 
+static time_t timet2dosu( time_t stamp )
+/**************************************/
+{
+    struct tm       *t;
+    unsigned short  dos_time;
+    unsigned short  dos_date;
+
+    t = gmtime( &stamp );
+
+    dos_date = ( ( t->tm_year - 80 ) << DATE_YEAR_B )
+             | ( ( t->tm_mon + 1 ) << DATE_MON_B )
+             | ( t->tm_mday << DATE_DAY_B );
+    dos_time = ( ( t->tm_hour ) << TIME_HOUR_B )
+             | ( t->tm_min << TIME_MIN_B )
+             | ( ( t->tm_sec / 2 ) << TIME_SEC_B );
+    return( dos_date * 0x10000UL + dos_time );
+}
+
 void    ObjInit( void )
 /*********************/
 {
@@ -1139,12 +1176,17 @@ void    ObjInit( void )
     CurrFNo = 0;
     OpenObj();
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
+#ifdef MULTI_THEADR
     OutName( FEModuleName(), names );
     PutObjOMFRec( CMD_THEADR, names );
     if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
         OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
         PutObjOMFRec( CMD_THEADR, names );
     }
+#else
+    OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
+    PutObjOMFRec( CMD_THEADR, names );
+#endif
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_EZ_OMF )
       || _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
@@ -1187,8 +1229,10 @@ void    ObjInit( void )
         OutShort( DEPENDENCY_COMMENT, names );
         /*
          * OMF use dos time/date format
+         * for better portability, we use UTC instead of local time,
+         * so as not to be dependent on the time zone
          */
-        OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
+        OutLongInt( timet2dosu( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, FEINF_DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names );
     }

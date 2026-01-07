@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,8 @@
 //
 
 #include "ftnstd.h"
-#include "wf77defs.h"
-#include "cg.h"
-#include "tmpdefs.h"
 #include "symbol.h"
+#include "tmpdefs.h"
 #include "fcjmptab.h"
 #include "emitobj.h"
 #include "fctypes.h"
@@ -48,11 +47,10 @@
 #include "cgprotos.h"
 
 
-void    FCDoBegin( void ) {
-//===================
-
+void    FCDoBegin( void )
+//=======================
 // Initialize DO loop processing.
-
+{
     cg_name             e1;
     cg_name             e2;
     cg_name             e3;
@@ -61,7 +59,7 @@ void    FCDoBegin( void ) {
     sym_id              loop_ctrl;
     label_handle        top;
     label_handle        bottom;
-    cg_type             do_type;
+    cg_type             do_cgtyp;
     intstar4            incr_value;
     int                 cmp_op;
     cg_name             tmp;
@@ -69,9 +67,11 @@ void    FCDoBegin( void ) {
     do_var = GetPtr();
     increment = GetPtr();
     if( increment == NULL ) {
-        incr_value = GetConst32();
+        incr_value = GetU32();
         loop_ctrl = GetPtr();
+        e3 = NULL;
     } else {
+        incr_value = 0;
         loop_ctrl = GetPtr();
         e3 = CGEval( GetTypedValue() );
     }
@@ -79,86 +79,87 @@ void    FCDoBegin( void ) {
     e1 = GetTypedValue();
     top = GetLabel( GetU16() );
     bottom = GetLabel( GetU16() );
-    do_type = F77ToCGType( do_var );
-    CGTrash( CGAssign( SymAddr( do_var ), e1, do_type ) );
+    do_cgtyp = F77ToCGType( do_var );
+    CGTrash( CGAssign( SymAddr( do_var ), e1, do_cgtyp ) );
     if( increment == NULL ) {  // INTEGER DO variable/constant increment
         if( incr_value < 0 ) {
             cmp_op = O_GE;
         } else {
             cmp_op = O_LE;
         }
-        CGDone( CGAssign( SymAddr( loop_ctrl ), e2, do_type ) );
+        CGDone( CGAssign( SymAddr( loop_ctrl ), e2, do_cgtyp ) );
         CGControl( O_LABEL, NULL, top );
         CGControl( O_IF_FALSE,
                    CGCompare( cmp_op, SymValue( do_var ), SymValue( loop_ctrl ),
-                              do_type ),
+                              do_cgtyp ),
                    bottom );
     } else {
         // compute:  e2 - e1
-        tmp = CGBinary( O_MINUS, e2, SymValue( do_var ), do_type ); // e2 - e1
+        tmp = CGBinary( O_MINUS, e2, SymValue( do_var ), do_cgtyp ); // e2 - e1
         // compute:  e2 - e1 + e3
         tmp = CGBinary( O_PLUS, tmp, CGAssign( SymAddr( increment ),
-                                                e3, do_type ), do_type );
+                                                e3, do_cgtyp ), do_cgtyp );
         // compute:  ( e2 - e1 + e3 ) / e3
-        tmp = CGBinary( O_DIV, tmp, SymValue( increment ), do_type );
+        tmp = CGBinary( O_DIV, tmp, SymValue( increment ), do_cgtyp );
         // set type of interation count
         if( !_IsTypeInteger( do_var->u.ns.u1.s.typ ) ) {
-            do_type = TY_INT_4;
+            do_cgtyp = TY_INT_4;
         }
         // save interation count
-        tmp = CGAssign( SymAddr( loop_ctrl ), tmp, do_type );
+        tmp = CGAssign( SymAddr( loop_ctrl ), tmp, do_cgtyp );
         // goto bottom of loop if iteration count <= 0
-        tmp = CGCompare( O_GT, tmp, CGInteger( 0, TY_INTEGER ), do_type );
+        tmp = CGCompare( O_GT, tmp, CGInteger( 0, TY_INTEGER ), do_cgtyp );
         CGControl( O_IF_FALSE, tmp, bottom );
         CGControl( O_LABEL, NULL, top );
     }
 }
 
 
-void    FCDoEnd( void ) {
-//=================
-
+void    FCDoEnd( void )
+//=====================
 // Terminal DO loop processing.
-
+{
     sym_id              do_var;
     sym_id              increment;
     sym_id              iteration;
     label_handle        top;
-    cg_type             do_type;
+    cg_type             do_cgtyp;
     intstar4            incr_value;
     cg_name             tmp;
 
     do_var = GetPtr();
     increment = GetPtr();
     if( increment == NULL ) {
-        incr_value = GetConst32();
+        incr_value = GetU32();
+        iteration = NULL;
     } else {
+        incr_value = 0;
         iteration = GetPtr();
     }
     top = GetLabel( GetU16() );
-    do_type = F77ToCGType( do_var );
+    do_cgtyp = F77ToCGType( do_var );
     if( increment == NULL ) {  // INTEGER DO variable with constant increment
         CGDone( CGAssign( SymAddr( do_var ),
                           CGBinary( O_PLUS, SymValue( do_var ),
-                                    CGInteger( incr_value, do_type ),
-                                    do_type ),
-                          do_type ) );
+                                    CGInteger( incr_value, do_cgtyp ),
+                                    do_cgtyp ),
+                          do_cgtyp ) );
         CGControl( O_GOTO, NULL, top );
     } else {
         // compute:  do_var += increment
         tmp = CGBinary( O_PLUS, SymValue( do_var ), SymValue( increment ),
-                         do_type );
-        CGDone( CGAssign( SymAddr( do_var ), tmp, do_type ) );
+                         do_cgtyp );
+        CGDone( CGAssign( SymAddr( do_var ), tmp, do_cgtyp ) );
         // set type of iteration
         if( !_IsTypeInteger( do_var->u.ns.u1.s.typ ) ) {
-            do_type = TY_INT_4;
+            do_cgtyp = TY_INT_4;
         }
         // compute:  --iteration
         tmp = CGBinary( O_MINUS, SymValue( iteration ),
-                         CGInteger( 1, TY_INTEGER ), do_type );
-        tmp = CGAssign( SymAddr( iteration ), tmp, do_type );
+                         CGInteger( 1, TY_INTEGER ), do_cgtyp );
+        tmp = CGAssign( SymAddr( iteration ), tmp, do_cgtyp );
         // goto top of loop if iteration != 0
-        tmp = CGCompare( O_EQ, tmp, CGInteger( 0, TY_INTEGER ), do_type );
+        tmp = CGCompare( O_EQ, tmp, CGInteger( 0, TY_INTEGER ), do_cgtyp );
         CGControl( O_IF_FALSE, tmp, top );
     }
 }

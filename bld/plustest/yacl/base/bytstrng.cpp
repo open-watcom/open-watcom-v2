@@ -5,7 +5,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -34,17 +34,8 @@
 #include "base/string.h"
 #include "base/stream.h"
 
-#ifdef __BORLANDC__
-#include <mem.h>
-#ifndef __OS2__
-#define MEMCMP _fmemcmp
-#else
-#define MEMCMP memcmp
-#endif
-#else
 #include <string.h>
 #define MEMCMP memcmp
-#endif
 
 
 // #define NEW_OP new (__LINE__, __FILE__)

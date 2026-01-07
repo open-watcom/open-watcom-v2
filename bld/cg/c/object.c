@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ void    GenObject( void )
     block               *next_block;
     instruction         *ins;
     source_line_number  last_line;
-    block_num           targets;
+    block_num           j;
     block_num           i;
     label_handle        lbl;
     unsigned            align;
@@ -120,7 +120,7 @@ void    GenObject( void )
                     align = DepthAlign( blk->depth );
                 }
                 CodeLabel( blk->label, align );
-                if( (blk->edge[0].flags & BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
+                if( (blk->edge[0].flags & BEF_BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
                     TellCondemnedLabel( blk->label );
                 }
             }
@@ -176,14 +176,14 @@ void    GenObject( void )
                 GenLabelReturn();
             }
             if( !_IsBlkAttr( blk, BLK_LABEL_RETURN ) ) { /* maybe pointer to dead label */
-                for( targets = blk->targets; targets-- > 0; ) {
-                    lbl = blk->edge[targets].destination.u.lbl;
+                for( j = blk->targets; j-- > 0; ) {
+                    lbl = blk->edge[j].destination.u.lbl;
                     TellReachedLabel( lbl );
-                    if( (blk->edge[targets].flags & DEST_LABEL_DIES) && BlocksUnTrimmed ) {
+                    if( (blk->edge[j].flags & BEF_DEST_LABEL_DIES) && BlocksUnTrimmed ) {
                         TellCondemnedLabel( lbl );
-                        for( i = targets; i-- > 0; ) {
+                        for( i = j; i-- > 0; ) {
                             if( blk->edge[i].destination.u.lbl == lbl ) {
-                                blk->edge[i].flags &= ~DEST_LABEL_DIES;
+                                blk->edge[i].flags &= ~BEF_DEST_LABEL_DIES;
                             }
                         }
                     }
@@ -204,7 +204,7 @@ void    GenObject( void )
 static  bool    GenId( block *blk, block *next )
 /**********************************************/
 {
-    return( blk->gen_id > next->gen_id );
+    return( blk->gen_blk_id > next->gen_blk_id );
 }
 
 
@@ -784,7 +784,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk )
         break;
     case BLK_CALL_LABEL:
         for( curr = BQFirst( unplaced ); curr != NULL; curr = BQNext( unplaced, curr ) ) {
-            if( curr->gen_id == ( blk->gen_id + 1 ) ) {
+            if( curr->gen_blk_id == ( blk->gen_blk_id + 1 ) ) {
                 best = curr;
                 break;
             }

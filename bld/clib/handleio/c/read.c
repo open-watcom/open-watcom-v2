@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <io.h>
@@ -47,18 +48,16 @@
 #elif defined( __DOS__ )
     #include "tinyio.h"
 #endif
-#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "lseek.h"
 #include "thread.h"
 
 
 #if defined(__WINDOWS_386__)
-static int __read( int handle, void *buf, unsigned len )
+static int _WCNEAR __read( int handle, void *buf, unsigned len )
 #else
 _WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
@@ -88,15 +87,15 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
     __ChkTTYIOMode( handle );
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ )
         return( _lread( handle, buffer, len ) );
 #else
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         return( -1 );
 #endif
     }
     if( (iomode_flags & _READ) == 0 ) {
-        _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
+        lib_set_errno( EACCES );     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
 #ifdef __NT__

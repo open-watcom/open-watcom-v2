@@ -10,7 +10,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -34,11 +34,9 @@
 
 
 // Check that a platform is defined:
-#if !defined(__UNIX__) && !defined(WINDOWS)
-#if !defined(MSDOS) && !defined(__DOS__)
-#if !defined(__OS2__)
+#if !defined(__UNIX__) && !defined(__WINDOWS__)
+#if !defined(__DOS__) && !defined(__OS2__) && !defined(__NT__)
 #error (defs.h) Unsupported platform: define __UNIX__, WINDOWS, MSDOS or __OS2__
-#endif
 #endif
 #endif
 

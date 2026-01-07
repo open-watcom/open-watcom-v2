@@ -29,5 +29,4 @@
 ****************************************************************************/
 
 
-extern unsigned_32      GetStmtNum( sym_id sn );
-extern sym_id           STStmtNo( unsigned_32 stmnt_no );
+extern sym_id           STStmtNo( stmt_num stmt_no );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,12 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <process.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -56,48 +57,57 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
 {
     char    *p;
     char    *p2;
-    int     retval, err;
+    int     retval;
+    int     errno_save;
     char    buffer[_POSIX_PATH_MAX];
     int     trailer = 0;
 
     __last_path = "";
     if( *path == '\0' ) {
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
     p = (char *)getenv( "PATH" );
     for( p2 = (char *)path; *p2 != '\0'; p2++ ) {   /* POSIX check for / in file name */
-        if( *p2 == '/' )
+        if( *p2 == '/' ) {
             break;
+        }
     }
-    if( p == NULL || *p2 == '/' )
+    if( p == NULL
+      || *p2 == '/' ) {
         return( spawnve( mode, path, argv, envp ) );
-    err = _RWD_errno;
-    for( retval = -1; ; ) {
+    }
+    retval = -1;
+    errno_save = lib_get_errno();
+    for( ;; ) {
         if( *p == '\0' )
             break;
         for( __last_path = p, p2 = buffer; *p && *p != ':';  )
             *p2++ = *p++;
-        if( p2 > buffer && p2[-1] != '/' )
+        if( p2 > buffer
+          && p2[-1] != '/' ) {
             *p2++ = '/';
+        }
         strcpy( p2, path );
         retval = spawnve( mode, buffer, argv, envp );
-        if( retval != -1 )
+        if( retval != -1
+          || lib_get_errno() != ENOENT
+          && lib_get_errno() != EACCES
+          && lib_get_errno() != ENOTDIR ) {
             break;
-        if( !(_RWD_errno == ENOENT || _RWD_errno == EACCES || _RWD_errno == ENOTDIR) )
-            break;
+        }
         if( *p == '\0' )
             break;
-/*
- * Search current directory once if PATH has a trailling ':'
- */
+        /*
+         * Search current directory once if PATH has a trailling ':'
+         */
         if( trailer )
             break;
         if( *++p == '\0' ) {
             --p;
             trailer++;
         }
-        _RWD_errno = err;
+        lib_set_errno( errno_save );
     }
     return( retval );
 }

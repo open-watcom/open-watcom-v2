@@ -4,8 +4,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +31,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Dummy file.
@@ -44,24 +45,24 @@ extern "C"
 {
 #endif
 
-unsigned int	GetNLMHandle
+unsigned int    GetNLMHandle
 (
-	void
+    void
 );
 
-int	SuspendThread
+int SuspendThread
 (
-	int			/*	nThreadID	*/
+    int         /*  nThreadID   */
 );
 
-int	ResumeThread
+int ResumeThread
 (
-	int			/*	nThreadID	*/
+    int         /*  nThreadID   */
 );
 
-int	GetThreadID
+int GetThreadID
 (
-	void
+    void
 );
 
 #ifdef __cplusplus

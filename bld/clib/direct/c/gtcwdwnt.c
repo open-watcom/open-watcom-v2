@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -39,11 +41,10 @@
 #include <dos.h>
 #include <direct.h>
 #include <windows.h>
-#include "rterrno.h"
-#include "seterrno.h"
 #include "libwin32.h"
 #include "liballoc.h"
 #include "thread.h"
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
@@ -60,12 +61,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     if( buf == NULL ) {
         buf = lib_malloc( max( size, realsize + 1 ) * CHARSIZE );
         if( buf == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
     } else {
         if( realsize + 1 > size ) {
-            _RWD_errno = ERANGE;
+            lib_set_errno( ERANGE );
             return( NULL );
         }
     }

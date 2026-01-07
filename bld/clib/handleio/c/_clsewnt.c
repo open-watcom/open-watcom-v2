@@ -32,20 +32,19 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"
 
 
-int __close( int handle )
+int _WCNEAR __close( int handle )
 {
     bool        is_closed;
     int         rc;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,19 +93,19 @@ static  void    (* const XArithTab[])(ftn_type *, ftn_type *) = {
            &AddX,   &SubX,    &MulX,    &DivX    // xcomplex
                                                  };
 
-static  void    (* const XCmpTab[])(ftn_type *, ftn_type *, const logstar1 *) = {
+static  void    (* const XCmpTab[])(ftn_type *, const ftn_type *, const logstar1 *) = {
 
 // int*1   int*2   integer real    double  extended complex dcomplex xcomplex character
    &XICmp, &XICmp, &XICmp, &XRCmp, &XDCmp, &XECmp,  &XCCmp, &XQCmp,  &XXCmp,  &XChCmp
           };
 
-static  void    (* const XLogicalTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XLogicalTab[])(ftn_type *, const ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XLEqv,    &XLNeqv,   &XLOr,     &XLAnd,    &XLNot
          };
 
-static  void    (* const XBitWiseTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XBitWiseTab[])(ftn_type *, const ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XBitEqv,  &XBitNeqv, &XBitOr,   &XBitAnd,  &XBitNot
@@ -151,9 +151,9 @@ static  void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
     op -= OPTR_FIRST_LOGOP;
     if( _IsTypeInteger( typ2 ) ) {
         Convert();
-        XBitWiseTab[ op ]( &CITNode->value, &CITNode->link->value );
+        XBitWiseTab[op]( &CITNode->value, &CITNode->link->value );
     } else {
-        XLogicalTab[ op ]( &CITNode->value, &CITNode->link->value );
+        XLogicalTab[op]( &CITNode->value, &CITNode->link->value );
     }
     CITNode->opn.us = USOPN_CON; // this is required for .not. operator
 }
@@ -167,9 +167,9 @@ static  void    RelOp( TYPE typ1, TYPE typ2, OPTR op ) {
     if( ResultType != FT_CHAR ) {
         Convert();
     }
-    XCmpTab[ ResultType - FT_INTEGER_1 ]( &CITNode->value,
+    XCmpTab[ResultType - FT_INTEGER_1]( &CITNode->value,
                                         &CITNode->link->value,
-          &CmpValue[ ( CITNode->link->opr - OPR_FIRST_RELOP ) * 3 ] );
+          &CmpValue[( CITNode->link->opr - OPR_FIRST_RELOP ) * 3] );
     ResultType = FT_LOGICAL;
 }
 
@@ -185,12 +185,10 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
     index = (byte)( ResultType - FT_INTEGER_1 );
     if( typ1 != FT_NO_TYPE ) {
         Convert();
-        XArithTab[ index * AR_TAB_COLS + op ]
-                 ( &CITNode->value, &CITNode->link->value );
+        XArithTab[index * AR_TAB_COLS + op]( &CITNode->value, &CITNode->link->value );
     } else {
         CnvTo( CITNode->link , ResultType, TypeSize( ResultType ) );
-        XUArithTab[ index * UAR_TAB_COLS + op ]
-                  ( &CITNode->value, &CITNode->link->value );
+        XUArithTab[index * UAR_TAB_COLS + op]( &CITNode->value, &CITNode->link->value );
         CITNode->opn.us = USOPN_CON;
     }
 }
@@ -215,35 +213,35 @@ void    ConstCat( size_t size )
 //=============================
 {
     itnode      *last_node;
-    byte        *dest;
+    char        *dest;
     size_t      opn_size;
     size_t      size_left;
-    byte        *string;
+    char        *str;
     itnode      *link_node;
 
     last_node = CITNode;
-    string = FMemAlloc( size );
+    str = FMemAlloc( size );
     size_left = size;
-    dest = string;
+    dest = str;
     for( ;; ) {
-        opn_size = last_node->value.cstring.len;
-        memcpy( dest, last_node->value.cstring.strptr, opn_size );
+        opn_size = last_node->value.string.len;
+        memcpy( dest, last_node->value.string.ptr, opn_size );
         size_left -= opn_size;
         if( size_left == 0 )
             break;
         last_node = last_node->link;
         dest += opn_size;
     }
-    CITNode->value.cstring.strptr = (char *)string;
-    CITNode->value.cstring.len = size;
+    CITNode->value.string.ptr = str;
+    CITNode->value.string.len = size;
     CITNode->size = size;
     link_node = last_node->link;
     last_node->link = NULL;
     FreeITNodes( CITNode->link );
     CITNode->link = link_node;
     AddConst( CITNode );
-    CITNode->value.cstring.strptr = (char *)&CITNode->sym_ptr->u.lt.value;
-    FMemFree( string );
+    CITNode->value.string.ptr = CITNode->sym_ptr->u.lt.value;
+    FMemFree( str );
 }
 
 void    (* const ConstTable[])(TYPE, TYPE, OPTR) = {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "fpu.h"
 #include "makeins.h"
 #include "makeaddr.h"
@@ -202,14 +201,14 @@ name    *Points( an addr, const type_def *tipe )
         }
         break;
     case CL_POINTER:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, type_class, size, SCALE_NONE, flags );
         break;
     case CL_GLOBAL_INDEX:
     case CL_TEMP_INDEX:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, type_class, size, 0, flags & ~X_FAKE_BASE );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, type_class, size, SCALE_NONE, flags & ~X_FAKE_BASE );
         break;
     case CL_TEMP_OFFSET:
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, type_class, size, SCALE_NONE, flags );
         break;
     case CL_CONS2:
 #if WORD_SIZE != 2
@@ -218,11 +217,11 @@ name    *Points( an addr, const type_def *tipe )
         addr->u.n.name = AllocIntConst( addr->u.n.offset );
         addr->class = CL_VALUE;
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, SCALE_NONE, flags );
         break;
     default:
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, SCALE_NONE, flags );
         break;
     }
     if( addr->flags & FL_VOLATILE ) {
@@ -249,16 +248,16 @@ an      AddrName( name *op, const type_def *tipe )
     addr->u.n.name = op;
     if( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE ) {
         addr->format = NF_CONS;
-        if( CFIsI16( op->c.value ) && tipe->length <= WORD_SIZE ) {
+        if( CFIsI16( op->c.u.cfval ) && tipe->length <= WORD_SIZE ) {
             addr->class = CL_CONS2;
-            addr->u.n.offset = CFCnvF16( op->c.value );
+            addr->u.n.offset = CFCnvF16( op->c.u.cfval );
         } else {
             addr->class = CL_VALUE4;
             addr->u.n.offset = 0;
 #if WORD_SIZE >= 4
-            if( CFIsI32( op->c.value ) ) {
+            if( CFIsI32( op->c.u.cfval ) ) {
                 addr->class = CL_CONS4;
-                addr->u.n.offset = CFCnvF32( op->c.value );
+                addr->u.n.offset = CFCnvF32( op->c.u.cfval );
             }
 #endif
         }
@@ -394,7 +393,7 @@ an      AddrPlus( an l_addr, an r_addr, const type_def *tipe )
     if( tipe->refno == TY_HUGE_POINTER )
         return( NULL );
     addr = NewAddrName();
-    for(;;) {
+    for( ;; ) {
         action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
         switch( action ) {
         case UNEXPECTED:

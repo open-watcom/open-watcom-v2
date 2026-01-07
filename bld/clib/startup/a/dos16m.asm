@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -44,9 +44,9 @@ include xinit.inc
 
         assume  nothing
 
-        extrn   __CMain                 : far
-        extrn   __FInitRtns             : far
-        extrn   __FFiniRtns             : far
+        extrn   __CMain                 : near
+        extrn   __InitRtns              : near
+        extrn   __FiniRtns              : near
         extrn   stackavail_             : far
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
         extrn   _end                    : byte  ; end of BSS (start of STACK)
@@ -432,15 +432,15 @@ _is_ovl:                                ; endif
         mov     word ptr __FPE_handler+2,cs     ; ...
 
         mov     ax,0ffh                 ; run all initializers
-        call    __FInitRtns             ; call initializer routines
-        call    __CMain
+        call    __InitRtns              ; call initializer routines
+        jmp     __CMain                 ; never return
 _cstart_ endp
 _startup_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc  far
         public  "C",__exit
+__exit  proc    near
         push    ax                      ; save return code on stack
         mov     dx,DGROUP
         mov     ds,dx
@@ -464,7 +464,7 @@ __exit  proc  far
 ;       DX:AX - far pointer to message to print
 ;       BX    - exit code
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg
@@ -504,10 +504,12 @@ L4:
 no_ovl:                                 ; endif
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
-        call    __FFiniRtns             ; call finalizer routines
+        call    __FiniRtns              ; call finalizer routines
         pop     ax                      ; restore return code
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

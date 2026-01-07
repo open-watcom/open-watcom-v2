@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -446,7 +446,8 @@ instruction     *rMOVEXX_8( instruction *ins )
             first_ins = new_ins;
         }
         new_ins = MakeMove( temp, dst, U8 );
-        if( quads == 0 && rem == 0 ) {
+        if( quads == 0
+          && rem == 0 ) {
             ReplIns( ins, new_ins );
             last_ins = new_ins;
         } else {
@@ -546,8 +547,8 @@ instruction      *rCONSTLOAD( instruction *ins )
     if( low == 0 ) {
         first_ins = MakeMove( high_part, ins->result, ins->type_class );
         ReplIns( ins, first_ins );
-        if( ( c & 0x80000000 ) &&
-            ( first_ins->type_class == Unsigned[first_ins->type_class] ) ) {
+        if( ( c & 0x80000000 )
+          && ( first_ins->type_class == Unsigned[first_ins->type_class] ) ) {
             new_ins = MakeBinary( OP_ZAP_NOT, first_ins->result, AllocS32Const( 0x0f ), first_ins->result, first_ins->type_class );
             SuffixIns( first_ins, new_ins );
             UpdateLive( first_ins, new_ins );
@@ -561,11 +562,12 @@ instruction      *rCONSTLOAD( instruction *ins )
         new_ins = MakeUnary( OP_LA, low_part, ins->result, ins->type_class );
         PrefixIns( ins, new_ins );
         cruft_in_high_dword = false;
-        if( c >= 0x7fff8000 && c <= 0x7fffffff ) {
+        if( c >= 0x7fff8000
+          && c <= 0x7fffffff ) {
             cruft_in_high_dword = true;
         }
-        if( ( c & 0x80000000 ) &&
-            ( ins->type_class == Unsigned[ins->type_class] ) ) {
+        if( ( c & 0x80000000 )
+          && ( ins->type_class == Unsigned[ins->type_class] ) ) {
             cruft_in_high_dword = true;
         }
         if( cruft_in_high_dword ) {
@@ -643,7 +645,8 @@ instruction *rALLOCA( instruction *ins )
     type_class = WD;
     check = true;
     CurrProc->targ.base_is_fp = true;
-    if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
+    if( amount->n.class == N_CONSTANT
+      && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.lo.u.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );

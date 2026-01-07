@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,8 @@
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+#include "i64.h"
+
 
 static dw_client       Client;
 static dw_loc_handle   dummyLoc;
@@ -175,7 +177,7 @@ static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
                        tag->size,
                        name,
                        0,
-                       (defined ? 0 : DW_FLAG_DECLARATION ) );
+                       (defined ? DW_FLAG_NONE : DW_FLAG_DECLARATION ) );
         if( defined ) {
             dwarfStructInfo( tag );
         }
@@ -213,7 +215,7 @@ static dw_handle dwarfEnum( TYPEPTR typ )
                              0 );
     enum_list = ReverseEnums( typ->u.tag->u.enum_list );
     for( esym = enum_list; esym != NULL; esym = esym->thread ) {
-        DWAddEnumerationConstant( Client, esym->value.u._32[I64LO32], esym->name );
+        DWAddEnumerationConstant( Client, U64Low( esym->value ), esym->name );
     }
     ReverseEnums( enum_list );
     DWEndEnumeration( Client );
@@ -432,7 +434,7 @@ static void dwarfFunctionDefine( SYMPTR func_sym )
     dw_handle   func_dh;
     dw_handle   dh;
     uint        call_type;
-    uint        flags;
+    dw_flags    flags;
     SYMPTR      sym;
     SYM_HANDLE  sym_handle;
 
@@ -447,7 +449,7 @@ static void dwarfFunctionDefine( SYMPTR func_sym )
     }
     flags = DW_FLAG_PROTOTYPED;
     if( func_sym->attribs.stg_class == SC_STATIC ) {
-        flags |= DW_SUB_STATIC;
+        flags |= DW_FLAG_SUB_STATIC;
     }
     return_dh = dwarfType( typ->object, DC_RETURN );
     func_dh = func_sym->dwarf_handle;
@@ -487,7 +489,7 @@ static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
     dw_handle   return_dh;
     dw_handle   func_dh;
     uint        call_type;
-    uint        flags;
+    dw_flags    flags;
 
     call_type = 0;
     typ = func_sym->sym_type;
@@ -498,10 +500,9 @@ static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
     } else if( func_sym->mods & FLAG_FAR16 ) {
         call_type = DW_SB_FAR16_CALL;
     }
-    flags = DW_FLAG_PROTOTYPED;
-    flags |= DW_FLAG_DECLARATION;
+    flags = DW_FLAG_PROTOTYPED | DW_FLAG_DECLARATION;
     if( func_sym->attribs.stg_class == SC_STATIC ) {
-        flags |= DW_SUB_STATIC;
+        flags |= DW_FLAG_SUB_STATIC;
     }
     return_dh = dwarfType( typ->object, DC_RETURN );
     dwarfLocation( &func_sym->src_loc );
@@ -523,10 +524,10 @@ static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
 static dw_handle dwarfVariable( SYMPTR sym )
 /******************************************/
 {
-    dw_handle dh;
-    uint      flags;
+    dw_handle   dh;
+    dw_flags    flags;
 
-    flags = 0;
+    flags = DW_FLAG_NONE;
     if( sym->attribs.stg_class == SC_NONE ) {
         flags = DW_FLAG_GLOBAL;
     }

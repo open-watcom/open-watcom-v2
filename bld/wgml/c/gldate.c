@@ -116,6 +116,14 @@ void    lay_date( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    date_form       :1;
+        unsigned    left_adjust     :1;
+        unsigned    right_adjust    :1;
+        unsigned    page_position   :1;
+        unsigned    font            :1;
+        unsigned    pre_skip        :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

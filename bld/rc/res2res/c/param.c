@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,21 +113,27 @@ static void DefaultParms( void )
     CmdLineParms.OutFileName[0] = '\0';
 }
 
+static bool CmdScanSwitchChar( char c )
+{
+#ifdef __UNIX__
+    return( c == '-' );
+#else
+    return( c == '-' || c == '/' );
+#endif
+}
+
 bool ScanParams( int argc, const char * argv[] )
 /**********************************************/
 {
-    int     switchchar;
     int     nofilenames;    /* number of filename parms read so far */
     bool    contok;         /* continue with main execution */
     int     currarg;
 
     nofilenames = 0;
     contok = true;
-    switchchar = _dos_switch_char();
     DefaultParms();
-
     for( currarg = 1; currarg < argc && contok; currarg++ ) {
-        if (*argv[ currarg ] == switchchar || *argv[ currarg ] == '-') {
+        if( CmdScanSwitchChar( *argv[ currarg ] ) ) {
             contok = ScanOptionsArg( argv[ currarg ] + 1 ) && contok;
         } else if (*argv[ currarg ] == '?') {
             CmdLineParms.PrintHelp = true;

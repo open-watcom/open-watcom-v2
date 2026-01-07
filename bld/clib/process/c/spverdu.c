@@ -33,32 +33,34 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <string.h>
 #include <process.h>
 #include <rdos.h>
-#include "rterrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "_process.h"
 #include "thread.h"
+
 
 #define LIB_ALLOC   lib_nmalloc
 #define LIB_FREE    lib_nfree
 
 #define FALSE   0
 
-static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
+static int _WCNEAR file_exists( const CHAR_TYPE *filename )
 {
-    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 )
+    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 ) {
         return( 1 );
-    else
+    } else {
         return( 0 );
+    }
 }
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                        const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
@@ -109,7 +111,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         cmdline = (CHAR_TYPE *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
-            _RWD_errno = E2BIG;
+            lib_set_errno( E2BIG );
         }
     } else {
         cmdline = cmdline_mem;
@@ -117,10 +119,9 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
 
     if( cmdline != NULL ) {
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         if( ext[0] != NULLCHAR ) {
-            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 )
-            {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 ) {
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {
                     /* the environment will have to be reconstructed */
@@ -133,22 +134,26 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                         p, cmdline, NULL );
                 }
             } else {
-                _RWD_errno = 0;
+                lib_set_errno( 0 );
                 /* user specified an extension, so try it */
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
             }
         } else {
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
-            _RWD_errno = 0;
+            lib_set_errno( 0 );
             retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-            if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                _RWD_errno = 0;
+            if( retval == -1
+              || lib_get_errno() == ENOENT
+              || lib_get_errno() == EINVAL ) {
+                lib_set_errno( 0 );
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-                if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                if( retval == -1
+                  || lib_get_errno() == ENOENT
+                  || lib_get_errno() == EINVAL ) {
                     /* try for a .BAT file */
-                    _RWD_errno = 0;
+                    lib_set_errno( 0 );
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
                     if( file_exists( p ) ) {
                         /* the environment will have to be reconstructed */
@@ -169,3 +174,5 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     lib_free( _envptr );
     return( retval );
 }
+
+#pragma pop( check_stack );

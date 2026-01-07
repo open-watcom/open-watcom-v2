@@ -33,6 +33,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #if defined( __NT__ )
     #include <windows.h>
@@ -46,7 +47,6 @@
     #include <dos.h>
 #endif
 #include "find.h"
-#include "seterrno.h"
 
 
 #ifdef __WIDECHAR__

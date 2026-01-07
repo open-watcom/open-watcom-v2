@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,9 @@ void __GETDS( void )
     __load_ds();
 }
 
-static void __save_ds( void )
+static void _WCNEAR __save_ds( void )
 {
     __saved_ds = _FP_SEG( &__saved_ds );
 }
 
-AXI( __save_ds, INIT_PRIORITY_RUNTIME );
+AXIN( __save_ds, INIT_PRIORITY_RUNTIME );

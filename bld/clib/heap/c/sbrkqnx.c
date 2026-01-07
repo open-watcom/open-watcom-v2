@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/seginfo.h>
 #include <unistd.h>
 #include "rtstack.h"
-#include "rterrno.h"
 #include "rtdata.h"
 #include "heapacc.h"
 #include "heap.h"
@@ -54,7 +54,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     unsigned long   seg_size;
 
     if( brk_value < _STACKTOP ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( (void_nptr)-1 );
     }
     seg_size = __ROUND_UP_SIZE_PARA( brk_value );
@@ -67,7 +67,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 #else
     if( _brk( (void *)seg_size ) == -1 ) {
 #endif
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         _ReleaseNHeap();
         return( (void_nptr)-1 );
     }

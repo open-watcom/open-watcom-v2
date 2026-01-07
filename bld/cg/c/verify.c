@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "zoiks.h"
 #include "data.h"
 #include "split.h"
@@ -96,22 +95,22 @@ static  bool    IsMin( name *op, type_class_def type_class )
         case U1:
         case U2:
         case U4:
-            if( CFIsI16( op->c.value )
+            if( CFIsI16( op->c.u.cfval )
               && op->c.lo.u.int_value == 0 )
                 return( true );
             break;
         case I1:
-            if( CFIsI8( op->c.value )
+            if( CFIsI8( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x80 )
                 return( true );
             break;
         case I2:
-            if( CFIsI16( op->c.value )
+            if( CFIsI16( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x8000 )
                 return( true );
             break;
         case I4:
-            if( CFIsI32( op->c.value )
+            if( CFIsI32( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x80000000 )
                 return( true );
             break;
@@ -129,32 +128,32 @@ static  bool    IsMax( name *op, type_class_def type_class )
     if( op->c.const_type == CONS_ABSOLUTE ) {
         switch( type_class ) {
         case U1:
-            if( CFIsU8( op->c.value )
+            if( CFIsU8( op->c.u.cfval )
               && op->c.lo.u.int_value == 0xff )
                 return( true );
             break;
         case U2:
-            if( CFIsU16( op->c.value )
+            if( CFIsU16( op->c.u.cfval )
               && op->c.lo.u.int_value == 0xffff )
                 return( true );
             break;
         case U4:
-            if( CFIsU32( op->c.value )
+            if( CFIsU32( op->c.u.cfval )
               && op->c.lo.u.int_value == 0xffffffff )
                 return( true );
             break;
         case I1:
-            if( CFIsU8( op->c.value )
+            if( CFIsU8( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x7f )
                 return( true );
             break;
         case I2:
-            if( CFIsU16( op->c.value )
+            if( CFIsU16( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x7fff )
                 return( true );
             break;
         case I4:
-            if( CFIsU32( op->c.value )
+            if( CFIsU32( op->c.u.cfval )
               && op->c.lo.u.int_value == 0x7fffffff )
                 return( true );
             break;
@@ -262,7 +261,7 @@ bool    OtherVerify( vertype kind, instruction *ins,
         break;
     case V_OP1ZERO:
         if( op1->c.const_type == CONS_ABSOLUTE
-          && CFIsI16( op1->c.value )
+          && CFIsI16( op1->c.u.cfval )
           && op1->c.lo.u.int_value == 0 )
             return( true );
         break;
@@ -279,7 +278,7 @@ bool    OtherVerify( vertype kind, instruction *ins,
             return( true );
         break;
     case V_OP2POW2:
-        if( !CFIsI32( op2->c.value ) )
+        if( !CFIsI32( op2->c.u.cfval ) )
             return( false );
         return( Op2Pow2( ins ) );
         break;
@@ -290,7 +289,7 @@ bool    OtherVerify( vertype kind, instruction *ins,
         break;
     case V_OP2ZERO:
         if( op2->c.const_type == CONS_ABSOLUTE
-          && CFIsI16( op2->c.value )
+          && CFIsI16( op2->c.u.cfval )
           && op2->c.lo.u.int_value == 0 )
             return( true );
         break;
@@ -340,7 +339,7 @@ bool    OtherVerify( vertype kind, instruction *ins,
     case V_U_TEST:
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( !CFIsI16( op2->c.value ) )
+        if( !CFIsI16( op2->c.u.cfval ) )
             return( false );
         if( op2->c.lo.u.int_value != 0 )
             return( false );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -48,7 +48,7 @@ _WCRTLINK struct servent *getservbyport( int port, const char *proto )
     struct servent *ret;
 
     if( port < 1 ) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( NULL );
     }
 

@@ -39,20 +39,20 @@ int main()
     c = gen;
     v = check;
     for(;;) {
-	if( *c == NULL && *v == NULL ) break;
-	if( *c == NULL ) {
-	    fail(__LINE__);
-	    break;
-	}
-	if( *v == NULL ) {
-	    fail(__LINE__);
-	    break;
-	}
-	if( strcmp( *c, *v ) != 0 ) {
-	    fail(__LINE__);
-	}
-	++c;
-	++v;
+        if( *c == NULL && *v == NULL ) break;
+        if( *c == NULL ) {
+            fail(__LINE__);
+            break;
+        }
+        if( *v == NULL ) {
+            fail(__LINE__);
+            break;
+        }
+        if( strcmp( *c, *v ) != 0 ) {
+            fail(__LINE__);
+        }
+        ++c;
+        ++v;
     }
     _PASS;
 }

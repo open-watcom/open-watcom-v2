@@ -1,0 +1,3 @@
+!ifeq system windows
+default_windowing = 1
+!endif

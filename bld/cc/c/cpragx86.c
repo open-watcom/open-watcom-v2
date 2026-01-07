@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include <ctype.h>
 #include "cvars.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
@@ -660,7 +661,7 @@ static bool GetByteSeq( aux_info *info )
                 use_fpu_emu = false;
             }
 #endif
-            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
+            AsmCodeBuffer[AsmCodeAddress++] = U8FetchTrunc( Constant64 );
             PPNextToken();
         } else if( checkEnum( &byte_value ) ) {
             AsmCodeBuffer[AsmCodeAddress++] = byte_value;
@@ -687,13 +688,13 @@ static bool GetByteSeq( aux_info *info )
                     if( CurToken == T_PLUS ) {
                         PPNextToken();
                         if( CurToken == T_CONSTANT ) {
-                            offset = Constant;
+                            offset = U32FetchTrunc( Constant64 );
                             PPNextToken();
                         }
                     } else if( CurToken == T_MINUS ) {
                         PPNextToken();
                         if( CurToken == T_CONSTANT ) {
-                            offset = -(int)Constant;
+                            offset = -(int)U32FetchTrunc( Constant64 );
                             PPNextToken();
                         }
                     }

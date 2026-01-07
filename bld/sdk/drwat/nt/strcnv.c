@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ bool StrToU64( char *str, unsigned_64 *u64, bool neg )
     int         radix;
 
     str = eatSpace( str );
-    U32ToU64( 0, u64 );
+    Set64ValZero( *u64 );
     if( neg ) {
         if( *str == '-') {
             str++;
@@ -83,7 +84,7 @@ bool StrToU64( char *str, unsigned_64 *u64, bool neg )
     default:
         radix = 10;
     }
-    U32ToU64( radix, &r64 );
+    Set64ValU32( r64, radix );
     while( *str != '\0' ) {
         if( isdigit( *str ) ) {
             value = *str - '0';
@@ -93,13 +94,13 @@ bool StrToU64( char *str, unsigned_64 *u64, bool neg )
         if( value < 0 || value >= radix ) {
             return( false );
         }
-        U32ToU64( value, &v64 );
-        U64Mul( u64, &r64, u64 );
-        U64Add( &v64, u64, u64 );
+        Set64ValU32( v64, value );
+        U64MulEq( u64, &r64 );
+        U64AddEq( u64, &v64 );
         str++;
     }
     if( neg ) {
-        U64Neg( u64, u64 );
+        U64NegEq( u64 );
     }
     return( true );
 }

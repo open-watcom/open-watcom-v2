@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,10 @@
 
 #include "drwatcom.h"
 #include <dos.h>
+#include "dpmi.h"
 
 /*
- * CheckIsWin32App - check if task is a win 32 app
+ * CheckIsWin32App - check if task is a win32 app
  */
 bool CheckIsWin32App( HANDLE htask )
 {
@@ -80,12 +82,12 @@ bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg )
         if( seg == 1 ) {
             ge->hBlock = (HGLOBAL)Win32CS;
             ge->dwSize = 1;
-            ge->dwBlockSize = GetASelectorLimit( Win32CS );
+            ge->dwBlockSize = GetASelectorSize( Win32CS );
             return( true );
         } else if( seg == 2 ) {
             ge->hBlock = (HGLOBAL)Win32DS;
             ge->dwSize = 1;
-            ge->dwBlockSize = GetASelectorLimit( Win32DS );
+            ge->dwBlockSize = GetASelectorSize( Win32DS );
             return( true );
         }
         ge->hBlock = 0;

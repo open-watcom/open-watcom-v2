@@ -62,7 +62,7 @@ debug_linker=-debug:none -debugtype:both /pdb:none
 
 inc_dirs = -I"$(w32api_dir)/nt/h"
 
-extra_cpp_flags = -D_WIN32 -DWIN32
+extra_cpp_flags = -DWIN32
 
 # explicit rules
 #################

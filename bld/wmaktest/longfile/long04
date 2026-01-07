@@ -1,0 +1,36 @@
+#
+#  LONGFILE TEST 04
+#  Test that paths with spaces work fine in dependency 
+#  search paths.
+#
+
+.EXTENSIONS: .out .tmp
+
+PATHS = "Test Path";Another" Pa"th;
+FILES = "Test Path\Long Filename.out" 
+FILES+= "Another Path\Long Filename.out"
+
+.tmp: $(PATHS)
+
+.tmp.out:
+    %copy "$[@" "$^@"
+
+test: .symbolic create $(FILES) clean    
+
+create: .symbolic
+    -mkdir "Test Path"
+    @echo Creating <<"Test Path\Long Filename.tmp"
+OK
+<< keep
+    -mkdir "Another Path"
+    @echo Creating <<"Another Path\Long Filename.tmp"
+OK
+<< keep
+
+clean: .symbolic
+    -rm "Test Path\Long filename.tmp"
+    -rm "Another Path\Long filename.tmp"
+    -rm "Test Path\Long filename.out"
+    -rm "Another Path\Long filename.out"
+    -rmdir "Test Path"
+    -rmdir "Another Path"

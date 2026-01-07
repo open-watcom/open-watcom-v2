@@ -30,9 +30,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include "thread.h"
-#include "rterrno.h"
 
 
 #if defined( __386__ )
@@ -59,7 +59,7 @@
 #pragma aux __set_errno_vfork __parm [__eax] __modify [__edx]
 static int __set_errno_vfork( int err )
 {
-    _RWD_errno = err;
+    lib_set_errno( err );
     return( -1 );
 }
 

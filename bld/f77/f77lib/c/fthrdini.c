@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ int     __InitFThreadProcessing( void )
     _AccessFIO  = &__AccessFIO;
     _ReleaseFIO = &__ReleaseFIO;
     _PartialReleaseFIO = &__PartialReleaseFIO;
-    __InitMultiThreadIO();
+    __InitMultiThreadFIO();
     return( 0 );
 }
 

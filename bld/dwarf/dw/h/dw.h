@@ -65,9 +65,9 @@ enum {
 };
 
 /* fundamental types */
-enum {
-    DW_FT_MIN = 1,
-    DW_FT_ADDRESS = DW_FT_MIN,
+typedef enum {
+    DW_FT_NONE = 0,
+    DW_FT_ADDRESS,
     DW_FT_BOOLEAN,
     DW_FT_COMPLEX_FLOAT,
     DW_FT_FLOAT,
@@ -75,8 +75,9 @@ enum {
     DW_FT_SIGNED_CHAR,
     DW_FT_UNSIGNED,
     DW_FT_UNSIGNED_CHAR,
-    DW_FT_MAX
-};
+    DW_FT_MAX,
+    DW_FT_MIN = DW_FT_ADDRESS
+} dw_ftype;
 
 /* type modifiers */
 enum {
@@ -90,9 +91,10 @@ enum {
 };
 
 /* various flags for the generic 'flags' parameter to many functions */
-enum {
+typedef enum dw_flags {
     /* set to indicate die is a declaration, not a definition */
 
+    DW_FLAG_NONE                = 0x0000,
     DW_FLAG_DECLARATION         = 0x8000, // declaration, not definition
 
     /* accessibility flags */
@@ -101,14 +103,14 @@ enum {
     DW_FLAG_PROTECTED           = 0x0002,
     DW_FLAG_PUBLIC              = 0x0003,
     /* "pointer types" used in DWPointer and DWBeginSubroutine[Type] */
-    DW_PTR_TYPE_MASK            = 0x7000,
-    DW_PTR_TYPE_SHIFT           = 12,
-    DW_PTR_TYPE_DEFAULT         = 0x0000,
-    DW_PTR_TYPE_NEAR16          = 0x1000,
-    DW_PTR_TYPE_FAR16           = 0x2000,
-    DW_PTR_TYPE_HUGE16          = 0x3000,
-    DW_PTR_TYPE_NEAR32          = 0x4000,
-    DW_PTR_TYPE_FAR32           = 0x5000,
+    DW_FLAG_PTR_TYPE_MASK       = 0x7000,
+    DW_FLAG_PTR_TYPE_SHIFT      = 12,
+    DW_FLAG_PTR_TYPE_DEFAULT    = 0x0000,
+    DW_FLAG_PTR_TYPE_NEAR16     = 0x1000,
+    DW_FLAG_PTR_TYPE_FAR16      = 0x2000,
+    DW_FLAG_PTR_TYPE_HUGE16     = 0x3000,
+    DW_FLAG_PTR_TYPE_NEAR32     = 0x4000,
+    DW_FLAG_PTR_TYPE_FAR32      = 0x5000,
 
     /* extra flags for DWPointer */
     DW_FLAG_REFERENCE           = 0x0008,
@@ -128,7 +130,7 @@ enum {
     DW_FLAG_VIRTUAL_SHIFT       = 5,
     DW_FLAG_PURE_VIRTUAL        = 0x0040,
     DW_FLAG_MAIN                = 0x0080,
-    DW_SUB_STATIC               = 0x0100,
+    DW_FLAG_SUB_STATIC          = 0x0100,
     DW_FLAG_INLINE_MASK         = 0x0c00,
     DW_FLAG_INLINE_SHIFT        = 10,
     DW_FLAG_WAS_INLINED         = 0x0400,
@@ -136,7 +138,7 @@ enum {
 
     /* for DWVariable and DWConstant */
     DW_FLAG_GLOBAL              = 0x0008
-};
+} dw_flags;
 
 /* operation codes for location expressions */
 typedef enum {
@@ -323,6 +325,12 @@ typedef struct {
 } dw_init_info;
 
 /* compilation units */
+enum {
+    DW_CU_FLAG_NONE          = 0,
+    DW_CU_FLAG_NONCONTIGUOUS = 0x00,
+    DW_CU_FLAG_CONTIGUOUS    = 0x01
+};
+
 typedef struct {
     char const      *source_filename;
     char const      *directory;
@@ -412,50 +420,50 @@ extern dw_handle    DWENTRY DWHandle( dw_client cli, dw_struct_type kind );
 extern void         DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl );
 
 /* typing information */
-extern dw_handle    DWENTRY DWFundamental( dw_client, char const * __name, unsigned __fund_idx, unsigned __size );
+extern dw_handle    DWENTRY DWFundamental( dw_client, char const * __name, dw_ftype __fund_idx, unsigned __size );
 extern dw_handle    DWENTRY DWModifier( dw_client, dw_handle __base_type, uint __modifiers );
 extern dw_handle    DWENTRY DWTypedef( dw_client, dw_handle __base_type, char const *__name,
-                                dw_addr_offset __scope, uint __flags );
-extern dw_handle    DWENTRY DWPointer( dw_client, dw_handle __base_type, uint __flags );
-extern dw_handle    DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_handle seg, uint flags );
+                                dw_addr_offset __scope, dw_flags __flags );
+extern dw_handle    DWENTRY DWPointer( dw_client, dw_handle __base_type, dw_flags __flags );
+extern dw_handle    DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_handle seg, dw_flags flags );
 extern dw_handle    DWENTRY DWString( dw_client, dw_loc_handle __string_length,
                                 dw_size_t __byte_size, char const *__name,
-                                dw_addr_offset __scope, uint __flags );
+                                dw_addr_offset __scope, dw_flags __flags );
 extern dw_handle    DWENTRY DWMemberPointer( dw_client, dw_handle __containing_struct,
                                 dw_loc_handle __use_location, dw_handle __base_type,
-                                char const *__name, unsigned __flags );
+                                char const *__name, dw_flags __flags );
 extern dw_handle    DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_count );
 extern dw_handle    DWENTRY DWBeginArray( dw_client, dw_handle __elt_type,
                                 uint_32 __stride_size, char const *__name,
-                                dw_addr_offset __scope, uint __flags );
+                                dw_addr_offset __scope, dw_flags __flags );
 extern void         DWENTRY DWArrayDimension( dw_client, const dw_dim_info *__info);
 extern void         DWENTRY DWArrayVarDim( dw_client, const dw_vardim_info * );
 extern void         DWENTRY DWEndArray( dw_client );
 extern dw_handle    DWENTRY DWStruct( dw_client, dw_struct_type __kind );
 extern void         DWENTRY DWBeginStruct( dw_client, dw_handle __struct_hdl,
                                 dw_size_t __size, char const *__name,
-                                dw_addr_offset __scope, uint __flags );
+                                dw_addr_offset __scope, dw_flags __flags );
 extern void         DWENTRY DWAddFriend( dw_client, dw_handle __friend );
 extern dw_handle    DWENTRY DWAddInheritance( dw_client, dw_handle __ancestor,
-                                dw_loc_handle __loc, uint __flags );
+                                dw_loc_handle __loc, dw_flags __flags );
 extern dw_handle    DWENTRY DWAddField( dw_client, dw_handle __field_hdl, dw_loc_handle __loc,
-                                char const *__name, uint __flags );
+                                char const *__name, dw_flags __flags );
 extern dw_handle    DWENTRY DWAddBitField( dw_client, dw_handle __field_hdl,
                                 dw_loc_handle __loc, dw_size_t __byte_size,
                                 uint __bit_offset, uint __bit_size,
-                                char const *__name, uint __flags );
+                                char const *__name, dw_flags __flags );
 extern void         DWENTRY DWEndStruct( dw_client );
 
 /* enumeration types */
 extern dw_handle    DWENTRY DWBeginEnumeration( dw_client, dw_size_t __byte_size,
-                                char const *__name, dw_addr_offset __scope, uint __flags );
+                                char const *__name, dw_addr_offset __scope, dw_flags __flags );
 extern void         DWENTRY DWAddEnumerationConstant( dw_client, dw_uconst __constant_value,
                                                          char const *__name );
 extern void         DWENTRY DWEndEnumeration( dw_client );
 
 /* subroutine types */
 extern dw_handle    DWENTRY DWBeginSubroutineType( dw_client, dw_handle __return_type,
-                                char const *__name, dw_addr_offset __scope, uint __flags );
+                                char const *__name, dw_addr_offset __scope, dw_flags __flags );
 extern dw_handle    DWENTRY DWAddParmToSubroutineType( dw_client, dw_handle __parm_type,
                                 dw_loc_handle __loc, dw_loc_handle __seg, char const *__name );
 extern dw_handle    DWENTRY DWAddEllipsisToSubroutineType( dw_client );
@@ -472,7 +480,7 @@ extern void         DWENTRY DWEndLexicalBlock( dw_client );
 
 /* common blocks */
 extern dw_handle    DWENTRY DWBeginCommonBlock( dw_client, dw_loc_handle __loc,
-                                dw_loc_handle __aseg, char const *__name, unsigned __flags );
+                                dw_loc_handle __aseg, char const *__name, dw_flags __flags );
 extern void         DWENTRY DWEndCommonBlock( dw_client );
 extern dw_handle    DWENTRY DWIncludeCommonBlock( dw_client, dw_handle __common_block );
 
@@ -484,15 +492,15 @@ extern dw_handle    DWENTRY DWBeginSubroutine( dw_client, uint call_type,
                                 dw_loc_handle __frame_base_loc, dw_loc_handle __structure_loc,
                                 dw_handle __member_hdl, dw_loc_handle __aseg,
                                 char const * __name, dw_addr_offset __start_scope,
-                                uint __flags );
+                                dw_flags __flags );
 extern dw_handle    DWENTRY DWBeginEntryPoint( dw_client cli, dw_handle return_type,
                                 dw_loc_handle return_addr_loc, dw_loc_handle segment,
-                                char const *name, dw_addr_offset start_scope, uint flags );
+                                char const *name, dw_addr_offset start_scope, dw_flags flags );
 extern dw_handle    DWENTRY DWBeginMemFuncDecl( dw_client cli, dw_handle return_type,
                                 dw_loc_handle segment, dw_loc_handle loc, char const *name,
-                                uint flags );
+                                dw_flags flags );
 extern dw_handle    DWENTRY DWBeginVirtMemFuncDecl( dw_client cli, dw_handle return_type,
-                                dw_loc_handle vtable_loc, char const *name, uint flags );
+                                dw_loc_handle vtable_loc, char const *name, dw_flags flags );
 extern void         DWENTRY DWEndSubroutine( dw_client );
 extern dw_handle    DWENTRY DWFormalParameter( dw_client, dw_handle __parm_type,
                                 dw_loc_handle __parm_loc, dw_loc_handle __aseg,
@@ -503,11 +511,11 @@ extern dw_handle    DWENTRY DWLabel( dw_client, dw_loc_handle __aseg, char const
 extern dw_handle    DWENTRY DWVariable( dw_client, dw_handle __type, dw_loc_handle __loc,
                                 dw_handle __member_of, dw_loc_handle __aseg,
                                 char const *__name, dw_addr_offset __start_scope,
-                                uint __flags );
+                                dw_flags __flags );
 extern dw_handle    DWENTRY DWConstant( dw_client, dw_handle __type,
                                 const void *__constant_value, size_t __len,
                                 dw_handle __member_of, char const * __name,
-                                dw_addr_offset __start_scope, uint __flags );
+                                dw_addr_offset __start_scope, dw_flags __flags );
 
 /* name list      */
 extern dw_handle    DWENTRY DWNameListBegin( dw_client cli, char const *name );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -47,7 +49,7 @@
 #include "cinit.h"
 #include "mthread.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 sem_t *__tls_sem;
 
 _WCRTLINK int *__threadid( void )
@@ -77,7 +79,7 @@ void __LinuxInit( struct thread_data *ptr )
 {
     unsigned    *tmp;
 
-#ifdef __SW_BM
+#ifdef __MT__
     __tls_sem = (sem_t *)malloc(sizeof(sem_t));
     if(__tls_sem != NULL)
         sem_init( __tls_sem, 0, 1 );
@@ -92,9 +94,9 @@ void __LinuxInit( struct thread_data *ptr )
     *tmp = _STACKLOW;
 }
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
-#ifdef __SW_BM
+#ifdef __MT__
     if( __FirstThreadData != NULL && gettid( ) == __FirstThreadData->thread_id ) {
         __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         _sys_exit_group( ret_code );

@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <termios.h>
 #ifdef __LINUX__
     #include <sys/ioctl.h>
 #else
-    #include "rterrno.h"
     #include "thread.h"
 #endif
 
@@ -45,7 +45,6 @@ _WCRTLINK int tcflush( int fd, int queue_selector )
 #ifdef __LINUX__
     return( ioctl( fd, TCFLSH, queue_selector ) );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }

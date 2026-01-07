@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 // 92/12/18     G. Coschi       initial implementation
 // 93/12/14     Alex Brodsky    Added Q as legal exponent character
 
-#if _CSET == _EBCDIC
+#ifdef _CSET_EBCDIC
 
 // EBCDIC character set:
 // =====================

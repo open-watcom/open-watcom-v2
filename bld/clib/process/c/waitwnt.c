@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,16 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <process.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "thread.h"
+
 
 _WCRTLINK pid_t wait( int *status )
 {
     /* unused parameters */ (void)status;
 
-    _RWD_errno = ECHILD;
+    lib_set_errno( ECHILD );
     return( -1 );
 }

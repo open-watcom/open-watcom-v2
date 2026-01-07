@@ -32,10 +32,7 @@
 
 typedef struct label_entry {
     struct label_entry  *link;
-    label_id            label;
     pointer             handle;
+    label_id            label;
+    bool                format_label;
 } label_entry;
-
-// high bit of label field indicates whether it's a FORMAT label or not
-
-#define FORMAT_LABEL    (1U<<(sizeof(label_id)*8-1))

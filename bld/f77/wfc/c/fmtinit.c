@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "format.h"
 #include "global.h"
@@ -65,7 +64,7 @@ static  void    FFinish( void )
 //=============================
 {
     if( StmtProc == PR_FMT ) {
-        for(;;) {
+        for( ;; ) {
             if( *Fmt_charptr != ' ' )
                 break;
             ++Fmt_charptr;
@@ -73,7 +72,8 @@ static  void    FFinish( void )
                 break;
             }
         }
-        if( ( Fmt_charptr < Fmt_end ) && ( *Fmt_charptr != '!' ) ) {
+        if( ( Fmt_charptr < Fmt_end )
+          && ( *Fmt_charptr != '!' ) ) {
             FmtError( FM_NO_EOS );
         }
     }

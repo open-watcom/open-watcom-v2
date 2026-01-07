@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,11 @@
 #include "ifdefs.h"
 
 
-extern int          IFIndex( const char *name );
 extern IFF          IFLookUp( void );
 extern bool         IFIsGeneric( IFF func );
 extern bool         IFIsMagic( IFF func );
 extern TYPE         IFType( IFF func );
-extern IFF          IFSpecific( TYPE typ );
+extern bool         IFSpecific( TYPE typ );
 extern bool         IsIFMax( IFF func );
 extern bool         IsIFMin( IFF func );
 extern bool         IsIntrinsic( unsigned_16 flags );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,7 @@
 
 #include "ftnstd.h"
 #include "symbol.h"
-#include "wf77defs.h"
 #include "fcstruct.h"
-#include "cg.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -41,9 +42,7 @@
 #include <direct.h>
 #include <utime.h>
 #include <wos2.h>
-#include "rterrno.h"
 #include "openmode.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -74,7 +73,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     }
     if( DosQFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     if( times == NULL ) {
@@ -108,11 +107,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
 
     if( DosSetFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     if( DosClose( handle ) != 0 ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     return( 0 );

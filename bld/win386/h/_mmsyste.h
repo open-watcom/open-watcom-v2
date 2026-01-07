@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-extern void     GetMIDIHDRAlias( LPSTR _DLLFAR *orig, LPMIDIHDR ptr );
-extern void     ReleaseMIDIHDRAlias( LPSTR orig, LPMIDIHDR ptr );
-extern void     GetWAVEHDRAlias( LPSTR _DLLFAR *orig, LPWAVEHDR ptr );
-extern void     ReleaseWAVEHDRAlias( LPSTR orig, LPWAVEHDR ptr );
 extern UINT     FAR PASCAL __midiInAddBuffer( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize );
 extern UINT     FAR PASCAL __midiInPrepareHeader( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize );
 extern UINT     FAR PASCAL __midiInUnprepareHeader( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize );

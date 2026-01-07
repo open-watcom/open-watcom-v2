@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ extern  void    ITPurge( void );
 extern  void    FreeOneNode( itnode *itptr );
 extern  char    *MkNodeStr( itnode *itptr );
 extern  void    FrNodeStr( char *str );
-extern  bool    CmpNode2Str( itnode *itptr, char *str );
+extern  bool    CmpNode2Str( itnode *itptr, const char *str );
 extern  void    ProcExpr( void );
 extern  bool    TypeIs( TYPE typ );
 extern  bool    ConstExpr( TYPE typ );

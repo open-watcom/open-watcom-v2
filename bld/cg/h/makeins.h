@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,4 +41,4 @@ extern instruction      *MakeUnary( opcode_defs, name *, name *, type_class_def 
 extern instruction      *MakeConvert( name *, name *, type_class_def, type_class_def );
 extern instruction      *MakeRound( name *, name *, type_class_def, type_class_def );
 extern instruction      *MakeBinary( opcode_defs, name *, name *, name *, type_class_def );
-extern instruction      *MakeCondition( opcode_defs, name *, name *, byte, byte, type_class_def );
+extern instruction      *MakeCondition( opcode_defs, name *, name *, cond_dst_idx, cond_dst_idx, type_class_def );

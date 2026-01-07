@@ -26,8 +26,14 @@ set PROJDIR=<CWD>
     <CCCMD> wbind/nt386/wbind.exe       "<OWRELROOT>/binnt/"
     <CCCMD> wbind/linux386/wbind.exe    "<OWRELROOT>/binl/wbind"
 
+    <CCCMD> wbind/bsdx64/wbind.exe      "<OWRELROOT>/binb64/wbind"
     <CCCMD> wbind/ntx64/wbind.exe       "<OWRELROOT>/binnt64/"
     <CCCMD> wbind/linuxx64/wbind.exe    "<OWRELROOT>/binl64/wbind"
+    <CCCMD> wbind/linuxarm/wbind.exe    "<OWRELROOT>/arml/wbind"
+    <CCCMD> wbind/linuxa64/wbind.exe    "<OWRELROOT>/arml64/wbind"
+    <CCCMD> wbind/osxx64/wbind.exe      "<OWRELROOT>/bino64/wbind"
+    <CCCMD> wbind/osxarm/wbind.exe      "<OWRELROOT>/armo/wbind"
+    <CCCMD> wbind/osxa64/wbind.exe      "<OWRELROOT>/armo64/wbind"
 
 [ BLOCK . . ]
 

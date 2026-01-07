@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +32,15 @@
 
 extern tn           TGLeaf( an addr );
 extern tn           TGBitMask( tn left, byte start, byte len, const type_def *tipe );
-extern tn           TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe );
+extern tn           TGNode( tn_class class, cg_op opcode, tn left, tn rite, const type_def *tipe );
 extern tn           TGWarp( tn before, label_handle label, tn after );
 extern tn           TGHandle( void );
 extern tn           TGCallback( cg_callback rtn, callback_handle ptr );
-extern tn           TGCompare( cg_op op, tn left, tn rite, const type_def *tipe );
+extern tn           TGCompare( cg_op opcode, tn left, tn rite, const type_def *tipe );
 extern uint_32      TGMask32( tn node );
 extern tn           TGConvert( tn name, const type_def *tipe );
-extern tn           TGBinary( cg_op op, tn left, tn rite, const type_def *tipe );
-extern tn           TGUnary( cg_op op, tn left, const type_def *tipe );
+extern tn           TGBinary( cg_op opcode, tn left, tn rite, const type_def *tipe );
+extern tn           TGUnary( cg_op opcode, tn left, const type_def *tipe );
 extern call_handle  TGInitCall( tn left, const type_def *tipe, cg_sym_handle sym );
 extern tn           TGAddParm( call_handle call, tn parm, const type_def *tipe );
 extern tn           TGCall( call_handle call );
@@ -52,18 +52,18 @@ extern name         *TGetName( tn node );
 extern tn           TGReLeaf( an addr );
 extern tn           TGTmpLeaf( an addr );
 extern tn           TGConst( float_handle cons, const type_def *tipe );
-extern tn           DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe, tn_class class, tn_class assn_class );
-extern tn           TGPreGets( cg_op op, tn left, tn rite, const type_def *tipe );
-extern tn           TGLVPreGets( cg_op op, tn left, tn rite, const type_def *tipe );
-extern tn           TGPostGets( cg_op op, tn left, tn rite, const type_def *tipe );
+extern tn           DoTGPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe, tn_class class, tn_class assn_class );
+extern tn           TGPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe );
+extern tn           TGLVPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe );
+extern tn           TGPostGets( cg_op opcode, tn left, tn rite, const type_def *tipe );
 extern cg_type      TGType( tn node );
-extern tn           TGFlow( cg_op op, tn left, tn rite );
+extern tn           TGFlow( cg_op opcode, tn left, tn rite );
 extern tn           TGTrash( tn node );
 extern tn           TGAttr( tn node, cg_sym_attr attr );
 extern tn           TGAlign( tn node, uint align );
 extern tn           TGVolatile( tn node );
 extern void         TG3WayControl( tn node, label_handle lt, label_handle eq, label_handle gt );
-extern void         TGControl( cg_op op, tn node, label_handle lbl );
+extern void         TGControl( cg_op opcode, tn node, label_handle lbl );
 extern an           TGen( tn node, const type_def *tipe );
 extern an           TGReturn( tn node, const type_def *tipe );
 extern an           TNFlow( tn node );

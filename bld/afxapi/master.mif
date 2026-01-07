@@ -1,4 +1,4 @@
-.EXTENSIONS : .gsp .sp .mh .inl .mnl .rc .mrc
+.EXTENSIONS : .gsp .sp .mh .mhv .inl .mnl .rc .mrc
 
 proj_name = afxapi
 
@@ -40,9 +40,15 @@ ntverrc_dll = $(dllname)
 
 crwatpro_gsp = crwatpro.gsp
 
-inc_path += -I"../$(host_os)" -I"../h"
+mh_dir = ../include
 
-wsplice_opts = -i"$(hdr_dir)" $[@ $@
+!include ../deps.mif
+
+inc_dirs = -I"../$(host_os)" -I"../h"
+
+rc_inc_dirs = -I"../$(host_os)" -I"../h"
+
+wsplice_opts = -i"$(hdr_dir)"
 
 resources =             &
         afxprint.rc     &
@@ -314,31 +320,32 @@ additional_clean = *.h *.inl *.rc *.gdf $(crwatpro_gsp)
 all : $($(what_to_build)) .SYMBOLIC
     @%null
 
-.mh: ../include
-.mnl: ../include
-.mrc: ../include
+.mh: $(mh_dir)
+.mhv: $(mh_dir)
+.mnl: $(mh_dir)
+.mrc: $(mh_dir)
 .sp: $(hdr_dir)
 
 .cpp: ../cpp
 
 .mh.h:
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts) $[@ $@
 
 .mnl.inl:
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts) $[@ $@
 
 .mrc.rc:
     @%make echo_wsplice
-    $(noecho)*wsplice $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts) $[@ $@
 
-afx.h: afx.mh $(crwatpro_gsp)
-    @%make echo_wsplice
-    $(noecho)*wsplice -i"$(hdr_dir)" $[@ tmp.h
+.mhv.h:
     @%make echo_awk
-    $(noecho)*awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
-    @rm tmp.h
+    $(noecho)*awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=tmp.tmp $[@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) tmp.tmp $@
+    @rm -f tmp.tmp
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
@@ -371,9 +378,9 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) $(static_objs)
 
-$(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
+$(dllname).res: ../h/owf.rc ../$(host_os)/afxprint.rc ../$(host_os)/afxres.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) -I"../include" $[@ -fo=$@
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 .sp.gsp:
     @%make echo_awk

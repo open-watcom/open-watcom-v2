@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
@@ -41,10 +42,8 @@
 #elif defined(__OS2__)
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -66,7 +65,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 
 // removed by JBS - allow O_NOINHERIT
 //  /*** Sanity check ***/
-//  if( textmode != 0  &&  textmode != _O_TEXT  &&  textmode != _O_BINARY ) {
+//  if( textmode != 0 && textmode != _O_TEXT && textmode != _O_BINARY ) {
 //      return( -1 );
 //  }
 
@@ -74,7 +73,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 #if defined(__NT__)
     sa.nLength = sizeof( SECURITY_ATTRIBUTES );
     sa.lpSecurityDescriptor = NULL;
-    sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
+    sa.bInheritHandle = (((textmode & O_NOINHERIT) == O_NOINHERIT)?FALSE:TRUE);
     if( CreatePipe( &osfh_read, &osfh_write, &sa, psize ) == 0 ) {
         return( __set_errno_nt() );
     }
@@ -87,7 +86,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
     rc = DosCreatePipe( &osfh_read, &osfh_write, psize );
   #endif
     if( rc != NO_ERROR ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
 #endif

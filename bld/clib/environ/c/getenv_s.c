@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +49,10 @@ _WCRTLINK extern errno_t getenv_s( size_t * __restrict len, char * __restrict va
     }
 
     /* Verify runtime-constraints */
-    if( __check_constraint_nullptr( name ) &&
-        __check_constraint_maxsize( maxsize ) &&
-        ((maxsize == 0) || __check_constraint_nullptr( value )) ) {
+    if( __check_constraint_nullptr( name )
+      && __check_constraint_maxsize( maxsize )
+      && ( (maxsize == 0)
+      || __check_constraint_nullptr( value ) ) ) {
 
         /* Make sure destination string is always terminated */
         if( maxsize > 0 ) {

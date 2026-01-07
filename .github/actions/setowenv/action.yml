@@ -1,0 +1,71 @@
+name: set-ow-env
+description: 'Set OW environment'
+inputs:
+  suffix:
+    description: 'artifact name suffix'
+    required: true
+    type: string
+  ow_version:
+    description: 'OW version'
+    required: false
+    default: ''
+    type: string
+  ow_tag:
+    description: 'OW version tag'
+    required: false
+    default: ''
+    type: string
+  bits:
+    description: 'tools version'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - if: inputs.ow_version != ''
+    name: Open Watcom setup
+    uses: open-watcom/setup-watcom@v0
+    with:
+      version: ${{inputs.ow_version}}
+      tag:     ${{inputs.ow_tag}}
+  - if: inputs.ow_version == ''
+    name: Load Artifact
+    uses: ./.github/actions/artfload
+    with:
+      gitpath:    'rel'
+      artifact:   rel ${{inputs.suffix}}
+  - if: inputs.ow_version == '' && runner.os == 'Linux'
+    name: Setup OW Linux bits
+    run: |
+      if [ '${{inputs.bits}}' = '32' ]; then
+        if [ '${{runner.arch}}' = 'ARM64' ]; then
+          echo "${{github.workspace}}/rel/arml" >> "$GITHUB_PATH"
+        elif [ '${{runner.arch}}' = 'X64' ]; then
+          echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
+        fi
+      else
+        if [ '${{runner.arch}}' = 'ARM64' ]; then
+          echo "${{github.workspace}}/rel/arml64" >> "$GITHUB_PATH"
+        elif [ '${{runner.arch}}' = 'X64' ]; then
+          echo "${{github.workspace}}/rel/binl64" >> "$GITHUB_PATH"
+        fi
+      fi
+      echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
+      echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
+    shell: bash
+  - if: inputs.ow_version == '' && runner.os == 'Windows'
+    name: Setup OW Windows bits
+    run: |
+      if '${{inputs.bits}}' == '32' (
+        if '${{runner.arch}}' == 'X64' (
+          echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
+        )
+      ) else (
+        if '${{runner.arch}}' == 'X64' (
+          echo ${{github.workspace}}\rel\binnt64>> "%GITHUB_PATH%"
+        )
+      )
+      echo WATCOM=${{github.workspace}}\rel>> "%GITHUB_ENV%"
+      echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
+    shell: cmd

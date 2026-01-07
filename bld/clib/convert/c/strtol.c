@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -49,8 +50,8 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "thread.h"
+
 
 /*
  * this table is the largest value that can safely be multiplied
@@ -71,7 +72,7 @@ static unsigned long nearly_overflowing[] = {
 #define hexstr(p) (p[0] == STRING( '0' ) && (p[1] == STRING( 'x' ) || p[1] == STRING( 'X' )))
 
 
-static int radix_value( CHAR_TYPE c )
+static int _WCNEAR radix_value( CHAR_TYPE c )
 {
     if( c >= STRING( '0' ) && c <= STRING( '9' ) )
         return( c - STRING( '0' ) );
@@ -86,7 +87,7 @@ static int radix_value( CHAR_TYPE c )
 }
 
 
-static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
+static unsigned long _WCNEAR _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
     const CHAR_TYPE     *p;
     const CHAR_TYPE     *startp;
@@ -100,13 +101,13 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)nptr;
     p = nptr;
-    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p) )
+    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) )
         ++p;
     minus = false;
     switch( *p ) {
     case STRING( '-' ):
         minus = true;
-        // fall down
+        /* fall through */
     case STRING( '+' ):
         ++p;
         break;
@@ -121,7 +122,7 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
         }
     }
     if( base < 2 || base > 36 ) {
-        _RWD_errno = EDOM;
+        lib_set_errno( EDOM );
         return( 0 );
     }
     if( base == 16 ) {
@@ -149,7 +150,7 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)p;
     if( who ) {
-        if( value >= 0x80000000 ) {
+        if( value & 0x80000000 ) {
             if( value == 0x80000000 && minus ) {
                 ;  /* OK */
             } else {
@@ -158,7 +159,7 @@ static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base,
         }
     }
     if( overflow ) {
-        _RWD_errno = ERANGE;
+        lib_set_errno( ERANGE );
         if( !who )
             return( ULONG_MAX );
         if( minus )

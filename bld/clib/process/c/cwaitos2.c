@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <process.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <wos2.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -56,20 +56,22 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
     #pragma pack(__pop);
 
     rc = DosCwait( action, 0, &retval, &pid, process_id );
-    if( rc != 0 ) {
-        _RWD_errno = ( rc == ERROR_WAIT_NO_CHILDREN ) ? ECHILD : EINVAL;
-        return( -1 );
-    } else {
+    if( rc == 0 ) {
         u.stat = rc;
         u.s.al = retval.codeTerminate;
         if( u.s.al == 0 )
             u.s.ah = retval.codeResult;
         if( status != NULL )
             *status = u.stat;
-        if( u.s.al != 0 ) {
-            _RWD_errno = EINTR;
-            return( -1 );
+        if( u.s.al == 0 ) {
+            return( pid );
         }
+        lib_set_errno( EINTR );
+        return( -1 );
     }
-    return( pid );
+    if( rc == ERROR_WAIT_NO_CHILDREN ) {
+        lib_set_errno( ECHILD );
+        return( -1 );
+    }
+    return( lib_set_EINVAL() );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,9 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <termios.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -45,8 +46,8 @@ _WCRTLINK int isatty( int __fildes )
     /*
      * preserve errno across the call
      */
-    errno_save = _RWD_errno;
+    errno_save = lib_get_errno();
     status = tcgetattr( __fildes, &term );
-    _RWD_errno = errno_save;
+    lib_set_errno( errno_save );
     return( status == 0 );
 }

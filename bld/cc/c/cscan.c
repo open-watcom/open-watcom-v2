@@ -43,6 +43,9 @@
 
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
 
+#define HEXBIN(c)               ((CharSet[c] & C_HX) ? HEX2BIN((c)) : DEC2BIN((c)))
+#define OCTAL(c)                ((c) >= '0' && (c) <= '7')
+
 enum scan_class {
     #define pick(e,p) e,
     #include "_scnclas.h"
@@ -216,19 +219,27 @@ TOKEN KwLookup( const char *buf, size_t len )
     /*
      * look up id in keyword table
      */
-    if( CompVars.cstd < STD_C99 ) {
-        switch( token ) {
-        case T__BOOL:
-        case T_INLINE:
-            if( CompFlags.extensions_enabled )
-                break;
-            /* fall through */
-        case T_RESTRICT:
-        case T__COMPLEX:
-        case T__IMAGINARY:
-        case T___OW_IMAGINARY_UNIT:
+    switch( token ) {
+    case T__BOOL:
+    case T_INLINE:
+        if( CompVars.cstd < STD_C99
+          && !CompFlags.extensions_enabled )
+            return( T_ID );
+        break;
+    case T__COMPLEX:
+    case T_RESTRICT:
+    case T__IMAGINARY:
+    case T___OW_IMAGINARY_UNIT:
+        if( CompVars.cstd < STD_C99 ) {
             return( T_ID );
         }
+        break;
+    case T__NORETURN:
+        if( CompVars.cstd >= STD_C23
+          || CompVars.cstd < STD_C11
+          && !CompFlags.extensions_enabled )
+            return( T_ID );
+        break;
     }
     keyword = Tokens[token];
     if( *keyword == buf[0] ) {
@@ -379,9 +390,8 @@ static TOKEN doScanFloat( bool hex )
         }
     }
     token = T_CONSTANT;
-    if( c == 'e'
-      || c == 'E'
-      || ( hex && ( c == 'p' || c == 'P' ) ) ) {
+    if( ONE_CASE_EQUAL( c, 'E' )
+      || hex && ONE_CASE_EQUAL( c, 'P' ) ) {
         c = WriteBufferCharNextChar( c );
         if( c == '+'
           || c == '-' ) {
@@ -395,12 +405,10 @@ static TOKEN doScanFloat( bool hex )
             c = WriteBufferCharNextChar( c );
         }
     }
-    if( c == 'f'
-      || c == 'F' ) {
+    if( ONE_CASE_EQUAL( c, 'F' ) ) {
         WriteBufferCharNextChar( c );
         ConstType = TYP_FLOAT;
-    } else if( c == 'l'
-      || c == 'L' ) {
+    } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
         WriteBufferCharNextChar( c );
         if( CompFlags.use_long_double ) {
             ConstType = TYP_LONG_DOUBLE;
@@ -465,9 +473,9 @@ static TOKEN doScanPPNumber( void )
         if( (CharSet[c] & (C_AL | C_DI))
           || c == '.' ) {
             WriteBufferChar( c );
-        } else if( ( prevc == 'e' || prevc == 'E'
+        } else if( ( ONE_CASE_EQUAL( prevc, 'E' )
           || ( CompVars.cstd > STD_C89 )
-          && ( prevc == 'p' || prevc == 'P' ) )
+          && ONE_CASE_EQUAL( prevc, 'P' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
@@ -523,210 +531,37 @@ static TOKEN ScanPPDot( void )
     }
 }
 
-typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
-
-static cnv_cc Cnv8( void )
-/************************/
-{
-    char        *curr;
-    char        c;
-    size_t      len;
-    int         value;
-    uint64      value64;
-    cnv_cc      ret;
-
-    curr = Buffer;
-    len = TokenLen;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0xE0000000 ) {
-            /*
-             * 64 bit
-             */
-            goto is64;
-        }
-        value = value * 8 + c - '0';
-        ++curr;
-    }
-    Constant = value;
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    U32ToU64( value, &value64 );
-    do {
-        c = *curr;
-        if( U64Cnv8( &value64, c - '0' ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-static cnv_cc Cnv16( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    /*
-     * skip 0x thing
-     */
-    curr = Buffer + 2;
-    len = TokenLen - 2;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0xF0000000 ) {
-            /*
-             * 64 bit
-             */
-            goto is64;
-        }
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        value = value * 16 + c - '0';
-        ++curr;
-    }
-    Constant = value;
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    U32ToU64( value, &value64 );
-    do {
-        c = *curr;
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        if( U64Cnv16( &value64, c - '0' ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-
-static cnv_cc Cnv2( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    /*
-     * skip the 0b start of the binary number
-     */
-    curr = Buffer + 2;
-    len = TokenLen - 2;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value & 0x80000000 ) {
-            /*
-             * value needs 64 bit
-             */
-            goto is64;
-        }
-        if( c == '0' || c == '1' ) {
-            value = value + value + ( c - '0' );
-        }
-        ++curr;
-    }
-    Constant = value;
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    U32ToU64( value, &value64 );
-    do {
-        c = *curr;
-        if( U64Cnv2( &value64, c - '0' ) ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
-
-static cnv_cc Cnv10( void )
-/*************************/
-{
-    const char      *curr;
-    unsigned char   c;
-    size_t          len;
-    unsigned        value;
-    uint64          value64;
-    cnv_cc          ret;
-
-    curr = Buffer;
-    len = TokenLen;
-    value = 0;
-    while( len-- > 0 ) {
-        c = *curr;
-        if( value >= 429496729 ) {
-            if( value == 429496729 ) {
-                if( c > '5' ) {
-                    goto is64;
-                }
-            } else {
-                goto is64;
-            }
-        }
-        value = value * 10 + c - '0';
-        ++curr;
-    }
-    Constant = value;
-    return( CNV_32 );
-is64:
-    ret = CNV_64;
-    U32ToU64( value, &value64 );
-    do {
-        c = *curr;
-        if( U64Cnv10( &value64, c - '0') ) {
-            ret = CNV_OVR;
-        }
-        ++curr;
-    } while( len-- > 0 );
-    Constant64 = value64;
-    return( ret );
-}
-
 static TOKEN doScanNum( void )
 /****************************/
 {
-    int         c;
-    msg_codes   bad_token_type;
-    cnv_cc      ov;
-    TOKEN       token;
+    int             c;
+    msg_codes       bad_token_type;
+    TOKEN           token;
+    const char      *curr;
+    size_t          len;
+    bool            overflow;
+    bool            ssuffix;
+    bool            usuffix;
+    enum {
+        SUFF_NONE,
+        SUFF_8    = 0x01, /* 8-bit */
+        SUFF_16   = 0x02, /* 16-bit */
+        SUFF_L    = 0x03, /* 32-bit */
+        SUFF_LL   = 0x04, /* 64-bit */
+        SUFF_U    = 0x08, /* unsigned */
+        SUFF_MS   = 0x10, /* MS ixx */
+        SUFF_MASK = SUFF_8 | SUFF_16 | SUFF_L | SUFF_LL,
+    } suffix;
 
-    struct {
-        enum { CON_DEC, CON_HEX, CON_OCT, CON_BIN, CON_ERR } form;
-        enum { SUFF_NONE,SUFF_U, SUFF_L,SUFF_UL,  SUFF_I, SUFF_UI,
-               SUFF_LL,SUFF_ULL } suffix;
-    } con;
-
+    ConstType = TYP_UNDEFINED;
     BadTokenInfo = ERR_NONE;
-    ov = CNV_32;
-    Constant = 0;
+    overflow = false;
+    usuffix = true;
+    Set64ValZero( Constant64 );
     if( CurrChar == '0' ) {
         c = NextChar();
-        if( c == 'x'
-          || c == 'X' ) {
+        if( ONE_CASE_EQUAL( c, 'X' ) ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
-            con.form = CON_HEX;
             c = WriteBufferCharNextChar( c );
             while( CharSet[c] & (C_HX | C_DI) ) {
                 c = WriteBufferCharNextChar( c );
@@ -734,8 +569,7 @@ static TOKEN doScanNum( void )
 
             if( CompVars.cstd > STD_C89 ) {
                 if( c == '.'
-                  || c == 'p'
-                  || c == 'P' ) {
+                  || ONE_CASE_EQUAL( c, 'P' ) ) {
                     return( doScanFloat( true ) );
                 }
             }
@@ -745,15 +579,28 @@ static TOKEN doScanNum( void )
                  * just collected a 0x
                  */
                 BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
+            } else {
+                /*
+                 * skip 0x thing
+                 */
+                curr = Buffer + 2;
+                len = TokenLen - 2;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv16( &Constant64, HEXBIN( ch ) ) ) {
+                        overflow = true;
+                    }
+                }
             }
-        } else if(( c == 'b' || c == 'B' ) &&
-            ( CompFlags.extensions_enabled || ( CompVars.cstd >= STD_C23 ))) {
+        } else if( ONE_CASE_EQUAL( c, 'B' )
+          && ( CompFlags.extensions_enabled
+          || ( CompVars.cstd >= STD_C23 ) ) ) {
             bad_token_type = ERR_INVALID_BINARY_CONSTANT;
-            con.form = CON_BIN;
             c = WriteBufferCharNextChar( c );
             while( c == '0' || c == '1' ) {
                 c = WriteBufferCharNextChar( c );
@@ -764,41 +611,62 @@ static TOKEN doScanNum( void )
                  * just collected a 0b
                  */
                 BadTokenInfo = ERR_INVALID_BINARY_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_BINARY_CONSTANT );
+                }
+            } else {
+                /*
+                 * skip the 0b start of the binary number
+                 */
+                curr = Buffer + 2;
+                len = TokenLen - 2;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv2( &Constant64, DEC2BIN( ch ) ) ) {
+                        overflow = true;
+                    }
                 }
             }
         } else {
             /*
              * scan octal number
              */
-            unsigned char   digit_mask;
+            bool    digit89;
 
             bad_token_type = ERR_INVALID_OCTAL_CONSTANT;
-            con.form = CON_OCT;
-            digit_mask = 0;
             /*
              * if collecting tokens for macro preprocessor, allow 8 and 9
              * since the argument may be used in with # or ##.
              */
+            digit89 = false;
             while( CharSet[c] & C_DI ) {
-                digit_mask |= c;
+                digit89 |= ( c > '7' );
                 c = WriteBufferCharNextChar( c );
             }
             if( c == '.'
-              || c == 'e'
-              || c == 'E' ) {
+              || ONE_CASE_EQUAL( c, 'E' ) ) {
                 return( doScanFloat( false ) );
             }
-            if( digit_mask & 0x08 ) {
+            if( digit89 ) {
                 /*
                  * if digit 8 or 9 somewhere
                  */
                 BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
-                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_OCTAL_CONSTANT );
+                }
+            } else {
+                curr = Buffer;
+                len = TokenLen;
+                while( len-- > 0 ) {
+                    unsigned char   ch;
+
+                    ch = *(unsigned char *)curr++;
+                    if( U64Cnv8( &Constant64, DEC2BIN( ch ) ) ) {
+                        overflow = true;
+                    }
                 }
             }
         }
@@ -807,211 +675,141 @@ static TOKEN doScanNum( void )
          * scan decimal number
          */
         bad_token_type = ERR_INVALID_CONSTANT;
-        con.form = CON_DEC;
+        usuffix = false;
         c = NextChar();
         while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
         }
         if( c == '.'
-          || c == 'e'
-          || c == 'E' ) {
+          || ONE_CASE_EQUAL( c, 'E' ) ) {
             return( doScanFloat( false ) );
         }
+        curr = Buffer;
+        len = TokenLen;
+        while( len-- > 0 ) {
+            unsigned char   ch;
+
+            ch = *(unsigned char *)curr++;
+            if( U64Cnv10( &Constant64, DEC2BIN( ch ) ) ) {
+                overflow = true;
+            }
+        }
     }
-    switch( con.form ) {
-    case CON_OCT:
-        ov = Cnv8();
-        break;
-    case CON_HEX:
-        ov = Cnv16();
-        break;
-    case CON_DEC:
-        ov = Cnv10();
-        break;
-    case CON_BIN:
-        ov = Cnv2();
-        break;
-    case CON_ERR:
-        ov = CNV_32;
-    }
-    con.suffix = SUFF_NONE;
     /*
      * collect suffix
      */
-    if( c == 'l'
-      || c == 'L' ) {
+    suffix = SUFF_NONE;
+    if( ONE_CASE_EQUAL( c, 'U' ) ) {
+        suffix |= SUFF_U;
         c = WriteBufferCharNextChar( c );
-        if( c == 'u'
-          || c == 'U' ) {
-            c = WriteBufferCharNextChar( c );
-            con.suffix = SUFF_UL;
-        } else if( c == 'l'
-          || c == 'L' ) {
-            c = WriteBufferCharNextChar( c );
-            if( c == 'u'
-              || c == 'U' ) {
-                c = WriteBufferCharNextChar( c );
-                con.suffix = SUFF_ULL;
-            } else {
-                con.suffix = SUFF_LL;
-            }
-        } else {
-            con.suffix = SUFF_L;
-        }
-    } else if( c == 'u'
-      || c == 'U' ) {
-        c = WriteBufferCharNextChar( c );
-        if( c == 'l'
-          || c == 'L' ) {
-            c = WriteBufferCharNextChar( c );
-            if( c == 'l'
-              || c == 'L' ) {
-                c = WriteBufferCharNextChar( c );
-                con.suffix = SUFF_ULL;
-            } else {
-                con.suffix = SUFF_UL;
-            }
-        } else if( c == 'i'
-          || c == 'I' ) {
-            c = WriteBufferCharNextChar( c );
-            con.suffix = SUFF_UI;
-        } else {
-            con.suffix = SUFF_U;
-        }
-    } else if( c == 'i'
-      || c == 'I' ) {
-        c = WriteBufferCharNextChar( c );
-        con.suffix = SUFF_I;
     }
-    if( con.suffix == SUFF_UI
-      || con.suffix == SUFF_I ) {
-        unsigned_32 value;
-
-        value = 0;
-        while( CharSet[c] & C_DI ) {
-            value = value * 10 + c - '0';
+    if( ONE_CASE_EQUAL( c, 'L' ) ) {
+        c = WriteBufferCharNextChar( c );
+        if( ONE_CASE_EQUAL( c, 'L' ) ) {
+            suffix |= SUFF_LL;
+            c = WriteBufferCharNextChar( c );
+        } else {
+            suffix |= SUFF_L;
+        }
+        if( ONE_CASE_EQUAL( c, 'U' ) ) {
+            suffix |= SUFF_U;
             c = WriteBufferCharNextChar( c );
         }
-        if( value == 64 ) {
-            if( ov == CNV_32 ) {
-                Constant64.u._32[I64LO32] = Constant;
-                Constant64.u._32[I64HI32] = 0;
-            }
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYP_LONG64;
-            } else {
-                ConstType = TYP_ULONG64;
-            }
-        } else if( value == 32 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYP_LONG;
-            } else {
-                ConstType = TYP_ULONG;
-            }
-        } else if( value == 16 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYP_SHORT;
-            } else {
-                ConstType = TYP_USHORT;
-            }
-        } else if( value == 8 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYP_CHAR;
-            } else {
-                ConstType = TYP_UCHAR;
-            }
-        } else {
-            if( diagnose_lex_error() ) {
+    } else if( ONE_CASE_EQUAL( c, 'I' ) ) {
+        c = WriteBufferCharNextChar( c );
+        if( c == '6' ) {
+            c = WriteBufferCharNextChar( c );
+            if( c == '4' ) {
+                suffix |= SUFF_LL | SUFF_MS;
+                c = WriteBufferCharNextChar( c );
+            } else if( diagnose_lex_error() ) {
                 CErr1( ERR_INVALID_CONSTANT );
             }
-        }
-        if( ov == CNV_64
-          && value < 64 ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            Constant =  Constant64.u._32[I64LO32];
-            if( diagnose_lex_error() ) {
-                CWarn1( ERR_CONSTANT_TOO_BIG );
+        } else if( c == '3' ) {
+            c = WriteBufferCharNextChar( c );
+            if( c == '2' ) {
+                suffix |= SUFF_L | SUFF_MS;
+                c = WriteBufferCharNextChar( c );
+            } else if( diagnose_lex_error() ) {
+                CErr1( ERR_INVALID_CONSTANT );
             }
+        } else if( c == '1' ) {
+            c = WriteBufferCharNextChar( c );
+            if( c == '6' ) {
+                suffix |= SUFF_16 | SUFF_MS;
+                c = WriteBufferCharNextChar( c );
+            } else if( diagnose_lex_error() ) {
+                CErr1( ERR_INVALID_CONSTANT );
+            }
+        } else if( c == '8' ) {
+            suffix |= SUFF_8 | SUFF_MS;
+            c = WriteBufferCharNextChar( c );
+        } else if( diagnose_lex_error() ) {
+            CErr1( ERR_INVALID_CONSTANT );
         }
-    } else if( ov == CNV_32 ) {
-        /*
-         * 32-bit value
-         */
-        switch( con.suffix ) {
-        case SUFF_NONE:
-            if( Constant <= TARGET_INT_MAX ) {
+    }
+    /*
+     * process constant size
+     */
+    ssuffix = ( (suffix & SUFF_U) == 0 );
+    usuffix = ( !ssuffix || usuffix );
+    switch( suffix & SUFF_MASK ) {
+    case SUFF_NONE:
+    case SUFF_8:
+    case SUFF_16:
+        if( ssuffix ) {
+            if( U64CmpU32( Constant64, TARGET_INT_MAX ) <= 0 ) {
                 ConstType = TYP_INT;
                 break;
             }
-#if TARGET_INT < TARGET_LONG
-            if( Constant <= TARGET_UINT_MAX
-              && con.form != CON_DEC ) {
-#else
-            if( con.form != CON_DEC ) {
-#endif
+        }
+        if( usuffix ) {
+            if( U64CmpU32( Constant64, TARGET_UINT_MAX ) <= 0 ) {
                 ConstType = TYP_UINT;
                 break;
             }
-            /* fall through */
-        case SUFF_L:
-            if( Constant <= TARGET_LONG_MAX ) {
+        }
+        /* fall through */
+    case SUFF_L:
+        if( ssuffix ) {
+            if( U64CmpU32( Constant64, TARGET_LONG_MAX ) <= 0 ) {
                 ConstType = TYP_LONG;
                 break;
             }
-            if( con.form != CON_DEC ) {
+        }
+        if( usuffix ) {
+            if( U64CmpU32( Constant64, TARGET_ULONG_MAX ) <= 0 ) {
                 ConstType = TYP_ULONG;
                 break;
             }
-            /* fall through */
-        case SUFF_LL:
-            Constant64.u._32[I64LO32] = Constant;
-            Constant64.u._32[I64HI32] = 0;
-            ConstType = TYP_LONG64;
-            break;
-        case SUFF_U:
-#if TARGET_INT < TARGET_LONG
-            if( Constant <= TARGET_UINT_MAX ) {
-                ConstType = TYP_UINT;
-                break;
-            }
-            /* fall through */
-#else
-            ConstType = TYP_UINT;
-            break;
-#endif
-        case SUFF_UL:
-            ConstType = TYP_ULONG;
-            break;
-        case SUFF_ULL:
-            Constant64.u._32[I64LO32] = Constant;
-            Constant64.u._32[I64HI32] = 0;
-            ConstType = TYP_ULONG64;
-            break;
-        default:
-            break;
         }
-    } else {
-        /*
-         * 64-bit value
-         */
-        switch( con.suffix ) {
-        case SUFF_NONE:
-        case SUFF_L:
-        case SUFF_LL:
-            if( (Constant64.u._32[I64HI32] & 0x80000000) == 0 ) {
+        /* fall through */
+    case SUFF_LL:
+        if( ssuffix ) {
+            if( Constant64.u.sign.v == 0 ) {
                 ConstType = TYP_LONG64;
                 break;
             }
-            /* fall through */
-        case SUFF_U:
-        case SUFF_UL:
-        case SUFF_ULL:
-            ConstType = TYP_ULONG64;
-            break;
-        default:
-            break;
         }
+        if( usuffix ) {
+            ConstType = TYP_ULONG64;
+        } else if( ConstType == TYP_UNDEFINED ) {
+            /*
+             * C99 say that signed long long decimal number is undefined type
+             * if it cannot be represented by any standard or extended signed type
+             * signed integer over LLONG_MAX cannot be represented by OW signed type
+             * that it should be undefined type.
+             * We report this issue at Warning level 1 and setup it as
+             * unsigned long long type
+             */
+            ConstType = TYP_ULONG64;
+            if( diagnose_lex_error() ) {
+                CWarn1( ERR_INT_IS_UNSIGNED );
+            }
+        }
+        break;
     }
+
     token = T_CONSTANT;
     if( CharSet[c] & (C_AL | C_DI) ) {
         token = T_BAD_TOKEN;
@@ -1020,13 +818,14 @@ static TOKEN doScanNum( void )
         }
     }
     WriteBufferNullChar();
-    if( token == T_BAD_TOKEN ) {
-        BadTokenInfo = bad_token_type;
-    } else if( ov == CNV_OVR ) {
+    if( overflow ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
         if( diagnose_lex_error() ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
         }
+    }
+    if( token == T_BAD_TOKEN ) {
+        BadTokenInfo = bad_token_type;
     }
     return( token );
 }
@@ -1371,8 +1170,8 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
-/******************************************************************
+static msg_codes doScanHex( int max, unsigned_64 *pval64, escinp_fn ifn, escout_fn ofn )
+/***************************************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1380,28 +1179,24 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
 {
     int             c;
     int             count;
-    char            too_big;
-    unsigned        value;
+    bool            too_big;
 
-    too_big = 0;
+    too_big = false;
     count = max;
-    value = 0;
+    Set64ValZero( *pval64 );
     for( ;; ) {
         c = ifn();
         if( max == 0 )
             break;
-        if( ( CharSet[c] & (C_HX | C_DI) ) == 0 )
+        if( (CharSet[c] & (C_HX | C_DI)) == 0 )
             break;
         if( ofn != NULL )
             ofn( c );
-        if( CharSet[c] & C_HX )
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        if( value & 0xF0000000 )
-            too_big = 1;
-        value = value * 16 + c - '0';
+        if( U64Cnv16( pval64, HEXBIN( c ) ) ) {
+            too_big = true;
+        }
         --max;
     }
-    Constant = value;
     if( count == max ) {
         /*
          * indicate no characters matched
@@ -1417,8 +1212,8 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
     return( ERR_NONE );
 }
 
-int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
-/**********************************************************************
+int ESCChar( escinp_fn ifn, escout_fn ofn, msg_codes *perr_msg )
+/***************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1427,30 +1222,33 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
     int         n;
     int         i;
     msg_codes   err_msg;
+    int         c;
 
-    if( c >= '0'
-      && c <= '7' ) {
+    c = ifn();
+    if( OCTAL( c ) ) {
         /*
          * get octal escape sequence
          */
         n = 0;
         i = 3;
-        while( i-- > 0 && c >= '0' && c <= '7' ) {
+        while( i-- > 0 && OCTAL( c ) ) {
             if( ofn != NULL )
                 ofn( c );
-            n = n * 8 + c - '0';
+            n = n * 8 + DEC2BIN( c );
             c = ifn();
         }
     } else if( c == 'x' ) {
+        unsigned_64 val64;
+
         /*
          * get hex escape sequence
          */
         if( ofn != NULL )
             ofn( c );
-        err_msg = doScanHex( 127, ifn, ofn );
+        err_msg = doScanHex( 127, &val64, ifn, ofn );
         if( err_msg != ERR_NONE )
             *perr_msg = err_msg;
-        n = Constant;
+        n = U32FetchTrunc( val64 );
     } else {
         if( ofn != NULL )
             ofn( c );
@@ -1486,6 +1284,14 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
             }
             break;
 #endif
+        case '\\':
+        case '\"':
+        case '\'':
+        case '?':
+            break;
+        default:
+            *perr_msg = ERR_INV_CHAR_CONSTANT;
+            break;
         }
 #if _CPU == 370
         _ASCIIOUT( c );
@@ -1509,6 +1315,11 @@ int EncodeWchar( int c )
     return( c );
 }
 
+static int read_inp( void )
+{
+    return( NextChar() );
+}
+
 static TOKEN doScanCharConst( DATA_TYPE char_type )
 /**************************************************
  * TokenLen is alway lower then BUF_SIZE that
@@ -1517,11 +1328,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
 {
     int         c;
     int         i;
-    int         n;
     TOKEN       token;
-    int         value;
 
-    value = 0;
+    Set64ValZero( Constant64 );
     c = NextChar();
     if( c == '\'' ) {
         Buffer[TokenLen++] = '\'';
@@ -1539,47 +1348,22 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             }
             if( c == '\\' ) {
                 Buffer[TokenLen++] = '\\';
-                c = NextChar();
-                if( c >= '0'
-                  && c <= '7' ) {
-                    n = c - '0';
-                    Buffer[TokenLen++] = c;
-                    c = NextChar();
-                    if( c >= '0'
-                      && c <= '7' ) {
-                        n = n * 8 + c - '0';
-                        Buffer[TokenLen++] = c;
-                        c = NextChar();
-                        if( c >= '0'
-                          && c <= '7' ) {
-                            n = n * 8 + c - '0';
-                            Buffer[TokenLen++] = c;
-                            NextChar();
-                            if( n > 0377
-                              && char_type != TYP_WCHAR ) {
-                                BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                                if( diagnose_lex_error() ) {
-                                    CWarn1( ERR_CONSTANT_TOO_BIG );
-                                }
-                                /*
-                                 * mask off high bits
-                                 */
-                                n &= 0377;
-                            }
-                        }
+                c = ESCChar( read_inp, WriteBufferChar, &BadTokenInfo );
+                if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
+                    if( diagnose_lex_error() ) {
+                        CErr1( ERR_INVALID_HEX_CONSTANT );
                     }
-                    c = n;
-                } else {
-                    c = ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
-                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        if( diagnose_lex_error() ) {
-                            CWarn1( ERR_CONSTANT_TOO_BIG );
-                        }
+                } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
+                  || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
+                    if( diagnose_lex_error() ) {
+                        CWarn1( BadTokenInfo );
                     }
                 }
                 if( char_type == TYP_WCHAR ) {
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                 }
             } else {
@@ -1596,14 +1380,18 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                         }
                     }
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                     Buffer[TokenLen++] = CurrChar;
                     NextChar();
                 } else if( char_type == TYP_WCHAR ) {
                     c = EncodeWchar( c );
                     ++i;
-                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    /* value = (value << 8) + ((c & 0xFF00) >> 8); */
+                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
 #if _CPU == 370
                 } else {
@@ -1612,7 +1400,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 }
             }
             ++i;
-            value = (value << 8) + c;
+            /* value = (value << 8) + c; */
+            U64ShiftL( &Constant64, 8, &Constant64 );
+            U64IncDec( &Constant64, c );
             /*
              * handle case where user wants a \ but doesn't escape it
              */
@@ -1641,14 +1431,25 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     }
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
-    if( char_type == TYP_CHAR
-      && CompFlags.signed_char ) {
-        if( value < 256
-          && value > 127 ) {
-            value -= 256;
+    if( char_type == TYP_CHAR ) {
+        /*
+         * character constant has plain character type
+         * ConstType must be setup to appropriate character type
+         */
+        if( CompFlags.signed_char ) {
+            /*
+             * check if it is single character constant
+             * it means value in range 128 ... 255
+             * then convert into signed char range -128 ... 127
+             */
+            if( U64CmpU32( Constant64, 127 ) > 0
+              && U64CmpU32( Constant64, 256 ) < 0 ) {
+                U64IncDec( &Constant64, -256 );
+            }
+        } else {
+            ConstType = TYP_UCHAR;
         }
     }
-    Constant = value;
     return( token );
 }
 
@@ -1691,18 +1492,19 @@ static TOKEN doScanString( bool wide )
         }
 
         if( c == '\\' ) {
-            c = WriteBufferCharNextChar( c );
-            if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
+            WriteBufferChar( c );
+            ESCChar( read_inp, WriteBufferChar, &BadTokenInfo );
+            if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
                 if( diagnose_lex_error() ) {
-                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        CWarn1( ERR_CONSTANT_TOO_BIG );
-                    } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        CErr1( ERR_INVALID_HEX_CONSTANT );
-                    }
+                    CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
-                c = CurrChar;
+            } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG
+              || BadTokenInfo == ERR_INV_CHAR_CONSTANT ) {
+                if( diagnose_lex_error() ) {
+                    CWarn1( BadTokenInfo );
+                }
             }
+            c = CurrChar;
         } else {
             /*
              * if first character of a double-byte character, then

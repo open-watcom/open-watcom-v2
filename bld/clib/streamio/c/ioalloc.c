@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 #include "streamio.h"
 
 
-void __ioalloc( FILE *fp )
+void _WCNEAR __ioalloc( FILE *fp )
 {
     __chktty( fp );                                 /* JBS 28-aug-90 */
     if( fp->_bufsize == 0 ) {

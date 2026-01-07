@@ -25,7 +25,7 @@ _TEXT segment word public 'CODE'
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 public  __init_87_emulator
-__init_87_emulator proc
+__init_87_emulator proc near
 __init_87_emulator endp
 
 _TEXT   ends

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +40,10 @@ void    FRewind( b_file *io )
 //===========================
 // Rewind a file.
 {
-    if( io->attrs & BUFFERED ) {
+    if( io->buffered ) {
         io->b_curs = 0;
         io->read_len = 0;
-        io->high_water = 0;
-        io->attrs &= ~READ_AHEAD;
     }
-    io->phys_offset = 0;
     FSetIOOk( io );
     if( fseek( io->fp, 0, SEEK_SET ) ) {
         FSetSysErr( io );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include "cvsyms.h"
 #include "cvtypes.h"
 #include "dbsupp.h"
+#include "i64.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -323,14 +324,14 @@ void        CVPutINum64( cv_out *out, signed_64 val )
     byte       *ptr;
 
 #define LC( what, to )   *((to *)&what)
-    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
-        CVPutINum( out, val.u._32[I64LO32] );
+    if( I64High( val ) == 0 || I64High( val ) == -1 ) {
+        CVPutINum( out, I64Low( val ) );
     } else {
         ptr = out->ptr;
         LC( ptr[0],u2 ) = LF_QUADWORD;
-        LC( ptr[2],u4 ) = val.u._32[I64LO32];
-        LC( ptr[6],u4 ) = val.u._32[I64HI32];
-        ptr += sizeof(u2) + sizeof( u8 );
+        LC( ptr[2],u4 ) = U64Low( val );
+        LC( ptr[6],u4 ) = U64High( val );
+        ptr += sizeof( u2 ) + sizeof( u8 );
         out->ptr = ptr;
     }
 #undef LC

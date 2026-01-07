@@ -36,8 +36,8 @@
 
 gbl_defn ftnoption      Options;        // compile options
 gbl_defn ftnoption      NewOptions;     // compile options for next statement
-gbl_defn unsigned_32    StmtNo;         // current statement number
-gbl_defn unsigned_32    NextStmtNo;     // next statement number
+gbl_defn stmt_num       StmtNo;         // current statement number
+gbl_defn stmt_num       NextStmtNo;     // next statement number
 gbl_defn int            BrCnt;          // bracket count
 gbl_defn itnode         *ITHead;        // head of stmt internal text
 gbl_defn itnode         *CITNode;       // current internal text node
@@ -46,7 +46,7 @@ gbl_defn itnode         *SPtr2;         // 2nd LZ right bracket
 gbl_defn STMT           StmtProc;       // statement processor code
 gbl_defn unsigned_16    CtrlFlgs;       // statement control flags
 gbl_defn int            SrcRecNum;      // record # of initial line of statement
-gbl_defn unsigned_16    BlockNum;       // for controlling unstructured branches
+gbl_defn block_num      BlockNum;       // for controlling unstructured branches
 gbl_defn csnode         *CSHead;        // head of control structure list
 gbl_defn unsigned_32    IOData;         // bit flags for i/o control lists
 gbl_defn itnode         *BkLink;        // ptr to previous itnode in list

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ static  void    NoBlocksToSelf( void )
                  * set up new block to look like it was generated after blk
                  */
                 _SetBlkAttr( new_blk, BLK_JUMP );
-                new_blk->gen_id = blk->gen_id;
+                new_blk->gen_blk_id = blk->gen_blk_id;
                 new_blk->ins.head.line_num = blk->ins.head.line_num;
                 new_blk->next_block = blk->next_block;
                 new_blk->prev_block = blk;
@@ -99,12 +99,12 @@ static  void    NoBlocksToSelf( void )
                  * retarget edge to point to new block
                  */
                 edge->destination.u.blk = new_blk;
-                edge->flags &= ~DEST_LABEL_DIES;
+                edge->flags &= ~BEF_DEST_LABEL_DIES;
                 /*
                  * set new block to jump from new_blk to blk
                  */
                 new_edge = &new_blk->edge[0];
-                new_edge->flags |= DEST_IS_BLOCK;
+                new_edge->flags |= BEF_DEST_IS_BLOCK;
                 new_edge->destination.u.blk = blk;
                 new_edge->source = new_blk;
                 /*
@@ -214,14 +214,14 @@ static  void    FixLinks( void )
 {
     block       *blk;
     block       *prev;
-    block_num   id;
+    block_id    blk_id;
 
     prev = NULL;
-    id = 0;
+    blk_id = 1;
     for( blk = BlockList; blk != NULL; blk = blk->next_block ) {
         blk->next_block = blk->prev_block;
         blk->prev_block = prev;
-        blk->id = ++id;
+        blk->blk_id = blk_id++;
         prev = blk;
     }
     HeadBlock = BlockList;
@@ -372,7 +372,7 @@ static  void    ReorderBlocks( void )
         next_block = curr->first_block;
         next_block->prev_block = last_block;
         last_block->next_block = next_block;
-        next_block->id = last_block->id + 1;
+        next_block->blk_id = last_block->blk_id + 1;
         last_block = next_block;
     }
     last_block->next_block = NULL;
@@ -386,14 +386,14 @@ static  void    EdgeLevels( void )
     block               *blk;
     block_edge          *edge;
     interval_def        *interval;
-    block_num           id;
+    block_id            blk_id;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            id = edge->source->id;
+            blk_id = edge->source->blk_id;
             interval = blk->u.interval;
             for( ;; ) {
-                if( id >= interval->first_block->id && id <= interval->last_block->id )
+                if( blk_id >= interval->first_block->blk_id && blk_id <= interval->last_block->blk_id )
                     break;
                 edge->join_level = interval->level;
                 interval = interval->parent;
@@ -448,7 +448,7 @@ static  void    NestingDepth( void )
             for( i = blk->targets; i-- > 0; ) {
                 edge = &blk->edge[i];
                 target = edge->destination.u.blk;
-                if( target->id <= blk->id ) {
+                if( target->blk_id <= blk->blk_id ) {
                     /*
                      * back edge
                      */

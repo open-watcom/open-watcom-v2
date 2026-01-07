@@ -32,13 +32,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/dev_msg.h>
 #include <sys/kernel.h>
 #include <termios.h>
 #include <conio.h>
-#include "rterrno.h"
 #include "rtdata.h"
 
 

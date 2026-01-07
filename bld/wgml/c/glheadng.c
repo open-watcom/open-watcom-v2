@@ -91,6 +91,13 @@ void    lay_heading( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    delim           :1;
+        unsigned    stop_eject      :1;
+        unsigned    para_indent     :1;
+        unsigned    threshold       :1;
+        unsigned    max_group       :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

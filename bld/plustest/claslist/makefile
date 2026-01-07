@@ -18,7 +18,7 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .SYMBOLIC start test.lnk pcfistt.$(exe)
+test : .SYMBOLIC start pcfistt.$(exe)
     $(noecho)%make common_set_result
 
 clean : .procedure

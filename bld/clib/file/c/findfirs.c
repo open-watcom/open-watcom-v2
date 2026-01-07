@@ -33,6 +33,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #include <string.h>
 #if defined( __OS2__ )
@@ -54,7 +55,7 @@
     #include "libwin32.h"
     #include "ntext.h"
 #elif defined( __OS2__ )
-    #include "d2ttime.h"
+    #include "d2timet.h"
 #elif defined( __RDOS__ )
     #include "liballoc.h"
 #else
@@ -63,11 +64,10 @@
     #include "tinyio.h"
     #include "_doslfn.h"
     #include "_dtaxxx.h"
-    #include "d2ttime.h"
+    #include "d2timet.h"
 #endif
-#include "i64.h"
+#include "libi64.h"
 #include "find.h"
-#include "seterrno.h"
 
 
 #ifdef __WIDECHAR__
@@ -208,7 +208,8 @@
 
     /*** Handle the file size ***/
   #ifdef __INT64__
-    U64Set( (unsigned_64 *)&fileinfo->size, ffd->nFileSizeLow, ffd->nFileSizeHigh );
+    LIB_LODWORD( fileinfo->size ) = ffd->nFileSizeLow;
+    LIB_HIDWORD( fileinfo->size ) = ffd->nFileSizeHigh;
   #else
     fileinfo->size = ffd->nFileSizeLow;
   #endif
@@ -221,25 +222,25 @@
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __os2_wfinddatai64_cvt( FF_BUFFER *ffb, struct _wfinddatai64_t *fileinfo )
   #else
-   void __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __os2_wfinddata_cvt( FF_BUFFER *ffb, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __os2_finddatai64_cvt( FF_BUFFER *ffb, struct _finddatai64_t *fileinfo )
   #else
-   void __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
+   void _WCNEAR __os2_finddata_cvt( FF_BUFFER *ffb, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
 {
     /*** Handle the timestamps ***/
-    fileinfo->time_create = _d2ttime( TODDATE( ffb->fdateCreation ),
+    fileinfo->time_create = __dos2timet( TODDATE( ffb->fdateCreation ),
                                         TODTIME( ffb->ftimeCreation ) );
-    fileinfo->time_access = _d2ttime( TODDATE( ffb->fdateLastAccess ),
+    fileinfo->time_access = __dos2timet( TODDATE( ffb->fdateLastAccess ),
                                         TODTIME( ffb->ftimeLastAccess ) );
-    fileinfo->time_write  = _d2ttime( TODDATE( ffb->fdateLastWrite ),
+    fileinfo->time_write  = __dos2timet( TODDATE( ffb->fdateLastWrite ),
                                         TODTIME( ffb->ftimeLastWrite ) );
 
   #if defined( __INT64__ ) && !defined( _M_I86 )
@@ -340,15 +341,15 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
+   void _WCNEAR __dos_wfinddatai64_cvt( struct _wfind_t *findbuf, struct _wfinddatai64_t *fileinfo )
   #else
-   void __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
+   void _WCNEAR __dos_wfinddata_cvt( struct _wfind_t *findbuf, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
+   void _WCNEAR __dos_finddatai64_cvt( struct find_t *findbuf, struct _finddatai64_t *fileinfo )
   #else
-   void __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
+   void _WCNEAR __dos_finddata_cvt( struct find_t *findbuf, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
@@ -359,8 +360,8 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
     /*** Handle the timestamps ***/
   #ifdef __WATCOM_LFN__
     if( IS_LFN( findbuf->reserved ) && DTALFN_CRTIME_OF( findbuf->reserved ) ) {
-        fileinfo->time_create = _d2ttime( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
-        fileinfo->time_access = _d2ttime( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
+        fileinfo->time_create = __dos2timet( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
+        fileinfo->time_access = __dos2timet( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
     } else {
   #endif
         fileinfo->time_create = -1L;
@@ -368,10 +369,11 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
   #ifdef __WATCOM_LFN__
     }
   #endif
-    fileinfo->time_write = _d2ttime( findbuf->wr_date, findbuf->wr_time );
+    fileinfo->time_write = __dos2timet( findbuf->wr_date, findbuf->wr_time );
     /*** Handle the file size ***/
   #ifdef __INT64__
-    U64Set( (unsigned_64 *)&fileinfo->size, findbuf->size, 0 );
+    LIB_LODWORD( fileinfo->size ) = findbuf->size;
+    LIB_HIDWORD( fileinfo->size ) = 0;
   #else
     fileinfo->size = findbuf->size;
   #endif

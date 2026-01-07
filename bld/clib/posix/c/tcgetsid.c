@@ -30,12 +30,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <termios.h>
 #ifdef __LINUX__
     #include <sys/ioctl.h>
     #include <sys/types.h>
 #else
-    #include "rterrno.h"
     #include "thread.h"
 #endif
 
@@ -49,7 +49,6 @@ _WCRTLINK pid_t tcgetsid( int fd )
         return( -1 );
     return( sid );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }

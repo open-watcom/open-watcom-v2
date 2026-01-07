@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +30,14 @@
 ****************************************************************************/
 
 
+#include "wf77defs.h"
 #include "symdefs.h"
 #include "symflgs.h"
 #include "symtypes.h"
 #include "symacc.h"
 #include "ifdefs.h"
 #include "cg.h"
+
 
 #define SEG_NULL        0       // NULL segment id
 #if _INTEL_CPU
@@ -75,7 +77,7 @@ typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
     segment_id          segid;          //   variables not in common/equivalence
     void                *alt_scb;       // SCB for character arguments
-    unsigned short      cg_typ;         // cg-type for local character
+    cg_type             cgtyp;          // cg-type for local character
 } vi;
 
 typedef struct var {
@@ -197,7 +199,7 @@ typedef struct m_sym {
     sym_id              sym;            // shadowed symbol
     union {
         intstar4        *value;         // value of implied-DO variables
-        unsigned short  cg_typ;         // cg-type for character temporaries
+        cg_type         cgtyp;          // cg-type for character temporaries
     } u;                                //   and equivalence sets allocated
 } m_sym;
 
@@ -215,18 +217,21 @@ typedef struct constant {
 // symbol table structure for literals:
 // ====================================
 
+typedef enum {
+    LT_NONE               = 0x00,
+    LT_DATA_STMT          = 0x01,   // literal used in DATA statement
+    LT_EXEC_STMT          = 0x02,   // literal used in executable statement
+    LT_SCB_TMP_REFERENCE  = 0x04,   // temporary reference to SCB
+    LT_SCB_REQUIRED       = 0x08,   // SCB required
+} lt_flags;
+
 typedef struct literal {
     sym_id              link;           // pointer to next literal in chain
     void                *address;       // back handle
     size_t              length;         // length of literal
-    unsigned_8          flags;          // constant appeared in DATA statement
-    byte                value;          // value of literal
+    lt_flags            flags;          // constant appeared in DATA statement
+    char                value[1];       // value of literal
 } literal;
-
-#define LT_DATA_STMT            0x01    // literal used in DATA statement
-#define LT_EXEC_STMT            0x02    // literal used in executable statement
-#define LT_SCB_TMP_REFERENCE    0x04    // temporary reference to SCB
-#define LT_SCB_REQUIRED         0x08    // SCB required
 
 // symbol table structure for statement numbers:
 // =============================================
@@ -234,11 +239,11 @@ typedef struct literal {
 typedef struct stmtno {
     sym_id              link;           // link to next statement # entry
     uint                ref_count;      // reference count
-    unsigned_16         block;          // block # statement # appeared in
+    block_num           block;          // block # statement # appeared in
     unsigned_16         flags;          // statement # flags
     label_id            address;        // label of statement #
     int                 line;           // source line statement # appeared in
-    unsigned_16         number;         // statement #
+    stmt_num            number;         // statement #
 } stmtno;
 
 // union of all symbols:

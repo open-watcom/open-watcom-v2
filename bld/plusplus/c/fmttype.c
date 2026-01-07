@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,9 +66,22 @@ typedef struct {
 } FMT_FLAG_INFO;
 
 static const char *typeText[] = {
-    #define pick(id,promo,promo_asm,text)   text,
+    /*
+     * base types
+     */
+    #define pickb(id,promo,promo_asm,type_text) type_text,
+    #define picke(id,promo,promo_asm,type_text)
     #include "_typdefs.h"
-    #undef pick
+    #undef picke
+    #undef pickb
+    /*
+     * extended types
+     */
+    #define pickb(id,promo,promo_asm,type_text)
+    #define picke(id,promo,promo_asm,type_text) type_text,
+    #include "_typdefs.h"
+    #undef picke
+    #undef pickb
 };
 
 static const char *errFormats[] = {

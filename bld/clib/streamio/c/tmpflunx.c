@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -40,7 +41,6 @@
 #include <fcntl.h>
 #include "tmpfname.h"
 #include "rtdata.h"
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -64,7 +64,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
         fd = open( name, O_RDWR | O_CREAT | O_EXCL | O_TEMP, 0666 );
         if( fd != -1 )
             break;
-        if( _RWD_errno != EEXIST )
+        if( lib_get_errno() != EEXIST )
             return( NULL );
         if( tmpfnext == 'z' )
             tmpfnext = 'A' - 1;

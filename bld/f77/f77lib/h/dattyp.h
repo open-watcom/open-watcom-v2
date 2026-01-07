@@ -68,7 +68,7 @@ typedef struct arr_desc {
     char                *data;
     unsigned long       num_elmts;
     uint                elmt_size;
-    PTYPE               typ;
+    PTYPE               ptyp;
 } arr_desc;
 
 #include "scb.h"

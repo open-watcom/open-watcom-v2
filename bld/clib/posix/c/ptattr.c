@@ -32,16 +32,16 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <pthread.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sched.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
-_WCRTLINK int pthread_attr_init(pthread_attr_t *__attr)
+_WCRTLINK int pthread_attr_init( pthread_attr_t *__attr )
 {
     if( __attr == NULL )
         return( EINVAL );
@@ -57,20 +57,20 @@ _WCRTLINK int pthread_attr_init(pthread_attr_t *__attr)
 
 }
 
-_WCRTLINK int pthread_attr_destroy(pthread_attr_t *__attr)
+_WCRTLINK int pthread_attr_destroy( pthread_attr_t *__attr )
 {
     if( __attr == NULL )
         return( EINVAL );
 
     if( __attr->sched_params != NULL )
-        free(__attr->sched_params);
+        free( __attr->sched_params );
 
     __attr->sched_params = NULL;
 
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setdetachstate(pthread_attr_t *__attr, int detachstate)
+_WCRTLINK int pthread_attr_setdetachstate( pthread_attr_t *__attr, int detachstate )
 {
     /* Detaching really isn't necessary in Open Watcom's
      * pthread implementation, but you can set this...
@@ -78,7 +78,9 @@ _WCRTLINK int pthread_attr_setdetachstate(pthread_attr_t *__attr, int detachstat
      * See ptdetach.c for more info
      */
 
-    if( __attr == NULL || (detachstate != PTHREAD_CREATE_JOINABLE && detachstate != PTHREAD_CREATE_DETACHED))
+    if( __attr == NULL
+      || ( detachstate != PTHREAD_CREATE_JOINABLE
+      && detachstate != PTHREAD_CREATE_DETACHED ) )
         return( EINVAL );
 
     __attr->detached = detachstate;
@@ -86,9 +88,10 @@ _WCRTLINK int pthread_attr_setdetachstate(pthread_attr_t *__attr, int detachstat
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getdetachstate(const pthread_attr_t *__attr, int *detachstate)
+_WCRTLINK int pthread_attr_getdetachstate( const pthread_attr_t *__attr, int *detachstate )
 {
-    if( __attr == NULL || detachstate == NULL )
+    if( __attr == NULL
+      || detachstate == NULL )
         return( EINVAL );
 
     *detachstate = __attr->detached;
@@ -96,9 +99,10 @@ _WCRTLINK int pthread_attr_getdetachstate(const pthread_attr_t *__attr, int *det
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getguardsize(const pthread_attr_t *__attr, size_t *guardsize)
+_WCRTLINK int pthread_attr_getguardsize( const pthread_attr_t *__attr, size_t *guardsize )
 {
-    if( __attr == NULL || guardsize == NULL)
+    if( __attr == NULL
+      || guardsize == NULL )
         return( EINVAL );
 
     *guardsize = 0;
@@ -106,16 +110,18 @@ _WCRTLINK int pthread_attr_getguardsize(const pthread_attr_t *__attr, size_t *gu
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setguardsize(pthread_attr_t *__attr, size_t guardsize)
+_WCRTLINK int pthread_attr_setguardsize( pthread_attr_t *__attr, size_t guardsize )
 {
     /* unused parameters */ (void)__attr; (void)guardsize;
 
     return( ENOSYS );
 }
 
-_WCRTLINK int pthread_attr_setinheritsched(pthread_attr_t *__attr, int inheritsched)
+_WCRTLINK int pthread_attr_setinheritsched( pthread_attr_t *__attr, int inheritsched )
 {
-    if( __attr == NULL || (inheritsched != PTHREAD_EXPLICIT_SCHED && inheritsched != PTHREAD_INHERIT_SCHED))
+    if( __attr == NULL
+      || ( inheritsched != PTHREAD_EXPLICIT_SCHED
+      && inheritsched != PTHREAD_INHERIT_SCHED ) )
         return( EINVAL );
 
     __attr->sched_inherit = inheritsched;
@@ -123,9 +129,10 @@ _WCRTLINK int pthread_attr_setinheritsched(pthread_attr_t *__attr, int inheritsc
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getinheritsched(const pthread_attr_t *__attr, int *inheritsched)
+_WCRTLINK int pthread_attr_getinheritsched( const pthread_attr_t *__attr, int *inheritsched )
 {
-    if( __attr == NULL || inheritsched == NULL )
+    if( __attr == NULL
+      || inheritsched == NULL )
         return( EINVAL );
 
     *inheritsched = __attr->sched_inherit;
@@ -133,17 +140,16 @@ _WCRTLINK int pthread_attr_getinheritsched(const pthread_attr_t *__attr, int *in
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setschedpolicy(pthread_attr_t *__attr, int policy)
+_WCRTLINK int pthread_attr_setschedpolicy( pthread_attr_t *__attr, int policy )
 {
     if( __attr == NULL )
         return( EINVAL );
 
-    if( policy != SCHED_FIFO ||
-        policy != SCHED_RR ||
-        policy != SCHED_BATCH ||
-        policy != SCHED_IDLE ||
-        policy != SCHED_DEADLINE)
-    {
+    if( policy != SCHED_FIFO
+      || policy != SCHED_RR
+      || policy != SCHED_BATCH
+      || policy != SCHED_IDLE
+      || policy != SCHED_DEADLINE ) {
         return( EINVAL );
     }
 
@@ -152,9 +158,10 @@ _WCRTLINK int pthread_attr_setschedpolicy(pthread_attr_t *__attr, int policy)
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getschedpolicy(const pthread_attr_t *__attr, int *policy)
+_WCRTLINK int pthread_attr_getschedpolicy( const pthread_attr_t *__attr, int *policy )
 {
-    if( __attr == NULL || policy == NULL )
+    if( __attr == NULL
+      || policy == NULL )
         return( EINVAL );
 
     *policy = __attr->sched_policy;
@@ -163,46 +170,49 @@ _WCRTLINK int pthread_attr_getschedpolicy(const pthread_attr_t *__attr, int *pol
 }
 
 
-_WCRTLINK int pthread_attr_setschedparam(pthread_attr_t *__attr, const struct sched_param *__params)
+_WCRTLINK int pthread_attr_setschedparam( pthread_attr_t *__attr, const struct sched_param *__params )
 {
     if( __attr == NULL )
         return( EINVAL );
 
-    if(__params == NULL && __attr->sched_params != NULL ) {
-        free(__attr->sched_params);
+    if( __params == NULL
+      && __attr->sched_params != NULL ) {
+        free( __attr->sched_params );
         __attr->sched_params = NULL;
-    } else if(__params != NULL) {
+    } else if( __params != NULL ) {
         if( __attr->sched_params == NULL )
-            __attr->sched_params = (struct sched_param *)malloc(sizeof(struct sched_param));
+            __attr->sched_params = (struct sched_param *)malloc( sizeof( struct sched_param ) );
         if( __attr->sched_params == NULL )
             return( ENOMEM );
 
-        memcpy(__attr->sched_params, __params, sizeof(struct sched_param));
+        memcpy( __attr->sched_params, __params, sizeof( struct sched_param ) );
     }
 
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getschedparam(const pthread_attr_t *__attr, struct sched_param *__params)
+_WCRTLINK int pthread_attr_getschedparam( const pthread_attr_t *__attr, struct sched_param *__params )
 {
-    if( __attr == NULL || __params == NULL )
+    if( __attr == NULL
+      || __params == NULL )
         return( EINVAL );
 
-    memcpy(__params, __attr->sched_params, sizeof(struct sched_param));
+    memcpy( __params, __attr->sched_params, sizeof( struct sched_param ) );
 
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setscope(pthread_attr_t *__attr, int contentionscope)
+_WCRTLINK int pthread_attr_setscope( pthread_attr_t *__attr, int contentionscope )
 {
     /* unused parameters */ (void)__attr; (void)contentionscope;
 
     return( ENOSYS );
 }
 
-_WCRTLINK int pthread_attr_getscope(const pthread_attr_t *__attr, int *contentionscope)
+_WCRTLINK int pthread_attr_getscope( const pthread_attr_t *__attr, int *contentionscope )
 {
-    if( __attr == NULL || contentionscope == NULL )
+    if( __attr == NULL
+      || contentionscope == NULL )
         return( EINVAL );
 
     *contentionscope = PTHREAD_SCOPE_PROCESS;
@@ -210,7 +220,7 @@ _WCRTLINK int pthread_attr_getscope(const pthread_attr_t *__attr, int *contentio
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setstackaddr(pthread_attr_t *__attr, void *__stackaddr)
+_WCRTLINK int pthread_attr_setstackaddr( pthread_attr_t *__attr, void *__stackaddr )
 {
     if( __attr == NULL )
         return( EINVAL );
@@ -220,9 +230,10 @@ _WCRTLINK int pthread_attr_setstackaddr(pthread_attr_t *__attr, void *__stackadd
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getstackaddr(const pthread_attr_t *__attr, void **__stackaddr)
+_WCRTLINK int pthread_attr_getstackaddr( const pthread_attr_t *__attr, void **__stackaddr )
 {
-    if( __attr == NULL || __stackaddr == NULL )
+    if( __attr == NULL
+      || __stackaddr == NULL )
         return( EINVAL );
 
     *__stackaddr = __attr->stack_addr;
@@ -230,7 +241,7 @@ _WCRTLINK int pthread_attr_getstackaddr(const pthread_attr_t *__attr, void **__s
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setstacksize(pthread_attr_t *__attr, size_t __stacksize)
+_WCRTLINK int pthread_attr_setstacksize( pthread_attr_t *__attr, size_t __stacksize )
 {
     if( __attr == NULL )
         return( EINVAL );
@@ -240,9 +251,10 @@ _WCRTLINK int pthread_attr_setstacksize(pthread_attr_t *__attr, size_t __stacksi
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_getstacksize(const pthread_attr_t *__attr, size_t *__stacksize)
+_WCRTLINK int pthread_attr_getstacksize( const pthread_attr_t *__attr, size_t *__stacksize )
 {
-    if( __attr == NULL || __stacksize == NULL )
+    if( __attr == NULL
+      || __stacksize == NULL )
         return( EINVAL );
 
     *__stacksize = __attr->stack_size;
@@ -250,28 +262,28 @@ _WCRTLINK int pthread_attr_getstacksize(const pthread_attr_t *__attr, size_t *__
     return( 0 );
 }
 
-_WCRTLINK int pthread_attr_setstack(pthread_attr_t *__attr, void *__stackaddr, size_t __stacksize)
+_WCRTLINK int pthread_attr_setstack( pthread_attr_t *__attr, void *__stackaddr, size_t __stacksize )
 {
     int ret;
 
-    ret = pthread_attr_setstackaddr(__attr, __stackaddr);
-    if(ret != 0)
+    ret = pthread_attr_setstackaddr( __attr, __stackaddr );
+    if( ret != 0 )
         return( ret );
 
-    ret = pthread_attr_setstacksize(__attr, __stacksize);
+    ret = pthread_attr_setstacksize( __attr, __stacksize );
 
     return( ret );
 }
 
-_WCRTLINK int pthread_attr_getstack(const pthread_attr_t *__attr, void **__stackaddr, size_t *__stacksize)
+_WCRTLINK int pthread_attr_getstack( const pthread_attr_t *__attr, void **__stackaddr, size_t *__stacksize )
 {
     int ret;
 
-    ret = pthread_attr_getstackaddr(__attr, __stackaddr);
-    if(ret != 0)
+    ret = pthread_attr_getstackaddr( __attr, __stackaddr );
+    if( ret != 0 )
         return( ret );
 
-    ret = pthread_attr_getstacksize(__attr, __stacksize);
+    ret = pthread_attr_getstacksize( __attr, __stacksize );
 
     return( ret );
 }

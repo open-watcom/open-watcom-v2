@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -350,7 +350,7 @@ stack_okay:
         call    __InitRtns              ; call initializer routines
         mov     eax,_LpCmdLine          ; cmd buffer pointed at by EAX
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
-        call    __CMain
+        jmp     __CMain                 ; never return
 __x386_init endp
 
 insuf_mem:
@@ -380,7 +380,7 @@ null_error:     ; a null code pointer has been called
 ;       EAX - pointer to message to print
 ;       EDX - exit code
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset DGROUP:ConsoleName
@@ -409,6 +409,8 @@ L5:
         pop     eax                     ; restore return code from stack
         mov     ah,4cH                  ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit   endp
 
 ;

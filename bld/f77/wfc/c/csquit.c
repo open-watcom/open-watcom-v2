@@ -58,8 +58,8 @@ void    CpQuit(void) {
     block_label = GetBlockLabel();
     csblock = CSHead;
     if( block_label->opnd_size != 0 ) {
-        for(;;) {
-            if( CmpNode2Str( block_label, &csblock->label ) )
+        for( ;; ) {
+            if( CmpNode2Str( block_label, csblock->label ) )
                 break;
             if( csblock->link == NULL )
                 break;

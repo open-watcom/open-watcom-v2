@@ -33,6 +33,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -51,15 +52,13 @@
 #define INCL_LONGLONG
 #include <wos2.h>
 #include "os2fil64.h"
-#include "rterrno.h"
-#include "i64.h"
-#include "d2ttime.h"
+#include "d2timet.h"
 #include "thread.h"
 #include "find.h"
 #include "pathmac.h"
 
 
-static unsigned short at2mode( OS_UINT attr, char *fname ) {
+static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 
     register unsigned short mode;
     register unsigned char  *ext;
@@ -100,17 +99,21 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     /* reject null string and names that has wildcard */
 #ifdef __WIDECHAR__
-    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR
+      || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
 #else
-    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR
+      || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
 #endif
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         return( -1 );
     }
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
+        if( HAS_DRIVE( fullpath )
+          && fullpath[2] == DIR_SEP
+          && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -122,15 +125,17 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
     if( *_mbsinc( (unsigned char *)path ) == DRV_SEP )
 #endif
         ptr += 2;
-    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] )
+      && ptr[1] == NULLCHAR
+      || isrootdir ) {
         /* handle root directory */
         int     drv;
 
         /* check if drive letter is valid */
         drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
-        if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
-            _RWD_errno = ENOENT;
+        if( (drvmap & ( 1UL << drv )) == 0 ) {
+            lib_set_errno( ENOENT );
             return( -1 );
         }
         /* set attributes */
@@ -160,22 +165,24 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
                     &dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
         if( rc == ERROR_FILE_NOT_FOUND ) { // appply a bit more persistence
             int handle;
+            int errno_num;
 
-            rc = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle < 0 ) {
-                _RWD_errno = ENOENT;
+                lib_set_errno( ENOENT );
                 return( -1 );
+            }
+            errno_num = 0;
 #ifdef __INT64__
-            } else if( _fstati64( handle, buf ) == -1 ) {
+            if( _fstati64( handle, buf ) == -1 ) {
 #else
-            } else if( fstat( handle, buf ) == -1 ) {
+            if( fstat( handle, buf ) == -1 ) {
 #endif
-                rc = _RWD_errno;
+                errno_num = lib_get_errno();
             }
             close( handle );
-            _RWD_errno = rc;
-            if( rc != 0 ) {
+            lib_set_errno( errno_num );
+            if( errno_num != 0 ) {
                 return( -1 );
             }
             return( 0 );
@@ -185,15 +192,15 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         }
         if( rc != 0
           || searchcount != 1 ) {
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             return( -1 );
         }
         /* set timestamps */
-        buf->st_ctime = _d2ttime( TODDATE( dir_buff.fdateCreation ),
+        buf->st_ctime = __dos2timet( TODDATE( dir_buff.fdateCreation ),
                                   TODTIME( dir_buff.ftimeCreation ) );
-        buf->st_atime = _d2ttime( TODDATE( dir_buff.fdateLastAccess ),
+        buf->st_atime = __dos2timet( TODDATE( dir_buff.fdateLastAccess ),
                                   TODTIME( dir_buff.ftimeLastAccess ) );
-        buf->st_mtime = _d2ttime( TODDATE( dir_buff.fdateLastWrite ),
+        buf->st_mtime = __dos2timet( TODDATE( dir_buff.fdateLastWrite ),
                                   TODTIME( dir_buff.ftimeLastWrite ) );
         buf->st_btime = buf->st_mtime;
 #if defined( __INT64__ ) && !defined( _M_I86 )

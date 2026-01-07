@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #if defined( __NT__ )
@@ -41,16 +42,15 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "thread.h"
 
 
 #ifdef __INT64__
-static int __update_buffer( long long diff, FILE *fp )
+static int _WCNEAR __update_buffer( long long diff, FILE *fp )
 #else
-static int __update_buffer( long diff, FILE *fp )
+static int _WCNEAR __update_buffer( long diff, FILE *fp )
 #endif
 {
     /*
@@ -72,7 +72,7 @@ static int __update_buffer( long diff, FILE *fp )
  * This used to be in __update_buffer(), but we don't want to do this until
  * AFTER we've made certain that lseek() will be a successful one.
  */
-static void __reset_buffer( FILE *fp )
+static void _WCNEAR __reset_buffer( FILE *fp )
 {
     fp->_flag &= ~(_EOF);
     fp->_ptr = _FP_BASE( fp );
@@ -106,7 +106,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
                 // assume __flush set the errno value
                 // if erroneous input, override errno value
                 if( origin == SEEK_SET && offset < 0 ) {
-                    _RWD_errno = EINVAL;
+                    lib_set_errno( EINVAL );
                 }
                 _ReleaseFile( fp );
                 return( -1 );
@@ -183,7 +183,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
             }
             break;
         default:
-            _RWD_errno = EINVAL;
+            lib_set_errno( EINVAL );
             _ReleaseFile( fp );
             return( -1 );
         }

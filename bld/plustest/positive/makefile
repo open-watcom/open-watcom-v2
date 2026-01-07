@@ -94,7 +94,7 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .SYMBOLIC start start_test test.lnk $(positive_exes) test_set_result
+test : .SYMBOLIC start start_test $(positive_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure

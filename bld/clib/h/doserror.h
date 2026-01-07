@@ -32,10 +32,10 @@
 #ifndef _DOSERROR_H_INCLUDED
 #define _DOSERROR_H_INCLUDED
 
-extern unsigned __near __doserror_( unsigned );
+extern unsigned _WCNEAR __doserror_( unsigned );
 #pragma aux __doserror_ "*" __parm __caller
 
-extern unsigned __near __doserror1_( unsigned );
+extern unsigned _WCNEAR __doserror1_( unsigned );
 #pragma aux __doserror1_ "*" __parm __caller
 
 #endif

@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -94,9 +94,9 @@ endif
 
 _TEXT   segment word public 'CODE'
 
-        extrn   __CMain                 : proc
-        extrn   __InitRtns              : proc
-        extrn   __FiniRtns              : proc
+        extrn   __CMain                 : near
+        extrn   __InitRtns              : near
+        extrn   __FiniRtns              : near
 
 if ( _MODEL and _TINY ) eq 0
 FAR_DATA segment byte public 'FAR_DATA'
@@ -421,13 +421,13 @@ endif
 
         mov     ax,0FFh                 ; run all initalizers
         call    __InitRtns              ; call initializer routines
-        call    __CMain
+        jmp     __CMain                 ; never return
 _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc
         public  "C",__exit
+__exit  proc near
         push    ax                      ; save return code on stack
 if _MODEL and _TINY
         jmp short L7
@@ -455,7 +455,7 @@ endif
 ;       DX:AX - far pointer to message to print
 ;       BX    - exit code
 
-__do_exit_with_msg_:
+__do_exit_with_msg_ proc near
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg
@@ -501,6 +501,8 @@ endif
         pop     ax                      ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+__do_exit_with_msg_ endp
+
 __exit  endp
 
 ;

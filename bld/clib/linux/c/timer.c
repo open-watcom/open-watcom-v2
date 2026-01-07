@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <string.h>
 #include <signal.h>
 #include <stdio.h>
@@ -57,8 +58,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
     timer_t id;
 
     if( __tmr == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     memset( &ksev, 0, sizeof( struct ksigevent ) );

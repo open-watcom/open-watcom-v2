@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +29,12 @@
 *
 ****************************************************************************/
 
+
+#include "bitset.h"
+#include "_cfloat.h"
+
+
+#define    EMPTY        0
 
 /* aligned */
 typedef enum {
@@ -112,9 +118,6 @@ typedef enum {
     MF_VISITED              = 0x0001,
 } m_flags;
 
-#include "bitset.h"
-#define    EMPTY        0
-
 typedef struct name_def {
     union name              *next_name;
     name_class_def          class;
@@ -134,7 +137,7 @@ typedef struct var_name {
 typedef struct constant_defn {
     struct constant_defn    *next_defn;
     pointer                 label;          /*  back end label for static */
-    uint_16                 value[4];       /*  in internal format */
+    flt                     buffer;         /*  in internal format */
     type_class_def          const_class;
 } constant_defn;
 
@@ -147,14 +150,17 @@ typedef struct value32 {
 
 typedef struct const_name {
     struct name_def         _n;
-    pointer                 value;
+    union {
+        float_handle        cfval;
+        union name          *op;
+    } u;
     value32                 lo;
     value32                 hi;             /* high part of 64-bit const */
     struct constant_defn    *static_defn;
     constant_type_class     const_type;
 } const_name;
 
-typedef struct memory_name {                    /*  global name value or address */
+typedef struct memory_name {                /*  global name value or address */
     struct var_name         _v;
     union name              *same_sym;
     cg_class                memory_type;    /*  what the symbol points to */
@@ -173,7 +179,7 @@ typedef struct temp_name {
         type_length         alt_location;
     } v;
     union {
-        block_num           block_id;       /* AKA block_num */
+        block_id            blk_id;         /* AKA block_num */
         uint_16             ref_count;      /* for counting references */
     } u;
     t_flags                 temp_flags;

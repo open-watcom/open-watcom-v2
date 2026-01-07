@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,8 @@ ANALYSE.C -- analyse parsed tree of tokens
     #include "togglesd.h"
 #endif
 #include "mngless.h"
+#include "i64.h"
+
 
 // define action-codes for (operation,operand,operand)-combination actions
 
@@ -1460,11 +1462,11 @@ static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         }
         NodeIsIntConstant( op2, &icon );
         if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
-            val = icon.u.value;
+            val = icon.value;
         } else if( icon.type->id == TYP_ULONG || icon.type->id == TYP_UINT ) {
-            U32ToU64( icon.u.uval, &val );
+            Set64ValU32( val, U64Low( icon.value ) );
         } else {
-            I32ToI64( icon.u.sval, &val );
+            Set64ValI32( val, I64Low( icon.value ) );
         }
         ret = CheckMeaninglessCompare( rel
                                    , op1_size
@@ -2297,14 +2299,14 @@ static unsigned getConstBits(   // GET SIGNIFICANT BITS IN CONSTANT NODE
 
     value = con->u.int64_constant;
     if( SignedIntType( con->type ) && value.u.sign.v ) {
-        U64Neg( &value, &value );
+        U64NegEq( &value );
     }
-    if( 0 == value.u._32[I64HI32] ) {
+    if( U64High( value ) == 0 ) {
         bits = 0;
-        sig = value.u._32[I64LO32];
+        sig = U64Low( value );
     } else {
         bits = 32;
-        sig = value.u._32[I64HI32];
+        sig = U64High( value );
     }
     for( ; sig != 0; ++bits ) {
         sig >>= 1;
@@ -4100,7 +4102,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                         expr = PTreeOp( &throw_exp );
                     } else {
                         INT_CONSTANT int_con;
-                        if( NodeIsIntConstant( throw_exp, &int_con ) && Zero64( &int_con.u.value ) ) {
+                        if( NodeIsIntConstant( throw_exp, &int_con ) && U64isZero( int_con.value ) ) {
                             rt_code = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );

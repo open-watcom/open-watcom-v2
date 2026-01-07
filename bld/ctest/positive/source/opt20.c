@@ -14,7 +14,7 @@ unsigned fib( unsigned i, unsigned n,
     "%u %u %u %u %u "
     "%u %u %u %u %u "
     "\n",
-	i, n,
+    i, n,
     p01, p02, p03, p04, p05,
     p06, p07, p08, p09, p10,
     p11, p12, p13, p14, p15,
@@ -23,12 +23,12 @@ unsigned fib( unsigned i, unsigned n,
     #endif
 
     return i == n ? p20+p01 :
-    	fib( i+1, n,
-    p01+p02, p03, p04, p05,
-    p06, p07, p08, p09, p10,
-    p11, p12, p13, p14, p15,
-    p16, p17, p18, p19, p20,
-	p20 + p19 );
+        fib( i+1, n,
+        p01+p02, p03, p04, p05,
+        p06, p07, p08, p09, p10,
+        p11, p12, p13, p14, p15,
+        p16, p17, p18, p19, p20,
+        p20 + p19 );
 
 }
 

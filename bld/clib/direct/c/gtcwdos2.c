@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -43,9 +44,7 @@
     #include <mbstring.h>
 #endif
 #include <wos2.h>
-#include "rterrno.h"
 #include "thread.h"
-#include "seterrno.h"
 #include "pathmac.h"
 
 
@@ -74,7 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     path[2] = DIR_SEP;
     if( buf == NULL ) {
         if( (buf = malloc( max( size, pathlen + 4 ) * CHARSIZE )) == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
         size = pathlen + 3;

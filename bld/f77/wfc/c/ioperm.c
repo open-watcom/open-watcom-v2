@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "ioperm.h"
 #include "ioutls.h"
 #include "iokwlist.h"
+#include "iortncon.h"
 
 
 #define NO      0
@@ -52,11 +53,9 @@
 // This table is used to determine if a control list item is permissible in
 // a particular i/o statement.
 
-#define TABLE_ENTRY     9
+static  const byte          PermTable[][EX_COUNT] = {
 
-static  const byte          PermTable[] = {
-
-//     READ WRT  OPEN CLS  BKSP ENDF REWD INQ  extension
+//     READ WRT  OPEN CLS  BKSP ENDF REWD INQ  Extension
 
        NO,  NO,  YES, NO,  NO,  NO,  NO,  YES, NO,  // "ACCESS"
        NO,  NO,  YES, NO,  NO,  NO,  NO,  YES, YES, // "ACTION"
@@ -88,35 +87,17 @@ static  const byte          PermTable[] = {
 };
 
 
-bool    Already( IOKW kw ) {
+bool    IOPermChk( IOKW kw ) {
 //==========================
 
-    return( ( ( IOData >> ( kw - 1 ) ) & 1 ) != 0 );
+    return( ( ( IOData >> kw ) & 1 ) != 0 );
 }
 
 
-static  byte    ExtnTest( IOKW kw ) {
-//===================================
-
-    return( PermTable[ TABLE_ENTRY * ( kw - 1 ) + 8 ] );
-}
-
-
-byte    PermTest( int kw ) {
-//==========================
-
-    return( PermTable[ TABLE_ENTRY * ( kw - 1 ) + IOIndex() ] );
-}
-
-
-void    KWRememb( IOKW kw ) {
+void    IOPermSet( IOKW kw )
 //===========================
-
-    unsigned_32 i;
-
-    i = 1;
-    i = i << ( kw - 1 );
-    IOData |= i;
+{
+    IOData |= 1U << kw;
 }
 
 
@@ -126,19 +107,19 @@ bool    Permission( IOKW kw ) {
     bool        perm;
 
     perm = false;
-    if( kw == 0 ) {
+    if( kw == IO_KW_NONE ) {
         OpndErr( IL_CTRL_LIST );
-    } else if( Already( kw ) ) {
+    } else if( IOPermChk( kw ) ) {
         OpndErr( IL_DUP_LIST );
     } else {
-        perm = ( PermTest( kw ) != NO );
+        perm = ( PermTable[kw][IOIndex()] != NO );
         if( perm ) {
-            KWRememb( kw );
-            if( ExtnTest( kw ) == YES ) {
-                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[ kw ] );
+            IOPermSet( kw );
+            if( PermTable[kw][EX_Extension] == YES ) {
+                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[kw] );
             }
         } else {
-            StmtPtrErr( IL_BAD_LIST, IOKeywords[ kw ] );
+            StmtPtrErr( IL_BAD_LIST, IOKeywords[kw] );
         }
     }
     return( perm );
@@ -150,26 +131,26 @@ void    CheckList( void ) {
 
     bool        have_unit;
 
-    have_unit = Already( IO_UNIT );
+    have_unit = IOPermChk( IO_UNIT );
     if( StmtProc == PR_INQ ) {
         if( have_unit ) {
-            if( Already( IO_FILE ) ) {
+            if( IOPermChk( IO_FILE ) ) {
                 Error( IL_UNIT_AND_FILE );
             }
-        } else if( !Already( IO_FILE ) ) {
+        } else if( !IOPermChk( IO_FILE ) ) {
             Error( IL_NO_FILE_OR_UNIT );
         }
     } else if( !have_unit ) {
         Error( IL_NO_UNIT_ID );
     }
-    if( Already( IO_INTERNAL ) && Already( IO_REC ) ) {
+    if( IOPermChk( IO_INTERNAL ) && IOPermChk( IO_REC ) ) {
         Error( IL_AINTL );
     }
-    if( Already( IO_END ) && Already( IO_REC ) ) {
+    if( IOPermChk( IO_END ) && IOPermChk( IO_REC ) ) {
         Extension( IL_END_REC );
     }
-    if( Already( IO_LIST_DIR ) && Already( IO_INTERNAL ) ) {
+    if( IOPermChk( IO_LIST_DIR ) && IOPermChk( IO_INTERNAL ) ) {
         Extension( IL_ILST );
     }
-    Remember.end_equals = Already( IO_END );
+    Remember.end_equals = IOPermChk( IO_END );
 }

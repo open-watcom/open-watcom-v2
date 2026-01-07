@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,21 +53,21 @@ static  void    Equivalent( cg_op op_code ) {
     cg_name     op1;
     cg_name     op2;
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
-    op2 = XPopValue( typ2 );
-    typ1 = CGType( op1 );
-    if( typ1 != TY_BOOLEAN ) {
-        op1 = CGCompare( O_NE, op1, CGInteger( 0, typ1 ), typ1 );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op1 = XPopValue( cgtyp1 );
+    op2 = XPopValue( cgtyp2 );
+    cgtyp1 = CGType( op1 );
+    if( cgtyp1 != TY_BOOLEAN ) {
+        op1 = CGCompare( O_NE, op1, CGInteger( 0, cgtyp1 ), cgtyp1 );
     }
-    typ2 = CGType( op2 );
-    if( typ2 != TY_BOOLEAN ) {
-        op2 = CGCompare( O_NE, op2, CGInteger( 0, typ2 ), typ2 );
+    cgtyp2 = CGType( op2 );
+    if( cgtyp2 != TY_BOOLEAN ) {
+        op2 = CGCompare( O_NE, op2, CGInteger( 0, cgtyp2 ), cgtyp2 );
     }
     XPush( CGCompare( op_code, op1, op2, TY_UINT_1 ) );
 }
@@ -80,14 +81,14 @@ static  void    XLogic( int op_code ) {
     cg_name     op1;
     cg_name     op2;
     unsigned_16 typ_info;
-    cg_type     typ1;
-    cg_type     typ2;
+    cg_type     cgtyp1;
+    cg_type     cgtyp2;
 
     typ_info = GetU16();
-    typ1 = GetType1( typ_info );
-    typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
-    op2 = XPopValue( typ2 );
+    cgtyp1 = GetCGTypes1( typ_info );
+    cgtyp2 = GetCGTypes2( typ_info );
+    op1 = XPopValue( cgtyp1 );
+    op2 = XPopValue( cgtyp2 );
     XPush( CGFlow( op_code, op1, op2 ) );
 }
 

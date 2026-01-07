@@ -51,6 +51,7 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
 
 .obj.$(exe):
     @set ERROR_MSG=failure to link $@
+    @%make test.lnk
     $(linker) name $@ @test.lnk $(opt_link_$^*) file $[@
     @set ERROR_MSG=failure to execute $@
     @%append exec.out PASS executing $@
@@ -68,6 +69,7 @@ test : .SYMBOLIC start_test $(test_exes)
 
 string04.$(exe) : string04.obj string04.res
     @set ERROR_MSG=failure to link $@
+    @%make test.lnk
     $(linker) name $@ @test.lnk file $[@
     @set ERROR_MSG=failure to add resources to $@
     wrc -q $]@
@@ -75,28 +77,28 @@ string04.$(exe) : string04.obj string04.res
     @%append exec.out PASS executing $@
     $(run) $(exec_prefix)$@ >>exec.out
 
-start_test : .SYMBOLIC test.lnk
+start_test : .SYMBOLIC
     %create exec.out
     @set ERROR_FILE=exec.out
     @set PATH=..\dnt386.dll;..\dnt386u.dll;..\nt386.dll;..\nt386u.dll;$(%PATH)
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @if exist s$(arch)$(alt_error)$(host_bits).sav rm s$(arch)$(alt_error)$(host_bits).sav
 
 test.lnk : makefile
-    %create $@
-    @%append $@ $(ldebug_$(arch))
-    @%append $@ $(lnk_$(arch))
-    @%append $@ OPTION quiet, noredef
-    @%append $@ LIBPATH ../dnt386
-    @%append $@ LIBPATH ../dnt386.dll
-    @%append $@ LIBPATH ../dnt386u
-    @%append $@ LIBPATH ../dnt386u.dll
-    @%append $@ LIBPATH ../nt386
-    @%append $@ LIBPATH ../nt386.dll
-    @%append $@ LIBPATH ../nt386u
-    @%append $@ LIBPATH ../nt386u.dll
+    %create test.lnk
+    @%append test.lnk $(ldebug_$(arch))
+    @%append test.lnk $(lnk_$(arch))
+    @%append test.lnk OPTION quiet, noredef
+    @%append test.lnk LIBPATH ../dnt386
+    @%append test.lnk LIBPATH ../dnt386.dll
+    @%append test.lnk LIBPATH ../dnt386u
+    @%append test.lnk LIBPATH ../dnt386u.dll
+    @%append test.lnk LIBPATH ../nt386
+    @%append test.lnk LIBPATH ../nt386.dll
+    @%append test.lnk LIBPATH ../nt386u
+    @%append test.lnk LIBPATH ../nt386u.dll
 
 save : .SYMBOLIC
-    @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav
+    @if exist exec.out %ren exec.out s$(arch)$(alt_error)$(host_bits).sav
 
 global : .SYMBOLIC
     @%make common_clean

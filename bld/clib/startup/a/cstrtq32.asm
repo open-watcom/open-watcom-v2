@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -174,8 +174,8 @@ _cstart_ endp
 ;
 include msgcpyrt.inc
 
-__exit proc near
         public  "C",__exit
+__exit proc near
 ifndef __STACK__
         push    eax                     ; only if not already on the stack
 endif

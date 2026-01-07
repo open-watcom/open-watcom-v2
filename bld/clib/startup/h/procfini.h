@@ -30,5 +30,5 @@
 
 
 #if defined(__NT__) || defined(__OS2_32BIT__)
-_WCRTDATA extern void (*__process_fini)( unsigned, unsigned );
+_WCRTDATA extern void _WCNEAR (*__process_fini)( unsigned, unsigned );
 #endif

@@ -12,15 +12,15 @@ int main()
 
     x = ret_f0();
     if( ((int)(signed char) x) < 0 ) {
-	if( (int)x < 0xc0 ) fail(__LINE__);
+        if( (int)x < 0xc0 ) fail(__LINE__);
     } else {
-	fail(__LINE__);
+        fail(__LINE__);
     }
     y = ret_f0();
     if( ((signed char) y) < 0 ) {
-	if( y < 0xc0 ) fail(__LINE__);
+        if( y < 0xc0 ) fail(__LINE__);
     } else {
-	fail(__LINE__);
+        fail(__LINE__);
     }
     _PASS;
 }

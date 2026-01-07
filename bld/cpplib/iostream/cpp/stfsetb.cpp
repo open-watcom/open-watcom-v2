@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,8 @@
 #endif
 #include "lock.h"
 #include "stfhdr.h"
-#include "liballoc.h"
+#include "clibsupp.h"
+
 
 namespace std {
 
@@ -48,7 +50,7 @@ namespace std {
 
     __lock_it( __b_lock );
     if( __delete_reserve ) {
-        _plib_free( __reserve_base );
+        __clib_free( __reserve_base );
     }
     if( (buf == NULL) || (ebuf <= buf) ) {
         __reserve_base     = NULL;

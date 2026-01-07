@@ -109,7 +109,7 @@ static size_t MakeExeTypeString( char *buff, size_t max )
         format = FmtData.type;
         for( ;; ) {
             num = log2_32( format );
-            format &= ~( 1 << num );
+            format &= ~( CONSTU32( 1 ) << num );
             if( format == 0 ) {
                 break;
             }
@@ -159,7 +159,7 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
 static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
 /****************************************************************************/
 {
-#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+#if defined( _PHARLAP ) || defined( _RAW )
     /* only flat offset */
     if( FmtData.type & MK_FLAT_OFFS ) {
         return( FmtStr( dest, len, "%h", addr->off ) );

@@ -68,8 +68,5 @@ pick( E_ELF,      "elf" )
 pick( E_ILK,      "ilk" )
 pick( E_HEX,      "hex" )
 pick( E_BIN,      "bin" )
-pick( E_SYS,      "sys" )   /* ZDOS device driver */
-pick( E_HWD,      "hwd" )   /* ZDOS hardware driver */
-pick( E_FSD,      "fsd" )   /* ZDOS file system driver */
 pick( E_RDV,      "rdv" )   /* RDOS device driver */
 pick( E_EFI,      "efi" )   /* EFI */

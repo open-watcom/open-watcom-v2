@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,15 +66,15 @@
         #define FF_BUFFER       FILEFINDBUF3
     #endif
 
-    extern void     __os2_finddata_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_finddata_cvt( FF_BUFFER *ffb,
                                        struct _finddata_t *fileinfo );
-    extern void     __os2_wfinddata_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_wfinddata_cvt( FF_BUFFER *ffb,
                                         struct _wfinddata_t *fileinfo );
-    extern void     __os2_finddatai64_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_finddatai64_cvt( FF_BUFFER *ffb,
                                           struct _finddatai64_t *fileinfo );
-    extern void     __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
+    extern void     _WCNEAR __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
                                            struct _wfinddatai64_t *fileinfo );
-#elif defined( __RDOS__ )
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
     struct _rdos_find_t {
         int handle;
@@ -99,13 +99,13 @@
         #define DOSFINDTYPE     struct find_t
     #endif
 
-    extern void     __dos_finddata_cvt( struct find_t *findbuf,
+    extern void     _WCNEAR __dos_finddata_cvt( struct find_t *findbuf,
                                         struct _finddata_t *fileinfo );
-    extern void     __dos_wfinddata_cvt( struct _wfind_t *findbuf,
+    extern void     _WCNEAR __dos_wfinddata_cvt( struct _wfind_t *findbuf,
                                          struct _wfinddata_t *fileinfo );
-    extern void     __dos_finddatai64_cvt( struct find_t *findbuf,
+    extern void     _WCNEAR __dos_finddatai64_cvt( struct find_t *findbuf,
                                            struct _finddatai64_t *fileinfo );
-    extern void     __dos_wfinddatai64_cvt( struct _wfind_t *findbuf,
+    extern void     _WCNEAR __dos_wfinddatai64_cvt( struct _wfind_t *findbuf,
                                             struct _wfinddatai64_t *fileinfo );
 
 #endif

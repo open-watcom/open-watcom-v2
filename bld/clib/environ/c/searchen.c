@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -49,7 +50,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "_environ.h"
 #include "thread.h"
 #include "pathmac.h"
@@ -65,12 +65,12 @@
 _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CHAR_TYPE *env_var, CHAR_TYPE *buffer )
 {
     CHAR_TYPE   *p, *p2;
-    int         prev_errno;
+    int         errno_save;
     size_t      len;
 
     CHECK_WIDE_ENV();
 
-    prev_errno = _RWD_errno;
+    errno_save = lib_get_errno();
     if( __F_NAME(access,_waccess)( name, F_OK ) == 0 ) {
         p = buffer;
         len = 0;
@@ -133,7 +133,7 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                     __F_NAME(strcat,wcscat)( p2, name );
                     /* check to see if file exists */
                     if( __F_NAME(access,_waccess)( buffer, 0 ) == 0 ) {
-                        _RWD_errno = prev_errno;
+                        lib_set_errno( errno_save );
                         return;
                     }
                 }

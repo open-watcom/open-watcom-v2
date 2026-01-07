@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +53,8 @@ namespace std {
       tie()->flush();
     }
     if( flags() & ios::stdio ) {
-      ::__flush( __get_std_stream( STDOUT_FILENO ) );
-      ::__flush( __get_std_stream( STDERR_FILENO ) );
+      ::__clib_flush( __get_std_stream( STDOUT_FILENO ) );
+      ::__clib_flush( __get_std_stream( STDERR_FILENO ) );
     }
     return( good() );
   }

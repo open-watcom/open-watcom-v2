@@ -37,7 +37,7 @@
 #include <langinfo.h>
 #include "li_base.h"
 
-static char *__langinfo_array_get(int index, char *array[])
+static char * _WCNEAR __langinfo_array_get(int index, char *array[])
 {
     int i;
     for( i = 0; i < index && array[i] != NULL; i++);

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@
 #include "scangbl.h"
 #include "token.h"
 #include "cioconst.h"
-#include "fmtdef.h"
 
 // The following files have been ordered so that variables are aligned on
 // an even address.  Be careful when you change them!

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,11 +84,13 @@ void DisplayAsmLines( HWND hwnd, ADDRESS *paddr, ADDRESS *flagaddr, int idlo,
     int         curr;
 
     addr = *paddr;
-    for( i=idlo;i<=idhi;i++ ) {
+    for( i = idlo; i <= idhi; i++ ) {
         markit = FALSE;
-        if( (addr.seg == flagaddr->seg ) &&
-            (addr.offset == flagaddr->offset )) markit = TRUE;
-        addr.offset += Disassemble( &addr, buff+1, FALSE );
+        if( ( addr.seg == flagaddr->seg )
+          && ( addr.offset == flagaddr->offset ) ) {
+            markit = TRUE;
+        }
+        addr.offset += Disassemble( &addr, buff + 1, FALSE );
         if( markit ) {
             buff[0] = '*';
         } else {
@@ -101,18 +103,18 @@ void DisplayAsmLines( HWND hwnd, ADDRESS *paddr, ADDRESS *flagaddr, int idlo,
     max = max;
     curr = curr;
     hscrl = GetDlgItem( hwnd, sbid );
-    SetScrollRange( hscrl, SB_CTL, 0, 2, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, 2, FALSE );
     SetScrollPos( hscrl, SB_CTL, 1, TRUE );
 #else
-    max = GetASelectorLimit( paddr->seg );
+    max = GetASelectorSize( paddr->seg );
     if( max > MAXRANGE ) {
-        curr = (MAXRANGE*paddr->offset)/max;
+        curr = ( MAXRANGE * paddr->offset ) / max;
         max = MAXRANGE;
     } else {
         curr = paddr->offset;
     }
     hscrl = GetDlgItem( hwnd, sbid );
-    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE);
+    SetScrollRange( hscrl, SB_CTL, 0, max, FALSE );
     SetScrollPos( hscrl, SB_CTL, curr, TRUE );
 #endif
 } /* DisplayAsmLines */
@@ -128,12 +130,12 @@ void ScrollAsmDisplay( HWND hwnd, WORD wparam, ADDRESS *paddr,
 
     switch( wparam ) {
     case SB_PAGEDOWN:
-        for( i=0;i<8;i++ ) {
+        for( i = 0; i < 8; i++ ) {
             paddr->offset += Disassemble( paddr, buff, FALSE );
         }
         break;
     case SB_PAGEUP:
-        for( i=0;i<8;i++ ) {
+        for( i = 0; i < 8; i++ ) {
             InstructionBackup( 1, paddr );
         }
         break;
@@ -225,7 +227,7 @@ static void InitStatDialog( HWND hwnd )
     currAddr.offset = IntData.EIP;
     firstAddr = currAddr;
     InstructionBackup( 2, &currAddr );
-    for( i=STAT_DISASM_1;i<=STAT_DISASM_8;i++ ) {
+    for( i = STAT_DISASM_1; i <= STAT_DISASM_8; i++ ) {
         SetDlgCourierFont( hwnd, i );
     }
     DisplayAsmLines( hwnd, &currAddr, &firstAddr, STAT_DISASM_1,
@@ -304,7 +306,7 @@ INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         for( i = 0; i <= 1024; i++ ) {
             seg = NumToAddr( DTTaskEntry.hModule, i );
             if( seg != 0 ) {
-                sprintf( buff,"%04d->%04x", i, seg );
+                sprintf( buff, "%04d->%04x", i, seg );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buff );
             }
         }

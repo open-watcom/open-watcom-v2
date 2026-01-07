@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ void ClearSuffixes( void )
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC SUFFIX *findSuffixNode( const char *name, const char **sufdest )
 /**********************************************************************
@@ -148,7 +148,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **sufdest )
     return( (SUFFIX *)FindHashNode( sufTab, FixName( sufname ), FILENAMESENSITIVE ) );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

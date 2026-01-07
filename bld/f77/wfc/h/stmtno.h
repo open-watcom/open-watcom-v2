@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@ typedef struct stnumbers {
     bool                wild_goto;      //  true if assigned goto without list
     bool                var_format;     //  true if variable used for format
     bool                in_remote;      //  true if currently in REMOTE BLOCK
-    unsigned_16         blk_before;     //  CSHead->block before statement
+    block_num           blk_before;     //  CSHead->block before statement
 } stnumbers;
 
 #define SN_INIT         0x0000
@@ -50,19 +51,16 @@ typedef struct stnumbers {
 #define SN_IN_REMOTE    0x0080
 #define SN_EXECUTABLE   0x0100
 #define SN_IN_GOTO_LIST 0x0200  // appeared in assigned GOTO list
-#define SN_ADD_65535    0x0400  // add 65535 to statement number
-
-#define SN_INIT_MASK    ~SN_ADD_65535
 
 
-extern intstar4    GetStmtNo( void );
-extern sym_id      LookUp( unsigned_32 num );
-extern void        Err( int errcod, sym_id sym_ptr );
-extern sym_id      LkUpStmtNo( void );
-extern sym_id      LkUpFormat( void );
-extern sym_id      FmtPointer( void );
-extern sym_id      LkUpAssign( void );
-extern unsigned_32 LkUpDoTerm( void );
-extern void        DefStmtNo( unsigned_32 num );
-extern void        Update( unsigned_32 num );
-extern void        InitStNumbers( void );
+extern stmt_num     GetStmtNo( void );
+extern sym_id       LookUp( stmt_num stmt_no );
+extern void         Err( int errcod, sym_id sym_ptr );
+extern sym_id       LkUpStmtNo( void );
+extern sym_id       LkUpFormat( void );
+extern sym_id       FmtPointer( void );
+extern sym_id       LkUpAssign( void );
+extern stmt_num     LkUpDoTerm( void );
+extern void         DefStmtNo( stmt_num stmt_no );
+extern void         Update( stmt_num stmt_no );
+extern void         InitStNumbers( void );

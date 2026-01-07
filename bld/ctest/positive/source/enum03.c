@@ -150,13 +150,13 @@ typedef enum {
 
 int main( int argc, char **argv )
 {
-    __int64	i = 1UI64 << 30;
-    __int64	j = 1UI64 << 31;
-    __int64	k = 1UI64 << 32;
+    __int64 i = 1UI64 << 30;
+    __int64 j = 1UI64 << 31;
+    __int64 k = 1UI64 << 32;
 
-    __int64	i2 = 1I64 << 29;
-    __int64	j2 = -1 << 15;
-    __int64	k2 = 1I64 << 31;
+    __int64 i2 = 1I64 << 29;
+    __int64 j2 = -1 << 15;
+    __int64 k2 = 1I64 << 31;
 
 #ifdef __SW_EI
     if( sizeof( enum_s81 ) != sizeof(int) ) fail(__LINE__);

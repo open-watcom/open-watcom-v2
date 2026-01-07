@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,13 +48,13 @@
 
 
 #define PROG_LEN        5
-char    ProgName[ PROG_LEN+1 ] = { 'F','M','A','I','N',
+char    ProgName[PROG_LEN+1] = { 'F','M','A','I','N',
                                    NULLCHAR };
 #define BLKDAT_LEN      10
-char    BlkData[ BLKDAT_LEN+1 ] = { '@','B','L','O','C','K','D','A','T','A',
+char    BlkData[BLKDAT_LEN+1] = { '@','B','L','O','C','K','D','A','T','A',
                                     NULLCHAR };
 #define CBLANK_LEN      6
-char    CBlank[ CBLANK_LEN+1 ] = { '@','B','L','A','N','K',NULLCHAR };
+char    CBlank[CBLANK_LEN+1] = { '@','B','L','A','N','K',NULLCHAR };
 
 
 void    STInit( void ) {

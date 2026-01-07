@@ -1343,41 +1343,41 @@ RealRegsStruc ends
 ;
 EPSP_Struc      struc
                     db 256 dup (?)
-EPSP_Parent         dw ?            ;Selector of parent/previous PSP, 0 for none.
-EPSP_Next           dw ?            ;Next PSP.
-EPSP_Resource       dd ?            ;Linear address of resource tracking table. 0 for none.
-EPSP_mcbHead        dd ?            ;Linear address of MCB memory head. 0 for none.
-EPSP_mcbMaxAlloc    dd ?            ;Size of MCB chunks.
-EPSP_DTA            df ?            ;DTA address.
-EPSP_TransProt      dw ?            ;Transfer buffer address.
-EPSP_TransReal      dw ?            ;Transfer buffer real mode segment value.
-EPSP_TransSize      dd ?            ;Transfer buffer size.
-EPSP_SSESP          df ?            ;Return SS:ESP to use.
-EPSP_INTMem         dd ?            ;linear address of interrupt/exception vector save buffer. 0 for none.
-EPSP_DPMIMem        dw ?            ;selector for DPMI state save buffer. 0 for none.
-EPSP_MemBase        dd ?            ;Program linear load address.
-EPSP_MemSize        dd ?            ;Program memory size.
-EPSP_SegBase        dw ?            ;Base program selector.
-EPSP_SegSize        dw ?            ;Number of program selectors.
+EPSP_Parent         dw ?            ;+100 Selector of parent/previous PSP, 0 for none.
+EPSP_Next           dw ?            ;+102 Next PSP.
+EPSP_Resource       dd ?            ;+104 Linear address of resource tracking table. 0 for none.
+EPSP_mcbHead        dd ?            ;+108 Linear address of MCB memory head. 0 for none.
+EPSP_mcbMaxAlloc    dd ?            ;+10C Size of MCB chunks.
+EPSP_DTA            df ?            ;+110 DTA address.
+EPSP_TransProt      dw ?            ;+116 Transfer buffer address.
+EPSP_TransReal      dw ?            ;+118 Transfer buffer real mode segment value.
+EPSP_TransSize      dd ?            ;+11A Transfer buffer size.
+EPSP_SSESP          df ?            ;+11E Return SS:ESP to use.
+EPSP_INTMem         dd ?            ;+124 linear address of interrupt/exception vector save buffer. 0 for none.
+EPSP_DPMIMem        dw ?            ;+128 selector for DPMI state save buffer. 0 for none.
+EPSP_MemBase        dd ?            ;+12A Program linear load address.
+EPSP_MemSize        dd ?            ;+12E Program memory size.
+EPSP_SegBase        dw ?            ;+132 Base program selector.
+EPSP_SegSize        dw ?            ;+134 Number of program selectors.
 
-EPSP_NearBase       dd ?            ;NEAR function address translation base.
+EPSP_NearBase       dd ?            ;+136 NEAR function address translation base.
 
-EPSP_RealENV        dw ?            ;Origional real mode environment SEGMENT.
+EPSP_RealENV        dw ?            ;+13A Origional real mode environment SEGMENT.
 
-EPSP_NextPSP        dd ?            ;Pointer to next PSP
-EPSP_LastPSP        dd ?            ;Pointer to last PSP
+EPSP_NextPSP        dd ?            ;+13C Pointer to next PSP
+EPSP_LastPSP        dd ?            ;+140 Pointer to last PSP
 
-EPSP_Exports        dd ?            ;Pointer to export list.
-EPSP_Imports        dd ?            ;Pointer to import list.
+EPSP_Exports        dd ?            ;+144 Pointer to export list.
+EPSP_Imports        dd ?            ;+148 Pointer to import list.
 
-EPSP_Links          dd ?            ;Count of linked modules.
+EPSP_Links          dd ?            ;+14C Count of linked modules.
 
-EPSP_ExecCount      dd ?            ;PMode pointer to exec counter.
+EPSP_ExecCount      dd ?            ;+150 PMode pointer to exec counter.
 
-EPSP_EntryCSEIP     df ?            ;Entry CS:EIP for DLL's
+EPSP_EntryCSEIP     df ?            ;+154 Entry CS:EIP for DLL's
 
-EPSP_PSPSel         dw ?            ;This PSP's selector.
+EPSP_PSPSel         dw ?            ;+15A This PSP's selector.
 
-EPSP_FileName       db 256 dup (?)  ;This module full file name.
+EPSP_FileName       db 256 dup (?)  ;+15C This module full file name.
 
 EPSP_Struc      ends

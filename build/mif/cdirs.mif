@@ -19,9 +19,12 @@ depth_4 = ../../../../
 depth_5 = ../../../../../
 depth_6 = ../../../../../../
 depth_7 = ../../../../../../../
+!ifdef proj_name
 !ifdef $(proj_name)_tree_depth
 tree_depth = $($(proj_name)_tree_depth)
-!else ifndef tree_depth
+!endif
+!endif
+!ifndef tree_depth
 tree_depth = 3
 !endif
 owroot_bld     = $(depth_$(tree_depth))bld/
@@ -105,6 +108,9 @@ wtouch_dir      = $(owroot_bld)wtouch
 !endif
 !ifndef wmake_dir
 wmake_dir       = $(owroot_bld)wmake
+!endif
+!ifndef wmaktest_dir
+wmaktest_dir	= $(owroot_bld)wmaktest
 !endif
 !ifndef wdump_dir
 wdump_dir       = $(owroot_bld)wdump

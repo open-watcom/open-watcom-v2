@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #include "print.h"
 #include "main.h"
 #include "init.h"
+#include "i64.h"
 
 
 #define STRING_LINE_LEN 41
@@ -89,7 +90,7 @@ typedef enum {
     ASCIZ
 } string_type;
 
-static const char	*getDataTypeStr( unsigned size )
+static const char   *getDataTypeStr( unsigned size )
 {
     if( IsMasmOutput ) {
         return( masmTypes[size] );
@@ -221,7 +222,7 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 {
     size_t      d;
     size_t      dup;
-    dis_value   value;
+    unsigned_64 value;
 
 
     if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
@@ -240,14 +241,13 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 
     BufferHexU32( 0, dup );
     BufferConcat( " DUP(" );
-    value.u._32[I64HI32] = 0;
     for( dup = 0; dup < 7; dup++ ) {
-        value.u._32[I64LO32] = bytes[i + dup];
-        BufferHex( 2, value );
+        Set64ValU32( value, bytes[i + dup] );
+        BufferHex( 2, &value );
         BufferConcatChar( ',' );
     }
-    value.u._32[I64LO32] = bytes[i + 7];
-    BufferHex( 2, value );
+    Set64ValU32( value, bytes[i + 7] );
+    BufferHex( 2, &value );
     BufferConcatChar( ')' );
     return( d );
 }
@@ -256,13 +256,12 @@ static void printRest( unsigned_8 *bytes, size_t size )
 {
     size_t      i;
     size_t      d;
-    const char	*datatype;
-    dis_value   value;
+    const char  *datatype;
+    unsigned_64 value;
 
     datatype = getDataTypeStr( 1 );
     BufferConcat( "    " );
     BufferConcat( datatype );
-    value.u._32[I64HI32] = 0;
     for( i = 0; i < size; ) {
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
@@ -280,8 +279,8 @@ static void printRest( unsigned_8 *bytes, size_t size )
             }
         }
 
-        value.u._32[I64LO32] = bytes[i];
-        BufferHex( 2, value );
+        Set64ValU32( value, bytes[i] );
+        BufferHex( 2, &value );
         if( i < size - 1 ) {
             if( (i % 8) == 7 ) {
                 BufferConcatNL();
@@ -299,10 +298,16 @@ static void printRest( unsigned_8 *bytes, size_t size )
 }
 
 dis_sec_addend HandleAddend( ref_entry r_entry )
-// sign-extend an addend value by the appropriate number of bits.
+/**************************************************
+ * sign-extend an addend value by the appropriate number of bits.
+ */
 {
     dis_sec_addend  r_addend;
-    int             bits;
+    dis_sec_addend  sign_bit_mask;
+    dis_sec_addend  sign_extension;
+
+    #define SBIT(x)     ( 1L << ( x - 1 ) )
+    #define SEXT(x)     ( -1L << ( x - 1 ) )
 
     r_addend = r_entry->addend;
     switch( r_entry->type ) {
@@ -310,15 +315,18 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
     case ORL_RELOC_TYPE_WORD_14:
     case ORL_RELOC_TYPE_TOCREL_14:
     case ORL_RELOC_TYPE_TOCVREL_14:
-        bits = 14;
+        sign_bit_mask = SBIT( 14 );
+        sign_extension = SEXT( 14 );
         break;
     case ORL_RELOC_TYPE_REL_24:
     case ORL_RELOC_TYPE_WORD_24:
     case ORL_RELOC_TYPE_PLTREL_24:
-        bits = 24;
+        sign_bit_mask = SBIT( 24 );
+        sign_extension = SEXT( 24 );
         break;
     case ORL_RELOC_TYPE_WORD_26:
-        bits = 26;
+        sign_bit_mask = SBIT( 26 );
+        sign_extension = SEXT( 26 );
         break;
     case ORL_RELOC_TYPE_REL_16:
     case ORL_RELOC_TYPE_WORD_16:
@@ -334,7 +342,8 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLT_16_HI:
     case ORL_RELOC_TYPE_PLT_16_HA:
     case ORL_RELOC_TYPE_PLT_16_LO:
-        bits = 16;
+        sign_bit_mask = SBIT( 16 );
+        sign_extension = SEXT( 16 );
         break;
     case ORL_RELOC_TYPE_WORD_32:
     case ORL_RELOC_TYPE_WORD_32_NB:
@@ -350,20 +359,24 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
     default:
-        bits = 32;
+        sign_bit_mask = SBIT( 32 );
+        sign_extension = SEXT( 32 );
         break;
     case ORL_RELOC_TYPE_REL_21_SH:
         // Will NEVER happen
-        bits = 21;
+        sign_bit_mask = SBIT( 21 );
+        sign_extension = SEXT( 21 );
         break;
     case ORL_RELOC_TYPE_WORD_64:
         // Will NEVER happen
-        bits = 64;
-        break;
+        return( r_addend );
     }
-    if( (bits < 32) && (r_addend & (1 << (bits - 1) ) ) )
-        r_addend |= ( 0xFFFFFFFF ^ ((1 << bits) - 1) );
+    if( r_addend & sign_bit_mask )
+        r_addend |= sign_extension;
     return( r_addend );
+
+    #undef SEXT
+    #undef SBIT
 }
 
 bool IsDataReloc( ref_entry r_entry )
@@ -456,28 +469,23 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     unsigned            rv;
     const char          *datatype;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
-    dis_value           value;
+    unsigned_64         value;
 
     rv = RelocSize( r_entry );
-    value.u._32[I64HI32] = 0;
     switch( rv ) {
     case 6:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
-        break;
     case 4:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
+        Set64ValU32( value, *(unsigned_32 *)data );
         break;
     case 2:
-        value.u._32[I64LO32] = *(unsigned_16 *)data;
+        Set64ValU32( value, *(unsigned_16 *)data );
         break;
     case 1:
-        value.u._32[I64LO32] = *(unsigned_8 *)data;
+        Set64ValU32( value, *(unsigned_8 *)data );
         break;
     case 8:
-        value.u._32[I64LO32] = 0;
-        break;
     default:
-        value.u._32[I64LO32] = 0;
+        Set64ValZero( value );
         break;
     }
     if( asmLabels ) {
@@ -486,19 +494,19 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
             BufferConcat( datatype );
         }
     }
-    HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
+    HandleAReference( &value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
     BufferConcat( buff );
     switch( rv ) {
     case 8:
-        value.u._32[I64LO32] = *(unsigned_32 *)data;
-        value.u._32[I64HI32] = *((unsigned_32 *)data + 1);
-        if( value.u._32[I64LO32] != 0 || value.u._32[I64HI32] != 0 ) {
+        U64Low( value ) = *(unsigned_32 *)data;
+        U64High( value ) = *((unsigned_32 *)data + 1);
+        if( U64isNonZero( value ) ) {
             BufferConcat( "+0x" );
-            if( value.u._32[I64HI32] != 0 ) {
-                BufferHexU32( 0, value.u._32[I64HI32] );
-                BufferHexU32( 8, value.u._32[I64LO32] );
+            if( U64High( value ) != 0 ) {
+                BufferHexU32( 0, U64High( value ) );
+                BufferHexU32( 8, U64Low( value ) );
             } else {
-                BufferHexU32( 0, value.u._32[I64LO32] );
+                BufferHexU32( 0, U64Low( value ) );
             }
         }
         break;
@@ -802,17 +810,16 @@ static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, lab
 static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
     size_t      offset = OFFSET_UNDEF;
-    dis_value   value;
+    unsigned_64 value;
 
     PrintHeader( section );
 
-    value.u._32[I64HI32] = 0;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
         if( l_entry->type != LTYP_SECTION ) {
             if( offset != l_entry->offset ) {
                 BufferConcat( "    ORG " );
-                value.u._32[I64LO32] = l_entry->offset;
-                BufferHex( 8, value );
+                Set64ValU32( value, l_entry->offset );
+                BufferHex( 8, &value );
                 offset = l_entry->offset;
                 BufferConcatNL();
                 BufferPrint();
@@ -843,8 +850,8 @@ static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, lab
     }
     if( size > offset ) {
         BufferConcat( "    ORG " );
-        value.u._32[I64LO32] = size;
-        BufferHex( 8, value );
+        Set64ValU32( value, size );
+        BufferHex( 8, &value );
         BufferConcatNL();
         BufferPrint();
     }

@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77prag.h"
 #include "wf77info.h"
@@ -63,6 +62,7 @@
 #include "fcgmain.h"
 #include "mkname.h"
 #include "rstutils.h"
+#include "gsegs.h"
 
 #include "langenvd.h"
 #if _INTEL_CPU
@@ -109,13 +109,13 @@ static  char            ObjExtn[] = { "obj" };
 static  char            GData[] = { "GDATA@" };
 #if _INTEL_CPU
 static  char            *CSSuff = TS_SEG_CODE;
-static  unsigned char   CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
-static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
+static  byte            CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
+static  byte            DefCodeAlignSeq[] = { 2, 1, 1 };
 #endif
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
 static  segment_id      import_segid;
-static  cg_type         UserType;
+static  cg_type         user_cgtyp;
 
 static  dbg_type        DBGTypes[] = {
     #define ONLY_BASE_TYPES
@@ -135,7 +135,7 @@ static  char * DBGNames[] = {
 
 
 /* Forward declarations */
-static  void    SegBytes( uint_32 size );
+static  void    SegBytes( uint size );
 static  void    DefineGlobalSeg( global_seg *seg );
 static  void    DefineGlobalSegs( void );
 static  void    DefineCommonSegs( void );
@@ -271,7 +271,7 @@ void    SubCodeSeg( void )
 
 
 #if _INTEL_CPU
-static  unsigned char   *AlignmentSeq( void )
+static  byte   *AlignmentSeq( void )
 //===========================================
 {
     if( OZOpts & OZOPT_O_TIME ) {
@@ -287,7 +287,7 @@ static  void    DefCodeSeg( void )
 // Define a code segment.
 {
     char            seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
-    unsigned char   *align_info_bytes;
+    byte            *align_info_bytes;
     int             i;
     int             alignment;
 
@@ -321,8 +321,10 @@ static  void    DefineCommonSegs( void )
 //======================================
 // Define segments for a common blocks.
 {
+#if _CPU == 8086
     uint_32     com_size;
     int         seg_count;
+#endif
     sym_id      sym;
     size_t      cb_len;
     int         private;
@@ -353,9 +355,11 @@ static  void    DefineCommonSegs( void )
         } else {
             BEDefSeg( sym->u.ns.si.cb.segid, COMMON | private, cb_name, ALIGN_BYTE );
         }
+#if _CPU == 8086
         cb_name[cb_len] = '@';
         seg_count = 0;
-        for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
+        com_size = GetComBlkSize( sym );
+        while( com_size > MAX_SEG16_SIZE ) {
             seg_count++;
             sprintf( &cb_name[cb_len + 1], "%d", seg_count );
             if( CGOpts & CGOPT_ALIGN ) {
@@ -363,7 +367,9 @@ static  void    DefineCommonSegs( void )
             } else {
                 BEDefSeg( AllocSegId(), COMMON | private , cb_name, ALIGN_BYTE );
             }
+            com_size -= MAX_SEG16_SIZE;
         }
+#endif
     }
 }
 
@@ -387,35 +393,35 @@ static  void    AllocComBlk( sym_id cb )
 // Allocate a common block.
 {
     segment_id  segid;
-    uint_32     size;
+    uint        size;
 
     segid = cb->u.ns.si.cb.segid;
     BESetSeg( segid );
     cb->u.ns.u3.address = BENewBack( cb );
     DGLabel( cb->u.ns.u3.address );
-    for( size = GetComBlkSize( cb ); size > MaxSegSize; size -= MaxSegSize ) {
-        BESetSeg( segid );
-        SegBytes( MaxSegSize );
+    size = GetComBlkSize( cb );
+#if _CPU == 8086
+    while( size > MAX_SEG16_SIZE ) {
+        SegBytes( MAX_SEG16_SIZE );
         segid++;
+        BESetSeg( segid );
+        size -= MAX_SEG16_SIZE;
     }
-    BESetSeg( segid );
+#endif
     SegBytes( size );
 }
 
 
-static  void    SegBytes( uint_32 size )
-//======================================
+static  void    SegBytes( uint size )
+//===================================
 {
-#if _CPU == 386
-    DGUBytes( size );
-#else
-    if( size == MaxSegSize ) {
-        DGUBytes( size - 1 ); // back end can't handle value of 64k
-        DGUBytes( 1 );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGUBytes( size );
     }
 #endif
+    DGUBytes( size );
 }
 
 
@@ -477,12 +483,12 @@ static  void    AllocGlobalSegs( void )
 }
 
 
-static  global_seg      *GSegDesc( uint_32 g_offset )
-//===================================================
+static  global_seg      *GSegDesc( uint g_offset )
+//================================================
 // Find global segment descriptor for given offset.
 {
     global_seg  *g_seg;
-    uint_32     g_size;
+    uint        g_size;
 
     g_size = 0;
     for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
@@ -496,14 +502,13 @@ void    DtInit( segment_id segid, seg_offset offset )
 //===================================================
 // Set to do DATA initialization.
 {
-    if( offset + DtOffset >= MaxSegSize ) {
+    DtSegOffset = offset + DtOffset;
+#if _CPU == 8086
+    while( DtSegOffset > MAX_SEG16_SIZE ) {
         segid++;
-        for( DtSegOffset = DtOffset - (MaxSegSize - offset); DtSegOffset >= MaxSegSize; DtSegOffset -= MaxSegSize ) {
-            segid++;
-        }
-    } else {
-        DtSegOffset = offset + DtOffset;
+        DtSegOffset -= MAX_SEG16_SIZE;
     }
+#endif
     DtSegId = segid;
 }
 
@@ -516,37 +521,30 @@ struct {
 } CurrDt;
 
 
-static  void    InitBytes( unsigned long size, byte value )
-//=========================================================
+static void     InitBytes( uint size, byte value )
+//================================================
 {
-#if _CPU == 386
-    DGIBytes( size, value );
-#else
-    if( size == MaxSegSize ) {
-        // back end can't handle size of 64k
-        DGIBytes( MaxSegSize / 2, value );
-        DGIBytes( MaxSegSize / 2, value );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGIBytes( size, value );
     }
 #endif
+    DGIBytes( size, value );
 }
 
 
-static  void    UndefBytes( unsigned long size, byte *data )
-//==========================================================
+static void DefBytes( const char *data, uint size )
+//=================================================
 {
-#if _CPU == 386
-    DGBytes( size, data );
-#else
-    if( size == MaxSegSize ) {
-        // back end can't handle size of 64k
-        DGBytes( MaxSegSize / 2, data );
-        DGBytes( MaxSegSize / 2, data );
-    } else {
+#if _CPU == 8086
+    if( size == MAX_SEG16_SIZE ) {
+        size /= 2;
         DGBytes( size, data );
+        data += size;
     }
 #endif
+    DGBytes( size, data );
 }
 
 
@@ -571,20 +569,21 @@ static  void    InitCurrDt( void )
 }
 
 
-void    DtIBytes( byte data, int size )
-//=====================================
+void    DtIBytes( byte data, uint size )
+//======================================
 // Initialize with specified data.
 {
-    if( ( DtSegId == CurrDt.segid ) &&
-        (DtSegOffset == CurrDt.offset + CurrDt.size) &&
-        (data == CurrDt.byte_value) &&
-        (MaxSegSize >= (CurrDt.offset + CurrDt.size + size)) ) {
+#if _CPU == 8086
+    if( ( DtSegId == CurrDt.segid )
+      && ( DtSegOffset == CurrDt.offset + CurrDt.size )
+      && ( data == CurrDt.byte_value )
+      && ( (CurrDt.offset + CurrDt.size + size) <= MAX_SEG16_SIZE ) ) {
         // We are continuing where we left off
         CurrDt.size += size;
         DtSegOffset += size;
     } else {
         FlushCurrDt();
-        if( MaxSegSize > DtSegOffset + size ) {
+        if( DtSegOffset + size < MAX_SEG16_SIZE ) {
             CurrDt.segid = DtSegId;
             CurrDt.offset = DtSegOffset;
             CurrDt.byte_value = data;
@@ -593,8 +592,8 @@ void    DtIBytes( byte data, int size )
         } else {
             BESetSeg( DtSegId );
             DGSeek( DtSegOffset );
-            DGIBytes( MaxSegSize - DtSegOffset, data );
-            size -= MaxSegSize - DtSegOffset;
+            DGIBytes( MAX_SEG16_SIZE - DtSegOffset, data );
+            size -= MAX_SEG16_SIZE - DtSegOffset;
             DtSegId++;
             DtSegOffset = size;
             CurrDt.segid = DtSegId;
@@ -603,42 +602,64 @@ void    DtIBytes( byte data, int size )
             CurrDt.size = size;
         }
     }
+#else
+    if( ( DtSegId == CurrDt.segid )
+      && ( DtSegOffset == CurrDt.offset + CurrDt.size )
+      && ( data == CurrDt.byte_value ) ) {
+        // We are continuing where we left off
+        CurrDt.size += size;
+        DtSegOffset += size;
+    } else {
+        FlushCurrDt();
+        CurrDt.segid = DtSegId;
+        CurrDt.offset = DtSegOffset;
+        CurrDt.byte_value = data;
+        CurrDt.size = size;
+        DtSegOffset += size;
+    }
+#endif
 }
 
 
-void    DtStreamBytes( byte *data, int size )
-//===========================================
+void    DtStreamBytes( const char *data, uint size )
+//==================================================
 // Initialize with specified data.
 {
     FlushCurrDt();
     InitCurrDt();
     BESetSeg( DtSegId );
     DGSeek( DtSegOffset );
-    if( MaxSegSize > DtSegOffset + size ) {
-        UndefBytes( size, data );
+#if _CPU == 8086
+    if( DtSegOffset + size < MAX_SEG16_SIZE ) {
+        DefBytes( data, size );
         DtSegOffset += size;
     } else {
-        UndefBytes( MaxSegSize - DtSegOffset, data );
-        size -= MaxSegSize - DtSegOffset;
+        uint    len;
+
+        len = MAX_SEG16_SIZE - DtSegOffset;
+        DefBytes( data, len );
+        size -= len;
         DtSegId++;
         if( size != 0 ) {
             BESetSeg( DtSegId );
             DGSeek( 0 );
-            UndefBytes( size, data + MaxSegSize - DtSegOffset );
-            DtSegOffset = size;
-        } else {
-            DtSegOffset = 0;
+            DefBytes( data + len, size );
         }
+        DtSegOffset = size;
     }
+#else
+    DefBytes( data, size );
+    DtSegOffset += size;
+#endif
 }
 
 
-void    DtBytes( byte *data, int size )
-//=====================================
+void    DtBytes( const char *data, uint size )
+//============================================
 // Initialize with specified data.
 {
     byte        byte_value;
-    int         i;
+    uint        i;
 
     byte_value = *data;
     for( i = 1; i < size; ++i ) {
@@ -665,16 +686,23 @@ void    DtFiniSequence( void )
 }
 
 
-segment_id      GetComSegId( sym_id sym, uint_32 offset )
-//=======================================================
+segment_id      GetComSegId( sym_id sym, uint offset )
+//====================================================
 // Get segment id of common block for variable in common.
 {
     segment_id  segid;
 
+#if _CPU != 8086
+    (void)offset;
+#endif
     segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
-    for( offset += sym->u.ns.si.va.vi.ec_ext->offset; offset > MaxSegSize; offset -= MaxSegSize ) {
+#if _CPU == 8086
+    offset += sym->u.ns.si.va.vi.ec_ext->offset;
+    while( offset > MAX_SEG16_SIZE ) {
         segid++;
+        offset -= MAX_SEG16_SIZE;
     }
+#endif
     return( segid );
 }
 
@@ -684,7 +712,7 @@ segment_id      GetDataSegId( sym_id sym )
 // Get segment containing data for given variable.
 {
     segment_id  segid;
-    uint_32     offset;
+    uint        offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
@@ -718,12 +746,12 @@ segment_id      GetDataSegId( sym_id sym )
 }
 
 
-seg_offset      GetGlobalOffset( uint_32 g_offset )
-//=================================================
+seg_offset      GetGlobalOffset( uint g_offset )
+//==============================================
 // Find offset in the global segment containing data at given offset.
 {
     global_seg  *g_seg;
-    uint_32     g_size;
+    uint        g_size;
 
     g_size = 0;
     for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
@@ -733,13 +761,15 @@ seg_offset      GetGlobalOffset( uint_32 g_offset )
 }
 
 
-seg_offset      GetComOffset( uint_32 offset )
-//============================================
+seg_offset      GetComOffset( uint offset )
+//=========================================
 // Get segment offset in common block for variable in common.
 {
-    while( offset >= MaxSegSize ) {
-        offset -= MaxSegSize;
+#if _CPU == 8086
+    while( offset >= MAX_SEG16_SIZE ) {
+        offset -= MAX_SEG16_SIZE;
     }
+#endif
     return( offset );
 }
 
@@ -764,7 +794,7 @@ seg_offset      GetDataOffset( sym_id sym )
 // Get offset in segment containing data for given variable.
 {
     seg_offset  seg_offset;
-    uint_32     offset;
+    uint        offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
@@ -794,8 +824,8 @@ seg_offset      GetDataOffset( sym_id sym )
 }
 
 
-segment_id  GetGlobalSegId( uint_32 g_offset )
-//============================================
+segment_id  GetGlobalSegId( uint g_offset )
+//=========================================
 // Find global segment containing data at given offset.
 {
     return( GSegDesc( g_offset )->segid );
@@ -806,9 +836,9 @@ void    DefTypes( void )
 //======================
 // Define FORTRAN 77 data types.
 {
-    int         adv_cnt;
-    int         adv_size;
-    int         total_size;
+    uint        adv_cnt;
+    uint        adv_size;
+    uint        total_size;
 
 #if _INTEL_CPU
     if( _BigDataModel( CGOpts ) ) {
@@ -883,12 +913,12 @@ void    DefStructs( void )
 {
     sym_id      sym;
 
-    UserType = TY_USER_DEFINED;
+    user_cgtyp = TY_USER_DEFINED;
     for( sym = RList; sym != NULL; sym = sym->u.sd.link ) {
-        BEDefType( UserType, ALIGN_BYTE, sym->u.sd.size );
-        sym->u.sd.cg_typ = UserType;
+        BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.sd.size );
+        sym->u.sd.cgtyp = user_cgtyp;
         sym->u.sd.dbi = DBG_NIL_TYPE;
-        ++UserType;
+        user_cgtyp++;
     }
     if( Options & OPT_AUTOMATIC ) {
         for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
@@ -909,29 +939,29 @@ void    DefStructs( void )
                 if( ce_ext->ec_flags & MEMBER_INITIALIZED )
                     continue;
                 eqv_set = STEqSetShadow( sym );
-                BEDefType( UserType, ALIGN_DWORD, ce_ext->high - ce_ext->low );
-                eqv_set->u.ns.si.ms.u.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_DWORD, ce_ext->high - ce_ext->low );
+                eqv_set->u.ns.si.ms.u.cgtyp = user_cgtyp;
+                user_cgtyp++;
             } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( _Allocatable( sym ) )
                     continue;
-                BEDefType( UserType, SymAlign( sym ),
+                BEDefType( user_cgtyp, SymAlign( sym ),
                    _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elts );
-                sym->u.ns.si.va.u.dim_ext->l.cg_typ = UserType;
-                ++UserType;
+                sym->u.ns.si.va.u.dim_ext->l.cgtyp = user_cgtyp;
+                user_cgtyp++;
             } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
-                sym->u.ns.si.va.vi.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.va.vi.cgtyp = user_cgtyp;
+                user_cgtyp++;
             }
         }
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
             if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) )
                 continue;
             if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size != 0) ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
-                sym->u.ns.si.ms.u.cg_typ = UserType;
-                ++UserType;
+                BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.ms.u.cgtyp = user_cgtyp;
+                user_cgtyp++;
             }
         }
     }
@@ -1216,14 +1246,14 @@ int     FELexLevel( cg_sym_handle _sym )
 }
 
 
-cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
+cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type cgtyp )
 //======================================================================
 // Return the type that an argument of the given type should be converted
 // to.
 {
     /* unused parameters */ (void)parm; (void)fn;
 
-    switch( tipe ) {
+    switch( cgtyp ) {
 #if _CPU == 386
     case TY_UINT_2:
     case TY_INT_2:
@@ -1242,9 +1272,9 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
             }
         }
 #endif
-        tipe = TY_INTEGER;
+        cgtyp = TY_INTEGER;
     }
-    return( tipe );
+    return( cgtyp );
 }
 
 
@@ -1310,7 +1340,7 @@ void    FEMessage( fe_msg femsg, pointer x )
 #if _CPU == 8086
         CodeSize = (unsigned short)(pointer_uint)x;
 #else
-        CodeSize = (unsigned long)(pointer_uint)x;
+        CodeSize = (unsigned)(pointer_uint)x;
 #endif
         break;
     case FEMSG_DATA_SIZE :
@@ -1406,7 +1436,7 @@ static  dbg_type        GetDbgType( sym_id sym )
             // character*(*) variable/array
             if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
-                sprintf( new_name, "%s*(*)", DBGNames[PT_CHAR] );
+                sprintf( new_name, "%s*(*)", DBGNames[FPT_CHAR] );
                 return( DBCharBlockNamed( new_name, 0 ) );
             }
             loc = DBLocInit();
@@ -1426,7 +1456,7 @@ static  dbg_type        GetDbgType( sym_id sym )
         return( sym->u.ns.xt.record->dbi );
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%lu", DBGNames[PT_CHAR], (unsigned long)sym->u.ns.xt.size );
+        sprintf( new_name, "%s*%lu", DBGNames[FPT_CHAR], (unsigned long)sym->u.ns.xt.size );
         return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
@@ -1449,7 +1479,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type )
     while( dim_cnt-- > 0 ) {
         lo = *bounds++;
         hi = *bounds++;
-        DBDimCon( db_arr, DBGTypes[PT_INT_4], lo, hi );
+        DBDimCon( db_arr, DBGTypes[FPT_INT_4], lo, hi );
     }
     return( DBEndArray( db_arr ) );
 }
@@ -1461,9 +1491,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
 {
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
-        return( DBGTypes[PT_INT_2] );
+        return( DBGTypes[FPT_INT_2] );
 #else
-        return( DBGTypes[PT_INT_4] );
+        return( DBGTypes[FPT_INT_4] );
 #endif
     } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1482,9 +1512,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
         // We must assign a return type to bar, assume that it is a subroutine
         // Since we don't really know what it is.
 #if _CPU == 8086
-        return( DBGTypes[PT_INT_2] );
+        return( DBGTypes[FPT_INT_2] );
 #else
-        return( DBGTypes[PT_INT_4] );
+        return( DBGTypes[FPT_INT_4] );
 #endif
     } else {
         return( DBG_NIL_TYPE );
@@ -1538,12 +1568,12 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type )
 }
 
 
-static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset )
-//========================================================================
+static  void    DefDbgFields( sym_id sd, dbg_struct db, uint f_offset )
+//=====================================================================
 {
     sym_id      map;
     sym_id      field;
-    uint_32     size;
+    uint        size;
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
@@ -1584,7 +1614,7 @@ static  void    DefDbgStruct( sym_id sym )
 
     if( sym->u.sd.dbi != DBG_NIL_TYPE )
         return;
-    db = DBBegStruct( sym->u.sd.cg_typ, true );
+    db = DBBegStruct( sym->u.sd.cgtyp, true );
     DefDbgFields( sym, db, 0 );
     sym->u.sd.dbi = DBEndStruct( db );
 }
@@ -1595,14 +1625,14 @@ static  dbg_type        DefCommonStruct( sym_id sym )
 // Define debugging information for a COMMON block.
 {
     dbg_struct  db;
-    uint_32     com_offset;
-    uint_32     size;
+    uint        com_offset;
+    uint        size;
     char        field_name[MAX_SYMLEN+1];
     dbg_type    db_type;
     com_eq      *com_ext;
 
-    BEDefType( UserType, ALIGN_BYTE, GetComBlkSize( sym ) );
-    db = DBBegNameStruct( "COMMON BLOCK", UserType, true );
+    BEDefType( user_cgtyp, ALIGN_BYTE, GetComBlkSize( sym ) );
+    db = DBBegNameStruct( "COMMON BLOCK", user_cgtyp, true );
     com_offset = 0;
     sym = sym->u.ns.si.cb.first;
     for( ;; ) {
@@ -1625,7 +1655,7 @@ static  dbg_type        DefCommonStruct( sym_id sym )
         com_offset += size;
         sym = com_ext->link_com;
     }
-    ++UserType;
+    user_cgtyp++;
     return( DBEndStruct( db ) );
 }
 
@@ -1633,15 +1663,15 @@ static  dbg_type        DefCommonStruct( sym_id sym )
 static  void    InitDBGTypes( void )
 //==================================
 {
-    int         typ;
+    PTYPE       ptyp;
 
-    if( DBGTypes[PT_LOG_1] == DBG_NIL_TYPE ) {
-        for( typ = PT_LOG_1; typ <= PT_REAL_16; ++typ ) {
-            DBGTypes[typ] = DBScalar( DBGNames[typ], MkCGType( typ ) );
+    if( DBGTypes[FPT_LOG_1] == DBG_NIL_TYPE ) {
+        for( ptyp = FPT_LOG_1; ptyp <= FPT_REAL_16; ptyp++ ) {
+            DBGTypes[ptyp] = DBScalar( DBGNames[ptyp], MkCGType( ptyp ) );
         }
-        DBGTypes[PT_CPLX_8]  = DBFtnType( DBGNames[PT_CPLX_8],  T_DBG_COMPLEX );
-        DBGTypes[PT_CPLX_16] = DBFtnType( DBGNames[PT_CPLX_16], T_DBG_DCOMPLEX );
-        DBGTypes[PT_CPLX_32] = DBFtnType( DBGNames[PT_CPLX_32], T_DBG_XCOMPLEX );
+        DBGTypes[FPT_CPLX_8]  = DBFtnType( DBGNames[FPT_CPLX_8],  T_DBG_COMPLEX );
+        DBGTypes[FPT_CPLX_16] = DBFtnType( DBGNames[FPT_CPLX_16], T_DBG_DCOMPLEX );
+        DBGTypes[FPT_CPLX_32] = DBFtnType( DBGNames[FPT_CPLX_32], T_DBG_XCOMPLEX );
     }
 }
 
@@ -1676,7 +1706,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type )
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
         // an allocated array, until we get a decent db_loc system.
         while( dim_cnt-- > 0 ) {
-            DBDimCon( db_arr, DBGTypes[PT_INT_4], 1, 1 );
+            DBDimCon( db_arr, DBGTypes[FPT_INT_4], 1, 1 );
         }
         return( DBEndArray( db_arr ) );
     }
@@ -1781,7 +1811,7 @@ char    *GetFullSrcName( void )
 {
     size_t      idx;
 
-    idx = MakeName( SrcName, SrcExtn, TokenBuff ) + sizeof( char );
+    idx = MakeName( SrcName, SrcExtn, TokenBuff ) + 1;
     if( _fullpath( &TokenBuff[idx], TokenBuff, TOKLEN-idx ) != NULL ) {
         return( &TokenBuff[idx] );
     } else {
@@ -1794,9 +1824,9 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;
-#if _INTEL_CPU
+#if _CPU == 8086
     int         idx;
-    uint_32     com_size;
+    uint        com_size;
 #endif
     sym_id      sym;
     char        *fn;
@@ -1979,12 +2009,18 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
             if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
+#if _CPU == 8086
             idx = 0;
-            for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
+            com_size = GetComBlkSize( sym );
+            while( com_size > MAX_SEG16_SIZE ) {
                 idx++;
+                com_size -= MAX_SEG16_SIZE;
             }
             if(( (segment_id)(pointer_uint)req_handle >= sym->u.ns.si.cb.segid )
               && ( (segment_id)(pointer_uint)req_handle <= sym->u.ns.si.cb.segid + idx )) {
+#else
+            if( (segment_id)(pointer_uint)req_handle == sym->u.ns.si.cb.segid ) {
+#endif
                 MangleCommonBlockName( sym, MangleSymBuff, true );
                 return( MangleSymBuff );
             }

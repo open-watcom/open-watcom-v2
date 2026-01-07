@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "cvars.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
-#include <ctype.h>
+#include "scan.h"
 
 
 static  aux_info        AuxInfo;
@@ -118,9 +120,11 @@ hw_reg_set PragRegName( const char *regname )
 {
     int             index;
     hw_reg_set      name;
+    int             c;
 
-    if( *regname != '\0' ) {
-        if( *regname == '$' ) {
+    c = *(unsigned char *)regname;
+    if( c != '\0' ) {
+        if( c == '$' ) {
             if( regname[1] != '\0' ) {
                 // search register or alias name
                 index = PragRegIndex( Registers, regname + 1, false );
@@ -133,7 +137,7 @@ hw_reg_set PragRegName( const char *regname )
                     return( RegBits[index] );
                 }
             }
-        } else if( *regname == 'r' || *regname == 'R' ) {
+        } else if( ONE_CASE_EQUAL( c, 'R' ) ) {
             // decode regular register name [rR]nn
             if( regname[1] != '\0' ) {
                 index = PragRegNumIndex( regname + 1, 32 );
@@ -241,7 +245,7 @@ static bool GetByteSeq( aux_info *info )
                 NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
-            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
+            AsmCodeBuffer[AsmCodeAddress++] = U8FetchTrunc( Constant64 );
             NextToken();
         } else {
             break;

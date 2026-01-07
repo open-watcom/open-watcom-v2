@@ -20,8 +20,9 @@ ide_rc_host_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
+additional_clean = *.grc *.grh
 !ifndef nowgml
-additional_clean = $(docs_host_dir)/ide.gh
+additional_clean += $(docs_host_dir)/ide.gh
 !endif
 
 !include cproj.mif

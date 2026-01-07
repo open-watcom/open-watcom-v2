@@ -23,8 +23,10 @@
  */
 #if defined( _M_I86 )
     #define _USE16
+    #define _USE32      0x66
 #else
     #define _USE16      0x66
+    #define _USE32
 #endif
 
 /*
@@ -132,6 +134,9 @@
 #define _MOV_CL_AL      0x88 0xc1
 #define _MOV_CH_AL      0x88 0xc5
 #define _MOV_AL_BL      0x88 0xd8
+
+#define _MOVZX_EAX_DX   _USE32 0x0f 0xb7 0xc2
+#define _MOVZX_EDX_AX   _USE32 0x0f 0xb7 0xd0
 
 #define _NOT_AX         0xf7 0xd0
 #define _NOT_CX         0xf7 0xd1
@@ -260,6 +265,9 @@
 #define _SHL_ESI_16     0xc1 0xe6 16
 
 #define _LSL_AX_AX      0x0f 0x03 0xc0
+#define _LSL_AX_CX      0x0f 0x03 0xc1
+#define _LSL_AX_DX      0x0f 0x03 0xc2
+#define _LSL_DX_AX      0x0f 0x03 0xd0
 #define _VERR_AX        0x0f 0x00 0xe0
 #define _VERW_AX        0x0f 0x00 0xe8
 

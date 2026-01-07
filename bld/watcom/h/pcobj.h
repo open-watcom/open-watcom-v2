@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,6 +247,12 @@ typedef struct omf_name {
     uint_8      len;
     char        name[ 1 ];
 } omf_name;
+
+typedef struct omf_coment {
+    uint_8      type;
+    uint_8      class;
+} omf_coment;
+
 /*
     Comment Type
 */
@@ -287,6 +293,7 @@ enum {
  * pack COMENT into two bytes so it can be written as a word
  */
 #define CMT_NP( a ) ((CMT_##a<<8)|CMT_TNP)
+#define CMT_P( a )  (CMT_##a<<8)
 
 /*
  * Comment Class Subtype
@@ -298,6 +305,12 @@ enum {
     DLL_PROTLIB     = 0x04, /* Protected Memory Library (OMF extension) */
     DLL_LNKDIR      = 0x05, /* Subtype LNKDIR of OMF extension class    */
 };
+
+typedef struct omf_coment_dep {
+    uint_16         dos_time;
+    uint_16         dos_date;
+    uint_8          name_len;
+} omf_coment_dep;
 
 #define EASY_OMF_SIGNATURE  "80386"
 

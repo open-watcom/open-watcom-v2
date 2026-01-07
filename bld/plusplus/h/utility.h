@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,15 +141,6 @@ int escape_char(                // GET ESCAPE CHAR FOR A LETTER
 ;
 int hex_dig(                    // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
     int chr )                   // - character
-;
-void Int64From32                // CREATE 64-BIT VALUE FROM 32-BIT VALUE
-    ( TYPE type                 // - source integral type (signed or unsigned)
-    , signed_32 value           // - integral value (signed or unsigned)
-    , signed_64* result )       // - addr[ result (signed or unsigned) ]
-;
-void Int64FromU32               // CREATE 64-BIT VALUE FROM UNSIGNED 32-BIT VALUE
-    ( unsigned_32 value         // - integral value (unsigned)
-    , unsigned_64* result )     // - addr[ result (unsigned) ]
 ;
 bool IsCppMembPtrOffsetName(    // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
     NAME name )                 // - name of field for offsetting

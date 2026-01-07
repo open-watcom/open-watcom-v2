@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -725,7 +725,7 @@ static bool nodeGetConstant     // TEST IF CONSTANT AND GET VALUE
         switch( node->op ) {
         case PT_INT_CONSTANT :
             pval->type = TypedefModifierRemoveOnly( node->type );
-            pval->u.value = node->u.int64_constant;
+            pval->value = node->u.int64_constant;
             ok = true;
             break;
         case PT_SYMBOL :
@@ -766,7 +766,7 @@ bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        ok = Zero64( &icon.u.value );
+        ok = U64isZero( icon.value );
     } else {
         ok = false;
     }
@@ -784,7 +784,7 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
         if( ( icon.type->id < TYP_BOOL ) || ( icon.type->id > TYP_ULONG64 ) ) {
             ok = false;
         } else {
-            ok = Zero64( &icon.u.value );
+            ok = U64isZero( icon.value );
         }
     } else {
         ok = false;
@@ -812,7 +812,7 @@ PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     PTREE retn;                 // - new entry
 
     con = SymConstantValue( con, &icon );
-    retn = PTreeInt64Constant( icon.u.value, TYP_SLONG64 );
+    retn = PTreeInt64Constant( icon.value, TYP_SLONG64 );
     retn->type = SymUnmodifiedType( con );
     return( retn );
 }
@@ -2267,7 +2267,7 @@ bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
         if( NodeIsIntConstant( right, &icon )
          && NodeGetIbpSymbol( left, a_ibp, a_offset ) ) {
             bound = *a_ibp;
-            offset = *a_offset + icon.u.uval;
+            offset = *a_offset + U64Low( icon.value );
             ok = true;
         } else {
             bound = NULL;

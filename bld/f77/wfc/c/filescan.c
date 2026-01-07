@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,13 +48,13 @@ char *SDFName( const char *fn )
     char        chr;
 
 #if ! defined( __UNIX__ )
-    if( fn[ 1 ] == ':' ) {
+    if( fn[1] == ':' ) {
         fn += 2;
     }
 #endif
-    for(;;) {
+    for( ;; ) {
         start = (char *)fn;
-        for(;;) {
+        for( ;; ) {
             chr = *fn;
             if( chr == NULLCHAR )
                 return( start );
@@ -79,7 +79,7 @@ char *SDSplitExtn( char *fn, char *default_extn )
 
     fn = SDFName( fn );
     src_extn = NULL;
-    for(;;) {
+    for( ;; ) {
         chr = *fn;
         if( chr == NULLCHAR )
             break;

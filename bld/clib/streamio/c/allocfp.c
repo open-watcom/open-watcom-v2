@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <string.h>
 #if defined( __NT__ )
@@ -41,14 +42,13 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "streamio.h"
 #include "thread.h"
 
 
-FILE *__allocfp( void )
+FILE * _WCNEAR __allocfp( void )
 {
     FILE                *end;
     FILE                *fp;
@@ -91,7 +91,7 @@ got_one:
     _ReleaseIOB();
     return( fp );
 no_mem:
-    _RWD_errno = ENOMEM;
+    lib_set_errno( ENOMEM );
     _ReleaseIOB();
     return( NULL );     /* no free slots */
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,7 +198,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
 
     {
         char    *cmd;
-        _cmd_ptr = cmd = __clib_strdup( GetCommandLineA() );
+        _cmd_ptr = cmd = lib_strdup( GetCommandLineA() );
         if( *cmd == '"' ) {
             cmd++;
             while( *cmd != '"' && *cmd != '\0' ) {
@@ -218,7 +219,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
         wchar_t *wcmd;
         wcmd = GetCommandLineW();       /* Win95 supports GetCommandLineW */
         if( wcmd != NULL ) {
-            _wcmd_ptr = wcmd = __clib_wcsdup( wcmd );
+            _wcmd_ptr = wcmd = lib_wcsdup( wcmd );
             if( *wcmd == L'"' ) {
                 wcmd++;
                 while( *wcmd != L'"' && *wcmd != L'\0' ) {
@@ -296,9 +297,9 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
     __InitRtns( 255 );
 }
 
-_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
+_WCRTDATA void _WCNEAR (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {

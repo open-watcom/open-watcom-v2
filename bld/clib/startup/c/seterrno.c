@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,12 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of set errno routines called from assembled modules.
+* Description:  Implementation of CRTL internal set errno routines.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #if defined( __NT__ )
     #include <windows.h>
@@ -39,24 +40,71 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
 #include "clibsupp.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
+#if defined( __NETWARE__ )
+#if !defined( _THIN_LIB )
+int _WCNEAR __get_errno( void )
+{
+#if defined( _NETWARE_LIBC )
+    return( *___errno() );
+#else
+    return( *__get_errno_ptr() );
+#endif
+}
+void _WCNEAR __set_errno( int err )
+{
+#if defined( _NETWARE_LIBC )
+    *___errno() = err;
+#else
+    *__get_errno_ptr() = err;
+#endif
+}
+#endif
+#elif defined(__QNX__)
+#elif defined(__RDOSDEV__)
+#elif defined(__MT__)
+int _WCNEAR __get_errno( void )
+{
+    return( __THREADDATAPTR->__errnoP );
+}
+void _WCNEAR __set_errno( int err )
+{
+    __THREADDATAPTR->__errnoP = err;
+}
+#else
+#endif
+
+
+int _WCNEAR __set_EINVAL( void )
+{
+#if defined( __NETWARE__ )
+#if defined( _NETWARE_LIBC )
+    *___errno() = EINVAL;
+#else
+    *__get_errno_ptr() = EINVAL;
+#endif
+#else
+    lib_set_errno( EINVAL );
+#endif
+    return( -1 );
+}
+
+
+#if defined( __NETWARE__ )
+
+#else
+
 _WCRTLINK void __set_EDOM( void )
 {
-    _RWD_errno = EDOM;
+    lib_set_errno( EDOM );
 }
 
 _WCRTLINK void __set_ERANGE( void )
 {
-    _RWD_errno = ERANGE;
+    lib_set_errno( ERANGE );
 }
 
-int __set_EINVAL( void )
-{
-    _RWD_errno = EINVAL;
-    return( -1 );
-}
+#endif

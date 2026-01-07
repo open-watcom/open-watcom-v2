@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -64,17 +63,17 @@ static  bool    isNiceCondIns( instruction *ins )
 * Figure out if an instruction can be converted to OP_SET_LESS
 */
 {
-    opcode_defs     oc;
+    opcode_defs     opcode;
 
-    oc = ins->head.opcode;
-    if( !_OpIsCondition( oc ) )
+    opcode = ins->head.opcode;
+    if( !_OpIsCondition( opcode ) )
         return( false );
-    if( oc == OP_CMP_LESS || oc == OP_CMP_GREATER )
+    if( opcode == OP_CMP_LESS || opcode == OP_CMP_GREATER )
         return( true );
-    if( (oc == OP_CMP_LESS_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
+    if( (opcode == OP_CMP_LESS_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
         && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) )
         return( true );
-    if( (oc == OP_CMP_GREATER_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
+    if( (opcode == OP_CMP_GREATER_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
         && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) )
         return( true );
     return( false );
@@ -125,7 +124,7 @@ static  bool    FindFlowOut( block *blk )
     name                *temp;
     name                *result;
     type_class_def      type_class;
-    opcode_defs         oc;
+    opcode_defs         opcode;
 
     ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -177,19 +176,19 @@ static  bool    FindFlowOut( block *blk )
     if( type_class != ins1->type_class )
         return( false );
 
-    oc = ins->head.opcode;
-    if( oc == OP_CMP_GREATER || oc == OP_CMP_GREATER_EQUAL )
+    opcode = ins->head.opcode;
+    if( opcode == OP_CMP_GREATER || opcode == OP_CMP_GREATER_EQUAL )
         reverse = !reverse;
 
     /* Replace 'x <= const' with 'x < const + 1' */
-    if( oc == OP_CMP_LESS_EQUAL || oc == OP_CMP_GREATER_EQUAL ) {
+    if( opcode == OP_CMP_LESS_EQUAL || opcode == OP_CMP_GREATER_EQUAL ) {
         int_32          value;
         name            *op1;
 
         op1 = ins->operands[1];
         assert( op1->n.class == N_CONSTANT && op1->c.const_type == CONS_ABSOLUTE );
         value = op1->c.lo.u.int_value;
-        if( oc == OP_CMP_LESS_EQUAL )
+        if( opcode == OP_CMP_LESS_EQUAL )
             value += 1;
         else
             value -= 1;

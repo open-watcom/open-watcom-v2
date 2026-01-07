@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,13 @@
 ****************************************************************************/
 
 
-extern  cg_type         MkCGType( PTYPE typ );
-extern  cg_type         GetType( unsigned_16 typ_info );
-extern  cg_type         GetType1( unsigned_16 typ_info );
-extern  cg_type         GetType2( unsigned_16 typ_info );
+extern  cg_type         MkCGType( PTYPE ptyp );
+extern  cg_type         GetCGType( unsigned_16 typ_info );
+extern  cg_type         GetCGTypes1( unsigned_16 typ_info );
+extern  cg_type         GetCGTypes2( unsigned_16 typ_info );
 extern  cg_type         F77ToCGType( sym_id sym );
-extern  cg_type         ResCGType( cg_type typ1, cg_type typ2 );
-extern  bool            DataPointer( cg_type typ );
-extern  bool            TypeCGInteger( cg_type typ );
-extern  bool            TypePointer( cg_type typ );
-extern  cg_type         PromoteToBaseType( cg_type typ );
+extern  cg_type         ResCGType( cg_type cgtyp1, cg_type cgtyp2 );
+extern  bool            IsCGCodePointer( cg_type cgtyp );
+extern  bool            IsCGInteger( cg_type cgtyp );
+extern  bool            IsCGPointer( cg_type cgtyp );
+extern  cg_type         PromoteCGToBaseType( cg_type cgtyp );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "model.h"
 #include "system.h"
 #include "zoiks.h"
-#include "_cfloat.h"
 #include "confldef.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -51,6 +50,7 @@
 #include "overlap.h"
 #include "x86segs.h"
 #include "liveinfo.h"
+#include "i64.h"
 #include "x86splt2.h"
 
 
@@ -87,10 +87,10 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64LowLE( floatval->buffer.u64 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_part = AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -140,7 +140,7 @@ name    *OffsetPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( tosplit );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET ) );
+            return( AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( tosplit );
@@ -172,7 +172,7 @@ name    *SegmentPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( AllocIntConst( 0 ) );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT ) );
+            return( AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( NULL );
@@ -240,10 +240,10 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( U64HighLE( floatval->buffer.u64 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_part = AddrConst( tosplit->c.u.op, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -446,8 +446,8 @@ instruction     *rMAKEU4( instruction *ins )
     instruction         *low;
     instruction         *high;
     instruction         *first;
-    byte                true_idx;
-    byte                false_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
     name                *lseg;
     name                *rseg;
     name                *temp;
@@ -469,7 +469,8 @@ instruction     *rMAKEU4( instruction *ins )
         temp = AllocTemp( U2 );
         new_ins = MakeMove( lseg, temp, U2 );
         PrefixIns( ins, new_ins );
-        if( first == NULL ) first = new_ins;
+        if( first == NULL )
+            first = new_ins;
         lseg = temp;
     }
     rseg = SegmentPart( rite );
@@ -477,7 +478,8 @@ instruction     *rMAKEU4( instruction *ins )
         temp = AllocTemp( U2 );
         new_ins = MakeMove( rseg, temp, U2 );
         PrefixIns( ins, new_ins );
-        if( first == NULL ) first = new_ins;
+        if( first == NULL )
+            first = new_ins;
         rseg = temp;
     }
     high = MakeCondition( ins->head.opcode, lseg,
@@ -485,7 +487,8 @@ instruction     *rMAKEU4( instruction *ins )
     if( low->head.opcode == OP_CMP_EQUAL ) {
         low->head.opcode = OP_CMP_NOT_EQUAL;
     }
-    if( first == NULL ) first = low;
+    if( first == NULL )
+        first = low;
     DupSeg( ins, low );
     PrefixIns( ins, low );
     DupSeg( ins, high );
@@ -556,12 +559,12 @@ instruction     *rINTCOMP( instruction *ins )
     instruction         *low;
     instruction         *high;
     type_class_def      half_type_class;
-    byte                true_idx;
-    byte                false_idx;
-    byte                first_idx;
+    cond_dst_idx        true_idx;
+    cond_dst_idx        false_idx;
+    cond_dst_idx        first_idx;
     bool                rite_is_zero;
 
-    rite_is_zero = CFTest( ins->operands[1]->c.value ) == 0;
+    rite_is_zero = CFTest( ins->operands[1]->c.u.cfval ) == 0;
     if( ins->type_class == FS ) {
         ChangeType( ins, I4 );
         // V_INTCOMP ensures that this is only called

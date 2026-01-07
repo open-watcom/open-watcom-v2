@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,10 +53,10 @@ rt_class    LookupRoutine( instruction *ins )
     }
     rtn = RTInfo;
     rtindex = 0;
-    while( rtn->op != opcode || rtn->operand_class != ins->type_class ) {
+    while( rtn->opcode != opcode || rtn->operand_class != ins->type_class ) {
         ++rtn;
         ++rtindex;
-        if( rtn->op == OP_NOP ) {
+        if( rtn->opcode == OP_NOP ) {
             _Zoiks( ZOIKS_021 );
             break;
         }

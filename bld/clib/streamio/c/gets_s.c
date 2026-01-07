@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +37,20 @@
 _WCRTLINK extern char *gets_s( char *s, rsize_t n )
 /*************************************************/
 {
-    int		c;
+    int         c;
     char        *cs;
     rsize_t     len;
-    unsigned	oflag;
+    unsigned    oflag;
 
     /* Check runtime constraint: s shall not be a null pointer */
-    if( ! __check_constraint_nullptr( s ) ) {
+    if( !__check_constraint_nullptr( s ) ) {
         /* Just trigger the constraint handler if necessary */
     }
 
     /* Check runtime constraint: n shall not be zero nor
        greater than RSIZE_MAX */
-    if(  ! __check_constraint_zero( n )
-       || ! __check_constraint_maxsize( n ) ) {
+    if( !__check_constraint_zero( n )
+      || !__check_constraint_maxsize( n ) ) {
         n = 0;
     }
 
@@ -84,7 +85,7 @@ _WCRTLINK extern char *gets_s( char *s, rsize_t n )
        contains at least one character */
 
     /* Catch too small buffer and I/O error */
-    if( ! __check_constraint_toosmall( s, len )
+    if( !__check_constraint_toosmall( s, len )
       || ferror( stdin ) ) {
         stdin->_flag |= oflag;
         *s = 0;

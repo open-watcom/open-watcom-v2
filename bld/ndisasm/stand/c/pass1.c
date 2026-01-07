@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "init.h"
 #include "formasm.h"
 #include "hashtabl.h"
+#include "i64.h"
 
 
 ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset start, dis_sec_offset end )
@@ -205,7 +206,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
             case DO_RELATIVE:
             case DO_MEMORY_REL:
                 if( op_type != DO_IMMED ) {
-                    decoded.op[i].value.u._32[I64LO32] += loop;
+                    U64Low( decoded.op[i].value ) += loop;
                     adjusted = 1;
                 }
                 /* fall through */
@@ -235,18 +236,18 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             if( adjusted && isSelfReloc( r_entry ) && ( r_entry->label->type == LTYP_SECTION ) ) {
                                 /* This is a kludgy reloc done under OMF
                                  */
-                                decoded.op[i].value.u._32[I64LO32] -= loop;
-                                decoded.op[i].value.u._32[I64LO32] -= decoded.size;
+                                U64Low( decoded.op[i].value ) -= loop;
+                                U64Low( decoded.op[i].value ) -= decoded.size;
                                 switch( RelocSize( r_entry ) ) {
                                 case 2:
-                                    decoded.op[i].value.u._32[I64LO32] = (uint_16)(decoded.op[i].value.u._32[I64LO32]);
+                                    U64Low( decoded.op[i].value ) = U64LowWord( decoded.op[i].value );
                                     break;
                                 case 1:
-                                    decoded.op[i].value.u._32[I64LO32] = (uint_8)(decoded.op[i].value.u._32[I64LO32]);
+                                    U64Low( decoded.op[i].value ) = U64LowByte( decoded.op[i].value );
                                     break;
                                 }
                             }
-                            loc = decoded.op[i].value.u._32[I64LO32];
+                            loc = U64Low( decoded.op[i].value );
                             if( loc > ORLSecGetSize( r_entry->label->shnd ) ) {
                                 // can't fold it into the label position - BBB Oct 28, 1996
                                 loc = 0;
@@ -271,18 +272,18 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             // relocations in pass2 are not applied because they break
                             // relative memory references if no relocation is present!
                             if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
-                                decoded.op[i].value.u._32[I64LO32] += decoded.size;
+                                U64Low( decoded.op[i].value ) += decoded.size;
 
                                 // I don't know if this is neccessary, but it will generate
                                 // labels for memory references if no symbol is present
                                 // (ex: executable file)
-                                CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
+                                CreateUnnamedLabel( shnd, U64Low( decoded.op[i].value ), &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
                                 error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_JUMP );
                             } else {
                                 // create an LTYP_ABSOLUTE label
-                                CreateAbsoluteLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
+                                CreateAbsoluteLabel( shnd, U64Low( decoded.op[i].value ), &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
                                 error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_ABS );
@@ -290,7 +291,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             break;
                         default:
                             // create an LTYP_UNNAMED label
-                            CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
+                            CreateUnnamedLabel( shnd, U64Low( decoded.op[i].value ), &rs );
                             if( rs.error != RC_OKAY )
                                 return( rs.error );
                             error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, reltype );

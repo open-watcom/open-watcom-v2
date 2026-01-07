@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "axp.h"
 #include "axptypes.h"
 #include "madregs.h"
+#include "i64.h"
 
 
 #define BIT_OFF(who)    BYTES2BITS( offsetof( mad_registers, axp.who ) )
@@ -265,14 +266,14 @@ mad_status GetPData( addr_off off, axp_pdata_struct *axp_pdata )
     memset( &a, 0, sizeof( a ) );
     a.mach.offset = off;
     MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
-    if( axp_pdata->pro_end_addr.u._32[0] < axp_pdata->beg_addr.u._32[0]
-     || axp_pdata->pro_end_addr.u._32[0] >= axp_pdata->end_addr.u._32[0] ) {
+    if( U64LowLE( axp_pdata->pro_end_addr ) < U64LowLE( axp_pdata->beg_addr )
+      || U64LowLE( axp_pdata->pro_end_addr ) >= U64LowLE( axp_pdata->end_addr ) ) {
         /*
            This is a procedure with different exception handlers for
            different portions - pro_end_addr is the address of the
            start of the procedure in this case.
         */
-        a.mach.offset = axp_pdata->pro_end_addr.u._32[0];
+        a.mach.offset = U64LowLE( axp_pdata->pro_end_addr );
         MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
     }
     return( MS_OK );
@@ -284,12 +285,13 @@ int VariableFrame( addr_off off )
     unsigned_32         ins;
     address             a;
 
-    if( GetPData( off, &axp_pdata ) != MS_OK ) return( 0 );
-    if( axp_pdata.pro_end_addr.u._32[0] == axp_pdata.beg_addr.u._32[0] ) {
+    if( GetPData( off, &axp_pdata ) != MS_OK )
+        return( 0 );
+    if( U64LowLE( axp_pdata.pro_end_addr ) == U64LowLE( axp_pdata.beg_addr ) ) {
         return( 0 );
     }
     memset( &a, 0, sizeof( a ) );
-    a.mach.offset = axp_pdata.pro_end_addr.u._32[0] - sizeof( ins );
+    a.mach.offset = U64LowLE( axp_pdata.pro_end_addr ) - sizeof( ins );
     MCReadMem( a, sizeof( ins ), &ins );
     return( ins == INS_MOV_SP_FP );
 }
@@ -319,11 +321,15 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 
     if( tk & MTK_INTEGER ) {
         wr = wk( &RegSet[CPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     if( tk & MTK_FLOAT ) {
         wr = wk( &RegSet[FPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -535,10 +541,10 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     if( ri->bit_start == BIT_OFF( pal.nt.fir ) ) {
         new_ip = old->axp.pal.nt.fir;
         //NYI: 64 bit
-        new_ip.u._32[0] += sizeof( unsigned_32 );
-        if( new_ip.u._32[0] != cur->axp.pal.nt.fir.u._32[0] ) {
+        U64LowLE( new_ip ) += sizeof( unsigned_32 );
+        if( U64LowLE( new_ip ) != U64LowLE( cur->axp.pal.nt.fir ) ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->axp.pal.nt.fir.u._32[0] != cur->axp.pal.nt.fir.u._32[0] ) {
+        } else if( U64LowLE( old->axp.pal.nt.fir ) != U64LowLE( cur->axp.pal.nt.fir ) ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -565,7 +571,7 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_regi
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( pal.nt.fir ) ) {
-        a->mach.offset = mr->axp.pal.nt.fir.u._32[0];
+        a->mach.offset = U64LowLE( mr->axp.pal.nt.fir );
         return( MS_OK );
     }
     if( IS_FP_BIT( bit_start ) ) {
@@ -598,7 +604,8 @@ unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsign
     *bits ^= toggle;
     *bits |= on & ~toggle;
     *bits &= ~off | toggle;
-    if( index == CPU_REG_SET && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
+    if( index == CPU_REG_SET
+      && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
         /*
            We've changed from numeric regs to symbolic or vis-versa.
            Have to force a redraw of the disassembly window.
@@ -636,7 +643,9 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         reg_set = (unsigned)( rsd - RegSet );
         curr = RegList;
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
-            if( curr->reg_set == reg_set && (curr->pal == PAL_all || curr->pal == CurrPAL) ) {
+            if( curr->reg_set == reg_set
+              && (curr->pal == PAL_all
+              || curr->pal == CurrPAL) ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
@@ -654,16 +663,16 @@ void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, 
     switch( sr ) {
     case MSR_IP:
         /* doesn't matter what PAL is in control since always first field */
-        ma->offset = mr->axp.pal.nt.fir.u._32[0];
+        ma->offset = U64LowLE( mr->axp.pal.nt.fir );
         break;
     case MSR_SP:
-        ma->offset = mr->axp.u30.sp.u64.u._32[0];
+        ma->offset = U64LowLE( mr->axp.u30.sp.u64 );
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            ma->offset = mr->axp.u15.fp.u64.u._32[0];
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
+            ma->offset = U64LowLE( mr->axp.u15.fp.u64 );
         } else {
-            ma->offset = mr->axp.u30.sp.u64.u._32[0];
+            ma->offset = U64LowLE( mr->axp.u30.sp.u64 );
         }
         break;
     }
@@ -674,16 +683,16 @@ void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const 
     switch( sr ) {
     case MSR_IP:
         /* doesn't matter what PAL is in control since always first field */
-        mr->axp.pal.nt.fir.u._32[0] = ma->offset;
+        U64LowLE( mr->axp.pal.nt.fir ) = ma->offset;
         break;
     case MSR_SP:
-        mr->axp.u30.sp.u64.u._32[0] = ma->offset;
+        U64LowLE( mr->axp.u30.sp.u64 ) = ma->offset;
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            mr->axp.u15.fp.u64.u._32[0] = ma->offset;
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
+            U64LowLE( mr->axp.u15.fp.u64 ) = ma->offset;
         } else {
-            mr->axp.u30.sp.u64.u._32[0] = ma->offset;
+            U64LowLE( mr->axp.u30.sp.u64 ) = ma->offset;
         }
         break;
     }
@@ -718,7 +727,7 @@ size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *m
         idx = IDX_sp;
         break;
     case MSR_FP:
-        if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
+        if( VariableFrame( U64LowLE( mr->axp.pal.nt.fir ) ) ) {
             idx = IDX_fp;
         } else {
             idx = IDX_sp;
@@ -745,9 +754,11 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
     reg = NULL;
     if( ci == CI_AXP_fir ) {
         reg = &RegList[IDX_nt_fir].info;
-    } else if( ci >= CI_AXP_r0 && ci <= CI_AXP_r31 ) {
+    } else if( ci >= CI_AXP_r0
+      && ci <= CI_AXP_r31 ) {
         reg = &RegList[ci - CI_AXP_r0 + IDX_r0].info;
-    } else if( ci >= CI_AXP_f0 && ci <= CI_AXP_f31 ) {
+    } else if( ci >= CI_AXP_f0
+      && ci <= CI_AXP_f31 ) {
         reg = &RegList[ci - CI_AXP_f0 + IDX_f0].info;
     }
     return( reg );
@@ -769,10 +780,13 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
     memset( &mr->axp.f31, 0, sizeof( mr->axp.f31 ) );
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
+      ((bit) >= RegList[i].info.bit_start \
+      && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))
-         && (RegList[i].pal == PAL_all || RegList[i].pal == mr->axp.active_pal) ) {
+        if( (IN_RANGE(i, bit_start)
+          || IN_RANGE( i, bit_end ))
+          && (RegList[i].pal == PAL_all
+          || RegList[i].pal == mr->axp.active_pal) ) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }

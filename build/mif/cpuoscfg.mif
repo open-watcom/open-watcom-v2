@@ -1,0 +1,102 @@
+#
+# native host compilers
+# supported configuration
+#
+!ifdef __MSVC_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+#
+bld_os_nt    = 1
+!else ifdef __INTEL_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+#
+bld_os_nt    = 1
+!else ifdef __GCC_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+bld_cpu_arm  = 1
+bld_cpu_a64  = 1
+#
+bld_os_linux = 1
+bld_os_bsd   = 1
+!else ifdef __CLANG_TOOLS__
+bld_cpu_386  = 1
+bld_cpu_x64  = 1
+bld_cpu_arm  = 1
+bld_cpu_a64  = 1
+#
+bld_os_linux = 1
+bld_os_bsd   = 1
+bld_os_osx   = 1
+!else ifdef __WATCOM_TOOLS__
+bld_cpu_386  = 1
+#
+bld_os_dos   = 1
+bld_os_os2   = 1
+bld_os_nt    = 1
+bld_os_linux = 1
+__BLD_WATCOM_TOOLS__ = $(__WATCOM_TOOLS__)
+!endif
+
+!ifdef bootstrap
+! ifndef bld_cpu_$(bld_cpu)
+skip_build = 1
+! else ifndef bld_os_$(bld_os)
+skip_build = 1
+! else ifneq bld_os $(host_os)
+skip_build = 1
+! else ifneq bld_cpu $(host_cpu)
+skip_build = 1
+! endif
+!else
+#
+# Open Watcom new build
+# supported target configurations
+#
+watbld_dosi86         = 1
+watbld_dos386         = 1
+watbld_linux386       = 1
+watbld_nov386         = 1
+watbld_nt386          = 1
+watbld_ntgeneric      = 1
+watbld_os2i86         = 1
+watbld_os2386         = 1
+watbld_qnxi86         = 1
+watbld_qnx386         = 1
+watbld_rdos386        = 1
+watbld_rdosdev386     = 1
+watbld_wini86         = 1
+watbld_win386         = 1
+watbld_generici86     = 1
+watbld_generic386     = 1
+watbld_genericgeneric = 1
+#
+! ifdef watbld_$(host_os)$(host_cpu)
+__WATCOM_TOOLS__ = $(bld_ver_tool)
+#
+# if platform is not supported by new build Open Watcom
+# then try to check if host platform is supported
+# by bootstrap compiler
+#
+! else ifndef bld_cpu_$(bld_cpu)
+skip_build = 1
+! else ifndef bld_os_$(bld_os)
+skip_build = 1
+! else ifneq bld_os $(host_os)
+skip_build = 1
+! else ifneq bld_cpu $(host_cpu)
+skip_build = 1
+! else
+!undef __WATCOM_TOOLS__
+! endif
+!endif
+
+##############################################################################
+!ifdef skip_build
+skip_all: .SYMBOLIC
+!  ifeq verbose 1
+    @echo skip: target $(host_os)-$(host_cpu) [host $(bld_os)-$(bld_cpu)]
+!  endif
+!endif
+##############################################################################

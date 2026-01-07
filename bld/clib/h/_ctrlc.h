@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,6 +40,6 @@ extern unsigned char    _WCNEAR __ctrl_break_int;
 #endif
 
 #ifndef __WINDOWS_386__
-extern      void    __grab_int_ctrl_break( void );
-extern      void    __restore_int_ctrl_break( void );
+extern      void    _WCNEAR __grab_int_ctrl_break( void );
+extern      void    _WCNEAR __restore_int_ctrl_break( void );
 #endif

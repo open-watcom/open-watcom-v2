@@ -102,8 +102,8 @@ static void OrderArgs( const char *msg, msg_arg *ordered_args, va_list args )
     uint        arg_count;
 
     arg_count = 0;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             chr = *msg;
             if( chr == '%' )
                 break;
@@ -152,8 +152,8 @@ static void Substitute( const char *msg, char *buffer, va_list args )
     same_buff = ( msg == buffer );
     OrderArgs( msg, ordered_args, args );
     arg_count = 0;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             chr = *msg;
             if( chr == '%' )
                 break;
@@ -195,7 +195,7 @@ static void Substitute( const char *msg, char *buffer, va_list args )
             width = subs_len;
         }
         if( same_buff ) {
-            memmove( buffer + width, msg, strlen( msg ) + sizeof( char ) );
+            memmove( buffer + width, msg, strlen( msg ) + 1 );
             msg = buffer + width;
         }
         if( subs_len < width ) {

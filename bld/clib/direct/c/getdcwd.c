@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <direct.h>
 #if defined( __NT__ )
@@ -40,7 +41,6 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -52,7 +52,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer,
     if( drive != 0 ) {
         old_drive = _getdrive();
         if( _chdrive( drive ) ) {
-            _RWD_errno = ENODEV;
+            lib_set_errno( ENODEV );
             return( NULL );
         }
     }

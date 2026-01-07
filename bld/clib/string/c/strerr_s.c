@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include "saferlib.h"
 #include <string.h>
 #include "libwchar.h"
@@ -43,7 +44,6 @@
     #include "nw_lib.h"
 #endif
 #include "errstr.h"
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -67,9 +67,9 @@ _WCRTLINK errno_t __F_NAME(strerror_s,_wcserror_s)( CHAR_TYPE *s,
     // s not NULL
     // maxsize <= RSIZE_MAX
     // maxsize != 0
-    if( __check_constraint_nullptr( s ) &&
-        __check_constraint_maxsize( maxsize ) &&
-        __check_constraint_zero( maxsize ) ) {
+    if( __check_constraint_nullptr( s )
+      && __check_constraint_maxsize( maxsize )
+      && __check_constraint_zero( maxsize ) ) {
 
         if( errnum < 0 || errnum >= _sys_nerr ) {
             msg = UNKNOWN_ERROR;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,81 +37,133 @@
 
 
 const dw_tagnum FunctionTags[] = {
-    DW_TAG_subprogram, 0
+    DW_TAG_subprogram,
+    0
 };
 
 const dw_tagnum ClassTags[] = {
-    DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
+    DW_TAG_class_type,
+    DW_TAG_union_type,
+    DW_TAG_structure_type,
+    0
 };
 
 const dw_tagnum TypedefTags[] = {
-    DW_TAG_typedef, 0
+    DW_TAG_typedef,
+    0
 };
 
 const dw_tagnum EnumTags[] = {
-    DW_TAG_enumeration_type, 0
+    DW_TAG_enumeration_type,
+    0
 };
 
 const dw_tagnum LabelTags[] = {
-    DW_TAG_label, 0
+    DW_TAG_label,
+    0
 };
 
 const dw_tagnum VariableTags[] = {
-    DW_TAG_common_block, DW_TAG_variable,
-    DW_TAG_formal_parameter, DW_TAG_member, 0
+    DW_TAG_common_block,
+    DW_TAG_variable,
+    DW_TAG_formal_parameter,
+    DW_TAG_member,
+    0
 };
 
-const dw_tagnum MacroTags[] = { 0 };
+const dw_tagnum MacroTags[] = {
+    0
+};
 
 const dw_tagnum *const SearchTags[] = {
-    FunctionTags, ClassTags, EnumTags,
-    TypedefTags, VariableTags,
-    MacroTags, LabelTags
+    FunctionTags,
+    ClassTags,
+    EnumTags,
+    TypedefTags,
+    VariableTags,
+    MacroTags,
+    LabelTags
 };
 
 const dw_tagnum SearchSymbolTags[] = {
-    DW_TAG_class_type, DW_TAG_common_block, DW_TAG_enumeration_type,
-    DW_TAG_subprogram, DW_TAG_variable, DW_TAG_member, DW_TAG_structure_type,
-    DW_TAG_typedef, DW_TAG_union_type, DW_TAG_label, 0
+    DW_TAG_class_type,
+    DW_TAG_common_block,
+    DW_TAG_enumeration_type,
+    DW_TAG_subprogram,
+    DW_TAG_variable,
+    DW_TAG_member,
+    DW_TAG_structure_type,
+    DW_TAG_typedef,
+    DW_TAG_union_type,
+    DW_TAG_label,
+    0
 };
 
 const dw_tagnum SearchFunctionTags[] = {
-    DW_TAG_subprogram, 0
+    DW_TAG_subprogram,
+    0
 };
 
 const dw_tagnum SearchClassTags[] = {
-    DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
+    DW_TAG_class_type,
+    DW_TAG_union_type,
+    DW_TAG_structure_type,
+    0
 };
 
 const dw_tagnum SearchTypeTags[] = {
-    DW_TAG_typedef, DW_TAG_enumeration_type, 0
+    DW_TAG_typedef,
+    DW_TAG_enumeration_type,
+    0
 };
 
 const dw_tagnum SearchVariableTags[] = {
-    DW_TAG_common_block, DW_TAG_variable, DW_TAG_member, 0
+    DW_TAG_common_block,
+    DW_TAG_variable,
+    DW_TAG_member,
+    0
 };
 
 const dw_tagnum SearchFriendTags[] = {
-    DW_TAG_friend, 0
+    DW_TAG_friend,
+    0
 };
 
 const dw_tagnum SearchBaseTags[] = {
-    DW_TAG_inheritance, 0
+    DW_TAG_inheritance,
+    0
 };
 
 const dw_tagnum ScanKidsTags[] = {
-    DW_TAG_compile_unit,  DW_TAG_lexical_block, 0
+    DW_TAG_compile_unit,
+    DW_TAG_lexical_block,
+    0
 };
 
 const dw_tagnum DeclarationTags[] = {
-    DW_TAG_array_type, DW_TAG_class_type, DW_TAG_common_block, DW_TAG_constant,
-    DW_TAG_enumeration_type, DW_TAG_member, DW_TAG_structure_type,
-    DW_TAG_subprogram, DW_TAG_union_type, DW_TAG_variable, 0
+    DW_TAG_array_type,
+    DW_TAG_class_type,
+    DW_TAG_common_block,
+    DW_TAG_constant,
+    DW_TAG_enumeration_type,
+    DW_TAG_member,
+    DW_TAG_structure_type,
+    DW_TAG_subprogram,
+    DW_TAG_union_type,
+    DW_TAG_variable,
+    0
 };
 
 const dw_tagnum *const SearchTypes[] = {
-    SearchSymbolTags, SearchFunctionTags, SearchClassTags,
-    SearchTypeTags, SearchVariableTags, SearchFriendTags, SearchBaseTags
+    SearchSymbolTags,       /* DR_SEARCH_ALL */
+    SearchFunctionTags,     /* DR_SEARCH_FUNCTIONS */
+    SearchClassTags,        /* DR_SEARCH_CLASSES */
+    SearchTypeTags,         /* DR_SEARCH_TYPES */
+    SearchVariableTags,     /* DR_SEARCH_VARIABLES */
+    SearchFriendTags,       /* DR_SEARCH_FRIENDS */
+    SearchBaseTags,         /* DR_SEARCH_BASE */
+                            /* DR_SEARCH_MACROS */
+                            /* DR_SEARCH_NOT_SYM should always be last */
 };
 
 
@@ -562,7 +614,7 @@ dw_tagnum DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 {
     dw_tagnum       tag;
     dr_abbrev_idx   abbrev_idx;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     abbrev_idx = DR_VMReadULEB128( entry );
     cu = DR_FindCompileInfo( *entry );
@@ -598,7 +650,7 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
@@ -657,13 +709,16 @@ bool DR_ScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
     return( found );
 }
 
-static const dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
+static const dw_tagnum CompUnitTag[] = {
+    DW_TAG_compile_unit,
+    0
+};
 
 void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
 
     compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
@@ -716,7 +771,7 @@ char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
 void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 /*******************************************************************/
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = &DR_CurrNode->compunit;
     do {
@@ -737,7 +792,7 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
 
     if( startingCtxt == NULL ) {
         ctxt.compunit = &DR_CurrNode->compunit;
-        ctxt.start = ((compunit_info *)ctxt.compunit)->start;
+        ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
         ctxt.start += sizeof( compuhdr_prologue );
         ctxt.classhdl = DRMEM_HDL_NULL;
@@ -758,9 +813,9 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
     do {
         cont = DR_ScanCompileUnit( &ctxt, fn, tagarray, depth, data );
 
-        ctxt.compunit = ((compunit_info *) ctxt.compunit)->next;
+        ctxt.compunit = ((dr_cu_handle)ctxt.compunit)->next;
         if( ctxt.compunit ) {
-            ctxt.start = ((compunit_info *) ctxt.compunit)->start;
+            ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
             ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
             ctxt.start += sizeof( compuhdr_prologue );
         }
@@ -777,7 +832,7 @@ bool DR_WalkCompileUnit( drmem_hdl mod, DR_CUWLK fn,
 {
     bool                cont;
     dr_search_context   ctxt;
-    compunit_info       *compunit;
+    dr_cu_handle        compunit;
 
     compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
@@ -809,7 +864,7 @@ bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     dw_children     haschild;
     int             index;
     DRWLKBLK        wlk;
-    compunit_info   *cu;
+    dr_cu_handle    cu;
 
     cu = DR_FindCompileInfo( mod );
     abbrev_idx = DR_VMReadULEB128( &mod );
@@ -1004,8 +1059,8 @@ bool DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
-/******************************************************************************/
+static dr_cu_handle FindCompileInfo( dr_cu_handle compunit, drmem_hdl addr )
+/**************************************************************************/
 {
     for( ;; ) {
         if( (addr >= compunit->start) && (addr <= compunit->end) )
@@ -1021,11 +1076,11 @@ static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
     return( compunit );
 }
 
-compunit_info * DR_FindCompileInfo( drmem_hdl addr )
-/**************************************************/
+dr_cu_handle DR_FindCompileInfo( drmem_hdl addr )
+/***********************************************/
 /* gets the drmem_hdl of the module that addr is in */
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = DR_CurrNode->last_ccu;
     if( addr < compunit->start ) {  // start at begining
@@ -1039,7 +1094,7 @@ compunit_info * DR_FindCompileInfo( drmem_hdl addr )
 drmem_hdl DR_FindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
-    compunit_info   *compunit;
+    dr_cu_handle    compunit;
 
     compunit = DR_FindCompileInfo( addr );
     return( compunit->start );

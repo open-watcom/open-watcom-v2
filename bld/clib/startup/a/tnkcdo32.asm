@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -38,7 +38,7 @@
                 extrn   "C", __saved_CS:WORD
                 extrn   DosSelToFlat:NEAR
 
-_text           segment word use32 'code'
+_TEXT           segment word use32 'CODE'
 
 
 __do_thunk:
@@ -62,10 +62,10 @@ __do_thunk:
 
                 retf
 
-_text           ends
+_TEXT           ends
 
 
-_text16         segment word public use16 'code'
+_TEXT16         segment word public use16 'CODE'
 
 
 SAVED_JUNK      equ     10
@@ -117,6 +117,6 @@ no_parms:
                 pop     bp
                 retf
 __Far32Func     endp
-_text16         ends
+_TEXT16         ends
 
 end

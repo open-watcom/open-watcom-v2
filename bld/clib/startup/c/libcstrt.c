@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,7 +42,6 @@
 #include "nw_lib.h"
 #include "nwlibmem.h"
 #include "rtdata.h"
-#include "rterrno.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
 #include "fileacc.h"
@@ -58,9 +59,9 @@
 *****************************************************************************/
 NXKey_t     __NXSlotID;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
     /*
     //  Called from LibC startup / termination code in libcpre.obj
     */
@@ -74,39 +75,36 @@ extern "C" {
     void *      getnlmhandle( void );
     char *      getnlmname( void *handle, char *name );
 
-    /*
-    //  module level functions
-    */
-    static void __NullSema4Rtn( semaphore_object *p );
+//#ifdef __cplusplus
+//}
+//#endif
+
+extern unsigned short __DS( void );
+#pragma aux __DS = "mov ax,ds" __value [__ax]
+
+/*****************************************************************************
+//  These are essentially NULL functions setup before initialising
+//  multithreading support is enabled
+*****************************************************************************/
+static void _INTERNAL __NullSema4Rtn( semaphore_object *p ) { (void)p; }
+
 #if !defined (_THIN_LIB)
-    static void __NullAccessRtn( int hdl );
-#endif
-    static void __NullRtn( void );
-
-    /*
-    //  global library support functions
-    */
-    extern unsigned short __DS( void );
-
-#ifdef __cplusplus
-}
+static void _INTERNAL __NullAccessRtn( int hdl ) { (void)hdl; }
 #endif
 
-#pragma aux __DS =  \
-        "mov ax,ds" \
-    __value [__ax]
+static void _INTERNAL __NullRtn( void ) {}
 
 /*****************************************************************************
 //  Multi-thread barriers. See mthread\c\mthread.c
 *****************************************************************************/
 #if !defined (_THIN_LIB)
-void    (*_AccessFileH)( int )      =   &__NullAccessRtn;
-void    (*_ReleaseFileH)( int )     =   &__NullAccessRtn;
-void    (*_AccessIOB)( void )       =   &__NullRtn;
-void    (*_ReleaseIOB)( void )      =   &__NullRtn;
+void    _INTERNAL (*_AccessFileH)( int )      =   __NullAccessRtn;
+void    _INTERNAL (*_ReleaseFileH)( int )     =   __NullAccessRtn;
+void    _INTERNAL (*_AccessIOB)( void )       =   __NullRtn;
+void    _INTERNAL (*_ReleaseIOB)( void )      =   __NullRtn;
 #endif
-void    (*_AccessTDList)( void )    =   &__NullRtn;
-void    (*_ReleaseTDList)( void )   =   &__NullRtn;
+void    _INTERNAL (*_AccessTDList)( void )    =   __NullRtn;
+void    _INTERNAL (*_ReleaseTDList)( void )   =   __NullRtn;
 
 /*****************************************************************************
 //  Module level globals
@@ -117,39 +115,19 @@ static long                 AllocRTag = 0;
 static void *               NLMHandle = NULL;
 
 /*****************************************************************************
-//  These are essentially NULL functions setup before initialising
-//  multithreading support is enabled
-*****************************************************************************/
-static void __NullSema4Rtn(semaphore_object *p)
-{
-    p = p;
-}
-
-#if !defined (_THIN_LIB)
-static void __NullAccessRtn( int hdl )
-{
-    hdl = hdl;
-}
-#endif
-
-static void __NullRtn( void )
-{
-}
-
-/*****************************************************************************
 //  Restore NULL functions
 *****************************************************************************/
-static void __FiniMultipleThread(void)
+static void _WCNEAR __FiniMultipleThread( void )
 {
-    #if !defined (_THIN_LIB)
-    _AccessFileH   = &__NullAccessRtn;
-    _ReleaseFileH  = &__NullAccessRtn;
-    _AccessIOB     = &__NullRtn;
-    _ReleaseIOB    = &__NullRtn;
-    #endif
-    __AccessSema4  = &__NullSema4Rtn;
-    __ReleaseSema4 = &__NullSema4Rtn;
-    __CloseSema4   = &__NullSema4Rtn;
+#if !defined (_THIN_LIB)
+    _AccessFileH   = __NullAccessRtn;
+    _ReleaseFileH  = __NullAccessRtn;
+    _AccessIOB     = __NullRtn;
+    _ReleaseIOB    = __NullRtn;
+#endif
+    __AccessSema4  = __NullSema4Rtn;
+    __ReleaseSema4 = __NullSema4Rtn;
+    __CloseSema4   = __NullSema4Rtn;
 
     /*
     //  we need to close down so get hold of __FirstThreadData when any
@@ -222,7 +200,7 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-_WCRTLINK _WCNORETURN void __exit( int rc )
+_WCNORETURN void _INTERNAL __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*

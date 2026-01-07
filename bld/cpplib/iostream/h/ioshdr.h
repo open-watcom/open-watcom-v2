@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #ifndef _IOSHDR_H_INCLUDED
 #define _IOSHDR_H_INCLUDED
 
-#ifdef __SW_BM
+#ifdef __MT__
         extern __lock *__get_next_ios_lock( void );
 #endif
 

@@ -135,7 +135,7 @@ static char *StmtName( char *buff )
         MsgBuffer( MS_STMT_FUNC_DEFN, buff );
         return( &buff[1] );     // skip leading blank
     default:
-        return( strcpy( buff, StmtKeywords[ stmt ] ) );
+        return( strcpy( buff, StmtKeywords[stmt] ) );
     }
 }
 
@@ -202,7 +202,7 @@ void    NameStmtErr( int errcod, sym_id sym, STMT stmt )
     char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
-    Error( errcod, buff, StmtKeywords[ stmt ] );
+    Error( errcod, buff, StmtKeywords[stmt] );
 }
 
 

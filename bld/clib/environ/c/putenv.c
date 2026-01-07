@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -49,7 +50,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #ifdef __NT__
     #include "libwin32.h"
 #endif
@@ -62,7 +62,7 @@
 
 #ifdef CLIB_USE_ALT_ENV
 
-static int __alt_env_update( const CHAR_TYPE *in_env_string )
+static int _WCNEAR __alt_env_update( const CHAR_TYPE *in_env_string )
 /*
  * it updates counterpart environment data (wide or narrow)
  *
@@ -92,7 +92,7 @@ static int __alt_env_update( const CHAR_TYPE *in_env_string )
 
 #ifdef CLIB_UPDATE_OS_ENV
 
-static int __os_env_update( const CHAR_TYPE *env_string )
+static int _WCNEAR __os_env_update( const CHAR_TYPE *env_string )
 {
     CHAR_TYPE           *name;
     CHAR_TYPE           *value;

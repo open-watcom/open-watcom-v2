@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "frtdata.h"
 #include "fthread.h"
-#include "xfflags.h"
 #include "rundat.h"
 #include "iotype.h"
 #include "errcod.h"
@@ -73,11 +71,13 @@ int     IOMain( void (*io_rtn)( void ) ) {
     // the time we call IOMain(), no one should be checking IOF_SETIOCB
     IOCB->flags &= ~IOF_SETIOCB;
     io_stmt = IOCB->iostmt;
-    if( ( RTSpawn( io_rtn ) != 0 ) && ( IOCB->fileinfo != NULL ) &&
-        ( ( io_stmt == IO_READ ) || ( io_stmt == IO_WRITE ) ) ) {
+    if( ( RTSpawn( io_rtn ) != 0 )
+      && ( IOCB->fileinfo != NULL )
+      && ( ( io_stmt == IO_READ )
+      || ( io_stmt == IO_WRITE ) ) ) {
         IOCB->fileinfo->col = 0; // so next statement starts new record
-        if( ( io_stmt == IO_READ ) &&
-                            _LogicalRecordOrganization( IOCB->fileinfo ) ) {
+        if( ( io_stmt == IO_READ )
+          && _LogicalRecordOrganization( IOCB->fileinfo ) ) {
             SkipLogicalRecord( IOCB->fileinfo );
         }
         IOCB->fileinfo->flags &= ~FTN_LOGICAL_RECORD; // in case we got EOF
@@ -98,8 +98,8 @@ int     IOMain( void (*io_rtn)( void ) ) {
         *IOCB->iosptr = io_stat;
     }
     if( io_stat == 0 ) {
-        while( IOCB->typ != PT_NOTYPE ) {     // flush the io list
-            IOCB->typ = IOTypeRtn();
+        while( IOCB->ptyp != FPT_NOTYPE ) {     // flush the io list
+            IOCB->ptyp = IOTypeRtn();
         }
     }
     if( io_stmt == IO_READ ) {
@@ -109,7 +109,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
         // the record number got incremented, so if an EOF condition
         // was encounterd we must adjust the record number so that
         // we don't get IO_PAST_EOF on the write
-        if( ( IOCB->set_flags & SET_INTERNAL ) == 0 ) {
+        if( (IOCB->set_flags & SET_INTERNAL) == 0 ) {
             // Consider:    READ(5,*,IOSTAT=IOS) I
             //              READ(5,*) I
             // If the first read gets EOF, then we must clear eof before
@@ -119,12 +119,16 @@ int     IOMain( void (*io_rtn)( void ) ) {
             ClearEOF();
         }
     }
-#if defined( __SW_BM ) && !defined( _SA_LIBRARY )
+#if defined( __MT__ )
     // we cannot release the i/o system for READ/WRITE statements since
     // co-routines are not done yet
-    if( (io_stmt != IO_READ) && (io_stmt != IO_WRITE) )
-#endif
+    if( (io_stmt != IO_READ)
+      && (io_stmt != IO_WRITE) ) {
         __ReleaseIOSys();
+    }
+#else
+    __ReleaseIOSys();
+#endif
     _RWD_XcptFlags &= ~XF_IO_INTERRUPTABLE;
     return( io_stat );
 }

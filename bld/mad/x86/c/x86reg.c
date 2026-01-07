@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -494,13 +494,15 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
             return( wr );
         }
     }
-    if( (tk & MTK_MMX) && (MCSystemConfig()->cpu.x86 & X86_MMX) ) {
+    if( (tk & MTK_MMX)
+      && (MCSystemConfig()->cpu.x86 & X86_MMX) ) {
         wr = wk( &RegSet[MMX_REG_SET], d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
     }
-    if( (tk & MTK_XMM) && (MCSystemConfig()->cpu.x86 & X86_XMM) ) {
+    if( (tk & MTK_XMM)
+      && (MCSystemConfig()->cpu.x86 & X86_XMM) ) {
         wr = wk( &RegSet[XMM_REG_SET], d );
         if( wr != WR_CONTINUE ) {
             return( wr );
@@ -647,7 +649,8 @@ static mad_status CPUGetPiece(
     char                        *p;
     static const x86_reg_info   **last_list;
 
-    if( (MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) || BIG_SEG( GetRegIP( mr ) ) ) {
+    if( (MADState->reg_state[CPU_REG_SET] & CT_EXTENDED)
+      || BIG_SEG( GetRegIP( mr ) ) ) {
         list = list32;
         list_num = NUM_ELTS( list32 );
     } else {
@@ -1335,8 +1338,8 @@ mad_status MADIMPENTRY( RegSetDisplayModify )(
         *possible_p = ModFPUStack;
         *num_possible_p = NUM_ELTS( ModFPUStack );
     } else if( ri->bit_start >= REG_BIT_OFF( u.fpu.tag )
-            && ri->bit_start <  REG_BIT_OFF( u.fpu.tag ) + 16
-            && ri->bit_size == 2 ) {
+      && ri->bit_start <  REG_BIT_OFF( u.fpu.tag ) + 16
+      && ri->bit_size == 2 ) {
         *possible_p = ModFPUTag;
         *num_possible_p = NUM_ELTS( ModFPUTag );
     } else if( ri->bit_size == 1 ) {
@@ -1513,7 +1516,8 @@ mad_status MADIMPENTRY( RegModified )(
     if( old == cur )
         return( MS_OK );
     cur_start = ri->bit_start;
-    if( cur_start >= REG_BIT_OFF( cpu.eip ) && cur_start < REG_BIT_OFF( cpu.eip ) + 32 ) {
+    if( cur_start >= REG_BIT_OFF( cpu.eip )
+      && cur_start < REG_BIT_OFF( cpu.eip ) + 32 ) {
         /* dealing with [E]IP - check for control transfer */
         addr = GetRegIP( old );
         DecodeIns( &addr, &dd, BIG_SEG( addr ) );
@@ -1526,7 +1530,8 @@ mad_status MADIMPENTRY( RegModified )(
     unchanged = MS_OK;
     old_start = cur_start;
     if( rsd - RegSet == FPU_REG_SET ) {
-        if( cur_start >= STK_REG_BIT_OFF( 0 ) && cur_start <  STK_REG_BIT_OFF( 8 ) ) {
+        if( cur_start >= STK_REG_BIT_OFF( 0 )
+          && cur_start <  STK_REG_BIT_OFF( 8 ) ) {
             /* dealing with a 87 stack register - handle stack rotation */
             st = GET_STK_REG_IDX( cur_start );
             rotation = EXTRACT_ST( old ) - EXTRACT_ST( cur );
@@ -1549,7 +1554,8 @@ mad_status MADIMPENTRY( RegModified )(
             } else {
                 return( MS_MODIFIED_SIGNIFICANTLY );
             }
-        } else if( cur_start >= REG_BIT_OFF( u.fpu.tag ) && cur_start < REG_BIT_OFF( u.fpu.tag ) + 16 ) {
+        } else if( cur_start >= REG_BIT_OFF( u.fpu.tag )
+          && cur_start < REG_BIT_OFF( u.fpu.tag ) + 16 ) {
             /* dealing with the 87 tag register - handle stack rotation */
             rotation = EXTRACT_ST( old ) - EXTRACT_ST( cur );
             if( rotation != 0 ) {
@@ -1590,7 +1596,8 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_regi
     if( bit_start >= REG_BIT_OFF( u.fpu ) ) {
         return( MS_FAIL );
     }
-    if( bit_start >= REG_BIT_OFF( cpu.efl ) && bit_start < REG_BIT_OFF( cpu.efl ) + 32 ) {
+    if( bit_start >= REG_BIT_OFF( cpu.efl )
+      && bit_start < REG_BIT_OFF( cpu.efl ) + 32 ) {
         return( MS_FAIL );
     }
     if( bit_start == REG_BIT_OFF( cpu.eip ) ) {
@@ -1722,7 +1729,8 @@ walk_result MADIMPENTRY( RegWalk )(
         fpulevel = LN;
     }
     for( ; (reg = *list) != NULL; ++list ) {
-        if( (processor_level)reg->cpulevel <= cpulevel || (processor_level)reg->fpulevel <= fpulevel ) {
+        if( (processor_level)reg->cpulevel <= cpulevel
+          || (processor_level)reg->fpulevel <= fpulevel ) {
             wr = wk( &reg->info, reg->sublist != NULL, d );
             if( wr != WR_CONTINUE ) {
                 return( wr );

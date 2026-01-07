@@ -44,7 +44,6 @@
 #include "cmdelf.h"
 #include "cmdphar.h"
 #include "cmddos.h"
-#include "cmdzdos.h"
 #include "cmdrdv.h"
 #include "cmdraw.h"
 #include "cmdline.h"
@@ -117,9 +116,6 @@ static const select_format PossibleFmt[] = {
 #endif
 #ifdef _RDOS
     MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
-#endif
-#ifdef _ZDOS
-    MK_ZDOS,        "LIBZDOS",      SetZdosFmt,     FreeZdosFmt,
 #endif
     0,              NULL,           NULL,           NULL
 };

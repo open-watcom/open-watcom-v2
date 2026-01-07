@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +34,11 @@
 #include "global.h"
 #include "fcgbls.h"
 #include "progsw.h"
-#include "cg.h"
 #include "wf77segs.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
 #include "gsegs.h"
 
-
-#if _CPU == 8086
-  #define MAX_SEG_SIZE  0x10000
-#else
-  #define MAX_SEG_SIZE  0xffffffff
-#endif
 
 global_seg              *GlobalSeg;
 
@@ -57,7 +50,6 @@ void    InitGlobalSegs( void )
 {
     GlobalSeg  = NULL;
     CurrGSeg   = NULL;
-    MaxSegSize = MAX_SEG_SIZE;
 }
 
 
@@ -100,10 +92,17 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
 
     if( ProgSw & PS_ERROR )
         return( SEG_FREE );
-    if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MaxSegSize ) ) {
+#if _CPU == 8086
+    if( ( CurrGSeg != NULL )
+      && ( CurrGSeg->size + g_size <= MAX_SEG16_SIZE ) ) {
+#else
+    if( ( CurrGSeg != NULL )
+      && ( CurrGSeg->size + g_size >= g_size ) ) {
+#endif
         // object will fit in current segment
 #if _INTEL_CPU
-        if( ( init == CurrGSeg->initialized ) || !_SmallDataModel( CGOpts ) ) {
+        if( ( init == CurrGSeg->initialized )
+          || !_SmallDataModel( CGOpts ) ) {
             CurrGSeg->size += g_size;
             return( CurrGSeg->segid );
         }
@@ -117,21 +116,14 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
     NewGlobalSeg();
     segid = CurrGSeg->segid;
     CurrGSeg->initialized = init;
-    if( g_size < MaxSegSize ) {
-        // object smaller than a segment chunk
-        CurrGSeg->size = g_size;
-    } else {
-        CurrGSeg->size = MaxSegSize;
-    }
-    for( g_size -= CurrGSeg->size; g_size > MaxSegSize; g_size -= MaxSegSize ) {
+#if _CPU == 8086
+    while( g_size > MAX_SEG16_SIZE ) {
+        CurrGSeg->size = MAX_SEG16_SIZE;
         NewGlobalSeg();
-        CurrGSeg->size = MaxSegSize;
         CurrGSeg->initialized = init;
+        g_size -= MAX_SEG16_SIZE;
     }
-    if( g_size != 0 ) {
-        NewGlobalSeg();
-        CurrGSeg->size = g_size;
-        CurrGSeg->initialized = init;
-    }
+#endif
+    CurrGSeg->size = g_size;
     return( segid );
 }

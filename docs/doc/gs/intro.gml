@@ -359,13 +359,7 @@ Ray Duncan, et al; Addison-Wesley Publishing Company, 1992.
 .note DOS Protected-Mode Interface (DPMI) Specification
 .br
 .ix 'DPMI specification'
-The DPMI 1.0 specification can be obtained from the Open Watcom website.
-Here is the URL.
-.code begin
-http://www.openwatcom.org/ftp/devel/docs/dpmi10.pdf
-.code end
-.np
-This file contains a PDF version of the DPMI 1.0 specification.
+:INCLUDE file='dpmiinfo'.
 .endnote
 .* ----------------------------------------------------------------
 .*

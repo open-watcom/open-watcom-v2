@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,8 @@ _WCRTLINK struct tm *localtime_s( const time_t * __restrict timer,
     // Verify runtime-constraints
     // timer   not NULL
     // t  not NULL
-    if( __check_constraint_nullptr_msg( msg, timer ) &&
-        __check_constraint_nullptr_msg( msg, t ) ) {
+    if( __check_constraint_nullptr_msg( msg, timer )
+      && __check_constraint_nullptr_msg( msg, t ) ) {
 
         // Parameters checked, now call plain old _localtime
         return( _localtime( timer, t ) );

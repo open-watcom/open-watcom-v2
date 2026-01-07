@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,8 @@ static  void    AltReturn( void );
 static  void    LitC( void ) {
 //======================
 
-    CITNode->value.cstring.strptr = CITNode->opnd;
-    CITNode->value.cstring.len = CITNode->opnd_size;
+    CITNode->value.string.ptr = CITNode->opnd;
+    CITNode->value.string.len = CITNode->opnd_size;
     CITNode->typ = FT_CHAR;
     CITNode->size = CITNode->opnd_size;
     CITNode->opn.us = USOPN_CON;
@@ -414,7 +414,7 @@ static  void    OprEqu( void ) {
 }
 
 static void (* const DSTable[])( void ) = {
-    #define pick(tok_id,dsopn_id,opn_proc) opn_proc,
+    #define pick(dsopn_id,opn_proc) opn_proc,
     #include "tokdsopn.h"
     #undef pick
 };
@@ -425,7 +425,7 @@ void    GetConst( void ) {
 
 // Constant converting without downscan-upscan process.
 
-    DSTable[ CITNode->opn.ds ]();
+    DSTable[CITNode->opn.ds]();
     if( CITNode->opn.us != USOPN_CON ) {
         Error( SX_CONST );
     }
@@ -448,11 +448,11 @@ void    DownScan( void ) {
     AError = false;
     BkLink = NULL;
     FieldNode = NULL;
-    for(;;) {
+    for( ;; ) {
         if( CITNode->opr == OPR_EQU ) {
             OprEqu();
         }
-        DSTable[ CITNode->opn.ds ]();
+        DSTable[CITNode->opn.ds]();
         MoveDown();
         if( RecTrmOpr() ) {
             break;

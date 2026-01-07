@@ -39,7 +39,7 @@
 #include "ioctrl.h"
 
 
-void __InitFiles( void )
+void _WCNEAR __InitFiles( void )
 {
 #ifdef _M_I86
     __stream_link _WCI86NEAR    *ptr;

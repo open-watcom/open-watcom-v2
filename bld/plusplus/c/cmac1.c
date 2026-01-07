@@ -40,11 +40,8 @@
 #include "initdefs.h"
 #include "yydriver.h"
 #include "carve.h"
-#include "dumpapi.h"
+#include "dbg.h"
 #include "cscanbuf.h"
-#ifdef DEVBUILD
-    #include "dbg.h"
-#endif
 
 
 #define FUNCTION_not_expandable (CompFlags.cpp_output)
@@ -300,7 +297,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     switch( mentry->parm_count ) {
     case MACRO_LINE:
         TokenLen = sprintf( Buffer, "%u", TokenLine );
-        U32ToU64( TokenLine, &Constant64 );
+        Set64ValU32( Constant64, TokenLine );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_FILE:
@@ -369,7 +366,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
             WriteBufferString( "202302L" );
             break;
         }
-        U32ToU64( cxxvalue, &Constant64 );
+        Set64ValU32( Constant64, cxxvalue );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_ALT_AND:

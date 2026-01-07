@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,10 +31,10 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include "seterrno.h"
 #include <pthread.h>
-#include "rterrno.h"
-
 #include "_ptint.h"
+
 
 _WCRTLINK int pthread_getconcurrency(void)
 {

@@ -49,8 +49,8 @@
  */
 
 
-static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_src, const CHAR_TYPE *e_src )
-/*=======================================================================================================*/
+static CHAR_TYPE * _WCNEAR pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_src, const CHAR_TYPE *e_src )
+/*================================================================================================================*/
 {
     unsigned    len;
 

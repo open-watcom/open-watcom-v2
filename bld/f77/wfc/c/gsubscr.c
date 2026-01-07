@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "gstring.h"
 #include "gsubscr.h"
 #include "gtypes.h"
+#include "cgmagic.h"
 
 
 void    GBegSubScr( itnode *array_node ) {
@@ -87,7 +88,7 @@ void    GEndSubScr( itnode *arr ) {
     if( (arr->opn.us & USOPN_FLD) == 0 ) {
         if( (StmtSw & SS_DATA_INIT) == 0 ) {
             if( arr->sym_ptr->u.ns.u1.s.typ == FT_CHAR ) {
-                OutPtr( GTempString( 0 ) );
+                OutPtr( TmpVar( FT_CHAR, 0 ) );
             }
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "tmpdefs.h"
 #include "fcgbls.h"
@@ -45,11 +44,9 @@
 #include "fctemp.h"
 #include "wf77info.h"
 #include "fcstack.h"
+#include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  void            *GetPtr(void);
 
 
 void    FCDone( void ) {

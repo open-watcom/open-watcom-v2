@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,10 @@ typedef struct iocb {                   // global iocb structure
     unsigned_32         set_flags;      // what ptr's have been set
     string              PGM *filename;  // pointer to filename scb
     string              PGM *internal;  // pointer to internal file variable
-    union fmt_desc      PGM *fmtptr;    // pointer for fmt=
+    union {
+        union fmt_desc  PGM *fmtptr;    // pointer for fmt=
+        char            PGM *ptr;       // pointer for fmt= (char pointer)
+    } u;
     intstar4            PGM *iosptr;    // pointer to iostat=
     string              PGM *accptr;    // pointer to access=
     string              PGM *blnkptr;   // pointer to blank=
@@ -99,7 +102,7 @@ typedef struct iocb {                   // global iocb structure
     int                 status;         // status indicator
     unsigned_32         elmts;          // number of records in internal file
     byte                iostmt;         // indicates the current io operation
-    PTYPE               typ;            // type to be formatted
+    PTYPE               ptyp;           // type to be formatted
     unsigned_32         flags;          // i/o flags
     char                buffer[IO_FIELD_BUFF+1]; // buffer for formatting
     arr_desc            arr_desc;       // descriptor for array i/o

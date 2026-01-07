@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 
 #define TO_CHAR_TYPE(c) ((CHAR_TYPE)(unsigned char)(c))
 
-static void convDec( int num, int off, CHAR_TYPE *buf )
+static void _WCNEAR convDec( int num, int off, CHAR_TYPE *buf )
 {
     div_t        tens_units;
 

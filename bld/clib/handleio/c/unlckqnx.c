@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,13 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
+
 
 _WCRTLINK int (unlock)( int handle, unsigned long offset, unsigned long nbytes )
 {

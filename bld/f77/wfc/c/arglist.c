@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ void    DumpEntries( void )
 
     uint        args_cnt;
     PCODE       code;
-    PTYPE       typ;
+    PTYPE       ptyp;
     unsigned_16 flags;
     sym_id      sym;
     sym_id      fn_shadow;
@@ -114,34 +114,34 @@ void    DumpEntries( void )
         sym = dum_lst->id;
         GetImplType( sym );
         ChkEntryType( sym, SubProgId );
-        typ = PT_NOTYPE;
+        ptyp = FPT_NOTYPE;
         if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             fn_shadow = FindShadow( sym );
             fn_shadow->u.ns.xt.size = sym->u.ns.xt.size;
             fn_shadow->u.ns.u1.s.typ = sym->u.ns.u1.s.typ;
-            typ = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
-            if( ( typ == PT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
-                typ |= VAR_LEN_CHAR;
+            ptyp = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
+            if( ( ptyp == FPT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
+                ptyp |= VAR_LEN_CHAR;
             }
         }
         if( (ProgSw & PS_ERROR) == 0 ) {
-            GArgList( dum_lst, args_cnt, typ );
+            GArgList( dum_lst, args_cnt, ptyp );
         }
         for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
             if( curr_parm->flags & ARG_STMTNO ) {
-                typ = PT_NOTYPE;
+                ptyp = FPT_NOTYPE;
                 code = PC_STATEMENT;
             } else {
                 sym = curr_parm->id;
                 GetImplType( sym );
-                typ = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
+                ptyp = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
                 flags = sym->u.ns.flags;
                 if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
                     code = PC_FN_OR_SUB;
                     if( (flags & SY_SUBPROG_TYPE) != SY_FN_OR_SUB ) {
                         code = PC_PROCEDURE;
                         if( (flags & SY_SUBPROG_TYPE) != SY_FUNCTION ) {
-                            typ = PT_NOTYPE;
+                            ptyp = FPT_NOTYPE;
                         }
                     }
                 } else {
@@ -149,13 +149,13 @@ void    DumpEntries( void )
                     if( (flags & SY_SUBSCRIPTED) != 0 ) {
                         code = PC_ARRAY_NAME;
                     }
-                    if( ( typ == PT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
-                        typ |= VAR_LEN_CHAR;
+                    if( ( ptyp == FPT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
+                        ptyp |= VAR_LEN_CHAR;
                     }
                 }
             }
             if( (ProgSw & PS_ERROR) == 0 ) {
-                GArgInfo( sym, code, typ );
+                GArgInfo( sym, code, ptyp );
             }
         }
     }

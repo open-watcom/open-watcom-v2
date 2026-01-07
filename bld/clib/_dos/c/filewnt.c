@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
@@ -41,13 +42,11 @@
 #include <dos.h>
 #include <windows.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntext.h"
 #include "openmode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

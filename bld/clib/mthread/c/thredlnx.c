@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
@@ -122,7 +123,7 @@ void __LinuxSetThreadData( void *__data )
     sem_post( __tls_sem );
 }
 
-static void __cloned_lnx_start_fn( void *thrvoiddata )
+static void _WCNEAR __cloned_lnx_start_fn( void *thrvoiddata )
 {
 
     struct __lnx_thread *thrdata;
@@ -160,7 +161,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     thrdata = (struct __lnx_thread *)malloc( sizeof( struct __lnx_thread ) );
     if( thrdata == NULL ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         return( -1 );
     }
     thrdata->start_addr = (__thread_fn *)start_addr;

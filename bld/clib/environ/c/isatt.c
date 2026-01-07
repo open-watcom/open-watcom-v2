@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -39,7 +40,7 @@
 #include "defwin.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "rterrno.h"
+
 
 /* determine if file is a terminal */
 

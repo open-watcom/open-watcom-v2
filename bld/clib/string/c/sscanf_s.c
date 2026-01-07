@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "scanf.h"
 
 
-static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE _WCNEAR cget_string( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
@@ -53,7 +53,7 @@ static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 }
 
 
-static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
+static void _WCNEAR uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     /* unused parameters */ (void)c;
 
@@ -71,7 +71,7 @@ _WCRTLINK int __F_NAME(sscanf_s,swscanf_s)( const CHAR_TYPE *s, const CHAR_TYPE 
 
     /* Basic check for null pointers to see if we can continue */
     if( __check_constraint_nullptr_msg( msg, s )
-     && __check_constraint_nullptr_msg( msg, format ) ) {
+      && __check_constraint_nullptr_msg( msg, format ) ) {
 
         specs.ptr        = (CHAR_TYPE *)s;
         specs.cget_rtn   = cget_string;

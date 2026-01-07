@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,9 @@
 #define gbl_defn extern
 #endif
 
-#include "fmtdef.h"
-
 gbl_defn char           *Fmt_start;       // pointer to start of format string
 gbl_defn char           *Fmt_charptr;     // pointer to current format character
 gbl_defn char           *Fmt_end;         // pointer to end of format string
 gbl_defn int            Fmt_paren_level;  // parenthesis count
-gbl_defn fmt_ptr        Fmt_revert;       // position to revert to if required
 gbl_defn int            Fmt_rep_spec;     // repeat specification count
 gbl_defn byte           Fmt_delimited;    // has format code been delimite

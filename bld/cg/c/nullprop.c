@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -355,7 +355,7 @@ static void     FloodDown( block *blk, block_class bits )
     block_edge          *edge;
 
     stk = InitStack();
-    for(;;) {
+    for( ;; ) {
         if( _IsBlkAttr( blk, bits ) ) {
             _MarkBlkAttrSet( blk, bits );
             PushTargets( stk, blk, true );
@@ -436,7 +436,7 @@ static  bool            NullProp( block *blk )
     instruction         *cmp;
     name                **ptr;
     parm_struct         parms;
-    byte                dest_idx;
+    cond_dst_idx        dest_idx;
 
     cmp = CompareIns( blk );
     if( cmp == NULL )

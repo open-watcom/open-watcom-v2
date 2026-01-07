@@ -325,7 +325,7 @@ if _MODEL and _BIG_DATA
         lodsw                           ; ...
         mov     ES:IORslt+4,AX          ; ...
 endif
-        mov     AX,PT_CHAR              ; return CHARACTER*n type
+        mov     AX,FPT_CHAR             ; return CHARACTER*n type
         pop     ES                      ; restore ES
         pop     SI                      ; restore SI
 if _MODEL and _BIG_DATA
@@ -348,7 +348,7 @@ if _MODEL and _BIG_DATA
 else
         mov     ES:IORslt+2,DX          ; ...
 endif
-        mov     AX,PT_CHAR              ; return CHARACTER*n type
+        mov     AX,FPT_CHAR             ; return CHARACTER*n type
         pop     ES                      ; restore ES
         pop     DI                      ; restore DI
         jmp     IOSwitch                ; return to caller of IOType()
@@ -383,7 +383,7 @@ endif
 if _MODEL and _BIG_DATA
         add     SP,2                    ; adjust stack for stacked argument
 endif
-        mov     AX,PT_ARRAY             ; return ARRAY type
+        mov     AX,FPT_ARRAY            ; return ARRAY type
         jmp     IOSwitch                ; return to caller of IOType()
         endproc IOArr
 
@@ -403,7 +403,7 @@ if _MODEL and _BIG_DATA
         mov     DI,SP                   ; ... element size
         mov     DX,SS:8[DI]             ; ...
         mov     ES:IORslt+8,DX          ; ...
-        mov     AL,PT_CHAR              ; ... type of array
+        mov     AL,FPT_CHAR             ; ... type of array
         mov     byte ptr ES:IORslt+10,AL;...
         mov     AX,SS:6[DI]             ; get rid of stacked argument by
         mov     SS:8[DI],AX             ; ... moving the return address up
@@ -413,10 +413,10 @@ else
         mov     ES:IORslt+2,BX          ; ... number of elements
         mov     ES:IORslt+4,CX          ; ...
         mov     ES:IORslt+6,DX          ; ... element size
-        mov     AL,PT_CHAR              ; ... type of array
+        mov     AL,FPT_CHAR             ; ... type of array
         mov     byte ptr ES:IORslt+8,AL ; ...
 endif
-        mov     AX,PT_ARRAY             ; return ARRAY type
+        mov     AX,FPT_ARRAY            ; return ARRAY type
         pop     ES                      ; restore ES
         pop     DI                      ; restore DI
 if _MODEL and _BIG_DATA
@@ -428,7 +428,7 @@ endif
 
         xdefp   RT@EndIO
         defp    RT@EndIO
-        mov     AX,PT_NOTYPE            ; return "no i/o items remaining"
+        mov     AX,FPT_NOTYPE           ; return "no i/o items remaining"
         jmp     IOSwitch                ; return to caller of IOType()
         endproc RT@EndIO
 

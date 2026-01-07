@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,6 @@
 #include "dwcliuti.h"
 #include "dwhandle.h"
 
-/* first handle we ever return */
-#define FIRST_HANDLE        (DW_FT_MAX + 1)
 
 /* number of elts in a block; should be a power of 2 */
 #define BLOCK_SIZE          1024
@@ -317,6 +315,7 @@ dw_sect_offs DWENTRY DWGetHandleLocation( dw_client cli, dw_handle hdl )
 {
     handle_common   *c;
 
+    _ValidateHandle( hdl );
     c = DW_GetCommon( cli, hdl );
     return( GET_HANDLE_LOCATION( c ) );
 }

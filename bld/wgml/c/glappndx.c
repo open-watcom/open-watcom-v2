@@ -217,6 +217,29 @@ void    lay_appendix( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    indent          :1;
+        unsigned    pre_top_skip    :1;
+        unsigned    pre_skip        :1;
+        unsigned    post_skip       :1;
+        unsigned    spacing         :1;
+        unsigned    font            :1;
+        unsigned    number_font     :1;
+        unsigned    number_form     :1;
+        unsigned    page_position   :1;
+        unsigned    number_style    :1;
+        unsigned    page_eject      :1;
+        unsigned    line_break      :1;
+        unsigned    display_heading :1;
+        unsigned    number_reset    :1;
+        unsigned    case_a          :1;
+        unsigned    align           :1;
+        unsigned    header          :1;
+        unsigned    appendix_string :1;
+        unsigned    page_reset      :1;
+        unsigned    section_eject   :1;
+        unsigned    columns         :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

@@ -417,7 +417,6 @@ void gml_fig( const gmltag * entry )
     figcap_done = false;                // reset for this FIG
     *figrefid = '\0';
     page_width = false;
-    p = g_scandata.s;
     depth = 0;                          // default value; depth is space reserved for some other item
     frame.type = layout_work.fig.default_frame.type;
     if( frame.type == FRAME_char ) {
@@ -429,6 +428,7 @@ void gml_fig( const gmltag * entry )
     spacing_save = g_text_spacing;
     g_text_spacing = layout_work.fig.spacing;
 
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {

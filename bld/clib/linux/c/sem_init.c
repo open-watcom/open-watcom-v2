@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,12 +30,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <semaphore.h>
 #include <limits.h>
 #include "rtinit.h"
 #include "exitwmsg.h"
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -68,17 +68,16 @@ static int  __cmpxchg = 0;
 _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
 {
     if( __cmpxchg == 0 ) {
-        _RWD_errno = ENOSYS;
+        lib_set_errno( ENOSYS );
         return( -1 );
     }
     if( value > SEM_VALUE_MAX ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     // Debugging...
     if( pshared != 0 ) {
-        _RWD_errno = ENOSYS;
+        lib_set_errno( ENOSYS );
         return( -1 );
     }
 
@@ -90,17 +89,17 @@ _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
 _WCRTLINK int sem_destroy( sem_t *sem )
 {
     if( sem_trywait( sem ) != 0 ) {
-        _RWD_errno = EBUSY;
+        lib_set_errno( EBUSY );
         return( -1 );
     }
     return( 0 );
 }
 
-static void __check_cmpxchg( void )
+static void _WCNEAR __check_cmpxchg( void )
 {
     if( !is386() ) {
         __cmpxchg = 1;
     }
 }
 
-AXI( __check_cmpxchg, INIT_PRIORITY_THREAD )
+AXIN( __check_cmpxchg, INIT_PRIORITY_THREAD )

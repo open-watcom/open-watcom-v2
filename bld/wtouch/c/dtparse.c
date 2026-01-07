@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,7 @@
 #else
     #include "tinyio.h"
 #endif
-#include "wdirent.h"
-#include "wio.h"
 #include "watcom.h"
-#include "banner.h"
 #include "bool.h"
 #include "touch.h"
 #include "wtmsg.h"
@@ -117,7 +114,11 @@ void DoTOption( char *time )
     hours = 0;
     for(;;) {
         c = tolower( *p );
-        if( digits == 0 || c == timeSeparator || c=='\0' || c=='a' || c=='p' ) {
+        if( digits == 0
+          || c == timeSeparator
+          || c == '\0'
+          || c == 'a'
+          || c == 'p' ) {
             if( hours > 23 ) {
                 Error( MSG_INV_HOUR, NULL );
                 return;
@@ -142,7 +143,11 @@ void DoTOption( char *time )
     minutes = 0;
     for(;;) {
         c = tolower( *p );
-        if( digits == 0 || c == timeSeparator || c=='\0' || c=='a' || c=='p' ) {
+        if( digits == 0
+          || c == timeSeparator
+          || c == '\0'
+          || c == 'a'
+          || c == 'p' ) {
             if( minutes > 60 ) {
                 Error( MSG_INV_MINUTE, NULL );
                 return;
@@ -167,7 +172,11 @@ void DoTOption( char *time )
     seconds = 0;
     for(;;) {
         c = tolower( *p );
-        if( digits == 0 || c == timeSeparator || c=='\0' || c=='a' || c=='p' ) {
+        if( digits == 0
+          || c == timeSeparator
+          || c == '\0'
+          || c == 'a'
+          || c == 'p' ) {
             if( seconds > 60 ) {
                 Error( MSG_INV_SECOND, NULL );
                 return;
@@ -188,7 +197,8 @@ void DoTOption( char *time )
         }
         ++p;
     }
-    if( TouchFlags.time_24hr == 0 && TimeAdjust.hours < 13 ) {
+    if( TouchFlags.time_24hr == 0
+      && TimeAdjust.hours < 13 ) {
         c = tolower( *p );
         if( c == 'a' ) {
             /* 12:xx:xxAM is just after midnight */
@@ -224,7 +234,9 @@ static char *parseYear( char *p )
     digits = 4;
     year = 0;
     for(;;) {
-        if( digits == 0 || *p == dateSeparator || *p == '\0' ) {
+        if( digits == 0
+          || *p == dateSeparator
+          || *p == '\0' ) {
             if( year < 1900 ) {
                 year %= 100;
                 year += 1900;
@@ -260,7 +272,9 @@ static char *parseMonth( char *p )
     digits = 2;
     month = 0;
     for(;;) {
-        if( digits == 0 || *p == dateSeparator || *p == '\0' ) {
+        if( digits == 0
+          || *p == dateSeparator
+          || *p == '\0' ) {
             if( month == 0 ) {
                 month = 1;
             } else if( month > 12 ) {
@@ -294,7 +308,9 @@ static char *parseDay( char *p )
     digits = 2;
     day = 0;
     for(;;) {
-        if( digits == 0 || *p == dateSeparator || *p == '\0' ) {
+        if( digits == 0
+          || *p == dateSeparator
+          || *p == '\0' ) {
             if( day == 0 ) {
                 day = 1;
             } else if( day > 31 ) {
@@ -334,19 +350,19 @@ void WhereAmI( void )
     if( !TouchFlags.usa_date_time ) {
         COUNTRYINFO country;
         COUNTRYCODE code;
-#if defined(__386__)
+  #if defined(__386__)
         ULONG  amount;
 
         if( DosQueryCtryInfo( sizeof(country), &code, &country, &amount ) ) {
             return;
         }
-#else
+  #else
         USHORT amount;
 
         if( DosGetCtryInfo( sizeof(country), &code, &country, &amount ) ) {
             return;
         }
-#endif
+  #endif
         switch( country.fsDateFmt ) {
         case 0x0000:
             firstParse = parseMonth;

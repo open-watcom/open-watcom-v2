@@ -828,50 +828,6 @@ system begin dos16m
     format dos16m runtime auto ^
 :endsegment
 end
-system begin zdos
-:segment Pspecs
-    ARCH i386 -bt=zdos
-:elsesegment Pwlsystem
-    option osname='ZDOS User Application'
-    libpath '%WATCOM%/lib386'
-    libpath '%WATCOM%/lib386/zdos'
-    libfile appstart.obj
-    format zdos
-:endsegment
-end
-system begin zdosfsd
-:segment Pspecs
-    ARCH i386 -bt=zdos
-:elsesegment Pwlsystem
-    option osname='ZDOS File System Driver'
-    libpath '%WATCOM%/lib386'
-    libpath '%WATCOM%/lib386/zdosdrv'
-    libfile fsdstart.obj
-    format zdos fsd
-:endsegment
-end
-system begin zdoshwd
-:segment Pspecs
-    ARCH i386 -bt=zdos
-:elsesegment Pwlsystem
-    option osname='ZDOS Hardware Driver'
-    libpath '%WATCOM%/lib386'
-    libpath '%WATCOM%/lib386/zdosdrv'
-    libfile hwdstart.obj
-    format zdos hwd
-:endsegment
-end
-system begin zdosdev
-:segment Pspecs
-    ARCH i386 -bt=zdos
-:elsesegment Pwlsystem
-    option osname='ZDOS Device Driver'
-    libpath '%WATCOM%/lib386'
-    libpath '%WATCOM%/lib386/zdosdrv'
-    libfile devstart.obj
-    format zdos sys
-:endsegment
-end
 system begin rdos
 :segment Pspecs
     ARCH i386 -bt=rdos

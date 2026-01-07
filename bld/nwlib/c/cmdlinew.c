@@ -189,7 +189,7 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
     const char  *begcmd;
     char        *p;
 
-    old_cmd = CmdScanInit( cmd );
+    old_cmd = CmdScanLineInit( cmd );
     for( ;; ) {
         CmdScanSkipWhiteSpace();
         option_start = CmdScanAddr();
@@ -208,7 +208,7 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
                 if( !OPT_PROCESS_W( data ) ) {
                     break;
                 }
-                CmdScanInit( option_start );
+                CmdScanLineInit( option_start );
             }
             /* fall through */
 #if !defined(__UNIX__)
@@ -234,7 +234,7 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
                     break;
                 }
             }
-            CmdScanInit( begcmd );
+            CmdScanLineInit( begcmd );
             p = GetFilenameExt( EXT_CMD );
             if( p != NULL ) {
                 getline_data    fd;
@@ -247,17 +247,17 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
                 my_getline_fini( &fd );
                 break;
             }
-            CmdScanInit( begcmd );
+            CmdScanLineInit( begcmd );
             break;
         case '\0':
-            CmdScanInit( old_cmd );
+            CmdScanLineInit( old_cmd );
             return;
         case '#':
             if( comment ) {
                 /*
                  * comment - blow away line
                  */
-                CmdScanInit( old_cmd );
+                CmdScanLineInit( old_cmd );
                 return;
             }
             /* fall through */

@@ -465,7 +465,11 @@ drmem_hdl DRENTRY DRSkipTypeChain( drmem_hdl tref )
 }
 
 static const dw_tagnum MemTag[DR_WLKBLK_STRUCT] = {
-    DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
+    DW_TAG_member,
+    DW_TAG_inheritance,
+    DW_TAG_variable,
+    DW_TAG_subprogram,
+    0
 };
 
 bool DRENTRY DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
@@ -477,7 +481,9 @@ bool DRENTRY DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
 }
 
 static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
-    DW_TAG_subrange_type, DW_TAG_enumerator, 0
+    DW_TAG_subrange_type,
+    DW_TAG_enumerator,
+    0
 };
 
 bool DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
@@ -489,7 +495,8 @@ bool DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
 }
 
 static const dw_tagnum EnumTag[DR_WLKBLK_ENUMS] = {
-    DW_TAG_enumerator, 0
+    DW_TAG_enumerator,
+    0
 };
 
 bool DRENTRY DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )

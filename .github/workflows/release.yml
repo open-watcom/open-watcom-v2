@@ -1,195 +1,206 @@
-name: Release-Build
-run-name: Release build (daily and monthly)
+name: Release
+run-name: Release Build (daily and monthly)
 
 on:
   schedule:
     - cron:  '30 0 * * *'
   workflow_dispatch:
 
+env:
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
+  OWUSETARARCHIVE:  '1'
+
 jobs:
   check_run:
-    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.OWREPO
+    if: github.repository == 'open-watcom/open-watcom-v2' || github.repository == vars.REPO
     name: Check if to run
     runs-on: ubuntu-latest
     outputs:
-      runit: ${{ steps.check_tag.outputs.old }}
+      runit: ${{steps.check_tag.outputs.old}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Check tag reference
+    - if: env.OWTESTMODE != '1'
+      name: Check tag reference
       id: check_tag
-      uses: "./.github/actions/ghtagchk"
+      uses: ./.github/actions/ghtagchk
       with:
         tag:     'Current-build'
-        owdebug: ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
-  Linux:
+
+  builds:
     needs: check_run
     if: needs.check_run.outputs.runit
     strategy:
       matrix:
         include:
-        - owtools: 'GCC'
-          arch:    'x64'
-          image:   'ubuntu-22.04'
-          tools:   'gcc'
-        - owtools: 'GCC'
-          arch:    'a64'
-          image:   'ubuntu-24.04-arm'
-          tools:   'gcc'
-    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
-    uses: "./.github/workflows/rel-lnx.yml"
+        # LINUX X64
+        - name:      'Linux x64'
+          suffix:    'lnx x64'
+          docbuild:  ''
+          run_tests: '1'
+          image:     'ubuntu-22.04'
+          owtools:   'GCC'
+          args:      'gcc'
+          gitpath:   'rel'
+        # LINUX ARM64
+        - name:      'Linux arm64'
+          suffix:    'lnx a64'
+          docbuild:  ''
+          run_tests: ''
+          image:     'ubuntu-24.04-arm'
+          owtools:   'GCC'
+          args:      'gcc'
+          gitpath:   'rel arml64'
+        # WINDOWS X64
+        - name:      'Windows x64'
+          suffix:    'nt x64'
+          docbuild:  '1'
+          run_tests: '1'
+          image:     'windows-2022'
+          owtools:   'VISUALC'
+          args:      'vs2022'
+          gitpath:   'rel'
+        # OSX X64
+        - name:      'OSX x64'
+          suffix:    'osx x64'
+          docbuild:  ''
+          run_tests: ''
+          image:     'macos-15-intel'
+          owtools:   'CLANG'
+          args:      'clang'
+          gitpath:   'rel bino64'
+        # OSX ARM64
+        - name:      'OSX arm64'
+          suffix:    'osx a64'
+          docbuild:  ''
+          run_tests: ''
+          image:     'macos-15'
+          owtools:   'CLANG'
+          args:      'clang'
+          gitpath:   'rel armo64'
+    name: ${{matrix.name}} ${{matrix.args}}
+    uses: ./.github/workflows/buildx.yml
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
-  Windows:
-    needs: check_run
-    if: needs.check_run.outputs.runit
-    strategy:
-      matrix:
-        include:
-        - owtools: 'VISUALC'
-          arch:    'x64'
-          image:   'windows-2022'
-          tools:   'vs2022'
-    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
-    uses: "./.github/workflows/rel-nt.yml"
-    with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
-  OSX:
-    needs: check_run
-    if: needs.check_run.outputs.runit
-    strategy:
-      matrix:
-        include:
-        - owtools: 'CLANG'
-          arch:    'x64'
-          image:   'macos-13'
-          tools:   'clang'
-          relpath: 'rel bino64'
-        - owtools: 'CLANG'
-          arch:    'a64'
-          image:   'macos-14'
-          tools:   'clang'
-          relpath: 'rel armo64'
-    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
-    uses: "./.github/workflows/rel-osx.yml"
-    with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      relpath:      ${{ matrix.relpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
-      owdebug:      ${{ vars.OWDEBUG }}
-  Installers:
+      args:         ${{matrix.args}}
+      suffix:       ${{matrix.suffix}} ${{matrix.args}}
+      gitpath:      ${{matrix.gitpath}}
+      owtools:      ${{matrix.owtools}}
+      image:        ${{matrix.image}}
+      docbuild:     ${{matrix.docbuild}}
+      run_tests:    ${{matrix.run_tests}}
+
+  installers:
     needs:
-    - Linux
-    - Windows
-    - OSX
+    - builds
     strategy:
       matrix:
         include:
         - asset: instdos
-          title:   'Build DOS Installer'
+          title:    'Build DOS Installer'
         - asset: instos2
-          title:   'Build OS/2 Installer'
+          title:    'Build OS/2 Installer'
         - asset: instlnx32
-          title:   'Build Linux(32-bit) Installer'
+          title:    'Build Linux(32-bit) Installer'
         - asset: instlnx64
-          title:   'Build Linux(64-bit) Installer'
+          title:    'Build Linux(64-bit) Installer'
         - asset: instwin16
-          title:   'Build Windows(16-bit) Installer'
+          title:    'Build Windows(16-bit) Installer'
         - asset: instwin32
-          title:   'Build Windows(32-bit) Installer'
+          title:    'Build Windows(32-bit) Installer'
         - asset: instwin64
-          title:   'Build Windows(64-bit) Installer'
+          title:    'Build Windows(64-bit) Installer'
         - asset: snapshot
-          title:   'Create OW full snapshot'
-    name: ${{ matrix.title }}
+          title:    'Create OW snapshot'
+          gitpath:  'distrib ow bin'
+    name: ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: ${{ matrix.title }}
-      uses: "./.github/actions/install"
+    - name: ${{matrix.title}}
+      uses: ./.github/actions/relload
       with:
-        target:     ${{ matrix.asset }}
-        tools_nt:   'vs2022'
-        tools_lnx:  'gcc'
-        tools_osx:  'clang'
-        owdebug:    ${{ vars.OWDEBUG }}
+        asset:      ${{matrix.asset}}
+        suffix_nt:  'vs2022'
+        suffix_lnx: 'gcc'
+        suffix_osx: 'clang'
+        isrelrel:   '1'
+
   release:
-    needs: Installers
-    name: "Create GitHub Release"
+    needs: installers
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
-      drelid: ${{ steps.rel_rel.outputs.drelid }}
-      mrelid: ${{ steps.rel_rel.outputs.mrelid }}
+      drelid: ${{steps.relrel.outputs.relid}}
+      mrelid: ${{steps.mrelrel.outputs.relid}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: GitHub Release
-      id: rel_rel
-      uses: "./.github/actions/release"
+      id: relrel
+      uses: ./.github/actions/release
       with:
-        owdebug: ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
-    - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
+        isrelrel:   '1'
+    - name: GitHub Month Release
+      id: mrelrel
+      uses: ./.github/actions/releasem
+    - run: echo "drelid=${{steps.relrel.outputs.relid}};mrelid=${{steps.mrelrel.outputs.relid}}"
       shell: bash
-  Uploads:
+
+  uploads:
     needs: release
     strategy:
       matrix:
         include:
         - asset: instdos
-          title:   'DOS Installer'
+          title:    'DOS Installer'
         - asset: instos2
-          title:   'OS/2 Installer'
+          title:    'OS/2 Installer'
         - asset: instlnx32
-          title:   'Linux(32-bit) Installer'
+          title:    'Linux(32-bit) Installer'
         - asset: instlnx64
-          title:   'Linux(64-bit) Installer'
+          title:    'Linux(64-bit) Installer'
         - asset: instwin16
-          title:   'Windows(16-bit) Installer'
+          title:    'Windows(16-bit) Installer'
         - asset: instwin32
-          title:   'Windows(32-bit) Installer'
+          title:    'Windows(32-bit) Installer'
         - asset: instwin64
-          title:   'Windows(64-bit) Installer'
+          title:    'Windows(64-bit) Installer'
         - asset: snapshot
-          title:   'OW full snapshot'
-    name: Upload ${{ matrix.title }}
+          title:    'OW snapshot'
+    name: Upload ${{matrix.title}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
+    - run: echo "drelid=${{needs.release.outputs.drelid}};mrelid=${{needs.release.outputs.mrelid}}"
       shell: bash
-    - name: ${{ matrix.title }} Asset
-      uses: "./.github/actions/ghassets"
+    - name: Load asset files artifact
+      uses: ./.github/actions/artfload
       with:
-        hostos:     'lnx'
-        target:     ${{ matrix.asset }}
-        drelid:     ${{ needs.release.outputs.drelid }}
-        mrelid:     ${{ needs.release.outputs.mrelid }}
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+        artifact: install ${{matrix.asset}}
+        gitpath:  'temp'
+    - name: Upload asset files (day release)
+      uses: ./.github/actions/ghassets
+      with:
+        relid:    ${{needs.release.outputs.drelid}}
+        gitpath:  'temp'
+    - if: needs.release.outputs.mrelid != ''
+      name: Upload asset files (month release)
+      uses: ./.github/actions/ghassets
+      with:
+        relid:    ${{needs.release.outputs.mrelid}}
+        gitpath:  'temp'
+
   end-end:
-    needs: Uploads
+    needs: uploads
     name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - if: vars.OWDELETEARTIFACTS == 1
+    - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacs
-      uses: "./.github/actions/artfdelc"
-      with:
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
+      uses: ./.github/actions/artfdelc

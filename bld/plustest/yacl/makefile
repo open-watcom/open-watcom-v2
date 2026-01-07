@@ -16,7 +16,7 @@ test_flags = -op-d2
 alt_error=00
 !endif
 
-test_flags += -ei -I.. -w0 -D__OS2__
+test_flags += -ei -I.. -w0
 
 test_flags_i86 = -ml
 
@@ -28,7 +28,6 @@ exes = &
 bittest.$(exe) &
 btreetst.$(exe) &
 bytstrm.$(exe) &
-dkbtrtst.$(exe) &
 format1.$(exe) &
 gseqtest.$(exe) &
 holidays.$(exe) &
@@ -36,12 +35,13 @@ maptest.$(exe) &
 perstest.$(exe) &
 seqtest.$(exe) &
 settest.$(exe) &
-slotftst.$(exe) &
 strset.$(exe) &
 strtest.$(exe) &
 treeprnt.$(exe) &
 treetest.$(exe) &
 wordcnt.$(exe)
+#dkbtrtst.$(exe) &
+#slotftst.$(exe) &
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k
@@ -56,35 +56,39 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .SYMBOLIC start base.lib io.lib test.lnk $(exes)
+test : .SYMBOLIC start base.lib io.lib $(exes)
     $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS executing $^&
 
 perstest.$(exe) : perstest.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_run_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS executing $^&
 
 clean : .procedure

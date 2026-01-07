@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -49,7 +50,6 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #ifdef __NT__
     #include "libwin32.h"
 #endif
@@ -61,7 +61,7 @@
 
 #ifdef CLIB_USE_ALT_ENV
 
-static int __alt_env_update( const CHAR_TYPE *in_name, const CHAR_TYPE *in_value, int overwrite )
+static int _WCNEAR __alt_env_update( const CHAR_TYPE *in_name, const CHAR_TYPE *in_value, int overwrite )
 /*
  * it updates counterpart environment data (wide or narrow)
  *
@@ -108,8 +108,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     int                 rc;
 
     if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
 
     /*** Ensure variable is deleted if value == "" ***/

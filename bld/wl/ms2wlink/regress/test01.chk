@@ -4,3 +4,4 @@ begin
 section
     file obj(1.obj
 end
+option nocaseexact

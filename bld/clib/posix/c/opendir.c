@@ -33,16 +33,17 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <dirent.h>
-
+#include "liballoc.h"
 #include "dirstrea.h"
+
 
 _WCRTLINK DIR *opendir( const char *__dirname )
 {
-    DIR *dir = malloc( sizeof( *dir ) );
+    DIR *dir = lib_malloc( sizeof( *dir ) );
 
     dir->fd = open( __dirname, O_RDONLY | O_NONBLOCK | O_DIRECTORY );
     if( dir->fd == -1 ) {
-        free( dir );
+        lib_free( dir );
         return( NULL );
     }
     dir->bufofs = 0;

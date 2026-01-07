@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,25 +38,25 @@
     #define   __TGT_SYS     __TGT_SYS_PPC_NT
     typedef unsigned        __type_rtp;
     typedef unsigned        __type_pad;
-    typedef void(           *__type_rtn ) ( void );
+    typedef void            (* __type_rtn)( void );
 #elif defined( __AXP__ )
     #define   __TGT_SYS     __TGT_SYS_AXP_NT
     typedef unsigned        __type_rtp;
     typedef unsigned        __type_pad;
-    typedef void(           *__type_rtn ) ( void );
+    typedef void            (* __type_rtn)( void );
 #elif defined( __MIPS__ )
     #define   __TGT_SYS     __TGT_SYS_MIPS
     typedef unsigned        __type_rtp;
     typedef unsigned        __type_pad;
-    typedef void(           *__type_rtn ) ( void );
+    typedef void            (* __type_rtn)( void );
 #else
     #define   __TGT_SYS     __TGT_SYS_X86
     typedef unsigned char   __type_rtp;
     typedef unsigned short  __type_pad;
-  #if defined( __386__ )
-    typedef void __near(    *__type_rtn ) ( void );
+  #if defined( _M_I86 )
+    typedef void            (* __type_rtn)( void );
   #else
-    typedef void(           *__type_rtn ) ( void );
+    typedef void            __near (* __type_rtn)( void );
   #endif
 #endif
 #include "langenv.h"
@@ -79,6 +80,14 @@ struct rt_init // structure placed in XI/YI segment
                           //   or when risc cpu
 #endif
 };
+#if defined( _M_I86 ) && defined( __LARGE_CODE__ )
+struct rt_init_near {
+    __type_rtp  rtn_type;         // - near=0/far=1 routine indication
+    __type_rtp  priority;         // - priority (0-highest 255-lowest)
+    void __near (*rtn)( void );   // - routine (near)
+    __type_pad  padding;          // - padding (0)
+};
+#endif
 #include "poppck.h"
 
 #if defined( _M_I86 )
@@ -86,30 +95,39 @@ struct rt_init // structure placed in XI/YI segment
     #define YIXI( seg, label, routine, priority )               \
         struct rt_init __based( __segname( seg ) ) label =      \
         { 1, priority, routine };
+    #define YIXIN( seg, label, routine, priority )              \
+        struct rt_init_near __based( __segname( seg ) ) label =      \
+        { 0, priority, routine, 0 };
   #else                         /* other segmented models */
     #define YIXI( seg, label, routine, priority )               \
         struct rt_init __based( __segname( seg ) ) label =      \
-        { 0, priority, routine, 0 };
+        { 0, priority, routine };
+    #define YIXIN   YIXI
   #endif
 #else                           /* non-segmented architectures */
     #define YIXI( seg, label, routine, priority )               \
         struct rt_init __based( __segname( seg ) ) label =      \
         { 0, priority, routine };
+    #define YIXIN   YIXI
 #endif
 
 /*
     Use these when you want a global label for the XI/YI structure
 */
-#define XI( label, routine, priority ) YIXI( TS_SEG_XI, label, routine, priority )
-#define YI( label, routine, priority ) YIXI( TS_SEG_YI, label, routine, priority )
+#define XI( label, routine, priority )  YIXI( TS_SEG_XI, label, routine, priority )
+#define XIN( label, routine, priority ) YIXIN( TS_SEG_XI, label, routine, priority )
+#define YI( label, routine, priority )  YIXI( TS_SEG_YI, label, routine, priority )
+#define YIN( label, routine, priority ) YIXIN( TS_SEG_YI, label, routine, priority )
 
 /*
     Use these when you don't care about the label on the XI/YI structure
 */
 #define __ANON( x )     __anon ## x
 #define ANON( x )       __ANON( x )
-#define AXI( routine, priority ) static XI( ANON( __LINE__ ), routine, priority )
-#define AYI( routine, priority ) static YI( ANON( __LINE__ ), routine, priority )
+#define AXI( routine, priority )  static YIXI( TS_SEG_XI, ANON( __LINE__ ), routine, priority )
+#define AXIN( routine, priority ) static YIXIN( TS_SEG_XI, ANON( __LINE__ ), routine, priority )
+#define AYI( routine, priority )  static YIXI( TS_SEG_YI, ANON( __LINE__ ), routine, priority )
+#define AYIN( routine, priority ) static YIXIN( TS_SEG_YI, ANON( __LINE__ ), routine, priority )
 
 /* ..._PRIORITY_... constants definition */
 #include "rtprior.h"

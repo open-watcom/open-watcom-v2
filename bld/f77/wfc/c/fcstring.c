@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "wf77defs.h"
 #include "wf77aux.h"
 #include "tmpdefs.h"
 #include "cpopt.h"
@@ -56,102 +55,94 @@
 #include "cgprotos.h"
 
 
-cg_name SCBPtrAddr( cg_name scb ) {
-//=================================
-
+cg_name SCBPtrAddr( cg_name scb )
+//===============================
 // Get pointer to pointer in SCB.
-
+{
     return( scb );
 }
 
 
-cg_name SCBPointer( cg_name scb ) {
-//=================================
-
+cg_name SCBPointer( cg_name scb )
+//===============================
 // Get pointer from SCB.
-
+{
     return( CGUnary( O_POINTS, SCBPtrAddr( scb ), TY_GLOBAL_POINTER ) );
 }
 
 
-cg_name SCBLenAddr( cg_name scb ) {
-//=================================
-
+cg_name SCBLenAddr( cg_name scb )
+//===============================
 // Get pointer to length in SCB.
-
+{
     return( StructRef( scb, BETypeLength( TY_GLOBAL_POINTER ) ) );
 }
 
 
-cg_name SCBFlagsAddr( cg_name scb ) {
-//===================================
-
+cg_name SCBFlagsAddr( cg_name scb )
+//=================================
 // Get pointer to flags in SCB.
-
+{
     return( StructRef( scb, BETypeLength( TY_CHAR ) ) );
 }
 
 
-cg_name SCBLength( cg_name scb ) {
-//================================
-
+cg_name SCBLength( cg_name scb )
+//==============================
 // Get length from SCB.
-
+{
     return( CGUnary( O_POINTS, SCBLenAddr( scb ), TY_UNSIGNED ) );
 }
 
 
-cg_name Concat( uint num_args, cg_name dest ) {
-//=============================================
-
+cg_name Concat( args_num argc, cg_name dest )
+//===========================================
 // Do concatenation operation.
-
-    uint        count;
+{
+    args_num    i;
     call_handle call;
     cg_name     dest_1;
     cg_name     dest_2;
 
-    if( num_args & CAT_TEMP ) {
+    if( argc & CAT_TEMP ) {
         call = InitCall( RT_TCAT );
-        num_args &= ~CAT_TEMP;
-    } else if( num_args == 1 ) {
+        argc &= ~CAT_TEMP;
+    } else if( argc == 1 ) {
         call = InitCall( RT_MOVE );
     } else {
         call = InitCall( RT_CAT );
     }
-    for( count = num_args; count > 0; --count ) {
-        CGAddParm( call, StkElement( count ), TY_LOCAL_POINTER );
+    for( i = argc; i > 0; --i ) {
+        CGAddParm( call, StkElement( i ), TY_LOCAL_POINTER );
     }
-    PopStkElements( num_args );
+    PopStkElements( argc );
     CloneCGName( dest, &dest_1, &dest_2 );
     CGAddParm( call, dest_1, TY_LOCAL_POINTER );
-    if( num_args != 1 ) {
-        CGAddParm( call, CGInteger( num_args, TY_UNSIGNED ), TY_UNSIGNED );
+    if( argc != 1 ) {
+        CGAddParm( call, CGInteger( argc, TY_UNSIGNED ), TY_UNSIGNED );
     }
     return( CGBinary( O_COMMA, CGCall( call ), dest_2, TY_LOCAL_POINTER ) );
 }
 
 
-void    FCCat( void ) {
-//===============
-
+void    FCCat( void )
+//===================
 // Do concatenation operation.
-
+{
     XPush( Concat( GetU16(), XPop() ) );
 }
 
 
-void    FCChar1Move( void ) {
-//=====================
-
+void    FCChar1Move( void )
+//=========================
 // Perform single character assignment.
-
-    cg_type     typ;
+{
+    cg_type     cgtyp;
     cg_name     dest;
 
-    typ = GetType( GetU16() );
+    cgtyp = GetCGType( GetU16() );
     dest = XPop();
-    XPush( CGLVAssign( SCBPointer( dest ), GetChOp( typ ), typ ) );
+    XPush( CGLVAssign( SCBPointer( dest ), GetChOp( cgtyp ), cgtyp ) );
 }
 
 #if _CPU == 8086
@@ -162,11 +153,10 @@ void    FCChar1Move( void ) {
  #define TAIL_SHIFT     2
 #endif
 
-void    FCCharNMove( void ) {
-//=====================
-
+void    FCCharNMove( void )
+//=========================
 // Perform N character assignment of non optimal lengths.
-
+{
     int         src_len;
     int         dst_len;
     cg_name     dst;
@@ -186,7 +176,8 @@ void    FCCharNMove( void ) {
     dst = XPop();
     CloneCGName( dst, &dst, &dst2 );
 
-    if( (OZOpts & OZOPT_O_SPACE) || !equal ) {
+    if( (OZOpts & OZOPT_O_SPACE)
+      || !equal ) {
         CGAddParm( call, CGInteger( src_len, TY_INTEGER ), TY_INTEGER );
     } else {
         // Special but common case, so we optimize it.
@@ -203,11 +194,10 @@ void    FCCharNMove( void ) {
 }
 
 
-static cg_name CharArrLength( sym_id sym ) {
-//==========================================
-
+static cg_name CharArrLength( sym_id sym )
+//========================================
 // Get element size for character*(*) arrays.
-
+{
     if( sym->u.ns.flags & SY_VALUE_PARM ) {
         return( CGInteger( 0, TY_INTEGER ) );
     } else if( Options & OPT_DESCRIPTOR ) {
@@ -218,11 +208,10 @@ static cg_name CharArrLength( sym_id sym ) {
 }
 
 
-cg_name CharItemLen( sym_id sym ) {
-//=================================
-
+cg_name CharItemLen( sym_id sym )
+//===============================
 // Get element size for character*(*) variables, functions and arrays.
-
+{
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         return( CharArrLength( sym ) );
     } else {
@@ -231,11 +220,10 @@ cg_name CharItemLen( sym_id sym ) {
 }
 
 
-void    FCSubString( void ) {
-//=====================
-
+void    FCSubString( void )
+//=========================
 // Do substring operation.
-
+{
     sym_id      char_var;
     sym_id      dest;
     cg_name     src;
@@ -247,10 +235,11 @@ void    FCSubString( void ) {
     cg_name     ptr;
     call_handle call;
 
+    last = NULL;
     char_var = GetPtr();
     typ_info = GetU16();
     src = XPop();
-    first_1 = XPopValue( GetType1( typ_info ) );
+    first_1 = XPopValue( GetCGTypes1( typ_info ) );
     len = 0;
     if( char_var == NULL ) { // i.e. chr(i:i)
         len = CGInteger( GetInt(), TY_INTEGER );
@@ -269,7 +258,7 @@ void    FCSubString( void ) {
             }
         } else {
             XPush( last );
-            last = XPopValue( GetType2( typ_info ) );
+            last = XPopValue( GetCGTypes2( typ_info ) );
         }
         if( (Options & OPT_BOUNDS) == 0 ) {
             CloneCGName( first_1, &first_1, &first_2 );
@@ -304,19 +293,18 @@ void    FCSubString( void ) {
 }
 
 
-void    FCPushSCBLen( void ) {
-//======================
-
+void    FCPushSCBLen( void )
+//==========================
 // NULL "last" means we need the length from the SCB in the character*(*) case.
 // See FCSubString().
-
+{
     XPush( NULL );
 }
 
 
-void    FCMakeSCB( void ) {
-//===================
-
+void    FCMakeSCB( void )
+//=======================
+{
     cg_name     len;
     cg_name     ptr;
 
@@ -327,11 +315,10 @@ void    FCMakeSCB( void ) {
 }
 
 
-void    FCSetSCBLen( void ) {
-//=====================
-
+void    FCSetSCBLen( void )
+//=========================
 // Fill scb length
-
+{
     sym_id              scb;
     cg_name             len;
 

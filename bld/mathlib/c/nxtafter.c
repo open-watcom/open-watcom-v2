@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (C) 1993 by Sun Microsystems, Inc.
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2014-2025 The Open Watcom Contributors. All Rights Reserved.
+* Portions Copyright (C) 1993 by Sun Microsystems, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,13 +29,13 @@
 *
 *    Developed at SunSoft, a Sun Microsystems, Inc. business.
 *    Permission to use, copy, modify, and distribute this
-*    software is freely granted, provided that this notice 
+*    software is freely granted, provided that this notice
 *    is preserved.
 *
 *  ========================================================================
 *
 * Description:  Return the next machine floating-point number of x in the
-*	            direction toward y.
+*                   direction toward y.
 *
 ****************************************************************************/
 
@@ -47,97 +46,97 @@
 
 _WMRTLINK double nextafter(double x, double y)
 {
-	i4 hx,hy,ix,iy;
-	i4 lx,ly;
-    
+    i4 hx,hy,ix,iy;
+    i4 lx,ly;
+
     float_double fdx;
     float_double fdy;
-    
+
     fdx.u.value = x;
     fdy.u.value = y;
 
-	hx = fdx.u.word[1];		/* high word of x */
-	lx = fdx.u.word[0];		/* low  word of x */
-	hy = fdy.u.word[1];		/* high word of y */
-	ly = fdy.u.word[0];		/* low  word of y */
-	ix = hx & ((u4)0x7fffffff);	/* |x| */
-	iy = hy & ((u4)0x7fffffff);	/* |y| */
+    hx = fdx.u.word[1];             /* high word of x */
+    lx = fdx.u.word[0];             /* low  word of x */
+    hy = fdy.u.word[1];             /* high word of y */
+    ly = fdy.u.word[0];             /* low  word of y */
+    ix = hx & ((u4)0x7fffffff);     /* |x| */
+    iy = hy & ((u4)0x7fffffff);     /* |y| */
 
-	if(((ix>=((u4)0x7ff00000)) && ((ix-((u4)0x7ff00000)) | lx)!=0) ||   /* x is nan */ 
-	   ((iy>=((u4)0x7ff00000)) && ((iy-((u4)0x7ff00000)) | ly)!=0))     /* y is nan */ 
+    if(((ix>=((u4)0x7ff00000)) && ((ix-((u4)0x7ff00000)) | lx)!=0) ||   /* x is nan */
+        ((iy>=((u4)0x7ff00000)) && ((iy-((u4)0x7ff00000)) | ly)!=0))     /* y is nan */
     {
         return x+y;
     }
-    
-	if(x==y) 
-        return x;		/* x=y, return x */
-        
-	if((ix|lx) == 0) 			/* x == 0 */
+
+    if(x==y)
+        return x;               /* x=y, return x */
+
+    if((ix|lx) == 0)                        /* x == 0 */
     {
-	    fdx.u.word[1] = hy&((u4)0x80000000);	/* return +-minsubnormal */
-	    fdx.u.word[0] = 1;
-	    y = fdx.u.value*fdx.u.value;
-        
-	    if(y==fdx.u.value) 
-            return y; 
+        fdx.u.word[1] = hy&((u4)0x80000000);        /* return +-minsubnormal */
+        fdx.u.word[0] = 1;
+        y = fdx.u.value*fdx.u.value;
+
+        if(y==fdx.u.value)
+            return y;
         else {
             __reporterror(UNDERFLOW, __func__, x, y, fdx.u.value);
-            return fdx.u.value;	/* raise underflow flag */
+            return fdx.u.value; /* raise underflow flag */
         }
-	}
-	
-    if(hx>=0) 				/* x > 0 */
-    {
-	    if(hx > hy || ((hx == hy) && (lx > ly)))  	/* x > y, x -= ulp */
-        {
-		    if(lx==0) 
-                hx -= 1;
-		    lx -= 1;
-	    } 
-        else 				/* x < y, x += ulp */
-        {
-    		lx += 1;
-		    if(lx==0) 
-                hx += 1;
-	    }
-	} 
-    else 				/* x < 0 */
-    {
-	    if(hy >= 0 || hx > hy || ((hx == hy) && (lx > ly))) /* x < y, x -= ulp */
-        {
-		    if(lx==0) 
-                hx -= 1;
-		    lx -= 1;
-	    } 
-        else 				/* x > y, x += ulp */
-        {
-		    lx += 1;
-		    if(lx==0) 
-                hx += 1;
-	    }
-	}
-    
-	hy = hx & ((u4)0x7ff00000);
-    
-	if(hy >= ((u4)0x7ff00000)) {
-        __reporterror(OVERFLOW, __func__, x, y, x+x);    
-        return x+x;	/* overflow  */
     }
-	
-    if(hy<((u4)0x00100000)) 		/* underflow */
+
+    if(hx>=0)                           /* x > 0 */
     {
-	    y = x*x;
-	    if(y!=x) 		/* raise underflow flag */
+        if(hx > hy || ((hx == hy) && (lx > ly)))    /* x > y, x -= ulp */
         {
-		    fdy.u.word[1] = hx; 
+            if(lx==0)
+                hx -= 1;
+            lx -= 1;
+        }
+        else                            /* x < y, x += ulp */
+        {
+            lx += 1;
+            if(lx==0)
+                hx += 1;
+        }
+    }
+    else                                /* x < 0 */
+    {
+        if(hy >= 0 || hx > hy || ((hx == hy) && (lx > ly))) /* x < y, x -= ulp */
+        {
+            if(lx==0)
+                hx -= 1;
+            lx -= 1;
+        }
+        else                            /* x > y, x += ulp */
+        {
+            lx += 1;
+            if(lx==0)
+                hx += 1;
+        }
+    }
+
+    hy = hx & ((u4)0x7ff00000);
+
+    if(hy >= ((u4)0x7ff00000)) {
+        __reporterror(OVERFLOW, __func__, x, y, x+x);
+        return x+x;     /* overflow  */
+    }
+
+    if(hy<((u4)0x00100000))             /* underflow */
+    {
+        y = x*x;
+        if(y!=x)            /* raise underflow flag */
+        {
+            fdy.u.word[1] = hx;
             fdy.u.word[0] = lx;
             __reporterror(UNDERFLOW, __func__, x, y, fdy.u.value);
-		    return fdy.u.value;
-	    }
-	}
-	
+            return fdy.u.value;
+        }
+    }
+
     fdx.u.word[1] = hx;
     fdx.u.word[0] = lx;
-    
-	return fdx.u.value;
+
+    return fdx.u.value;
 }

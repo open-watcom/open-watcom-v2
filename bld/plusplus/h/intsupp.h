@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,8 @@
 #include "i64.h"
 
 typedef struct {                // INTEGER CONSTANT
-    union {                     // - value
-        signed_64     value;    // - - 64-bit int
-        signed int    sval;     // - - signed 32-bit int
-        unsigned int  uval;     // - - unsigned 32-bit int
-    } u;
-    TYPE              type;     // - type (not modified)
+    signed_64       value;      // - 64-bit value
+    TYPE            type;       // - type (not modified)
 } INT_CONSTANT;
 
 

@@ -2,3 +2,4 @@
 system dos
 file obj1.obj
 name 2.exe
+option nocaseexact

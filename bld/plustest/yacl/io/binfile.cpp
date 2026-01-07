@@ -3,7 +3,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -57,10 +57,10 @@ extern "C" int ftruncate (int, int);
 // #ifdef WINDOWS
 // #include <windows.h>
 // #endif
- 
+
 #include "io/binfile.h"
 #include "base/error.h"
- 
+
 
 #define MAX_LINE_LENGTH 512
 
@@ -90,16 +90,16 @@ CL_BinaryFile::CL_BinaryFile (const char *pathname, bool createFlag)
     // #ifndef MS_WINDOWS
     _Open ();
     // #endif
-} 
- 
- 
+}
+
+
 CL_BinaryFile::~CL_BinaryFile()
 {
     _Close();
 }
- 
- 
- 
+
+
+
 bool CL_BinaryFile::Create (const char* pathName)
 {
     int fd;
@@ -111,14 +111,14 @@ bool CL_BinaryFile::Create (const char* pathName)
     close (fd);
 // #else
 //     OFSTRUCT    OfStruct;
-//  
+//
 //     int mode =   OF_READWRITE | OF_CREATE;   //This will truncate the file
 //     fd = OpenFile (_pathName, &OfStruct, mode);
 //     _lclose (fd);
 // #endif
     return TRUE;
 }
- 
+
 
 long CL_BinaryFile::Size () const
 {
@@ -142,11 +142,11 @@ long CL_BinaryFile::Size () const
 //     return fileSize;
 // #endif
 }
- 
+
 
 #if defined(__UNIX__)
 #define CHANGESIZE ftruncate
-#elif defined(__DOS__) || defined(__OS2__) || defined(__MS_WINDOWS__)
+#else
 #define CHANGESIZE chsize
 #endif
 
@@ -158,7 +158,7 @@ bool CL_BinaryFile::ChangeSize (long size)
 //     Open ();
 // #endif
     _MakeErrorString ("");
-    
+
     if (CHANGESIZE (_fd, size) == -1) {
         _MakeErrorString ("ChangeSize: chsize call failed");
         return FALSE;
@@ -170,8 +170,8 @@ bool CL_BinaryFile::ChangeSize (long size)
     return TRUE;
 }
 
- 
- 
+
+
 long CL_BinaryFile::Read (uchar *buffer, long num_bytes)  const
 {
     int nn;
@@ -180,7 +180,7 @@ long CL_BinaryFile::Read (uchar *buffer, long num_bytes)  const
 // #ifdef MS_WINDOWS
 //     Open();
 // #endif
-    
+
     // #ifndef MS_WINDOWS
     if ((nn = read (_fd, buffer, num_bytes)) < 0) {
 // #else
@@ -193,11 +193,11 @@ long CL_BinaryFile::Read (uchar *buffer, long num_bytes)  const
 // #endif
     return nn;
 }
- 
 
 
-    
- 
+
+
+
 bool CL_BinaryFile::Write (uchar *buffer, long num_bytes)
 {
 
@@ -226,8 +226,8 @@ bool CL_BinaryFile::Write (uchar *buffer, long num_bytes)
     return TRUE;
 
 }
- 
- 
+
+
 
 
 bool CL_BinaryFile::SeekTo (long position) const
@@ -245,7 +245,7 @@ bool CL_BinaryFile::SeekTo (long position) const
     }
     return TRUE;
 }
- 
+
 
 bool CL_BinaryFile::SeekRelative (long position) const
 {
@@ -262,7 +262,7 @@ bool CL_BinaryFile::SeekRelative (long position) const
     }
     return TRUE;
 }
- 
+
 
 bool CL_BinaryFile::Eof () const
 {
@@ -275,7 +275,7 @@ bool CL_BinaryFile::Eof () const
         return -1;
     lseek (_fd, current, SEEK_SET);
     return size == current;
-#elif defined(__DOS__) || defined(__OS2__) || defined(__MS_WINDOWS__)
+#else
     return eof (_fd);
 #endif
 }
@@ -286,39 +286,39 @@ long CL_BinaryFile::Offset () const
     return lseek (_fd, 0, SEEK_CUR);
 }
 
- 
+
 bool CL_BinaryFile::Exists (const char *pathname)
 {
     return (access (pathname, 0) == 0);
-}  
- 
- 
- 
+}
+
+
+
 
 // Protected methods
- 
+
 bool CL_BinaryFile::_Open()
 {
     _MakeErrorString ("");
     // #ifndef MS_WINDOWS
     int mode = O_RDWR;
-    
-#if defined(__DOS__) || defined(__MS_WINDOWS__) || defined(__OS2__)
+
+#if !defined(__UNIX__)
     mode |= O_BINARY;
 #endif
     _fd = open (_pathName.AsPtr(), mode, S_IREAD | S_IWRITE);
 // #else
 //     OFSTRUCT    OfStruct;
-// 
+//
 //     int mode =   OF_READWRITE;
 //     fd = OpenFile (_pathName.AsPtr(), &OfStruct, mode);
 // #endif
-    if (_fd < 0) 
+    if (_fd < 0)
         _MakeErrorString ("_Open: open call failed");
     return (_fd >= 0);
 }  // End of function Open
- 
- 
+
+
 void CL_BinaryFile::_Close()
 {
 
@@ -371,7 +371,7 @@ void CL_BinaryFile::_MakeErrorString (const char* msg) const
     }
     else
         ((CL_BinaryFile*) this)->_errorString = "";
-        
+
 }
 
 

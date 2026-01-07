@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +234,7 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
         new_ins = MakeMove( new_ins->result, AllocTemp( WD ), WD );
         AddIns( new_ins );
         result = AllocIndex( new_ins->result, result, 0, U4 );
-        result->i.scale = 2; /* 2**2 == 4 */
+        result->i.scale = SCALE_4; /* 2**2 == 4 */
     }
     return( result );
 }

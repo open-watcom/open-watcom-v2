@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2014-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,12 +29,12 @@
 *
 *    Developed at SunSoft, a Sun Microsystems, Inc. business.
 *    Permission to use, copy, modify, and distribute this
-*    software is freely granted, provided that this notice 
+*    software is freely granted, provided that this notice
 *    is preserved.
 *
 *  ========================================================================
 *
-* Description:  Retrieves the exponent from a floating-point number and 
+* Description:  Retrieves the exponent from a floating-point number and
 *               returns the value as an integer.
 *
 ****************************************************************************/
@@ -46,36 +45,36 @@
 
 _WMRTLINK int ilogb(double x)
 {
-	i4 hx,lx,ix;
-    
+    i4 hx,lx,ix;
+
     float_double fdx;
-    
+
     if(x == 0)
         return FP_ILOGB0;
     else if(isnan(x))
         return FP_ILOGBNAN;
-    
+
     fdx.u.value = x;
 
-	hx  = (fdx.u.word[1]) & ((u4)0x7fffffff);	    /* high word of x */
-	if(hx<0x00100000) {
-	    lx = fdx.u.word[0];
-        
-	    if((hx|lx)==0) 
-		    return (int)((u4)0x80000001);	/* ilogb(0) = 0x80000001 */
-	    else			/* subnormal x */
+    hx  = (fdx.u.word[1]) & ((u4)0x7fffffff);           /* high word of x */
+    if(hx<0x00100000) {
+        lx = fdx.u.word[0];
+
+        if((hx|lx)==0)
+            return (int)((u4)0x80000001);       /* ilogb(0) = 0x80000001 */
+        else                        /* subnormal x */
         {
-		    if(hx==0) 
+            if(hx==0)
             {
-		        for (ix = -1043; lx>0; lx<<=1) ix -=1;
-		    } else {
-		        for (ix = -1022,hx<<=11; hx>0; hx<<=1) ix -=1;
-		    }
+                for (ix = -1043; lx>0; lx<<=1) ix -=1;
+            } else {
+                for (ix = -1022,hx<<=11; hx>0; hx<<=1) ix -=1;
+            }
         }
-	    return ix;
-	}
-	else if (hx < ((u4)0x7ff00000)) 
+            return ix;
+        }
+    else if (hx < ((u4)0x7ff00000))
         return (hx>>20)-1023;
-	else 
+    else
         return (int)((u4)0x7fffffff);
 }

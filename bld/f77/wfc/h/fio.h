@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +31,6 @@
 
 #ifndef _FIO_H_INCLUDED
 #define _FIO_H_INCLUDED
-
-typedef enum {
-    REC_TEXT            = 0x0001,  // text records (terminated with CR/LF)
-    REC_FIXED           = 0x0002,  // fixed records
-    SEEK                = 0x0004,  // seek allowed
-    WRITE_ONLY          = 0x0008,  // no reading allowed
-    READ_AHEAD          = 0x0010,  // buffer read
-    BUFFERED            = 0x0020,  // buffered i/o
-} f_attrs;
 
 typedef struct b_file   *file_handle;   // file handle
 

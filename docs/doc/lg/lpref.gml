@@ -6,11 +6,10 @@
 The
 .us &lnkname User's Guide
 describes how to use the &lnkname under
-DOS, ZDOS, OS/2, Windows 9x, Windows NT and QNX.
+DOS, OS/2, Windows 9x, Windows NT and QNX.
 The &lnkname can generate executable files that run under
 DOS,
 RDOS,
-ZDOS,
 CauseWay DOS extender,
 FlashTek's DOS extender,
 Phar Lap's 386|DOS-Extender and TNT DOS extender,
@@ -34,8 +33,6 @@ described in this book.
 .*
 .sect Trademarks Used in this Manual
 .*
-.np
-ZDOS is a registered trademark of Zebor Technology.
 .np
 DOS/4G is a trademark of Tenberry Software, Inc.
 .np

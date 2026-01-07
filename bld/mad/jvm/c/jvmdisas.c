@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "jvmtypes.h"
 #include "madregs.h"
 #include "jvmops.h"
+#include "i64.h"
+
 
 static dis_handle DH;
 
@@ -114,14 +116,14 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
-        val.mach.offset += ins->op[op].value.s._32[I64LO32];
+        val.mach.offset += I64Low( ins->op[op].value );
         MCAddrToString( val, JVMT_N32_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value.s._32[I64LO32] ) ), &mti );
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value.s._32[I64LO32], buff, &buff_size );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( U64Low( ins->op[0].value ) ) ), &mti );
+        MCTypeToString( dd->radix, &mti, &U64Low( ins->op[op].value ), buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
@@ -150,8 +152,10 @@ mad_status DisasmOne( mad_disasm_data *dd, address *a, int adj )
     dd->addr = *a;
     //NYI: doesn't handle variable sized instructions
     new = dd->addr.mach.offset + adj * (int)sizeof( unsigned_32 );
-    if( (adj < 0 && new > dd->addr.mach.offset)
-     || (adj > 0 && new < dd->addr.mach.offset) ) {
+    if( (adj < 0
+      && new > dd->addr.mach.offset)
+      || (adj > 0
+      && new < dd->addr.mach.offset) ) {
         return( MS_FAIL );
     }
     dd->addr.mach.offset = new;

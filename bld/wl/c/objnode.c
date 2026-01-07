@@ -59,15 +59,15 @@ typedef struct nodearray {
     char        *array[MAX_NUM_NODES];   // the array.
 } nodearray;
 
-nodearray       *ExtNodes;           // ptr to obj file import list
-nodearray       *SegNodes;           // ptr to obj file segment list
-nodearray       *GrpNodes;           // ptr to obj file group list
-nodearray       *NameNodes;          // ptr to obj file lname list
+nodearray_handle    ExtNodes;   // ptr to obj file import list
+nodearray_handle    SegNodes;   // ptr to obj file segment list
+nodearray_handle    GrpNodes;   // ptr to obj file group list
+nodearray_handle    NameNodes;  // ptr to obj file lname list
 
 static void *MakeArray( unsigned size )
 /*************************************/
 {
-    nodearray *nodes;
+    nodearray_handle    nodes;
 
     _ChkAlloc( nodes, sizeof( nodearray ) );
     nodes->num = 0;
@@ -89,8 +89,8 @@ void InitNodes( void )
     NameNodes = MakeArray( sizeof( list_of_names * ) );
 }
 
-static void BurnNodeArray( nodearray *list )
-/******************************************/
+static void BurnNodeArray( nodearray_handle list )
+/************************************************/
 {
     unsigned    index;
 
@@ -109,15 +109,15 @@ void BurnNodes( void )
     BurnNodeArray( NameNodes );
 }
 
-void *FindNode( nodearray *list, unsigned index )
-/***********************************************/
+void *FindNode( nodearray_handle list, unsigned index )
+/*****************************************************/
 {
     index--;            // index is base 1
     return( list->array[ARRAY_NUM( index )] + ELEMENT_NUM( index ) * list->elsize );
 }
 
-static void AllocNewArray( nodearray *list )
-/******************************************/
+static void AllocNewArray( nodearray_handle list )
+/************************************************/
 {
     unsigned    size;
 
@@ -127,8 +127,8 @@ static void AllocNewArray( nodearray *list )
     memset( list->array[list->arraymax], 0, size );
 }
 
-void *AllocNode( nodearray *list )
-/********************************/
+void *AllocNode( nodearray_handle list )
+/**************************************/
 {
     if( ARRAY_NUM( list->num ) > list->arraymax ) {
         AllocNewArray( list );
@@ -137,8 +137,8 @@ void *AllocNode( nodearray *list )
     return( FindNode( list, list->num ) );
 }
 
-void *AllocNodeIdx( nodearray *list, unsigned index )
-/***************************************************/
+void *AllocNodeIdx( nodearray_handle list, unsigned index )
+/*********************************************************/
 {
     if( list->num < index ) {
         list->num = index;
@@ -170,8 +170,8 @@ void FreeModEntry( mod_entry *mod )
     CarveFree( CarveModEntry, mod );
 }
 
-void FreeNodes( nodearray *nodes )
-/***************************************/
+void FreeNodes( nodearray_handle nodes )
+/**************************************/
 {
     unsigned    index;
 
@@ -201,7 +201,7 @@ static void IterateNodeArray( char *narray, void (*fn)(void *, void *),
     }
 }
 
-void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
+void IterateNodelist( nodearray_handle list, void (*fn)(void *, void *),
                              void *cookie )
 /***********************************************************************/
 {
@@ -263,8 +263,8 @@ static void *ListFindValue( char *node, unsigned limit, unsigned elsize,
     return( NULL );
 }
 
-static void *IterateFindValue( nodearray *list, void *target, bool (*fn)(void *, void *) )
-/****************************************************************************************/
+static void *IterateFindValue( nodearray_handle list, void *target, bool (*fn)(void *, void *) )
+/**********************************************************************************************/
 {
     unsigned    index;
     void        *retval;

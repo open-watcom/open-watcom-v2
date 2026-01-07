@@ -5,8 +5,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +32,9 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
-*   
+*
 * Description:  Defines NetWare 5.0 Debugger APIs
 *
 ****************************************************************************/
@@ -42,29 +43,29 @@
 
 CPP_START
 
-int	ReserveABreakpointRTag(
-	/* IN */	LONG					/* struct RTAG *						*/
-	);
+int ReserveABreakpointRTag(
+    /* IN */    LONG                        /*  struct RTAG *           */
+    );
 
-LONG RegisterDebuggerRTag( 
-	/* IN */	struct debuggerStructure *,	/*	alternateDebugger,				*/
-    /* IN */	int						/*	position							*/
-	); 
+LONG RegisterDebuggerRTag(
+    /* IN */    struct debuggerStructure *, /*  alternateDebugger,      */
+    /* IN */    int                         /*  position                */
+    );
 
-LONG UnRegisterDebugger( 
-	/* IN */	struct debuggerStructure *	/*	alternateDebugger,				*/
-	); 
+LONG UnRegisterDebugger(
+    /* IN */    struct debuggerStructure *  /*  alternateDebugger,      */
+    );
 
 extern LONG GetFileServerMajorVersionNumber(
-	void
+    void
 );
 
 extern LONG GetFileServerMinorVersionNumber(
-	void
+    void
 );
 
 extern LONG GetFileServerRevisionNumber(
-	void
+    void
 );
 
 CPP_END

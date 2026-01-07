@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ extern  char            _end;
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
 
-void __RdosMain( void )
+_WCNORETURN void __RdosMain( void )
 {
     int major, minor, release;
 
@@ -105,20 +106,21 @@ void __RdosMain( void )
 
 #ifdef CMD_LINE
     _LpCmdLine = (char *)RdosGetCmdLine();
-    if( _LpCmdLine == 0 )
+    if( _LpCmdLine == 0 ) {
         _LpCmdLine = "";
-    else {
-       while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 )
-         _LpCmdLine++;
+    } else {
+        while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 ) {
+            _LpCmdLine++;
+        }
     }
 #else
     _LpCmdLine = "";
 #endif
-
     __CMain();
+    // never return
 }
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
+_WCNORETURN void _WCNEAR __exit( int ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
     // never return

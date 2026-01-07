@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,10 @@
 // =====
 
 typedef enum {
-    #define pick(id,text,size,ptype) id,
+    #define pick(id,text,size,ptype,dwtype) id,
     #include "symdefn.h"
     #undef pick
+    FT_MAX
 } TYPE;
 
 #define FT_FIRST    FT_LOGICAL_1
@@ -54,7 +56,9 @@ typedef enum {
  #define FT_INTEGER_TARG FT_INTEGER
 #endif
 
-#define _IsTypeLogical( typ )   ((typ >= FT_LOGICAL_1) && (typ <= FT_LOGICAL))
-#define _IsTypeInteger( typ )   ((typ >= FT_INTEGER_1) && (typ <= FT_INTEGER))
+#define _IsTypeLogical( typ )       ((typ >= FT_LOGICAL_1) && (typ <= FT_LOGICAL))
+#define _IsTypeInteger( typ )       ((typ >= FT_INTEGER_1) && (typ <= FT_INTEGER))
+#define _isFundamentalType( typ )   ((typ >= FIRST_BASE_TYPE) && (typ <= LAST_BASE_TYPE))
+
 
 #endif

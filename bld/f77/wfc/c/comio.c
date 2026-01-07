@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static void Comment( void )
 
     int old_srcrecnum;
 
-    if( ( SrcBuff[ 0 ] != NULLCHAR ) && ( SrcBuff[ 1 ] == '$' ) ) {
+    if( ( SrcBuff[0] != NULLCHAR ) && ( SrcBuff[1] == '$' ) ) {
         old_srcrecnum = SrcRecNum;
         SrcRecNum = CurrFile->rec; // in case we get an error processing comment
         SrcOption();
@@ -70,8 +70,8 @@ void ComRead( void )
     char        ch;
     byte        chtype;
     uint        stmt_type;
-    unsigned_32 stmt_no;
-    bool        stno_found;
+    stmt_num    stmt_no;
+    bool        found;
     byte        cont_type;
     bool        done_scan;
     ftnoption   save_options;
@@ -92,9 +92,9 @@ void ComRead( void )
     cursor = 0;
     column = FIRST_COL - 1;
     stmt_no = 0;
-    stno_found = false;
+    found = false;
     done_scan = false;
-    for(;;) {
+    for( ;; ) {
         ReadSrc();
         if( ProgSw & PS_SOURCE_EOF )
             break;
@@ -119,9 +119,9 @@ void ComRead( void )
             // not a comment (but it might be a blank line)
             // try for a statement number
             stmt_no = 0;
-            stno_found = false;
-            for(;;) {
-                chtype = CharSetInfo.character_set[ (unsigned char)ch ];
+            found = false;
+            for( ;; ) {
+                chtype = CharSetInfo.character_set[(byte)ch];
                 if( chtype == C_EL )
                     break;
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {
@@ -148,7 +148,7 @@ void ComRead( void )
                             break;
                         }
                         stmt_no = 10 * stmt_no + ch - '0';
-                        stno_found = true;
+                        found = true;
                     } else {
                         stmt_type = STMT_START;
                         if( column != CONT_COL ) {
@@ -197,7 +197,7 @@ void ComRead( void )
     Cursor = cursor;
     Column = column - 1;
     NextStmtNo = stmt_no;
-    StmtNoFound = stno_found;
+    StmtNoFound = found;
     StmtType = stmt_type;
     ContType = cont_type;
     Options = save_options;
@@ -210,11 +210,11 @@ void ProcInclude( void )
 
     ComPrint();
     if( strlen( SrcBuff ) > LastColumn ) {
-        SrcBuff[ LastColumn ] = NULLCHAR;
+        SrcBuff[LastColumn] = NULLCHAR;
     }
     old_srcrecnum = SrcRecNum;
     SrcRecNum = CurrFile->rec; // in case we get an error processing INCLUDE
-    Include( SkipBlanks( &SrcBuff[ 10 ] ) );
+    Include( SkipBlanks( &SrcBuff[10] ) );
     SrcRecNum = old_srcrecnum;
 }
 

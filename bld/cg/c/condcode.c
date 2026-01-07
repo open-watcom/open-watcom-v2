@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +286,7 @@ static  void    GatherSources( block *blk )
         cc->right_op = source_cc->right_op;
         cc->result_op = source_cc->result_op;
         cc->op_type = source_cc->op_type;
-        for(;;) {
+        for( ;; ) {
             if( cc->state == UNKNOWN_STATE )
                 break;
             edge = edge->next_source;

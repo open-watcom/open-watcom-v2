@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "x86.h"
 #include "madregs.h"
 #include "brkptcpu.h"
+#include "i64.h"
 
 
 unsigned MADIMPENTRY( TraceSize )( void )
@@ -51,7 +52,8 @@ void MADIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 
 mad_status MADIMPENTRY( TraceHaveRecursed )( address watch_stack, const mad_registers *mr )
 {
-    if( mr->x86.cpu.ss == watch_stack.mach.segment && mr->x86.cpu.esp < watch_stack.mach.offset ) {
+    if( mr->x86.cpu.ss == watch_stack.mach.segment
+      && mr->x86.cpu.esp < watch_stack.mach.offset ) {
         /*
            we're down some levels in a recursive call -- want to unwind.
         */
@@ -160,7 +162,7 @@ static mad_trace_how DoTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_tr
              * used under Linux to get the GOT pointer when compiled for
              * 386 processors.
              */
-            if( dd->ins.op[0].value.s._32[I64LO32] == dd->ins.size )
+            if( U64Low( dd->ins.op[0].value ) == dd->ins.size )
                 return( MTRH_STEP );
             /* Fall through for normal handling */
         case DI_X86_call2:
@@ -201,7 +203,8 @@ static mad_trace_how DoTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_tr
 
 static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *mr, mad_trace_how th )
 {
-    if( th != MTRH_STEP ) return( th );
+    if( th != MTRH_STEP )
+        return( th );
     switch( dd->ins.type ) {
     case DI_X86_int:
         if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
@@ -254,7 +257,8 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
         if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
             break;
         if( ( dd->ins.flags.u.x86 & DIF_X86_FPU_INS )
-            && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu.x86 == X86_EMU ) ) )
+          && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT )
+          || ( MCSystemConfig()->fpu.x86 == X86_EMU ) ) )
             break;
         return( MTRH_STEP );
     }
@@ -272,20 +276,23 @@ static walk_result TouchesScreenBuff( address a, mad_type_handle mth, mad_memref
         return( WR_CONTINUE );
     switch( MCSystemConfig()->os ) {
     case DIG_OS_DOS:
-        if( a.mach.segment < 0xa000 || a.mach.segment >= 0xc000 )
+        if( a.mach.segment < 0xa000
+          || a.mach.segment >= 0xc000 )
             return( WR_CONTINUE );
         break;
     case DIG_OS_RATIONAL:
-        if( a.mach.segment != mr->x86.cpu.cs && a.mach.segment != mr->x86.cpu.ds )
+        if( a.mach.segment != mr->x86.cpu.cs
+          && a.mach.segment != mr->x86.cpu.ds )
             return( WR_CONTINUE );
-        if( a.mach.offset < 0xa0000UL || a.mach.offset >= 0xc0000UL )
+        if( a.mach.offset < 0xa0000UL
+          || a.mach.offset >= 0xc0000UL )
             return( WR_CONTINUE );
         break;
     case DIG_OS_AUTOCAD:
     case DIG_OS_PHARLAP:
     case DIG_OS_ECLIPSE:
         if( a.mach.segment == mr->x86.cpu.cs
-            || a.mach.segment == mr->x86.cpu.ds )
+          || a.mach.segment == mr->x86.cpu.ds )
             return( WR_CONTINUE );
         break;
     }

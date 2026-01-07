@@ -2,7 +2,7 @@ CPPFLAGS = $(DEFS) -I. -I..\h -I..\..\lib_misc\h -I..\..\watcom\h
 # -wd4214 "bit field types other than int"
 # -wd4244 "conversion ....., possible loss of data"
 CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -wd4214 -wd4244 -wd4063
-DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DBOOTSTRAP -DINCL_MSGTEXT -D__NT__
+DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D__NT__ -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT $(EXTRADEF)
 LFLAGS = -link -INCREMENTAL:NO -DEBUG -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
 
 {..\c}.c.obj :
@@ -19,8 +19,8 @@ all: ..\..\..\build\$(OWOBJDIR)\wmake.exe
 OBJS= macros.obj main.obj mautodep.obj mautoomf.obj \
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj \
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj \
-  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dostimet.obj \
-  mcache.obj misc.obj clibext.obj
+  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj \
+  mcache.obj misc.obj depinfo.obj clibext.obj
 
 wsplice.exe: wsplice.obj clibext.obj
         $(CC) $(CFLAGS) -Fe$@ $** $(LFLAGS)

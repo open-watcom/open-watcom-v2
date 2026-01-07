@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -409,7 +409,7 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
     dim_any **owner;
 
     owner = &ar->list;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
         if( curr == NULL )
             break;
@@ -965,7 +965,7 @@ void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, int_32 val )
     cons = CGAlloc( sizeof( const_entry ) + len );
     strcpy( cons->name, nm );
     cons->len = len;
-    I32ToI64( val, &cons->val );
+    Set64ValI32( cons->val, val );
     cons->next = en->list;
     en->list = cons;
     en->num++;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,17 +40,47 @@
 extern "C" {
 #endif
 
-/* used by math run-time library */
+/*
+ * used by Netware and math run-time library
+ */
 _WCRTLINK extern void   __set_EDOM( void );
 _WCRTLINK extern void   __set_ERANGE( void );
 
-/* used by math and C++ run-time library */
+/*
+ * used by Netware, math and C++ run-time library
+ */
 _WCRTLINK extern FILE   *__get_std_stream( unsigned handle );
 
-/* used by C++ run-time library */
-_WCRTLINK extern int    __flush( FILE * );
-_WCRTLINK extern int    __plusplus_fstat( int handle, int *pios_mode );
-_WCRTLINK extern int    __plusplus_open( const char *name, int *pios_mode, int prot );
+/*
+ * used by C++ run-time library
+ */
+_WCRTLINK extern int    __clib_flush( FILE * );
+_WCRTLINK extern int    __clib_fstat( int handle, int *pios_mode );
+_WCRTLINK extern int    __clib_open( const char *name, int *pios_mode, int prot );
+_WCRTLINK extern _WCNORETURN void __clib_fatal( char _WCI86FAR *, int );
+_WCRTLINK extern _WCNORETURN void __clib_exit( int );
+_WCRTLINK extern void   __clib_free( void *ptr );
+_WCRTLINK extern void   *__clib_malloc( size_t size );
+
+/* used by Fortran run-time library */
+_WCRTLINK extern int    __clib_set_binary( int );
+
+/*
+ * used by Netware
+ */
+#if defined( __NETWARE__ ) && ( defined( _NETWARE_CLIB ) || !defined( _THIN_LIB ) )
+_WCRTLINK extern FILE   **__get_stdin ( void );
+_WCRTLINK extern FILE   **__get_stdout( void );
+_WCRTLINK extern FILE   **__get_stderr( void );
+#endif
+
+/*
+ * Watcom Debugger interface
+ * - this function should be called before __exit_with_msg()
+ * - to allow Watcom Debugger to trap runtime errors.
+ * - string argument really needs to be far!!!
+ */
+_WCRTLINK extern int    __EnterWVIDEO( char _WCFAR *string );
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -63,7 +63,7 @@ unsigned char   __isPC98 = 0;   // 0 - IBM PC, 1 - NEC PC-98
 
 #if defined( __DOS__ ) || defined( __WINDOWS_286__ )
 
-static void init_on_startup( void )
+static void _WCNEAR init_on_startup( void )
 {
     char _WCFAR     *p;
 
@@ -79,6 +79,6 @@ static void init_on_startup( void )
     }
 }
 
-AXI( init_on_startup, INIT_PRIORITY_LIBRARY )
+AXIN( init_on_startup, INIT_PRIORITY_LIBRARY )
 
 #endif

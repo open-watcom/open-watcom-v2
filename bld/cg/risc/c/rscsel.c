@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,6 @@
 
 extern  type_length     TypeClassLength[];
 
-#define MAX_COST        0x7FFF
-
 cost_val ScanCost( sel_handle s_node )
 /************************************/
 {
@@ -65,8 +63,8 @@ cost_val JumpCost( sel_handle s_node )
 }
 
 
-cost_val IfCost( sel_handle s_node, int entries )
-/***********************************************/
+cost_val IfCost( sel_handle s_node, uint_32 entries )
+/***************************************************/
 {
     /* unused parameters */ (void)s_node; (void)entries;
 
@@ -74,19 +72,19 @@ cost_val IfCost( sel_handle s_node, int entries )
 }
 
 
-tbl_control *MakeScanTab( select_list *list, int_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
-/***********************************************************************************************************/
+tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_type )
+/**********************************************************************************/
 {
-    /* unused parameters */ (void)list; (void)hi; (void)tipe; (void)other; (void)real_tipe;
+    /* unused parameters */ (void)s_node; (void)value_type; (void)real_type;
 
     return( NULL );
 }
 
 
-tbl_control *MakeJmpTab( select_list *list, int_32 lo, int_32 hi, label_handle other )
-/************************************************************************************/
+tbl_control *MakeJmpTab( sel_handle s_node )
+/******************************************/
 {
-    /* unused parameters */ (void)list; (void)lo; (void)hi; (void)other;
+    /* unused parameters */ (void)s_node;
 
     return( NULL );
 }
@@ -95,15 +93,15 @@ tbl_control *MakeJmpTab( select_list *list, int_32 lo, int_32 hi, label_handle o
 name    *SelIdx( tbl_control *table, an node )
 /********************************************/
 {
-    /* unused parameters */ (void)node; (void)table;
+    /* unused parameters */ (void)table; (void)node;
 
     return( NULL );
 }
 
-name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def type_class )
+name    *ScanCall( tbl_control *table, name* tmp, type_class_def type_class )
 /*************************************************************************/
 {
-    /* unused parameters */ (void)tbl; (void)tmp; (void)type_class;
+    /* unused parameters */ (void)table; (void)tmp; (void)type_class;
 
     return( NULL );
 }

@@ -31,7 +31,7 @@ opt_link = LIB tort.lib
 
 exes = dim2arr.$(exe) mdarrtst.$(exe)
 
-test : .SYMBOLIC start test.lnk tort.lib $(exes) test_set_result
+test : .SYMBOLIC start tort.lib $(exes) test_set_result
     $(noecho)%make common_set_result
 
 test_set_result : .SYMBOLIC
@@ -40,6 +40,7 @@ test_set_result : .SYMBOLIC
 tort.lib : tort.lbc $(objs)
     @%make set_path_wlib
     @%make echo_lib
+    @which $(wlib_any)
     $(noecho)$(librarian) @$[@
     @%make set_old_path
 

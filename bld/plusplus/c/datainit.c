@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -584,7 +584,7 @@ static void dataInitComputeTarget( INITIALIZE_INFO *top )
             } else if( type->id == TYP_BITFIELD ) {
                 top->target = DT_BITFIELD;
                 top->u.b.type = type->of;
-                top->u.b.mask = 0;
+                Set64ValZero( top->u.b.mask );
             }
         } else {
             top->target = DT_SCALAR;
@@ -1677,7 +1677,7 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
         if( currInit->huge_sym ) {
             dataInitCheckHugeSegment( top->base + top->offset );
         }
-        if( !DgStoreBitfield( top->u.b.type, top->u.b.mask ) )
+        if( !DgStoreBitfield( top->u.b.type, U64Low( top->u.b.mask ) ) )
             currInit->all_zero = 0;
         while( !dataInitIsFull( top ) ) {
             top->type = dataInitAdvanceField( top->previous );
@@ -1813,7 +1813,7 @@ static void dataInitSaveBits( PTREE expr )
     value = expr->u.uint_constant;
     value &= bitMask[prev->type->u.b.field_width-1];
     value = value << prev->type->u.b.field_start;
-    prev->u.b.mask |= value;
+    U64Low( prev->u.b.mask ) |= value;
 }
 
 static void dataInitStashBitfield( PTREE expr )

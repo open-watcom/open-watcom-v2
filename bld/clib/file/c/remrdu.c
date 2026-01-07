@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,11 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <io.h>
 #include <direct.h>
 #include <stdio.h>
 #include <rdos.h>
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -44,10 +45,10 @@ _WCRTLINK int remove( CHAR_TYPE const *filename )
 {
     __ptr_check( filename, 0 );
 
-    if( RdosDeleteFile( filename ) )
+    if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    else {
-        _RWD_errno = ENOENT;
-        return( -1 );  
+    } else {
+        lib_set_errno( ENOENT );
+        return( -1 );
     }
 }

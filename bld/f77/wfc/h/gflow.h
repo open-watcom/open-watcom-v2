@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-extern void    GStmtAddr( sym_id stmtno );
-extern void    GLabel( int label );
+extern void    GStmtAddr( sym_id stmt );
+extern void    GLabel( label_id label );
 extern void    GStmtLabel( sym_id stmt );
 extern void    GStmtBr( sym_id stmt );
-extern void    GBranch( int label );
-extern void    GBrFalse( int label );
+extern void    GBranch( label_id label );
+extern void    GBrFalse( label_id label );
 extern void    G3WayBranch( sym_id lt, sym_id eq, sym_id gt );
 extern void    InitSelect( void );
 extern void    FiniSelect( void );
@@ -50,4 +50,4 @@ extern void    GEndBlock( void );
 extern void    GPgmLabel( void );
 extern void    GSegLabel( void );
 extern void    GBlockLabel( void );
-extern void    FreeLabel( int label );
+extern void    FreeLabel( label_id label );

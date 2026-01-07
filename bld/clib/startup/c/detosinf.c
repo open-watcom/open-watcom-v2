@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #include "osinfqnx.h"
 
 
-void __DetOSInfo( void )
+void _WCNEAR __DetOSInfo( void )
 {
     struct _osinfo osdata;
 
@@ -50,7 +51,7 @@ void __DetOSInfo( void )
     _osmajor = osdata.version / 100;
     _osminor = osdata.version % 100;
 #if defined( _M_I86 )
-    if( (osdata.sflags & _PSF_PROTECTED) != 0 ) {
+    if( osdata.sflags & _PSF_PROTECTED ) {
         _HShift = 3;
     } else {
         _HShift = 12;

@@ -55,13 +55,14 @@ opt_prag01 = -fhq       # (1) write PCH
 opt_prag02 = -fhq       # (2) read PCH
 opt_thread01 = $(incl_sys_nt)
 
-!ifneq arch i86
-opt_link_opt32 = option stack=128k
-!endif
-
 #
 # architecture specific options
 #
+!ifneq arch i86
+# 32-bit specific
+opt_link_opt32 = option stack=128k
+!endif
+
 !ifeq arch axp
 # AXP specific
 !else ifeq arch 386
@@ -106,6 +107,7 @@ positive_tests = &
     callc01.$(exe) &
     cmp01.$(exe) &
     cmp02.$(exe) &
+    const01.$(exe) &
     conv02.$(exe) &
     conv03.$(exe) &
     conv04.$(exe) &
@@ -259,6 +261,7 @@ positive_tests = &
     str02.$(exe) &
     struct01.$(exe) &
     switch01.$(exe) &
+    switch02.$(exe) &
     thread01.$(exe) &
     thread02.$(exe) &
 

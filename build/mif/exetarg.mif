@@ -21,8 +21,12 @@ additional_clean_sys = *$(exetarg_ext)
 !else
 exetarg_ext = .exe
 !endif
-!undef exetarg_qnx_res_obj
-!undef exetarg_qnx_res_link
+!ifdef exetarg_qnx_res_obj
+! undef exetarg_qnx_res_obj
+!endif
+!ifdef exetarg_qnx_res_link
+! undef exetarg_qnx_res_link
+!endif
 !ifdef qnx_usage
 exetarg_qnx_res_obj = $(qnx_usage)
 exetarg_qnx_res_link = opt resource=$(qnx_usage)
@@ -58,7 +62,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
-    @for %l in ($+$(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
+    @for %l in ($+$(watcom_extra_libs_gen) $(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
     $(linker) name $(lname) @$^&.lnk
 ! else
@@ -71,7 +75,9 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 # get list of OS native resources
 # for wrc
 ###########################
-!undef exetarg_res_wrc
+!ifdef exetarg_res_wrc
+! undef exetarg_res_wrc
+!endif
 !ifdef exetarg_res
 ! ifeq wreslib_cli 1
 !  ifdef ntmanif_res

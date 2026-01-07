@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ int  main( void )
 {
     dw_init_info        info;
     dw_loc_handle       seg;
-    dw_cu_info          cuinfo;
+    dw_cu_info          cu;
     DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
     info.language = DW_LANG_C89;
@@ -168,16 +168,16 @@ int  main( void )
             return( 1 );
         }
         seg = DWLocFini( Client, DWLocInit( Client ) );
-        memset( &cuinfo, 0, sizeof( cuinfo ));
-        cuinfo.source_filename = "foo.bar";
-        cuinfo.directory = "somewhere\\over\\the\\rainbow";
+        memset( &cu, 0, sizeof( cu ));
+        cu.source_filename = "foo.bar";
+        cu.directory = "somewhere\\over\\the\\rainbow";
 
-        DWBeginCompileUnit( Client, &cuinfo );
+        DWBeginCompileUnit( Client, &cu );
         Test();
         DWEndCompileUnit( Client );
-        cuinfo.source_filename = "empty.unit";
-        cuinfo.directory = "in\\a\\land\\far\\far\\away";
-        DWBeginCompileUnit( Client, &cuinfo );
+        cu.source_filename = "empty.unit";
+        cu.directory = "in\\a\\land\\far\\far\\away";
+        DWBeginCompileUnit( Client, &cu );
         DWEndCompileUnit( Client );
         DWLocTrash( Client, seg );
         DWFini( Client );

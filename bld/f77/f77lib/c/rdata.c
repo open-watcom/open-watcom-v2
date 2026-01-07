@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,13 @@
 
 
 #include "ftnstd.h"
-#include "trcback.h"
+#include "fthread.h"
 #include "ftnio.h"
 #include "fmtdef.h"
 
-#ifndef __SW_BM
-    struct traceback PGM *ExCurr;      // head of traceback list
+#ifndef __MT__
+    struct traceback        PGM *ExCurr;    // head of traceback list
+    volatile unsigned short XcptFlags;
 #endif
 
 #define gbl_defn

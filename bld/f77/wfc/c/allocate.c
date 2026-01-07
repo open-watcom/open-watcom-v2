@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,98 +53,16 @@
 #include "gsublist.h"
 
 
-/* forward declarations */
-static  void    AllocStat( void );
-static  void    AllocLoc( void );
-static  void    ChkStat( void );
-static  void    ChkLoc( void );
-static  void    DeallocStat( void );
-
-
 static  char            *StatKW = { "STAT" };
 static  char            *LocKW = { "LOCATION" };
 
 
-void    CpAllocate( void )
-{
-// Process ALLOCATE statement.
-//      ALLOCATE( arr([l:]u,...),...,[STAT=istat])
-//          or
-//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc)
-//          or
-//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc, [STAT=istat])
-
-    sym_id      sym;
-
-    StmtExtension( SP_STRUCTURED_EXT );
-    if( RecTrmOpr() && RecNOpn() ) {
-        AdvanceITPtr();
-    }
-    ReqOpenParen();
-    GBegAllocate();
-    for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
-            sym = LkSym();
-            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
-                if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) &&
-                    !( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) ) {
-                    AdvanceITPtr();
-                    ReqOpenParen();
-                    sym->u.ns.u1.s.xflags |= SY_DEFINED;
-                    GAllocate( sym );
-                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0)
-                  && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
-                    AdvanceITPtr();
-                    ReqMul();
-                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
-                    GAllocateString( sym );
-                } else {
-                    IllName( sym );
-                }
-            }
-        }
-        AdvanceITPtr();
-        if( !RecComma() ) {
-            GAllocEOL();
-            break;
-        }
-        if( RecNextOpr( OPR_EQU ) ) {
-            GAllocEOL();
-            if( RecKeyWord( LocKW ) ) {
-                AllocLoc();
-            }
-            if( RecKeyWord( StatKW ) ) {
-                AllocStat();
-            }
-            break;
-        }
-    }
-    GEndAllocate();
-    ReqCloseParen();
-    ReqNOpn();
-    AdvanceITPtr();
-    ReqEOS();
-}
-
-
-static  void    AllocStat( void )
-{
-    ChkStat();
-}
-
-
-static  void    AllocLoc( void )
-{
-    ChkLoc();
-}
-
-
 void    DimArray( sym_id sym )
-{
+//============================
 // Dimension an allocatable array.
 // Called by GAllocate() so that system dependent code
 // can control the order in which code gets generated.
-
+{
     int         ss;
     int         dim_cnt;
 
@@ -191,67 +110,15 @@ void    DimArray( sym_id sym )
 
 
 void    LoadSCB( sym_id sym )
-{
+//===========================
 // Dimension an allocatable character string
 // Called by GAllocateString() so that system dependent code
 // can control the order in which code gets generated.
-
+{
     IntegerExpr();
     if( !AError ) {
         GSCBLength( sym );
     }
-}
-
-
-void    CpDeAllocate( void )
-{
-// Process DEALLOCATE statement.
-//      DEALLOCATE( arr,...,[STAT=istat])
-
-    sym_id      sym;
-
-    StmtExtension( SP_STRUCTURED_EXT );
-    if( RecTrmOpr() && RecNOpn() ) {
-        AdvanceITPtr();
-    }
-    ReqOpenParen();
-    GBegDeAllocate();
-    for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
-            sym = LkSym();
-            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
-                if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
-                    GDeAllocate( sym );
-                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) {
-                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
-                    GDeAllocateString( sym );
-                } else {
-                    IllName( sym );
-                }
-            }
-        }
-        AdvanceITPtr();
-        if( !RecComma() ) {
-            GAllocEOL();
-            break;
-        }
-        if( RecKeyWord( StatKW ) && RecNextOpr( OPR_EQU ) ) {
-            GAllocEOL();
-            DeallocStat();
-            break;
-        }
-    }
-    GEndDeAllocate();
-    ReqCloseParen();
-    ReqNOpn();
-    AdvanceITPtr();
-    ReqEOS();
-}
-
-
-static  void    DeallocStat( void )
-{
-    ChkStat();
 }
 
 
@@ -268,6 +135,18 @@ static  void    ChkStat( void )
 }
 
 
+static  void    AllocStat( void )
+{
+    ChkStat();
+}
+
+
+static  void    DeallocStat( void )
+{
+    ChkStat();
+}
+
+
 static  void    ChkLoc( void )
 {
     AdvanceITPtr();
@@ -276,4 +155,126 @@ static  void    ChkLoc( void )
         GAllocLoc();
     }
     AdvanceITPtr();
+}
+
+
+static  void    AllocLoc( void )
+{
+    ChkLoc();
+}
+
+
+void    CpDeAllocate( void )
+//==========================
+// Process DEALLOCATE statement.
+//      DEALLOCATE( arr,...,[STAT=istat])
+{
+    sym_id      sym;
+
+    StmtExtension( SP_STRUCTURED_EXT );
+    if( RecTrmOpr()
+      && RecNOpn() ) {
+        AdvanceITPtr();
+    }
+    ReqOpenParen();
+    GBegDeAllocate();
+    for( ;; ) {
+        if( ReqName( NAME_ARRAY ) ) {
+            sym = LkSym();
+            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_SUBSCRIPTED)
+                  && _Allocatable( sym ) ) {
+                    GDeAllocate( sym );
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR)
+                  && (sym->u.ns.xt.size == 0) ) {
+                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
+                    GDeAllocateString( sym );
+                } else {
+                    IllName( sym );
+                }
+            }
+        }
+        AdvanceITPtr();
+        if( !RecComma() ) {
+            GAllocEOL();
+            break;
+        }
+        if( RecKeyWord( StatKW )
+          && RecNextOpr( OPR_EQU ) ) {
+            GAllocEOL();
+            DeallocStat();
+            break;
+        }
+    }
+    GEndDeAllocate();
+    ReqCloseParen();
+    ReqNOpn();
+    AdvanceITPtr();
+    ReqEOS();
+}
+
+
+void    CpAllocate( void )
+//========================
+// Process ALLOCATE statement.
+//      ALLOCATE( arr([l:]u,...),...,[STAT=istat])
+//          or
+//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc)
+//          or
+//      ALLOCATE( arr([l:]u,...),...,LOCATION=loc, [STAT=istat])
+{
+    sym_id      sym;
+
+    StmtExtension( SP_STRUCTURED_EXT );
+    if( RecTrmOpr()
+      && RecNOpn() ) {
+        AdvanceITPtr();
+    }
+    ReqOpenParen();
+    GBegAllocate();
+    for( ;; ) {
+        if( ReqName( NAME_ARRAY ) ) {
+            sym = LkSym();
+            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_SUBSCRIPTED)
+                  && _Allocatable( sym )
+                  && !( (sym->u.ns.u1.s.typ == FT_CHAR)
+                  && (sym->u.ns.xt.size == 0) ) ) {
+                    AdvanceITPtr();
+                    ReqOpenParen();
+                    sym->u.ns.u1.s.xflags |= SY_DEFINED;
+                    GAllocate( sym );
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR)
+                  && (sym->u.ns.xt.size == 0)
+                  && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
+                    AdvanceITPtr();
+                    ReqMul();
+                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
+                    GAllocateString( sym );
+                } else {
+                    IllName( sym );
+                }
+            }
+        }
+        AdvanceITPtr();
+        if( !RecComma() ) {
+            GAllocEOL();
+            break;
+        }
+        if( RecNextOpr( OPR_EQU ) ) {
+            GAllocEOL();
+            if( RecKeyWord( LocKW ) ) {
+                AllocLoc();
+            }
+            if( RecKeyWord( StatKW ) ) {
+                AllocStat();
+            }
+            break;
+        }
+    }
+    GEndAllocate();
+    ReqCloseParen();
+    ReqNOpn();
+    AdvanceITPtr();
+    ReqEOS();
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Windows NT Video Miniport for the VirtualBox/bochs/qemu SVGA adapter.
  * This miniport programs the hardware directly and does not use or require
  * the video BIOS or VBE.
@@ -76,7 +76,7 @@ static void vmpValidateMode( PVIDEOMP_MODE Mode, ULONG FramebufLen )
         /* Horizontal resolution should be divisible by 8. */
         if( Mode->HorzRes % 8)
             break;
-        
+
         /* Validate memory requirements. */
         ulModeMem = vmpPitchByBpp( Mode->HorzRes, Mode->Bpp ) * Mode->VertRes;
         if( ulModeMem > FramebufLen )
@@ -87,7 +87,7 @@ static void vmpValidateMode( PVIDEOMP_MODE Mode, ULONG FramebufLen )
     } while( 0 );
 }
 
-/* Determine whether the supported adapter is present. Note that this 
+/* Determine whether the supported adapter is present. Note that this
  * function is not allowed to change the state of the adapter!
  */
 VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentString,
@@ -124,8 +124,8 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
     }
 
     /* Sadly, VideoPortGetAccessRanges was not present in NT 3.1. There is no
-     * reasonably simple way to dynamically import port driver routines on 
-     * newer versions, so we'll just do without. 
+     * reasonably simple way to dynamically import port driver routines on
+     * newer versions, so we'll just do without.
      */
 #ifdef USE_GETACCESSRANGES
     /* If PCI is supported, query the bus for resource mappings. */
@@ -145,8 +145,8 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
             accessRanges[1].RangeLength = pciAccessRanges[0].RangeLength;
         } else {
             /* On NT versions without PCI support, we won't even attempt this.
-             * So if we tried to query the PCI device and failed to find it, 
-             * it really isn't there and we have to give up. 
+             * So if we tried to query the PCI device and failed to find it,
+             * it really isn't there and we have to give up.
              */
             VideoDebugPrint( (1, "videomp: PCI adapter not found\n") );
             return( ERROR_DEV_NOT_EXIST );
@@ -161,7 +161,7 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
      */
     if( PortVersion < VP_VER_W2K )
         accessRanges[0].RangeStart = RtlConvertUlongToLargeInteger( 0x1CC );
- 
+
     /* Check for a conflict in case someone else claimed our resources. */
     status = VideoPortVerifyAccessRanges( HwDevExt, NUM_ACCESS_RANGES, accessRanges );
     if( status != NO_ERROR ) {
@@ -192,7 +192,7 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
 
     /* Attempt to claim and map the memory and I/O address ranges. */
     for( i = 0; i < NUM_ACCESS_RANGES; ++i, ++pVirtAddr ) {
-        *pVirtAddr = VideoPortGetDeviceBase( pExt, 
+        *pVirtAddr = VideoPortGetDeviceBase( pExt,
                                              accessRanges[i].RangeStart,
                                              accessRanges[i].RangeLength,
                                              accessRanges[i].RangeInIoSpace );
@@ -212,7 +212,7 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
         return( ERROR_DEV_NOT_EXIST );
     }
 
-    /* We need to access VGA and other I/O ports. Fortunately the HAL doesn't 
+    /* We need to access VGA and other I/O ports. Fortunately the HAL doesn't
      * care at all how the I/O ports are or aren't mapped on x86 platforms.
      */
     pExt->IOAddrVGA = NULL;
@@ -372,7 +372,7 @@ BOOLEAN HwVidStartIO( PVOID HwDevExt, PVIDEO_REQUEST_PACKET ReqPkt )
     {
         PVIDEO_NUM_MODES        numModes;
 
-        VideoDebugPrint( (2, "QUERY_NUM_AVAIL_MODES\n") );        
+        VideoDebugPrint( (2, "QUERY_NUM_AVAIL_MODES\n") );
         if( ReqPkt->OutputBufferLength < sizeof( VIDEO_NUM_MODES ) ) {
             status = ERROR_INSUFFICIENT_BUFFER;
         } else {
@@ -411,7 +411,7 @@ BOOLEAN HwVidStartIO( PVOID HwDevExt, PVIDEO_REQUEST_PACKET ReqPkt )
         } else {
             ReqPkt->StatusBlock->Information = sizeof( VIDEO_MODE_INFORMATION );
             modeInfo  = ReqPkt->OutputBuffer;
-            vmpFillModeInfo( modeInfo, 
+            vmpFillModeInfo( modeInfo,
                              VideoModes[pExt->CurrentModeNumber].HorzRes,
                              VideoModes[pExt->CurrentModeNumber].VertRes,
                              VideoModes[pExt->CurrentModeNumber].Bpp );
@@ -431,7 +431,7 @@ BOOLEAN HwVidStartIO( PVOID HwDevExt, PVIDEO_REQUEST_PACKET ReqPkt )
             break;
         }
 
-        BOXV_ext_mode_set( pExt, VideoModes[modeNumber].HorzRes, 
+        BOXV_ext_mode_set( pExt, VideoModes[modeNumber].HorzRes,
                            VideoModes[modeNumber].VertRes, VideoModes[modeNumber].Bpp,
                            VideoModes[modeNumber].HorzRes, VideoModes[modeNumber].VertRes );
 
@@ -440,7 +440,7 @@ BOOLEAN HwVidStartIO( PVOID HwDevExt, PVIDEO_REQUEST_PACKET ReqPkt )
 
     case IOCTL_VIDEO_RESET_DEVICE:
         VideoDebugPrint( (2, "RESET_DEVICE\n") );
-	/* Not calling the following routine avoids some visual glitches. */
+        /* Not calling the following routine avoids some visual glitches. */
         /* BOXV_ext_disable( pExt ); */
         break;
 
@@ -710,7 +710,7 @@ ULONG DriverEntry( PVOID Context1, PVOID Context2 )
     /* Later NT versions support PCI; recent versions ignore this entirely */
     hwInitData.AdapterInterfaceType = PCIBus;
 
-    /* The PsGetVersion function was not available in NT 3.x. We therefore 
+    /* The PsGetVersion function was not available in NT 3.x. We therefore
      * implement a poor man's version detection by successively reducing the
      * HwInitDataSize until the video miniport (we hope) accepts it.
      */

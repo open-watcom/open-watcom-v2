@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +151,7 @@ static intstar4 CaseValue( void )
     } else if( _IsTypeLogical( CITNode->typ  ) ) {
         return( _LogValue( CITNode->value.logstar1 ) );
     } else { // if( CITNode->typ = FT_CHAR ) {
-        return( *CITNode->value.cstring.strptr );
+        return( (byte)*CITNode->value.string.ptr );
     }
 }
 

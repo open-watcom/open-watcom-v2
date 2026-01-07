@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -43,18 +44,16 @@
 #include <dos.h>
 #include <dosfunc.h>
 #include "rtdata.h"
-#include "rterrno.h"
-#include "seterrno.h"
+#include "doserrno.h"
 #include "rtumask.h"
 #include "tinyio.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "extender.h"
 #include "msdos.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
+static int _WCNEAR __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                                        unsigned shflag, va_list args )
 {
     unsigned    rwmode;
@@ -82,14 +81,13 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
     if( _dos_open( __F_NAME(name,mbName), rwmode | shflag, &handle ) == 0 ) {
         if( handle >= __NFiles ) {
             TinyClose( handle );
-            _RWD_errno = EMFILE;
+            lib_set_errno( EMFILE );
             return( -1 );
         }
     }
-                                        /* 17-apr-90   05-sep-91 */
     if( (mode & (O_RDONLY | O_WRONLY | O_RDWR)) != O_RDONLY ) {
         if( handle != -1 ) {
-            if( ! isatty( handle ) ) {      /* if not a device */
+            if( !isatty( handle ) ) {      /* if not a device */
 #if 0
                 rc = TinyAccess( name, 0 ); /* check for existence */
                 if( TINY_ERROR( rc ) ) {    /* file does not exist */
@@ -105,10 +103,11 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                  * the TinyAccess will fail on (e.g. named pipes).
                  */
                 /* must not exist if O_CREAT specified */
-                if( (mode & O_EXCL) && (mode & O_CREAT) ) {
+                if( (mode & O_EXCL)
+                  && (mode & O_CREAT) ) {
 #endif
                     TinyClose( handle );
-                    _RWD_errno = EEXIST;
+                    lib_set_errno( EEXIST );
                     return( -1 );
                 } else if( mode & O_TRUNC ) {   /* truncate file */
                     rc = TinyWrite( handle, &dummy, 0 );
@@ -121,7 +120,8 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
         }
     }
     if( handle == -1 ) {                    /* could not open */
-        if( (mode & O_CREAT) == 0 || _RWD_doserrno != E_nofile ) {
+        if( (mode & O_CREAT) == 0
+          || lib_get_doserrno() != E_nofile ) {
             return( -1 );
         }
         /* creating the file */
@@ -130,39 +130,42 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
             permission = S_IWRITE | S_IREAD;
         permission &= ~_RWD_umaskval;               /* 05-jan-95 */
         attr = 0;
-        if(( permission & S_IWRITE) == 0 )
+        if( (permission & S_IWRITE) == 0 ) {
             attr = _A_RDONLY;
-        #if 0
-            /* remove this support because it is not consistently available */
-            if( _RWD_osmajor >= 5
-                #ifdef __DOS_EXT__
-                    && !_IsFlashTek()
-                    && !_IsRational()
-                #endif
-                ) {
-                /* this function is only available in version DOS 5 and up */
-                /* this new way was added to handle the case of creating a */
-                /* new file with read-only access, but with a writeable */
-                /* file handle */
-                #ifdef __WIDECHAR__
-                    rc = TinyCreateEx( mbName, rwmode|shflag, attr, TIO_OPEN );
-                #else
-                    rc = TinyCreateEx( name, rwmode|shflag, attr, TIO_OPEN );
-                #endif
-                if( TINY_ERROR( rc ) ) {
-                    return( __set_errno_dos( TINY_INFO( rc ) ) );
-                }
-                handle = TINY_INFO( rc );
-            } else
-        #endif
+        }
+#if 0
+        /* remove this support because it is not consistently available */
+    #ifdef __DOS_EXT__
+        if( _RWD_osmajor >= 5
+          && !_IsFlashTek()
+          && !_IsRational() ) {
+    #else
+        if( _RWD_osmajor >= 5 ) {
+    #endif
+            /* this function is only available in version DOS 5 and up */
+            /* this new way was added to handle the case of creating a */
+            /* new file with read-only access, but with a writeable */
+            /* file handle */
+    #ifdef __WIDECHAR__
+            rc = TinyCreateEx( mbName, rwmode | shflag, attr, TIO_OPEN );
+    #else
+            rc = TinyCreateEx( name, rwmode | shflag, attr, TIO_OPEN );
+    #endif
+            if( TINY_ERROR( rc ) ) {
+                return( __set_errno_dos( TINY_INFO( rc ) ) );
+            }
+            handle = TINY_INFO( rc );
+        } else {
+#else
         {
+#endif
             /* do it the old way */
             if( _dos_creat( __F_NAME(name,mbName), attr, &handle ) ) {
                 return( -1 );
             }
             if( handle >= __NFiles ) {
                 TinyClose( handle );
-                _RWD_errno = EMFILE;
+                lib_set_errno( EMFILE );
                 return( -1 );
             }
             /*

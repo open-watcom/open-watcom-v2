@@ -210,6 +210,31 @@ static bool chk_is_dir( const char *name )
     return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
 }
 
+static void fix_path_separator( char *path )
+/*******************************************
+ * remove trailing path separator because filename path component
+ * can contain trailing slash from splitpath function
+ * it is necessary for OS/2 otherwise path related functions fail
+ * but we fix it for all platforms to be transparent
+ */
+{
+#ifndef __UNIX__
+    /*
+     * special case for drive letters
+     */
+    if( cisalpha( path[0] )
+      && path[1] == ':' ) {
+        path += 2;
+    }
+#endif
+    if( path[0] != NULLCHAR && path[1] != NULLCHAR ) {
+        path += strlen( path ) - 1;
+        if( IS_PATH_SEP( path ) ) {
+            *path = NULLCHAR;
+        }
+    }
+}
+
 char *CmdGetFileName( char *src, char **fname, bool osname )
 /**********************************************************/
 {
@@ -227,7 +252,7 @@ char *CmdGetFileName( char *src, char **fname, bool osname )
         if( t == '\\' ) {
             if( !dquote ) {
                 t = src[1];
-                if( cisws( t ) || t == '\"' || t == '\\' ) {
+                if( t == '\"' || t == '\\' ) {
                     src++;
                 } else {
                     t = '\\';
@@ -282,7 +307,7 @@ STATIC char *createTmpFileName( void )
     }
 
     for( ;; ) {
-        tmpFileChar = tmpFileNumber % 26 + 'a' ;
+        tmpFileChar = ( tmpFileNumber % 26 ) + 'a' ;
         buf = StartVec();
         FmtStr( fileName, "wm%c%u.tmp", tmpFileChar, tmpFileNumber );
         if( tmpPath != NULL ) {
@@ -802,7 +827,7 @@ STATIC bool percentRename( char *arg )
         return( true );
     }
 
-    /* Get first LFN */
+    /* Get first file name */
     p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
@@ -813,7 +838,7 @@ STATIC bool percentRename( char *arg )
     *p++ = NULLCHAR;        /* terminate first file name */
     /* skip ws after first and before second file name */
     p = SkipWS( p );
-    /* Get second LFN as well */
+    /* Get second file name as well */
     p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR
       && !cisws( *p ) ) {
@@ -938,7 +963,7 @@ STATIC bool percentCopy( char *arg )
         return( true );
     }
     /*
-     * Get first LFN
+     * Get first file name
      */
     p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
@@ -953,7 +978,7 @@ STATIC bool percentCopy( char *arg )
      */
     p = SkipWS( p );
     /*
-     * Get second LFN as well
+     * Get second file name as well
      */
     p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR
@@ -1438,7 +1463,7 @@ STATIC void doForSubst( const char *var, size_t varlen,
 
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC RET_T handleFor( char *line )
 /***********************************
@@ -1519,7 +1544,7 @@ STATIC RET_T handleFor( char *line )
     return( RET_SUCCESS );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 
@@ -1553,10 +1578,11 @@ STATIC RET_T handleCD( char *cmd )
     }
 #endif
     /*
-     * handle File name
+     * handle directory name
      */
     p = CmdGetFileName( p, &path, true );
     *p = NULLCHAR;                  /* terminate path */
+    fix_path_separator( path );     /* fix trailing separator */
     if( chdir( path ) != 0 ) {      /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, path );
         return( RET_ERROR );
@@ -1577,7 +1603,7 @@ STATIC RET_T handleChangeDrive( const char *cmd )
 
     drive_index = (ctoupper( *cmd ) - 'A' + 1);
     if( drive_index == 0
-      || drive_index > 26 ) {
+      || drive_index > ('Z' - 'A' + 1) ) {
         return( RET_ERROR );
     }
     if( _chdrive( drive_index ) ) {
@@ -1694,8 +1720,8 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     size_t              i;
     size_t              j;
     size_t              len;
-    DIR                 *dirp;
-    struct dirent       *dire;
+    DIRXX               *dirp;
+    struct DIRENTXX     *dire;
     bool                rc = true;
 
     /*
@@ -1729,13 +1755,13 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         memcpy( fname, fullpath + j, len - j + 1 );
     }
 #endif
-    dirp = opendir( fpath );
+    dirp = OPENDIRXX( fpath );
     if( dirp == NULL ) {
 //        Log( false, "File (%s) not found.\n", f );
         return( true );
     }
 
-    while( ( dire = readdir( dirp ) ) != NULL ) {
+    while( ( dire = READDIRXX( dirp ) ) != NULL ) {
         if( ENTRY_INVALID( fname, dire ) )
             continue;
         /*
@@ -1778,7 +1804,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
             }
         }
     }
-    closedir( dirp );
+    CLOSEDIRXX( dirp );
     /*
      * process any directories found
      */
@@ -1865,10 +1891,12 @@ STATIC RET_T handleRM( char *cmd )
 
     for( ok = getRMArgs( cmd, &flags, &p ); ok && p != NULL && *p != NULLCHAR; ok = getRMArgs( NULL, NULL, &p ) ) {
         /*
-         * handle File name
+         * handle File/Directory name
          */
         p = CmdGetFileName( p, &name, false );
-        *p = NULLCHAR;      /* terminate file name */
+        *p = NULLCHAR;                  /* terminate file name */
+        if( flags.bDirs )
+            fix_path_separator( name ); /* fix trailing separator */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
         }
@@ -1968,12 +1996,13 @@ STATIC RET_T handleMkdir( char *cmd )
         p = SkipWS( p + 1 );
     }
     /*
-     * handle File name
+     * handle directory name
      */
     p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
     }
+    fix_path_separator( path ); /* fix trailing separator */
     if( !processMkdir( path, mkparents ) ) {
         return( RET_ERROR );
     }
@@ -2007,6 +2036,7 @@ STATIC RET_T handleRmdir( char *cmd )
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
         return( RET_ERROR );
     }
+    fix_path_separator( path ); /* fix trailing separator */
     if( rmdir( path ) ) {
         return( RET_ERROR );
     }
@@ -2138,7 +2168,7 @@ STATIC void killTmpEnv( UINT16 tmp )
 #endif
 
 #ifdef __WATCOMC__
-#pragma on (check_stack);
+#pragma on( check_stack );
 #endif
 STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 /*****************************************************/
@@ -2165,7 +2195,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     for( arg = cmd; *arg != NULLCHAR; arg++ ) {
         if( !dquote ) {
             if( cisws( *arg )
-              || *arg == Glob.swchar
+              || *arg == Glob.shell_swchar
               || *arg == '+'
               || *arg == '=' ) {
                 break;
@@ -2365,7 +2395,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     return( my_ret );
 }
 #ifdef __WATCOMC__
-#pragma off(check_stack);
+#pragma pop( check_stack );
 #endif
 
 

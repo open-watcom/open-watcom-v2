@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1519,13 +1519,13 @@ static void writeAttrH( void )
             }
             while( grp_index < m->grpIndex ) {
                 grp_index++;
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u - %s */ \\\n", grp->prefix, grp_index, m->name );
             }
             grp_index++;
             if( m->attr == NULL ) {
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u - %s */ \\\n", grp->prefix, grp_index, m->name );
             } else {
-                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2u */ \\\n", m->attr, grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2u - %s */ \\\n", m->attr, grp->prefix, grp_index, m->name );
             }
         }
         fputs( "\n\n", o_attrh );
@@ -1667,7 +1667,7 @@ static char *ProcessOption( char *p, char *option_start )
     case 'r':   // 'rc='
         if( *p++ == 'c'
           && *p++ == '=' ) {
-            int i;
+            unsigned i;
 
             i = 0;
             while( *p != '\0'
@@ -1847,10 +1847,9 @@ int main( int argc, char **argv )
             showUsageAndExit();
         }
     }
-    if( i_gml == NULL )
-    {
-	    error( "fatal: gml file required\n\n" );
-	    showUsageAndExit();
+    if( i_gml == NULL ) {
+        error( "fatal: gml file required\n\n" );
+        showUsageAndExit();
     }
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );

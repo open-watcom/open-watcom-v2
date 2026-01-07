@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -45,8 +46,6 @@
     #include <windows.h>
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
-#include "seterrno.h"
 #include "tinyio.h"
 #include "_doslfn.h"
 
@@ -70,7 +69,7 @@ typedef struct {
 #if defined( __WATCOM_LFN__ )
 
 #ifdef _M_I86
-extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
+extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned date, unsigned time, unsigned mode );
   #ifdef __BIG_DATA__
     #pragma aux __dos_utime_lfn = \
             "push   ds"         \
@@ -81,7 +80,7 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             __INT_21            \
             "pop    ds"         \
             "call __lfnerror_0" \
-        __parm __caller     [__dx __ax] [__cx] [__di] [__bx] \
+        __parm __caller     [__dx __ax] [__di] [__cx] [__bx] \
         __value             [__dx __ax] \
         __modify __exact    [__ax __dx]
   #else
@@ -90,17 +89,17 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
             "stc"               \
             __INT_21            \
             "call __lfnerror_0" \
-        __parm __caller     [__dx] [__cx] [__di] [__bx] \
+        __parm __caller     [__dx] [__di] [__cx] [__bx] \
         __value             [__dx __ax] \
         __modify __exact    [__ax __dx]
   #endif
 #endif
 
-static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date, unsigned mode )
+static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned date, unsigned time, unsigned mode )
 /***********************************************************************************************/
 {
   #ifdef _M_I86
-    return( __dos_utime_lfn( fname, time, date, mode ) );
+    return( __dos_utime_lfn( fname, date, time, mode ) );
   #else
     dpmi_regs_struct    dr;
 
@@ -159,13 +158,13 @@ static int _utime_sfn( const char *fname, _dos_tms *dostms )
     if( regs.x.cflag ) {
         switch( regs.w.ax ) {
         case 2:
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             break;
         case 4:
-            _RWD_errno = EMFILE;
+            lib_set_errno( EMFILE );
             break;
         case 5:
-            _RWD_errno = EACCES;
+            lib_set_errno( EACCES );
             break;
         }
         return( -1 );
@@ -178,14 +177,14 @@ static int _utime_sfn( const char *fname, _dos_tms *dostms )
     regs.h.al = 1;           /* set date & time */
     intdos( &regs, &regs );
     if( regs.x.cflag ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     regs.w.bx = handle;
     regs.h.ah = DOS_CLOSE;
     intdos( &regs, &regs );
     if( regs.x.cflag ) {
-        _RWD_errno = EACCES;
+        lib_set_errno( EACCES );
         return( -1 );
     }
     return( 0 );
@@ -232,19 +231,18 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, struct utimbuf co
     _dos_tms    dostms;
 
     if( _get_dos_tms( times, &dostms ) ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
   #ifdef __WATCOM_LFN__
     if( _RWD_uselfn ) {
         lfn_ret_t   rc;
 
-        rc = _dos_utime_lfn( fname, dostms.wr_time, dostms.wr_date, 3 );
+        rc = _dos_utime_lfn( fname, dostms.wr_date, dostms.wr_time, 3 );
         if( LFN_ERROR( rc ) ) {
             return( __set_errno_dos( LFN_INFO( rc ) ) );
         }
         if( LFN_OK( rc ) ) {
-            rc = _dos_utime_lfn( fname, dostms.ac_time, dostms.ac_date, 5 );
+            rc = _dos_utime_lfn( fname, dostms.ac_date, dostms.ac_time, 5 );
             if( LFN_ERROR( rc ) ) {
                 return( __set_errno_dos( LFN_INFO( rc ) ) );
             }

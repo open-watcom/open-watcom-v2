@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,4 +44,4 @@
 typedef int     (*escinp_fn)( void );
 typedef void    (*escout_fn)( int );
 
-extern int      ESCChar( int, escinp_fn, msg_codes *, escout_fn );
+extern int      ESCChar( escinp_fn, escout_fn, msg_codes * );

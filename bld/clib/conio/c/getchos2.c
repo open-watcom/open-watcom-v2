@@ -82,7 +82,7 @@ _WCRTLINK int getch( void )
     if( rc == ERROR_KBD_DETACHED )
         return( EOF );
     if( info.chChar == 0
-      || info.chChar == 0xe0 ) {
+      || info.chChar == (unsigned char)0xe0 ) {
         _RWD_cbyte2 = info.chScan;
     }
     return( info.chChar );

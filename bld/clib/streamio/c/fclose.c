@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,16 @@
 #include "lseek.h"
 #include "streamio.h"
 #include "close.h"
-#include "clibsupp.h"
+#include "_flush.h"
 #include "tmpfile.h"
 
 
 #ifndef __UNIX__
-void    (*__RmTmpFileFn)( FILE *fp );
+void    _WCNEAR (*__RmTmpFileFn)( FILE *fp );
 #endif
 
 
-int __doclose( FILE *fp, int close_handle )
+int _WCNEAR __doclose( FILE *fp, int close_handle )
 {
     int         ret;
 
@@ -96,7 +97,7 @@ int __doclose( FILE *fp, int close_handle )
     return( ret );
 }
 
-int __shutdown_stream( FILE *fp, int close_handle )
+int _WCNEAR __shutdown_stream( FILE *fp, int close_handle )
 {
     int         ret;
 

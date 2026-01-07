@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #if defined(__NT__)
     #include <windows.h>
@@ -44,10 +45,8 @@
         #include <owfileng.h>
     #endif
 #endif
-#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -72,12 +71,12 @@ _WCRTLINK int fsync( int handle )
     }
   #elif defined(__OS2__)
     if( DosBufReset( handle ) != 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         ret = -1;
     }
   #elif defined(__NETWARE__)
     if( FEFlushWrite( handle ) != 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         ret = -1;
     }
   #else

@@ -34,7 +34,7 @@
 /* $Id: termcap.h.in,v 1.16 2001/03/24 21:53:27 tom Exp $ */
 
 #ifndef NCURSES_TERMCAP_H_incl
-#define NCURSES_TERMCAP_H_incl	1
+#define NCURSES_TERMCAP_H_incl  1
 
 #undef  NCURSES_VERSION
 #define NCURSES_VERSION "5.3"
@@ -48,16 +48,16 @@ extern "C"
 
 #include <sys/types.h>
 
-#undef  NCURSES_CONST 
-#define NCURSES_CONST /*nothing*/ 
+#undef  NCURSES_CONST
+#define NCURSES_CONST /*nothing*/
 
-#undef  NCURSES_OSPEED 
-#define NCURSES_OSPEED short 
+#undef  NCURSES_OSPEED
+#define NCURSES_OSPEED short
 
 extern NCURSES_EXPORT_VAR(char) PC;
 extern NCURSES_EXPORT_VAR(char *) UP;
 extern NCURSES_EXPORT_VAR(char *) BC;
-extern NCURSES_EXPORT_VAR(NCURSES_OSPEED) ospeed; 
+extern NCURSES_EXPORT_VAR(NCURSES_OSPEED) ospeed;
 
 #if !defined(NCURSES_TERM_H_incl)
 extern NCURSES_EXPORT(char *) tgetstr (NCURSES_CONST char *, char **);

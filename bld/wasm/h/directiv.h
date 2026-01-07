@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ typedef enum {
 /*
  * forward declaration
  */
-typedef struct dir_node dir_node;
+//typedef struct dir_node dir_node;
 
 /*---------------------------------------------------------------------------*/
 
@@ -131,7 +131,7 @@ typedef struct stacknode {
 
 typedef struct seg_list {
     struct seg_list     *next;
-    dir_node            *seg;
+    dir_node_handle     seg;
 } seg_list;
 
 typedef struct {
@@ -142,7 +142,7 @@ typedef struct {
 
 typedef struct {
     direct_idx          idx;            // segment lname/order index
-    asm_sym             *group;         // its group
+    asm_sym_handle      group;          // its group
     uint_32             start_loc;      // starting offset of current ledata or lidata
     uint_8              align       :4; // align field (enum segdef_align_values)
     uint_8              combine     :4; // combine field (values in pcobj.h)
@@ -153,7 +153,7 @@ typedef struct {
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
     uint_16             abs_frame;      // frame for absolute segment
-    asm_sym             *class_name;    // segment class name (lname)
+    asm_sym_handle      class_name;     // segment class name (lname)
 } seg_info;
 
 typedef struct {
@@ -182,7 +182,7 @@ typedef struct label_list {
     struct label_list   *next;
     char                *label;         // name of parameter
     char                *replace;       // string that replaces the label
-    asm_sym             *sym;           // structure definition or local label symbol
+    asm_sym_handle      sym;            // structure definition or local label symbol
     int                 size;           // size of parameter
     int                 factor;         // for local var only
     bool                is_register;    // for arguments only
@@ -270,7 +270,7 @@ typedef struct field_list {
     struct field_list   *next;
     char                *initializer;
     char                *value;
-    asm_sym             *sym;
+    asm_sym_handle      sym;
 } field_list;
 
 typedef struct {
@@ -303,8 +303,8 @@ typedef struct dir_node {
                     // and symbolic integer constants.
 
 typedef struct {
-    dir_node            *head;
-    dir_node            *tail;
+    dir_node_handle     head;
+    dir_node_handle     tail;
 } symbol_queue;     // tables array - queues of symbols of 1 type ie: segments
                     // the data are actually part of the symbol table
 
@@ -315,7 +315,7 @@ typedef struct {
 typedef struct a_definition_struct {
     unsigned short      struct_depth;
     stacknode           *struct_stack;      // stack of nested structs being defined
-    dir_node            *curr_struct;
+    dir_node_handle     curr_struct;
 } a_definition_struct;
 
 extern a_definition_struct      Definition;
@@ -347,7 +347,7 @@ typedef struct {
     os_type             ostype;         // operating system;
     bool                use32;          // If 32-bit segment is used
     bool                mseg;           // mixed segments (16/32-bit)
-    asm_sym             *flat_grp;      // FLAT group symbol
+    asm_sym_handle      flat_grp;       // FLAT group symbol
     const FNAME         *srcfile;
 } module_info;                          // Information about the module
 
@@ -361,16 +361,16 @@ extern symbol_queue     Tables[TAB_SIZE];   // tables of definitions
 
 /*---------------------------------------------------------------------------*/
 
-extern dir_node         *AllocD( const char * );
+extern dir_node_handle  AllocD( const char * );
 
-extern dir_node         *dir_insert( const char *, int );
-extern void             dir_to_sym( dir_node * );
-extern void             dir_change( dir_node *, int );
-extern void             dir_init( dir_node  *, int );
+extern dir_node_handle  dir_insert( const char *, int );
+extern void             dir_to_sym( dir_node_handle );
+extern void             dir_change( dir_node_handle, int );
+extern void             dir_init( dir_node_handle, int );
 
 extern uint_32          GetCurrAddr( void );    // Get offset from current segment
 
-extern dir_node         *GetCurrSeg( void );
+extern dir_node_handle  GetCurrSeg( void );
 /* Get current segment; NULL means none */
 
 extern bool             ExtDef( token_buffer *tokbuf, token_idx, bool );    // define an global or external symbol
@@ -416,7 +416,7 @@ extern bool             AlignDirective( asm_token directive, token_buffer *tokbu
 extern bool             ForDirective( token_buffer *tokbuf, token_idx, irp_type );
 
 extern void             DefFlatGroup( void );
-extern bool             SymIs32( asm_sym *sym );
+extern bool             SymIs32( asm_sym_handle sym );
 
 extern bool             directive( token_buffer *tokbuf, token_idx, asm_token );
 
@@ -426,34 +426,34 @@ extern void             ProcStackFini( void );
 extern uint_32          GetCurrSegStart(void);
 /* Get offset of segment at the start of current LEDATA record */
 
-#define GetSeg( x )     (dir_node *)x->segment
+#define GetSeg( x )     (dir_node_handle)x->segment
 
 #define SEGISCODE( x )  ( x->seg->e.seginfo->iscode == SEGTYPE_ISCODE )
 
-extern asm_sym          *GetGrp( asm_sym * );
+extern asm_sym_handle   GetGrp( asm_sym_handle sym );
 
 extern void             AssumeInit( void );     // init all assumed-register table
 extern bool             SetAssume( token_buffer *tokbuf, token_idx );       // Assume a register
 
-extern assume_reg       GetAssume( asm_sym *, assume_reg );
+extern assume_reg       GetAssume( asm_sym_handle sym, assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
    frame_datum of its fixup */
 
-extern assume_reg       GetPrefixAssume( asm_sym *, assume_reg );
+extern assume_reg       GetPrefixAssume( asm_sym_handle sym, assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
 extern bool             FixOverride( token_buffer *tokbuf, token_idx );
 /* Get the correct frame and frame_datum for a label when there is a segment
    or group override. */
 
-extern void             GetSymInfo( asm_sym * );
+extern void             GetSymInfo( asm_sym_handle sym );
 /* Store location information about a symbol */
 extern bool             NameDirective( token_buffer *tokbuf, token_idx );
 
 extern bool             Comment( int, token_buffer *tokbuf, token_idx, const char * ); /* handle COMMENT directives */
 
 extern bool             AddAlias( token_buffer *tokbuf, token_idx );
-extern void             FreeInfo( dir_node * );
+extern void             FreeInfo( dir_node_handle );
 extern void             push( void *stack, void *elt );
 extern void             *pop( void *stack );
 extern uint_32          GetCurrSegAlign( void );
@@ -468,7 +468,7 @@ extern void             heap( char *func ); // for debugging only
  *   included from write.c
  *---------------------------------------------------------------------------*/
 
-extern dir_node         *CurrProc;      // current procedure
+extern dir_node_handle  CurrProc;      // current procedure
 extern unsigned long    LineNumber;
 extern bool             PhaseError;
 

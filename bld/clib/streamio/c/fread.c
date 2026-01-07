@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -42,7 +43,6 @@
     #include "nw_lib.h"
 #endif
 #include "rtdata.h"
-#include "rterrno.h"
 #include "fileacc.h"
 #include "qread.h"
 #include "streamio.h"
@@ -60,7 +60,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
     _ValidFile( fp, 0 );
     _AccessFile( fp );
     if( (fp->_flag & _READ) == 0 ) {
-        _RWD_errno = EBADF;
+        lib_set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( 0 );

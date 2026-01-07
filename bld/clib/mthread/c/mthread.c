@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +61,6 @@
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
 #endif
-#include "rterrno.h"
 #include "liballoc.h"
 //#include "stacklow.h"
 #include "thread.h"
@@ -121,7 +121,7 @@ static int              critsect_next;
 static CRITICAL_SECTION **critsect_vector;
 static int              critsect_vectornext;
 
-static CRITICAL_SECTION *__NTGetCriticalSection( void )
+static CRITICAL_SECTION * _WCNEAR __NTGetCriticalSection( void )
 {
     CRITICAL_SECTION *ptr;
 
@@ -147,7 +147,7 @@ static CRITICAL_SECTION *__NTGetCriticalSection( void )
     return( ptr );
 }
 
-static void __NTDeleteCriticalSection( void )
+static void _WCNEAR __NTDeleteCriticalSection( void )
 {
     int i;
 
@@ -156,7 +156,7 @@ static void __NTDeleteCriticalSection( void )
     }
 }
 
-static void __NTFreeCriticalSection( void )
+static void _WCNEAR __NTFreeCriticalSection( void )
 {
     int i;
 
@@ -588,8 +588,8 @@ int __NTThreadInit( void )
 }
 
 
-static void __NTThreadFini( void )
-/********************************/
+static void _WCNEAR __NTThreadFini( void )
+/****************************************/
 {
     if( __TlsIndex != NO_INDEX ) {
         TlsFree( __TlsIndex );
@@ -645,8 +645,8 @@ void __NTRemoveThread( int close_handle )
     }
 }
 
-static void __ThreadExit( void )
-/******************************/
+static void _WCNEAR __ThreadExit( void )
+/**************************************/
 {
     __NTRemoveThread( TRUE );
     __NTThreadFini();
@@ -765,8 +765,8 @@ int __RdosThreadInit( void )
 
     #if 0
 
-static void __RdosThreadFini( void )
-/**********************************/
+static void _WCNEAR __RdosThreadFini( void )
+/******************************************/
 {
     if( __TlsIndex != NO_INDEX ) {
         __tls_free( __TlsIndex );
@@ -932,8 +932,8 @@ void __InitMultipleThread( void )
 }
 #endif
 
-static void __FiniSema4s( void )              // called from finalizer
-/******************************/
+static void _WCNEAR __FiniSema4s( void )              // called from finalizer
+/**************************************/
 {
     int         i;
 
@@ -987,4 +987,4 @@ static void __FiniSema4s( void )              // called from finalizer
 #endif
 }
 
-AYI( __FiniSema4s, INIT_PRIORITY_RUNTIME )
+AYIN( __FiniSema4s, INIT_PRIORITY_RUNTIME )

@@ -32,20 +32,18 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <wos2.h>
-#include "rterrno.h"
-#include "seterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"
 
 
-int __close( int handle )
+int _WCNEAR __close( int handle )
 {
     APIRET      rc;
     int         rv;

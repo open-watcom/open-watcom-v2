@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,14 +71,14 @@ static  void    OutCplx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.realpart );
+    *buff++ = '(';
+    FmtRealRtn( buff, &IORslt.scomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.imagpart );
+    *buff++ = ',';
+    FmtRealRtn( buff, &IORslt.scomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, COMPLEX_IO_WINDOW );
 }
 
@@ -89,14 +89,14 @@ static  void    OutDbcx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtDoubleRtn( buff + sizeof( char ), &IORslt.dcomplex.realpart );
+    *buff++ = '(';
+    FmtDoubleRtn( buff, &IORslt.dcomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtDoubleRtn( buff + sizeof( char ), &IORslt.dcomplex.imagpart );
+    *buff++ = ',';
+    FmtDoubleRtn( buff, &IORslt.dcomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, DCOMPLEX_IO_WINDOW );
 }
 
@@ -107,14 +107,14 @@ static  void    OutXtcx( void )
     char        *buff;
 
     buff = IOCB->buffer;
-    *buff = '(';
-    FmtExtendedRtn( buff + sizeof( char ), &IORslt.xcomplex.realpart );
+    *buff++ = '(';
+    FmtExtendedRtn( buff, &IORslt.xcomplex.realpart );
     buff += strlen( buff );
-    *buff = ',';
-    FmtExtendedRtn( buff + sizeof( char ), &IORslt.xcomplex.imagpart );
+    *buff++ = ',';
+    FmtExtendedRtn( buff, &IORslt.xcomplex.imagpart );
     buff += strlen( buff );
-    *buff = ')';
-    buff[ 1 ] = NULLCHAR;
+    *buff++ = ')';
+    *buff = NULLCHAR;
     F_SendData( IOCB->buffer, XCOMPLEX_IO_WINDOW );
 }
 
@@ -152,35 +152,37 @@ void    (* __FAR OutRtn[])( void ) = {        // this is not const anymore
 void    FreeOut( void ) {
 //=================
 
-    PTYPE       typ;
+    PTYPE       ptyp;
 
     CheckCCtrl();
     for(;;) {
-        typ = IOTypeRtn();
-        IOCB->typ = typ;
-        if( typ == PT_NOTYPE ) break;
-        if( typ == PT_ARRAY ) {
+        ptyp = IOTypeRtn();
+        IOCB->ptyp = ptyp;
+        if( ptyp == FPT_NOTYPE )
+            break;
+        if( ptyp == FPT_ARRAY ) {
             IOCB->arr_desc = IORslt.arr_desc;
-            typ = IOCB->arr_desc.typ;
-            IOCB->typ = typ;
-            if( typ == PT_CHAR ) {
+            ptyp = IOCB->arr_desc.ptyp;
+            IOCB->ptyp = ptyp;
+            if( ptyp == FPT_CHAR ) {
                 IORslt.string.len = IOCB->arr_desc.elmt_size;
             } else {
-                IOCB->arr_desc.elmt_size = SizeVars[ typ ];
+                IOCB->arr_desc.elmt_size = SizeVars[ptyp];
             }
             for(;;) {
-                if( typ == PT_CHAR ) {
+                if( ptyp == FPT_CHAR ) {
                     IORslt.string.strptr = IOCB->arr_desc.data;
                 } else {
-                    IOItemResult( IOCB->arr_desc.data, typ );
+                    IOItemResult( IOCB->arr_desc.data, ptyp );
                 }
-                OutRtn[ typ ]();
+                OutRtn[ptyp]();
                 --IOCB->arr_desc.num_elmts;
-                if( IOCB->arr_desc.num_elmts == 0 ) break;
+                if( IOCB->arr_desc.num_elmts == 0 )
+                    break;
                 IOCB->arr_desc.data += IOCB->arr_desc.elmt_size;
             }
         } else {
-            OutRtn[ typ ]();
+            OutRtn[ptyp]();
         }
     }
     SendEOR();

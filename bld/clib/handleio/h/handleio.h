@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,7 @@
 ****************************************************************************/
 
 
-extern unsigned     __IOMode( int handle );
-extern void         __set_handles( int num );
-extern void         __grow_iomode( int num );
-extern void         __shrink_iomode( void );
+extern void         _INTERNAL __set_handles( int num );
+extern void         _INTERNAL __grow_iomode( int num );
 
 extern unsigned     *__io_mode;

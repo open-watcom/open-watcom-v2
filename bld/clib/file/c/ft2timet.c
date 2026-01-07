@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -22,5 +22,5 @@ time_t __NT_filetime_to_timet( const FILETIME *ft )
 
     ulint.u.LowPart   =   ft->dwLowDateTime;
     ulint.u.HighPart  =   ft->dwHighDateTime;
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart - TICK_TO_UNIX_EPOCH ) / WINDOWS_TICK_PER_SEC );
 }

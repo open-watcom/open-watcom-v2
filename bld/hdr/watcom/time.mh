@@ -220,6 +220,9 @@ _WCRTLINK extern char       *_asctime( const __w_tm *__timeptr, char *__buf );
 _WCRTLINK extern char       *_ctime( const __w_time_t *__timer, char *__buf );
 _WCRTLINK extern __w_tm     *_gmtime( const __w_time_t *__timer, __w_tm *__tmbuf );
 _WCRTLINK extern __w_tm     *_localtime( const __w_time_t *__timer, __w_tm *__tmbuf );
+
+_WCRTLINK extern __w_time_t _mkgmtime( __w_tm *__tmbuf );
+_WCRTLINK extern __w_time_t timegm( __w_tm *__tmbuf );
 :segment LINUX
 _WCRTLINK extern char       *asctime_r( const __w_tm *__timeptr, char *__buf );
 _WCRTLINK extern char       *ctime_r( const __w_time_t *__timer, char *__buf );

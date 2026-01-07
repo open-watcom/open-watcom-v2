@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ typedef struct rt_init _WCNEAR      *struct_rt_init_ptr;
 #endif
 
 #if defined( _M_I86 )
-static void callit_near( npfn *f )
+static void _WCNEAR callit_near( npfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -121,7 +122,7 @@ static void callit_near( npfn *f )
     }
 }
 
-static void callit_far( fpfn *f )
+static void _WCNEAR callit_far( fpfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -132,7 +133,7 @@ static void callit_far( fpfn *f )
     }
 }
 #else
-static void callit( npfn *f )
+static void _WCNEAR callit( npfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -151,13 +152,7 @@ static void callit( npfn *f )
 ;       eax==15  -> run init routines whose priority is <= 15
 ;
 */
-#if defined( _M_I86 )
-void _WCFAR __FInitRtns( unsigned limit )
-{
-    __InitRtns( limit );
-}
-#endif
-void __InitRtns( unsigned limit )
+void _WCNEAR __InitRtns( unsigned limit )
 {
     __type_rtp local_limit;
     struct_rt_init_ptr  pnext;
@@ -221,13 +216,7 @@ void __InitRtns( unsigned limit )
 ;       eax==16, edx=255 -> run fini routines in range 16..255
 ;       eax==16, edx=40  -> run fini routines in range 16..40
 */
-#if defined( _M_I86 )
-void _WCFAR __FFiniRtns( unsigned min_limit, unsigned max_limit )
-{
-    __FiniRtns( min_limit, max_limit );
-}
-#endif
-void __FiniRtns( unsigned min_limit, unsigned max_limit )
+void _WCNEAR __FiniRtns( unsigned min_limit, unsigned max_limit )
 {
     __type_rtp local_min_limit;
     __type_rtp local_max_limit;

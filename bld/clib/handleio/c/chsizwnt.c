@@ -32,22 +32,21 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #include <windows.h>
-#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "osver.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "lseek.h"
 #include "thread.h"
 
 
-#define PAD_SIZE	512
+#define PAD_SIZE        512
 
 // pad with zero bytes
-void static __padfile( int handle, long offset, long diff )
+void static _WCNEAR __padfile( int handle, long offset, long diff )
 {
     int rc;
     unsigned amount;

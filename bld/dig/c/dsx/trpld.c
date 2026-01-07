@@ -45,23 +45,15 @@
 #include "envlkup.h"
 #include "realmod.h"
 #include "roundmac.h"
+#include "trpdoshd.h"
 
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
-#define TRAP_VECTOR             0x1a
+#define TRAP_SWITCH_VECTOR      0x1a
 #define PSP_ENVSEG_OFF          0x2c
 
-#define TRAP_SIGNATURE          0xdeaf
-
 #include "pushpck1.h"
-typedef struct {
-    unsigned_16         sig;
-    addr32_off          init;
-    addr32_off          req;
-    addr32_off          fini;
-} trap_file_header;
-
 typedef struct {
     memptr      ptr;
     unsigned_16 len;
@@ -149,7 +141,7 @@ extern void DoIntSwitchToRM( void );
         "xor    eax,eax" \
         "mov    ah,6" \
         "mov    cx,0xffff" \
-        "int    1ah" \
+        "int    1ah" /* TRAP_SWITCH_VECTOR */ \
         "popad" \
     __parm              [] \
     __value             \
@@ -285,6 +277,11 @@ static void GoToRealMode( void *rm_func )
             DPMISetPMInterruptVector( PMVectSaveList[i], OrigPMVects[i] );
         }
     } else {
+        /*
+         * DOS4GW has no raw switch to RM (DPMI API 0306)
+         * therefore it is emulated by call INT TRAP_SWITCH_VECTOR
+         * INT TRAP_SWITCH_VECTOR is setup to call RM function
+         */
         DoIntSwitchToRM();
     }
 }
@@ -364,7 +361,7 @@ static digld_error SetTrapHandler( void )
         }
     }
     if( IntrState == IS_RATIONAL ) {
-        MySetRMVector( TRAP_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
+        MySetRMVector( TRAP_SWITCH_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
     }
     return( DIGS_OK );
 }
@@ -484,7 +481,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
-    trap_file_header    __far *head;
+    dos_trap_header     __far *head;
     char                filename[_MAX_PATH];
     const char          *base_name;
     digld_error         err;
@@ -517,10 +514,10 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
       && (err = CopyEnv()) == DIGS_OK ) {
         err = DIGS_ERR_BAD_MODULE_FILE;
         head = EXTENDER_RM2PM( TrapDOSMem.rm, 0 );
-        if( head->sig == TRAP_SIGNATURE ) {
-            PMData->initfunc.s.offset = head->init;
-            PMData->reqfunc.s.offset  = head->req;
-            PMData->finifunc.s.offset = head->fini;
+        if( head->signature == TRAP_SIGNATURE ) {
+            PMData->initfunc.s.offset = head->init_off;
+            PMData->reqfunc.s.offset  = head->req_off;
+            PMData->finifunc.s.offset = head->fini_off;
             PMData->initfunc.s.segment = TrapDOSMem.rm;
             PMData->reqfunc.s.segment  = TrapDOSMem.rm;
             PMData->finifunc.s.segment = TrapDOSMem.rm;

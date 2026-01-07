@@ -228,11 +228,11 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
         new_ip = old->jvm.pc;
         //NYI: find length of instruction
         new_ip.offset += sizeof( unsigned_32 );
-        if( new_ip.segment != cur->jvm.pc.segment ||
-            new_ip.offset != cur->jvm.pc.offset ) {
+        if( new_ip.segment != cur->jvm.pc.segment
+          || new_ip.offset != cur->jvm.pc.offset ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->jvm.pc.segment != cur->jvm.pc.segment ||
-                   old->jvm.pc.offset != cur->jvm.pc.offset ) {
+        } else if( old->jvm.pc.segment != cur->jvm.pc.segment
+          || old->jvm.pc.offset != cur->jvm.pc.offset ) {
             return( MS_MODIFIED );
         }
     } else {

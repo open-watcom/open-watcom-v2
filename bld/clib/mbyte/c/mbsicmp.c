@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,17 @@ _WCRTLINK int _NEARFAR(_mbsicmp,_fmbsicmp)( const unsigned char _FFAR *s1, const
 //    if( !__IsDBCS )  return( _stricmp( s1, s2 ) );
 
     /*** Compare characters, one by one ***/
-    while( !_NEARFAR(_mbterm,_fmbterm)(s1) && !_NEARFAR(_mbterm,_fmbterm)(s2) ) {
+    while( _NEARFAR(_mbterm,_fmbterm)( s1 ) == 0 && _NEARFAR(_mbterm,_fmbterm)( s2 ) == 0 ) {
         status = _NEARFAR(_mbcicmp,_fmbcicmp)( s1, s2 );  /* compare chars */
-        if( status != 0 )  return( status );        /* if error, exit loop */
+        if( status != 0 )
+            return( status );                       /* if error, exit loop */
         s1 = _NEARFAR(_mbsinc,_fmbsinc)( s1 );      /* skip over character */
         s2 = _NEARFAR(_mbsinc,_fmbsinc)( s2 );      /* skip over character */
     }
 
-    if( _NEARFAR(_mbterm,_fmbterm)(s1) && _NEARFAR(_mbterm,_fmbterm)(s2) )
+    if( _NEARFAR(_mbterm,_fmbterm)( s1 ) && _NEARFAR(_mbterm,_fmbterm)( s2 ) ) {
         return( 0 );
-    else
+    } else {
         return( *s1 - *s2 );
+    }
 }

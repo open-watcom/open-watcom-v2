@@ -46,7 +46,7 @@
 #include "tmpfile.h"
 
 
-static unsigned __GetTmpPath( char *buf )
+static unsigned _WCNEAR __GetTmpPath( char *buf )
 {
 #ifndef __NETWARE__
     static char *evars[] = { "TMP", "TEMP", "TMPDIR", "TEMPDIR", "" };
@@ -86,7 +86,7 @@ static unsigned __GetTmpPath( char *buf )
     return( i );
 }
 
-static char __hex( int num )
+static char _WCNEAR __hex( int num )
 {
     num += '0';
     if( num > '9' ) {
@@ -105,7 +105,7 @@ static char __hex( int num )
     #define getuniqueid()   (getpid())
 #endif
 
-void __MkTmpFile( char *buf, int num )
+void _WCNEAR __MkTmpFile( char *buf, int num )
 {
     unsigned    pid;
     unsigned    i;
@@ -133,7 +133,7 @@ void __MkTmpFile( char *buf, int num )
     ptr[12] = NULLCHAR;
 }
 
-void __RmTmpFile( FILE *fp )
+void _WCNEAR __RmTmpFile( FILE *fp )
 {
     char    name[PATH_MAX + _TMPFNAME_LENGTH + 1];
 

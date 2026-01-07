@@ -29,19 +29,19 @@
 ****************************************************************************/
 
 
-extern void    GBegCall( itnode *itptr );
-extern void    GEndCall( itnode *itptr, int num_stmts );
-extern void    GArg( void );
-extern int     GParms( itnode *sp );
-extern void    GSPProlog( void );
-extern void    GEPProlog( void );
-extern void    GEpilog( void );
-extern void    GReturn( void );
-extern void    GEndBlockData( void );
-extern void    GGotoEpilog( void );
-extern void    GRetIdx( void );
-extern void    GNullRetIdx( void );
-extern void    GCallNoArgs( void );
-extern void    GCallWithArgs( void );
-extern void    GArgList( entry_pt *arg_list, uint args, PTYPE typ );
-extern void    GArgInfo( sym_id sym, PCODE code, PTYPE typ );
+extern void         GBegCall( itnode *itptr );
+extern void         GEndCall( itnode *itptr, unsigned_16 num_stmts );
+extern void         GArg( void );
+extern unsigned_16  GParms( itnode *sp );
+extern void         GSPProlog( void );
+extern void         GEPProlog( void );
+extern void         GEpilog( void );
+extern void         GReturn( void );
+extern void         GEndBlockData( void );
+extern void         GGotoEpilog( void );
+extern void         GRetIdx( void );
+extern void         GNullRetIdx( void );
+extern void         GCallNoArgs( void );
+extern void         GCallWithArgs( void );
+extern void         GArgList( entry_pt *arg_list, uint args, PTYPE ptyp );
+extern void         GArgInfo( sym_id sym, PCODE code, PTYPE ptyp );

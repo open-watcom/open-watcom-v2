@@ -389,6 +389,8 @@ static const char *validTargets[] = {
     "axp",
     "ppc",
     "mps",
+    "a64",
+    "arm",
     "sparc",
 /* host OS targets */
     "bsd",

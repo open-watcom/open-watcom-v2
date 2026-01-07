@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <dos.h>
 #include <windows.h>
 #include "roundmac.h"
-#include "rterrno.h"
 #include "rtdata.h"
 #include "thread.h"
 #include "heap.h"
@@ -52,9 +52,8 @@ _WCRTLINK void_nptr sbrk( int increment )
         cstg = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
         if( cstg != NULL )
             return( cstg );
-        _RWD_errno = ENOMEM;
-    } else {
-        _RWD_errno = EINVAL;
+        lib_set_errno( ENOMEM );
+        return( (void_nptr)-1 );
     }
-    return( (void_nptr)-1 );
+    return( (void_nptr)lib_set_EINVAL() );
 }

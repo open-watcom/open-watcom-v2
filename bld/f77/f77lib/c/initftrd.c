@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 #include "fthread.h"
 
 
-AXI( __InitBeginThread, INIT_PRIORITY_THREAD );
-AYI( __FiniBeginThread, INIT_PRIORITY_LIBRARY );
+AXI( __InitBeginFThread, INIT_PRIORITY_THREAD );
+AYI( __FiniBeginFThread, INIT_PRIORITY_LIBRARY );
 
 #if defined( _M_IX86 )
   #pragma aux   __fthread_init "*"

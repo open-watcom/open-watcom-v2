@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static bool             first_init;
 
 #endif
 
-static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes );
+static token_idx dup_array( asm_sym_handle sym, asm_sym_handle struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes );
 
 static bool             More_Array_Element = false;
 static unsigned         Last_Element_Size;
@@ -111,8 +111,8 @@ static void output_float( token_buffer *tokbuf, token_idx index, unsigned no_of_
 }
 
 #if defined( _STANDALONE_ )
-static void update_sizes( asm_sym *sym, bool first, unsigned no_of_bytes )
-/************************************************************************/
+static void update_sizes( asm_sym_handle sym, bool first, unsigned no_of_bytes )
+/******************************************************************************/
 {
     sym->total_length++;
     sym->total_size += no_of_bytes;
@@ -162,7 +162,7 @@ static bool check_override( token_buffer *tokbuf, token_idx *i )
 }
 #endif
 
-static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes )
+static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes )
 /***********************************************************************************************************************************
  * - parse an array and initialize the number;
  * - call by dup_array() only;
@@ -174,10 +174,10 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
     bool                negative = false;
 
 #if defined( _STANDALONE_ )
-    asm_sym             *the_struct;
+    asm_sym_handle      the_struct;
     token_idx           tmp;
 
-    the_struct = (asm_sym *)Definition.curr_struct;
+    the_struct = (asm_sym_handle)Definition.curr_struct;
 
     if( sym != NULL ) {
         sym->count++;
@@ -368,7 +368,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
           {
             token_idx           i;
             fixup_types         fixup_type = 0;
-            asm_sym             *init_sym;
+            asm_sym_handle      init_sym;
             char                *ptr;
             long                data = 0;
             asmfixup            *fixup;
@@ -509,7 +509,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             token_idx           i;
             fixup_types         fixup_type = 0;
             token_idx           seg_off_operator_loc = 0;
-            asm_sym             *init_sym;
+            asm_sym_handle      init_sym;
             char                *ptr;
             long                data = 0;
             asmfixup            *fixup;
@@ -688,7 +688,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
     return( cur_pos );
 }
 
-static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes )
+static token_idx dup_array( asm_sym_handle sym, asm_sym_handle struct_sym, token_buffer *tokbuf, token_idx start_pos, unsigned no_of_bytes )
 /*******************************************************************************************************************************
  * parse array with DUP operator;
  */
@@ -779,8 +779,8 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
 {
     unsigned        no_of_bytes;
     memtype         mem_type;
-    asm_sym         *sym = NULL;
-    asm_sym         *struct_sym = NULL;
+    asm_sym_handle  sym = NULL;
+    asm_sym_handle  struct_sym = NULL;
 #if defined( _STANDALONE_ )
     uint            old_offset = 0;
     bool            label_dir = false;
@@ -901,10 +901,10 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
                 }
                 return( RC_OK );
             } else if( sym->state == SYM_EXTERNAL
-              && ((dir_node *)sym)->e.extinfo->global ) {
-                dir_to_sym( (dir_node *)sym );
+              && ((dir_node_handle)sym)->e.extinfo->global ) {
+                dir_to_sym( (dir_node_handle)sym );
                 if( !sym->public ) {
-                    AddPublicData( (dir_node *)sym );
+                    AddPublicData( (dir_node_handle)sym );
                 }
                 if( sym->mem_type != mem_type ) {
                     AsmErr( SYMBOL_TYPE_DIFF, sym->name );

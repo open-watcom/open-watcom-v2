@@ -67,6 +67,7 @@ static void PP_CharConst( PREPROC_VALUE *val )
         ++PPTokenPtr;
         // look for hex constant or octal escape sequence
         switch( PPTokenPtr[0] ) {
+        /* control characters */
         case 'a':       value = '\a';   break;
         case 'b':       value = '\b';   break;
         case 'f':       value = '\f';   break;
@@ -74,11 +75,20 @@ static void PP_CharConst( PREPROC_VALUE *val )
         case 'r':       value = '\r';   break;
         case 't':       value = '\t';   break;
         case 'v':       value = '\v';   break;
+        /* extra characters */
+        case '\\':
+        case '\'':
+        case '\"':
+        case '?':
+            value = PPTokenPtr[0];
+            break;
+        /* hexa esc sequence */
         case 'x':
             ++PPTokenPtr;
             value = PP_HexNumber();
             --PPTokenPtr;
             break;
+        /* octal esc sequence */
         case '0':
         case '1':
         case '2':
@@ -99,6 +109,10 @@ static void PP_CharConst( PREPROC_VALUE *val )
                 }
             }
             break;
+        /*
+         * invalid esc sequence
+         * should be somehow handled as error etc.
+         */
         default:
             value = PPTokenPtr[0];
             break;

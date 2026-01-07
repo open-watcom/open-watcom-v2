@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <unistd.h>
 #ifdef __LINUX__
     #include <sys/ioctl.h>
 #else
-    #include "rterrno.h"
     #include "thread.h"
 #endif
 
@@ -49,8 +49,7 @@ _WCRTLINK  pid_t  tcgetpgrp( int fd )
         return( -1 );
     return( pid );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }
 

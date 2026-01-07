@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,10 +62,10 @@ void    IOList( void ) {
     if( CITNode->link != NULL ) {
         if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
             AdvanceITPtr();                   // WRITE(6,3)
-        } else if( Already( IO_NAMELIST ) ) {
+        } else if( IOPermChk( IO_NAMELIST ) ) {
             Error( IL_NO_IOLIST );
         }
-        for(;;) {
+        for( ;; ) {
             if( CITNode->link == NULL ) {
                 break;
             }
@@ -79,7 +79,7 @@ void    IOList( void ) {
 static  bool    HasUnion( sym_id fld ) {
 //======================================
 
-    for(;;) {
+    for( ;; ) {
         if( fld == NULL )
             return( false );
         if( fld->u.fd.typ == FT_STRUCTURE ) {
@@ -132,7 +132,7 @@ bool    StartImpDo( void ) {
     lastcomma = NULL;
     level = 0;
     AdvanceITPtr();
-    for(;;) {
+    for( ;; ) {
         if( RecOpenParen() ) {
             level++;
         } else if( RecCloseParen() ) {
@@ -238,7 +238,7 @@ void    InitImpDo( itnode *lastcomma ) {
     ImpDo();
     if( !ReqCloseParen() ) {
         level = 0;
-        for(;;) {
+        for( ;; ) {
             if( RecOpenParen() ) {
                 level++;
             } else if( RecCloseParen() ) {

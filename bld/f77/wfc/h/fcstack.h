@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ extern cg_name     SymValue( sym_id sym );
 extern void        DXPush( intstar4 val );
 extern void        SymPush( sym_id val );
 extern cg_name     XPop( void );
-extern cg_name     XPopValue( cg_type typ );
+extern cg_name     XPopValue( cg_type cgtyp );
 extern cg_name     GetTypedValue( void );
 extern cg_name     StkElement( int idx );
 extern void        PopStkElements( int num );

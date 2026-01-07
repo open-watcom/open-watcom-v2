@@ -94,6 +94,14 @@ void    lay_figlist( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    left_adjust     :1;
+        unsigned    right_adjust    :1;
+        unsigned    skip            :1;
+        unsigned    spacing         :1;
+        unsigned    columns         :1;
+        unsigned    fill_string     :1;
+    } AttrFlags;
 
     p = g_scandata.s;
 

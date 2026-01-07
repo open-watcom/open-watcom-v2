@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +32,10 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <dos.h>
 #include <wos2.h>
 #include "rtdata.h"
-#include "rterrno.h"
 #include "thread.h"
 
 
@@ -59,7 +59,7 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute ) {
     if( rc == 0 && searchcount == 1 ) {
         *attribute = dir_buff.attrFile;
     } else {
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
     }
     return( rc );
 }

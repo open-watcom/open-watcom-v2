@@ -332,7 +332,7 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :endsegment
 #endif
 
-:segment BITS16
+:segment BITS16 & DOS
 :include far2.sp
  _WCRTLINK extern int       _fwctomb( char _WCFAR * __s, wchar_t __wchar );
  _WCRTLINK extern size_t    _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
@@ -431,7 +431,6 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :segment DOS
 #ifndef __NETWARE__
 :endsegment
- _WCRTDATA extern int       _doserrno;
  _WCRTLINK extern int       *__get_doserrno_ptr( void );
  #define _doserrno          (*__get_doserrno_ptr())     /* DOS system error code value */
 :segment DOS
@@ -471,15 +470,15 @@ _WCRTDATA extern unsigned   _WCDATA __minreal;           /* DOS4GW var for WLINK
 :segment DOS
 #endif
 :endsegment
-_WCRTLINK extern char       **__get_sys_errlist_ptr( void );
-_WCRTLINK extern int        *__get_sys_nerr_ptr( void );
+_WCRTLINK extern char   **__get_sys_errlist_ptr( void );
+_WCRTLINK extern int    *__get_sys_nerr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
- #define _sys_errlist       (*__get_sys_errlist_ptr())
- #define _sys_nerr          (*__get_sys_nerr_ptr())
+ #define _sys_errlist   (*__get_sys_errlist_ptr())
+ #define _sys_nerr      (*__get_sys_nerr_ptr())
 :segment DOS | RDOS
 #elif defined(__SW_BR) || defined(_RTDLL)
- #define _sys_errlist       _sys_errlist_br
- #define _sys_nerr          _sys_nerr_br
+ #define _sys_errlist   _sys_errlist_br
+ #define _sys_nerr      _sys_nerr_br
 :endsegment
 #endif
 _WCRTDATA extern char * _WCDATA _sys_errlist[]; /* strerror error message table */
@@ -547,13 +546,13 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
  _WCRTDATA extern unsigned int   _WCDATA _winver;   /*  O/S version #       */
 #endif
 :endsegment
-extern  int                 __argc;     /* number of cmd line args */
-extern  char                **__argv;   /* vector of cmd line args */
+_WRTLDCONV extern int       __argc;     /* number of cmd line args */
+_WRTLDCONV extern char      **__argv;   /* vector of cmd line args */
 :: Wide character version
 :segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
-extern  int                 __wargc;    /* number of wide cmd line args */
-extern  wchar_t             **__wargv;  /* vector of wide cmd line args */
+_WRTLDCONV extern int       __wargc;    /* number of wide cmd line args */
+_WRTLDCONV extern wchar_t   **__wargv;  /* vector of wide cmd line args */
 #endif
 :endsegment
 
@@ -592,7 +591,7 @@ _WCRTLINK extern errno_t    mbstowcs_s( size_t * __restrict __retval, wchar_t * 
 _WCRTLINK extern errno_t    wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
 
 :include ext.sp
-:segment BITS16
+:segment BITS16 & DOS
 :include far2.sp
  _WCRTLINK extern errno_t   _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
  _WCRTLINK extern errno_t   _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );

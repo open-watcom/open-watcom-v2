@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <dos.h>
 #include <windows.h>
 #include "iomode.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_read( int handle, void *buffer, unsigned count, unsigned *bytes )

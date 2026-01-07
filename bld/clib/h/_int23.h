@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,8 +30,8 @@
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
-extern void     (*__int23_exit)( void );
-extern void     __null_int23_exit( void );
-extern void     __grab_int23( void );
-extern void     __restore_int23( void );
+extern void     _WCNEAR (*__int23_exit)( void );
+extern void     _WCNEAR __null_int23_exit( void );
+extern void     _WCNEAR __grab_int23( void );
+extern void     _WCNEAR __restore_int23( void );
 #endif

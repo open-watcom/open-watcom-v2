@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 #define _INITNEXTTOK
-#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __LINUX__ ) )
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __LINUX__ ) )
     #define _NEXTWTOK   (__THREADDATAPTR->__nextwtokP)
 #else
     static wchar_t      *nextwtok = NULL;

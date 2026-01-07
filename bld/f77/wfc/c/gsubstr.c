@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "gstring.h"
 #include "gsubstr.h"
 #include "gtypes.h"
+#include "cgmagic.h"
 
 
 void    GBegSSStr( itnode *array_node ) {
@@ -119,7 +121,7 @@ void    GFiniSS( itnode *sym_node, itnode *ss_node ) {
         }
         if( (StmtSw & SS_DATA_INIT) == 0 ) {
             sym_node->value.st.ss_id = sym_node->sym_ptr;
-            sym_node->sym_ptr = GTempString( 0 );
+            sym_node->sym_ptr = TmpVar( FT_CHAR, 0 );
             OutPtr( sym_node->sym_ptr );
             sym_node->opn.us |= USOPN_ASY;
         }

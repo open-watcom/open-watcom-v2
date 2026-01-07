@@ -83,13 +83,12 @@ typedef struct _87state {
 extern __stream_link        *__OpenStreams;
 extern __stream_link        *__ClosedStreams;
 extern char                 * _WCNEAR __env_mask;  /* ptr to char array of flags */
-extern void                 (*__FPE_handler_exit)( void );
+extern void                 _WCNEAR (*__FPE_handler_exit)( void );
 #if !defined( __NETWARE__ )
 _WCRTDATA extern  int       _cbyte;
 _WCRTDATA extern  int       _cbyte2;
           extern  int       _child;
 _WCRTDATA extern  unsigned  _curbrk;
-          extern  int       _commode;
   #if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux             _child "_*";
   #endif
@@ -106,8 +105,8 @@ _WCRTDATA extern char       *_Envptr;
 #endif
 
 #if defined( _M_IX86 ) && !defined( __UNIX__ )
-    extern void                 (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
-    extern void                 (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
+    extern void                 _WCNEAR (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
+    extern void                 _WCNEAR (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
 #endif
 extern unsigned short           _8087cw;    /* control word initializer */
 extern unsigned char            _no87;      /* NO87 environment var defined */
@@ -150,6 +149,7 @@ extern unsigned char            __isPC98;   /* is NEC PC-98 hardware */
     #define _RWD_amblksiz       _amblksiz
     #define _RWD_curbrk         _curbrk
     #define _RWD_dynend         _dynend
+    #define _RWD_commode        _commode
 #endif
 #if defined( __DOS__ ) || defined( _M_I86 ) && !defined( __QNX__ )
     #define _RWD_psp            _psp

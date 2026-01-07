@@ -27,4 +27,6 @@ defrule_obj_target = .obj
     $(as) $(ppflags_common) $(ppflags_wreslib) $(aflags) $(extra_a_flags_f_$[&) $(inc_path) $[@
 !endif
 !undef defrule_obj_target
-!undef defrule_key
+!ifdef defrule_key
+! undef defrule_key
+!endif

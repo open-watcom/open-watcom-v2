@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -58,6 +58,22 @@ endif
 XI      ends
         endm
 
+xinitn  macro   rtn,priority
+XI  segment word public 'DATA'
+        db      PNEAR
+        db      priority
+if _MODEL and _USE_32_SEGS
+        dd      rtn
+if COMP_CFG_COFF EQ 1
+        dw      0
+endif
+else
+        dw      rtn
+        dw      0
+endif
+XI      ends
+        endm
+
 xfini   macro   rtn,priority
 YI      segment word public 'DATA'
 if _MODEL and _BIG_CODE
@@ -78,6 +94,22 @@ else
         dw      rtn
         dw      0
 endif
+endif
+YI      ends
+        endm
+
+xfinin  macro   rtn,priority
+YI      segment word public 'DATA'
+        db      PNEAR
+        db      priority
+if _MODEL and _USE_32_SEGS
+        dd      rtn
+if COMP_CFG_COFF EQ 1
+        dw      0
+endif
+else
+        dw      rtn
+        dw      0
 endif
 YI      ends
         endm

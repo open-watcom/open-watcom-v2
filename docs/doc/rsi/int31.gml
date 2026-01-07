@@ -28,15 +28,7 @@ hosts.
 .ix 'DOS Protected-Mode Interface'
 Some of the information in this chapter was obtained from the the DOS
 Protected-Mode Interface (DPMI) specification.
-It is no longer in print; however the DPMI 1.0 specification can be
-obtained from the Intel ftp site.
-Here is the URL.
-.code begin
-ftp://ftp.intel.com/pub/IAL/software_specs/dpmiv1.zip
-.code end
-.np
-This ZIP file contains a Postscript version of the DPMI 1.0
-specification.
+:INCLUDE file='dpmiinfo'.
 .*
 .section Using Interrupt 31H Function Calls
 .*

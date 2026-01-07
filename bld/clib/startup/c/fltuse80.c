@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,23 +33,18 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "rtcntrl.h"
-#include "setefg.h"
+#include "clibint.h"
 
 
 #ifdef _M_I86
-unsigned _fltused_ = 1;
+int _fltused_80bit_ = 1;
 #else
-unsigned _fltused_ = 0;
+int _fltused_80bit_ = 0;
 #endif
 
-#if defined(_M_IX86)
-  #pragma aux _fltused_ "*";
-#endif
+static void _WCNEAR _SetLD80bit( void )
+{
+    *__get_rt_control_ptr() |= RTFLG_LD_80BIT;
+}
 
-#pragma alias ( "_fltused_80bit_" , "_fltused_" )
-
-extern void __setEFGfmt( void );
-extern void _SetLD80bit( void );
-
-AXI( _SetLD80bit, INIT_PRIORITY_LIBRARY )
-AXI( __setEFGfmt, INIT_PRIORITY_LIBRARY )
+AXIN( _SetLD80bit, INIT_PRIORITY_LIBRARY )

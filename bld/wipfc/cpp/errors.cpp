@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,11 +32,11 @@
 #include "wipfc.hpp"
 #include "errors.hpp"
 
-const char *ErrText[ ERR_LAST_ERR + 1 ] = {
+const char * const ErrText[ ERR_LAST_ERR + 1 ] = {
     "Not an error",
-#undef PICK
 #define PICK(a,b) b,
 #include "err.hpp"
+#undef PICK
     "Last error code"
 };
 

@@ -76,7 +76,7 @@ altlibdir=../misc/$(host)/$(alt_subdir_$(host)$(model))
 #       compiler options
 #
 
-extra_cppflags_ntaxp = -DWIN32 -D_WIN32
+extra_cppflags_ntaxp = -DWIN32
 extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host)) $(extra_cppflags)
 
 extra_c_flags_i86 = -zt=10000

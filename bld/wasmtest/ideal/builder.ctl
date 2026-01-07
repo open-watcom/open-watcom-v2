@@ -9,12 +9,8 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> test ]
 #=======================
-    cdsay .
-    wmake -h
-[ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
-    cdsay .
-    wmake -h arch=<EXTRA_ARCH>
-[ ENDIF ]
+    set TESTARG=test0=1
+[ INCLUDE "<OWROOT>/build/deftest.ctl" ]
 
 [ BLOCK <BLDRULE> testclean ]
 #============================

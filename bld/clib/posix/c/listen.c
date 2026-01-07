@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -38,7 +39,6 @@
 #include "linuxsys.h"
 #elif defined( __RDOS__ )
 #include "rtdata.h"
-#include "rterrno.h"
 #include "thread.h"
 #include "rdos.h"
 #endif
@@ -54,7 +54,7 @@ _WCRTLINK int listen(int s, int backlog)
 #elif defined( __RDOS__ )
     if( RdosListenSocket( s, backlog ) )
         return( 0 );
-    _RWD_errno = ENOTSOCK;
+    lib_set_errno( ENOTSOCK );
     return( -1 );
 #else
 

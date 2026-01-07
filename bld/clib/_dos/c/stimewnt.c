@@ -32,11 +32,11 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <dos.h>
 #include <windows.h>
 #include "osver.h"
-#include "seterrno.h"
 
 
 _WCRTLINK unsigned _dos_settime( struct dostime_t *time )

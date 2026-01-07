@@ -1,0 +1,87 @@
+name: X-Tests
+run-name: OW Tests
+on:
+  workflow_call:
+    inputs:
+      suffix:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+
+env:
+  OWDEBUG:          "${{vars.DEBUG}}"
+  OWTESTMODE:       "${{vars.TESTMODE}}"
+  OWCURLOPTS:       "${{vars.CURLOPTS}}"
+  OWUSETARARCHIVE:  '1'
+
+jobs:
+  tests-xx:
+    strategy:
+      matrix:
+        include:
+          - title: Wmake tests
+            path:    wmaktest
+            timeout: 10
+            skip:    ''
+          - title: Wasm tests
+            path:   wasmtest
+            timeout: 10
+            skip:   ''
+          - title: C tests
+            path:   ctest
+            timeout: 30
+            skip:   ''
+          - title: C++ tests
+            path:   plustest
+            timeout: 90
+            skip:   ''
+          - title: Fortran tests
+            path:   f77test
+            timeout: 30
+            skip:   ''
+          - title: C run-time library tests
+            path:   clibtest
+            timeout: 30
+            skip:   ''
+          - title: Math run-time library tests
+            path:   mathtest
+            timeout: 50
+            skip:   'Linux Windows'
+    timeout-minutes: ${{matrix.timeout}}
+    runs-on: ${{inputs.image}}
+    name: ${{matrix.title}}
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        suffix: ${{inputs.suffix}}
+        bits: '64'
+    - name: ${{matrix.title}}
+      if: ! contains( ${{matrix.skip}}, ${{runner.os}} )
+      uses: ./.github/actions/tests
+      with:
+        suffix: ${{inputs.suffix}}
+        path:   ${{matrix.path}}
+        skip:   ${{matrix.skip}}
+
+  testboot-xx:
+    name: Test Bootstrap
+    runs-on: ${{inputs.image}}
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        suffix: ${{inputs.suffix}}
+        bits: '32'
+    - name: Test Bootstrap
+      uses: ./.github/actions/testboot
+      with:
+        testnewow:  '1'

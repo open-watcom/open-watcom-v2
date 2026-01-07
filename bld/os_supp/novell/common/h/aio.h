@@ -5,8 +5,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +32,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines all we require to support serial functionality on
@@ -72,7 +73,7 @@
 #define AIO_HARDWARE_TYPE_WILDCARD  (-1)
 #define AIO_BOARD_NUMBER_WILDCARD   (-1)
 #define AIO_PORT_NUMBER_WILDCARD    (-1)
-                          
+
 #define AIO_BAUD_50       (0)
 #define AIO_BAUD_75       (1)
 #define AIO_BAUD_110      (2)
@@ -92,7 +93,7 @@
 #define AIO_BAUD_38400    (16)
 #define AIO_BAUD_57600    (17)
 #define AIO_BAUD_115200   (18)
-                          
+
 /* DataBits */
 
 #define AIO_DATA_BITS_5   (0)
@@ -101,11 +102,11 @@
 #define AIO_DATA_BITS_8   (3)
 
 /* StopBits */
-                             
+
 #define AIO_STOP_BITS_1   (0)
 #define AIO_STOP_BITS_1p5 (1)
 #define AIO_STOP_BITS_2   (2)
-                            
+
 /* Parity */
 
 #define AIO_PARITY_NONE   (0)
@@ -115,7 +116,7 @@
 #define AIO_PARITY_SPACE  (4)
 
 /* FlowControl */
-                                      
+
 #define AIO_SOFTWARE_FLOWCONTROL_OFF  (0)
 #define AIO_SOFTWARE_FLOWCONTROL_ON   (1)
 #define AIO_HARDWARE_FLOWCONTROL_OFF  (0)
@@ -141,9 +142,9 @@ extern  int  AIOWriteData             ( int   portHandle,
                                       );
 
 extern  int  AIOAcquirePortWithRTag   ( int   *hardwareType,
-                                        int   *boardNumber,       
-                                        int   *portNumber,        
-                                        int   *portHandle,        
+                                        int   *boardNumber,
+                                        int   *portNumber,
+                                        int   *portHandle,
                                         LONG   RTag
                                       );
 
@@ -152,8 +153,8 @@ extern  int  AIOReadData              ( int   portHandle,
                                         LONG  length,
                                         LONG  *numberBytesRead
                                       );
-        
-extern  int  AIOReadStatus            ( int   portHandle, 
+
+extern  int  AIOReadStatus            ( int   portHandle,
                                         LONG  *count,
                                         WORD  *state
                                       );
@@ -170,4 +171,4 @@ extern  int  AIOReleasePort           ( int   portHandle );
 
 CPP_END
 
-#endif	/* _AIO_H_F39997A6_88FC_434B_B339_554BE343B3E8 */
+#endif  /* _AIO_H_F39997A6_88FC_434B_B339_554BE343B3E8 */

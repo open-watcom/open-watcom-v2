@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,8 @@ _WCRTLINK int __F_NAME(vsprintf_s,vswprintf_s)( CHAR_TYPE * __restrict s, rsize_
      * is violated, return immediately and don't touch anything.
      */
     if( __check_constraint_nullptr_msg( msg, s )
-     && __check_constraint_maxsize_msg( msg, n )
-     && __check_constraint_zero_msg( msg, n ) ) {
+      && __check_constraint_maxsize_msg( msg, n )
+      && __check_constraint_zero_msg( msg, n ) ) {
 
         /* The buffer looks okay, try doing something useful */
         if( __check_constraint_nullptr_msg( msg, format ) ) {

@@ -31,7 +31,7 @@ exes = &
     perlasso.$(exe) &
     tstio.$(exe)
 
-test : .SYMBOLIC start test.lnk perlclas.obj regex.obj $(exes) test_set_result
+test : .SYMBOLIC start perlclas.obj regex.obj $(exes) test_set_result
     $(noecho)%make common_set_result
 
 test_set_result : .SYMBOLIC

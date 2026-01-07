@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +40,14 @@
 #include <wos2.h>
 #include "grabfp87.h"
 
-void __interrupt __FPEHandler();
+
+void __interrupt __FPEHandler( void );
 #pragma aux __FPEHandler "*";
 
-static void (__interrupt *old_FPE_handler)() = NULL;
+static void (__interrupt *old_FPE_handler)( void ) = NULL;
 
-void __Init_FPE_handler( void )
-/*****************************/
+void _WCNEAR __Init_FPE_handler( void )
+/*************************************/
 {
     char    devinfo;
 
@@ -55,8 +57,8 @@ void __Init_FPE_handler( void )
     }
 }
 
-void __Fini_FPE_handler( void )
-/*****************************/
+void _WCNEAR __Fini_FPE_handler( void )
+/*************************************/
 {
     if( old_FPE_handler != NULL ) {
         DosSetVec( 16, (PFN)old_FPE_handler, (PFN FAR*)&old_FPE_handler );

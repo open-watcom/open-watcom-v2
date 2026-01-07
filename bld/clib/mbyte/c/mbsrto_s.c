@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,21 +61,22 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
     // ps     != NULL
     // if dst == NULL then dstmax == 0
     // if dst != NULL then dstmax != 0
-    if(__check_constraint_nullptr_msg( msg, retval ) &&
-        __check_constraint_nullptr_msg( msg, src ) &&
-        __check_constraint_nullptr_msg( msg, *src ) &&
-        __check_constraint_nullptr_msg( msg, ps )) {
+    if( __check_constraint_nullptr_msg( msg, retval )
+      && __check_constraint_nullptr_msg( msg, src )
+      && __check_constraint_nullptr_msg( msg, *src )
+      && __check_constraint_nullptr_msg( msg, ps ) ) {
         mbcPtr =  *src;
-        if(dst == NULL) {                /* get required size */
+        if( dst == NULL ) {             /* get required size */
             // ensure dstmax == 0
-            if(__check_constraint_a_gt_b_msg( msg, dstmax, 0 )) {
+            if( __check_constraint_a_gt_b_msg( msg, dstmax, 0 ) ) {
                 for( ;; ) {
                     if( *mbcPtr != '\0' ) {
                         ret = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-                        if( ret == (size_t)-1 || ret == (size_t)-2 ) {
+                        if( ret == (size_t)-1
+                          || ret == (size_t)-2 ) {
                             *retval = (size_t)-1;
                             break;               // encoding error
-                        } else if( ret == 0) {
+                        } else if( ret == 0 ) {
                             break;
                         } else {
                             mbcPtr += ret;
@@ -85,7 +86,8 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                         break;
                     }
                 }
-                if( ret != (size_t)-1 && ret != (size_t)-2 ) {  // no encoding error
+                if( ret != (size_t)-1
+                  && ret != (size_t)-2 ) {  // no encoding error
                     *retval = charsConverted;
                     rc = 0;
                 }
@@ -94,18 +96,19 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
             // more runtime-constraints
             // len    <= RSIZE_MAX
             // dstmax <= RSIZE_MAX
-            if(__check_constraint_maxsize_msg( msg, dstmax ) &&
-               __check_constraint_maxsize_msg( msg, len ) &&
-               __check_constraint_a_gt_b_msg( msg, 1, dstmax )) {
+            if( __check_constraint_maxsize_msg( msg, dstmax )
+              && __check_constraint_maxsize_msg( msg, len )
+              && __check_constraint_a_gt_b_msg( msg, 1, dstmax ) ) {
 
                 srcend = *src + len;
                 /*** Process the characters, one by one ***/
                 for( maxlen = min(len, dstmax); maxlen > 0; maxlen-- ) {
                     if( *mbcPtr != '\0' ) {
-                        if(srcend < mbcPtr)
+                        if( srcend < mbcPtr )
                             break;              //no null found
                         ret = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-                        if( ret == (size_t)-1 || ret == (size_t)-2 ) {
+                        if( ret == (size_t)-1
+                          || ret == (size_t)-2 ) {
                             *retval = (size_t)-1;
                             break;              //encoding error
                         } else if( ret == 0 ) {
@@ -119,30 +122,35 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                         break;
                     }
                 }
-                if( (dstmax > len) ||
-                    __check_constraint_toosmall_msg( msg, dst, maxlen )) {
+                if( (dstmax > len)
+                  || __check_constraint_toosmall_msg( msg, dst, maxlen ) ) {
                     *dst = L'\0';            // terminate string
                 }
-                if( (msg == NULL) && __check_constraint_a_gt_b_msg( msg, mbcPtr, srcend )) {
-                    if( ret != (size_t)-1 && ret != (size_t)-2 ) {  // no encoding error
-                      *retval = charsConverted;
-                      rc = 0;
-                      if( ret == 0 ) {
-                          *src = NULL;
-                      } else {
-                          *src = mbcPtr;
-                      }
+                if( (msg == NULL)
+                  && __check_constraint_a_gt_b_msg( msg, mbcPtr, srcend ) ) {
+                    if( ret != (size_t)-1
+                      && ret != (size_t)-2 ) {  // no encoding error
+                        *retval = charsConverted;
+                        rc = 0;
+                        if( ret == 0 ) {
+                            *src = NULL;
+                        } else {
+                            *src = mbcPtr;
+                        }
                     }
                 }
             }
         }
     }
-    if(msg != NULL) {
+    if( msg != NULL ) {
         // Runtime-constraint found
         // set dst[0] to nullchar and *retval to -1
-        if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
+        if( (dst != NULL)
+          && (dstmax > 0)
+          && __lte_rsizmax( dstmax ) ) {
             *dststart = L'\0';
-        if(retval != NULL)
+        }
+        if( retval != NULL )
             *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );

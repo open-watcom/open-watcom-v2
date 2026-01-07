@@ -40,33 +40,37 @@
 #include "watcom.h"
 #include "memwnd.h"
 
-void DumpMemAsm( MemWndInfo *info, int hdl ) {
-    info = info;
-    hdl = hdl;
+void DumpMemAsm( MemWndInfo *info, int hdl )
+{
+    (void)info;
+    (void)hdl;
 }
 
-void RegDisasmRtns( void ) {
+void RegDisasmRtns( void ) {}
+
+void RedrawAsCode( HDC dc, MemWndInfo *info )
+{
+    (void)dc;
+    (void)info;
 }
 
-void RedrawAsCode( HDC dc, MemWndInfo *info ) {
-    dc = dc;
-    info = info;
+bool NeedScrollBar( MemWndInfo *info )
+{
+    (void)info;
+    return( false );
 }
 
-bool NeedScrollBar( MemWndInfo *info ) {
-    info = info;
-    return( FALSE );
-}
-
-uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset ) {
-    info = info;
-    offset = offset;
+uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset )
+{
+    (void)info;
+    (void)offset;
     return( 0 );
 }
 
-void ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info ) {
-    hwnd = hwnd;
-    wparam = wparam;
-    pos = pos;
-    info = info;
+void ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
+{
+    (void)hwnd;
+    (void)wparam;
+    (void)pos;
+    (void)info;
 }

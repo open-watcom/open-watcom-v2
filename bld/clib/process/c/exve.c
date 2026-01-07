@@ -25,14 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of execve().
-*               (16-bit code only)
+* Description:  DOS implementation of execve() (16-bit code only)
 *
 ****************************************************************************/
 
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -52,7 +52,7 @@
 #include "lseek.h"
 #include "_process.h"
 #include "_int23.h"
-#include "rterrno.h"
+#include "doserrno.h"
 
 
 #define MIN_COM_STACK   128             /* Minimum size stack for .COM file */
@@ -60,7 +60,7 @@
 
 #define _swap(i)        (((i&0xff) << 8)|((i&0xff00) >> 8))
 
-#pragma on(check_stack);
+#pragma on( check_stack );
 
 typedef struct a_blk {
     unsigned            next;
@@ -86,12 +86,11 @@ extern unsigned doslowblock( void );
     __value             [__ax] \
     __modify __nomemory [__bx __es]
 
-extern void         __cdecl __far _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
-extern void         __init_execve( void );
-
+extern void         __cdecl _WCFAR _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
+extern void         _WCNEAR __init_execve( void );
 extern unsigned     __exec_para;
 
-static void dosexpand( unsigned block )
+static void _WCNEAR dosexpand( unsigned block )
 {
     unsigned num_of_paras;
 
@@ -99,7 +98,7 @@ static void dosexpand( unsigned block )
     TinySetBlock( block, num_of_paras );
 }
 
-static unsigned dosalloc( unsigned num_of_paras )
+static unsigned _WCNEAR dosalloc( unsigned num_of_paras )
 {
     tiny_ret_t  rc;
     unsigned    block;
@@ -113,7 +112,7 @@ static unsigned dosalloc( unsigned num_of_paras )
     return( block );
 }
 
-static unsigned doscalve( unsigned block, unsigned req_paras )
+static unsigned _WCNEAR doscalve( unsigned block, unsigned req_paras )
 {
     unsigned    block_num_of_paras;
 
@@ -126,13 +125,13 @@ static unsigned doscalve( unsigned block, unsigned req_paras )
     }
 }
 
-static void resetints( void )
+static void _WCNEAR resetints( void )
 /* reset ctrl-break, floating point, divide by 0 interrupt */
 {
     (*__int23_exit)();
 }
 
-static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
+static bool _WCNEAR doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
     unsigned            p;
     unsigned            q;
@@ -199,7 +198,7 @@ error: /* if we get an error */
     return( false );
 }
 
-static void save_file_handles( void )
+static void _WCNEAR save_file_handles( void )
 {
     int             i;
     handle_tab_ptr  handle_table;
@@ -245,7 +244,7 @@ _WCRTLINK int execve( path, argv, envp )
     name = strrchr( pgmname, '\\' );
     if( strchr( name == NULL ? pgmname : name, '.' ) != NULL ) {
         file = open( pgmname, O_BINARY|O_RDONLY, 0 );
-        _RWD_errno = ENOENT;
+        lib_set_errno( ENOENT );
         if( file == -1 ) {
             goto error;
         }
@@ -255,7 +254,7 @@ _WCRTLINK int execve( path, argv, envp )
         if( file == -1 ) {
             strcpy( strrchr( pgmname, '.' ), ".exe" );
             file = open( pgmname, O_BINARY|O_RDONLY, 0 );
-            _RWD_errno = ENOENT;
+            lib_set_errno( ENOENT );
             if( file == -1 ) {
                 goto error;
             }
@@ -264,8 +263,8 @@ _WCRTLINK int execve( path, argv, envp )
 
     if( read( file, (char *)&exe, sizeof( exe ) ) == -1 ) {
         close( file );
-        _RWD_errno = ENOEXEC;
-        _RWD_doserrno = E_badfmt;
+        lib_set_errno( ENOEXEC );
+        lib_set_doserrno( E_badfmt );
         goto error;
     }
     isexe = exe.id == EXE_ID || exe.id == _swap( EXE_ID );
@@ -300,7 +299,9 @@ error: /* Clean up after error */
     return( -1 );
 }
 
-void __init_execve( void )              /* called from initializer segment */
+void _WCNEAR __init_execve( void )      /* called from initializer segment */
 {
     __Exec_addr = execve;
 }
+
+#pragma pop( check_stack );

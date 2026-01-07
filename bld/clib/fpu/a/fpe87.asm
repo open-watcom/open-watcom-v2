@@ -84,7 +84,7 @@ ifndef  __OS2__
 Save87  dw      0
         dw      0
 
-defp    __Init_FPE_handler
+defn    __Init_FPE_handler
         _guess                          ; guess initialization required
           cmp   word ptr CS:Save87+2,0  ; - quit if already initialized
           _quif ne                      ; - ...
@@ -117,7 +117,7 @@ defp    __Init_FPE_handler
         ret
 endproc __Init_FPE_handler
 
-defp    __Fini_FPE_handler
+defn    __Fini_FPE_handler
         _guess                          ; guess handler was initialized
           cmp   word ptr CS:Save87+2,0  ; - quit if not initialized
           _quif e                       ; - ...

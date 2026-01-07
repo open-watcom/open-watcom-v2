@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,44 +80,44 @@ static void NextUnFmtRec( void )
 static  void    UnFmtItem( void *s )
 //==================================
 {
-    switch( IOCB->typ ) {
-    case PT_LOG_1:
+    switch( IOCB->ptyp ) {
+    case FPT_LOG_1:
         *(logstar1 PGM *)(IORslt.pgm_ptr) = *(logstar1 *)s;
         break;
-    case PT_LOG_4:
+    case FPT_LOG_4:
         *(logstar4 PGM *)(IORslt.pgm_ptr) = *(logstar4 *)s;
         break;
-    case PT_INT_1:
+    case FPT_INT_1:
         *(intstar1 PGM *)(IORslt.pgm_ptr) = *(intstar1 *)s;
         break;
-    case PT_INT_2:
+    case FPT_INT_2:
         *(intstar2 PGM *)(IORslt.pgm_ptr) = *(intstar2 *)s;
         break;
-    case PT_INT_4:
+    case FPT_INT_4:
         *(intstar4 PGM *)(IORslt.pgm_ptr) = *(intstar4 *)s;
         break;
-    case PT_REAL_4:
+    case FPT_REAL_4:
         *(single PGM *)(IORslt.pgm_ptr) = *(single *)s;
         break;
-    case PT_REAL_8:
+    case FPT_REAL_8:
         *(double PGM *)(IORslt.pgm_ptr) = *(double *)s;
         break;
-    case PT_REAL_16:
+    case FPT_REAL_16:
         *(extended PGM *)(IORslt.pgm_ptr) = *(extended *)s;
         break;
-    case PT_CPLX_8:
+    case FPT_CPLX_8:
         ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart =
                         ((scomplex *)s)->imagpart;
         ((scomplex PGM *)(IORslt.pgm_ptr))->realpart =
                         ((scomplex *)s)->realpart;
         break;
-    case PT_CPLX_16:
+    case FPT_CPLX_16:
         ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart =
                         ((dcomplex *)s)->imagpart;
         ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart =
                         ((dcomplex *)s)->realpart;
         break;
-    case PT_CPLX_32:
+    case FPT_CPLX_32:
         ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart =
                         ((xcomplex *)s)->imagpart;
         ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart =
@@ -136,18 +136,18 @@ static  void    RecordUnFmtIn( void ) {
     fcb = IOCB->fileinfo;
     NextRec();
     for(;;) {
-        IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == PT_NOTYPE )
+        IOCB->ptyp = IOTypeRtn();
+        if( IOCB->ptyp == FPT_NOTYPE )
             break;
         if( fcb->col == fcb->len ) {
             NextUnFmtRec();
         }
-        if( IOCB->typ == PT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IUnString();
-        } else if( IOCB->typ == PT_ARRAY ) {
+        } else if( IOCB->ptyp == FPT_ARRAY ) {
             IUnArray();
         } else {
-            len = SizeVars[ IOCB->typ ];
+            len = SizeVars[ IOCB->ptyp ];
             if( fcb->col + len > fcb->len ) {
                 IOErr( IO_UNFMT_RECL );
                 // never return
@@ -189,23 +189,23 @@ static  void    StreamUnFmtIn( void ) {
 
     fcb = IOCB->fileinfo;
     for(;;) {
-        IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == PT_NOTYPE )
+        IOCB->ptyp = IOTypeRtn();
+        if( IOCB->ptyp == FPT_NOTYPE )
             break;
-        if( IOCB->typ == PT_CHAR ) {
+        if( IOCB->ptyp == FPT_CHAR ) {
             IUnStream( IORslt.string.strptr, IORslt.string.len );
-        } else if( IOCB->typ == PT_ARRAY ) {
+        } else if( IOCB->ptyp == FPT_ARRAY ) {
             uint        elmt_size;
 
-            if( IORslt.arr_desc.typ == PT_CHAR ) {
+            if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
                 elmt_size = IORslt.arr_desc.elmt_size;
             } else {
-                elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+                elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
             }
             IUnStream( IORslt.arr_desc.data,
                        IORslt.arr_desc.num_elmts * elmt_size );
         } else {
-            fcb->len = SizeVars[ IOCB->typ ];
+            fcb->len = SizeVars[ IOCB->ptyp ];
             if( fcb->len > fcb->bufflen ) {
                 IOErr( IO_UNFMT_RECL );
                 // never return
@@ -252,10 +252,10 @@ static  void    IUnArray( void ) {
 
     uint        elmt_size;
 
-    if( IORslt.arr_desc.typ == PT_CHAR ) {
+    if( IORslt.arr_desc.ptyp == FPT_CHAR ) {
         elmt_size = IORslt.arr_desc.elmt_size;
     } else {
-        elmt_size = SizeVars[ IORslt.arr_desc.typ ];
+        elmt_size = SizeVars[ IORslt.arr_desc.ptyp ];
     }
     IUnBytes( IORslt.arr_desc.data, IORslt.arr_desc.num_elmts * elmt_size );
 }

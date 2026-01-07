@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,9 @@
 
 extern asmfixup     *InsFixups[OPND_MAX];
 extern asmfixup     *FixupHead;
-extern asmfixup     *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option );
+extern asmfixup     *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fixup_option );
 extern void         add_frame( void );
-extern bool         BackPatch( asm_sym *sym );
+extern bool         BackPatch( asm_sym_handle sym );
 extern void         mark_fixupp( OPNDTYPE determinant, operand_idx index );
 extern bool         store_fixup( operand_idx index );
 

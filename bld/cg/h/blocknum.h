@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
-#define NO_BLOCK_ID             ((block_num)-1)
+#define BLK_ID_NONE             ((block_id)-1)
 
+typedef unsigned short          block_id;
 typedef unsigned short          block_num;

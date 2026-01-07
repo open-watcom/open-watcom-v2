@@ -8,12 +8,15 @@ sw_c_common += -xr
 !else
 sw_c_common += -s
 !endif
+sw_c_common += -oabelr
 !ifeq processor 086
-sw_c_common += -oax
+sw_c_common += -om
 !else ifeq processor 286
-sw_c_common += -oax
+sw_c_common += -om
+!else ifeq processor 386
+sw_c_common += -omt
 !else
-sw_c_common += -oaxt
+sw_c_common += -ot
 !endif
 !ifdef mthreaded
 sw_c_common += -bm
@@ -124,6 +127,9 @@ sw_a_linux   = -bt=linux
 ######
 # Include system headers in dependency lists
 plib_cpp_flags =
+!ifdef mthreaded
+plib_cpp_flags += -D__MT__
+!endif
 !ifeq debug 0
 plib_cpp_flags += -D__OBSCURE_STREAM_INTERNALS
 !endif
@@ -139,9 +145,9 @@ plib_cpp_flags += -DSTRICT
 !else ifeq system winnt
 plib_cpp_flags += $(cppflags_win32ver)
 !ifeq processor axp
-plib_cpp_flags += -DWIN32 -D_WIN32
+plib_cpp_flags += -DWIN32
 !else ifeq processor ppc
-plib_cpp_flags += -DWIN32 -D_WIN32
+plib_cpp_flags += -DWIN32
 !endif
 !endif
 

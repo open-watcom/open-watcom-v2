@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Default Windowing - Start/exit Windows Win16, WIN386 and Win32
+* Description:  Default Windowing - Start/exit Windows WIN16, WIN386 and WIN32
 *
 ****************************************************************************/
 
@@ -56,23 +56,25 @@ char    __init_default_win;
 
 static char *mainClass;
 
-static bool firstInstance( HANDLE );
-static bool windowsInit( HANDLE, int );
-static void windowsFini( void );
+static bool _WCNEAR firstInstance( HANDLE );
+static bool _WCNEAR windowsInit( HANDLE, int );
+static void _WCNEAR windowsFini( void );
 
 
 #if defined( __NT__ )
 
 _WCRTLINK void  __InitDefaultWin( void )
 {
-    char        *str;
+//    char        *str;
     HANDLE      inst;
 
-    str = __clib_strdup( GetCommandLine() );
+#if 0
+    str = lib_strdup( GetCommandLine() );
     while( !isspace( (unsigned char)*str ) && *str != '\0' )
         str++;
     while( isspace( (unsigned char)*str ) )
         str++;
+#endif
     inst = GetModuleHandle( NULL );
     if( !firstInstance( inst ) )
 //        return( FALSE );
@@ -119,7 +121,7 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 /*
  * firstInstance - initialization at startup
  */
-static bool firstInstance( HANDLE inst )
+static bool _WCNEAR firstInstance( HANDLE inst )
 {
     char        tmp[128];
     WNDCLASS    wc;
@@ -208,7 +210,7 @@ static bool firstInstance( HANDLE inst )
 /*
  * windowsInit - windows-specific initialization
 */
-static bool windowsInit( HANDLE inst, int showcmd )
+static bool _WCNEAR windowsInit( HANDLE inst, int showcmd )
 {
     LOGFONT     logfont;
     WORD        x,y;
@@ -267,7 +269,7 @@ static bool windowsInit( HANDLE inst, int showcmd )
 /*
  * windowsFini - windows-specific initialization
 */
-static void windowsFini( void )
+static void _WCNEAR windowsFini( void )
 {
     _FiniMainWindowData();
 

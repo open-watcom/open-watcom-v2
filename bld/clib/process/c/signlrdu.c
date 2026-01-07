@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <signal.h>
 #include <float.h>
@@ -39,7 +40,6 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
-#include "rterrno.h"
 #include "sigfunc.h"
 #include "signlrdu.h"
 #include "rtinit.h"
@@ -135,7 +135,7 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
     __sig_func  prev_func;
 
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( SIG_ERR );
     }
 
@@ -196,7 +196,7 @@ _WCRTLINK int raise( int sig )
 
 static void __SigInit( void )
 {
-#ifdef __SW_BM
+#ifdef __MT__
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {

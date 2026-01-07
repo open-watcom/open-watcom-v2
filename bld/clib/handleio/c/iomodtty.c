@@ -44,7 +44,7 @@
 
 #define _INITIALIZED    _DYNAMIC
 
-void __ChkTTYIOMode( int handle )
+void _INTERNAL __ChkTTYIOMode( int handle )
 {
     if( handle < NUM_STD_STREAMS
       && (__io_mode[handle] & _INITIALIZED) == 0 ) {
@@ -53,12 +53,4 @@ void __ChkTTYIOMode( int handle )
             __io_mode[handle] |= _ISTTY;
         }
     }
-}
-
-// For F77 to call
-
-unsigned __IOMode( int handle )
-{
-    __ChkTTYIOMode( handle );
-    return( __GetIOMode( handle ) );
 }

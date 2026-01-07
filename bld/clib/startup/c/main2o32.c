@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,15 +49,11 @@
 #include "cominit.h"
 #include "procfini.h"
 #include "rtexcpt.h"
+#include "xmain.h"
 
 
-#ifdef __SW_BR
-    extern      int     main( int, char ** );
-    extern      int     wmain( int, wchar_t ** );
-#endif
-
-void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
-                                     char *env, char *cmd )
+_WCNORETURN void _WCNEAR __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod,
+                            unsigned reserved, char *env, char *cmd )
 /********************************************************************/
 {
     EXCEPTIONREGISTRATIONRECORD     xcpt;
@@ -89,5 +85,6 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     __InitThreadData( tdata );
     __OS2MainInit( &xcpt, tdata, hmod, env, cmd );
     __F_NAME(__CMain,__wCMain)();
+    // never return
 #endif
 }

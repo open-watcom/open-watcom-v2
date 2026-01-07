@@ -36,7 +36,7 @@
         include struct.inc
 
         name    dospawn
-        xrefp   "C",__set_errno_dos
+        xrefn   "C",__set_errno_dos
 
 _TEXT   segment byte public 'CODE'
 _TEXT   ends

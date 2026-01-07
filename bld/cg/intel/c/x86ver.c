@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "_cfloat.h"
 #include "data.h"
 #include "rgtbl.h"
 #include "fixindex.h"
@@ -74,25 +73,30 @@ bool    DoVerify( vertype kind, instruction *ins )
     case V_HIGHEQLOW:
         if( op1->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( !CFIsI32( op1->c.value ) && !CFIsU32( op1->c.value ) )
+        if( !CFIsI32( op1->c.u.cfval )
+          && !CFIsU32( op1->c.u.cfval ) )
             return(false);
         if( (op1->c.lo.u.int_value & 0x0000ffff) == (( op1->c.lo.u.int_value >> 16 ) & 0x0000ffff) )
             return( true );
         break;
     case V_OP2HIGH_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ff00) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0x0000ff00) == 0 )
             return( true );
         break;
     case V_OP2LOW_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.u.int_value & 0x000000ff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (~op2->c.lo.u.int_value & 0x000000ff) == 0 )
             return( true );
         break;
     case V_OP2LOW_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x000000ff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0x000000ff) == 0 )
             return( true );
         break;
     case V_OP2LOW_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.u.int_value & 0x0000ffff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (~op2->c.lo.u.int_value & 0x0000ffff) == 0 )
             return( true );
         break;
     case V_LSHONE:
@@ -106,15 +110,18 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         return( OtherVerify( V_OP2TWO, ins, op1, op2, result ) );
     case V_BYTESHIFT:
-        if( ins->head.opcode != OP_LSHIFT && ins->type_class != U4 )
+        if( ins->head.opcode != OP_LSHIFT
+          && ins->type_class != U4 )
             return( false );
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( false );
         if( op2->c.lo.u.int_value != 8 )
             return( false );
-        if( op1->n.class == N_REGISTER && !HW_CEqual( op1->r.reg, HW_ABCD ) )
+        if( op1->n.class == N_REGISTER
+          && !HW_CEqual( op1->r.reg, HW_ABCD ) )
             return( false );
-        if( result->n.class == N_REGISTER && !HW_CEqual( result->r.reg, HW_ABCD ) )
+        if( result->n.class == N_REGISTER
+          && !HW_CEqual( result->r.reg, HW_ABCD ) )
             return( false );
         return( true );
     case V_CYP2SHIFT:
@@ -134,29 +141,36 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         return( true );
     case V_OP2HIGH_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ff00) == 0x0000ff00 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0x0000ff00) == 0x0000ff00 )
             return( true );
         break;
     case V_OP2HIGH_W_FFFF_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
+        if( op1->n.class == N_REGISTER
+          && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0xffff0000) == 0xffff0000 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0xffff0000) == 0xffff0000 )
             return( true );
         break;
     case V_OP2HIGH_W_ZERO_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
+        if( op1->n.class == N_REGISTER
+          && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0xffff0000) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0xffff0000) == 0 )
             return( true );
         break;
     case V_OP2LOW_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ffff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE
+          && (op2->c.lo.u.int_value & 0x0000ffff) == 0 )
             return( true );
         break;
     case V_OP2PTR:
-        if( op2->n.type_class == PT || op2->n.type_class == CP )
+        if( op2->n.type_class == PT
+          || op2->n.type_class == CP )
             return( true );
         break;
     case V_LEA_GOOD:
@@ -177,7 +191,9 @@ bool    DoVerify( vertype kind, instruction *ins )
             }
             break;
         case OP_LSHIFT:
-            if( op1 == result && (_CPULevel( CPU_586 ) && !_CPULevel( CPU_686 )) )
+            if( op1 == result
+              && (_CPULevel( CPU_586 )
+              && !_CPULevel( CPU_686 )) )
                 return( false );
             if( OptForSize > 50 )
                 return( false );
@@ -211,7 +227,8 @@ bool    DoVerify( vertype kind, instruction *ins )
 #endif
         case OP_ADD:
         case OP_SUB:
-            if( OptForSize < 50 && !_CPULevel( CPU_286 ) )
+            if( OptForSize < 50
+              && !_CPULevel( CPU_286 ) )
                 return( false );
             return( true );
         default:
@@ -223,7 +240,9 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
         break;
     case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility) */
-        if( !_CPULevel( CPU_286 ) && ins->type_class != U1 && ins->type_class != U2 )
+        if( !_CPULevel( CPU_286 )
+          && ins->type_class != U1
+          && ins->type_class != U2 )
             return( true );
         break;
     case V_OP1SP:
@@ -274,14 +293,15 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
         /* Always allow cases like ax<-al which is just a simple mov or xor */
         if( op1->n.class == N_REGISTER
-            && RegClass( result->r.reg ) == U2
-            && HW_Equal( op1->r.reg, Low16Reg( result->r.reg ) ) ) {
+          && RegClass( result->r.reg ) == U2
+          && HW_Equal( op1->r.reg, Low16Reg( result->r.reg ) ) ) {
             return( true );
         }
         /* On P6 architecture, 'and' will cause a partial register stall with
          * horrible performance implications. Always use movzx.
          */
-        if( !_CPULevel( CPU_486 ) || _CPULevel( CPU_686 ) )
+        if( !_CPULevel( CPU_486 )
+          || _CPULevel( CPU_686 ) )
             break;
         if( OptForSize > 50 )
             break;
@@ -297,7 +317,8 @@ bool    DoVerify( vertype kind, instruction *ins )
          * Therefore, generate CDQ except when optimizing for time and the
          * CPU is 586 (on 386/486, CDQ is always better).
          */
-        if( _CPULevel( CPU_686 ) || !_CPULevel( CPU_586 ) )
+        if( _CPULevel( CPU_686 )
+          || !_CPULevel( CPU_586 ) )
             return( true );
         if( OptForSize >= 50 )
             return( true );
@@ -353,7 +374,8 @@ bool    DoVerify( vertype kind, instruction *ins )
 
             for( i = ins->num_operands; i-- > 0; ) {
                 op1 = ins->operands[i];
-                if( op1->n.class == N_TEMP && (op1->t.temp_flags & CONST_TEMP) ) {
+                if( op1->n.class == N_TEMP
+                  && (op1->t.temp_flags & CONST_TEMP) ) {
                     return( true );
                 }
             }
@@ -364,7 +386,8 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         return( OtherVerify( V_SWAP_GOOD, ins, op1, op2, result ) );
     case V_INTCOMP:
-        if( ins->result != NULL && ins->type_class != FS )
+        if( ins->result != NULL
+          && ins->type_class != FS )
             return( false );
         if( ins->head.opcode == OP_CMP_EQUAL )
             return( true );
@@ -375,9 +398,9 @@ bool    DoVerify( vertype kind, instruction *ins )
         // comparisons - not worth it for now - BBB Apr 24, 1995
         if( ins->type_class != FS )
             return( false );
-        if( ins->operands[1]->n.class == N_CONSTANT &&
-            ins->operands[1]->c.const_type == CONS_ABSOLUTE &&
-            CFTest( ins->operands[1]->c.value ) > 0 )
+        if( ins->operands[1]->n.class == N_CONSTANT
+          && ins->operands[1]->c.const_type == CONS_ABSOLUTE
+          && CFTest( ins->operands[1]->c.u.cfval ) > 0 )
             return( true );
 #endif
         return( false );

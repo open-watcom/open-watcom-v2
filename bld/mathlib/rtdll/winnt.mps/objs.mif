@@ -1,0 +1,21 @@
+__cifx__ =$(system).$(processor)/$(libsubdir)
+__mifx__ =$(system).$(processor)/$(libsubdir).dll
+
+dll_libs = $+ &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(clib_dir)/rtdll/$(__cifx__)/clbdll.lib &
+    $-
+
+dll_def = $+ &
+#    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
+#    $(mathlib_dir)/export.$(processor) &
+    $-
+
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $-
+
+static_objs =
+
+__cifx__ =
+__mifx__ =

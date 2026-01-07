@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,8 +52,8 @@
 #endif
 
 
-static int __sysconf_nprocessors_conf( void )
-/********************************************
+static int _WCNEAR __sysconf_nprocessors_conf( void )
+/****************************************************
  * I did not find a better method to find out the number
  * of installed CPUs than reading this value from the kernel
  * by file /sys/devices/system/cpu/present
@@ -66,8 +67,7 @@ static int __sysconf_nprocessors_conf( void )
 
     fp = fopen( "/sys/devices/system/cpu/present", "rb" );
     if( fp == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( lib_set_EINVAL() );
     }
     fseek( fp, 0, SEEK_END );
     len = ftell( fp );
@@ -99,7 +99,7 @@ static int __sysconf_nprocessors_conf( void )
     return( ret + 1 );
 }
 
-static int __sysconf_nprocessors( void )
+static int _WCNEAR __sysconf_nprocessors( void )
 {
     syscall_res res;
     unsigned char mask[128];    /* enough space for 1024 cores */
@@ -109,7 +109,7 @@ static int __sysconf_nprocessors( void )
 
     res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
     if ( __syscall_iserror( res ) ) {
-        _RWD_errno = __syscall_errno( res );
+        lib_set_errno( __syscall_errno( res ) );
         return( -1 );
     }
     used = __syscall_val( int, res );
@@ -124,7 +124,7 @@ static int __sysconf_nprocessors( void )
     return( ret );
 }
 
-static int __sysconf_rlimit_int( int rlimid )
+static int _WCNEAR __sysconf_rlimit_int( int rlimid )
 {
     struct rlimit rls;
 
@@ -134,7 +134,7 @@ static int __sysconf_rlimit_int( int rlimid )
     return( -1 );
 }
 
-static int __sysconf_pages( int name )
+static int _WCNEAR __sysconf_pages( int name )
 {
     long quantity;
     struct sysinfo info;
@@ -151,12 +151,11 @@ static int __sysconf_pages( int name )
 #ifdef PAGE_SIZE
     return( (int)( quantity / PAGE_SIZE ) );
 #else
-    _RWD_errno = EINVAL;
-    return( -1 );
+    return( lib_set_EINVAL() );
 #endif
 }
 
-static int __sysconf_somaxconn( void )
+static int _WCNEAR __sysconf_somaxconn( void )
 {
     FILE *fp;
     int ret;
@@ -217,11 +216,10 @@ _WCRTLINK long sysconf( int name )
         /* Also used for _SC_PAGE_SIZE */
 #ifdef PAGE_SIZE
         ret = PAGE_SIZE;
-#else
-        _RWD_errno = EINVAL;
-        ret = -1;
-#endif
         break;
+#else
+        return( lib_set_EINVAL() );
+#endif
     case _SC_PHYS_PAGES:
     case _SC_AVPHYS_PAGES:
         ret = __sysconf_pages( name );
@@ -251,8 +249,7 @@ _WCRTLINK long sysconf( int name )
         ret = (long)0;
         break;
     default:
-        _RWD_errno = EINVAL;
-        break;
+        return( lib_set_EINVAL() );
     }
 
     return( ret );

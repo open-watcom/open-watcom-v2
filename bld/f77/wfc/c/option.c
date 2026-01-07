@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,17 +268,17 @@ void    FiniProcCmd( void )
 }
 
 
-static unsigned_32 OptV( opt_entry *optn, const char *ptr )
-//=========================================================
+static unsigned OptV( opt_entry *optn, const char *ptr )
+//======================================================
 // Process an option that requires a value.
 {
-    unsigned_32 number;
+    unsigned    number;
 
     if( !isdigit( *ptr ) ) {
         Warning( CO_WANT_NUMBER, optn->option );
     }
     number = 0;
-    for(;;) {
+    for( ;; ) {
         number = 10 * number + ( *ptr - '0' );
         ptr++;
         if( isdigit( *ptr ) == 0 ) {
@@ -446,7 +446,7 @@ static bool OptMatch( const char *buff, const char *list, bool value )
 //==========================================================================
 // Determine if option matches.
 {
-    for(;;) {
+    for( ;; ) {
         if( *buff == NULLCHAR )
             break;
         if( *buff == ' ' )
@@ -489,11 +489,10 @@ static opt_entry *GetOptn( const char *buff, bool *negated )
 {
     opt_entry   *optn;
 
-    optn = CompOptns;
     *negated = false;
-    if( ( toupper( buff[ 0 ] ) == 'N' ) && ( toupper( buff[ 1 ] ) == 'O' ) ) {
+    if( ( toupper( buff[0] ) == 'N' ) && ( toupper( buff[1] ) == 'O' ) ) {
         *negated = true;
-        buff += 2 * sizeof( char );
+        buff += 2;
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
         if( OptMatch( buff, optn->option, (optn->flags & VAL) ) ) {
@@ -564,10 +563,10 @@ static void ScanOpts( const char *buff )
     bool        first_opt;
 
     if( strlen( SrcBuff ) > LastColumn ) {
-        SrcBuff[ LastColumn ] = NULLCHAR;
+        SrcBuff[LastColumn] = NULLCHAR;
     }
     first_opt = true;
-    for(;;) {
+    for( ;; ) {
         buff = SkipBlanks( buff );
         if( *buff == NULLCHAR )
             break;
@@ -609,10 +608,10 @@ static int GetDirective( const char *buff )
 
     drctv = CompDrctvs;
     offset = 0;
-    for(;;) {
-        if( drctv[ offset ] == NULL )
+    for( ;; ) {
+        if( drctv[offset] == NULL )
             return( 0 );
-        if( OptMatch( buff, drctv[ offset ], false ) )
+        if( OptMatch( buff, drctv[offset], false ) )
             return( offset + 1 );
         offset++;
     }
@@ -625,7 +624,7 @@ static char *GetOptName( char *buffer, const char *opt_name )
 {
     char        *buff;
 
-    buff = buffer + sizeof( char );
+    buff = buffer + 1;
     while( *opt_name != NULLCHAR ) {
         *buff = tolower( *opt_name );
         opt_name++;
@@ -674,7 +673,7 @@ void    SrcOption( void )
     int         directive;
     const char  *buff;
 
-    buff = &SrcBuff[ 2 ];
+    buff = &SrcBuff[2];
     directive = GetDirective( buff );
     if( directive == CD_INCLUDE ) {
         if( ProgSw & PS_SKIP_SOURCE )
@@ -739,13 +738,12 @@ void    PrtOptions( void )
     opt_entry   *optn;
     char        buffer[30];
     char        *buff;
-    unsigned_32 number;
+    unsigned    number;
 
     LFSkip();
     PrtLst( "Options:" );
-    buffer[ 0 ] = ' ';
+    buffer[0] = ' ';
     number = 0;
-    optn = CompOptns;
     for( optn = CompOptns; optn->option != NULL; optn++ ) {
         if( optn->flags & VAL ) {
             // the following check will only work if
@@ -764,7 +762,7 @@ void    PrtOptions( void )
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( IncludePath );
-                buffer[ 0 ] = ',';
+                buffer[0] = ',';
                 continue;
             }
             if( optn->value == CGOPT_OBJ_NAME ) {
@@ -773,12 +771,12 @@ void    PrtOptions( void )
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( ObjName );
-                buffer[ 0 ] = ',';
+                buffer[0] = ',';
                 continue;
             }
-            buff += sprintf( buff, "%lu", (unsigned long)number );
+            buff += sprintf( buff, "%u", number );
             PrtLst( buffer );
-            buffer[ 0 ] = ',';
+            buffer[0] = ',';
         } else {
             if( optn->flags & CG ) {
                 if( optn->flags & NEG ) {
@@ -829,7 +827,7 @@ void    PrtOptions( void )
             }
             GetOptName( buffer, optn->option );
             PrtLst( buffer );
-            buffer[ 0 ] = ',';
+            buffer[0] = ',';
         }
     }
     PrtLstNL( "" );

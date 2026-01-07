@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "opr.h"
 #include "opn.h"
 #include "rtconst.h"
-#include "units.h"
 #include "global.h"
 #include "recog.h"
 #include "types.h"
@@ -230,13 +229,13 @@ void    FormatIdd( void ) {
             ge->sym->u.ns.flags |= SY_REFERENCED;
         }
         GSetNameList( FC_SET_NML );
-        KWRememb( IO_NAMELIST );
+        IOPermSet( IO_NAMELIST );
     } else if( RecNumber() ) {
         GPassStmtNo( LkUpFormat(), FC_SET_FMT );
     } else if( RecNOpn() && RecNextOpr( OPR_MUL ) ) {
         if( CITNode->link->opn.ds == DSOPN_PHI ) {
             AdvanceITPtr();   // nothing needs to be loaded for default
-            KWRememb( IO_LIST_DIR );
+            IOPermSet( IO_LIST_DIR );
         }
     } else if( RecNOpn() && RecNextOpr( OPR_COM ) ) {
         Extension( IL_NO_ASTERISK );
@@ -259,7 +258,7 @@ void    FormatIdd( void ) {
                 AddConst( CITNode ); // in case single constant
                 fmt_label.g_label = NextLabel();
                 FScan( CITNode->sym_ptr->u.lt.length,
-                       (char *)&CITNode->sym_ptr->u.lt.value, fmt_label );
+                       CITNode->sym_ptr->u.lt.value, fmt_label );
                 GPassLabel( fmt_label.g_label, RT_SET_FMT );
             } else {
                 GFmtExprSet();
@@ -284,7 +283,7 @@ void    Unit(void) {
             if( _IsTypeInteger( CITNode->typ ) && !RecArrName() ) {
                 GPassValue( FC_SET_UNIT );
             } else if( CITNode->typ == FT_CHAR ) {
-                KWRememb( IO_INTERNAL );
+                IOPermSet( IO_INTERNAL );
                 CkAssignOk();
                 if( RecArrName() ) {
                     ChkAssumed();
@@ -315,87 +314,87 @@ static  void    GetItem( void ) {
         AdvanceITPtr();
         ReqEquSign();
         switch( kw ) {
-          case IO_ACCESS:
-              CharItem( FC_SET_ACC );
-              break;
-          case IO_ACTION:
-              CharItem( FC_SET_ACTION );
-              break;
-          case IO_BLANK:
-              CharItem( FC_SET_BLNK );
-              break;
-          case IO_BLOCKSIZE:
-              BlockSize();
-              break;
-          case IO_CARRIAGECONTROL:
-              CharItem( FC_SET_CCTRL );
-              break;
-          case IO_DIRECT:
-              CharItem( FC_SET_DIR );
-              break;
-          case IO_END:
-              LabelItem( FC_SET_END );
-              break;
-          case IO_ERR:
-              LabelItem( FC_SET_ERR );
-              break;
-          case IO_EXIST:
-              BoolInq( FC_SET_EXST );
-              break;
-          case IO_FILE:
-              FileItem();
-              break;
-          case IO_FMT:
-              FormatIdd();
-              break;
-          case IO_FORM:
-              CharItem( FC_SET_FORM );
-              break;
-          case IO_FMTTED:
-              CharItem( FC_SET_FMTD );
-              break;
-          case IO_IOSTAT:
-              IntInq( FC_SET_IOS );
-              break;
-          case IO_NAME:
-              CharItem( FC_SET_NAME );
-              break;
-          case IO_NAMED:
-              BoolInq( FC_SET_NMD );
-              break;
-          case IO_NXTREC:
-              IntInq( FC_SET_NREC );
-              break;
-          case IO_NUMBER:
-              IntInq( FC_SET_NUMB );
-              break;
-          case IO_OPENED:
-              BoolInq( FC_SET_OPEN );
-              break;
-          case IO_REC:
-              IntItem( FC_SET_REC );
-              break;
-          case IO_RECL:
-              Recl();
-              break;
-          case IO_RECORDTYPE:
-              CharItem( FC_SET_RECTYPE );
-              break;
-          case IO_SEQ:
-              CharItem( FC_SET_SEQ );
-              break;
-          case IO_SHARE:
-              CharItem( FC_SET_SHARE );
-              break;
-          case IO_STATUS:
-              CharItem( FC_SET_STAT );
-              break;
-          case IO_UNFMTD:
-              CharItem( FC_SET_UFMTD );
-              break;
-          case IO_UNIT:
-              Unit();
-              break;
+        case IO_ACCESS:
+            CharItem( FC_SET_ACC );
+            break;
+        case IO_ACTION:
+            CharItem( FC_SET_ACTION );
+            break;
+        case IO_BLANK:
+            CharItem( FC_SET_BLNK );
+            break;
+        case IO_BLOCKSIZE:
+            BlockSize();
+            break;
+        case IO_CARRIAGECONTROL:
+            CharItem( FC_SET_CCTRL );
+            break;
+        case IO_DIRECT:
+            CharItem( FC_SET_DIR );
+            break;
+        case IO_END:
+            LabelItem( FC_SET_END );
+            break;
+        case IO_ERR:
+            LabelItem( FC_SET_ERR );
+            break;
+        case IO_EXIST:
+            BoolInq( FC_SET_EXST );
+            break;
+        case IO_FILE:
+            FileItem();
+            break;
+        case IO_FMT:
+            FormatIdd();
+            break;
+        case IO_FORM:
+            CharItem( FC_SET_FORM );
+            break;
+        case IO_FMTTED:
+            CharItem( FC_SET_FMTD );
+            break;
+        case IO_IOSTAT:
+            IntInq( FC_SET_IOS );
+            break;
+        case IO_NAME:
+            CharItem( FC_SET_NAME );
+            break;
+        case IO_NAMED:
+            BoolInq( FC_SET_NMD );
+            break;
+        case IO_NXTREC:
+            IntInq( FC_SET_NREC );
+            break;
+        case IO_NUMBER:
+            IntInq( FC_SET_NUMB );
+            break;
+        case IO_OPENED:
+            BoolInq( FC_SET_OPEN );
+            break;
+        case IO_REC:
+            IntItem( FC_SET_REC );
+            break;
+        case IO_RECL:
+            Recl();
+            break;
+        case IO_RECORDTYPE:
+            CharItem( FC_SET_RECTYPE );
+            break;
+        case IO_SEQ:
+            CharItem( FC_SET_SEQ );
+            break;
+        case IO_SHARE:
+            CharItem( FC_SET_SHARE );
+            break;
+        case IO_STATUS:
+            CharItem( FC_SET_STAT );
+            break;
+        case IO_UNFMTD:
+            CharItem( FC_SET_UFMTD );
+            break;
+        case IO_UNIT:
+            Unit();
+            break;
         }
         AdvanceITPtr();
     } else {

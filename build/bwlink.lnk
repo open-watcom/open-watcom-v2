@@ -412,6 +412,8 @@ system begin os2v2
     libpath '%OWROOT%/bld/mathlib/library/msdos.386/mf_s'
     libpath '%OWROOT%/bld/mathlib/library/msdos.387/mf_r'
     libpath '%OWROOT%/bld/mathlib/library/msdos.387/mf_s'
+    libpath '%OWROOT%/bld/mathlib/rtdll/os2.386/mf_r'
+    libpath '%OWROOT%/bld/mathlib/rtdll/os2.386/mf_s'
     libpath '%OWROOT%/bld/mathlib/rtdll/os2.387/mf_r'
     libpath '%OWROOT%/bld/mathlib/rtdll/os2.387/mf_s'
     libpath '%OWROOT%/bld/cpplib/library/os2.386/mf_rmt'

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 #define _INITNEXTMBTOK
-#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) )
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) )
     #define _NEXTMBTOK          (__THREADDATAPTR->__nextmbtokP)
 #else
     static unsigned char        *nextmbtok = NULL;

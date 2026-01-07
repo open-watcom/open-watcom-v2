@@ -174,13 +174,13 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
     if( io->attrs & SEEK ) { // direct access
         if( SysRead( io, b, len ) == READ_ERROR )
             return( 0 );
-        if( SysRead( io, rs, sizeof( char ) ) == READ_ERROR )
+        if( SysRead( io, rs, 1 ) == READ_ERROR )
             return( 0 );
         if( rs[0] == CHAR_LF )
             return( len );
 #if !defined( __UNIX__ )
         if( rs[0] == CHAR_CR ) {
-            if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
+            if( SysRead( io, &rs[1], 1 ) == READ_ERROR ) {
                 return( 0 );
             }
             if( rs[1] == CHAR_LF )

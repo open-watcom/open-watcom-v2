@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +45,10 @@
 
 
 #ifdef __NETWARE__
-
     /*
-    //  NetWare uses Alloc and Free because the heap will not have
-    //  been initialised at _Prelude time...
-    */
-
+     * NetWare uses Alloc and Free because the heap will not have
+     * been initialised at _Prelude time...
+     */
     #define lib_malloc( x )         _NW_malloc( x )
     #define lib_free( x )           _NW_free( x )
   #if defined (_NETWARE_CLIB)
@@ -58,47 +57,38 @@
     #define lib_realloc( x, y)      _NW_realloc( x, y)
   #endif
     #define lib_calloc( x, y )      _NW_calloc( x, y )
-
+    #define lib_strdup( x )         __clib_strdup( x )
 #elif defined(__RDOSDEV__)
-    #define lib_malloc( x ) malloc( x )
-    #define lib_free( x ) free( x )
-    #define lib_realloc( x, y ) realloc( x, y )
+    #define lib_malloc( x )         malloc( x )
+    #define lib_free( x )           free( x )
+    #define lib_realloc( x, y )     realloc( x, y )
 
-    #define lib_nmalloc( x ) malloc( x )
-    #define lib_nfree( x ) free( x )
-    #define lib_nrealloc( x, y ) realloc( x, y )
+    #define lib_nmalloc( x )        malloc( x )
+    #define lib_nfree( x )          free( x )
+    #define lib_nrealloc( x, y )    realloc( x, y )
 
-    #define lib_fmalloc( x ) malloc( x )
-    #define lib_ffree( x ) free( x )
-    #define lib_frealloc( x, y ) realloc( x, y )
+    #define lib_fmalloc( x )        malloc( x )
+    #define lib_ffree( x )          free( x )
+    #define lib_frealloc( x, y )    realloc( x, y )
 
-    #define lib_calloc( x, y ) calloc( x, y )
+    #define lib_calloc( x, y )      calloc( x, y )
+    #define lib_strdup( x )         __clib_strdup( x )
 #else
-    #define lib_malloc( x ) malloc( x )
-    #define lib_free( x ) free( x )
-    #define lib_realloc( x, y ) realloc( x, y )
+    #define lib_malloc( x )         malloc( x )
+    #define lib_free( x )           free( x )
+    #define lib_realloc( x, y )     realloc( x, y )
 
-    #define lib_nmalloc( x ) _nmalloc( x )
-    #define lib_nfree( x ) _nfree( x )
-    #define lib_nrealloc( x, y ) _nrealloc( x, y )
+    #define lib_nmalloc( x )        _nmalloc( x )
+    #define lib_nfree( x )          _nfree( x )
+    #define lib_nrealloc( x, y )    _nrealloc( x, y )
 
-    #define lib_fmalloc( x ) _fmalloc( x )
-    #define lib_ffree( x ) _ffree( x )
-    #define lib_frealloc( x, y ) _frealloc( x, y )
+    #define lib_fmalloc( x )        _fmalloc( x )
+    #define lib_ffree( x )          _ffree( x )
+    #define lib_frealloc( x, y )    _frealloc( x, y )
 
-    #define lib_calloc( x, y ) calloc( x, y )
-#endif
-
-// these are used by the C++ library
-// they are real routines so that the C++ library
-// remains platform independent.
-#ifdef __cplusplus
-extern "C" {
-#endif
-_WCRTLINK extern void _plib_free( void *ptr );
-_WCRTLINK extern void *_plib_malloc( size_t size );
-#ifdef __cplusplus
-}
+    #define lib_calloc( x, y )      calloc( x, y )
+    #define lib_strdup( x )         __clib_strdup( x )
+    #define lib_wcsdup( x )         __clib_wcsdup( x )
 #endif
 
 #endif

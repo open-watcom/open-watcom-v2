@@ -43,8 +43,6 @@ DOS executable files
 .bull
 RDOS executable files including Dynamic Link Libraries
 .bull
-ZDOS executable files
-.bull
 ELF executable files
 .bull
 executable files that run under CauseWay DOS extender
@@ -80,8 +78,6 @@ Currently, the &lnkname runs under the following operating systems.
 .begbull
 .bull
 DOS
-.bull
-ZDOS
 .bull
 Linux
 .bull

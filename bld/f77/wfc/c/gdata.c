@@ -97,7 +97,7 @@ void    GDataItem( itnode *rpt ) {
     }
     OutPtr( data );
     if( CITNode->typ == FT_HEX ) {
-        OutU16( PT_NOTYPE );
+        OutU16( FPT_NOTYPE );
     } else {
         GenType( CITNode );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -639,7 +639,7 @@ void    BGZapBase( name *base, const type_def *tipe )
     ins = MakeNop();
     if( DummyIndex == NULL )
         DummyIndex = AllocTemp( WD );
-    ins->result = ScaleIndex( DummyIndex, base, 0, XX, tipe->length, 0, X_FAKE_BASE );
+    ins->result = ScaleIndex( DummyIndex, base, 0, XX, tipe->length, SCALE_NONE, X_FAKE_BASE );
     ins->flags.u.nop_flags |= NOP_ZAP_INFO;
     AddIns( ins );
 }

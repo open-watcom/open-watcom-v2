@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdio.h>
 #if defined(__NT__)
@@ -41,11 +42,9 @@
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
-#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "qwrite.h"
 #include "thread.h"
@@ -64,7 +63,7 @@
 
 #define MAXBUFF 0x8000
 
-static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
+static tiny_ret_t _WCNEAR __TinyWrite( int handle, const void *buffer, unsigned len )
 {
     unsigned    total;
     unsigned    writamt;
@@ -88,7 +87,7 @@ static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
 }
 #endif
 
-int __qwrite( int handle, const void *buffer, unsigned len )
+int _WCNEAR __qwrite( int handle, const void *buffer, unsigned len )
 {
     int             atomic;
 #if defined(__NT__)
@@ -179,7 +178,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     len_written = TINY_LINFO( rc );
 #endif
     if( len_written != len ) {
-        _RWD_errno = ENOSPC;
+        lib_set_errno( ENOSPC );
     }
     if( atomic == 1 ) {
         _ReleaseFileH( handle );

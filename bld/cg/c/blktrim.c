@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,13 +104,13 @@ int     CountIns( block *blk )
 }
 
 
-static  bool    FindBlock( block *target )
-/****************************************/
+static  bool    FindBlock( block *blk )
+/*************************************/
 {
-    block       *blk;
+    block       *curr;
 
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk == target ) {
+    for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
+        if( curr == blk ) {
             return( true );
         }
     }
@@ -157,7 +157,7 @@ void    RemoveBlock( block *blk )
      * have a line number on it.
      */
     if( blk->next_block != NULL
-      && blk->next_block->gen_id == (blk->gen_id + 1) ) {
+      && blk->next_block->gen_blk_id == (blk->gen_blk_id + 1) ) {
         /*
          * quick check to see if following block is next one in src order
          */
@@ -166,9 +166,9 @@ void    RemoveBlock( block *blk )
         next = NULL;
         for( chk = HeadBlock; chk != NULL; chk = chk->next_block ) {
             if( (chk != blk)
-              && (chk->gen_id > blk->gen_id)
+              && (chk->gen_blk_id > blk->gen_blk_id)
               && (next == NULL
-              || next->gen_id > chk->gen_id) ) {
+              || next->gen_blk_id > chk->gen_blk_id) ) {
                 next = chk;
             }
         }
@@ -200,10 +200,10 @@ void    RemoveInputEdge( block_edge *edge )
     block       *dest;
     block_edge  *prev;
 
-    if( (edge->flags & DEST_IS_BLOCK) == 0 )
+    if( (edge->flags & BEF_DEST_IS_BLOCK) == 0 )
         return;
     dest = edge->destination.u.blk;
-    dest->inputs --;
+    dest->inputs--;
     prev = dest->input_edges;
     if( prev == edge ) {
         dest->input_edges = edge->next_source;
@@ -354,10 +354,9 @@ static  bool    SameTarget( block *blk )
     if( targ1 != targ2 )
         return( false );
     if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION )
-      || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
+      || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) ) {
         return( false );
-    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
-    _MarkBlkAttrSet( blk, BLK_JUMP );
+    }
     RemoveEdge( &blk->edge[1] );
     ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -377,7 +376,7 @@ static  bool    DoBlockTrim( void )
     instruction *ins;
     bool        change;
     bool        any_change;
-    block_num   blk_id;
+    block_id    blk_id;
 
     _MarkBlkAllUnVisited();
     any_change = false;
@@ -394,7 +393,11 @@ static  bool    DoBlockTrim( void )
                 RemoveBlock( blk );
                 change = true;
             } else if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
-                change |= SameTarget( blk );
+                if( SameTarget( blk ) ) {
+                    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+                    _MarkBlkAttrSet( blk, BLK_JUMP );
+                    change = true;
+                }
             } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk
@@ -428,13 +431,13 @@ static  bool    DoBlockTrim( void )
     } while( change );
     blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->id = blk_id++;
+        blk->blk_id = blk_id++;
     }
     return( any_change );
 }
 
-void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
-/**************************************************************
+void KillCondBlk( block *blk, instruction *ins, cond_dst_idx dest_idx )
+/**********************************************************************
  * Assume blk is a conditional with compare ins
  * Make dest the destination and delete the unused edge
  * Change blk to a JMP to dest edge
@@ -459,10 +462,10 @@ void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
 bool    DeadBlocks( void )
 /************************/
 {
-    block       *blk;
-    instruction *ins;
-    byte        dest_idx;
-    bool        change;
+    block           *blk;
+    instruction     *ins;
+    cond_dst_idx    dest_idx;
+    bool            change;
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

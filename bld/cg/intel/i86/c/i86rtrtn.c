@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "liveinfo.h"
 #include "x86rtrn.h"
 #include "bldselco.h"
+#include "i64.h"
 #include "_x86rtrn.h"
 
 
@@ -130,8 +131,8 @@ name    *Addressable( name *cons, type_class_def type_class )
             return( GenFloat( cons, type_class ) );
         case U8:
         case I8:
-            buffer.u._32[I64LO32] = cons->c.lo.u.int_value;
-            buffer.u._32[I64HI32] = cons->c.hi.u.int_value;
+            U64Low( buffer ) = cons->c.lo.u.int_value;
+            U64High( buffer ) = cons->c.hi.u.int_value;
             return( GenConstData( &buffer, type_class ) );
         default:
             Zoiks( ZOIKS_138 );

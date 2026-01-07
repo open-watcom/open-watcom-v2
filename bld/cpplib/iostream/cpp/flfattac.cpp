@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ namespace std {
     }
 
     // Derive the value of "mode" from the file handle:
-    if( ::__plusplus_fstat( fd, &__file_mode ) != 0 ) {
+    if( ::__clib_fstat( fd, &__file_mode ) != 0 ) {
         return( NULL );
     }
     __file_handle = fd;

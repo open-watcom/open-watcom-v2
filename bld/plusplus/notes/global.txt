@@ -6,7 +6,6 @@ Items to be done at next global recompile:
     - move IC_INIT_AUTO into IC_INIT_* range
 - datainit.h
     - remove auto_type field
-- remove SwitchChar if we don't use it
 
 Items we don't want to forget
 =============================

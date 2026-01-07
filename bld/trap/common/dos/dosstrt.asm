@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,6 +30,10 @@
 ;*
 ;*****************************************************************************
 
+;
+; this module must be linked as first that code in _TEXT segment
+; is at offset 0 in final executable
+;
 
                 name    TRAPSTRT
 
@@ -37,15 +41,19 @@
 public  _small_code_
 _small_code_    equ 0
 
-DGROUP  group   BEGTEXT,_TEXT,_DATA,_BSS,CONST,STACK
+DGROUP  group   STACK
 
-BEGTEXT         segment byte public 'CODE'
-        assume  CS:BEGTEXT
+_TEXT   segment byte public 'CODE'
+        assume  CS:_TEXT
 
         extrn   TrapInit_               :near
         extrn   TrapRequest_            :near
         extrn   TrapFini_               :near
 
+;
+; following structure must correspond with declaration
+; used in bld/dig/h/trpdoshd.h file
+;
 sign    dw      0DEAFh
 init    dw      TrapInit_
 req     dw      TrapRequest_
@@ -62,19 +70,7 @@ dos_start label far
         mov     ax, 4cffH
         int     21H
 
-BEGTEXT ends
-
-_TEXT   segment byte public 'CODE'
 _TEXT   ends
-
-_BSS    segment byte public 'BSS'
-_BSS    ends
-
-_DATA   segment byte public 'DATA'
-_DATA   ends
-
-CONST   segment byte public 'DATA'
-CONST   ends
 
 STACK   segment byte stack 'STACK'
     db  1   ; this causes the _BSS segment to be allocated

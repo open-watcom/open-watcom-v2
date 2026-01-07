@@ -153,7 +153,7 @@ bool VarParm( SYMPTR sym )
         fn_typ = sym->sym_type;
         SKIP_TYPEDEFS( fn_typ );
         if( fn_typ->u.fn.parms != NULL ) {
-            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
+            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; parm_types++ ) {
                 if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     return( true );
                 }
@@ -212,7 +212,7 @@ static const inline_funcs *IF_Lookup( const char *name )
     const inline_funcs  *ifunc;
 
     if( !GET_FPU_FPC( ProcRevision ) ) {
-        for( ifunc = _8087_Functions; ifunc->name != NULL; ++ifunc ) {
+        for( ifunc = _8087_Functions; ifunc->name != NULL; ifunc++ ) {
             if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
@@ -235,7 +235,7 @@ static const inline_funcs *IF_Lookup( const char *name )
             }
   #endif
         }
-        for( ; ifunc->name != NULL; ++ifunc ) {
+        for( ; ifunc->name != NULL; ifunc++ ) {
             if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
@@ -243,7 +243,7 @@ static const inline_funcs *IF_Lookup( const char *name )
     }
   #if _CPU == 386
     if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
-        for( ifunc = Flat_Functions; ifunc->name != NULL; ++ifunc ) {
+        for( ifunc = Flat_Functions; ifunc->name != NULL; ifunc++ ) {
             if( strcmp( ifunc->name, name ) == 0 ) {
                 return( ifunc );
             }
@@ -266,12 +266,12 @@ static const inline_funcs *IF_Lookup( const char *name )
         }
   #endif
     }
-    for( ; ifunc->name != NULL; ++ifunc ) {
+    for( ; ifunc->name != NULL; ifunc++ ) {
         if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
     }
-    for( ifunc = Common_Functions; ifunc->name != NULL; ++ifunc ) {
+    for( ifunc = Common_Functions; ifunc->name != NULL; ifunc++ ) {
         if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
@@ -633,14 +633,13 @@ static CGPOINTER NextLibrary( int index, aux_class request )
         addDefaultLibs();
     }
     if( request == FEINF_NEXT_LIBRARY )
-        ++index;
+        index++;
     if( index > 0 ) {
-        for( i = 1, lib = HeadLibs; lib != NULL; lib = lib->next ) {
+        for( i = 1, lib = HeadLibs; lib != NULL; i++, lib = lib->next ) {
             if( i == index ) {
                 name = lib->libname;
                 break;
             }
-            ++i;
         }
     }
     /*
@@ -680,38 +679,28 @@ static CGPOINTER NextAlias( int index, aux_class request )
  */
 {
     alias_list          *aliaslist;
-    SYM_HANDLE          alias_sym = SYM_NULL;
-    SYM_HANDLE          subst_sym = SYM_NULL;
-    const char          *alias_name = NULL;
-    const char          *subst_name = NULL;
     int                 i;
 
     if( request == FEINF_NEXT_ALIAS )
         ++index;
 
-    for( i = 1, aliaslist = AliasHead; aliaslist != NULL; aliaslist = aliaslist->next, ++i ) {
-        alias_name = aliaslist->name;
-        alias_sym = aliaslist->a_sym;
-        subst_name = aliaslist->subst;
-        subst_sym = aliaslist->s_sym;
+    for( i = 1, aliaslist = AliasHead; aliaslist != NULL; i++, aliaslist = aliaslist->next ) {
         if( i == index ) {
-            break;
+            switch( request ) {
+            case FEINF_ALIAS_NAME:
+                return( (CGPOINTER)aliaslist->name );
+            case FEINF_ALIAS_SYMBOL:
+                return( (CGPOINTER)aliaslist->a_sym );
+            case FEINF_ALIAS_SUBST_NAME:
+                return( (CGPOINTER)aliaslist->subst );
+            case FEINF_ALIAS_SUBST_SYMBOL:
+                return( (CGPOINTER)aliaslist->s_sym );
+            }
+            return( (CGPOINTER)(pointer_uint)index );
         }
     }
-    if( aliaslist == NULL )
-        index = 0;          /* no (more) aliases */
-
-    if( request == FEINF_ALIAS_NAME ) {
-        return( (CGPOINTER)alias_name );
-    } else if( request == FEINF_ALIAS_SYMBOL ) {
-        return( (CGPOINTER)alias_sym );
-    } else if( request == FEINF_ALIAS_SUBST_NAME ) {
-        return( (CGPOINTER)subst_name );
-    } else if( request == FEINF_ALIAS_SUBST_SYMBOL ) {
-        return( (CGPOINTER)subst_sym );
-    } else {    /* this had better be a FEINF_NEXT_ALIAS request */
-        return( (CGPOINTER)(pointer_uint)index );
-    }
+    /* no (more) aliases */
+    return( (CGPOINTER)(pointer_uint)0 );
 }
 
 static unsigned GetParmsSize( SYM_HANDLE sym_handle )
@@ -732,7 +721,7 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     SKIP_TYPEDEFS( fn_typ );
     if( fn_typ->decl_type == TYP_FUNCTION ) {
         if( fn_typ->u.fn.parms != NULL ) {
-            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
+            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; parm_types++ ) {
                 if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     total_parm_size = (unsigned)-1;
                     break;
@@ -883,9 +872,8 @@ static void addDefaultImports( void )
         if( CompFlags.float_used ) {
             if( CompFlags.use_long_double ) {
                 AddExtRefN( "_fltused_80bit_" );
-            } else {
-                AddExtRefN( "_fltused_" );
             }
+            AddExtRefN( "_fltused_" );
         }
   #if _CPU == 8086
         if( FirstStmt != 0 ) {
@@ -1023,16 +1011,15 @@ static CGPOINTER NextImport( int index, aux_class request )
         addDefaultImports();
     }
     if( request == FEINF_NEXT_IMPORT )
-        ++index;
+        index++;
     if( index > 0 ) {
-        for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
+        for( i = 1, e = ExtrefInfo; e != NULL; i++, e = e->next ) {
             if( e->symbol != NULL )
                 continue;
             if( i == index ) {
                 name = e->name;
                 break;
             }
-            ++i;
         }
     }
     /*
@@ -1059,16 +1046,15 @@ static CGPOINTER NextImportS( int index, aux_class request )
 
     symbol = NULL;
     if( request == FEINF_NEXT_IMPORT_S )
-        ++index;
+        index++;
     if( index > 0 ) {
-        for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
+        for( i = 1, e = ExtrefInfo; e != NULL; i++, e = e->next ) {
             if( e->symbol == NULL )
                 continue;
             if( i == index ) {
                 symbol = e->symbol;
                 break;
             }
-            ++i;
         }
     }
     /*

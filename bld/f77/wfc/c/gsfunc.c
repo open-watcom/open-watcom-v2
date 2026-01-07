@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include "emitobj.h"
 #include "gsfunc.h"
 #include "gstring.h"
+#include "cgmagic.h"
 
 
 void    GSFArg( sym_id sym ) {
@@ -67,7 +68,7 @@ void    GSFCall( itnode *sfunc ) {
     }
     OutPtr( NULL );
     if( sfunc->typ == FT_CHAR ) {
-        OutPtr( GTempString( sfunc->size ) );
+        OutPtr( TmpVar( FT_CHAR, sfunc->size ) );
     }
     SetOpn( sfunc, USOPN_SAFE );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -243,7 +244,7 @@ int parse_cmdline( char * cmdline )
     /* Verify that parameter is not adorned. */
 
     opt = *cmdline;
-    if( opt == '-'  ||  opt == dos_switch_char  ||  opt == '@' ) {
+    if( CmdScanSwitchChar( opt ) || opt == '@' ) {
         print_usage();
         return( FAILURE );
     }

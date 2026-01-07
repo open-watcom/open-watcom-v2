@@ -110,19 +110,21 @@ test : .SYMBOLIC start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .SYMBOLIC start test.lnk $(exes)
+test : .SYMBOLIC start $(exes)
     $(noecho)%make common_set_result_display
 !endif
 
 # this is my laziness bit...
-$(names) : test.lnk .SYMBOLIC
+$(names) : .SYMBOLIC
     @%make $^*.obj
     @%make set_path_wlink
     @%make echo_link
+    @%make test.lnk
+    @which $(linker)
     $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    @%make set_run_path
+    @%make set_path_run
     $(run) $(exec_prefix)$^*.exe
-    @%make set_old_run_path
+    @%make set_old_path
     @echo PASS
 
 !ifdef __OS2__
@@ -134,10 +136,10 @@ mmwindef.$(exe): .SYMBOLIC
 # nominmax.cpp
 
 mmwin16.cpp : nominmax.cpp
-    copy nominmax.cpp mmwin16.cpp
+    %copy nominmax.cpp mmwin16.cpp
 
 mmwindef.cpp : nominmax.cpp
-    copy nominmax.cpp mmwindef.cpp
+    %copy nominmax.cpp mmwindef.cpp
 
 clean : .procedure
     @%make echo_clean

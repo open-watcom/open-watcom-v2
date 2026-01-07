@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
-#include "_cfloat.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"
@@ -77,32 +76,32 @@ typedef struct loop_condition {
 
 void    FixBlockIds( void )
 /**************************
- * Fix up the block_id field of temps.
+ * Fix up the blk_id field of temps.
  */
 {
-    block_num   id;
+    block_id    blk_id;
     block       *blk;
     name        *temp;
 
-    id = 0;
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->t.u.block_id == NO_BLOCK_ID ) {
+        if( temp->t.u.blk_id == BLK_ID_NONE ) {
             temp->t.temp_flags |= VISITED;
         } else {
             temp->t.temp_flags &= ~VISITED;
         }
     }
+    blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ++id;
         for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
             if( temp->t.temp_flags & VISITED )
                 continue;
-            if( temp->t.u.block_id != blk->id )
+            if( temp->t.u.blk_id != blk->blk_id )
                 continue;
             temp->t.temp_flags |= VISITED;
-            temp->t.u.block_id = id;
+            temp->t.u.blk_id = blk_id;
         }
-        blk->id = id;
+        blk->blk_id = blk_id;
+        blk_id++;
     }
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.temp_flags &= ~VISITED;
@@ -122,10 +121,8 @@ block   *DupBlock( block *blk )
     copy = MakeBlock( AskForNewLabel(), blk->targets );
     _SetBlkAttr( copy, blk->class );
     _MarkBlkAttrClr( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
-    copy->id = NO_BLOCK_ID;
     copy->depth = blk->depth;
-    copy->gen_id = blk->gen_id;
-    copy->ins.head.line_num = 0;
+    copy->gen_blk_id = blk->gen_blk_id;
     DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
     return( copy );
 }
@@ -214,10 +211,10 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
                 }
             }
             edge = &copy->edge[i];
-            edge->flags = DEST_IS_BLOCK;
-//            edge->flags &= ~ONE_ITER_EXIT;
+            edge->flags = BEF_DEST_IS_BLOCK;
+//            edge->flags &= ~BEF_ONE_ITER_EXIT;
             if( dest == old_header ) {
-                edge->flags |= DEST_IS_HEADER;
+                edge->flags |= BEF_DEST_IS_HEADER;
             }
             edge->source->targets++;
             PointEdge( edge, dest );
@@ -240,7 +237,7 @@ static  void    MarkHeaderEdges( block *loop, block *head )
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
             if( edge->destination.u.blk == head ) {
-                edge->flags |= DEST_IS_HEADER;
+                edge->flags |= BEF_DEST_IS_HEADER;
             }
         }
     }
@@ -259,7 +256,7 @@ static  void    RedirectHeaderEdges( block *loop, block *new_head )
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
-            if( edge->flags & DEST_IS_HEADER ) {
+            if( edge->flags & BEF_DEST_IS_HEADER ) {
                 MoveEdge( edge, new_head );
                 edge->source = blk;
             }
@@ -277,7 +274,7 @@ static  void    UnMarkHeaderEdges( block *loop )
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[i];
-            edge->flags &= ~DEST_IS_HEADER;
+            edge->flags &= ~BEF_DEST_IS_HEADER;
         }
     }
 }
@@ -692,9 +689,7 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
     if( _IsBlkAttr( blki, BLK_CONDITIONAL ) ) {
         blk = MakeBlock( AskForNewLabel(), 1 );
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
-        blk->id = NO_BLOCK_ID;
-        blk->gen_id = blki->gen_id;
-        blk->ins.head.line_num = 0;
+        blk->gen_blk_id = blki->gen_blk_id;
         blk->next_block = blki->next_block;
         if( blk->next_block != NULL ) {
             blk->next_block->prev_block = blk;
@@ -703,7 +698,7 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
         blki->next_block = blk;
         blk->loop_head = Head;
         edge = &blk->edge[0];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, edgei->destination.u.blk );
         MoveEdge( edgei, blk );
@@ -989,10 +984,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         new_blk = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
         new_blk->loop_head = PreHead->loop_head;
-        new_blk->input_edges = NULL;
-        new_blk->id = NO_BLOCK_ID;
-        new_blk->gen_id = PreHead->gen_id;
-        new_blk->ins.head.line_num = 0;
+        new_blk->gen_blk_id = PreHead->gen_blk_id;
         temp = AllocTemp( comp_type_class );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );
         SuffixIns( new_blk->ins.head.prev, ins );
@@ -1000,11 +992,11 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
         SuffixIns( new_blk->ins.head.prev, ins );
         edge = &new_blk->edge[0];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, cleanup_copy->head );
         edge = &new_blk->edge[1];
-        edge->flags = DEST_IS_BLOCK;
+        edge->flags = BEF_DEST_IS_BLOCK;
         edge->source->targets++;
         PointEdge( edge, loop->loop_head );
         MoveEdge( &PreHead->edge[0], new_blk );
@@ -1049,11 +1041,11 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
                 AddBlocks( loop, blk );
                 MoveEdge( &loop->edge[0], blk );
                 edge = &blk->edge[0];
-                edge->flags = DEST_IS_BLOCK;
+                edge->flags = BEF_DEST_IS_BLOCK;
                 edge->source->targets++;
                 PointEdge( edge, Head->edge[0].destination.u.blk );
                 edge = &blk->edge[1];
-                edge->flags = DEST_IS_BLOCK;
+                edge->flags = BEF_DEST_IS_BLOCK;
                 edge->source->targets++;
                 PointEdge( edge, Head->edge[1].destination.u.blk );
                 blk->u.loop = loop;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,9 @@
 #include "sdfile.h"
 
 
-void    F_SendData( char *str, uint width ) {
-//===========================================
+void    F_SendData( const char *str, uint width )
+//===============================================
+{
     int         blanks;
     ftnfile     *fcb;
 
@@ -64,17 +65,17 @@ void    F_SendData( char *str, uint width ) {
 }
 
 
-void    SendLine( char *str ) {
-//=============================
-
+void    SendLine( const char *str )
+//=================================
+{
     SendWSLStr( str );
     SendEOR();
 }
 
 
-void    SendInt( intstar4 num ) {
-//===============================
-
+void    SendInt( intstar4 num )
+//=============================
+{
     char        num_buff[MAX_INT_SIZE+1];
 
     ltoa( num, num_buff, 10 );
@@ -82,9 +83,9 @@ void    SendInt( intstar4 num ) {
 }
 
 
-void    SendStr( char PGM *str, uint len ) {
-//==========================================
-
+void    SendStr( const char PGM *str, uint len )
+//==============================================
+{
     while( len > 0 ) {
         Drop( *str );
         str++;
@@ -93,9 +94,9 @@ void    SendStr( char PGM *str, uint len ) {
 }
 
 
-void    SendWSLStr( char *str ) {
-//===============================
-
+void    SendWSLStr( const char *str )
+//===================================
+{
     while( *str != NULLCHAR ) {
         Drop( *str );
         ++str;
@@ -103,9 +104,9 @@ void    SendWSLStr( char *str ) {
 }
 
 
-void    SendChar( char ch, int rep ) {
-//====================================
-
+void    SendChar( char ch, int rep )
+//==================================
+{
     while( rep > 0 ) {
         Drop( ch );
         rep--;
@@ -113,9 +114,9 @@ void    SendChar( char ch, int rep ) {
 }
 
 
-void    Drop( char ch ) {
-//=======================
-
+void    Drop( char ch )
+//=====================
+{
     ftnfile     *fcb;
     bool        save;
     int         chr_size;
@@ -132,14 +133,15 @@ void    Drop( char ch ) {
         }
     }
     if( fcb->col + chr_size > fcb->bufflen ) {
-        save = ( IOCB->flags & IOF_NOCR ) != 0;
+        save = ( (IOCB->flags & IOF_NOCR) != 0 );
         IOCB->flags &= ~IOF_NOCR;
         SendEOR();
         if( save ) {
             IOCB->flags |= IOF_NOCR;
         }
-        if( ( ( IOCB->flags & IOF_NOFMT ) == 0 ) &&
-            ( ( IOCB->set_flags & SET_FMTPTR ) == 0 ) && IsCarriage() ) {
+        if( ( (IOCB->flags & IOF_NOFMT) == 0 )
+          && ( (IOCB->set_flags & SET_FMTPTR) == 0 )
+          && IsCarriage() ) {
             strcpy( fcb->buffer, NormalCtrlSeq );
             fcb->col = strlen( NormalCtrlSeq );
         }
@@ -149,9 +151,9 @@ void    Drop( char ch ) {
 }
 
 
-void    SendEOR( void ) {
-//=================
-
+void    SendEOR( void )
+//=====================
+{
     ftnfile     *fcb;
     int         len;
     bool        ifile;
@@ -187,14 +189,15 @@ void    SendEOR( void ) {
     // will go at the beginning of the buffer.
     len = fcb->col;
     fcb->col = 0;
-    if( ( IOCB->flags & IOF_NOCR ) == 0 ) {
+    if( (IOCB->flags & IOF_NOCR) == 0 ) {
         UpdateRecNum( fcb );
         // eofrecnum used to be updated in ExWrite().
         // We MUST set eofrecnum here in case we abort the WRITE and
         // suicide which will NOT return to ExWrite().
         // If we don't do this here, the next time a WRITE is executed
         // on this unit, we get IO_PAST_EOF error.
-        if( !ifile && !NoEOF( fcb ) ) {
+        if( !ifile
+          && !NoEOF( fcb ) ) {
             if( fcb->accmode <= ACCM_SEQUENTIAL ) {
                 fcb->eofrecnum = fcb->recnum;
             }
@@ -207,43 +210,43 @@ void    SendEOR( void ) {
 }
 
 
-void    IOItemResult( char PGM *src, PTYPE typ ) {
-//==============================================
-
-    switch( typ ) {
-    case PT_LOG_1:
+void    IOItemResult( char PGM *src, PTYPE ptyp )
+//===============================================
+{
+    switch( ptyp ) {
+    case FPT_LOG_1:
         *(logstar4 *)(&IORslt) = *(logstar1 *)src;
         break;
-    case PT_LOG_4:
+    case FPT_LOG_4:
         *(logstar4 *)(&IORslt) = *(logstar4 *)src;
         break;
-    case PT_INT_1:
+    case FPT_INT_1:
         *(intstar4 *)(&IORslt) = *(intstar1 *)src;
         break;
-    case PT_INT_2:
+    case FPT_INT_2:
         *(intstar4 *)(&IORslt) = *(intstar2 *)src;
         break;
-    case PT_INT_4:
+    case FPT_INT_4:
         *(intstar4 *)(&IORslt) = *(intstar4 *)src;
         break;
-    case PT_REAL_4:
+    case FPT_REAL_4:
         *(single *)(&IORslt) = *(single *)src;
         break;
-    case PT_REAL_8:
+    case FPT_REAL_8:
         *(double *)(&IORslt) = *(double *)src;
         break;
-    case PT_REAL_16:
+    case FPT_REAL_16:
         *(extended *)(&IORslt) = *(extended *)src;
         break;
-    case PT_CPLX_8:
+    case FPT_CPLX_8:
         ((scomplex *)(&IORslt))->imagpart = ((scomplex *)src)->imagpart;
         ((scomplex *)(&IORslt))->realpart = ((scomplex *)src)->realpart;
         break;
-    case PT_CPLX_16:
+    case FPT_CPLX_16:
         ((dcomplex *)(&IORslt))->imagpart = ((dcomplex *)src)->imagpart;
         ((dcomplex *)(&IORslt))->realpart = ((dcomplex *)src)->realpart;
         break;
-    case PT_CPLX_32:
+    case FPT_CPLX_32:
         ((xcomplex *)(&IORslt))->imagpart = ((xcomplex *)src)->imagpart;
         ((xcomplex *)(&IORslt))->realpart = ((xcomplex *)src)->realpart;
         break;

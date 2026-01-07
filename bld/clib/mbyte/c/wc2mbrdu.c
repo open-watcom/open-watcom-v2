@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,57 +36,53 @@
 //#include "mbrdos.h"
 
 
-#define MY_MB_LEN_MAX   ( sizeof(wchar_t) * 3 / 2 )
+#define MY_MB_LEN_MAX   ( sizeof( wchar_t ) * 3 / 2 )
 /*  If wchar_t is long,  MY_MB_LEN_MAX will be 6.
  *  If wchar_t is short, MY_MB_LEN_MAX will be 3.
  *  It should be equal to MB_LEN_MAX anyway.
  */
 
-
 int wctomb( char *s, wchar_t wc )
 {
+    /* wchar_t is 32 bit wide (this would also work with 16 bits) */
+    char    *dst;
+    int     rv;
+    wchar_t mask;
+
     if( s != NULL ) {
         if( wc < 0x80 ) {
             *s = wc;
             return( 1 );
-        } else {
-            if( sizeof(wchar_t) == 2 ) {
-                /* Explicitly optimised for 16-bit wchar_t */
-                if( wc < 0x800 ) {
-                    s[0] = 0xC0 | wc >> 6;
-                    s[1] = 0x80 | wc & 0x3F;
-                    return( 2 );
-                } else {
-                    s[2] = 0x80 | wc & 0x3F;
-                    s[1] = 0x80 | ( wc >>= 6 ) & 0x3F;
-                    s[0] = 0xE0 | wc >> 6;
-                    return( 3 );
-                }
-            } else {
-                /* wchar_t is 32 bit wide (this would also work with 16 bits) */
-                char *  dst = s;
-                int     rv;
-                {   /* The block seems to help the compiler optimise */
-                    wchar_t mask = ~0ul << 5+6;
-                    while( mask & wc ) {
-                        mask <<= 5;
-                        ++dst;
-                    }
-                }
-                if( ( rv = ++dst - s ) < MY_MB_LEN_MAX ) {
-                    wchar_t     mask;
-                    do {
-                        *dst = 0x80 | ( wc & 0x3F );
-                        wc >>= 6;
-                    } while( --dst != s );
-                    mask = 0x7F >> ++rv;
-                    *dst = wc & mask | ( ~mask << 1 );
-                    return( rv );
-                }
-                return( -1 );
-            }
         }
-    } else {
-        return( 0 ); /* Not state dependent encoding */
+        if( sizeof( wchar_t ) == 2 ) {
+            /* Explicitly optimised for 16-bit wchar_t */
+            if( wc < 0x800 ) {
+                s[0] = 0xC0 | ( wc >> 6 );
+                s[1] = 0x80 | ( wc & 0x3F );
+                return( 2 );
+            }
+            s[2] = 0x80 | ( wc & 0x3F );
+            s[1] = 0x80 | ( wc >>= 6 ) & 0x3F;
+            s[0] = 0xE0 | ( wc >> 6 );
+            return( 3 );
+        }
+        /* wchar_t is 32 bit wide (this would also work with 16 bits) */
+        dst = s;
+        mask = ~0ul << 5 + 6;
+        while( mask & wc ) {
+            mask <<= 5;
+            ++dst;
+        }
+        if( (rv = ++dst - s) < MY_MB_LEN_MAX ) {
+            do {
+                *dst = 0x80 | ( wc & 0x3F );
+                wc >>= 6;
+            } while( --dst != s );
+            mask = 0x7F >> ++rv;
+            *dst = ( wc & mask ) | ( ~mask << 1 );
+            return( rv );
+        }
+        return( -1 );
     }
+    return( 0 );    /* Not state dependent encoding */
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,9 @@
 
 typedef struct select_list {
         struct select_list      *next;
-        int_32                  low;
-        int_32                  high;
-        uint_32                 count;
+        signed_64               low;
+        signed_64               high;
+        unsigned_64             count;
         label_handle            label;
 } select_list;
 
@@ -50,15 +50,15 @@ typedef struct select_node {
 #endif
         struct select_list      *list;
         label_handle            other_wise;
-        int_32                  lower;
-        int_32                  upper;
-        uint                    num_cases;
+        signed_64               lower;
+        signed_64               upper;
+        unsigned_64             num_cases;
 } select_node;
 
 typedef struct tbl_control {
         label_handle            lbl;            /*  for the table */
         label_handle            value_lbl;      /*  for the value table */
-        uint                    size;
+        uint_32                 size;
         label_handle            cases[1];
 } tbl_control;
 #endif // __SELDEF__H__

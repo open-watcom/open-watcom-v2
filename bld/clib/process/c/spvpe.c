@@ -33,6 +33,7 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,12 +43,13 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
-#include "rterrno.h"
+#include "doserrno.h"
 #include "msdos.h"
 #include "thread.h"
 #include "pathmac.h"
 
-#pragma on(check_stack);
+
+#pragma on( check_stack );
 
 _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
 {
@@ -60,13 +62,15 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
 
     retval = __F_NAME(spawnve,_wspawnve)( mode, file, argv, envp );
     if( retval != -1
-      || (_RWD_errno != ENOENT
-      && _RWD_errno != EINVAL) )
+      || lib_get_errno() != ENOENT
+      && lib_get_errno() != EINVAL ) {
         return( retval );
+    }
     if( file[0] == DIR_SEP
       || file[0] == NULLCHAR
-      || file[1] == DRV_SEP )
+      || file[1] == DRV_SEP ) {
         return( retval );
+    }
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
     if( p == NULL )
         return( retval );
@@ -79,8 +83,8 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
             end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
         }
         if( end - p > _MAX_PATH - file_len ) {
-            _RWD_errno = E2BIG;
-            _RWD_doserrno = E_badenv;
+            lib_set_errno( E2BIG );
+            lib_set_doserrno( E_badenv );
             return( -1 );
         }
         memcpy( buffer, p, (end - p) * sizeof( CHAR_TYPE ) );
@@ -90,14 +94,16 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         }
         memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
         retval = __F_NAME(spawnve,_wspawnve)( mode, buffer, argv, envp );
-        if( retval != -1 )
+        if( retval != -1
+          || lib_get_errno() != ENOENT
+          && lib_get_errno() != EINVAL ) {
             break;
-        if( _RWD_errno != ENOENT
-          && _RWD_errno != EINVAL )
-            break;
+        }
         if( *end != STRING( ';' ) )
             break;
         p = end + 1;
     }
     return( retval );
 }
+
+#pragma pop( check_stack );

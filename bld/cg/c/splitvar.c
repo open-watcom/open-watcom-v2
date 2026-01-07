@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "splitvar.h"
 
 
-static  block_num       Instance;
+static  block_id        Instance;
 static  global_bit_set  Id;
 static  void            *MarkInstance(block *blk);
 
@@ -76,7 +76,7 @@ static  void    NotVisited( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         _MarkBlkUnVisited( blk );
-        blk->id = 0;
+        blk->blk_id = 0;
     }
 }
 
@@ -125,7 +125,7 @@ static  void    ReplaceInstances( name *of, name *with )
 
 //    replaced = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->id == Instance ) {
+        if( blk->blk_id == Instance ) {
             for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 for( i = ins->num_operands; i-- > 0; ) {
                     RepOp( &ins->operands[i], of, with );
@@ -171,12 +171,12 @@ static  void    CleanUp( void )
 /*****************************/
 {
     block       *blk;
-    block_num   id;
+    block_id    blk_id;
 
-    id = 0;
+    blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         _MarkBlkUnVisited( blk );
-        blk->id = ++id;
+        blk->blk_id = blk_id++;
     }
 }
 
@@ -192,7 +192,7 @@ static  void *MarkInstance( block *blk )
     if( _IsBlkVisited( blk ) )
         return( NULL );
     _MarkBlkVisited( blk );
-    blk->id = Instance;
+    blk->blk_id = Instance;
     flow = blk->dataflow;
     if( _GBitOverlap( flow->in, Id ) ) {
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {

@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdbool.h>
 #include <signal.h>
@@ -40,7 +41,6 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
-#include "rterrno.h"
 #include "sigfunc.h"
 #include "signlwnt.h"
 #include "rtinit.h"
@@ -193,7 +193,7 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
     __sig_func  prev_func;
 
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
-        _RWD_errno = EINVAL;
+        lib_set_errno( EINVAL );
         return( SIG_ERR );
     }
 
@@ -260,7 +260,7 @@ _WCRTLINK int raise( int sig )
 
 static void __SigInit( void )
 {
-#ifdef __SW_BM
+#ifdef __MT__
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {

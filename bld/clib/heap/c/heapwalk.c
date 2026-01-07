@@ -38,7 +38,7 @@
 #include "heap.h"
 
 
-static int verifyHeapList( __segment start )
+static int _WCNEAR verifyHeapList( __segment start )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
     __segment   seg;

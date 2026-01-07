@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,12 +173,12 @@ static signed_64    CFGetDec64( const char *str )
     signed_64   ten;
     signed_64   temp;
 
-    I32ToI64( 0, &number );
-    I32ToI64( 10, &ten );
+    Set64ValZero( number );
+    Set64ValU32( ten, 10 );
     while( _IsDigit( *str ) ) {
-        U64Mul( &number, &ten, &number );
-        I32ToI64( *str++ - '0', &temp );
-        U64Add( &number, &temp, &number );
+        U64MulEq( &number, &ten );
+        Set64ValU32( temp, *str++ - '0' );
+        U64AddEq( &number, &temp );
     }
     return( number );
 }
@@ -772,14 +772,14 @@ signed_64       CFCnvF64( cfloat *f )
     signed_64           rem;
     signed_32           exp;
 
-    I32ToI64( 0, &data );
+    Set64ValZero( data );
     if( CFIsI64( f )
       || CFIsU64( f ) ) {
-        I32ToI64( 10, &ten );
+        Set64ValU32( ten, 10 );
         data = CFGetDec64( f->mant );
         exp = f->exp - f->len;
         while( exp > 0 ) {
-            U64Mul( &data, &ten, &data );
+            U64MulEq( &data, &ten );
             exp--;
         }
         while( exp < 0 ) {
@@ -787,7 +787,7 @@ signed_64       CFCnvF64( cfloat *f )
             exp++;
         }
         if( f->sign == -1 ) {
-            U64Neg( &data, &data );
+            U64NegEq( &data );
         }
     }
     return( data );

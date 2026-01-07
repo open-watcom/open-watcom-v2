@@ -85,7 +85,7 @@ extern void *CodeBuilderAlloc( unsigned );
 
 #endif
 
-static freelist_nptr __LinkUpNewNHeap( heapblk_nptr heap )
+static freelist_nptr _WCNEAR __LinkUpNewNHeap( heapblk_nptr heap )
 {
     heapblk_nptr    heap2;
     heapblk_nptr    prev_heap2;
@@ -197,7 +197,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
-        _curbrk = GetDataSelectorLimitB() + 1;
+        _curbrk = GetDataSelectorSize();
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
         return( frl_last->len );
@@ -207,7 +207,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 #endif
 
 #if defined( __DOS_EXT__ )
-static heapblk_nptr RationalAlloc( size_t size )
+static heapblk_nptr _WCNEAR RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
     heapblk_nptr    heap;
@@ -258,7 +258,7 @@ static heapblk_nptr RationalAlloc( size_t size )
  * @return 1 if adjust OK, 0 if adjustment fails
  */
 
-static int __AdjustAmount( unsigned *amount )
+static int _WCNEAR __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount;
     unsigned amt;
@@ -333,7 +333,7 @@ static int __AdjustAmount( unsigned *amount )
 #if defined( __WINDOWS__ ) || defined(__OS2_32BIT__) || defined( __NT__ ) \
   || defined( __DOS_EXT__ ) || defined( __RDOS__ )
 
-static heapblk_nptr __GetMemFromSystem( unsigned *amount )
+static heapblk_nptr _WCNEAR __GetMemFromSystem( unsigned *amount )
 {
     unsigned    brk_value = 0;
 
@@ -377,7 +377,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
     return( (heapblk_nptr)brk_value );
 }
 
-static int __CreateNewNHeap( unsigned amount )
+static int _WCNEAR __CreateNewNHeap( unsigned amount )
 {
     heapblk_nptr    heap;
     freelist_nptr   frl;
@@ -428,7 +428,7 @@ int __ExpandDGROUP( unsigned amount )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         return( __CreateNewNHeap( amount ) );
     } else if( _IsPharLap() && !_IsFlashTek() ) {
-        _curbrk = GetDataSelectorLimitB() + 1;
+        _curbrk = GetDataSelectorSize();
 //    } else {
         // Rational non-zero based system should go through.
     }
@@ -493,7 +493,7 @@ int __ExpandDGROUP( unsigned amount )
 #if defined(__OS2_32BIT__)
 bool _os2_obj_any_supported = false;
 
-static void _check_os2_obj_any_support( void )
+static void _WCNEAR _check_os2_obj_any_support( void )
 {
     PBYTE           p;
     APIRET          rc;

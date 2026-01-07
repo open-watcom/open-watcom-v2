@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,16 +64,13 @@ static  void    SetArgAddrs( void );
 static  void    FinishCALL( itnode *sp );
 void    GNullRetIdx( void );
 
-
-
-void    GBegCall( itnode *itptr ) {
-//=================================
-
+void    GBegCall( itnode *itptr )
+//===============================
 // Initialize for subprogram invocation.
-
+{
     sym_id      sp;
     obj_ptr     curr_obj;
-    int         num_args;
+    args_num    argc;
 
     sp = itptr->sym_ptr;
 #if _CPU == 386
@@ -87,37 +84,37 @@ void    GBegCall( itnode *itptr ) {
         if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             if( (sp->u.ns.flags & SY_INTRINSIC) == 0 ) {
                 if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-                    OutPtr( GTempString( sp->u.ns.xt.size ) );
+                    OutPtr( TmpVar( FT_CHAR, sp->u.ns.xt.size ) );
                 }
             }
         }
     }
-    num_args = DumpArgInfo( itptr->list );
+    argc = DumpArgInfo( itptr->list );
     curr_obj = ObjSeek( curr_obj );
-    OutU16( num_args );
+    OutU16( argc );
     ObjSeek( curr_obj );
     if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-            if( (Options & OPT_DESCRIPTOR) || (sp->u.ns.flags & SY_INTRINSIC) ) {
-                OutPtr( GTempString( sp->u.ns.xt.size ) );
+            if( (Options & OPT_DESCRIPTOR)
+              || (sp->u.ns.flags & SY_INTRINSIC) ) {
+                OutPtr( TmpVar( FT_CHAR, sp->u.ns.xt.size ) );
             }
         }
     }
 }
 
 
-void    GEndCall( itnode *itptr, int num_stmts ) {
-//================================================
-
+void    GEndCall( itnode *itptr, unsigned_16 num_stmts )
+//======================================================
 // Finish off a subprogram invocation.
-
+{
     itnode      *arg;
 
     if( num_stmts > 0 ) {
         EmitOp( FC_ALT_RET );
         OutU16( num_stmts );
         arg = itptr->list;
-        for(;;) {
+        for( ;; ) {
             if( (arg->opn.us & USOPN_WHAT) == USOPN_STN ) {
                 GStmtAddr( arg->sym_ptr );
                 num_stmts--;
@@ -134,18 +131,17 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
 }
 
 
-void    GArg( void ) {
-//==============
-
+void    GArg( void )
+//==================
 // Generate an argument for subprogram, subscript, or substring.
-
+{
     if( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) {
-        if( (CITNode->opn.us & USOPN_FLD) &&
-            ((CITNode->opn.us & USOPN_WHAT) == USOPN_ARR) &&
-            (CITNode->typ == FT_CHAR) ) {
+        if( (CITNode->opn.us & USOPN_FLD)
+          && ((CITNode->opn.us & USOPN_WHAT) == USOPN_ARR)
+          && (CITNode->typ == FT_CHAR) ) {
             EmitOp( FC_PASS_FIELD_CHAR_ARRAY );
             OutPtr( CITNode->value.st.field_id );
-            OutPtr( GTempString( 0 ) );
+            OutPtr( TmpVar( FT_CHAR, 0 ) );
         }
         return;
     }
@@ -158,7 +154,7 @@ void    GArg( void ) {
         if( CITNode->typ == FT_CHAR ) {
             EmitOp( FC_PASS_CHAR_ARRAY );
             SymRef( CITNode );
-            OutPtr( GTempString( 0 ) );
+            OutPtr( TmpVar( FT_CHAR, 0 ) );
         }
     } else {
         PushOpn( CITNode );
@@ -166,24 +162,24 @@ void    GArg( void ) {
 }
 
 
-int     GParms( itnode *sp ) {
-//============================
-
+unsigned_16 GParms( itnode *sp )
+//==============================
 // Process argument list.
-
-    int         num_stmts;
+{
+    unsigned_16     num_stmts;
 
     /* unused parameters */ (void)sp;
 
     num_stmts = 0;
-    for(;;) {
+    for( ;; ) {
         if( !RecNOpn() ) {  // consider f()
             if( CITNode->opn.us == USOPN_STN ) {
                 num_stmts++;
             }
         }
         AdvanceITPtr();
-        if( RecCloseParen() || RecColon() ) {
+        if( RecCloseParen()
+          || RecColon() ) {
             break;
         }
     }
@@ -191,22 +187,21 @@ int     GParms( itnode *sp ) {
 }
 
 
-static  int     DumpArgInfo( itnode *node ) {
-//===========================================
-
+static  int     DumpArgInfo( itnode *node )
+//=========================================
 // Dump argument types.
-
+{
     int         num_args;
     unsigned_16 arg_info;
-    PTYPE       parm_type;
-    PCODE       parm_code;
+    PTYPE       ptyp;
+    PCODE       pcode;
 #if _CPU == 386
     aux_info    *info;
 #endif
 
     num_args = 0;
     if( node != NULL ) {
-        for(;;) {
+        for( ;; ) {
             if( node->opr == OPR_COL )
                 break;
             if( node->opr == OPR_RBR )
@@ -214,17 +209,18 @@ static  int     DumpArgInfo( itnode *node ) {
             if( node->opn.ds == DSOPN_PHI )
                 break;
             if( node->opn.us != USOPN_STN ) {
-                parm_type = ParmType( node->typ, node->size );
-                parm_code = ParmClass( node );
+                ptyp = ParmType( node->typ, node->size );
+                pcode = ParmClass( node );
 #if _CPU == 386
-                if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
+                if( (pcode == PC_PROCEDURE)
+                  || (pcode == PC_FN_OR_SUB) ) {
                     info = InfoLookup( node->sym_ptr );
                     if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
-                        parm_code |= PC_PROC_FAR16;
+                        pcode |= PC_PROC_FAR16;
                     }
                 }
 #endif
-                arg_info = _SetTypeInfo( parm_code, parm_type );
+                arg_info = _SetArgInfo( pcode, ptyp );
                 OutU16( arg_info );
                 ++num_args;
             }
@@ -235,11 +231,10 @@ static  int     DumpArgInfo( itnode *node ) {
 }
 
 
-void    GSPProlog( void ) {
-//===================
-
+void    GSPProlog( void )
+//=======================
 // Generate a subprogram prologue.
-
+{
     SetArgAddrs();
     ReturnValue = SymLookup( "$@RVAL", 6 );
     ReturnValue->u.ns.flags |= SY_REFERENCED;
@@ -247,11 +242,10 @@ void    GSPProlog( void ) {
 }
 
 
-void    GEPProlog( void ) {
-//===================
-
+void    GEPProlog( void )
+//=======================
 // Generate an entry point prologue.
-
+{
     sym_id      ep;
     char        *ptr;
     char        name[MAX_SYMLEN+3];
@@ -286,11 +280,10 @@ void    GEPProlog( void ) {
 }
 
 
-static  void    SetArgAddrs( void ) {
-//=============================
-
+static  void    SetArgAddrs( void )
+//=================================
 // Assign addresses to dummy argument arguments.
-
+{
     parameter   *d_arg;
 
     EmitOp( FC_DARG_INIT );
@@ -304,11 +297,10 @@ static  void    SetArgAddrs( void ) {
 }
 
 
-void    GEpilog( void ) {
-//=================
-
+void    GEpilog( void )
+//=====================
 // Generate a subprogram epilogue.
-
+{
     if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         GNullRetIdx();
     }
@@ -321,30 +313,27 @@ void    GEpilog( void ) {
 }
 
 
-void    GReturn( void ) {
-//=================
-
+void    GReturn( void )
+//=====================
 // Generate a return from the program.
-
+{
     GEpilog();
 }
 
 
-void    GEndBlockData( void ) {
-//=======================
-
+void    GEndBlockData( void )
+//===========================
 // Terminate a block data subprogram.
-
+{
     EmitOp( FC_EPILOGUE );
     OutPtr( SubProgId );
 }
 
 
-void    GGotoEpilog( void ) {
-//=====================
-
+void    GGotoEpilog( void )
+//=========================
 // Generate a branch to the epilogue.
-
+{
     if( EpilogLabel == 0 ) {
         EpilogLabel = NextLabel();
     }
@@ -352,52 +341,48 @@ void    GGotoEpilog( void ) {
 }
 
 
-void    GRetIdx( void ) {
-//=================
-
+void    GRetIdx( void )
+//=====================
 // Generate an alternate return.
-
+{
     PushOpn( CITNode );
     EmitOp( FC_ASSIGN_ALT_RET );
     GenType( CITNode );
 }
 
 
-void    GNullRetIdx( void ) {
-//=====================
-
+void    GNullRetIdx( void )
+//=========================
 // No alternate return.
-
+{
     PushConst( 0 );
     EmitOp( FC_ASSIGN_ALT_RET );
     DumpType( FT_INTEGER, TypeSize( FT_INTEGER ) );
 }
 
 
-void    GCallNoArgs( void ) {
-//=====================
-
+void    GCallNoArgs( void )
+//=========================
 // Generate a CALL with no arguments.
-
+{
     GBegCall( CITNode );
     GEndCall( CITNode, 0 );
     FinishCALL( CITNode );
 }
 
 
-void    GCallWithArgs( void ) {
-//=======================
-
+void    GCallWithArgs( void )
+//===========================
 // Generate a CALL with arguments.
-
+{
     PushOpn( CITNode );
     FinishCALL( CITNode );
 }
 
 
-static  void    FinishCALL( itnode *sp ) {
-//========================================
-
+static  void    FinishCALL( itnode *sp )
+//======================================
+{
     if( (sp->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         // a FUNCTION invoked in a CALL statement
         EmitOp( FC_EXPR_DONE );
@@ -405,19 +390,17 @@ static  void    FinishCALL( itnode *sp ) {
 }
 
 
-void    GArgList( entry_pt *arg_list, uint args, PTYPE typ ) {
+void    GArgList( entry_pt *arg_list, uint args, PTYPE ptyp )
 //===========================================================
-
 // Dump start of an argument list.
-
-    /* unused parameters */ (void)arg_list; (void)args; (void)typ;
+{
+    /* unused parameters */ (void)arg_list; (void)args; (void)ptyp;
 }
 
 
-void    GArgInfo( sym_id sym, PCODE code, PTYPE typ ) {
-//===================================================
-
+void    GArgInfo( sym_id sym, PCODE code, PTYPE ptyp )
+//====================================================
 // Dump information for an argument.
-
-    /* unused parameters */ (void)sym; (void)code; (void)typ;
+{
+    /* unused parameters */ (void)sym; (void)code; (void)ptyp;
 }

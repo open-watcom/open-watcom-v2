@@ -9,12 +9,12 @@ void check( short x, short y ) {
 void test( short c )
 {
     short n;
-    
+
     if( c > 255 ) {
-	n = ( c >> 8 );
-	check( n, ( c & 0x00FF ) );
+        n = ( c >> 8 );
+        check( n, ( c & 0x00FF ) );
     } else {
-	fail(__LINE__);
+        fail(__LINE__);
     }
 }
 

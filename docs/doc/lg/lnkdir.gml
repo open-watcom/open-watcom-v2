@@ -6,10 +6,6 @@
 .if &*$$fnd. ne 0 .do begin
 .   .sr *$$sys=&*$$sys., DOS
 .do end
-.se *$$fnd=&'wordpos('zdos',&*,3)
-.if &*$$fnd. ne 0 .do begin
-.   .sr *$$sys=&*$$sys., ZDOS
-.do end
 .se *$$fnd=&'wordpos('raw',&*,3)
 .if &*$$fnd. ne 0 .do begin
 .   .sr *$$sys=&*$$sys., RAW

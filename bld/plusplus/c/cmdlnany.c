@@ -546,7 +546,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     } else if( str != NULL ) {
         ++indirectionLevel;
         CtxSetSwitchAddr( str );
-        CmdScanInit( str );
+        CmdScanLineInit( str );
         for(;;) {
             CmdScanSkipWhiteSpace();
             c = CmdScanChar();
@@ -554,7 +554,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
                 break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
-            if( _IS_SWITCH_CHAR( c ) ) {
+            if( CmdScanSwitchChar( c ) ) {
                 if( OPT_PROCESS( data ) ) {
                     BadCmdLine( ERR_INVALID_OPTION );
                 }

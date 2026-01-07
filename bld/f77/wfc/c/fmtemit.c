@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "format.h"
 #include "errcod.h"
 #include "global.h"
-#include "fmtdef.h"
 #include "fmtdat.h"
 #include "cpopt.h"
 #include "emitobj.h"
@@ -47,11 +46,13 @@
 #include "fmtemit.h"
 
 
+static obj_ptr      Fmt_revert;     // position to revert to if required
+
 void    GFEmEnd( void )
 //=====================
 {
     OutByte( END_FORMAT );
-    OutInt( ObjOffset( Fmt_revert.cp ) );
+    OutInt( ObjOffset( Fmt_revert ) );
     AlignEven();
 }
 
@@ -63,7 +64,7 @@ void    GFEmCode( int int_code )
 
     if( (code & REV_CODE) == REV_CODE ) {
         code &= ~REV_CODE;
-        Fmt_revert.cp = ObjTell();
+        Fmt_revert = ObjTell();
     }
     if( Options & OPT_EXTEND_FORMAT ) {
         code |= EXTEND_FORMAT;
@@ -89,7 +90,8 @@ void    GFEmNum( int num )
 void    GFEmByte( int num )
 //=========================
 {
-    if( ( num < 0 ) || ( num > 255 ) ) {
+    if( ( num < 0 )
+      || ( num > 255 ) ) {
         FmtError( FM_SPEC_256 );
     } else {
         OutByte( num );

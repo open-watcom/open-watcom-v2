@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@
 
 #include "exitwmsg.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 
 /* semaphore control for file handles */
 
@@ -94,7 +94,7 @@ unsigned char   _WCDATA _osmode;
 jmp_buf         JmpBuff;
 int             RetCode;
 #endif
-#ifndef __SW_BM
+#ifndef __MT__
 int             _nothread;
 #endif
 
@@ -108,9 +108,13 @@ static void __far __null_FPE_handler( int fpe_type )
 
 FPEhandler  *__FPE_handler = __null_FPE_handler;
 
-int _OS2Main( char __far *stklow, char __far *stktop,
-                        unsigned envseg, unsigned cmdoff )
-/***********************************************************/
+#if defined(__SW_BD)
+int
+#else
+_WCNORETURN void
+#endif
+_WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
+/******************************************************************************************/
 {
     USHORT      shftval;
 
@@ -165,7 +169,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
     }
 #endif
 
-#ifdef __SW_BM
+#ifdef __MT__
     {
         SEL             globalseg;
         SEL             localseg;
@@ -214,14 +218,14 @@ int _OS2Main( char __far *stklow, char __far *stktop,
         return( RetCode );
     }
 #else
-    _CMain();   // this doesn't return, following line quiet compiler only
-    return( EXIT_FAILURE );
+    _CMain();
+    // never return
 #endif
 }
 
 
-_WCRTLINK _WCNORETURN void __exit( int ret_code )
-/***********************************************/
+_WCNORETURN void _WCNEAR __exit( int ret_code )
+/*********************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD

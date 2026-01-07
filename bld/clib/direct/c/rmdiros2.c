@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,10 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <wos2.h>
 #include <stdlib.h>
 #include <direct.h>
-#include "seterrno.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif

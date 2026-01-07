@@ -101,6 +101,13 @@ void    lay_figcap( const gmltag * entry )
     lay_att             curr;
     att_name_type       attr_name;
     att_val_type        attr_val;
+    struct {
+        unsigned    pre_lines       :1;
+        unsigned    font            :1;
+        unsigned    figcap_string   :1;
+        unsigned    string_font     :1;
+        unsigned    delim           :1;
+    } AttrFlags;
 
     p = g_scandata.s;
     cvterr = false;

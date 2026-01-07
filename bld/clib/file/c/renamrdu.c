@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,12 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdio.h>
 #include <rdos.h>
-#include "rterrno.h"
 #include "liballoc.h"
 #include "thread.h"
+
 
 _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
@@ -51,7 +53,7 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 
     dst = RdosOpenFile( new, 0 );
     if ( dst ) {
-        _RWD_errno = EEXIST;
+        lib_set_errno( EEXIST );
         RdosCloseFile( dst );
         return( -1 );
     }
@@ -61,18 +63,18 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
         src = RdosOpenFile( old, 0 );
         dst = RdosCreateFile( new, attrib );
 
-        ok = 1;    
+        ok = 1;
         buf = (char*) lib_malloc( sizeof( 0x1000 ) );
 
         rdsize = RdosReadFile( src, buf, 0x1000 );
 
         while( ok && rdsize ) {
             wrsize = RdosWriteFile( dst, buf, 0x1000 );
-
-            if( rdsize == wrsize )
+            if( rdsize == wrsize ) {
                 rdsize = RdosReadFile( src, buf, 0x1000 );
-            else
+            } else {
                 ok = 0;
+            }
         }
 
         if( ok ) {
@@ -81,18 +83,17 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
             RdosCloseFile( src );
             RdosCloseFile( dst );
             RdosDeleteFile( old );
-        }
-        else {
+        } else {
             RdosCloseFile( src );
             RdosCloseFile( dst );
         }
-        
-        lib_free( buf );        
+
+        lib_free( buf );
 
         if( ok )
             return( 0 );
     }
 
-    _RWD_errno = ENOENT;
+    lib_set_errno( ENOENT );
     return( -1 );
 }

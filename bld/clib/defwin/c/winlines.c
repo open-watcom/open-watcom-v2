@@ -51,7 +51,7 @@
 /*
  * createNewEntry - build a new line number entry
  */
-static LPLDATA createNewEntry( LPWDATA w )
+static LPLDATA _WCNEAR createNewEntry( LPWDATA w )
 {
     LPLDATA             ld;
 #ifdef _MBCS
@@ -84,7 +84,7 @@ static LPLDATA createNewEntry( LPWDATA w )
 /*
  * incrementLastLineNumber - guess!
  */
-static void incrementLastLineNumber( LPWDATA w )
+static void _WCNEAR incrementLastLineNumber( LPWDATA w )
 {
     int diff;
 
@@ -113,7 +113,7 @@ static void incrementLastLineNumber( LPWDATA w )
 /*
  * replaceTail - replace tail line data
  */
-static void replaceTail( LPWDATA w )
+static void _WCNEAR replaceTail( LPWDATA w )
 {
     LPLDATA             prev;
 
@@ -149,7 +149,7 @@ static void replaceTail( LPWDATA w )
 /*
  * addBuff - add current working buffer to line data structures
  */
-static void addBuff( LPWDATA w )
+static void _WCNEAR addBuff( LPWDATA w )
 {
     LPLDATA     ld;
 
@@ -162,7 +162,7 @@ static void addBuff( LPWDATA w )
 /*
  * updateBuff - update current line with tmpbuff
  */
-static void updateBuff( LPWDATA w )
+static void _WCNEAR updateBuff( LPWDATA w )
 {
     int oldbuff;
 
@@ -180,7 +180,7 @@ static void updateBuff( LPWDATA w )
 /*
  * newLine - add a new line to the bottom
  */
-static void newLine( LPWDATA w )
+static void _WCNEAR newLine( LPWDATA w )
 {
     if( w->LineTail != NULL && !w->LineTail->has_cr ) {
         replaceTail( w );
@@ -197,7 +197,7 @@ static void newLine( LPWDATA w )
 /*
  * _AddLine - add a line to the lines data structures
  */
-void _AddLine( LPWDATA w, const void *in_data, unsigned len )
+void _WCNEAR _AddLine( LPWDATA w, const void *in_data, unsigned len )
 {
     int                     i;
     bool                    hadbreak;
@@ -362,7 +362,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
  * _UpdateInputLine - add data to current line; return number of chars
  *                   on next line if line break was forced
  */
-int _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
+int _WCNEAR _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
 {
     int         i,j;
     bool        justnew;
@@ -419,7 +419,7 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
 /*
  * _PositionScrollThumb
 */
-void _PositionScrollThumb( LPWDATA w )
+void _WCNEAR _PositionScrollThumb( LPWDATA w )
 {
     DWORD       c;
     WORD        curr, end;
@@ -452,7 +452,7 @@ void _PositionScrollThumb( LPWDATA w )
 /*
  * _GetLineFromThumbPosition - given a thumb position, find line in file
  */
-DWORD _GetLineFromThumbPosition( LPWDATA w, WORD n )
+DWORD _WCNEAR _GetLineFromThumbPosition( LPWDATA w, WORD n )
 {
     DWORD       new;
     DWORD       ll;
@@ -472,7 +472,7 @@ DWORD _GetLineFromThumbPosition( LPWDATA w, WORD n )
 /*
  * _GetLineDataPointer - get line data pointer
  */
-LPLDATA _GetLineDataPointer( LPWDATA w, DWORD line )
+LPLDATA _WCNEAR _GetLineDataPointer( LPWDATA w, DWORD line )
 {
     DWORD       cnt;
     LPLDATA     ld;
@@ -497,7 +497,7 @@ LPLDATA _GetLineDataPointer( LPWDATA w, DWORD line )
 /*
  * _FreeAllLines - as it sounds!
  */
-void _FreeAllLines( LPWDATA w )
+void _WCNEAR _FreeAllLines( LPWDATA w )
 {
     LPLDATA     ld;
     LPLDATA     ld_next;
@@ -525,7 +525,7 @@ static char filterFiles[] = "Result Files (*.TXT)" \
 /*
  * _SaveAllLines - save all lines to a file
  */
-void _SaveAllLines( LPWDATA w )
+void _WCNEAR _SaveAllLines( LPWDATA w )
 {
     char                fname[_MAX_PATH];
     OPENFILENAME        of;
@@ -572,7 +572,7 @@ void _SaveAllLines( LPWDATA w )
 /*
  * _CopyAllLines - copy lines to clipboard
  */
-void _CopyAllLines( LPWDATA w )
+void _WCNEAR _CopyAllLines( LPWDATA w )
 {
     LPLDATA     ld;
     DWORD       total;
@@ -645,7 +645,7 @@ void _CopyAllLines( LPWDATA w )
 /*
  * _GetLastLineNumber
  */
-DWORD _GetLastLineNumber( LPWDATA w )
+DWORD _WCNEAR _GetLastLineNumber( LPWDATA w )
 {
     DWORD       ll;
 

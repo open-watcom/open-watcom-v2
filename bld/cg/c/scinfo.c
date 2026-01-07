@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,7 +217,7 @@ static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
         if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
             first = &scoreboard[info->index_reg];
             curr = first;
-            for(;;) {
+            for( ;; ) {
                 info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
                 if( !ScoreLookup( &scoreboard[i], info ) ) {
                     ScoreInsert( scoreboard, i, info );
@@ -280,7 +280,7 @@ void    ScoreInfo( score_info *info, name *op )
         op = op->i.base; /* track memory location */
     }
     info->class = (score_name_class_def)op->n.class;
-    info->scale = 0;
+    info->scale = SCALE_NONE;
     info->base  = NULL;
     info->index_reg = NO_INDEX;
     switch( op->n.class ) {
@@ -296,14 +296,14 @@ void    ScoreInfo( score_info *info, name *op )
             break;
         case CONS_OFFSET:
         case CONS_ADDRESS:
-            info->symbol.u.p = op->c.value;
+            info->symbol.u.p = op->c.u.op;
             info->offset = op->c.lo.u.int_value;
             break;
         case CONS_HIGH_ADDR:
             /* FIXME: not sure what to do here */
-            if( op->c.value != NULL ) {
+            if( op->c.u.op != NULL ) {
                 info->symbol.u.p = &HighAddrSymbol;
-                info->offset = (int_32)(pointer_uint)op->c.value;
+                info->offset = (int_32)(pointer_uint)op->c.u.op;
             } else {
                 info->symbol.u.p = &HighAddrConst;
                 info->offset = op->c.lo.u.int_value;
@@ -353,7 +353,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
-        info->scale = 0;
+        info->scale = SCALE_NONE;
         return( true );
     default:
         return( false );

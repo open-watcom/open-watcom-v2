@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +30,23 @@
 ****************************************************************************/
 
 
-extern  block           *MakeBlock( label_handle label, block_num edges );
-extern  block           *NewBlock( label_handle label, bool label_dies );
-extern  void            FreeABlock( block * blk );
-extern  void            FreeBlock( void );
-extern  void            EnLink( label_handle label, bool label_dies );
-extern  void            AddIns( instruction *ins );
-extern  void            GenBlock( block_class class, int targets );
-extern  block           *ReGenBlock( block *blk, label_handle lbl );
-extern  type_class_def  InitCallState( const type_def *tipe );
-extern  type_class_def  CallState( aux_handle aux, const type_def *tipe, call_state *state );
-extern  void            AddTarget( label_handle dest, bool dest_label_dies );
-extern  block           *FindBlockWithLbl( label_handle label );
-extern  void            FixEdges( void );
-extern  bool            FixReturns( void );
-extern  void            UnFixEdges( void );
-extern  void            AddAnIns( block *blk, instruction *ins );
-extern  bool            BlkTooBig( void );
-extern  void            NewProc( level_depth level );
-extern  void            FreeProc( void );
+extern block            *MakeBlock( label_handle label, block_num targets );
+extern block            *MakeBlockCopy( block_num targets, block *src, block_num src_targets );
+extern block            *NewBlock( label_handle label, bool label_dies );
+extern void             FreeABlock( block *blk );
+extern void             FreeBlock( void );
+extern void             EnLink( label_handle label, bool label_dies );
+extern void             AddIns( instruction *ins );
+extern void             GenBlock( block_class class, block_num targets );
+extern block            *ReGenBlock( block *blk, label_handle lbl );
+extern type_class_def   InitCallState( const type_def *tipe );
+extern type_class_def   CallState( aux_handle aux, const type_def *tipe, call_state *state );
+extern void             AddTarget( label_handle dest, bool dest_label_dies );
+extern block            *FindBlockWithLbl( label_handle label );
+extern void             FixEdges( void );
+extern bool             FixReturns( void );
+extern void             UnFixEdges( void );
+extern void             AddAnIns( block *blk, instruction *ins );
+extern bool             BlkTooBig( void );
+extern void             NewProc( level_depth level );
+extern void             FreeProc( void );

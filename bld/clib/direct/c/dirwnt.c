@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,15 +45,14 @@
 #include "strdup.h"
 #include "libwin32.h"
 #include "ntinfo.h"
-#include "seterrno.h"
 #include "_direct.h"
 #include "_dtaxxx.h"
 #include "liballoc.h"
 #include "pathmac.h"
 
 
-static int is_directory( const CHAR_TYPE *name )
-/**********************************************/
+static int _WCNEAR is_directory( const CHAR_TYPE *name )
+/******************************************************/
 {
     UINT_WC_TYPE    curr_ch;
     UINT_WC_TYPE    prev_ch;
@@ -93,8 +93,8 @@ static int is_directory( const CHAR_TYPE *name )
     return( -1 );
 }
 
-static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
-/*******************************************************************************************/
+static DIR_TYPE * _WCNEAR __F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
+/****************************************************************************************************/
 {
     WIN32_FIND_DATA     ffd;
     HANDLE              osffh;
@@ -114,8 +114,8 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
     return( dirp );
 }
 
-static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
-/*************************************************************************/
+static DIR_TYPE * _WCNEAR __F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
+/**********************************************************************************/
 {
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;
@@ -153,7 +153,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
         __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
         return( NULL );
     }
-    tmp.d_openpath = __F_NAME(__clib_strdup,__clib_wcsdup)( dirname );
+    tmp.d_openpath = __F_NAME(lib_strdup,lib_wcsdup)( dirname );
     *dirp = tmp;
     return( dirp );
 }
@@ -201,7 +201,7 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
     }
     dirp->d_first = _DIR_CLOSED;
     if( dirp->d_openpath != NULL )
-        free( dirp->d_openpath );
+        lib_free( dirp->d_openpath );
     lib_free( dirp );
     return( 0 );
 }

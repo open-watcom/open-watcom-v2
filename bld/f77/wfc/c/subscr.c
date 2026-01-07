@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,13 @@
 
 
 #include "ftnstd.h"
+#include "wf77defs.h"
 #include "symdefs.h"
 #include "subscr.h"
 
 
 bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
+//=========================================================================
 // Do subscript operation for EQUIVALENCE or DATA statements and
 // NAMELIST-directed i/o at run-time.
 {

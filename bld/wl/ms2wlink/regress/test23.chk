@@ -20,3 +20,4 @@ export Func2.5 14
 export Func3 62
 # iopl value is invalid
 export Func4
+option nocaseexact

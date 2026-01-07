@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77defs.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"
 #include "wf77labe.h"
@@ -57,6 +56,7 @@
 #include "fcdata.h"
 #include "fcgmain.h"
 #include "fcstack.h"
+#include "i64.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -69,31 +69,26 @@ static  void    RBReferenced( sym_id rb );
 static  void    RefStmtFunc( sym_id sf );
 
 
-void    InitLabels( void ) {
-//====================
-
+void    InitLabels( void )
+//========================
 // Initialize label processing.
-
+{
     LabelList = NULL;
 }
 
 
-void    FiniLabels( int label_type ) {
-//====================================
-
+void    FiniLabels( bool format_label )
+//=====================================
 // Free specified class of labels.
-
+{
     label_entry **owner;
     label_entry *curr;
 
     owner = (label_entry **)&LabelList;
-    for(;;) {
-        curr = *owner;
-        if( curr == NULL )
-            break;
-        if( (curr->label & FORMAT_LABEL) == label_type ) {
+    while( (curr = *owner) != NULL ) {
+        if( curr->format_label == format_label ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
-                if( curr->label & FORMAT_LABEL ) {
+                if( curr->format_label ) {
                     BEFiniBack( curr->handle );
                     BEFreeBack( curr->handle );
                 } else {
@@ -110,24 +105,21 @@ void    FiniLabels( int label_type ) {
 }
 
 
-static  label_entry     *FindLabel( int label ) {
-//===============================================
-
+static  label_entry     *FindLabel( label_id label )
+//==================================================
 // Search for given label.
-
+{
     label_entry *le;
 
-    le = LabelList;
-    for(;;) {
-        if( le == NULL )
+    for( le = LabelList; le != NULL; le = le->link ) {
+        if( le->label == label ) {
             break;
-        if( (le->label & ~FORMAT_LABEL) == label )
-            break;
-        le = le->link;
+        }
     }
     if( le == NULL ) {
         le = FMemAlloc( sizeof( label_entry ) );
         le->label = label;
+        le->format_label = false;
         le->handle = NULL;
         le->link = LabelList;
         LabelList = le;
@@ -136,11 +128,10 @@ static  label_entry     *FindLabel( int label ) {
 }
 
 
-label_handle    GetLabel( label_id label ) {
-//==========================================
-
+label_handle    GetLabel( label_id label )
+//========================================
 // Get a label.
-
+{
     label_entry *le;
 
     le = FindLabel( label );
@@ -151,44 +142,43 @@ label_handle    GetLabel( label_id label ) {
 }
 
 
-void    FCJmpFalse( void ) {
-//====================
-
+void    FCJmpFalse( void )
+//========================
+{
     unsigned_16 typ_info;
-    cg_type     typ;
+    cg_type     cgtyp;
     cg_name     bool_expr;
 
     typ_info = GetU16();
-    typ = GetType( typ_info );
+    cgtyp = GetCGType( typ_info );
     if( IntType( typ_info ) ) {
-        bool_expr = CGCompare( O_NE, XPopValue( typ ),
-                               CGInteger( 0, typ ), typ );
+        bool_expr = CGCompare( O_NE, XPopValue( cgtyp ),
+                               CGInteger( 0, cgtyp ), cgtyp );
     } else {
-        bool_expr = XPopValue( typ );
+        bool_expr = XPopValue( cgtyp );
     }
     CGControl( O_IF_FALSE, bool_expr, GetLabel( GetU16() ) );
 }
 
 
-void    FCJmpAlways( void ) {
-//=====================
-
+void    FCJmpAlways( void )
+//=========================
+{
     CGControl( O_GOTO, NULL, GetLabel( GetU16() ) );
 }
 
 
-label_handle    GetStmtLabel( sym_id sn ) {
-//=========================================
-
+label_handle    GetStmtLabel( sym_id sn )
+//=======================================
 // Get a statement label.
-
+{
     return( GetLabel( sn->u.st.address ) );
 }
 
 
-void    FCStmtJmpAlways( void ) {
-//=========================
-
+void    FCStmtJmpAlways( void )
+//=============================
+{
     sym_id      sn;
 
     sn = GetPtr();
@@ -197,16 +187,16 @@ void    FCStmtJmpAlways( void ) {
 }
 
 
-void    FCDefineLabel( void ) {
-//=======================
-
+void    FCDefineLabel( void )
+//===========================
+{
     CGControl( O_LABEL, NULL, GetLabel( GetU16() ) );
 }
 
 
-void    FCStmtDefineLabel( void ) {
-//===========================
-
+void    FCStmtDefineLabel( void )
+//===============================
+{
     sym_id      sn;
 
     sn = GetPtr();
@@ -215,27 +205,25 @@ void    FCStmtDefineLabel( void ) {
 }
 
 
-back_handle     GetFmtLabel( label_id label ) {
-//=============================================
-
+back_handle     GetFmtLabel( label_id label )
+//===========================================
 // Get a format label.
-
+{
     label_entry *le;
 
     le = FindLabel( label );
     if( le->handle == NULL ) {
         le->handle = BENewBack( NULL );
-        le->label |= FORMAT_LABEL;
+        le->format_label = true;
     }
     return( le->handle  );
 }
 
 
-void    FCAssign( void ) {
-//==================
-
+void    FCAssign( void )
+//======================
 // Process ASSIGN statement.
-
+{
     sym_id      stmt;
 
     stmt = GetPtr();
@@ -253,35 +241,34 @@ void    FCAssign( void ) {
 }
 
 
-void    FCIfArith( void ) {
-//===================
-
+void    FCIfArith( void )
+//=======================
 // Set up control structure for arithmetic if.
-
+{
     cg_name     if_expr;
     sym_id      lt;
     sym_id      eq;
     sym_id      gt;
-    cg_type     typ;
+    cg_type     cgtyp;
 
-    typ = GetType( GetU16() );
-    if_expr = XPopValue( typ );
+    cgtyp = GetCGType( GetU16() );
+    if_expr = XPopValue( cgtyp );
     lt = GetPtr();
     eq = GetPtr();
     gt = GetPtr();
     if( lt == gt ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_EQ, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_EQ, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( eq ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( lt ) );
     } else if( lt == eq ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_GT, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_GT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( gt ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
     } else if( eq == gt ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_LT, if_expr, CGInteger( 0, typ ), typ ),
+                   CGCompare( O_LT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
                    GetStmtLabel( lt ) );
         CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
     } else {
@@ -294,28 +281,27 @@ void    FCIfArith( void ) {
 }
 
 
-void    FCAssignedGOTOList( void ) {
-//============================
-
+void    FCAssignedGOTOList( void )
+//================================
 // Perform assigned GOTO with list.
+{
+    sel_handle      s;
+    label_handle    label;
+    sym_id          sn;
+    sym_id          var;
+    obj_ptr         curr_obj;
+    signed_64       tmp;
 
-    sel_handle          s;
-    label_handle        label;
-    sym_id              sn;
-    sym_id              var;
-    obj_ptr             curr_obj;
-
+    U64High( tmp ) = 0;
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
     s = CGSelInit();
-    for(;;) {
-        sn = GetPtr();
-        if( sn == NULL )
-            break;
+    while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            CGSelCase( s, label, sn->u.st.address );
+            U64Low( tmp ) = sn->u.st.address;
+            CGSelCase( s, label, tmp );
         }
     }
     label = BENewLabel();
@@ -324,30 +310,25 @@ void    FCAssignedGOTOList( void ) {
     CGControl( O_LABEL, NULL, label );
     BEFiniLabel( label );
     FCodeSeek( curr_obj );
-    for(;;) {
-        sn = GetPtr();
-        if( sn == NULL )
-            break;
+    while( (sn = GetPtr()) != NULL ) {
         sn->u.st.flags &= ~SN_IN_GOTO_LIST;
         RefStmtLabel( sn );
     }
 }
 
 
-void    FCComputedGOTO( void ) {
-//========================
-
+void    FCComputedGOTO( void )
+//============================
 // Perform computed GOTO.
-
+{
     DoSelect( FC_COMPUTED_GOTO );
 }
 
 
-void    FCStartRB( void ) {
-//===================
-
+void    FCStartRB( void )
+//=======================
 // Start a REMOTE BLOCK.
-
+{
     sym_id      rb;
 
     rb = GetPtr();
@@ -356,11 +337,10 @@ void    FCStartRB( void ) {
 }
 
 
-void    FCWarp( void ) {
-//================
-
+void    FCWarp( void )
+//====================
 // Process WARP F-Code.
-
+{
     sym_id      arr;
     warp_label  init_label;
 
@@ -370,20 +350,18 @@ void    FCWarp( void ) {
 }
 
 
-void    FCWarpReturn( void ) {
-//======================
-
+void    FCWarpReturn( void )
+//==========================
 // Return from a warp (array initialization).
-
+{
     FCodeSeek( WarpReturn );
 }
 
 
-void    FCExecute( void ) {
-//===================
-
+void    FCExecute( void )
+//=======================
 // Process EXECUTE F-Code (call remote block).
-
+{
     sym_id      rb;
 
     rb = GetPtr();
@@ -392,11 +370,10 @@ void    FCExecute( void ) {
 }
 
 
-static  void    RBReferenced( sym_id rb ) {
-//=========================================
-
+static  void    RBReferenced( sym_id rb )
+//=======================================
 // REMOTE BLOCK has been referenced.
-
+{
     rb->u.ns.si.rb.ref_count--;
     if( rb->u.ns.si.rb.ref_count == 0 ) {
         DoneLabel( rb->u.ns.si.rb.entry );
@@ -404,24 +381,22 @@ static  void    RBReferenced( sym_id rb ) {
 }
 
 
-void    FCEndRB( void ) {
-//=================
-
+void    FCEndRB( void )
+//=====================
 // Terminate a REMOTE BLOCK.
-
+{
     CGControl( O_LABEL_RETURN, NULL, NULL );
 }
 
 
-void    FCSFCall( void ) {
-//==================
-
+void    FCSFCall( void )
+//======================
 // Call a statement function.
-
+{
     sym_id      sf;
     sym_id      sf_arg;
     sym_id      tmp;
-    cg_type     sf_type;
+    cg_type     sf_cgtyp;
     cg_name     arg_list;
     cg_name     value;
     cg_cmplx    z;
@@ -430,25 +405,22 @@ void    FCSFCall( void ) {
     sf = GetPtr();
     arg_list = NULL;
     value = NULL;
-    sf_type = 0;
-    for(;;) {
-        sf_arg = GetPtr();
-        if( sf_arg == NULL )
-            break;
+    sf_cgtyp = 0;
+    while( (sf_arg = GetPtr()) != NULL ) {
         if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
-            sf_type = F77ToCGType( sf_arg );
+            sf_cgtyp = F77ToCGType( sf_arg );
             if( TypeCmplx( sf_arg->u.ns.u1.s.typ ) ) {
-                XPopCmplx( &z, sf_type );
-                sf_type = CmplxBaseType( sf_type );
-                value = ImagPtr( SymAddr( sf_arg ), sf_type );
-                CGTrash( CGAssign( value, z.imagpart, sf_type ) );
-                value = CGFEName( sf_arg, sf_type );
-                value = CGAssign( value, z.realpart, sf_type );
+                XPopCmplx( &z, sf_cgtyp );
+                sf_cgtyp = CmplxBaseType( sf_cgtyp );
+                value = ImagPtr( SymAddr( sf_arg ), sf_cgtyp );
+                CGTrash( CGAssign( value, z.imagpart, sf_cgtyp ) );
+                value = CGFEName( sf_arg, sf_cgtyp );
+                value = CGAssign( value, z.realpart, sf_cgtyp );
             } else {
-                value = CGFEName( sf_arg, sf_type );
-                value = CGAssign( value, XPopValue( sf_type ), sf_type );
+                value = CGFEName( sf_arg, sf_cgtyp );
+                value = CGAssign( value, XPopValue( sf_cgtyp ), sf_cgtyp );
             }
         }
         if( arg_list == NULL ) {
@@ -468,9 +440,9 @@ void    FCSFCall( void ) {
         }
         value = CGFEName( tmp, TY_CHAR );
     } else {
-        sf_type = F77ToCGType( sf );
+        sf_cgtyp = F77ToCGType( sf );
         if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
-            value = CGUnary( O_POINTS, CGFEName( sf, sf_type ), sf_type );
+            value = CGUnary( O_POINTS, CGFEName( sf, sf_cgtyp ), sf_cgtyp );
         }
     }
     if( OZOpts & OZOPT_O_INLINE ) {
@@ -485,12 +457,12 @@ void    FCSFCall( void ) {
             CGTrash( XPop() );
             XPush( value );
         } else if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
-            XPopCmplx( &z, sf_type );
-            sf_type = CmplxBaseType( sf_type );
-            XPush( TmpVal( MkTmp( z.imagpart, sf_type ), sf_type ) );
-            XPush( TmpVal( MkTmp( z.realpart, sf_type ), sf_type ) );
+            XPopCmplx( &z, sf_cgtyp );
+            sf_cgtyp = CmplxBaseType( sf_cgtyp );
+            XPush( TmpVal( MkTmp( z.imagpart, sf_cgtyp ), sf_cgtyp ) );
+            XPush( TmpVal( MkTmp( z.realpart, sf_cgtyp ), sf_cgtyp ) );
         } else {
-            XPush( TmpVal( MkTmp( XPopValue( sf_type ), sf_type ), sf_type ) );
+            XPush( TmpVal( MkTmp( XPopValue( sf_cgtyp ), sf_cgtyp ), sf_cgtyp ) );
         }
     } else {
         value = CGWarp( arg_list, GetLabel( sf->u.ns.si.sf.u.location ), value );
@@ -499,7 +471,7 @@ void    FCSFCall( void ) {
         // arguments for outer reference
         value = CGEval( value );
         if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
-            SplitCmplx( TmpPtr( MkTmp( value, sf_type ), sf_type ), sf_type );
+            SplitCmplx( TmpPtr( MkTmp( value, sf_cgtyp ), sf_cgtyp ), sf_cgtyp );
         } else {
             XPush( value );
         }
@@ -508,11 +480,10 @@ void    FCSFCall( void ) {
 }
 
 
-void            FCStartSF( void ) {
-//===========================
-
+void            FCStartSF( void )
+//===============================
 // Start definition of a statement function.
-
+{
     sym_id      sf;
 
     if( OZOpts & OZOPT_O_INLINE ) {
@@ -527,13 +498,12 @@ void            FCStartSF( void ) {
 }
 
 
-void            FCEndSF( void ) {
-//=========================
-
+void            FCEndSF( void )
+//=============================
 // End definition of a statement function.
 // This F-CODE is only generated if we are NOT generating statement
 // functions in-line.
-
+{
     sym_id      sf;
 
     sf = GetPtr();
@@ -544,50 +514,44 @@ void            FCEndSF( void ) {
 }
 
 
-void            FCSFReferenced( void ) {
-//================================
-
+void            FCSFReferenced( void )
+//====================================
 // Statement function has been referenced; check if its label can be freed.
-
+{
     sym_id      sf;
 
-    sf = SFSymId;
-    for(;;) {
-        if( sf == NULL )
-            break;
+    for( sf = SFSymId; sf != NULL; sf = sf->u.ns.si.sf.header->link ) {
         if( sf->u.ns.si.sf.header->ref_count == 0 ) {
             if( sf->u.ns.si.sf.u.location != 0 ) {
                 DoneLabel( sf->u.ns.si.sf.u.location );
                 sf->u.ns.si.sf.u.location = 0;
             }
         }
-        sf = sf->u.ns.si.sf.header->link;
     }
 }
 
 
-static  void    RefStmtFunc( sym_id sf ) {
-//========================================
-
+static  void    RefStmtFunc( sym_id sf )
+//======================================
 // A statement function has been referenced.
-
+{
     sf->u.ns.si.sf.header->ref_count--;
 }
 
 
-void    DoneLabel( label_id label ) {
-//===================================
-
+void    DoneLabel( label_id label )
+//=================================
 // Free specified label since it will no longer be referenced.
-
+{
     label_entry **owner;
     label_entry *curr;
 
     owner = (label_entry **)&LabelList;
-    for(;;) {
+    for( ;; ) {
         curr = *owner;
-        if( curr->label == label )
+        if( curr->label == label ) {
             break;
+        }
         owner = &curr->link;
     }
     *owner = curr->link;
@@ -596,20 +560,18 @@ void    DoneLabel( label_id label ) {
 }
 
 
-void    FCFreeLabel( void ) {
-//=====================
-
+void    FCFreeLabel( void )
+//=========================
 // Free specified label since it will no longer be referenced.
-
+{
     DoneLabel( GetU16() );
 }
 
 
-void    RefStmtLabel( sym_id sn ) {
-//=================================
-
+void    RefStmtLabel( sym_id sn )
+//===============================
 // Statement number has been referenced.
-
+{
     if( sn->u.st.ref_count == 0 ) {
         InfoError( CP_ERROR, "unaccounted referenced to label" );
     } else {

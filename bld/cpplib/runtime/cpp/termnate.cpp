@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <cstdlib>
 #include "rtexcept.h"
 #include "rtmsgs.h"
-#include "exitwmsg.h"
+#include "clibsupp.h"
 
 
 namespace std {
@@ -52,7 +53,7 @@ namespace std {
             thr = PgmThread();
             msg = thr->abort_msg;
             if( msg == NULL ) {
-                __exit( 1 );
+                __clib_exit( 1 );
                 // never return
             }
         } else {

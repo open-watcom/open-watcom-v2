@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,14 @@
 ****************************************************************************/
 
 
+#if !defined( __WATCOMC__ ) && defined( __UNIX__ ) && !defined( __OSX__ )
+    /*
+     * following definition is necessary to access timegm function
+     * in GNU C library
+     */
+    #define _DEFAULT_SOURCE
+    #define _BSD_SOURCE
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 #include "wdirent.h"
@@ -56,6 +64,24 @@
 /* UNIX: no changes */
 #define FIX_CHAR(c) (c)
 #endif
+
+enum {
+    TIME_SEC_B  = 0,
+    TIME_SEC_F  = 0x001f,
+    TIME_MIN_B  = 5,
+    TIME_MIN_F  = 0x07e0,
+    TIME_HOUR_B = 11,
+    TIME_HOUR_F = 0xf800
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_DAY_F  = 0x001f,
+    DATE_MON_B  = 5,
+    DATE_MON_F  = 0x01e0,
+    DATE_YEAR_B = 9,
+    DATE_YEAR_F = 0xfe00
+};
 
 char *SkipWS( const char *p )
 /*****************************
@@ -370,4 +396,48 @@ int KWCompare( const void *p1, const void *p2 )     /* for bsearch */
 /*********************************************/
 {
     return( stricmp( *(const char **)p1, *(const char **)p2 ) );
+}
+
+time_t dos2timet( unsigned short dos_date, unsigned short dos_time )
+/******************************************************************/
+{
+    struct tm t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+    return( mktime( &t ) );
+}
+
+time_t dosu2timet( unsigned short dos_date, unsigned short dos_time )
+/*******************************************************************/
+{
+    struct tm       t;
+
+    t.tm_year  = ((dos_date & DATE_YEAR_F) >> DATE_YEAR_B) + 80;
+    t.tm_mon   = ((dos_date & DATE_MON_F) >> DATE_MON_B) - 1;
+    t.tm_mday  = (dos_date & DATE_DAY_F) >> DATE_DAY_B;
+
+    t.tm_hour  = (dos_time & TIME_HOUR_F) >> TIME_HOUR_B;
+    t.tm_min   = (dos_time & TIME_MIN_F) >> TIME_MIN_B;
+    t.tm_sec   = ((dos_time & TIME_SEC_F) >> TIME_SEC_B) * 2;
+
+    t.tm_wday  = -1;
+    t.tm_yday  = -1;
+    t.tm_isdst = -1;
+
+#if defined( BOOTSTRAP ) && !defined( TESTBOOT ) && defined( __WATCOMC__ ) && ( __WATCOMC__ <= 1300 )
+    return( _mkgmtime20( &t ) );
+#else
+    return( _mkgmtime( &t ) );
+#endif
 }

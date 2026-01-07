@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,9 +113,10 @@ typedef enum prefix_reg {
 /*
  * forward declaration
  */
-typedef struct dir_node dir_node;
-typedef struct asm_sym  asm_sym;
+typedef struct dir_node *dir_node_handle;
 #endif
+
+typedef struct asm_sym  *asm_sym_handle;
 
 typedef struct asmfixup {
     struct asmfixup     *next;
@@ -137,9 +138,9 @@ typedef struct asmfixup {
 //    unsigned            line;
 #if defined( _STANDALONE_ )
     struct asmfixup     *next_loc;
-    asm_sym             *frame;         // frame of the fixup
-    dir_node            *fixup_seg;     // segment of the fixup location
-    asm_sym             *sym;
+    asm_sym_handle      frame;          // frame of the fixup
+    dir_node_handle     fixup_seg;     // segment of the fixup location
+    asm_sym_handle      sym;
 #else
     char                *name;
 #endif

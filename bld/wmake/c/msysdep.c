@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,7 @@
 
 #if defined( __DOS__ )
 
-extern char DOSSwitchChar( void );
-#pragma aux DOSSwitchChar = \
-        "mov ax,3700h"  \
-        "int 21h"       \
-    __parm __caller [] \
-    __value         [__dl] \
-    __modify        [__ax __dx]
-
 #if defined ( _M_I86 )
-
 /* see page 90-91 of "Undocumented DOS" */
 extern void __far *_DOS_list_of_lists( void );
 #pragma aux _DOS_list_of_lists = \
@@ -103,18 +94,6 @@ void InitHardErr( void )
 }
 
 #endif
-
-int SwitchChar( void )
-/***************************/
-{
-#if defined( __DOS__ )
-    return( DOSSwitchChar() );
-#elif   defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
-    return( '/' );
-#elif   defined( __UNIX__ )
-    return( '-' );
-#endif
-}
 
 int OSCorrupted( void )
 /*********************/
@@ -177,9 +156,10 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
 
     if( in_obj == stamp )
         return( true );
-#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 ) && defined( PREBOOT )
     /*
-     * OW1.x bootstrap compiler workaround
+     * OW 1.9 bootstrap compiler workaround
+     * all platforms are dos based two-second timestamp
      */
     if( in_obj < stamp ) {
         if( (( in_obj + 1 ) & ~1) == (stamp & ~1) ) {
@@ -191,9 +171,13 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
         }
     }
 #else
+    /*
+     * OW 2.0 use one-second timestamp if available
+     * only DOS and OS/2 has two-second timestamp
+     */
   #if defined( __DOS__ ) || defined( __OS2__ )
     /*
-     * host is two-second file time based, the stamp is always two-second based time
+     * the host file stamp is always two-second based time
      * if in_obj is not a two-second based file time ( ELF, COFF or RES object files )
      * then we need to round in_obj to the nearest two-second based time
      */
@@ -467,15 +451,11 @@ int SetEnvExt( ENV_TRACKER *env )
         return( rc );
     }
 #endif
-#if defined( _MSC_VER )
-    return( putenv( env->name ) );
-#else
-  #if !defined( __WATCOMC__ )
-    if( env->value == NULL )
-        return( unsetenv( env->name ) );
-  #endif
+    if( env->value == NULL ) {
+        unsetenv( env->name );
+        return( 0 );
+    }
     return( setenv( env->name, env->value, true ) );
-#endif
 }
 
 int SetEnvSafe( const char *name, const char *value )
@@ -499,12 +479,7 @@ int SetEnvSafe( const char *name, const char *value )
     while( *name != NULLCHAR ) {
         *p++ = ctoupper( *name++ );
     }
-#ifdef _MSC_VER
-    *p++ = '=';
-    len++;  /* include '=' character to search */
-#else
     *p++ = NULLCHAR;
-#endif
     if( value == NULL ) {
         env->value = NULL;
         *p = NULLCHAR;
@@ -517,11 +492,7 @@ int SetEnvSafe( const char *name, const char *value )
         rc = 0;                     // we are deleting the envvar, ignore errors
     }
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
-#ifdef _MSC_VER
-        if( strncmp( (*walk)->name, env->name, len ) == 0 ) {
-#else
         if( strcmp( (*walk)->name, env->name ) == 0 ) {
-#endif
             break;
         }
     }

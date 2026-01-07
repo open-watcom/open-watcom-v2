@@ -41,9 +41,17 @@ if "%OWBUILD_STAGE%" == "boot" (
     mkdir %OWROOT%\bld\wmake\%OWOBJDIR%
     cd %OWROOT%\bld\wmake\%OWOBJDIR%
     if "%OWTOOLS%" == "WATCOM" (
-        wmake -m -f ..\wmake
+        if "%OWTESTBOOT%" == "1" (
+            wmake -m -f ..\wmake EXTRADEF=-DTESTBOOT
+        ) else (
+            wmake -m -f ..\wmake
+        )
     ) else (
-        nmake -f ..\nmake
+        if "%OWTESTBOOT%" == "1" (
+            nmake -f ..\nmake EXTRADEF=-DTESTBOOT
+        ) else (
+            nmake -f ..\nmake
+        )
     )
     set RC=!ERRORLEVEL!
     if not %RC% == 1 (
@@ -75,8 +83,10 @@ if "%OWBUILD_STAGE%" == "build" (
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "tests" (
-REM    builder test %OWTESTTARGET%
-REM    set RC=!ERRORLEVEL!
+    cd %OWTESTTARGET%
+    builder -i test
+    rem set RC=!ERRORLEVEL!
+    type result.log
 )
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's

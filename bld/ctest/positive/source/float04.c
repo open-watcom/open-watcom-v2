@@ -3,9 +3,9 @@
 double d1[] = {
     /*
     fractional-constant:
-    	digit-seq .
-    	digit-seq . digit-seq
-    	          . digit-seq
+        digit-seq .
+        digit-seq . digit-seq
+                  . digit-seq
     */
     12.,
     12.12,
@@ -142,7 +142,7 @@ double d3[] = {
 9.3e+03,
 };
 
-#define ARRAY_SIZE( n )	(sizeof(n)/sizeof(n[0]))
+#define ARRAY_SIZE( n ) (sizeof(n)/sizeof(n[0]))
 
 void closeEnough( double v1, double v2, double v3 ) {
     double v = v1+v2+v3;
@@ -156,7 +156,7 @@ int main() {
 
     if( ARRAY_SIZE(d1) != ARRAY_SIZE(d2) || ARRAY_SIZE(d2)!=ARRAY_SIZE(d3) ) _fail;
     for( i = 0; i < ARRAY_SIZE(d1); ++i ) {
-	closeEnough( d1[i], d2[i], d3[i] );
+        closeEnough( d1[i], d2[i], d3[i] );
     }
     _PASS;
 }

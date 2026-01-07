@@ -103,8 +103,8 @@ static char has_wgod_emu = 0;
 
 static char FPArea[128];
 
-char __hook387( D16INFO __far *_d16infop )
-/****************************************/
+char _INTERNAL __hook387( D16INFO __far *_d16infop )
+/**************************************************/
 {
     unsigned char   iswin;
 
@@ -132,8 +132,8 @@ char __hook387( D16INFO __far *_d16infop )
     return( 0 );
 }
 
-char __unhook387( D16INFO __far *_d16infop )
-/******************************************/
+char _INTERNAL __unhook387( D16INFO __far *_d16infop )
+/****************************************************/
 {
     if( has_wgod_emu ) {
         EMUUnRegister( CS() );

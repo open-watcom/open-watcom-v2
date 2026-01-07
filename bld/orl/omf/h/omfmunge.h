@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "omftype.h"
 
 extern orl_return       OmfAddLName( omf_file_handle ofh, const char *buffer, omf_string_len len );
+
+extern orl_return       OmfAddFileName( omf_file_handle ofh, const char *buffer, omf_string_len len );
 
 extern orl_return       OmfAddLIData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, omf_sec_offset offset,

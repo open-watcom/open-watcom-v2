@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "score.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "spawn.h"
 #include "memout.h"
 #include "data.h"
@@ -255,7 +254,7 @@ static  void    ConstSizes( void )
 
     for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_ABSOLUTE ) {
-            if( CFIsU16( cons->c.value ) ) {
+            if( CFIsU16( cons->c.u.cfval ) ) {
                 cons->n.size = 2;
             } else {
                 cons->n.size = 4;

@@ -11,7 +11,7 @@
 #include <i86.h>
 #include "initfini.h"
 #include "cmain.h"
-#include "exitwmsg.h"
+//#include "exitwmsg.h"
 #include "owqnx.h"
 
 
@@ -71,11 +71,11 @@ void __FiniRtns() {}
 #endif
 
 //void __Null_Argv() {} /* to satisfy main_entry */
-__declspec(aborts) void __exit_with_msg( char __FAR *msg, int rc )
+__declspec(aborts) void __near __exit_with_msg( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }
-__declspec(aborts) void __fatal_runtime_error( char __FAR *msg, int rc )
+__declspec(aborts) void __near __fatal_runtime_error( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }

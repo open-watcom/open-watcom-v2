@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,18 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getcwd() for Linux. 
+* Description:  Implementation of getcwd() for Linux.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include "widechar.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "liballoc.h"
 #include "linuxsys.h"
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
@@ -47,18 +50,18 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     res = sys_call2( SYS_getcwd, (u_long)path, _MAX_PATH );
     if( __syscall_iserror( res ) ) {
-        _RWD_errno = __syscall_errno( res );
+        lib_set_errno( __syscall_errno( res ) );
         return( NULL );
     }
     if( buf == NULL ) {
         buf = lib_malloc( max( size, __syscall_val( size_t, res ) ) * CHARSIZE );
         if( buf == NULL ) {
-            _RWD_errno = ENOMEM;
+            lib_set_errno( ENOMEM );
             return( NULL );
         }
     } else {
         if( __syscall_val( size_t, res ) > size ) {
-            _RWD_errno = ERANGE;
+            lib_set_errno( ERANGE );
             return( NULL );
         }
     }

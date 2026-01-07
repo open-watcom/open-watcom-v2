@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +34,20 @@
 #include "mips.h"
 #include "mpstypes.h"
 #include "madregs.h"
+#include "i64.h"
+
 
 #define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, mips.who ) )
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
-#define MIPS_SWAP_REG_64(x)                         \
-    {                                               \
-        unsigned_32     temp;                       \
-        CONV_BE_32( (x).u._32[I64LO32] );           \
-        CONV_BE_32( (x).u._32[I64HI32] );           \
-        temp = (x).u._32[I64LO32];                  \
-        (x).u._32[I64LO32] = (x).u._32[I64HI32];    \
-        (x).u._32[I64HI32] = temp;                  \
+#define MIPS_SWAP_REG_64(x)             \
+    {                                   \
+        unsigned_32     temp;           \
+        CONV_BE_32( U64Low( (x) ) );    \
+        CONV_BE_32( U64High( (x) ) );   \
+        temp = U64Low( (x) );           \
+        U64Low( (x) ) = U64High( (x) ); \
+        U64High( (x) ) = temp;          \
     }
 
 enum {
@@ -300,11 +302,15 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 
     if( tk & MTK_INTEGER ) {
         wr = wk( &RegSet[CPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     if( tk & MTK_FLOAT ) {
         wr = wk( &RegSet[FPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -408,9 +414,13 @@ static mad_status CPUGetPiece( unsigned piece,
     unsigned    idx;
 
     if( MADState->reg_state[CPU_REG_SET] & CT_SYMBOLIC_NAMES ) {
-        if( !FindEntry( CPUSymbolic, piece, &idx, disp_mth ) ) return( MS_FAIL );
+        if( !FindEntry( CPUSymbolic, piece, &idx, disp_mth ) ) {
+            return( MS_FAIL );
+        }
     } else {
-        if( !FindEntry( CPUNumeric, piece, &idx, disp_mth ) ) return( MS_FAIL );
+        if( !FindEntry( CPUNumeric, piece, &idx, disp_mth ) ) {
+            return( MS_FAIL );
+        }
     }
     *reg = &RegList[idx].info;
     if( !(MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) ) {
@@ -520,10 +530,10 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     if( ri->bit_start == BIT_OFF( pc ) ) {
         new_ip = old->mips.pc;
         //NYI: 64 bit
-        new_ip.u._32[I64LO32] += sizeof( unsigned_32 );
-        if( new_ip.u._32[I64LO32] != cur->mips.pc.u._32[I64LO32] ) {
+        U64Low( new_ip ) += sizeof( unsigned_32 );
+        if( U64Low( new_ip ) != U64Low( cur->mips.pc ) ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->mips.pc.u._32[I64LO32] != cur->mips.pc.u._32[I64LO32] ) {
+        } else if( U64Low( old->mips.pc ) != U64Low( cur->mips.pc ) ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -550,14 +560,14 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, mad_registers 
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( pc ) ) {
-        a->mach.offset = mr->mips.pc.u._32[I64LO32];
+        a->mach.offset = U64Low( mr->mips.pc );
         return( MS_OK );
     }
     if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     p = (unsigned_64 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
-    a->mach.offset = p->u._32[I64LO32];
+    a->mach.offset = U64Low( *p );
     return( MS_OK );
 }
 
@@ -580,7 +590,8 @@ unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsign
     *bits ^= toggle;
     *bits |= on & ~toggle;
     *bits &= ~off | toggle;
-    if( index == CPU_REG_SET && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
+    if( index == CPU_REG_SET
+      && ((old ^ *bits) & CT_SYMBOLIC_NAMES) ) {
         /* We've changed from numeric regs to symbolic or vice versa.
          * Have to force a redraw of the disassembly window.
          */
@@ -607,7 +618,8 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         if( curr != NULL ) {
             while( curr->info.name != NULL ) {
                 wr = wk( &curr->info, 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 ++curr;
             }
         }
@@ -617,7 +629,9 @@ walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_i
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
             if( curr->reg_set == reg_set ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
             ++curr;
         }
@@ -630,14 +644,14 @@ void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, mad_registers const *mr, 
     ma->segment = 0;
     switch( sr ) {
     case MSR_IP:
-        ma->offset = mr->mips.pc.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.pc );
         break;
     case MSR_SP:
-        ma->offset = mr->mips.u29.sp.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.u29.sp );
         break;
     case MSR_FP:
         //NYI: may not be used?
-        ma->offset = mr->mips.u30.r30.u._32[I64LO32];
+        ma->offset = U64Low( mr->mips.u30.r30 );
         break;
     }
 }
@@ -646,14 +660,14 @@ void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, addr_p
 {
     switch( sr ) {
     case MSR_IP:
-        mr->mips.pc.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.pc ) = ma->offset;
         break;
     case MSR_SP:
-        mr->mips.u29.sp.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.u29.sp ) = ma->offset;
         break;
     case MSR_FP:
         //NYI: may not be used?
-        mr->mips.u30.r30.u._32[I64LO32] = ma->offset;
+        U64Low( mr->mips.u30.r30 ) = ma->offset;
         break;
     }
 }
@@ -709,9 +723,11 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
         reg = &RegList[IDX_hi].info;
         break;
     default:
-        if( ci >= CI_MIPS_r0 && ci <= CI_MIPS_r31 ) {
+        if( ci >= CI_MIPS_r0
+          && ci <= CI_MIPS_r31 ) {
             reg = &RegList[ci - CI_MIPS_r0 + IDX_r0].info;
-        } else if( ci >= CI_MIPS_f0 && ci <= CI_MIPS_f31 ) {
+        } else if( ci >= CI_MIPS_f0
+          && ci <= CI_MIPS_f31 ) {
             reg = &RegList[ci - CI_MIPS_f0 + IDX_f0].info;
         }
     }
@@ -732,9 +748,11 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
+      ((bit) >= RegList[i].info.bit_start \
+      && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))) {
+        if( (IN_RANGE(i, bit_start)
+          || IN_RANGE( i, bit_end ))) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }

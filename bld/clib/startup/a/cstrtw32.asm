@@ -358,7 +358,7 @@ not_dll2:                               ; endif
         jmp     exit                    ; exit
 
         public  "C",__exit
-__exit:
+__exit  proc    near
 ifndef __STACK__
         push    eax                     ; save return code on stack
 endif
@@ -371,6 +371,7 @@ endif
         pop     edx                     ; restore edx
 skip_fini:
         pop     eax                     ; restore return code from stack
+__exit  endp
 
 __win386_exit:
         mov     esp,_STACKTOP           ; reset stack pointer to the loader stack

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include "dis.h"
 #include "distypes.h"
+#include "i64.h"
 #include "disx86.h"
 
 #include "clibext.h"
@@ -661,7 +662,7 @@ static void X86GetModRM_S( WBIT w, MOD mod, RM rm, void * d,
 
     ins->op[oper].type = DO_MEMORY_ABS;
     ins->op[oper].ref_type = ref_type;
-    ins->op[oper].value.s._32[I64LO32] = 0;
+    U64Low( ins->op[oper].value ) = 0;
     ins->op[oper].scale = 1;
 
     switch(rm)  {
@@ -704,18 +705,18 @@ static void X86GetModRM_S( WBIT w, MOD mod, RM rm, void * d,
         if( rm == RM_6 ) {
             ins->op[oper].base = DR_NONE;
             ins->op[oper].op_position = ins->size;
-            ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
+            U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
             ins->size += 2;
         }
         break;
     case MOD_1:
         ins->op[oper].op_position = ins->size;
-        ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
         ins->size += 1;
         break;
     case MOD_2:
         ins->op[oper].op_position = ins->size;
-        ins->op[oper].value.s._32[I64LO32] = GetSShort( d,  ins->size);
+        U64Low( ins->op[oper].value ) = GetSShort( d,  ins->size);
         ins->size += 2;
         break;
     case MOD_3:
@@ -758,7 +759,7 @@ static void X86GetModRM_L( WBIT w, MOD mod, RM rm, void * d,
 
     ins->op[oper].type = DO_MEMORY_ABS;
     ins->op[oper].ref_type = ref_type;
-    ins->op[oper].value.s._32[I64LO32] = 0;
+    U64Low( ins->op[oper].value ) = 0;
     ins->op[oper].scale = 1;
     ins->op[oper].index = DR_NONE;
     ins->op[oper].base  = DR_NONE;
@@ -789,7 +790,7 @@ static void X86GetModRM_L( WBIT w, MOD mod, RM rm, void * d,
                 if( ins->op[oper].base == DR_X86_ebp ) {
                     ins->op[oper].base = DR_NONE;
                     ins->op[oper].op_position = ins->size;
-                    ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+                    U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
                     ins->size += 4;
                 }
             }
@@ -811,18 +812,18 @@ static void X86GetModRM_L( WBIT w, MOD mod, RM rm, void * d,
         if( rm == RM_5 ) {
             ins->op[oper].base = DR_NONE;
             ins->op[oper].op_position = ins->size;
-            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
             ins->size += 4;
         }
         break;
     case MOD_1:
         ins->op[oper].op_position = ins->size;
-        ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
         ins->size += 1;
         break;
     case MOD_2:
         ins->op[oper].op_position = ins->size;
-        ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
         ins->size += 4;
         break;
     case MOD_3:
@@ -1059,16 +1060,16 @@ static void X86GetImmedVal( SBIT s, WBIT w, void *d, dis_dec_ins *ins )
 
     if( w == W_FULL && s == S_FULL ) {
         if( ins->flags.u.x86 & DIF_X86_OPND_LONG ) {
-            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+            U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
             ins->op[oper].ref_type = DRT_X86_DWORD;
             ins->size   += 4;
         } else {
-            ins->op[oper].value.s._32[I64LO32] = GetSShort( d, ins->size );
+            U64Low( ins->op[oper].value ) = GetSShort( d, ins->size );
             ins->op[oper].ref_type = DRT_X86_WORD;
             ins->size   += 2;
         }
     } else {
-        ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
         if( w == W_BYTE ) {
             ins->op[oper].ref_type = DRT_X86_BYTE;
         } else if( ins->flags.u.x86 & DIF_X86_OPND_LONG ) {
@@ -1096,10 +1097,10 @@ static void X86GetAbsVal( void *d, dis_dec_ins *ins )
     ins->op[oper].type = DO_ABSOLUTE;
     ++ins->num_ops;
     if( ins->flags.u.x86 & DIF_X86_OPND_LONG ) {
-        ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
         ins->size += 4;
     } else {
-        ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetUShort( d, ins->size );
         ins->size   += 2;
     }
 
@@ -1125,9 +1126,9 @@ static void X86GetRelVal_8( void *d, dis_dec_ins *ins )
     ins->op[oper].op_position = ins->size;
     ins->op[oper].type = DO_RELATIVE;
     ++ins->num_ops;
-    ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
+    U64Low( ins->op[oper].value ) = GetSByte( d, ins->size );
     ins->size += 1;
-    ins->op[oper].value.s._32[I64LO32] += ins->size;
+    U64Low( ins->op[oper].value ) += ins->size;
 }
 
 static void X86GetRelVal( void *d, dis_dec_ins *ins )
@@ -1142,13 +1143,13 @@ static void X86GetRelVal( void *d, dis_dec_ins *ins )
     ins->op[oper].type = DO_RELATIVE;
     ++ins->num_ops;
     if( ins->flags.u.x86 & DIF_X86_OPND_LONG ) {
-        ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetULong( d, ins->size );
         ins->size += 4;
     } else {
-        ins->op[oper].value.s._32[I64LO32] = GetSShort( d, ins->size );
+        U64Low( ins->op[oper].value ) = GetSShort( d, ins->size );
         ins->size += 2;
     }
-    ins->op[oper].value.s._32[I64LO32] += ins->size;
+    U64Low( ins->op[oper].value ) += ins->size;
 }
 
 /*=====================================================================*/
@@ -1672,10 +1673,10 @@ dis_handler_return X86MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
         ins->op[0].ref_type = X86GetRefType( code.type1.w , ins );
         ins->op[0].op_position = ins->size;
         if( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) {
-            ins->op[0].value.s._32[I64LO32] = GetULong( d, ins->size );
+            U64Low( ins->op[0].value ) = GetULong( d, ins->size );
             ins->size += 4;
         } else {
-            ins->op[0].value.s._32[I64LO32] = GetUShort( d, ins->size );
+            U64Low( ins->op[0].value ) = GetUShort( d, ins->size );
             ins->size   += 2;
         }
         ++ins->num_ops;
@@ -1686,10 +1687,10 @@ dis_handler_return X86MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
         ins->op[1].ref_type = X86GetRefType( code.type1.w , ins );
         ins->op[1].op_position = ins->size;
         if( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) {
-            ins->op[1].value.s._32[I64LO32] = GetULong( d, ins->size );
+            U64Low( ins->op[1].value ) = GetULong( d, ins->size );
             ins->size += 4;
         } else {
-            ins->op[1].value.s._32[I64LO32] = GetUShort( d, ins->size );
+            U64Low( ins->op[1].value ) = GetUShort( d, ins->size );
             ins->size += 2;
         }
         ++ins->num_ops;
@@ -1742,7 +1743,7 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 
             if( (ins->flags.u.x86 & DIF_X86_FPU_EMU) && ( intno >= 0x34 ) && ( intno <= 0x3D ) ) {
                 ins->flags.u.x86 |= DIF_X86_EMU_INT;
-                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = intno;
+                U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) = intno;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].type = DO_IMMED;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].ref_type = DRT_X86_BYTE;
                 if( intno == 0x3C ) {
@@ -1754,17 +1755,17 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
                 }
                 return( DHR_CONTINUE );
             }
-            ins->op[0].value.s._32[I64LO32] = intno;
+            U64Low( ins->op[0].value ) = intno;
             ins->size += 1;
         } else {
-            ins->op[0].value.s._32[I64LO32] = 3;
+            U64Low( ins->op[0].value ) = 3;
         }
         ins->op[0].ref_type = DRT_X86_BYTE;
         ++ins->num_ops;
         break;
     case DI_X86_ret2:
     case DI_X86_retf2:
-        ins->op[0].value.s._32[I64LO32] = GetUShort( d, ins->size );
+        U64Low( ins->op[0].value ) = GetUShort( d, ins->size );
         ins->op[0].ref_type = DRT_X86_WORD;
         ins->size += 2;
         ++ins->num_ops;
@@ -1773,12 +1774,12 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
         X86GetImmedVal( code.type3.s, W_DEFAULT, d, ins );
         if( code.type3.s ) {
             if( ( DIF_X86_OPND_LONG & ins->flags.u.x86 ) == 0 ) {
-                ins->op[0].value.s._32[I64LO32] &= 0xffff;
+                U64Low( ins->op[0].value ) &= 0xffff;
             }
         }
         if( DIF_X86_OPND_SIZE & ins->flags.u.x86 ) {
             if( DIF_X86_OPND_LONG & ins->flags.u.x86 ) {
-                if( ( ins->op[0].value.s._32[I64LO32] & 0xffff0000 ) == 0 ) {
+                if( ( U64Low( ins->op[0].value ) & 0xffff0000 ) == 0 ) {
                     ins->type = DI_X86_pushd;
                 }
             } else {
@@ -1787,9 +1788,9 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
         }
         break;
     case DI_X86_aam:
-        ins->op[0].value.s._32[I64LO32] = GetUByte( d, ins->size );
+        U64Low( ins->op[0].value ) = GetUByte( d, ins->size );
         ins->size += 1;
-        if( ins->op[0].value.s._32[I64LO32] != 10 ) {
+        if( U64Low( ins->op[0].value ) != 10 ) {
             ins->op[0].ref_type = DRT_X86_BYTE;
             ins->num_ops++;
         }
@@ -1826,11 +1827,11 @@ dis_handler_return X86ImmImm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->num_ops = 2;
     ins->size   += 1;
-    ins->op[0].value.s._32[I64LO32] = GetUShort( d, ins->size );
+    U64Low( ins->op[0].value ) = GetUShort( d, ins->size );
     ins->op[0].type = DO_IMMED;
     ins->op[0].ref_type = DRT_X86_WORD;
     ins->size   += 2;
-    ins->op[1].value.s._32[I64LO32] = GetUByte( d, ins->size );
+    U64Low( ins->op[1].value ) = GetUByte( d, ins->size );
     ins->op[1].type = DO_IMMED;
     ins->op[1].ref_type = DRT_X86_BYTE;
     ins->size   += 1;
@@ -2057,7 +2058,7 @@ dis_handler_return X86Shift_16 ( dis_handle *h, void *d, dis_dec_ins *ins )
         ins->op[ins->num_ops].type = DO_REG;
         ++ins->num_ops;
     } else {
-        ins->op[ins->num_ops].value.s._32[I64LO32] = 1;
+        U64Low( ins->op[ins->num_ops].value ) = 1;
         ins->op[ins->num_ops].type = DO_IMMED;
         ins->op[ins->num_ops].ref_type = DRT_X86_BYTE;
         ++ins->num_ops;
@@ -2703,7 +2704,7 @@ dis_handler_return X86RegModRM_24B( dis_handle *h, void *d, dis_dec_ins *ins )
         X86GetModRM( W_DEFAULT, code.type1.mod, code.type1.rm, d, ins,
                                X86GetRefType( W_DEFAULT ,ins ) );
         X86GetReg( W_DEFAULT, code.type1.reg, ins );
-        ins->op[ins->num_ops].value.s._32[I64LO32] = GetUByte( d, ins->size );
+        U64Low( ins->op[ins->num_ops].value ) = GetUByte( d, ins->size );
         ins->op[ins->num_ops].type = DO_IMMED;
         ins->op[ins->num_ops].ref_type = DRT_X86_BYTE;
         ++ins->size;
@@ -4337,7 +4338,7 @@ static dis_handler_return X86DecodeTableCheck( int page, dis_dec_ins *ins )
 static void process87EMUIns( dis_dec_ins *ins )
 /*********************************************/
 {
-    if( ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] == 0x3C ) {
+    if( U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) == 0x3C ) {
         switch( ins->opcode & 0xC0 ) {
         case 0xC0:
             ins->flags.u.x86 |= DIF_X86_ES;
@@ -4353,7 +4354,7 @@ static void process87EMUIns( dis_dec_ins *ins )
             break;
         }
         ins->opcode |= 0xC0;  // restore FP opcode D8-DF
-    } else if( ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] == 0x3D ) {
+    } else if( U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) == 0x3D ) {
         ins->opcode = 0x90;   // NOP
     } else {
         ins->opcode += 0xA4;  // restore FP opcode D8-DF
@@ -4390,12 +4391,12 @@ static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     if( ins->flags.u.x86 & DIF_X86_EMU_INT ) {
     } else if( ins->flags.u.x86 & DIF_X86_FPU_EMU ) {
         if( (ins->opcode & 0xFFFF) == 0x9B90 ) {
-            ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3D;
+            U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) = 0x3D;
         } else if( (ins->flags.u.x86 & DIF_X86_FWAIT) && (ins->flags.u.x86 & DIF_X86_FPU_INS) ) {
             if( X86SegmentOverride( ins ) ) {
-                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3C;
+                U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) = 0x3C;
             } else {
-                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = (ins->opcode & 0xFF) - 0xA4;
+                U64Low( ins->op[ MAX_NUM_OPERANDS - 1 ].value ) = (ins->opcode & 0xFF) - 0xA4;
             }
         } else {
             return( 0 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "variety.h"
+#include "seterrno.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -50,7 +52,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 
     sys_brk_value = sys_brk( brk_value );
     if( sys_brk_value == -1 ) {
-        _RWD_errno = ENOMEM;
+        lib_set_errno( ENOMEM );
         _ReleaseNHeap();
         return( (void_nptr)-1 );
     }

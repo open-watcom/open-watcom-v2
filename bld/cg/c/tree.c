@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "tree.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "_cfloat.h"
 #include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
@@ -74,8 +73,9 @@
     #include "echoapi.h"
 #endif
 
+
 static  void    FreeTreeNode( tn node );
-static  void    Control( cg_op op, tn node, label_handle lbl, bool gen );
+static  void    Control( cg_op opcode, tn node, label_handle lbl, bool gen );
 
 static  pointer *TreeFrl;
 
@@ -191,7 +191,7 @@ tn  TGBitMask( tn left, byte start, byte len, const type_def *tipe )
 }
 
 
-tn  TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe )
+tn  TGNode( tn_class class, cg_op opcode, tn left, tn rite, const type_def *tipe )
 /*****************************************************************************
  * create a general node
  */
@@ -202,7 +202,7 @@ tn  TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe )
     node->u1.t.base = NULL;
     node->u1.t.alignment = 0;
     node->class = class;
-    node->u1.t.op = op;
+    node->u1.t.op = opcode;
     node->u.left = left;
     node->u1.t.rite = rite;
     node->tipe = tipe;
@@ -267,7 +267,7 @@ tn  TGCallback( cg_callback rtn, callback_handle ptr )
 static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
                     const type_class_def *mat_type_class, bool demote_const )
 /***********************************************************************
- * What is the resulting type of "left" op "rite" given that the front
+ * What is the resulting type of "left" opcode "rite" given that the front
  * end says it should be "tipe" (T_DEFAULT if its not sure).
  * "demote_const" is true if we are allowed to do demotion of type even
  * if the front end said it wanted a different type.  For example if
@@ -318,7 +318,7 @@ static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
     if( tipe->length > TypeClassSize[U4] )
         return( tipe );
     if( left->tipe->attr & TYPE_SIGNED ) {
-        if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
+        if( !CFSignedSize( rite->u.name->c.u.cfval, left->tipe->length ) ) {
             return( tipe );
         }
         if( rite->u.name->c.lo.u.int_value < 0 )
@@ -327,7 +327,7 @@ static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
             return( tipe );
         }
     } else {
-        if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
+        if( !CFUnSignedSize( rite->u.name->c.u.cfval, left->tipe->length ) )  {
             return( tipe );
         }
     }
@@ -360,7 +360,7 @@ static bool RHSLongPointer( tn rite )
 #endif
 
 
-tn  TGCompare( cg_op op, tn left, tn rite, const type_def *tipe )
+tn  TGCompare( cg_op opcode, tn left, tn rite, const type_def *tipe )
 /******************************************************************
  * build a relational operator node
  */
@@ -385,16 +385,16 @@ tn  TGCompare( cg_op op, tn left, tn rite, const type_def *tipe )
     }
     left = TGConvert( left, tipe );
     rite = TGConvert( rite, tipe );
-    new_tn = FoldCompare( op, left, rite, tipe );
+    new_tn = FoldCompare( opcode, left, rite, tipe );
     if( new_tn != NULL )
         return( new_tn );
-    new_tn = FoldBitCompare( op, left, rite );
+    new_tn = FoldBitCompare( opcode, left, rite );
     if( new_tn != NULL )
         return( new_tn );
-    new_tn = FoldPostGetsCompare( op, left, rite, tipe );
+    new_tn = FoldPostGetsCompare( opcode, left, rite, tipe );
     if( new_tn != NULL )
         return( new_tn );
-    new_tn = TGNode( TN_COMPARE, op, left, rite, TypeBoolean );
+    new_tn = TGNode( TN_COMPARE, opcode, left, rite, TypeBoolean );
     return( new_tn );
 }
 
@@ -450,11 +450,11 @@ static  unsigned_64    TGMask64( tn node )
     unsigned_64     tmp;
 
     len = node->u1.b.len;
-    U32ToU64( 0, &mask );
-    U32ToU64( 1, &tmp );
+    Set64ValZero( mask );
+    Set64Val1p( tmp );
     U64ShiftL( &tmp, node->u1.b.start, &bit );
     for( ;; ) {
-        U64Or( &mask, &bit, &tmp );
+        U64Or( tmp, bit, mask );
         mask = tmp;
         U64ShiftL( &bit, 1, &tmp );
         bit = tmp;
@@ -497,9 +497,9 @@ tn  TGConvert( tn name, const type_def *tipe )
 }
 
 
-static const type_def   *BinResult( cg_op op, tn *l, tn *r, const type_def *tipe, int commie )
+static const type_def   *BinResult( cg_op opcode, tn *l, tn *r, const type_def *tipe, int commie )
 /*********************************************************************************
- * Calculate the resulting type of a binary operation "l" op "r".  Tipe
+ * Calculate the resulting type of a binary operation "l" opcode "r".  Tipe
  * is what the front end thinks is should be.  Sometimes we can do
  * better.  Also, convert the operands to the type of the result if
  * necessary before the operation is performed. There are some wacky cases
@@ -518,7 +518,7 @@ static const type_def   *BinResult( cg_op op, tn *l, tn *r, const type_def *tipe
 
     rite = *r;
     left = *l;
-    switch( op ) {
+    switch( opcode ) {
     case O_LSHIFT:
     case O_RSHIFT:
         left = TGConvert( left, tipe );
@@ -710,13 +710,13 @@ static const type_def   *BinResult( cg_op op, tn *l, tn *r, const type_def *tipe
 }
 
 
-static  tn  BinFold( cg_op op, tn left, tn rite, const type_def *tipe )
+static  tn  BinFold( cg_op opcode, tn left, tn rite, const type_def *tipe )
 /**********************************************************************
- * Try to fold "left" "op" "rite".  Return NULL if it is not possible,
+ * Try to fold "left" "opcode" "rite".  Return NULL if it is not possible,
  * a new tree node if it is possible (freeing "left" and "rite").
  */
 {
-    switch( op ) {
+    switch( opcode ) {
     case O_PLUS:
         return( FoldPlus( left, rite, tipe ) );
     case O_MINUS:
@@ -750,7 +750,7 @@ static  tn  BinFold( cg_op op, tn left, tn rite, const type_def *tipe )
 }
 
 
-tn  TGBinary( cg_op op, tn left, tn rite, const type_def *tipe )
+tn  TGBinary( cg_op opcode, tn left, tn rite, const type_def *tipe )
 /***************************************************************
  * build a binary operator tree node
  */
@@ -761,16 +761,16 @@ tn  TGBinary( cg_op op, tn left, tn rite, const type_def *tipe )
 
     l = left;
     r = rite;
-    tipe = BinResult( op, &l, &r, tipe, true );
-    result = BinFold( op, l, r, tipe );
+    tipe = BinResult( opcode, &l, &r, tipe, true );
+    result = BinFold( opcode, l, r, tipe );
     if( result == NULL ) {
-        result = TGNode( TN_BINARY, op, l, r, tipe );
+        result = TGNode( TN_BINARY, opcode, l, r, tipe );
     }
     return( result );
 }
 
 
-tn  TGUnary( cg_op op, tn left, const type_def *tipe )
+tn  TGUnary( cg_op opcode, tn left, const type_def *tipe )
 /*****************************************************
  * build a unary operator tree node
  */
@@ -779,13 +779,13 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
 
     new_tn = NULL;
 
-    if( op != O_POINTS ) { /* for O_POINTS, the tipe given is always correct*/
+    if( opcode != O_POINTS ) { /* for O_POINTS, the tipe given is always correct*/
         if( tipe == TypeNone ) {
             tipe = left->tipe;
         }
     }
 
-    switch( op ) {
+    switch( opcode ) {
     case O_UMINUS:
         left = TGConvert( left, tipe );
         new_tn = FoldUMinus( left, tipe );
@@ -804,10 +804,10 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
         }
         break;
     case O_ROUND:
-        new_tn = FoldCnvRnd( op, left, tipe );
+        new_tn = FoldCnvRnd( opcode, left, tipe );
         break;
     case O_CONVERT:
-        new_tn = FoldCnvRnd( op, left, tipe );
+        new_tn = FoldCnvRnd( opcode, left, tipe );
         if( new_tn == NULL ) {
             new_tn = TGConvert( left, tipe );
         }
@@ -819,7 +819,7 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
     case O_LOG:
     case O_LOG10:
         left = TGConvert( left, tipe );
-        new_tn = FoldLog( op, left, tipe );
+        new_tn = FoldLog( opcode, left, tipe );
         break;
     case O_COS:
     case O_SIN:
@@ -854,7 +854,7 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
         break;
     }
     if( new_tn == NULL ) {
-        new_tn = TGNode( TN_UNARY, op, left, NULL, tipe );
+        new_tn = TGNode( TN_UNARY, opcode, left, NULL, tipe );
     }
     return( new_tn );
 }
@@ -1077,7 +1077,7 @@ tn  TGDuplicate( tn node )
     if( node != NULL ) {
         switch( node->class ) {
         case TN_CONS:
-            new_tn = TGConst( CFCopy( &cgh, node->u.name->c.value ), node->tipe );
+            new_tn = TGConst( CFCopy( &cgh, node->u.name->c.u.cfval ), node->tipe );
             break;
         case TN_LEAF:
             new_tn = TGLeaf( AddrCopy( node->u.addr ) );
@@ -1099,7 +1099,7 @@ tn  TGDuplicate( tn node )
 }
 
 
-tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
+tn  DoTGPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe,
                  tn_class class, tn_class assn_class )
 /*******************************************************************
  * Build a node for left op= right.  We try to turn it into "left =
@@ -1117,7 +1117,7 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
     tn              l;
     tn              r;
 
-    switch( op ) {
+    switch( opcode ) {
     case O_DIV:
     case O_MOD:
     case O_RSHIFT:
@@ -1135,17 +1135,17 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
     l = leftp;
     r = rite;
     /* ok to use defaults here since we're assining the result to left*/
-    optipe = BinResult( op, &l, &r, TypeNone, false );
+    optipe = BinResult( opcode, &l, &r, TypeNone, false );
     rite = r;
     leftp = l;
     if( dupleft == NULL ) {
         result = NULL;
     } else {
-        result = BinFold( op, leftp, rite, optipe );
+        result = BinFold( opcode, leftp, rite, optipe );
     }
     if( result == NULL ) {
         // rite = TGUnary( O_CONVERT, rite, tipe );
-        result = TGNode( class, op, left, rite, tipe );
+        result = TGNode( class, opcode, left, rite, tipe );
         result->optipe = optipe;
         if( tipe != optipe ) { /* someone might have put a convert onto leftp*/
             if( leftp != left ) {
@@ -1187,21 +1187,21 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
 }
 
 
-tn  TGPreGets( cg_op op, tn left, tn rite, const type_def *tipe )
-/***************************************************************/
+tn  TGPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe )
+/*******************************************************************/
 {
-    return( DoTGPreGets( op, left, rite, tipe, TN_PRE_GETS, TN_ASSIGN ) );
+    return( DoTGPreGets( opcode, left, rite, tipe, TN_PRE_GETS, TN_ASSIGN ) );
 }
 
 
-tn  TGLVPreGets( cg_op op, tn left, tn rite, const type_def *tipe )
-/*****************************************************************/
+tn  TGLVPreGets( cg_op opcode, tn left, tn rite, const type_def *tipe )
+/*********************************************************************/
 {
-    return( DoTGPreGets( op, left, rite, tipe, TN_LV_PRE_GETS, TN_LV_ASSIGN ) );
+    return( DoTGPreGets( opcode, left, rite, tipe, TN_LV_PRE_GETS, TN_LV_ASSIGN ) );
 }
 
 
-tn  TGPostGets( cg_op op, tn left, tn rite, const type_def *tipe )
+tn  TGPostGets( cg_op opcode, tn left, tn rite, const type_def *tipe )
 /*******************************************************************
  * node for left op= right, but yields the rvalue of left before the
  * assignment took place.  (for x++) Notice that "Post" refers to the
@@ -1210,7 +1210,7 @@ tn  TGPostGets( cg_op op, tn left, tn rite, const type_def *tipe )
  */
 {
     rite = TGConvert( rite, tipe );
-    return( TGNode( TN_POST_GETS, op, left, rite, tipe ) );
+    return( TGNode( TN_POST_GETS, opcode, left, rite, tipe ) );
 }
 
 
@@ -1240,14 +1240,14 @@ tn  TGPatch( patch_handle patch, const type_def *tipe )
     return( node );
 }
 
-tn  TGFlow( cg_op op, tn left, tn rite )
+tn  TGFlow( cg_op opcode, tn left, tn rite )
 /***********************************************
  * create a short circuit boolean expression node
  */
 {
     tn  result;
 
-    switch( op ) {
+    switch( opcode ) {
     case O_FLOW_AND:
         result = FoldFlAnd( left, rite );
         break;
@@ -1268,7 +1268,7 @@ tn  TGFlow( cg_op op, tn left, tn rite )
     if( rite != NULL ) {  /* O_FLOW_NOT*/
         rite = TGConvert( rite, TypeBoolean );
     }
-    return( TGNode( TN_FLOW, op, left, rite, TypeBoolean ) );
+    return( TGNode( TN_FLOW, opcode, left, rite, TypeBoolean ) );
 }
 
 
@@ -1368,30 +1368,30 @@ void    TG3WayControl( tn node, label_handle lt, label_handle eq, label_handle g
 }
 
 
-void    TGControl( cg_op op, tn node, label_handle lbl )
+void    TGControl( cg_op opcode, tn node, label_handle lbl )
 /***************************************************************
  * generate a simple flow of control. The tree must be complete when this is called.
  */
 {
-    switch( op ) {
+    switch( opcode ) {
     case O_IF_TRUE:
         if( !FoldIfTrue( node, lbl ) ) {
-            Control( op, node, lbl, true );
+            Control( opcode, node, lbl, true );
         }
         break;
     case O_IF_FALSE:
         if( !FoldIfFalse( node, lbl ) ) {
-            Control( op, node, lbl, true );
+            Control( opcode, node, lbl, true );
         }
         break;
     default:
-        BGGenCtrl( op, NULL, lbl, true );
+        BGGenCtrl( opcode, NULL, lbl, true );
         break;
     }
 }
 
 
-static  void    Control( cg_op op, tn node, label_handle lbl, bool gen )
+static  void    Control( cg_op opcode, tn node, label_handle lbl, bool gen )
 /***********************************************************************
  * see TGControl ^
  */
@@ -1400,18 +1400,18 @@ static  void    Control( cg_op op, tn node, label_handle lbl, bool gen )
 
     addr = NotAddrGen( TGConvert( node, TypeBoolean ) );
     if( addr->format == NF_CONS ) { /* will either be NF_CONS or NF_BOOL*/
-        if( CFTest( addr->u.n.name->c.value ) != 0 ) {
-            if( op == O_IF_TRUE ) {
+        if( CFTest( addr->u.n.name->c.u.cfval ) != 0 ) {
+            if( opcode == O_IF_TRUE ) {
                 BGGenCtrl( O_GOTO, NULL, lbl, gen );
             }
         } else {
-            if( op == O_IF_FALSE ) {
+            if( opcode == O_IF_FALSE ) {
                 BGGenCtrl( O_GOTO, NULL, lbl, gen );
             }
         }
         BGDone( addr );
     } else {
-        BGGenCtrl( op, addr, lbl, gen );
+        BGGenCtrl( opcode, addr, lbl, gen );
     }
 }
 
@@ -1705,13 +1705,14 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
         U64ShiftR( &mask, node->u1.b.start, &mask );
         retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         U64ShiftR( &mask, 1, &mask );
-        U64Not( &mask, &mask );
-        if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
-                        unsigned_64 one;
-                        I32ToI64( 1, &one );
+        U64NotEq( mask );
+        if( U64Low( mask ) == 0xffffffff ) { /* a one-bit signed bit field */
+            signed_64 one;
+
+            Set64Val1p( one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
             retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, true );
-        } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */
+        } else if( U64Low( mask ) == 0xfffff80 ) { /* an eight-bit signed bit field */
             switch( tipeu->length ) {
             case 1:
                 break;
@@ -1729,7 +1730,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
                 break;
             }
             retv = BGConvert( retv, tipes );
-        } else if( mask.u._32[I64LO32] == 0xffff8000 ) { /* a sixteen-bit signed bit field */
+        } else if( U64Low( mask ) == 0xffff8000 ) { /* a sixteen-bit signed bit field */
             switch( tipeu->length ) {
             case 2:
                 break;
@@ -1742,7 +1743,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
                 break;
             }
             retv = BGConvert( retv, tipes );
-        } else if( mask.u._32[I64LO32] == 0x80000000 ) { /* a 32-bit signed bit field */
+        } else if( U64Low( mask ) == 0x80000000 ) { /* a 32-bit signed bit field */
             switch( tipeu->length ) {
             case 4:
                 break;
@@ -1784,7 +1785,7 @@ static  void    DoAnd( an left, unsigned_64 mask, tn node )
  * Turn off bits "mask" in address name "left"
  */
 {
-    BGDone( BGOpGets( O_AND, AddrCopy( left ), Int( ~(mask.u._32[I64LO32]) ),
+    BGDone( BGOpGets( O_AND, AddrCopy( left ), Int( ~(U64Low( mask )) ),
               node->tipe, node->tipe ) );
 }
 
@@ -1795,7 +1796,7 @@ static  void    DoAnd64( an left, unsigned_64 mask, tn node )
 {
     unsigned_64     tmp;
 
-    U64Not( &mask, &tmp );
+    U64Not( tmp, mask );
     BGDone( BGOpGets( O_AND, AddrCopy( left ), Int64( tmp ),
               node->tipe, node->tipe ) );
 }
@@ -1840,8 +1841,8 @@ static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & (uint_32)after_value->u.n.name->c.lo.u.int_value );
-        if( (uint_32)retv->u.n.name->c.lo.u.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( U64Low( shiftmask ) & (uint_32)after_value->u.n.name->c.lo.u.int_value );
+        if( (uint_32)retv->u.n.name->c.lo.u.int_value != U64Low( shiftmask ) ) {
             DoAnd( left, mask, node );
         }
         if( retv->u.n.name->c.lo.u.int_value != 0 ) {
