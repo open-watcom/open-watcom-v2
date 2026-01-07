@@ -267,7 +267,7 @@ endif
           _endif                        ; - endif
           mov   SaveSS,SS               ; - save current stack pointer
           mov   SaveSP,SP               ; - ...
-          mov   SS,SI                   ; - get new stack pointer
+          mov   SS,BX                   ; - get new stack pointer
           mov   SP,DX                   ; - ...
 ifdef __MT__
           les   si,_threadid            ; - get thread id
