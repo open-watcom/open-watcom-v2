@@ -15,7 +15,7 @@ runs:
         fi
       done
     shell: bash
-  - if: runner.os == 'macOS' && runner.arch == 'ARM64'
+  - if: runner.os == 'macOS'
     name: Install DOSBOX-X
     run: |
       # this install version defined by ci/dosbox-x.rb
@@ -25,9 +25,4 @@ runs:
     env:
       HOMEBREW_NO_INSTALL_FROM_API: 1
       HOMEBREW_NO_AUTO_UPDATE:      1
-    shell: bash
-  - if: runner.os == 'macOS' && runner.arch == 'X64'
-    name: Install DOSBOX-X
-    run: |
-      brew install dosbox-x
     shell: bash
