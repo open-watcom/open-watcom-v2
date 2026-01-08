@@ -18,8 +18,7 @@ runs:
   - if: runner.os == 'macOS'
     name: Install DOSBOX-X
     run: |
-      #brew install dosbox-x
-      brew --repository homebrew/core
+      # this install version defined by ci/dosbox-x.rb
       brew tap --force homebrew/core
       sudo cp -v ci/dosbox-x.rb /opt/homebrew/Library/Taps/homebrew/homebrew-core/Formula/d/dosbox-x.rb
       brew install dosbox-x
