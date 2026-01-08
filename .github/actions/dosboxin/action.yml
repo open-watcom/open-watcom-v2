@@ -16,6 +16,8 @@ runs:
       done
     shell: bash
   - if: runner.os == 'macOS'
-    name: Install DOSBOX-X
-    run: brew install dosbox-x
+    name: Install DOSBOX-X/DOSBOX
+    run: |
+      brew install dosbox-x
+      brew install --cask dosbox
     shell: bash

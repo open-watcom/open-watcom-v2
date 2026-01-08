@@ -128,14 +128,14 @@ jobs:
           args:         'clang'
           gitpath:      'rel bino64'
         # OSX ARM64
-        #- name:         'OSX arm64'
-        #  suffix:       'osx a64'
-        #  docbuild:     ''
-        #  run_tests:    ''
-        #  image:        'macos-15'
-        #  owtools:      'CLANG'
-        #  args:         'clang'
-        #  gitpath:      'rel armo64'
+        - name:         'OSX arm64'
+          suffix:       'osx a64'
+          docbuild:     ''
+          run_tests:    ''
+          image:        'macos-15'
+          owtools:      'CLANG'
+          args:         'clang'
+          gitpath:      'rel armo64'
     name: ${{matrix.name}} ${{matrix.args}}
     uses: ./.github/workflows/buildx.yml
     with:
