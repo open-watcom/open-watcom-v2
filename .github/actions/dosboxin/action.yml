@@ -19,5 +19,9 @@ runs:
     name: Install DOSBOX-X
     run: |
       #brew install dosbox-x
-      brew install --build-from-source ./ci/dosbox-x.rb
+      mkdir -p ~/homebrew-ow2
+      brew tap-new ~/homebrew-ow2
+      cp ./ci/dosbox-x.rb ~/homebrew-ow2/Formula/
+      brew tap ow/ow2 ~/homebrew-ow2
+      brew install dosbox-x
     shell: bash
