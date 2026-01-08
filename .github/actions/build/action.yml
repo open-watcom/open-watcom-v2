@@ -67,8 +67,7 @@ runs:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{inputs.owtools}}
       OWROOT:        ${{github.workspace}}
-      #OWDOSBOX:      'dosbox-x'
-      OWDOSBOX:      'dosbox'
+      OWDOSBOX:      'dosbox-x'
       OWVERBOSE:     1
     shell: bash
   - uses: ./.github/actions/artfsave
