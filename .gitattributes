@@ -40,6 +40,7 @@
 *.msg text
 *.pcd text
 *.ps  text
+*.rb  text
 *.rc  text
 *.re  text
 *.rh  text

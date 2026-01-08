@@ -16,20 +16,8 @@ runs:
       done
     shell: bash
   - if: runner.os == 'macOS'
-    name: Setup curl options
-    id: curlcmd
-    uses: ./.github/actions/curlcmd
-  - if: runner.os == 'macOS'
-    name: "Download Coverity Tools"
-    run: |
-      $response = ${{steps.curlcmd.outputs.cov}} `
-      "https://github.com/Homebrew/homebrew-core/blob/2e4fee868ba6e91e18a0ae0e89999437de84eb8c/Formula/d/dosbox-x.rb"
-      if( '${{env.OWDEBUG}}' -eq '1' ) { $response }
-    shell: pwsh
-  - if: runner.os == 'macOS'
     name: Install DOSBOX-X
     run: |
       #brew install dosbox-x
-      brew install --build-from-source dosbox-x.rb
-      rm -f dosbox-x.rb
+      brew install --build-from-source ./ci/dosbox-x.rb
     shell: bash
