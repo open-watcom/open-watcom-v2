@@ -56,10 +56,10 @@ runs:
     with:
       gitpath:  'rel bino64'
       artifact: rel osx x64 ${{inputs.suffix_osx}}
-  - uses: ./.github/actions/artfload
-    with:
-      gitpath:  'rel armo64'
-      artifact: rel osx a64 ${{inputs.suffix_osx}}
+  #- uses: ./.github/actions/artfload
+  #  with:
+  #    gitpath:  'rel armo64'
+  #    artifact: rel osx a64 ${{inputs.suffix_osx}}
   - uses: ./.github/actions/artfload
     with:
       gitpath:  'rel'
