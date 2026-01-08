@@ -19,8 +19,10 @@ runs:
     name: Install DOSBOX-X
     run: |
       #brew install dosbox-x
+      HOMEBREW_NO_INSTALL_FROM_API=1
       HOMEBREW_NO_AUTO_UPDATE=1
-      brew update
+      brew --repository homebrew/core
+      brew tap --force homebrew/core
       cp -v ci/dosbox-x.rb /opt/homebrew/Library/Taps/homebrew/homebrew-core/Formula/d/dosbox-x.rb
       brew install dosbox-x
     shell: bash
