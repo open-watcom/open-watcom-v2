@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -274,14 +274,7 @@ void wiki_trans_line( char *line_buf, section_def *section )
     case WHP_LIST_END:
     case WHP_DLIST_END:
     case WHP_SLIST_END:
-        switch( ch ) {
-        case WHP_OLIST_END:
-        case WHP_LIST_END:
-        case WHP_SLIST_END:
-        case WHP_DLIST_END:
-            trans_add_str_nl( "", section );
-            break;
-        }
+        trans_add_str_nl( "", section );
         Blank_line_sfx = false;
         PopList();
         return;
