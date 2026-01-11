@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,13 +74,6 @@ enum {
     #undef pick
 };
 
-#if defined( _M_IX86 )
-
-unsigned char   _8087   = 0;
-unsigned char   _real87 = 0;
-
-#endif
-
 void    ShowUsage( void ) {
 //===================
 
@@ -121,6 +114,13 @@ int     main( int argc, char *argv[] )
     int         cmd_len;
     char        *cmd_line;
 
+#if defined(__WATCOMC__) && defined( _M_IX86 )
+    /*
+     * set to 0 in case 8087 is present
+     */
+    _real87 = 0;
+    _8087 = 0;
+#endif
 #if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;

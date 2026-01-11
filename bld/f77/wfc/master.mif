@@ -6,8 +6,6 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
-wfc_nofpu = 1
-
 wfc_ntverrc = ..
 
 wfc_trmem = 1
