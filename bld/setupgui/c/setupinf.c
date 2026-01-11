@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -3358,25 +3358,21 @@ static void CalcAddRemove( void )
         dir_index = FileInfo[i].dir_index;
         target_index = DirInfo[dir_index].target;
         add = EvalExprTree( FileInfo[i].condition.p->cond );
+        remove = false;
         if( FileInfo[i].supplemental ) {
-            remove = false;
             if( uninstall ) {
                 add = false;
             }
+        } else if( uninstall
+          && !FileInfo[i].core_component ) {
+            add = false;
+            remove = true;
+        } else if( FileInfo[i].condition.p->dont_touch ) {
+            add = false;
+        } else if( FileInfo[i].core_component ) {
+            add = !SimSubFileExists( i, 0 );
         } else {
-            if( uninstall
-              && !FileInfo[i].core_component ) {
-                add = false;
-                remove = true;
-            } else if( FileInfo[i].condition.p->dont_touch ) {
-                add = false;
-                remove = false;
-            } else if( FileInfo[i].core_component ) {
-                add = !SimSubFileExists( i, 0 );
-                remove = false;
-            } else {
-                remove = !add && previous;
-            }
+            remove = !add && previous;
         }
         if( add ) {
             MarkUsed( dir_index );
