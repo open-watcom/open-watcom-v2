@@ -559,7 +559,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                       || strcmp( Buffer, "__aborts" ) == 0 ) {
                         modifier = FLAG_ABORTS;
                     } else if( strcmp( Buffer, "noreturn" ) == 0
-                      || strcmp( Buffer, "__noreturn" ) == 0 ) {
+                      || strcmp( Buffer, "__noreturn" ) == 0
+                      || strcmp( Buffer, "_Noreturn" ) == 0 ) {
                         modifier = FLAG_NORETURN;
                     } else if( strcmp( Buffer, "farss" ) == 0 ) {
                         modifier = FLAG_FARSS;
