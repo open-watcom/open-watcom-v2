@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2529,6 +2529,7 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
       || strcmp( NameStr( name ), "__aborts" ) == 0 ) {
         spec->ms_declspec = MSDS_ABORTS;
     } else if( strcmp( NameStr( name ), "noreturn" ) == 0
+      || strcmp( NameStr( name ), "__noreturn" ) == 0
       || strcmp( NameStr( name ), "_Noreturn" ) == 0 ) {
         spec->ms_declspec = MSDS_NORETURN;
     } else if( strcmp( NameStr( name ), "farss" ) == 0 ) {
