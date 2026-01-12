@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,7 @@ extern void DoInt66( unsigned, unsigned );
     modify exact [ax bx cx dx si di];
 
 extern void DPMIFini( void );
-#pragma aux DPMIFini aborts = \
+#pragma aux DPMIFini __aborts = \
     "mov  ah, 0x4c"     \
     "mov  al, 0   "     \
     "int  0x21    "     \
