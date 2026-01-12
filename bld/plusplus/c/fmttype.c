@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,8 +94,8 @@ static const FMT_FLAG_INFO functionFlags[] = {
     { "__loadds ",      TF1_LOADDS },
     { "__saveregs ",    TF1_SAVEREGS },
     { "__interrupt ",   TF1_INTERRUPT },
-    { "__declspec(aborts) ", TF1_ABORTS },
-    { "__declspec(noreturn) ", TF1_NORETURN },
+    { "__declspec(__aborts) ", TF1_ABORTS },
+    { "__declspec(__noreturn) ", TF1_NORETURN },
     { "__declspec(farss) ", TF1_FARSS },
     { NULL,             TF1_NULL }
 };

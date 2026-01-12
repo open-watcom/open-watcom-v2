@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -555,9 +555,11 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         } else {
                             info->naked = true;
                         }
-                    } else if( strcmp( Buffer, "aborts" ) == 0 ) {
+                    } else if( strcmp( Buffer, "aborts" ) == 0
+                      || strcmp( Buffer, "__aborts" ) == 0 ) {
                         modifier = FLAG_ABORTS;
-                    } else if( strcmp( Buffer, "noreturn" ) == 0 ) {
+                    } else if( strcmp( Buffer, "noreturn" ) == 0
+                      || strcmp( Buffer, "__noreturn" ) == 0 ) {
                         modifier = FLAG_NORETURN;
                     } else if( strcmp( Buffer, "farss" ) == 0 ) {
                         modifier = FLAG_FARSS;
