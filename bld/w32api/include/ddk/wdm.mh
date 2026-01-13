@@ -18,8 +18,10 @@
 #include <driverspecs.h>
 #include <string.h>
 #include <ktmtypes.h>
-#ifdef RUN_WPP
+#if defined( RUN_WPP )
     #include <evntrace.h>
+#endif
+#if (NTDDI_VERSION >= 0x05010000) || defined( RUN_WPP )
     #include <stdarg.h>
 #endif
 #include <evntprov.h>
