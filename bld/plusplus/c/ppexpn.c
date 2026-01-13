@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,19 +57,8 @@
 
 #define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
 
-#define U64LT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
-#define U64GT(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
-#define U64LE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
-#define U64GE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
-#define U64EQ(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
-#define U64NE(a,b)          ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
-
-#define I64LT(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
-#define I64GT(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
-#define I64LE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
-#define I64GE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
-#define I64EQ(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
-#define I64NE(a,b)          ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
+#define U64CmpPP(a,b)       U64Cmp( &((a).u.uval), &((b).u.uval) )
+#define I64CmpPP(a,b)       I64Cmp( &((a).u.uval), &((b).u.uval) )
 
 #define U64AddEqPP(a,b)     U64AddEq( &((a).u.uval), &((b).u.uval) );
 #define U64SubEqPP(a,b)     U64SubEq( &((a).u.uval), &((b).u.uval) );
@@ -651,9 +640,9 @@ static bool CEquality( void )
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         if( token == T_EQ ) {
-            val = I64EQ( e1, e2 );
+            val = ( I64CmpPP( e1, e2 ) == 0 );
         } else {
-            val = I64NE( e1, e2 );
+            val = ( I64CmpPP( e1, e2 ) != 0 );
         }
         Set64ValU32PP( e1, val );
         e1.no_sign = 0;
@@ -679,36 +668,36 @@ static bool CRelational( void )
         case T_LT:
             if( e1.no_sign
               || e2.no_sign ) {
-                val = U64LT( e1, e2 );
+                val = ( U64CmpPP( e1, e2 ) < 0 );
             } else {
-                val = I64LT( e1, e2 );
+                val = ( I64CmpPP( e1, e2 ) < 0 );
             }
             Set64ValU32PP( e1, val );
             break;
         case T_LE:
             if( e1.no_sign
               || e2.no_sign ) {
-                val = U64LE( e1, e2 );
+                val = ( U64CmpPP( e1, e2 ) <= 0 );
             } else {
-                val = I64LE( e1, e2 );
+                val = ( I64CmpPP( e1, e2 ) <= 0 );
             }
             Set64ValU32PP( e1, val );
             break;
         case T_GT:
             if( e1.no_sign
               || e2.no_sign ) {
-                val = U64GT( e1, e2 );
+                val = ( U64CmpPP( e1, e2 ) > 0 );
             } else {
-                val = I64GT( e1, e2 );
+                val = ( I64CmpPP( e1, e2 ) > 0 );
             }
             Set64ValU32PP( e1, val );
             break;
         case T_GE:
             if( e1.no_sign
               || e2.no_sign ) {
-                val = U64GE( e1, e2 );
+                val = ( U64CmpPP( e1, e2 ) >= 0 );
             } else {
-                val = I64GE( e1, e2 );
+                val = ( I64CmpPP( e1, e2 ) >= 0 );
             }
             Set64ValU32PP( e1, val );
             break;
