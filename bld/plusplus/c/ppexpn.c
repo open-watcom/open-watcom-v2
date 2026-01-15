@@ -48,6 +48,7 @@
 
 #define U64isZeroPP(a)      U64isZero((a).u.uval)
 #define U64isNonZeroPP(a)   U64isNonZero((a).u.uval)
+#define U64isEqPP(a)        U64isEq((a).u.uval)
 
 #define U64LowPP(a)         U64Low((a).u.uval)
 #define U64HighPP(a)        U64High((a).u.uval)
@@ -636,15 +637,11 @@ static bool CEquality( void )
     ppvalue e2;
     loc_info loc;
     TOKEN token;
-    int val;
+    bool eq;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( token == T_EQ ) {
-            val = ( I64CmpPP( e1, e2 ) == 0 );
-        } else {
-            val = ( I64CmpPP( e1, e2 ) != 0 );
-        }
-        Set64ValU32PP( e1, val );
+        eq = U64isEqPP( e1, e2 );
+        Set64ValU32PP( e1, ( token == T_EQ ) ? eq : !eq );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -661,45 +658,27 @@ static bool CRelational( void )
     ppvalue e2;
     loc_info loc;
     TOKEN token;
-    int val;
+    int cmp;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
+        if( e1.no_sign
+          || e2.no_sign ) {
+            cmp = U64CmpPP( e1, e2 );
+        } else {
+            cmp = I64CmpPP( e1, e2 );
+        }
         switch( token ) {
         case T_LT:
-            if( e1.no_sign
-              || e2.no_sign ) {
-                val = ( U64CmpPP( e1, e2 ) < 0 );
-            } else {
-                val = ( I64CmpPP( e1, e2 ) < 0 );
-            }
-            Set64ValU32PP( e1, val );
+            Set64ValU32PP( e1, cmp < 0 );
             break;
         case T_LE:
-            if( e1.no_sign
-              || e2.no_sign ) {
-                val = ( U64CmpPP( e1, e2 ) <= 0 );
-            } else {
-                val = ( I64CmpPP( e1, e2 ) <= 0 );
-            }
-            Set64ValU32PP( e1, val );
+            Set64ValU32PP( e1, cmp <= 0 );
             break;
         case T_GT:
-            if( e1.no_sign
-              || e2.no_sign ) {
-                val = ( U64CmpPP( e1, e2 ) > 0 );
-            } else {
-                val = ( I64CmpPP( e1, e2 ) > 0 );
-            }
-            Set64ValU32PP( e1, val );
+            Set64ValU32PP( e1, cmp > 0 );
             break;
         case T_GE:
-            if( e1.no_sign
-              || e2.no_sign ) {
-                val = ( U64CmpPP( e1, e2 ) >= 0 );
-            } else {
-                val = ( I64CmpPP( e1, e2 ) >= 0 );
-            }
-            Set64ValU32PP( e1, val );
+            Set64ValU32PP( e1, cmp >= 0 );
             break;
         DbgDefault( "Default in CRelational\n" );
         }

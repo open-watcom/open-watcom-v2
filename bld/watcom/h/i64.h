@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,6 +91,7 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 #define I64Test( a )        (((a).u.sign.v)?-1:U64BTest((a))!=0)
 
 #define U64Eq( a, b )       ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
+#define U64isEq( a, b )     ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
 
 void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
 void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
