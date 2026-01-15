@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,7 +37,7 @@
 include struct.inc
 include mdef.inc
 include stword.inc
-include env387.inc
+include x87env.inc
 include fstatus.inc
 
 ifndef  __NETWARE__
@@ -86,7 +86,7 @@ __FPE2Handler_ label byte
         push    EBP                     ; ...
         push    DS                      ; ...
         push    ES                      ; ...
-        sub     ESP,ENV_SIZE            ; make room for environment information
+        sub     ESP,ENV387_SIZE         ; make room for environment information
         mov     EBP,ESP                 ; point to buffer for 80x87 environment
         fnstenv [EBP]                   ; get 80x87 environment
         fwait                           ; wait for 80x87
@@ -98,20 +98,20 @@ ifdef __NETWARE__
 else
         call    __GETDS                 ; load DS
 endif
-        mov     EDX,ENV_CW[EBP]         ; get control word
+        mov     EDX,dword ptr [EBP].ENV387_CONTROL_WORD ; get control word
         not     EDX                     ; flip the mask bits
         mov     DH,0FFh                 ; turn on top byte
-        and     EDX,ENV_SW[EBP]         ; get status word
-        mov     ES,ENV_IP+4[EBP]        ; get intruction address
-        mov     EDI,ENV_IP[EBP]         ; ...
+        and     EDX,dword ptr [EBP].ENV387_STATUS_WORD ; get status word
+        mov     ES,dword ptr [EBP].ENV387_CS_SLCT ; get intruction address
+        mov     EDI,[EBP].ENV387_IP_OFFSET ; ...
 opcode: mov     BX,ES:[EDI]             ; get opcode
         inc     EDI                     ; point to next opcode
         cmp     BL,0d8h                 ; check if its the opcode
         jb      opcode                  ; ...
         cmp     BL,0dfh                 ; ...
         ja      opcode                  ; ...
-        mov     ES,ENV_OP+4[EBP]        ; get pointer to operand
-        mov     EDI,ENV_OP[EBP]         ; ...
+        mov     ES,dword ptr [EBP].ENV387_OPERAND_SLCT ; get pointer to operand
+        mov     EDI,[EBP].ENV387_OPERAND_OFFSET ; ...
         xchg    BL,BH                   ; get opcode in right position
         mov     CL,FPE_OK               ; assume exception to be ignored
         _guess                          ; guess precision exception
@@ -173,10 +173,10 @@ opcode: mov     BX,ES:[EDI]             ; get opcode
         fclex                           ; clear exceptions that may have
                                         ; occurred as a result of handling the
                                         ; exception
-        and     word ptr ENV_CW[EBP],0FF72h
-        fldcw   word ptr ENV_CW[EBP]    ; enable interrupts
+        and     word ptr [EBP].ENV387_CONTROL_WORD,0FF72h
+        fldcw   [EBP].ENV387_CONTROL_WORD ; enable interrupts
         fwait                           ; ...
-        add     ESP,ENV_SIZE            ; clean up stack
+        add     ESP,ENV387_SIZE         ; clean up stack
         pop     ES                      ; restore registers
         pop     DS                      ; ...
         pop     EBP                     ; ...
@@ -246,7 +246,7 @@ InvalidOp proc near
           and   DX,0130h                ; - check for fdiv/fidiv instruction
           cmp   DX,0030h                ; - ...
           _quif ne                      ; - quit if it's not that instruction
-          mov   DX,ENV_TW[EBP]          ; - get tag word
+          mov   DX,[EBP].ENV387_TAG_WORD ; - get tag word
           mov   CL,AH                   ; - get stack pointer
           and   CL,38h                  ; - ...
           shr   CL,2                    ; - ...
@@ -313,7 +313,7 @@ endproc KOOverFlow
 
 GetInf  proc    near
         ftst                    ; get sign of result
-        fstsw   word ptr ENV_OP[EBP]
+        fstsw   [EBP].ENV387_OPERAND_OFFSET
         fstp    st(0)           ; pop argument off stack (does fwait)
         test    BH,04h          ; check if single or double
         _if     ne              ; if double
@@ -321,7 +321,7 @@ GetInf  proc    near
         _else                   ; else
           fld   dword ptr F4Inf ; - load single precision infinity
         _endif                  ; endif
-        test    word ptr ENV_OP[EBP],ST_C0
+        test    word ptr [EBP].ENV387_OPERAND_OFFSET,ST_C0
         _if     ne              ; if argument is negative
           fchs                  ; - return negative infinity
         _endif                  ; endif

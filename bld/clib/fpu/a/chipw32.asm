@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -49,46 +50,18 @@
 ;
 ;
 include mdef.inc
+include x87env.inc
 
 .386
 .387
 
 DATA   SEGMENT DWORD USE32 PUBLIC 'DATA'
-
-
-FPU_STATE       STRUC
-        CONTROL_WORD    DW      ?
-        reserved_1      DW      ?
-        STATUS_WORD     DW      ?
-        reserved_2      DW      ?
-        TAG_WORD        DW      ?
-        reserved_3      DW      ?
-        IP_OFFSET       DD      ?
-        CS_SLCT         DW      ?
-        OPCODE          DW      ?
-        DATA_OFFSET     DD      ?
-        OPERAND_SLCT    DW      ?
-        reserved_4      DW      ?
-        REGISTER_0      DT      ?
-        REGISTER_1      DT      ?
-        REGISTER_2      DT      ?
-        REGISTER_3      DT      ?
-        REGISTER_4      DT      ?
-        REGISTER_5      DT      ?
-        REGISTER_6      DT      ?
-        REGISTER_7      DT      ?
-        SAVE_REG_0      DT      ?
-FPU_STATE       ENDS
-
-ENV_SIZE        EQU     118
-
 DATA   ENDS
 
 DGROUP GROUP DATA
 
 
 _TEXT  SEGMENT   DWORD USE32 PUBLIC 'CODE'
-
 
         assume cs:_TEXT, ds:DGROUP, es:DGROUP, ss:nothing
         public  __fpatan_wrap
@@ -99,21 +72,26 @@ _TEXT  SEGMENT   DWORD USE32 PUBLIC 'CODE'
 
         EXTRN   __fpatan_chk:NEAR
 
+S1      STRUC
+        STAT        STAT387_AREA    <>
+        SAVE_REG_0  DT              ?
+S1      ENDS
+
         defpe   __fpatan_wrap
         push    eax
-        sub     esp, ENV_SIZE
-        fstp    tbyte ptr [esp].SAVE_REG_0
+        sub     esp, sizeof S1
+        fstp    tbyte ptr [esp].S1.SAVE_REG_0
         fnsave  [esp]
-        fld     tbyte ptr [esp].REGISTER_0
-        fld     tbyte ptr [esp].SAVE_REG_0
+        fld     tbyte ptr [esp].S1.STAT.STAT387_REGS.REGISTER_0
+        fld     tbyte ptr [esp].S1.SAVE_REG_0
         call    __fpatan_chk
         fstsw   ax
-        fstp    tbyte ptr [esp].REGISTER_0
+        fstp    tbyte ptr [esp].S1.STAT.STAT387_REGS.REGISTER_0
         and     ax, 0ffh
-        or      ax, [esp].STATUS_WORD
-        mov     [esp].STATUS_WORD, ax
+        or      ax, [esp].S1.STAT.STAT387_ENV.ENV387_STATUS_WORD
+        mov     [esp].S1.STAT.STAT387_ENV.ENV387_STATUS_WORD, ax
         frstor  [esp]
-        add     esp, ENV_SIZE
+        add     esp, sizeof S1
         pop     eax
         ret
 __fpatan_wrap     ENDP

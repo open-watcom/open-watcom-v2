@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -49,6 +50,7 @@
 ;
 ;
 include mdef.inc
+include x87env.inc
 
 .386
 .387
@@ -56,30 +58,7 @@ include mdef.inc
 _TEXT   SEGMENT PARA USE16 PUBLIC 'CODE'
 _TEXT   ENDS
 
-FPU_STATE       STRUC
-        CONTROL_WORD    DW      ?
-        STATUS_WORD     DW      ?
-        TAG_WORD        DW      ?
-        IP_OFFSET       DW      ?
-        CS_SLCT         DW      ?
-        OPERAND_OFF     DW      ?
-        OPERAND_SLCT    DW      ?
-        REGISTER_0      DT      ?
-        REGISTER_1      DT      ?
-        REGISTER_2      DT      ?
-        REGISTER_3      DT      ?
-        REGISTER_4      DT      ?
-        REGISTER_5      DT      ?
-        REGISTER_6      DT      ?
-        REGISTER_7      DT      ?
-        SAVE_REG_0      DT      ?
-FPU_STATE       ENDS
-
-ENV_SIZE        EQU     104
-
-
 _TEXT   SEGMENT   PARA USE16 PUBLIC 'CODE'
-
 
         assume cs:_TEXT, ds:nothing, ss:nothing
         public  __fpatan_wrap
@@ -90,23 +69,28 @@ _TEXT   SEGMENT   PARA USE16 PUBLIC 'CODE'
 
         xrefp  __fpatan_chk
 
+S1      STRUC
+        STAT        STAT87_AREA <>
+        SAVE_REG_0  DT          ?
+S1      ENDS
+
         defpe   __fpatan_wrap
         push    ax
         push    bp
-        sub     sp, ENV_SIZE
+        sub     sp, sizeof S1
         mov     bp, sp
-        fstp    tbyte ptr [bp].SAVE_REG_0
+        fstp    tbyte ptr [bp].S1.SAVE_REG_0
         fsave   [bp]
-        fld     tbyte ptr [bp].REGISTER_0
-        fld     tbyte ptr [bp].SAVE_REG_0
+        fld     tbyte ptr [bp].S1.STAT.STAT87_REGS.REGISTER_0
+        fld     tbyte ptr [bp].S1.SAVE_REG_0
         call    __fpatan_chk
-        fstsw  ax
-        fstp    tbyte ptr [bp].REGISTER_0
+        fstsw   ax
+        fstp    tbyte ptr [bp].S1.STAT.STAT87_REGS.REGISTER_0
         and     ax, 0ffh
-        or      ax, [bp].STATUS_WORD
-        mov     [bp].STATUS_WORD, ax
+        or      ax, [bp].S1.STAT.STAT87_ENV.ENV87_STATUS_WORD
+        mov     [bp].S1.STAT.STAT87_ENV.ENV87_STATUS_WORD, ax
         frstor  [bp]
-        add     sp, ENV_SIZE
+        add     sp, sizeof S1
         pop     bp
         pop     ax
         ret

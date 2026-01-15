@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -45,6 +46,7 @@
 ;
 ;
 include mdef.inc
+include x87env.inc
 
         .386
         .387
@@ -105,23 +107,6 @@ ifdef   DEBUG
 fpcw    dw      0
 fpsw    dw      0
 endif
-
-FPU_STATE       STRUC
-        CONTROL_WORD    DW      ?
-        reserved_1      DW      ?
-        STATUS_WORD     DD      ?
-        TAG_WORD        DW      ?
-        reserved_3      DW      ?
-        IP_OFFSET       DD      ?
-        CS_SLCT         DW      ?
-        OPCODE          DW      ?
-        DATA_OFFSET     DD      ?
-        OPERAND_SLCT    DW      ?
-        reserved_4      DW      ?
-FPU_STATE       ENDS
-
-ENV_SIZE        EQU     28
-
 
 DATA  ENDS
 
@@ -307,12 +292,12 @@ do_not_de_scale:
         fld     tbyte ptr[esp + MAIN_DENOM_SAVE]
         fxch
         and     eax, 04300h             ; restore saved Q0, Q1, Q2
-        sub     esp, ENV_SIZE
+        sub     esp, ENV387_SIZE
         fnstenv [esp]
-        and     [esp].STATUS_WORD, 0bcffh
-        or      [esp].STATUS_WORD, eax
+        and     dword ptr [esp].ENV387_STATUS_WORD, 0bcffh
+        or      dword ptr [esp].ENV387_STATUS_WORD, eax
         fldenv  [esp]
-        add     esp, ENV_SIZE
+        add     esp, ENV387_SIZE
 rem_exit:
         pop     ecx
         pop     ebx
@@ -657,12 +642,12 @@ do_not_de_scale1:
         fld     tbyte ptr[esp + MAIN_DENOM_SAVE]
         fxch
         and     eax, 04300h             ; restore saved Q0, Q1, Q2
-        sub     esp, ENV_SIZE
+        sub     esp, ENV387_SIZE
         fnstenv [esp]
-        and     [esp].STATUS_WORD, 0bcffh
-        or      [esp].STATUS_WORD, eax
+        and     dword ptr [esp].ENV387_STATUS_WORD, 0bcffh
+        or      dword ptr [esp].ENV387_STATUS_WORD, eax
         fldenv  [esp]
-        add     esp, ENV_SIZE
+        add     esp, ENV387_SIZE
 rem1_exit:
         pop     ecx
         pop     ebx

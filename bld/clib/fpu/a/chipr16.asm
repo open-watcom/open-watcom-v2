@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -45,6 +46,7 @@
 ;
 ;
 include mdef.inc
+include x87env.inc
 
         .386
         .387
@@ -110,19 +112,6 @@ ifdef   DEBUG
 _fpcw   dw      0
 _fpsw   dw      0
 endif
-
-FPU_STATE       STRUC
-        CONTROL_WORD    DW      ?
-        STATUS_WORD     DW      ?
-        TAG_WORD        DW      ?
-        IP_OFFSET       DW      ?
-        CS_SLCT         DW      ?
-        OPERAND_OFF     DW      ?
-        OPERAND_SLCT    DW      ?
-FPU_STATE       ENDS
-
-ENV_SIZE        EQU     14
-
 
         assume cs:_TEXT, ds:nothing, es:nothing, ss:nothing
 
@@ -291,13 +280,13 @@ do_not_de_scale:
         fld     tbyte ptr[bp + MAIN_DENOM_SAVE]
         fxch
         and     ax, 04300h              ; restore saved Q0, Q1, Q2
-        sub     sp, ENV_SIZE
+        sub     sp, ENV87_SIZE
         mov     bp, sp
         fnstenv [bp]
-        and     [bp].STATUS_WORD, 0bcffh
-        or      [bp].STATUS_WORD, ax
+        and     [bp].ENV87_STATUS_WORD, 0bcffh
+        or      [bp].ENV87_STATUS_WORD, ax
         fldenv  [bp]
-        add     sp, ENV_SIZE
+        add     sp, ENV87_SIZE
 rem_exit:
         pop     bp
         pop     cx
@@ -665,13 +654,13 @@ do_not_de_scale1:
         fld     tbyte ptr[bp + MAIN_DENOM_SAVE]
         fxch
         and     ax, 04300h              ; restore saved Q0, Q1, Q2
-        sub     sp, ENV_SIZE
+        sub     sp, ENV87_SIZE
         mov     bp, sp
         fnstenv [bp]
-        and     [bp].STATUS_WORD, 0bcffh
-        or      [bp].STATUS_WORD, ax
+        and     [bp].ENV87_STATUS_WORD, 0bcffh
+        or      [bp].ENV87_STATUS_WORD, ax
         fldenv  [bp]
-        add     sp, ENV_SIZE
+        add     sp, ENV87_SIZE
 rem1_exit:
         pop     bp
         pop     cx

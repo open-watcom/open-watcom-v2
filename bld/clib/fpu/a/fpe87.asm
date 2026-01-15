@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,10 +37,10 @@
 include struct.inc
 include mdef.inc
 include stword.inc
-include env87.inc
 include fstatus.inc
 include fpeint.inc
 include int21.inc
+include x87env.inc
 
 _emu_init_start segment word public 'EMU'
 _emu_init_start ends
@@ -153,7 +153,7 @@ endif
         xdefp   __FPEHandler
 __FPEHandler proc far
         push    BP                      ; allocate room on stack for 80x87
-        sub     SP,ENV_SIZE             ; ... environment information
+        sub     SP,ENV87_SIZE           ; ... environment information
         mov     BP,offset DGROUP:_emu_init_end   ; see if we have an emulator
         cmp     BP,offset DGROUP:_emu_init_start ; ...
         mov     BP,SP                   ; point to buffer for 80x87 environment
@@ -164,10 +164,10 @@ __FPEHandler proc far
         _endif                          ; endif
         fwait                           ; wait for 80x87
 ifndef  __OS2__
-        test    word ptr ENV_SW[BP],ST_EF_ES
+        test    [BP].ENV87_STATUS_WORD,ST_EF_ES
                                         ; check if 80x87 interrupted
         _if     e                       ; if interrupt not caused by 80x87
-          add   SP,ENV_SIZE             ; - restore stack
+          add   SP,ENV87_SIZE           ; - restore stack
           pop   BP                      ; - ...
           push  CS:Save87+2             ; - invoke old interrupt handler
           push  CS:Save87               ; - ...
@@ -189,13 +189,13 @@ ifndef  __OS2__
 endif
         mov     AX,seg DGROUP           ; get data segment
         mov     DS,AX                   ; ...
-        mov     DX,ENV_CW[BP]           ; get control word
+        mov     DX,[BP].ENV87_CONTROL_WORD ; get control word
         not     DX                      ; flip bits to get mask
         mov     DH,0FFh                 ; want to keep high bits
 ifdef __OS2__
-        mov     CX,ENV_SIZE+2[BP]       ; get status word that OS/2 pushed
-        mov     ES,ENV_IP+2[BP]         ; get instruction pointer
-        mov     DI,ENV_IP+0[BP]         ; ...
+        mov     CX,[BP + ENV87_SIZE].ENV87_STATUS_WORD ; get status word that OS/2 pushed
+        mov     ES,[BP].ENV87_CS_SLCT   ; get instruction pointer
+        mov     DI,[BP].ENV87_IP_OFFSET ; ...
         _loop                           ; loop (skip over prefix bytes)
            mov    BX,ES:[DI]            ; - get opcode
            and    BL,0F8h               ; - see if 8087 opcode
@@ -205,14 +205,14 @@ ifdef __OS2__
         _endloop                        ; endloop
         mov     BX,ES:[DI]              ; get opcode
 else
-        mov     CX,ENV_SW[BP]           ; get status word from fstenv
-        mov     BX,ENV_IP+2[BP]         ; get op code
-        and     BH,7                    ; ...
-        or      BH,0D8h                 ; ...
+        mov     CX,[BP].ENV87_STATUS_WORD ; get status word from fstenv
+        mov     BX,[BP].ENV87_CS_SLCT   ; get opcode/code segment value
+        and     BH,7                    ; low byte contains second byte of opcode
+        or      BH,0D8h                 ; decode high byte low 3 bits to FPU opcode
 endif
         and     DX,CX                   ; get status word
-        mov     ES,ENV_OP+2[BP]         ; get pointer to operand
-        mov     DI,ENV_OP[BP]           ; ...
+        mov     ES,[BP].ENV87_OPERAND_SLCT ; get pointer to operand
+        mov     DI,[BP].ENV87_OPERAND_OFFSET ; ...
         mov     CX,FPE_OK               ; assume unrecognizeable error
         _guess                          ; guess precision exception
           test  DL,ST_EF_PR             ; - check for precision exception
@@ -298,8 +298,8 @@ endif
         fclex                           ; clear exceptions that may have
                                         ; occurred as a result of handling the
                                         ; exception
-        and     word ptr ENV_CW[BP],0FF72h
-        fldcw   word ptr ENV_CW[BP]     ; enable interrupts
+        and     [BP].ENV87_CONTROL_WORD,0FF72h
+        fldcw   [BP].ENV87_CONTROL_WORD     ; enable interrupts
         pop     ES                      ; restore registers
         pop     DS                      ; ...
         pop     DI                      ; ...
@@ -309,7 +309,7 @@ endif
         pop     BX                      ; ...
         pop     AX                      ; ...
         fwait                           ; make sure 80x87 is ready
-        add     SP,ENV_SIZE             ; clean up stack
+        add     SP,ENV87_SIZE             ; clean up stack
         pop     BP                      ; ...
 ifdef __OS2__
         add     SP,2                    ; OS/2 stored the FP status word on stack!
@@ -363,7 +363,7 @@ InvalidOp proc near
           and   DX,0130h                ; - check for fdiv/fidiv instruction
           cmp   DX,0030h                ; - ...
           _quif ne                      ; - quit if it's not that instruction
-          mov   DX,ENV_TW[BP]           ; - get tag word
+          mov   DX,[BP].ENV87_TAG_WORD  ; - get tag word
           mov   CL,AH                   ; - get stack pointer
           and   CL,38h                  ; - ...
           shr   CL,1                    ; - ...
@@ -492,7 +492,7 @@ endproc KOOverFlow
 
 GetInf  proc    near
         ftst                    ; get sign of result
-        fstsw word ptr ENV_OP[BP]
+        fstsw [BP].ENV87_OPERAND_OFFSET
         fstp  ST(0)             ; pop argument off stack (does fwait)
         test  BX,0400h          ; check if single or double
         _if   ne                ; if double
@@ -500,7 +500,7 @@ GetInf  proc    near
         _else                   ; else
           fld dword ptr F4Inf   ; - load single precision infinity
         _endif                  ; endif
-        test  word ptr ENV_OP[BP],ST_C0
+        test  word ptr [BP].ENV87_OPERAND_OFFSET,ST_C0
         _if   ne                ; if argument is negative
           fchs                  ; - return negative infinity
         _endif                  ; endif
