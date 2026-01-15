@@ -48,7 +48,7 @@
 
 #define U64isZeroPP(a)      U64isZero((a).u.uval)
 #define U64isNonZeroPP(a)   U64isNonZero((a).u.uval)
-#define U64isEqPP(a)        U64isEq((a).u.uval)
+#define U64isEqPP(a,b)      U64isEq((a).u.uval,(b).u.uval)
 
 #define U64LowPP(a)         U64Low((a).u.uval)
 #define U64HighPP(a)        U64High((a).u.uval)
