@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,7 +309,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             EnumTable[esym->hash] = esym;
             if( CurToken == T_RIGHT_BRACE )
                 break;
-            U64IncDec( &n, 1 );
+            U64AddI32( &n, 1 );
             MustRecog( T_COMMA );
             if( !CompFlags.extensions_enabled
               && ( CompVars.cstd < STD_C99 )

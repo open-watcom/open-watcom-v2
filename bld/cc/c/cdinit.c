@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -645,7 +645,7 @@ static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
      */
     Set64Val1p( mask );
     U64ShiftL( &mask, width, &mask );
-    U64IncDec( &mask, -1 );
+    U64AddI32( &mask, -1 );
     U64ShiftL( &mask, start, &mask );
     U64ResetBitsEq( *val64, mask );
 }

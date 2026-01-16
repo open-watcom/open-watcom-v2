@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -755,7 +755,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
      */
     Set64Val1p( max );
     U64ShiftL( &max, width, &max );
-    U64IncDec( &max, -1 );
+    U64AddI32( &max, -1 );
     /*
      * if( val > max )
      */
@@ -765,7 +765,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
          */
         U64ShiftR( &max, 1, &tmp );
         U64OrEq( tmp, *val );
-        U64IncDec( &tmp, 1 );
+        U64AddI32( &tmp, 1 );
         if( U64isNonZero( tmp ) ) {
             overflow = true;
         }

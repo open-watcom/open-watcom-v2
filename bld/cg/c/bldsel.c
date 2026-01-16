@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ static  select_list *NewCase( const signed_64 *lo, const signed_64 *hi, label_ha
     list->low = *lo;
     list->high = *hi;
     U64Sub( hi, lo, &list->count );
-    U64IncDec( &list->count, 1 );
+    U64AddI32( &list->count, 1 );
     list->label = label;
     list->next = NULL;
     return( list );
@@ -171,7 +171,7 @@ static  void    MergeListEntries( sel_handle s_node )
 
     for( list = s_node->list, next = list->next; next != NULL; next = list->next ) {
         tmp = list->high;
-        U64IncDec( &tmp, 1 );
+        U64AddI32( &tmp, 1 );
         if( U64Eq( tmp, next->low ) && ( list->label == next->label ) ) {
             /*
              * add/merge second range to first range
@@ -201,7 +201,7 @@ static cost_val DistinctIfCost( sel_handle s_node )
     entries = 1;
     for( list = s_node->list, next = list->next; next != NULL; next = next->next ) {
         tmp = list->high;
-        U64IncDec( &tmp, 1 );
+        U64AddI32( &tmp, 1 );
         if( !U64Eq( tmp, next->low ) || ( list->label != next->label ) ) {
             ++entries;
             list = next;
@@ -486,7 +486,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
          */
         tmp = *hibound;
         if( have_hibound && U64Eq( tmp, mid_list->low ) )
-            U64IncDec( &tmp, -1 );
+            U64AddI32( &tmp, -1 );
         DoBinarySearch( node, list, tipe, lo, mid, other,
                         lobound, &tmp, have_lobound, have_hibound );
         return;
@@ -512,7 +512,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
     }
     if( mid < hi ) {
         tmp = mid_list->high;
-        U64IncDec( &tmp, 1 );
+        U64AddI32( &tmp, 1 );
         DoBinarySearch( node, list, tipe, mid + 1, hi, other,
                         &tmp, hibound, true, have_hibound );
     } else if( other != NULL ) {
@@ -521,7 +521,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
     BGControl( O_LABEL, NULL, lt );
     if( lo < mid ) {
         tmp = mid_list->low;
-        U64IncDec( &tmp, -1 );
+        U64AddI32( &tmp, -1 );
         DoBinarySearch( node, list, tipe, lo, mid - 1, other,
                         lobound, &tmp, have_lobound, true );
     } else if( other != NULL ) {

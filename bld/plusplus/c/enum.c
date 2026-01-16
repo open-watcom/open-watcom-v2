@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,7 +284,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         // value is not signed negative (to avoid sign extension later on)
         sym->flags |= SYMF_ENUM_UINT;
     }
-    U64IncDec( &edata->next_value, 1 );
+    U64AddI32( &edata->next_value, 1 );
     // what about wrap around ? to zero?
 }
 

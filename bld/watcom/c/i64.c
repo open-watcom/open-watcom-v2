@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
     res->u._32[L] = new_value;
 }
 
-void U64IncDec( unsigned_64 *a, signed_32 i )
+void U64AddI32( unsigned_64 *a, signed_32 i )
 {
     unsigned_32 new_value;
 

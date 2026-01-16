@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -793,7 +793,7 @@ static void AddCaseLabel( signed_64 value )
     converted_value = value;
 #endif
     old_value = converted_value;
-    U64IncDec( &old_value, 1 ); /* make old_value different */
+    U64AddI32( &old_value, 1 ); /* make old_value different */
     for( ce = SwitchStack->case_list; ce != NULL; ce = ce->next_case ) {
         old_value = ce->value;
         if( I64Cmp( &old_value, &converted_value ) >= 0 )

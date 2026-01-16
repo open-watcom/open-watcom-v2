@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1363,7 +1363,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
                     U64ShiftL( &Constant64, 8, &Constant64 );
-                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
+                    U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                 }
             } else {
@@ -1382,7 +1382,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
                     U64ShiftL( &Constant64, 8, &Constant64 );
-                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
+                    U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                     Buffer[TokenLen++] = CurrChar;
                     NextChar();
@@ -1391,7 +1391,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
                     U64ShiftL( &Constant64, 8, &Constant64 );
-                    U64IncDec( &Constant64, ((c & 0xFF00) >> 8) );
+                    U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
 #if _CPU == 370
                 } else {
@@ -1402,7 +1402,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             ++i;
             /* value = (value << 8) + c; */
             U64ShiftL( &Constant64, 8, &Constant64 );
-            U64IncDec( &Constant64, c );
+            U64AddI32( &Constant64, c );
             /*
              * handle case where user wants a \ but doesn't escape it
              */
@@ -1444,7 +1444,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
              */
             if( U64CmpU32( Constant64, 127 ) > 0
               && U64CmpU32( Constant64, 256 ) < 0 ) {
-                U64IncDec( &Constant64, -256 );
+                U64AddI32( &Constant64, -256 );
             }
         } else {
             ConstType = TYP_UCHAR;

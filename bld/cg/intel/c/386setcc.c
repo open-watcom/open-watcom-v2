@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +135,7 @@ static  bool    FindFlowOut( block *blk ) {
     Set64Val1m( neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
     if( U64Eq( diff, neg_one ) ) {
-        U64IncDec( &false_cons, -1 );
+        U64AddI32( &false_cons, -1 );
         reverse = true;
     } else if( U64Eq( diff, one ) ) {
         reverse = false;
