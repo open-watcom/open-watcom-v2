@@ -39,26 +39,6 @@
 extern "C" {
 #endif
 
-void U64Neg( const unsigned_64 *a, unsigned_64 *res );
-void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
-void U64Sub( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
-void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
-
-#define U64NegEq(a)     U64Neg(a,a)
-#define U64AddEq(a,b)   U64Add(a,b,a)
-#define U64SubEq(a,b)   U64Sub(a,b,a)
-#define U64MulEq(a,b)   U64Mul(a,b,a)
-
-void U64Div( const unsigned_64 *a, const unsigned_64 *b,
-                unsigned_64 *div, unsigned_64 *rem );
-void I64Div( const signed_64 *a, const signed_64 *b,
-                signed_64 *div,    signed_64 *rem );
-
-void U64IncDec( unsigned_64 *a, signed_32 i );
-
-int U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
-int I64Cmp( const signed_64 *a, const signed_64 *b );
-
 #define U64Byte( a, b )     ((a).u._8[(b)])
 #define U64Word( a, b )     ((a).u._16[(b)])
 
@@ -93,11 +73,6 @@ int I64Cmp( const signed_64 *a, const signed_64 *b );
 #define U64Eq( a, b )       ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
 #define U64isEq( a, b )     ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
 
-void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
-void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
-void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
-void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
-
 #define U64And( a, b, c )   \
         { (a).u._32[0] = (b).u._32[0] & (c).u._32[0]; \
           (a).u._32[1] = (b).u._32[1] & (c).u._32[1]; }
@@ -116,12 +91,6 @@ void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 #define U64XorEq( a, b )    \
         { (a).u._32[0] ^= (b).u._32[0]; \
           (a).u._32[1] ^= (b).u._32[1]; }
-#define U64ResetBits( a, b, c ) \
-        { (a).u._32[0] = (b).u._32[0] & ~(c).u._32[0]; \
-          (a).u._32[0] = (b).u._32[1] & ~(c).u._32[1]; }
-#define U64ResetBitsEq( a, b )  \
-        { (a).u._32[0] &= ~(b).u._32[0]; \
-          (a).u._32[1] &= ~(b).u._32[1]; }
 #define U64Not( a, b )      \
         { (a).u._32[0] = ~(b).u._32[0]; \
           (a).u._32[1] = ~(b).u._32[1]; }
@@ -129,77 +98,12 @@ void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
         { (a).u._32[0] = ~(a).u._32[0]; \
           (a).u._32[1] = ~(a).u._32[1]; }
 
-int  U64Cnv10( unsigned_64 *res, char c );
-int  U64Cnv8( unsigned_64 *res, char c );
-int  U64Cnv2( unsigned_64 *res, char c );
-int  U64Cnv16( unsigned_64 *res, char c );
-#if defined(__386__) && defined( __WATCOMC__ )
-#pragma aux U64Cnv10 \
-    __parm __caller [__esi] [__eax] = \
-        "mov  ecx,4[esi]" \
-        "xor  edx,edx" \
-        "mov  ebx,[esi]" \
-        "shld edx,ecx,3" \
-        "shld ecx,ebx,3" \
-        "shl  ebx,3" \
-        "shl  dword ptr [esi],1" \
-        "rcl  dword ptr 4[esi],1" \
-        "rcl  edx,1" \
-        "add  ebx,eax" \
-        "adc  ecx,0" \
-        "adc  edx,0" \
-        "add  [esi],ebx" \
-        "adc  4[esi],ecx" \
-        "adc  edx,0" \
-    __value [__edx] \
-    __modify __exact [__ebx __ecx __edx]
-
-#pragma aux U64Cnv8 \
-    __parm __caller [__esi] [__eax] = \
-        "mov  ecx,4[esi]" \
-        "xor  edx,edx" \
-        "mov  ebx,[esi]" \
-        "shld edx,ecx,3" \
-        "shld ecx,ebx,3" \
-        "shl  ebx,3" \
-        "mov  4[esi],ecx" \
-        "or   ebx,eax" \
-        "mov  [esi],ebx" \
-    __value [__edx] \
-    __modify __exact [__ebx __ecx __edx]
-
-
-#pragma aux U64Cnv2 \
-    __parm __caller [__esi] [__eax] = \
-        "mov  ecx,4[esi]" \
-        "xor  edx,edx" \
-        "mov  ebx,[esi]" \
-        "shld edx,ecx,1" \
-        "shld ecx,ebx,1" \
-        "shl  ebx,1" \
-        "mov  4[esi],ecx" \
-        "or   ebx,eax" \
-        "mov  [esi],ebx" \
-    __value [__edx] \
-    __modify __exact [__ebx __ecx __edx]
-
-#pragma aux U64Cnv16 \
-    __parm __caller [__esi] [__eax] = \
-        "mov  ecx,4[esi]" \
-        "xor  edx,edx" \
-        "mov  ebx,[esi]" \
-        "shld edx,ecx,4" \
-        "shld ecx,ebx,4" \
-        "shl  ebx,4" \
-        "mov  4[esi],ecx" \
-        "or   ebx,eax" \
-        "mov  [esi],ebx" \
-    __value [__edx] \
-    __modify __exact [__ebx __ecx __edx]
-
-#else
-#define _U64_C_ROUTINES
-#endif
+#define U64ResetBits( a, b, c ) \
+        { (a).u._32[0] = (b).u._32[0] & ~(c).u._32[0]; \
+          (a).u._32[0] = (b).u._32[1] & ~(c).u._32[1]; }
+#define U64ResetBitsEq( a, b )  \
+        { (a).u._32[0] &= ~(b).u._32[0]; \
+          (a).u._32[1] &= ~(b).u._32[1]; }
 
 /* The FetchTrunc macros grab an 8/16/32-bit value from memory assuming
  * that the value is stored as a 64-bit integer. This is required for
@@ -256,6 +160,96 @@ int  U64Cnv16( unsigned_64 *res, char c );
 // is the I64 a I32?
 #define I64IsI32( x )           (((x).u._32[I64HI32]==0)&&((signed_32)(x).u._32[I64LO32]>=0) \
                                 ||((x).u._32[I64HI32]==-1)&&((signed_32)(x).u._32[I64LO32]<0))
+
+#define U64NegEq(a)         U64Neg(a,a)
+#define U64AddEq(a,b)       U64Add(a,b,a)
+#define U64SubEq(a,b)       U64Sub(a,b,a)
+#define U64MulEq(a,b)       U64Mul(a,b,a)
+
+extern int  U64Cnv10( unsigned_64 *res, char c );
+extern int  U64Cnv8( unsigned_64 *res, char c );
+extern int  U64Cnv2( unsigned_64 *res, char c );
+extern int  U64Cnv16( unsigned_64 *res, char c );
+#if defined(__386__) && defined( __WATCOMC__ )
+#pragma aux U64Cnv10 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,3" \
+        "shld ecx,ebx,3" \
+        "shl  ebx,3" \
+        "shl  dword ptr [esi],1" \
+        "rcl  dword ptr 4[esi],1" \
+        "rcl  edx,1" \
+        "add  ebx,eax" \
+        "adc  ecx,0" \
+        "adc  edx,0" \
+        "add  [esi],ebx" \
+        "adc  4[esi],ecx" \
+        "adc  edx,0" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
+
+#pragma aux U64Cnv8 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,3" \
+        "shld ecx,ebx,3" \
+        "shl  ebx,3" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
+
+#pragma aux U64Cnv2 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,1" \
+        "shld ecx,ebx,1" \
+        "shl  ebx,1" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
+
+#pragma aux U64Cnv16 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,4" \
+        "shld ecx,ebx,4" \
+        "shl  ebx,4" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
+
+#else
+#define _U64_C_ROUTINES
+#endif
+
+extern void U64Neg( const unsigned_64 *a, unsigned_64 *res );
+extern void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
+extern void U64Sub( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
+extern void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
+extern void U64Div( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *div, unsigned_64 *rem );
+extern void I64Div( const signed_64 *a, const signed_64 *b, signed_64 *div, signed_64 *rem );
+extern void U64IncDec( unsigned_64 *a, signed_32 i );
+extern int  U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
+extern int  I64Cmp( const signed_64 *a, const signed_64 *b );
+extern void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
+extern void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
+extern void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
+extern void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 
 #ifdef __cplusplus
 }
