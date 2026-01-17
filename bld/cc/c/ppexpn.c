@@ -40,6 +40,7 @@
 #include "feprotos.h"
 
 
+#define I64isNegPP(a)       I64isNeg((a).u.sval)
 #define U64isZeroPP(a)      U64isZero((a).u.uval)
 #define U64isntZeroPP(a)    U64isntZero((a).u.uval)
 #define U64isEqPP(a,b)      U64isEq((a).u.uval,(b).u.uval)
@@ -48,12 +49,13 @@
 #define U64HighPP(a)        U64High((a).u.uval)
 
 #define Set64ValZeroPP(a)   Set64ValZero((a).u.uval)
+#define Set64Val1mPP(a)     Set64Val1m((a).u.uval)
 #define Set64ValU32PP(a,b)  Set64ValU32((a).u.uval,(b))
 
 #define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
 
 #define U64CmpPP(a,b)       U64Cmp( &((a).u.uval), &((b).u.uval) )
-#define I64CmpPP(a,b)       I64Cmp( &((a).u.uval), &((b).u.uval) )
+#define I64CmpPP(a,b)       I64Cmp( &((a).u.sval), &((b).u.sval) )
 
 #define U64AddEqPP(a,b)     U64AddEq( &((a).u.uval), &((b).u.uval) );
 #define U64SubEqPP(a,b)     U64SubEq( &((a).u.uval), &((b).u.uval) );
@@ -745,17 +747,13 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( U64CmpU32PP( e2, 64 ) > 0 ) {
-                if( e1.no_sign ) {
-                    Set64ValZeroPP( e1 );
+            if( U64CmpU32PP( e2, 64 ) >= 0 ) {
+                if( !e1.no_sign && I64isNegPP( e1 ) ) {
+                    Set64Val1mPP( e1 );
                 } else {
-                    if( (signed int)U64LowPP( e1 ) < 0 ) {
-                        Set64ValU32PP( e1, -1 );
-                    } else {
-                        Set64ValZeroPP( e1 );
-                    }
+                    Set64ValZeroPP( e1 );
                 }
-            } else {
+            } else if( U64isntZeroPP( e2 ) ) {
                 if( e1.no_sign ) {
                     U64ShiftREqPP( e1, U64LowPP( e2 ) );
                 } else {
@@ -764,9 +762,9 @@ static bool CShift( void )
             }
             break;
         case T_LSHIFT:
-            if( U64CmpU32PP( e2, 64 ) > 0 ) {
+            if( U64CmpU32PP( e2, 64 ) >= 0 ) {
                 Set64ValZeroPP( e1 );
-            } else {
+            } else if( U64isntZeroPP( e2 ) ) {
                 U64ShiftLEqPP( e1, U64LowPP( e2 ) );
             }
             break;
