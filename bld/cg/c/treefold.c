@@ -160,9 +160,9 @@ static cmp_result CheckCmpRange( cg_op opcode, int op_type, float_handle cf )
     }
     /* Determine how to compare */
     val = CFCnvF64( cf );
-    if( U64Eq( val, low ) ) {
+    if( U64isEq( val, low ) ) {
         range = CASE_LOW_EQ;
-    } else if( U64Eq( val, high ) ) {
+    } else if( U64isEq( val, high ) ) {
         range = CASE_HIGH_EQ;
     } else if( NumBits( op_type ) < MAXSIZE ) { /* Can't be outside range */
         if( I64Cmp( &val, &low ) < 0 ) {      /* Don't need unsigned compare */

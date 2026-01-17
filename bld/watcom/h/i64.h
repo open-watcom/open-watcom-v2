@@ -64,14 +64,11 @@ extern "C" {
 #define U64CmpU32( a, b )   (((a).u._32[I64HI32])?1:(((a).u._32[I64LO32]<(b))?-1:((a).u._32[I64LO32]!=(b))))
 #define I64CmpU32( a, b )   (((a).u.sign.v)?-1:U64CmpU32((a),(b)))
 
-#define U64BTest( a )       ((a).u._32[0]|(a).u._32[1])
-#define U64isZero( a )      (U64BTest((a))==0)
-#define U64isNonZero( a )   (U64BTest((a))!=0)
-#define U64Test( a )        (U64BTest((a))!=0)
-#define I64Test( a )        (((a).u.sign.v)?-1:U64BTest((a))!=0)
-
-#define U64Eq( a, b )       ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
+#define I64isNeg( a )       ((a).u.sign.v!=0)
+#define U64isZero( a )      (((a).u._32[0]|(a).u._32[1])==0)
+#define U64isntZero( a )    (((a).u._32[0]|(a).u._32[1])!=0)
 #define U64isEq( a, b )     ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
+#define U64isntEq( a, b )   ((a).u._32[0]!=(b).u._32[0]||(a).u._32[1]!=(b).u._32[1])
 
 #define U64And( a, b, c )   \
         { (a).u._32[0] = (b).u._32[0] & (c).u._32[0]; \

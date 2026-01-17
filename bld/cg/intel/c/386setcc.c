@@ -134,10 +134,10 @@ static  bool    FindFlowOut( block *blk ) {
     Set64Val1p( one );
     Set64Val1m( neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
-    if( U64Eq( diff, neg_one ) ) {
+    if( U64isEq( diff, neg_one ) ) {
         U64AddI32( &false_cons, -1 );
         reverse = true;
-    } else if( U64Eq( diff, one ) ) {
+    } else if( U64isEq( diff, one ) ) {
         reverse = false;
     } else {
         return( false );
@@ -160,7 +160,7 @@ static  bool    FindFlowOut( block *blk ) {
     SuffixIns( ins, ins1 );
     ins = ins1;
 
-    if( U64isNonZero( false_cons ) ) {
+    if( U64isntZero( false_cons ) ) {
         konst = AllocS64Const( U64Low( false_cons ), U64High( false_cons ) );
         ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {

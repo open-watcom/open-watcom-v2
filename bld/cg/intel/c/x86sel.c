@@ -279,7 +279,7 @@ static void GenValuesBackward( sel_handle s_node, const signed_64 *to_sub, cg_ty
     unsigned_64         tmp;
 
     list = s_node->list;
-    while( !U64Eq( list->high, s_node->upper ) ) {
+    while( U64isntEq( list->high, s_node->upper ) ) {
         list = list->next;
     }
     curr = s_node->upper;

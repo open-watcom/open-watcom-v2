@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -627,7 +627,7 @@ static bool templateArgSame( PTREE left, PTREE right )
     } else if( ( left->op == PT_INT_CONSTANT )
             && ( right->op == PT_INT_CONSTANT ) ) {
         // integer constant
-        return( U64Eq( left->u.int64_constant, right->u.int64_constant ) );
+        return( U64isEq( left->u.int64_constant, right->u.int64_constant ) );
     } else if( ( left->op == PT_SYMBOL ) && ( right->op == PT_SYMBOL ) ) {
         // unbound constant
         return TypesIdentical( left->u.symcg.symbol->sym_type,
@@ -2099,7 +2099,7 @@ static bool sameConstantInt( SYMBOL s1, SYMBOL s2 )
 
     SymConstantValue( s1, &con1 );
     SymConstantValue( s2, &con2 );
-    return( U64Eq( con1.value, con2.value ) );
+    return( U64isEq( con1.value, con2.value ) );
 }
 
 bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
@@ -2131,7 +2131,7 @@ static bool parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
         switch( temp_parm->op ) {
         case PT_INT_CONSTANT:
             SymConstantValue( temp_arg, &con );
-            if( U64Eq( con.value, temp_parm->u.int64_constant ) ) {
+            if( U64isEq( con.value, temp_parm->u.int64_constant ) ) {
                 return( false );
             }
             break;

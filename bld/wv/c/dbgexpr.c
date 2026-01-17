@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -571,7 +571,7 @@ int TstEQ( int true_value )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        temp = U64Eq( left->v.uint, rite->v.uint );
+        temp = U64isEq( left->v.uint, rite->v.uint );
         break;
     case TK_ADDRESS:
     case TK_POINTER:

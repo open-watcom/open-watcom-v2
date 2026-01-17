@@ -172,7 +172,7 @@ static  void    MergeListEntries( sel_handle s_node )
     for( list = s_node->list, next = list->next; next != NULL; next = list->next ) {
         tmp = list->high;
         U64AddI32( &tmp, 1 );
-        if( U64Eq( tmp, next->low ) && ( list->label == next->label ) ) {
+        if( U64isEq( tmp, next->low ) && ( list->label == next->label ) ) {
             /*
              * add/merge second range to first range
              */
@@ -202,7 +202,7 @@ static cost_val DistinctIfCost( sel_handle s_node )
     for( list = s_node->list, next = list->next; next != NULL; next = next->next ) {
         tmp = list->high;
         U64AddI32( &tmp, 1 );
-        if( !U64Eq( tmp, next->low ) || ( list->label != next->label ) ) {
+        if( U64isntEq( tmp, next->low ) || ( list->label != next->label ) ) {
             ++entries;
             list = next;
         }
@@ -388,7 +388,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
     an              lt;
     unsigned_64     tmp;
 
-    if( U64isNonZero( s_node->lower ) ) {
+    if( U64isntZero( s_node->lower ) ) {
         node = BGBinary( O_MINUS, node,
                           BGIntegerSel( &s_node->lower, tipe ), tipe , true );
     }
@@ -431,11 +431,11 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
         mid_list = mid_list->next;
     }
     if( lo == hi ) {
-        if( have_lobound && U64Eq( *lobound, mid_list->low )
-          && have_hibound && U64Eq( *hibound, mid_list->high ) ) {
+        if( have_lobound && U64isEq( *lobound, mid_list->low )
+          && have_hibound && U64isEq( *hibound, mid_list->high ) ) {
              BGControl( O_GOTO, NULL, mid_list->label );
              return;
-        } else if( U64Eq( mid_list->low, mid_list->high ) ) {
+        } else if( U64isEq( mid_list->low, mid_list->high ) ) {
             cmp = BGCompare( O_EQ, BGDuplicate( node ),
                              BGIntegerSel( &mid_list->low, tipe ), NULL, tipe );
             BGControl( O_IF_TRUE, cmp, mid_list->label );
@@ -443,7 +443,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
             return;
         }
     }
-    if( hi == mid + 1 && U64Eq( mid_list->next->low, mid_list->next->high ) ) {
+    if( hi == mid + 1 && U64isEq( mid_list->next->low, mid_list->next->high ) ) {
         /*
          * a linear sequence for three different non-sequential cases where
          * c1<c2<c3, looks like:
@@ -485,7 +485,7 @@ static void DoBinarySearch( an node, const select_list *list, const type_def *ti
          * unconditional O_GOTO to a specific case label!
          */
         tmp = *hibound;
-        if( have_hibound && U64Eq( tmp, mid_list->low ) )
+        if( have_hibound && U64isEq( tmp, mid_list->low ) )
             U64AddI32( &tmp, -1 );
         DoBinarySearch( node, list, tipe, lo, mid, other,
                         lobound, &tmp, have_lobound, have_hibound );
@@ -583,7 +583,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     }
     kind = 0;
     node = Arithmetic( node, TypeInteger );
-    if( U64isNonZero( s_node->num_cases ) ) {
+    if( U64isntZero( s_node->num_cases ) ) {
         best = MAX_COST;
         /*
          * sort signed

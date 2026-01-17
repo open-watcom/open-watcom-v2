@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -470,7 +470,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             // Certain funky toolchains produce two reloc sections for each
             // section containing relocations (both .rel and .rela) and one of
             // them is empty. We have to ignore the empty one!
-            if( U64isNonZero( elf_sec_hnd->size ) ) {
+            if( U64isntZero( elf_sec_hnd->size ) ) {
                 associated_index[i] = sh_info - 1;
                 associated2_index[i] = sh_link - 1;
             } else {

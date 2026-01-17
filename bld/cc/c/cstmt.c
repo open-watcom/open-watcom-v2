@@ -800,7 +800,7 @@ static void AddCaseLabel( signed_64 value )
             break;
         prev_ce = ce;
     }
-    if( U64Eq( converted_value, old_value ) ) {
+    if( U64isEq( converted_value, old_value ) ) {
         /*
          * duplicate case value found
          */

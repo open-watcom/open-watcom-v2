@@ -766,7 +766,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
         U64ShiftR( &max, 1, &tmp );
         U64OrEq( tmp, *val );
         U64AddI32( &tmp, 1 );
-        if( U64isNonZero( tmp ) ) {
+        if( U64isntZero( tmp ) ) {
             overflow = true;
         }
     }

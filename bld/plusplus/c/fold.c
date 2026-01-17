@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -895,7 +895,7 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
         U64Mul( &v1, &v2, &left->u.int64_constant );
-        if( U64Eq( test, left->u.int64_constant ) == 0 ) {
+        if( U64isntEq( test, left->u.int64_constant ) ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
         break;
@@ -941,10 +941,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= I64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, U64isNonZero( v1 ) && U64isNonZero( v2 ) );
+        left = makeBooleanConst( left, U64isntZero( v1 ) && U64isntZero( v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, U64isNonZero( v1) || U64isNonZero( v2 ) );
+        left = makeBooleanConst( left, U64isntZero( v1) || U64isntZero( v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;
@@ -994,7 +994,7 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
         U64Mul( &v1, &v2, &left->u.int64_constant );
-        if( U64Eq( test, left->u.int64_constant ) == 0 ) {
+        if( U64isntEq( test, left->u.int64_constant ) ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
         break;
@@ -1040,10 +1040,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= U64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, U64isNonZero( v1 ) && U64isNonZero( v2 ) );
+        left = makeBooleanConst( left, U64isntZero( v1 ) && U64isntZero( v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, U64isNonZero( v1) || U64isNonZero( v2 ) );
+        left = makeBooleanConst( left, U64isntZero( v1) || U64isntZero( v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;

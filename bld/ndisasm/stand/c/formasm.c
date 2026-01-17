@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -500,7 +500,7 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     case 8:
         U64Low( value ) = *(unsigned_32 *)data;
         U64High( value ) = *((unsigned_32 *)data + 1);
-        if( U64isNonZero( value ) ) {
+        if( U64isntZero( value ) ) {
             BufferConcat( "+0x" );
             if( U64High( value ) != 0 ) {
                 BufferHexU32( 0, U64High( value ) );

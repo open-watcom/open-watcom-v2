@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,13 +174,13 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         U64Or( value, left, right );
         break;
     case OPR_OR_OR:
-        Set64ValU32( value, U64isNonZero( right ) || U64isNonZero( left ) );
+        Set64ValU32( value, U64isntZero( right ) || U64isntZero( left ) );
         break;
     case OPR_AND:
         U64And( value, left, right );
         break;
     case OPR_AND_AND:
-        Set64ValU32( value, U64isNonZero( right ) && U64isNonZero( left ) );
+        Set64ValU32( value, U64isntZero( right ) && U64isntZero( left ) );
         break;
     case OPR_XOR:
         U64Xor( value, left, right );
@@ -1209,7 +1209,7 @@ static void CheckOpndValues( TREEPTR tree )
                 int64       right;
 
                 right = LongValue64( opnd );
-                if( I64Test( right ) < 0 ) {
+                if( I64isNeg( right ) ) {
                     shift_negative = true;
                 } else {
                     if( U64CmpU32( right, max_shift ) >= 0 ) {

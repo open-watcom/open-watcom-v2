@@ -41,7 +41,7 @@
 
 
 #define U64isZeroPP(a)      U64isZero((a).u.uval)
-#define U64isNonZeroPP(a)   U64isNonZero((a).u.uval)
+#define U64isntZeroPP(a)    U64isntZero((a).u.uval)
 #define U64isEqPP(a,b)      U64isEq((a).u.uval,(b).u.uval)
 
 #define U64LowPP(a)         U64Low((a).u.uval)
@@ -522,7 +522,7 @@ static bool CConditional( void )
           && ( e2_info.pos > op1_info.pos ) ) {
             if( PopOperand( &e1, &e1_info )
               && ( e1_info.pos < op1_info.pos ) ) {
-                if( U64isNonZeroPP( e1 ) ) {
+                if( U64isntZeroPP( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
                     e1.u.sval = e3.u.sval;
@@ -582,7 +582,7 @@ static bool CLogicalOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32PP( e1, U64isNonZeroPP( e1 ) || U64isNonZeroPP( e2 ) );
+        Set64ValU32PP( e1, U64isntZeroPP( e1 ) || U64isntZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -601,7 +601,7 @@ static bool CLogicalAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        Set64ValU32PP( e1, U64isNonZeroPP( e1 ) && U64isNonZeroPP( e2 ) );
+        Set64ValU32PP( e1, U64isntZeroPP( e1 ) && U64isntZeroPP( e2 ) );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( false );
@@ -1054,7 +1054,7 @@ bool PpConstExpr( void )
     ppvalue val;
 
     PrecedenceParse( &val );
-    return( U64isNonZeroPP( val ) );
+    return( U64isntZeroPP( val ) );
 }
 
 void InitPPexpn( void )

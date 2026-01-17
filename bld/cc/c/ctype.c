@@ -1038,7 +1038,6 @@ static target_size GetFields( TYPEPTR decl )
     decl_info           info;
     static field_level_stype struct_level = 0;
     const_val           cval;
-    int                 cmp;
 
     struct_level++;
     prev_unqualified_type = TYP_VOID;   /* so it doesn't match 1st time */
@@ -1103,12 +1102,11 @@ static target_size GetFields( TYPEPTR decl )
                 bits_width = bits_total;
                 if( bits_width > TARGET_BITFIELD * CHAR_BIT )
                     bits_width = TARGET_BITFIELD * CHAR_BIT;
-                cmp = I64Test( cval.value );
-                if( cmp == 0
+                if( U64isZero( cval.value )
                   && field != NULL ) {
                     CErr1( ERR_WIDTH_0 );
                     bits_width = 0;
-                } else if( cmp < 0 ) {
+                } else if( I64isNeg( cval.value ) ) {
                     CErr1( ERR_WIDTH_NEGATIVE );
                     bits_width = 0;
                 } else if( U64CmpU32( cval.value, bits_width ) > 0 ) {

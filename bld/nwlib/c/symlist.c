@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
             unsigned_64 val64;
 
             ORLSymbolGetValue( orl_sym_hnd, &val64 );
-            if( U64isNonZero( val64 ) ) {
+            if( U64isntZero( val64 ) ) {
                 AddSym( name, SYM_WEAK, info );
             }
         }
