@@ -754,7 +754,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
      * max = ( 1 << width ) - 1;
      */
     Set64Val1p( max );
-    U64ShiftL( &max, width, &max );
+    U64ShiftLEq( &max, width );
     U64AddI32( &max, -1 );
     /*
      * if( val > max )

@@ -714,9 +714,9 @@ static bool CShift( void )
                 }
             } else {
                 if( e1.no_sign ) {
-                    U64ShiftR( &(e1.u.uval), U64LowPP( e2 ), &e1.u.uval );
+                    U64ShiftREq( &(e1.u.uval), U64LowPP( e2 ) );
                 } else {
-                    I64ShiftR( &(e1.u.sval), U64LowPP( e2 ), &e1.u.sval );
+                    I64ShiftREq( &(e1.u.sval), U64LowPP( e2 ) );
                 }
             }
             break;
@@ -724,7 +724,7 @@ static bool CShift( void )
             if( U64CmpU32PP( e2, 64 ) > 0 ) {
                 Set64ValZeroPP( e1 );
             } else {
-                U64ShiftL( &(e1.u.uval), U64LowPP( e2 ), &e1.u.uval );
+                U64ShiftLEq( &(e1.u.uval), U64LowPP( e2 ) );
             }
             break;
         DbgDefault( "Default in CShift\n" );

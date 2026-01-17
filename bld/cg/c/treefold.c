@@ -151,12 +151,12 @@ static cmp_result CheckCmpRange( cg_op opcode, int op_type, float_handle cf )
     /* Determine type range */
     if( NumSign( op_type ) ) {
         Set64Val( low, 0, 0x80000000 );
-        I64ShiftR( &low, MAXSIZE - NumBits( op_type ), &low );
+        I64ShiftREq( &low, MAXSIZE - NumBits( op_type ) );
         U64Not( high, low );
     } else {
         Set64ValZero( low );
         U64Not( high, low );
-        U64ShiftR( &high, MAXSIZE - NumBits( op_type ), &high );
+        U64ShiftREq( &high, MAXSIZE - NumBits( op_type ) );
     }
     /* Determine how to compare */
     val = CFCnvF64( cf );

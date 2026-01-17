@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -414,11 +414,11 @@ void DoShift( void )
     case TK_CHAR:
     case TK_INTEGER:
         if( shift >= 0 ) {
-            U64ShiftL( &left->v.uint, shift, &left->v.uint );
+            U64ShiftLEq( &left->v.uint, shift );
         } else if( left->ti.modifier == TM_UNSIGNED ) {
-            U64ShiftR( &left->v.uint, -shift, &left->v.uint );
+            U64ShiftREq( &left->v.uint, -shift );
         } else {
-            I64ShiftR( &left->v.sint, -shift, &left->v.sint );
+            I64ShiftREq( &left->v.sint, -shift );
         }
         break;
     default:

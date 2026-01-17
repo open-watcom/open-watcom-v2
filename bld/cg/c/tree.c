@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1702,9 +1702,9 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
 #else
     if( node->u1.b.is_signed ) {
         retv = BGBinary( O_RSHIFT, retv, Int( node->u1.b.start ), tipeu, true );
-        U64ShiftR( &mask, node->u1.b.start, &mask );
+        U64ShiftREq( &mask, node->u1.b.start );
         retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
-        U64ShiftR( &mask, 1, &mask );
+        U64ShiftREq( &mask, 1 );
         U64NotEq( mask );
         if( U64Low( mask ) == 0xffffffff ) { /* a one-bit signed bit field */
             signed_64 one;
@@ -1759,7 +1759,7 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
     } else {
         retv = BGBinary( O_RSHIFT, retv, Int( node->u1.b.start ), node->tipe, true );
         if( !already_masked && ( node->tipe->length * 8 - node->u1.b.start - node->u1.b.len != 0 )) {
-            U64ShiftR( &mask, node->u1.b.start, &mask );
+            U64ShiftREq( &mask, node->u1.b.start );
             retv = BGBinary( O_AND, retv, Int64( mask ), node->tipe, true );
         }
     }

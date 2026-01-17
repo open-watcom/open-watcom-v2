@@ -644,9 +644,9 @@ static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
      * mask = ( 1 << width ) - 1;
      */
     Set64Val1p( mask );
-    U64ShiftL( &mask, width, &mask );
+    U64ShiftLEq( &mask, width );
     U64AddI32( &mask, -1 );
-    U64ShiftL( &mask, start, &mask );
+    U64ShiftLEq( &mask, start );
     U64NotAndEq( *val64, mask );
 }
 
@@ -680,7 +680,7 @@ static void InitBitField( FIELDPTR field )
             if( CheckAssignBits( &bit_value.value, width, true ) ) {
                 CWarn1( ERR_CONSTANT_TOO_BIG );
             }
-            U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
+            U64ShiftLEq( &bit_value.value, typ->u.f.field_start );
             U64OrEq( value64, bit_value.value );
         }
     }

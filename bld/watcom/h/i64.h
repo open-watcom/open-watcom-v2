@@ -67,8 +67,8 @@ extern "C" {
 #define I64isNeg(a)         ((a).u.sign.v!=0)
 #define U64isZero(a)        (((a).u._32[0]|(a).u._32[1])==0)
 #define U64isntZero(a)      (((a).u._32[0]|(a).u._32[1])!=0)
-#define U64isEq(a,b)        ((a).u._32[0]==(b).u._32[0]&&(a).u._32[1]==(b).u._32[1])
-#define U64isntEq(a,b)      ((a).u._32[0]!=(b).u._32[0]||(a).u._32[1]!=(b).u._32[1])
+#define U64isEq(a,b)        (((a).u._32[0]==(b).u._32[0])&&((a).u._32[1]==(b).u._32[1]))
+#define U64isntEq(a,b)      (((a).u._32[0]!=(b).u._32[0])||((a).u._32[1]!=(b).u._32[1]))
 
 #define U64And(r,a,b)   \
         { (r).u._32[0] = (a).u._32[0] & (b).u._32[0]; \
@@ -161,6 +161,11 @@ extern "C" {
 #define U64AddEq(a,b)       U64Add((a),(b),(a))
 #define U64SubEq(a,b)       U64Sub((a),(b),(a))
 #define U64MulEq(a,b)       U64Mul((a),(b),(a))
+
+#define I64ShiftREq(a,b)    I64ShiftR((a),(b),(a))
+#define U64ShiftREq(a,b)    U64ShiftR((a),(b),(a))
+#define U64ShiftLEq(a,b)    U64ShiftL((a),(b),(a))
+#define U64ShiftEq(a,b)     U64Shift((a),(b),(a))
 
 extern int      U64Cnv10( unsigned_64 *res, char c );
 extern int      U64Cnv8( unsigned_64 *res, char c );

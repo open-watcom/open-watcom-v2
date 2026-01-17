@@ -1362,7 +1362,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 if( char_type == TYP_WCHAR ) {
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
-                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64ShiftLEq( &Constant64, 8 );
                     U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                 }
@@ -1381,7 +1381,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
-                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64ShiftLEq( &Constant64, 8 );
                     U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
                     Buffer[TokenLen++] = CurrChar;
@@ -1390,7 +1390,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     c = EncodeWchar( c );
                     ++i;
                     /* value = (value << 8) + ((c & 0xFF00) >> 8); */
-                    U64ShiftL( &Constant64, 8, &Constant64 );
+                    U64ShiftLEq( &Constant64, 8 );
                     U64AddI32( &Constant64, ((c & 0xFF00) >> 8) );
                     c &= 0x00FF;
 #if _CPU == 370
@@ -1401,7 +1401,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             }
             ++i;
             /* value = (value << 8) + c; */
-            U64ShiftL( &Constant64, 8, &Constant64 );
+            U64ShiftLEq( &Constant64, 8 );
             U64AddI32( &Constant64, c );
             /*
              * handle case where user wants a \ but doesn't escape it
