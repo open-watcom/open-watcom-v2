@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -263,7 +263,7 @@ void ClassNum( stack_entry *entry )
     entry->ti.kind = TK_INTEGER;
     entry->flags &= ~SF_FORM_MASK;
     entry->flags |= SF_CONST;
-    if( I64Test( entry->v.sint ) < 0 ) {
+    if( I64isNeg( entry->v.sint ) ) {
         /*
             A bit backwards - if the top bit is on, it won't fit in in
             63 bits.

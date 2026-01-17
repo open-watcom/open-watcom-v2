@@ -185,7 +185,7 @@ static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buf
 
     ptr = &internal[64];
     Set64ValU32( big_radix, radix );
-    while( (len > 0) || U64isNonZero( *value ) ) {
+    while( (len > 0) || U64isntZero( *value ) ) {
         U64Div( value, &big_radix, value, &remainder );
         dig = U32FetchTrunc( remainder );
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
@@ -205,7 +205,7 @@ static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class
     const char  *prefix;
     size_t      prefix_len;
 
-    if( sign_type == NUM_SIGNED && I64Test( num ) < 0 ) {
+    if( sign_type == NUM_SIGNED && I64isNeg( num ) ) {
         *buff = '-';
         ++buff;
         U64NegEq( &num );
@@ -841,7 +841,7 @@ static unsigned ValueToName( char *buff, unsigned len )
         return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
-    while( U64isNonZero( d.value ) ) {
+    while( U64isntZero( d.value ) ) {
         d.found = false;
         DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )
