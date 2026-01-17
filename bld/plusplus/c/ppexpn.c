@@ -71,6 +71,11 @@
 #define U64XorEqPP(a,b)     U64XorEq( (a).u.uval, (b).u.uval );
 #define U64NotEqPP(a)       U64NotEq( (a).u.uval );
 
+#define I64ShiftREqPP(a,b)  I64ShiftREq(&((a).u.sval),(b))
+#define U64ShiftREqPP(a,b)  U64ShiftREq(&((a).u.uval),(b))
+#define U64ShiftLEqPP(a,b)  U64ShiftLEq(&((a).u.uval),(b))
+#define U64ShiftEqPP(a,b)   U64ShiftEq(&((a).u.uval),(b))
+
 #define U64DivPP(a,b,c,d)   U64Div( &((a).u.uval), &((b).u.uval), &((c).u.uval), &((d).u.uval) );
 #define I64DivPP(a,b,c,d)   I64Div( &((a).u.sval), &((b).u.sval), &((c).u.sval), &((d).u.sval) );
 
@@ -714,9 +719,9 @@ static bool CShift( void )
                 }
             } else {
                 if( e1.no_sign ) {
-                    U64ShiftREq( &(e1.u.uval), U64LowPP( e2 ) );
+                    U64ShiftREqPP( e1, U64LowPP( e2 ) );
                 } else {
-                    I64ShiftREq( &(e1.u.sval), U64LowPP( e2 ) );
+                    I64ShiftREqPP( e1, U64LowPP( e2 ) );
                 }
             }
             break;
@@ -724,7 +729,7 @@ static bool CShift( void )
             if( U64CmpU32PP( e2, 64 ) > 0 ) {
                 Set64ValZeroPP( e1 );
             } else {
-                U64ShiftLEq( &(e1.u.uval), U64LowPP( e2 ) );
+                U64ShiftLEqPP( e1, U64LowPP( e2 ) );
             }
             break;
         DbgDefault( "Default in CShift\n" );
