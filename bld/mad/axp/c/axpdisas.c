@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,7 +251,7 @@ static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned conditio
         /* integer */
         if( reg->s64.u.sign.v ) {
             cmp = -1;
-        } else if( U64isNonZero( reg->u64 ) ) {
+        } else if( U64isntZero( reg->u64 ) ) {
             cmp = +1;
         } else {
             cmp = 0;
