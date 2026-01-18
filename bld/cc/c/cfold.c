@@ -414,7 +414,6 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         Set64ValZero( left );
     }
     right = LongValue64( op2 );
-    const_type = tree->u.expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = U64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
@@ -440,6 +439,7 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYP_INT;
         tree->op.u2.long_value = (target_int)tmp;
     } else {
+        const_type = tree->u.expr_type->decl_type;
         value = DoOp64( left, tree->op.opr, right, false );
         if( const_type  == TYP_ULONG64 ) {
             tree->op.u2.long64_value = value;
@@ -472,7 +472,6 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         Set64ValZero( left );
     }
     right = LongValue64( op2 );
-    const_type = tree->u.expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = I64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
@@ -498,6 +497,7 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYP_INT;
         tree->op.u2.long_value = (target_int)tmp;
     } else {
+        const_type = tree->u.expr_type->decl_type;
         value = DoOp64( left, tree->op.opr, right, true );
         if( const_type  == TYP_LONG64 ) {
             tree->op.u2.long64_value = value;

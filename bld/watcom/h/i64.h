@@ -138,9 +138,9 @@ extern "C" {
 #define I8FetchNative(x)    ((signed_8)(x).u._8[0])
 
 #if defined( __BIG_ENDIAN__ )
-    #define Init64Val(h,l)  { (h), (l) }
+    #define Init64Val(h,l)  {(h),(l)}
 #else
-    #define Init64Val(h,l)  { (l), (h) }
+    #define Init64Val(h,l)  {(l),(h)}
 #endif
 // set 64-bit from low and high part
 #define Set64Val(x,l,h)     ((x).u._32[I64LO32]=(l),(x).u._32[I64HI32]=(h))
