@@ -52,16 +52,14 @@
 #define Set64Val1mPP(a)     Set64Val1m((a).u.uval)
 #define Set64ValU32PP(a,b)  Set64ValU32((a).u.uval,(b))
 
-#define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
-
 #define U64CmpPP(a,b)       U64Cmp( &((a).u.uval), &((b).u.uval) )
 #define I64CmpPP(a,b)       I64Cmp( &((a).u.sval), &((b).u.sval) )
+#define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
 
 #define U64AddEqPP(a,b)     U64AddEq( &((a).u.uval), &((b).u.uval) );
 #define U64SubEqPP(a,b)     U64SubEq( &((a).u.uval), &((b).u.uval) );
 #define U64MulEqPP(a,b)     U64MulEq( &((a).u.uval), &((b).u.uval) );
 #define U64NegEqPP(a)       U64NegEq( &((a).u.uval) );
-
 #define U64AndEqPP(a,b)     U64AndEq( (a).u.uval, (b).u.uval );
 #define U64OrEqPP(a,b)      U64OrEq(  (a).u.uval, (b).u.uval );
 #define U64XorEqPP(a,b)     U64XorEq( (a).u.uval, (b).u.uval );
@@ -93,7 +91,7 @@ typedef struct ppvalue {
         unsigned_64     uval;
         signed_64       sval;
     } u;
-    unsigned            no_sign : 1;
+    bool        no_sign;
 } ppvalue;
 
 typedef struct loc_info {
@@ -335,7 +333,7 @@ static bool COperand( void )
     bool done;
 
     done = false;
-    p.no_sign = 0;
+    p.no_sign = false;
     switch( CurToken ) {
     case T_ID:
         loc.locn = SrcFileLoc; // need this to store result
@@ -395,7 +393,7 @@ static bool COperand( void )
         case TYP_UINT:
         case TYP_ULONG:
         case TYP_ULONG64:
-            p.no_sign = 1;
+            p.no_sign = true;
             /* fall through */
         default:
             p.u.uval = Constant64;
@@ -534,7 +532,7 @@ static bool CConditional( void )
                 } else {
                     e1.u.sval = e3.u.sval;
                 }
-                e1.no_sign = e2.no_sign | e3.no_sign;
+                e1.no_sign = e2.no_sign || e3.no_sign;
                 PushOperand( e1, &e1_info );
                 return( false );
             } else {
@@ -590,7 +588,7 @@ static bool CLogicalOr( void )
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         Set64ValU32PP( e1, U64isntZeroPP( e1 ) || U64isntZeroPP( e2 ) );
-        e1.no_sign = 0;
+        e1.no_sign = false;
         PushOperand( e1, &loc );
         return( false );
     }
@@ -609,7 +607,7 @@ static bool CLogicalAnd( void )
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         Set64ValU32PP( e1, U64isntZeroPP( e1 ) && U64isntZeroPP( e2 ) );
-        e1.no_sign = 0;
+        e1.no_sign = false;
         PushOperand( e1, &loc );
         return( false );
     }
@@ -687,7 +685,7 @@ static bool CEquality( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         eq = U64isEqPP( e1, e2 );
         Set64ValU32PP( e1, ( token == T_EQ ) ? eq : !eq );
-        e1.no_sign = 0;
+        e1.no_sign = false;
         PushOperand( e1, &loc );
         return( false );
     }
@@ -727,7 +725,7 @@ static bool CRelational( void )
             break;
         DbgDefault( "Default in CRelational\n" );
         }
-        e1.no_sign = 0;
+        e1.no_sign = false;
         PushOperand( e1, &loc );
         return( false );
     }
@@ -794,7 +792,7 @@ static bool CAdditive( void )
             break;
         case T_MINUS:
             U64SubEqPP( e1, e2 );
-            e1.no_sign = 0;
+            e1.no_sign = false;
             break;
         DbgDefault( "Default in CAdditive\n" );
         }
@@ -872,7 +870,7 @@ static bool CUnary( void )
         case T_EXCLAMATION:
 //        case T_ALT_EXCLAMATION:
             Set64ValU32PP( p, U64isZeroPP( p ) );
-            p.no_sign = 0;
+            p.no_sign = false;
             break;
         case T_TILDE:
 //        case T_ALT_TILDE:
