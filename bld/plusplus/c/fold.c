@@ -923,22 +923,22 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         U64ShiftL( &v1, U64Low( v2 ), &left->u.int64_constant );
         break;
     case CO_EQ:
-        left = makeBooleanConst( left, 0 == I64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64isEq( &v1, &v2 ) );
         return( left );
     case CO_NE:
-        left = makeBooleanConst( left, 0 != I64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64isntEq( &v1, &v2 ) );
         return( left );
     case CO_GT:
-        left = makeBooleanConst( left, 0 < I64Cmp( &v1, &v2 )) ;
+        left = makeBooleanConst( left, I64Cmp( &v1, &v2 ) > 0 ) ;
         return( left );
     case CO_LE:
-        left = makeBooleanConst( left, 0 >= I64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, I64Cmp( &v1, &v2 ) <= 0 );
         return( left );
     case CO_LT:
-        left = makeBooleanConst( left, 0 > I64Cmp( &v1, &v2 )) ;
+        left = makeBooleanConst( left, I64Cmp( &v1, &v2 ) < 0 ) ;
         return( left );
     case CO_GE:
-        left = makeBooleanConst( left, 0 <= I64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, I64Cmp( &v1, &v2 ) >= 0 );
         return( left );
     case CO_AND_AND:
         left = makeBooleanConst( left, U64isntZero( v1 ) && U64isntZero( v2 ) );
@@ -1022,22 +1022,22 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         U64ShiftL( &v1, U64Low( v2 ), &left->u.int64_constant );
         break;
     case CO_EQ:
-        left = makeBooleanConst( left, 0 == U64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64isEq( &v1, &v2 ) );
         return( left );
     case CO_NE:
-        left = makeBooleanConst( left, 0 != U64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64isntEq( &v1, &v2 ) );
         return( left );
     case CO_GT:
-        left = makeBooleanConst( left, 0 < U64Cmp( &v1, &v2 )) ;
+        left = makeBooleanConst( left, U64Cmp( &v1, &v2 ) > 0 ) ;
         return( left );
     case CO_LE:
-        left = makeBooleanConst( left, 0 >= U64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64Cmp( &v1, &v2 ) <= 0 );
         return( left );
     case CO_LT:
-        left = makeBooleanConst( left, 0 > U64Cmp( &v1, &v2 )) ;
+        left = makeBooleanConst( left, U64Cmp( &v1, &v2 ) < 0 ) ;
         return( left );
     case CO_GE:
-        left = makeBooleanConst( left, 0 <= U64Cmp( &v1, &v2 ) );
+        left = makeBooleanConst( left, U64Cmp( &v1, &v2 ) >= 0 );
         return( left );
     case CO_AND_AND:
         left = makeBooleanConst( left, U64isntZero( v1 ) && U64isntZero( v2 ) );
