@@ -94,6 +94,11 @@ host_bits = 64
 ! endif
 !endif
 host_bits_str = ($(host_bits)-bit)
+!ifdef __UNIX__
+host_bits_str_echo = \($(host_bits)-bit\)
+!else
+host_bits_str_echo = ($(host_bits)-bit)
+!endif
 
 !ifdef buildtest
 ! ifdef __OS2__
