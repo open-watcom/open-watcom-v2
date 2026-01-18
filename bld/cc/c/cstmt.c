@@ -793,7 +793,7 @@ static void AddCaseLabel( signed_64 value )
     converted_value = value;
 #endif
     old_value = converted_value;
-    U64AddI32( &old_value, 1 ); /* make old_value different */
+    U64Inc( old_value ); /* make old_value different */
     for( ce = SwitchStack->case_list; ce != NULL; ce = ce->next_case ) {
         old_value = ce->value;
         if( I64Cmp( &old_value, &converted_value ) >= 0 )

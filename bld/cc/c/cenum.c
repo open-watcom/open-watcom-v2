@@ -309,7 +309,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             EnumTable[esym->hash] = esym;
             if( CurToken == T_RIGHT_BRACE )
                 break;
-            U64AddI32( &n, 1 );
+            U64Inc( n );
             MustRecog( T_COMMA );
             if( !CompFlags.extensions_enabled
               && ( CompVars.cstd < STD_C99 )

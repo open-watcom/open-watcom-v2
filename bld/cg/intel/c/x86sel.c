@@ -167,7 +167,7 @@ cost_val JumpCost( sel_handle s_node )
     cost = MAX_COST;
 
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
-    U64AddI32( &tmp, 1 );
+    U64Inc( tmp );
     in_range = U64Low( tmp );
     if( U64High( tmp ) == 0
       && in_range <= MAX_IN_RANGE
@@ -265,7 +265,7 @@ static void GenValuesForward( sel_handle s_node, const signed_64 *to_sub, cg_typ
             list = list->next;
             curr = list->low;
         } else {
-            U64AddI32( &curr, 1 );
+            U64Inc( curr );
         }
     }
 }
@@ -309,7 +309,7 @@ static void GenValuesBackward( sel_handle s_node, const signed_64 *to_sub, cg_ty
             }
             curr = list->high;
         } else {
-            U64AddI32( &curr, -1 );
+            U64Dec( curr );
         }
     }
 }
@@ -369,7 +369,7 @@ tbl_control *MakeScanTab( sel_handle s_node, cg_type value_type, cg_type real_ty
                 list = list->next;
                 curr = list->low;
             } else {
-                U64AddI32( &curr, 1 );
+                U64Inc( curr );
             }
         }
         if( value_type == TY_WORD ) {
@@ -391,7 +391,7 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
     unsigned_64         tmp;
 
     U64Sub( &s_node->upper, &s_node->lower, &tmp );
-    U64AddI32( &tmp, 1 );
+    U64Inc( tmp );
     cases = U64Low( tmp );
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
     table->size = cases;
@@ -416,7 +416,7 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
             if( SelCompare( &curr, &list->high ) >= 0 ) {
                 list = list->next;
             }
-            U64AddI32( &curr, 1 );
+            U64Inc( curr );
         }
     POP_OP();
     return( table );

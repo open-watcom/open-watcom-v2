@@ -645,7 +645,7 @@ static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
      */
     Set64Val1p( mask );
     U64ShiftLEq( &mask, width );
-    U64AddI32( &mask, -1 );
+    U64Dec( mask );
     U64ShiftLEq( &mask, start );
     U64NotAndEq( *val64, mask );
 }

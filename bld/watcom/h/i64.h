@@ -102,6 +102,9 @@ extern "C" {
         { (r).u._32[0] &= ~(b).u._32[0]; \
           (r).u._32[1] &= ~(b).u._32[1]; }
 
+#define U64Inc(r) if( ++(r).u._32[I64LO32] == 0 ) ++(r).u._32[I64HI32]
+#define U64Dec(r) if( (r).u._32[I64LO32]-- == 0 ) --(r).u._32[I64HI32]
+
 /* The FetchTrunc macros grab an 8/16/32-bit value from memory assuming
  * that the value is stored as a 64-bit integer. This is required for
  * big endian systems where the value is at different memory address
