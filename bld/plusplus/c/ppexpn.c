@@ -52,7 +52,6 @@
 #define U64isEqPP(a,b)      U64isEq((a).u.uval,(b).u.uval)
 
 #define U64LowPP(a)         U64Low((a).u.uval)
-#define U64HighPP(a)        U64High((a).u.uval)
 
 #define Set64ValZeroPP(a)   Set64ValZero((a).u.uval)
 #define Set64Val1mPP(a)     Set64Val1m((a).u.uval)
@@ -74,7 +73,6 @@
 #define I64ShiftREqPP(a,b)  I64ShiftREq(&((a).u.sval),(b))
 #define U64ShiftREqPP(a,b)  U64ShiftREq(&((a).u.uval),(b))
 #define U64ShiftLEqPP(a,b)  U64ShiftLEq(&((a).u.uval),(b))
-#define U64ShiftEqPP(a,b)   U64ShiftEq(&((a).u.uval),(b))
 
 #define U64DivPP(a,b,c,d)   U64Div(&((a).u.uval),&((b).u.uval),&((c).u.uval),&((d).u.uval))
 #define I64DivPP(a,b,c,d)   I64Div(&((a).u.sval),&((b).u.sval),&((c).u.sval),&((d).u.sval))
@@ -722,7 +720,7 @@ static bool CShift( void )
             }
             break;
         case T_LSHIFT:
-            if( U64CmpU32PP( e2, 64 ) > 0 ) {
+            if( U64CmpU32PP( e2, 64 ) >= 0 ) {
                 Set64ValZeroPP( e1 );
             } else if( U64isntZeroPP( e2 ) ) {
                 U64ShiftLEqPP( e1, U64LowPP( e2 ) );

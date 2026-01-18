@@ -67,7 +67,6 @@
 #define I64ShiftREqPP(a,b)  I64ShiftREq(&((a).u.sval),(b))
 #define U64ShiftREqPP(a,b)  U64ShiftREq(&((a).u.uval),(b))
 #define U64ShiftLEqPP(a,b)  U64ShiftLEq(&((a).u.uval),(b))
-#define U64ShiftEqPP(a,b)   U64ShiftEq(&((a).u.uval),(b))
 
 #define U64DivPP(a,b,c,d)   U64Div(&((a).u.uval),&((b).u.uval),&((c).u.uval),&((d).u.uval))
 #define I64DivPP(a,b,c,d)   I64Div(&((a).u.sval),&((b).u.sval),&((c).u.sval),&((d).u.sval))
