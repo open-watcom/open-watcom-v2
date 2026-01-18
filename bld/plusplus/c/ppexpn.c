@@ -62,22 +62,22 @@
 #define I64CmpPP(a,b)       I64Cmp(&((a).u.sval),&((b).u.sval))
 #define U64CmpU32PP(a,b)    U64CmpU32((a).u.uval,(b))
 
-#define U64AddEqPP(a,b)     U64AddEq(&((a).u.uval),&((b).u.uval));
-#define U64SubEqPP(a,b)     U64SubEq(&((a).u.uval),&((b).u.uval));
-#define U64MulEqPP(a,b)     U64MulEq(&((a).u.uval),&((b).u.uval));
-#define U64NegEqPP(a)       U64NegEq(&((a).u.uval));
-#define U64AndEqPP(a,b)     U64AndEq((a).u.uval,(b).u.uval);
-#define U64OrEqPP(a,b)      U64OrEq((a).u.uval,(b).u.uval);
-#define U64XorEqPP(a,b)     U64XorEq((a).u.uval,(b).u.uval);
-#define U64NotEqPP(a)       U64NotEq((a).u.uval);
+#define U64AddEqPP(a,b)     U64AddEq(&((a).u.uval),&((b).u.uval))
+#define U64SubEqPP(a,b)     U64SubEq(&((a).u.uval),&((b).u.uval))
+#define U64MulEqPP(a,b)     U64MulEq(&((a).u.uval),&((b).u.uval))
+#define U64NegEqPP(a)       U64NegEq(&((a).u.uval))
+#define U64AndEqPP(a,b)     U64AndEq((a).u.uval,(b).u.uval)
+#define U64OrEqPP(a,b)      U64OrEq((a).u.uval,(b).u.uval)
+#define U64XorEqPP(a,b)     U64XorEq((a).u.uval,(b).u.uval)
+#define U64NotEqPP(a)       U64NotEq((a).u.uval)
 
 #define I64ShiftREqPP(a,b)  I64ShiftREq(&((a).u.sval),(b))
 #define U64ShiftREqPP(a,b)  U64ShiftREq(&((a).u.uval),(b))
 #define U64ShiftLEqPP(a,b)  U64ShiftLEq(&((a).u.uval),(b))
 #define U64ShiftEqPP(a,b)   U64ShiftEq(&((a).u.uval),(b))
 
-#define U64DivPP(a,b,c,d)   U64Div(&((a).u.uval),&((b).u.uval),&((c).u.uval),&((d).u.uval));
-#define I64DivPP(a,b,c,d)   I64Div(&((a).u.sval),&((b).u.sval),&((c).u.sval),&((d).u.sval));
+#define U64DivPP(a,b,c,d)   U64Div(&((a).u.uval),&((b).u.uval),&((c).u.uval),&((d).u.uval))
+#define I64DivPP(a,b,c,d)   I64Div(&((a).u.sval),&((b).u.sval),&((c).u.sval),&((d).u.sval))
 
 #define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
 
