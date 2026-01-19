@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,7 @@ static void CaseHandler( void )
 {
     label_id    label;
     case_entry  *link;
-    case_entry  *kase;
+    case_entry  *currcase;
     intstar4    low = 0;
     intstar4    high = 0;
     bool        case_ok;
@@ -216,22 +216,22 @@ static void CaseHandler( void )
             if( high < low ) {
                 Error( SP_NEVER_CASE );
             } else {
-                for( kase = CSHead->cs_info.cases; kase->link != NULL; kase = kase->link ) {
-                    if( kase->link->low > high ) {
+                for( currcase = CSHead->cs_info.cases; currcase->link != NULL; currcase = currcase->link ) {
+                    if( currcase->link->low > high ) {
                         break;
                     }
                 }
-                if( ( kase != CSHead->cs_info.cases ) && ( kase->high >= low ) ) {
+                if( ( currcase != CSHead->cs_info.cases ) && ( currcase->high >= low ) ) {
                     Error( SP_CASE_OVERLAP );
                 } else {
-                    link = kase->link;
-                    kase->link = NewCase();
-                    kase = kase->link;
-                    kase->link = link;
-                    kase->label.g_label = label;
-                    kase->high = high;
-                    kase->low = low;
-                    kase->multi_case = multi_case;
+                    link = currcase->link;
+                    currcase->link = NewCase();
+                    currcase = currcase->link;
+                    currcase->link = link;
+                    currcase->label.g_label = label;
+                    currcase->high = high;
+                    currcase->low = low;
+                    currcase->multi_case = multi_case;
                     multi_case = true;
                 }
             }

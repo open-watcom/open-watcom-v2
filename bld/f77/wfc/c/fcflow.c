@@ -292,9 +292,9 @@ void    FCAssignedGOTOList( void )
     obj_ptr         curr_obj;
     signed_64       tmp;
 
-    U64High( tmp ) = 0;
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
+    Set64ValZero( tmp );
     s = CGSelInit();
     while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
