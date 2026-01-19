@@ -83,7 +83,7 @@ class uint64 {
         uint64 operator*( const uint64 & a ) const
         {
             uint64 result;
-            U64Mul( &result._d &this->_d, &a._d );
+            U64Mul( &result._d, &this->_d, &a._d );
             return( result );
         }
         uint64 operator*=( const uint64 & a )

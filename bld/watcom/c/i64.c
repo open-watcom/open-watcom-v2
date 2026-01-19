@@ -43,11 +43,8 @@
 
 void U64Neg( unsigned_64 *res, const unsigned_64 *a )
 {
-    res->u._32[L] = ~a->u._32[L];
-    res->u._32[H] = ~a->u._32[H];
-    if( ++res->u._32[L] == 0 ) {
-        ++res->u._32[H];
-    }
+    U64Not( *res, *a );
+    U64Inc( *res );
 }
 
 void U64Add( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b )
@@ -94,13 +91,12 @@ void U64Mul( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b )
     tmp_a = *a;
     tmp_b = *b;
 
-    res->u._32[L] = 0;
-    res->u._32[H] = 0;
+    Set64ValZero( *res );
     while( U64isntZero( tmp_b ) ) {
         if( tmp_b.u._32[L] & 1 )
             U64AddEq( res, &tmp_a );
         U64ShiftLEq( &tmp_a, 1 );
-        U64ShiftR( &tmp_b, &tmp_b, 1 );
+        U64ShiftREq( &tmp_b, 1 );
     }
 }
 
