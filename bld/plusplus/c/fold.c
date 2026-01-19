@@ -881,10 +881,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
     v1 = left->u.int64_constant;
     switch( op ) {
     case CO_PLUS:
-        U64Add( &v1, &v2, &left->u.int64_constant );
+        U64Add( &left->u.int64_constant, &v1, &v2 );
         break;
     case CO_MINUS:
-        U64Sub( &v1, &v2, &left->u.int64_constant );
+        U64Sub( &left->u.int64_constant, &v1, &v2 );
         break;
     case CO_TIMES:
         t0 = CFCnvI64F( &cxxh, U64Low( v1 ), U64High( v1 ) );
@@ -894,7 +894,7 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t0 );
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
-        U64Mul( &v1, &v2, &left->u.int64_constant );
+        U64Mul( &left->u.int64_constant, &v1, &v2 );
         if( U64isntEq( test, left->u.int64_constant ) ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
@@ -917,10 +917,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         U64Xor( left->u.int64_constant, v1, v2 );
         break;
     case CO_RSHIFT:
-        I64ShiftR( &v1, U64Low( v2 ), &left->u.int64_constant );
+        I64ShiftR( &left->u.int64_constant, &v1, U64Low( v2 ) );
         break;
     case CO_LSHIFT:
-        U64ShiftL( &v1, U64Low( v2 ), &left->u.int64_constant );
+        U64ShiftL( &left->u.int64_constant, &v1, U64Low( v2 ) );
         break;
     case CO_EQ:
         left = makeBooleanConst( left, U64isEq( v1, v2 ) );
@@ -980,10 +980,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
     v1 = left->u.int64_constant;
     switch( op ) {
     case CO_PLUS:
-        U64Add( &v1, &v2, &left->u.int64_constant );
+        U64Add( &left->u.int64_constant, &v1, &v2 );
         break;
     case CO_MINUS:
-        U64Sub( &v1, &v2, &left->u.int64_constant );
+        U64Sub( &left->u.int64_constant, &v1, &v2 );
         break;
     case CO_TIMES:
         t0 = CFCnvU64F( &cxxh, U64Low( v1 ), U64High( v1 ) );
@@ -993,7 +993,7 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         CFFree( &cxxh, t0 );
         CFFree( &cxxh, t1 );
         CFFree( &cxxh, t2 );
-        U64Mul( &v1, &v2, &left->u.int64_constant );
+        U64Mul( &left->u.int64_constant, &v1, &v2 );
         if( U64isntEq( test, left->u.int64_constant ) ) {
             CErr1( ANSI_ARITHMETIC_OVERFLOW );
         }
@@ -1016,10 +1016,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         U64Xor( left->u.int64_constant, v1, v2 );
         break;
     case CO_RSHIFT:
-        U64ShiftR( &v1, U64Low( v2 ), &left->u.int64_constant );
+        U64ShiftR( &left->u.int64_constant, &v1, U64Low( v2 ) );
         break;
     case CO_LSHIFT:
-        U64ShiftL( &v1, U64Low( v2 ), &left->u.int64_constant );
+        U64ShiftL( &left->u.int64_constant, &v1, U64Low( v2 ) );
         break;
     case CO_EQ:
         left = makeBooleanConst( left, U64isEq( v1, v2 ) );

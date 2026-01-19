@@ -74,16 +74,16 @@ cmp_result CheckMeaninglessCompare( rel_op rel, int op1_size, int result_size,
     }
     shift = CMPMAXBITSIZE - NumBits( result_size );
     if( NumSign( result_size ) == 0 && shift > 0 ) {
-        U64ShiftR( &HIGH_VAL, shift, &tmp );
+        U64ShiftR( &tmp, &HIGH_VAL, shift );
         U64AndEq( val, tmp );
     }
     shift = CMPMAXBITSIZE - NumBits( op1_size );
     if( NumSign( op1_size ) ) {
-        I64ShiftR( &LOW_VAL, shift, low );
+        I64ShiftR( low, &LOW_VAL, shift );
         U64Not( *high, *low );
     } else {
         Set64ValZero( *low );
-        U64ShiftR( &HIGH_VAL, shift, high );
+        U64ShiftR( high, &HIGH_VAL, shift );
     }
     if( U64isEq( val, *low ) ) {
         range = CASE_LOW_EQ;

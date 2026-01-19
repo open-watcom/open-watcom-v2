@@ -133,7 +133,7 @@ static  bool    FindFlowOut( block *blk ) {
 
     Set64Val1p( one );
     Set64Val1m( neg_one );
-    U64Sub( &true_cons, &false_cons, &diff );
+    U64Sub( &diff, &true_cons, &false_cons );
     if( U64isEq( diff, neg_one ) ) {
         U64Dec( false_cons );
         reverse = true;

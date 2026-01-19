@@ -161,14 +161,14 @@ extern "C" {
                             ||((x).u._32[I64HI32]==-1)&&((signed_32)(x).u._32[I64LO32]<0))
 
 #define U64NegEq(a)         U64Neg((a),(a))
-#define U64AddEq(a,b)       U64Add((a),(b),(a))
-#define U64SubEq(a,b)       U64Sub((a),(b),(a))
-#define U64MulEq(a,b)       U64Mul((a),(b),(a))
+#define U64AddEq(a,b)       U64Add((a),(a),(b))
+#define U64SubEq(a,b)       U64Sub((a),(a),(b))
+#define U64MulEq(a,b)       U64Mul((a),(a),(b))
 
-#define I64ShiftREq(a,b)    I64ShiftR((a),(b),(a))
-#define U64ShiftREq(a,b)    U64ShiftR((a),(b),(a))
-#define U64ShiftLEq(a,b)    U64ShiftL((a),(b),(a))
-#define U64ShiftEq(a,b)     U64Shift((a),(b),(a))
+#define I64ShiftREq(a,b)    I64ShiftR((a),(a),(b))
+#define U64ShiftREq(a,b)    U64ShiftR((a),(a),(b))
+#define U64ShiftLEq(a,b)    U64ShiftL((a),(a),(b))
+#define U64ShiftEq(a,b)     U64Shift((a),(a),(b))
 
 extern int      U64Cnv10( unsigned_64 *res, char c );
 extern int      U64Cnv8( unsigned_64 *res, char c );
@@ -241,19 +241,19 @@ extern int      U64Cnv16( unsigned_64 *res, char c );
 #define _U64_C_ROUTINES
 #endif
 
-extern void     U64Neg( const unsigned_64 *a, unsigned_64 *res );
-extern void     U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
-extern void     U64Sub( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
-extern void     U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res );
+extern void     U64Neg( unsigned_64 *res, const unsigned_64 *a );
+extern void     U64Add( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b );
+extern void     U64Sub( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b );
+extern void     U64Mul( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b );
 extern void     U64Div( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *div, unsigned_64 *rem );
 extern void     I64Div( const signed_64 *a, const signed_64 *b, signed_64 *div, signed_64 *rem );
-extern void     U64AddI32( unsigned_64 *a, signed_32 i );
+extern void     U64AddI32( unsigned_64 *res, signed_32 i );
 extern int      U64Cmp( const unsigned_64 *a, const unsigned_64 *b );
 extern int      I64Cmp( const signed_64 *a, const signed_64 *b );
-extern void     I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res );
-extern void     U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
-extern void     U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res );
-extern void     U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
+extern void     I64ShiftR( signed_64 *res, const signed_64 *a, unsigned shift );
+extern void     U64ShiftR( unsigned_64 *res, const unsigned_64 *a, unsigned shift );
+extern void     U64ShiftL( unsigned_64 *res, const unsigned_64 *a, unsigned shift );
+extern void     U64Shift( unsigned_64 *res, const unsigned_64 *a, int shift );
 
 #ifdef __cplusplus
 }

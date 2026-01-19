@@ -126,13 +126,13 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
 
     switch( opr ) {
     case OPR_ADD:
-        U64Add( &left, &right, &value );
+        U64Add( &value, &left, &right );
         break;
     case OPR_SUB:
-        U64Sub( &left, &right, &value );
+        U64Sub( &value, &left, &right );
         break;
     case OPR_MUL:
-        U64Mul( &left, &right, &value );
+        U64Mul( &value, &left, &right );
         break;
     case OPR_DIV:
         if( U64isZero( right ) ) {
@@ -161,13 +161,13 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
     do_shift:
         if( shift > 0 ) {
             if( sign ) {
-                I64ShiftR( &left, shift, &value );
+                I64ShiftR( &value, &left, shift );
             } else {
-                U64ShiftR( &left, shift, &value );
+                U64ShiftR( &value, &left, shift );
             }
         } else {
             shift = -shift;
-            U64ShiftL( &left, shift, &value );
+            U64ShiftL( &value, &left, shift );
         }
         break;
     case OPR_OR:
@@ -186,7 +186,7 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         U64Xor( value, left, right );
         break;
     case OPR_NEG:
-        U64Neg( &right, &value );
+        U64Neg( &value, &right );
 //        value = - right;
         break;
     case OPR_COM:
@@ -1105,7 +1105,7 @@ static bool FoldableTree( TREEPTR tree )
 
             seg_val = LongValue64( tree->left );
             off_val = LongValue64( tree->right );
-            U64ShiftL( &seg_val, TARGET_NEAR_POINTER * CHAR_BIT, &value );
+            U64ShiftL( &value, &seg_val, TARGET_NEAR_POINTER * CHAR_BIT );
             U64Or( tree->op.u2.ulong64_value, value, off_val );
             tree->op.opr = OPR_PUSHINT;
             tree->op.u1.const_type = TYP_POINTER;

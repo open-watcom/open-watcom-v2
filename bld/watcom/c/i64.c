@@ -41,7 +41,7 @@
 #define L       I64LO32
 #define H       I64HI32
 
-void U64Neg( const unsigned_64 *a, unsigned_64 *res )
+void U64Neg( unsigned_64 *res, const unsigned_64 *a )
 {
     res->u._32[L] = ~a->u._32[L];
     res->u._32[H] = ~a->u._32[H];
@@ -50,7 +50,7 @@ void U64Neg( const unsigned_64 *a, unsigned_64 *res )
     }
 }
 
-void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
+void U64Add( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b )
 {
     unsigned_32 new_value;
 
@@ -61,32 +61,32 @@ void U64Add( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
     res->u._32[L] = new_value;
 }
 
-void U64AddI32( unsigned_64 *a, signed_32 i )
+void U64AddI32( unsigned_64 *res, signed_32 i )
 {
     unsigned_32 new_value;
 
-    new_value = a->u._32[L] + i;
+    new_value = res->u._32[L] + i;
     if( i >= 0 ) {
-        if( new_value < a->u._32[L] ) {
-            ++a->u._32[H];
+        if( new_value < res->u._32[L] ) {
+            ++res->u._32[H];
         }
     } else {
-        if( new_value > a->u._32[L] ) {
-            --a->u._32[H];
+        if( new_value > res->u._32[L] ) {
+            --res->u._32[H];
         }
     }
-    a->u._32[L] = new_value;
+    res->u._32[L] = new_value;
 }
 
-void U64Sub( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
+void U64Sub( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b )
 {
     unsigned_64 tmp;
 
-    U64Neg( b, &tmp );
-    U64Add( a, &tmp, res );
+    U64Neg( &tmp, b );
+    U64Add( res, a, &tmp );
 }
 
-void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
+void U64Mul( unsigned_64 *res, const unsigned_64 *a, const unsigned_64 *b )
 {
     unsigned_64         tmp_a;
     unsigned_64         tmp_b;
@@ -99,8 +99,8 @@ void U64Mul( const unsigned_64 *a, const unsigned_64 *b, unsigned_64 *res )
     while( U64isntZero( tmp_b ) ) {
         if( tmp_b.u._32[L] & 1 )
             U64AddEq( res, &tmp_a );
-        U64ShiftL( &tmp_a, 1, &tmp_a );
-        U64ShiftR( &tmp_b, 1, &tmp_b );
+        U64ShiftLEq( &tmp_a, 1 );
+        U64ShiftR( &tmp_b, &tmp_b, 1 );
     }
 }
 
@@ -131,18 +131,18 @@ void U64Div( const unsigned_64 *a, const unsigned_64 *b,
                 break;
             if( U64Cmp( &tmp_a, &tmp_b ) <= 0 )
                 break;
-            U64ShiftL( &tmp_b, 1, &tmp_b );
+            U64ShiftLEq( &tmp_b, 1 );
             ++count;
         }
         div->u._32[L] = 0;
         div->u._32[H] = 0;
         while( count >= 0 ) {
-            U64ShiftL( div, 1, div );
+            U64ShiftLEq( div, 1 );
             if( U64Cmp( &tmp_a, &tmp_b ) >= 0 ) {
                 div->u._32[L] |= 1;
                 U64SubEq( &tmp_a, &tmp_b );
             }
-            U64Shift( &tmp_b, 1, &tmp_b );
+            U64ShiftEq( &tmp_b, 1 );
             --count;
         }
         if( rem != NULL ) {
@@ -162,14 +162,14 @@ void I64Div( const signed_64 *a, const signed_64 *b,
     neg = 0;
     remneg = 0;
     if( a->u.sign.v ) {
-        U64Neg( a, &tmp_a );
+        U64Neg( &tmp_a, a );
         neg ^= 1;
         remneg = 1;
     } else {
         tmp_a = *a;
     }
     if( b->u.sign.v ) {
-        U64Neg( b, &tmp_b );
+        U64Neg( &tmp_b, b );
         neg ^= 1;
     } else {
         tmp_b = *b;
@@ -215,7 +215,7 @@ int I64Cmp( const signed_64 *a, const signed_64 *b )
     return( 0 );
 }
 
-void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res )
+void I64ShiftR( signed_64 *res, const signed_64 *a, unsigned shift )
 {
     unsigned_32       save;
     signed_32         tmp;
@@ -236,7 +236,7 @@ void I64ShiftR( const signed_64 *a, unsigned shift, signed_64 *res )
     }
 }
 
-void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res )
+void U64ShiftR( unsigned_64 *res, const unsigned_64 *a, unsigned shift )
 {
     unsigned_32       save;
 
@@ -255,7 +255,7 @@ void U64ShiftR( const unsigned_64 *a, unsigned shift, unsigned_64 *res )
     }
 }
 
-void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res )
+void U64ShiftL( unsigned_64 *res, const unsigned_64 *a, unsigned shift )
 {
     unsigned_32       save;
 
@@ -274,15 +274,15 @@ void U64ShiftL( const unsigned_64 *a, unsigned shift, unsigned_64 *res )
     }
 }
 
-void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res )
+void U64Shift( unsigned_64 *res, const unsigned_64 *a, int shift )
 {
     if( shift < 0 ) {
         /* left shift */
         shift = -shift;
-        U64ShiftL( a, shift, res );
+        U64ShiftL( res, a, shift );
     } else {
         /* right shift */
-        U64ShiftR( a, shift, res );
+        U64ShiftR( res, a, shift );
     }
 }
 

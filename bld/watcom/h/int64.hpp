@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ class int64 {
         int64 operator+( const int64 & a ) const
         {
             int64 res;
-            U64Add( &this->_d, &a._d, &res._d );
+            U64Add( &res._d, &this->_d, &a._d );
             return( res );
         }
         int64 operator+=( const int64 & a )
@@ -72,7 +72,7 @@ class int64 {
         int64 operator-( const int64 & a ) const
         {
             int64 res;
-            U64Sub( &this->_d, &a._d, &res._d );
+            U64Sub( &res._d, &this->_d, &a._d );
             return( res );
         }
         int64 operator-=( const int64 & a )
@@ -83,14 +83,14 @@ class int64 {
         int64 operator-() const
         {
             int64 neg;
-            U64Neg( &this->_d, &neg._d );
+            U64Neg( &neg._d, &this->_d );
             return( neg );
         }
 
         int64 operator*( const int64 & a ) const
         {
             int64 result;
-            U64Mul( &this->_d, &a._d, &result._d );
+            U64Mul( &result._d, &this->_d, &a._d );
             return( result );
         }
         int64 operator*=( const int64 & a )
@@ -169,7 +169,7 @@ class int64 {
         int64 operator<<( unsigned a ) const
         {
             int64 result;
-            U64ShiftL( &this->_d, a, &result._d );
+            U64ShiftL( &result._d, &this->_d, a );
             return( result );
         }
         int64 operator<<=( unsigned a )
@@ -181,7 +181,7 @@ class int64 {
         int64 operator>>( unsigned a ) const
         {
             int64 result;
-            I64ShiftR( &this->_d, a, &result._d );
+            I64ShiftR( &result._d, &this->_d, a );
             return( result );
         }
         int64 operator>>=( unsigned a )

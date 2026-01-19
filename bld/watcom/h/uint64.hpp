@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ class uint64 {
         uint64 operator+( const uint64 & a ) const
         {
             uint64 res;
-            U64Add( &this->_d, &a._d, &res._d );
+            U64Add( &res._d, &this->_d, &a._d );
             return( res );
         }
         uint64 operator+=( const uint64 & a )
@@ -65,7 +65,7 @@ class uint64 {
         uint64 operator-( const uint64 & a ) const
         {
             uint64 res;
-            U64Sub( &this->_d, &a._d, &res._d );
+            U64Sub( &res._d, &this->_d, &a._d );
             return( res );
         }
         uint64 operator-=( const uint64 & a )
@@ -76,14 +76,14 @@ class uint64 {
         uint64 operator-() const
         {
             uint64 neg;
-            U64Neg( &this->_d, &neg._d );
+            U64Neg( &neg._d, &this->_d );
             return( neg );
         }
 
         uint64 operator*( const uint64 & a ) const
         {
             uint64 result;
-            U64Mul( &this->_d, &a._d, &result._d );
+            U64Mul( &result._d &this->_d, &a._d );
             return( result );
         }
         uint64 operator*=( const uint64 & a )
@@ -162,7 +162,7 @@ class uint64 {
         uint64 operator<<( unsigned a ) const
         {
             uint64 result;
-            U64ShiftL( &this->_d, a, &result._d );
+            U64ShiftL( &result._d, &this->_d, a );
             return( result );
         }
         uint64 operator<<=( unsigned a )
@@ -174,7 +174,7 @@ class uint64 {
         uint64 operator>>( unsigned a ) const
         {
             uint64 result;
-            U64ShiftR( &this->_d, a, &result._d );
+            U64ShiftR( &result._d, &this->_d, a );
             return( result );
         }
         uint64 operator>>=( unsigned a )

@@ -2877,15 +2877,15 @@ static  bool    ConstOverflowsType( const signed_64 *val, type_class_def type_cl
         /*
          * signed type of length 'len' bits
          */
-        U64ShiftL( &one, len - 1, &max );
-        U64Neg( &max, &min );
+        U64ShiftL( &max, &one, len - 1 );
+        U64Neg( &min, &max );
         U64SubEq( &max, &one );
     } else {
         /*
          * unsigned type of length 'len' bits
          */
         Set64ValZero( min );
-        U64ShiftL( &one, len, &max );
+        U64ShiftL( &max, &one, len );
         U64SubEq( &max, &one );
     }
     if( I64Cmp( val, &min ) < 0 )

@@ -452,11 +452,11 @@ static  unsigned_64    TGMask64( tn node )
     len = node->u1.b.len;
     Set64ValZero( mask );
     Set64Val1p( tmp );
-    U64ShiftL( &tmp, node->u1.b.start, &bit );
+    U64ShiftL( &bit, &tmp, node->u1.b.start );
     for( ;; ) {
         U64Or( tmp, bit, mask );
         mask = tmp;
-        U64ShiftL( &bit, 1, &tmp );
+        U64ShiftL( &tmp, &bit, 1 );
         bit = tmp;
         if( --len == 0 ) {
             break;
@@ -1839,7 +1839,7 @@ static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
     mask = TGMask64( lhs );
     shift = lhs->u1.b.start;
     FreeTreeNode( lhs );
-    U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
+    U64ShiftR( &shiftmask, &mask, shift );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
         retv = Int( U64Low( shiftmask ) & (uint_32)after_value->u.n.name->c.lo.u.int_value );
         if( (uint_32)retv->u.n.name->c.lo.u.int_value != U64Low( shiftmask ) ) {

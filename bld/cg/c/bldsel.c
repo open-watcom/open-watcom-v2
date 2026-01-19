@@ -59,7 +59,7 @@ static  select_list *NewCase( const signed_64 *lo, const signed_64 *hi, label_ha
     list = CGAlloc( sizeof( select_list ) );
     list->low = *lo;
     list->high = *hi;
-    U64Sub( hi, lo, &list->count );
+    U64Sub( &list->count, hi, lo );
     U64Inc( list->count );
     list->label = label;
     list->next = NULL;
@@ -325,7 +325,7 @@ static  an      GenScanTable( an node, sel_handle s_node, const type_def *tipe )
     cg_type         real_type;
     unsigned_64     tmp;
 
-    U64Sub( &s_node->upper, &s_node->lower, &tmp );
+    U64Sub( &tmp, &s_node->upper, &s_node->lower );
     value_type = SelType( &tmp );
     real_type = tipe->refno;
     if( real_type != value_type ) {
@@ -396,7 +396,7 @@ static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
      * generate if's to check if index in table
      */
     if( s_node->other_wise != NULL ) {
-        U64Sub( &s_node->upper, &s_node->lower, &tmp );
+        U64Sub( &tmp, &s_node->upper, &s_node->lower );
         lt = BGCompare( O_LE, BGDuplicate( node ),
                         BGIntegerSel( &tmp, tipe ), NULL,
                         UnSignedIntTipe( tipe ) );

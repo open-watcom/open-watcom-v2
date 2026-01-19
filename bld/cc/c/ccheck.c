@@ -763,7 +763,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
         /*
          * if( (val | ( max >> 1 )) != ~0U )
          */
-        U64ShiftR( &max, 1, &tmp );
+        U64ShiftR( &tmp, &max, 1 );
         U64OrEq( tmp, *val );
         U64Inc( tmp );
         if( U64isntZero( tmp ) ) {

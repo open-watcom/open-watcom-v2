@@ -794,9 +794,9 @@ tn      FoldRShift( tn left, tn rite, const type_def *tipe )
                     li = CFGetInteger64Value( lv );
 
                     if( tipe->attr & TYPE_SIGNED ) {
-                        I64ShiftR( &li, ri, &rsh );
+                        I64ShiftR( &rsh, &li, ri );
                     } else {
-                        U64ShiftR( &li, ri, &rsh );
+                        U64ShiftR( &rsh, &li, ri );
                     }
                     fold = Int64ToType( rsh, tipe );
                 }
@@ -849,7 +849,7 @@ tn      FoldLShift( tn left, tn rite, const type_def *tipe )
 
                     li = CFGetInteger64Value( lv );
 
-                    U64ShiftL( &li, ri, &lsh );
+                    U64ShiftL( &lsh, &li, ri );
                     fold = Int64ToType( lsh, tipe );
                 }
             }

@@ -137,7 +137,7 @@ cost_val ScanCost( sel_handle s_node )
      */
     cost = MAX_COST;
 
-    U64Sub( &s_node->upper, &s_node->lower, &tmp );
+    U64Sub( &tmp, &s_node->upper, &s_node->lower );
     type = SelType( &tmp );
     if( type != TY_UINT_8 ) {
         if( U64High( s_node->num_cases ) == 0 ) {
@@ -166,7 +166,7 @@ cost_val JumpCost( sel_handle s_node )
      */
     cost = MAX_COST;
 
-    U64Sub( &s_node->upper, &s_node->lower, &tmp );
+    U64Sub( &tmp, &s_node->upper, &s_node->lower );
     U64Inc( tmp );
     in_range = U64Low( tmp );
     if( U64High( tmp ) == 0
@@ -199,7 +199,7 @@ cost_val IfCost( sel_handle s_node, uint_32 entries )
     uint_32         size;
     unsigned_64     tmp;
 
-    U64Sub( &s_node->upper, &s_node->lower, &tmp );
+    U64Sub( &tmp, &s_node->upper, &s_node->lower );
     type_length = TypeAddress( SelType( &tmp ) )->length;
     if( entries > 20 ) {
         jumpsize = LONG_JUMP;
@@ -244,7 +244,7 @@ static void GenValuesForward( sel_handle s_node, const signed_64 *to_sub, cg_typ
     list = s_node->list;
     curr = s_node->lower;
     for( ;; ) {
-        U64Sub( &curr, to_sub, &tmp );
+        U64Sub( &tmp, &curr, to_sub );
         switch( type ) {
         case TY_UINT_1:
             Gen1ByteValue( U64LowByte( tmp ) );
@@ -284,7 +284,7 @@ static void GenValuesBackward( sel_handle s_node, const signed_64 *to_sub, cg_ty
     }
     curr = s_node->upper;
     for( ;; ) {
-        U64Sub( &curr, to_sub, &tmp );
+        U64Sub( &tmp, &curr, to_sub );
         switch( type ) {
         case TY_UINT_1:
             Gen1ByteValue( U64LowByte( tmp ) );
@@ -390,7 +390,7 @@ tbl_control     *MakeJmpTab( sel_handle s_node )
     label_handle        other;
     unsigned_64         tmp;
 
-    U64Sub( &s_node->upper, &s_node->lower, &tmp );
+    U64Sub( &tmp, &s_node->upper, &s_node->lower );
     U64Inc( tmp );
     cases = U64Low( tmp );
     table = CGAlloc( sizeof( tbl_control ) + ( cases - 1 ) * sizeof( label_handle ) );
