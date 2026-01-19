@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -294,13 +294,12 @@ void    FCAssignedGOTOList( void )
 
     var = GetPtr();
     curr_obj = FCodeTell( 0 );
-    Set64ValZero( tmp );
     s = CGSelInit();
     while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            U64Low( tmp ) = sn->u.st.address;
+            Set64ValU32( tmp, sn->u.st.address );
             CGSelCase( s, label, tmp );
         }
     }

@@ -66,8 +66,6 @@ void    DoSelect( FCODE kind ) {
     signed_64           lo;
     signed_64           hi;
 
-    Set64ValZero( lo );
-    Set64ValZero( hi );
     s = CGSelInit();
     cases = GetU16();
     stmts = cases;

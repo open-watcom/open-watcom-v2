@@ -1135,14 +1135,13 @@ static  void    DumpBrTable( void )
     label_handle    end_sel;
     signed_64       tmp;
 
-    U64High( tmp ) = 0;
     end_sel = BENewLabel();
     CGControl( O_GOTO, NULL, end_sel );
     CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            U64Low( tmp ) = stmt->u.st.address;
+            Set64ValU32( tmp, stmt->u.st.address );
             CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
         }
     }
