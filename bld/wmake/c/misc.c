@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,14 +54,17 @@
 
 #define CLOWER(c)   (((c) < 'a') ? (c) - 'A' + 'a' : (c))
 
+/*
+ * FIX_CHAR macro
+ * DOS: down case all filenames, convert fwd-slash to back-slash
+ * OS2, NT and RDOS: convert fwd-slash to back-slash
+ * UNIX: no changes
+ */
 #if defined( __DOS__ )
-/* DOS: down case all filenames, convert fwd-slash to back-slash */
 #define FIX_CHAR(c) (((c) == '/') ? '\\' : (cisalpha( (c) ) ? CLOWER(c) : (c)))
 #elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
-/* OS2, NT and RDOS: convert fwd-slash to back-slash */
 #define FIX_CHAR(c) (((c) == '/') ? '\\' : (c))
 #else   /* __UNIX__ */
-/* UNIX: no changes */
 #define FIX_CHAR(c) (c)
 #endif
 
@@ -153,12 +156,13 @@ char *FindNextWSorEqual( const char *str )
 }
 
 char *FixName( char *name )
-{
-#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
-/***************************************************************************************
+/****************************************************************
  * DOS: down case all characters, convert fwd-slash to back-slash
  * OS2, NT and RDOS: convert fwd-slash to back-slash
+ * UNIX: no changes
  */
+{
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     char    *ptr;
     char    hold;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,8 +100,6 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
  * returns: token it terminates on
  */
 {
-    char    dotname[MAX_DOT_NAME];
-
     assert( dest != NULL );
 
     for( ;; ) {                     /* read till SCOLON or DCOLON */
@@ -125,8 +124,7 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
             if( !IsDotWithCmds( CurAttr.u.dotname ) ) {
                 ignoring( TOK_DOTNAME, true );
             } else {
-                FmtStr( dotname, ".%s", DotNames[CurAttr.u.dotname] );
-                WildTList( dest, dotname, true, true );
+                DotTList( dest, CurAttr.u.dotname );
             }
             break;
         case TOK_FILENAME:

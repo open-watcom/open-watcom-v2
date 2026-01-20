@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +41,6 @@
 
 #include "clibext.h"
 
-
-#define BEFORE_S        "BEFORE"
-#define AFTER_S         "AFTER"
-#define DEFAULT_S       "DEFAULT"
 
 #define HASH_PRIME      211
 
@@ -177,6 +173,17 @@ TARGET *FindTarget( const char *name )
 }
 
 
+STATIC TARGET *FindDotTarget( DotName dot )
+/*****************************************/
+{
+    char    name[MAX_DOT_NAME];
+
+    name[0] = '.';
+    strcpy( name + 1, DotNames[dot] );
+    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
+}
+
+
 #ifdef __WATCOMC__
 #pragma on( check_stack );
 #endif
@@ -185,13 +192,9 @@ CLIST *DotCList( DotName dot )
  * find clist associated with dotname
  */
 {
-    char                name[MAX_DOT_NAME];
     TARGET const        *cur;
 
-    name[0] = '.';
-    FixName( strcpy( name + 1, DotNames[dot] ) );
-
-    cur = FindTarget( name );
+    cur = FindDotTarget( dot );
 
     if( cur == NULL
       || cur->depend == NULL ) {
@@ -476,10 +479,9 @@ void KillTarget( const char *name )
     }
 }
 
-
 STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 /******************************************************************
- * Return a pointer to a target with name name.  Create target if necessary.
+ * Return a pointer to a target with name tname.  Create target if necessary.
  */
 {
     char    name[_MAX_PATH];
@@ -492,18 +494,44 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
           && ( cisextc( name[1] )
           || ciswildc( name[1] ) ) ) {
             targ->special = true;
-            if( stricmp( name + 1, BEFORE_S ) == 0
-              || stricmp( name + 1, AFTER_S ) == 0 ) {
-                targ->before_after = true;
-            }
-            if( stricmp( name + 1, DEFAULT_S ) == 0 ) {
-                targ->dot_default = true;
-            }
         }
     }
 
     /* mentioned in a makefile */
     targ->mentioned = ( targ->mentioned || mentioned );
+
+    return( targ );
+}
+
+
+STATIC TARGET *findOrNewDotTarget( DotName dot )
+/***********************************************
+ * Return a pointer to a target with name tname.
+ * Create target if necessary.
+ */
+{
+    char    name[MAX_DOT_NAME];
+    TARGET  *targ;
+
+    targ = FindDotTarget( dot );
+    if( targ == NULL ) {
+        name[0] = '.';
+        strcpy( name + 1, DotNames[dot] );
+        targ = NewTarget( name );
+        targ->special = true;
+        targ->mentioned = true;
+        switch( dot ) {
+        case DOT_BEFORE:
+        case DOT_AFTER:
+            targ->before_after = true;
+            break;
+        case DOT_DEFAULT:
+            targ->dot_default = true;
+            break;
+        case DOT_ERROR:
+            break;
+        }
+    }
 
     return( targ );
 }
@@ -565,6 +593,33 @@ bool WildTList( TLIST **list, const char *base, bool mentioned, bool expandWildC
             endOfList = endOfList->next;
         }
         endOfList->next = current;
+    }
+    return( true );
+}
+
+
+bool DotTList( TLIST **list, DotName dot )
+/*****************************************
+ * Build a dot TLIST. Pushes target onto list.
+ */
+{
+    TARGET      *targ;
+    TLIST       *new;
+    TLIST       *endOfList;
+
+    targ = findOrNewDotTarget( dot );
+    new = NewTList();
+    new->target = targ;
+    new->next = NULL;
+
+    if( *list == NULL ) {
+        *list = new;
+    } else {
+        endOfList = *list;
+        while( endOfList->next != NULL ) {
+            endOfList = endOfList->next;
+        }
+        endOfList->next = new;
     }
     return( true );
 }
