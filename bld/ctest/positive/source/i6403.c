@@ -13,7 +13,6 @@ long fool___( long x ) {
 unsigned long fooul__( unsigned long x ) {
     return x + 4;
 }
-#ifdef __WATCOM_INT64__
 __int64 fooi64_( __int64 x ) {
     return x + 5;
 }
@@ -23,7 +22,6 @@ unsigned __int64 fooui64( unsigned __int64 x ) {
 __int64 bar( __int64 x ) {
     return x;
 }
-#endif
 
 int main() {
     #define testi___( c, i )    fooi___( c ) != ( c + i )
@@ -43,7 +41,6 @@ int main() {
     if( testul__( 0Lu, 4 ) ) _fail;
     if( testul__( 0lU, 4 ) ) _fail;
     if( testul__( 0LU, 4 ) ) _fail;
-#ifdef __WATCOM_INT64__
     if( testi64_( 0i64, 5 ) ) _fail;
     if( testi64_( 0I64, 5 ) ) _fail;
     if( testi64_( 0ll, 5 ) ) _fail;
@@ -80,7 +77,6 @@ int main() {
     if( testui64( 0x9999999999u, 6 ) ) _fail;
     if( testui64( 0x9999999999ul, 6 ) ) _fail;
     if( testui64( 0x9999999999uL, 6 ) ) _fail;
-#endif
     if( testi___( CHAR_MIN, 1 ) ) _fail;
     if( testi___( CHAR_MAX, 1 ) ) _fail;
     if( testi___( SCHAR_MIN, 1 ) ) _fail;
@@ -95,7 +91,6 @@ int main() {
     if( testl___( LONG_MIN, 3 ) ) _fail;
     if( testl___( LONG_MAX, 3 ) ) _fail;
     if( testul__( ULONG_MAX, 4 ) ) _fail;
-#ifdef __WATCOM_INT64__
     if( testi64_( LONGLONG_MIN, 5 ) ) _fail;
     if( testi64_( LONGLONG_MAX, 5 ) ) _fail;
     if( testui64( ULONGLONG_MAX, 6 ) ) _fail;
@@ -105,7 +100,6 @@ int main() {
     if( testi64_( _I64_MIN, 5 ) ) _fail;
     if( testi64_( _I64_MAX, 5 ) ) _fail;
     if( testui64( _UI64_MAX, 6 ) ) _fail;
-#endif
     if( testi___( 0, 1 ) ) _fail;
 #if INT_MAX < 65536
     if( testi___( 32766, 1 ) ) _fail;
@@ -152,13 +146,11 @@ int main() {
 #else
 #error int is larger than expected
 #endif
-#ifdef __WATCOM_INT64__
     if( testi64_( 4294967296, 5 ) ) _fail;
     if( testui64( 4294967296u, 6 ) ) _fail;
     if( testui64( 4294967296U, 6 ) ) _fail;
     /* Test for bug in Open Watcom 1.2 scanner */
     if( bar( 12345LL ) != 12345 ) _fail;
     if( bar( 12345ULL ) != 12345 ) _fail;
-#endif
     _PASS;
 }

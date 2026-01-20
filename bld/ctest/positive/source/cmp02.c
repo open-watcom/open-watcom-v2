@@ -22,7 +22,6 @@ int cmp_U2_hi_eq( unsigned short x )
     return( 0 );
 }
 
-#ifdef __WATCOM_INT64__
 int cmp_U4_hi_eq( unsigned long x )
 {
     if( x == ULONG_MAX + 1LL ) {
@@ -30,7 +29,6 @@ int cmp_U4_hi_eq( unsigned long x )
     }
     return( 0 );
 }
-#endif
 
 /* Test comparisons of signed and/or unsigned chars (not shorts, ints, etc.).
  * Watcom 11.0 and later (up to 1.9) incorrectly generated the comparisons
@@ -89,9 +87,7 @@ int main( void )
 {
     if( cmp_U1_hi_eq( uc ) ) fail( __LINE__ );
     if( cmp_U2_hi_eq( us ) ) fail( __LINE__ );
-#ifdef __WATCOM_INT64__
     if( cmp_U4_hi_eq( ul ) ) fail( __LINE__ );
-#endif
 
     if( cmp_sc_sc_l( 1, -1 ) ) fail( __LINE__ );
     if( cmp_sc_sc_l( 127, -127 ) ) fail( __LINE__ );
