@@ -1,6 +1,5 @@
 #include "fail.h"
 
-#ifdef __WATCOM_INT64__
 struct S {
     unsigned __int64 x : 31;
     unsigned __int64 y : 3;
@@ -9,7 +8,7 @@ struct S {
     __int64 sy : 3;
     __int64 sz : 1;
     S() {
-	memset( this, -1, sizeof( *this ) );
+        memset( this, -1, sizeof( *this ) );
     }
 };
 
@@ -45,6 +44,3 @@ int main() {
     if( rsz( &x ) != -1 ) _fail;
     _PASS;
 }
-#else
-ALWAYS_PASS
-#endif

@@ -1,6 +1,5 @@
 #include "fail.h"
 
-#ifdef __WATCOM_INT64__
 unsigned __int64 p[] = {
     401953,
     834527,
@@ -76,13 +75,10 @@ void stest( __int64 x, __int64 y ) {
 }
 int main() {
     for( int i = 0; i < sizeof(p)/sizeof(p[0]); ++i ) {
-	for( int j = 0; j < sizeof(p)/sizeof(p[0]); ++j ) {
-	    test( p[i], p[j] );
-	    stest( p[i], p[j] );
-	}
+        for( int j = 0; j < sizeof(p)/sizeof(p[0]); ++j ) {
+            test( p[i], p[j] );
+            stest( p[i], p[j] );
+        }
     }
     _PASS;
 }
-#else
-ALWAYS_PASS
-#endif

@@ -3,8 +3,6 @@
 #include "fail.h"
 #include <limits.h>
 
-#ifdef __WATCOM_INT64__
-
 typedef struct {
     unsigned long       low;
     unsigned long       high;
@@ -43,9 +41,3 @@ int main()
 
     _PASS;
 }
-
-#else
-
-ALWAYS_PASS
-
-#endif

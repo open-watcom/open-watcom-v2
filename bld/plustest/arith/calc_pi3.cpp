@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-#ifdef __WATCOM_INT64__
-
 typedef unsigned __int64 UINT;
 
 UINT gcd( UINT n1, UINT n2 ) {
@@ -89,7 +87,8 @@ main() {
     }
     return 0;
 }
-#else
+
+/*
 main() {
     puts( "31333333333333333333" );
     puts( "31414224664224664224" );
@@ -97,4 +96,4 @@ main() {
     puts( "31415924575674353818" );
     return 0;
 }
-#endif
+*/

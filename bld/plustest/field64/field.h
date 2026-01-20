@@ -1,48 +1,44 @@
-// @(#)field.h	1.5   Release Date: 2/26/93
-//	 Author:  Kent G. Budge, 
-//		  Computational Physics Research and Development (1431)
-//		  Sandia National Laboratories 
+// @(#)field.h  1.5   Release Date: 2/26/93
+//       Author:  Kent G. Budge,
+//                Computational Physics Research and Development (1431)
+//                Sandia National Laboratories
 
 #ifndef fieldH
 #define fieldH
 
 // Compilation macro flags:
 
-//	CRAY		Compile for Cray mainframe
-//	SUN		Compile for Sun workstations
-//      HP_UX		Compile for HP workstations
-//	NDEBUG		Turn off computationally expensive checks
+//      CRAY            Compile for Cray mainframe
+//      SUN             Compile for Sun workstations
+//      HP_UX           Compile for HP workstations
+//      NDEBUG          Turn off computationally expensive checks
 
 /******************************** Macros *************************************/
 
 /***************************** Include files *********************************/
 
 #include <assert.h>
-#include <stddef.h>		// Needed for size_t
-#include <stdio.h>		// Needed for FILE* 
-#include <string.h>		// Needed for memcpy
+#include <stddef.h>             // Needed for size_t
+#include <stdio.h>              // Needed for FILE*
+#include <string.h>             // Needed for memcpy
 
-#ifdef __WATCOM_INT64__
 typedef __int64 INT;
-#else
-typedef long INT;
-#endif
 
 /**************************** Predeclarations ********************************/
 
 // Classes defined in this library are:
 
-class field;			// A field of double values
-class ifield;			// A field of integer values
+class field;                    // A field of double values
+class ifield;                   // A field of integer values
 
 /*************************** External Variables ******************************/
 
 /***************************** Helper classes ********************************/
 
 struct __field_node {
-  size_t length;		// Data array count
-  size_t ref_count;		// Reference count
-  double data[1];		// Start of data array
+  size_t length;                // Data array count
+  size_t ref_count;             // Reference count
+  double data[1];               // Start of data array
 
   //void *operator new(size_t, size_t=1);
   void *operator new(size_t, size_t);
@@ -56,9 +52,9 @@ struct __field_node {
 };
 
 struct __field_inode {
-  size_t length;		// Data array count
-  size_t ref_count;		// Reference count
-  INT data[1];			// Start of data array
+  size_t length;                // Data array count
+  size_t ref_count;             // Reference count
+  INT data[1];                  // Start of data array
 
   //void *operator new(size_t, size_t=1);
   void *operator new(size_t, size_t);
@@ -77,12 +73,12 @@ struct __field_inode {
 class field {
   public:
 
-		/**** Constructors, destructors, assigns ****/
+                /**** Constructors, destructors, assigns ****/
 
-    field(void);			// Create an unsized field.
-    field(size_t);			// Create an uninitialized field
-    field(size_t, double);		// Create a field of given size and
-					// initialize to a given value.
+    field(void);                        // Create an unsized field.
+    field(size_t);                      // Create an uninitialized field
+    field(size_t, double);              // Create a field of given size and
+                                        // initialize to a given value.
     field(size_t, const double*);
 
     field(const field&);
@@ -94,21 +90,21 @@ class field {
     field& operator=(const ifield&);
     field& operator=(double);
 
-		/**** Operator overloads ****/
+                /**** Operator overloads ****/
 
 // Access functions
 
-    size_t Length(void) const;		// Return the length of the allocated
-					// data array (1 for a constant field)
+    size_t Length(void) const;          // Return the length of the allocated
+                                        // data array (1 for a constant field)
 
     double operator[](size_t) const;
     double& operator[](size_t);
 
     operator double*(void);
-    operator const double*(void) const;	// Direct access to data array.
+    operator const double*(void) const; // Direct access to data array.
 
 // Unary operators
-    
+
     field operator+(void) const;
     field operator-(void) const;
 
@@ -159,7 +155,7 @@ class field {
     friend ifield operator>=(double, const field&);
     friend ifield operator>=(const field&, const field&);
 
- 				// Methods
+                                // Methods
 
 // find the sum of all the components
 
@@ -218,57 +214,57 @@ class field {
     field Shift(int) const;
 
     field& Assemble(const field& a, const ifield& ia, const ifield& ib);
-		// Add selected elements from a to this.  ib lists the 
-		// elements selected from a and ia lists their destination
-		// in this. ia and ib must be the same length; this and a
-		// need not be the same length.  To function reliably, it
-		// is necessary that each value in ia be unique. 
+                // Add selected elements from a to this.  ib lists the
+                // elements selected from a and ia lists their destination
+                // in this. ia and ib must be the same length; this and a
+                // need not be the same length.  To function reliably, it
+                // is necessary that each value in ia be unique.
 
     field& Assemble(const field& a, const ifield& ia);
-		// Add all elements from a to selected elements of this.
-		// ia lists the destination of each element of a.  ia and
-		// a must be the same size; a and this need not be the same
-		// size. To function reliably, each value in ia should be
-		// unique.
+                // Add all elements from a to selected elements of this.
+                // ia lists the destination of each element of a.  ia and
+                // a must be the same size; a and this need not be the same
+                // size. To function reliably, each value in ia should be
+                // unique.
 
     field& Assemble(double, const ifield& ia);
-		// Like the previous function, but a constant value is
-		// being assembled into selected elements of this.
+                // Like the previous function, but a constant value is
+                // being assembled into selected elements of this.
 
     field& Scatter(const field& a, const ifield& ia, const ifield& ib);
-		// Scatter selected elements from a to this (replacing the
-		// old values.)  ib lists the elements selected from a and ia 
-		// lists their destination in this. ia and ib must be the same
-		// length; this and a need not be the same length.  To function
-		// reliably, it is necessary that each value in ia be unique. 
+                // Scatter selected elements from a to this (replacing the
+                // old values.)  ib lists the elements selected from a and ia
+                // lists their destination in this. ia and ib must be the same
+                // length; this and a need not be the same length.  To function
+                // reliably, it is necessary that each value in ia be unique.
 
     field& Scatter(const field& a, const ifield& ia);
-		// Scatter the elements of a into this (replacing the old
-		// values).  ia lists the destination of each element
-		// in this.  a and ia must be the same length. To function 
-		// reliably, each value in ia should be unique.
+                // Scatter the elements of a into this (replacing the old
+                // values).  ia lists the destination of each element
+                // in this.  a and ia must be the same length. To function
+                // reliably, each value in ia should be unique.
 
     field& Scatter(double fill, const ifield& ia);
-		// Like the previous function, but a constant value is
-		// being scattered into selected elements of this.
- 
+                // Like the previous function, but a constant value is
+                // being scattered into selected elements of this.
+
     field Gather(const ifield& ia) const;
-		// Gather selected elements from this into a new field.
-		// ia lists the elements to select.  the result will have
-		// the same length as ia.  The mapping need NOT be one-to-one
-		// to function reliably.
+                // Gather selected elements from this into a new field.
+                // ia lists the elements to select.  the result will have
+                // the same length as ia.  The mapping need NOT be one-to-one
+                // to function reliably.
 
     field& Scatter(const field& a, size_t start, size_t end, size_t stride=1);
-		// Scatter the elements of a into those elements of the field
-		// whose indices are n*stride+start.  The length of the field
-		// must be stride times the length of a and start must be less
-		// than stride.
+                // Scatter the elements of a into those elements of the field
+                // whose indices are n*stride+start.  The length of the field
+                // must be stride times the length of a and start must be less
+                // than stride.
 
     field Gather(size_t start, size_t end, size_t stride=1) const;
-		// Gather the elements whose indices are given by n*stride+start
-		// into a new field. The value of start must be less than 
-		// the value of stride.
- 
+                // Gather the elements whose indices are given by n*stride+start
+                // into a new field. The value of start must be less than
+                // the value of stride.
+
 // I/O
 
     friend size_t fwrite(const field&, FILE*);
@@ -284,7 +280,7 @@ class field {
 
     // Data
 
-    int ref_flag;			// Number of references given out
+    int ref_flag;                       // Number of references given out
     struct __field_node *root;
 
     // Methods
@@ -298,12 +294,12 @@ class field {
 class ifield {
   public:
 
-		/**** Constructors, destructors, assigns ****/
+                /**** Constructors, destructors, assigns ****/
 
-    ifield(void);			// Create an unsized field
-    ifield(size_t);			// Create an uninitialized field.
-    ifield(size_t size, INT fill);	// Create a sized field and initialize
-					// to the fill value.
+    ifield(void);                       // Create an unsized field
+    ifield(size_t);                     // Create an uninitialized field.
+    ifield(size_t size, INT fill);      // Create a sized field and initialize
+                                        // to the fill value.
     ifield(size_t, const INT*);
 
     ifield(const ifield&);
@@ -315,7 +311,7 @@ class ifield {
     ifield& operator=(const field&);
     ifield& operator=(INT);
 
-		/**** Operator overloads ****/
+                /**** Operator overloads ****/
 
 // Access functions
 
@@ -326,7 +322,7 @@ class ifield {
     operator INT*(void);
 
 // Unary operators
-    
+
     ifield operator+(void) const;
     ifield operator-(void) const;
     ifield operator~(void) const;
@@ -434,7 +430,7 @@ class ifield {
     friend ifield operator>=(double, const field&);
     friend ifield operator>=(const field&, const field&);
 
- 				// Methods
+                                // Methods
 
 // find the sum of all the components
 
@@ -468,56 +464,56 @@ class ifield {
     ifield Shift(int) const;
 
     ifield& Assemble(const ifield& a, const ifield& ia, const ifield& ib);
-		// Add selected elements from a to this.  ib lists the 
-		// elements selected from a and ia lists their destination
-		// in this. ia and ib must be the same length; this and a
-		// need not be the same length.  To function reliably, it
-		// is necessary that each value in ia be unique. 
+                // Add selected elements from a to this.  ib lists the
+                // elements selected from a and ia lists their destination
+                // in this. ia and ib must be the same length; this and a
+                // need not be the same length.  To function reliably, it
+                // is necessary that each value in ia be unique.
 
     ifield& Assemble(const ifield& a, const ifield& ia);
-		// Add all elements from a to selected elements of this.
-		// ia lists the destination of each element of a.  ia and
-		// a must be the same size; a and this need not be the same
-		// size. To function reliably, each value in ia should be
-		// unique.
+                // Add all elements from a to selected elements of this.
+                // ia lists the destination of each element of a.  ia and
+                // a must be the same size; a and this need not be the same
+                // size. To function reliably, each value in ia should be
+                // unique.
 
     ifield& Assemble(INT, const ifield& ia);
-		// Like the previous function, but a constant value is
-		// being assembled into selected elements of this.
+                // Like the previous function, but a constant value is
+                // being assembled into selected elements of this.
 
     ifield& Scatter(const ifield& a, const ifield& ia, const ifield& ib);
-		// Scatter selected elements from a to this (replacing the
-		// old values.)  ib lists the elements selected from a and ia 
-		// lists their destination in this. ia and ib must be the same
-		// length; this and a need not be the same length.  To function
-		// reliably, it is necessary that each value in ia be unique. 
+                // Scatter selected elements from a to this (replacing the
+                // old values.)  ib lists the elements selected from a and ia
+                // lists their destination in this. ia and ib must be the same
+                // length; this and a need not be the same length.  To function
+                // reliably, it is necessary that each value in ia be unique.
 
     ifield& Scatter(const ifield& a, const ifield& ia);
-		// Scatter the elements of a into this (replacing the old
-		// values).  ia lists the destination of each element
-		// in this.  a and ia must be the same length. To function 
-		// reliably, each value in ia should be unique.
+                // Scatter the elements of a into this (replacing the old
+                // values).  ia lists the destination of each element
+                // in this.  a and ia must be the same length. To function
+                // reliably, each value in ia should be unique.
 
     ifield& Scatter(INT fill, const ifield& ia);
-		// Like the previous function, but a constant value is
-		// being scattered into selected elements of this.
- 
+                // Like the previous function, but a constant value is
+                // being scattered into selected elements of this.
+
     ifield Gather(const ifield& ia) const;
-		// Gather selected elements from this into a new ifield.
-		// ia lists the elements to select.  the result will have
-		// the same length as ia.  The mapping need NOT be one-to-one
-		// to function reliably.
+                // Gather selected elements from this into a new ifield.
+                // ia lists the elements to select.  the result will have
+                // the same length as ia.  The mapping need NOT be one-to-one
+                // to function reliably.
 
     ifield& Scatter(const ifield& a, size_t start, size_t end, size_t stride=1);
-		// Scatter the elements of a into those elements of the ifield
-		// whose indices are n*stride+start.  The length of the ifield
-		// must be stride times the length of a and start must be less
-		// than stride.
+                // Scatter the elements of a into those elements of the ifield
+                // whose indices are n*stride+start.  The length of the ifield
+                // must be stride times the length of a and start must be less
+                // than stride.
 
     ifield Gather(size_t start, size_t end, size_t stride=1) const;
-		// Gather the elements whose indices are given by n*stride+start
-		// into a new ifield. The value of start must be less than 
-		// the value of stride.
+                // Gather the elements whose indices are given by n*stride+start
+                // into a new ifield. The value of start must be less than
+                // the value of stride.
 
 // I/O
 
@@ -600,15 +596,15 @@ inline double& field::operator[](size_t n) {
   return root->data[n];
 }
 
-inline field::operator const double*(void) const{ 
+inline field::operator const double*(void) const{
   assert(root!=NULL);
-  return root->data; 
+  return root->data;
 }
-inline field::operator double *(void){ 
+inline field::operator double *(void){
   assert(root!=NULL);
   ref_flag = 1;
   if (root->ref_count>1) Private();
-  return root->data; 
+  return root->data;
 }
 
 inline field field::operator+(void) const{
@@ -652,13 +648,13 @@ inline INT& ifield::operator[](size_t n) {
 
 inline ifield::operator const INT *(void) const{
   assert(root!=NULL);
-  return root->data; 
+  return root->data;
 }
 inline ifield::operator INT *(void){
   assert(root!=NULL);
   if (root->ref_count>1) Private();
   ref_flag = 1;
-  return root->data; 
+  return root->data;
 }
 
 inline ifield ifield::operator+(void) const{

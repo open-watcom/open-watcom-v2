@@ -1,8 +1,5 @@
 #include "fail.h"
 
-#ifndef __WATCOM_INT64__
-typedef int __int64;
-#endif
 __int64 foo( __int64 x ) {
     return x * 2;
 }

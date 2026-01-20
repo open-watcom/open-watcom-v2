@@ -4,8 +4,6 @@
 #include "fail.h"
 #include <limits.h>
 
-#ifdef __WATCOM_INT64__
-
 typedef struct {
     unsigned long       low;
     unsigned long       high;
@@ -45,9 +43,3 @@ int main()
     if( value.p.low != 0xffffffff || value.p.high != 0 ) fail( __LINE__ );
     _PASS;
 }
-
-#else
-
-ALWAYS_PASS
-
-#endif

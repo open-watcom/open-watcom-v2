@@ -1,13 +1,8 @@
 #include <stdio.h>
 
 // from Introduction to Algorithms (Cormen,Leiserson,Rivest) Chapter 33
-#ifdef __WATCOM_INT64__
 typedef __int64 INT;
 #define FMT "I64"
-#else
-typedef long INT;
-#define FMT "l"
-#endif
 
 // Public(e,n) Secret(d,n)
 INT n;
@@ -119,10 +114,8 @@ int main() {
     INT q = 9;
     p *= p;
     q *= q;
-#ifdef __WATCOM_INT64__
     p *= p;
     q *= q;
-#endif
     while( ! is_prime( p ) ) {
         p += 2;
     }

@@ -1,8 +1,6 @@
 #include "fail.h"
 #include <limits.h>
 
-#ifdef __WATCOM_INT64__
-
 #ifdef __WATCOMC__
 #define I8 char
 #define I16 short
@@ -46,7 +44,7 @@ unsigned __int64 foo( unsigned __int64 x ) {
 
 int main() {
     //__asm int 3;
-    #define test( c, i )	(( foo( c ) != ( c + i ) ) && ( printf("%u\n",foo(c)-c), 1 ))
+    #define test( c, i )        (( foo( c ) != ( c + i ) ) && ( printf("%u\n",foo(c)-c), 1 ))
     if( test( 6i8, 1 ) ) _fail;
     if( test( 0x7i8, 1 ) ) _fail;
     if( test( 6ui8, 2 ) ) _fail;
@@ -87,6 +85,3 @@ int main() {
     if( test( 0x10000Ui32, 8 ) ) _fail;
     _PASS;
 }
-#else
-ALWAYS_PASS
-#endif

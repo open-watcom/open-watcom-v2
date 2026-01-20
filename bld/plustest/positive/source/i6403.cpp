@@ -13,17 +13,15 @@ long foo( long x ) {
 unsigned long foo( unsigned long x ) {
     return x + 4;
 }
-#ifdef __WATCOM_INT64__
 __int64 foo( __int64 x ) {
     return x + 5;
 }
 unsigned __int64 foo( unsigned __int64 x ) {
     return x + 6;
 }
-#endif
 
 int main() {
-    #define test( c, i )	foo( c ) != ( c + i )
+    #define test( c, i )        foo( c ) != ( c + i )
     if( test( 0, 1 ) ) _fail;
     if( test( 0u, 2 ) ) _fail;
     if( test( 0U, 2 ) ) _fail;
@@ -35,7 +33,6 @@ int main() {
     if( test( 0Lu, 4 ) ) _fail;
     if( test( 0lU, 4 ) ) _fail;
     if( test( 0LU, 4 ) ) _fail;
-#ifdef __WATCOM_INT64__
     if( test( 0i64, 5 ) ) _fail;
     if( test( 0I64, 5 ) ) _fail;
     if( test( 0ui64, 6 ) ) _fail;
@@ -60,7 +57,6 @@ int main() {
     if( test( 0x9999999999u, 6 ) ) _fail;
     if( test( 0x9999999999ul, 6 ) ) _fail;
     if( test( 0x9999999999uL, 6 ) ) _fail;
-#endif
     if( test( CHAR_MIN, 1 ) ) _fail;
     if( test( CHAR_MAX, 1 ) ) _fail;
     if( test( SCHAR_MIN, 1 ) ) _fail;
@@ -80,14 +76,12 @@ int main() {
     if( test( LONG_MIN, 3 ) ) _fail;
     if( test( LONG_MAX, 3 ) ) _fail;
     if( test( ULONG_MAX, 4 ) ) _fail;
-#ifdef __WATCOM_INT64__
     if( test( LONGLONG_MIN, 5 ) ) _fail;
     if( test( LONGLONG_MAX, 5 ) ) _fail;
     if( test( ULONGLONG_MAX, 6 ) ) _fail;
     if( test( _I64_MIN, 5 ) ) _fail;
     if( test( _I64_MAX, 5 ) ) _fail;
     if( test( _UI64_MAX, 6 ) ) _fail;
-#endif
     if( test( 0, 1 ) ) _fail;
 #if INT_MAX < 65536
     if( test( 32766, 1 ) ) _fail;
@@ -134,10 +128,8 @@ int main() {
 #else
 #error int is larger than expected
 #endif
-#ifdef __WATCOM_INT64__
     if( test( 4294967296, 5 ) ) _fail;
     if( test( 4294967296u, 6 ) ) _fail;
     if( test( 4294967296U, 6 ) ) _fail;
-#endif
     _PASS;
 }

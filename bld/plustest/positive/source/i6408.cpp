@@ -3,8 +3,6 @@
 
 #include "fail.h"
 
-#ifdef __WATCOM_INT64__
-
 __int64 a;
 
 void reset( void ) {
@@ -30,9 +28,3 @@ int main( void ) {
     if( !test() ) _fail;
     _PASS;
 }
-
-#else
-
-ALWAYS_PASS
-
-#endif

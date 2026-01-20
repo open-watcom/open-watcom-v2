@@ -1,9 +1,5 @@
 #include "fail.h"
 
-#ifndef __WATCOM_INT64__
-#define __int64 long
-#endif
-
 struct S {
     double d;
     __int64 x;

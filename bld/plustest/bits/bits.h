@@ -1,11 +1,7 @@
 // bits.h:    Fixed-length sets of bit flags
 
 #ifdef _USE_INT64
-#ifdef __WATCOM_INT64__
 typedef unsigned __int64 _Block;
-#else
-typedef unsigned long _Block;
-#endif
 #else
 typedef unsigned short _Block;
 #endif

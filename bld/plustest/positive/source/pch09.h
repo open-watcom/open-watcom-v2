@@ -1,8 +1,6 @@
 #include <limits.h>
 #include "fail.h"
 
-#ifdef __WATCOM_INT64__
-
 class C : public _CD {
     public:
     __int64 a;
@@ -26,5 +24,3 @@ C::C() {
 C::~C() {
     a = LONG_MAX+34;
 }
-
-#endif

@@ -1,16 +1,12 @@
 #include "fail.h"
 #include <stddef.h>
 
-#ifdef __WATCOM_INT64__
 typedef __int64 I64;
-#else
-typedef long I64;
-#endif
 
 template <class T>
     struct S {
-	char c;
-	T x;
+        char c;
+        T x;
     };
 
 char x1;
