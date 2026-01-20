@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 gbl_defn unsigned               CodeSize;       // size of program object code
 gbl_defn label_id               LabelIdx;       // label index
 gbl_defn sym_id                 WildLabel;      // label of a wild goto
-gbl_defn pointer                LabelList;      // list of labels
 gbl_defn obj_ptr                FormatList;     // pointer to format list
 gbl_defn label_id               EpilogLabel;    // epilogue label
 gbl_defn sym_id                 CommonEntry;    // common entry point

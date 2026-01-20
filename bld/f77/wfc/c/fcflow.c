@@ -61,7 +61,8 @@
 #include "cgprotos.h"
 
 
-static  obj_ptr         WarpReturn;
+static obj_ptr          WarpReturn;
+static label_entry      *LabelList;     // list of labels
 
 
 /* Forward declarations */
@@ -84,7 +85,7 @@ void    FiniLabels( bool format_label )
     label_entry **owner;
     label_entry *curr;
 
-    owner = (label_entry **)&LabelList;
+    owner = &LabelList;
     while( (curr = *owner) != NULL ) {
         if( curr->format_label == format_label ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
@@ -545,7 +546,7 @@ void    DoneLabel( label_id label )
     label_entry **owner;
     label_entry *curr;
 
-    owner = (label_entry **)&LabelList;
+    owner = &LabelList;
     for( ;; ) {
         curr = *owner;
         if( curr->label == label ) {
