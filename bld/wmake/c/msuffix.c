@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -437,7 +437,7 @@ char *AddCreator( const char *sufsuf )
     slist = NewSList();
     slist->targ_path = cur_targ_path;
     slist->dep_path = cur_dep_path;
-    slist->cretarg = NewTarget( fullsufsuf );
+    slist->cretarg = NewTarget( FixName( StrDupSafe( fullsufsuf ) ) );
     slist->cretarg->special = true;
     slist->cretarg->sufsuf  = true;
     slist->cretarg->depend = NewDepend();

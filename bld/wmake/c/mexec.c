@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -601,9 +601,9 @@ STATIC int findInternal( const char *cmd )
  * expects cmd to be just the command - ie: no args
  */
 {
-    char * const    *key;
-    size_t          len;
-    char            buff[COM_MAX_LEN + 1];
+    const char * const  *key;
+    size_t              len;
+    char                buff[COM_MAX_LEN + 1];
 
     assert( cmd != NULL );
 
@@ -630,7 +630,7 @@ STATIC int findInternal( const char *cmd )
         buff[len - 1] = NULLCHAR;
         cmd = buff;
     }
-    return( (int)( key - (char **)dosInternals ) );
+    return( (int)( key - dosInternals ) );
 }
 
 
@@ -676,7 +676,7 @@ STATIC bool percentMake( char *arg )
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
-            calltarg = NewTarget( buf );
+            calltarg = NewTarget( FixName( StrDupSafe( buf ) ) );
             newtarg = true;
         }
         ok = Update( calltarg );

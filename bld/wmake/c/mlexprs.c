@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,9 +331,6 @@ STATIC bool checkDotName( const char *str )
     }
 
     CurAttr.u.dotname = (DotName)( (const char **)key - DotNames );
-
-    assert( DOT_MIN < CurAttr.u.dotname
-        && CurAttr.u.dotname < DOT_MAX );
 
     return( true );
 }

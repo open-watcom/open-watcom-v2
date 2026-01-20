@@ -145,8 +145,8 @@ void RenameTarget( const char *oldname, const char *newname )
 }
 
 
-TARGET *NewTarget( const char *name )
-/************************************
+TARGET *NewTarget( char *name )
+/******************************
  * allocate a newtarget with name, and default values
  */
 {
@@ -155,7 +155,7 @@ TARGET *NewTarget( const char *name )
     new = CallocSafe( sizeof( *new ) );
     new->executed = true;
     new->date = OLDEST_DATE;
-    new->node.name = FixName( StrDupSafe( name ) );
+    new->node.name = name;
     AddHashNode( targTab, (HASHNODE *)new );
 
     return( new );
@@ -489,7 +489,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
-        targ = NewTarget( name );
+        targ = NewTarget( StrDupSafe( name ) );
         if( name[0] == '.'
           && ( cisextc( name[1] )
           || ciswildc( name[1] ) ) ) {
@@ -517,7 +517,7 @@ STATIC TARGET *findOrNewDotTarget( DotName dot )
     if( targ == NULL ) {
         name[0] = '.';
         strcpy( name + 1, DotNames[dot] );
-        targ = NewTarget( name );
+        targ = NewTarget( StrDupSafe( name ) );
         targ->special = true;
         targ->mentioned = true;
         switch( dot ) {
@@ -908,7 +908,8 @@ void TargetFini( void )
     WalkHashTab( targTab, walkFree, NULL );
     FreeHashTab( targTab );
     targTab = NULL;
-    while( cleanupLeftovers() )
-        ;
+    while( cleanupLeftovers() ) {
+        /* nothing */;
+    }
 #endif
 }

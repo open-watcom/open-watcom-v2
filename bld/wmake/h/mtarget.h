@@ -178,7 +178,7 @@ extern void     TargetInit( void );
 extern void     TargetFini( void );
 
 extern TLIST    *NewTList( void );
-extern TARGET   *NewTarget( const char *name );
+extern TARGET   *NewTarget( char *name );
 extern DEPEND   *NewDepend( void );
 extern NKLIST   *NewNKList( void );
 extern SLIST    *NewSList( void );
