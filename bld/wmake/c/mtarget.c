@@ -173,17 +173,6 @@ TARGET *FindTarget( const char *name )
 }
 
 
-STATIC TARGET *FindDotTarget( DotName dot )
-/*****************************************/
-{
-    char    name[MAX_DOT_NAME];
-
-    name[0] = '.';
-    strcpy( name + 1, DotNames[dot] );
-    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
-}
-
-
 #ifdef __WATCOMC__
 #pragma on( check_stack );
 #endif
@@ -192,9 +181,12 @@ CLIST *DotCList( DotName dot )
  * find clist associated with dotname
  */
 {
-    TARGET const        *cur;
+    TARGET const    *cur;
+    char            name[MAX_DOT_NAME];
 
-    cur = FindDotTarget( dot );
+    name[0] = '.';
+    strcpy( name + 1, DotNames[dot] );
+    cur = FindTarget( name );
 
     if( cur == NULL
       || cur->depend == NULL ) {
@@ -513,10 +505,10 @@ STATIC TARGET *findOrNewDotTarget( DotName dot )
     char    name[MAX_DOT_NAME];
     TARGET  *targ;
 
-    targ = FindDotTarget( dot );
+    name[0] = '.';
+    strcpy( name + 1, DotNames[dot] );
+    targ = FindTarget( name );
     if( targ == NULL ) {
-        name[0] = '.';
-        strcpy( name + 1, DotNames[dot] );
         targ = NewTarget( StrDupSafe( name ) );
         targ->special = true;
         targ->mentioned = true;

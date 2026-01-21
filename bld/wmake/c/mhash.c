@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,22 +143,18 @@ bool WalkHashTab( HASHTAB *tab, bool (*func)(void *node,void *ptr), void *ptr )
  */
 {
     HASH_T      h;
-    HASHNODE    *walk;
+    HASHNODE    *next;
     HASHNODE    *cur;
 
     assert( tab != NULL && func != NULL );
 
-    h = 0;
-    while( h < tab->prime ) {
-        walk = tab->nodes[h];
-        while( walk != NULL ) {
-            cur = walk;
-            walk = walk->next;
+    for( h = 0; h < tab->prime; ++h ) {
+        for( cur = tab->nodes[h]; cur != NULL; cur = next ) {
+            next = cur->next;
             if( func( cur, ptr ) ) {
                 return( true );
             }
         }
-        ++h;
     }
     return( false );
 }
@@ -233,16 +229,10 @@ HASHNODE *RemHashNode( HASHTAB *tab, const char *name, case_sensitivity caseSens
     }
     for( cur = &(tab->nodes[h]); *cur != NULL; cur = &(*cur)->next ) {
         if( cmp( (*cur)->name, name ) == 0 ) {
-            break;
+            old = *cur;
+            *cur = (*cur)->next;    /* delink from list */
+            return( old );
         }
     }
-
-    if( *cur == NULL ) {
-        return( NULL );     /* not found */
-    }
-
-    old = *cur;
-    *cur = (*cur)->next;    /* delink from list */
-
-    return( old );
+    return( NULL );     /* not found */
 }
