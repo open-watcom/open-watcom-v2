@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,14 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     cmdnam = MStrdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
-    argv = MAlloc( strlen( cmd ) * sizeof( char * ) );
+    /*
+     * skip trailing spaces
+     */
+    i = strlen( cmdnam );
+    while( i-- > 0 && cmdnam[i] == ' ' ) {
+        cmdnam[i] = '\0';
+    }
+    argv = MAlloc( ( strlen( cmd ) + 1 ) * sizeof( char * ) );
     if( argv == NULL ) {
         MFree( cmdnam );
         return( -1 );
