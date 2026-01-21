@@ -23,11 +23,8 @@ do_check() {
     fi
 }
 
-if [ -z "$2" ]; then 
-    usage
-fi
+LOGFILE=../error.out
 
-LOGFILE=$2
 echo \# ===========================
 echo \# Macro Tests
 echo \# ===========================

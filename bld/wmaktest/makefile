@@ -2,7 +2,7 @@
 
 tree_depth = 2
 
-watcom_root = $+$(%WATCOM)$-
+watcom_root = $(%WATCOM)
 
 !ifdef %BUILDTEST
 buildtest = 1
@@ -82,7 +82,6 @@ from = $+$(%__CWD__)$-
 
 .BEFORE
     @set TRMEM_CODE=1
-    @if exist error.out del error.out
     # ===========================
     # Build utilities first
     # ===========================
@@ -95,19 +94,27 @@ from = $+$(%__CWD__)$-
 ! endif
 !else ifdef __LINUXX64__
 ! ifeq host 386
-    @echo Test wmake (32-bit)
+    @echo "Test wmake (32-bit)"
 ! else
-    @echo Test wmake (64-bit)
+    @echo "Test wmake (64-bit)"
 ! endif
 !else
     @echo Test wmake (32-bit)
 !endif
-    @cd cmds
-    @-wmake -h
-    @cd $(from)
+    @echo *****************************************************************
+    @if exist error.out @rm error.out
 
-all: $(tests) .SYMBOLIC
+all: prebuild $(tests) .SYMBOLIC
 #    for %t in ($(tests)) do %make %t
+
+prebuild: .SYMBOLIC
+    @cd cmds
+!ifdef buildtest
+    @-wmake -h buildtest=1
+!else
+    @-wmake -h
+!endif
+    @cd $(from)
 
 test1: .SYMBOLIC
     # =======================================

@@ -23,9 +23,7 @@ do_check() {
     fi
 }
 
-if [ -z "$2" ]; then 
-    usage
-fi
+LOGFILE=../error.out
 
 echo \# ===========================
 echo \# Preprocessor Tests

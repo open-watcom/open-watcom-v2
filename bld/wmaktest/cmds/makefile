@@ -3,6 +3,10 @@ host_cpu = $(bld_cpu)
 
 proj_name = wmake_regress_cmds
 
+!ifdef %BUILDTEST
+buildtest = 1
+!endif
+
 !ifdef __UNIX__
 exe=
 c_dir=../c/
@@ -19,7 +23,7 @@ commands += rem$(exe)
 commands += prntdir$(exe)
 !endif
 
-!ifdef %BUILDTEST
+!ifdef buildtest
 
 !include cproj.mif
 !include defrule.mif
@@ -36,4 +40,3 @@ $(commands) : .SYMBOLIC
     wcl386 $(c_dir)$^&.c -I"../../watcom/h" -fe=$@
 
 !endif
-

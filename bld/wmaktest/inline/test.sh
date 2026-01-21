@@ -31,11 +31,7 @@ do_err_check() {
     fi
 }
 
-if [ -z "$2" ]; then 
-    usage
-fi
-
-LOGFILE=$2
+LOGFILE=../error.out
 
 echo \# ===========================
 echo \# Inline File Tests

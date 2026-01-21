@@ -2,11 +2,11 @@
 
 objs = ap1.obj ap2.obj ap3.obj
 
-.asm:       .;..\asm
+.asm:       .;../asm
 .asm.obj:
     optasm $[*
 
-.c:         .;..\c
+.c:         .;../c
 .c.obj:
     %write $@ wcc386 $[* -zq
 

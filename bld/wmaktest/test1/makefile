@@ -3,7 +3,7 @@ tests = &
     test01
 
 .BEFORE
-    @set ERRLOG=..\error.out
+    @set ERRLOG=../error.out
     @echo $# ===========================
     @echo $# Multiple Dependents Tests
     @echo $# ===========================
