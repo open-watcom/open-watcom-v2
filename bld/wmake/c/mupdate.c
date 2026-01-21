@@ -634,7 +634,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
              * note the path of the current target must match the
              * path as specified in the slist
              */
-            if( stricmp( buf, curslist->targ_path ) == 0 ) {
+            if( FNameEq( buf, curslist->targ_path ) ) {
                 /* build filename for implied target */
                 _makepath( buf, NULL, curslist->dep_path, fname, cursuf->node.name );
                 /* try to find this file on path or in targets */

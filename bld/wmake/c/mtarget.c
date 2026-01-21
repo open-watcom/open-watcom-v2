@@ -92,7 +92,7 @@ NKLIST *NewNKList( void )
 
 SLIST *NewSList( void )
 /**********************
- * allocate a NKLIST, fill in default values
+ * allocate a SLIST, fill in default values
  */
 {
     SLIST   *slist;

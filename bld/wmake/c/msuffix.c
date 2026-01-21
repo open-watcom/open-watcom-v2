@@ -406,8 +406,8 @@ char *AddCreator( const char *sufsuf )
     if( *cur != NULL
       && src->id == (*cur)->suffix->id ) {
         for( slist = (*cur)->slist; ; slist = slist->next ) {
-            if( stricmp( slist->targ_path, cur_targ_path ) == 0
-              && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
+            if( FNameEq( slist->targ_path, cur_targ_path )
+              && FNameEq( slist->dep_path, cur_dep_path ) ) {
                 if( *cur_targ_path != NULLCHAR ) {
                     FreeSafe( cur_targ_path );
                 }
