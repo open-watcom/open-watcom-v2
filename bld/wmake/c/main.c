@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,6 +266,11 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     while( (p = *++argv) != NULL ) {
         checkCtrl( p );
         select = p[0];
+        /*
+         * skip blank argument
+         */
+        if( select == NULLCHAR )
+            continue;
         option = ctolower( p[1] );
         if( CHECK_OPTION( p ) ) {
             if( option != NULLCHAR
