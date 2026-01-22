@@ -73,7 +73,7 @@ void    DoSelect( FCODE kind ) {
     curr_obj = FCodeTell( 0 );
     while( cases-- > 0 ) {
         if( kind == FC_COMPUTED_GOTO ) {
-            label = GetStmtCgLabel( GetPtr() );
+            label = GetStmtCgLabel( (sym_id)GetPtr() );
         } else {
             label = GetCgLabel( GetU16() );
         }

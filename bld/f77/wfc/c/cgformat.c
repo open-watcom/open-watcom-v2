@@ -40,6 +40,7 @@
 #include "fcodes.h"
 #include "fcgbls.h"
 #include "emitobj.h"
+#include "fcflow.h"
 #include "cgformat.h"
 
 
@@ -60,7 +61,7 @@ void    StartFmt( cs_label fmt_label ) {
             // FORMAT statement with no statement label
             OutU16( 0 );
         } else {
-            OutU16( fmt_label.st_label->u.st.label );
+            OutU16( GetStmtLabel( fmt_label.st_label ) );
         }
     } else {
         OutU16( fmt_label.g_label );

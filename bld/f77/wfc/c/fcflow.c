@@ -169,14 +169,6 @@ void    FCJmpAlways( void )
 }
 
 
-label_handle    GetStmtCgLabel( sym_id sn )
-//=========================================
-// Get a statement cg code label.
-{
-    return( GetCgLabel( sn->u.st.label ) );
-}
-
-
 void    FCStmtJmpAlways( void )
 //=============================
 {
@@ -221,14 +213,6 @@ back_handle     GetCgBckLabel( label_id label )
 }
 
 
-back_handle    GetStmtCgBckLabel( sym_id sn )
-//===========================================
-// Get a statement cg data label.
-{
-    return( GetCgBckLabel( sn->u.st.label ) );
-}
-
-
 void    FCAssign( void )
 //======================
 // Process ASSIGN statement.
@@ -238,12 +222,12 @@ void    FCAssign( void )
     stmt = GetPtr();
     if( stmt->u.st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGBackName( GetCgBckLabel( stmt->u.st.label ),
+                          CGBackName( GetStmtCgBckLabel( stmt ),
                                       TY_LOCAL_POINTER ),
                           TY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( stmt->u.st.label, TY_INTEGER ),
+                          CGInteger( GetStmtLabel( stmt ), TY_INTEGER ),
                           TY_INTEGER ) );
         RefStmtLabel( stmt );
     }
@@ -308,7 +292,7 @@ void    FCAssignedGOTOList( void )
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtCgLabel( sn );
-            Set64ValU32( tmp, sn->u.st.label );
+            Set64ValU32( tmp, GetStmtLabel( sn ) );
             CGSelCase( s, label, tmp );
         }
     }
@@ -585,7 +569,7 @@ void    RefStmtLabel( sym_id sn )
     } else {
         sn->u.st.ref_count--;
         if( sn->u.st.ref_count == 0 ) {
-            DoneLabel( sn->u.st.label );
+            DoneLabel( GetStmtLabel( sn ) );
         }
     }
 }

@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
+#define GetStmtLabel(x)         ((x)->u.st.label)
+#define GetStmtCgLabel(x)       GetCgLabel((x)->u.st.label)
+#define GetStmtCgBckLabel(x)    GetCgBckLabel((x)->u.st.label)
+
 extern void             InitLabels( void );
 extern void             FiniLabels( bool format_label );
 extern label_handle     GetCgLabel( label_id label );
-extern label_handle     GetStmtCgLabel( sym_id sn );
 extern back_handle      GetCgBckLabel( label_id label );
-extern back_handle      GetStmtCgBckLabel( sym_id sn );
 extern void             DoneLabel( label_id label );
 extern void             RefStmtLabel( sym_id sn );
