@@ -71,9 +71,9 @@ typedef struct old_back_handle {
     back_handle             cgbck;
 } old_back_handle;
 
-extern  cg_name         SubAltSCB( sym_id );
+extern cg_name          SubAltSCB( sym_id );
 
-extern  segment_id      CurrCodeSegId;
+extern segment_id       CurrCodeSegId;
 
 back_handle             TraceEntry_cgbck;
 
@@ -114,14 +114,13 @@ static void         CheckAutoSize( sym_id sym, cg_type cgtyp )
 #else
     /* unused parameters */ (void)sym; (void)cgtyp;
 #endif
-
 }
 
 
 static temp_handle  MakeTempSCB( int len )
 //========================================
 {
-    temp_handle scb;
+    temp_handle     scb;
 
     scb = CGTemp( TY_CHAR );
     // if it's character*(*), the SCB will get filled in by FCDArgInit()
@@ -163,8 +162,8 @@ size_t  SymAlign( sym_id sym )
 static segment_id   LocalData( sym_id sym, unsigned_32 size )
 //===========================================================
 {
-    segment_id  segid;
-    segment_id  old_segid;
+    segment_id      segid;
+    segment_id      old_segid;
 
     if( sym->u.ns.flags & SY_DATA_INIT ) {
         segid = SEG_LDATA;
@@ -183,8 +182,8 @@ static segment_id   LocalData( sym_id sym, unsigned_32 size )
 static unsigned_32  CheckThreshold( sym_id sym, unsigned_32 g_offset )
 //====================================================================
 {
-    unsigned_32 item_size;
-    segment_id  old_segid;
+    unsigned_32     item_size;
+    segment_id      old_segid;
 
     item_size = _SymSize( sym );
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
@@ -197,10 +196,9 @@ static unsigned_32  CheckThreshold( sym_id sym, unsigned_32 g_offset )
         DGLabel( FEBack( sym ) );
         BESetSeg( old_segid );
         return( item_size );
-    } else {
-        sym->u.ns.si.va.vi.segid = LocalData( sym, item_size );
-        return( 0 );
     }
+    sym->u.ns.si.va.vi.segid = LocalData( sym, item_size );
+    return( 0 );
 }
 
 
@@ -209,7 +207,7 @@ static void     DumpSCB( back_handle scb_cgbck, back_handle data_cgbck,
 //=======================================================================
 // Dump an SCB.
 {
-    segment_id  old_segid;
+    segment_id      old_segid;
 
     old_segid = BESetSeg( SEG_LDATA );
     DGAlign( ALIGN_DWORD );
@@ -285,7 +283,7 @@ static void     DumpAutoSCB( sym_id sym, cg_type cgtyp )
 static void     DumpGlobalSCB( sym_id sym, unsigned_32 g_offset )
 //===============================================================
 {
-    segment_id  old_segid;
+    segment_id      old_segid;
 
     if( _Allocatable( sym ) ) {
         DumpSCB( FEBack( sym ), NULL, 0, true, 0 );
@@ -335,9 +333,9 @@ static void     MergeCommonInfo( void )
 //=====================================
 // Merge information from global common block to local common block.
 {
-    sym_id      sym;
-    sym_id      g_sym;
-    size_t      len;
+    sym_id          sym;
+    sym_id          g_sym;
+    size_t          len;
 
     for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
         for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
@@ -372,14 +370,14 @@ static void     DbgVarInfo( sym_id sym )
 //======================================
 // Generate debugging information for for a variable.
 {
-    dbg_loc     loc;
-    com_eq      *ce_ext;
+    dbg_loc         loc;
+    com_eq          *ce_ext;
 
     if( sym->u.ns.flags & SY_SUB_PARM ) {
         DBLocalSym( sym, TY_POINTER );
     } else if( sym->u.ns.flags & SY_IN_EQUIV ) {
-        sym_id  leader;
-        intstar4        offset;
+        sym_id      leader;
+        intstar4    offset;
 
         offset = 0;
         leader = sym;
@@ -441,8 +439,8 @@ void    GenLocalDbgInfo( void )
 //=============================
 // Generate local symbols for a subprogram.
 {
-    sym_id      sym;
-    cg_name     loc;
+    sym_id          sym;
+    cg_name         loc;
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
@@ -498,7 +496,7 @@ void    GenLocalDbgInfo( void )
 static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type cgtyp )
 //==================================================================
 {
-    int         offset;
+    int             offset;
 
     offset = BETypeLength( TY_ADV_ENTRY ) * ( entry - 1 );
     if( cgtyp == TY_ADV_HI ) {
@@ -511,7 +509,7 @@ static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type cgtyp )
 static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type cgtyp )
 //=================================================================================
 {
-    int         offset;
+    int             offset;
 
     offset = ( BETypeLength( TY_ADV_ENTRY_CV ) * entry ) +
              ( BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
@@ -557,10 +555,10 @@ static void PostponeFreeBackHandle( back_handle cgbck )
 static void AssignName2Adv( sym_id sym )
 //======================================
 {
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    cg_name             adv;
-    back_handle         cgbck;
+    act_dim_list    *dim_ptr;
+    int             dim_cnt;
+    cg_name         adv;
+    back_handle     cgbck;
 
     dim_ptr = sym->u.ns.si.va.u.dim_ext;
     dim_cnt = _DimCount( dim_ptr->dim_flags );
@@ -584,14 +582,14 @@ static void     DumpAutoAdv( sym_id sym, sym_id shadow )
 //======================================================
 // Dump an automatic array dope vector.
 {
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    int                 dim_no;
-    int                 entry;
-    intstar4            *bounds;
-    intstar4            lo;
-    intstar4            hi;
-    cg_name             adv;
+    act_dim_list    *dim_ptr;
+    int             dim_cnt;
+    int             dim_no;
+    int             entry;
+    intstar4        *bounds;
+    intstar4        lo;
+    intstar4        hi;
+    cg_name         adv;
 
 
     dim_ptr = sym->u.ns.si.va.u.dim_ext;
@@ -646,7 +644,7 @@ static void     AssignAutoAdv( sym_id sym )
 //=========================================
 // Assign an auto ADV to an array.
 {
-    sym_id      shadow;
+    sym_id          shadow;
 
     shadow = STAdvShadow( sym );
     DumpAutoAdv( sym, shadow );
@@ -658,12 +656,12 @@ static void     DumpStaticAdv( sym_id sym, bool dmp_nam_ptr )
 //===========================================================
 // Dump a global array dope vector.
 {
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    int                 dim_no;
-    intstar4            *bounds;
-    intstar4            lo;
-    intstar4            hi;
+    act_dim_list    *dim_ptr;
+    int             dim_cnt;
+    int             dim_no;
+    intstar4        *bounds;
+    intstar4        lo;
+    intstar4        hi;
 
     dim_ptr = sym->u.ns.si.va.u.dim_ext;
     dim_cnt = _DimCount( dim_ptr->dim_flags );
@@ -739,9 +737,9 @@ static void     CreateAllocatableADV( sym_id sym )
 //      2. flags
 //      3. actual ADV
 {
-    cg_name     adv;
-    cg_name     temp;
-    cg_type     cgtyp;
+    cg_name         adv;
+    cg_name         temp;
+    cg_type         cgtyp;
 
     if( !ForceStatic( sym->u.ns.flags )
       && (Options & OPT_AUTOMATIC) ) {
@@ -794,7 +792,7 @@ static void     DumpBrTable( void )
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED)
           && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            Set64ValU32( tmp, stmt->u.st.label );
+            Set64ValU32( tmp, GetStmtLabel( stmt ) );
             CGSelCase( s_handle, GetStmtCgLabel( stmt ), tmp );
         }
     }
@@ -831,9 +829,11 @@ void    FreeLocalBacks( bool free_dbg_handles )
 //=============================================
 // Free back handles for local symbols in local symbol table.
 {
-    unsigned_16 flags;
-    sym_id      sym;
-    com_eq      *eq_ext;
+    unsigned_16     flags;
+    sym_id          sym;
+    com_eq          *eq_ext;
+
+    /* unused parameters */ (void)free_dbg_handles;
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
@@ -889,12 +889,14 @@ void    FreeLocalBacks( bool free_dbg_handles )
         } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
             if( flags & SY_SUB_PARM ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
+                /*
                 if( (sym->u.ns.u1.s.typ == FT_CHAR)
                   && (CGOpts & CGOPT_DB_LOCALS) ) {
                     if( free_dbg_handles ) {
                         FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
                     }
                 }
+                */
             } else if( (flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
                 FreeSFHeader( sym );
@@ -968,8 +970,8 @@ void    FreeGlobalBacks( void )
 //=============================
 // Free back handles for global symbols in local symbol table.
 {
-    unsigned_16 flags;
-    sym_id      sym;
+    unsigned_16     flags;
+    sym_id          sym;
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
@@ -988,8 +990,8 @@ void    FreeGlobalBacks( void )
 static void     DeclareShadowArgs( entry_pt *ep, aux_info *info )
 //===============================================================
 {
-    parameter   *arg;
-    pass_by     *arg_aux;
+    parameter       *arg;
+    pass_by         *arg_aux;
 
     arg_aux = info->arg_info;
     for( arg = ep->parms; arg != NULL; arg = arg->link ) {
@@ -1013,8 +1015,8 @@ static void     DeclareArg( parameter *arg, pass_by *arg_aux )
 //============================================================
 // Declare an argument.
 {
-    cg_type     arg_cgtyp;
-    sym_id      arg_id;
+    cg_type         arg_cgtyp;
+    sym_id          arg_id;
 
     arg_id = arg->id;
     if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
@@ -1057,9 +1059,9 @@ static void     DeclareArg( parameter *arg, pass_by *arg_aux )
 static void     DefineArgs( entry_pt *ep )
 //========================================
 {
-    parameter   *arg;
-    aux_info    *info;
-    pass_by     *arg_aux;
+    parameter       *arg;
+    aux_info        *info;
+    pass_by         *arg_aux;
 
     info = InfoLookup( ep->id );
     if( (info->cclass & FECALL_GEN_REVERSE_PARMS) ) {
@@ -1089,8 +1091,8 @@ static void     DefineArgs( entry_pt *ep )
 void    DefineEntryPoint( entry_pt *ep )
 //======================================
 {
-    sym_id      sp;
-    cg_type     cgtyp;
+    sym_id          sp;
+    cg_type         cgtyp;
 
     sp = ep->id;
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
@@ -1122,10 +1124,10 @@ void    DefineEntryPoint( entry_pt *ep )
 static void     DefineCommonEntry( void )
 //=======================================
 {
-    entry_pt    *ep;
-    parameter   *arg;
-    aux_info    *info;
-    pass_by     *arg_aux;
+    entry_pt        *ep;
+    parameter       *arg;
+    aux_info        *info;
+    pass_by         *arg_aux;
 
     for( ep = Entries; ep != NULL; ep = ep->link ) {
         info = InfoLookup( ep->id );
@@ -1168,10 +1170,10 @@ static void     DumpNameLists( void )
 //===================================
 // Dump NAMELIST information.
 {
-    sym_id      nl;
-    grp_entry   *ge;
-    sym_id      sym;
-    byte        nl_info;
+    sym_id          nl;
+    grp_entry       *ge;
+    sym_id          sym;
+    byte            nl_info;
 
     for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
         nl->u.nl.address = BENewBack( NULL );
@@ -1205,14 +1207,14 @@ static unsigned_32  DumpVariable( sym_id sym, unsigned_32 g_offset )
 //==================================================================
 // Allocate space for the given variable.
 {
-    unsigned_16 flags;
-    uint        size;
-    segment_id  old_segid;
-    TYPE        typ;
-    sym_id      leader;
-    signed_32   offset;
-    com_eq      *ce_ext;
-    cg_type     cgtyp;
+    unsigned_16     flags;
+    uint            size;
+    segment_id      old_segid;
+    TYPE            typ;
+    sym_id          leader;
+    signed_32       offset;
+    com_eq          *ce_ext;
+    cg_type         cgtyp;
 
     flags = sym->u.ns.flags;
     typ = sym->u.ns.u1.s.typ;
@@ -1381,9 +1383,9 @@ static void     DumpFormats( void )
 //=================================
 // Dump format statements.
 {
-    obj_ptr     curr_fc;
-    unsigned_16 fmt_len;
-    label_id    label;
+    obj_ptr         curr_fc;
+    unsigned_16     fmt_len;
+    label_id        label;
 
     curr_fc = FCodeTell( 0 );
     while( FormatList ) {
@@ -1407,11 +1409,11 @@ void    GenLocalSyms( void )
 //==========================
 // Generate local symbols for a subprogram.
 {
-    sym_id      sym;
-    unsigned_16 flags;
-    unsigned_16 sp_class;
-    unsigned_16 sp_type;
-    cg_type     cgtyp;
+    sym_id          sym;
+    unsigned_16     flags;
+    unsigned_16     sp_class;
+    unsigned_16     sp_type;
+    cg_type         cgtyp;
 
     SFSymId = NULL; // for building statement function chain
     BESetSeg( SEG_LDATA );

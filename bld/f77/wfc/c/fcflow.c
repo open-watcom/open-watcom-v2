@@ -77,8 +77,8 @@ void    FiniLabels( bool back_label )
 //===================================
 // Free specified class of labels.
 {
-    label_entry **owner;
-    label_entry *curr;
+    label_entry     **owner;
+    label_entry     *curr;
 
     owner = &LabelList;
     while( (curr = *owner) != NULL ) {
@@ -105,7 +105,7 @@ static  label_entry     *FindLabel( label_id label )
 //==================================================
 // Search for given label.
 {
-    label_entry *le;
+    label_entry     *le;
 
     for( le = LabelList; le != NULL; le = le->link ) {
         if( le->label == label ) {
@@ -128,22 +128,22 @@ label_handle    GetCgLabel( label_id label )
 //==========================================
 // Get a cg code label.
 {
-    label_entry *le;
+    label_entry     *le;
 
     le = FindLabel( label );
     if( le->u.cglbl == NULL ) {
         le->u.cglbl = BENewLabel();
     }
-    return( le->u.cglbl  );
+    return( le->u.cglbl );
 }
 
 
 void    FCJmpFalse( void )
 //========================
 {
-    unsigned_16 typ_info;
-    cg_type     cgtyp;
-    cg_name     bool_expr;
+    unsigned_16     typ_info;
+    cg_type         cgtyp;
+    cg_name         bool_expr;
 
     typ_info = GetU16();
     cgtyp = GetCGType( typ_info );
@@ -167,7 +167,7 @@ void    FCJmpAlways( void )
 void    FCStmtJmpAlways( void )
 //=============================
 {
-    sym_id      sn;
+    sym_id          sn;
 
     sn = GetPtr();
     CGControl( O_GOTO, NULL, GetStmtCgLabel( sn ) );
@@ -185,7 +185,7 @@ void    FCDefineLabel( void )
 void    FCStmtDefineLabel( void )
 //===============================
 {
-    sym_id      sn;
+    sym_id          sn;
 
     sn = GetPtr();
     CGControl( O_LABEL, NULL, GetStmtCgLabel( sn ) );
@@ -197,14 +197,14 @@ back_handle     GetCgBckLabel( label_id label )
 //===========================================
 // Get a cg data label.
 {
-    label_entry *le;
+    label_entry     *le;
 
     le = FindLabel( label );
     if( le->u.cgbck == NULL ) {
         le->u.cgbck = BENewBack( NULL );
         le->back_label = true;
     }
-    return( le->u.cgbck  );
+    return( le->u.cgbck );
 }
 
 
@@ -212,7 +212,7 @@ void    FCAssign( void )
 //======================
 // Process ASSIGN statement.
 {
-    sym_id      stmt;
+    sym_id          stmt;
 
     stmt = GetPtr();
     if( stmt->u.st.flags & SN_FORMAT ) {
@@ -233,11 +233,11 @@ void    FCIfArith( void )
 //=======================
 // Set up control structure for arithmetic if.
 {
-    cg_name     if_expr;
-    sym_id      lt;
-    sym_id      eq;
-    sym_id      gt;
-    cg_type     cgtyp;
+    cg_name         if_expr;
+    sym_id          lt;
+    sym_id          eq;
+    sym_id          gt;
+    cg_type         cgtyp;
 
     cgtyp = GetCGType( GetU16() );
     if_expr = XPopValue( cgtyp );
@@ -327,7 +327,7 @@ void    FCStartRB( void )
 //=======================
 // Start a REMOTE BLOCK.
 {
-    sym_id      rb;
+    sym_id          rb;
 
     rb = GetPtr();
     CGControl( O_LABEL, NULL, GetCgLabel( rb->u.ns.si.rb.entry ) );
@@ -339,8 +339,8 @@ void    FCWarp( void )
 //====================
 // Process WARP F-Code.
 {
-    sym_id      arr;
-    warp_label  init_label;
+    sym_id          arr;
+    warp_label      init_label;
 
     arr = GetPtr();
     init_label = arr->u.ns.si.va.u.dim_ext->l.init_label;
@@ -360,7 +360,7 @@ void    FCExecute( void )
 //=======================
 // Process EXECUTE F-Code (call remote block).
 {
-    sym_id      rb;
+    sym_id          rb;
 
     rb = GetPtr();
     CGControl( O_INVOKE_LABEL, NULL, GetCgLabel( rb->u.ns.si.rb.entry ) );
@@ -388,14 +388,14 @@ void    FCSFCall( void )
 //======================
 // Call a statement function.
 {
-    sym_id      sf;
-    sym_id      sf_arg;
-    sym_id      tmp;
-    cg_type     sf_cgtyp;
-    cg_name     arg_list;
-    cg_name     value;
-    cg_cmplx    z;
-    obj_ptr     curr_obj;
+    sym_id          sf;
+    sym_id          sf_arg;
+    sym_id          tmp;
+    cg_type         sf_cgtyp;
+    cg_name         arg_list;
+    cg_name         value;
+    cg_cmplx        z;
+    obj_ptr         curr_obj;
 
     sf = GetPtr();
     arg_list = NULL;
@@ -479,7 +479,7 @@ void            FCStartSF( void )
 //===============================
 // Start definition of a statement function.
 {
-    sym_id      sf;
+    sym_id          sf;
 
     if( OZOpts & OZOPT_O_INLINE ) {
         // skip the statement function
@@ -499,7 +499,7 @@ void            FCEndSF( void )
 // This F-CODE is only generated if we are NOT generating statement
 // functions in-line.
 {
-    sym_id      sf;
+    sym_id          sf;
 
     sf = GetPtr();
     CGControl( O_LABEL_RETURN, NULL, NULL );
@@ -513,7 +513,7 @@ void            FCSFReferenced( void )
 //====================================
 // Statement function has been referenced; check if its label can be freed.
 {
-    sym_id      sf;
+    sym_id          sf;
 
     for( sf = SFSymId; sf != NULL; sf = sf->u.ns.si.sf.header->link ) {
         if( sf->u.ns.si.sf.header->ref_count == 0 ) {
@@ -530,8 +530,8 @@ void    DoneLabel( label_id label )
 //=================================
 // Free specified label since it will no longer be referenced.
 {
-    label_entry **owner;
-    label_entry *curr;
+    label_entry     **owner;
+    label_entry     *curr;
 
     owner = &LabelList;
     for( ;; ) {

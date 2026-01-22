@@ -51,20 +51,19 @@
 #include "cgprotos.h"
 
 
-void    DoSelect( FCODE kind ) {
-//==============================
-
+void    DoSelect( FCODE kind )
+//============================
 // Select processing for SELECT and computed GOTO.
-
-    sel_handle          s;
-    int                 cases;
-    int                 stmts;
-    label_handle        cglbl;
-    sym_id              sel_sym;
-    cg_name             sel_expr;
-    obj_ptr             curr_obj;
-    signed_64           lo;
-    signed_64           hi;
+{
+    sel_handle      s;
+    int             cases;
+    int             stmts;
+    label_handle    cglbl;
+    sym_id          sel_sym;
+    cg_name         sel_expr;
+    obj_ptr         curr_obj;
+    signed_64       lo;
+    signed_64       hi;
 
     s = CGSelInit();
     cases = GetU16();
@@ -102,10 +101,9 @@ void    DoSelect( FCODE kind ) {
 }
 
 
-void    FCSelect( void ) {
-//========================
-
+void    FCSelect( void )
+//======================
 // Perform SELECT statement.
-
+{
     DoSelect( FC_SELECT );
 }

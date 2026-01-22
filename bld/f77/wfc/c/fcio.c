@@ -68,7 +68,7 @@ void    FCChkIOStmtLabel( void );
 static  void    ChrArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts, cg_name elt_size )
 //=======================================================================================
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, elt_size, TY_INTEGER );
@@ -81,7 +81,7 @@ static  void    ChrArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts, cg_name e
 static  void    NumArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts, uint typ )
 //===============================================================================
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, CGInteger( typ, TY_INTEGER ), TY_INTEGER );
@@ -95,7 +95,7 @@ static  void    IOCall( RTCODE rtn )
 //==================================
 // Call i/o run-time routine with one argument.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, XPop(), TY_POINTER );
@@ -107,7 +107,7 @@ static  void    IOCallValue( RTCODE rtn )
 //=======================================
 // Call i/o run-time routine with one argument.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, GetTypedValue(), TY_INT_4 );
@@ -119,7 +119,7 @@ static  void    chkIOErr( cg_name io_stat )
 //=========================================
 // Check for i/o errors.
 {
-    label_handle        cglbl;
+    label_handle    cglbl;
 
     io_stat = CGUnary( O_POINTS, io_stat, TY_INTEGER );
     if( ( EndEqLabel != 0 )
@@ -154,9 +154,9 @@ static  void    chkIOErr( cg_name io_stat )
 static  void    StructIO( struct field *fd )
 //==========================================
 {
-    sym_id      map;
-    sym_id      big_map = NULL;
-    unsigned_32 size;
+    sym_id          map;
+    sym_id          big_map = NULL;
+    unsigned_32     size;
 
     for( ; fd != NULL; fd = &fd->link->u.fd ) {
         if( fd->typ == FT_STRUCTURE ) {
@@ -199,7 +199,7 @@ static  void    Output( RTCODE rtn, cg_type arg_cgtyp )
 //====================================================
 // Call runtime routine to output elemental types value.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, XPopValue( arg_cgtyp ), PromoteCGToBaseType( arg_cgtyp ) );
@@ -211,7 +211,7 @@ static  void    Input( RTCODE rtn )
 //=================================
 // Common input routine.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, XPop(), TY_POINTER );
@@ -373,8 +373,8 @@ static  void    OutCplx( RTCODE rtn, cg_type cgtyp )
 //================================================
 // Call runtime routine to input COMPLEX value.
 {
-    call_handle call;
-    cg_cmplx    z;
+    call_handle     call;
+    cg_cmplx        z;
 
     call = InitCall( rtn );
     XPopCmplx( &z, cgtyp );
@@ -413,7 +413,7 @@ void    FCOutCHAR( void )
 //=======================
 // Call runtime routine to output CHARACTER*n value.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( RT_OUT_CHAR );
     CGAddParm( call, XPop(), TY_POINTER );
@@ -424,7 +424,7 @@ void    FCOutCHAR( void )
 static  void    IOString( RTCODE rtn )
 //====================================
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, XPop(), TY_INTEGER );
@@ -593,7 +593,7 @@ static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz )
 //==========================================================================
 // Perform structure array i/o.
 {
-    label_handle        cglbl;
+    label_handle    cglbl;
 
     cglbl = BENewLabel();
     CGControl( O_LABEL, NULL, cglbl );
@@ -616,7 +616,7 @@ static  void    StructIOArrayStruct( sym_id arr )
 //===============================================
 // Perform structure array i/o on a field.
 {
-    tmp_handle          num_elts;
+    tmp_handle      num_elts;
 
     num_elts = MkTmp( FieldArrayNumElts( arr ), TY_INT_4 );
     DoStructArrayIO( num_elts, arr->u.fd.xt.record->fl.fields );
@@ -627,7 +627,7 @@ static  void    StructIOItem( sym_id fd )
 //=======================================
 // Perform i/o of structure field.
 {
-    RTCODE      rtn;
+    RTCODE          rtn;
 
     if( fd->u.fd.dim_ext == NULL ) {
         XPush( TmpVal( TmpStructPtr, TY_POINTER ) );
@@ -672,8 +672,8 @@ static  void    StructArrayIO( void )
 //===================================
 // Perform structure array i/o.
 {
-    sym_id              arr;
-    tmp_handle          num_elts;
+    sym_id          arr;
+    tmp_handle      num_elts;
 
     arr = GetPtr();
     num_elts = MkTmp( ArrayNumElts( arr ), TY_INT_4 );
@@ -724,9 +724,9 @@ void    FCSetNml( void )
 //======================
 // Set NAMELIST format.
 {
-    call_handle call;
-    sym_id      nl;
-    grp_entry   *ge;
+    call_handle     call;
+    sym_id          nl;
+    grp_entry       *ge;
 
     NmlSpecified = true;
     call = InitCall( RT_SET_NML );
@@ -745,7 +745,7 @@ void    FCSetFmt( void )
 //======================
 // Set format string from FORMAT statement.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( RT_SET_FMT );
     CGAddParm( call, CGBackName( GetStmtCgBckLabel( (sym_id)GetPtr() ), TY_POINTER ), TY_POINTER );
@@ -757,7 +757,7 @@ void    FCPassLabel( void )
 //=========================
 // Pass label to run-time routine.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( GetU16() );
     CGAddParm( call, CGBackName( GetCgBckLabel( GetU16() ), TY_POINTER ), TY_POINTER );
@@ -772,7 +772,7 @@ void    FCFmtAssign( void )
 //       PRINT I, ...
 // 10    FORMAT( ... )
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( RT_SET_FMT );
     CGAddParm( call, CGUnary( O_POINTS, SymAddr( GetPtr() ), TY_POINTER ), TY_POINTER );
@@ -784,11 +784,11 @@ static void    ArrayIO( RTCODE num_array, RTCODE chr_array )
 //==========================================================
 // Output an array.
 {
-    sym_id      arr;
-    sym_id      field;
-    cg_name     addr;
-    cg_name     num_elts;
-    cg_name     elt_size;
+    sym_id          arr;
+    sym_id          field;
+    cg_name         addr;
+    cg_name         num_elts;
+    cg_name         elt_size;
 
     arr = GetPtr();
     field = GetPtr();
@@ -836,7 +836,7 @@ void    FCFmtScan( void )
 // Call runtime routine to scan a format specification from a character
 // expression.
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( RT_FMT_SCAN );
     CGAddParm( call, CGInteger( GetU16(), TY_UNSIGNED ), TY_UNSIGNED );
@@ -850,8 +850,8 @@ void    FCFmtArrScan( void )
 // Call runtime routine to scan a format specification from a character
 // array.
 {
-    call_handle call;
-    sym_id      sym;
+    call_handle     call;
+    sym_id          sym;
 
     sym = GetPtr();
     call = InitCall( RT_FMT_ARR_SCAN );
@@ -867,9 +867,9 @@ void    FCIntlArrSet( void )
 //==========================
 // Call runtime routine to set internal file to character array.
 {
-    call_handle call;
-    sym_id      sym;
-    sym_id      scb;
+    call_handle     call;
+    sym_id          sym;
+    sym_id          scb;
 
     sym = GetPtr();
     scb = GetPtr();
@@ -888,7 +888,7 @@ void    FCSetIntl( void )
 //=======================
 // Call runtime routine to set internal file to character item (not array).
 {
-    call_handle call;
+    call_handle     call;
 
     call = InitCall( RT_SET_INTL );
     CGAddParm( call, CGInteger( 1, TY_INT_4 ), TY_INT_4 );
@@ -941,7 +941,7 @@ void    FCSetErr( void )
 //======================
 // Set ERROR=.
 {
-    sym_id      sn;
+    sym_id          sn;
 
     CGDone( CGCall( InitCall( RT_SET_ERR ) ) );
     sn = GetPtr();
@@ -950,7 +950,7 @@ void    FCSetErr( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     ErrEqStmt = sn;
-    ErrEqLabel = sn->u.st.label;
+    ErrEqLabel = GetStmtLabel( sn );
 }
 
 
@@ -958,7 +958,7 @@ void    FCSetEnd( void )
 //======================
 // Set END=.
 {
-    sym_id      sn;
+    sym_id          sn;
 
     CGDone( CGCall( InitCall( RT_SET_END ) ) );
     sn = GetPtr();
@@ -967,7 +967,7 @@ void    FCSetEnd( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     EndEqStmt = sn;
-    EndEqLabel = sn->u.st.label;
+    EndEqLabel = GetStmtLabel( sn );
 }
 
 
