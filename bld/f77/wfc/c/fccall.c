@@ -108,7 +108,7 @@ void    FCPrologue( void )
     entry_pt            *ep;
     signed_64           ep_count;
     sel_handle          sel;
-    label_handle        main_entry_label;
+    label_handle        cglbl;
     unsigned_16         sp_type;
 
     --NumSubProgs;
@@ -147,11 +147,11 @@ void    FCPrologue( void )
             CGSelCase( sel, GetCgLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
             U64Inc( ep_count );
         }
-        main_entry_label = BENewLabel();
-        CGSelOther( sel, main_entry_label );
+        cglbl = BENewLabel();
+        CGSelOther( sel, cglbl );
         CGSelect( sel, CGUnary( O_POINTS, CGFEName( EPValue, TY_INTEGER ), TY_INTEGER ) );
-        CGControl( O_LABEL, NULL, main_entry_label );
-        BEFiniLabel( main_entry_label );
+        CGControl( O_LABEL, NULL, cglbl );
+        BEFiniLabel( cglbl );
     }
     BESetSeg( SEG_LDATA );
     LDSegOffset = DGTell();
@@ -898,7 +898,7 @@ void    FCAltReturn( void )
     int             num_alts;
     signed_64       alt_ret;
     obj_ptr         curr_obj;
-    label_handle    other;
+    label_handle    cglbl;
 
     curr_obj = FCodeTell( 0 );
     sel = CGSelInit();
@@ -908,11 +908,11 @@ void    FCAltReturn( void )
         CGSelCase( sel, GetStmtCgLabel( (sym_id)GetPtr() ), alt_ret );
         U64Inc( alt_ret );
     }
-    other = BENewLabel();
-    CGSelOther( sel, other );
+    cglbl = BENewLabel();
+    CGSelOther( sel, cglbl );
     CGSelect( sel, XPop() );
-    CGControl( O_LABEL, NULL, other );
-    BEFiniLabel( other );
+    CGControl( O_LABEL, NULL, cglbl );
+    BEFiniLabel( cglbl );
     // mark all referenced statements
     FCodeSeek( curr_obj );
     num_alts = GetU16();

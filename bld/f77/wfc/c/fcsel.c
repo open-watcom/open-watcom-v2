@@ -59,7 +59,7 @@ void    DoSelect( FCODE kind ) {
     sel_handle          s;
     int                 cases;
     int                 stmts;
-    label_handle        label;
+    label_handle        cglbl;
     sym_id              sel_sym;
     cg_name             sel_expr;
     obj_ptr             curr_obj;
@@ -73,13 +73,13 @@ void    DoSelect( FCODE kind ) {
     curr_obj = FCodeTell( 0 );
     while( cases-- > 0 ) {
         if( kind == FC_COMPUTED_GOTO ) {
-            label = GetStmtCgLabel( (sym_id)GetPtr() );
+            cglbl = GetStmtCgLabel( (sym_id)GetPtr() );
         } else {
-            label = GetCgLabel( GetU16() );
+            cglbl = GetCgLabel( GetU16() );
         }
         Set64ValI32( hi, GetU32() );
         Set64ValI32( lo, GetU32() );
-        CGSelRange( s, lo, hi, label );
+        CGSelRange( s, lo, hi, cglbl );
     }
     sel_sym = GetPtr();
     if( sel_sym->u.ns.u1.s.typ == FT_CHAR ) {

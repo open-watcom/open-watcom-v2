@@ -799,11 +799,11 @@ static  void    DumpBrTable( void )
 {
     sym_id          stmt;
     sel_handle      s_handle;
-    label_handle    end_sel;
+    label_handle    cglbl;
     signed_64       tmp;
 
-    end_sel = BENewLabel();
-    CGControl( O_GOTO, NULL, end_sel );
+    cglbl = BENewLabel();
+    CGControl( O_GOTO, NULL, cglbl );
     CGControl( O_LABEL, NULL, GetCgLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
@@ -813,10 +813,10 @@ static  void    DumpBrTable( void )
             CGSelCase( s_handle, GetStmtCgLabel( stmt ), tmp );
         }
     }
-    CGSelOther( s_handle, end_sel );
+    CGSelOther( s_handle, cglbl );
     CGSelect( s_handle, CGUnary( O_POINTS, CGFEName( WildLabel, TY_INTEGER ), TY_INTEGER ) );
-    CGControl( O_LABEL, NULL, end_sel );
-    BEFiniLabel( end_sel );
+    CGControl( O_LABEL, NULL, cglbl );
+    BEFiniLabel( cglbl );
 }
 
 

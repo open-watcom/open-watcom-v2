@@ -59,7 +59,7 @@ static  sym_id          ErrEqStmt;
 static  void            (**IORtnTable)(void);
 static  tmp_handle      TmpStructPtr;
 static  bool            IOStatSpecified;
-static  label_handle    IOSLabel;
+static  label_handle    IOS_cglbl;
 static  bool            NmlSpecified;
 
 /* Forward declarations */
@@ -119,16 +119,16 @@ static  void    chkIOErr( cg_name io_stat )
 //=========================================
 // Check for i/o errors.
 {
-    label_handle        eq_label;
+    label_handle        cglbl;
 
     io_stat = CGUnary( O_POINTS, io_stat, TY_INTEGER );
     if( ( EndEqLabel != 0 )
       && ( ErrEqLabel != 0 ) ) {
-        eq_label = BENewLabel();
-        CG3WayControl( io_stat, GetCgLabel( EndEqLabel ), eq_label,
+        cglbl = BENewLabel();
+        CG3WayControl( io_stat, GetCgLabel( EndEqLabel ), cglbl,
                        GetCgLabel( ErrEqLabel ) );
-        CGControl( O_LABEL, NULL, eq_label );
-        BEFiniLabel( eq_label );
+        CGControl( O_LABEL, NULL, cglbl );
+        BEFiniLabel( cglbl );
     } else if( EndEqLabel != 0 ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_LT, io_stat, CGInteger( 0, TY_INTEGER ),
@@ -140,11 +140,11 @@ static  void    chkIOErr( cg_name io_stat )
                               TY_INTEGER ),
                    GetCgLabel( ErrEqLabel ) );
     } else if( IOStatSpecified ) {
-        IOSLabel = BENewLabel();
+        IOS_cglbl = BENewLabel();
         CGControl( O_IF_TRUE,
                    CGCompare( O_NE, io_stat, CGInteger( 0, TY_INTEGER ),
                               TY_INTEGER ),
-                   IOSLabel );
+                   IOS_cglbl );
     } else {
         CGDone( io_stat );
     }
@@ -558,8 +558,8 @@ void    FCEndIO( void )
     if( ( ErrEqLabel == 0 )
       && ( EndEqLabel == 0 )
       && IOStatSpecified ) {
-        CGControl( O_LABEL, NULL, IOSLabel );
-        BEFiniLabel( IOSLabel );
+        CGControl( O_LABEL, NULL, IOS_cglbl );
+        BEFiniLabel( IOS_cglbl );
     }
 }
 
@@ -593,10 +593,10 @@ static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz )
 //==========================================================================
 // Perform structure array i/o.
 {
-    label_handle        label;
+    label_handle        cglbl;
 
-    label = BENewLabel();
-    CGControl( O_LABEL, NULL, label );
+    cglbl = BENewLabel();
+    CGControl( O_LABEL, NULL, cglbl );
     StructIO( fieldz );
     CGControl( O_IF_TRUE,
                CGCompare( O_NE,
@@ -607,8 +607,8 @@ static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz )
                                               TY_INT_4 ),
                                     TY_INT_4 ),
                           CGInteger( 0, TY_INTEGER ), TY_INT_4 ),
-               label );
-    BEFiniLabel( label );
+               cglbl );
+    BEFiniLabel( cglbl );
 }
 
 

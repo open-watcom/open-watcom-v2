@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,18 +88,18 @@ void            FCAllocate( void ) {
     cg_name             expr_stat;
     cg_name             expr_loc;
     cg_name             fl;
-    label_handle        label;
+    label_handle        cglbl;
 
     SymPush( NULL );
     for( num = 0; (arr = GetPtr()) != NULL; ++num ) {
         // check if array is already allocated before filling in ADV
-        label = BENewLabel();
+        cglbl = BENewLabel();
         fl = getFlags( arr );
         fl = CGBinary( O_AND, fl, CGInteger( ALLOC_MEM, TY_UINT_2 ), TY_UINT_2 );
-        CGControl( O_IF_TRUE, CGCompare( O_NE, fl, CGInteger( 0, TY_UINT_2 ), TY_UINT_2 ), label );
+        CGControl( O_IF_TRUE, CGCompare( O_NE, fl, CGInteger( 0, TY_UINT_2 ), TY_UINT_2 ), cglbl );
         FCodeSequence(); // fill in the ADV, SCB or RCB
-        CGControl( O_LABEL, NULL, label );
-        BEFiniLabel( label );
+        CGControl( O_LABEL, NULL, cglbl );
+        BEFiniLabel( cglbl );
         SymPush( arr );
     }
     alloc_flags = GetU16();

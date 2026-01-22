@@ -57,8 +57,8 @@ void    FCDoBegin( void )
     sym_id              do_var;
     sym_id              increment;
     sym_id              loop_ctrl;
-    label_handle        top;
-    label_handle        bottom;
+    label_handle        cglbl_top;
+    label_handle        cglbl_bottom;
     cg_type             do_cgtyp;
     intstar4            incr_value;
     int                 cmp_op;
@@ -77,8 +77,8 @@ void    FCDoBegin( void )
     }
     e2 = CGEval( GetTypedValue() );
     e1 = GetTypedValue();
-    top = GetCgLabel( GetU16() );
-    bottom = GetCgLabel( GetU16() );
+    cglbl_top = GetCgLabel( GetU16() );
+    cglbl_bottom = GetCgLabel( GetU16() );
     do_cgtyp = F77ToCGType( do_var );
     CGTrash( CGAssign( SymAddr( do_var ), e1, do_cgtyp ) );
     if( increment == NULL ) {  // INTEGER DO variable/constant increment
@@ -88,11 +88,11 @@ void    FCDoBegin( void )
             cmp_op = O_LE;
         }
         CGDone( CGAssign( SymAddr( loop_ctrl ), e2, do_cgtyp ) );
-        CGControl( O_LABEL, NULL, top );
+        CGControl( O_LABEL, NULL, cglbl_top );
         CGControl( O_IF_FALSE,
                    CGCompare( cmp_op, SymValue( do_var ), SymValue( loop_ctrl ),
                               do_cgtyp ),
-                   bottom );
+                   cglbl_bottom );
     } else {
         // compute:  e2 - e1
         tmp = CGBinary( O_MINUS, e2, SymValue( do_var ), do_cgtyp ); // e2 - e1
@@ -109,8 +109,8 @@ void    FCDoBegin( void )
         tmp = CGAssign( SymAddr( loop_ctrl ), tmp, do_cgtyp );
         // goto bottom of loop if iteration count <= 0
         tmp = CGCompare( O_GT, tmp, CGInteger( 0, TY_INTEGER ), do_cgtyp );
-        CGControl( O_IF_FALSE, tmp, bottom );
-        CGControl( O_LABEL, NULL, top );
+        CGControl( O_IF_FALSE, tmp, cglbl_bottom );
+        CGControl( O_LABEL, NULL, cglbl_top );
     }
 }
 
@@ -122,7 +122,7 @@ void    FCDoEnd( void )
     sym_id              do_var;
     sym_id              increment;
     sym_id              iteration;
-    label_handle        top;
+    label_handle        cglbl;
     cg_type             do_cgtyp;
     intstar4            incr_value;
     cg_name             tmp;
@@ -136,7 +136,7 @@ void    FCDoEnd( void )
         incr_value = 0;
         iteration = GetPtr();
     }
-    top = GetCgLabel( GetU16() );
+    cglbl = GetCgLabel( GetU16() );
     do_cgtyp = F77ToCGType( do_var );
     if( increment == NULL ) {  // INTEGER DO variable with constant increment
         CGDone( CGAssign( SymAddr( do_var ),
@@ -144,7 +144,7 @@ void    FCDoEnd( void )
                                     CGInteger( incr_value, do_cgtyp ),
                                     do_cgtyp ),
                           do_cgtyp ) );
-        CGControl( O_GOTO, NULL, top );
+        CGControl( O_GOTO, NULL, cglbl );
     } else {
         // compute:  do_var += increment
         tmp = CGBinary( O_PLUS, SymValue( do_var ), SymValue( increment ),
@@ -160,6 +160,6 @@ void    FCDoEnd( void )
         tmp = CGAssign( SymAddr( iteration ), tmp, do_cgtyp );
         // goto top of loop if iteration != 0
         tmp = CGCompare( O_EQ, tmp, CGInteger( 0, TY_INTEGER ), do_cgtyp );
-        CGControl( O_IF_FALSE, tmp, top );
+        CGControl( O_IF_FALSE, tmp, cglbl );
     }
 }

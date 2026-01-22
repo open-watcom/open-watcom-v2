@@ -279,7 +279,7 @@ void    FCAssignedGOTOList( void )
 // Perform assigned GOTO with list.
 {
     sel_handle      s;
-    label_handle    label;
+    label_handle    cglbl;
     sym_id          sn;
     sym_id          var;
     obj_ptr         curr_obj;
@@ -291,16 +291,16 @@ void    FCAssignedGOTOList( void )
     while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
-            label = GetStmtCgLabel( sn );
+            cglbl = GetStmtCgLabel( sn );
             Set64ValU32( tmp, GetStmtLabel( sn ) );
-            CGSelCase( s, label, tmp );
+            CGSelCase( s, cglbl, tmp );
         }
     }
-    label = BENewLabel();
-    CGSelOther( s, label );
+    cglbl = BENewLabel();
+    CGSelOther( s, cglbl );
     CGSelect( s, CGUnary( O_POINTS, CGFEName( var, TY_INTEGER ), TY_INTEGER ) );
-    CGControl( O_LABEL, NULL, label );
-    BEFiniLabel( label );
+    CGControl( O_LABEL, NULL, cglbl );
+    BEFiniLabel( cglbl );
     FCodeSeek( curr_obj );
     while( (sn = GetPtr()) != NULL ) {
         sn->u.st.flags &= ~SN_IN_GOTO_LIST;
