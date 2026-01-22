@@ -358,7 +358,7 @@ static void     MergeCommonInfo( void )
 
 
 static void     DumpSymName( sym_id sym )
-//=========================================
+//=======================================
 // Dump symbol name for run-time error messages.
 {
     DGInteger( sym->u.ns.u2.name_len, TY_UINT_1 );
@@ -682,7 +682,7 @@ static void     DumpStaticAdv( sym_id sym, bool dmp_nam_ptr )
         }
     }
     if( (Options & OPT_BOUNDS)
-      && dmp_nam_ptr ) {  // dump ptr to array name
+      && dmp_nam_ptr ) {  // Dump ptr to array name
         DGInteger( 0, TY_POINTER );
     }
     if( CGOpts & CGOPT_DI_CV ) {
@@ -1379,8 +1379,8 @@ static unsigned_32  DumpVariable( sym_id sym, unsigned_32 g_offset )
     return( g_offset );
 }
 
-static void     DumpFormats( void ) 
-//=================================
+static void    DumpFormats( void )
+//================================
 // Dump format statements.
 {
     obj_ptr         curr_fc;
@@ -1553,4 +1553,3 @@ void    GenLocalSyms( void )
         }
     }
 }
-
