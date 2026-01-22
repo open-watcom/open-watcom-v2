@@ -68,16 +68,16 @@
 
 typedef struct old_back_handle {
     struct old_back_handle  *next;
-    back_handle             old;
+    back_handle             cgbck;
 } old_back_handle;
 
 extern  cg_name         SubAltSCB( sym_id );
 
 extern  segment_id      CurrCodeSegId;
 
-back_handle             TraceEntry;
+back_handle             TraceEntry_cgbck;
 
-static back_handle      ModuleName = { NULL };
+static back_handle      ModuleName_cgbck = { NULL };
 
 static old_back_handle  *OldBackHandles = NULL;
 
@@ -85,14 +85,14 @@ static old_back_handle  *OldBackHandles = NULL;
 static  back_handle     MakeStaticSCB( int len ) {
 //================================================
 
-    back_handle scb;
+    back_handle     cgbck;
 
-    scb = BENewBack( NULL );
+    cgbck = BENewBack( NULL );
     DGAlign( ALIGN_DWORD );
-    DGLabel( scb );
+    DGLabel( cgbck );
     DGIBytes( BETypeLength( TY_POINTER ), 0 );
     DGInteger( len, TY_INTEGER );
-    return( scb );
+    return( cgbck );
 }
 */
 
@@ -204,7 +204,7 @@ static  unsigned_32     CheckThreshold( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    DumpSCB( back_handle scb, back_handle data, size_t len,
+static  void    DumpSCB( back_handle scb_cgbck, back_handle data_cgbck, size_t len,
                          bool allocatable, signed_32 offset ) {
 //=============================================================
 
@@ -214,11 +214,11 @@ static  void    DumpSCB( back_handle scb, back_handle data, size_t len,
 
     old_segid = BESetSeg( SEG_LDATA );
     DGAlign( ALIGN_DWORD );
-    DGLabel( scb );
-    if( data == NULL ) {
+    DGLabel( scb_cgbck );
+    if( data_cgbck == NULL ) {
         DGIBytes( BETypeLength( TY_POINTER ), 0 );
     } else {
-        DGBackPtr( data, old_segid, offset, TY_POINTER );
+        DGBackPtr( data_cgbck, old_segid, offset, TY_POINTER );
     }
     DGInteger( len, TY_INTEGER );
     if( allocatable ) {
@@ -233,14 +233,14 @@ static  back_handle     DumpCharVar( sym_id sym ) {
 
 // Dump a character variable.
 
-    back_handle data;
+    back_handle     cgbck;
 
-    data = BENewBack( NULL );
-    DGLabel( data );
+    cgbck = BENewBack( NULL );
+    DGLabel( cgbck );
     if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
-        DumpSCB( FEBack( sym ), data, sym->u.ns.xt.size, _Allocatable( sym ), 0 );
+        DumpSCB( FEBack( sym ), cgbck, sym->u.ns.xt.size, _Allocatable( sym ), 0 );
     }
-    return( data );
+    return( cgbck );
 }
 
 
@@ -533,25 +533,25 @@ static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type cgty
 }
 
 
-static  void    FreeBackHandle( void *_back ) {
+static  void    FreeBackHandle( void *_cgbck ) {
 //=============================================
 
 // Free back handles.
 
-    back_handle     *back = _back;
+    back_handle     *cgbck = _cgbck;
 
-    if( *back != NULL ) {
+    if( *cgbck != NULL ) {
         /* no need to call BEFiniBack() since we immediately
            follow it with a call to BEFreeBack()
-        BEFiniBack( *back );
+        BEFiniBack( *cgbck );
         */
-        BEFreeBack( *back );
-        *back = NULL;
+        BEFreeBack( *cgbck );
+        *cgbck = NULL;
     }
 }
 
 
-static void PostponeFreeBackHandle( back_handle data ) {
+static void PostponeFreeBackHandle( back_handle cgbck ) {
 //======================================================
 
     old_back_handle     *tmp;
@@ -559,7 +559,7 @@ static void PostponeFreeBackHandle( back_handle data ) {
     tmp = FMemAlloc( sizeof( old_back_handle ) );
     tmp->next = OldBackHandles;
     OldBackHandles = tmp;
-    tmp->old = data;
+    tmp->cgbck = cgbck;
 }
 
 
@@ -569,7 +569,7 @@ static void AssignName2Adv( sym_id sym ) {
     act_dim_list        *dim_ptr;
     int                 dim_cnt;
     cg_name             adv;
-    back_handle         data;
+    back_handle         cgbck;
 
     dim_ptr = sym->u.ns.si.va.u.dim_ext;
     dim_cnt = _DimCount( dim_ptr->dim_flags );
@@ -580,12 +580,12 @@ static void AssignName2Adv( sym_id sym ) {
         adv = CGBackName( dim_ptr->adv, TY_ADV_ENTRY + dim_cnt );
     }
     adv = StructRef( adv, BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
-    data = BENewBack( NULL );
-    DGLabel( data );
+    cgbck = BENewBack( NULL );
+    DGLabel( cgbck );
     DumpSymName( sym );
-    CGDone( CGAssign( adv, CGBackName( data, TY_POINTER ), TY_POINTER ) );
-    BEFiniBack( data );
-    PostponeFreeBackHandle( data );
+    CGDone( CGAssign( adv, CGBackName( cgbck, TY_POINTER ), TY_POINTER ) );
+    BEFiniBack( cgbck );
+    PostponeFreeBackHandle( cgbck );
 }
 
 
@@ -825,8 +825,8 @@ static  void    DumpLitSCBs( void ) {
 
 // Dump string control blocks for constant literals.
 
-    sym_id      sym;
-    back_handle data;
+    sym_id          sym;
+    back_handle     cgbck;
 
     for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
         if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 )
@@ -834,11 +834,11 @@ static  void    DumpLitSCBs( void ) {
         if( (sym->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE)) == 0 ) {
             continue;
         }
-        data = BENewBack( NULL );
-        DGLabel( data );
+        cgbck = BENewBack( NULL );
+        DGLabel( cgbck );
         DGString( sym->u.lt.value, sym->u.lt.length );
-        DumpSCB( LitBack( sym ), data, sym->u.lt.length, false, 0 );
-        FreeBackHandle( &data );
+        DumpSCB( LitBack( sym ), cgbck, sym->u.lt.length, false, 0 );
+        FreeBackHandle( &cgbck );
     }
 }
 
@@ -950,7 +950,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
     }
     FreeUsedBacks( true );
     FiniLabels( true );
-    FreeBackHandle( &TraceEntry );
+    FreeBackHandle( &TraceEntry_cgbck );
 }
 
 
@@ -963,7 +963,7 @@ void    FreeUsedBacks( bool nuke ) {
         tmp = OldBackHandles;
         OldBackHandles = tmp->next;
         if( nuke ) {
-            BEFreeBack( tmp->old );
+            BEFreeBack( tmp->cgbck );
         }
         FMemFree( tmp );
     }
@@ -974,8 +974,8 @@ void    FreeGlobalData( void ) {
 //========================
 
     if( Options & OPT_TRACE ) {
-        if( ModuleName != NULL ) {
-            BEFreeBack( ModuleName );
+        if( ModuleName_cgbck != NULL ) {
+            BEFreeBack( ModuleName_cgbck );
         }
     }
 }
@@ -1551,25 +1551,25 @@ void    GenLocalSyms( void ) {
     DumpLitSCBs();
     DumpNameLists();
     DumpFormats();
-    TraceEntry = NULL;
+    TraceEntry_cgbck = NULL;
     if( Options & OPT_TRACE ) {
         if( sp_class != SY_BLOCK_DATA ) {
-            if( ModuleName == NULL ) {
+            if( ModuleName_cgbck == NULL ) {
                 // can't go in code segment since
                 // there may be multiple code segments
                 BESetSeg( SEG_CDATA );
-                ModuleName = BENewBack( NULL );
+                ModuleName_cgbck = BENewBack( NULL );
                 MakeName( SDFName( SrcName ), SrcExtn, TokenBuff );
-                DGLabel( ModuleName );
+                DGLabel( ModuleName_cgbck );
                 DGString( TokenBuff, strlen( TokenBuff ) );
                 DGIBytes( 1, NULLCHAR );
             }
             BESetSeg( SEG_LDATA );
-            TraceEntry = BENewBack( NULL );
-            DGLabel( TraceEntry );
+            TraceEntry_cgbck = BENewBack( NULL );
+            DGLabel( TraceEntry_cgbck );
             DGIBytes( BETypeLength( TY_POINTER ), 0 );
             DGInteger( 0, TY_INTEGER );
-            DGBackPtr( ModuleName, SEG_CDATA, 0, TY_POINTER );
+            DGBackPtr( ModuleName_cgbck, SEG_CDATA, 0, TY_POINTER );
         }
     }
 }

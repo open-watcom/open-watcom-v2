@@ -65,7 +65,7 @@
 
 extern  void            FiniTmps(void);
 
-extern  back_handle     TraceEntry;
+extern  back_handle     TraceEntry_cgbck;
 extern  segment_id      CurrCodeSegId;
 
 /* Forward declarations */
@@ -165,7 +165,7 @@ static  void    GenTraceback( void )
 
     if( Options & OPT_TRACE ) {
         call = InitCall( RT_SET_MODULE );
-        CGAddParm( call, CGBackName( TraceEntry, TY_POINTER ), TY_POINTER );
+        CGAddParm( call, CGBackName( TraceEntry_cgbck, TY_POINTER ), TY_POINTER );
         CGDone( CGCall( call ) );
     }
 }
