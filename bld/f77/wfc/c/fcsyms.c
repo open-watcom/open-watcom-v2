@@ -77,27 +77,6 @@ extern  segment_id      CurrCodeSegId;
 
 back_handle             TraceEntry;
 
-/* Forward declarations */
-static void     AssignAdv( sym_id sym );
-static void     AssignName2Adv( sym_id sym );
-static void     AssignStaticAdv( sym_id sym );
-static void     CreateAllocatableADV( sym_id sym );
-static void     DefineCommonEntry( void );
-static void     MergeCommonInfo( void );
-static void     DumpBrTable( void );
-static void     DumpLitSCBs( void );
-static void     DumpNameLists( void );
-static void     DumpSymName( sym_id sym );
-static void     DumpStaticAdv( sym_id sym, bool dmp_nam_ptr );
-static void     DbgVarInfo( sym_id sym );
-static void     DbgSubProgInfo( sym_id sym );
-static void     AssignAutoAdv( sym_id sym );
-static void     DumpAutoAdv( sym_id sym, sym_id shadow );
-static void     PostponeFreeBackHandle( back_handle data );
-static void     FreeBackHandle( void *_back );
-static void     DefineArgs( entry_pt *ep );
-static void     DeclareArg( parameter *arg, pass_by *arg_aux );
-
 static back_handle      ModuleName = { NULL };
 
 static old_back_handle  *OldBackHandles = NULL;
@@ -339,6 +318,887 @@ bool    SCBRequired( sym_id sym ) {
 }
 
 
+static  void    SetConstDataSeg( void )
+//=====================================
+{
+#if _INTEL_CPU
+    if( (CGOpts & CGOPT_CONST_CODE) && ( _BigDataModel( CGOpts ) ) ) {
+        BESetSeg( CurrCodeSegId );
+    } else {
+        BESetSeg( SEG_CDATA );
+    }
+#else /* _RISC_CPU */
+    BESetSeg( SEG_CDATA );
+#endif
+}
+
+
+static  void    MergeCommonInfo( void ) {
+//=================================
+
+// Merge information from global common block to local common block.
+
+    sym_id      sym;
+    sym_id      g_sym;
+    size_t      len;
+
+    for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
+        for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
+            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON )
+                continue;
+            len = sym->u.ns.u2.name_len;
+            if( len == g_sym->u.ns.u2.name_len ) {
+                if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) {
+                    break;
+                }
+            }
+        }
+        sym->u.ns.si.cb.segid = g_sym->u.ns.si.cb.segid;
+        sym->u.ns.u3.address = g_sym->u.ns.u3.address;
+        if( g_sym->u.ns.flags & SY_EQUIVED_NAME ) {
+            sym->u.ns.flags |= SY_EQUIVED_NAME;
+        }
+    }
+}
+
+
+static  void    DumpSymName( sym_id sym ) {
+//=========================================
+
+// Dump symbol name for run-time error messages.
+
+    DGInteger( sym->u.ns.u2.name_len, TY_UINT_1 );
+    DGBytes( sym->u.ns.u2.name_len, sym->u.ns.name );
+}
+
+
+static  void    DbgVarInfo( sym_id sym ) {
+//========================================
+
+// Generate debugging information for for a variable.
+
+    dbg_loc     loc;
+    com_eq      *ce_ext;
+
+    if( sym->u.ns.flags & SY_SUB_PARM ) {
+        DBLocalSym( sym, TY_POINTER );
+    } else if( sym->u.ns.flags & SY_IN_EQUIV ) {
+        sym_id  leader;
+        intstar4        offset;
+
+        offset = 0;
+        leader = sym;
+        for( ;; ) {
+            ce_ext = leader->u.ns.si.va.vi.ec_ext;
+            if( ce_ext->ec_flags & LEADER )
+                break;
+            offset += ce_ext->offset;
+            leader = ce_ext->link_eqv;
+        }
+        leader = FindEqSetShadow( leader );
+        if( (leader == NULL) || (sym->u.ns.u1.s.typ == FT_CHAR) ) {
+            if( ( sym->u.ns.u1.s.typ != FT_CHAR ) &&
+                (ce_ext->ec_flags & MEMBER_IN_COMMON) ) {
+                loc = DBLocInit();
+                loc = DBLocSym( loc, ce_ext->com_blk );
+                loc = DBLocConst( loc, ce_ext->offset + offset );
+                loc = DBLocOp( loc, DB_OP_ADD, 0 );
+                DBGenSym( sym, loc, true );
+                DBLocFini( loc );
+            } else {
+                DBLocalSym( sym, TY_DEFAULT );
+            }
+        } else {
+            loc = DBLocInit();
+            loc = DBLocSym( loc, leader );
+            loc = DBLocConst( loc, offset - ce_ext->low );
+            loc = DBLocOp( loc, DB_OP_ADD, 0 );
+            DBGenSym( sym, loc, true );
+            DBLocFini( loc );
+        }
+    } else {
+        if( (sym->u.ns.u1.s.typ != FT_CHAR) && (sym->u.ns.flags & SY_IN_COMMON) ) {
+            ce_ext = sym->u.ns.si.va.vi.ec_ext;
+            loc = DBLocInit();
+            loc = DBLocSym( loc, ce_ext->com_blk );
+            loc = DBLocConst( loc, ce_ext->offset );
+            loc = DBLocOp( loc, DB_OP_ADD, 0 );
+            DBGenSym( sym, loc, true );
+            DBLocFini( loc );
+        } else {
+            DBLocalSym( sym, TY_DEFAULT );
+        }
+    }
+}
+
+
+static  void    DbgSubProgInfo( sym_id sym ) {
+//============================================
+
+// Generate debugging information for for a subprogram.
+
+    DBLocalSym( sym, TY_DEFAULT );
+}
+
+
+void    GenLocalDbgInfo( void ) {
+//=========================
+
+// Generate local symbols for a subprogram.
+
+    sym_id      sym;
+    cg_name     loc;
+
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
+        if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
+            if( ( sym != EPValue ) && ( sym != ReturnValue ) ) {
+                DbgVarInfo( sym );
+            }
+        } else if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+            if( sym->u.ns.flags & SY_SUB_PARM ) {
+                DbgSubProgInfo( sym );
+            }
+        }
+    }
+    for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
+        DBModSym( sym, TY_DEFAULT );
+    }
+    for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
+        // map all entry points to the return value so that when
+        // the subprogram is entered through one entry point and
+        // the symbol of a different entry point is referenced, we
+        // will get the return value for the entered entry point
+        if( (sym->u.ns.flags & SY_PS_ENTRY) &&
+            ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) ) {
+            // shadow symbol for function return value
+            if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                // ReturnValue is an argument to character functions
+                if( Options & OPT_DESCRIPTOR ) {
+                    // use SCB passed as argument
+                    loc = CGFEName( ReturnValue, TY_POINTER );
+                    loc = CGUnary( O_POINTS, loc, TY_POINTER );
+                } else {
+                    // use allocated SCB
+                    if( CommonEntry != NULL ) {
+                        loc = SubAltSCB( CommonEntry );
+                    } else {
+                        loc = SubAltSCB( sym->u.ns.si.ms.sym );
+                    }
+                }
+            } else if( CommonEntry != NULL ) {
+                // ReturnValue is an argument to common entry point
+                loc = CGFEName( ReturnValue, TY_POINTER );
+                loc = CGUnary( O_POINTS, loc, TY_POINTER );
+            } else {
+                loc = CGFEName( ReturnValue, F77ToCGType( sym ) );
+            }
+            CGDone( CGAssign( CGFEName( sym, TY_POINTER ), loc, TY_POINTER ) );
+            DbgVarInfo( sym );
+        }
+    }
+}
+
+
+static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type cgtyp ) {
+//===================================================================
+
+    int         offset;
+
+    offset = BETypeLength( TY_ADV_ENTRY ) * ( entry - 1 );
+    if( cgtyp == TY_ADV_HI ) {
+        offset += BETypeLength( TY_ADV_LO );
+    }
+    return( StructRef( adv, offset ) );
+}
+
+
+static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type cgtyp )
+//==============================================================================
+{
+    int         offset;
+
+    offset = ( BETypeLength( TY_ADV_ENTRY_CV ) * entry ) +
+             ( BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
+    if( cgtyp == TY_ADV_HI_CV ) {
+        offset += BETypeLength( TY_ADV_LO );
+    }
+    if( Options & OPT_BOUNDS ) {
+        offset += BETypeLength( TY_POINTER );
+    }
+    return( StructRef( adv, offset ) );
+}
+
+
+static  void    FreeBackHandle( void *_back ) {
+//=============================================
+
+// Free back handles.
+
+    back_handle     *back = _back;
+
+    if( *back != NULL ) {
+        /* no need to call BEFiniBack() since we immediately
+           follow it with a call to BEFreeBack()
+        BEFiniBack( *back );
+        */
+        BEFreeBack( *back );
+        *back = NULL;
+    }
+}
+
+
+static void PostponeFreeBackHandle( back_handle data ) {
+//======================================================
+
+    old_back_handle     *tmp;
+
+    tmp = FMemAlloc( sizeof( old_back_handle ) );
+    tmp->next = OldBackHandles;
+    OldBackHandles = tmp;
+    tmp->old = data;
+}
+
+
+static void AssignName2Adv( sym_id sym ) {
+//========================================
+
+    act_dim_list        *dim_ptr;
+    int                 dim_cnt;
+    cg_name             adv;
+    back_handle         data;
+
+    dim_ptr = sym->u.ns.si.va.u.dim_ext;
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
+    if( dim_ptr->adv == NULL ) {
+        // ADV is allocated on the stack
+        adv = CGFEName( FindAdvShadow( sym ), TY_ADV_ENTRY + dim_cnt );
+    } else {
+        adv = CGBackName( dim_ptr->adv, TY_ADV_ENTRY + dim_cnt );
+    }
+    adv = StructRef( adv, BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
+    data = BENewBack( NULL );
+    DGLabel( data );
+    DumpSymName( sym );
+    CGDone( CGAssign( adv, CGBackName( data, TY_POINTER ), TY_POINTER ) );
+    BEFiniBack( data );
+    PostponeFreeBackHandle( data );
+}
+
+
+static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
+//========================================================
+
+// Dump an automatic array dope vector.
+
+    act_dim_list        *dim_ptr;
+    int                 dim_cnt;
+    int                 dim_no;
+    int                 entry;
+    intstar4            *bounds;
+    intstar4            lo;
+    intstar4            hi;
+    cg_name             adv;
+
+
+    dim_ptr = sym->u.ns.si.va.u.dim_ext;
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
+    dim_no = dim_cnt;
+    bounds = &dim_ptr->subs_1_lo;
+    CGAutoDecl( shadow, ( TY_ADV_ENTRY + dim_cnt ) );
+    for( entry = 1; ; ++entry ) {
+        lo = *bounds++;
+        hi = *bounds++;
+        adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
+        CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_LO ),
+                CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
+        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
+            hi = 0;
+        } else {
+            hi = hi - lo + 1;
+        }
+        adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
+        CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_HI ),
+                CGInteger( hi, TY_ADV_HI ), TY_ADV_HI ) );
+        if( --dim_no == 0 ) {
+            break;
+        }
+    }
+    if( CGOpts & CGOPT_DI_CV ) {
+        dim_no = dim_cnt;
+        bounds = &dim_ptr->subs_1_lo;
+        for( entry = 1; ; ++entry ) {
+            lo = *bounds++;
+            hi = *bounds++;
+            adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
+            CGDone( CGAssign( CVAdvEntryAddr( adv, dim_cnt, entry, TY_ADV_LO ),
+                    CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
+            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
+                hi = 0;
+            }
+            adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
+            CGDone( CGAssign( CVAdvEntryAddr( adv, dim_cnt, entry, TY_ADV_HI_CV ),
+                    CGInteger( hi, TY_ADV_HI_CV ), TY_ADV_HI_CV ) );
+            if( --dim_no == 0 ) {
+                break;
+            }
+        }
+    }
+}
+
+
+static  void    AssignAutoAdv( sym_id sym ) {
+//===========================================
+
+// Assign an auto ADV to an array.
+
+    sym_id      shadow;
+
+    shadow = STAdvShadow( sym );
+    DumpAutoAdv( sym, shadow );
+    sym->u.ns.si.va.u.dim_ext->adv = NULL;
+}
+
+
+static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
+//=============================================================
+
+// Dump a global array dope vector.
+
+    act_dim_list        *dim_ptr;
+    int                 dim_cnt;
+    int                 dim_no;
+    intstar4            *bounds;
+    intstar4            lo;
+    intstar4            hi;
+
+    dim_ptr = sym->u.ns.si.va.u.dim_ext;
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
+    dim_no = dim_cnt;
+    bounds = &dim_ptr->subs_1_lo;
+    for( ;; ) {
+        lo = *bounds++;
+        hi = *bounds++;
+        DGInteger( lo, TY_ADV_LO );
+        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
+            DGInteger( 0, TY_ADV_HI );
+        } else {
+            DGInteger( hi - lo + 1, TY_ADV_HI );
+        }
+        if( --dim_no == 0 ) {
+            break;
+        }
+    }
+    if( (Options & OPT_BOUNDS) && dmp_nam_ptr ) {  // dump ptr to array name
+        DGInteger( 0, TY_POINTER );
+    }
+    if( CGOpts & CGOPT_DI_CV ) {
+        dim_no = dim_cnt;
+        bounds = &dim_ptr->subs_1_lo;
+        for( ;; ) {
+            lo = *bounds++;
+            hi = *bounds++;
+            DGInteger( lo, TY_ADV_LO );
+            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
+                DGInteger( 0, TY_ADV_HI_CV );
+            } else {
+                DGInteger( hi, TY_ADV_HI_CV );
+            }
+            if( --dim_no == 0 ) {
+                break;
+            }
+        }
+    }
+}
+
+
+static  void    AssignStaticAdv( sym_id sym ) {
+//=============================================
+
+// Assign a static ADV to an array.
+
+    sym->u.ns.si.va.u.dim_ext->adv = BENewBack( NULL );
+    DGAlign( ALIGN_DWORD );
+    DGLabel( sym->u.ns.si.va.u.dim_ext->adv );
+    DumpStaticAdv( sym, true );
+}
+
+
+static  void    AssignAdv( sym_id sym ) {
+//=======================================
+
+// Assign an ADV to an array.
+
+    if( !ForceStatic( sym->u.ns.flags ) && (Options & OPT_AUTOMATIC) ) {
+        AssignAutoAdv( sym );
+    } else {
+        AssignStaticAdv( sym );
+    }
+}
+
+
+static  void    CreateAllocatableADV( sym_id sym ) {
+//==================================================
+
+// Creates a allocatable ADV:
+//      1. pointer to array storage
+//      2. flags
+//      3. actual ADV
+
+    cg_name     adv;
+    cg_name     temp;
+    cg_type     cgtyp;
+
+    if( !ForceStatic( sym->u.ns.flags ) && (Options & OPT_AUTOMATIC) ) {
+        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
+            CGAutoDecl( sym, TY_ARR_ALLOCATABLE_EXTENDED );
+            adv = CGFEName( sym, TY_ARR_ALLOCATABLE_EXTENDED );
+            temp = CGInteger( ALLOC_EXTENDED, TY_UINT_2 );
+        } else {
+            CGAutoDecl( sym, TY_ARR_ALLOCATABLE );
+            adv = CGFEName( sym, TY_ARR_ALLOCATABLE );
+            temp = CGInteger( 0, TY_UINT_2 );
+        }
+        adv = StructRef( adv, BETypeLength( ArrayPtrType( sym ) ) );
+        CGDone( CGAssign( adv, temp, TY_UINT_2 ) );
+        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
+            adv = CGFEName( sym, TY_ARR_ALLOCATABLE_EXTENDED );
+        } else {
+            adv = CGFEName( sym, TY_ARR_ALLOCATABLE );
+        }
+        cgtyp = ArrayPtrType( sym );
+        temp = CGInteger( 0, cgtyp );
+        CGDone( CGAssign( adv, temp, cgtyp ) );
+    } else {
+        DGLabel( FEBack( sym ) );
+        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
+            DGIBytes( BETypeLength( TY_LONG_POINTER ), 0 );
+            DGInteger( ALLOC_EXTENDED, TY_UINT_2 );
+        } else {
+            DGIBytes( BETypeLength( TY_POINTER ), 0 );
+            DGIBytes( BETypeLength( TY_INT_2 ), 0 );
+        }
+    }
+    AssignAdv( sym );
+}
+
+
+static  void    DumpBrTable( void )
+//=============================
+// Dump the branch table ( for wild goto's ).
+{
+    sym_id          stmt;
+    sel_handle      s_handle;
+    label_handle    end_sel;
+    signed_64       tmp;
+
+    end_sel = BENewLabel();
+    CGControl( O_GOTO, NULL, end_sel );
+    CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
+    s_handle = CGSelInit();
+    for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
+        if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
+            Set64ValU32( tmp, stmt->u.st.address );
+            CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
+        }
+    }
+    CGSelOther( s_handle, end_sel );
+    CGSelect( s_handle, CGUnary( O_POINTS, CGFEName( WildLabel, TY_INTEGER ), TY_INTEGER ) );
+    CGControl( O_LABEL, NULL, end_sel );
+    BEFiniLabel( end_sel );
+}
+
+
+static  void    DumpLitSCBs( void ) {
+//=============================
+
+// Dump string control blocks for constant literals.
+
+    sym_id      sym;
+    back_handle data;
+
+    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
+        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 )
+            continue;
+        if( (sym->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE)) == 0 ) {
+            continue;
+        }
+        data = BENewBack( NULL );
+        DGLabel( data );
+        DGString( sym->u.lt.value, sym->u.lt.length );
+        DumpSCB( LitBack( sym ), data, sym->u.lt.length, false, 0 );
+        FreeBackHandle( &data );
+    }
+}
+
+
+void    FreeLocalBacks( bool free_dbg_handles ) {
+//===============================================
+
+// Free back handles for local symbols in local symbol table.
+
+    unsigned_16 flags;
+    sym_id      sym;
+    com_eq      *eq_ext;
+
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
+        flags = sym->u.ns.flags;
+        if( (flags & SY_CLASS) == SY_VARIABLE ) {
+            FreeBackHandle( &sym->u.ns.u3.address );
+            if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
+                if( flags & SY_SUB_PARM ) {
+                    if( flags & SY_SUBSCRIPTED ) {
+                        if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) ||
+                            ((sym->u.ns.xt.size == 0) && (flags & SY_VALUE_PARM)) ||
+                            (Options & OPT_BOUNDS) ) {
+                            FreeBackHandle( &sym->u.ns.si.va.u.dim_ext->adv );
+                        }
+                    /* SCB for dummy arguments are always allocated on the
+                       stack so we have no problems with recursion
+                    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                        if( SCBRequired( sym ) ) {
+                            if( (Options & OPT_AUTOMATIC) == 0 ) {
+                                // if d2-level debugging information has been
+                                // requested, don't free the back handle until
+                                // we are told
+                                if( (CGOpts & CGOPT_DB_LOCALS) == 0 || free_dbg_handles ) {
+                                    FreeBackHandle( &sym->u.ns.si.va.vi.alt_scb );
+                                }
+                            }
+                        }
+                    */
+                    }
+                } else {
+                    if( flags & SY_SUBSCRIPTED ) {
+                        if( _Allocatable( sym ) || (Options & OPT_BOUNDS) ) {
+                            FreeBackHandle( &sym->u.ns.si.va.u.dim_ext->adv );
+                        }
+                    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                        // character variable
+                        if( (flags & SY_DATA_INIT) && (flags & SY_IN_EC) == 0 ) {
+                            FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
+                        } else if( flags & SY_IN_EQUIV ) {
+                            eq_ext = sym->u.ns.si.va.vi.ec_ext;
+                            if( eq_ext->ec_flags & LEADER ) {
+                                if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
+                                    FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+            if( flags & SY_SUB_PARM ) {
+                FreeBackHandle( &sym->u.ns.u3.address );
+                if( (sym->u.ns.u1.s.typ == FT_CHAR) && (CGOpts & CGOPT_DB_LOCALS) ) {
+                    if( free_dbg_handles ) {
+                        FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
+                    }
+                }
+            } else if( (flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
+                FreeBackHandle( &sym->u.ns.u3.address );
+                FreeSFHeader( sym );
+            /*
+            for function return values, the SCB is always allocated
+            on the stack so we have no problems with recursion
+            } else if( (flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+                if( (Options & OPT_DESCRIPTOR) == 0 &&
+                    (flags & SY_PENTRY) && (sym->u.ns.u1.s.typ == FT_CHAR) ) {
+                    if( CommonEntry != NULL ) {
+                        if( (Options & OPT_AUTOMATIC) == 0 ) {
+                            FreeBackHandle( &CommonEntry->u.ns.si.sp.alt_scb );
+                        }
+                    } else {
+                        if( (Options & OPT_AUTOMATIC) == 0 ) {
+                            FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
+                        }
+                    }
+                }
+            */
+            }
+        }
+    }
+    for( sym = CList; sym != NULL; sym = sym->u.cn.link ) {
+        FreeBackHandle( &sym->u.cn.address );
+    }
+    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
+        FreeBackHandle( &sym->u.lt.address );
+    }
+    for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
+        FreeBackHandle( &sym->u.ns.u3.address );
+    }
+    for( sym = NmList; sym != NULL; sym = sym->u.nl.link ) {
+        FreeBackHandle( &sym->u.nl.address );
+    }
+    FreeUsedBacks( true );
+    FiniLabels( true );
+    FreeBackHandle( &TraceEntry );
+}
+
+
+void    FreeUsedBacks( bool nuke ) {
+//==================================
+
+    old_back_handle     *tmp;
+
+    while( OldBackHandles != NULL ) {
+        tmp = OldBackHandles;
+        OldBackHandles = tmp->next;
+        if( nuke ) {
+            BEFreeBack( tmp->old );
+        }
+        FMemFree( tmp );
+    }
+}
+
+
+void    FreeGlobalData( void ) {
+//========================
+
+    if( Options & OPT_TRACE ) {
+        if( ModuleName != NULL ) {
+            BEFreeBack( ModuleName );
+        }
+    }
+}
+
+
+void    FreeGlobalBacks( void ) {
+//=========================
+
+// Free back handles for global symbols in local symbol table.
+
+    unsigned_16 flags;
+    sym_id      sym;
+
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
+        flags = sym->u.ns.flags;
+        if( (flags & SY_CLASS) != SY_SUBPROGRAM )
+            continue;
+        if( ( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) &&
+            ( (flags & SY_SUBPROG_TYPE) != SY_REMOTE_BLOCK ) ) {
+            if( sym->u.ns.u3.address != NULL ) {
+                BEFreeBack( sym->u.ns.u3.address );
+            }
+        }
+    }
+}
+
+
+static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info )
+//===============================================================
+{
+    parameter   *arg;
+    pass_by     *arg_aux;
+
+    arg_aux = info->arg_info;
+    for( arg = ep->parms; arg != NULL; arg = arg->link ) {
+        if( (arg->flags & ARG_STMTNO) == 0 ) {
+            if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
+                if( (arg_aux == NULL) ||
+                    (arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA)) == 0 ) {
+                    CGParmDecl( STArgShadow( arg->id ), TY_INTEGER );
+                }
+            }
+        }
+        if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
+            arg_aux = arg_aux->link;
+        }
+    }
+}
+
+
+static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
+//==============================================================
+
+// Declare an argument.
+
+    cg_type     arg_cgtyp;
+    sym_id      arg_id;
+
+    arg_id = arg->id;
+    if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        arg_cgtyp = TY_CODE_PTR;
+    } else if( arg_id->u.ns.flags & SY_SUBSCRIPTED ) {
+        arg_cgtyp = ArrayPtrType( arg_id );
+        if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
+            if( arg_aux != NULL ) {
+                if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
+                    arg_id->u.ns.flags |= SY_VALUE_PARM;
+                }
+            }
+        }
+    } else {
+        arg_cgtyp = TY_POINTER;
+        if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
+            if( arg_aux != NULL ) {
+                if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
+                    arg_id->u.ns.flags |= SY_VALUE_PARM;
+                }
+            }
+        } else {
+            if( arg_aux != NULL ) {
+                if( arg_aux->info & PASS_BY_VALUE ) {
+                    arg_cgtyp = F77ToCGType( arg_id );
+                    arg_id->u.ns.flags |= SY_VALUE_PARM;
+                    if( TypeCmplx( arg_id->u.ns.u1.s.typ ) ) {
+                        arg_cgtyp = CmplxBaseType( arg_cgtyp );
+                        CGParmDecl( arg_id, arg_cgtyp );
+                        arg_id = STArgShadow( arg_id );
+                    }
+                }
+            }
+        }
+    }
+    CGParmDecl( arg_id, arg_cgtyp );
+}
+
+
+static  void    DefineArgs( entry_pt *ep ) {
+//==========================================
+
+    parameter   *arg;
+    aux_info    *info;
+    pass_by     *arg_aux;
+
+    info = InfoLookup( ep->id );
+    if( (info->cclass & FECALL_GEN_REVERSE_PARMS) ) {
+        ReverseList( (void **)&ep->parms );
+        ReverseList( (void **)&info->arg_info );
+    }
+    arg_aux = info->arg_info;
+    for( arg = ep->parms; arg != NULL; arg = arg->link ) {
+        if( (arg->flags & ARG_STMTNO) == 0 ) {
+            DeclareArg( arg, arg_aux );
+            if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
+                arg_aux = arg_aux->link;
+            }
+        }
+    }
+    if( (Options & OPT_DESCRIPTOR) == 0 ) {
+        DeclareShadowArgs( ep, info );
+    }
+    if( info->cclass & FECALL_GEN_REVERSE_PARMS ) {
+        ReverseList( (void **)&ep->parms );
+        ReverseList( (void **)&info->arg_info );
+    }
+}
+
+
+void    DefineEntryPoint( entry_pt *ep ) {
+//========================================
+
+    sym_id      sp;
+    cg_type     cgtyp;
+
+    sp = ep->id;
+    if( (Options & OPT_DESCRIPTOR) == 0 ) {
+        if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+            if( sp->u.ns.u1.s.typ == FT_CHAR ) {
+                CGParmDecl( ReturnValue, TY_POINTER );
+                CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
+            }
+        }
+    }
+    DefineArgs( ep );
+    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+        if( ChkForAltRets( ep ) ) {
+            CGAutoDecl( ReturnValue, TY_INTEGER );
+        }
+    } else if( sp->u.ns.u1.s.typ == FT_CHAR ) {
+        if( Options & OPT_DESCRIPTOR ) {
+            CGParmDecl( ReturnValue, TY_POINTER );
+        }
+    } else {
+        cgtyp = F77ToCGType( sp );
+        CheckAutoSize( sp, cgtyp );
+        CGAutoDecl( ReturnValue, cgtyp );
+    }
+    CGLastParm();
+}
+
+
+static  void    DefineCommonEntry( void ) {
+//===================================
+
+    entry_pt    *ep;
+    parameter   *arg;
+    aux_info    *info;
+    pass_by     *arg_aux;
+
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
+        info = InfoLookup( ep->id );
+        arg_aux = info->arg_info;
+        for( arg = ep->parms; arg != NULL; arg = arg->link ) {
+            if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
+                DeclareArg( arg, arg_aux );
+                if( (arg->id->u.ns.u1.s.typ == FT_CHAR) &&
+                    (Options & OPT_DESCRIPTOR) == 0 ) {
+                    if( (arg_aux == NULL ) ||
+                        (arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA)) == 0 ) {
+                        CGParmDecl( STArgShadow( arg->id ), TY_INTEGER );
+                    }
+                }
+            }
+            if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
+                arg_aux = arg_aux->link;
+            }
+        }
+    }
+    if( (Entries->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+        CGParmDecl( EPValue, TY_INTEGER );
+        if( EntryWithAltRets() ) {
+            CGAutoDecl( ReturnValue, TY_INTEGER );
+        }
+    } else {
+        CGParmDecl( ReturnValue, TY_POINTER );
+        if( (Entries->id->u.ns.u1.s.typ == FT_CHAR) && (Options & OPT_DESCRIPTOR) == 0 ) {
+            CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
+        }
+        CGParmDecl( EPValue, TY_INTEGER );
+    }
+    CGLastParm();
+}
+
+
+static  void    DumpNameLists( void ) {
+//===============================
+
+// Dump NAMELIST information.
+
+    sym_id      nl;
+    grp_entry   *ge;
+    sym_id      sym;
+    byte        nl_info;
+
+    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
+        nl->u.nl.address = BENewBack( NULL );
+        DGLabel( nl->u.nl.address );
+        DGInteger( nl->u.nl.name_len, TY_UINT_1 );
+        DGBytes( nl->u.nl.name_len, nl->u.nl.name );
+        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
+            sym = ge->sym;
+            DumpSymName( sym );
+            nl_info = 0;
+            _SetNMLType( nl_info, ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
+            if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+                _SetNMLSubScrs( nl_info, _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) );
+                DGInteger( nl_info, TY_UINT_1 );
+                DGInteger( sym->u.ns.si.va.u.dim_ext->num_elts, TY_UINT_4 );
+                DumpStaticAdv( sym, false ); // we do not want a name ptr dumped
+                if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                    DGInteger( sym->u.ns.xt.size, TY_INTEGER );
+                }
+            } else {
+                DGInteger( nl_info, TY_UINT_1 );
+            }
+            DGIBytes( BETypeLength( TY_POINTER ), 0 );
+        }
+        DGInteger( 0, TY_UINT_1 );
+    }
+}
+
+
 static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
 //========================================================================
 
@@ -505,21 +1365,6 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    SetConstDataSeg( void )
-//=====================================
-{
-#if _INTEL_CPU
-    if( (CGOpts & CGOPT_CONST_CODE) && ( _BigDataModel( CGOpts ) ) ) {
-        BESetSeg( CurrCodeSegId );
-    } else {
-        BESetSeg( SEG_CDATA );
-    }
-#else /* _RISC_CPU */
-    BESetSeg( SEG_CDATA );
-#endif
-}
-
-
 void    GenLocalSyms( void ) {
 //======================
 
@@ -668,868 +1513,3 @@ void    GenLocalSyms( void ) {
     }
 }
 
-
-static  void    DumpNameLists( void ) {
-//===============================
-
-// Dump NAMELIST information.
-
-    sym_id      nl;
-    grp_entry   *ge;
-    sym_id      sym;
-    byte        nl_info;
-
-    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
-        nl->u.nl.address = BENewBack( NULL );
-        DGLabel( nl->u.nl.address );
-        DGInteger( nl->u.nl.name_len, TY_UINT_1 );
-        DGBytes( nl->u.nl.name_len, nl->u.nl.name );
-        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
-            sym = ge->sym;
-            DumpSymName( sym );
-            nl_info = 0;
-            _SetNMLType( nl_info, ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
-            if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-                _SetNMLSubScrs( nl_info, _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) );
-                DGInteger( nl_info, TY_UINT_1 );
-                DGInteger( sym->u.ns.si.va.u.dim_ext->num_elts, TY_UINT_4 );
-                DumpStaticAdv( sym, false ); // we do not want a name ptr dumped
-                if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                    DGInteger( sym->u.ns.xt.size, TY_INTEGER );
-                }
-            } else {
-                DGInteger( nl_info, TY_UINT_1 );
-            }
-            DGIBytes( BETypeLength( TY_POINTER ), 0 );
-        }
-        DGInteger( 0, TY_UINT_1 );
-    }
-}
-
-
-void    GenLocalDbgInfo( void ) {
-//=========================
-
-// Generate local symbols for a subprogram.
-
-    sym_id      sym;
-    cg_name     loc;
-
-    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-        if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
-            if( ( sym != EPValue ) && ( sym != ReturnValue ) ) {
-                DbgVarInfo( sym );
-            }
-        } else if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
-            if( sym->u.ns.flags & SY_SUB_PARM ) {
-                DbgSubProgInfo( sym );
-            }
-        }
-    }
-    for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
-        DBModSym( sym, TY_DEFAULT );
-    }
-    for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
-        // map all entry points to the return value so that when
-        // the subprogram is entered through one entry point and
-        // the symbol of a different entry point is referenced, we
-        // will get the return value for the entered entry point
-        if( (sym->u.ns.flags & SY_PS_ENTRY) &&
-            ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) ) {
-            // shadow symbol for function return value
-            if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                // ReturnValue is an argument to character functions
-                if( Options & OPT_DESCRIPTOR ) {
-                    // use SCB passed as argument
-                    loc = CGFEName( ReturnValue, TY_POINTER );
-                    loc = CGUnary( O_POINTS, loc, TY_POINTER );
-                } else {
-                    // use allocated SCB
-                    if( CommonEntry != NULL ) {
-                        loc = SubAltSCB( CommonEntry );
-                    } else {
-                        loc = SubAltSCB( sym->u.ns.si.ms.sym );
-                    }
-                }
-            } else if( CommonEntry != NULL ) {
-                // ReturnValue is an argument to common entry point
-                loc = CGFEName( ReturnValue, TY_POINTER );
-                loc = CGUnary( O_POINTS, loc, TY_POINTER );
-            } else {
-                loc = CGFEName( ReturnValue, F77ToCGType( sym ) );
-            }
-            CGDone( CGAssign( CGFEName( sym, TY_POINTER ), loc, TY_POINTER ) );
-            DbgVarInfo( sym );
-        }
-    }
-}
-
-
-static  void    MergeCommonInfo( void ) {
-//=================================
-
-// Merge information from global common block to local common block.
-
-    sym_id      sym;
-    sym_id      g_sym;
-    size_t      len;
-
-    for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
-        for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
-            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON )
-                continue;
-            len = sym->u.ns.u2.name_len;
-            if( len == g_sym->u.ns.u2.name_len ) {
-                if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) {
-                    break;
-                }
-            }
-        }
-        sym->u.ns.si.cb.segid = g_sym->u.ns.si.cb.segid;
-        sym->u.ns.u3.address = g_sym->u.ns.u3.address;
-        if( g_sym->u.ns.flags & SY_EQUIVED_NAME ) {
-            sym->u.ns.flags |= SY_EQUIVED_NAME;
-        }
-    }
-}
-
-
-static  void    DumpSymName( sym_id sym ) {
-//=========================================
-
-// Dump symbol name for run-time error messages.
-
-    DGInteger( sym->u.ns.u2.name_len, TY_UINT_1 );
-    DGBytes( sym->u.ns.u2.name_len, sym->u.ns.name );
-}
-
-
-static  void    DbgVarInfo( sym_id sym ) {
-//========================================
-
-// Generate debugging information for for a variable.
-
-    dbg_loc     loc;
-    com_eq      *ce_ext;
-
-    if( sym->u.ns.flags & SY_SUB_PARM ) {
-        DBLocalSym( sym, TY_POINTER );
-    } else if( sym->u.ns.flags & SY_IN_EQUIV ) {
-        sym_id  leader;
-        intstar4        offset;
-
-        offset = 0;
-        leader = sym;
-        for( ;; ) {
-            ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER )
-                break;
-            offset += ce_ext->offset;
-            leader = ce_ext->link_eqv;
-        }
-        leader = FindEqSetShadow( leader );
-        if( (leader == NULL) || (sym->u.ns.u1.s.typ == FT_CHAR) ) {
-            if( ( sym->u.ns.u1.s.typ != FT_CHAR ) &&
-                (ce_ext->ec_flags & MEMBER_IN_COMMON) ) {
-                loc = DBLocInit();
-                loc = DBLocSym( loc, ce_ext->com_blk );
-                loc = DBLocConst( loc, ce_ext->offset + offset );
-                loc = DBLocOp( loc, DB_OP_ADD, 0 );
-                DBGenSym( sym, loc, true );
-                DBLocFini( loc );
-            } else {
-                DBLocalSym( sym, TY_DEFAULT );
-            }
-        } else {
-            loc = DBLocInit();
-            loc = DBLocSym( loc, leader );
-            loc = DBLocConst( loc, offset - ce_ext->low );
-            loc = DBLocOp( loc, DB_OP_ADD, 0 );
-            DBGenSym( sym, loc, true );
-            DBLocFini( loc );
-        }
-    } else {
-        if( (sym->u.ns.u1.s.typ != FT_CHAR) && (sym->u.ns.flags & SY_IN_COMMON) ) {
-            ce_ext = sym->u.ns.si.va.vi.ec_ext;
-            loc = DBLocInit();
-            loc = DBLocSym( loc, ce_ext->com_blk );
-            loc = DBLocConst( loc, ce_ext->offset );
-            loc = DBLocOp( loc, DB_OP_ADD, 0 );
-            DBGenSym( sym, loc, true );
-            DBLocFini( loc );
-        } else {
-            DBLocalSym( sym, TY_DEFAULT );
-        }
-    }
-}
-
-
-static  void    DbgSubProgInfo( sym_id sym ) {
-//============================================
-
-// Generate debugging information for for a subprogram.
-
-    DBLocalSym( sym, TY_DEFAULT );
-}
-
-
-static  void    AssignAdv( sym_id sym ) {
-//=======================================
-
-// Assign an ADV to an array.
-
-    if( !ForceStatic( sym->u.ns.flags ) && (Options & OPT_AUTOMATIC) ) {
-        AssignAutoAdv( sym );
-    } else {
-        AssignStaticAdv( sym );
-    }
-}
-
-
-static  void    CreateAllocatableADV( sym_id sym ) {
-//==================================================
-
-// Creates a allocatable ADV:
-//      1. pointer to array storage
-//      2. flags
-//      3. actual ADV
-
-    cg_name     adv;
-    cg_name     temp;
-    cg_type     cgtyp;
-
-    if( !ForceStatic( sym->u.ns.flags ) && (Options & OPT_AUTOMATIC) ) {
-        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
-            CGAutoDecl( sym, TY_ARR_ALLOCATABLE_EXTENDED );
-            adv = CGFEName( sym, TY_ARR_ALLOCATABLE_EXTENDED );
-            temp = CGInteger( ALLOC_EXTENDED, TY_UINT_2 );
-        } else {
-            CGAutoDecl( sym, TY_ARR_ALLOCATABLE );
-            adv = CGFEName( sym, TY_ARR_ALLOCATABLE );
-            temp = CGInteger( 0, TY_UINT_2 );
-        }
-        adv = StructRef( adv, BETypeLength( ArrayPtrType( sym ) ) );
-        CGDone( CGAssign( adv, temp, TY_UINT_2 ) );
-        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
-            adv = CGFEName( sym, TY_ARR_ALLOCATABLE_EXTENDED );
-        } else {
-            adv = CGFEName( sym, TY_ARR_ALLOCATABLE );
-        }
-        cgtyp = ArrayPtrType( sym );
-        temp = CGInteger( 0, cgtyp );
-        CGDone( CGAssign( adv, temp, cgtyp ) );
-    } else {
-        DGLabel( FEBack( sym ) );
-        if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
-            DGIBytes( BETypeLength( TY_LONG_POINTER ), 0 );
-            DGInteger( ALLOC_EXTENDED, TY_UINT_2 );
-        } else {
-            DGIBytes( BETypeLength( TY_POINTER ), 0 );
-            DGIBytes( BETypeLength( TY_INT_2 ), 0 );
-        }
-    }
-    AssignAdv( sym );
-}
-
-
-static  void    AssignAutoAdv( sym_id sym ) {
-//===========================================
-
-// Assign an auto ADV to an array.
-
-    sym_id      shadow;
-
-    shadow = STAdvShadow( sym );
-    DumpAutoAdv( sym, shadow );
-    sym->u.ns.si.va.u.dim_ext->adv = NULL;
-}
-
-
-static  void    AssignStaticAdv( sym_id sym ) {
-//=============================================
-
-// Assign a static ADV to an array.
-
-    sym->u.ns.si.va.u.dim_ext->adv = BENewBack( NULL );
-    DGAlign( ALIGN_DWORD );
-    DGLabel( sym->u.ns.si.va.u.dim_ext->adv );
-    DumpStaticAdv( sym, true );
-}
-
-
-static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type cgtyp ) {
-//===================================================================
-
-    int         offset;
-
-    offset = BETypeLength( TY_ADV_ENTRY ) * ( entry - 1 );
-    if( cgtyp == TY_ADV_HI ) {
-        offset += BETypeLength( TY_ADV_LO );
-    }
-    return( StructRef( adv, offset ) );
-}
-
-
-static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type cgtyp )
-//==============================================================================
-{
-    int         offset;
-
-    offset = ( BETypeLength( TY_ADV_ENTRY_CV ) * entry ) +
-             ( BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
-    if( cgtyp == TY_ADV_HI_CV ) {
-        offset += BETypeLength( TY_ADV_LO );
-    }
-    if( Options & OPT_BOUNDS ) {
-        offset += BETypeLength( TY_POINTER );
-    }
-    return( StructRef( adv, offset ) );
-}
-
-
-static void AssignName2Adv( sym_id sym ) {
-//========================================
-
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    cg_name             adv;
-    back_handle         data;
-
-    dim_ptr = sym->u.ns.si.va.u.dim_ext;
-    dim_cnt = _DimCount( dim_ptr->dim_flags );
-    if( dim_ptr->adv == NULL ) {
-        // ADV is allocated on the stack
-        adv = CGFEName( FindAdvShadow( sym ), TY_ADV_ENTRY + dim_cnt );
-    } else {
-        adv = CGBackName( dim_ptr->adv, TY_ADV_ENTRY + dim_cnt );
-    }
-    adv = StructRef( adv, BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
-    data = BENewBack( NULL );
-    DGLabel( data );
-    DumpSymName( sym );
-    CGDone( CGAssign( adv, CGBackName( data, TY_POINTER ), TY_POINTER ) );
-    BEFiniBack( data );
-    PostponeFreeBackHandle( data );
-}
-
-
-static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
-//========================================================
-
-// Dump an automatic array dope vector.
-
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    int                 dim_no;
-    int                 entry;
-    intstar4            *bounds;
-    intstar4            lo;
-    intstar4            hi;
-    cg_name             adv;
-
-
-    dim_ptr = sym->u.ns.si.va.u.dim_ext;
-    dim_cnt = _DimCount( dim_ptr->dim_flags );
-    dim_no = dim_cnt;
-    bounds = &dim_ptr->subs_1_lo;
-    CGAutoDecl( shadow, ( TY_ADV_ENTRY + dim_cnt ) );
-    for( entry = 1; ; ++entry ) {
-        lo = *bounds++;
-        hi = *bounds++;
-        adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
-        CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_LO ),
-                CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
-        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
-            hi = 0;
-        } else {
-            hi = hi - lo + 1;
-        }
-        adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
-        CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_HI ),
-                CGInteger( hi, TY_ADV_HI ), TY_ADV_HI ) );
-        if( --dim_no == 0 ) {
-            break;
-        }
-    }
-    if( CGOpts & CGOPT_DI_CV ) {
-        dim_no = dim_cnt;
-        bounds = &dim_ptr->subs_1_lo;
-        for( entry = 1; ; ++entry ) {
-            lo = *bounds++;
-            hi = *bounds++;
-            adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
-            CGDone( CGAssign( CVAdvEntryAddr( adv, dim_cnt, entry, TY_ADV_LO ),
-                    CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
-            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
-                hi = 0;
-            }
-            adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
-            CGDone( CGAssign( CVAdvEntryAddr( adv, dim_cnt, entry, TY_ADV_HI_CV ),
-                    CGInteger( hi, TY_ADV_HI_CV ), TY_ADV_HI_CV ) );
-            if( --dim_no == 0 ) {
-                break;
-            }
-        }
-    }
-}
-
-
-static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
-//=============================================================
-
-// Dump a global array dope vector.
-
-    act_dim_list        *dim_ptr;
-    int                 dim_cnt;
-    int                 dim_no;
-    intstar4            *bounds;
-    intstar4            lo;
-    intstar4            hi;
-
-    dim_ptr = sym->u.ns.si.va.u.dim_ext;
-    dim_cnt = _DimCount( dim_ptr->dim_flags );
-    dim_no = dim_cnt;
-    bounds = &dim_ptr->subs_1_lo;
-    for( ;; ) {
-        lo = *bounds++;
-        hi = *bounds++;
-        DGInteger( lo, TY_ADV_LO );
-        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
-            DGInteger( 0, TY_ADV_HI );
-        } else {
-            DGInteger( hi - lo + 1, TY_ADV_HI );
-        }
-        if( --dim_no == 0 ) {
-            break;
-        }
-    }
-    if( (Options & OPT_BOUNDS) && dmp_nam_ptr ) {  // dump ptr to array name
-        DGInteger( 0, TY_POINTER );
-    }
-    if( CGOpts & CGOPT_DI_CV ) {
-        dim_no = dim_cnt;
-        bounds = &dim_ptr->subs_1_lo;
-        for( ;; ) {
-            lo = *bounds++;
-            hi = *bounds++;
-            DGInteger( lo, TY_ADV_LO );
-            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
-                DGInteger( 0, TY_ADV_HI_CV );
-            } else {
-                DGInteger( hi, TY_ADV_HI_CV );
-            }
-            if( --dim_no == 0 ) {
-                break;
-            }
-        }
-    }
-}
-
-
-static  void    DumpBrTable( void )
-//=============================
-// Dump the branch table ( for wild goto's ).
-{
-    sym_id          stmt;
-    sel_handle      s_handle;
-    label_handle    end_sel;
-    signed_64       tmp;
-
-    end_sel = BENewLabel();
-    CGControl( O_GOTO, NULL, end_sel );
-    CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
-    s_handle = CGSelInit();
-    for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
-        if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            Set64ValU32( tmp, stmt->u.st.address );
-            CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
-        }
-    }
-    CGSelOther( s_handle, end_sel );
-    CGSelect( s_handle, CGUnary( O_POINTS, CGFEName( WildLabel, TY_INTEGER ), TY_INTEGER ) );
-    CGControl( O_LABEL, NULL, end_sel );
-    BEFiniLabel( end_sel );
-}
-
-
-static  void    DumpLitSCBs( void ) {
-//=============================
-
-// Dump string control blocks for constant literals.
-
-    sym_id      sym;
-    back_handle data;
-
-    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
-        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 )
-            continue;
-        if( (sym->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE)) == 0 ) {
-            continue;
-        }
-        data = BENewBack( NULL );
-        DGLabel( data );
-        DGString( sym->u.lt.value, sym->u.lt.length );
-        DumpSCB( LitBack( sym ), data, sym->u.lt.length, false, 0 );
-        FreeBackHandle( &data );
-    }
-}
-
-
-void    FreeLocalBacks( bool free_dbg_handles ) {
-//===============================================
-
-// Free back handles for local symbols in local symbol table.
-
-    unsigned_16 flags;
-    sym_id      sym;
-    com_eq      *eq_ext;
-
-    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-        flags = sym->u.ns.flags;
-        if( (flags & SY_CLASS) == SY_VARIABLE ) {
-            FreeBackHandle( &sym->u.ns.u3.address );
-            if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
-                if( flags & SY_SUB_PARM ) {
-                    if( flags & SY_SUBSCRIPTED ) {
-                        if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) ||
-                            ((sym->u.ns.xt.size == 0) && (flags & SY_VALUE_PARM)) ||
-                            (Options & OPT_BOUNDS) ) {
-                            FreeBackHandle( &sym->u.ns.si.va.u.dim_ext->adv );
-                        }
-                    /* SCB for dummy arguments are always allocated on the
-                       stack so we have no problems with recursion
-                    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                        if( SCBRequired( sym ) ) {
-                            if( (Options & OPT_AUTOMATIC) == 0 ) {
-                                // if d2-level debugging information has been
-                                // requested, don't free the back handle until
-                                // we are told
-                                if( (CGOpts & CGOPT_DB_LOCALS) == 0 || free_dbg_handles ) {
-                                    FreeBackHandle( &sym->u.ns.si.va.vi.alt_scb );
-                                }
-                            }
-                        }
-                    */
-                    }
-                } else {
-                    if( flags & SY_SUBSCRIPTED ) {
-                        if( _Allocatable( sym ) || (Options & OPT_BOUNDS) ) {
-                            FreeBackHandle( &sym->u.ns.si.va.u.dim_ext->adv );
-                        }
-                    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                        // character variable
-                        if( (flags & SY_DATA_INIT) && (flags & SY_IN_EC) == 0 ) {
-                            FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
-                        } else if( flags & SY_IN_EQUIV ) {
-                            eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                            if( eq_ext->ec_flags & LEADER ) {
-                                if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
-                                    FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
-            if( flags & SY_SUB_PARM ) {
-                FreeBackHandle( &sym->u.ns.u3.address );
-                if( (sym->u.ns.u1.s.typ == FT_CHAR) && (CGOpts & CGOPT_DB_LOCALS) ) {
-                    if( free_dbg_handles ) {
-                        FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
-                    }
-                }
-            } else if( (flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
-                FreeBackHandle( &sym->u.ns.u3.address );
-                FreeSFHeader( sym );
-            /*
-            for function return values, the SCB is always allocated
-            on the stack so we have no problems with recursion
-            } else if( (flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-                if( (Options & OPT_DESCRIPTOR) == 0 &&
-                    (flags & SY_PENTRY) && (sym->u.ns.u1.s.typ == FT_CHAR) ) {
-                    if( CommonEntry != NULL ) {
-                        if( (Options & OPT_AUTOMATIC) == 0 ) {
-                            FreeBackHandle( &CommonEntry->u.ns.si.sp.alt_scb );
-                        }
-                    } else {
-                        if( (Options & OPT_AUTOMATIC) == 0 ) {
-                            FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
-                        }
-                    }
-                }
-            */
-            }
-        }
-    }
-    for( sym = CList; sym != NULL; sym = sym->u.cn.link ) {
-        FreeBackHandle( &sym->u.cn.address );
-    }
-    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
-        FreeBackHandle( &sym->u.lt.address );
-    }
-    for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
-        FreeBackHandle( &sym->u.ns.u3.address );
-    }
-    for( sym = NmList; sym != NULL; sym = sym->u.nl.link ) {
-        FreeBackHandle( &sym->u.nl.address );
-    }
-    FreeUsedBacks( true );
-    FiniLabels( true );
-    FreeBackHandle( &TraceEntry );
-}
-
-
-static void PostponeFreeBackHandle( back_handle data ) {
-//======================================================
-
-    old_back_handle     *tmp;
-
-    tmp = FMemAlloc( sizeof( old_back_handle ) );
-    tmp->next = OldBackHandles;
-    OldBackHandles = tmp;
-    tmp->old = data;
-}
-
-
-void    FreeUsedBacks( bool nuke ) {
-//==================================
-
-    old_back_handle     *tmp;
-
-    while( OldBackHandles != NULL ) {
-        tmp = OldBackHandles;
-        OldBackHandles = tmp->next;
-        if( nuke ) {
-            BEFreeBack( tmp->old );
-        }
-        FMemFree( tmp );
-    }
-}
-
-
-void    FreeGlobalData( void ) {
-//========================
-
-    if( Options & OPT_TRACE ) {
-        if( ModuleName != NULL ) {
-            BEFreeBack( ModuleName );
-        }
-    }
-}
-
-
-void    FreeGlobalBacks( void ) {
-//=========================
-
-// Free back handles for global symbols in local symbol table.
-
-    unsigned_16 flags;
-    sym_id      sym;
-
-    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-        flags = sym->u.ns.flags;
-        if( (flags & SY_CLASS) != SY_SUBPROGRAM )
-            continue;
-        if( ( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) &&
-            ( (flags & SY_SUBPROG_TYPE) != SY_REMOTE_BLOCK ) ) {
-            if( sym->u.ns.u3.address != NULL ) {
-                BEFreeBack( sym->u.ns.u3.address );
-            }
-        }
-    }
-}
-
-
-static  void    FreeBackHandle( void *_back ) {
-//=============================================
-
-// Free back handles.
-
-    back_handle     *back = _back;
-
-    if( *back != NULL ) {
-        /* no need to call BEFiniBack() since we immediately
-           follow it with a call to BEFreeBack()
-        BEFiniBack( *back );
-        */
-        BEFreeBack( *back );
-        *back = NULL;
-    }
-}
-
-
-void    DefineEntryPoint( entry_pt *ep ) {
-//========================================
-
-    sym_id      sp;
-    cg_type     cgtyp;
-
-    sp = ep->id;
-    if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-            if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-                CGParmDecl( ReturnValue, TY_POINTER );
-                CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
-            }
-        }
-    }
-    DefineArgs( ep );
-    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
-        if( ChkForAltRets( ep ) ) {
-            CGAutoDecl( ReturnValue, TY_INTEGER );
-        }
-    } else if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-        if( Options & OPT_DESCRIPTOR ) {
-            CGParmDecl( ReturnValue, TY_POINTER );
-        }
-    } else {
-        cgtyp = F77ToCGType( sp );
-        CheckAutoSize( sp, cgtyp );
-        CGAutoDecl( ReturnValue, cgtyp );
-    }
-    CGLastParm();
-}
-
-
-static  void    DefineCommonEntry( void ) {
-//===================================
-
-    entry_pt    *ep;
-    parameter   *arg;
-    aux_info    *info;
-    pass_by     *arg_aux;
-
-    for( ep = Entries; ep != NULL; ep = ep->link ) {
-        info = InfoLookup( ep->id );
-        arg_aux = info->arg_info;
-        for( arg = ep->parms; arg != NULL; arg = arg->link ) {
-            if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
-                DeclareArg( arg, arg_aux );
-                if( (arg->id->u.ns.u1.s.typ == FT_CHAR) &&
-                    (Options & OPT_DESCRIPTOR) == 0 ) {
-                    if( (arg_aux == NULL ) ||
-                        (arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA)) == 0 ) {
-                        CGParmDecl( STArgShadow( arg->id ), TY_INTEGER );
-                    }
-                }
-            }
-            if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
-                arg_aux = arg_aux->link;
-            }
-        }
-    }
-    if( (Entries->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
-        CGParmDecl( EPValue, TY_INTEGER );
-        if( EntryWithAltRets() ) {
-            CGAutoDecl( ReturnValue, TY_INTEGER );
-        }
-    } else {
-        CGParmDecl( ReturnValue, TY_POINTER );
-        if( (Entries->id->u.ns.u1.s.typ == FT_CHAR) && (Options & OPT_DESCRIPTOR) == 0 ) {
-            CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
-        }
-        CGParmDecl( EPValue, TY_INTEGER );
-    }
-    CGLastParm();
-}
-
-
-static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info )
-//===============================================================
-{
-    parameter   *arg;
-    pass_by     *arg_aux;
-
-    arg_aux = info->arg_info;
-    for( arg = ep->parms; arg != NULL; arg = arg->link ) {
-        if( (arg->flags & ARG_STMTNO) == 0 ) {
-            if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
-                if( (arg_aux == NULL) ||
-                    (arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA)) == 0 ) {
-                    CGParmDecl( STArgShadow( arg->id ), TY_INTEGER );
-                }
-            }
-        }
-        if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
-            arg_aux = arg_aux->link;
-        }
-    }
-}
-
-
-static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
-//==============================================================
-
-// Declare an argument.
-
-    cg_type     arg_cgtyp;
-    sym_id      arg_id;
-
-    arg_id = arg->id;
-    if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
-        arg_cgtyp = TY_CODE_PTR;
-    } else if( arg_id->u.ns.flags & SY_SUBSCRIPTED ) {
-        arg_cgtyp = ArrayPtrType( arg_id );
-        if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
-            if( arg_aux != NULL ) {
-                if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
-                    arg_id->u.ns.flags |= SY_VALUE_PARM;
-                }
-            }
-        }
-    } else {
-        arg_cgtyp = TY_POINTER;
-        if( arg_id->u.ns.u1.s.typ == FT_CHAR ) {
-            if( arg_aux != NULL ) {
-                if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
-                    arg_id->u.ns.flags |= SY_VALUE_PARM;
-                }
-            }
-        } else {
-            if( arg_aux != NULL ) {
-                if( arg_aux->info & PASS_BY_VALUE ) {
-                    arg_cgtyp = F77ToCGType( arg_id );
-                    arg_id->u.ns.flags |= SY_VALUE_PARM;
-                    if( TypeCmplx( arg_id->u.ns.u1.s.typ ) ) {
-                        arg_cgtyp = CmplxBaseType( arg_cgtyp );
-                        CGParmDecl( arg_id, arg_cgtyp );
-                        arg_id = STArgShadow( arg_id );
-                    }
-                }
-            }
-        }
-    }
-    CGParmDecl( arg_id, arg_cgtyp );
-}
-
-
-static  void    DefineArgs( entry_pt *ep ) {
-//==========================================
-
-    parameter   *arg;
-    aux_info    *info;
-    pass_by     *arg_aux;
-
-    info = InfoLookup( ep->id );
-    if( (info->cclass & FECALL_GEN_REVERSE_PARMS) ) {
-        ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&info->arg_info );
-    }
-    arg_aux = info->arg_info;
-    for( arg = ep->parms; arg != NULL; arg = arg->link ) {
-        if( (arg->flags & ARG_STMTNO) == 0 ) {
-            DeclareArg( arg, arg_aux );
-            if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
-                arg_aux = arg_aux->link;
-            }
-        }
-    }
-    if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        DeclareShadowArgs( ep, info );
-    }
-    if( info->cclass & FECALL_GEN_REVERSE_PARMS ) {
-        ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&info->arg_info );
-    }
-}
