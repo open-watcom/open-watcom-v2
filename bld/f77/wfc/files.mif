@@ -215,7 +215,6 @@ comovl2 += &
     fcdbg.obj &
     fcdo.obj &
     fcflow.obj &
-    fcformat.obj &
     fcio.obj &
     fcjmptab.obj &
     fclogic.obj &

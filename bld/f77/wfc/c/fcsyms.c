@@ -51,7 +51,6 @@
 #include "tcmplx.h"
 #include "fccmplx.h"
 #include "fcflow.h"
-#include "fcformat.h"
 #include "fcstring.h"
 #include "fcstruct.h"
 #include "forcstat.h"
@@ -61,6 +60,7 @@
 #include "wf77info.h"
 #include "i64.h"
 #include "fcsyms.h"
+#include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
@@ -1362,6 +1362,31 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
         }
     }
     return( g_offset );
+}
+
+static void     DumpFormats( void ) 
+//=================================
+// Dump format statements.
+{
+    obj_ptr     curr_fc;
+    unsigned_16 fmt_len;
+    label_id    label;
+
+    curr_fc = FCodeTell( 0 );
+    while( FormatList ) {
+        FCodeSeek( FormatList );
+        fmt_len = GetU16() - sizeof( obj_ptr ) - sizeof( unsigned_16 );
+        FormatList = GetObjPtr();
+        label = GetU16();
+        if( label != 0 ) {
+            DGLabel( GetFmtLabel( label ) );
+        }
+        while( fmt_len > 0 ) {
+            DGIBytes( 1, GetByte() );
+            fmt_len--;
+        }
+    }
+    FCodeSeek( curr_fc );
 }
 
 
