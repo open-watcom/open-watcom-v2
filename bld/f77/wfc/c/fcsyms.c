@@ -793,12 +793,12 @@ static  void    DumpBrTable( void )
 
     end_sel = BENewLabel();
     CGControl( O_GOTO, NULL, end_sel );
-    CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
+    CGControl( O_LABEL, NULL, GetCgLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
             Set64ValU32( tmp, stmt->u.st.label );
-            CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
+            CGSelCase( s_handle, GetStmtCgLabel( stmt ), tmp );
         }
     }
     CGSelOther( s_handle, end_sel );
@@ -1379,7 +1379,7 @@ static void     DumpFormats( void )
         FormatList = GetObjPtr();
         label = GetU16();
         if( label != 0 ) {
-            DGLabel( GetFmtLabel( label ) );
+            DGLabel( GetCgBckLabel( label ) );
         }
         while( fmt_len > 0 ) {
             DGIBytes( 1, GetByte() );

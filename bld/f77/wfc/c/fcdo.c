@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,8 +77,8 @@ void    FCDoBegin( void )
     }
     e2 = CGEval( GetTypedValue() );
     e1 = GetTypedValue();
-    top = GetLabel( GetU16() );
-    bottom = GetLabel( GetU16() );
+    top = GetCgLabel( GetU16() );
+    bottom = GetCgLabel( GetU16() );
     do_cgtyp = F77ToCGType( do_var );
     CGTrash( CGAssign( SymAddr( do_var ), e1, do_cgtyp ) );
     if( increment == NULL ) {  // INTEGER DO variable/constant increment
@@ -136,7 +136,7 @@ void    FCDoEnd( void )
         incr_value = 0;
         iteration = GetPtr();
     }
-    top = GetLabel( GetU16() );
+    top = GetCgLabel( GetU16() );
     do_cgtyp = F77ToCGType( do_var );
     if( increment == NULL ) {  // INTEGER DO variable with constant increment
         CGDone( CGAssign( SymAddr( do_var ),

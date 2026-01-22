@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,10 @@
 
 typedef struct label_entry {
     struct label_entry  *link;
-    pointer             handle;
+    union {
+        label_handle    cglbl;
+        back_handle     cgbck;
+    } u;
     label_id            label;
-    bool                format_label;
+    bool                back_label;
 } label_entry;

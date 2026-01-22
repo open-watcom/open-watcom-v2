@@ -78,8 +78,8 @@ void    InitLabels( void )
 }
 
 
-void    FiniLabels( bool format_label )
-//=====================================
+void    FiniLabels( bool back_label )
+//===================================
 // Free specified class of labels.
 {
     label_entry **owner;
@@ -87,14 +87,14 @@ void    FiniLabels( bool format_label )
 
     owner = &LabelList;
     while( (curr = *owner) != NULL ) {
-        if( curr->format_label == format_label ) {
+        if( curr->back_label == back_label ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
-                if( curr->format_label ) {
-                    BEFiniBack( curr->handle );
-                    BEFreeBack( curr->handle );
+                if( curr->back_label ) {
+                    BEFiniBack( curr->u.cgbck );
+                    BEFreeBack( curr->u.cgbck );
                 } else {
                     InfoError( CP_ERROR, "unfreed label" );
-                    BEFiniLabel( curr->handle );
+                    BEFiniLabel( curr->u.cglbl );
                 }
             }
             *owner = curr->link;
@@ -120,8 +120,8 @@ static  label_entry     *FindLabel( label_id label )
     if( le == NULL ) {
         le = FMemAlloc( sizeof( label_entry ) );
         le->label = label;
-        le->format_label = false;
-        le->handle = NULL;
+        le->back_label = false;
+        le->u.cglbl = NULL;
         le->link = LabelList;
         LabelList = le;
     }
@@ -129,17 +129,17 @@ static  label_entry     *FindLabel( label_id label )
 }
 
 
-label_handle    GetLabel( label_id label )
-//========================================
-// Get a label.
+label_handle    GetCgLabel( label_id label )
+//==========================================
+// Get a cg code label.
 {
     label_entry *le;
 
     le = FindLabel( label );
-    if( le->handle == NULL ) {
-        le->handle = BENewLabel();
+    if( le->u.cglbl == NULL ) {
+        le->u.cglbl = BENewLabel();
     }
-    return( le->handle  );
+    return( le->u.cglbl  );
 }
 
 
@@ -158,22 +158,22 @@ void    FCJmpFalse( void )
     } else {
         bool_expr = XPopValue( cgtyp );
     }
-    CGControl( O_IF_FALSE, bool_expr, GetLabel( GetU16() ) );
+    CGControl( O_IF_FALSE, bool_expr, GetCgLabel( GetU16() ) );
 }
 
 
 void    FCJmpAlways( void )
 //=========================
 {
-    CGControl( O_GOTO, NULL, GetLabel( GetU16() ) );
+    CGControl( O_GOTO, NULL, GetCgLabel( GetU16() ) );
 }
 
 
-label_handle    GetStmtLabel( sym_id sn )
-//=======================================
-// Get a statement label.
+label_handle    GetStmtCgLabel( sym_id sn )
+//=========================================
+// Get a statement cg code label.
 {
-    return( GetLabel( sn->u.st.label ) );
+    return( GetCgLabel( sn->u.st.label ) );
 }
 
 
@@ -183,7 +183,7 @@ void    FCStmtJmpAlways( void )
     sym_id      sn;
 
     sn = GetPtr();
-    CGControl( O_GOTO, NULL, GetStmtLabel( sn ) );
+    CGControl( O_GOTO, NULL, GetStmtCgLabel( sn ) );
     RefStmtLabel( sn );
 }
 
@@ -191,7 +191,7 @@ void    FCStmtJmpAlways( void )
 void    FCDefineLabel( void )
 //===========================
 {
-    CGControl( O_LABEL, NULL, GetLabel( GetU16() ) );
+    CGControl( O_LABEL, NULL, GetCgLabel( GetU16() ) );
 }
 
 
@@ -201,23 +201,31 @@ void    FCStmtDefineLabel( void )
     sym_id      sn;
 
     sn = GetPtr();
-    CGControl( O_LABEL, NULL, GetStmtLabel( sn ) );
+    CGControl( O_LABEL, NULL, GetStmtCgLabel( sn ) );
     RefStmtLabel( sn );
 }
 
 
-back_handle     GetFmtLabel( label_id label )
+back_handle     GetCgBckLabel( label_id label )
 //===========================================
-// Get a format label.
+// Get a cg data label.
 {
     label_entry *le;
 
     le = FindLabel( label );
-    if( le->handle == NULL ) {
-        le->handle = BENewBack( NULL );
-        le->format_label = true;
+    if( le->u.cgbck == NULL ) {
+        le->u.cgbck = BENewBack( NULL );
+        le->back_label = true;
     }
-    return( le->handle  );
+    return( le->u.cgbck  );
+}
+
+
+back_handle    GetStmtCgBckLabel( sym_id sn )
+//===========================================
+// Get a statement cg data label.
+{
+    return( GetCgBckLabel( sn->u.st.label ) );
 }
 
 
@@ -230,7 +238,7 @@ void    FCAssign( void )
     stmt = GetPtr();
     if( stmt->u.st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGBackName( GetFmtLabel( stmt->u.st.label ),
+                          CGBackName( GetCgBckLabel( stmt->u.st.label ),
                                       TY_LOCAL_POINTER ),
                           TY_LOCAL_POINTER ) );
     } else {
@@ -260,21 +268,21 @@ void    FCIfArith( void )
     if( lt == gt ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_EQ, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtLabel( eq ) );
-        CGControl( O_GOTO, NULL, GetStmtLabel( lt ) );
+                   GetStmtCgLabel( eq ) );
+        CGControl( O_GOTO, NULL, GetStmtCgLabel( lt ) );
     } else if( lt == eq ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_GT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtLabel( gt ) );
-        CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
+                   GetStmtCgLabel( gt ) );
+        CGControl( O_GOTO, NULL, GetStmtCgLabel( eq ) );
     } else if( eq == gt ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_LT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtLabel( lt ) );
-        CGControl( O_GOTO, NULL, GetStmtLabel( eq ) );
+                   GetStmtCgLabel( lt ) );
+        CGControl( O_GOTO, NULL, GetStmtCgLabel( eq ) );
     } else {
-        CG3WayControl( if_expr, GetStmtLabel( lt ), GetStmtLabel( eq ),
-                       GetStmtLabel( gt ) );
+        CG3WayControl( if_expr, GetStmtCgLabel( lt ), GetStmtCgLabel( eq ),
+                       GetStmtCgLabel( gt ) );
     }
     RefStmtLabel( lt );
     RefStmtLabel( eq );
@@ -299,7 +307,7 @@ void    FCAssignedGOTOList( void )
     while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
-            label = GetStmtLabel( sn );
+            label = GetStmtCgLabel( sn );
             Set64ValU32( tmp, sn->u.st.label );
             CGSelCase( s, label, tmp );
         }
@@ -332,7 +340,7 @@ void    FCStartRB( void )
     sym_id      rb;
 
     rb = GetPtr();
-    CGControl( O_LABEL, NULL, GetLabel( rb->u.ns.si.rb.entry ) );
+    CGControl( O_LABEL, NULL, GetCgLabel( rb->u.ns.si.rb.entry ) );
     RBReferenced( rb );
 }
 
@@ -365,7 +373,7 @@ void    FCExecute( void )
     sym_id      rb;
 
     rb = GetPtr();
-    CGControl( O_INVOKE_LABEL, NULL, GetLabel( rb->u.ns.si.rb.entry ) );
+    CGControl( O_INVOKE_LABEL, NULL, GetCgLabel( rb->u.ns.si.rb.entry ) );
     RBReferenced( rb );
 }
 
@@ -465,7 +473,7 @@ void    FCSFCall( void )
             XPush( TmpVal( MkTmp( XPopValue( sf_cgtyp ), sf_cgtyp ), sf_cgtyp ) );
         }
     } else {
-        value = CGWarp( arg_list, GetLabel( sf->u.ns.si.sf.u.location ), value );
+        value = CGWarp( arg_list, GetCgLabel( sf->u.ns.si.sf.u.location ), value );
         // consider: y = f( a, f( b, c, d ), e )
         // make sure that inner reference to f gets evaluated before we assign
         // arguments for outer reference
@@ -492,8 +500,8 @@ void            FCStartSF( void )
     } else {
         sf = GetPtr();
         SFEndLabel = GetU16();
-        CGControl( O_GOTO, NULL, GetLabel( SFEndLabel ) );
-        CGControl( O_LABEL, NULL, GetLabel( sf->u.ns.si.sf.u.location ) );
+        CGControl( O_GOTO, NULL, GetCgLabel( SFEndLabel ) );
+        CGControl( O_LABEL, NULL, GetCgLabel( sf->u.ns.si.sf.u.location ) );
     }
 }
 
@@ -508,7 +516,7 @@ void            FCEndSF( void )
 
     sf = GetPtr();
     CGControl( O_LABEL_RETURN, NULL, NULL );
-    CGControl( O_LABEL, NULL, GetLabel( SFEndLabel ) );
+    CGControl( O_LABEL, NULL, GetCgLabel( SFEndLabel ) );
     DoneLabel( SFEndLabel );
     RefStmtFunc( sf );
 }
@@ -555,7 +563,7 @@ void    DoneLabel( label_id label )
         owner = &curr->link;
     }
     *owner = curr->link;
-    BEFiniLabel( curr->handle );
+    BEFiniLabel( curr->u.cglbl );
     FMemFree( curr );
 }
 

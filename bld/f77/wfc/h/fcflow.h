@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,9 @@
 
 extern void             InitLabels( void );
 extern void             FiniLabels( bool format_label );
-extern label_handle     GetLabel( label_id label );
-extern label_handle     GetStmtLabel( sym_id sn );
-extern back_handle      GetFmtLabel( label_id label );
+extern label_handle     GetCgLabel( label_id label );
+extern label_handle     GetStmtCgLabel( sym_id sn );
+extern back_handle      GetCgBckLabel( label_id label );
+extern back_handle      GetStmtCgBckLabel( sym_id sn );
 extern void             DoneLabel( label_id label );
 extern void             RefStmtLabel( sym_id sn );

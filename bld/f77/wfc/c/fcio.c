@@ -125,20 +125,20 @@ static  void    chkIOErr( cg_name io_stat )
     if( ( EndEqLabel != 0 )
       && ( ErrEqLabel != 0 ) ) {
         eq_label = BENewLabel();
-        CG3WayControl( io_stat, GetLabel( EndEqLabel ), eq_label,
-                       GetLabel( ErrEqLabel ) );
+        CG3WayControl( io_stat, GetCgLabel( EndEqLabel ), eq_label,
+                       GetCgLabel( ErrEqLabel ) );
         CGControl( O_LABEL, NULL, eq_label );
         BEFiniLabel( eq_label );
     } else if( EndEqLabel != 0 ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_LT, io_stat, CGInteger( 0, TY_INTEGER ),
                               TY_INTEGER ),
-                   GetLabel( EndEqLabel ) );
+                   GetCgLabel( EndEqLabel ) );
     } else if( ErrEqLabel != 0 ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_NE, io_stat, CGInteger( 0, TY_INTEGER ),
                               TY_INTEGER ),
-                   GetLabel( ErrEqLabel ) );
+                   GetCgLabel( ErrEqLabel ) );
     } else if( IOStatSpecified ) {
         IOSLabel = BENewLabel();
         CGControl( O_IF_TRUE,
@@ -748,7 +748,7 @@ void    FCSetFmt( void )
     call_handle call;
 
     call = InitCall( RT_SET_FMT );
-    CGAddParm( call, CGBackName( (back_handle)GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( call, CGBackName( (back_handle)GetStmtCgLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( call ) );
 }
 
@@ -760,7 +760,7 @@ void    FCPassLabel( void )
     call_handle call;
 
     call = InitCall( GetU16() );
-    CGAddParm( call, CGBackName( (back_handle)GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( call, CGBackName( (back_handle)GetCgLabel( GetU16() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( call ) );
 }
 
