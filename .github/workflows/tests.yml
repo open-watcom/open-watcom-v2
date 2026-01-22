@@ -62,7 +62,7 @@ jobs:
         suffix: ${{inputs.suffix}}
         bits: '64'
     - name: ${{matrix.title}}
-      if: ! contains( ${{matrix.skip}}, ${{runner.os}} )
+      if: ${{ !contains( matrix.skip, runner.os ) }}
       uses: ./.github/actions/tests
       with:
         suffix: ${{inputs.suffix}}
