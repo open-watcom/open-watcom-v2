@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ void    StartFmt( cs_label fmt_label ) {
             // FORMAT statement with no statement label
             OutU16( 0 );
         } else {
-            OutU16( fmt_label.st_label->u.st.address );
+            OutU16( fmt_label.st_label->u.st.label );
         }
     } else {
         OutU16( fmt_label.g_label );

@@ -797,7 +797,7 @@ static  void    DumpBrTable( void )
     s_handle = CGSelInit();
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            Set64ValU32( tmp, stmt->u.st.address );
+            Set64ValU32( tmp, stmt->u.st.label );
             CGSelCase( s_handle, GetStmtLabel( stmt ), tmp );
         }
     }

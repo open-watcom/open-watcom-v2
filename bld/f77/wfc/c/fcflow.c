@@ -173,7 +173,7 @@ label_handle    GetStmtLabel( sym_id sn )
 //=======================================
 // Get a statement label.
 {
-    return( GetLabel( sn->u.st.address ) );
+    return( GetLabel( sn->u.st.label ) );
 }
 
 
@@ -230,12 +230,12 @@ void    FCAssign( void )
     stmt = GetPtr();
     if( stmt->u.st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGBackName( GetFmtLabel( stmt->u.st.address ),
+                          CGBackName( GetFmtLabel( stmt->u.st.label ),
                                       TY_LOCAL_POINTER ),
                           TY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( stmt->u.st.address, TY_INTEGER ),
+                          CGInteger( stmt->u.st.label, TY_INTEGER ),
                           TY_INTEGER ) );
         RefStmtLabel( stmt );
     }
@@ -300,7 +300,7 @@ void    FCAssignedGOTOList( void )
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            Set64ValU32( tmp, sn->u.st.address );
+            Set64ValU32( tmp, sn->u.st.label );
             CGSelCase( s, label, tmp );
         }
     }
@@ -577,7 +577,7 @@ void    RefStmtLabel( sym_id sn )
     } else {
         sn->u.st.ref_count--;
         if( sn->u.st.ref_count == 0 ) {
-            DoneLabel( sn->u.st.address );
+            DoneLabel( sn->u.st.label );
         }
     }
 }

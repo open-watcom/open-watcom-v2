@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +241,7 @@ typedef struct stmtno {
     uint                ref_count;      // reference count
     block_num           block;          // block # statement # appeared in
     unsigned_16         flags;          // statement # flags
-    label_id            address;        // label of statement #
+    label_id            label;          // label of statement #
     int                 line;           // source line statement # appeared in
     stmt_num            number;         // statement #
 } stmtno;

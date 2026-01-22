@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -950,7 +950,7 @@ void    FCSetErr( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     ErrEqStmt = sn;
-    ErrEqLabel = sn->u.st.address;
+    ErrEqLabel = sn->u.st.label;
 }
 
 
@@ -967,7 +967,7 @@ void    FCSetEnd( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     EndEqStmt = sn;
-    EndEqLabel = sn->u.st.address;
+    EndEqLabel = sn->u.st.label;
 }
 
 

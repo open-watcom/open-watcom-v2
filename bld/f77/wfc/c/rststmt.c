@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ sym_id  STStmtNo( stmt_num stmt_no )
     ste_ptr->u.st.block = CSHead->block;
     ste_ptr->u.st.flags = SN_INIT;
     ste_ptr->u.st.number = stmt_no;
-    ste_ptr->u.st.address = NextLabel();
+    ste_ptr->u.st.label = NextLabel();
     ste_ptr->u.st.ref_count = 0;
     ste_ptr->u.st.link = SList;
     SList = ste_ptr;
