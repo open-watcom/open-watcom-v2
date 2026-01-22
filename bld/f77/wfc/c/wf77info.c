@@ -326,9 +326,11 @@ static  void    DefineCommonSegs( void )
     int         seg_count;
 #endif
     sym_id      sym;
-    size_t      cb_len;
     int         private;
     char        cb_name[MAX_SYMLEN + 4 + SYM_MANGLE_LEN];
+#if _CPU == 8086
+    size_t      cb_len;
+#endif
 
 #if _INTEL_CPU
     if( _SmallDataModel( CGOpts ) ) {
@@ -347,8 +349,11 @@ static  void    DefineCommonSegs( void )
             private = 0;
         }
 #endif
+#if _CPU == 8086
         cb_len = MangleCommonBlockName( sym, cb_name, false );
-
+#else
+        MangleCommonBlockName( sym, cb_name, false );
+#endif
         sym->u.ns.si.cb.segid = AllocSegId();
         if( CGOpts & CGOPT_ALIGN ) {
             BEDefSeg( sym->u.ns.si.cb.segid, COMMON | private, cb_name, ALIGN_SEGMENT );

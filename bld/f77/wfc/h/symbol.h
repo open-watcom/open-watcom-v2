@@ -31,12 +31,12 @@
 
 
 #include "wf77defs.h"
+#include "cg.h"
 #include "symdefs.h"
 #include "symflgs.h"
 #include "symtypes.h"
 #include "symacc.h"
 #include "ifdefs.h"
-#include "cg.h"
 
 
 #define SEG_NULL        0       // NULL segment id
@@ -63,8 +63,6 @@
 #define ALIGN_SEGMENT   16      // align segment on segment boundary
 
 
-typedef back_handle     obj_addr;              // back handle
-
 typedef unsigned_32     db_handle;
 
 #include "struct.h"
@@ -76,14 +74,14 @@ typedef unsigned_32     db_handle;
 typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
     segment_id          segid;          //   variables not in common/equivalence
-    void                *alt_scb;       // SCB for character arguments
+    temp_handle         alt_scb;        // SCB for character arguments
     cg_type             cgtyp;          // cg-type for local character
 } vi;
 
 typedef struct var {
     union {
         struct act_dim_list *dim_ext;   // pointer to dimension extension
-        void                *bck_hdl;
+        back_handle         bck_hdl;
     } u;
     union vi            vi;             // variable information
 } var;
@@ -111,7 +109,7 @@ typedef struct subprog {
         label_id        entry;          // entry label
         segment_id      segid;          // segment id for external subprograms
     } u;
-    void                *alt_scb;       // SCB for character*(*) functions
+    temp_handle         alt_scb;        // SCB for character*(*) functions
 } subprog;
 
 // symbol table information for intrinsic functions:
@@ -208,7 +206,7 @@ typedef struct m_sym {
 
 typedef struct constant {
     sym_id              link;           // pointer to next constant in chain
-    void                *address;       // back handle
+    back_handle         address;        // back handle
     TYPE                typ;            // type of constant
     size_t              size;           // size of constant
     ftn_type            value;          // value of constant
@@ -227,7 +225,7 @@ typedef enum {
 
 typedef struct literal {
     sym_id              link;           // pointer to next literal in chain
-    void                *address;       // back handle
+    back_handle         address;        // back handle
     size_t              length;         // length of literal
     lt_flags            flags;          // constant appeared in DATA statement
     char                value[1];       // value of literal
@@ -273,8 +271,8 @@ typedef struct named_symbol {
         byte            magic_flags;    // information about the magic symbol
     } u2;
     union {
-      obj_addr          address;        // address of symbol
-      db_handle         dbh;            // browse handle
+        back_handle     address;        // address of symbol
+        db_handle       dbh;            // browse handle
     } u3;
     ext_inf             xt;             // extended info
     union {
