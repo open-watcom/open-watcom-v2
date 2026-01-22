@@ -31,9 +31,9 @@
 ****************************************************************************/
 
 
-//
-// LEX       : lexical analyser
-//
+/*
+ * LEX       : lexical analyser
+ */
 
 #include "ftnstd.h"
 #include "opr.h"
@@ -84,11 +84,10 @@ static  void    GetOpr( void );
 static  void    SetSwitch( void );
 
 
-static  itnode  *NewITNode( void ) {
-//==================================
-
+static  itnode  *NewITNode( void )
+//================================
 // Create a new itnode.
-
+{
     itnode      *new;
 
     new = FrlAlloc( &ITPool, sizeof( itnode ) );
@@ -111,11 +110,10 @@ static  itnode  *NewITNode( void ) {
 }
 
 
-void    MakeITList( void ) {
-//====================
-
+void    MakeITList( void )
+//========================
 // Make up the internal text list.
-
+{
     itnode      *new_it;
 
     InitScan();
@@ -142,11 +140,13 @@ void    MakeITList( void ) {
             break;
         GetOpr();
         GetOpnd();
-        // Consider what happens when NewITNode() calls FrlAlloc() who
-        // in turns calls FMemAlloc() and there is no memory left.
-        // FMemAlloc() frees the I.T. list starting at ITHead so when
-        // we return CITNode has been freed.
-        // So don't code ---->    CITNode->link = NewITNode();
+        /*
+         * Consider what happens when NewITNode() calls FrlAlloc() who
+         * in turns calls FMemAlloc() and there is no memory left.
+         * FMemAlloc() frees the I.T. list starting at ITHead so when
+         * we return CITNode has been freed.
+         * So don't code ---->    CITNode->link = NewITNode();
+         */
         new_it = NewITNode();
         if( new_it == NULL ) {
             FlushStatement();
@@ -156,10 +156,12 @@ void    MakeITList( void ) {
         CITNode = CITNode->link;
         SetSwitch();
     }
-    // If the last token in the statement is a NULL operand, then
-    // make the caret point 1 past the operator. Otherwise
-    // it will point at the end of the line and for fixed-length
-    // files which contain trailing blanks this will look funny.
+    /*
+     * If the last token in the statement is a NULL operand, then
+     * make the caret point 1 past the operator. Otherwise
+     * it will point at the end of the line and for fixed-length
+     * files which contain trailing blanks this will look funny.
+     */
     if( CITNode->opn.ds == DSOPN_PHI ) {
         CITNode->opnpos = CITNode->oprpos + 1;
     }
@@ -182,9 +184,9 @@ void    MakeITList( void ) {
 }
 
 
-static  void FlushStatement( void ) {
-//========================================
-
+static  void FlushStatement( void )
+//=================================
+{
     for( ;; ) {
         ComRead();
         if( ProgSw & PS_SOURCE_EOF )
@@ -196,11 +198,10 @@ static  void FlushStatement( void ) {
 }
 
 
-static  void    SetSwitch( void ) {
-//===========================
-
+static  void    SetSwitch( void )
+//===============================
 // Set statement switches according to operators.
-
+{
     if( Lex.opr == OPR_LBR ) {
         ++BrCnt;
     } else if( Lex.opr == OPR_RBR ) {
@@ -233,9 +234,9 @@ static  void    SetSwitch( void ) {
 }
 
 
-static  OPR    LkUpOpr( void ) {
-//=========================
-
+static  OPR    LkUpOpr( void )
+//============================
+{
     switch( *LexToken.start ) {
     case ',':   return( OPR_COM );
     case '(':   return( OPR_LBR );
@@ -254,25 +255,29 @@ static  OPR    LkUpOpr( void ) {
 }
 
 
-static  void    GetOpr( void ) {
-//========================
-
+static  void    GetOpr( void )
+//============================
 // Collect an operator.
-
+{
     Lex.oprpos = ( LexToken.line << 8 ) + LexToken.col + 1;
     if( LexToken.class == TO_OPR ) {
         Lex.opr = LkUpOpr();
-        // this is to tell scan not to collect
-        //     4d4      in    INTEGER*4  d4,a,b . . .
-        //     4h,a,b   in    INTEGER*4  h,a,b . . .
+        /*
+         * this is to tell scan not to collect
+         *     4d4      in    INTEGER*4  d4,a,b . . .
+         *     4h,a,b   in    INTEGER*4  h,a,b . . .
+         */
         LexToken.flags &= ~TK_LENSPEC;
-        if( ( Lex.opr == OPR_MUL ) && ( CITNode == ITHead ) ) {
+        if( ( Lex.opr == OPR_MUL )
+          && ( CITNode == ITHead ) ) {
             LexToken.flags |= TK_LENSPEC;
         }
         Scan();
-        if( ( LexToken.class == TO_OPR ) && (LexToken.flags & TK_EOL) == 0 &&
-            ( ( Lex.opr == OPR_MUL ) || ( Lex.opr == OPR_DIV ) ) &&
-            ( Lex.opr == LkUpOpr() ) ) {
+        if( ( LexToken.class == TO_OPR )
+          && (LexToken.flags & TK_EOL) == 0
+          && ( ( Lex.opr == OPR_MUL )
+          || ( Lex.opr == OPR_DIV ) )
+          && ( Lex.opr == LkUpOpr() ) ) {
             if( Lex.opr == OPR_MUL ) {
                 Lex.opr = OPR_EXP;
             } else {
@@ -292,11 +297,10 @@ static  void    GetOpr( void ) {
 }
 
 
-static  void    GetOpnd( void ) {
-//=========================
-
+static  void    GetOpnd( void )
+//=============================
 // Scan off an operand.
-
+{
     const char      *kw;
 
     Lex.ptr = LexToken.start;
@@ -313,18 +317,24 @@ static  void    GetOpnd( void ) {
             Lex.opn.ds = DSOPN_PHI;
         }
     } else {
-        // this is a kludge to collect FORMAT/INCLUDE statements
-        // we don't want INCLUDE statements to span lines
-        if( (ITHead == NULL) && (Lex.opr == OPR_TRM) && (Lex.opn.ds == DSOPN_NAM) ) {
+        /*
+         * this is a kludge to collect FORMAT/INCLUDE statements
+         * we don't want INCLUDE statements to span lines
+         */
+        if( (ITHead == NULL)
+          && (Lex.opr == OPR_TRM)
+          && (Lex.opn.ds == DSOPN_NAM) ) {
             if( Lex.len == 6 ) {
-                if( ( Cursor == NULL ) || ( *Cursor == '(' ) ) {
+                if( ( Cursor == NULL )
+                  || ( *Cursor == '(' ) ) {
                     kw = StmtKeywords[PR_FMT];
                     if( memcmp( LexToken.start, kw, 6 ) == 0 ) {
                         State = SFM;
                     }
                 }
             } else if( Lex.len == 7 ) {
-                if( ( Cursor != NULL ) && ( *Cursor == '\'' ) ) {
+                if( ( Cursor != NULL )
+                  && ( *Cursor == '\'' ) ) {
                     kw = StmtKeywords[PR_INCLUDE];
                     if( memcmp( LexToken.start, kw, 7 ) == 0 ) {
                         LexToken.flags |= TK_INCLUDE;
@@ -332,7 +342,9 @@ static  void    GetOpnd( void ) {
                 }
             }
         }
-        // end of kludge
+        /*
+         * end of kludge
+         */
         Scan();
     }
 }
