@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
 #define _SetArgInfo(pcode,ptyp)     ((((unsigned_16)(pcode) & 0xff) << 8) | ((ptyp) & 0xff))
 #define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
 #define _SetArgInfoPtypes(p1,p2)    ((((unsigned_16)(p1) & 0xff) << 8) | ((p2) & 0xff))
+
+#define _GetPtr()       ((sym_id)GetPtr())
 
 #define CAT_TEMP        0x8000U
 

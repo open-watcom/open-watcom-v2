@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1464,7 +1464,7 @@ void    DtInpStruct( void )
 //=========================
 // Initialize a struct.
 {
-    StructInit( ((sym_id)GetPtr())->u.sd.fl.sym_fields );
+    StructInit( _GetPtr()->u.sd.fl.sym_fields );
 }
 
 

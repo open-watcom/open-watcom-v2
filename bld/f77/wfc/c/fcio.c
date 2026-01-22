@@ -585,7 +585,7 @@ void    FCOutStruct( void )
 {
     IORtnTable = outRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
-    StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
+    StructIO( _GetPtr()->u.sd.fl.fields );
 }
 
 
@@ -704,7 +704,7 @@ void    FCInpStruct( void )
 {
     IORtnTable = inpRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
-    StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
+    StructIO( _GetPtr()->u.sd.fl.fields );
 }
 
 
@@ -748,7 +748,7 @@ void    FCSetFmt( void )
     call_handle     call;
 
     call = InitCall( RT_SET_FMT );
-    CGAddParm( call, CGBackName( GetStmtCgBckLabel( (sym_id)GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( call, CGBackName( GetStmtCgBckLabel( _GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( call ) );
 }
 
