@@ -81,7 +81,7 @@ typedef union vi {
 typedef struct var {
     union {
         struct act_dim_list *dim_ext;   // pointer to dimension extension
-        back_handle         bck_hdl;
+        back_handle         cgbck;
     } u;
     union vi            vi;             // variable information
 } var;

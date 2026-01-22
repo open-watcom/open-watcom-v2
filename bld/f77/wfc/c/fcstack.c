@@ -343,7 +343,7 @@ cg_name SymIndex( sym_id sym, cg_name i )
                 offset -= leader->u.ns.si.va.vi.ec_ext->low;
             } else if( (leader->u.ns.u1.s.typ == FT_CHAR)
               && (leader->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
-                addr = CGBackName( leader->u.ns.si.va.u.bck_hdl, F77ToCGType( sym ) );
+                addr = CGBackName( leader->u.ns.si.va.u.cgbck, F77ToCGType( sym ) );
             } else {
                 addr = CGFEName( leader, F77ToCGType( sym ) );
             }

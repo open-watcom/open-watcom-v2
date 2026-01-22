@@ -821,7 +821,7 @@ seg_offset      GetDataOffset( sym_id sym )
     } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         seg_offset = DGBackTell( FEBack( sym ) );
     } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-        seg_offset = DGBackTell( sym->u.ns.si.va.u.bck_hdl );
+        seg_offset = DGBackTell( sym->u.ns.si.va.u.cgbck );
     } else {
         seg_offset = DGBackTell( FEBack( sym ) );
     }

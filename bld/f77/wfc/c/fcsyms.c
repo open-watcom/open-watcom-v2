@@ -293,9 +293,9 @@ static void     DumpGlobalSCB( sym_id sym, unsigned_32 g_offset )
         sym->u.ns.si.va.vi.segid = GetGlobalSegId( g_offset );
         old_segid = BESetSeg( sym->u.ns.si.va.vi.segid );
         DGSeek( GetGlobalOffset( g_offset ) );
-        sym->u.ns.si.va.u.bck_hdl = DumpCharVar( sym );
+        sym->u.ns.si.va.u.cgbck = DumpCharVar( sym );
         if( (sym->u.ns.flags & SY_DATA_INIT) == 0 ) {
-            BEFreeBack( sym->u.ns.si.va.u.bck_hdl );
+            BEFreeBack( sym->u.ns.si.va.u.cgbck );
         }
         BESetSeg( old_segid );
     }
@@ -874,12 +874,12 @@ void    FreeLocalBacks( bool free_dbg_handles )
                         // character variable
                         if( (flags & SY_DATA_INIT)
                           && (flags & SY_IN_EC) == 0 ) {
-                            FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
+                            FreeBackHandle( &sym->u.ns.si.va.u.cgbck );
                         } else if( flags & SY_IN_EQUIV ) {
                             eq_ext = sym->u.ns.si.va.vi.ec_ext;
                             if( eq_ext->ec_flags & LEADER ) {
                                 if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
-                                    FreeBackHandle( &sym->u.ns.si.va.u.bck_hdl );
+                                    FreeBackHandle( &sym->u.ns.si.va.u.cgbck );
                                 }
                             }
                         }
@@ -1262,9 +1262,9 @@ static unsigned_32  DumpVariable( sym_id sym, unsigned_32 g_offset )
                 DGSeek( GetGlobalOffset( offset ) );
                 if( (typ == FT_CHAR)
                   && (flags & SY_SUBSCRIPTED) == 0 ) {
-                    sym->u.ns.si.va.u.bck_hdl = DumpCharVar( sym );
+                    sym->u.ns.si.va.u.cgbck = DumpCharVar( sym );
                     if( sym != leader ) {
-                        BEFreeBack( sym->u.ns.si.va.u.bck_hdl );
+                        BEFreeBack( sym->u.ns.si.va.u.cgbck );
                     }
                 } else if( (sym == leader)
                   || (CGOpts & CGOPT_DB_LOCALS) ) {
