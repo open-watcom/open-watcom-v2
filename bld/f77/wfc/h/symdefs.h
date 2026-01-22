@@ -90,7 +90,7 @@ typedef struct act_dim_list {
         cg_type         cgtyp;          // cg-type for local arrays on stack
     } l;
     dim_flags_type      dim_flags;      //  dimension flags
-    pointer             adv;            //  address of ADV
+    back_handle         adv;            //  address of ADV
     unsigned_32         num_elts;       //  number of elements
     intstar4            subs_1_lo;      //  low bound of 1st dimension
     intstar4            subs_1_hi;      //  high bound of 1st dimension

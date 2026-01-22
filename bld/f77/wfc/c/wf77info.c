@@ -1229,7 +1229,7 @@ const char  *FEName( cg_sym_handle _sym )
 }
 
 
-void    *LitBack( sym_id c_ptr )
+back_handle LitBack( sym_id c_ptr )
 //================================
 // Get a back handle for a literal.
 {

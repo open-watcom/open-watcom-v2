@@ -50,6 +50,6 @@ extern seg_offset   GetDataOffset( sym_id sym );
 extern segment_id   GetGlobalSegId( uint g_offset );
 extern void         DefTypes( void );
 extern void         DefStructs( void );
-extern void         *LitBack( sym_id c_ptr );
+extern back_handle  LitBack( sym_id c_ptr );
 extern void         FCMessage( fc_msg_class tipe, pointer x );
 extern char         *GetFullSrcName( void );
