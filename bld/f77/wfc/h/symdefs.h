@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,16 +83,6 @@ typedef enum {
 #define _Allocatable( sym )                     \
         (sym->u.ns.u1.s.xflags & (SY_ALLOCATABLE))
 #define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elts)
-
-typedef struct dim_list {
-    union {
-        warp_label      init_label; // initialization label for arrays
-        cg_type         cgtyp;      // cg-type for local arrays on stack
-    } l;
-    dim_flags_type  dim_flags;      //  dimension flags
-    pointer         adv;            //  address of ADV
-    unsigned_32     num_elts;       //  number of elements
-} dim_list;
 
 typedef struct act_dim_list {
     union {

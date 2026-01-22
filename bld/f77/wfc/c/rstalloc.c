@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
     size_t          size;
     act_dim_list    *ste_ptr;
 
-    size = sizeof( dim_list ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
+    size = offsetof( act_dim_list, subs_1_lo ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
     ste_ptr = FMemAlloc( size );
     memcpy( ste_ptr, subs_ptr, size );
     return( ste_ptr );
