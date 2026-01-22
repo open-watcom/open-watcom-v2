@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,6 @@ extern seg_offset   GetDataOffset( sym_id sym );
 extern segment_id   GetGlobalSegId( uint g_offset );
 extern void         DefTypes( void );
 extern void         DefStructs( void );
-extern void         *ConstBack( sym_id c_ptr );
+extern void         *LitBack( sym_id c_ptr );
 extern void         FCMessage( fc_msg_class tipe, pointer x );
 extern char         *GetFullSrcName( void );

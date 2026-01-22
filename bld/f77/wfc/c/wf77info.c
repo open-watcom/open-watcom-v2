@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1224,14 +1224,14 @@ const char  *FEName( cg_sym_handle _sym )
 }
 
 
-void    *ConstBack( sym_id c_ptr )
+void    *LitBack( sym_id c_ptr )
 //================================
 // Get a back handle for a literal.
 {
-    if( c_ptr->u.cn.address == NULL ) {
-        c_ptr->u.cn.address = BENewBack( NULL );
+    if( c_ptr->u.lt.address == NULL ) {
+        c_ptr->u.lt.address = BENewBack( NULL );
     }
-    return( c_ptr->u.cn.address );
+    return( c_ptr->u.lt.address );
 }
 
 
