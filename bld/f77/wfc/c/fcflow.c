@@ -65,11 +65,6 @@ static obj_ptr          WarpReturn;
 static label_entry      *LabelList;     // list of labels
 
 
-/* Forward declarations */
-static  void    RBReferenced( sym_id rb );
-static  void    RefStmtFunc( sym_id sf );
-
-
 void    InitLabels( void )
 //========================
 // Initialize label processing.
@@ -317,6 +312,17 @@ void    FCComputedGOTO( void )
 }
 
 
+static  void    RBReferenced( sym_id rb )
+//=======================================
+// REMOTE BLOCK has been referenced.
+{
+    rb->u.ns.si.rb.ref_count--;
+    if( rb->u.ns.si.rb.ref_count == 0 ) {
+        DoneLabel( rb->u.ns.si.rb.entry );
+    }
+}
+
+
 void    FCStartRB( void )
 //=======================
 // Start a REMOTE BLOCK.
@@ -362,22 +368,19 @@ void    FCExecute( void )
 }
 
 
-static  void    RBReferenced( sym_id rb )
-//=======================================
-// REMOTE BLOCK has been referenced.
-{
-    rb->u.ns.si.rb.ref_count--;
-    if( rb->u.ns.si.rb.ref_count == 0 ) {
-        DoneLabel( rb->u.ns.si.rb.entry );
-    }
-}
-
-
 void    FCEndRB( void )
 //=====================
 // Terminate a REMOTE BLOCK.
 {
     CGControl( O_LABEL_RETURN, NULL, NULL );
+}
+
+
+static  void    RefStmtFunc( sym_id sf )
+//======================================
+// A statement function has been referenced.
+{
+    sf->u.ns.si.sf.header->ref_count--;
 }
 
 
@@ -520,14 +523,6 @@ void            FCSFReferenced( void )
             }
         }
     }
-}
-
-
-static  void    RefStmtFunc( sym_id sf )
-//======================================
-// A statement function has been referenced.
-{
-    sf->u.ns.si.sf.header->ref_count--;
 }
 
 
