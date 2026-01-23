@@ -102,6 +102,10 @@ from = $+$(%__CWD__)$-
     @echo Test wmake (32-bit)
 !endif
     @echo *****************************************************************
+    @cd cmds
+    @$(test_wmake) -?
+    @cd $(from)
+    @echo *****************************************************************
     @if exist error.out @rm error.out
 
 all: prebuild $(tests) .SYMBOLIC
@@ -121,8 +125,9 @@ test1: .SYMBOLIC
     # -- test1 - Multiple Dependents Test
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 implicit: .SYMBOLIC
@@ -130,8 +135,9 @@ implicit: .SYMBOLIC
     # -- TEST2 - Implicit Rules Test
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 fortest: .SYMBOLIC
@@ -139,8 +145,9 @@ fortest: .SYMBOLIC
     # -- FORTEST - FOR LOOP TEST
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 pretest: .SYMBOLIC
@@ -148,8 +155,9 @@ pretest: .SYMBOLIC
     # -- PRETEST - PRE COMPILER TEST
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 updtest: .SYMBOLIC
@@ -157,8 +165,9 @@ updtest: .SYMBOLIC
     # -- UPDTEST - UPDATE TEST
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 errtest: .SYMBOLIC
@@ -167,8 +176,9 @@ errtest: .SYMBOLIC
     # -- ERRTEST - ERROR TEST
     # =======================================
     @echo *****************************************************************
-    @cd $@
-    @!$(testcmd)
+    cd $@
+    #@!$(testcmd)
+    -wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 inline: .SYMBOLIC
@@ -177,7 +187,7 @@ inline: .SYMBOLIC
     # -- INLINE TEST -
     # =======================================
     @echo *****************************************************************
-    @cd $@
+    cd $@
     @!$(testcmd)
     @cd $(from)
 
@@ -186,7 +196,7 @@ preproc: .SYMBOLIC
     # -- PREPROCESS TEST -
     # =======================================
     @echo *****************************************************************
-    @cd $@
+    cd $@
     @!$(testcmd)
     @cd $(from)
 
@@ -195,7 +205,7 @@ macros: .SYMBOLIC
     # -- MACROS TEST -
     # =======================================
     @echo *****************************************************************
-    @cd $@
+    cd $@
     @!$(testcmd)
     @cd $(from)
 
@@ -204,7 +214,7 @@ misc: .SYMBOLIC
     # -- MISC TEST -
     # =======================================
     @echo *****************************************************************
-    @cd $@
+    cd $@
     @!$(testcmd)
     @cd $(from)
 
@@ -213,7 +223,7 @@ longfile: .SYMBOLIC
     # -- LONG FILENAME TEST -
     # =======================================
     @echo *****************************************************************
-    @cd $@
+    cd $@
     @!$(testcmd)
     @cd $(from)
 

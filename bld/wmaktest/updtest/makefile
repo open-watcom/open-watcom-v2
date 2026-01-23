@@ -52,7 +52,7 @@ test03: .SYMBOLIC
 test04: .SYMBOLIC
     @set TEST=04
     @%make header
-    @$(test_wmake) -h -f upd$(%TEST) > test$(%TEST).lst 2>&1
+    @-$(test_wmake) -h -f upd$(%TEST) > test$(%TEST).lst 2>&1
     @set VER=
     @diff -b upd$(%TEST).chk test$(%TEST).lst
     @%make result

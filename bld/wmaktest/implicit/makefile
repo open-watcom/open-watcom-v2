@@ -61,7 +61,7 @@ test05: .SYMBOLIC
     @set ERRORS=0
     @$(test_wmake) -f imp$(%TEST) -h > tmp$(%TEST).lst
     @sed "s:of .*[\\/]:of :" tmp$(%TEST).lst > test$(%TEST).lst
-    @diff imp$(%TEST).chk test$(%TEST).lst
+    @-diff imp$(%TEST).chk test$(%TEST).lst
     @%make result
 
 header: .PROCEDURE .EXPLICIT

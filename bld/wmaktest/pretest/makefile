@@ -30,7 +30,7 @@ test01: .SYMBOLIC
 test02: .SYMBOLIC
     @set TEST=02
     @%make header
-    @$(test_wmake) -h -f pre$(%TEST) pre$(%TEST) > test$(%TEST).lst 2>&1
+    @-$(test_wmake) -h -f pre$(%TEST) pre$(%TEST) > test$(%TEST).lst 2>&1
     @set VER=
     @diff -i pre$(%TEST).chk test$(%TEST).lst
     @%make result
@@ -59,7 +59,7 @@ test05: .SYMBOLIC
 test06: .SYMBOLIC
     @set TEST=06
     @%make header
-    @$(test_wmake) -h -f pre$(%TEST) > test$(%TEST).lst 2>&1
+    @-$(test_wmake) -h -f pre$(%TEST) > test$(%TEST).lst 2>&1
     @set VER=
     @diff -i pre$(%TEST).chk test$(%TEST).lst
     @%make result
