@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ void    CpAdmit(void) {
         FreeLabel( CSHead->branch );
         CSHead->typ = CS_ADMIT;
         CSHead->branch = NextLabel();
-        CSHead->block = ++BlockNum;
+        CSHead->block = NextBlock();
     } else {
         Match();
     }

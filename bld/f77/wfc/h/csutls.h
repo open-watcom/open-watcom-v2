@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +30,18 @@
 ****************************************************************************/
 
 
-extern csnode   *NewCSNode( size_t label_len );
-extern void     InitCSList( void );
-extern void     CSPurge( void );
-extern itnode   *GetBlockLabel( void );
-extern void     AddCSNode( cstype typ );
-extern void     DelCSNode( void );
-extern void     CSNoMore( void );
-extern void     ColonLabel( void );
-extern void     BlockLabel( void );
-extern void     Match( void );
-extern void     CSExtn( void );
-extern bool     CheckCSList( cstype typ );
-extern bool     EmptyCSList( void );
-extern void     CSCond( label_id label );
+extern csnode       *NewCSNode( size_t label_len );
+extern void         InitCSList( void );
+extern void         CSPurge( void );
+extern itnode       *GetBlockLabel( void );
+extern void         AddCSNode( cstype typ );
+extern void         DelCSNode( void );
+extern void         CSNoMore( void );
+extern void         ColonLabel( void );
+extern void         BlockLabel( void );
+extern void         Match( void );
+extern void         CSExtn( void );
+extern bool         CheckCSList( cstype typ );
+extern bool         EmptyCSList( void );
+extern void         CSCond( label_id label );
+extern block_num    NextBlock( void );

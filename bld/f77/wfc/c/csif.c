@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ void    CpElseIf( void )
         FreeLabel( CSHead->branch );
         CSHead->typ = CS_ELSEIF;
         CSHead->branch = NextLabel();
-        CSHead->block = ++BlockNum;
+        CSHead->block = NextBlock();
     } else if( CSHead->typ == CS_ELSE ) {
         Error( IF_ELSE_LAST );
     } else {
@@ -114,7 +114,7 @@ void    CpElse( void )
         GLabel( CSHead->branch );
         FreeLabel( CSHead->branch );
         CSHead->typ = CS_ELSE;
-        CSHead->block = ++BlockNum;
+        CSHead->block = NextBlock();
     } else if( CSHead->typ == CS_ELSE ) {
         Error( IF_ELSE_LAST );
     } else {

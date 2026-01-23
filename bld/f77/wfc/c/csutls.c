@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +53,7 @@ static  const STMT  CSWords[] = {
     #undef CSTYP
 };
 
+static block_num    BlockNum;       // for controlling unstructured branches
 
 csnode  *NewCSNode( size_t label_len )
 {
@@ -77,6 +78,11 @@ void InitCSList(void)
 {
     BlockNum = 0;
     CSHead = NewCSNode( 0 );
+}
+
+block_num   NextBlock( void )
+{
+    return( ++BlockNum );
 }
 
 void CSPurge(void)
@@ -120,7 +126,7 @@ void    AddCSNode( cstype typ )
     new_cs_node->link = CSHead;
     CSHead = new_cs_node;
     CSHead->typ = typ;
-    CSHead->block = ++BlockNum;
+    CSHead->block = NextBlock();
     memcpy( CSHead->label, label->opnd, label_len );
     CSHead->label[label_len] = NULLCHAR;
 }

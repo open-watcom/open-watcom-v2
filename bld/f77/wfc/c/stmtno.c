@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,10 +76,10 @@ extern  bool            RecNumber(void);
 //
 
 
-stmt_num    GetStmtNo( void )
-//===========================
+static stmt_num GetStmtNo( void )
+//===============================
 // Create statement number from operand field of CITNode must be before
-// routines who call this routine since it returns unsigned_32.
+// routines who call this routine since it returns unsigned_32. ???
 {
     intstar4    num;
     stmt_num    stmt_no;
@@ -362,6 +362,7 @@ void    InitStNumbers( void )
 //===========================
 // Intitialize statement number processing.
 {
+    StNumbers.blk_before = 0;
     StNumbers.wild_goto  = false;
     StNumbers.var_format = false;
     StNumbers.in_remote  = false;

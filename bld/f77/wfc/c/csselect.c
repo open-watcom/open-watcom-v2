@@ -244,7 +244,7 @@ static void CaseHandler( void )
     ReqNOpn();
     AdvanceITPtr();
     ReqEOS();
-    CSHead->block = ++BlockNum;
+    CSHead->block = NextBlock();
 }
 
 void CpOtherwise( void )
@@ -257,7 +257,7 @@ void CpOtherwise( void )
         CSHead->cs_info.cases->label.g_label = NextLabel();
         CSHead->cs_info.cases->multi_case = false;
         GLabel( CSHead->cs_info.cases->label.g_label );
-        CSHead->block = ++BlockNum;
+        CSHead->block = NextBlock();
     } else if( CSHead->typ == CS_OTHERWISE ) {
         Error( SP_OTHERWISE_LAST );
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@ gbl_defn itnode         *SPtr2;         // 2nd LZ right bracket
 gbl_defn STMT           StmtProc;       // statement processor code
 gbl_defn unsigned_16    CtrlFlgs;       // statement control flags
 gbl_defn int            SrcRecNum;      // record # of initial line of statement
-gbl_defn block_num      BlockNum;       // for controlling unstructured branches
 gbl_defn csnode         *CSHead;        // head of control structure list
 gbl_defn unsigned_32    IOData;         // bit flags for i/o control lists
 gbl_defn itnode         *BkLink;        // ptr to previous itnode in list

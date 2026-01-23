@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,6 @@ typedef struct stnumbers {
 #define SN_IN_GOTO_LIST 0x0200  // appeared in assigned GOTO list
 
 
-extern stmt_num     GetStmtNo( void );
 extern sym_id       LookUp( stmt_num stmt_no );
 extern void         Err( int errcod, sym_id sym_ptr );
 extern sym_id       LkUpStmtNo( void );
