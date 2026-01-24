@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ void MemFini( void )
         } else {
             trmemCode = atoi( trmemCodeStr );
         }
-        if( TRMEM_IGNORE_ERROR & trmemCode ) {
+        if( trmemCode & TRMEM_IGNORE_ERROR ) {
             _trmem_prt_list( Handle );
         } else {
             if( _trmem_prt_list( Handle ) > 0 ) {
