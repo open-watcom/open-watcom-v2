@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,13 @@
 
 
 static const char *usageMsg[] = {
-    "Usage: head [-?X] [-<number>] [@env] [files...]",
+    "Usage: head [-?nX] [-<number>] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : files to display head lines of",
     "\tOptions: -?        : display this message",
-    "\t\t -<number> : number of lines to show",
-    "\t\t -X        : match files by regular expressions",
+    "\t\t -<number>   : number of lines to show",
+    "\t\t -n <number> : number of lines to show",
+    "\t\t -X          : match files by regular expressions",
     NULL
 };
 
@@ -89,11 +90,12 @@ int main( int argc, char **argv )
     head = 10;
     rxflag = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv1, "#X", usageMsg );
+        ch = GetOpt( &argc, argv1, "#n:X", usageMsg );
         if( ch == -1 ) {
             break;
         }
         switch( ch ) {
+        case 'n':
         case '#':
             head = atoi( OptArg );
             break;
