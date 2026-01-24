@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Macro Tests
-echo # ===========================
+echo # ==================================
+echo # Macro Tests (macros)
+echo # ==================================
 
 if .%2 == . goto usage
 set PRG=%1

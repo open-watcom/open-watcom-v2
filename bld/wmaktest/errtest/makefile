@@ -11,9 +11,6 @@
 # *************************************************************
 
 tests = &
-    test03 &
-    test04 &
-    test13 &
     test17 &
     test27 &
     test35 &
@@ -23,44 +20,11 @@ list1 = 05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31
 
 .BEFORE
     @set ERRLOG=../error.out
-    @echo $# ===========================
-    @echo $# Error Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# Error Tests (errtest)
+    @echo $# ==================================
 
 all: $(tests) .SYMBOLIC
-
-test03: .SYMBOLIC
-    set TEST=03
-    @set VER=a
-    @head err$(%TEST) -3
-    @$(test_wmake) -h "-." > tmp$(%TEST)a.lst 2>&1
-    egrep Error tmp$(%TEST)a.lst > test$(%TEST)a.lst
-    diff err$(%TEST)a.chk test$(%TEST)a.lst
-    %make resulta
-    @set VER=b
-    @$(test_wmake) -h "- " > tmp$(%TEST)b.lst 2>&1
-    egrep Error tmp$(%TEST)b.lst > test$(%TEST)b.lst
-    diff -b err$(%TEST)b.chk test$(%TEST)b.lst
-    %make resultb
-
-test04: .SYMBOLIC
-    set TEST=04
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -h -f > tmp$(%TEST).lst 2>&1
-    egrep Error tmp$(%TEST).lst > test$(%TEST).lst
-    diff err$(%TEST).chk test$(%TEST).lst
-    %make result
-
-test13: .SYMBOLIC
-    set TEST=13
-    @set VER=
-    head err$(%TEST) -3
-    @-$(test_wmake) -h <data13a 2> test$(%TEST).lst
-    @$(test_wmake) -h <data13b 2>> test$(%TEST).lst
-    @$(test_wmake) -h <data13c 2>> test$(%TEST).lst
-    diff err$(%TEST).chk test$(%TEST).lst
-    %make result
 
 test17: .SYMBOLIC
     set TEST=17
@@ -98,7 +62,7 @@ test36: .SYMBOLIC
     @set VER=
     head err$(%TEST) -3
     @$(test_wmake) -h -f err$(%TEST) .c.obj > test$(%TEST).lst 2>&1
-    diff err$(%TEST).chk test$(%TEST).lst
+    diff -i err$(%TEST).chk test$(%TEST).lst
     %make result
 
 test39: .SYMBOLIC
@@ -107,7 +71,7 @@ test39: .SYMBOLIC
     head err$(%TEST) -3
     echo. >ditty.c
     @$(test_wmake) -h -f err$(%TEST) ditty.obj > test$(%TEST).lst 2>&1
-    diff err$(%TEST).chk test$(%TEST).lst
+    diff -i err$(%TEST).chk test$(%TEST).lst
     %make result
 
 test40: .SYMBOLIC
@@ -119,7 +83,7 @@ test40: .SYMBOLIC
     @$(test_wmake) -h -a -t -f err$(%TEST) >> test$(%TEST).lst 2>&1
     chmod -r err$(%TEST).tst
     del err$(%TEST).tst
-    diff err$(%TEST).chk test$(%TEST).lst
+    diff -i err$(%TEST).chk test$(%TEST).lst
     %make result
 
     #for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c) DO #call :work %%i

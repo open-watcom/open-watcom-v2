@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Miscellaneous Tests
-echo # ===========================
+echo # ==================================
+echo # Miscellaneous Tests (misc)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1

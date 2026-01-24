@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Long FileName Tests
-echo # ===========================
+echo # ==================================
+echo # Long FileName Tests (longfile)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1

@@ -9,9 +9,9 @@ tests = &
 
 .BEFORE
     @set ERRLOG=..\error.out
-    @echo $# ===========================
-    @echo $# Implicit Rules Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# Implicit Rules Tests (implicit)
+    @echo $# ==================================
     @%create hello.obj
     @%create hello.cpp
 

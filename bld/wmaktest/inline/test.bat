@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Inline File Tests
-echo # ===========================
+echo # ==================================
+echo # Inline File Tests (inline)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1

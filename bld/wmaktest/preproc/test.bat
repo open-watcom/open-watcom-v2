@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Preprocessor Tests
-echo # ===========================
+echo # ==================================
+echo # Preprocessor Tests (preproc)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1

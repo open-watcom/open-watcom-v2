@@ -11,9 +11,9 @@ tests = &
 
 .BEFORE
     @set ERRLOG=..\error.out
-    @echo $# ===========================
-    @echo $# Preprocessor IF Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# Preprocessor IF Tests (pretest)
+    @echo $# ==================================
     @%create hello.obj
     @%create hello.cpp
 

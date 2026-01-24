@@ -12,9 +12,9 @@ tests = &
 
 .BEFORE
     @set ERRLOG=..\error.out
-    @echo $# ===========================
-    @echo $# For Loop Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# For Loop Tests (fortest)
+    @echo $# ==================================
     @%create hello.obj
     @%create hello.cpp
 

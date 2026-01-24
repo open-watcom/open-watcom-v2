@@ -14,40 +14,13 @@ rem *************************************************************
 
 set ERRORS=0
 
-echo # =============================
-echo # Error Tests
-echo # =============================
+echo # ==================================
+echo # Error Tests (errtest)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1
 set ERRLOG=..\error.out
-
-set TEST=03
-head err%TEST% -3
-%WMK% "-." > tmp%TEST%a.lst 2>&1
-egrep Error tmp%TEST%a.lst > test%TEST%a.lst
-diff err%TEST%a.chk test%TEST%a.lst
-call :result a
-
-%WMK% "- " > tmp%TEST%b.lst 2>&1
-egrep Error tmp%TEST%b.lst > test%TEST%b.lst
-diff -b err%TEST%b.chk test%TEST%b.lst
-call :result b
-
-set TEST=04
-head err%TEST% -3
-%WMK% -f > tmp%TEST%.lst 2>&1
-egrep Error tmp%TEST%.lst > test%TEST%.lst
-diff err%TEST%.chk test%TEST%.lst
-call :result
-
-set TEST=13
-head err%TEST% -3
-%WMK% -h "-" 2> test%TEST%.lst
-%WMK% -h - 2>> test%TEST%.lst
-%WMK% -h "-\" 2>> test%TEST%.lst
-diff err%TEST%.chk test%TEST%.lst
-call :result
 
 set TEST=17
 head err%TEST% -3

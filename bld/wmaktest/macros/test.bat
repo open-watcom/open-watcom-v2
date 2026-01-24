@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Macro Tests
-echo # ===========================
+echo # ==================================
+echo # Macro Tests (macros)
+echo # ==================================
 
 if .%1 == . goto usage
 set WMK=%1

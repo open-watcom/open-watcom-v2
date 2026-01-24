@@ -9,6 +9,7 @@ buildtest = 1
 !endif
 
 tests = &
+    cmdline &
     test1 &
     implicit &
     fortest &
@@ -82,9 +83,6 @@ from = $+$(%__CWD__)$-
 
 .BEFORE
     @set TRMEM_CODE=1
-    # ===========================
-    # Build utilities first
-    # ===========================
     @echo *****************************************************************
 !ifdef __NTX64__
 ! ifeq host 386
@@ -101,17 +99,16 @@ from = $+$(%__CWD__)$-
 !else
     @echo Test wmake (32-bit)
 !endif
-    @echo *****************************************************************
-    @cd cmds
-    @$(test_wmake) -?
-    @cd $(from)
-    @echo *****************************************************************
     @if exist error.out @rm error.out
 
 all: prebuild $(tests) .SYMBOLIC
 #    for %t in ($(tests)) do %make %t
 
 prebuild: .SYMBOLIC
+    # ===========================
+    # Build utilities first
+    # ===========================
+    @echo *****************************************************************
     @cd cmds
 !ifdef buildtest
     @-wmake -h buildtest=1
@@ -120,19 +117,28 @@ prebuild: .SYMBOLIC
 !endif
     @cd $(from)
 
+cmdline: .SYMBOLIC
+    # =======================================
+    # -- cmdline - Command line Test
+    # =======================================
+    @echo *****************************************************************
+    @cd $@
+    @!$(testcmd)
+    @cd $(from)
+
 test1: .SYMBOLIC
     # =======================================
     # -- test1 - Multiple Dependents Test
     # =======================================
     @echo *****************************************************************
-    cd $@
+    @cd $@
     #@!$(testcmd)
     wmake -h test_wmake=$(test_wmake)
     @cd $(from)
 
 implicit: .SYMBOLIC
     # =======================================
-    # -- TEST2 - Implicit Rules Test
+    # -- implicit - Implicit Rules Test
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -142,7 +148,7 @@ implicit: .SYMBOLIC
 
 fortest: .SYMBOLIC
     # =======================================
-    # -- FORTEST - FOR LOOP TEST
+    # -- fortest - FOR LOOP TEST
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -152,7 +158,7 @@ fortest: .SYMBOLIC
 
 pretest: .SYMBOLIC
     # =======================================
-    # -- PRETEST - PRE COMPILER TEST
+    # -- pretest - PRE COMPILER TEST
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -162,7 +168,7 @@ pretest: .SYMBOLIC
 
 updtest: .SYMBOLIC
     # =======================================
-    # -- UPDTEST - UPDATE TEST
+    # -- updtest - UPDATE TEST
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -173,7 +179,7 @@ updtest: .SYMBOLIC
 errtest: .SYMBOLIC
     set TRMEM_CODE=3
     # =======================================
-    # -- ERRTEST - ERROR TEST
+    # -- errtest - ERROR TEST
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -184,7 +190,7 @@ errtest: .SYMBOLIC
 inline: .SYMBOLIC
     set TRMEM_CODE=1
     # =======================================
-    # -- INLINE TEST -
+    # -- inline - INLINE TEST -
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -193,7 +199,7 @@ inline: .SYMBOLIC
 
 preproc: .SYMBOLIC
     # =======================================
-    # -- PREPROCESS TEST -
+    # -- preproc - PREPROCESS TEST -
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -202,7 +208,7 @@ preproc: .SYMBOLIC
 
 macros: .SYMBOLIC
     # =======================================
-    # -- MACROS TEST -
+    # -- macros - MACROS TEST -
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -211,7 +217,7 @@ macros: .SYMBOLIC
 
 misc: .SYMBOLIC
     # =======================================
-    # -- MISC TEST -
+    # -- misc - MISC TEST -
     # =======================================
     @echo *****************************************************************
     cd $@
@@ -220,7 +226,7 @@ misc: .SYMBOLIC
 
 longfile: .SYMBOLIC
     # =======================================
-    # -- LONG FILENAME TEST -
+    # -- longfile - LONG FILENAME TEST -
     # =======================================
     @echo *****************************************************************
     cd $@

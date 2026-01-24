@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Inline File Tests
-echo # ===========================
+echo # ==================================
+echo # Inline File Tests (inline)
+echo # ==================================
 
 if .%2 == . goto usage
 set PRG=%1

@@ -22,36 +22,6 @@ if .%2 == . goto usage
 set PRG=%1
 set ERRLOG=%2
 
-:test03
-set TEST=03
-head err%TEST% -3
-del tmp.out
-%PRG% "-." > tmp%TEST%a.lst 2>&1
-egrep Error tmp%TEST%a.lst > test%TEST%a.lst
-diff err%TEST%a.chk test%TEST%a.lst
-call :result a
-
-del tmp.out
-%PRG% "- " > tmp%TEST%b.lst 2>&1
-egrep Error tmp%TEST%b.lst > test%TEST%b.lst
-diff -b err%TEST%b.chk test%TEST%b.lst
-call :result b
-
-set TEST=04
-head err%TEST% -3
-%PRG% -f > tmp%TEST%.lst 2>&1
-egrep Error tmp%TEST%.lst > test%TEST%.lst
-diff err%TEST%.chk test%TEST%.lst
-call :result
-
-set TEST=13
-head err%TEST% -3
-%PRG% -h "-" 2> test%TEST%.lst
-%PRG% -h - 2>> test%TEST%.lst
-%PRG% -h "-\" 2>> test%TEST%.lst
-diff err%TEST%.chk test%TEST%.lst
-call :result
-
 set TEST=17
 head err%TEST% -3
 %PRG% -h -f err%TEST%a >  test%TEST%.lst 2>&1

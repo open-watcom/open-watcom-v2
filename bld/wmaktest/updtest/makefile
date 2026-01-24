@@ -14,9 +14,9 @@ tests = &
 
 .BEFORE
     @set ERRLOG=..\error.out
-    @echo $# ===========================
-    @echo $# Update Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# Update Tests (updtest)
+    @echo $# ==================================
     @%create hello.obj
     @%create hello.cpp
 

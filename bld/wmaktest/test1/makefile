@@ -4,9 +4,9 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
-    @echo $# ===========================
-    @echo $# Multiple Dependents Tests
-    @echo $# ===========================
+    @echo $# ==================================
+    @echo $# Multiple Dependents Tests (test1)
+    @echo $# ==================================
     @$(test_wmake) -f create -h
 
 all: $(tests) .SYMBOLIC

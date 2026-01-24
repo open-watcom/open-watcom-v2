@@ -2,9 +2,9 @@
 
 set ERRORS=0
 
-echo # ===========================
-echo # Long FileName Tests
-echo # ===========================
+echo # ==================================
+echo # Long FileName Tests (longfile)
+echo # ==================================
 
 if .%2 == . goto usage
 set PRG=%1
