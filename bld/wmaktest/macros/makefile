@@ -79,13 +79,13 @@ t05: .SYMBOLIC
     @set TEST=05
     @set ERRORS=0
     @%create hello.boo
-    @%create hello.tmp
+    @%create hello.xyz
     @%create hello.c
     @head $@ -3
     @$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
-    @rm -f hello.boo hello.tmp hello.c
+    @rm -f hello.boo hello.xyz hello.c
 
 t06: .SYMBOLIC
     @set TEST=06

@@ -15,4 +15,4 @@ all: hello.obj
      @echo $(@F)
      @echo $(@R)
 
-hello.obj: ../macros/hello.tmp hello.c hello.boo
+hello.obj: ../macros/hello.xyz hello.c hello.boo
