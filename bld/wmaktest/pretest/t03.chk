@@ -1,0 +1,10 @@
+t03(15): Warning(W30): Skipping !else ifdef block after !else
+t03(24): Warning(W30): Skipping !else block after !else
+t03(28): Error(E26): Unknown preprocessor directive: asdf
+t03(29): Error(E26): Unknown preprocessor directive: 
+t03(34): Error(E32): Opening file (alpha.foo): No such file or directory
+t03(41): Error(E33): should be warnings on lines 15, 24
+t03(42): Error(E33): should be errors on lines 28, 29, 34, 39
+t03(43): Error(E33): one warning should follow, then the abort message
+t03(47): Warning(W34): !endif pending at end of file
+Error(E02): Make execution terminated

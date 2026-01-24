@@ -1,0 +1,13 @@
+# ----------------------------------------------------
+# Test 05: test for-loop with LFN
+# ----------------------------------------------------
+
+OBJS = "Test Object1.obj" Test" "Object"2.obj"
+
+test: create clean
+
+create: .symbolic
+    @for %i in ($(OBJS)) do echo OK > %i
+
+clean: .symbolic
+    @for %i in ($(OBJS)) do if exist %i rm %i

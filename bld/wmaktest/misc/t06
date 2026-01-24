@@ -1,0 +1,17 @@
+# ----------------------------------------------------
+# Test 06: rm tests
+# ----------------------------------------------------
+
+all: .symbolic
+    rm -f foo
+    -rmdir food 2> NUL
+    echo foo > foo
+    rm foo
+    echo foo > foo
+    chmod +r foo
+    -rm foo
+    rm -f foo
+    rm -f foo
+    mkdir food
+    -rm -f food
+    rm -f -r food

@@ -1,131 +1,129 @@
 
 tests = &
-    test01 &
-    test02 &
-    test03 &
-    test04 &
-    test05 &
-    test06 &
-    test07 &
-    test09 &
-    test10 &
-    test11 &
+    t01 &
+    t02 &
+    t03 &
+    t04 &
+    t05 &
+    t06 &
+    t07 &
+    t09 &
+    t10 &
+    t11 &
     clean
 
 .BEFORE
-    @set ERRLOG=..\error.out
+    @set ERRLOG=../error.out
+    @set ERRORS=0
+    @set VER=
     @echo $# ==================================
     @echo $# Update Tests (updtest)
     @echo $# ==================================
-    @%create hello.obj
-    @%create hello.cpp
 
 all: $(tests) .SYMBOLIC
 
-test01: .SYMBOLIC
+t01: .SYMBOLIC
     @set TEST=01
-    @%make header
-    @set VER=a
-    @$(test_wmake) -h -f upd$(%TEST)
+    @set VER= a
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@
     @%make result
-    @set VER=b
-    @$(test_wmake) -h -f upd$(%TEST) -m -sn -y > test$(%TEST).lst
+    @set ERRORS=0
+    @set VER= b
+    @$(test_wmake) -h -f $@ -m -sn -y > $@.lst
     @%make result
-    @set VER=c
-    @diff upd$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @set VER= c
+    @diff -i $@.chk $@.lst
     @%make result
+    @set VER=
 
-test02: .SYMBOLIC
+t02: .SYMBOLIC
     @set TEST=02
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f upd$(%TEST) /c
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ /c
     @%make result
 
-test03: .SYMBOLIC
+t03: .SYMBOLIC
     @set TEST=03
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f upd$(%TEST)
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@
     @%make result
 
-test04: .SYMBOLIC
+t04: .SYMBOLIC
     @set TEST=04
-    @%make header
-    @-$(test_wmake) -h -f upd$(%TEST) > test$(%TEST).lst 2>&1
-    @set VER=
-    @diff -b upd$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @diff -b -i $@.chk $@.lst
     @%make result
 
-test05: .SYMBOLIC
+t05: .SYMBOLIC
     @set TEST=05
-    @%make header
-    @$(test_wmake) -h -s -f upd$(%TEST) > test$(%TEST).lst
-    @set VER=
-    @diff -b upd$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -s -f $@ > $@.lst
+    @diff -b -i $@.chk $@.lst
     @%make result
 
-test06: .SYMBOLIC
+t06: .SYMBOLIC
     @set TEST=06
-    @%make header
-    @$(test_wmake) -h -f upd$(%TEST) > test$(%TEST).lst
-    @set VER=
-    @diff upd$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ > $@.lst
+    @diff -i $@.chk $@.lst
     @%make result
 
-test07: .SYMBOLIC
+t07: .SYMBOLIC
     @set TEST=07
-    @%make header
-    @$(test_wmake) -h -f upd$(%TEST) > test$(%TEST).lst
-    @set VER=
-    @diff upd$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ > $@.lst
+    @diff -i $@.chk $@.lst
     @%make result
 
-#test08: .SYMBOLIC
+#t08: .SYMBOLIC
 #    @set TEST=08
-#    @%make header
-#    @set VER=a
-#    @$(test_wmake) -h -f upd$(%TEST) >test$(%TEST).lst
+#    @set VER= a
+#    @head $@ -3
+#    @$(test_wmake) -h -f $@ >$@.lst
 #    @%make result
-#    @set VER=b
-#    @diff upd$(%TEST).chk test$(%TEST).lst
+#    @set ERRORS=0
+#    @set VER= b
+#    @diff -i $@.chk $@.lst
 #    @%make result
+#    @set VER=
 
-test09: .SYMBOLIC
+t09: .SYMBOLIC
     @set TEST=09
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f upd$(%TEST)
+    @head $@ -3
+    @$(test_wmake) -h -f $@
     @%make result
 
-test10: .SYMBOLIC
+t10: .SYMBOLIC
     @set TEST=10
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f upd$(%TEST)
+    @head $@ -3
+    @$(test_wmake) -h -f $@
     @%make result
 
-test11: .SYMBOLIC
+t11: .SYMBOLIC
     @set TEST=11
-    @%make header
-    @$(test_wmake) -h -ms -f upd$(%TEST) > test$(%TEST).lst 2>&1
-    @set VER=
-    @diff -b upd$(%TEST).chk test$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -h -ms -f $@ > $@.lst 2>&1
+    @diff -b -i $@.chk $@.lst
     @%make result
-
-header: .PROCEDURE .EXPLICIT
-    @echo $# ------------------------------
-    @echo $#  Update Test $(%TEST)
-    @echo $# ------------------------------
 
 result: .PROCEDURE .EXPLICIT
     @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test $(%VER) successful
+    @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# UPDTEST $(%TEST) $#$#
-    @%append $(%ERRLOG) $# Error: Test $(%VER) unsuccessful!!!
-    @echo $# Error: Test $(%VER) unsuccessful!!!!
+    @%append $(%ERRLOG) $#$# Update Tests (updtest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
+    @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1
 
 clean: .SYMBOLIC

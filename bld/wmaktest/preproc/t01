@@ -1,0 +1,8 @@
+# ----------------------------------------------------
+# Test 01: test for bang error and bang messages
+# ----------------------------------------------------
+
+!message hello
+!error   hello2
+!message hello3
+!error   hello4

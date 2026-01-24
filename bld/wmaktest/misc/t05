@@ -1,0 +1,11 @@
+# ----------------------------------------------------
+# Test 05: Test For First Target
+# ----------------------------------------------------
+
+test1: .symbolic
+    echo test1
+test2: .symbolic
+    echo test2
+test3: .symbolic
+    echo test3
+

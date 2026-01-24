@@ -1,0 +1,37 @@
+# ----------------------------------------------------
+# Test 05: test single-colon dependent append
+# ----------------------------------------------------
+
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
+
+all : setup t05a t05b clean .symbolic
+    @%null
+
+setup : .symbolic
+    @%null
+
+clean : .symbolic
+    @rm -f t05a t05a1 t05a2 t05b t05b1 t05b2
+
+t05a : t05a1
+t05a : t05a2
+    if not exist t05a1 $(mkerr)
+    if not exist t05a2 $(mkerr)
+    %create t05a
+
+t05b : t05b1
+    if not exist t05b1 $(mkerr)
+    if not exist t05b2 $(mkerr)
+    %create t05b
+t05b : t05b2
+
+
+t05a1 t05a2 t05b1 t05b2 :
+    %create $^@
+    echo %create $^@
+

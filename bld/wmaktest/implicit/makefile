@@ -1,14 +1,14 @@
 
 tests = &
-    test01 &
-    test02 &
-    test03 &
-    test04 &
-    test05 &
+    t01 &
+    t02 &
+    t03 &
+    t04 &
+    t05 &
     clean
 
 .BEFORE
-    @set ERRLOG=..\error.out
+    @set ERRLOG=../error.out
     @echo $# ==================================
     @echo $# Implicit Rules Tests (implicit)
     @echo $# ==================================
@@ -17,64 +17,59 @@ tests = &
 
 all: $(tests) .SYMBOLIC
 
-test01: .SYMBOLIC
+t01: .SYMBOLIC
     @set TEST=01
-    @%make header
     @set ERRORS=0
-    @$(test_wmake) -f imp$(%TEST) -h -l err$(%TEST).lst > test$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -h -f $@ -l x$(%TEST).lst > $@.lst
     @%make result
 
-test02: .SYMBOLIC
+t02: .SYMBOLIC
     @set TEST=02
-    @%make header
+    @set ERRORS=0
+    @head $@ -3
     @sleep 2
     @%create hello.h
-    @set ERRORS=0
-    @$(test_wmake) -f imp$(%TEST) -h -c > test$(%TEST).lst
-    @diff imp$(%TEST).chk test$(%TEST).lst
+    @$(test_wmake) -h -f $@ -c > $@.lst
+    @diff $@.chk $@.lst
     @%make result
 
-test03: .SYMBOLIC
+t03: .SYMBOLIC
     @set TEST=03
-    @%make header
+    @set ERRORS=0
+    @head $@ -3
     @sleep 2
     @%create hello.h
-    @set ERRORS=0
-    @$(test_wmake) -f imp$(%TEST) -c -h > test$(%TEST).lst
-    @diff imp$(%TEST).chk test$(%TEST).lst
+    @$(test_wmake) -h -f $@ -c > $@.lst
+    @diff $@.chk $@.lst
     @%make result
 
-test04: .SYMBOLIC
+t04: .SYMBOLIC
     @set TEST=04
-    @%make header
+    @set ERRORS=0
+    @head $@ -3
     @sleep 2
     @%create hello.h
-    @set ERRORS=0
-    @$(test_wmake) -f imp$(%TEST) -h -c /ms /m > test$(%TEST).lst
-    @diff imp$(%TEST).chk test$(%TEST).lst
+    @$(test_wmake) -h -f $@ -c /ms /m > $@.lst
+    @diff $@.chk $@.lst
     @%make result
 
-test05: .SYMBOLIC
+t05: .SYMBOLIC
     @set TEST=05
-    @%make header
-    @rm hello.obj
     @set ERRORS=0
-    @$(test_wmake) -f imp$(%TEST) -h > tmp$(%TEST).lst
-    @sed "s:of .*[\\/]:of :" tmp$(%TEST).lst > test$(%TEST).lst
-    @-diff imp$(%TEST).chk test$(%TEST).lst
+    @head $@ -3
+    @rm -f hello.obj
+    @$(test_wmake) -h -f $@ > x$(%TEST).lst
+    @sed "s:of .*[\\/]:of :" x$(%TEST).lst > $@.lst
+    @-diff $@.chk $@.lst
     @%make result
-
-header: .PROCEDURE .EXPLICIT
-    @echo $# ------------------------------
-    @echo $#     Implicit Rules Test $(%TEST)
-    @echo $# ------------------------------
 
 result: .PROCEDURE .EXPLICIT
     @if errorlevel 1 @%make resulterr
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# IMPLICIT RULES TEST $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Implicit Rules Tests (implicit) - Test $(%TEST) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

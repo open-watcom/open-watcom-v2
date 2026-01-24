@@ -1,0 +1,13 @@
+t17a(14): Error(F17): Token too long, maximum size is 259 chars
+Error(E02): Make execution terminated
+t17b(14): Error(F17): Token too long, maximum size is 259 chars
+Error(E02): Make execution terminated
+t17c(10): Error(F17): Token too long, maximum size is 129 chars
+Error(E02): Make execution terminated
+t17d(10): Error(E17): Token too long, maximum size is 129 chars
+t17d(12): Error(F17): Token too long, maximum size is 129 chars
+Error(E02): Make execution terminated
+t17e(9): Error(F17): Token too long, maximum size is 255 chars
+Error(E02): Make execution terminated
+t17f(10): Error(F17): Token too long, maximum size is 255 chars
+Error(E02): Make execution terminated

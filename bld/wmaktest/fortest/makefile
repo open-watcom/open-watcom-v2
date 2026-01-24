@@ -1,116 +1,110 @@
 
 tests = &
-    test01 &
-    test02 &
-    test03 &
-    test04 &
-    test05 &
-    test06 &
-    test07 &
-    test08 &
+    t01 &
+    t02 &
+    t03 &
+    t04 &
+    t05 &
+    t06 &
+    t07 &
+    t08 &
     clean
 
 .BEFORE
     @set ERRLOG=..\error.out
+    @set ERRORS=0
     @echo $# ==================================
     @echo $# For Loop Tests (fortest)
     @echo $# ==================================
-    @%create hello.obj
-    @%create hello.cpp
 
 all: $(tests) .SYMBOLIC
 
-test01: .SYMBOLIC
+t01: .SYMBOLIC
     @set TEST=01
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test02: .SYMBOLIC
+t02: .SYMBOLIC
     @set TEST=02
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test03: .SYMBOLIC
+t03: .SYMBOLIC
     @set TEST=03
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test04: .SYMBOLIC
+t04: .SYMBOLIC
     @set TEST=04
-    @%make header
-    %create for$(%TEST).lst
-    type for$(%TEST)a.chk > tmp$(%TEST).lst
-    dir /b /-o       >> tmp$(%TEST).lst
-    type for$(%TEST)b.chk >> tmp$(%TEST).lst
-    dir /b /-o for?? >> tmp$(%TEST).lst
-    type for$(%TEST)c.chk >> tmp$(%TEST).lst
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff tmp$(%TEST).lst for$(%TEST).lst
+    @head $@ -3
+    @%create $@.lst
+    @type $@a.chk > x$(%TEST).lst
+    @dir /b /-o       >> x$(%TEST).lst
+    @type $@b.chk >> x$(%TEST).lst
+    @dir /b /-o t?? >> x$(%TEST).lst
+    @type $@c.chk >> x$(%TEST).lst
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff x$(%TEST).lst $@.lst
     @%make result
 
-test05: .SYMBOLIC
+t05: .SYMBOLIC
     @set TEST=05
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test06: .SYMBOLIC
+t06: .SYMBOLIC
     @set TEST=06
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test07: .SYMBOLIC
+t07: .SYMBOLIC
     @set TEST=07
-    @%make header
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff for$(%TEST).chk for$(%TEST).lst
+    @head $@ -3
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff $@.chk $@.lst
     @%make result
 
-test08: .SYMBOLIC
+t08: .SYMBOLIC
     @set TEST=08
-    @%make header
-    %create for$(%TEST).lst
-    #rem Need to set prompt, otherwise the test fails...
-    prompt $p$g
-    type for$(%TEST).chk > tmp$(%TEST).lst
-    ..\cmds\prntdir "echo a" >> tmp$(%TEST).lst
-    %append tmp$(%TEST).lst a
-    ..\cmds\prntdir "echo b" >> tmp$(%TEST).lst
-    %append tmp$(%TEST).lst b
-    ..\cmds\prntdir "echo c" >> tmp$(%TEST).lst
-    %append tmp$(%TEST).lst c
-    @$(test_wmake) -f for$(%TEST) -h > for$(%TEST).lst 2>&1
     @set ERRORS=0
-    @diff -b tmp$(%TEST).lst for$(%TEST).lst
+    @head $@ -3
+    @%create $@.lst
+    @#rem Need to set prompt, otherwise the test fails...
+    @prompt $p$g
+    @type $@.chk > x$(%TEST).lst
+    @..\cmds\prntdir "echo a" >> x$(%TEST).lst
+    @%append x$(%TEST).lst a
+    @..\cmds\prntdir "echo b" >> x$(%TEST).lst
+    @%append x$(%TEST).lst b
+    @..\cmds\prntdir "echo c" >> x$(%TEST).lst
+    @%append x$(%TEST).lst c
+    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @diff -b x$(%TEST).lst $@.lst
     @%make result
-
-header: .PROCEDURE .EXPLICIT
-    @echo $# ------------------------------
-    @echo $#  For Loop Test $(%TEST)
-    @echo $# ------------------------------
 
 result: .PROCEDURE .EXPLICIT
     @if errorlevel 1 @%make resulterr
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# FORTEST $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# For Loop Tests (fortest) - Test $(%TEST) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

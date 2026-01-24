@@ -1,0 +1,57 @@
+# ----------------------------------------------------
+# Test 04: test .CONTINUE
+# ----------------------------------------------------
+# - test that .CONTINUE really aborts an entire sub-tree if there is an error
+
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
+.CONTINUE
+
+all : setup targa targb clean .symbolic
+    @%null
+
+setup : .symbolic
+!ifdef __UNIX__
+    @echo "Should get Error(E42) on (t04a1) and (t04b1.d)"
+!else
+    @echo Should get Error(E42) on (t04a1) and (t04b1.d)
+!endif
+    @%create t04b1.1
+    @%create t04b2.2
+
+clean : .symbolic
+    @rm -f t04a2 t04b1.1 t04b2.2 t04b2.d
+
+#
+# example using explicit rules
+#
+
+targa : t04a1 t04a2
+    %abort
+
+t04a1 :
+    @$(mkerr)
+
+t04a2 :
+    @%create t04a2
+
+
+#
+# example using implicit rules
+#
+
+.extensions:
+.extensions: .d .1 .2
+
+.1.d :
+    @$(mkerr)
+
+.2.d :
+    @%create $^@
+
+targb : t04b1.d t04b2.d
+    @%abort

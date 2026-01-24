@@ -1,0 +1,11 @@
+# ----------------------------------------------------
+# Test 04:
+# ----------------------------------------------------
+
+all : .symbolic
+    for %i in (*) do @echo %i
+    for %i in (t??) do @echo %i
+    for %i in (hmm.*) do @echo %i
+    for %i in (t04) do @echo %i
+
+

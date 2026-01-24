@@ -1,0 +1,14 @@
+# ----------------------------------------------------
+# Test 02:
+# ----------------------------------------------------
+
+HELLO=hello
+
+"hello.exe:$(HELLO).obj":"$*.c""$(HELLO).c"
+   echo $** $@ $*
+
+"hello.exe:hello.c" :   # dummy target to avoid errors
+   @echo
+
+hello.c :               # another dummy target
+   @echo

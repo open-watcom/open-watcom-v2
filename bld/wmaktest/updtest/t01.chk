@@ -1,0 +1,15 @@
+if exist t01x*.* @rm t01x*.*
+%create t01xa.aa
+t01xa.bb will be built because of t01xa.aa
+%create t01xa.bb
+t01xa.cc will be built because of t01xa.bb
+%create t01xa.cc
+t01xa.dd will be built because of t01xa.cc
+%create t01xa.dd
+t01xa.ee will be built because of t01xa.dd
+%create t01xa.ee
+rm t01x*.*
+%null
+all will be built because of first
+all will be built because of last
+%null

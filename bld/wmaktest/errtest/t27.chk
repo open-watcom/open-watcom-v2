@@ -1,0 +1,4 @@
+t27(13): Warning(W27): Macro (abc) is undefined
+t27(15): Warning(W27): Macro (abc) is undefined
+t27(17): Warning(W27): Macro (%foobar2) is undefined
+t27(19): Warning(W27): Macro (%foobar2) is undefined

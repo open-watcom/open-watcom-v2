@@ -1,0 +1,34 @@
+# ----------------------------------------------------
+# Test 04u: path with spaces tests
+# ----------------------------------------------------
+
+.EXTENSIONS: .out .tmp
+
+PATHS = "Test Path";Another" Pa"th;
+FILES = "Test Path/Long Filename.out"
+FILES+= "Another Path/Long Filename.out"
+
+.tmp: $(PATHS)
+
+.tmp.out:
+    %copy "$[@" "$^@"
+
+test: .symbolic create $(FILES) clean
+
+create: .symbolic
+    -mkdir "Test Path"
+    @echo Creating <<"Test Path/Long Filename.tmp"
+OK
+<< keep
+    -mkdir "Another Path"
+    @echo Creating <<"Another Path/Long Filename.tmp"
+OK
+<< keep
+
+clean: .symbolic
+    -rm "Test Path/Long Filename.tmp"
+    -rm "Another Path/Long Filename.tmp"
+    -rm "Test Path/Long Filename.out"
+    -rm "Another Path/Long Filename.out"
+    -rmdir "Test Path"
+    -rmdir "Another Path"

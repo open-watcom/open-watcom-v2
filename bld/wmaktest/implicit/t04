@@ -1,0 +1,16 @@
+# ----------------------------------------------------
+# Test 04:
+# ----------------------------------------------------
+
+.SUFFIXES:
+.SUFFIXES: .obj .cpp
+
+
+hello.obj:
+
+.cpp.obj:
+    echo hello.cpp
+    echo hello.obj
+
+hello.cpp: hello.h
+

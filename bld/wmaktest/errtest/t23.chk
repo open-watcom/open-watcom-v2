@@ -1,0 +1,4 @@
+t23(7): Error(E23): Extensions reversed in implicit rule
+t23(10): Error(E23): Extensions reversed in implicit rule
+t23(13): Error(E23): Extensions reversed in implicit rule
+Error(E02): Make execution terminated

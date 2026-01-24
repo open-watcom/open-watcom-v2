@@ -1,0 +1,18 @@
+# ----------------------------------------------------
+# Test 05u: Microsoft DeMacro
+# ----------------------------------------------------
+
+all: hello.obj
+
+.c.obj:
+     @echo $@
+     @echo $*
+     @echo $**
+     @echo $?
+     @echo $<
+     @echo $(**D)
+     @echo $(@B)
+     @echo $(@F)
+     @echo $(@R)
+
+hello.obj: ../macros/hello.tmp hello.c hello.boo

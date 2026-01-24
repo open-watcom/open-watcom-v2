@@ -1,92 +1,91 @@
 
 tests = &
-    test01 &
-    test02 &
-    test03 &
-    test04 &
-    test05 &
-    test06 &
-    test07 &
+    t01 &
+    t03 &
+    t04 &
+    t05 &
+    t06 &
+    t07 &
     clean
 
 .BEFORE
-    @set ERRLOG=..\error.out
+    @set ERRLOG=../error.out
+    @set ERRORS=0
     @echo $# ==================================
     @echo $# Preprocessor IF Tests (pretest)
     @echo $# ==================================
-    @%create hello.obj
-    @%create hello.cpp
 
 all: $(tests) .SYMBOLIC
 
-test01: .SYMBOLIC
+t01: .SYMBOLIC
     @set TEST=01
-    @%make header
-    @set VER=a
+    @set ERRORS=0
+    @head $@ -3
     #:: 2>nul to hide debug-build, memory-tracking diagnostic
-    @$(test_wmake) -h -f pre$(%TEST)a pre$(%TEST)a -f pre$(%TEST)b pre$(%TEST)b 2>&1
+    @$(test_wmake) -h -f $@ $@ -f t02 t02 2>&1
     @%make result
 
-test02: .SYMBOLIC
+t02: .SYMBOLIC
     @set TEST=02
-    @%make header
-    @-$(test_wmake) -h -f pre$(%TEST) pre$(%TEST) > test$(%TEST).lst 2>&1
-    @set VER=
-    @diff -i pre$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    #:: 2>nul to hide debug-build, memory-tracking diagnostic
+    @$(test_wmake) -h -f $@ $@ 2>&1
     @%make result
 
-test03: .SYMBOLIC
+t03: .SYMBOLIC
     @set TEST=03
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f pre$(%TEST) pre$(%TEST)
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ $@ > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
     @%make result
 
-test04: .SYMBOLIC
+t04: .SYMBOLIC
     @set TEST=04
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f pre$(%TEST) pre$(%TEST)
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ $@
     @%make result
 
-test05: .SYMBOLIC
+t05: .SYMBOLIC
     @set TEST=05
-    @%make header
-    @set VER=
-    @$(test_wmake) -h -f pre$(%TEST) pre$(%TEST)
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ $@
     @%make result
 
-test06: .SYMBOLIC
+t06: .SYMBOLIC
     @set TEST=06
-    @%make header
-    @-$(test_wmake) -h -f pre$(%TEST) > test$(%TEST).lst 2>&1
-    @set VER=
-    @diff -i pre$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ $@
     @%make result
 
-test07: .SYMBOLIC
+t07: .SYMBOLIC
     @set TEST=07
-    @%make header
-    @set VER=a
-    @$(test_wmake) -h -f pre$(%TEST) > test$(%TEST).lst 2>&1
-    @%make result
-    @set VER=b
-    @diff pre$(%TEST).chk test$(%TEST).lst
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
     @%make result
 
-header: .PROCEDURE .EXPLICIT
-    @echo $# ------------------------------
-    @echo $#  Preprocessor IF Test $(%TEST)
-    @echo $# ------------------------------
+t08: .SYMBOLIC
+    @set TEST=08
+    @set ERRORS=0
+    @head $@ -3
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
+    @%make result
 
 result: .PROCEDURE .EXPLICIT
     @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test $(%VER) successful
+    @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# PRETEST $(%TEST) $#$#
-    @%append $(%ERRLOG) $# Error: Test $(%VER) unsuccessful!!!
-    @echo $# Error: Test $(%VER) unsuccessful!!!!
+    @%append $(%ERRLOG) $#$# Preprocessor IF Tests (pretest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
+    @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
 
 clean: .SYMBOLIC

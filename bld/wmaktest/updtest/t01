@@ -1,0 +1,38 @@
+# ----------------------------------------------------
+# Test 01: test implicit rules across multiple (non-existing) targets
+# ----------------------------------------------------
+#
+#   12-Feb-90   D.J.Gaudet      Initial Implementation
+#
+
+wk = %create
+
+.extensions:
+.extensions: .ee .dd .cc .bb .aa
+
+.aa.bb:
+    @$(wk) $[*.bb
+
+.bb.cc:
+    @$(wk) $[*.cc
+
+.cc.dd:
+    @$(wk) $[*.dd
+
+.dd.ee:
+    @$(wk) $[*.ee
+
+#
+#   We use first/last instead of .BEFORE/.AFTER to ensure that the commands
+#   for first/last are executed.  (.BEFORE/.AFTER are not necessarily exec'd)
+#
+all: first t01xa.ee last  .symbolic
+    @%null
+
+first: .symbolic
+    @-if exist t01x*.* @rm t01x*.* # Handled internally, not by shell.
+    @$(wk) t01xa.aa
+
+last: .symbolic
+    @rm t01x*.*
+    @%null

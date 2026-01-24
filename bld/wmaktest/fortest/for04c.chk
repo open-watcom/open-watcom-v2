@@ -1,4 +1,0 @@
-for %i in (hmm.*) do @echo %i
-hmm.*
-for %i in (for04) do @echo %i
-for04

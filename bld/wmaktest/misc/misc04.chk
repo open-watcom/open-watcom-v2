@@ -1,9 +1,0 @@
-misc04(19): Warning(W66): Redefinition of .DEFAULT Command List
-echo before
-before
-echo default2
-default2
-echo after-1
-after-1
-echo after
-after

@@ -1,0 +1,7 @@
+t19(6): Error(E19): Target (test1) already declared Single-colon
+t19(9): Error(E19): Target (test2) already declared Single-colon
+t19(12): Error(E19): Target (test3) already declared Single-colon
+t19(15): Error(E19): Target (test4) already declared Double-colon
+t19(18): Error(E19): Target (test5) already declared Double-colon
+t19(21): Error(E19): Target (test6) already declared Double-colon
+Error(E02): Make execution terminated

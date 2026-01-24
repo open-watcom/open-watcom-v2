@@ -1,0 +1,4 @@
+t30(7): Warning(W30): Skipping !else block after !else
+t30(12): Warning(W30): Skipping !else ifdef block after !else
+Error(F05): No targets specified
+Error(E02): Make execution terminated

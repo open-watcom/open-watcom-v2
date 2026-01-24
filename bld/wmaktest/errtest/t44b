@@ -1,0 +1,17 @@
+# --------------------------------------------------
+# Test 44B: BEFORE/AFTER/ERROR cmd ret bad status
+# --------------------------------------------------
+
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
+.BEFORE
+    @$(mkerr)
+
+all :
+    @%null
+
+

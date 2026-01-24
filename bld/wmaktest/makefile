@@ -1,5 +1,12 @@
 #pmake: build
 
+#
+# TRMEM_CODE environment variable for wmake
+#
+# TRMEM_DO_NOT_PRINT  = 0x0001
+# TRMEM_IGNORE_ERROR  = 0x0002
+#
+
 tree_depth = 2
 
 watcom_root = $(%WATCOM)
@@ -78,11 +85,12 @@ testcmd=call test.bat $(test_wmake)
 !else	# DOS
 testcmd=call test.bat $(test_wmake)
 !endif
+testwmake=wmake -h test_wmake=$(test_wmake)
 
 from = $+$(%__CWD__)$-
 
 .BEFORE
-    @set TRMEM_CODE=1
+    @set TRMEM_CODE=1	# TRMEM_DO_NOT_PRINT
     @echo *****************************************************************
 !ifdef __NTX64__
 ! ifeq host 386
@@ -123,7 +131,7 @@ cmdline: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @!$(testcmd)
+    @-!$(testcmd)
     @cd $(from)
 
 test1: .SYMBOLIC
@@ -132,8 +140,7 @@ test1: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    #@!$(testcmd)
-    wmake -h test_wmake=$(test_wmake)
+    @-$(testwmake)
     @cd $(from)
 
 implicit: .SYMBOLIC
@@ -141,9 +148,8 @@ implicit: .SYMBOLIC
     # -- implicit - Implicit Rules Test
     # =======================================
     @echo *****************************************************************
-    cd $@
-    #@!$(testcmd)
-    wmake -h test_wmake=$(test_wmake)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 fortest: .SYMBOLIC
@@ -151,9 +157,8 @@ fortest: .SYMBOLIC
     # -- fortest - FOR LOOP TEST
     # =======================================
     @echo *****************************************************************
-    cd $@
-    #@!$(testcmd)
-    wmake -h test_wmake=$(test_wmake)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 pretest: .SYMBOLIC
@@ -161,9 +166,8 @@ pretest: .SYMBOLIC
     # -- pretest - PRE COMPILER TEST
     # =======================================
     @echo *****************************************************************
-    cd $@
-    #@!$(testcmd)
-    wmake -h test_wmake=$(test_wmake)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 updtest: .SYMBOLIC
@@ -171,30 +175,28 @@ updtest: .SYMBOLIC
     # -- updtest - UPDATE TEST
     # =======================================
     @echo *****************************************************************
-    cd $@
-    #@!$(testcmd)
-    wmake -h test_wmake=$(test_wmake)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 errtest: .SYMBOLIC
-    set TRMEM_CODE=3
     # =======================================
     # -- errtest - ERROR TEST
     # =======================================
     @echo *****************************************************************
-    cd $@
-    #@!$(testcmd)
-    -wmake -h test_wmake=$(test_wmake)
+    @cd $@
+    @set TRMEM_CODE=3	# TRMEM_DO_NOT_PRINT | TRMEM_IGNORE_ERROR
+    @-$(testwmake)
+    @set TRMEM_CODE=1	# TRMEM_DO_NOT_PRINT
     @cd $(from)
 
 inline: .SYMBOLIC
-    set TRMEM_CODE=1
     # =======================================
     # -- inline - INLINE TEST -
     # =======================================
     @echo *****************************************************************
-    cd $@
-    @!$(testcmd)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 preproc: .SYMBOLIC
@@ -202,8 +204,8 @@ preproc: .SYMBOLIC
     # -- preproc - PREPROCESS TEST -
     # =======================================
     @echo *****************************************************************
-    cd $@
-    @!$(testcmd)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 macros: .SYMBOLIC
@@ -211,8 +213,8 @@ macros: .SYMBOLIC
     # -- macros - MACROS TEST -
     # =======================================
     @echo *****************************************************************
-    cd $@
-    @!$(testcmd)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 misc: .SYMBOLIC
@@ -220,8 +222,8 @@ misc: .SYMBOLIC
     # -- misc - MISC TEST -
     # =======================================
     @echo *****************************************************************
-    cd $@
-    @!$(testcmd)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 longfile: .SYMBOLIC
@@ -229,8 +231,8 @@ longfile: .SYMBOLIC
     # -- longfile - LONG FILENAME TEST -
     # =======================================
     @echo *****************************************************************
-    cd $@
-    @!$(testcmd)
+    @cd $@
+    @-$(testwmake)
     @cd $(from)
 
 finish: .SYMBOLIC

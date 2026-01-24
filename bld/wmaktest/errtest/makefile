@@ -10,114 +10,144 @@
 # use redirection.
 # *************************************************************
 
-tests = &
-    test17 &
-    test27 &
-    test35 &
-    clean
+work_tests = &
+ t05 &
+ t07 &
+ t10 &
+ t11 &
+ t12 &
+ t15 &
+ t16 &
+ t18 &
+ t19 &
+ t20 &
+ t21 &
+ t22 &
+ t23 &
+ t24 &
+ t25 &
+ t26 &
+ t28 &
+ t29a &
+ t29b &
+ t29c &
+ t30 &
+ t31a &
+ t31b &
+ t31c &
+ t31d &
+ t31e &
+ t31f &
+ t32 &
+ t33 &
+ t34a &
+ t34b &
+ t37a &
+ t37b &
+ t38 &
+ t41 &
+ t42 &
+ t43 &
+ t44a &
+ t44b &
+ t44c
 
-list1 = 05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c
+debug_tests = &
+ t27 &
+ t35
+
+tests = &
+ t17 &
+ $(work_tests) &
+ $(debug_tests) &
+ clean
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set ERRORS=0
     @echo $# ==================================
     @echo $# Error Tests (errtest)
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC
 
-test17: .SYMBOLIC
-    set TEST=17
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -h -f err$(%TEST)a >  test$(%TEST).lst 2>&1
-    @$(test_wmake) -h -f err$(%TEST)b >> test$(%TEST).lst 2>&1
-    @$(test_wmake) -h -f err$(%TEST)c >> test$(%TEST).lst 2>&1
-    @$(test_wmake) -h -f err$(%TEST)d >> test$(%TEST).lst 2>&1
-    @$(test_wmake) -h -f err$(%TEST)e >> test$(%TEST).lst 2>&1
-    @$(test_wmake) -h -f err$(%TEST)f >> test$(%TEST).lst 2>&1
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    %make result
+t17: .SYMBOLIC
+    @set TEST=17
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@a >  $@.lst 2>&1
+    @-$(test_wmake) -h -f $@b >> $@.lst 2>&1
+    @-$(test_wmake) -h -f $@c >> $@.lst 2>&1
+    @-$(test_wmake) -h -f $@d >> $@.lst 2>&1
+    @-$(test_wmake) -h -f $@e >> $@.lst 2>&1
+    @-$(test_wmake) -h -f $@f >> $@.lst 2>&1
+    @diff -i $@.chk $@.lst
+    @%make result
 
-test27: .SYMBOLIC
-    set TEST=27
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -f err$(%TEST) -h -d > tmp$(%TEST).lst 2>&1
-    egrep W$(%TEST) tmp$(%TEST).lst > test$(%TEST).lst
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    call :result
+t36: .SYMBOLIC
+    @set TEST=36
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ .c.obj > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
+    @%make result
 
-test35: .SYMBOLIC
-    set TEST=35
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -f err$(%TEST) -h -d > tmp$(%TEST).lst 2>&1
-    egrep W$(%TEST) tmp$(%TEST).lst > test$(%TEST).lst
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    call :result
+t39: .SYMBOLIC
+    @set TEST=39
+    @set ERRORS=0
+    @head $@ -3
+    @%create ditty.c
+    @-$(test_wmake) -h -f $@ ditty.obj > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
+    @%make result
 
-test36: .SYMBOLIC
-    set TEST=36
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -h -f err$(%TEST) .c.obj > test$(%TEST).lst 2>&1
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    %make result
+t40: .SYMBOLIC
+    @set TEST=40
+    @set ERRORS=0
+    @rm -f ditty.*
+    @head $@ -3
+    @%create $@.tst
+    @chmod +r $@.tst >$@.lst
+    @-$(test_wmake) -h -a -t -f $@ >> $@.lst 2>&1
+    @chmod -r $@.tst
+    @rm -f $@.tst
+    @diff -i $@.chk $@.lst
+    @%make result
 
-test39: .SYMBOLIC
-    set TEST=39
-    @set VER=
-    head err$(%TEST) -3
-    echo. >ditty.c
-    @$(test_wmake) -h -f err$(%TEST) ditty.obj > test$(%TEST).lst 2>&1
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    %make result
+$(work_tests): .SYMBOLIC
+    @set TESTXXX=$@
+    @set TEST=$(%TESTXXX:t=)
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @diff -i $@.chk $@.lst
+    @%make result
 
-test40: .SYMBOLIC
-    set TEST=40
-    del ditty.*
-    head err$(%TEST) -3
-    echo. >err$(%TEST).tst
-    chmod +r err$(%TEST).tst >test$(%TEST).lst
-    @$(test_wmake) -h -a -t -f err$(%TEST) >> test$(%TEST).lst 2>&1
-    chmod -r err$(%TEST).tst
-    del err$(%TEST).tst
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    %make result
+t27: .SYMBOLIC
+    @set TEST=27
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
+    @egrep W27 $@.tmp > $@.lst
+    @diff -i $@.chk $@.lst
+    @%make result
 
-    #for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c) DO #call :work %%i
-    #for %%j in (27 35) DO %make debug %%j
-
-work: .PROCEDURE .EXPLICIT
-    set TEST=%1
-    @set VER=
-    head err$(%TEST) -3
-    @$(test_wmake) -f err$(%TEST) -h > test$(%TEST).lst 2>&1
-    diff -i err$(%TEST).chk test$(%TEST).lst
-    %make result
-
-header: .PROCEDURE .EXPLICIT
-    @echo $# ------------------------------
-    @echo $#  Update Test $(%TEST)
-    @echo $# ------------------------------
+t35: .SYMBOLIC
+    @set TEST=35
+    @set ERRORS=0
+    @head $@ -3
+    @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
+    @egrep W35 $@.tmp > $@.lst
+    @diff -i $@.chk $@.lst
+    @%make result
 
 result: .PROCEDURE .EXPLICIT
     @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test $(%VER) successful
-
-resulta: .PROCEDURE .EXPLICIT
-    @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test $(%VER) successful
-
-resultb: .PROCEDURE .EXPLICIT
-    @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test $(%VER) successful
+    @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# UPDTEST $(%TEST) $#$#
-    @%append $(%ERRLOG) $# Error: Test $(%VER) unsuccessful!!!
-    @echo $# Error: Test $(%VER) unsuccessful!!!!
+    @%append $(%ERRLOG) $#$# Error Tests (errtest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
+    @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
 
 clean: .SYMBOLIC

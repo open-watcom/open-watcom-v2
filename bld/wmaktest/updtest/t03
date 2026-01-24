@@ -1,0 +1,41 @@
+# ----------------------------------------------------
+# Test 03: .symbolic as an attribute of a target
+# ----------------------------------------------------
+#
+#   20-Feb-90   D.J.Gaudet      Initial Implementation
+#
+
+#   .symbolic before dcolon
+t03xa.t :: .symbolic
+t03xa.t :: dep1
+    @%null
+
+#   .symbolic after dcolon
+t03xb.t :: dep1
+    @%null
+t03xb.t :: .symbolic
+
+#   .symbolic in between dcolon
+t03xc.t :: dep1
+    @%null
+t03xc.t :: .symbolic
+t03xc.t :: dep2
+    @%null
+
+#   .symbolic before scolon
+t03xd.t : .symbolic
+t03xd.t : dep1
+    @%null
+
+#   .symbolic after scolon
+t03xe.t : dep1
+    @%null
+t03xe.t : .symbolic
+
+targs=t03xa.t t03xb.t t03xc.t t03xd.t t03xe.t
+
+dep1 dep2 : .symbolic
+    @%null
+
+all : $(targs) .symbolic
+    @%null

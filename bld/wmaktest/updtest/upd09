@@ -1,9 +1,0 @@
-#
-# test .explicit
-#
-
-fail : .explicit
-	@%abort
-
-success : .symbolic
-	@%null

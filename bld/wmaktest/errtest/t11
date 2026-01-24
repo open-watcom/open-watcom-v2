@@ -1,0 +1,12 @@
+# --------------------------------------------------
+# Test 11: unknown % command
+# --------------------------------------------------
+.CONTINUE
+
+all : test1 test2 .symbolic
+
+test1 : .symbolic
+    %foobar
+
+test2 : .symbolic
+    %

@@ -1,0 +1,17 @@
+# ----------------------------------------------------
+# Test 06:
+# ----------------------------------------------------
+
+all : .symbolic
+    @%make once
+    @%make once
+    @%make twice
+    @%make twice
+
+once    : .symbolic
+
+twice   : .procedure
+
+once twice :
+    @echo you should get this message $^@
+

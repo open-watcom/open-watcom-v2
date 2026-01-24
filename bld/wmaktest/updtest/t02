@@ -1,0 +1,33 @@
+# ----------------------------------------------------
+# Test 02: double colon target w/o implicit rule
+# ----------------------------------------------------
+#
+#   12-Feb-90   D.J.Gaudet      Initial Implementation
+#
+
+.extensions:
+.extensions: .cc .bb .aa
+
+.bb.cc:
+    @%create $[*.cc
+
+all: first t02xa.3 t02xb.cc last .symbolic
+    @%null
+
+first: .symbolic
+    @-if exist t02x*.* @rm t02x*.* # Handled internally, not by shell.
+    @%create t02xa.1
+    @%create t02xb.aa
+
+last: .symbolic
+    @-rm t02x*.*
+
+t02xa.3 :: t02xa.1
+    @%create t02xa.2
+
+t02xa.3 :: t02xa.2
+    @%create t02xa.3
+
+t02xb.cc :: t02xb.aa
+    @%create t02xb.bb
+
