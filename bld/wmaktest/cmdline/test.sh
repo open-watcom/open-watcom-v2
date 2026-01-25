@@ -25,7 +25,7 @@ do_check() {
     if [ "$?" -eq "0" ]; then
         echo "#      Test$VER successful"
     else
-        echo "## Test $TEST ##" >> $ERRLOG
+        echo "## Test ${TT:t=} ##" >> $ERRLOG
         echo "Error: Test$VER unsuccessful!!!" | tee -a $ERRLOG
         ERRORS=1
     fi
@@ -35,38 +35,38 @@ if [ -z "$1" ]; then
     usage
 fi
 
-echo "# =================================="
-echo "# Command Line Error Tests (cmdline)"
-echo "# =================================="
+echo "# ============================="
+echo "# Command Line Error Tests"
+echo "# ============================="
 
-TEST=01
+TT=t01
 VER= a
-head t${TEST} -3
-$1 "-." > x${TEST}a.lst 2>&1
-egrep Error x${TEST}a.lst > t${TEST}a.lst
-diff t${TEST}a.chk t${TEST}a.lst
+head -n 3 ${TT}
+$1 "-." > ${TT}a.tmp 2>&1
+egrep Error ${TT}a.tmp > ${TT}a.lst
+diff ${TT}a.chk ${TT}a.lst
 do_check
 
 set VER= b
-$1 "- " > x${TEST}b.lst 2>&1
-egrep Error x${TEST}b.lst > t${TEST}b.lst
-diff -b t${TEST}b.chk t${TEST}b.lst
+$1 "- " > ${TT}b.tmp 2>&1
+egrep Error ${TT}b.tmp > ${TT}b.lst
+diff -b ${TT}b.chk ${TT}b.lst
 do_check
 set VER=
 
-set TEST=02
-head t${TEST} -3
-$1 -h -f > x${TEST}.lst 2>&1
-egrep Error x${TEST}.lst > t${TEST}.lst
-diff t${TEST}.chk t${TEST}.lst
+TT=t02
+head -n 3 ${TT}
+$1 -h -f > ${TT}.tmp 2>&1
+egrep Error ${TT}.tmp > ${TT}.lst
+diff ${TT}.chk ${TT}.lst
 do_check
 
-set TEST=03
-head t${TEST} -3
-$1 -h "-" 2> t${TEST}.lst
-$1 -h - 2>> t${TEST}.lst
-$1 -h "-\" 2>> t${TEST}.lst
-diff t${TEST}.chk t${TEST}.lst
+TT=t03
+head -n 3 ${TT}
+$1 -h "-" 2> ${TT}.lst
+$1 -h - 2>> ${TT}.lst
+$1 -h "-\" 2>> ${TT}.lst
+diff ${TT}.chk ${TT}.lst
 do_check
 
 # if [ exist *.obj ] rm -f *.obj

@@ -21,7 +21,7 @@ tests = &
 all: $(tests) .SYMBOLIC
 
 t01: .SYMBOLIC
-    @set TEST=01
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
@@ -29,7 +29,7 @@ t01: .SYMBOLIC
     @%make result
 
 t02: .SYMBOLIC
-    @set TEST=02
+    @set TT=$@
     @set ERRORS=0
     @set VER= a
     @head $@ -3
@@ -44,7 +44,7 @@ t02: .SYMBOLIC
     @set VER=
 
 t03: .SYMBOLIC
-    @set TEST=03
+    @set TT=$@
     @set ERRORS=0
     @set VER= a
     @head $@ -3
@@ -61,7 +61,7 @@ t03: .SYMBOLIC
     @set VER=
 
 t04: .SYMBOLIC
-    @set TEST=04
+    @set TT=$@
     @set ERRORS=0
     @set VER= a
     @head $@ -3
@@ -76,7 +76,7 @@ t04: .SYMBOLIC
     @set VER=
 
 t05: .SYMBOLIC
-    @set TEST=05
+    @set TT=$@
     @set ERRORS=0
     @%create hello.boo
     @%create hello.xyz
@@ -88,7 +88,7 @@ t05: .SYMBOLIC
     @rm -f hello.boo hello.xyz hello.c
 
 t06: .SYMBOLIC
-    @set TEST=06
+    @set TT=$@
     @set ERRORS=0
     @%create hello.obj
     @%create hello2.obj
@@ -101,7 +101,7 @@ t06: .SYMBOLIC
     @rm -f hello.obj hello2.obj hello.c hello2.c
 
 t07: .SYMBOLIC
-    @set TEST=07
+    @set TT=$@
     @set ERRORS=0
     @%create hello.obj
     @%create hello2.obj
@@ -114,7 +114,7 @@ t07: .SYMBOLIC
     @rm -f hello.obj hello2.obj hello.c hello2.c
 
 t08: .SYMBOLIC
-    @set TEST=08
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@ > $@.lst 2>&1

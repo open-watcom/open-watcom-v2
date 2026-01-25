@@ -72,7 +72,7 @@ tests = &
 all: $(tests) .SYMBOLIC
 
 t17: .SYMBOLIC
-    @set TEST=17
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @-$(test_wmake) -h -f $@a >  $@.lst 2>&1
@@ -85,7 +85,7 @@ t17: .SYMBOLIC
     @%make result
 
 t36: .SYMBOLIC
-    @set TEST=36
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @-$(test_wmake) -h -f $@ .c.obj > $@.lst 2>&1
@@ -93,7 +93,7 @@ t36: .SYMBOLIC
     @%make result
 
 t39: .SYMBOLIC
-    @set TEST=39
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @%create ditty.c
@@ -102,7 +102,7 @@ t39: .SYMBOLIC
     @%make result
 
 t40: .SYMBOLIC
-    @set TEST=40
+    @set TT=$@
     @set ERRORS=0
     @rm -f ditty.*
     @head $@ -3
@@ -115,15 +115,14 @@ t40: .SYMBOLIC
     @%make result
 
 $(work_tests): .SYMBOLIC
-    @set TESTXXX=$@
-    @set TEST=$(%TESTXXX:t=)
+    @set TT=$@
     @head $@ -3
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff -i $@.chk $@.lst
     @%make result
 
 t27: .SYMBOLIC
-    @set TEST=27
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
@@ -132,7 +131,7 @@ t27: .SYMBOLIC
     @%make result
 
 t35: .SYMBOLIC
-    @set TEST=35
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1

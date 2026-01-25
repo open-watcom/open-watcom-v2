@@ -13,7 +13,7 @@ tests = &
 all: $(tests) .SYMBOLIC
 
 t01: .SYMBOLIC
-    @set TEST=01
+    @set TT=$@
     @set VER= a
     @set ERRORS=0
     @head $@ -3

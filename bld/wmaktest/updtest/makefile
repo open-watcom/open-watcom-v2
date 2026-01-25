@@ -23,7 +23,7 @@ tests = &
 all: $(tests) .SYMBOLIC
 
 t01: .SYMBOLIC
-    @set TEST=01
+    @set TT=$@
     @set VER= a
     @set ERRORS=0
     @head $@ -3
@@ -40,21 +40,21 @@ t01: .SYMBOLIC
     @set VER=
 
 t02: .SYMBOLIC
-    @set TEST=02
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@ /c
     @%make result
 
 t03: .SYMBOLIC
-    @set TEST=03
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@
     @%make result
 
 t04: .SYMBOLIC
-    @set TEST=04
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
@@ -62,7 +62,7 @@ t04: .SYMBOLIC
     @%make result
 
 t05: .SYMBOLIC
-    @set TEST=05
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -s -f $@ > $@.lst
@@ -70,7 +70,7 @@ t05: .SYMBOLIC
     @%make result
 
 t06: .SYMBOLIC
-    @set TEST=06
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@ > $@.lst
@@ -78,7 +78,7 @@ t06: .SYMBOLIC
     @%make result
 
 t07: .SYMBOLIC
-    @set TEST=07
+    @set TT=$@
     @set ERRORS=0
     @head $@ -3
     @$(test_wmake) -h -f $@ > $@.lst
@@ -86,7 +86,7 @@ t07: .SYMBOLIC
     @%make result
 
 #t08: .SYMBOLIC
-#    @set TEST=08
+#    @set TT=$@
 #    @set VER= a
 #    @head $@ -3
 #    @$(test_wmake) -h -f $@ >$@.lst
@@ -98,19 +98,19 @@ t07: .SYMBOLIC
 #    @set VER=
 
 t09: .SYMBOLIC
-    @set TEST=09
+    @set TT=$@
     @head $@ -3
     @$(test_wmake) -h -f $@
     @%make result
 
 t10: .SYMBOLIC
-    @set TEST=10
+    @set TT=$@
     @head $@ -3
     @$(test_wmake) -h -f $@
     @%make result
 
 t11: .SYMBOLIC
-    @set TEST=11
+    @set TT=$@
     @head $@ -3
     @$(test_wmake) -h -ms -f $@ > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
