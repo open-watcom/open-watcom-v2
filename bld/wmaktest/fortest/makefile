@@ -11,7 +11,7 @@ tests = &
     clean
 
 .BEFORE
-    @set ERRLOG=..\error.out
+    @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
     @echo $# For Loop Tests (fortest)

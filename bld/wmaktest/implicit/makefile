@@ -50,7 +50,7 @@ t04: .SYMBOLIC
     @head -n 3 $@
     @sleep 2
     @%create hello.h
-    @$(test_wmake) -h -f $@ -c /ms /m > $@.lst
+    @$(test_wmake) -h -f $@ -ms -m -c > $@.lst
     @diff $@.chk $@.lst
     @%make result
 

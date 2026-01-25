@@ -43,7 +43,7 @@ t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ /c
+    @$(test_wmake) -h -f $@ -c
     @%make result
 
 t03: .SYMBOLIC
