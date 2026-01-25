@@ -6,7 +6,11 @@ tests = &
     @set ERRLOG=../error.out
     @set VER=
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Multiple Dependents Tests (test1)"
+!else
     @echo $# Multiple Dependents Tests (test1)
+!endif
     @echo $# ==================================
     @wmake -h -f create
 
@@ -46,5 +50,5 @@ resulterr: .PROCEDURE .EXPLICIT
     @set ERRORS=1
 
 clean: .PROCEDURE .EXPLICIT
-    @rm *.obj *.exe main.* foo*.c
-    @if $(%ERRORS) == 0 @rm *.ref *.lst *.tmp maketst1
+    @rm -f *.obj *.exe main.* foo*.c
+    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp *.ref maketst1

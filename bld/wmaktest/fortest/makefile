@@ -14,7 +14,11 @@ tests = &
     @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# For Loop Tests (fortest)"
+!else
     @echo $# For Loop Tests (fortest)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC
@@ -110,5 +114,5 @@ resulterr: .PROCEDURE .EXPLICIT
     @set ERRORS=1
 
 clean: .SYMBOLIC
-    @if exist *.obj @rm *.obj
-    @if $(%ERRORS) == 0 @rm *.lst
+    @rm -f *.obj
+    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp

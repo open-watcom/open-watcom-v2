@@ -15,7 +15,11 @@ tests = &
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Macro Tests (macros)"
+!else
     @echo $# Macro Tests (macros)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

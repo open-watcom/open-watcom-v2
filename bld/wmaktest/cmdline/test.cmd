@@ -53,6 +53,7 @@ call :result
 
 rem if exist *.obj del *.obj
 if %ERRORS% == 0 del *.lst
+if %ERRORS% == 0 del *.tmp
 goto end
 
 :usage

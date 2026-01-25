@@ -17,7 +17,11 @@ tests = &
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Update Tests (updtest)"
+!else
     @echo $# Update Tests (updtest)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

@@ -10,7 +10,11 @@ tests = &
 .BEFORE
     @set ERRLOG=../error.out
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Implicit Rules Tests (implicit)"
+!else
     @echo $# Implicit Rules Tests (implicit)
+!endif
     @echo $# ==================================
     @%create hello.obj
     @%create hello.cpp
@@ -75,7 +79,5 @@ resulterr: .PROCEDURE .EXPLICIT
     @set ERRORS=1
 
 clean: .SYMBOLIC
-    #:: hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
     @rm *.obj app.lnk app.exe hello.* hello?.*
-    @if exist *.obj @rm *.obj
-    @if $(%ERRORS) == 0 @rm *.lst
+    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp

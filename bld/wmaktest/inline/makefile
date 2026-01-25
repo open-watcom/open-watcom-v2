@@ -13,7 +13,11 @@ tests = &
     @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Inline File Tests (inline)"
+!else
     @echo $# Inline File Tests (inline)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

@@ -13,7 +13,11 @@ tests = &
     @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Miscellaneous Tests (misc)"
+!else
     @echo $# Miscellaneous Tests (misc)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

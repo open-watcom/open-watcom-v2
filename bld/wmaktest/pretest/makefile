@@ -12,7 +12,11 @@ tests = &
     @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Preprocessor IF Tests (pretest)"
+!else
     @echo $# Preprocessor IF Tests (pretest)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

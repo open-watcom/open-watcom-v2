@@ -11,7 +11,11 @@ tests = &
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Preprocessor Tests (preproc)"
+!else
     @echo $# Preprocessor Tests (preproc)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

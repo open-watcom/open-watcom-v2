@@ -13,7 +13,11 @@ tests = &
     @set ERRLOG=../error.out
     @set ERRORS=0
     @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# Long FileName Tests (longfile)"
+!else
     @echo $# Long FileName Tests (longfile)
+!endif
     @echo $# ==================================
 
 all: $(tests) .SYMBOLIC

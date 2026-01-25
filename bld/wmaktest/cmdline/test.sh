@@ -16,24 +16,20 @@ ERRLOG=../error.out
 ERRORS=0
 VER=
 
-usage() {
+if [ -z "$1" ]; then
     echo "usage: $0 prgname errorfile"
     exit
-}
+fi
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo "#      Test$VER successful"
+        echo "#      Test${VER} successful"
     else
         echo "## Test ${TT:t=} ##" >> $ERRLOG
-        echo "Error: Test$VER unsuccessful!!!" | tee -a $ERRLOG
+        echo "Error: Test${VER} unsuccessful!!!" | tee -a $ERRLOG
         ERRORS=1
     fi
 }
-
-if [ -z "$1" ]; then
-    usage
-fi
 
 echo "# ============================="
 echo "# Command Line Error Tests"
@@ -47,12 +43,12 @@ egrep Error ${TT}a.tmp > ${TT}a.lst
 diff ${TT}a.chk ${TT}a.lst
 do_check
 
-set VER= b
+VER= b
 $1 "- " > ${TT}b.tmp 2>&1
 egrep Error ${TT}b.tmp > ${TT}b.lst
 diff -b ${TT}b.chk ${TT}b.lst
 do_check
-set VER=
+VER=
 
 TT=t02
 head -n 3 ${TT}
@@ -69,7 +65,7 @@ $1 -h "-\" 2>> ${TT}.lst
 diff ${TT}.chk ${TT}.lst
 do_check
 
-# if [ exist *.obj ] rm -f *.obj
+rm -f *.obj
 if [ "$ERRORS" -eq "0" ]; then
-    rm -f *.lst
+    rm -f *.lst *.tmp
 fi
