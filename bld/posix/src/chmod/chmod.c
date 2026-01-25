@@ -102,9 +102,9 @@ int main( int argc, char *argv[] )
             break;
         case 'w':
             if( OptChar == '-' ) {
-                OptChar = '+'
+                OptChar = '+';
             } else {
-                OptChar = '-'
+                OptChar = '-';
             }
             /* fall through */
         case 'r':
@@ -122,9 +122,9 @@ int main( int argc, char *argv[] )
             break;
         case 'w':
             if( OptChar == '-' ) {
-                OptChar = '+'
+                OptChar = '+';
             } else {
-                OptChar = '-'
+                OptChar = '-';
             }
             /* fall through */
         case 'r':
