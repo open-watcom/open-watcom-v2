@@ -112,7 +112,6 @@ from = $+$(%__CWD__)$-
     @cd $(from)
 
 all: prebuild $(tests) .SYMBOLIC
-#    for %t in ($(tests)) do %make %t
 
 prebuild: .SYMBOLIC
     # ===========================

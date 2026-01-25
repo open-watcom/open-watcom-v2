@@ -23,7 +23,7 @@ t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -31,7 +31,7 @@ t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -39,7 +39,7 @@ t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -53,7 +53,7 @@ t04: .SYMBOLIC
     @type $@b.chk >> x$(%TEST).lst
     @dir /b /-o t?? >> x$(%TEST).lst
     @type $@c.chk >> x$(%TEST).lst
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff x$(%TEST).lst $@.lst
     @%make result
 
@@ -61,7 +61,7 @@ t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -69,7 +69,7 @@ t06: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -77,7 +77,7 @@ t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
 
@@ -88,15 +88,15 @@ t08: .SYMBOLIC
     @%create $@.lst
     @#rem Need to set prompt, otherwise the test fails...
     @prompt $p$g
-    @type $@.chk > x$(%TEST).lst
-    @..\cmds\prntdir "echo a" >> x$(%TEST).lst
-    @%append x$(%TEST).lst a
-    @..\cmds\prntdir "echo b" >> x$(%TEST).lst
-    @%append x$(%TEST).lst b
-    @..\cmds\prntdir "echo c" >> x$(%TEST).lst
-    @%append x$(%TEST).lst c
-    @$(test_wmake) -f $@ -h > $@.lst 2>&1
-    @diff -b x$(%TEST).lst $@.lst
+    @type $@.chk > $@.tmp
+    @..\cmds\prntdir "echo a" >> $@.tmp
+    @%append $@.tmp a
+    @..\cmds\prntdir "echo b" >> $@.tmp
+    @%append $@.tmp b
+    @..\cmds\prntdir "echo c" >> $@.tmp
+    @%append $@.tmp c
+    @$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @diff -b $@.tmp $@.lst
     @%make result
 
 result: .PROCEDURE .EXPLICIT
@@ -104,7 +104,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# For Loop Tests (fortest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# For Loop Tests (fortest) - Test $(%TESTXXX:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

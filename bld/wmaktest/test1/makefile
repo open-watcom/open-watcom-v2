@@ -17,10 +17,10 @@ t01: .SYMBOLIC
     @set VER= a
     @set ERRORS=0
     @head -n 3 $@
-    @%create x$(%TEST).ref
-    @%create x$(%TEST).lst
-    @-$(test_wmake) -h -f maketst1 -l x$(%TEST).lst > $@.lst
-    @diff -b x$(%TEST).ref x$(%TEST).lst
+    @%create $@.ref
+    @%create $@.tmp
+    @-$(test_wmake) -h -f maketst1 -l $@.tmp > $@.lst
+    @diff -b $@.ref $@.tmp
     @%make result
     #
     @set ERRORS=0
@@ -40,11 +40,11 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Multiple Dependents Tests (test1) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Multiple Dependents Tests (test1) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1
 
 clean: .PROCEDURE .EXPLICIT
     @rm *.obj *.exe main.* foo*.c
-    @if $(%ERRORS) == 0 @rm *.ref *.lst maketst1
+    @if $(%ERRORS) == 0 @rm *.ref *.lst *.tmp maketst1

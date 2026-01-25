@@ -108,7 +108,7 @@ t40: .SYMBOLIC
     @head -n 3 $@
     @%create $@.tst
     @chmod +r $@.tst >$@.lst
-    @-$(test_wmake) -h -a -t -f $@ >> $@.lst 2>&1
+    @-$(test_wmake) -h -f $@ -a -t >> $@.lst 2>&1
     @chmod -r $@.tst
     @rm -f $@.tst
     @diff -i $@.chk $@.lst
@@ -144,7 +144,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Error Tests (errtest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Error Tests (errtest) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

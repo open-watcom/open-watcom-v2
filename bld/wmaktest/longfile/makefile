@@ -84,7 +84,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Long FileName Tests (longfile) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Long FileName Tests (longfile) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

@@ -65,7 +65,7 @@ t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -s -f $@ > $@.lst
+    @$(test_wmake) -h -f $@ -s > $@.lst
     @diff -b -i $@.chk $@.lst
     @%make result
 
@@ -112,7 +112,7 @@ t10: .SYMBOLIC
 t11: .SYMBOLIC
     @set TT=$@
     @head -n 3 $@
-    @$(test_wmake) -h -ms -f $@ > $@.lst 2>&1
+    @$(test_wmake) -h -f $@ -ms > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
 
@@ -121,7 +121,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Update Tests (updtest) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Update Tests (updtest) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1

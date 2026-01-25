@@ -59,8 +59,8 @@ t05: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @rm -f hello.obj
-    @$(test_wmake) -h -f $@ > x$(%TEST).lst
-    @sed "s:of .*[\\/]:of :" x$(%TEST).lst > $@.lst
+    @$(test_wmake) -h -f $@ > $@.tmp
+    @sed "s:of .*[\\/]:of :" $@.tmp > $@.lst
     @-diff $@.chk $@.lst
     @%make result
 
@@ -69,7 +69,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Implicit Rules Tests (implicit) - Test $(%TEST) $#$#
+    @%append $(%ERRLOG) $#$# Implicit Rules Tests (implicit) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
