@@ -22,7 +22,7 @@ all: $(tests) .SYMBOLIC
 t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -30,7 +30,7 @@ t01: .SYMBOLIC
 t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -38,7 +38,7 @@ t02: .SYMBOLIC
 t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -46,7 +46,7 @@ t03: .SYMBOLIC
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @%create $@.lst
     @type $@a.chk > x$(%TEST).lst
     @dir /b /-o       >> x$(%TEST).lst
@@ -60,7 +60,7 @@ t04: .SYMBOLIC
 t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -68,7 +68,7 @@ t05: .SYMBOLIC
 t06: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -76,7 +76,7 @@ t06: .SYMBOLIC
 t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -f $@ -h > $@.lst 2>&1
     @diff $@.chk $@.lst
     @%make result
@@ -84,7 +84,7 @@ t07: .SYMBOLIC
 t08: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @%create $@.lst
     @#rem Need to set prompt, otherwise the test fails...
     @prompt $p$g

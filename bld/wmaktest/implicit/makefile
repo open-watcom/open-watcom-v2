@@ -20,14 +20,14 @@ all: $(tests) .SYMBOLIC
 t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -l x$(%TEST).lst > $@.lst
     @%make result
 
 t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @sleep 2
     @%create hello.h
     @$(test_wmake) -h -f $@ -c > $@.lst
@@ -37,7 +37,7 @@ t02: .SYMBOLIC
 t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @sleep 2
     @%create hello.h
     @$(test_wmake) -h -f $@ -c > $@.lst
@@ -47,7 +47,7 @@ t03: .SYMBOLIC
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @sleep 2
     @%create hello.h
     @$(test_wmake) -h -f $@ -c /ms /m > $@.lst
@@ -57,7 +57,7 @@ t04: .SYMBOLIC
 t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @rm -f hello.obj
     @$(test_wmake) -h -f $@ > x$(%TEST).lst
     @sed "s:of .*[\\/]:of :" x$(%TEST).lst > $@.lst

@@ -23,32 +23,32 @@ echo # =============================
 
 set TT=t01
 set VER= a
-head -n 3 $(%TT)
-%1 "-." > $(%TT)a.tmp 2>&1
-egrep Error $(%TT)a.tmp > $(%TT)a.lst
-diff $(%TT)a.chk $(%TT)a.lst
+head -n 3 %TT%
+%1 "-." > %TT%a.tmp 2>&1
+egrep Error %TT%a.tmp > %TT%a.lst
+diff %TT%a.chk %TT%a.lst
 call :result
 
 set VER= b
-%1 "- " > $(%TT)b.tmp 2>&1
-egrep Error $(%TT)b.tmp > $(%TT)b.lst
-diff -b $(%TT)b.chk $(%TT)b.lst
+%1 "- " > %TT%b.tmp 2>&1
+egrep Error %TT%b.tmp > %TT%b.lst
+diff -b %TT%b.chk %TT%b.lst
 call :result
 set VER=
 
 set TT=t02
-head -n 3 $(%TT)
-%1 -h -f > $(%TT).tmp 2>&1
-egrep Error $(%TT).tmp > $(%TT).lst
-diff $(%TT).chk $(%TT).lst
+head -n 3 %TT%
+%1 -h -f > %TT%.tmp 2>&1
+egrep Error %TT%.tmp > %TT%.lst
+diff %TT%.chk %TT%.lst
 call :result
 
 set TT=t03
-head -n 3 $(%TT)
-%1 -h "-" 2> $(%TT).lst
-%1 -h - 2>> $(%TT).lst
-%1 -h "-\" 2>> $(%TT).lst
-diff $(%TT).chk $(%TT).lst
+head -n 3 %TT%
+%1 -h "-" 2> %TT%.lst
+%1 -h - 2>> %TT%.lst
+%1 -h "-\" 2>> %TT%.lst
+diff %TT%.chk %TT%.lst
 call :result
 
 rem if exist *.obj del *.obj

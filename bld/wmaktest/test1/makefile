@@ -16,7 +16,7 @@ t01: .SYMBOLIC
     @set TT=$@
     @set VER= a
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @%create x$(%TEST).ref
     @%create x$(%TEST).lst
     @-$(test_wmake) -h -f maketst1 -l x$(%TEST).lst > $@.lst

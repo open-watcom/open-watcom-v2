@@ -20,7 +20,7 @@ all: $(tests) .SYMBOLIC
 t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     #:: 2>nul to hide debug-build, memory-tracking diagnostic
     @$(test_wmake) -h -f $@ $@ -f t02 t02 2>&1
     @%make result
@@ -28,7 +28,7 @@ t01: .SYMBOLIC
 t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     #:: 2>nul to hide debug-build, memory-tracking diagnostic
     @$(test_wmake) -h -f $@ $@ 2>&1
     @%make result
@@ -36,7 +36,7 @@ t02: .SYMBOLIC
 t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @-$(test_wmake) -h -f $@ $@ > $@.lst 2>&1
     @diff -i $@.chk $@.lst
     @%make result
@@ -44,28 +44,28 @@ t03: .SYMBOLIC
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ $@
     @%make result
 
 t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ $@
     @%make result
 
 t06: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ $@
     @%make result
 
 t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff -i $@.chk $@.lst
     @%make result
@@ -73,7 +73,7 @@ t07: .SYMBOLIC
 t08: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff -i $@.chk $@.lst
     @%make result

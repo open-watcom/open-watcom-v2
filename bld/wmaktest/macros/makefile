@@ -23,7 +23,7 @@ all: $(tests) .SYMBOLIC
 t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -32,7 +32,7 @@ t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @set VER= a
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ > $@a.lst 2>&1
     @diff -b -i $@a.chk $@a.lst
     @%make result
@@ -47,7 +47,7 @@ t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @set VER= a
-    @head $@ -3
+    @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@a.lst 2>&1
     @diff -b -i $@a.chk $@a.lst
     @%make result
@@ -64,7 +64,7 @@ t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @set VER= a
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ > $@a.lst 2>&1
     @diff -b -i $@a.chk $@a.lst
     @%make result
@@ -81,7 +81,7 @@ t05: .SYMBOLIC
     @%create hello.boo
     @%create hello.xyz
     @%create hello.c
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -94,7 +94,7 @@ t06: .SYMBOLIC
     @%create hello2.obj
     @%create hello.c
     @%create hello2.c
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -ms -m -a > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -107,7 +107,7 @@ t07: .SYMBOLIC
     @%create hello2.obj
     @%create hello.c
     @%create hello2.c
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -ms -m -a cc=wcl386 > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -116,7 +116,7 @@ t07: .SYMBOLIC
 t08: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result

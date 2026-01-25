@@ -1,15 +1,13 @@
 #pmake: build
 
+tree_depth = 2
+
 #
 # TRMEM_CODE environment variable for wmake
 #
 # TRMEM_DO_NOT_PRINT  = 0x0001
 # TRMEM_IGNORE_ERROR  = 0x0002
 #
-
-tree_depth = 2
-
-watcom_root = $(%WATCOM)
 
 !ifdef %BUILDTEST
 buildtest = 1
@@ -54,25 +52,25 @@ test_wmake = ..\..\wmake\dos386\wmk.exe
 ! endif
 !else
 ! ifdef __OS2__
-test_wmake = $(watcom_root)\binp\wmake
+test_wmake = $(%WATCOM)\binp\wmake
 ! else ifdef __LINUX386__
-test_wmake = $(watcom_root)/binl/wmake
+test_wmake = $(%WATCOM)/binl/wmake
 ! else ifdef __LINUXX64__
 !  ifeq host 386
-test_wmake = $(watcom_root)/binl/wmake
+test_wmake = $(%WATCOM)/binl/wmake
 !  else
-test_wmake = $(watcom_root)/binl64/wmake
+test_wmake = $(%WATCOM)/binl64/wmake
 !  endif
 ! else ifdef __NT386__
-test_wmake = $(watcom_root)\binnt\wmake
+test_wmake = $(%WATCOM)\binnt\wmake
 ! else ifdef __NTX64__
 !  ifeq host 386
-test_wmake = $(watcom_root)\binnt\wmake
+test_wmake = $(%WATCOM)\binnt\wmake
 !  else
-test_wmake = $(watcom_root)\binnt64\wmake
+test_wmake = $(%WATCOM)\binnt64\wmake
 !  endif
 ! else	# DOS
-test_wmake = $(watcom_root)\binw\wmake
+test_wmake = $(%WATCOM)\binw\wmake
 ! endif
 !endif
 
@@ -108,6 +106,10 @@ from = $+$(%__CWD__)$-
     @echo Test wmake (32-bit)
 !endif
     @if exist error.out @rm error.out
+    @echo *****************************************************************
+    @cd cmds
+    @-!$(test_wmake) -?
+    @cd $(from)
 
 all: prebuild $(tests) .SYMBOLIC
 #    for %t in ($(tests)) do %make %t

@@ -21,7 +21,7 @@ all: $(tests) .SYMBOLIC
 t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @%write "hello tmp.xyz" LONGFILENAME OK
     @%create hello.h
     @$(test_wmake) -h -f $@ -a > $@.lst 2>&1
@@ -33,7 +33,7 @@ t02: .SYMBOLIC
     @set ERRORS=0
     @rm -f "hello tmp.xyz"
     @rm -f hello.h
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -a -ms -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -41,7 +41,7 @@ t02: .SYMBOLIC
 t03: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     # This one MUST NOT use -a switch!
     @$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
@@ -50,7 +50,7 @@ t03: .SYMBOLIC
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -58,7 +58,7 @@ t04: .SYMBOLIC
 t05: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -66,7 +66,7 @@ t05: .SYMBOLIC
 t06: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
@@ -74,7 +74,7 @@ t06: .SYMBOLIC
 t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
-    @head $@ -3
+    @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
     @%make result
