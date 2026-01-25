@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,10 +64,12 @@ static const char *usageMsg[] = {
     "\t\t +h : turn on hidden attribute",
     "\t\t +s : turn on system attribute",
     "\t\t +r : turn on read-only attribute",
+    "\t\t +w : turn off read-only attribute",
     "\t\t -a : turn off archive attribute",
     "\t\t -h : turn off hidden attribute",
     "\t\t -s : turn off system attribute",
     "\t\t -r : turn off read-only attribute",
+    "\t\t -w : turn on read-only attribute",
     "\t\t -X : match files by regular expressions",
     NULL
 };
@@ -98,6 +100,13 @@ int main( int argc, char *argv[] )
         case 'h':
             attr = FILE_ATTRIBUTE_HIDDEN;
             break;
+        case 'w':
+            if( OptChar == '-' ) {
+                OptChar = '+'
+            } else {
+                OptChar = '-'
+            }
+            /* fall through */
         case 'r':
             attr = FILE_ATTRIBUTE_READONLY;
             break;
@@ -111,6 +120,13 @@ int main( int argc, char *argv[] )
         case 'h':
             attr = _A_HIDDEN;
             break;
+        case 'w':
+            if( OptChar == '-' ) {
+                OptChar = '+'
+            } else {
+                OptChar = '-'
+            }
+            /* fall through */
         case 'r':
             attr = _A_RDONLY;
             break;
