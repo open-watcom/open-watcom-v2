@@ -2,33 +2,33 @@
 # Test 04: path with spaces tests
 # ----------------------------------------------------
 
-.EXTENSIONS: .out .tmp
+.EXTENSIONS: .abc .xyz
 
 PATHS = "Test Path";Another" Pa"th;
-FILES = "Test Path\Long Filename.out"
-FILES+= "Another Path\Long Filename.out"
+FILES = "Test Path\Long Filename.abc"
+FILES+= "Another Path\Long Filename.abc"
 
-.tmp: $(PATHS)
+.xyz: $(PATHS)
 
-.tmp.out:
+.xyz.abc:
     %copy "$[@" "$^@"
 
 test: .symbolic create $(FILES) clean
 
 create: .symbolic
     -mkdir "Test Path"
-    @echo Creating <<"Test Path\Long Filename.tmp"
+    @echo Creating <<"Test Path\Long Filename.xyz"
 OK
 << keep
     -mkdir "Another Path"
-    @echo Creating <<"Another Path\Long Filename.tmp"
+    @echo Creating <<"Another Path\Long Filename.xyz"
 OK
 << keep
 
 clean: .symbolic
-    -rm "Test Path\Long filename.tmp"
-    -rm "Another Path\Long filename.tmp"
-    -rm "Test Path\Long filename.out"
-    -rm "Another Path\Long filename.out"
+    -rm "Test Path\Long filename.xyz"
+    -rm "Another Path\Long filename.xyz"
+    -rm "Test Path\Long filename.abc"
+    -rm "Another Path\Long filename.abc"
     -rmdir "Test Path"
     -rmdir "Another Path"

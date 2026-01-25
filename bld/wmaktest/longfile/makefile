@@ -22,7 +22,7 @@ t01: .SYMBOLIC
     @set TEST=01
     @set ERRORS=0
     @head $@ -3
-    @%write "HELLO TMP.TMP" LONGFILENAME OK
+    @%write "hello tmp.xyz" LONGFILENAME OK
     @%create hello.h
     @$(test_wmake) -h -f $@ -a > $@.lst 2>&1
     @diff -b -i $@.chk $@.lst
@@ -31,7 +31,7 @@ t01: .SYMBOLIC
 t02: .SYMBOLIC
     @set TEST=02
     @set ERRORS=0
-    @rm -f "HELLO TMP.TMP"
+    @rm -f "hello tmp.xyz"
     @rm -f hello.h
     @head $@ -3
     @$(test_wmake) -h -f $@ -a -ms -m > $@.lst 2>&1

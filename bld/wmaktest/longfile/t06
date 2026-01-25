@@ -16,22 +16,22 @@ test: .symbolic create clean
 create: .symbolic
     -@mkdir Path1
     @cd Path1
-    @echo Creating <<"Long Filename.o1"
+    @echo Creating <<"Long Filename.a1"
 OK
 << keep
-    @echo Creating <<"Long Filename.out"
+    @echo Creating <<"Long Filename.abc"
 OK
 << keep
-    @echo Creating <<"Long Filename.out1"
+    @echo Creating <<"Long Filename.abc1"
 OK
 << keep
-    @echo Creating <<"Long Filename.t1"
+    @echo Creating <<"Long Filename.x1"
 OK
 << keep
-    @echo Creating <<"Long Filename.tmp"
+    @echo Creating <<"Long Filename.xyz"
 OK
 << keep
-    @echo Creating <<"Long Filename.tmp1"
+    @echo Creating <<"Long Filename.xyz1"
 OK
 << keep
     @cd ..
@@ -81,19 +81,19 @@ clean: .symbolic
     @%create $fx
     for %i in (*) do @%append $fx %i
     @%make listfile
-    -rm *.tmp
+    -rm *.xyz
     @%create $fx
     for %i in (*) do @%append $fx %i
     @%make listfile
-    -rm *.tmp1
+    -rm *.xyz1
     @%create $fx
     for %i in (*) do @%append $fx %i
     @%make listfile
-    -rm *.out
+    -rm *.abc
     @%create $fx
     for %i in (*) do @%append $fx %i
     @%make listfile
-    -rm *.out1
+    -rm *.abc1
     @%create $fx
     for %i in (*) do @%append $fx %i
     @%make listfile

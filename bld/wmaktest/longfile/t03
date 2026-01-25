@@ -3,16 +3,16 @@
 # ----------------------------------------------------
 # - Older versions of wmake searched for 8.3 filenames when LFN search failed.
 
-test: .symbolic longfile.tmp longfile2.tmp
-    rm longfile.tmp
-    rm longfile2.tmp
+test: .symbolic longfile.xyz longfile2.xyz
+    rm longfile.xyz
+    rm longfile2.xyz
 
-longfile.tmp:
-    @echo Creating <<longfile.tmp
+longfile.xyz:
+    @echo Creating <<longfile.xyz
 Long file name 1
 << keep
 
-longfile2.tmp:
-      @echo Creating <<longfile2.tmp
+longfile2.xyz:
+      @echo Creating <<longfile2.xyz
 Long file name 2
 << keep

@@ -1,106 +1,106 @@
-Creating "Long Filename.o1"
-Creating "Long Filename.out"
-Creating "Long Filename.out1"
-Creating "Long Filename.t1"
-Creating "Long Filename.tmp"
-Creating "Long Filename.tmp1"
+Creating "Long Filename.a1"
+Creating "Long Filename.abc"
+Creating "Long Filename.abc1"
+Creating "Long Filename.x1"
+Creating "Long Filename.xyz"
+Creating "Long Filename.xyz1"
 for %i in (L*e.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (l*e.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*F*e.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*f*e.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*e.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*a??.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*a*.*) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz
+Long Filename.xyz1
 for %i in (*.???) do @%append ../files.lst %i
-Long Filename.out
-Long Filename.tmp
+Long Filename.abc
+Long Filename.xyz
 for %i in (*.????) do @%append ../files.lst %i
-Long Filename.out1
-Long Filename.tmp1
+Long Filename.abc1
+Long Filename.xyz1
 for %i in (*.?????) do @%append ../files.lst %i
 *.?????
 for %i in (*.???1) do @%append ../files.lst %i
-Long Filename.out1
-Long Filename.tmp1
+Long Filename.abc1
+Long Filename.xyz1
 for %i in (*.*1) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz1
 for %i in (*1) do @%append ../files.lst %i
-Long Filename.o1
-Long Filename.out1
-Long Filename.t1
-Long Filename.tmp1
+Long Filename.a1
+Long Filename.abc1
+Long Filename.x1
+Long Filename.xyz1
 rm *.?1
 for %i in (*) do @%append ../files.lst %i
 .
 ..
-Long Filename.out
-Long Filename.out1
-Long Filename.tmp
-Long Filename.tmp1
-rm *.tmp
+Long Filename.abc
+Long Filename.abc1
+Long Filename.xyz
+Long Filename.xyz1
+rm *.xyz
 for %i in (*) do @%append ../files.lst %i
 .
 ..
-Long Filename.out
-Long Filename.out1
-Long Filename.tmp1
-rm *.tmp1
+Long Filename.abc
+Long Filename.abc1
+Long Filename.xyz1
+rm *.xyz1
 for %i in (*) do @%append ../files.lst %i
 .
 ..
-Long Filename.out
-Long Filename.out1
-rm *.out
+Long Filename.abc
+Long Filename.abc1
+rm *.abc
 for %i in (*) do @%append ../files.lst %i
 .
 ..
-Long Filename.out1
-rm *.out1
+Long Filename.abc1
+rm *.abc1
 for %i in (*) do @%append ../files.lst %i
 .
 ..

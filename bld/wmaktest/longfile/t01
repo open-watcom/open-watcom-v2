@@ -2,16 +2,16 @@
 # Test 01:
 # ----------------------------------------------------
 
-#!include <"hello tmp.tmp">
-#!include <hello tmp.tmp>
-#!include "hello tmp.tmp"
-#!include hello tmp.tmp
+#!include <"hello tmp.xyz">
+#!include <hello tmp.xyz>
+#!include "hello tmp.xyz"
+#!include hello tmp.xyz
 
-"hello tmp.tmp": hello.h
+"hello tmp.xyz": hello.h
       echo hello
-      @echo type "hello tmp.tmp"
+      @echo type "hello tmp.xyz"
 !ifdef __UNIX__
-      @cat "hello tmp.tmp"
+      @cat "hello tmp.xyz"
 !else
-      @type "hello tmp.tmp"
+      @type "hello tmp.xyz"
 !endif

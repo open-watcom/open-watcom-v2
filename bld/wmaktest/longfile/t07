@@ -3,34 +3,34 @@
 # ----------------------------------------------------
 # - Test that path with last character in search path being backslash works.
 
-.EXTENSIONS: .out .tmp
+.EXTENSIONS: .abc .xyz
 
 TESTPATH=testpath\
-FILES=myfile.out "my second file.out"
+FILES=myfile.abc "my second file.abc"
 
-.tmp: $(TESTPATH)
+.xyz: $(TESTPATH)
 
-.tmp.out:
+.xyz.abc:
     %copy "$[@" "$^@"
 
 test: .symbolic create $(FILES) clean
 
 create: .symbolic
     -mkdir testpath
-    @echo Creating <<"testpath\myfile.tmp"
+    @echo Creating <<"testpath\myfile.xyz"
 OK
 << keep
-    @echo Creating <<"testpath\my second file.tmp"
+    @echo Creating <<"testpath\my second file.xyz"
 OK
 << keep
 
-myfile.out: $(TESTPATH)myfile.tmp
+myfile.abc: $(TESTPATH)myfile.xyz
 
-"my second file.out": "$(TESTPATH)my second file.tmp"
+"my second file.abc": "$(TESTPATH)my second file.xyz"
 
 clean: .symbolic
-    -rm -f testpath\myfile.tmp
-    -rm -f "testpath\my second file.tmp"
-    -rm -f myfile.out
-    -rm -f "my second file.out"
+    -rm -f testpath\myfile.xyz
+    -rm -f "testpath\my second file.xyz"
+    -rm -f myfile.abc
+    -rm -f "my second file.abc"
     -rmdir testpath
