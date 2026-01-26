@@ -36,14 +36,14 @@ echo "# Command Line Error Tests"
 echo "# ============================="
 
 TT=t01
-VER= a
+VER=" a"
 head -n 3 ${TT}
 $1 "-." > ${TT}a.tmp 2>&1
 egrep Error ${TT}a.tmp > ${TT}a.lst
 diff ${TT}a.chk ${TT}a.lst
 do_check
 
-VER= b
+VER=" b"
 $1 "- " > ${TT}b.tmp 2>&1
 egrep Error ${TT}b.tmp > ${TT}b.lst
 diff -b ${TT}b.chk ${TT}b.lst
