@@ -94,17 +94,17 @@ t08: .SYMBOLIC
     @cat $@u.chk > $@.tmp
 !else
     # Need to set prompt, otherwise the test fails...
-    @prompt $p$g
     @cat $@.chk > $@.tmp
-    %append $@.tmp $(CDRIVE):$(CWD)>echo a
+    %append $@.tmp
+    %append $@.tmp $(%CDRIVE):$(%CWD)>echo a
     %append $@.tmp a
     %append $@.tmp
-    %append $@.tmp $(CDRIVE):$(CWD)>echo b
+    %append $@.tmp $(%CDRIVE):$(%CWD)>echo b
     %append $@.tmp b
     %append $@.tmp
-    %append $@.tmp $(CDRIVE):$(CWD)>echo c
+    %append $@.tmp $(%CDRIVE):$(%CWD)>echo c
     %append $@.tmp c
-    %append $@.tmp
+    @prompt $p$g
 !endif
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @-diff -b $@.tmp $@.lst
