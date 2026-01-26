@@ -1680,7 +1680,20 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
         inf_msg = "file";
         rc = access( name, W_OK );
         if( rc == 0 ) {
-            rc = remove( name );
+            struct stat     s;
+            rc = stat( name, &s );
+            if( rc == 0 ) {
+                if( S_ISREG( s.st_mode ) ) {
+                    rc = remove( name );
+                } else {
+                    rc = -1;
+                    if( S_ISDIR( s.st_mode ) ) {
+                        errno = EISDIR;
+                    } else {
+                        errno = EINVAL;
+                    }
+                }
+            }
         }
     }
     if( rc != 0
