@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
 
     argv1 = ExpandEnv( &argc, argv, "CHMOD" );
 
-    while( (ch = GetOpt( &argc, argv1, "Xarhs", usageMsg )) != -1 ) {
+    while( (ch = GetOpt( &argc, argv1, "Xarhsw", usageMsg )) != -1 ) {
         attr = 0;
         switch( ch ) {
 #ifdef __NT__
