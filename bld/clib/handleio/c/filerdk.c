@@ -243,6 +243,7 @@ _WCRTLINK int unlink( const CHAR_TYPE *filename )
     if( RdosDeleteFile( filename ) ) {
         return( 0 );
     }
+    lib_set_errno( ENOENT );
     return( -1 );
 }
 

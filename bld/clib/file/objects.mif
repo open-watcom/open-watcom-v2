@@ -20,8 +20,7 @@
 !inject mkstemp.obj     d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32         w16 w32 l32 lpc lmp
 !inject mktemp.obj      d16 d32     nt  nta ntp ntm                 o16 o32         w16 w32
 !inject ntdosdt.obj                 nt  nta ntp ntm
-!inject remove.obj      d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject remrdu.obj                                                                                      rdu rdk
+!inject remove.obj      d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject renam.obj       d16 d32                                                     w16 w32
 !inject renamos2.obj                                                o16 o32
 !inject renamwnt.obj                nt  nta ntp ntm
