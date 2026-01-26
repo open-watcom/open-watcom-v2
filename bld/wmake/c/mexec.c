@@ -1678,7 +1678,10 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
         rc = rmdir( name );
     } else {
         inf_msg = "file";
-        rc = remove( name );
+        rc = access( name, W_OK );
+        if( rc == 0 ) {
+            rc = remove( name );
+        }
     }
     if( rc != 0
       && flags->bForce

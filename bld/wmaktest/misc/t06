@@ -15,7 +15,7 @@ all: .symbolic
     rm foo
     echo foo > foo
     chmod -w foo
-    -rm foo < $(nuldev)
+    -rm foo
     rm -f foo
     rm -f foo
     mkdir food
