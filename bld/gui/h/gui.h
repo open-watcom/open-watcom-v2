@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,13 @@
 #include "initmode.h"
 
 
-#define GUIAPI                  /* public API */
-#define GUICALLBACK             /* public callback */
+#ifdef __WATCOMC__
+#define GUIAPI                  /* public API */ __fastcall
+#define GUICALLBACK             /* public callback */ __cdecl
+#else
+#define GUIAPI
+#define GUICALLBACK
+#endif
 
 #define GUI_LAST_INTERNAL_MSG   255
 

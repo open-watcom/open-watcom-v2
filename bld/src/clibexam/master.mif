@@ -4,159 +4,149 @@
 #FN_BAD =.exec.exe
  
 # Win32, QNX, OS/2
-FN_WQO = wait.exe &
-allocmem.exe &
-freemem.exe
- 
- 
+!inject wait.exe     FN_WQO
+!inject allocmem.exe FN_WQO
+!inject freemem.exe  FN_WQO
 # DOS, Pharlap-16
-FN_DP = setblock.exe &
-intr.exe &
-setvect.exe &
-getvect.exe &
-allocmem.exe &
-freemem.exe &
-fp_off.exe &
-fp_seg.exe
- 
+!inject setblock.exe FN_DP
+!inject intr.exe     FN_DP
+!inject setvect.exe  FN_DP
+!inject getvect.exe  FN_DP
+!inject allocmem.exe FN_DP
+!inject freemem.exe  FN_DP
+!inject fp_off.exe   FN_DP
+!inject fp_seg.exe   FN_DP
 # Win16 only
-FN_WIN16 = setvect.exe &
-getvect.exe &
-chainint.exe
- 
+!inject setvect.exe  FN_WIN16
+!inject getvect.exe  FN_WIN16
+!inject chainint.exe FN_WIN16
 # Default Windowing
-FN_DEFWIN = _dwdelcl.exe &
-_dwshutd.exe &
-_dwstabo.exe &
-_dwstapt.exe &
-_dwstcnt.exe &
-_dwyield.exe
- 
+!inject _dwdelcl.exe FN_DEFWIN
+!inject _dwshutd.exe FN_DEFWIN
+!inject _dwstabo.exe FN_DEFWIN
+!inject _dwstapt.exe FN_DEFWIN
+!inject _dwstcnt.exe FN_DEFWIN
+!inject _dwyield.exe FN_DEFWIN
 # BIOS commands (DOS, Win, Win386)
-FN_BIOS = b_disk.exe &
-b_equip.exe &
-b_keybrd.exe &
-b_memsiz.exe &
-b_print.exe &
-b_serial.exe &
-b_time.exe &
-breakoff.exe &
-intr.exe &
-nosound.exe &
-delay.exe &
-sound.exe
- 
+!inject b_disk.exe   FN_BIOS
+!inject b_equip.exe  FN_BIOS
+!inject b_keybrd.exe FN_BIOS
+!inject b_memsiz.exe FN_BIOS
+!inject b_print.exe  FN_BIOS
+!inject b_serial.exe FN_BIOS
+!inject b_time.exe   FN_BIOS
+!inject breakoff.exe FN_BIOS
+!inject intr.exe     FN_BIOS
+!inject nosound.exe  FN_BIOS
+!inject delay.exe    FN_BIOS
+!inject sound.exe    FN_BIOS
 # DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
-FN_DOSCALL = creatnew.exe &
-btowc.exe &
-d_close.exe &
-d_creat.exe &
-d_open.exe &
-d_read.exe &
-d_write.exe &
-findfirs.exe &
-setdate.exe &
-setdrive.exe &
-setfattr.exe &
-setftime.exe &
-settime.exe &
-dosfind.exe &
-findclos.exe &
-findnext.exe &
-getdcwd.exe &
-getmbcp.exe &
-ismbbaln.exe &
-ismbbalp.exe &
-ismbbgra.exe &
-ismbbkal.exe &
-ismbbkan.exe &
-ismbbkap.exe &
-ismbbkpr.exe &
-ismbbkpu.exe &
-ismbblea.exe &
-ismbbpri.exe &
-ismbbpun.exe &
-ismbbtra.exe &
-ismbcaln.exe &
-ismbcalp.exe &
-ismbccnt.exe &
-ismbcdig.exe &
-ismbcgra.exe &
-ismbchir.exe &
-ismbckat.exe &
-ismbcl0.exe &
-ismbcl1.exe &
-ismbcl2.exe &
-ismbcleg.exe &
-ismbclow.exe &
-ismbcpri.exe &
-ismbcpun.exe &
-ismbcspa.exe &
-ismbcsym.exe &
-ismbcupp.exe &
-ismbcxdi.exe &
-mbbtombc.exe &
-mbbtype.exe &
-mbccmp.exe &
-mbccpy.exe &
-mbcicmp.exe &
-mbctolow.exe &
-mbctombb.exe &
-mbctoupp.exe &
-mbgetcod.exe &
-mblen.exe &
-mbputcha.exe &
-mbrlen.exe &
-mbrtowc.exe &
-mbsbtype.exe &
-mbsinit.exe &
-mbsnbcat.exe &
-mbsnbcmp.exe &
-mbsnbcnt.exe &
-mbsnbcpy.exe &
-mbsnbicm.exe &
-mbsnbset.exe &
-mbsnccnt.exe &
-mbsnextc.exe &
-mbsrtowc.exe &
-mbterm.exe &
-mbvtop.exe &
-rewinddi.exe &
-setmbcp.exe &
-sisinit.exe &
-strdec.exe &
-stricoll.exe &
-strinc.exe &
-strspnp.exe &
-tempnam.exe &
-wcrtomb.exe &
-wcrtom_s.exe &
-wcsrtomb.exe &
-wcsrto_s.exe &
-wctob.exe &
-dgetdriv.exe &
-dgetdskf.exe &
-doscommi.exe
- 
- 
+!inject creatnew.exe FN_DOSCALL
+!inject btowc.exe    FN_DOSCALL
+!inject d_close.exe  FN_DOSCALL
+!inject d_creat.exe  FN_DOSCALL
+!inject d_open.exe   FN_DOSCALL
+!inject d_read.exe   FN_DOSCALL
+!inject d_write.exe  FN_DOSCALL
+!inject findfirs.exe FN_DOSCALL
+!inject setdate.exe  FN_DOSCALL
+!inject setdrive.exe FN_DOSCALL
+!inject setfattr.exe FN_DOSCALL
+!inject setftime.exe FN_DOSCALL
+!inject settime.exe  FN_DOSCALL
+!inject dosfind.exe  FN_DOSCALL
+!inject findclos.exe FN_DOSCALL
+!inject findnext.exe FN_DOSCALL
+!inject getdcwd.exe  FN_DOSCALL
+!inject getmbcp.exe  FN_DOSCALL
+!inject ismbbaln.exe FN_DOSCALL
+!inject ismbbalp.exe FN_DOSCALL
+!inject ismbbgra.exe FN_DOSCALL
+!inject ismbbkal.exe FN_DOSCALL
+!inject ismbbkan.exe FN_DOSCALL
+!inject ismbbkap.exe FN_DOSCALL
+!inject ismbbkpr.exe FN_DOSCALL
+!inject ismbbkpu.exe FN_DOSCALL
+!inject ismbblea.exe FN_DOSCALL
+!inject ismbbpri.exe FN_DOSCALL
+!inject ismbbpun.exe FN_DOSCALL
+!inject ismbbtra.exe FN_DOSCALL
+!inject ismbcaln.exe FN_DOSCALL
+!inject ismbcalp.exe FN_DOSCALL
+!inject ismbccnt.exe FN_DOSCALL
+!inject ismbcdig.exe FN_DOSCALL
+!inject ismbcgra.exe FN_DOSCALL
+!inject ismbchir.exe FN_DOSCALL
+!inject ismbckat.exe FN_DOSCALL
+!inject ismbcl0.exe  FN_DOSCALL
+!inject ismbcl1.exe  FN_DOSCALL
+!inject ismbcl2.exe  FN_DOSCALL
+!inject ismbcleg.exe FN_DOSCALL
+!inject ismbclow.exe FN_DOSCALL
+!inject ismbcpri.exe FN_DOSCALL
+!inject ismbcpun.exe FN_DOSCALL
+!inject ismbcspa.exe FN_DOSCALL
+!inject ismbcsym.exe FN_DOSCALL
+!inject ismbcupp.exe FN_DOSCALL
+!inject ismbcxdi.exe FN_DOSCALL
+!inject mbbtombc.exe FN_DOSCALL
+!inject mbbtype.exe  FN_DOSCALL
+!inject mbccmp.exe   FN_DOSCALL
+!inject mbccpy.exe   FN_DOSCALL
+!inject mbcicmp.exe  FN_DOSCALL
+!inject mbctolow.exe FN_DOSCALL
+!inject mbctombb.exe FN_DOSCALL
+!inject mbctoupp.exe FN_DOSCALL
+!inject mbgetcod.exe FN_DOSCALL
+!inject mblen.exe    FN_DOSCALL
+!inject mbputcha.exe FN_DOSCALL
+!inject mbrlen.exe   FN_DOSCALL
+!inject mbrtowc.exe  FN_DOSCALL
+!inject mbsbtype.exe FN_DOSCALL
+!inject mbsinit.exe  FN_DOSCALL
+!inject mbsnbcat.exe FN_DOSCALL
+!inject mbsnbcmp.exe FN_DOSCALL
+!inject mbsnbcnt.exe FN_DOSCALL
+!inject mbsnbcpy.exe FN_DOSCALL
+!inject mbsnbicm.exe FN_DOSCALL
+!inject mbsnbset.exe FN_DOSCALL
+!inject mbsnccnt.exe FN_DOSCALL
+!inject mbsnextc.exe FN_DOSCALL
+!inject mbsrtowc.exe FN_DOSCALL
+!inject mbterm.exe   FN_DOSCALL
+!inject mbvtop.exe   FN_DOSCALL
+!inject rewinddi.exe FN_DOSCALL
+!inject setmbcp.exe  FN_DOSCALL
+!inject sisinit.exe  FN_DOSCALL
+!inject strdec.exe   FN_DOSCALL
+!inject stricoll.exe FN_DOSCALL
+!inject strinc.exe   FN_DOSCALL
+!inject strspnp.exe  FN_DOSCALL
+!inject tempnam.exe  FN_DOSCALL
+!inject wcrtomb.exe  FN_DOSCALL
+!inject wcrtom_s.exe FN_DOSCALL
+!inject wcsrtomb.exe FN_DOSCALL
+!inject wcsrto_s.exe FN_DOSCALL
+!inject wctob.exe    FN_DOSCALL
+!inject dgetdriv.exe FN_DOSCALL
+!inject dgetdskf.exe FN_DOSCALL
+!inject doscommi.exe FN_DOSCALL
 # 16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
 # NOTE: intdos and intdosx don't work under QNX/16.
-FN_16BIT = halloc.exe &
-hfree.exe &
-_bfreese.exe &
-_bheapse.exe
- 
+!inject halloc.exe   FN_16BIT
+!inject hfree.exe    FN_16BIT
+!inject _bfreese.exe FN_16BIT
+!inject _bheapse.exe FN_16BIT
 # 32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
-FN_32BIT = outpd.exe &
-inpd.exe
- 
+!inject outpd.exe    FN_32BIT
+!inject inpd.exe     FN_32BIT
 # DOS16, Win, Win386, Pharlap-16
-FN_DOSWIN = bdos.exe &
-dosexter.exe &
-int86.exe &
-int86x.exe &
-intdos.exe &
-intdosx.exe
+!inject bdos.exe     FN_DOSWIN
+!inject dosexter.exe FN_DOSWIN
+!inject int86.exe    FN_DOSWIN
+!inject int86x.exe   FN_DOSWIN
+!inject intdos.exe   FN_DOSWIN
+!inject intdosx.exe  FN_DOSWIN
  
 # DOS16 and DOS32
 FN_DOS = _harderr.exe &
@@ -642,3 +632,8 @@ vsnprint.exe
  
 # Available on ALL platforms except 16-bit Windows
 FN_SPAWN = spawn.exe
+
+
+clean: .SYMBOLIC .EXPLICIT
+    rm *.obj *.err *.exe
+

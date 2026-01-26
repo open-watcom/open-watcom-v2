@@ -39,8 +39,13 @@
 #include "guifdlg.h"
 
 
-#define WNDAPI              /* public API */
-#define WNDCALLBACK         /* public callback */
+#ifdef __WATCOMC__
+#define WNDAPI              /* public API */ __stdcall
+#define WNDCALLBACK         /* public callback */ __syscall
+#else
+#define WNDAPI
+#define WNDCALLBACK
+#endif
 
 #define SAVE_SIZE           512
 

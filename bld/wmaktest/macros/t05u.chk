@@ -3,7 +3,7 @@ hello
 ../macros/hello.xyz hello.c hello.boo
 ../macros/hello.xyz hello.c hello.boo
 hello.c
-../macros/ . .
+../macros . .
 hello
 hello.obj
 hello

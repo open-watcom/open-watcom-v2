@@ -1,5 +1,5 @@
 compiler = wcc386
-cflags = -bt=netware
+cflags = -bt=netware -I"$(%WATCOM)/h" -fo=.obj
 linkflags = sys netware debug all
 cdebug = -d2
 
@@ -8,6 +8,6 @@ cdebug = -d2
 all: $(FN_MACRO) $(FN_FILE) $(FN_STRING) $(FN_ALLN) $(FN_THREAD) $(FN_DQN32) &
         $(FN_32BIT)
 
-{..\}.c.nlm:
+{..}.c.nlm:
     $(compiler) $(cflags) $(cdebug) $<
     wlink $(linkflags) name $* file $*.obj
