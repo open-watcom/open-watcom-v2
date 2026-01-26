@@ -10,5 +10,5 @@ rm -f foo
 rm -f foo
 mkdir food
 rm -f food
-Error(E43): Deleting (food): Permission denied
+Error(E43): Deleting (food): Is a directory
 rm -f -r food
