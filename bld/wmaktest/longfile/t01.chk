@@ -1,4 +1,4 @@
 echo hello
 hello
-type "hello tmp.xyz"
+show "hello tmp.xyz"
 LONGFILENAME OK 

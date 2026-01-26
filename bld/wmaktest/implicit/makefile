@@ -25,7 +25,7 @@ t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ -l x$(%TEST).lst > $@.lst
+    @$(test_wmake) -h -f $@ -l $@.tmp > $@.lst
     @%make result
 
 t02: .SYMBOLIC

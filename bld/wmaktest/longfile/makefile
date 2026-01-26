@@ -6,8 +6,15 @@ tests = &
     t04 &
     t05 &
     t06 &
-    t07 &
-    clean
+    t07
+
+!ifdef __UNIX__
+chk_file = $@u.chk
+!else
+chk_file = $@.chk
+!endif
+
+old_locale = $(%LC_MESSAGES)
 
 .BEFORE
     @set ERRLOG=../error.out
@@ -20,7 +27,7 @@ tests = &
 !endif
     @echo $# ==================================
 
-all: $(tests) .SYMBOLIC
+all: $(tests) clean .SYMBOLIC
 
 t01: .SYMBOLIC
     @set TT=$@
@@ -56,7 +63,7 @@ t04: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
-    @diff -b -i $@.chk $@.lst
+    @diff -b -i $(chk_file) $@.lst
     @%make result
 
 t05: .SYMBOLIC
@@ -68,19 +75,21 @@ t05: .SYMBOLIC
     @%make result
 
 t06: .SYMBOLIC
+    @set LC_MESSAGES=en_US
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
-    @diff -b -i $@.chk $@.lst
+    @diff -b -i $(chk_file) $@.lst
     @%make result
+    @set LC_MESSAGES=$(old_locale)
 
 t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
     @$(test_wmake) -h -f $@ -m > $@.lst 2>&1
-    @diff -b -i $@.chk $@.lst
+    @diff -b -i $(chk_file) $@.lst
     @%make result
 
 result: .PROCEDURE .EXPLICIT
@@ -94,5 +103,5 @@ resulterr: .PROCEDURE .EXPLICIT
     @set ERRORS=1
 
 clean: .SYMBOLIC
-    @if exist *.obj @rm *.obj
-    @if $(%ERRORS) == 0 @rm *.lst
+    @if exist *.obj @rm -f *.obj
+    @if $(%ERRORS) == 0 @rm -f *.lst *.abc *.xyz

@@ -1,0 +1,10 @@
+mkdir testpath
+Creating "testpath/myfile.xyz"
+Creating "testpath/my second file.xyz"
+%copy "testpath/myfile.xyz" "myfile.abc"
+%copy "testpath/my second file.xyz" "my second file.abc"
+rm -f testpath/myfile.xyz
+rm -f "testpath/my second file.xyz"
+rm -f myfile.abc
+rm -f "my second file.abc"
+rmdir testpath

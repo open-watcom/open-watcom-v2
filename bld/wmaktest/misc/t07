@@ -7,7 +7,11 @@ TPATH=-.$+$(%PATH)$-.-
 
 .before
     @set PATH=-.$(%PATH).-      # Try modifying PATH
+!ifdef __UNIX__
+    @set WMK_TST_PATH="/Program Files (x86)/watcom"     # Contains shell metas
+!else
     @set WMK_TST_PATH=C:\Program Files (x86)\watcom   # Contains shell metas
+!endif
     @!set VAR_ISNT_SET=test     # Forcing shell exec makes this a no-op
 
 all: .symbolic

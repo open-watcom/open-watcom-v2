@@ -1,12 +1,18 @@
 # ----------------------------------------------------
-# Test 04: path with spaces tests
+# Test 04u: path with spaces tests
 # ----------------------------------------------------
 
 .EXTENSIONS: .abc .xyz
 
+!ifdef __UNIX__
+SEP = /
+!else
+SEP = \
+!endif
+
 PATHS = "Test Path";Another" Pa"th;
-FILES = "Test Path\Long Filename.abc"
-FILES+= "Another Path\Long Filename.abc"
+FILES = "Test Path$(SEP)Long Filename.abc"
+FILES+= "Another Path$(SEP)Long Filename.abc"
 
 .xyz: $(PATHS)
 
@@ -17,18 +23,18 @@ test: .symbolic create $(FILES) clean
 
 create: .symbolic
     -mkdir "Test Path"
-    @echo Creating <<"Test Path\Long Filename.xyz"
+    @echo Creating <<"Test Path$(SEP)Long Filename.xyz"
 OK
 << keep
     -mkdir "Another Path"
-    @echo Creating <<"Another Path\Long Filename.xyz"
+    @echo Creating <<"Another Path$(SEP)Long Filename.xyz"
 OK
 << keep
 
 clean: .symbolic
-    -rm "Test Path\Long filename.xyz"
-    -rm "Another Path\Long filename.xyz"
-    -rm "Test Path\Long filename.abc"
-    -rm "Another Path\Long filename.abc"
+    -rm "Test Path$(SEP)Long Filename.xyz"
+    -rm "Another Path$(SEP)Long Filename.xyz"
+    -rm "Test Path$(SEP)Long Filename.abc"
+    -rm "Another Path$(SEP)Long Filename.abc"
     -rmdir "Test Path"
     -rmdir "Another Path"

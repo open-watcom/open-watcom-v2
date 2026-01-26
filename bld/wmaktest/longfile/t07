@@ -5,7 +5,11 @@
 
 .EXTENSIONS: .abc .xyz
 
+!ifdef __UNIX__
+TESTPATH=testpath/
+!else
 TESTPATH=testpath\
+!endif
 FILES=myfile.abc "my second file.abc"
 
 .xyz: $(TESTPATH)
@@ -17,10 +21,10 @@ test: .symbolic create $(FILES) clean
 
 create: .symbolic
     -mkdir testpath
-    @echo Creating <<"testpath\myfile.xyz"
+    @echo Creating <<"$(TESTPATH)myfile.xyz"
 OK
 << keep
-    @echo Creating <<"testpath\my second file.xyz"
+    @echo Creating <<"$(TESTPATH)my second file.xyz"
 OK
 << keep
 
@@ -29,8 +33,8 @@ myfile.abc: $(TESTPATH)myfile.xyz
 "my second file.abc": "$(TESTPATH)my second file.xyz"
 
 clean: .symbolic
-    -rm -f testpath\myfile.xyz
-    -rm -f "testpath\my second file.xyz"
+    -rm -f $(TESTPATH)myfile.xyz
+    -rm -f "$(TESTPATH)my second file.xyz"
     -rm -f myfile.abc
     -rm -f "my second file.abc"
     -rmdir testpath

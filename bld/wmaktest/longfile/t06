@@ -102,9 +102,5 @@ clean: .symbolic
     -@rmdir Path1
 
 listfile: .procedure
-#!ifdef __UNIX__
 #      @cat $fx
-#!else
-#      @type $fx
-#!endif
     @sort < $fx

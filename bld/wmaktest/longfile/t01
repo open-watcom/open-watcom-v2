@@ -9,7 +9,7 @@
 
 "hello tmp.xyz": hello.h
       echo hello
-      @echo type "hello tmp.xyz"
+      @echo show "hello tmp.xyz"
 !ifdef __UNIX__
       @cat "hello tmp.xyz"
 !else

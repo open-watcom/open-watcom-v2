@@ -10,7 +10,7 @@ all : .symbolic
         for %dowah in ($(set)) do echo %%dowah %%i
         for %abc in () do echo %abc wow!
         for %abc in (this is a test) do echo %abc and again, %abc
-        for %i in (echo rem) do %i does it work?
+        for %i in (echo) do %i does it work?
         @for %i in ($(set)) do echo %i
         @for %i in ($(set)) do @echo %i
         for %i in (1 2 3 4) do @echo no replacement text!

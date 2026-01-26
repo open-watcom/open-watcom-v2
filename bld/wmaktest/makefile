@@ -25,8 +25,7 @@ tests = &
     preproc &
     macros &
     misc &
-    longfile &
-    finish
+    longfile
 
 !ifdef buildtest
 ! ifdef __OS2__
@@ -106,17 +105,20 @@ from = $+$(%__CWD__)$-
     @echo Test wmake (32-bit)
 !endif
     @if exist error.out @rm error.out
+    # =======================================
+    # display wmake banner to check version
+    # =======================================
     @echo *****************************************************************
     @cd cmds
     @-!$(test_wmake) -?
     @cd $(from)
 
-all: prebuild $(tests) .SYMBOLIC
+all: prebuild $(tests) finish .SYMBOLIC
 
 prebuild: .SYMBOLIC
-    # ===========================
-    # Build utilities first
-    # ===========================
+    # =======================================
+    # Build test utilities first
+    # =======================================
     @echo *****************************************************************
     @cd cmds
 !ifdef buildtest
