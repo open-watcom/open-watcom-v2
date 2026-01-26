@@ -17,7 +17,7 @@ setupgui_dos_extender = causeway
 
 .ERROR:
 
-additional_clean = *.i *.rex setup.inf *.grc
+additional_clean = *.i *.rex setup.inf *.grc *.grh
 
 !include cproj.mif
 !include defrule.mif

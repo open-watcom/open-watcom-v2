@@ -239,12 +239,14 @@ static  an      FlowOut( an node, const type_def *tipe ) {
     *(node->u.b.t) = CurrBlock->label;
     GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
-    EnLink( AskForNewLabel(), true );
+    EnLink( AskForNewLabel() );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     AddIns( MakeMove( AllocIntConst( 0 ), temp, temp->n.type_class ) );
     *(node->u.b.f) = CurrBlock->label;
     GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
-    EnLink( lbl, true );
+    EnLink( lbl );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     NamesCrossBlocks();
     AddrFree( node );
     return( AddrName( temp, tipe ) );
@@ -288,7 +290,8 @@ an      BGCompare( cg_op opcode, an left, an rite, label_handle entry, const typ
     new_an->u.b.e = entry;
     new_an->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
     new_an->u.b.f = &CurrBlock->edge[1].destination.u.lbl;
-    EnLink( AskForNewLabel(), true );
+    EnLink( AskForNewLabel() );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     return( new_an );
 }
 
@@ -339,7 +342,8 @@ void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle g
     lbl = AskForNewLabel();
     AddTarget( lbl, false );
 
-    EnLink( lbl, true );
+    EnLink( lbl );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
 #if _TARGET & _TARG_80386
     if( type_class == FS ) {
         type_class = SW;
@@ -374,9 +378,9 @@ void    BGGenCtrl( cg_op opcode, an expr, label_handle lbl, bool gen )
                 Generate( false );
             }
         }
-        EnLink( lbl, false );
-        HaveCurrBlock = true;
+        EnLink( lbl );
         CurrBlock->unroll_count = UnrollValue;
+        HaveCurrBlock = true;
         break;
     case O_GOTO:
         if( HaveCurrBlock ) {
@@ -400,7 +404,8 @@ void    BGGenCtrl( cg_op opcode, an expr, label_handle lbl, bool gen )
                 Generate( false );
             }
 #endif
-            EnLink( AskForNewLabel(), true );
+            EnLink( AskForNewLabel() );
+            CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
         }
         break;
     case O_LABEL_RETURN:
@@ -443,10 +448,10 @@ void    BGBigLabel( back_handle bck )
         AddTarget( bck->lbl, false );
         Generate( false );
     }
-    EnLink( bck->lbl, false );
+    EnLink( bck->lbl );
+    _MarkBlkAttrSet( CurrBlock, BLK_BIG_LABEL );
     HaveCurrBlock = true;
     BigLabel();
-    _MarkBlkAttrSet( CurrBlock, BLK_BIG_LABEL );
 }
 
 
@@ -457,7 +462,8 @@ void    BGBigGoto( label_handle lbl, level_depth level )
     AddTarget( lbl, false );
     BigGoto( level );
     Generate( false );
-    EnLink( AskForNewLabel(), true );
+    EnLink( AskForNewLabel() );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
 }
 
 
@@ -652,7 +658,8 @@ an      BGFlow( cg_op opcode, an left, an rite )
             left->u.b.t = rite->u.b.t;
             new_an = left;
             AddrFree( rite );
-            EnLink( AskForNewLabel(), true );
+            EnLink( AskForNewLabel() );
+            CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
             break;
         case O_FLOW_OR:
             *(left->u.b.f) = rite->u.b.e;
@@ -664,7 +671,8 @@ an      BGFlow( cg_op opcode, an left, an rite )
             left->u.b.f = rite->u.b.f;
             new_an = left;
             AddrFree( rite );
-            EnLink( AskForNewLabel(), true );
+            EnLink( AskForNewLabel() );
+            CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
             break;
         default:
             break;
@@ -735,7 +743,8 @@ void    BGStartBlock( void )
         GenBlock( BLK_JUMP, 1 );
         AddTarget( lbl, false );
         Generate( false );
-        EnLink( lbl, true );
+        EnLink( lbl );
+        CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     } else { /* check if the block is getting too big*/
         BlkTooBig();
     }

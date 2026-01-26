@@ -72,7 +72,7 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     while( i-- > 0 && cmdnam[i] == ' ' ) {
         cmdnam[i] = '\0';
     }
-    argv = MAlloc( ( strlen( cmd ) + 1 ) * sizeof( char * ) );
+    argv = MAlloc( strlen( cmdnam ) * sizeof( char * ) );
     if( argv == NULL ) {
         MFree( cmdnam );
         return( -1 );

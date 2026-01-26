@@ -27,7 +27,7 @@ wv_os2pm = 1
 !endif
 !endif
 
-additional_clean = *.gh *.grc
+additional_clean = *.gh *.grc *.grh
 !ifdef wv_os2pm
 additional_clean += *.dlg
 !endif

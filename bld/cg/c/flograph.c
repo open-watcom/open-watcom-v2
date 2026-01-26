@@ -76,17 +76,27 @@ static  void    NoBlocksToSelf( void )
         for( edge = blk->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
             if( edge->source == blk ) {
-                new_blk = NewBlock( AskForNewLabel(), true );
+                new_blk = MakeBlockInit( 1 );
                 /*
                  * set up new block to look like it was generated after blk
                  */
                 _SetBlkAttr( new_blk, BLK_JUMP );
+                new_blk->label = AskForNewLabel();
+                new_blk->edge[0].flags = BEF_BLOCK_LABEL_DIES;
                 new_blk->gen_blk_id = blk->gen_blk_id;
                 new_blk->ins.head.line_num = blk->ins.head.line_num;
                 new_blk->next_block = blk->next_block;
                 new_blk->prev_block = blk;
+                /*
+                 * set new block to jump from new_blk to blk
+                 */
                 new_blk->targets = 1;
-                new_blk->inputs++;
+                new_edge = &new_blk->edge[0];
+                new_edge->flags |= BEF_DEST_IS_BLOCK;
+                new_edge->destination.u.blk = blk;
+                new_edge->source = new_blk;
+
+                new_blk->inputs = 1;
                 new_blk->input_edges = edge;
                 /*
                  * link it after blk
@@ -100,13 +110,6 @@ static  void    NoBlocksToSelf( void )
                  */
                 edge->destination.u.blk = new_blk;
                 edge->flags &= ~BEF_DEST_LABEL_DIES;
-                /*
-                 * set new block to jump from new_blk to blk
-                 */
-                new_edge = &new_blk->edge[0];
-                new_edge->flags |= BEF_DEST_IS_BLOCK;
-                new_edge->destination.u.blk = blk;
-                new_edge->source = new_blk;
                 /*
                  * replace edge with new_edge in blk's input edge list
                  */

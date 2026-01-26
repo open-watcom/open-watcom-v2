@@ -9,6 +9,8 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set CLEANUP=1
+    @set ERRORS=0
     @echo $# ==================================
 !ifdef __UNIX__
     @echo "$# Implicit Rules Tests (implicit)"
@@ -25,7 +27,7 @@ t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ -l $@.tmp > $@.lst
+    @-$(test_wmake) -h -f $@ -l $@.tmp > $@.lst
     @%make result
 
 t02: .SYMBOLIC
@@ -34,8 +36,8 @@ t02: .SYMBOLIC
     @head -n 3 $@
     @sleep 2
     @%create hello.h
-    @$(test_wmake) -h -f $@ -c > $@.lst
-    @diff $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ -c > $@.lst
+    @-diff $@.chk $@.lst
     @%make result
 
 t03: .SYMBOLIC
@@ -44,8 +46,8 @@ t03: .SYMBOLIC
     @head -n 3 $@
     @sleep 2
     @%create hello.h
-    @$(test_wmake) -h -f $@ -c > $@.lst
-    @diff $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ -c > $@.lst
+    @-diff $@.chk $@.lst
     @%make result
 
 t04: .SYMBOLIC
@@ -54,8 +56,8 @@ t04: .SYMBOLIC
     @head -n 3 $@
     @sleep 2
     @%create hello.h
-    @$(test_wmake) -h -f $@ -ms -m -c > $@.lst
-    @diff $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ -ms -m -c > $@.lst
+    @-diff $@.chk $@.lst
     @%make result
 
 t05: .SYMBOLIC
@@ -63,7 +65,7 @@ t05: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @rm -f hello.obj
-    @$(test_wmake) -h -f $@ > $@.tmp
+    @-$(test_wmake) -h -f $@ > $@.tmp
     @sed "s:of .*[\\/]:of :" $@.tmp > $@.lst
     @-diff $@.chk $@.lst
     @%make result
@@ -77,7 +79,8 @@ resulterr: .PROCEDURE .EXPLICIT
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
+    @set CLEANUP=0
 
 clean: .SYMBOLIC
     @rm *.obj app.lnk app.exe hello.* hello?.*
-    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp
+    @if $(%CLEANUP) == 1 @rm -f *.lst *.tmp

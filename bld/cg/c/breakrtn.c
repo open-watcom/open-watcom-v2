@@ -153,15 +153,15 @@ bool    CreateBreak( void )
     Break = break_blk;
     Curr = CurrBlock;
     Tail = BlockList;
-    exit_blk = NewBlock( NULL, false );
+    exit_blk = MakeBlockInit( 1 );
+    _SetBlkAttr( exit_blk, BLK_UNKNOWN_DESTINATION );
     exit_blk->gen_blk_id = BlockList->gen_blk_id + 1;
     exit_blk->blk_id = BlockList->blk_id + 1;
-    BlockList = exit_blk;
     exit_blk->prev_block = break_blk->prev_block;
     exit_blk->next_block = NULL;
-    _SetBlkAttr( exit_blk, BLK_UNKNOWN_DESTINATION );
     break_blk->prev_block->next_block = exit_blk;
     break_blk->prev_block = NULL;
+    BlockList = exit_blk;
     /*
      * run throuch all the blocks before break_blk, and create a 'BranchOut' for
      * and edge that goes to a block after break_blk
@@ -223,23 +223,23 @@ bool    CreateBreak( void )
      * HeadBlock will not be a loop header. The loop optimizer will
      * screw up if it is.
      */
-    blk = NewBlock( NULL, false );
+    blk = MakeBlockInit( 1 );
+    _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
     blk->label = HeadBlock->label;
     blk->ins.head.line_num = HeadBlock->ins.head.line_num;
-    HeadBlock->ins.head.line_num = 0;
     blk->gen_blk_id = 0;
     blk->blk_id = 0;
-    HeadBlock->label = AskForNewLabel();
     blk->targets = 1;
-    _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
-    _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
     edge = &blk->edge[0];
     edge->flags = BEF_DEST_IS_BLOCK;
     edge->source = blk;
     PointEdge( edge, HeadBlock );
-    HeadBlock->prev_block = blk;
     blk->prev_block = NULL;
     blk->next_block = HeadBlock;
+    _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
+    HeadBlock->ins.head.line_num = 0;
+    HeadBlock->label = AskForNewLabel();
+    HeadBlock->prev_block = blk;
     HeadBlock = blk;
     return( true );
 }

@@ -415,29 +415,28 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     }
     right = LongValue64( op2 );
     if( tree->op.opr == OPR_CMP ) {
+        const_type = TYP_INT;
         tmp = U64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
         case CC_EQ:
-            tmp = ( tmp == 0 );
+            tree->op.u2.long_value = ( tmp == 0 );
             break;
         case CC_NE:
-            tmp = ( tmp != 0 );
+            tree->op.u2.long_value = ( tmp != 0 );
             break;
         case CC_GT:
-            tmp = ( tmp > 0 );
+            tree->op.u2.long_value = ( tmp > 0 );
             break;
         case CC_LE:
-            tmp = ( tmp <= 0 );
+            tree->op.u2.long_value = ( tmp <= 0 );
             break;
         case CC_GE:
-            tmp = ( tmp >= 0 );
+            tree->op.u2.long_value = ( tmp >= 0 );
             break;
         case CC_LT:
-            tmp = ( tmp < 0 );
+            tree->op.u2.long_value = ( tmp < 0 );
             break;
         }
-        const_type = TYP_INT;
-        tree->op.u2.long_value = (target_int)tmp;
     } else {
         const_type = tree->u.expr_type->decl_type;
         value = DoOp64( left, tree->op.opr, right, false );
@@ -473,29 +472,28 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     }
     right = LongValue64( op2 );
     if( tree->op.opr == OPR_CMP ) {
+        const_type = TYP_INT;
         tmp = I64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
         case CC_EQ:
-            tmp = ( tmp == 0 );
+            tree->op.u2.long_value = ( tmp == 0 );
             break;
         case CC_NE:
-            tmp = ( tmp != 0 );
+            tree->op.u2.long_value = ( tmp != 0 );
             break;
         case CC_GT:
-            tmp = ( tmp > 0 );
+            tree->op.u2.long_value = ( tmp > 0 );
             break;
         case CC_LE:
-            tmp = ( tmp <= 0 );
+            tree->op.u2.long_value = ( tmp <= 0 );
             break;
         case CC_GE:
-            tmp = ( tmp >= 0 );
+            tree->op.u2.long_value = ( tmp >= 0 );
             break;
         case CC_LT:
-            tmp = ( tmp < 0 );
+            tree->op.u2.long_value = ( tmp < 0 );
             break;
         }
-        const_type = TYP_INT;
-        tree->op.u2.long_value = (target_int)tmp;
     } else {
         const_type = tree->u.expr_type->decl_type;
         value = DoOp64( left, tree->op.opr, right, true );

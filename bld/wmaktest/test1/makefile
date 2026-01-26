@@ -4,6 +4,8 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set CLEANUP=1
+    @set ERRORS=0
     @set VER=
     @echo $# ==================================
 !ifdef __UNIX__
@@ -24,12 +26,12 @@ t01: .SYMBOLIC
     @%create $@.ref
     @%create $@.tmp
     @-$(test_wmake) -h -f maketst1 -l $@.tmp > $@.lst
-    @diff -b $@.ref $@.tmp
+    @-diff -b $@.ref $@.tmp
     @%make result
     #
     @set ERRORS=0
     @set VER= b
-    @diff -b $@.chk $@.lst > nul
+    @-diff -b $@.chk $@.lst > nul
     @%make result
     @set VER=
     #
@@ -48,7 +50,8 @@ resulterr: .PROCEDURE .EXPLICIT
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1
+    @set CLEANUP=0
 
 clean: .PROCEDURE .EXPLICIT
     @rm -f *.obj *.exe main.* foo*.c
-    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp *.ref maketst1
+    @if $(%CLEANUP) == 1 @rm -f *.lst *.tmp *.ref maketst1

@@ -170,14 +170,14 @@ block    *AddPreBlock( block *postblk )
     block_edge  *edge;
     block       *preblk;
 
-    preblk = NewBlock( postblk->label, false );
+    preblk = MakeBlockInit( 1 );
     /*
      * set up new block to look like it was generated after postblk
      */
     _SetBlkAttr( preblk, BLK_JUMP );
+    preblk->label = postblk->label;
     preblk->gen_blk_id = postblk->gen_blk_id;
     preblk->ins.head.line_num = postblk->ins.head.line_num;
-    postblk->ins.head.line_num = 0;
     preblk->loop_head = postblk->loop_head; /**/
     preblk->depth = postblk->depth;
     if( _IsBlkAttr( postblk, BLK_LOOP_HEADER ) ) {
@@ -203,6 +203,7 @@ block    *AddPreBlock( block *postblk )
     edge->source = preblk;
     edge->flags = BEF_SOURCE_IS_PREHEADER | BEF_DEST_IS_BLOCK;
     PointEdge( edge, postblk );
+    postblk->ins.head.line_num = 0;
     postblk->label = AskForNewLabel();
     FixBlockIds();
     return( preblk );

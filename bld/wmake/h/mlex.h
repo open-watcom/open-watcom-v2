@@ -173,13 +173,13 @@ typedef enum {
 #define DEFINED         "DEFINED"
 
 // Node Definition for the tokens
-typedef struct  MTOKEN_OP {
+typedef struct  MTOKEN_TYPE {
     MTOKEN_O    type;       // Type of Token
     union {
         INT32   number;     // string value
         char    string[MAX_STRING];
     }   data;
-}   MTOKEN_TYPE;
+} MTOKEN_TYPE;
 
 typedef MTOKEN_TYPE DATAVALUE;
 

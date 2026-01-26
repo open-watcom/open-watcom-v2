@@ -11,6 +11,7 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set CLEANUP=1
     @set ERRORS=0
     @echo $# ==================================
 !ifdef __UNIX__
@@ -26,16 +27,16 @@ t01: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t02: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t03: .SYMBOLIC
@@ -43,15 +44,15 @@ t03: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t05: .SYMBOLIC
@@ -59,7 +60,7 @@ t05: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t06: .SYMBOLIC
@@ -67,15 +68,15 @@ t06: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t07: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @-diff -i $@.chk $@.lst
     @%make result
 
 result: .PROCEDURE .EXPLICIT
@@ -87,7 +88,8 @@ resulterr: .PROCEDURE .EXPLICIT
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
+    @set CLEANUP=0
 
 clean: .SYMBOLIC
     @if exist *.obj @rm *.obj
-    @if $(%ERRORS) == 0 @rm *.lst
+    @if $(%CLEANUP) == 1 @rm *.lst

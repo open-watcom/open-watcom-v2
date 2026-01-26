@@ -313,7 +313,8 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def type_clas
         AddTarget( other, false );
     }
     Generate( false );
-    EnLink( AskForNewLabel(), true );
+    EnLink( AskForNewLabel() );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
 }
 
 
@@ -378,7 +379,8 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
         AddTarget( other, false );
     }
     Generate( false );
-    EnLink( AskForNewLabel(), true );
+    EnLink( AskForNewLabel() );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
 }
 
 

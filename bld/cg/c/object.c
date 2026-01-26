@@ -790,7 +790,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk )
             }
         }
         assert( best != NULL );
-        assert( (best->class & BLK_RETURNED_TO) != 0 );
+        assert( _IsBlkAttr( best, BLK_RETURNED_TO ) );
         break;
     }
     return( best );

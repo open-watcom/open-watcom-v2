@@ -118,9 +118,10 @@ block   *DupBlock( block *blk )
 {
     block       *copy;
 
-    copy = MakeBlock( AskForNewLabel(), blk->targets );
+    copy = MakeBlockInit( blk->targets );
     _SetBlkAttr( copy, blk->class );
     _MarkBlkAttrClr( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
+    copy->label = AskForNewLabel();
     copy->depth = blk->depth;
     copy->gen_blk_id = blk->gen_blk_id;
     DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
@@ -687,8 +688,9 @@ static  block   *MakeNonConditional( block *blki, block_edge *edgei )
     block_edge  *edge;
 
     if( _IsBlkAttr( blki, BLK_CONDITIONAL ) ) {
-        blk = MakeBlock( AskForNewLabel(), 1 );
+        blk = MakeBlockInit( 1 );
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
+        blk->label = AskForNewLabel();
         blk->gen_blk_id = blki->gen_blk_id;
         blk->next_block = blki->next_block;
         if( blk->next_block != NULL ) {
@@ -981,8 +983,9 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
      */
     if( !cond->complete
       && Signed[comp_type_class] != comp_type_class ) {
-        new_blk = MakeBlock( AskForNewLabel(), 2 );
+        new_blk = MakeBlockInit( 2 );
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
+        new_blk->label = AskForNewLabel();
         new_blk->loop_head = PreHead->loop_head;
         new_blk->gen_blk_id = PreHead->gen_blk_id;
         temp = AllocTemp( comp_type_class );

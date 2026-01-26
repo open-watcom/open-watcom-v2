@@ -53,8 +53,8 @@
 
 #define BLOCK_SIZE(n)   (sizeof( block ) + (n - 1) * sizeof( block_edge ))
 
-block   *MakeBlock( label_handle label, block_num targets )
-/*********************************************************/
+block   *MakeBlockInit( block_num targets )
+/*****************************************/
 {
     block       *blk;
     block_num   i;
@@ -62,7 +62,7 @@ block   *MakeBlock( label_handle label, block_num targets )
     blk = CGAlloc( BLOCK_SIZE( targets ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
-    blk->label = label;
+    blk->label = NULL;
     blk->class = 0;
     blk->ins.head.line_num = 0;
     blk->ins.head.next = (instruction *)&blk->ins;
@@ -85,6 +85,7 @@ block   *MakeBlock( label_handle label, block_num targets )
     _DBitInit( blk->dom.id, 0U );
     for( i = 0; i < targets; i++ ) {
         blk->edge[i].source = blk;
+        blk->edge[i].flags = BEF_NONE;
     }
     blk->blk_id = BLK_ID_NONE;
     blk->gen_blk_id = BLK_ID_NONE;
@@ -98,17 +99,6 @@ block   *MakeBlockCopy( block_num targets, block *src, block_num src_targets )
 
     blk = CGAlloc( BLOCK_SIZE( targets ) );
     Copy( src, blk, BLOCK_SIZE( src_targets ) );
-    return( blk );
-}
-
-
-block   *NewBlock( label_handle label, bool label_dies )
-/******************************************************/
-{
-    block       *blk;
-
-    blk = MakeBlock( label, 1 );
-    blk->edge[0].flags = ( label_dies ) ? BEF_BLOCK_LABEL_DIES : BEF_NONE;
     return( blk );
 }
 
@@ -137,12 +127,13 @@ void    FreeBlock( void )
 }
 
 
-void    EnLink( label_handle label, bool label_dies )
-/***************************************************/
+void    EnLink( label_handle label )
+/**********************************/
 {
     block       *blk;
 
-    blk = NewBlock( label, label_dies );
+    blk = MakeBlockInit( 1 );
+    blk->label = label;
     blk->ins.head.line_num = SrcLine;
     CurrBlock = blk;
     SrcLine = 0;
@@ -152,7 +143,8 @@ void    AddIns( instruction *ins )
 /********************************/
 {
     if( !HaveCurrBlock ) {
-        EnLink( AskForNewLabel(), true );
+        EnLink( AskForNewLabel() );
+        CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
         HaveCurrBlock = true;
     }
     ins->head.next = (instruction *)&CurrBlock->ins;
@@ -161,7 +153,7 @@ void    AddIns( instruction *ins )
     CurrBlock->ins.head.prev = ins;
     ins->head.line_num = SrcLine;
     _INS_NOT_BLOCK( ins );
-    ins->id = ++ InsId;
+    ins->id = ++InsId;
     SrcLine = 0;
 }
 
@@ -487,7 +479,8 @@ bool    BlkTooBig( void )
     blk = AskForNewLabel();
     GenBlock( BLK_JUMP, 1 );
     AddTarget( blk, false );
-    EnLink( blk, true );
+    EnLink( blk );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     return( true );
 }
 

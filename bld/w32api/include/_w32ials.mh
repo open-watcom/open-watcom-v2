@@ -21,3 +21,4 @@
 #pragma include_alias( <wlantypes.h>,                   <wlantype.h> )
 #pragma include_alias( <winsdkver.h>,                   <winsdkve.h> )
 #pragma include_alias( <compressapi.h>,                 <wcompres.h> )
+#pragma include_alias( <winapifamily.h>,                <winapifa.h> )

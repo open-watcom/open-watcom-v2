@@ -18,6 +18,8 @@ cli_cfloat_libs = $(cfloat_dir)/$(host).dll/cf.lib
 ! else
 cli_cfloat_libs = $(cfloat_dir)/$(host)/cf.lib
 ! endif
+!else ifdef debug_cg
+cli_cfloat_libs = $(cfloat_dir)/$(host).dbg/cf.lib
 !else
 #
 # CFLOAT library used

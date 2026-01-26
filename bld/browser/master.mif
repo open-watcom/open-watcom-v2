@@ -11,7 +11,7 @@ browser_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-additional_clean = *.grc
+additional_clean = *.grc *.grh
 !ifndef nowgml
 additional_clean += $(docs_host_dir)/wbrw.gh
 !endif

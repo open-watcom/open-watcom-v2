@@ -8,6 +8,7 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set CLEANUP=1
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
@@ -25,7 +26,7 @@ t01: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t02: .SYMBOLIC
@@ -33,12 +34,12 @@ t02: .SYMBOLIC
     @set ERRORS=0
     @set VER= a
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ -m -ms > $@a.lst 2>&1
+    @-$(test_wmake) -h -f $@ -m -ms > $@a.lst 2>&1
     @%make result
     @set ERRORS=0
     @set VER= b
-    @$(test_wmake) -h -f $@ -m > $@b.lst 2>&1
-    @diff -i $@.chk $@b.lst
+    @-$(test_wmake) -h -f $@ -m > $@b.lst 2>&1
+    @-diff -i $@.chk $@b.lst
     @%make result
     @set VER=
 
@@ -47,15 +48,15 @@ t03: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t04: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-$(test_wmake) -h -f $@ > $@.lst 2>&1
+    @-diff -i $@.chk $@.lst
     @%make result
 
 result: .PROCEDURE .EXPLICIT
@@ -67,7 +68,8 @@ resulterr: .PROCEDURE .EXPLICIT
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1
+    @set CLEANUP=0
 
 clean: .SYMBOLIC
     @if exist *.obj @rm *.obj
-    @if $(%ERRORS) == 0 @rm *.lst
+    @if $(%CLEANUP) == 1 @rm *.lst

@@ -99,13 +99,15 @@ an      BGStopInline( call_handle call, const type_def *tipe )
     an              retv;
 
     if( !HaveCurrBlock ) {
-        EnLink( AskForNewLabel(), true );
+        EnLink( AskForNewLabel() );
+        CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
         HaveCurrBlock = true;
     }
     lbl = AskForNewLabel();
     GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
-    EnLink( lbl, true );
+    EnLink( lbl );
+    CurrBlock->edge[0].flags = BEF_BLOCK_LABEL_DIES;
     InlineStack->tipe = tipe;
     FEGenProc( InlineStack->proc_sym, call );
     retv = InlineStack->addr;

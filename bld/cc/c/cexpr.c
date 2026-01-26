@@ -2600,20 +2600,12 @@ static TREEPTR NotOp( TREEPTR tree )
         case TYP_UINT:
         case TYP_LONG:
         case TYP_ULONG:
-            if( tree->op.u2.long_value == 0 ) {
-                tree->op.u2.long_value = 1;
-            } else {
-                tree->op.u2.long_value = 0;
-            }
+            tree->op.u2.long_value = ( tree->op.u2.long_value == 0 );
             tree->op.u1.const_type = TYP_INT;
             break;
         case TYP_LONG64:
         case TYP_ULONG64:
-            if( U64isZero( tree->op.u2.long64_value ) ) {
-                tree->op.u2.long_value = 1;
-            } else {
-                tree->op.u2.long_value = 0;
-            }
+            tree->op.u2.long_value = U64isZero( tree->op.u2.long64_value );
             tree->op.u1.const_type = TYP_INT;
             break;
         case TYP_FLOAT:

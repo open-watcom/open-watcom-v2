@@ -64,6 +64,7 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set CLEANUP=1
     @set ERRORS=0
     @echo $# ==================================
 !ifdef __UNIX__
@@ -85,7 +86,7 @@ t17: .SYMBOLIC
     @-$(test_wmake) -h -f $@d >> $@.lst 2>&1
     @-$(test_wmake) -h -f $@e >> $@.lst 2>&1
     @-$(test_wmake) -h -f $@f >> $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t36: .SYMBOLIC
@@ -93,7 +94,7 @@ t36: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ .c.obj > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t39: .SYMBOLIC
@@ -102,7 +103,7 @@ t39: .SYMBOLIC
     @head -n 3 $@
     @%create ditty.c
     @-$(test_wmake) -h -f $@ ditty.obj > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t40: .SYMBOLIC
@@ -111,18 +112,18 @@ t40: .SYMBOLIC
     @rm -f ditty.*
     @head -n 3 $@
     @%create $@.tst
-    @chmod +r $@.tst >$@.lst
+    @chmod -w $@.tst >$@.lst
     @-$(test_wmake) -h -f $@ -a -t >> $@.lst 2>&1
-    @chmod -r $@.tst
+    @chmod +w $@.tst
     @rm -f $@.tst
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 $(work_tests): .SYMBOLIC
     @set TT=$@
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t27: .SYMBOLIC
@@ -131,7 +132,7 @@ t27: .SYMBOLIC
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
     @egrep W27 $@.tmp > $@.lst
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 t35: .SYMBOLIC
@@ -140,7 +141,7 @@ t35: .SYMBOLIC
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
     @egrep W35 $@.tmp > $@.lst
-    @diff -i $@.chk $@.lst
+    @-diff -i $@.chk $@.lst
     @%make result
 
 result: .PROCEDURE .EXPLICIT
@@ -152,7 +153,8 @@ resulterr: .PROCEDURE .EXPLICIT
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
+    @set CLEANUP=0
 
 clean: .SYMBOLIC
     @rm -f *.obj
-    @if $(%ERRORS) == 0 @rm -f *.lst *.tmp
+    @if $(%CLEANUP) == 1 @rm -f *.lst *.tmp

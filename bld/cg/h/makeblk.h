@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-extern block            *MakeBlock( label_handle label, block_num targets );
+extern block            *MakeBlockInit( block_num targets );
 extern block            *MakeBlockCopy( block_num targets, block *src, block_num src_targets );
-extern block            *NewBlock( label_handle label, bool label_dies );
 extern void             FreeABlock( block *blk );
 extern void             FreeBlock( void );
-extern void             EnLink( label_handle label, bool label_dies );
+extern void             EnLink( label_handle label );
 extern void             AddIns( instruction *ins );
 extern void             GenBlock( block_class class, block_num targets );
 extern block            *ReGenBlock( block *blk, label_handle lbl );

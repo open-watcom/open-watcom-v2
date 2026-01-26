@@ -639,8 +639,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
                 m.u64.u._64[0] <<= 12U;
             }
 #else
-            U64Low( m.u64 ) = ld.u.word[I64LO32];
-            U64High( m.u64 ) = ld.u.word[I64HI32];
+            m.u64 = ld.u.word;
             xexp = ( U64High( m.u64 ) >> 20 ) - 0x3FF;
             m.u64.u._64[0] <<= 12U;
 #endif
