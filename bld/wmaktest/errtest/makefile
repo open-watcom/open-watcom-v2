@@ -59,8 +59,7 @@ debug_tests = &
 tests = &
  t17 &
  $(work_tests) &
- $(debug_tests) &
- clean
+ $(debug_tests)
 
 .BEFORE
     @set ERRLOG=../error.out
@@ -74,7 +73,7 @@ tests = &
 !endif
     @echo $# ==================================
 
-all: $(tests) .SYMBOLIC
+all: $(tests) clean .SYMBOLIC
 
 t17: .SYMBOLIC
     @set TT=$@
@@ -121,6 +120,7 @@ t40: .SYMBOLIC
 
 $(work_tests): .SYMBOLIC
     @set TT=$@
+    @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @-diff -i $@.chk $@.lst
@@ -131,7 +131,7 @@ t27: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
-    @egrep W27 $@.tmp > $@.lst
+    @-egrep W27 $@.tmp > $@.lst
     @-diff -i $@.chk $@.lst
     @%make result
 
@@ -140,7 +140,7 @@ t35: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
-    @egrep W35 $@.tmp > $@.lst
+    @-egrep W35 $@.tmp > $@.lst
     @-diff -i $@.chk $@.lst
     @%make result
 

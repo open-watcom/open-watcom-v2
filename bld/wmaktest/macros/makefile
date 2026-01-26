@@ -7,8 +7,7 @@ tests = &
     t05 &
     t06 &
     t07 &
-    t08 &
-    clean
+    t08
 
 .BEFORE
     @set ERRLOG=../error.out
@@ -23,7 +22,7 @@ tests = &
 !endif
     @echo $# ==================================
 
-all: $(tests) .SYMBOLIC
+all: $(tests) clean .SYMBOLIC
 
 t01: .SYMBOLIC
     @set TT=$@
@@ -53,6 +52,7 @@ t03: .SYMBOLIC
     @set ERRORS=0
     @set VER= a
     @head -n 3 $@
+    @set fubar=
     @-$(test_wmake) -h -f $@ > $@a.lst 2>&1
     @-diff -b -i $@a.chk $@a.lst
     @%make result
@@ -60,9 +60,9 @@ t03: .SYMBOLIC
     @set VER= b
     @set fubar=test depends on this environment variable
     @-$(test_wmake) -h -f $@ -ms -m > $@b.lst 2>&1
-    @set fubar=
     @-diff -b -i $@b.chk $@b.lst
     @%make result
+    @set fubar=
     @set VER=
 
 t04: .SYMBOLIC
@@ -88,7 +88,11 @@ t05: .SYMBOLIC
     @%create hello.c
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -ms -m > $@.lst 2>&1
+!ifdef __UNIX__
+    @-diff -b -i $@u.chk $@.lst
+!else
     @-diff -b -i $@.chk $@.lst
+!endif
     @%make result
     @rm -f hello.boo hello.xyz hello.c
 

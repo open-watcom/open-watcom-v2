@@ -7,8 +7,7 @@ tests = &
     t05 &
     t06 &
     t07 &
-    t08 &
-    clean
+    t08
 
 .BEFORE
     @set ERRLOG=../error.out
@@ -22,7 +21,7 @@ tests = &
 !endif
     @echo $# ==================================
 
-all: $(tests) .SYMBOLIC
+all: $(tests) clean .SYMBOLIC
 
 t01: .SYMBOLIC
     @set TT=$@
@@ -91,15 +90,22 @@ t08: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @%create $@.lst
-    @#rem Need to set prompt, otherwise the test fails...
+!ifdef __UNIX__
+    @cat $@u.chk > $@.tmp
+!else
+    # Need to set prompt, otherwise the test fails...
     @prompt $p$g
-    @type $@.chk > $@.tmp
-    @..\cmds\prntdir "echo a" >> $@.tmp
-    @%append $@.tmp a
-    @..\cmds\prntdir "echo b" >> $@.tmp
-    @%append $@.tmp b
-    @..\cmds\prntdir "echo c" >> $@.tmp
-    @%append $@.tmp c
+    @cat $@.chk > $@.tmp
+    %append $@.tmp $(CDRIVE):$(CWD)>echo a
+    %append $@.tmp a
+    %append $@.tmp
+    %append $@.tmp $(CDRIVE):$(CWD)>echo b
+    %append $@.tmp b
+    %append $@.tmp
+    %append $@.tmp $(CDRIVE):$(CWD)>echo c
+    %append $@.tmp c
+    %append $@.tmp
+!endif
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @-diff -b $@.tmp $@.lst
     @%make result
@@ -109,7 +115,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# For Loop Tests (fortest) - Test $(%TESTXXX:t=) $#$#
+    @%append $(%ERRLOG) $#$# For Loop Tests (fortest) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

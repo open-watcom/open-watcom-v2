@@ -4,7 +4,8 @@ echo foo > foo
 rm foo
 echo foo > foo
 chmod -w foo
-rm foo < /dev/null
+rm foo
+Error(E43): Deleting (foo): Permission denied
 rm -f foo
 rm -f foo
 mkdir food

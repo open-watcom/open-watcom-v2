@@ -2,15 +2,13 @@
 # Test 06: rm tests
 # ----------------------------------------------------
 
-!ifdef __UNIX__
-nuldev = /dev/null
-!else
-nuldev = NUL
-!endif
-
 all: .symbolic
     rm -f foo
-    -rmdir food 2> $(nuldev)
+!ifdef __UNIX__
+    -rmdir food 2> /dev/null
+!else
+    -rmdir food 2> NUL
+!endif
     echo foo > foo
     rm foo
     echo foo > foo
@@ -21,4 +19,3 @@ all: .symbolic
     mkdir food
     -rm -f food
     rm -f -r food
-
