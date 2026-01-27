@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1320,9 +1320,9 @@ int setenv( const char *name, const char *newvalue, int overwrite )
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ ) \
-  && ( __WATCOMC__ == 1290 )        /* OW 1.9 fix */
+#if defined( __WATCOMC__ )
 
+  #if ( __WATCOMC__ == 1290 )        /* OW 1.9 fix */
 void unsetenv( const char *name )
 /*******************************/
 {
@@ -1335,6 +1335,7 @@ void unsetenv( const char *name )
     putenv( buff );
     free( buff );
 }
+  #endif
 
 #elif defined(_MSC_VER)
 
