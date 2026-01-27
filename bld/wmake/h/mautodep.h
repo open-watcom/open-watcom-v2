@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,5 +45,5 @@ typedef struct  auto_dep_info {
 } auto_dep_info;
 
 extern void     AutoDepInit( void );
-extern bool     AutoDepCheck( char *name, time_t stamp, bool (*chk)(time_t,time_t), time_t *pmax );
+extern bool     AutoDepCheck( const char *name, time_t stamp, bool (*chk)(time_t,time_t), time_t *pmax );
 extern void     AutoDepFini( void );

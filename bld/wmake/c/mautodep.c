@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +113,7 @@ static bool isTargObsolete( char const *name, time_t stamp,
 }
 
 
-bool AutoDepCheck( char *name, time_t stamp,
+bool AutoDepCheck( const char *name, time_t stamp,
     bool (*chk)(time_t,time_t), time_t *pmax_time )
 /*******************************************************/
 {

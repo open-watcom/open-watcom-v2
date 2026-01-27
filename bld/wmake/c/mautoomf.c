@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ typedef struct {
 } omf_info;
 
 static omf_info fileHandle;
-static char     nameBuffer[_MAX_PATH2 + 1];
+static char     nameBuffer[256];    /* OMF max name len is 255 bytes + 1 byte for nul termination */
 
 static bool verifyObjFile( FILE *fp )
 /***********************************/
