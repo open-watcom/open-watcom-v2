@@ -561,7 +561,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
 /***************************************************
  * This procedure takes care of double quotes in the stream
  * Note: each double quote must be paired with a double quote in the
- * input stream or this will expand until the EOL a backlash double
+ * input stream or this will expand until the EOL a backslah double
  * quote will be considered as a non-double quote.
  */
 {
