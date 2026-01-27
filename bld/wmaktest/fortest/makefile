@@ -89,25 +89,12 @@ t08: .SYMBOLIC
     @set TT=$@
     @set ERRORS=0
     @head -n 3 $@
-    @%create $@.lst
-!ifdef __UNIX__
-    @cat $@u.chk > $@.tmp
-!else
-    # Need to set prompt, otherwise the test fails...
-    @cat $@.chk > $@.tmp
-    %append $@.tmp
-    %append $@.tmp $(%CDRIVE):$(%CWD)>echo a
-    %append $@.tmp a
-    %append $@.tmp
-    %append $@.tmp $(%CDRIVE):$(%CWD)>echo b
-    %append $@.tmp b
-    %append $@.tmp
-    %append $@.tmp $(%CDRIVE):$(%CWD)>echo c
-    %append $@.tmp c
-    @prompt $p$g
-!endif
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
-    @-diff -b $@.tmp $@.lst
+!ifdef __UNIX__
+    @-diff -b $@u.chk $@.lst
+!else
+    @-diff -b $@.chk $@.lst
+!endif
     @%make result
 
 result: .PROCEDURE .EXPLICIT

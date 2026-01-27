@@ -6,5 +6,5 @@ all : .symbolic
 !ifdef __UNIX__
         !for i in a b c; do echo $$i; done
 !else
-        !for %i in (a b c) do echo %i
+        !for %i in (a b c) do @echo %i
 !endif

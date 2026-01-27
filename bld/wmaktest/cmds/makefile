@@ -19,8 +19,6 @@ c_dir=..\c\
 commands = mkerr$(exe) envarg$(exe) ifeq$(exe)
 !ifdef __UNIX__
 commands += rem$(exe)
-!else
-commands += prntdir$(exe)
 !endif
 
 !ifdef buildtest
