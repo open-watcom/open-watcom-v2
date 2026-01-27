@@ -9,5 +9,5 @@
 
 "hello tmp.xyz": hello.h
       echo hello
-      @echo show "hello tmp.xyz"
+      @echo cat "hello tmp.xyz"
       @cat "hello tmp.xyz"

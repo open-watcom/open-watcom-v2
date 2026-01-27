@@ -52,11 +52,11 @@ t04: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @%create $@.lst
-    @type $@a.chk   > $@.tmp
+    @cat $@a.chk   > $@.tmp
     @dir /b /-o     >> $@.tmp
-    @type $@b.chk   >> $@.tmp
+    @cat $@b.chk   >> $@.tmp
     @dir /b /-o t?? >> $@.tmp
-    @type $@c.chk   >> $@.tmp
+    @cat $@c.chk   >> $@.tmp
     @-$(test_wmake) -h -f $@ > $@.lst 2>&1
     @-diff $@.tmp $@.lst
     @%make result
