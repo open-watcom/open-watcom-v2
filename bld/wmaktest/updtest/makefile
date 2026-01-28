@@ -14,14 +14,15 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set TITLE=Update Tests (updtest)
     @set CLEANUP=1
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
 !ifdef __UNIX__
-    @echo "$# Update Tests (updtest)"
+    @echo "$# $(%TITLE)"
 !else
-    @echo $# Update Tests (updtest)
+    @echo $# $(%TITLE)
 !endif
     @echo $# ==================================
 
@@ -126,7 +127,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Update Tests (updtest) - Test $(%TT:t=) $#$#
+    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1

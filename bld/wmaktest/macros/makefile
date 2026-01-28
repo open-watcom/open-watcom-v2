@@ -11,14 +11,15 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set TITLE=Macro Tests (macros)
     @set CLEANUP=1
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
 !ifdef __UNIX__
-    @echo "$# Macro Tests (macros)"
+    @echo "$# $(%TITLE)"
 !else
-    @echo $# Macro Tests (macros)
+    @echo $# $(%TITLE)
 !endif
     @echo $# ==================================
 
@@ -135,7 +136,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Macro Tests (macros) - Test $(%TT:t=) $#$#
+    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1

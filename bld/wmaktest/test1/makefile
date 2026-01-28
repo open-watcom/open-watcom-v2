@@ -2,16 +2,23 @@
 tests = &
     t01
 
+!ifdef __UNIX__
+nuldev = /dev/null
+!else
+nuldev = NUL
+!endif
+
 .BEFORE
     @set ERRLOG=../error.out
+    @set TITLE=Multiple Dependents Tests (test1)
     @set CLEANUP=1
     @set ERRORS=0
     @set VER=
     @echo $# ==================================
 !ifdef __UNIX__
-    @echo "$# Multiple Dependents Tests (test1)"
+    @echo "$# $(%TITLE)"
 !else
-    @echo $# Multiple Dependents Tests (test1)
+    @echo $# $(%TITLE)
 !endif
     @echo $# ==================================
     @wmake -h -f create
@@ -31,13 +38,13 @@ t01: .SYMBOLIC
     #
     @set ERRORS=0
     @set VER= b
-    @-diff -b $@.chk $@.lst > nul
+    @-diff -b $@.chk $@.lst > $(nuldev)
     @%make result
     @set VER=
     #
     #@set ERRORS=0
     #@set VER= c
-    #diff -b $@a.chk $@a.lst > nul
+    #diff -b $@a.chk $@a.lst > $(nuldev)
     #%make result
     @%make clean
 
@@ -46,7 +53,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Multiple Dependents Tests (test1) - Test $(%TT:t=) $#$#
+    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
     @echo $# Error: Test$(%VER) unsuccessful!!!!
     @set ERRORS=1

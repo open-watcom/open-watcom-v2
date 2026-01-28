@@ -18,13 +18,14 @@ old_locale = $(%LC_MESSAGES)
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set TITLE=Long FileName Tests (longfile)
     @set CLEANUP=1
     @set ERRORS=0
     @echo $# ==================================
 !ifdef __UNIX__
-    @echo "$# Long FileName Tests (longfile)"
+    @echo "$# $(%TITLE)"
 !else
-    @echo $# Long FileName Tests (longfile)
+    @echo $# $(%TITLE)
 !endif
     @echo $# ==================================
 
@@ -98,7 +99,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Long FileName Tests (longfile) - Test $(%TT:t=) $#$#
+    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1

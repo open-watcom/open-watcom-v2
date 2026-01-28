@@ -9,13 +9,14 @@ tests = &
 
 .BEFORE
     @set ERRLOG=../error.out
+    @set TITLE=Implicit Rules Tests (implicit)
     @set CLEANUP=1
     @set ERRORS=0
     @echo $# ==================================
 !ifdef __UNIX__
-    @echo "$# Implicit Rules Tests (implicit)"
+    @echo "$# $(%TITLE)"
 !else
-    @echo $# Implicit Rules Tests (implicit)
+    @echo $# $(%TITLE)
 !endif
     @echo $# ==================================
     @%create hello.obj
@@ -75,7 +76,7 @@ result: .PROCEDURE .EXPLICIT
     @if $(%ERRORS) == 0 @echo $#        Test successful
 
 resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# Implicit Rules Tests (implicit) - Test $(%TT:t=) $#$#
+    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
     @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
     @echo $# Error: Test unsuccessful!!!!
     @set ERRORS=1
