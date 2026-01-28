@@ -172,7 +172,7 @@ unsigned_16 GParms( itnode *sp )
 
     num_stmts = 0;
     for( ;; ) {
-        if( !RecNOpn() ) {  // consider f()
+        if( !RecNoOpn() ) {  // consider f()
             if( CITNode->opn.us == USOPN_STN ) {
                 num_stmts++;
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,12 +232,12 @@ void    FormatIdd( void ) {
         IOPermSet( IO_NAMELIST );
     } else if( RecNumber() ) {
         GPassStmtNo( LkUpFormat(), FC_SET_FMT );
-    } else if( RecNOpn() && RecNextOpr( OPR_MUL ) ) {
+    } else if( RecNoOpn() && RecNextOpr( OPR_MUL ) ) {
         if( CITNode->link->opn.ds == DSOPN_PHI ) {
             AdvanceITPtr();   // nothing needs to be loaded for default
             IOPermSet( IO_LIST_DIR );
         }
-    } else if( RecNOpn() && RecNextOpr( OPR_COM ) ) {
+    } else if( RecNoOpn() && RecNextOpr( OPR_COM ) ) {
         Extension( IL_NO_ASTERISK );
     } else if( RecIntVar() ) {
         CkVarRef();
@@ -271,12 +271,12 @@ void    FormatIdd( void ) {
 void    Unit(void) {
 //===============
 
-    if( RecNOpn() && RecNextOpr( OPR_MUL ) ) {
+    if( RecNoOpn() && RecNextOpr( OPR_MUL ) ) {
         if( ( StmtProc != PR_READ ) && ( StmtProc != PR_WRITE ) ) {
             StmtErr( IL_STAR_NOT_ALLOWED );
         }
         AdvanceITPtr();
-        ReqNOpn();
+        ReqNoOpn();
     } else {
         ProcIOExpr();
         if( !AError ) {

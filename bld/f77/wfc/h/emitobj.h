@@ -45,8 +45,6 @@
 #define _SetArgInfoPtyp(p1)         ((p1) & 0xff)
 #define _SetArgInfoPtypes(p1,p2)    ((((unsigned_16)(p1) & 0xff) << 8) | ((p2) & 0xff))
 
-#define _GetPtr()       ((sym_id)GetPtr())
-
 #define CAT_TEMP        0x8000U
 
 // emit.c

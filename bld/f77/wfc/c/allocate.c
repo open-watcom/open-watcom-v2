@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ void    DimArray( sym_id sym )
         }
     }
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
 }
 
 
@@ -173,7 +173,7 @@ void    CpDeAllocate( void )
 
     StmtExtension( SP_STRUCTURED_EXT );
     if( RecTrmOpr()
-      && RecNOpn() ) {
+      && RecNoOpn() ) {
         AdvanceITPtr();
     }
     ReqOpenParen();
@@ -208,7 +208,7 @@ void    CpDeAllocate( void )
     }
     GEndDeAllocate();
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     ReqEOS();
 }
@@ -227,7 +227,7 @@ void    CpAllocate( void )
 
     StmtExtension( SP_STRUCTURED_EXT );
     if( RecTrmOpr()
-      && RecNOpn() ) {
+      && RecNoOpn() ) {
         AdvanceITPtr();
     }
     ReqOpenParen();
@@ -274,7 +274,7 @@ void    CpAllocate( void )
     }
     GEndAllocate();
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     ReqEOS();
 }

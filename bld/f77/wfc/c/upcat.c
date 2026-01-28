@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +245,7 @@ void            CatAxeParens( void )
 //  ** see KillOpnOpr() for case where first node is start-node of expr
 {
     BackTrack();
-    ReqNOpn();
+    ReqNoOpn();
     MoveDown();
     if( CITNode->is_catparen ) {
         KillOpnOpr();
@@ -317,7 +317,7 @@ void            ParenCat( void )
         // consider:    a(1)(2:3)//c
         if( ( cit->opr == OPR_LBR )
           && ok_to_axe ) {
-            ReqNOpn();
+            ReqNoOpn();
             cit->is_catparen = true;
             cit = CITNode;
             AdvanceITPtr();
@@ -350,7 +350,7 @@ void            CatParen( void )
             cit->is_catparen = true;
             cit = CITNode;
             AdvanceITPtr();
-            ReqNOpn();
+            ReqNoOpn();
             cit->link = CITNode->link;
             FreeOneNode( CITNode );
             CITNode = cit;

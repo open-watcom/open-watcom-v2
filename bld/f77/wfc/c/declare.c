@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,7 +236,7 @@ static  void    TypeDecl( TYPE typ ) {
 
     size = SIZE_UNDEF;
     default_size = StorageSize( typ );
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
         ReqMul();
     }
@@ -247,7 +247,7 @@ static  void    TypeDecl( TYPE typ ) {
         MustBeTypeDecl();
         if( len_spec ) { // if TYPE*LEN
             default_size = size;
-            if( !RecNOpr() && !RecCloseParen() ) {
+            if( !RecNoOpr() && !RecCloseParen() ) {
                 ReqComma();
             }
         }
@@ -430,7 +430,7 @@ void    ArrayDecl( sym_id sym ) {
     dim_list.num_elts = 0;
     dim_list.dim_flags = 0;
     dim_list.l.init_label = 0;
-    allocatable = RecNOpn() && RecNextOpr( OPR_COL );
+    allocatable = RecNoOpn() && RecNextOpr( OPR_COL );
     if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
         if( (sym->u.ns.flags & ERR_MASK) != SY_VARIABLE ) {
             IllName( sym );
@@ -456,12 +456,12 @@ void    ArrayDecl( sym_id sym ) {
         pvd_ok = false;
         hi_bound = 0;
         lo_bound = 1;
-        assumed = RecNOpn() && RecNextOpr( OPR_MUL );
+        assumed = RecNoOpn() && RecNextOpr( OPR_MUL );
         if( allocatable ) {
-            ReqNOpn();
+            ReqNoOpn();
             AdvanceITPtr();
             ReqColon();
-            ReqNOpn();
+            ReqNoOpn();
         } else if( !assumed ) {
             DimExpr();
             if( AError ) {
@@ -481,10 +481,10 @@ void    ArrayDecl( sym_id sym ) {
                     var_dim = true;
                 }
                 AdvanceITPtr();
-                assumed = RecNOpn() && RecNextOpr( OPR_MUL );
+                assumed = RecNoOpn() && RecNextOpr( OPR_MUL );
                 if( assumed ) {
                     AdvanceITPtr();
-                    ReqNOpn();
+                    ReqNoOpn();
                 } else {
                     DimExpr();
                     if( !AError ) {
@@ -545,7 +545,7 @@ void    ArrayDecl( sym_id sym ) {
         } else {
             _SetLoConstBound( dim_list.dim_flags, ss );
             AdvanceITPtr();
-            ReqNOpn();
+            ReqNoOpn();
         }
         *bounds++ = lo_bound;
         *bounds++ = hi_bound;
@@ -556,7 +556,7 @@ void    ArrayDecl( sym_id sym ) {
     }
     _SetDimCount( dim_list.dim_flags, ss );
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     if( SgmtSw & SG_DEFINING_STRUCTURE ) {
         if( var_dim || assumed ) {

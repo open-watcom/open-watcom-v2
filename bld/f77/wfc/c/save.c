@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,14 +77,14 @@ void    CpSave( void ) {
 
     sym_id      sym_ptr;
 
-    if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
+    if( RecNoOpn() && RecNextOpr( OPR_TRM ) ) {
         if( ( (SgmtSw & SG_LITTLE_SAVE) != 0 ) || ( (SgmtSw & SG_BIG_SAVE) != 0 ) ) {
             Error( SA_SAVED );
         }
         SgmtSw |= SG_BIG_SAVE;
     } else {
         for( ;; ) {
-            if( RecNOpn() && RecNextOpr( OPR_DIV ) ) {
+            if( RecNoOpn() && RecNextOpr( OPR_DIV ) ) {
                 AdvanceITPtr();
                 if( ReqName( NAME_COMMON ) ) {
                     sym_ptr = LkCommon();
@@ -95,7 +95,7 @@ void    CpSave( void ) {
                 }
                 AdvanceITPtr();
                 ReqDiv();
-                ReqNOpn();
+                ReqNoOpn();
             } else if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym_ptr = LkSym();
                 if( (sym_ptr->u.ns.flags & ~SV_ON_OR_OFF) != SY_VARIABLE ) {

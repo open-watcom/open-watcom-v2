@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,7 +182,7 @@ void CpSubroutine( void )
         if( RecOpenParen() ) {
             ParmList( true, entry );
             ReqCloseParen();
-            ReqNOpn();
+            ReqNoOpn();
             AdvanceITPtr();
         }
         ReqEOS();
@@ -219,7 +219,7 @@ void    Function( TYPE typ, size_t size, bool len_spec )
             ParmList( false, entry );
         }
         ReqCloseParen();
-        ReqNOpn();
+        ReqNoOpn();
         AdvanceITPtr();
         ReqEOS();
     } else {
@@ -273,7 +273,7 @@ void CpEntry( void )
             if( RecOpenParen() ) {
                 ParmList( in_subr, entry );
                 ReqCloseParen();
-                ReqNOpn();
+                ReqNoOpn();
                 AdvanceITPtr();
             }
             BIStartRBorEP( sym );
@@ -304,7 +304,7 @@ void CpReturn( void )
         Extension( RE_IN_PROGRAM );
     }
     CkRemBlock();
-    if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
+    if( RecNoOpn() && RecNextOpr( OPR_TRM ) ) {
         if( ( (SubProgId->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
             ( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) ) {
             GNullRetIdx();
@@ -416,14 +416,14 @@ static void ParmList( bool star_ok, entry_pt *entry )
     parameter   *new_arg;
 
     args = &entry->parms;
-    if( RecNOpn() && RecNextOpr( OPR_RBR ) ) {
+    if( RecNoOpn() && RecNextOpr( OPR_RBR ) ) {
         // consider name()
         AdvanceITPtr();
     } else {
         for( ;; ) {     // process parm list
-            if( star_ok && RecNOpn() ) {
+            if( star_ok && RecNoOpn() ) {
                 AdvanceITPtr();
-                if( ReqMul() && ReqNOpn() ) {
+                if( ReqMul() && ReqNoOpn() ) {
                     *args = StarParm();
                     args = &(*args)->link;
                 }
@@ -514,7 +514,7 @@ void CpBlockData( void )
         sym_ptr->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
                             SY_PENTRY | SY_REFERENCED;
     } else {
-        ReqNOpn();
+        ReqNoOpn();
         sym_ptr = LkBlkData();
     }
     SubProgId = sym_ptr;

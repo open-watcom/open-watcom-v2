@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,17 +71,17 @@ static  bool            StarStar( TYPE typ ) {
 
     if( typ != FT_CHAR )
         return( false );
-    if( !RecNOpn() )
+    if( !RecNoOpn() )
         return( false );
     if( !RecNextOpr( OPR_LBR ) )
         return( false );
     AdvanceITPtr();
-    if( !RecNOpn() )
+    if( !RecNoOpn() )
         return( false );
     if( !RecNextOpr( OPR_MUL ) )
         return( false );
     AdvanceITPtr();
-    if( !RecNOpn() )
+    if( !RecNoOpn() )
         return( false );
     if( !RecNextOpr( OPR_RBR ) )
         return( false );
@@ -166,7 +166,7 @@ bool    LenSpec( TYPE typ, size_t *size_ptr )
         save_itptr = CITNode;
         if( StarStar( typ ) ) {
             AdvanceITPtr();
-            if( RecNOpn() ) {
+            if( RecNoOpn() ) {
                 AdvanceITPtr();
             }
             *size_ptr = 0;
@@ -179,13 +179,13 @@ bool    LenSpec( TYPE typ, size_t *size_ptr )
             len_spec = true;
         } else {
             CITNode = save_itptr;
-            if( RecNOpn() && RecNextOpr( OPR_LBR ) ) {
+            if( RecNoOpn() && RecNextOpr( OPR_LBR ) ) {
                 AdvanceITPtr();
                 CIntExpr();
                 ivalue = ITIntValue( CITNode );
                 AdvanceITPtr();
                 ReqCloseParen();
-                if( RecNOpn() ) {
+                if( RecNoOpn() ) {
                     AdvanceITPtr();
                 }
                 len_spec = !AError;
@@ -290,7 +290,7 @@ void    CpImplicit( void ) {
                 }
             }
             ReqCloseParen();
-            ReqNOpn();
+            ReqNoOpn();
             AdvanceITPtr();
             if( !RecComma() ) {
                 break;

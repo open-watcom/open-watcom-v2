@@ -312,49 +312,49 @@ void    Update( stmt_num stmt_no )
 //================================
 // Update the statement number after compiling the statement.
 {
-    sym_id      sym;
+    sym_id      sym_ptr;
     block_num   block;
 
-    sym = LookUp( stmt_no );
-    if( (sym->u.st.flags & SN_DEFINED) == 0 ) {
-        sym->u.st.flags |= SN_DEFINED;
+    sym_ptr = LookUp( stmt_no );
+    if( (sym_ptr->u.st.flags & SN_DEFINED) == 0 ) {
+        sym_ptr->u.st.flags |= SN_DEFINED;
         block = StNumbers.blk_before; // allow branch to start of block
         if( block > CSHead->block ) { // end of structure occurred
             block = CSHead->block; // allow branch to end of block
         }
-        if( sym->u.st.flags & SN_BRANCHED_TO ) {
-            if( sym->u.st.block < block ) {
+        if( sym_ptr->u.st.flags & SN_BRANCHED_TO ) {
+            if( sym_ptr->u.st.block < block ) {
                 if( (Options & OPT_WILD) == 0 ) {
-                    Err( SP_FROM_OUTSIDE, sym );
+                    Err( SP_FROM_OUTSIDE, sym_ptr );
                 }
             }
             if( !StNumbers.in_remote
-              && (sym->u.st.flags & SN_IN_REMOTE) ) {
-                Err( SP_OUT_OF_BLOCK, sym );
+              && (sym_ptr->u.st.flags & SN_IN_REMOTE) ) {
+                Err( SP_OUT_OF_BLOCK, sym_ptr );
             }
         }
-        sym->u.st.block = block;
+        sym_ptr->u.st.block = block;
     }
     if( CtrlFlgOn( CF_BAD_BRANCH_OBJECT ) ) {
-        sym->u.st.flags |= SN_BAD_BRANCH;
-        if( sym->u.st.flags & SN_BRANCHED_TO ) {
-            StmtIntErr( ST_BAD_BRANCHED, sym->u.st.line );
+        sym_ptr->u.st.flags |= SN_BAD_BRANCH;
+        if( sym_ptr->u.st.flags & SN_BRANCHED_TO ) {
+            StmtIntErr( ST_BAD_BRANCHED, sym_ptr->u.st.line );
         }
-        sym->u.st.flags &= ~SN_AFTR_BRANCH;
-        if( (sym->u.st.flags & SN_ASSIGNED)
+        sym_ptr->u.st.flags &= ~SN_AFTR_BRANCH;
+        if( (sym_ptr->u.st.flags & SN_ASSIGNED)
           && ( StmtProc != PR_FMT ) ) {
-            StmtIntErr( GO_ASSIGNED_BAD, sym->u.st.line );
+            StmtIntErr( GO_ASSIGNED_BAD, sym_ptr->u.st.line );
         }
     }
     if( !CtrlFlgOn( CF_NOT_EXECUTABLE ) ) {
-        sym->u.st.flags |= SN_EXECUTABLE;
+        sym_ptr->u.st.flags |= SN_EXECUTABLE;
     }
     if( StmtProc != PR_FMT ) {
-        if( sym->u.st.flags & SN_FORMAT ) {
-            Err( ST_EXPECT_FORMAT, sym );
+        if( sym_ptr->u.st.flags & SN_FORMAT ) {
+            Err( ST_EXPECT_FORMAT, sym_ptr );
         }
     }
-    sym->u.st.line = SrcRecNum;
+    sym_ptr->u.st.line = SrcRecNum;
 }
 
 

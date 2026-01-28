@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ void    IOList( void ) {
 
     GStartIO();
     if( CITNode->link != NULL ) {
-        if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
+        if( RecNoOpn() && RecNextOpr( OPR_TRM ) ) {
             AdvanceITPtr();                   // WRITE(6,3)
         } else if( IOPermChk( IO_NAMELIST ) ) {
             Error( IL_NO_IOLIST );
@@ -123,7 +123,7 @@ bool    StartImpDo( void ) {
     itnode      *lastcomma;
     int         level;
 
-    if( !RecNOpn() )
+    if( !RecNoOpn() )
         return( false );
     if( !RecNextOpr( OPR_LBR ) )
         return( false );
@@ -156,7 +156,7 @@ bool    StartImpDo( void ) {
     InitImpDo( lastcomma );
     CITNode = citnode;
     AdvanceITPtr();
-    if( ( RecNextOpr( OPR_TRM ) && RecNOpn() ) ) {
+    if( ( RecNextOpr( OPR_TRM ) && RecNoOpn() ) ) {
         Error( IL_EMPTY_IMP_DO );
     }
     return( true );
@@ -193,7 +193,7 @@ void    ListItem( void ) {
 
     sym_id      sd;
 
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         if( !CpError ) {
             Error( SX_SURP_OPR );
         }
@@ -255,7 +255,7 @@ void    InitImpDo( itnode *lastcomma ) {
             AdvanceITPtr();
         }
     }
-    ReqNOpn();
+    ReqNoOpn();
     imp_do_list = lastcomma->link;
     lastcomma->link = CITNode->link;
     CITNode->link = NULL;

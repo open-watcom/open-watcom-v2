@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ void    CpData(void)
         DoData();
         error |= AError;
         ++data_sets;
-        if( RecNOpn() ) {
+        if( RecNoOpn() ) {
             AdvanceITPtr();
             if( RecTrmOpr() )
                 break;
@@ -121,7 +121,7 @@ void    DataInit( itnode *var_node )
         DumpDataSets( 1, var_node );
     }
     GDataEpilog( end_data );
-    if( ReqNOpn() ) {
+    if( ReqNoOpn() ) {
         AdvanceITPtr();
     }
 }
@@ -350,7 +350,7 @@ static  void    DumpDataSets( int num, itnode *node )
             } else {
                 rpt = NULL;
             }
-            if( RecNOpn() ) { // jump over optional sign.
+            if( RecNoOpn() ) { // jump over optional sign.
                 AdvanceITPtr();
             }
             GDataItem( rpt );
@@ -371,7 +371,7 @@ static  void    GetSConst( void )
 {
     int         sign;
 
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         sign = 1;
         if( RecNextOpr( OPR_MIN ) ) {
             sign = -1;

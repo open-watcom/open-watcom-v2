@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ void    CpCommon(void) {
     com_eq      *com_ext;
 
     sym = NULL;
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
         if( !RecDiv() ) {
             if( !RecCat() ) {
@@ -140,7 +140,7 @@ void    CpCommon(void) {
                     }
                 }
             }
-            if( RecComma() && RecNOpn() ) {
+            if( RecComma() && RecNoOpn() ) {
                 AdvanceITPtr();
             }
             if( !RecComma() ) {

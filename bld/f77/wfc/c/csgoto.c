@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ static void CompGoto( void )
     }
     ReqCloseParen();
     if( !RecEOS() ) {
-        if( RecNOpn() && RecNextOpr( OPR_COM ) ) {
+        if( RecNoOpn() && RecNextOpr( OPR_COM ) ) {
             AdvanceITPtr();
         }
         if( !RecEOS() ) {
@@ -138,7 +138,7 @@ static void AsgnGoto( void )
     } else {
         GAsgnGoTo( true );
         AdvanceITPtr();
-        if( RecComma() && RecNOpn() ) {
+        if( RecComma() && RecNoOpn() ) {
             AdvanceITPtr();
         }
         ReqOpenParen();
@@ -151,7 +151,7 @@ static void AsgnGoto( void )
         }
         GEndBrTab();
         ReqCloseParen();
-        if( RecNOpn() ) {
+        if( RecNoOpn() ) {
             AdvanceITPtr();
         }
     }
@@ -164,7 +164,7 @@ void CpGoto( void )
     if( RecNumber() ) {
         Remember.transfer = true;
         UnCondGoto();
-    } else if( RecNOpn() ) {
+    } else if( RecNoOpn() ) {
         CompGoto();
         CtrlFlgs &= ~CF_BAD_DO_ENDING;
     } else {
@@ -184,7 +184,7 @@ void CpArithIf( void )
     itnode      *cit;
 
     Remember.transfer = true;
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
     }
     cit = CITNode;
@@ -217,13 +217,13 @@ void CpAssign( void )
     char        *opnd;
     sym_id      label;
 
-    if( RecNOpn() && RecNextOpr( OPR_PHI ) ) {
+    if( RecNoOpn() && RecNextOpr( OPR_PHI ) ) {
         AdvanceITPtr();
     }
     label = LkUpAssign();
     AdvanceITPtr();
     opnd = CITNode->opnd;
-    if( RecNOpr() && RecName() && ( CITNode->opnd_size >= 2 ) &&
+    if( RecNoOpr() && RecName() && ( CITNode->opnd_size >= 2 ) &&
         ( opnd[0] == 'T' ) && ( opnd[1] == 'O' ) ) {
         CITNode->opnd += 2;
         CITNode->opnd_size -= 2;

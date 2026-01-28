@@ -77,7 +77,7 @@ void CpSelect( void )
     if( RecKeyWord( "CASE" ) ) {
         AdvanceITPtr();
     } else {
-        ReqNOpn();
+        ReqNoOpn();
         AdvanceITPtr();
     }
     ReqOpenParen();
@@ -91,7 +91,7 @@ void CpSelect( void )
     AdvanceITPtr();
     ReqCloseParen();
     if( !RecKeyWord( "FROM" ) ) {
-        ReqNOpn();
+        ReqNoOpn();
     }
     AdvanceITPtr();
     ColonLabel();
@@ -168,7 +168,7 @@ static void CaseHandler( void )
     CSHead->typ = CS_CASE;
     label = NextLabel();
     GLabel( label );
-    if( ReqNOpn() ) { // consider: CASE 10
+    if( ReqNoOpn() ) { // consider: CASE 10
         AdvanceITPtr();
     }
     multi_case = false;
@@ -183,7 +183,7 @@ static void CaseHandler( void )
             }
             AdvanceITPtr();
         } else {
-            if( RecNOpn() && RecNextOpr( OPR_COL ) ) {
+            if( RecNoOpn() && RecNextOpr( OPR_COL ) ) {
                 low = MinCaseValue( CSHead->cs_info.cases->sel_type );
                 AdvanceITPtr();
                 case_ok = ConstExpr( CSHead->cs_info.cases->sel_type );
@@ -199,7 +199,7 @@ static void CaseHandler( void )
                 }
                 AdvanceITPtr();
                 if( RecColon() ) {
-                    if( RecNOpn() &&
+                    if( RecNoOpn() &&
                         ( RecNextOpr( OPR_RBR ) || RecNextOpr( OPR_COM ) ) ) {
                         high = MaxCaseValue( CSHead->cs_info.cases->sel_type );
                     } else {
@@ -241,7 +241,7 @@ static void CaseHandler( void )
         }
     }
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     ReqEOS();
     CSHead->block = NextBlock();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ void CpWhile( void )
     CSExtn();
     InitLoop( CS_WHILE );
     CSCond( CSHead->bottom );
-    if( RecNOpn()
+    if( RecNoOpn()
       && RecNextOpr( OPR_COL ) ) {
         BlockLabel();
     } else if( RecKeyWord( "DO" )
@@ -163,7 +163,7 @@ static stmt_num DoLabel( void )
     if( RecNumber() ) {
         term_stmt_no = LkUpDoTerm();
         AdvanceITPtr();
-        if( !RecNOpr()
+        if( !RecNoOpr()
           && !RecComma() ) {
             Error( DO_NO_COMMA_OR_VAR );
         }
@@ -200,7 +200,7 @@ void CpDoWhile( void )
         CSCond( CSHead->bottom );
         BlockLabel();
     } else {
-        if( ReqNOpn() ) {
+        if( ReqNoOpn() ) {
             BlockLabel();
         }
     }

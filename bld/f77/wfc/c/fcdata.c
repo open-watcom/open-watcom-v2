@@ -1464,7 +1464,7 @@ void    DtInpStruct( void )
 //=========================
 // Initialize a struct.
 {
-    StructInit( _GetPtr()->u.sd.fl.sym_fields );
+    StructInit( ((sym_id)GetPtr())->u.sd.fl.sym_fields );
 }
 
 

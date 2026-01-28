@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ static  bool    SubStr2( intstar4 *subscripts ) {
     subscripts++;
     got_colon = RecColon();
     hi = false;
-    if( !RecNOpn() ) {
+    if( !RecNoOpn() ) {
         CIntExpr();
         *subscripts = ITIntValue( CITNode );
         hi = true;
@@ -68,7 +68,7 @@ static  bool    SubStr2( intstar4 *subscripts ) {
         AdvanceITPtr();
     }
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     return( hi );
 }
@@ -100,7 +100,7 @@ void    CpEquivalence(void) {
         }
     }
     for( ;; ) {
-        if( RecNOpn() ) {
+        if( RecNoOpn() ) {
             AdvanceITPtr();
         }
         ReqOpenParen();
@@ -138,7 +138,7 @@ void    CpEquivalence(void) {
                 equiv.substr2 = 0;
                 subscripts = equiv.subscrs;
                 if( RecOpenParen() ) {
-                    if( !RecNOpn() || !RecNextOpr( OPR_COL ) ) {
+                    if( !RecNoOpn() || !RecNextOpr( OPR_COL ) ) {
                         sub_string = false;
                         for( ;; ) {
                             CIntExpr();
@@ -158,11 +158,11 @@ void    CpEquivalence(void) {
                         }
                         if( !sub_string ) {
                             ReqCloseParen();
-                            ReqNOpn();
+                            ReqNoOpn();
                             AdvanceITPtr();
                             if( RecOpenParen() ) {
                                 *subscripts = 1;
-                                if( !RecNOpn() ) {
+                                if( !RecNoOpn() ) {
                                     CIntExpr();
                                     *subscripts = ITIntValue( CITNode );
                                 }
@@ -220,7 +220,7 @@ void    CpEquivalence(void) {
             eq_set = eq_head;
         }
         ReqCloseParen();
-        ReqNOpn();
+        ReqNoOpn();
         AdvanceITPtr();
         if( !RecComma() ) {
             break;

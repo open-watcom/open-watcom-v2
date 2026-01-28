@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -684,7 +684,7 @@ static  void    Generate( void )
         typ1 = CITNode->typ;
         typ2 = next->typ;
         opr = next->opr;
-        if( RecNOpn() ) {
+        if( RecNoOpn() ) {
             typ1 = FT_NO_TYPE;
             CITNode->size = next->size;
             if( (opr != OPR_PLS)

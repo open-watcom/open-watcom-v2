@@ -164,7 +164,7 @@ void DelCSNode(void)
 
 void CSNoMore(void)
 {
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
     }
     ReqEOS();
@@ -183,7 +183,7 @@ void ColonLabel(void)
 
 void BlockLabel(void)
 {
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
         ColonLabel();
     } else {
@@ -230,7 +230,7 @@ void CSCond( label_id label )
 {
 // Process a control structure condition (e.g. WHILE( cond )DO).
 
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
         if( ReqOpenParen() ) {
             GBoolExpr();

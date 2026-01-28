@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ void    SFPrologue( void ) {
     SFSymId->u.ns.si.sf.header->ref_count = 1;
     parm = &SFSymId->u.ns.si.sf.header->parm_list;
     *parm = NULL;
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
     } else {
         for( ;; ) {
@@ -109,7 +109,7 @@ void    SFPrologue( void ) {
         }
     }
     ReqCloseParen();
-    ReqNOpn();
+    ReqNoOpn();
     arg_list = func_node->link;
     func_node->link = CITNode->link;
     CITNode->link = NULL;

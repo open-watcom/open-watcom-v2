@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ void    CpNameList( void ) {
     grp_entry   *ge;
 
     StmtExtension( SP_STRUCTURED_EXT );
-    ReqNOpn();
+    ReqNoOpn();
     AdvanceITPtr();
     for( ;; ) {
         ReqDiv();
@@ -94,7 +95,7 @@ void    CpNameList( void ) {
                 }
             }
             AdvanceITPtr();
-            if( RecComma() && RecNOpn() ) {
+            if( RecComma() && RecNoOpn() ) {
                 AdvanceITPtr();
             }
             if( !RecComma() ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,9 +179,9 @@ bool    RecCat( void ) {
 }
 
 
-bool    RecNOpr( void ) {
-//=================
-
+bool    RecNoOpr( void )
+//======================
+{
     return( OPR_PHI == CITNode->opr );
 }
 
@@ -217,17 +217,17 @@ bool    ReqEOS( void ) {
 }
 
 
-bool    RecNOpn( void ) {
+bool    RecNoOpn( void ) {
 //=================
 
     return( CITNode->opn.ds == DSOPN_PHI );
 }
 
 
-bool    ReqNOpn( void ) {
+bool    ReqNoOpn( void ) {
 //=================
 
-    if( RecNOpn() )
+    if( RecNoOpn() )
         return( true );
     OpndErr( SX_UNEXPECTED_OPN );
     return( false );

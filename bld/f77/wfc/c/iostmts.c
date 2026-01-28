@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +117,7 @@ void    CpPrint( void ) {
     Form();
     if( !RecEOS() ) {
         ReqComma();
-        if( RecNOpn() ) {
+        if( RecNoOpn() ) {
             cit = CITNode;
             AdvanceITPtr();
             if( RecEOS() ) {
@@ -180,7 +180,7 @@ static  bool            ReadKWList( void ) {
         return( true ); // we have ( ciolist ) (a(i) i==1,10)
     if( opr != OPR_TRM )
         return( false );
-    if( RecNOpn() )
+    if( RecNoOpn() )
         return( false );
     if( CITNode->opn.ds == DSOPN_LIT )
         return( false );
@@ -237,7 +237,7 @@ void    CpWrite( void ) {
 // Compile WRITE statement.
 
     InitIO();
-    if( RecTrmOpr() && RecNOpn() ) {
+    if( RecTrmOpr() && RecNoOpn() ) {
         AdvanceITPtr();
     }
     if( ReqOpenParen() ) {
@@ -257,7 +257,7 @@ static  void    UnitOrList( void ) {
 // in brackets.
 
     InitIO();
-    if( RecNextOpr( OPR_LBR ) && RecNOpn() ) {
+    if( RecNextOpr( OPR_LBR ) && RecNoOpn() ) {
         AdvanceITPtr();
         DoKWList();
     } else {
@@ -277,7 +277,7 @@ static  void    JustList( void ) {
 // The io statement must have a keyword list in brackets.
 
     InitIO();
-    if( RecTrmOpr() && RecNOpn() ) {
+    if( RecTrmOpr() && RecNoOpn() ) {
         AdvanceITPtr();
     }
     if( ReqOpenParen() ) {
@@ -296,7 +296,7 @@ static  void    DoKWList( void ) {
 
     KeywordList();
     if( ReqCloseParen() ) {
-        if( !RecNOpn() ) {
+        if( !RecNoOpn() ) {
             Error( SX_EOS_EXPECTED );
         }
         AdvanceITPtr();

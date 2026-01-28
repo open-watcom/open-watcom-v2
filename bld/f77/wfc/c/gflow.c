@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,7 +236,7 @@ void    GBreak( FCODE routine )
 // Generate a STOP or a PAUSE.
 {
     EmitOp( routine );
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         OutPtr( NULL );
     } else {
         OutPtr( CITNode->sym_ptr );

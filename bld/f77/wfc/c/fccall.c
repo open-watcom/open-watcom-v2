@@ -905,7 +905,7 @@ void    FCAltReturn( void )
     Set64Val1p( alt_ret );
     num_alts = GetU16();
     while( num_alts-- > 0 ) {
-        CGSelCase( sel, GetStmtCgLabel( _GetPtr() ), alt_ret );
+        CGSelCase( sel, GetStmtCgLabel( (sym_id)GetPtr() ), alt_ret );
         U64Inc( alt_ret );
     }
     cglbl = BENewLabel();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,10 +70,10 @@ static  void    BreakOpn( FCODE routine ) {
 static  void    NumOrLit( FCODE routine ) {
 //===============================================
 
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
     }
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         GBreak( routine );
     } else if( !RecLiteral() ) {
         if( CITNode->opn.ds == DSOPN_INT ) {
@@ -120,7 +120,7 @@ void    CpEnd(void) {
 //===============
 
     LFSkip();
-    if( RecNOpn() ) {
+    if( RecNoOpn() ) {
         ProgSw |= PS_END_OF_SUBPROG;
         AdvanceITPtr();
         Remember.endstmt = true;
