@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "optr.h"
 #include "opn.h"
 #include "fcodes.h"
 #include "global.h"
@@ -39,8 +38,9 @@
 #include "emitobj.h"
 #include "types.h"
 #include "tcmplx.h"
-#include "binops.h"
 #include "gtypes.h"
+#include "optr.h"
+#include "binops.h"
 
 
 static bool UnaryMul( TYPE typ1, TYPE typ2 ) {

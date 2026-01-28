@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #include "rstnlist.h"
 #include "rststmt.h"
 #include "forcstat.h"
+#include "fcflow.h"
 #include "gsegs.h"
 
 
@@ -371,10 +372,10 @@ static  void    DumpStmtNos( void )
 
     for( sn = SList; sn != NULL; sn = STFree( sn ) ) {
         if( (sn->u.st.flags & SN_DEFINED) == 0 ) {
-            Error( ST_UNDEFINED, sn->u.st.number, sn->u.st.line );
+            Error( ST_UNDEFINED, _GetStmtNumber( sn ), sn->u.st.line );
         } else {
             if( !StmtNoRef( sn ) ) {
-                Warning( ST_UNREFERENCED, sn->u.st.number );
+                Warning( ST_UNREFERENCED, _GetStmtNumber( sn ) );
             }
         }
     }

@@ -748,7 +748,7 @@ void    FCSetFmt( void )
     call_handle     call;
 
     call = InitCall( RT_SET_FMT );
-    CGAddParm( call, CGBackName( GetStmtCgBckLabel( (sym_id)GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( call, CGBackName( _GetStmtCgBckLabel( (sym_id)GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( call ) );
 }
 
@@ -950,7 +950,7 @@ void    FCSetErr( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     ErrEqStmt = sn;
-    ErrEqLabel = GetStmtLabel( sn );
+    ErrEqLabel = _GetStmtLabel( sn );
 }
 
 
@@ -967,7 +967,7 @@ void    FCSetEnd( void )
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     EndEqStmt = sn;
-    EndEqLabel = GetStmtLabel( sn );
+    EndEqLabel = _GetStmtLabel( sn );
 }
 
 

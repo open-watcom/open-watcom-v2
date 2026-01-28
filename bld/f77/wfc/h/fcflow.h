@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#define GetStmtLabel(x)         ((x)->u.st.label)
-#define GetStmtCgLabel(x)       GetCgLabel((x)->u.st.label)
-#define GetStmtCgBckLabel(x)    GetCgBckLabel((x)->u.st.label)
+#define _GetStmtNumber(x)        ((x)->u.st.number)
+#define _GetStmtLabel(x)         ((x)->u.st.label)
+#define _GetStmtCgLabel(x)       GetCgLabel((x)->u.st.label)
+#define _GetStmtCgBckLabel(x)    GetCgBckLabel((x)->u.st.label)
 
 extern void             InitLabels( void );
 extern void             FiniLabels( bool format_label );

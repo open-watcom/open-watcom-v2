@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,18 +31,15 @@
 
 
 #include "ftnstd.h"
-#include "optr.h"
 #include "errcod.h"
 #include "global.h"
 #include "ferror.h"
 #include "usfold.h"
 #include "lexstcmp.h"
 #include "upscan.h"
-#include "binops.h"
 #include "intarith.h"
-
-
-extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
+#include "optr.h"
+#include "binops.h"
 
 
 static void    MulIOFlow ( ftn_type *arg1, ftn_type *arg2 ) {

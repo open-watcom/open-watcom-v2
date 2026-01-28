@@ -71,10 +71,6 @@ typedef struct old_back_handle {
     back_handle             cgbck;
 } old_back_handle;
 
-extern cg_name          SubAltSCB( sym_id );
-
-extern segment_id       CurrCodeSegId;
-
 back_handle             TraceEntry_cgbck;
 
 static back_handle      ModuleName_cgbck = { NULL };
@@ -792,8 +788,8 @@ static void     DumpBrTable( void )
     for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED)
           && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
-            Set64ValU32( tmp, GetStmtLabel( stmt ) );
-            CGSelCase( s_handle, GetStmtCgLabel( stmt ), tmp );
+            Set64ValU32( tmp, _GetStmtLabel( stmt ) );
+            CGSelCase( s_handle, _GetStmtCgLabel( stmt ), tmp );
         }
     }
     CGSelOther( s_handle, cglbl );

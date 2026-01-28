@@ -63,6 +63,7 @@
 #include "mkname.h"
 #include "rstutils.h"
 #include "gsegs.h"
+#include "symtab.h"
 
 #include "langenvd.h"
 #if _INTEL_CPU
@@ -77,7 +78,6 @@
 #include "langenv.h"
 #include "felang.h"
 
-#include "wf77segs.h"
 #include "dwarfid.h"
 
 #include "cgswitch.h"
@@ -87,10 +87,6 @@
 #include "clibext.h"
 #include "cspawn.h"
 
-
-extern  global_seg      *CurrGSeg;
-extern  global_seg      *GlobalSeg;
-extern  char            ProgName[];
 
 segment_id              CurrCodeSegId;
 
@@ -1145,7 +1141,7 @@ static char *GetName( sym_id sym )
     }
     if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
         ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
-        return( ProgName );
+        return( CPROGNAME );
     }
     STExtractName( sym, SymBuff );
     return( SymBuff );

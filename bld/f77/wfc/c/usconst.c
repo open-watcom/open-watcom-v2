@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "opr.h"
-#include "optr.h"
 #include "astype.h"
 #include "opn.h"
 #include "global.h"
@@ -43,6 +42,7 @@
 #include "usfold.h"
 #include "errcod.h"
 #include "ferror.h"
+#include "optr.h"
 #include "upscan.h"
 #include "usconst.h"
 

@@ -34,6 +34,7 @@
 #include "global.h"
 #include "fmemmgr.h"
 #include "rststmt.h"
+#include "fcflow.h"
 #include "cgmagic.h"
 
 
@@ -45,7 +46,7 @@ sym_id  STStmtNo( stmt_num stmt_no )
     sym_id      ste_ptr;
 
     for( ste_ptr = SList; ste_ptr != NULL; ste_ptr = ste_ptr->u.st.link ) {
-        if( ste_ptr->u.st.number == stmt_no ) {
+        if( _GetStmtNumber( ste_ptr ) == stmt_no ) {
             return( ste_ptr );
         }
     }

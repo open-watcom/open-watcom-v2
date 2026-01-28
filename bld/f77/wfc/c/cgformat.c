@@ -61,7 +61,7 @@ void    StartFmt( cs_label fmt_label ) {
             // FORMAT statement with no statement label
             OutU16( 0 );
         } else {
-            OutU16( GetStmtLabel( fmt_label.st_label ) );
+            OutU16( _GetStmtLabel( fmt_label.st_label ) );
         }
     } else {
         OutU16( fmt_label.g_label );

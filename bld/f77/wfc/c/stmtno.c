@@ -46,11 +46,11 @@
 #include "rststmt.h"
 #include "cgmagic.h"
 #include "fcodes.h"
+#include "recog.h"
+#include "fcflow.h"
 #include "gflow.h"
 #include "fmtcnvt.h"
 
-
-extern  bool            RecNumber(void);
 
 //  NOTE : These modules will check for errors and give any error
 //         messages relating to statement numbers.
@@ -121,7 +121,7 @@ sym_id  LookUp( stmt_num stmt_no )
 void    Err( int errcod, sym_id sym_ptr )
 //=======================================
 {
-    Error( errcod, sym_ptr->u.st.number, sym_ptr->u.st.line );
+    Error( errcod, _GetStmtNumber( sym_ptr ), sym_ptr->u.st.line );
 }
 
 
@@ -137,7 +137,7 @@ sym_id  LkUpStmtNo( void )
     if( sym_ptr != NULL ) {
         sym_ptr->u.st.ref_count++;
         flags = sym_ptr->u.st.flags;
-        if( sym_ptr->u.st.number == StmtNo ) {
+        if( _GetStmtNumber( sym_ptr ) == StmtNo ) {
             Warning( ST_TO_SELF );     // this is only a warning
         }                              // eg. 10 IF( FNX( Y ) )10,20,30
                                        // will not necessarily be infinite
@@ -242,8 +242,8 @@ sym_id  LkUpAssign( void )
 }
 
 
-stmt_num    LkUpDoTerm( void )
-//============================
+stmt_num    LkUpDoTermStmtNo( void )
+//==================================
 // Look up a statement numbers for a do terminator.
 {
     sym_id      sym_ptr;

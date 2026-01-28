@@ -156,12 +156,12 @@ void CpUntil( void )
     CSNoMore();
 }
 
-static stmt_num DoLabel( void )
+static stmt_num DoTermStmtNo( void )
 {
     stmt_num    term_stmt_no;
 
     if( RecNumber() ) {
-        term_stmt_no = LkUpDoTerm();
+        term_stmt_no = LkUpDoTermStmtNo();
         AdvanceITPtr();
         if( !RecNoOpr()
           && !RecComma() ) {
@@ -180,7 +180,7 @@ void CpDo( void )
     stmt_num    term_stmt_no;
 
     AddCSNode( CS_DO );
-    term_stmt_no = DoLabel();
+    term_stmt_no = DoTermStmtNo();
     if( term_stmt_no == 0 ) {
         Extension( DO_DO_EXT );
     }
@@ -194,7 +194,7 @@ void CpDoWhile( void )
 {
     Extension( DO_DO_EXT );
     InitLoop( CS_DO_WHILE );
-    CSHead->cs_info.term_stmt_no = DoLabel();
+    CSHead->cs_info.term_stmt_no = DoTermStmtNo();
     if( RecKeyWord( "WHILE" ) ) {
         RemKeyword( CITNode, 5 );
         CSCond( CSHead->bottom );

@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+extern segment_id   CurrCodeSegId;
+
 extern void         InitSubSegs( void );
 extern segment_id   AllocImpSegId( void );
 extern void         InitSegs( void );

@@ -46,6 +46,7 @@
 #include "insert.h"
 #include "utility.h"
 #include "arutls.h"
+#include "optr.h"
 #include "upscan.h"
 #include "usconst.h"
 #include "gstring.h"

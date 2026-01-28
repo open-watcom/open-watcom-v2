@@ -59,7 +59,7 @@ extern sym_id       LkUpStmtNo( void );
 extern sym_id       LkUpFormat( void );
 extern sym_id       FmtPointer( void );
 extern sym_id       LkUpAssign( void );
-extern stmt_num     LkUpDoTerm( void );
+extern stmt_num     LkUpDoTermStmtNo( void );
 extern void         DefStmtNo( stmt_num stmt_no );
 extern void         Update( stmt_num stmt_no );
 extern void         InitStNumbers( void );

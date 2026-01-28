@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,16 +45,6 @@
 #include "symtab.h"
 #include "declare.h"
 #include "rstmgr.h"
-
-
-#define PROG_LEN        5
-char    ProgName[PROG_LEN+1] = { 'F','M','A','I','N',
-                                   NULLCHAR };
-#define BLKDAT_LEN      10
-char    BlkData[BLKDAT_LEN+1] = { '@','B','L','O','C','K','D','A','T','A',
-                                    NULLCHAR };
-#define CBLANK_LEN      6
-char    CBlank[CBLANK_LEN+1] = { '@','B','L','A','N','K',NULLCHAR };
 
 
 void    STInit( void ) {
@@ -110,7 +100,7 @@ sym_id  LkProgram( void ) {
 
     sym_id    sym;
 
-    sym = SymLookup( ProgName, PROG_LEN );
+    sym = SymLookup( CPROGNAME, sizeof( CPROGNAME ) - 1 );
     sym->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_PROGRAM | SY_PENTRY |
                     SY_UNNAMED | SY_REFERENCED;
     return( sym );
@@ -124,7 +114,9 @@ sym_id  LkBlkData( void ) {
 
     sym_id    sym;
 
-    sym = SymLookup( BlkData, BLKDAT_LEN );
+#define CBLKDATA    "@BLOCKDATA"
+
+    sym = SymLookup( CBLKDATA, sizeof( CBLKDATA ) - 1 );
     sym->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
                     SY_PENTRY | SY_UNNAMED | SY_REFERENCED;
     return( sym );
@@ -161,7 +153,9 @@ sym_id  LkBCommon( void ) {
 
     sym_id      sym;
 
-    sym = ComLookup( CBlank, CBLANK_LEN );
+#define CBLANK      "@BLANK"
+
+    sym = ComLookup( CBLANK, sizeof( CBLANK ) - 1 );
     sym->u.ns.flags |= SY_BLANK_COMMON;
     return( sym );
 }

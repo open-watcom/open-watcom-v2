@@ -63,11 +63,6 @@
 #include "feprotos.h"
 
 
-extern  void            FiniTmps(void);
-
-extern  back_handle     TraceEntry_cgbck;
-extern  segment_id      CurrCodeSegId;
-
 /* Forward declarations */
 static  void    GenTraceback( void );
 static  void    GenReturnValue( sym_id sym );
@@ -905,7 +900,7 @@ void    FCAltReturn( void )
     Set64Val1p( alt_ret );
     num_alts = GetU16();
     while( num_alts-- > 0 ) {
-        CGSelCase( sel, GetStmtCgLabel( (sym_id)GetPtr() ), alt_ret );
+        CGSelCase( sel, _GetStmtCgLabel( (sym_id)GetPtr() ), alt_ret );
         U64Inc( alt_ret );
     }
     cglbl = BENewLabel();

@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "opr.h"
-#include "optr.h"
 #include "opn.h"
 #include "errcod.h"
 #include "astype.h"
@@ -61,12 +60,11 @@
 #include "gcnvt.h"
 #include "gsubprog.h"
 #include "ifdump.h"
+#include "optr.h"
+#include "usconst.h"
 #include "upcat.h"
 #include "proclist.h"
 
-
-extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
-extern  void            (* const ConstTable[])(TYPE, TYPE, OPTR);
 
 /* Forward declarations */
 static  void    InlineCnvt( void );

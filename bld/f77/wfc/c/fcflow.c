@@ -170,7 +170,7 @@ void    FCStmtJmpAlways( void )
     sym_id          sn;
 
     sn = GetPtr();
-    CGControl( O_GOTO, NULL, GetStmtCgLabel( sn ) );
+    CGControl( O_GOTO, NULL, _GetStmtCgLabel( sn ) );
     RefStmtLabel( sn );
 }
 
@@ -188,7 +188,7 @@ void    FCStmtDefineLabel( void )
     sym_id          sn;
 
     sn = GetPtr();
-    CGControl( O_LABEL, NULL, GetStmtCgLabel( sn ) );
+    CGControl( O_LABEL, NULL, _GetStmtCgLabel( sn ) );
     RefStmtLabel( sn );
 }
 
@@ -217,12 +217,12 @@ void    FCAssign( void )
     stmt = GetPtr();
     if( stmt->u.st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGBackName( GetStmtCgBckLabel( stmt ),
+                          CGBackName( _GetStmtCgBckLabel( stmt ),
                                       TY_LOCAL_POINTER ),
                           TY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( GetStmtLabel( stmt ), TY_INTEGER ),
+                          CGInteger( _GetStmtLabel( stmt ), TY_INTEGER ),
                           TY_INTEGER ) );
         RefStmtLabel( stmt );
     }
@@ -247,21 +247,21 @@ void    FCIfArith( void )
     if( lt == gt ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_EQ, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtCgLabel( eq ) );
-        CGControl( O_GOTO, NULL, GetStmtCgLabel( lt ) );
+                   _GetStmtCgLabel( eq ) );
+        CGControl( O_GOTO, NULL, _GetStmtCgLabel( lt ) );
     } else if( lt == eq ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_GT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtCgLabel( gt ) );
-        CGControl( O_GOTO, NULL, GetStmtCgLabel( eq ) );
+                   _GetStmtCgLabel( gt ) );
+        CGControl( O_GOTO, NULL, _GetStmtCgLabel( eq ) );
     } else if( eq == gt ) {
         CGControl( O_IF_TRUE,
                    CGCompare( O_LT, if_expr, CGInteger( 0, cgtyp ), cgtyp ),
-                   GetStmtCgLabel( lt ) );
-        CGControl( O_GOTO, NULL, GetStmtCgLabel( eq ) );
+                   _GetStmtCgLabel( lt ) );
+        CGControl( O_GOTO, NULL, _GetStmtCgLabel( eq ) );
     } else {
-        CG3WayControl( if_expr, GetStmtCgLabel( lt ), GetStmtCgLabel( eq ),
-                       GetStmtCgLabel( gt ) );
+        CG3WayControl( if_expr, _GetStmtCgLabel( lt ), _GetStmtCgLabel( eq ),
+                       _GetStmtCgLabel( gt ) );
     }
     RefStmtLabel( lt );
     RefStmtLabel( eq );
@@ -286,8 +286,8 @@ void    FCAssignedGOTOList( void )
     while( (sn = GetPtr()) != NULL ) {
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
-            cglbl = GetStmtCgLabel( sn );
-            Set64ValU32( tmp, GetStmtLabel( sn ) );
+            cglbl = _GetStmtCgLabel( sn );
+            Set64ValU32( tmp, _GetStmtLabel( sn ) );
             CGSelCase( s, cglbl, tmp );
         }
     }
@@ -564,7 +564,7 @@ void    RefStmtLabel( sym_id sn )
     } else {
         sn->u.st.ref_count--;
         if( sn->u.st.ref_count == 0 ) {
-            DoneLabel( GetStmtLabel( sn ) );
+            DoneLabel( _GetStmtLabel( sn ) );
         }
     }
 }

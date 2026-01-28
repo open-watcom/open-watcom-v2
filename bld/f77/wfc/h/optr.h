@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,3 +40,4 @@ typedef enum {
 #define OPTR_FIRST_LOGOP    OPTR_EQV
 #define OPTR_FIRST_ARITHOP  OPTR_ADD
 
+extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
