@@ -23,7 +23,8 @@ t01: .SYMBOLIC
     #
     @set ERRORS=0
     @set VER= b
-    @-diff -b $@.chk $@.lst > $(nuldev)
+    #@-diff -b $@.chk $@.lst > $(nuldev)
+    @-diff -b $@.chk $@.lst
     @%make result
     @set VER=
     #

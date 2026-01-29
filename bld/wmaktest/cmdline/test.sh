@@ -22,7 +22,7 @@ if [ -z "$1" ]; then
     exit
 fi
 
-TITLE=Command Line Error Tests (cmdline)
+TITLE='Command Line Error Tests (cmdline)'
 
 do_check() {
     if [ "$?" -eq "0" ]; then
@@ -35,9 +35,9 @@ do_check() {
     fi
 }
 
-echo "# ============================="
+echo "# =================================="
 echo "# ${TITLE}"
-echo "# ============================="
+echo "# =================================="
 
 TT=t01
 VER=" a"
