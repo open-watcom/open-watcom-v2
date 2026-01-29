@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include "opr.h"
 #include "opn.h"
 #include "astype.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "utility.h"

@@ -40,6 +40,7 @@
 #include "iodefs.h"
 #include "global.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "ioperm.h"
 #include "ioutls.h"

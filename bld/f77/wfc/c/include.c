@@ -38,6 +38,7 @@
 #include "global.h"
 #include "opn.h"
 #include "errcod.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"

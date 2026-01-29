@@ -42,6 +42,7 @@
 #include "errcod.h"
 #include "ctrlflgs.h"
 #include "global.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"

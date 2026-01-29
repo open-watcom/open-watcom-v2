@@ -38,6 +38,7 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "global.h"
+#include "namecod.h"
 #include "insert.h"
 #include "utility.h"
 #include "proctbl.h"

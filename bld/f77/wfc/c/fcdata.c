@@ -39,6 +39,7 @@
 #include "typclass.h"
 #include "emitobj.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "cnvd2s.h"
 #include "rststruc.h"

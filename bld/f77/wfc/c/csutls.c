@@ -35,6 +35,7 @@
 #include "errcod.h"
 #include "opr.h"
 #include "fmemmgr.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"

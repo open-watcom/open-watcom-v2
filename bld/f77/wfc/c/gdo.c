@@ -41,6 +41,7 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "cpopt.h"
+#include "namecod.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"

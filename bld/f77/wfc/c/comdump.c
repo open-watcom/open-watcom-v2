@@ -41,6 +41,7 @@
 #include "ecflags.h"
 #include "brseinfo.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "cbsize.h"
 #include "comdump.h"

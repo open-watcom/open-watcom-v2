@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ extern void     NameTypeErr( int errcod, sym_id sym );
 extern void     TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 );
 extern void     TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 );
 extern void     TypeErr( int errcod, TYPE typ );
-extern void     KnownClassErr( int errcod, uint idx );
+extern void     KnownClassErr( int errcod, clsname_id clsname );
 extern void     ClassErr( int errcod, sym_id sym );
 extern void     OpndErr( int errcod );
 extern void     IllName( sym_id sym );

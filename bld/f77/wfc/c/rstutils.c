@@ -36,6 +36,7 @@
 #include "cpopt.h"
 #include "errcod.h"
 #include "fmemmgr.h"
+#include "namecod.h"
 #include "insert.h"
 #include "chain.h"
 #include "rstutils.h"

@@ -41,6 +41,7 @@
 #include "opn.h"
 #include "iodefs.h"
 #include "global.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "utility.h"

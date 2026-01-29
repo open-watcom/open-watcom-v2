@@ -37,6 +37,7 @@
 #include "stmtsw.h"
 #include "progsw.h"
 #include "opn.h"
+#include "namecod.h"
 #include "insert.h"
 #include "impltab.h"
 #include "rstnlist.h"

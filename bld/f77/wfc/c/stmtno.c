@@ -42,6 +42,7 @@
 #include "intcnv.h"
 #include "cpopt.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "rststmt.h"
 #include "cgmagic.h"

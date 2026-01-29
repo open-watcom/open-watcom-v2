@@ -36,6 +36,7 @@
 #include "progsw.h"
 #include "global.h"
 #include "opn.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "inout.h"

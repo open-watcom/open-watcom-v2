@@ -33,8 +33,8 @@
 
 // constants used for parameter to ReqName
 
-enum {
+typedef enum {
     #define pick(en,class,msgid)  en,
     #include "_namecod.h"
     #undef pick
-};
+} clsname_id;

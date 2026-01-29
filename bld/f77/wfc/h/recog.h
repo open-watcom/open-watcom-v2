@@ -59,7 +59,7 @@ extern bool    RecNoOpn( void );
 extern bool    ReqNoOpn( void );
 extern bool    RecKeyWord( const char *key );
 extern bool    RecName( void );
-extern bool    ReqName( int index );
+extern bool    ReqName( clsname_id clsname );
 extern bool    RecNWL( void );
 extern bool    RecNumber( void );
 extern bool    RecLiteral( void );

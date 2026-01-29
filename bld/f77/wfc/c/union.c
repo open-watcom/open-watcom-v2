@@ -39,6 +39,7 @@
 #include "global.h"
 #include "errcod.h"
 #include "segsw.h"
+#include "namecod.h"
 #include "recog.h"
 #include "insert.h"
 #include "utility.h"

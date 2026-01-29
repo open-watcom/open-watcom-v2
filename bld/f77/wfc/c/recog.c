@@ -36,6 +36,7 @@
 #include "errcod.h"
 #include "global.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "utility.h"
 #include "arutls.h"
@@ -250,12 +251,12 @@ bool    RecName( void ) {
 }
 
 
-bool    ReqName( int index ) {
-//============================
-
+bool    ReqName( clsname_id clsname )
+//===================================
+{
     if( RecName() )
         return( true );
-    KnownClassErr( SX_NO_NAME, index );
+    KnownClassErr( SX_NO_NAME, clsname );
     return( false );
 }
 

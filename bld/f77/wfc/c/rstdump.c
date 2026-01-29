@@ -39,6 +39,7 @@
 #include "cpopt.h"
 #include "iflookup.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "rstutils.h"
 #include "ifused.h"

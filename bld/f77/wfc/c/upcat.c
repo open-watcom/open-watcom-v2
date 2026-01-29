@@ -41,6 +41,7 @@
 #include "errcod.h"
 #include "global.h"
 #include "iflookup.h"
+#include "namecod.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "insert.h"

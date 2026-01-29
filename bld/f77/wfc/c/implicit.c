@@ -42,6 +42,7 @@
 #include "global.h"
 #include "segsw.h"
 #include "csetinfo.h"
+#include "namecod.h"
 #include "recog.h"
 #include "types.h"
 #include "ferror.h"

@@ -35,6 +35,7 @@
 #include "global.h"
 #include "opr.h"
 #include "fmemmgr.h"
+#include "namecod.h"
 #include "recog.h"
 #include "types.h"
 #include "ferror.h"

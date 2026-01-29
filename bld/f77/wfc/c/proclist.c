@@ -41,6 +41,7 @@
 #include "opr.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"

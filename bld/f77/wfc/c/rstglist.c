@@ -40,6 +40,7 @@
 #include "fhash.h"
 #include "iflookup.h"
 #include "ferror.h"
+#include "namecod.h"
 #include "insert.h"
 #include "cbsize.h"
 #include "rstutils.h"

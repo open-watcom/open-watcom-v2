@@ -37,6 +37,7 @@
 #include "opn.h"
 #include "rtconst.h"
 #include "global.h"
+#include "namecod.h"
 #include "recog.h"
 #include "types.h"
 #include "ferror.h"

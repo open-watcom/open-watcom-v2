@@ -47,8 +47,8 @@
 
 
 typedef struct class_entry {
-    const char  *class;
-    uint        id;
+    const char  *class_name;
+    uint        msg_id;
 } class_entry;
 
 static  class_entry     ClassMsg[] = {
@@ -66,8 +66,8 @@ const char  *PrmCodTab[] = {
     #undef pick
 };
 
-static  uint    SymClass( sym_id sym )
-//====================================
+static clsname_id   SymClass( sym_id sym )
+//========================================
 {
     unsigned_16 class;
     unsigned_16 flags;
@@ -105,12 +105,12 @@ static  uint    SymClass( sym_id sym )
 }
 
 
-static const char   *GetClass( uint idx, char *buff )
-//===================================================
+static const char   *GetClass( clsname_id clsname, char *buff )
+//=============================================================
 {
-    if( ClassMsg[idx].class != NULL )
-        return( ClassMsg[idx].class );
-    MsgBuffer( ClassMsg[idx].id, buff );
+    if( ClassMsg[clsname].class_name != NULL )
+        return( ClassMsg[clsname].class_name );
+    MsgBuffer( ClassMsg[clsname].msg_id, buff );
     return( &buff[1] ); // skip the leading blank
 }
 
@@ -239,10 +239,10 @@ void    ClassNameErr( int errcod, sym_id sym )
 //============================================
 {
     char        buff[MAX_SYMLEN + 1];
-    char        class[MAX_MSGLEN + 1];
+    char        class_name[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
-    Error( errcod, GetClass( SymClass( sym ), class ), buff );
+    Error( errcod, GetClass( SymClass( sym ), class_name ), buff );
 }
 
 
@@ -250,10 +250,10 @@ void    PrevDef( sym_id sym )
 //===========================
 {
     char        buff[MAX_SYMLEN + 1];
-    char        class[MAX_MSGLEN + 1];
+    char        class_name[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
-    Error( VA_PREV_DEF_NAM, buff, GetClass( SymClass( sym ), class ) );
+    Error( VA_PREV_DEF_NAM, buff, GetClass( SymClass( sym ), class_name ) );
 }
 
 
@@ -291,21 +291,21 @@ void    TypeErr( int errcod, TYPE typ )
 }
 
 
-void    KnownClassErr( int errcod, uint idx )
-//===========================================
+void    KnownClassErr( int errcod, clsname_id clsname )
+//=====================================================
 {
-    char        class[MAX_MSGLEN + 1];
+    char        class_name[MAX_MSGLEN + 1];
 
-    Error( errcod, GetClass( idx, class ) );
+    Error( errcod, GetClass( clsname, class_name ) );
 }
 
 
 void    ClassErr( int errcod, sym_id sym )
 //========================================
 {
-    char        class[MAX_MSGLEN + 1];
+    char        class_name[MAX_MSGLEN + 1];
 
-    Error( errcod, GetClass( SymClass( sym ), class ) );
+    Error( errcod, GetClass( SymClass( sym ), class_name ) );
 }
 
 
@@ -324,12 +324,11 @@ void    IllName( sym_id sym )
 //===========================
 {
     char        buff[MAX_SYMLEN + 1];
-    char        class[MAX_MSGLEN + 1];
+    char        class_name[MAX_MSGLEN + 1];
     char        stmt[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
-    Error( VA_ILL_USE, GetClass( SymClass( sym ), class ), buff,
-                       StmtName( stmt ) );
+    Error( VA_ILL_USE, GetClass( SymClass( sym ), class_name ), buff, StmtName( stmt ) );
 }
 
 

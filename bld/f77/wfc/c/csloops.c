@@ -37,6 +37,7 @@
 #include "global.h"
 #include "stmtsw.h"
 #include "fmemmgr.h"
+#include "namecod.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"
