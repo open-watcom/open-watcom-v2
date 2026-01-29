@@ -41,11 +41,10 @@
 #include "rstutils.h"
 
 
-char    *STExtractName( sym_id sym, char *buff ) {
-//================================================
-
+char    *STExtractName( sym_id sym, char *buff )
+//==============================================
 // Get the name of a symbol.
-
+{
     memcpy( buff, &sym->u.ns.name, sym->u.ns.u2.name_len );
     buff += sym->u.ns.u2.name_len;
     *buff = NULLCHAR;
@@ -53,11 +52,10 @@ char    *STExtractName( sym_id sym, char *buff ) {
 }
 
 
-char    *STGetName( sym_id sym, char *buff ) {
-//============================================
-
+char    *STGetName( sym_id sym, char *buff )
+//==========================================
 // Get the name of a symbol (check for shadowed symbols).
-
+{
     if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
         (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = sym->u.ns.si.ms.sym;
@@ -86,21 +84,19 @@ sym_id STAdd( const char *name, size_t length )
 }
 
 
-sym_id  STFree( sym_id sym ) {
-//============================
-
+sym_id  STFree( sym_id sym )
+//==========================
 // Free a symbol table entry and return its link field (must not be a
 // common block).
-
+{
     return( FreeLink( (void **)sym ) );
 }
 
 
-void    FreeSFHeader( sym_id sym ) {
-//==================================
-
+void    FreeSFHeader( sym_id sym )
+//================================
 // Free statement function header.
-
+{
     if( sym->u.ns.si.sf.header != NULL ) {
         FreeChain( &sym->u.ns.si.sf.header->parm_list );
         FMemFree( sym->u.ns.si.sf.header );
@@ -109,11 +105,10 @@ void    FreeSFHeader( sym_id sym ) {
 }
 
 
-void    CkSymDeclared( sym_id sym ) {
-//===================================
-
+void    CkSymDeclared( sym_id sym )
+//=================================
 // Make sure type has been explicitly declared.
-
+{
     if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
         if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
             NameErr( TY_UNDECLARED, sym );
