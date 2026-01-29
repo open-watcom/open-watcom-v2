@@ -33,14 +33,14 @@
 // It holds relationship for token class and operand indexes
 //
 //    tok_id    opn_id
-pick( TO_OPR,  DSOPN_PHI )      // null operand
-pick( TO_NAM,  DSOPN_NAM )      // name
-pick( TO_LIT,  DSOPN_LIT )      // literal
-pick( TO_LGL,  DSOPN_LGL )      // logical
-pick( TO_INT,  DSOPN_INT )      // integer
-pick( TO_REA,  DSOPN_REA )      // real
-pick( TO_DBL,  DSOPN_DBL )      // double
-pick( TO_EXT,  DSOPN_EXT )      // extended
-pick( TO_OCT,  DSOPN_OCT )      // octal constant
-pick( TO_HEX,  DSOPN_HEX )      // hexadecimal constant
-pick( TO_FMT,  DSOPN_FMT )      // FORMAT string
+pick( TOK_OPR,  DSOPN_PHI )      // null operand
+pick( TOK_NAM,  DSOPN_NAM )      // name
+pick( TOK_LIT,  DSOPN_LIT )      // literal
+pick( TOK_LGL,  DSOPN_LGL )      // logical
+pick( TOK_INT,  DSOPN_INT )      // integer
+pick( TOK_REA,  DSOPN_REA )      // real
+pick( TOK_DBL,  DSOPN_DBL )      // double
+pick( TOK_EXT,  DSOPN_EXT )      // extended
+pick( TOK_OCT,  DSOPN_OCT )      // octal constant
+pick( TOK_HEX,  DSOPN_HEX )      // hexadecimal constant
+pick( TOK_FMT,  DSOPN_FMT )      // FORMAT string

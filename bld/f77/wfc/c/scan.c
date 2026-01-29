@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,17 +98,17 @@ void    InitScan( void ) {
 // Initialize the scanner.
 
     if( Options & OPT_EXTEND_REAL ) {
-        TokenREA = TO_DBL;
+        TokenREA = TOK_DBL;
         ExpREA = 'D';
-        TokenDBL = TO_EXT;
+        TokenDBL = TOK_EXT;
         ExpDBL = 'Q';
     } else {
-        TokenREA = TO_REA;
+        TokenREA = TOK_REA;
         ExpREA = 'E';
-        TokenDBL = TO_DBL;
+        TokenDBL = TOK_DBL;
         ExpDBL = 'D';
     }
-    TokenEXT = TO_EXT;
+    TokenEXT = TOK_EXT;
     ExpEXT = 'Q';
     Line = 0;
     State = SNS;
@@ -200,7 +200,7 @@ void    Scan( void ) {
                     *Cursor = NULLCHAR;
                 }
                 State = SOP;
-                class = TO_OPR;
+                class = TOK_OPR;
                 goto token;
             case SEX :
             case SLX :
@@ -269,7 +269,7 @@ void    Scan( void ) {
                     *Cursor = NULLCHAR;
                 }
                 State = SOP;
-                class = TO_OPR;
+                class = TOK_OPR;
                 goto token;
             case SFL :
                 if( old_state == SNS ) {
@@ -296,7 +296,7 @@ void    Scan( void ) {
                 len = atoi( LexToken.start );
                 LexToken.start = TkCrsr;
                 State = SIH;
-                class = TO_LIT;
+                class = TOK_LIT;
                 StmtSw |= SS_HOLLERITH;
                 break;
             case SIH :
@@ -387,23 +387,23 @@ token:  LexToken.stop  = TkCrsr;
         State = SNS;                   // set to no state for next time
         switch( state2 ) {
         case SAN :
-            class = TO_NAM;
+            class = TOK_NAM;
             break;
         case SNM :
-            class = TO_INT;
+            class = TOK_INT;
             break;
         case SFT :
             class = TokenREA;
             break;
         case SOL :
-            class = TO_OCT;
+            class = TOK_OCT;
             break;
         case SHX :
-            class = TO_HEX;
+            class = TOK_HEX;
             break;
         case SCS :
         case SAP :
-            class = TO_LIT;
+            class = TOK_LIT;
             break;
         case SFL :
             if( old_state == SNS ) {
@@ -414,16 +414,16 @@ token:  LexToken.stop  = TkCrsr;
                 if( ++Column >= LastColumn ) { // just processed column 72
                     *Cursor = NULLCHAR;
                 }
-                class = TO_LGL;
+                class = TOK_LGL;
             } else {
                 State = SLG;            // remember logical collected
                 LexToken.stop = dpt;    // decimal not part of token
-                class = TO_INT;
+                class = TOK_INT;
             }
             break;
         case SML :
             if( ( old_state == SNS ) || ( old_state == SSG ) ) {
-                class = TO_OPR;
+                class = TOK_OPR;
             } else {
                 class = TokenREA;
             }
@@ -433,7 +433,7 @@ token:  LexToken.stop  = TkCrsr;
             LexToken.stop = dpt + 1;    // decimal is part of token
             State = SAN;                // remember alphanumeric started
             if( old_state == SNS ) {
-                class = TO_OPR;
+                class = TOK_OPR;
             } else {
                 class = TokenREA;
             }
@@ -442,7 +442,7 @@ token:  LexToken.stop  = TkCrsr;
             LexToken.flags |= TK_EOL;
             /* fall through */
         case SLL :
-            class = TO_OPR;
+            class = TOK_OPR;
             break;
         case SIH :
             // We get here if and only if we are in a hollerith constant
@@ -459,16 +459,16 @@ token:  LexToken.stop  = TkCrsr;
             TkCrsr = LexToken.start + len;         // set new collection location
             break;
         case SFM :
-            class = TO_FMT;
+            class = TOK_FMT;
             break;
         case SIQ :
             Error( SX_QUOTE );
-            class = TO_LIT;
+            class = TOK_LIT;
             break;
         }
         LexToken.class = class;
-        if( (ExtnSw & XS_CHAR_EXTN) == 0 && ( class != TO_LIT ) &&
-            ( class != TO_FMT ) && (wasextch & C_EXT) ) {
+        if( (ExtnSw & XS_CHAR_EXTN) == 0 && ( class != TOK_LIT ) &&
+            ( class != TOK_FMT ) && (wasextch & C_EXT) ) {
             Extension( CC_SET_EXTEND );
             ExtnSw |= XS_CHAR_EXTN;
         }
@@ -480,9 +480,9 @@ token:  LexToken.stop  = TkCrsr;
             // so that last token is "FIELD".
             LexToken.start = LexToken.stop;
             LexToken.stop = TkCrsr;
-            LexToken.class = TO_NAM;
+            LexToken.class = TOK_NAM;
         } else {
-            LexToken.class = TO_OPR;
+            LexToken.class = TOK_OPR;
         }
         LexToken.flags |= TK_EOL;
     }

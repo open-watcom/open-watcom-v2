@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,7 +260,7 @@ static  void    GetOpr( void )
 // Collect an operator.
 {
     Lex.oprpos = ( LexToken.line << 8 ) + LexToken.col + 1;
-    if( LexToken.class == TO_OPR ) {
+    if( LexToken.class == TOK_OPR ) {
         Lex.opr = LkUpOpr();
         /*
          * this is to tell scan not to collect
@@ -273,7 +273,7 @@ static  void    GetOpr( void )
             LexToken.flags |= TK_LENSPEC;
         }
         Scan();
-        if( ( LexToken.class == TO_OPR )
+        if( ( LexToken.class == TOK_OPR )
           && (LexToken.flags & TK_EOL) == 0
           && ( ( Lex.opr == OPR_MUL )
           || ( Lex.opr == OPR_DIV ) )
@@ -285,7 +285,7 @@ static  void    GetOpr( void )
             }
             Scan();
         }
-    } else if( LexToken.class == TO_LGL ) {
+    } else if( LexToken.class == TOK_LGL ) {
         Lex.opr = LogOpr[LexToken.log];
         if( LexToken.log >= XLOG_OPS ) {
             Extension( MD_LOGOPR_EXTN, LogTab[LexToken.log] );
@@ -307,9 +307,9 @@ static  void    GetOpnd( void )
     Lex.opnpos = ( LexToken.line << 8 ) + LexToken.col + 1;
     Lex.opn.ds = lexDsOpn[LexToken.class];
     Lex.len = LexToken.stop - LexToken.start;
-    if( LexToken.class == TO_OPR ) {
+    if( LexToken.class == TOK_OPR ) {
         Lex.len = 0;
-    } else if( LexToken.class == TO_LGL ) {
+    } else if( LexToken.class == TOK_LGL ) {
         if( LexToken.log >= LOG_OPS ) {
             Scan();
         } else {
