@@ -59,7 +59,7 @@
 #else
 #define CHECK_OPTION(p)         ( p[0] == Glob.swchar || p[0] == Glob.shell_swchar )
 #endif
-#define CHECK_STDIN(p)          ( p[0] == Glob.swchar && p[1] == NULLCHAR )
+#define CHECK_STDIN(p)          ( p[0] == '-' && p[1] == NULLCHAR )
 
 STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
