@@ -12,20 +12,6 @@ tests = &
     t11 &
     clean
 
-.BEFORE
-    @set ERRLOG=../error.out
-    @set TITLE=Update Tests (updtest)
-    @set CLEANUP=1
-    @set ERRORS=0
-    @set VER=
-    @echo $# ==================================
-!ifdef __UNIX__
-    @echo "$# $(%TITLE)"
-!else
-    @echo $# $(%TITLE)
-!endif
-    @echo $# ==================================
-
 all: $(tests) .SYMBOLIC
 
 t01: .SYMBOLIC
@@ -122,16 +108,17 @@ t11: .SYMBOLIC
     @-diff -b -i $@.chk $@.lst
     @%make result
 
-result: .PROCEDURE .EXPLICIT
-    @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
+!include ../common.mif
 
-resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
-    @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
-    @echo $# Error: Test$(%VER) unsuccessful!!!!
-    @set ERRORS=1
-    @set CLEANUP=0
+.BEFORE
+    @set TITLE=Update Tests (updtest)
+    @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# $(%TITLE)"
+!else
+    @echo $# $(%TITLE)
+!endif
+    @echo $# ==================================
 
 clean: .SYMBOLIC
     @if exist *.obj @rm *.obj

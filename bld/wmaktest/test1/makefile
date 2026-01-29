@@ -8,21 +8,6 @@ nuldev = /dev/null
 nuldev = NUL
 !endif
 
-.BEFORE
-    @set ERRLOG=../error.out
-    @set TITLE=Multiple Dependents Tests (test1)
-    @set CLEANUP=1
-    @set ERRORS=0
-    @set VER=
-    @echo $# ==================================
-!ifdef __UNIX__
-    @echo "$# $(%TITLE)"
-!else
-    @echo $# $(%TITLE)
-!endif
-    @echo $# ==================================
-    @wmake -h -f create
-
 all: $(tests) .SYMBOLIC
 
 t01: .SYMBOLIC
@@ -48,16 +33,18 @@ t01: .SYMBOLIC
     #%make result
     @%make clean
 
-result: .PROCEDURE .EXPLICIT
-    @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test$(%VER) successful
+!include ../common.mif
 
-resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
-    @%append $(%ERRLOG) $# Error: Test$(%VER) unsuccessful!!!
-    @echo $# Error: Test$(%VER) unsuccessful!!!!
-    @set ERRORS=1
-    @set CLEANUP=0
+.BEFORE
+    @set TITLE=Multiple Dependents Tests (test1)
+    @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# $(%TITLE)"
+!else
+    @echo $# $(%TITLE)
+!endif
+    @echo $# ==================================
+    @wmake -h -f create
 
 clean: .PROCEDURE .EXPLICIT
     @rm -f *.obj *.exe main.* foo*.c

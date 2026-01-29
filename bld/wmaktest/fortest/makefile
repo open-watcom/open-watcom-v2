@@ -9,19 +9,6 @@ tests = &
     t07 &
     t08
 
-.BEFORE
-    @set ERRLOG=../error.out
-    @set TITLE=For Loop Tests (fortest)
-    @set CLEANUP=1
-    @set ERRORS=0
-    @echo $# ==================================
-!ifdef __UNIX__
-    @echo "$# $(%TITLE)"
-!else
-    @echo $# $(%TITLE)
-!endif
-    @echo $# ==================================
-
 all: $(tests) clean .SYMBOLIC
 
 t01: .SYMBOLIC
@@ -98,16 +85,17 @@ t08: .SYMBOLIC
 !endif
     @%make result
 
-result: .PROCEDURE .EXPLICIT
-    @if errorlevel 1 @%make resulterr
-    @if $(%ERRORS) == 0 @echo $#        Test successful
+!include ../common.mif
 
-resulterr: .PROCEDURE .EXPLICIT
-    @%append $(%ERRLOG) $#$# $(%TITLE) - Test $(%TT:t=) $#$#
-    @%append $(%ERRLOG) $# Error: Test unsuccessful!!!
-    @echo $# Error: Test unsuccessful!!!!
-    @set ERRORS=1
-    @set CLEANUP=0
+.BEFORE
+    @set TITLE=For Loop Tests (fortest)
+    @echo $# ==================================
+!ifdef __UNIX__
+    @echo "$# $(%TITLE)"
+!else
+    @echo $# $(%TITLE)
+!endif
+    @echo $# ==================================
 
 clean: .SYMBOLIC
     @rm -f *.obj
