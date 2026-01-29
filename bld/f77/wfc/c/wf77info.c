@@ -268,7 +268,7 @@ void    SubCodeSeg( void )
 
 #if _INTEL_CPU
 static  byte   *AlignmentSeq( void )
-//===========================================
+//==================================
 {
     if( OZOpts & OZOPT_O_TIME ) {
         return( CodeAlignSeq );
@@ -959,7 +959,8 @@ void    DefStructs( void )
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
             if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) )
                 continue;
-            if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size != 0) ) {
+            if( (sym->u.ns.u1.s.typ == FT_CHAR)
+              && (sym->u.ns.xt.size != 0) ) {
                 BEDefType( user_cgtyp, ALIGN_BYTE, sym->u.ns.xt.size );
                 sym->u.ns.si.ms.u.cgtyp = user_cgtyp;
                 user_cgtyp++;
@@ -998,8 +999,10 @@ fe_attr FEAttr( cg_sym_handle _sym )
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    if( ( sym == EPValue ) || ( sym == ReturnValue ) )
+    if( ( sym == EPValue )
+      || ( sym == ReturnValue ) ) {
         return( 0 );
+    }
     attr = 0;
     flags = sym->u.ns.flags;
     if( (flags & SY_CLASS) == SY_VARIABLE ) {
@@ -1007,8 +1010,9 @@ fe_attr FEAttr( cg_sym_handle _sym )
         if( (flags & (SY_SUB_PARM | SY_PS_ENTRY)) == 0 ) {
             if( flags & SY_IN_COMMON ) {
                 attr |= FE_STATIC | FE_VISIBLE;
-            } else if( !_MgcIsMagic( sym ) &&
-                       ( (SgmtSw & SG_BIG_SAVE) || (Options & OPT_SAVE) ) ) {
+            } else if( !_MgcIsMagic( sym )
+              && ( (SgmtSw & SG_BIG_SAVE)
+              || (Options & OPT_SAVE) ) ) {
                 attr |= FE_STATIC;
             } else if( flags & (SY_DATA_INIT | SY_SAVED) ) {
                 attr |= FE_STATIC;
@@ -1031,17 +1035,20 @@ fe_attr FEAttr( cg_sym_handle _sym )
                 } else {
                     attr |= FE_STATIC;
                 }
-            } else if( (flags & SY_SUBSCRIPTED) || (sym->u.ns.u1.s.typ == FT_STRUCTURE) ) {
+            } else if( (flags & SY_SUBSCRIPTED)
+              || (sym->u.ns.u1.s.typ == FT_STRUCTURE) ) {
                 if( (Options & OPT_AUTOMATIC) == 0 ) {
                     attr |= FE_STATIC;
                 }
             } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 // SCB's with length 0 are automatic temporaries
                 // We mustn't allow the codegen to blow away non magical symbols
-                if( (Options & OPT_AUTOMATIC ) && !_MgcIsMagic( sym ) ) {
+                if( (Options & OPT_AUTOMATIC )
+                  && !_MgcIsMagic( sym ) ) {
                     attr |= FE_VOLATILE;
                 }
-                if( (sym->u.ns.xt.size != 0) || _Allocatable( sym ) ) {
+                if( (sym->u.ns.xt.size != 0)
+                  || _Allocatable( sym ) ) {
                     if( (Options & OPT_AUTOMATIC) == 0 ) {
                         // if the assignment of the data pointer into the
                         // static SCB gets optimized out, remove this line
@@ -1139,8 +1146,8 @@ static char *GetName( sym_id sym )
             sym = sym->u.ns.si.ms.sym;
         }
     }
-    if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
-        ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
+    if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM )
+      && ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
         return( CPROGNAME );
     }
     STExtractName( sym, SymBuff );
@@ -1418,7 +1425,8 @@ static  dbg_type        GetDbgType( sym_id sym )
     dbg_loc     loc;
     dbg_type    type;
 
-    if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) {
+    if( (sym->u.ns.u1.s.typ == FT_CHAR)
+      && (sym->u.ns.xt.size == 0) ) {
         if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // return value for character*(*) function
             loc = DBLocInit();
@@ -1767,7 +1775,8 @@ dbg_type        FEDbgType( cg_sym_handle _sym )
                 db_type = GetDbgType( sym );
                 if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
                     dim_ptr = sym->u.ns.si.va.u.dim_ext;
-                    if( _AdvRequired( dim_ptr ) || _Allocatable( sym ) ) {
+                    if( _AdvRequired( dim_ptr )
+                      || _Allocatable( sym ) ) {
                         db_type = DbgADV( dim_ptr, db_type );
                     } else {
                         db_type = ArrayDbgType( dim_ptr, db_type );
@@ -1997,7 +2006,9 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
                 ptr += fn - ObjName;
             }
             fe = SDSplitExtn( fn, ObjExtn );
-            if(( *fn == NULLCHAR ) || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
+            if( ( *fn == NULLCHAR )
+              || ( ( *fn == '*' )
+              && ( fn[1] == NULLCHAR ) ) ) {
                 fn = SDFName( SrcName );
             }
             MakeName( fn, fe, ptr );

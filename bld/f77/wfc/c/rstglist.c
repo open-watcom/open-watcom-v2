@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,11 +55,10 @@
 hash_entry              GHashTable[HASH_PRIME + 1];
 
 
-static  sym_id  LnkNewGlobal( sym_id local ) {
-//============================================
-
+static  sym_id  LnkNewGlobal( sym_id local )
+//==========================================
 // Allocate a global symbol and link it into the global list.
-
+{
     sym_id      global;
     size_t      len;
 
@@ -72,11 +71,10 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
 
 
 
-sym_id        SearchGList( sym_id local ) {
-//=========================================
-
+sym_id        SearchGList( sym_id local )
+//=======================================
 // Search the global list for a symbol.
-
+{
     sym_id      head;
     sym_id      tail;
     size_t      name_len;
@@ -88,9 +86,9 @@ sym_id        SearchGList( sym_id local ) {
         return( NULL );
     tail = GHashTable[HashValue].h_tail;
     for( ;; ) {
-        if( ( head->u.ns.u2.name_len == name_len ) &&
-            ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
-            ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {
+        if( ( head->u.ns.u2.name_len == name_len )
+          && ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 )
+          && ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {
             return( head );
         }
         if( head == tail )
@@ -100,11 +98,10 @@ sym_id        SearchGList( sym_id local ) {
 }
 
 
-sym_id      AddSP2GList( sym_id ste_ptr ) {
-//=========================================
-
+sym_id      AddSP2GList( sym_id ste_ptr )
+//=======================================
 // Add a subprogram to the global list.
-
+{
     sym_id      gbl;
     unsigned_16 flags;
     unsigned_16 subprog;
@@ -128,15 +125,18 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
             // becomes what the local symbol is.
             gbl->u.ns.flags &= ~SY_FN_OR_SUB;
             gbl->u.ns.flags |= subprog;
-        } else if( (gsubprog != subprog) && (subprog != SY_FN_OR_SUB) ) {
+        } else if( (gsubprog != subprog)
+          && (subprog != SY_FN_OR_SUB) ) {
             PrevDef( gbl );
             return( gbl );
         }
     }
-    if( (flags & SY_PS_ENTRY) || ( subprog == SY_BLOCK_DATA ) ) {
+    if( (flags & SY_PS_ENTRY)
+      || ( subprog == SY_BLOCK_DATA ) ) {
         if( gbl->u.ns.flags & SY_ADDR_ASSIGNED ) {
-            if( ( ( subprog != SY_PROGRAM ) && ( subprog != SY_BLOCK_DATA ) ) ||
-                ( (flags & SY_UNNAMED) == 0 ) ) {
+            if( ( ( subprog != SY_PROGRAM )
+              && ( subprog != SY_BLOCK_DATA ) )
+              || ( (flags & SY_UNNAMED) == 0 ) ) {
                 PrevDef( gbl );
             } else {
                 ClassErr( SR_TWO_UNNAMED, gbl );
@@ -149,11 +149,10 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
 }
 
 
-void    CkComSize( sym_id sym_ptr, unsigned_32 size ) {
-//=====================================================
-
+void    CkComSize( sym_id sym_ptr, unsigned_32 size )
+//===================================================
 // Check for matching sizes of common blocks.
-
+{
     char        buff[MAX_SYMLEN+1];
     intstar4    com_size;
 
@@ -177,11 +176,10 @@ void    CkComSize( sym_id sym_ptr, unsigned_32 size ) {
     }
 }
 
-sym_id  AddCB2GList( sym_id ste_ptr ) {
-//=====================================
-
+sym_id  AddCB2GList( sym_id ste_ptr )
+//===================================
 // Add a common block to the global list.
-
+{
     sym_id      gbl;
     unsigned_16 flags;
 
@@ -206,5 +204,4 @@ sym_id  AddCB2GList( sym_id ste_ptr ) {
     }
     return( gbl );
 }
-
 

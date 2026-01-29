@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ char    *STGetName( sym_id sym, char *buff )
 //==========================================
 // Get the name of a symbol (check for shadowed symbols).
 {
-    if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
-        (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
+    if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE )
+      && (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = sym->u.ns.si.ms.sym;
     }
     return( STExtractName( sym, buff ) );
@@ -110,7 +110,8 @@ void    CkSymDeclared( sym_id sym )
 //=================================
 // Make sure type has been explicitly declared.
 {
-    if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
+    if( (SgmtSw & SG_IMPLICIT_NONE)
+      || (Options & OPT_EXPLICIT) ) {
         if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
             NameErr( TY_UNDECLARED, sym );
         }
