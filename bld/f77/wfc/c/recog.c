@@ -235,15 +235,6 @@ bool    ReqNoOpn( void ) {
 }
 
 
-bool    RecKeyWord( const char *key )
-//===================================
-{
-    if( CITNode->opn.ds != DSOPN_NAM )
-        return( false );
-    return( CmpNode2Str( CITNode, key ) );
-}
-
-
 bool    RecName( void ) {
 //=================
 
@@ -258,6 +249,15 @@ bool    ReqName( clsname_id clsname )
         return( true );
     KnownClassErr( SX_NO_NAME, clsname );
     return( false );
+}
+
+
+bool    RecKeyWord( const char *key )
+//===================================
+{
+    if( CITNode->opn.ds != DSOPN_NAM )
+        return( false );
+    return( CmpNode2Str( CITNode, key ) );
 }
 
 
@@ -285,7 +285,7 @@ bool    RecLiteral( void ) {
 bool    RecNextOpr( OPR operator ) {
 //===================================
 
-    return( operator == CITNode->link->opr );
+    return( CITNode->link->opr == operator );
 }
 
 

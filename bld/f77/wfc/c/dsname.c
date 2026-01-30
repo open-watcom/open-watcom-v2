@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +65,10 @@ static  void    ScanningFunction( void );
 static  void    SubProg( void );
 static  void    CkIntrinsic( void );
 
-bool    SubString( void ) {
+bool    SubString( void )
 //===================
-
 // Determine whether name is substring or not.
-
+{
     itnode      *save_citnode;
     OPR         opr;
 
@@ -82,11 +81,10 @@ bool    SubString( void ) {
 }
 
 
-void    DSName( void ) {
+void    DSName( void )
 //================
-
 // Downscan a name.
-
+{
     sym_id      sym_ptr;
 
     CITNode->opn.us = USOPN_NNL;
@@ -94,8 +92,9 @@ void    DSName( void ) {
         CITNode->link->opr = OPR_FBR;
         CITNode->opn.us = USOPN_NWL;
     }
-    if( ( FieldNode != NULL ) &&
-        ( ( CITNode->opr == OPR_FLD ) || ( CITNode->opr == OPR_DPT ) ) ) {
+    if( ( FieldNode != NULL )
+      && ( ( CITNode->opr == OPR_FLD )
+      || ( CITNode->opr == OPR_DPT ) ) ) {
         if( FieldNode->opn.us & USOPN_FLD ) {
             LkField( FieldNode->sym_ptr->u.fd.xt.sym_record );
         } else {
@@ -111,7 +110,8 @@ void    DSName( void ) {
                 }
             } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_NWL ) {
                 // field better be character and substring
-                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubString() ) {
+                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR )
+                  || !SubString() ) {
                     AdvError( PC_SURP_PAREN );
                 }
             }
@@ -171,10 +171,11 @@ void    DSName( void ) {
         }
     }
     sym_ptr = LkSym();
-    if( (ASType & AST_DEXP) && ( sym_ptr != InitVar ) &&
-        ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_PARAMETER ) &&
-        ( ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_VARIABLE ) ||
-            ( (sym_ptr->u.ns.flags & SY_SPECIAL_PARM) == 0 ) ) ) {
+    if( (ASType & AST_DEXP)
+      && ( sym_ptr != InitVar )
+      && ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_PARAMETER )
+      && ( ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_VARIABLE )
+      || ( (sym_ptr->u.ns.flags & SY_SPECIAL_PARM) == 0 ) ) ) {
         NameErr( DA_BAD_VAR_IN_EXPR, sym_ptr );
     }
     if( ClassIs( SY_VARIABLE ) ) {
@@ -190,7 +191,8 @@ void    DSName( void ) {
         } else if( RecNWL() ) {     // if name with list, not dimensioned
             if( ASType & AST_DIM ) {
                 IllName( sym_ptr );
-            } else if( (CITNode->typ == FT_CHAR) && SubString() ) {
+            } else if( (CITNode->typ == FT_CHAR)
+              && SubString() ) {
                 SetTypeUsage( SY_TYPE | SY_USAGE );
             } else {
                 ScanningFunction();
@@ -247,9 +249,9 @@ void    DSName( void ) {
 }
 
 
-static  void    ChkStructName( void ) {
+static  void    ChkStructName( void )
 //===============================
-
+{
     if( CITNode->typ == FT_STRUCTURE ) {
         // save the current FieldNode
         // consider:            STRUCTURE /S1/
@@ -269,9 +271,9 @@ static  void    ChkStructName( void ) {
 }
 
 
-void    GetFunctionShadow( void ) {
+void    GetFunctionShadow( void )
 //===========================
-
+{
     sym_id      fn_shadow;
 
     // update type in function shadow symbol in case an
@@ -288,15 +290,15 @@ void    GetFunctionShadow( void ) {
 }
 
 
-static  void    SubProg( void ) {
+static  void    SubProg( void )
 //=========================
-
 // Make sure subprograms are used correctly.
-
+{
     unsigned_16 sp_type;
 
     sp_type = (CITNode->flags & SY_SUBPROG_TYPE);
-    if( ( sp_type == SY_REMOTE_BLOCK ) || ( sp_type == SY_PROGRAM ) ) {
+    if( ( sp_type == SY_REMOTE_BLOCK )
+      || ( sp_type == SY_PROGRAM ) ) {
         IllName( CITNode->sym_ptr );
     } else if( sp_type == SY_STMT_FUNC ) {
         if( RecNWL() ) {
@@ -312,7 +314,8 @@ static  void    SubProg( void ) {
         }
     } else if( sp_type == SY_SUBROUTINE ) {
         if( RecNWL() ) {
-            if( ( StmtProc == PR_CALL ) && RecTrmOpr() ) {
+            if( ( StmtProc == PR_CALL )
+              && RecTrmOpr() ) {
                 if( (CITNode->flags & SY_PS_ENTRY) != 0 ) {
                     Extension( SR_TRIED_RECURSION );
                 }
@@ -325,10 +328,13 @@ static  void    SubProg( void ) {
             Extension( SR_TRIED_RECURSION );
         }
     } else if( sp_type == SY_FUNCTION ) {
-        if( RecNWL() && SubString() && (CITNode->typ == FT_CHAR) &&
-            (CITNode->flags & SY_PS_ENTRY) ) {
+        if( RecNWL()
+          && SubString()
+          && (CITNode->typ == FT_CHAR)
+          && (CITNode->flags & SY_PS_ENTRY) ) {
             GetFunctionShadow();
-        } else if( !RecNWL() && (ASType & AST_CNA) == 0 ) {
+        } else if( !RecNWL()
+          && (ASType & AST_CNA) == 0 ) {
             if( CITNode->flags & SY_PS_ENTRY ) {
                 GetFunctionShadow();
             } else {
@@ -352,11 +358,10 @@ static  void    SubProg( void ) {
 }
 
 
-static  void    ScanningFunction( void ) {
+static  void    ScanningFunction( void )
 //==========================
-
 // Must be scanning a function.
-
+{
     if( CITNode->flags & SY_PS_ENTRY ) {
         Extension( SR_TRIED_RECURSION );
     } else if( CITNode->flags & (SY_USAGE | SY_DO_PARM | SY_IN_EC) ) {
@@ -371,9 +376,8 @@ static  void    ScanningFunction( void ) {
 }
 
 
-static  void    CkIntrinsic( void ) {
+static  void    CkIntrinsic( void )
 //=============================
-
 // Check for intrinsic functions.
 //
 //     CASE 1: integer abs
@@ -382,7 +386,7 @@ static  void    CkIntrinsic( void ) {
 //     CASE 2: real iabs
 //             y == iabs( -1 )     -- this should give type mismatch error
 //
-
+{
     sym_id      sym_ptr;
     TYPE        typ;
     IFF         func;
@@ -404,7 +408,8 @@ static  void    CkIntrinsic( void ) {
                 CITNode->size = TypeSize( CITNode->typ );
                 sym_ptr->u.ns.u1.s.typ = CITNode->typ;
                 sym_ptr->u.ns.xt.size = CITNode->size;
-                if( ( CITNode->typ != typ ) && (CITNode->flags & SY_TYPE) ) {
+                if( ( CITNode->typ != typ )
+                  && (CITNode->flags & SY_TYPE) ) {
                     Error( LI_WRONG_TYPE );
                 }
             }
@@ -413,29 +418,31 @@ static  void    CkIntrinsic( void ) {
 }
 
 
-static  void    CkNameNoList( void ) {
+static  void    CkNameNoList( void )
 //==============================
-
 // Check that array/subprogram with no list is alright.
-
-    if( (ASType & AST_IO) && RecTrmOpr() && RecNextOpr( OPR_TRM ) ) {
+{
+    if( (ASType & AST_IO)
+      && RecTrmOpr()
+      && RecNextOpr( OPR_TRM ) ) {
         if( (CITNode->opn.us & USOPN_WHAT) != USOPN_ARR ) {
             ClassErr( SV_NO_LIST, CITNode->sym_ptr );
         }
         return;
     }
-    if( ( !RecNextOpr( OPR_COM ) && !RecNextOpr( OPR_RBR ) ) ||
-        ( !RecComma() && !RecFBr() ) ) {
+    if( ( !RecNextOpr( OPR_COM )
+      && !RecNextOpr( OPR_RBR ) )
+      || ( !RecComma()
+      && !RecFBr() ) ) {
         ClassErr( SV_NO_LIST, CITNode->sym_ptr );
     }
 }
 
 
-static  void    CkFieldNoList( void ) {
+static  void    CkFieldNoList( void )
 //===============================
-
 // Check that array field with no list is alright.
-
+{
     itnode      *opr_node;
 
     // find the node that contains the structured symbol
@@ -443,25 +450,27 @@ static  void    CkFieldNoList( void ) {
     while( opr_node->value.sc.struct_chain != NULL ) {
         opr_node = opr_node->value.sc.struct_chain;
     }
-    if( (ASType & AST_IO) && ( opr_node->opr == OPR_TRM ) &&
-        RecNextOpr( OPR_TRM ) ) {
+    if( (ASType & AST_IO)
+      && ( opr_node->opr == OPR_TRM )
+      && RecNextOpr( OPR_TRM ) ) {
         if( (CITNode->opn.us & USOPN_WHAT) != USOPN_ARR ) {
             KnownClassErr( SV_NO_LIST, NAME_ARRAY );
         }
         return;
     }
-    if( ( !RecNextOpr( OPR_COM ) && !RecNextOpr( OPR_RBR ) ) ||
-        ( ( opr_node->opr != OPR_COM ) && ( opr_node->opr != OPR_FBR ) ) ) {
+    if( ( !RecNextOpr( OPR_COM )
+      && !RecNextOpr( OPR_RBR ) )
+      || ( ( opr_node->opr != OPR_COM )
+      && ( opr_node->opr != OPR_FBR ) ) ) {
         KnownClassErr( SV_NO_LIST, NAME_ARRAY );
     }
 }
 
 
-static  void    SetTypeUsage( unsigned_16 type_usage ) {
+static  void    SetTypeUsage( unsigned_16 type_usage )
 //=====================================================
-
 // Indicate that a names' use and type has been established.
-
+{
     CITNode->sym_ptr->u.ns.flags = CITNode->flags;
     CkTypeDeclared();
     CITNode->flags |= type_usage;
@@ -469,14 +478,14 @@ static  void    SetTypeUsage( unsigned_16 type_usage ) {
 }
 
 
-void    CkTypeDeclared( void ) {
+void    CkTypeDeclared( void )
 //========================
-
 // Make sure type has been explicitly declared.
-
+{
     unsigned_16 flags;
 
-    if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
+    if( (SgmtSw & SG_IMPLICIT_NONE)
+      || (Options & OPT_EXPLICIT) ) {
         flags = CITNode->sym_ptr->u.ns.flags;
         if( (flags & SY_TYPE) == 0 ) {
             if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
