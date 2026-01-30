@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +32,15 @@
 
 // It holds operand indexes
 //
-//     opn_id     opn_proc
-pick( DSOPN_PHI,  &Phi       )      // null operand
-pick( DSOPN_NAM,  &DSName    )      // name
-pick( DSOPN_LIT,  &LitC      )      // literal
-pick( DSOPN_LGL,  &LogC      )      // logical
-pick( DSOPN_INT,  &IntC      )      // integer
-pick( DSOPN_REA,  &RealC     )      // real
-pick( DSOPN_DBL,  &DoubleC   )      // double
-pick( DSOPN_EXT,  &ExtendedC )      // extended
-pick( DSOPN_OCT,  &OctalC    )      // octal constant
-pick( DSOPN_HEX,  &HexC      )      // hexadecimal constant
-pick( DSOPN_FMT,  NULL       )      // FORMAT string
+//     dsopn_id   opn_proc    opn_id
+pick( DSOPN_PHI,  &Phi,       "OPN_PHI" )      // null operand
+pick( DSOPN_NAM,  &DSName,    "OPN_NAM" )      // name
+pick( DSOPN_LIT,  &LitC,      "OPN_LIT" )      // literal
+pick( DSOPN_LGL,  &LogC,      "OPN_LGL" )      // logical
+pick( DSOPN_INT,  &IntC,      "OPN_INT" )      // integer
+pick( DSOPN_REA,  &RealC,     "OPN_REA" )      // real
+pick( DSOPN_DBL,  &DoubleC,   "OPN_DBL" )      // double
+pick( DSOPN_EXT,  &ExtendedC, "OPN_EXT" )      // extended
+pick( DSOPN_OCT,  &OctalC,    "OPN_OCT" )      // octal constant
+pick( DSOPN_HEX,  &HexC,      "OPN_HEX" )      // hexadecimal constant
+pick( DSOPN_FMT,  NULL,       "OPN_FMT" )      // FORMAT string

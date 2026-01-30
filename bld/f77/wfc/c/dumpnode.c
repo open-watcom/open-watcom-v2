@@ -37,86 +37,17 @@
 #include "dumpnode.h"
 
 
-static  char    *Opn[] = {
-    "OPN_PHI",
-    "OPN_NAM",
-    "OPN_LIT",
-    "OPN_HOL",
-    "OPN_LGL",
-    "OPN_INT",
-    "OPN_REA",
-    "OPN_DBL"
-    "OPN_EXT"
-    "OPN_OCT"
-    "OPN_HEX"
-    "OPN_FMT"
+static const char   * const Opn[] = {
+    #define pick(dsopn_id,opn_proc,opn_id) opn_id,
+    #include "tokdsopn.h"
+    #undef pick
 };
 
-
-static  char    *Opr( byte opr )
-//================================
-{
-    switch( opr ) {
-    case OPR_PHI :
-        return( "OPR_PHI " );
-    case OPR_TRM :
-        return( "OPR_TRM " );
-    case OPR_FBR :
-        return( "OPR_FBR " );
-    case OPR_LBR :
-        return( "OPR_LBR " );
-    case OPR_COM :
-        return( "OPR_COM " );
-    case OPR_COL :
-        return( "OPR_COL " );
-    case OPR_EQU :
-        return( "OPR_EQU " );
-    case OPR_EQV :
-        return( "OPR_EQV " );
-    case OPR_NEQV :
-        return( "OPR_NEQV" );
-    case OPR_OR :
-        return( "OPR_OR  " );
-    case OPR_AND :
-        return( "OPR_AND " );
-    case OPR_NOT :
-        return( "OPR_NOT " );
-    case OPR_EQ :
-        return( "OPR_EQ  " );
-    case OPR_NE :
-        return( "OPR_NE  " );
-    case OPR_LT :
-        return( "OPR_LT  " );
-    case OPR_GE :
-        return( "OPR_GE  " );
-    case OPR_LE :
-        return( "OPR_LE  " );
-    case OPR_GT :
-        return( "OPR_GT  " );
-    case OPR_PLS :
-        return( "OPR_PLS " );
-    case OPR_MIN :
-        return( "OPR_MIN " );
-    case OPR_MUL :
-        return( "OPR_MUL " );
-    case OPR_DIV :
-        return( "OPR_DIV " );
-    case OPR_EXP :
-        return( "OPR_EXP " );
-    case OPR_CAT :
-        return( "OPR_CAT " );
-    case OPR_RBR :
-        return( "OPR_RBR " );
-    case OPR_DPT :
-        return( "OPR_DPT " );
-    case OPR_AST :
-        return( "OPR_AST " );
-    case OPR_FLD :
-        return( "OPR_FLD " );
-    default :
-        return( "UNKNOWN " );
-    }
-}
+static const char   * const Opr[] = {
+    #define pick(id,opr_index,proc_index) #id,
+    #include "oprdefn.h"
+    #undef pick
+};
 
 
 static  void    LLine( void )
@@ -129,7 +60,7 @@ static  void    LLine( void )
 static  void    Node( void )
 //======================
 {
-    printf( "|  %s  |  %s  |\n", Opr( CITNode->opr ), Opn[CITNode->opn.ds] );
+    printf( "|  %s  |  %s  |\n", Opr[CITNode->opr], Opn[CITNode->opn.ds] );
 }
 
 
@@ -143,6 +74,3 @@ void    DumpLex( void )
         CITNode = CITNode->link;
     }
 }
-
-
-

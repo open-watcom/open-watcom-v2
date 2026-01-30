@@ -425,7 +425,7 @@ static  void    OprEqu( void )
 }
 
 static void (* const DSTable[])( void ) = {
-    #define pick(dsopn_id,opn_proc) opn_proc,
+    #define pick(dsopn_id,opn_proc,opn_id) opn_proc,
     #include "tokdsopn.h"
     #undef pick
 };
