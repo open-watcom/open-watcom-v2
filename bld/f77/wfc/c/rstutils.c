@@ -42,8 +42,8 @@
 #include "rstutils.h"
 
 
-char    *STExtractName( sym_id sym, char *buff )
-//==============================================
+char    *STExtractSymName( sym_id sym, char *buff )
+//=================================================
 // Get the name of a symbol.
 {
     memcpy( buff, &sym->u.ns.name, sym->u.ns.u2.name_len );
@@ -53,15 +53,15 @@ char    *STExtractName( sym_id sym, char *buff )
 }
 
 
-char    *STGetName( sym_id sym, char *buff )
-//==========================================
+char    *STGetSymName( sym_id sym, char *buff )
+//=============================================
 // Get the name of a symbol (check for shadowed symbols).
 {
     if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE )
       && (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = sym->u.ns.si.ms.sym;
     }
-    return( STExtractName( sym, buff ) );
+    return( STExtractSymName( sym, buff ) );
 }
 
 

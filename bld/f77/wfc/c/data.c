@@ -456,9 +456,9 @@ static  void    CkFlags( void )
 //=============================
 {
     if( (InitVar->u.ns.flags & SY_CLASS) != SY_VARIABLE ) {
-        ClassNameErr( DA_ILL_NAME, InitVar );
+        SymClassErr( DA_ILL_NAME, InitVar );
     } else if( (InitVar->u.ns.flags & SY_SUB_PARM) != 0 ) {
-        ClassNameErr( DA_ILL_NAME, InitVar );
+        SymClassErr( DA_ILL_NAME, InitVar );
     } else if( (InitVar->u.ns.flags & SY_SUBSCRIPTED)
       && _Allocatable( InitVar ) ) {
         IllName( InitVar );

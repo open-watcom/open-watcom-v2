@@ -119,11 +119,10 @@ static  void    PrSFList( void ) {
                             ( (flags & SY_SUBSCRIPTED) == 0 ) ) {
                             GSFArg( sym_ptr );
                         } else {
-                            ClassNameErr( SF_ILL_PARM_PASSED,
-                                          CITNode->sym_ptr );
+                            SymClassErr( SF_ILL_PARM_PASSED, CITNode->sym_ptr );
                         }
                     } else {
-                        ClassNameErr( SF_ILL_PARM_PASSED, CITNode->sym_ptr );
+                        SymClassErr( SF_ILL_PARM_PASSED, CITNode->sym_ptr );
                     }
                 }
             }

@@ -262,7 +262,7 @@ void    GEPProlog( void )
         ptr = name;
         *ptr = '$';
         ptr++;
-        ptr = STGetName( SubProgId, ptr );
+        ptr = STGetSymName( SubProgId, ptr );
         *ptr = '.';
         ptr++;
         *ptr = NULLCHAR;

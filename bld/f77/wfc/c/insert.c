@@ -105,8 +105,8 @@ static clsname_id   SymClass( sym_id sym )
 }
 
 
-static const char   *GetClass( clsname_id clsname, char *buff )
-//=============================================================
+static const char   *GetClassName( clsname_id clsname, char *buff )
+//=================================================================
 {
     if( ClassMsg[clsname].class_name != NULL )
         return( ClassMsg[clsname].class_name );
@@ -181,7 +181,7 @@ void    NameWarn( int errcod, sym_id sym )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Warning( errcod, buff );
 }
 
@@ -191,7 +191,7 @@ void    NameErr( int errcod, sym_id sym )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Error( errcod, buff );
 }
 
@@ -201,7 +201,7 @@ void    NameStmtErr( int errcod, sym_id sym, STMT stmt )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Error( errcod, buff, StmtKeywords[stmt] );
 }
 
@@ -218,7 +218,7 @@ void    NameExt( int errcod, sym_id sym )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Extension( errcod, buff );
 }
 
@@ -229,20 +229,20 @@ void    NamNamErr( int errcod, sym_id var1, sym_id var2 )
     char        buff1[MAX_SYMLEN + 1];
     char        buff2[MAX_SYMLEN + 1];
 
-    STGetName( var1, buff1 );
-    STGetName( var2, buff2 );
+    STGetSymName( var1, buff1 );
+    STGetSymName( var2, buff2 );
     Error( errcod, buff1, buff2 );
 }
 
 
-void    ClassNameErr( int errcod, sym_id sym )
-//============================================
+void    SymClassErr( int errcod, sym_id sym )
+//===========================================
 {
     char        buff[MAX_SYMLEN + 1];
     char        class_name[MAX_MSGLEN + 1];
 
-    STGetName( sym, buff );
-    Error( errcod, GetClass( SymClass( sym ), class_name ), buff );
+    STGetSymName( sym, buff );
+    Error( errcod, GetClassName( SymClass( sym ), class_name ), buff );
 }
 
 
@@ -252,8 +252,8 @@ void    PrevDef( sym_id sym )
     char        buff[MAX_SYMLEN + 1];
     char        class_name[MAX_MSGLEN + 1];
 
-    STGetName( sym, buff );
-    Error( VA_PREV_DEF_NAM, buff, GetClass( SymClass( sym ), class_name ) );
+    STGetSymName( sym, buff );
+    Error( VA_PREV_DEF_NAM, buff, GetClassName( SymClass( sym ), class_name ) );
 }
 
 
@@ -262,7 +262,7 @@ void    NameTypeErr( int errcod, sym_id sym )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Error( errcod, buff, TypeKW( sym->u.ns.u1.s.typ ) );
 }
 
@@ -279,7 +279,7 @@ void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 )
 {
     char        buff[MAX_SYMLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Error( errcod, TypeKW( typ1 ), buff, TypeKW( typ2 ) );
 }
 
@@ -296,7 +296,7 @@ void    KnownClassErr( int errcod, clsname_id clsname )
 {
     char        class_name[MAX_MSGLEN + 1];
 
-    Error( errcod, GetClass( clsname, class_name ) );
+    Error( errcod, GetClassName( clsname, class_name ) );
 }
 
 
@@ -305,7 +305,7 @@ void    ClassErr( int errcod, sym_id sym )
 {
     char        class_name[MAX_MSGLEN + 1];
 
-    Error( errcod, GetClass( SymClass( sym ), class_name ) );
+    Error( errcod, GetClassName( SymClass( sym ), class_name ) );
 }
 
 
@@ -327,8 +327,8 @@ void    IllName( sym_id sym )
     char        class_name[MAX_MSGLEN + 1];
     char        stmt[MAX_MSGLEN + 1];
 
-    STGetName( sym, buff );
-    Error( VA_ILL_USE, GetClass( SymClass( sym ), class_name ), buff, StmtName( stmt ) );
+    STGetSymName( sym, buff );
+    Error( VA_ILL_USE, GetClassName( SymClass( sym ), class_name ), buff, StmtName( stmt ) );
 }
 
 
@@ -338,7 +338,7 @@ void    IllType( sym_id sym )
     char        buff[MAX_SYMLEN + 1];
     char        stmt[MAX_MSGLEN + 1];
 
-    STGetName( sym, buff );
+    STGetSymName( sym, buff );
     Error( TY_ILL_USE, buff, TypeKW( sym->u.ns.u1.s.typ ), StmtName( stmt ) );
 }
 

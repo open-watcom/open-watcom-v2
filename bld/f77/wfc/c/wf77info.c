@@ -174,13 +174,13 @@ static size_t   MangleCommonBlockName( sym_id sym, char *buffer, bool class )
     if( CGOpts & CGOPT_MANGLE ) {
         cb_len += SYM_MANGLE_PRE_LEN;
         strcpy( buffer, SYM_MANGLE_PRE );
-        STGetName( sym, &buffer[SYM_MANGLE_PRE_LEN] );
+        STGetSymName( sym, &buffer[SYM_MANGLE_PRE_LEN] );
         if( class ) {
             strcpy( &buffer[cb_len], SYM_MANGLE_POST );
             cb_len += SYM_MANGLE_POST_LEN;
         }
     } else {
-        STGetName( sym, buffer );
+        STGetSymName( sym, buffer );
     }
     return( cb_len );
 }
@@ -305,7 +305,7 @@ static  void    BldCSName( char *buff )
 // Build code segment name.
 {
   #if _CPU == 8086
-    strcpy( STGetName( SubProgId, buff ), CSSuff );
+    strcpy( STGetSymName( SubProgId, buff ), CSSuff );
   #else
     strcpy( buff, CSSuff );
   #endif
@@ -1150,7 +1150,7 @@ static char *GetName( sym_id sym )
       && ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
         return( CPROGNAME );
     }
-    STExtractName( sym, SymBuff );
+    STExtractSymName( sym, SymBuff );
     return( SymBuff );
 }
 
@@ -1316,15 +1316,15 @@ void    FCMessage( fc_msg_class tipe, pointer x )
 
     switch( tipe ) {
     case FCMSG_EQUIV_TOO_LARGE :
-        STGetName( (sym_id)x, name );
+        STGetSymName( (sym_id)x, name );
         Error( CP_AUTO_EQUIV_TOO_LARGE, name );
         break;
     case FCMSG_RET_VAL_TOO_LARGE :
-        STGetName( (sym_id)x, name );
+        STGetSymName( (sym_id)x, name );
         Error( CP_AUTO_RET_TOO_LARGE, name );
         break;
     case FCMSG_VARIABLE_TOO_LARGE :
-        STGetName( (sym_id)x, name );
+        STGetSymName( (sym_id)x, name );
         Error( CP_AUTO_VAR_TOO_LARGE, name );
         break;
     }
@@ -1378,7 +1378,7 @@ void    FEMessage( fe_msg femsg, pointer x )
     case FEMSG_PEEPHOLE_FLUSHED :
         if( CGFlags & CG_MEM_LOW_ISSUED )
             break;
-        STGetName( SubProgId, name );
+        STGetSymName( SubProgId, name );
         Warning( CP_LOW_ON_MEMORY, name );
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
@@ -1646,7 +1646,7 @@ static  dbg_type        DefCommonStruct( sym_id sym )
     sym = sym->u.ns.si.cb.first;
     for( ;; ) {
         com_ext = sym->u.ns.si.va.vi.ec_ext;
-        STGetName( sym, field_name );
+        STGetSymName( sym, field_name );
         if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
             DefDbgStruct( sym->u.ns.xt.sym_record );
         }

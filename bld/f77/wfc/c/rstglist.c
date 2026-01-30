@@ -168,7 +168,7 @@ void    CkComSize( sym_id sym_ptr, unsigned_32 size )
             if( sym_ptr->u.ns.flags & SY_BLANK_COMMON ) {
                 Warning( CM_BLANK_DIFF_SIZE );
             } else {
-                STGetName( sym_ptr, buff );
+                STGetSymName( sym_ptr, buff );
                 Warning( CM_NAMED_DIFF_SIZE, buff );
             }
             sym_ptr->u.ns.flags |= SY_COMSIZE_WARN;

@@ -436,7 +436,7 @@ static  void    DumpNameLists( void )
               || (flags & SY_SUB_PARM)
               || (sym->u.ns.u1.s.typ == FT_STRUCTURE)
               || _Allocatable( sym ) ) {
-                STGetName( sym, buff1 );
+                STGetSymName( sym, buff1 );
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );
             }

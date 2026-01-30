@@ -189,7 +189,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             // Consider:
             //        SUBROUTINE ()
             if( SubProgId != NULL ) {
-                STGetName( SubProgId, buff );
+                STGetSymName( SubProgId, buff );
                 if( was_listed ) {
                     MsgJustErr( MS_IN, buff );
                 } else {

@@ -40,7 +40,7 @@ extern void     NameStmtErr( int errcod, sym_id sym, STMT stmt );
 extern void     PrmCodeErr( int errcode, int code );
 extern void     NameExt( int errcod, sym_id sym );
 extern void     NamNamErr( int errcod, sym_id var1, sym_id var2 );
-extern void     ClassNameErr( int errcod, sym_id sym );
+extern void     SymClassErr( int errcod, sym_id sym );
 extern void     PrevDef( sym_id sym );
 extern void     NameTypeErr( int errcod, sym_id sym );
 extern void     TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 );
