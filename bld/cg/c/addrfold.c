@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,7 @@ name    *Points( an addr, const type_def *tipe )
           && addr->u.n.name->n.size == size ) {
             result = addr->u.n.name;
         } else {
-            result = (name *)SAllocMemory( addr->u.n.name->v.symbol,
+            result = SAllocMemory( addr->u.n.name->v.symbol,
                                    addr->u.n.offset,
                                    addr->u.n.name->m.memory_type,
                                    type_class, size );

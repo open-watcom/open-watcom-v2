@@ -1424,7 +1424,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                                                 opnd->n.size );
                                 break;
                             case N_MEMORY:
-                                *op = (name *)SAllocMemory( base->v.symbol,
+                                *op = SAllocMemory( base->v.symbol,
                                             base->v.offset + disp,
                                             base->m.memory_type,
                                             opnd->n.type_class,

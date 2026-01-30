@@ -127,7 +127,7 @@ cn      BGInitCall( an node, const type_def *tipe, aux_handle aux )
         call->ins->head.opcode = OP_CALL;
         type_class = CallState( aux, tipe, call->state );
         mem = node->u.n.name;
-        mem = (name *)SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
+        mem = SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
                             mem->n.type_class, mem->n.size );
         node->u.n.name = mem;
     } else {

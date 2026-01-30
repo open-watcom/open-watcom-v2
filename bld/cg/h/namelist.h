@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ extern name             *AllocU32Const( uint_32 value );
 extern name             *AllocS64Const( uint_32 low, uint_32 high );
 extern name             *AllocU64Const( uint_32 low, uint_32 high );
 extern constant_defn    *GetFloat( name *cons, type_class_def type_class );
-extern memory_name      *SAllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class, type_length size );
+extern name             *SAllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class, type_length size );
 extern name             *AllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class );
 extern name             *STempOffset( name *temp, type_length offset, type_class_def type_class, type_length size );
 extern name             *SAllocTemp( type_class_def type_class, type_length size );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -556,14 +556,14 @@ an      MakeAddrName( cg_class class, cg_sym_handle sym, const type_def *tipe )
 
     addr = NewAddrName();
     if( class != CG_FE ) {
-        op = (name *)SAllocMemory( sym, 0, class, TypeClass( tipe ), tipe->length );
+        op = SAllocMemory( sym, 0, class, TypeClass( tipe ), tipe->length );
         addr->u.n.name = op;
         addr->class = CL_ADDR_GLOBAL;
     } else {
         attr = FEAttr( sym );
         level = FELexLevel( sym );
         if( attr & FE_STATIC ) {
-            op = (name *)SAllocMemory( sym, 0, class, TypeClass(tipe), tipe->length );
+            op = SAllocMemory( sym, 0, class, TypeClass(tipe), tipe->length );
             if( ( attr & FE_MEMORY ) != EMPTY ) {
                 op->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             }

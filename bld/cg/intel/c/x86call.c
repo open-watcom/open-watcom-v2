@@ -291,7 +291,7 @@ void    BGProcDecl( cg_sym_handle sym, const type_def *tipe )
                     lbl = AskForNewLabel();
                     DataLabel( lbl );
                     DGUBytes( tipe->length );
-                    CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
+                    CurrProc->targ.return_points = SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
                 POP_OP();
             } else {
                 reg = CurrProc->state.return_reg;

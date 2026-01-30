@@ -340,9 +340,9 @@ constant_defn   *GetFloat( name *cons, type_class_def type_class )
 }
 
 
-memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class class,
-                                            type_class_def type_class, type_length size )
-/***************************************************************************************/
+name    *SAllocMemory( pointer symbol, type_length offset, cg_class class,
+                            type_class_def type_class, type_length size )
+/************************************************************************/
 {
     name        *new_m;
     name        *other;
@@ -350,36 +350,36 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
 
     other = NULL;
     xx = NULL;
-    for( new_m = Names[N_MEMORY]; new_m != NULL; new_m = new_m->n.next_name ) {
-        if( new_m->v.symbol == symbol
+    for( new_m = Names[N_MEMORY]; new_m != NULL; new_m = new_m->m._v._n.next_name ) {
+        if( new_m->m._v.symbol == symbol
           && new_m->m.memory_type == class ) {
-            if( new_m->v.offset != offset ) {
+            if( new_m->m._v.offset != offset ) {
                 other = new_m;
-                new_m->v.usage |= USE_MEMORY | NEEDS_MEMORY;
+                new_m->m._v.usage |= USE_MEMORY | NEEDS_MEMORY;
             } else {
                 if( type_class == XX
                   && size == 0 )
-                    return( &( new_m->m ) );
-                if( new_m->n.type_class == type_class   /*exact!*/
+                    return( new_m );
+                if( new_m->m._v._n.type_class == type_class   /*exact!*/
                   && type_class != XX ) {
-                    return( &( new_m->m ) );
+                    return( new_m );
                 }
-                if( new_m->n.type_class == XX
-                  && new_m->n.size == size ) {
+                if( new_m->m._v._n.type_class == XX
+                  && new_m->m._v._n.size == size ) {
                     xx = new_m;
                 }
                 other = new_m;
-                new_m->v.usage |= USE_MEMORY | NEEDS_MEMORY;
+                new_m->m._v.usage |= USE_MEMORY | NEEDS_MEMORY;
             }
         }
     }
     if( xx != NULL ) {
         ZapXX( xx, type_class, size );
-        return( &( xx->m ) );
+        return( xx );
     }
     new_m = AllocName( N_MEMORY, type_class, size );
-    new_m->v.symbol = symbol;
-    new_m->v.offset = offset;
+    new_m->m._v.symbol = symbol;
+    new_m->m._v.offset = offset;
     new_m->m.memory_type = class;
     new_m->m.alignment = 0;
     if( other != NULL ) {
@@ -389,29 +389,29 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
             new_m->m.same_sym = other;
         }
         other->m.same_sym = new_m;
-        new_m->v.usage = USE_MEMORY | NEEDS_MEMORY;
+        new_m->m._v.usage = USE_MEMORY | NEEDS_MEMORY;
     } else {
-        new_m->v.usage = NEEDS_MEMORY;
+        new_m->m._v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
     }
     if( class == CG_FE
       && _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-        new_m->v.usage |= USE_MEMORY;
+        new_m->m._v.usage |= USE_MEMORY;
     }
-    new_m->v.block_usage = 0;
-    new_m->v.conflict = NULL;
+    new_m->m._v.block_usage = 0;
+    new_m->m._v.conflict = NULL;
     if( class == CG_LBL
       || class == CG_CLB ) {
-        new_m->v.usage |= USE_MEMORY; /* so not put in conflict graph*/
+        new_m->m._v.usage |= USE_MEMORY; /* so not put in conflict graph*/
     }
-    return( &( new_m->m ) );
+    return( new_m );
 }
 
 
 name    *AllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class )
 /***************************************************************************************************/
 {
-    return( (name *)SAllocMemory( symbol, offset, class, type_class, 0 ) );
+    return( SAllocMemory( symbol, offset, class, type_class, 0 ) );
 }
 
 
