@@ -168,18 +168,18 @@ void CSNoMore(void)
     if( RecNoOpn() ) {
         AdvanceITPtr();
     }
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 void ColonLabel(void)
 {
-    if( RecColon() ) {
-        if( !RecName() ) {
+    if( RecColonOpr() ) {
+        if( !RecNameOpn() ) {
             Error( SP_BAD_LABEL );
         }
         AdvanceITPtr();
     }
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 void BlockLabel(void)
@@ -233,11 +233,11 @@ void CSCond( label_id label )
 
     if( RecNoOpn() ) {
         AdvanceITPtr();
-        if( ReqOpenParen() ) {
+        if( ReqOpenParenOpr() ) {
             GBoolExpr();
             GBrFalse( label );
             AdvanceITPtr();
-            ReqCloseParen();
+            ReqCloseParenOpr();
         }
     } else {
         Error( PC_NO_OPENPAREN );

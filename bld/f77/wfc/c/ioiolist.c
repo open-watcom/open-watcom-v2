@@ -134,11 +134,11 @@ bool    StartImpDo( void ) {
     level = 0;
     AdvanceITPtr();
     for( ;; ) {
-        if( RecOpenParen() ) {
+        if( RecOpenParenOpr() ) {
             level++;
-        } else if( RecCloseParen() ) {
+        } else if( RecCloseParenOpr() ) {
             level--;
-        } else if( RecComma() && ( level == 0 ) ) {
+        } else if( RecCommaOpr() && ( level == 0 ) ) {
             lastcomma = CITNode;
         }
         if( ( level < 0 ) || RecTrmOpr() ) {
@@ -146,7 +146,7 @@ bool    StartImpDo( void ) {
             return( false );
         }
         AdvanceITPtr();
-        if( RecEquSign() && ( level == 0 ) ) {
+        if( RecEquOpr() && ( level == 0 ) ) {
             break;
         }
     }
@@ -175,13 +175,13 @@ void    ProcessList( void ) {
     if( RecTrmOpr() ) {
         FinishImpDo();
         if( !RecTrmOpr() ) {
-            ReqComma();
+            ReqCommaOpr();
         }
     } else if( !StartImpDo() ) {
         ProcIOExpr();
         ListItem();
         if( !RecTrmOpr() ) {
-            ReqComma();
+            ReqCommaOpr();
         }
     }
 }
@@ -237,12 +237,12 @@ void    InitImpDo( itnode *lastcomma ) {
     CITNode = lastcomma;
     CITNode->opr = OPR_TRM;     // marks the end of the i/o list
     ImpDo();
-    if( !ReqCloseParen() ) {
+    if( !ReqCloseParenOpr() ) {
         level = 0;
         for( ;; ) {
-            if( RecOpenParen() ) {
+            if( RecOpenParenOpr() ) {
                 level++;
-            } else if( RecCloseParen() ) {
+            } else if( RecCloseParenOpr() ) {
                 level--;
             }
             if( level < 0 )

@@ -60,7 +60,7 @@ static  bool    ReqChar( void )
 //=============================
 // Recognize one character operand.
 {
-    if( RecName() && (CITNode->opnd_size == 1) && !CharSetInfo.is_foreign( *CITNode->opnd ) )
+    if( RecNameOpn() && (CITNode->opnd_size == 1) && !CharSetInfo.is_foreign( *CITNode->opnd ) )
         return( true );
     Error( IM_ILLEGAL_RANGE );
     return( false );
@@ -163,7 +163,7 @@ bool    LenSpec( TYPE typ, size_t *size_ptr )
     len_spec = false;
     save_itptr = NULL;
     ivalue = 0;
-    if( RecMul() ) {
+    if( RecMulOpr() ) {
         save_itptr = CITNode;
         if( StarStar( typ ) ) {
             AdvanceITPtr();
@@ -185,12 +185,12 @@ bool    LenSpec( TYPE typ, size_t *size_ptr )
                 CIntExpr();
                 ivalue = ITIntValue( CITNode );
                 AdvanceITPtr();
-                ReqCloseParen();
+                ReqCloseParenOpr();
                 if( RecNoOpn() ) {
                     AdvanceITPtr();
                 }
                 len_spec = !AError;
-            } else if( RecNumber() ) {
+            } else if( RecNumberOpn() ) {
                 FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &ivalue, false, NULL );
                 AdvanceITPtr();
                 len_spec = true;
@@ -225,7 +225,7 @@ static  TYPE    RecTypeKW( void ) {
 
     TYPE    typ;
 
-    if( RecName() ) {
+    if( RecNameOpn() ) {
         for( typ = FT_LOGICAL_1; typ <= FT_CHAR; typ++ ) {
             if( CmpNode2Str( CITNode, TypeKW( typ ) ) ) {
                 return( typ );
@@ -263,12 +263,12 @@ void    CpImplicit( void ) {
             if( ( typ != FT_NO_TYPE ) && !LenSpec( typ, &size ) ) {
                 size = StorageSize( typ );
             }
-            ReqOpenParen();
+            ReqOpenParenOpr();
             for( ;; ) {
                 valid_range = ReqChar();
                 chr1 = *CITNode->opnd;
                 AdvanceITPtr();
-                if( RecMin() ) {
+                if( RecMinOpr() ) {
                     valid_range = valid_range && ReqChar();
                     chr2 = *CITNode->opnd;
                     if( valid_range ) {
@@ -286,14 +286,14 @@ void    CpImplicit( void ) {
                         Error( IM_PREV_IMPLICIT );
                     }
                 }
-                if( !RecComma() ) {
+                if( !RecCommaOpr() ) {
                     break;
                 }
             }
-            ReqCloseParen();
+            ReqCloseParenOpr();
             ReqNoOpn();
             AdvanceITPtr();
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
@@ -302,5 +302,5 @@ void    CpImplicit( void ) {
         }
         SgmtSw |= SG_IMPLICIT_STMT;
     }
-    ReqEOS();
+    ReqEOSOpr();
 }

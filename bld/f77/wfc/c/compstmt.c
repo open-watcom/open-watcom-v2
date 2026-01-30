@@ -287,7 +287,7 @@ static void GetStmtType( void )
     OPR         opr;
 
     curr_opnd = CITNode->opnd;
-    if( !RecName() ) {
+    if( !RecNameOpn() ) {
         Error( ST_WANT_NAME );
         StmtProc = PR_KW_NONE;
     } else if( ( curr_opnd[0] == 'D' )
@@ -297,7 +297,7 @@ static void GetStmtType( void )
         RemKeyword( CITNode, 2 );
     } else if( ( curr_opnd[0] == 'I' )
       && ( curr_opnd[1] == 'F' )
-      && ( CITNode->link->opr == OPR_LBR )
+      && RecNextOpr( OPR_LBR )
       && ( SPtr1 != NULL )
       && ( ( SPtr1->opn.ds == DSOPN_NAM )
       || ( SPtr1->opn.ds == DSOPN_INT ) ) ) {
@@ -310,7 +310,7 @@ static void GetStmtType( void )
     } else if( ( (StmtSw & SS_COMMA_THEN_EQ) == 0 )
       && (StmtSw & SS_EQUALS_FOUND) ) {
         StmtProc = PR_ASNMNT;
-        if( RecName()
+        if( RecNameOpn()
           && RecNextOpr( OPR_LBR ) ) {
             if( SPtr1->opn.ds != DSOPN_PHI ) {
                 DefStmtType();

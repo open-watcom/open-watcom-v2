@@ -67,9 +67,9 @@ void    CpParameter( void ) {
 
     ReqNoOpn();
     AdvanceITPtr();
-    ReqOpenParen();
+    ReqOpenParenOpr();
     for( ;; ) {
-        if( ReqName( NAME_VARIABLE ) ) {
+        if( ReqNameOpn( NAME_VARIABLE ) ) {
             sym = LkSym();
             typ = sym->u.ns.u1.s.typ;
             assign_val = true;
@@ -83,7 +83,7 @@ void    CpParameter( void ) {
                 CkSymDeclared( sym );
             }
             AdvanceITPtr();
-            ReqEquSign();
+            ReqEquOpr();
             parm_size = sym->u.ns.xt.size;
             if( typ == FT_STRUCTURE ) {
                 ConstExpr( FT_NO_TYPE );
@@ -122,13 +122,13 @@ void    CpParameter( void ) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqCloseParen();
+    ReqCloseParenOpr();
     if( ReqNoOpn() ) {
         AdvanceITPtr();
-        ReqEOS();
+        ReqEOSOpr();
     }
 }

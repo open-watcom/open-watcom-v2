@@ -91,7 +91,7 @@ void    CpData(void)
             AdvanceITPtr();
             if( RecTrmOpr() )
                 break;
-            ReqComma();
+            ReqCommaOpr();
         }
         if( RecTrmOpr()
           || error ) {
@@ -181,14 +181,14 @@ static  OPR    FindSlash( itnode **itptr_ptr )
     cit = CITNode;
     level = 0;
     for( ;; ) {
-        if( RecOpenParen() ) {
+        if( RecOpenParenOpr() ) {
             level++;
-        } else if( RecCloseParen() ) {
+        } else if( RecCloseParenOpr() ) {
             level--;
         }
         AdvanceITPtr();
-        if( ( (RecDiv()
-          || RecCat())
+        if( ( (RecDivOpr()
+          || RecCatOpr())
           && (level == 0) )
           || RecTrmOpr() ) {
             break;
@@ -222,7 +222,7 @@ static  void    VarList( void )
             FinishImpDo();
         } else if( StartImpDo() ) {
             ++do_level;
-        } else if( ReqName( NAME_VAR_OR_ARR ) ) {
+        } else if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
             InitVar = LkSym();
             if( InitVar->u.ns.u1.s.typ == FT_STRUCTURE ) {
                 // make sure structure size is calculated - normally
@@ -236,7 +236,7 @@ static  void    VarList( void )
             CITNode->opr = opr;
             ListItem();
             if( !RecTrmOpr() ) {
-                ReqComma();
+                ReqCommaOpr();
             }
         } else {
             AdvanceITPtr();
@@ -251,7 +251,7 @@ static  void    VarList( void )
         }
     } else {
         CITNode->opr = last_opr;
-        ReqDiv();
+        ReqDivOpr();
     }
 }
 
@@ -267,7 +267,7 @@ static  bool    HexConst(void)
     hex_data = CITNode->opnd;
     hex_len = CITNode->opnd_size;
     if( CITNode->opn.ds != DSOPN_HEX ) {
-        if( !RecName() )
+        if( !RecNameOpn() )
             return( false );
         if( *hex_data != 'Z' )
             return( false );
@@ -317,13 +317,13 @@ static  void    ConList( void )
         AdvanceITPtr();
         if( CITNode == last_node )
             break;
-        ReqComma();
+        ReqCommaOpr();
         if( AError ) {
             break;
         }
     }
     CITNode->opr = opr;
-    ReqDiv();
+    ReqDivOpr();
 }
 
 
@@ -339,7 +339,7 @@ static  void    DumpDataSets( int num, itnode *node )
     while( --num >= 0 ) {
         for( ;; ) {
             AdvanceITPtr();
-            if( RecDiv() ) {
+            if( RecDivOpr() ) {
                 break;
             }
         }
@@ -355,7 +355,7 @@ static  void    DumpDataSets( int num, itnode *node )
             }
             GDataItem( rpt );
             AdvanceITPtr();
-            if( RecDiv() ) {
+            if( RecDivOpr() ) {
                 break;
             }
         }

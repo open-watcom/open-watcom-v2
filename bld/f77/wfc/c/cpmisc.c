@@ -62,7 +62,7 @@ static  void    BreakOpn( FCODE routine ) {
     AddConst( CITNode );
     GBreak( routine );
     AdvanceITPtr();
-    if( !RecEOS() ) {
+    if( !RecEOSOpr() ) {
         Error( SX_NUM_OR_LIT );
     }
 }
@@ -76,8 +76,8 @@ static  void    NumOrLit( FCODE routine ) {
     }
     if( RecNoOpn() ) {
         GBreak( routine );
-    } else if( !RecLiteral() ) {
-        if( RecNumber() ) {
+    } else if( !RecLiteralOpn() ) {
+        if( RecNumberOpn() ) {
             if( CITNode->opnd_size > 5 ) {
                 Extension( ST_LONG_NUM, StmtKeywords[StmtProc] );
             }
@@ -125,7 +125,7 @@ void    CpEnd(void) {
         ProgSw |= PS_END_OF_SUBPROG;
         AdvanceITPtr();
         Remember.endstmt = true;
-        ReqEOS();
+        ReqEOSOpr();
     } else {
         BadStmt();
     }

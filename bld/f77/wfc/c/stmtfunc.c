@@ -71,7 +71,7 @@ void    SFPrologue( void ) {
     CITNode->flags = SFSymId->u.ns.flags;
     func_node = CITNode;
     AdvanceITPtr();
-    ReqOpenParen();
+    ReqOpenParenOpr();
     SFSymId->u.ns.si.sf.header = FMemAlloc( sizeof( sf_header ) );
     SFSymId->u.ns.si.sf.header->ref_count = 1;
     parm = &SFSymId->u.ns.si.sf.header->parm_list;
@@ -80,7 +80,7 @@ void    SFPrologue( void ) {
         AdvanceITPtr();
     } else {
         for( ;; ) {
-            if( ReqName( NAME_SF_DUMMY ) ) {
+            if( ReqNameOpn( NAME_SF_DUMMY ) ) {
                 sym = LkSym();
                 sym->u.ns.u1.s.xflags |= SY_DEFINED;
                 CkTypeDeclared();
@@ -103,12 +103,12 @@ void    SFPrologue( void ) {
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
     }
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     arg_list = func_node->link;
     func_node->link = CITNode->link;

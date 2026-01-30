@@ -386,7 +386,7 @@ static  void    GrabColon( void )
     } else {
         KillOpnOpr();
         // Consider PRINT *,(F:80)TEST
-        if( CITNode->opr != OPR_TRM ) {
+        if( !RecTrmOpr() ) {
             CITNode->opr = OPR_COM;   // concatenate substring expression
             LowColon();               // onto end of subscript list
         } else {
@@ -549,7 +549,7 @@ static  void    USCleanUp( void )
     itnode      *junk;
     itnode      *first;
 
-    while( CITNode->opr != OPR_TRM ) {
+    while( !RecTrmOpr() ) {
         BackTrack();
     }
     first = CITNode;
@@ -561,7 +561,7 @@ static  void    USCleanUp( void )
         }
     }
     CITNode = CITNode->link;
-    while( CITNode->opr != OPR_TRM ) {
+    while( !RecTrmOpr() ) {
         junk = CITNode;
         CITNode = CITNode->link;
         FreeOneNode( junk );
@@ -576,7 +576,7 @@ static  void    USCleanUp( void )
 static  bool    DoGenerate( TYPE typ1, TYPE typ2, size_t *res_size )
 //==================================================================
 {
-    if( CITNode->link->opr == OPR_EQU ) {
+    if( RecNextOpr( OPR_EQU ) ) {
         ResultType = typ1;
         *res_size = CITNode->size;
         if( (ASType & AST_ASF)
@@ -881,9 +881,9 @@ static  void    IFPrmChk( void )
     CITNode = oldcit->list;
     parm_cnt = 0;
     for( ;; ) {
-        if( RecColon() )         // substring the i.f.
+        if( RecColonOpr() )     // substring the i.f.
             break;
-        if( RecCloseParen() )    // end of list
+        if( RecCloseParenOpr() )    // end of list
             break;
         parm_code = ParmCode( CITNode );
         switch( func ) {
@@ -1003,7 +1003,7 @@ static  void    IFPrmChk( void )
 static  bool    IFAsOperator( void )
 //==================================
 {
-    if( CITNode->opr != OPR_FBR )
+    if( !RecFBrOpr() )
         return( false );
     if( (BkLink->flags & SY_CLASS) != SY_SUBPROGRAM )
         return( false );
@@ -1304,7 +1304,7 @@ static  void    InlineCnvt( void )
         GIChar();
     }
     AdvanceITPtr();
-    ReqCloseParen();
+    ReqCloseParenOpr();
     CITNode = cit;
     cit = CITNode->list;
     CITNode->typ = func_type;
@@ -1336,8 +1336,8 @@ void    UpScan( void )
             USCleanUp();
             break;
         }
-        if( ( CITNode->opr == OPR_TRM )
-          && ( CITNode->link->opr == OPR_TRM ) ) {
+        if( RecTrmOpr()
+          && RecNextOpr( OPR_TRM ) ) {
             break;
         }
         index = OprIndex[CITNode->link->opr];

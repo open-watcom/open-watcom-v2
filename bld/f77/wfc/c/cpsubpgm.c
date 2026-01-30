@@ -75,14 +75,14 @@ static void ParmList( bool star_ok, entry_pt *entry );
 void CpProgram( void )
 {
     CkSubEnd();
-    if( ReqName( NAME_PROGRAM ) ) {
+    if( ReqNameOpn( NAME_PROGRAM ) ) {
         SubProgId = LkProgram();    // use default name
     } else {
         SubProgId = LkProgram();        // use default name
     }
     StartProg();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 void DefProg( void )
@@ -176,16 +176,16 @@ void CpSubroutine( void )
 
     CkSubEnd();
     ProgSw |= PS_IN_SUBPROGRAM;
-    if( ReqName( NAME_SUBROUTINE ) ) {
+    if( ReqNameOpn( NAME_SUBROUTINE ) ) {
         entry = SubProgName( FT_NO_TYPE, SY_USAGE | SY_SUBPROGRAM | SY_PENTRY |
                               SY_SUBROUTINE | SY_REFERENCED, 0, true );
-        if( RecOpenParen() ) {
+        if( RecOpenParenOpr() ) {
             ParmList( true, entry );
-            ReqCloseParen();
+            ReqCloseParenOpr();
             ReqNoOpn();
             AdvanceITPtr();
         }
-        ReqEOS();
+        ReqEOSOpr();
     } else {
         // We still want to start a subprogram even though there is no name.
         SubProgId = LkProgram();        // use default name
@@ -212,16 +212,16 @@ void    Function( TYPE typ, size_t size, bool len_spec )
     }
     CkSubEnd();
     ProgSw |= PS_IN_SUBPROGRAM;
-    if( ReqName( NAME_FUNCTION ) ) {
+    if( ReqNameOpn( NAME_FUNCTION ) ) {
         entry = SubProgName( typ, flags, size, len_spec );
         STFnShadow( SubProgId );
-        if( ReqOpenParen() ) {
+        if( ReqOpenParenOpr() ) {
             ParmList( false, entry );
         }
-        ReqCloseParen();
+        ReqCloseParenOpr();
         ReqNoOpn();
         AdvanceITPtr();
-        ReqEOS();
+        ReqEOSOpr();
     } else {
         // We still want to start a subprogram even though there is no name.
         SubProgId = LkProgram();        // use default name
@@ -248,7 +248,7 @@ void CpEntry( void )
     if( !EmptyCSList() ) {
         Error( EY_NOT_IN_CS );
     }
-    if( ReqName( NAME_FUNCTION ) ) {
+    if( ReqNameOpn( NAME_FUNCTION ) ) {
         in_subr = (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE;
         sym = LkSym();
         if( (sym->u.ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC | SY_SAVED)) ||
@@ -270,14 +270,14 @@ void CpEntry( void )
             if( Options & OPT_TRACE ) {
                 GSetSrcLine();
             }
-            if( RecOpenParen() ) {
+            if( RecOpenParenOpr() ) {
                 ParmList( in_subr, entry );
-                ReqCloseParen();
+                ReqCloseParenOpr();
                 ReqNoOpn();
                 AdvanceITPtr();
             }
             BIStartRBorEP( sym );
-            ReqEOS();
+            ReqEOSOpr();
         }
     }
     SgmtSw &= ~SG_PROLOG_DONE;       // indicate we need prologue
@@ -319,7 +319,7 @@ void CpReturn( void )
         }
     }
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
     GGotoEpilog();
     Remember.transfer = true;
     Remember.stop_or_return = true;
@@ -423,11 +423,11 @@ static void ParmList( bool star_ok, entry_pt *entry )
         for( ;; ) {     // process parm list
             if( star_ok && RecNoOpn() ) {
                 AdvanceITPtr();
-                if( ReqMul() && ReqNoOpn() ) {
+                if( ReqMulOpr() && ReqNoOpn() ) {
                     *args = StarParm();
                     args = &(*args)->link;
                 }
-            } else if( ReqName( NAME_ARGUMENT ) ) {
+            } else if( ReqNameOpn( NAME_ARGUMENT ) ) {
                 new_arg = NameParm( entry );
                 if( new_arg != NULL ) {
                     *args = new_arg;
@@ -435,7 +435,7 @@ static void ParmList( bool star_ok, entry_pt *entry )
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
@@ -509,7 +509,7 @@ void CpBlockData( void )
 
     CkSubEnd();
     ProgSw |= PS_IN_SUBPROGRAM | PS_BLOCK_DATA;
-    if( RecName() ) {
+    if( RecNameOpn() ) {
         sym_ptr = LkSym();
         sym_ptr->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
                             SY_PENTRY | SY_REFERENCED;
@@ -520,6 +520,6 @@ void CpBlockData( void )
     SubProgId = sym_ptr;
     GBlockLabel();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
     BIStartBlockData( SubProgId );
 }

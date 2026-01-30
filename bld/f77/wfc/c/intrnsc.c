@@ -65,7 +65,7 @@ void    CpIntrinsic(void) {
     TYPE        func_typ;
 
     for( ;; ) {
-        if( ReqName( NAME_INTRINSIC ) ) {
+        if( ReqNameOpn( NAME_INTRINSIC ) ) {
             func = IFLookUp();
             if( func != IF_KW_NONE ) {
                 func_typ = IFType( func );
@@ -101,9 +101,9 @@ void    CpIntrinsic(void) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }

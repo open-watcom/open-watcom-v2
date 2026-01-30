@@ -61,7 +61,7 @@ void    CpLogIf( void )
 
     if_skip = NextLabel();
     CSCond( if_skip );
-    if( RecKeyWord( "THEN" )
+    if( RecKeyWordOpn( "THEN" )
       && ( RecNextOpr( OPR_TRM )
       || RecNextOpr( OPR_COL ) ) ) {
         AddCSNode( CS_IF );
@@ -96,9 +96,9 @@ void    CpElseIf( void )
         Match();
     }
     CSCond( CSHead->branch );
-    if( RecKeyWord( "THEN" ) ) {
+    if( RecKeyWordOpn( "THEN" ) ) {
         AdvanceITPtr();
-        ReqEOS();
+        ReqEOSOpr();
     } else {
         Error( IF_NO_THEN );
     }

@@ -155,14 +155,14 @@ static  void    DoLoop( TYPE do_type ) {
     e1_type = CITNode->typ;
     e1_size = CITNode->size;
     AdvanceITPtr();
-    if( ReqComma() ) {
+    if( ReqCommaOpr() ) {
         EatDoParm();                            // process e2
         e2_const = CITNode->opn.us == USOPN_CON;
         PushOpn( CITNode );
         e2_node = CITNode;
         AdvanceITPtr();
         e3_node = NULL;
-        if( RecComma() ) {
+        if( RecCommaOpr() ) {
             EatDoParm();                        // process e3
             e3_node = CITNode;
             if( !AError ) {
@@ -250,9 +250,9 @@ static  void    DataDo( TYPE do_type ) {
     do_var = CITNode->sym_ptr;
     AdvanceITPtr();
     DoExpr();                           // process e1
-    if( ReqComma() ) {
+    if( ReqCommaOpr() ) {
         DoExpr();                       // process e2
-        if( RecComma() ) {
+        if( RecCommaOpr() ) {
             DoExpr();                   // process e3
         } else {
             PushConst( 1 );             // indicate unit incrementation

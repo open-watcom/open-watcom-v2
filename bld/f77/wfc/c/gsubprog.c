@@ -179,8 +179,8 @@ unsigned_16 GParms( itnode *sp )
             }
         }
         AdvanceITPtr();
-        if( RecCloseParen()
-          || RecColon() ) {
+        if( RecCloseParenOpr()
+          || RecColonOpr() ) {
             break;
         }
     }

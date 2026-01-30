@@ -57,15 +57,15 @@ static  sym_id  StructName( void ) {
 
     ReqNoOpn();
     AdvanceITPtr();
-    ReqDiv();
-    if( ReqName( NAME_STRUCTURE ) ) {
+    ReqDivOpr();
+    if( ReqNameOpn( NAME_STRUCTURE ) ) {
         sd = STStruct( CITNode->opnd, CITNode->opnd_size );
     } else {
         // so we don't have to check for NULL structures everywhere
         sd = STStruct( NULL, 0 );
     }
     AdvanceITPtr();
-    ReqDiv();
+    ReqDivOpr();
     return( sd );
 }
 
@@ -144,7 +144,7 @@ void    CpRecord( void ) {
     } else {
         MustBeTypeDecl();
         for( ;; ) {
-            if( ReqName( NAME_VAR_OR_ARR ) ) {
+            if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
                     sym = FieldDecl();
@@ -154,11 +154,11 @@ void    CpRecord( void ) {
                     sym = VarDecl( FT_STRUCTURE );
                     sym->u.ns.xt.sym_record = sd;
                 }
-                if( RecOpenParen() ) {
+                if( RecOpenParenOpr() ) {
                     ArrayDecl( sym );
                 }
                 if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
-                    if( RecDiv() || RecCat() ) {
+                    if( RecDivOpr() || RecCatOpr() ) {
                         StmtExtension( DA_IN_TYPE_STMT );
                         DataInit( var_node );
                     }
@@ -166,11 +166,11 @@ void    CpRecord( void ) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
-        ReqEOS();
+        ReqEOSOpr();
     }
 }
 

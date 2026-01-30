@@ -75,14 +75,14 @@ void CpSelect( void )
     CSHead->branch = NextLabel();
     CSHead->bottom = NextLabel();
     CSHead->cs_info.cases = NewCase();
-    if( RecKeyWord( "CASE" ) ) {
+    if( RecKeyWordOpn( "CASE" ) ) {
         AdvanceITPtr();
     } else {
         ReqNoOpn();
         AdvanceITPtr();
     }
-    ReqOpenParen();
-    if( !RecEOS() ) { // consider: SELECT
+    ReqOpenParenOpr();
+    if( !RecEOSOpr() ) { // consider: SELECT
         SelectExpr();
         CSHead->cs_info.cases->sel_type = CITNode->typ;
     } else {
@@ -90,8 +90,8 @@ void CpSelect( void )
     }
     InitSelect();
     AdvanceITPtr();
-    ReqCloseParen();
-    if( !RecKeyWord( "FROM" ) ) {
+    ReqCloseParenOpr();
+    if( !RecKeyWordOpn( "FROM" ) ) {
         ReqNoOpn();
     }
     AdvanceITPtr();
@@ -102,7 +102,7 @@ void CpCase( void )
 {
 // Compile a CASE statement.
 
-    if( RecKeyWord( "DEFAULT" ) ) {
+    if( RecKeyWordOpn( "DEFAULT" ) ) {
         AdvanceITPtr();
         CpOtherwise();
     } else {
@@ -173,7 +173,7 @@ static void CaseHandler( void )
         AdvanceITPtr();
     }
     multi_case = false;
-    ReqOpenParen();
+    ReqOpenParenOpr();
     for( ;; ) {
         if( _IsTypeLogical( CSHead->cs_info.cases->sel_type ) ) {
             // no range allowed for LOGICAL select expressions
@@ -199,7 +199,7 @@ static void CaseHandler( void )
                     high = low;
                 }
                 AdvanceITPtr();
-                if( RecColon() ) {
+                if( RecColonOpr() ) {
                     if( RecNoOpn() &&
                         ( RecNextOpr( OPR_RBR ) || RecNextOpr( OPR_COM ) ) ) {
                         high = MaxCaseValue( CSHead->cs_info.cases->sel_type );
@@ -237,14 +237,14 @@ static void CaseHandler( void )
                 }
             }
         }
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
     CSHead->block = NextBlock();
 }
 

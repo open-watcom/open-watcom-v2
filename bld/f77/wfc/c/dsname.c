@@ -432,8 +432,8 @@ static  void    CkNameNoList( void )
     }
     if( ( !RecNextOpr( OPR_COM )
       && !RecNextOpr( OPR_RBR ) )
-      || ( !RecComma()
-      && !RecFBr() ) ) {
+      || ( !RecCommaOpr()
+      && !RecFBrOpr() ) ) {
         ClassErr( SV_NO_LIST, CITNode->sym_ptr );
     }
 }

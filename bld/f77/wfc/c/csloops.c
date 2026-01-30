@@ -111,7 +111,7 @@ void CpWhile( void )
     if( RecNoOpn()
       && RecNextOpr( OPR_COL ) ) {
         BlockLabel();
-    } else if( RecKeyWord( "DO" )
+    } else if( RecKeyWordOpn( "DO" )
       && ( RecNextOpr( OPR_TRM )
       || RecNextOpr( OPR_COL ) ) ) {
         CITNode->opn.ds = DSOPN_PHI;
@@ -161,11 +161,11 @@ static stmt_num DoTermStmtNo( void )
 {
     stmt_num    term_stmt_no;
 
-    if( RecNumber() ) {
+    if( RecNumberOpn() ) {
         term_stmt_no = LkUpDoTermStmtNo();
         AdvanceITPtr();
         if( !RecNoOpr()
-          && !RecComma() ) {
+          && !RecCommaOpr() ) {
             Error( DO_NO_COMMA_OR_VAR );
         }
     } else {
@@ -196,7 +196,7 @@ void CpDoWhile( void )
     Extension( DO_DO_EXT );
     InitLoop( CS_DO_WHILE );
     CSHead->cs_info.term_stmt_no = DoTermStmtNo();
-    if( RecKeyWord( "WHILE" ) ) {
+    if( RecKeyWordOpn( "WHILE" ) ) {
         RemKeyword( CITNode, 5 );
         CSCond( CSHead->bottom );
         BlockLabel();
@@ -254,7 +254,7 @@ void InitDo( stmt_num term_stmt_no )
     CSHead->cs_info.do_parms = do_pointer;
     do_pointer->term_stmt_no = term_stmt_no;
     do_pointer->do_parm = NULL;
-    if( ReqDoVar() ) {
+    if( ReqDoVarOpn() ) {
         CkTypeDeclared();
         do_var = CITNode->sym_ptr;
         BIOutSymbol( do_var );

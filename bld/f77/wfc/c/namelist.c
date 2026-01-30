@@ -62,16 +62,16 @@ void    CpNameList( void ) {
     ReqNoOpn();
     AdvanceITPtr();
     for( ;; ) {
-        ReqDiv();
-        if( ReqName( NAME_GROUP ) ) {
+        ReqDivOpr();
+        if( ReqNameOpn( NAME_GROUP ) ) {
             name_list = LkNameList();
         } else {
             name_list = NULL;
         }
         AdvanceITPtr();
-        ReqDiv();
+        ReqDivOpr();
         for( ;; ) {
-            if( ReqName( NAME_VAR_OR_ARR ) ) {
+            if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
                 sym = LkSym();
             } else {
                 sym = NULL;
@@ -95,16 +95,16 @@ void    CpNameList( void ) {
                 }
             }
             AdvanceITPtr();
-            if( RecComma() && RecNoOpn() ) {
+            if( RecCommaOpr() && RecNoOpn() ) {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
-        if( !RecDiv() ) {
+        if( !RecDivOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }

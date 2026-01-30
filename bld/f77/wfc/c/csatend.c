@@ -67,7 +67,7 @@ void    CpAtEnd(void) {
     code = NextLabel();
     GBranch( skip );
     GCheckEOF( code );
-    if( RecKeyWord( "DO" ) ) {
+    if( RecKeyWordOpn( "DO" ) ) {
         AddCSNode( CS_ATEND );
         CSHead->bottom = skip;
         CITNode->opn.ds = DSOPN_PHI;       // not part of the block label
@@ -77,7 +77,7 @@ void    CpAtEnd(void) {
         FreeLabel( code );
     } else {
         AdvanceITPtr();
-        ReqComma();
+        ReqCommaOpr();
         if( (StmtSw & SS_COMMA_THEN_EQ) != 0 ) {
             StmtSw &= ~SS_COMMA_THEN_EQ;  // consider AT END, DATA == 0
             StmtSw |= SS_EQUALS_FOUND;

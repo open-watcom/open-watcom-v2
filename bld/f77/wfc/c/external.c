@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void    CpExternal(void) {
     unsigned_16 flags;
 
     for( ;; ) {
-        if( ReqName( NAME_EXT_PROC ) ) {
+        if( ReqNameOpn( NAME_EXT_PROC ) ) {
             sym = LkSym();
             flags = sym->u.ns.flags;
             if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
@@ -82,9 +82,9 @@ void    CpExternal(void) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }

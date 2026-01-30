@@ -100,11 +100,11 @@ void    DimArray( sym_id sym )
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
 }
 
@@ -176,10 +176,10 @@ void    CpDeAllocate( void )
       && RecNoOpn() ) {
         AdvanceITPtr();
     }
-    ReqOpenParen();
+    ReqOpenParenOpr();
     GBegDeAllocate();
     for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
+        if( ReqNameOpn( NAME_ARRAY ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                 if( (sym->u.ns.flags & SY_SUBSCRIPTED)
@@ -195,11 +195,11 @@ void    CpDeAllocate( void )
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             GAllocEOL();
             break;
         }
-        if( RecKeyWord( StatKW )
+        if( RecKeyWordOpn( StatKW )
           && RecNextOpr( OPR_EQU ) ) {
             GAllocEOL();
             DeallocStat();
@@ -207,10 +207,10 @@ void    CpDeAllocate( void )
         }
     }
     GEndDeAllocate();
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 
@@ -230,10 +230,10 @@ void    CpAllocate( void )
       && RecNoOpn() ) {
         AdvanceITPtr();
     }
-    ReqOpenParen();
+    ReqOpenParenOpr();
     GBegAllocate();
     for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
+        if( ReqNameOpn( NAME_ARRAY ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                 if( (sym->u.ns.flags & SY_SUBSCRIPTED)
@@ -241,14 +241,14 @@ void    CpAllocate( void )
                   && !( (sym->u.ns.u1.s.typ == FT_CHAR)
                   && (sym->u.ns.xt.size == 0) ) ) {
                     AdvanceITPtr();
-                    ReqOpenParen();
+                    ReqOpenParenOpr();
                     sym->u.ns.u1.s.xflags |= SY_DEFINED;
                     GAllocate( sym );
                 } else if( (sym->u.ns.u1.s.typ == FT_CHAR)
                   && (sym->u.ns.xt.size == 0)
                   && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
                     AdvanceITPtr();
-                    ReqMul();
+                    ReqMulOpr();
                     sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
                     GAllocateString( sym );
                 } else {
@@ -257,24 +257,24 @@ void    CpAllocate( void )
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             GAllocEOL();
             break;
         }
         if( RecNextOpr( OPR_EQU ) ) {
             GAllocEOL();
-            if( RecKeyWord( LocKW ) ) {
+            if( RecKeyWordOpn( LocKW ) ) {
                 AllocLoc();
             }
-            if( RecKeyWord( StatKW ) ) {
+            if( RecKeyWordOpn( StatKW ) ) {
                 AllocStat();
             }
             break;
         }
     }
     GEndAllocate();
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
 }

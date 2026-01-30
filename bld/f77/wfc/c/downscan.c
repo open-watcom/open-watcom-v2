@@ -91,7 +91,7 @@ static  void    IntC( void )
             // overflow for I - 2147483648
             if( !(((BkLink == NULL)
               || (BkLink->opn.ds == DSOPN_PHI))
-              && RecMin()
+              && RecMinOpr()
               && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
@@ -114,7 +114,7 @@ static  void    IntC( void )
             // overflow for I - 2147483648
             if( !(((BkLink == NULL)
               || (BkLink->opn.ds == DSOPN_PHI))
-              && RecMin()
+              && RecMinOpr()
               && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
@@ -224,7 +224,7 @@ static  bool    Number( void )
 {
     if( RecNoOpn() ) {
         AdvanceITPtr();
-        if( !RecPlus() && !RecMin() ) {
+        if( !RecPlusOpr() && !RecMinOpr() ) {
             return( false );
         }
     }
@@ -239,9 +239,9 @@ static  bool    Complex( void )
 //=========================
 {
     if( Number()
-      && RecComma()
+      && RecCommaOpr()
       && Number()
-      && RecCloseParen() ) {
+      && RecCloseParenOpr() ) {
         return( true );
     } else {
         return( false );
@@ -459,7 +459,7 @@ void    DownScan( void )
     BkLink = NULL;
     FieldNode = NULL;
     for( ;; ) {
-        if( RecEquSign() ) {
+        if( RecEquOpr() ) {
             OprEqu();
         }
         DSTable[CITNode->opn.ds]();

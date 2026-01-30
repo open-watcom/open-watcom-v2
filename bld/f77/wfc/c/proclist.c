@@ -92,7 +92,7 @@ static  void    PrSFList( void ) {
     parm = sf_sym->u.ns.si.sf.header->parm_list;
     if( RecNoOpn() ) {
         AdvanceITPtr();
-        done_list = RecCloseParen() || RecColon();
+        done_list = RecCloseParenOpr() || RecColonOpr();
     } else {
         done_list = false;
         for( ;; ) {
@@ -128,7 +128,7 @@ static  void    PrSFList( void ) {
             }
             AdvanceITPtr();
             parm = parm->link;
-            done_list = RecCloseParen() || RecColon();
+            done_list = RecCloseParenOpr() || RecColonOpr();
         }
     }
     if( ( parm != NULL ) || !done_list ) {
@@ -140,7 +140,7 @@ static  void    PrSFList( void ) {
     }
     GSFCall( sfunc_node );
     GSFRetVal( sfunc_node );
-    if( RecColon() ) {
+    if( RecColonOpr() ) {
         GBegSFSS( sfunc_node );
         SubStrArgs( sfunc_node );
     }
@@ -154,12 +154,12 @@ static  void    PrSubList( itnode *array_node ) {
     for( ;; ) {
         GSubScr();
         AdvanceITPtr();
-        if( RecCloseParen() || RecColon() ) {
+        if( RecCloseParenOpr() || RecColonOpr() ) {
             break;
         }
     }
     GEndSubScr( array_node );
-    if( RecColon() ) {
+    if( RecColonOpr() ) {
         GBegSSStr( array_node );
         SubStrArgs( array_node );
     } else {
@@ -187,7 +187,7 @@ static  void    PrCallList( itnode *subpgm_node ) {
 
     GBegCall( subpgm_node );
     GEndCall( subpgm_node, GParms( subpgm_node ) );
-    if( RecColon() ) {
+    if( RecColonOpr() ) {
         GBegFSS( subpgm_node );
         SubStrArgs( subpgm_node );
     }

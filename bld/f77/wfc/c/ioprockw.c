@@ -61,13 +61,13 @@
 static bool FormatIdentifier( void ) {
 //====================================
 
-    if( RecComma() && RecNextOpr( OPR_EQU ) )
+    if( RecCommaOpr() && RecNextOpr( OPR_EQU ) )
         return false;
-    if( RecCloseParen() )
+    if( RecCloseParenOpr() )
         return false;
     if( RecTrmOpr() )
         return false;
-    ReqComma();
+    ReqCommaOpr();
     return true;
 }
 
@@ -80,16 +80,16 @@ static  void    NextComma( void ) {
     AdvanceITPtr();
     level = 0;
     for( ;; ) {
-        if( RecOpenParen() ) {
+        if( RecOpenParenOpr() ) {
             level++;
-        } else if( RecCloseParen() ) {
+        } else if( RecCloseParenOpr() ) {
             level--;
         }
         if( level < 0 )
             break;
-        if( RecEOS() )
+        if( RecEOSOpr() )
             break;
-        if( RecComma() && ( level == 0 ) )
+        if( RecCommaOpr() && ( level == 0 ) )
             break;
         AdvanceITPtr();
     }
@@ -224,14 +224,14 @@ void    FormatIdd( void ) {
     cs_label    fmt_label;
     grp_entry   *ge;
 
-    if( RecName() && ( NameListFind() != NULL ) ) {
+    if( RecNameOpn() && ( NameListFind() != NULL ) ) {
         BIOutNameList( CITNode->sym_ptr );
         for( ge = CITNode->sym_ptr->u.nl.group_list; ge != NULL; ge = ge->link ) {
             ge->sym->u.ns.flags |= SY_REFERENCED;
         }
         GSetNameList( FC_SET_NML );
         IOPermSet( IO_NAMELIST );
-    } else if( RecNumber() ) {
+    } else if( RecNumberOpn() ) {
         GPassStmtNo( LkUpFormat(), FC_SET_FMT );
     } else if( RecNoOpn() && RecNextOpr( OPR_MUL ) ) {
         if( CITNode->link->opn.ds == DSOPN_PHI ) {
@@ -240,7 +240,7 @@ void    FormatIdd( void ) {
         }
     } else if( RecNoOpn() && RecNextOpr( OPR_COM ) ) {
         Extension( IL_NO_ASTERISK );
-    } else if( RecIntVar() ) {
+    } else if( RecIntVarOpn() ) {
         CkVarRef();
         StNumbers.var_format = true;
         GFmtVarSet();
@@ -313,7 +313,7 @@ static  void    GetItem( void ) {
     kw = RecIOKW();
     if( Permission( kw ) ) {
         AdvanceITPtr();
-        ReqEquSign();
+        ReqEquOpr();
         switch( kw ) {
         case IO_ACCESS:
             CharItem( FC_SET_ACC );
@@ -426,12 +426,12 @@ void    KeywordList( void ) {
                 NextComma();
             }
         }
-        morelist = RecComma();
+        morelist = RecCommaOpr();
     }
     if( morelist ) {
         for( ;; ) {
             GetItem();
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }

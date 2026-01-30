@@ -86,7 +86,7 @@ void    CpSave( void ) {
         for( ;; ) {
             if( RecNoOpn() && RecNextOpr( OPR_DIV ) ) {
                 AdvanceITPtr();
-                if( ReqName( NAME_COMMON ) ) {
+                if( ReqNameOpn( NAME_COMMON ) ) {
                     sym_ptr = LkCommon();
                     if( sym_ptr->u.ns.flags == 0 ) {
                         sym_ptr->u.ns.flags |= SY_USAGE | SY_COMMON;
@@ -94,9 +94,9 @@ void    CpSave( void ) {
                     Save( sym_ptr );
                 }
                 AdvanceITPtr();
-                ReqDiv();
+                ReqDivOpr();
                 ReqNoOpn();
-            } else if( ReqName( NAME_VAR_OR_ARR ) ) {
+            } else if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
                 sym_ptr = LkSym();
                 if( (sym_ptr->u.ns.flags & ~SV_ON_OR_OFF) != SY_VARIABLE ) {
                     IllName( sym_ptr );
@@ -105,11 +105,11 @@ void    CpSave( void ) {
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
-        ReqEOS();
+        ReqEOSOpr();
     }
 }
 

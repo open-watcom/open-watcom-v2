@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ void    CpVolatile( void ) {
     sym_id      sym;
 
     for( ;; ) {
-        if( ReqName( NAME_VAR_OR_ARR ) ) {
+        if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
                 IllName( sym );
@@ -69,9 +70,9 @@ void    CpVolatile( void ) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }

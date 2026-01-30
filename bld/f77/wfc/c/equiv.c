@@ -57,7 +57,7 @@ static  bool    SubStr2( intstar4 *subscripts ) {
     bool        hi;
 
     subscripts++;
-    got_colon = RecColon();
+    got_colon = RecColonOpr();
     hi = false;
     if( !RecNoOpn() ) {
         CIntExpr();
@@ -67,7 +67,7 @@ static  bool    SubStr2( intstar4 *subscripts ) {
     if( got_colon ) {
         AdvanceITPtr();
     }
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     AdvanceITPtr();
     return( hi );
@@ -103,13 +103,13 @@ void    CpEquivalence(void) {
         if( RecNoOpn() ) {
             AdvanceITPtr();
         }
-        ReqOpenParen();
+        ReqOpenParenOpr();
         eqv_entry = NULL;
         eq_head = NULL;
         num_equived = 0;
         for( ;; ) {
             AError = false;
-            if( ReqName( NAME_VAR_OR_ARR ) ) {
+            if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
                 num_equived++;
                 sym = LkSym();
                 ill_name = true;
@@ -137,14 +137,14 @@ void    CpEquivalence(void) {
                 equiv.substr1 = 1;
                 equiv.substr2 = 0;
                 subscripts = equiv.subscrs;
-                if( RecOpenParen() ) {
+                if( RecOpenParenOpr() ) {
                     if( !RecNoOpn() || !RecNextOpr( OPR_COL ) ) {
                         sub_string = false;
                         for( ;; ) {
                             CIntExpr();
                             *subscripts = ITIntValue( CITNode );
                             AdvanceITPtr();
-                            if( RecColon() ) {
+                            if( RecColonOpr() ) {
                                 sub_string = true;
                                 break;
                             }
@@ -152,22 +152,22 @@ void    CpEquivalence(void) {
                             equiv.subs_no++;
                             if( equiv.subs_no == MAX_DIM )
                                 break;
-                            if( !RecComma() ) {
+                            if( !RecCommaOpr() ) {
                                 break;
                             }
                         }
                         if( !sub_string ) {
-                            ReqCloseParen();
+                            ReqCloseParenOpr();
                             ReqNoOpn();
                             AdvanceITPtr();
-                            if( RecOpenParen() ) {
+                            if( RecOpenParenOpr() ) {
                                 *subscripts = 1;
                                 if( !RecNoOpn() ) {
                                     CIntExpr();
                                     *subscripts = ITIntValue( CITNode );
                                 }
                                 AdvanceITPtr();
-                                sub_string = ReqColon();
+                                sub_string = ReqColonOpr();
                             }
                         }
                     } else {
@@ -205,7 +205,7 @@ void    CpEquivalence(void) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
@@ -219,14 +219,14 @@ void    CpEquivalence(void) {
             eq_set->next_eq_set = eq_head;
             eq_set = eq_head;
         }
-        ReqCloseParen();
+        ReqCloseParenOpr();
         ReqNoOpn();
         AdvanceITPtr();
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 

@@ -77,7 +77,7 @@ bool    IsFunctionDefn( void ) {
 
 // Check to see if type declaration is a function definition.
 
-    if( !RecName() )
+    if( !RecNameOpn() )
         return( false );
     if( memcmp( StmtKeywords[PR_FUNC], CITNode->opnd, 8 ) )
         return( false );
@@ -238,7 +238,7 @@ static  void    TypeDecl( TYPE typ ) {
     default_size = StorageSize( typ );
     if( RecNoOpn() ) {
         AdvanceITPtr();
-        ReqMul();
+        ReqMulOpr();
     }
     len_spec = LenSpec( typ, &size );
     if( IsFunctionDefn() ) {
@@ -247,13 +247,13 @@ static  void    TypeDecl( TYPE typ ) {
         MustBeTypeDecl();
         if( len_spec ) { // if TYPE*LEN
             default_size = size;
-            if( !RecNoOpr() && !RecCloseParen() ) {
-                ReqComma();
+            if( !RecNoOpr() && !RecCloseParenOpr() ) {
+                ReqCommaOpr();
             }
         }
         for( ;; ) {
             size = SIZE_UNDEF;
-            if( ReqName( NAME_VAR_OR_ARR ) ) {
+            if( ReqNameOpn( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
                     sym = FieldDecl();
@@ -261,7 +261,7 @@ static  void    TypeDecl( TYPE typ ) {
                     sym = VarDecl( MapTypes( typ, default_size ) );
                 }
                 len_spec = LenSpec( typ, &size );
-                if( RecOpenParen() ) {
+                if( RecOpenParenOpr() ) {
                     if( len_spec && ( typ == FT_CHAR ) ) {
                         Extension( TY_CHAR_BEFORE_PAREN );
                     }
@@ -285,7 +285,7 @@ static  void    TypeDecl( TYPE typ ) {
                 } else {
                     sym->u.ns.u1.s.typ = MapTypes( typ, size );
                     sym->u.ns.xt.size = size;
-                    if( RecDiv() || RecCat() ) {
+                    if( RecDivOpr() || RecCatOpr() ) {
                         StmtExtension( DA_IN_TYPE_STMT );
                         DataInit( var_node );
                     }
@@ -293,11 +293,11 @@ static  void    TypeDecl( TYPE typ ) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) {
+            if( !RecCommaOpr() ) {
                 break;
             }
         }
-        ReqEOS();
+        ReqEOSOpr();
     }
 }
 
@@ -392,20 +392,20 @@ void    CpDimension( void ) {
     sym_id    sym;
 
     for( ;; ) {
-        if( ReqName( NAME_ARRAY ) ) {
+        if( ReqNameOpn( NAME_ARRAY ) ) {
             sym = LkSym();
             AdvanceITPtr();
-            if( ReqOpenParen() ) {
+            if( ReqOpenParenOpr() ) {
                 ArrayDecl( sym );
             }
         } else {
             AdvanceITPtr();
         }
-        if( !RecComma() ) {
+        if( !RecCommaOpr() ) {
             break;
         }
     }
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 
@@ -460,7 +460,7 @@ void    ArrayDecl( sym_id sym ) {
         if( allocatable ) {
             ReqNoOpn();
             AdvanceITPtr();
-            ReqColon();
+            ReqColonOpr();
             ReqNoOpn();
         } else if( !assumed ) {
             DimExpr();
@@ -550,12 +550,12 @@ void    ArrayDecl( sym_id sym ) {
         *bounds++ = lo_bound;
         *bounds++ = hi_bound;
         AdvanceITPtr();
-        if( !RecComma() || assumed ) {
+        if( !RecCommaOpr() || assumed ) {
             break;
         }
     }
     _SetDimCount( dim_list.dim_flags, ss );
-    ReqCloseParen();
+    ReqCloseParenOpr();
     ReqNoOpn();
     AdvanceITPtr();
     if( SgmtSw & SG_DEFINING_STRUCTURE ) {

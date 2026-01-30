@@ -76,7 +76,7 @@ static void     FoldCatSequence( itnode *cit )
             size += CITNode->value.string.len;
         }
         AdvanceITPtr();
-        if( !RecCat() ) {
+        if( !RecCatOpr() ) {
             break;
         }
     }
@@ -156,7 +156,7 @@ static args_num ScanCat( size_t *size_ptr )
         }
         CITNode = CITNode->link;
         argc++;
-        if( !RecCat() ) {
+        if( !RecCatOpr() ) {
             break;
         }
     }

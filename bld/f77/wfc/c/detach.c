@@ -93,7 +93,7 @@ void    DetCallList(void) {
     } else {
         SetDefinedStatus();
         AdvanceITPtr();
-        while( RecComma() ) {
+        while( RecCommaOpr() ) {
             if( CheckColon() ) {
                 Extension( SS_FUNCTION_VALUE );
                 SubStrArgs( cit );
@@ -106,7 +106,7 @@ void    DetCallList(void) {
             AdvanceITPtr();
         }
     }
-    if( !RecCloseParen() ) {
+    if( !RecCloseParenOpr() ) {
         Error( PC_NO_CLOSEPAREN );
     }
     Detach( cit );
@@ -129,7 +129,7 @@ void    DetSubList(void) {
     }
     cit = CITNode;
     AdvanceITPtr();
-    for( dim_no = 0; RecComma() || RecFBr(); ++dim_no ) {
+    for( dim_no = 0; RecCommaOpr() || RecFBrOpr(); ++dim_no ) {
         if( CheckColon() ) {
             if( dim_no == 0 ) {
                 save_cit = CITNode;
@@ -150,7 +150,7 @@ void    DetSubList(void) {
         CkScrStr();
         AdvanceITPtr();
     }
-    if( !RecCloseParen() ) {
+    if( !RecCloseParenOpr() ) {
         Error( PC_NO_CLOSEPAREN );
     }
     if( dim_no != dim_cnt ) {
@@ -196,7 +196,7 @@ static  void    SubStrArgs( itnode *cit ) {
         }
         CkScrStr();
         AdvanceITPtr();
-        if( !RecColon() )
+        if( !RecColonOpr() )
             break;
         ++count;
     }

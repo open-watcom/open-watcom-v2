@@ -86,7 +86,7 @@ static stmt_num GetStmtNo( void )
     stmt_num    stmt_no;
 
     stmt_no = 0;
-    if( RecNumber() ) {
+    if( RecNumberOpn() ) {
         if( ( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &num, false, NULL ) == INT_OK )
           && ( num <= 99999 ) ) {
             if( num == 0 ) {

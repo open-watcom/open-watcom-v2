@@ -61,12 +61,12 @@ void    ScanExpr(void) {
 
     level = 0;
     for( ;; ) {
-        if( RecOpenParen() ) {
+        if( RecOpenParenOpr() ) {
             level++;
-        } else if( RecCloseParen() ) {
+        } else if( RecCloseParenOpr() ) {
             level--;
         }
-        if( ( RecComma() || RecColon() ) && ( level == 0 ) )
+        if( ( RecCommaOpr() || RecColonOpr() ) && ( level == 0 ) )
             break;
         if( level < 0  )
             break;

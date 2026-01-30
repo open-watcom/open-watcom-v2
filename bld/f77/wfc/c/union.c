@@ -55,7 +55,7 @@ void    EndOfStatement( void ) {
 
     ReqNoOpn();
     AdvanceITPtr();
-    ReqEOS();
+    ReqEOSOpr();
 }
 
 
