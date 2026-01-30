@@ -287,16 +287,16 @@ static void GetStmtType( void )
     OPR         opr;
 
     curr_opnd = CITNode->opnd;
-    if( CITNode->opn.ds != DSOPN_NAM ) {
+    if( !RecName() ) {
         Error( ST_WANT_NAME );
         StmtProc = PR_KW_NONE;
-    } else if( ( *curr_opnd == 'D' )
-      && ( *(curr_opnd + 1) == 'O' )
+    } else if( ( curr_opnd[0] == 'D' )
+      && ( curr_opnd[1] == 'O' )
       && (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
         StmtProc = PR_DO;
         RemKeyword( CITNode, 2 );
-    } else if( ( *curr_opnd == 'I' )
-      && ( *(curr_opnd+1) == 'F' )
+    } else if( ( curr_opnd[0] == 'I' )
+      && ( curr_opnd[1] == 'F' )
       && ( CITNode->link->opr == OPR_LBR )
       && ( SPtr1 != NULL )
       && ( ( SPtr1->opn.ds == DSOPN_NAM )

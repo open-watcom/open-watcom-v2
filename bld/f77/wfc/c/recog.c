@@ -55,14 +55,14 @@
 bool    RecEquSign( void ) {
 //====================
 
-    return( OPR_EQU == CITNode->opr );
+    return( CITNode->opr == OPR_EQU );
 }
 
 
 bool    ReqOperator( OPR operator, int error ) {
 //===============================================
 
-    if( operator == CITNode->opr )
+    if( CITNode->opr == operator )
         return( true );
     Error( error );
     return( false );
@@ -79,14 +79,14 @@ bool    ReqEquSign( void ) {
 bool    RecColon( void ) {
 //==================
 
-    return( OPR_COL == CITNode->opr );
+    return( CITNode->opr == OPR_COL );
 }
 
 
 bool    RecComma( void ) {
 //==================
 
-    return( OPR_COM == CITNode->opr );
+    return( CITNode->opr == OPR_COM );
 }
 
 
@@ -107,7 +107,7 @@ bool    ReqColon( void ) {
 bool    RecCloseParen( void ) {
 //=======================
 
-    return( OPR_RBR == CITNode->opr );
+    return( CITNode->opr == OPR_RBR );
 }
 
 
@@ -121,7 +121,7 @@ bool    ReqCloseParen( void ) {
 bool    RecOpenParen( void ) {
 //======================
 
-    return( OPR_LBR == CITNode->opr );
+    return( CITNode->opr == OPR_LBR );
 }
 
 
@@ -134,7 +134,7 @@ bool    ReqOpenParen( void ) {
 bool    RecMul( void ) {
 //================
 
-    return( OPR_MUL == CITNode->opr );
+    return( CITNode->opr == OPR_MUL );
 }
 
 
@@ -148,7 +148,7 @@ bool    ReqMul( void ) {
 bool    RecDiv( void ) {
 //================
 
-    return( OPR_DIV == CITNode->opr );
+    return( CITNode->opr == OPR_DIV );
 }
 
 
@@ -162,49 +162,49 @@ bool    ReqDiv( void ) {
 bool    RecPlus( void ) {
 //=================
 
-    return( OPR_PLS == CITNode->opr );
+    return( CITNode->opr == OPR_PLS );
 }
 
 
 bool    RecMin( void ) {
 //================
 
-    return( OPR_MIN == CITNode->opr );
+    return( CITNode->opr == OPR_MIN );
 }
 
 
 bool    RecCat( void ) {
 //================
 
-    return( OPR_CAT == CITNode->opr );
+    return( CITNode->opr == OPR_CAT );
 }
 
 
 bool    RecNoOpr( void )
 //======================
 {
-    return( OPR_PHI == CITNode->opr );
+    return( CITNode->opr == OPR_PHI );
 }
 
 
 bool    RecFBr( void ) {
 //================
 
-    return( OPR_FBR == CITNode->opr );
+    return( CITNode->opr == OPR_FBR );
 }
 
 
 bool    RecTrmOpr( void ) {
 //===================
 
-    return( OPR_TRM == CITNode->opr );
+    return( CITNode->opr == OPR_TRM );
 }
 
 
 bool    RecEOS( void ) {
 //================
 
-    return( ( OPR_TRM == CITNode->opr ) && ( CITNode->oprpos == 9999 ) );
+    return( ( CITNode->opr == OPR_TRM ) && ( CITNode->oprpos == 9999 ) );
 }
 
 

@@ -130,7 +130,7 @@ void    InitSelect( void )
     sym_id      sel_expr;
 
     if( !AError ) {
-        if( CITNode->opn.ds == DSOPN_NAM ) {
+        if( RecName() ) {
             // must be a variable name
             CSHead->cs_info.cases->sel_expr = CITNode->sym_ptr;
         } else {

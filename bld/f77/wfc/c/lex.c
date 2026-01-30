@@ -45,6 +45,8 @@
 #include "ferror.h"
 #include "frl.h"
 #include "comio.h"
+#include "namecod.h"
+#include "recog.h"
 #include "scan.h"
 #include "kwlist.h"
 
@@ -162,7 +164,7 @@ void    MakeITList( void )
      * it will point at the end of the line and for fixed-length
      * files which contain trailing blanks this will look funny.
      */
-    if( CITNode->opn.ds == DSOPN_PHI ) {
+    if( RecNoOpn() ) {
         CITNode->opnpos = CITNode->oprpos + 1;
     }
     if( BrCnt != 0 ) {

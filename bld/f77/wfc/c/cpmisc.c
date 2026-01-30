@@ -77,7 +77,7 @@ static  void    NumOrLit( FCODE routine ) {
     if( RecNoOpn() ) {
         GBreak( routine );
     } else if( !RecLiteral() ) {
-        if( CITNode->opn.ds == DSOPN_INT ) {
+        if( RecNumber() ) {
             if( CITNode->opnd_size > 5 ) {
                 Extension( ST_LONG_NUM, StmtKeywords[StmtProc] );
             }

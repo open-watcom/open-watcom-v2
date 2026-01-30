@@ -73,7 +73,7 @@ static  void    LitC( void )
 static  void    LogC( void )
 //==========================
 {
-    CITNode->value.logstar1 = *CITNode->opnd == 'T';
+    CITNode->value.logstar1 = ( *CITNode->opnd == 'T' );
     CITNode->typ = FT_LOGICAL;
     CITNode->size = TypeSize( FT_LOGICAL );
     CITNode->opn.us = USOPN_CON;
@@ -91,7 +91,7 @@ static  void    IntC( void )
             // overflow for I - 2147483648
             if( !(((BkLink == NULL)
               || (BkLink->opn.ds == DSOPN_PHI))
-              && (CITNode->opr == OPR_MIN)
+              && RecMin()
               && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
@@ -114,7 +114,7 @@ static  void    IntC( void )
             // overflow for I - 2147483648
             if( !(((BkLink == NULL)
               || (BkLink->opn.ds == DSOPN_PHI))
-              && (CITNode->opr == OPR_MIN)
+              && RecMin()
               && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
@@ -222,7 +222,7 @@ static  void    ConstBase( uint base )
 static  bool    Number( void )
 //========================
 {
-    if( CITNode->opn.ds == DSOPN_PHI ) {
+    if( RecNoOpn() ) {
         AdvanceITPtr();
         if( !RecPlus() && !RecMin() ) {
             return( false );
@@ -459,7 +459,7 @@ void    DownScan( void )
     BkLink = NULL;
     FieldNode = NULL;
     for( ;; ) {
-        if( CITNode->opr == OPR_EQU ) {
+        if( RecEquSign() ) {
             OprEqu();
         }
         DSTable[CITNode->opn.ds]();

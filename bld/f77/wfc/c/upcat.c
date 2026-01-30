@@ -76,7 +76,7 @@ static void     FoldCatSequence( itnode *cit )
             size += CITNode->value.string.len;
         }
         AdvanceITPtr();
-        if( CITNode->opr != OPR_CAT ) {
+        if( !RecCat() ) {
             break;
         }
     }
@@ -141,7 +141,7 @@ static args_num ScanCat( size_t *size_ptr )
     cat_size = 0;
     argc = 0;
     for( ;; ) {
-        if( CITNode->opn.ds == DSOPN_PHI ) {
+        if( RecNoOpn() ) {
             // no operand (A = B // // C)
             TypeErr( SX_WRONG_TYPE, FT_CHAR );
         } else if( CITNode->typ != FT_CHAR ) {
@@ -156,7 +156,7 @@ static args_num ScanCat( size_t *size_ptr )
         }
         CITNode = CITNode->link;
         argc++;
-        if( CITNode->opr != OPR_CAT ) {
+        if( !RecCat() ) {
             break;
         }
     }

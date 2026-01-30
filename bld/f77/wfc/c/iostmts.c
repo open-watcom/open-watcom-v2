@@ -183,7 +183,7 @@ static  bool            ReadKWList( void ) {
         return( false );
     if( RecNoOpn() )
         return( false );
-    if( CITNode->opn.ds == DSOPN_LIT )
+    if( RecLiteral() )
         return( false );
     if( CITNode->opn.ds > DSOPN_LIT )
         return( true );

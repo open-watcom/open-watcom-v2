@@ -345,17 +345,17 @@ static  void    RemoveParen( void )
 {
     itnode      *cit;
 
-    if( CITNode->opn.ds != DSOPN_PHI ) {
+    if( !RecNoOpn() ) {
         AdvError( SX_NO_OPR );
     }
     MoveDown();
     KillOpnOpr();
     cit = CITNode;
-    if( CITNode->opn.ds == DSOPN_PHI ) {
+    if( RecNoOpn() ) {
         Error( PC_SURP_PAREN );
     }
     CITNode = CITNode->link;
-    if( CITNode->opn.ds != DSOPN_PHI ) {
+    if( !RecNoOpn() ) {
         Error( SX_NO_OPR );
     }
     cit->link = CITNode->link;
@@ -400,7 +400,7 @@ static  void    LowColon( void )
 //==============================
 // we are looking at the low bound
 {
-    if( CITNode->opn.ds == DSOPN_PHI ) {
+    if( RecNoOpn() ) {
         AddSS( 1 );
     }
     PrepArg();
@@ -411,7 +411,7 @@ static  void    HighColon( void )
 //===============================
 {
     // must be high bound
-    if( CITNode->opn.ds == DSOPN_PHI ) {
+    if( RecNoOpn() ) {
         // we don't know have access to the symbol table
         // entry so we can't compute the size
         CITNode->opn.us = USOPN_SSR;
