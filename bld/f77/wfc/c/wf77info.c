@@ -1114,9 +1114,9 @@ segment_id      FESegID( cg_sym_handle _sym )
         if( sp_type != SY_STMT_FUNC ) {
             if( (flags & SY_SUB_PARM) == 0 ) {
                 if( (flags & SY_PS_ENTRY) == 0 ) {
-                    if( (sp_type == SY_FUNCTION) ||
-                        (sp_type == SY_SUBROUTINE) ||
-                        (sp_type == SY_FN_OR_SUB) ) {
+                    if( (sp_type == SY_FUNCTION)
+                      || (sp_type == SY_SUBROUTINE)
+                      || (sp_type == SY_FN_OR_SUB) ) {
                         if( flags & SY_INTRINSIC ) {
                             segid = sym->u.ns.si.fi.u.segid;
                         } else {

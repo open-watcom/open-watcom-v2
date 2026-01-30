@@ -59,9 +59,9 @@ static  void    ConstBase( uint base );
 static  void    BuildCplx( int real_sign, int imag_sign );
 static  void    AltReturn( void );
 
-static  void    LitC( void ) {
-//======================
-
+static  void    LitC( void )
+//==========================
+{
     CITNode->value.string.ptr = CITNode->opnd;
     CITNode->value.string.len = CITNode->opnd_size;
     CITNode->typ = FT_CHAR;
@@ -70,9 +70,9 @@ static  void    LitC( void ) {
 }
 
 
-static  void    LogC( void ) {
-//======================
-
+static  void    LogC( void )
+//==========================
+{
     CITNode->value.logstar1 = *CITNode->opnd == 'T';
     CITNode->typ = FT_LOGICAL;
     CITNode->size = TypeSize( FT_LOGICAL );
@@ -80,18 +80,19 @@ static  void    LogC( void ) {
 }
 
 
-static  void    IntC( void ) {
-//======================
-
+static  void    IntC( void )
+//==========================
+{
     /* If OPT_SHORT is enabled, then default ints are 2 bytes, not 4 */
     if( Options & OPT_SHORT ) {
         if( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &CITNode->value.intstar4, false, NULL ) != INT_OK ) {
             // don't issue an overflow for -2147483648
             // but we need to be careful since we do want an
             // overflow for I - 2147483648
-            if( !(((BkLink == NULL) || (BkLink->opn.ds == DSOPN_PHI)) &&
-                  (CITNode->opr == OPR_MIN) &&
-                  (CITNode->value.intstar4 == INT_MIN)) ) {
+            if( !(((BkLink == NULL)
+              || (BkLink->opn.ds == DSOPN_PHI))
+              && (CITNode->opr == OPR_MIN)
+              && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
         }
@@ -100,7 +101,8 @@ static  void    IntC( void ) {
         CITNode->size = TypeSize( FT_INTEGER );
         CITNode->opn.us = USOPN_CON;
 
-        if( CITNode->value.intstar4 < SHRT_MIN || CITNode->value.intstar4 > SHRT_MAX ) {
+        if( CITNode->value.intstar4 < SHRT_MIN
+          || CITNode->value.intstar4 > SHRT_MAX ) {
             Warning( KO_IOVERFLOW );
         }
         CnvTo( CITNode, FT_INTEGER_2, TypeSize( FT_INTEGER_2 ) );
@@ -110,9 +112,10 @@ static  void    IntC( void ) {
             // don't issue an overflow for -2147483648
             // but we need to be careful since we do want an
             // overflow for I - 2147483648
-            if( !(((BkLink == NULL) || (BkLink->opn.ds == DSOPN_PHI)) &&
-                  (CITNode->opr == OPR_MIN) &&
-                  (CITNode->value.intstar4 == INT_MIN)) ) {
+            if( !(((BkLink == NULL)
+              || (BkLink->opn.ds == DSOPN_PHI))
+              && (CITNode->opr == OPR_MIN)
+              && (CITNode->value.intstar4 == INT_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
         }
@@ -123,9 +126,9 @@ static  void    IntC( void ) {
 }
 
 
-static  bool    CnvFloat( itnode *cit, int prec ) {
-//=================================================
-
+static  bool    CnvFloat( itnode *cit, int prec )
+//===============================================
+{
     bool        ext;
 
     ext = ( (Options & OPT_EXTEND_REAL) != 0 );
@@ -137,9 +140,9 @@ static  bool    CnvFloat( itnode *cit, int prec ) {
 }
 
 
-static  void    RealC( void ) {
+static  void    RealC( void )
 //=======================
-
+{
     if( CnvFloat( CITNode, PRECISION_SINGLE ) ) {
         CITNode->value.single = CITNode->value.extended;
     }
@@ -149,9 +152,9 @@ static  void    RealC( void ) {
 }
 
 
-static  void    DoubleC( void ) {
+static  void    DoubleC( void )
 //=========================
-
+{
     if( CnvFloat( CITNode, PRECISION_DOUBLE ) ) {
         CITNode->value.dble = CITNode->value.extended;
     }
@@ -161,9 +164,9 @@ static  void    DoubleC( void ) {
 }
 
 
-static  void    ExtendedC( void ) {
+static  void    ExtendedC( void )
 //===========================
-
+{
     CnvFloat( CITNode, PRECISION_EXTENDED );
     CITNode->typ = FT_EXTENDED;
     CITNode->size = TypeSize( FT_EXTENDED );
@@ -171,25 +174,25 @@ static  void    ExtendedC( void ) {
 }
 
 
-static  void    OctalC( void ) {
+static  void    OctalC( void )
 //========================
-
+{
     ConstBase( 8 );
     CITNode->opn.us = USOPN_CON;
 }
 
 
-static  void    HexC( void ) {
+static  void    HexC( void )
 //======================
-
+{
     ConstBase( 16 );
     CITNode->opn.us = USOPN_CON;
 }
 
 
-static  void    ConstBase( uint base ) {
+static  void    ConstBase( uint base )
 //======================================
-
+{
     char        *end;
 
     Extension( CN_HEX_OCT );
@@ -208,16 +211,17 @@ static  void    ConstBase( uint base ) {
         CITNode->size = sizeof( intstar4 );
         CITNode->typ = FT_INTEGER;
     }
-    if( ( *end != NULLCHAR ) || ( errno != 0 ) ) {
+    if( ( *end != NULLCHAR )
+      || ( errno != 0 ) ) {
         Error( CN_BAD_HEX_OCT );
     }
     CITNode->is_unsigned = true;
 }
 
 
-static  bool    Number( void ) {
+static  bool    Number( void )
 //========================
-
+{
     if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
         if( !RecPlus() && !RecMin() ) {
@@ -231,10 +235,13 @@ static  bool    Number( void ) {
 }
 
 
-static  bool    Complex( void ) {
+static  bool    Complex( void )
 //=========================
-
-    if( Number() && RecComma() && Number() && RecCloseParen() ) {
+{
+    if( Number()
+      && RecComma()
+      && Number()
+      && RecCloseParen() ) {
         return( true );
     } else {
         return( false );
@@ -242,9 +249,9 @@ static  bool    Complex( void ) {
 }
 
 
-static  itnode  *CollectNumber( itnode *itptr, int *sign ) {
+static  itnode  *CollectNumber( itnode *itptr, int *sign )
 //==========================================================
-
+{
     itnode      *save_node;
 
     save_node = itptr;
@@ -274,16 +281,15 @@ static  itnode  *CollectNumber( itnode *itptr, int *sign ) {
 }
 
 
-static  void    Phi( void ) {
+static  void    Phi( void )
 //=====================
-
 // Processing a null operand in an expression.
 //
 //         1. may be start of a complex constant
 //         2. may be start of an alternate return specifier
 //         3. may just be two operators in a row
 //
-
+{
     OPR         opr1;
     OPR         opr2;
     itnode      *itptr;
@@ -307,11 +313,12 @@ static  void    Phi( void ) {
         }
     } else {
         opr1 = CITNode->opr;
-        if( ( opr1 == OPR_FBR ) || ( opr1 == OPR_COM ) ) {
+        if( ( opr1 == OPR_FBR )
+          || ( opr1 == OPR_COM ) ) {
             if( opr2 == OPR_MUL ) {
                 if( CITNode->link->opn.ds == DSOPN_INT ) {
-                    if( ( CITNode->link->link->opr == OPR_COM ) ||
-                        ( CITNode->link->link->opr == OPR_RBR ) ) {
+                    if( ( CITNode->link->link->opr == OPR_COM )
+                      || ( CITNode->link->link->opr == OPR_RBR ) ) {
                         AltReturn();
                     }
                 }
@@ -321,16 +328,17 @@ static  void    Phi( void ) {
 }
 
 
-static  void    BuildCplx( int real_sign, int imag_sign ) {
+static  void    BuildCplx( int real_sign, int imag_sign )
 //=========================================================
-
+{
     itnode      *itptr;
     itnode      *stop;
     ftn_type    *val;
 
     val = &CITNode->value;
     itptr = CITNode->link;
-    if( ( itptr->opn.ds == DSOPN_EXT ) || ( itptr->link->opn.ds == DSOPN_EXT ) ) {
+    if( ( itptr->opn.ds == DSOPN_EXT )
+      || ( itptr->link->opn.ds == DSOPN_EXT ) ) {
         CITNode->typ = FT_XCOMPLEX;
         if( CnvFloat( itptr, PRECISION_EXTENDED ) ) {
             val->xcomplex.realpart = real_sign * itptr->value.extended;
@@ -340,7 +348,8 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
             val->xcomplex.imagpart = imag_sign * itptr->value.extended;
         }
         Extension( CN_DOUBLE_COMPLEX );
-    } else if( ( itptr->opn.ds == DSOPN_DBL ) || ( itptr->link->opn.ds == DSOPN_DBL ) ) {
+    } else if( ( itptr->opn.ds == DSOPN_DBL )
+      || ( itptr->link->opn.ds == DSOPN_DBL ) ) {
         CITNode->typ = FT_DCOMPLEX;
         if( CnvFloat( itptr, PRECISION_DOUBLE ) ) {
             val->dcomplex.realpart = real_sign * itptr->value.extended;
@@ -377,9 +386,9 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
 }
 
 
-static  void    AltReturn( void ) {
+static  void    AltReturn( void )
 //===========================
-
+{
     itnode      *itptr;
 
     itptr = CITNode;
@@ -393,15 +402,16 @@ static  void    AltReturn( void ) {
 }
 
 
-static  void    OprEqu( void ) {
+static  void    OprEqu( void )
 //========================
-
+{
     if( (ASType & AST_EOK) == 0 ) {
         Error( EQ_ILL_EQ_SIGN );
         return;
     }
     if( ASType & AST_MEQ ) {
-        if( (ASType & AST_ASF) || ( StmtProc != PR_ASNMNT ) ) {
+        if( (ASType & AST_ASF)
+          || ( StmtProc != PR_ASNMNT ) ) {
             Error( EQ_ILL_EQ_SIGN );
             return;
         }
@@ -421,11 +431,10 @@ static void (* const DSTable[])( void ) = {
 };
 
 
-void    GetConst( void ) {
+void    GetConst( void )
 //==================
-
 // Constant converting without downscan-upscan process.
-
+{
     DSTable[CITNode->opn.ds]();
     if( CITNode->opn.us != USOPN_CON ) {
         Error( SX_CONST );
@@ -433,9 +442,9 @@ void    GetConst( void ) {
 }
 
 
-void    GetIntConst( void ) {
+void    GetIntConst( void )
 //=====================
-
+{
     GetConst();
     if( !_IsTypeInteger( CITNode->typ ) ) {
         Error( SX_EXPECT_INT );
@@ -443,9 +452,9 @@ void    GetIntConst( void ) {
 }
 
 
-void    DownScan( void ) {
+void    DownScan( void )
 //==================
-
+{
     AError = false;
     BkLink = NULL;
     FieldNode = NULL;

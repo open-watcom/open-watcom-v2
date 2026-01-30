@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +53,9 @@ static  char    *Opn[] = {
 };
 
 
-static  char    *Opr( byte opr ) {
+static  char    *Opr( byte opr )
 //================================
-
+{
     switch( opr ) {
     case OPR_PHI :
         return( "OPR_PHI " );
@@ -119,23 +119,23 @@ static  char    *Opr( byte opr ) {
 }
 
 
-static  void    LLine( void ) {
+static  void    LLine( void )
 //=======================
-
+{
     printf( "+-----------+------------+\n" );
 }
 
 
-static  void    Node( void ) {
+static  void    Node( void )
 //======================
-
+{
     printf( "|  %s  |  %s  |\n", Opr( CITNode->opr ), Opn[CITNode->opn.ds] );
 }
 
 
-void    DumpLex( void ) {
+void    DumpLex( void )
 //=================
-
+{
     LLine();
     while( CITNode != NULL ) {
         Node();

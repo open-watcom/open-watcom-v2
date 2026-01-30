@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,8 @@ static void     FiniDo( void );
 static  void    ChkStatementSequence( void )
 {
     SetCtrlFlgs();
-    if( (StmtSw & SS_HOLLERITH) && ( StmtProc != PR_FMT ) ) {
+    if( (StmtSw & SS_HOLLERITH)
+      && ( StmtProc != PR_FMT ) ) {
         Extension( HO_CONST );
     }
     if( SgmtSw & SG_DEFINING_MAP ) {
@@ -99,20 +100,24 @@ static  void    ChkStatementSequence( void )
             StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_STRUCTURE] );
         }
     }
-    if( ( (SgmtSw & SG_PROLOG_DONE) == 0 ) &&
-        (ProgSw & PS_IN_SUBPROGRAM) &&
-        ( !CtrlFlgOn( CF_SPECIFICATION ) ) &&
-        ( StmtProc != PR_FMT ) && ( StmtProc != PR_INCLUDE ) ) {
+    if( ( (SgmtSw & SG_PROLOG_DONE) == 0 )
+      && (ProgSw & PS_IN_SUBPROGRAM)
+      && ( !CtrlFlgOn( CF_SPECIFICATION ) )
+      && ( StmtProc != PR_FMT )
+      && ( StmtProc != PR_INCLUDE ) ) {
         Prologue();
     }
-    if( ( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 ) &&
-        ( !CtrlFlgOn( CF_SPECIFICATION | CF_SUBPROGRAM ) ) &&
-        ( StmtProc != PR_FMT ) && ( StmtProc != PR_INCLUDE ) ) {
+    if( ( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 )
+      && ( !CtrlFlgOn( CF_SPECIFICATION | CF_SUBPROGRAM ) )
+      && ( StmtProc != PR_FMT )
+      && ( StmtProc != PR_INCLUDE ) ) {
         STResolve();
         SgmtSw |= SG_SYMTAB_RESOLVED;
     }
-    if( Remember.endstmt || ( (SgmtSw & SG_STMT_PROCESSED) == 0 ) ) {
-        if( !CtrlFlgOn( CF_SUBPROGRAM ) && ( StmtProc != PR_INCLUDE ) ) {
+    if( Remember.endstmt
+      || ( (SgmtSw & SG_STMT_PROCESSED) == 0 ) ) {
+        if( !CtrlFlgOn( CF_SUBPROGRAM )
+          && ( StmtProc != PR_INCLUDE ) ) {
             DefProg();
         }
     }
@@ -123,12 +128,13 @@ static  void    ChkStatementSequence( void )
 }
 
 
-static  void    ProcStmt( void ) {
+static  void    ProcStmt( void )
 //================================
-
+{
     if( AError )
         return;
-    if( CpError && ( StmtProc == PR_KW_NONE ) )
+    if( CpError
+      && ( StmtProc == PR_KW_NONE ) )
         return;
     ProcTable[StmtProc]();
 }
@@ -170,7 +176,8 @@ void    CompStatement( void )
         //          CHARACTER A, B(79)
         //          EQUIVALENCE (A,B(1))
         //          END
-        if( !scan_error && ( StmtProc != PR_KW_NONE ) ) {
+        if( !scan_error
+          && ( StmtProc != PR_KW_NONE ) ) {
             ChkStatementSequence();
         }
     }
@@ -178,11 +185,13 @@ void    CompStatement( void )
         if( CurrFile->link == NULL ) {  // no line numbering information for
             GSetDbugLine();             // include files
         }
-        if( CtrlFlgOn( CF_NEED_SET_LINE ) && (Options & OPT_TRACE) ) {
+        if( CtrlFlgOn( CF_NEED_SET_LINE )
+          && (Options & OPT_TRACE) ) {
             GSetSrcLine();
         }
         CheckOrder();
-        if( (ProgSw & PS_BLOCK_DATA) && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
+        if( (ProgSw & PS_BLOCK_DATA)
+          && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
             // if statement wasn't decodeable, don't issue an error
             if( StmtProc != PR_KW_NONE ) {
                 StmtErr( BD_IN_BLOCK_DATA );
@@ -212,7 +221,9 @@ void    CompStatement( void )
     // will not be properly set when we compile the RETURN statement in the
     // following example:       integer*2 fwinmain( hInstance
     //                          return
-    if( !scan_error && (StmtProc != PR_KW_NONE) && (StmtProc != PR_INCLUDE) ) {
+    if( !scan_error
+      && (StmtProc != PR_KW_NONE)
+      && (StmtProc != PR_INCLUDE) ) {
         SgmtSw |= SG_STMT_PROCESSED;
     }
     FiniStatement();
@@ -279,33 +290,40 @@ static void GetStmtType( void )
     if( CITNode->opn.ds != DSOPN_NAM ) {
         Error( ST_WANT_NAME );
         StmtProc = PR_KW_NONE;
-    } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd + 1) == 'O' ) &&
-               (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
+    } else if( ( *curr_opnd == 'D' )
+      && ( *(curr_opnd + 1) == 'O' )
+      && (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
         StmtProc = PR_DO;
         RemKeyword( CITNode, 2 );
-    } else if( ( *curr_opnd == 'I' ) && ( *(curr_opnd+1) == 'F' ) &&
-               ( CITNode->link->opr == OPR_LBR ) && ( SPtr1 != NULL ) &&
-               ( ( SPtr1->opn.ds == DSOPN_NAM ) || ( SPtr1->opn.ds == DSOPN_INT ) ) ) {
+    } else if( ( *curr_opnd == 'I' )
+      && ( *(curr_opnd+1) == 'F' )
+      && ( CITNode->link->opr == OPR_LBR )
+      && ( SPtr1 != NULL )
+      && ( ( SPtr1->opn.ds == DSOPN_NAM )
+      || ( SPtr1->opn.ds == DSOPN_INT ) ) ) {
         if( SPtr1->opn.ds == DSOPN_INT ) {
             StmtProc = PR_ARIF;
         } else {
             StmtProc = PR_IF;
         }
         RemKeyword( CITNode, 2 );
-    } else if( ( (StmtSw & SS_COMMA_THEN_EQ) == 0 ) && (StmtSw & SS_EQUALS_FOUND) ) {
+    } else if( ( (StmtSw & SS_COMMA_THEN_EQ) == 0 )
+      && (StmtSw & SS_EQUALS_FOUND) ) {
         StmtProc = PR_ASNMNT;
         if( RecName() && RecNextOpr( OPR_LBR ) ) {
             if( SPtr1->opn.ds != DSOPN_PHI ) {
                 DefStmtType();
             } else {
                 opr = SPtr1->link->opr;
-                if( opr != OPR_LBR && opr != OPR_DPT && opr != OPR_FLD ) {
+                if( opr != OPR_LBR
+                  && opr != OPR_DPT
+                  && opr != OPR_FLD ) {
                     if( opr != OPR_EQU ) {
                         DefStmtType();
                     } else {
                         LkSym();
-                        if( !BitOn( SY_USAGE | SY_SUB_PARM ) &&
-                            !CharSubString() ) {
+                        if( !BitOn( SY_USAGE | SY_SUB_PARM )
+                          && !CharSubString() ) {
                             StmtProc = PR_STMTFUNC;
                         }
                     }
@@ -336,7 +354,7 @@ static void RemCheck( void )
 // Check for errors or warnings concerning the dependencies
 // of this statement on the last one. eg. READ before ATEND.
 
-    if( StmtProc == PR_ATEND) {
+    if( StmtProc == PR_ATEND ) {
         if( Remember.read ) {
             if( Remember.end_equals ) {
                 Error( SP_ATEND_AND_ENDEQUALS );
@@ -345,12 +363,15 @@ static void RemCheck( void )
             Error( SP_READ_NO_ATEND );
         }
     }
-    if( Remember.transfer && ( StmtNo == 0 ) &&
-        !CtrlFlgOn( CF_BAD_BRANCH_OBJECT | CF_IMPLICIT_LABEL ) &&
-        ( !Remember.stop_or_return || ( StmtProc != PR_END ) ) ) {
+    if( Remember.transfer
+      && ( StmtNo == 0 )
+      && !CtrlFlgOn( CF_BAD_BRANCH_OBJECT | CF_IMPLICIT_LABEL )
+      && ( !Remember.stop_or_return
+      || ( StmtProc != PR_END ) ) ) {
         Warning( ST_NO_EXEC );
     }
-    if( Remember.slct && ( StmtProc != PR_CASE ) ) {
+    if( Remember.slct
+      && ( StmtProc != PR_CASE ) ) {
         Error( SP_SELECT_THEN_CASE );
     }
 }
@@ -371,26 +392,35 @@ void ClearRem( void )
 static void CheckOrder( void )
 {
     AError = false;
-    if( (StmtProc == PR_IMP) && (SgmtSw & SG_NO_MORE_IMPLICIT) ) {
+    if( (StmtProc == PR_IMP)
+      && (SgmtSw & SG_NO_MORE_IMPLICIT) ) {
         Error( ST_IMPLICIT_LATE );
-    } else if( CtrlFlgOn( CF_SPECIFICATION ) && (SgmtSw & SG_NO_MORE_SPECS) ) {
+    } else if( CtrlFlgOn( CF_SPECIFICATION )
+      && (SgmtSw & SG_NO_MORE_SPECS) ) {
         // ENTRY and DATA statements are special specification statements
-        if( (StmtProc != PR_ENTRY) && (StmtProc != PR_DATA) ) {
+        if( (StmtProc != PR_ENTRY)
+          && (StmtProc != PR_DATA) ) {
             Error( ST_SPEC_LATE );
         }
-    } else if( CtrlFlgOn( CF_SPECIFICATION ) && (SgmtSw & SG_SEEN_DATA) ) {
-        if( ( StmtProc != PR_DATA ) && (ExtnSw & XS_DATA_STMT_ORDER) == 0 ) {
+    } else if( CtrlFlgOn( CF_SPECIFICATION )
+      && (SgmtSw & SG_SEEN_DATA) ) {
+        if( ( StmtProc != PR_DATA )
+          && (ExtnSw & XS_DATA_STMT_ORDER) == 0 ) {
             Extension( ST_DATA_TOO_EARLY );
             ExtnSw |= XS_DATA_STMT_ORDER;
         }
-    } else if( (StmtProc == PR_STMTFUNC) && (SgmtSw & SG_NO_MORE_SF) ) {
+    } else if( (StmtProc == PR_STMTFUNC)
+      && (SgmtSw & SG_NO_MORE_SF) ) {
         Error( ST_ASF_LATE );
         AError = false; // so we still process statement function
     }
-    if( !CtrlFlgOn( CF_SUBPROGRAM ) && (StmtProc != PR_FMT) &&
-        (StmtProc != PR_INCLUDE) && (StmtProc != PR_ENTRY) &&
-        (StmtProc != PR_PARM) && (StmtProc != PR_DATA) &&
-        (StmtProc != PR_IMP) ) {
+    if( !CtrlFlgOn( CF_SUBPROGRAM )
+      && (StmtProc != PR_FMT)
+      && (StmtProc != PR_INCLUDE)
+      && (StmtProc != PR_ENTRY)
+      && (StmtProc != PR_PARM)
+      && (StmtProc != PR_DATA)
+      && (StmtProc != PR_IMP) ) {
         SgmtSw |= SG_NO_MORE_IMPLICIT;
         if( !CtrlFlgOn( CF_SPECIFICATION ) ) {
             SgmtSw |= SG_NO_MORE_SPECS;
@@ -459,7 +489,8 @@ static void CheckDoEnd( void )
 
 static void FiniDo( void )
 {
-    if( ( StmtProc != PR_KW_NONE ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
+    if( ( StmtProc != PR_KW_NONE )
+      && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
         StmtErr( DO_ENDING_BAD );
     }
     if( CSHead->typ == CS_DO ) {
