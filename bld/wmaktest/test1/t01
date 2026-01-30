@@ -1,3 +1,87 @@
 # ----------------------------------------------------
 # Test 01: Multiple Dependents Tests
 # ----------------------------------------------------
+
+objs= &
+    main.obj &
+    foo0001.obj &
+    foo0002.obj &
+    foo0003.obj &
+    foo0004.obj &
+    foo0005.obj &
+    foo0006.obj &
+    foo0007.obj &
+    foo0008.obj &
+    foo0009.obj &
+    foo0010.obj &
+    foo0011.obj &
+    foo0012.obj &
+    foo0013.obj &
+    foo0014.obj &
+    foo0015.obj &
+    foo0016.obj &
+    foo0017.obj &
+    foo0018.obj &
+    foo0019.obj &
+    foo0020.obj &
+    foo0021.obj &
+    foo0022.obj &
+    foo0023.obj &
+    foo0024.obj &
+    foo0025.obj &
+    foo0026.obj &
+    foo0027.obj &
+    foo0028.obj &
+    foo0029.obj &
+    foo0030.obj
+
+!ifdef %BUILDTEST
+buildtest = 1
+!endif
+
+!ifdef __DOS__
+xcflags=-bt=dos
+xlflags=sys dos4g
+!else ifdef __OS2__
+xcflags=-bt=os2
+xlflags=sys os2v2
+!else ifdef __NT__
+xcflags=-bt=nt
+xlflags=sys nt
+!else ifdef __LINUX__
+xcflags=-bt=linux
+xlflags=sys linux
+!endif
+
+!ifneq buildtest 1
+xwcc=wcc386
+xlinker=wlink
+!else ifdef __DOS__
+xwcc=..\..\cc\386\dos386\binbuild\wcc386.exe
+xlinker=..\..\wl\dos386\wlink.exe
+xwlinklnk=..\..\wl\lnk\dos386\wlink.lnk
+!else ifdef __OS2__
+xwcc=..\..\cc\386\os2386.dll\binbuild\wcc386.exe
+xlinker=..\..\wl\os2386.dll\wlink.exe
+xwlinklnk=..\..\wl\lnk\os2386\wlink.lnk
+!else ifdef __NT__
+xwcc=..\..\cc\386\nt386.dll\binbuild\wcc386.exe
+xlinker=..\..\wl\nt386.dll\wlink.exe
+xwlinklnk=..\..\wl\lnk\nt386\wlink.lnk
+!else ifdef __LINUX__
+xwcc=../../cc/386/linux386/binbuild/wcc386.exe
+xlinker=../../wl/linux386/wlink.exe
+xwlinklnk=../../wl/lnk/linux386/wlink.lnk
+!endif
+
+
+main.exe : $(objs)
+!ifdef xwlinklnk
+    @set WLINK_LNK=$(xwlinklnk)
+!endif
+    @echo link main
+    @$(xlinker) op q $(xlflags) name $@ @main.lnk
+
+.c.obj :
+    @echo cc $@
+    @$(xwcc) $(xcflags) -zq -fo=.obj $[@

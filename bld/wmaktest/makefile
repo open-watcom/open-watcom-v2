@@ -27,7 +27,7 @@ tests = &
     misc &
     longfile
 
-!ifdef buildtest
+!ifeq buildtest 1
 ! ifdef __OS2__
 test_wmake = ..\..\wmake\os2386\wmk.exe
 ! else ifdef __LINUX386__
@@ -121,7 +121,7 @@ prebuild: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd cmds
-!ifdef buildtest
+!ifeq buildtest 1
     @-wmake -h buildtest=1
 !else
     @-wmake -h
@@ -243,5 +243,5 @@ finish: .SYMBOLIC
     # -- End of Test
     # =======================================
     @echo ************* DONE DONE DONE ********************
-    @if exist error.out echo !!!!!!!! ERRORS FOUND !!!!!!!!!!
-    @if exist error.out echo look at error.out for listing
+    @if exist error.out @echo !!!!!!!! ERRORS FOUND !!!!!!!!!!
+    @if exist error.out @cat error.out
