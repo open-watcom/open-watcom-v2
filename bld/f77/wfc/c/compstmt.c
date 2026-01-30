@@ -310,7 +310,8 @@ static void GetStmtType( void )
     } else if( ( (StmtSw & SS_COMMA_THEN_EQ) == 0 )
       && (StmtSw & SS_EQUALS_FOUND) ) {
         StmtProc = PR_ASNMNT;
-        if( RecName() && RecNextOpr( OPR_LBR ) ) {
+        if( RecName()
+          && RecNextOpr( OPR_LBR ) ) {
             if( SPtr1->opn.ds != DSOPN_PHI ) {
                 DefStmtType();
             } else {
