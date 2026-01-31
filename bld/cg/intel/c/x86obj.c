@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -522,19 +522,22 @@ static  void    OutByte( byte value, array_control *dest )
 static  void    OutShort( uint_16 value, array_control *dest )
 /************************************************************/
 {
-    *(uint_16 *)allocOut( dest, sizeof( uint_16 ) ) = _TargetShort( value );
+    value = _TargetShort( value );
+    memcpy( allocOut( dest, sizeof( uint_16 ) ), &value, sizeof( uint_16 ) );
 }
 
 static  void    OutLongInt( uint_32 value, array_control *dest )
 /**************************************************************/
 {
-    *(uint_32 *)allocOut( dest, sizeof( uint_32 ) ) = _TargetLongInt( value );
+    value = _TargetLongInt( value );
+    memcpy( allocOut( dest, sizeof( uint_32 ) ), &value, sizeof( uint_32 ) );
 }
 
 static  void    OutOffset( offset value, array_control *dest )
 /************************************************************/
 {
-    *(offset *)allocOut( dest, sizeof( offset ) ) = _TargetOffset( value );
+    value = _TargetOffset( value );
+    memcpy( allocOut( dest, sizeof( offset ) ), &value, sizeof( offset ) );
 }
 
 #if _TARGET & _TARG_8086
@@ -544,7 +547,8 @@ static  void    OutOffset( offset value, array_control *dest )
 static  void    OutLongOffset( long_offset value, array_control *dest )
 /*********************************************************************/
 {
-    *(long_offset *)allocOut( dest, sizeof( long_offset ) ) = _TargetLongInt( value );
+    value = _TargetLongInt( value );
+    memcpy( allocOut( dest, sizeof( long_offset ) ), &value, sizeof( long_offset ) );
 }
 #endif
 
@@ -560,7 +564,7 @@ static  void    OutIdx( omf_idx value, array_control *dest )
 static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
 /******************************************************************************/
 {
-    _CopyTrans( name, allocOut( dest, len ), len );
+    memcpy( allocOut( dest, len ), name, len );
 }
 
 static object *InitTarg( index_rec *rec )
@@ -2927,7 +2931,8 @@ void    OutDataShort( uint_16 value )
 {
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_16 ), true );
-    *(uint_16 *)allocOutData( sizeof( uint_16 ) ) = _TargetShort( value );
+    value = _TargetShort( value );
+    memcpy( allocOutData( sizeof( uint_16 ) ), &value, sizeof( uint_16 ) );
 }
 
 
@@ -2936,7 +2941,8 @@ void    OutDataLong( uint_32 value )
 {
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_32 ), true );
-    *(uint_32 *)allocOutData( sizeof( uint_32 ) ) = _TargetLongInt( value );
+    value = _TargetLongInt( value );
+    memcpy( allocOutData( sizeof( uint_32 ) ), &value, sizeof( uint_32 ) );
 }
 
 

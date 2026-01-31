@@ -545,7 +545,8 @@ static  bool    ShiftToTypeLength( type_length x, uint_16 y )
     int_32  lx;
 
     lx = x;
-    x <<= y; lx <<= y;
+    x <<= y;
+    lx <<= y;
     if( lx != x )
         return( false );
 #if _TARGET & _TARG_370
@@ -562,7 +563,7 @@ an      AddrShift( an l_addr, an r_addr, const type_def *tipe )
 /*       Returns NULL if code needs to be generated*/
 {
     instruction         *ins;
-    int_16              rv;
+    uint_16             rv;
     an                  addr;
     type_class_def      type_class;
 

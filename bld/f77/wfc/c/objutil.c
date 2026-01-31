@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -223,7 +223,7 @@ void    OutPtr( pointer val )
             }
             NewPage();
         }
-        *(pointer *)ObjPtr = val;
+        memcpy( ObjPtr, &val, sizeof( pointer ) );
         ObjPtr += sizeof( pointer );
         PageDirty = true;
     }
@@ -242,7 +242,7 @@ void    OutU16( unsigned_16 val )
             }
             NewPage();
         }
-        *(unsigned_16 *)ObjPtr = val;
+        memcpy( ObjPtr, &val, sizeof( unsigned_16 ) );
         ObjPtr += sizeof( unsigned_16 );
         PageDirty = true;
     }
@@ -273,7 +273,7 @@ void    OutU32( unsigned_32 val )
             }
             NewPage();
         }
-        *(unsigned_32 *)ObjPtr = val;
+        memcpy( ObjPtr, &val, sizeof( unsigned_32 ) );
         ObjPtr += sizeof( unsigned_32 );
         PageDirty = true;
     }
@@ -292,7 +292,7 @@ void    OutObjPtr( obj_ptr val )
             }
             NewPage();
         }
-        *(obj_ptr *)ObjPtr = val;
+        memcpy( ObjPtr, &val, sizeof( obj_ptr ) );
         ObjPtr += sizeof( obj_ptr );
         PageDirty = true;
     }
@@ -349,7 +349,7 @@ pointer GetPtr( void )
         LoadPage( CurrPage + 1 );
         ObjPtr = ObjCode;
     }
-    val = *(pointer *)ObjPtr;
+    memcpy( &val, ObjPtr, sizeof( pointer ) );
     ObjPtr += sizeof( pointer );
     return( val );
 }
@@ -369,7 +369,7 @@ unsigned_16     GetU16( void )
         LoadPage( CurrPage + 1 );
         ObjPtr = ObjCode;
     }
-    val = *(unsigned_16 *)ObjPtr;
+    memcpy( &val, ObjPtr, sizeof( unsigned_16 ) );
     ObjPtr += sizeof( unsigned_16 );
     return( val );
 }
@@ -389,7 +389,7 @@ unsigned_32     GetU32( void )
         LoadPage( CurrPage + 1 );
         ObjPtr = ObjCode;
     }
-    val = *(unsigned_32 *)ObjPtr;
+    memcpy( &val, ObjPtr, sizeof( unsigned_32 ) );
     ObjPtr += sizeof( unsigned_32 );
     return( val );
 }
@@ -421,7 +421,7 @@ obj_ptr GetObjPtr( void )
         LoadPage( CurrPage + 1 );
         ObjPtr = ObjCode;
     }
-    val = *(obj_ptr *)ObjPtr;
+    memcpy( &val, ObjPtr, sizeof( obj_ptr ) );
     ObjPtr += sizeof( obj_ptr );
     return( val );
 }

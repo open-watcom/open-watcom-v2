@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,6 +389,7 @@ static  label_handle ExpandObj( byte *cur, int explen )
     fix_class           class;
     bool                rel;
     unsigned            len;
+    abs_patch           *apatch;
 
     lbl = NULL;
     fini = cur + explen;
@@ -427,13 +428,13 @@ static  label_handle ExpandObj( byte *cur, int explen )
         }
         switch( esc_class & ~ESCA_MASK ) {
         case ESC_REL:
-            segid = *(segment_id *)cur;
+            memcpy( &segid, cur, sizeof( segment_id ) );
             cur += sizeof( segment_id );
             OutReloc( segid, class, rel );
             val = 0;
             break;
         case ESC_SYM:       /* never BASE*/
-            sym = *(pointer *)cur;
+            memcpy( &sym, cur, sizeof( pointer ) );
             cur += sizeof( pointer );
             lbl = AskForSymLabel( sym, CG_FE );
             val = AskAddress( lbl );
@@ -448,9 +449,9 @@ static  label_handle ExpandObj( byte *cur, int explen )
             OutReloc( AskSegID( sym, CG_FE ), class, rel );
             break;
         case ESC_LBL:       /* never BASE*/
-            segid = *(segment_id *)cur;
+            memcpy( &segid, cur, sizeof( segment_id ) );
             cur += sizeof( segment_id );
-            lbl = *(pointer *)cur;
+            memcpy( &lbl, cur, sizeof( pointer ) );
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
                 OutRTImportRel( SYM2RTIDX( AskForLblSym( lbl ) ), F_OFFSET, false );
@@ -473,15 +474,16 @@ static  label_handle ExpandObj( byte *cur, int explen )
             }
             break;
         case ESC_IMP:
-            OutImport( *(pointer *)cur, class, rel );
+            memcpy( &sym, cur, sizeof( pointer ) );
             cur += sizeof( pointer );
+            OutImport( sym, class, rel );
             val = 0;
             break;
         case ESC_ABS:
-            val = *cur;
-            cur++;
-            OutAbsPatch( *(pointer *)cur, val );
+            val = *cur++;
+            memcpy( &apatch, cur, sizeof( pointer ) );
             cur += sizeof( pointer );
+            OutAbsPatch( apatch, val );
             continue;
         case ESC_FUN:
             OutFPPatch( *cur );

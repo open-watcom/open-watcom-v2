@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,7 @@ void    EmitPtr( pointer p )
  * Plop a pointer into Inst[]
  */
 {
-    *(pointer *)(Inst + ICur) = p;
+    memcpy( Inst + ICur, p, sizeof( pointer ) );
     ICur += sizeof( pointer );
 }
 
@@ -236,7 +236,7 @@ void    EmitSegId( segment_id segid )
  * Plop a segment_id into Inst[]
  */
 {
-    *(segment_id *)(Inst + ICur) = segid;
+    memcpy( Inst + ICur, &segid, sizeof( segment_id ) );
     ICur += sizeof( segment_id );
 }
 
@@ -245,7 +245,7 @@ void    EmitOffset( offset i )
  * Plop an "offset" int Inst[] (a machine word)
  */
 {
-    *(offset *)(Inst + ICur) = i;
+    memcpy( Inst + ICur, &i, sizeof( offset ) );
     ICur += sizeof( offset );
 }
 
