@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -56,6 +56,13 @@ endm
 defsb    macro   name
 _&name&_defs:
 endm
+
+func    macro   name
+        dw      _&name&_defs - module_start
+        dw      _&name&_name - module_start
+        dw      _&name - module_start
+        endm
+
 
         name    code386
 
@@ -142,13 +149,7 @@ beginb  __RTIStrBlastNeOT
         rep   stosb
 endb    __RTIStrBlastNeOT
 
-
-
-func    macro   name
-        dw      _&name&_defs - module_start
-        dw      _&name&_name - module_start
-        dw      _&name - module_start
-        endm
+        ALIGN 2
 
         public  _Functions
 
