@@ -869,7 +869,7 @@ static void finiUsageGroups( void )
         }
         for( i = 0; i < LANG_RLE_MAX; i++ ) {
             if( ugr->lang_usage[i] != NULL ) {
-                free( ugr->lang_usage[i] );
+                free( (void *)ugr->lang_usage[i] );
             }
         }
         free( ugr );
@@ -3280,7 +3280,7 @@ static void finiDataOptions( void )
         optionList = optionList->next;
         for( i = 0; i < LANG_RLE_MAX; i++ ) {
             if( o->lang_usage[i] != NULL ) {
-                free( o->lang_usage[i] );
+                free( (void *)o->lang_usage[i] );
             }
         }
         if( o->check_func != NULL ) {
