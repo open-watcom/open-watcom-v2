@@ -137,32 +137,34 @@ TAG( USAGENOCHAIN )
 
 #define BLANKARG( s )       (s[0] == '.' && s[1] == '\0')
 
-// functions that are supplied by the host environment
-#define FN_UNGET            "OPT_UNGET"                 // void ( void )
-#define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
-#define FN_RECOG            "OPT_RECOG"                 // bool ( int )
-#define FN_RECOG_LOWER      "OPT_RECOG_LOWER"           // bool ( int )
-#define FN_RERECOG          "OPT_RERECOG"               // bool ( int )
-#define FN_END              "OPT_END"                   // bool ( void )
+/*
+ * functions that are supplied by the host environment
+ */
+#define FN_UNGET            "OPT_UNGET"                 /* void ( void ) */
+#define FN_GET_LOWER        "OPT_GET_LOWER"             /* int ( void ) */
+#define FN_RECOG            "OPT_RECOG"                 /* bool ( int ) */
+#define FN_RECOG_LOWER      "OPT_RECOG_LOWER"           /* bool ( int ) */
+#define FN_RERECOG          "OPT_RERECOG"               /* bool ( int ) */
+#define FN_END              "OPT_END"                   /* bool ( void ) */
 
-#define FN_NUMBER           "OPT_GET_NUMBER"            // bool ( unsigned * )
-#define FN_NUMBER_DEFAULT   "OPT_GET_NUMBER_DEFAULT"    // bool ( unsigned *, unsigned )
-#define FN_NUMBER_MULTIPLE  "OPT_GET_NUMBER_MULTIPLE"   // bool ( OPT_NUMBER ** )
-#define FN_CHAR             "OPT_GET_CHAR"              // bool ( int * )
-#define FN_CHAR_OPT         "OPT_GET_CHAR_OPT"          // bool ( int * )
-#define FN_ID               "OPT_GET_ID"                // bool ( OPT_STRING ** )
-#define FN_ID_OPT           "OPT_GET_ID_OPT"            // bool ( OPT_STRING ** )
-#define FN_FILE             "OPT_GET_FILE"              // bool ( OPT_STRING ** )
-#define FN_FILE_OPT         "OPT_GET_FILE_OPT"          // bool ( OPT_STRING ** )
-#define FN_PATH             "OPT_GET_PATH"              // bool ( OPT_STRING ** )
-#define FN_PATH_OPT         "OPT_GET_PATH_OPT"          // bool ( OPT_STRING ** )
+#define FN_NUMBER           "OPT_GET_NUMBER"            /* bool ( unsigned * ) */
+#define FN_NUMBER_DEFAULT   "OPT_GET_NUMBER_DEFAULT"    /* bool ( unsigned *, unsigned ) */
+#define FN_NUMBER_MULTIPLE  "OPT_GET_NUMBER_MULTIPLE"   /* bool ( OPT_NUMBER ** ) */
+#define FN_CHAR             "OPT_GET_CHAR"              /* bool ( int * ) */
+#define FN_CHAR_OPT         "OPT_GET_CHAR_OPT"          /* bool ( int * ) */
+#define FN_ID               "OPT_GET_ID"                /* bool ( OPT_STRING ** ) */
+#define FN_ID_OPT           "OPT_GET_ID_OPT"            /* bool ( OPT_STRING ** ) */
+#define FN_FILE             "OPT_GET_FILE"              /* bool ( OPT_STRING ** ) */
+#define FN_FILE_OPT         "OPT_GET_FILE_OPT"          /* bool ( OPT_STRING ** ) */
+#define FN_PATH             "OPT_GET_PATH"              /* bool ( OPT_STRING ** ) */
+#define FN_PATH_OPT         "OPT_GET_PATH_OPT"          /* bool ( OPT_STRING ** ) */
 
-#define FN_CLEAN_STRING     "OPT_CLEAN_STRING"          // void ( OPT_STRING ** )
-#define FN_CLEAN_NUMBER     "OPT_CLEAN_NUMBER"          // void ( OPT_NUMBER ** )
+#define FN_CLEAN_STRING     "OPT_CLEAN_STRING"          /* void ( OPT_STRING ** ) */
+#define FN_CLEAN_NUMBER     "OPT_CLEAN_NUMBER"          /* void ( OPT_NUMBER ** ) */
 
-#define FN_PROCESS          "OPT_PROCESS"               // bool ( OPT_STORAGE * )
-#define FN_INIT             "OPT_INIT"                  // void ( OPT_STORAGE * )
-#define FN_FINI             "OPT_FINI"                  // void ( OPT_STORAGE * )
+#define FN_PROCESS          "OPT_PROCESS"               /* bool ( OPT_STORAGE * ) */
+#define FN_INIT             "OPT_INIT"                  /* void ( OPT_STORAGE * ) */
+#define FN_FINI             "OPT_FINI"                  /* void ( OPT_STORAGE * ) */
 
 #define USE_SWITCH_THRESHOLD    (4)
 #define CONSOLE_WIDTH           (79)
@@ -310,7 +312,7 @@ typedef struct option {
     USAGECHAIN      *usageChain;
     USAGEGROUP      *usageGroup;
     size_t          name_len;
-    char            *name;
+    const char      *name;
     char            pattern[1];
 } OPTION;
 
@@ -851,6 +853,29 @@ static void addUsageGroup( const char *id )
     lastUsageGroup = ugr;
 }
 
+static void finiUsageGroups( void )
+{
+    USAGEGROUP  *ugr;
+    USAGEGROUP  *nextgr;
+    USAGECHAIN  *ucn;
+    USAGECHAIN  *nextcn;
+    int         i;
+
+    for( ugr = usageGroupList->next; ugr != NULL; ugr = nextgr ) {
+        nextgr = ugr->next;
+        for( ucn = ugr->usageChainList; ucn != NULL; ucn = nextcn ) {
+            nextcn = ucn->next;
+            free( ucn );
+        }
+        for( i = 0; i < LANG_RLE_MAX; i++ ) {
+            if( ugr->lang_usage[i] != NULL ) {
+                free( ugr->lang_usage[i] );
+            }
+        }
+        free( ugr );
+    }
+}
+
 static CHAIN *findChain( const char *pattern )
 {
     CHAIN *cn;
@@ -994,12 +1019,11 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     OPTION  *newo;
 
     len = strlen( pattern );
-    newo = calloc( 1, sizeof( *newo ) + len );
+    newo = calloc( 1, sizeof( *newo ) + len + len + 1 );
     memcpy( newo->pattern, pattern, len + 1 );
     len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     newo->name_len = len;
-    newo->name = calloc( 1, len + 1 );
-    memcpy( newo->name, pattern, len + 1 );
+    newo->name = memcpy( newo->pattern + len + 1, pattern, len + 1 );
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
@@ -1017,10 +1041,12 @@ static char *pickUpRest( const char *p )
     char    *dst;
     char    *out;
 
-    // replace leading '.' character by space
-    // it is used to specify spaces on the beginning of text
-    // if only '.' character than it is as blank text
-    // if only two '.' character than it is single space text
+    /*
+     * replace leading '.' character by space
+     * it is used to specify spaces on the beginning of text
+     * if only '.' character than it is as blank text
+     * if only two '.' character than it is single space text
+     */
     len = strlen( p );
     out = dst = malloc( len + 1 );
     if( BLANKARG( p ) ) {
@@ -1044,8 +1070,10 @@ static char *pickUpRest( const char *p )
     return( out );
 }
 
-// :argequal. <char>
 static void doARGEQUAL( const char *p )
+/**************************************
+ * :argequal. <char>
+ */
 {
     char    c;
 
@@ -1074,14 +1102,18 @@ static void doARGEQUAL( const char *p )
     }
 }
 
-// :cmt comment text
 static void doCMT( const char *p )
+/*********************************
+ * :cmt comment text
+ */
 {
     /* unused parameters */ (void)p;
 }
 
-// :internal.
 static void doINTERNAL( const char *p )
+/**************************************
+ * :internal.
+ */
 {
     OPTION *o;
 
@@ -1092,8 +1124,10 @@ static void doINTERNAL( const char *p )
     }
 }
 
-// :option. <option> <synonym> ...
 static void doOPTION( const char *p )
+/**************************************
+ * :option. <option> <synonym> ...
+ */
 {
     OPTION *synonym;
 
@@ -1107,8 +1141,10 @@ static void doOPTION( const char *p )
     getsUsage = TAG_OPTION;
 }
 
-// :target. <targ> <targ> ...
 static void doTARGET( const char *p )
+/**************************************
+ * :target. <targ> <targ> ...
+ */
 {
     targmask    mask;
     OPTION      *o;
@@ -1144,8 +1180,10 @@ static void doTARGET( const char *p )
     }
 }
 
-// :ntarget. <targ> <targ> ...
 static void doNTARGET( const char *p )
+/**************************************
+ * :ntarget. <targ> <targ> ...
+ */
 {
     targmask    mask;
     OPTION      *o;
@@ -1166,8 +1204,10 @@ static void doNTARGET( const char *p )
     }
 }
 
-// :number. [<fn>] [<default>] [<usage argid>]
 static void doNUMBER( const char *p )
+/**************************************
+ * :number. [<fn>] [<default>] [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1201,8 +1241,10 @@ static void doNUMBER( const char *p )
     }
 }
 
-// :multiple.
 static void doMULTIPLE( const char *p )
+/**************************************
+ * :multiple.
+ */
 {
     OPTION *o;
 
@@ -1213,8 +1255,10 @@ static void doMULTIPLE( const char *p )
     }
 }
 
-// :nochain.
 static void doNOCHAIN( const char *p )
+/**************************************
+ * :nochain.
+ */
 {
     OPTION *o;
 
@@ -1225,8 +1269,10 @@ static void doNOCHAIN( const char *p )
     }
 }
 
-// :id. [<fn>] [<usage argid>]
 static void doID( const char *p )
+/**************************************
+ * :id. [<fn>] [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1250,8 +1296,10 @@ static void doID( const char *p )
     }
 }
 
-// :char. [<fn>] [<usage argid>]
 static void doCHAR( const char *p )
+/**************************************
+ * :char. [<fn>] [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1275,8 +1323,10 @@ static void doCHAR( const char *p )
     }
 }
 
-// :immediate. <fn> [<usage argid>]
 static void doIMMEDIATE( const char *p )
+/**************************************
+ * :immediate. <fn> [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1300,8 +1350,10 @@ static void doIMMEDIATE( const char *p )
     }
 }
 
-// :code. <source-code>
 static void doCODE( const char *p )
+/**************************************
+ * :code. <source-code>
+ */
 {
     OPTION *o;
 
@@ -1320,8 +1372,10 @@ static void doCODE( const char *p )
     }
 }
 
-// :file. [<usage argid>]
 static void doFILE( const char *p )
+/**************************************
+ * :file. [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1339,8 +1393,10 @@ static void doFILE( const char *p )
     }
 }
 
-// :optional.
 static void doOPTIONAL( const char *p )
+/**************************************
+ * :optional.
+ */
 {
     OPTION *o;
 
@@ -1350,8 +1406,11 @@ static void doOPTIONAL( const char *p )
         o->is_optional = true;
     }
 }
-// :negate.
+
 static void doNEGATE( const char *p )
+/**************************************
+ * :negate.
+ */
 {
     OPTION *o;
 
@@ -1366,8 +1425,10 @@ static void doNEGATE( const char *p )
 }
 
 
-// :noequal.
 static void doNOEQUAL( const char *p )
+/**************************************
+ * :noequal.
+ */
 {
     /* unused parameters */ (void)p;
 
@@ -1375,8 +1436,10 @@ static void doNOEQUAL( const char *p )
     getsUsage = TAG_NOEQUAL;
 }
 
-// :path. [<usage argid>]
 static void doPATH( const char *p )
+/**************************************
+ * :path. [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1394,11 +1457,13 @@ static void doPATH( const char *p )
     }
 }
 
-// :chain. <option> <option> ...
-//
-// mark options that start with <option> as chainable
-// i.e., -oa -ox == -oax
 static void doCHAIN( const char *p )
+/**************************************
+ * :chain. <option> <option> ...
+ *
+ * mark options that start with <option> as chainable
+ * i.e., -oa -ox == -oax
+ */
 {
     getsUsage = TAG_CHAIN;
     if( *p == '\0' ) {
@@ -1415,8 +1480,10 @@ static void doCHAIN( const char *p )
     }
 }
 
-// :enumerate. <name> [<option>]
 static void doENUMERATE( const char *p )
+/**************************************
+ * :enumerate. <name> [<option>]
+ */
 {
     ENAME *en;
     OPTION *o;
@@ -1443,8 +1510,10 @@ static void doENUMERATE( const char *p )
     }
 }
 
-// :special. <fn> [<usage argid>]
 static void doSPECIAL( const char *p )
+/**************************************
+ * :special. <fn> [<usage argid>]
+ */
 {
     OPTION *o;
 
@@ -1469,8 +1538,10 @@ static void doSPECIAL( const char *p )
     }
 }
 
-// :prefix.
 static void doPREFIX( const char *p )
+/**************************************
+ * :prefix.
+ */
 {
     OPTION *o;
 
@@ -1482,8 +1553,10 @@ static void doPREFIX( const char *p )
     }
 }
 
-// :usage. <usage-text>
 static void doUSAGE( const char *p )
+/**************************************
+ * :usage. <usage-text>
+ */
 {
     OPTION *o;
 
@@ -1504,8 +1577,10 @@ static void doUSAGE( const char *p )
     }
 }
 
-// :jusage. <kanji-usage-text>
 static void doJUSAGE( const char *p )
+/**************************************
+ * :jusage. <kanji-usage-text>
+ */
 {
     char *usage;
     OPTION *o;
@@ -1538,8 +1613,10 @@ static void doJUSAGE( const char *p )
     }
 }
 
-// :title. <text>
 static void doTITLE( const char *p )
+/**************************************
+ * :title. <text>
+ */
 {
     TEXT    **i;
     TEXT    *t;
@@ -1559,8 +1636,10 @@ static void doTITLE( const char *p )
     getsUsage = TAG_TITLE;
 }
 
-// :titleu. <text>
 static void doTITLEU( const char *p )
+/**************************************
+ * :titleu. <text>
+ */
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":titleu. tag must follow a :title. tag\n" );
@@ -1570,8 +1649,10 @@ static void doTITLEU( const char *p )
     targetTitle->is_u = true;
 }
 
-// :jtitle. <text>
 static void doJTITLE( const char *p )
+/**************************************
+ * :jtitle. <text>
+ */
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":jtitle. tag must follow a :title. tag\n" );
@@ -1580,8 +1661,10 @@ static void doJTITLE( const char *p )
     targetTitle->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
-// :jtitleu. <text>
 static void doJTITLEU( const char *p )
+/**************************************
+ * :jtitleu. <text>
+ */
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":jtitleu. tag must follow a :title. tag\n" );
@@ -1591,8 +1674,10 @@ static void doJTITLEU( const char *p )
     targetTitle->is_u = true;
 }
 
-// :footer. <text>
 static void doFOOTER( const char *p )
+/**************************************
+ * :footer. <text>
+ */
 {
     TEXT    **i;
     TEXT    *t;
@@ -1612,8 +1697,10 @@ static void doFOOTER( const char *p )
     getsUsage = TAG_FOOTER;
 }
 
-// :footeru. <text>
 static void doFOOTERU( const char *p )
+/**************************************
+ * :footeru. <text>
+ */
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":footeru. tag must follow a :footer. tag\n" );
@@ -1623,8 +1710,10 @@ static void doFOOTERU( const char *p )
     targetFooter->is_u = true;
 }
 
-// :jfooter. <text>
 static void doJFOOTER( const char *p )
+/**************************************
+ * :jfooter. <text>
+ */
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":jfooter. tag must follow a :footer. tag\n" );
@@ -1633,8 +1722,10 @@ static void doJFOOTER( const char *p )
     targetFooter->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
-// :jfooteru. <text>
 static void doJFOOTERU( const char *p )
+/**************************************
+ * :jfooteru. <text>
+ */
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":jfooteru. tag must follow a :footer. tag\n" );
@@ -1644,8 +1735,10 @@ static void doJFOOTERU( const char *p )
     targetFooter->is_u = true;
 }
 
-// :group. <group_id>
 static void doGROUP( const char *p )
+/**************************************
+ * :group. <group_id>
+ */
 {
     OPTION      *o;
     USAGEGROUP  *ugr;
@@ -1666,8 +1759,10 @@ static void doGROUP( const char *p )
 }
 
 
-// :timestamp.
 static void doTIMESTAMP( const char *p )
+/**************************************
+ * :timestamp.
+ */
 {
     OPTION *o;
 
@@ -1682,11 +1777,13 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usagechain. <group_id> <option>
-//
-// mark options that start with <option> as group in usage text
-// i.e., -fp0 -fp1 ==> -fp{0,1}
 static void doUSAGECHAIN( const char *p )
+/**************************************
+ * :usagechain. <group_id> <option>
+ *
+ * mark options that start with <option> as group in usage text
+ * i.e., -fp0 -fp1 ==> -fp{0,1}
+ */
 {
     USAGEGROUP  *ugr;
 
@@ -1713,11 +1810,13 @@ static void doUSAGECHAIN( const char *p )
     getsUsage = TAG_USAGECHAIN;
 }
 
-// :usagegroup. <group_id>
-//
-// define group <group_id> for block of options
-//
 static void doUSAGEGROUP( const char *p )
+/**************************************
+ * :usagegroup. <group_id>
+ *
+ * define group <group_id> for block of options
+ *
+ */
 {
     if( *p == '\0' ) {
         error( ":usagegroup. tag requires <group_id> parameter\n" );
@@ -1732,8 +1831,10 @@ static void doUSAGEGROUP( const char *p )
     getsUsage = TAG_USAGEGROUP;
 }
 
-// :usagenochain.
 static void doUSAGENOCHAIN( const char *p )
+/**************************************
+ * :usagenochain.
+ */
 {
     OPTION *o;
 
@@ -2203,7 +2304,9 @@ static CODESEQ *reorderCode( CODESEQ *head )
     if( c->sibling != NULL ) {
         a = NULL;
         s = &head;
-        // accepting states move to the end
+        /*
+         * accepting states move to the end
+         */
         for( c = head; c != NULL; c = n ) {
             n = c->sibling;
             if( c->accept ) {
@@ -2216,7 +2319,9 @@ static CODESEQ *reorderCode( CODESEQ *head )
         }
         *s = a;
         s = &(head->sibling);
-        // sensitive states move to the front
+        /*
+         * sensitive states move to the front
+         */
         for( c = head; c != NULL; c = n ) {
             n = c->sibling;
             if( IS_SENSITIVE( c ) ) {
@@ -2282,7 +2387,7 @@ static CODESEQ *genCode( OPTION *o )
     return( head );
 }
 
-static void emitSuccessCode( unsigned depth, flow_control control )
+static void emitCodeSuccess( unsigned depth, flow_control control )
 {
     if( control & EC_CONTINUE ) {
         emitPrintf( depth, "continue;\n" );
@@ -2291,7 +2396,7 @@ static void emitSuccessCode( unsigned depth, flow_control control )
     }
 }
 
-static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
+static void emitCodeAccept( CODESEQ *c, unsigned depth, flow_control control )
 {
     INAME *ei;
     OPTION *o;
@@ -2397,7 +2502,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         --depth;
         emitPrintf( depth, "}\n" );
     }
-    emitSuccessCode( depth, control );
+    emitCodeSuccess( depth, control );
     if( o->is_prefix ) {
         --depth;
         emitPrintf( depth, "}\n" );
@@ -2411,35 +2516,35 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
         if( c->is_chain ) {
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control );
+                emitCodeAccept( c, depth, control );
             } else {
                 emitPrintf( depth, "return( true );\n" );
             }
         } else if( c->is_chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control & ~EC_CONTINUE );
+                emitCodeAccept( c, depth, control & ~EC_CONTINUE );
             } else {
-                emitSuccessCode( depth, control );
+                emitCodeSuccess( depth, control );
             }
         } else {
             emitCode( c->children, depth, control & ~EC_CHAIN );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control );
+                emitCodeAccept( c, depth, control );
             } else {
                 emitPrintf( depth, "return( true );\n" );
             }
         }
     } else {
         if( c->option->chain != NULL ) {
-            emitAcceptCode( c, depth, control );
+            emitCodeAccept( c, depth, control );
         } else {
-            emitAcceptCode( c, depth, control & ~EC_CONTINUE );
+            emitCodeAccept( c, depth, control & ~EC_CONTINUE );
         }
     }
 }
 
-static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
+static void emitCodeIf( CODESEQ *c, unsigned depth, flow_control control )
 {
     if( IS_SENSITIVE( c ) ) {
         emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->s );
@@ -2477,7 +2582,7 @@ static void emitCodeBlk( CODESEQ *head, unsigned depth, flow_control control )
     } else {
         for( c = head; c != NULL; c = c->sibling ) {
             if( c->sel ) {
-                emitIfCode( c, depth, control );
+                emitCodeIf( c, depth, control );
             }
         }
     }
@@ -2499,7 +2604,7 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
           && ( IS_SENSITIVE( c )
           || (control & EC_CHAIN)
           && !c->is_chain ) ) {
-            emitIfCode( c, depth, control );
+            emitCodeIf( c, depth, control );
             c->sel = false;
         } else {
             ++count;
@@ -2513,10 +2618,26 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
     }
 }
 
+static void FreeCode( CODESEQ *codeseq )
+/***************************************
+ * free code tree recursively
+ */
+{
+    CODESEQ     *cur;
+
+    while( (cur = codeseq) != NULL ) {
+        codeseq = codeseq->sibling;
+        if( cur->children != NULL ) {
+            FreeCode( cur->children );
+        }
+        free( cur );
+    }
+}
+
 static void outputFN_PROCESS( void )
 {
-    unsigned depth = 0;
-    CODESEQ *codeseq;
+    unsigned    depth = 0;
+    CODESEQ     *codeseq;
 
     emitPrintf( depth, "bool " FN_PROCESS "%s( OPT_STORAGE%s *data )\n", paramFlags.sid, paramFlags.sid );
     emitPrintf( depth, "{\n" );
@@ -2526,6 +2647,10 @@ static void outputFN_PROCESS( void )
     emitPrintf( depth, "return( true );\n" );
     --depth;
     emitPrintf( depth, "}\n" );
+    /*
+     * free code tree
+     */
+    FreeCode( codeseq );
 }
 
 static void outputFN_INIT( void )
@@ -2587,12 +2712,12 @@ static void outputFN_FINI( void )
 
 static int usageCmp( const void *v1, const void *v2 )
 {
-    int     res;
-    size_t  chain_len;
-    OPTION  *o1 = *(OPTION **)v1;
-    OPTION  *o2 = *(OPTION **)v2;
-    char    *n1 = o1->name;
-    char    *n2 = o2->name;
+    int         res;
+    size_t      chain_len;
+    OPTION      *o1 = *(OPTION **)v1;
+    OPTION      *o2 = *(OPTION **)v2;
+    const char  *n1 = o1->name;
+    const char  *n2 = o2->name;
 
     res = 0;
     if( o1->usageChain != o2->usageChain ) {
@@ -2747,7 +2872,9 @@ static void emitQuotedString( FILE *fp, const char *str, const char *line_term, 
 
     fprintf( fp, "\"" );
     for( s = str; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
-        // replace " with \"
+        /*
+         * replace " with \"
+         */
         len = q - s;
         memcpy( tmpbuff, s, len );
         tmpbuff[len] = '\0';
@@ -3144,6 +3271,43 @@ static void closeFiles( void )
     }
 }
 
+static void finiDataOptions( void )
+{
+    OPTION      *o;
+    int         i;
+
+    while( (o = optionList) != NULL ) {
+        optionList = optionList->next;
+        for( i = 0; i < LANG_RLE_MAX; i++ ) {
+            if( o->lang_usage[i] != NULL ) {
+                free( o->lang_usage[i] );
+            }
+        }
+        if( o->check_func != NULL ) {
+            free( o->check_func );
+        }
+        if( o->special_func != NULL ) {
+            free( o->special_func );
+        }
+        if( o->immediate_func != NULL ) {
+            free( o->immediate_func );
+        }
+        if( o->usage_argid != NULL ) {
+            free( o->usage_argid );
+        }
+        if( o->field_name != NULL ) {
+            free( o->field_name );
+        }
+        if( o->value_field_name != NULL ) {
+            free( o->value_field_name );
+        }
+        if( o->code != NULL ) {
+            free( o->code );
+        }
+        free( o );
+    }
+}
+
 static void initUTF8( void )
 {
     if( !paramFlags.out_utf8 ) {
@@ -3169,10 +3333,12 @@ static char *ReadIndirectFile( char *name )
         fread( str, 1, len, fp );
         str[len] = '\0';
         fclose( fp );
-        // go through characters changing \r, \n etc into ' '
+        /*
+         * go through characters changing \r, \n etc into ' '
+         */
         for( ; (ch = *str) != '\0'; str++ ) {
-            if( ch == 0x1A ) {      // if end of file
-                *str = '\0';        // - mark end of str
+            if( ch == 0x1A ) {      /* if end of file */
+                *str = '\0';        /* - mark end of str */
                 break;
             }
             if( ch != ' '
@@ -3213,8 +3379,8 @@ static char *getFileName( char *str, char *name )
     return( str );
 }
 
-static char *ProcessOption( char *s, char *option_start )
-/*******************************************************/
+static char *ProcessParam( char *s, char *option_start )
+/******************************************************/
 {
     switch( *s++ ) {
     case 'c':
@@ -3302,9 +3468,10 @@ static char *ProcessOption( char *s, char *option_start )
 static void initParams( void )
 /*****************************/
 {
-     paramFlags.line_term = "";
-     paramFlags.list_sep = "";
-     paramFlags.sid = "";
+    paramFlags.rc_macro = NULL;
+    paramFlags.line_term = "";
+    paramFlags.list_sep = "";
+    paramFlags.sid = "";
 }
 
 static bool ProcessParams( char *str )
@@ -3332,7 +3499,7 @@ static bool ProcessParams( char *str )
             continue;
         }
         if( *str == '-' ) {
-            str = ProcessOption( str + 1, str );
+            str = ProcessParam( str + 1, str );
             if( str == NULL ) {
                 rc = true;
                 break;
@@ -3394,6 +3561,12 @@ static bool ProcessParams( char *str )
     return( rc );
 }
 
+static void finiParams( void )
+/****************************/
+{
+}
+
+
 #define NUM_FILES   5
 
 int main( int argc, char **argv )
@@ -3440,8 +3613,11 @@ int main( int argc, char **argv )
             dumpInternational();
             outputFini();
         }
+        finiDataOptions();
+        finiUsageGroups();
     }
     closeFiles();
+    finiParams();
     finiTargets();
     if( ok )
         return( EXIT_SUCCESS );
