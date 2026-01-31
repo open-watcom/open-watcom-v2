@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -475,7 +475,7 @@ static struct {
     char        *list_sep;
     char        *sid;
     wres_lang_id lang;
-} optFlag;
+} paramFlags;
 
 static TARGET       *targetList;
 static ENAME        *enumList;
@@ -1066,7 +1066,7 @@ static void doARGEQUAL( const char *p )
             }
         } else {
             alternateEqual = c;
-            optFlag.alternate_equal = true;
+            paramFlags.alternate_equal = true;
         }
     }
     if( getsUsage != TAG_OPTION ) {
@@ -1371,7 +1371,7 @@ static void doNOEQUAL( const char *p )
 {
     /* unused parameters */ (void)p;
 
-    optFlag.no_equal = true;
+    paramFlags.no_equal = true;
     getsUsage = TAG_NOEQUAL;
 }
 
@@ -1821,7 +1821,7 @@ static void checkForMissingUsages( void )
     wres_lang_id lang;
     int         j;
 
-    if( optFlag.international ) {
+    if( paramFlags.international ) {
         start_lang = 0;
         end_lang = LANG_RLE_MAX;
     } else {
@@ -1832,7 +1832,7 @@ static void checkForMissingUsages( void )
         if( o->usageChain == NULL
           || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
             for( lang = start_lang; lang < end_lang; ++lang ) {
-                if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && o->lang_usage[lang] == NULL ) {
+                if( ( lang == LANG_RLE_ENGLISH || paramFlags.report_missing_data ) && o->lang_usage[lang] == NULL ) {
                     error( "option '%s' has no %s usage text\n", o->pattern, langName[lang] );
                 }
             }
@@ -1841,7 +1841,7 @@ static void checkForMissingUsages( void )
     j = 1;
     for( t = titleList; t != NULL; t = t->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
-            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+            if( ( lang == LANG_RLE_ENGLISH || paramFlags.report_missing_data ) && t->lang_usage[lang] == NULL ) {
                 error( "title(%d) has no %s usage text\n", j, langName[lang] );
             }
         }
@@ -1850,7 +1850,7 @@ static void checkForMissingUsages( void )
     j = 1;
     for( t = footerList; t != NULL; t = t->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
-            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+            if( ( lang == LANG_RLE_ENGLISH || paramFlags.report_missing_data ) && t->lang_usage[lang] == NULL ) {
                 error( "footer(%d) has no %s usage text\n", j, langName[lang] );
             }
         }
@@ -1858,13 +1858,13 @@ static void checkForMissingUsages( void )
     }
     for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
-            if( optFlag.report_missing_data && ugr->lang_usage[lang] == NULL ) {
+            if( paramFlags.report_missing_data && ugr->lang_usage[lang] == NULL ) {
                 error( "group '%s' has no %s usage text\n", ugr->id, langName[lang] );
             }
         }
         for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
             for( lang = start_lang; lang < end_lang; ++lang ) {
-                if( optFlag.report_missing_data && ucn->lang_usage[lang] == NULL ) {
+                if( paramFlags.report_missing_data && ucn->lang_usage[lang] == NULL ) {
                     error( "chain '%s' has no %s usage text\n", ucn->pattern, langName[lang] );
                 }
             }
@@ -2037,8 +2037,8 @@ static void startParserH( void )
     ENAME *en;
     FILE *fp;
 
-    if( !optFlag.parser_only ) {
-        if( optFlag.sid != NULL && *optFlag.sid != '\0' ) {
+    if( !paramFlags.parser_only ) {
+        if( paramFlags.sid != NULL && *paramFlags.sid != '\0' ) {
             fp = ofpg;
         } else {
             fp = ofp;
@@ -2060,8 +2060,8 @@ static void startParserH( void )
             fprintf( fp, "#endif\n" );
         }
         if( ofp != NULL ) {
-            fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", optFlag.sid, optFlag.sid );
-            fprintf( ofp, "struct opt_storage%s {\n", optFlag.sid );
+            fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", paramFlags.sid, paramFlags.sid );
+            fprintf( ofp, "struct opt_storage%s {\n", paramFlags.sid );
             fprintf( ofp, "    unsigned     timestamp;\n" );
             for( o = optionList; o != NULL; o = o->next ) {
                 if( o->synonym == NULL ) {
@@ -2108,12 +2108,12 @@ static void startParserH( void )
                 }
             }
             fprintf( ofp, "};\n" );
-            fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
-            fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+            fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", paramFlags.sid, paramFlags.sid );
+            fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", paramFlags.sid, paramFlags.sid );
         }
     }
     if( ofp != NULL ) {
-        fprintf( ofp, "extern bool " FN_PROCESS "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+        fprintf( ofp, "extern bool " FN_PROCESS "%s( OPT_STORAGE%s *data );\n", paramFlags.sid, paramFlags.sid );
     }
 }
 
@@ -2130,7 +2130,7 @@ static void finishParserH( void )
                 continue;
             for( ei = en->items; ei != NULL; ei = ei->next ) {
                 ++value;
-                fprintf( ofp, "#define OPT_ENUM%s_%s %u\n", optFlag.sid, ei->name, value );
+                fprintf( ofp, "#define OPT_ENUM%s_%s %u\n", paramFlags.sid, ei->name, value );
             }
         }
     }
@@ -2363,7 +2363,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
-        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", o->enumerate->name, optFlag.sid, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", o->enumerate->name, paramFlags.sid, ei->name );
         if( o->is_immediate ) {
             emitPrintf( depth, "%s( data, true );\n", o->immediate_func );
         }
@@ -2518,7 +2518,7 @@ static void outputFN_PROCESS( void )
     unsigned depth = 0;
     CODESEQ *codeseq;
 
-    emitPrintf( depth, "bool " FN_PROCESS "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
+    emitPrintf( depth, "bool " FN_PROCESS "%s( OPT_STORAGE%s *data )\n", paramFlags.sid, paramFlags.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     codeseq = genCode( optionList );
@@ -2535,7 +2535,7 @@ static void outputFN_INIT( void )
     INAME *ei;
     unsigned depth = 0;
 
-    emitPrintf( depth, "void " FN_INIT "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
+    emitPrintf( depth, "void " FN_INIT "%s( OPT_STORAGE%s *data )\n", paramFlags.sid, paramFlags.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
@@ -2550,7 +2550,7 @@ static void outputFN_INIT( void )
         if( !en->used )
             continue;
         ei = addEnumerator( en, "default" );
-        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", en->name, optFlag.sid, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", en->name, paramFlags.sid, ei->name );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2563,7 +2563,7 @@ static void outputFN_FINI( void )
     bool no_data;
 
     depth = 0;
-    emitPrintf( depth, "void " FN_FINI "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
+    emitPrintf( depth, "void " FN_FINI "%s( OPT_STORAGE%s *data )\n", paramFlags.sid, paramFlags.sid );
     emitPrintf( depth, "{\n" );
     no_data = true;
     ++depth;
@@ -2642,11 +2642,11 @@ static char *catArg( char *arg, char *buf, char equal_char )
             } else {
                 *buf++ = equal_char;
             }
-        } else if( optFlag.no_equal ) {
+        } else if( paramFlags.no_equal ) {
             if( *arg != '=' ) {
                 *buf++ = *arg;
             }
-        } else if( optFlag.alternate_equal ) {
+        } else if( paramFlags.alternate_equal ) {
             if( *arg != '=' ) {
                 *buf++ = *arg;
             } else {
@@ -2762,14 +2762,14 @@ static void emitUsageH( void )
     size_t      len;
     const char  *str;
 
-    if( optFlag.rc ) {
+    if( paramFlags.rc ) {
         if( ufp != NULL ) {
-            fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
+            fprintf( ufp, "pick((%s+%d), ", paramFlags.rc_macro, line_offs++ );
             str = getLangData( outputdata, LANG_RLE_ENGLISH );
             emitQuotedString( ufp, str, "", "" );
             fprintf( ufp, ", " );
             str = getLangData( outputdata, LANG_RLE_JAPANESE );
-            if( !optFlag.out_utf8 ) {
+            if( !paramFlags.out_utf8 ) {
                 utf8_to_cp932( str, tmpbuff );
                 str = tmpbuff;
             }
@@ -2777,14 +2777,14 @@ static void emitUsageH( void )
             fprintf( ufp, ")\n" );
         }
     } else {
-        str = getLangData( outputdata, optFlag.lang );
+        str = getLangData( outputdata, paramFlags.lang );
         len = strlen( str );
         if( maxUsageLen < len ) {
             maxUsageLen = len;
             strcpy( maxusgbuff, str );
         }
         if( ufp != NULL ) {
-            emitQuotedString( ufp, str, optFlag.line_term, optFlag.list_sep );
+            emitQuotedString( ufp, str, paramFlags.line_term, paramFlags.list_sep );
             fprintf( ufp, "\n" );
         }
     }
@@ -2796,7 +2796,7 @@ static void emitUsageHQNX( void )
     const char *str;
 
     if( mfp != NULL ) {
-        str = getLangData( outputdata, optFlag.lang );
+        str = getLangData( outputdata, paramFlags.lang );
         fprintf( mfp, "%s\n", str );
     }
 
@@ -2999,7 +2999,7 @@ static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_
 
 static bool checkUsageLength( size_t len )
 {
-    return( ( len / langMaxChar[optFlag.lang] ) > CONSOLE_WIDTH );
+    return( ( len / langMaxChar[paramFlags.lang] ) > CONSOLE_WIDTH );
 }
 
 static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
@@ -3086,9 +3086,9 @@ static void emitUsageB( void )
     size_t len;
     const char *str;
 
-    str = getLangData( outputdata, optFlag.lang );
-    if( optFlag.lang == LANG_RLE_JAPANESE ) {
-        if( !optFlag.out_utf8 ) {
+    str = getLangData( outputdata, paramFlags.lang );
+    if( paramFlags.lang == LANG_RLE_JAPANESE ) {
+        if( !paramFlags.out_utf8 ) {
             utf8_to_cp932( str, tmpbuff );
             str = tmpbuff;
         }
@@ -3106,9 +3106,9 @@ static void dumpInternational( void )
     char        fname[16];
     LocaleUsage usage_header;
 
-    if( optFlag.international ) {
-        for( optFlag.lang = LANG_RLE_FIRST_INTERNATIONAL; optFlag.lang < LANG_RLE_MAX; optFlag.lang++ ) {
-            sprintf( fname, "usage%02u." LOCALE_DATA_EXT, optFlag.lang );
+    if( paramFlags.international ) {
+        for( paramFlags.lang = LANG_RLE_FIRST_INTERNATIONAL; paramFlags.lang < LANG_RLE_MAX; paramFlags.lang++ ) {
+            sprintf( fname, "usage%02u." LOCALE_DATA_EXT, paramFlags.lang );
             bfp = fopen( fname, "wb" );
             if( bfp == NULL ) {
                 fail( "cannot open international file for write\n" );
@@ -3146,7 +3146,7 @@ static void closeFiles( void )
 
 static void initUTF8( void )
 {
-    if( !optFlag.out_utf8 ) {
+    if( !paramFlags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
 }
@@ -3218,37 +3218,37 @@ static char *ProcessOption( char *s, char *option_start )
 {
     switch( *s++ ) {
     case 'c':
-        optFlag.list_sep = ",";
+        paramFlags.list_sep = ",";
         return( s );
     case 'i':
-        optFlag.international = true;
+        paramFlags.international = true;
         return( s );
     case 'l':
         if( *s++ == '=' ) {
-            optFlag.lang = strtol( s, &s, 10 );
+            paramFlags.lang = strtol( s, &s, 10 );
             return( s );
         }
         break;
     case 'n':
         if( *s == 'n' ) {
             s++;
-            optFlag.line_term = "\\n";
+            paramFlags.line_term = "\\n";
         } else {
-            optFlag.line_term = "\\0";
+            paramFlags.line_term = "\\0";
         }
         return( s );
     case 'p':
-        optFlag.parser_only = true;
+        paramFlags.parser_only = true;
         return( s );
     case 'q':
-        optFlag.quiet = true;
+        paramFlags.quiet = true;
         return( s );
     case 'r':
         if( *s++ == 'c'
           && *s++ == '=' ) {
-            optFlag.rc = true;
+            paramFlags.rc = true;
             SKIP_SPACES( s );
-            optFlag.rc_macro = option_start;
+            paramFlags.rc_macro = option_start;
             while( *s != '\0' ) {
                 if( myisspace( *s ) ) {
                     s++;
@@ -3261,7 +3261,7 @@ static char *ProcessOption( char *s, char *option_start )
         }
         break;
     case 't':
-        optFlag.report_missing_data = true;
+        paramFlags.report_missing_data = true;
         return( s );
     case 'u':
         if( *s == '=' ) {
@@ -3274,7 +3274,7 @@ static char *ProcessOption( char *s, char *option_start )
         } else if( *s++ == 't'
           && *s++ == 'f'
           && *s++ == '8' ) {
-            optFlag.out_utf8 = true;
+            paramFlags.out_utf8 = true;
             return( s );
         }
         break;
@@ -3282,7 +3282,7 @@ static char *ProcessOption( char *s, char *option_start )
         if( *s == '=' ) {
             s++;
             SKIP_SPACES( s );
-            optFlag.sid = option_start;
+            paramFlags.sid = option_start;
             while( *s != '\0' ) {
                 if( myisspace( *s ) ) {
                     s++;
@@ -3299,15 +3299,15 @@ static char *ProcessOption( char *s, char *option_start )
     return( NULL );
 }
 
-static void initOptions( void )
+static void initParams( void )
 /*****************************/
 {
-     optFlag.line_term = "";
-     optFlag.list_sep = "";
-     optFlag.sid = "";
+     paramFlags.line_term = "";
+     paramFlags.list_sep = "";
+     paramFlags.sid = "";
 }
 
-static bool ProcessOptions( char *str )
+static bool ProcessParams( char *str )
 /*************************************/
 {
     char        name[PATH_MAX];
@@ -3404,9 +3404,9 @@ int main( int argc, char **argv )
     setlocale( LC_ALL, "C" );
     ok = true;
     initTargets();
-    initOptions();
+    initParams();
     for( i = 1; i < argc; i++ ) {
-        if( ProcessOptions( argv[i] ) ) {
+        if( ProcessParams( argv[i] ) ) {
             ok = false;
             break;
         }
@@ -3431,7 +3431,7 @@ int main( int argc, char **argv )
             outputInit();
             startParserH();
             outputFN_PROCESS();
-            if( !optFlag.parser_only ) {
+            if( !paramFlags.parser_only ) {
                 outputFN_INIT();
                 outputFN_FINI();
             }
