@@ -59,19 +59,19 @@ xlinker=wlink
 !else ifdef __DOS__
 xwcc=..\..\cc\386\dos386\binbuild\wcc386.exe
 xlinker=..\..\wl\dos386\wlink.exe
-xwlinklnk=..\..\wl\lnk\dos386\wlink.lnk
+xwlinklnk=..\..\..\build\bwlink.lnk
 !else ifdef __OS2__
 xwcc=..\..\cc\386\os2386.dll\binbuild\wcc386.exe
 xlinker=..\..\wl\os2386.dll\wlink.exe
-xwlinklnk=..\..\wl\lnk\os2386\wlink.lnk
+xwlinklnk=..\..\..\build\bwlink.lnk
 !else ifdef __NT__
 xwcc=..\..\cc\386\nt386.dll\binbuild\wcc386.exe
 xlinker=..\..\wl\nt386.dll\wlink.exe
-xwlinklnk=..\..\wl\lnk\nt386\wlink.lnk
+xwlinklnk=..\..\..\build\bwlink.lnk
 !else ifdef __LINUX__
 xwcc=../../cc/386/linux386/binbuild/wcc386.exe
 xlinker=../../wl/linux386/wlink.exe
-xwlinklnk=../../wl/lnk/linux386/wlink.lnk
+xwlinklnk=../../../build/bwlink.lnk
 !endif
 
 
