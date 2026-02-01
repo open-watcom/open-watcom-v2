@@ -473,9 +473,9 @@ static void Conflict( void )
             }
         }
     }
-    FreeSet( set );
-    FREE( reduce );
     FREE( work );
+    FREE( reduce );
+    FreeSet( set );
 }
 
 void lalr1( void )
@@ -522,8 +522,10 @@ void lalr1( void )
     if( rp - rset != GetSetSize( nredun ) ) {
         puts( "internal error" );
     }
-    FREE( look );
     FREE( stk );
+    FreeSet( rset );
+    FreeSet( lset );
+    FREE( look );
     Conflict();
     nbstate = nstate;
     FreeSet( lset );
