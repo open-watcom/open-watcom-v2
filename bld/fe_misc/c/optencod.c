@@ -1017,13 +1017,14 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
 {
     size_t  len;
     OPTION  *newo;
+    char    *p;
 
     len = strlen( pattern );
     newo = calloc( 1, sizeof( *newo ) + len + len + 1 );
-    memcpy( newo->pattern, pattern, len + 1 );
+    p = strncpy( newo->pattern, pattern, len + 1 ) + len + 1;
     len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     newo->name_len = len;
-    newo->name = memcpy( newo->pattern + len + 1, pattern, len + 1 );
+    newo->name = strncpy( p, pattern, len + 1 );
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
