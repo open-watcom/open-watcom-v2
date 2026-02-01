@@ -1220,7 +1220,7 @@ static void doNUMBER( const char *p )
         p = nextWord( p, tokbuff );
         if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->check_func = STRDUP( tokbuff );
+                o->check_func = strdup( tokbuff );
             }
         }
     }
@@ -1236,7 +1236,7 @@ static void doNUMBER( const char *p )
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1284,14 +1284,14 @@ static void doID( const char *p )
         p = nextWord( p, tokbuff );
         if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->check_func = STRDUP( tokbuff );
+                o->check_func = strdup( tokbuff );
             }
         }
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1311,14 +1311,14 @@ static void doCHAR( const char *p )
         p = nextWord( p, tokbuff );
         if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->check_func = STRDUP( tokbuff );
+                o->check_func = strdup( tokbuff );
             }
         }
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1340,12 +1340,12 @@ static void doIMMEDIATE( const char *p )
     }
     p = nextWord( p, tokbuff );
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->immediate_func = STRDUP( tokbuff );
+        o->immediate_func = strdup( tokbuff );
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1367,7 +1367,7 @@ static void doCODE( const char *p )
     }
     if( *p != '\0' ) {
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->code = STRDUP( p );
+            o->code = strdup( p );
         }
     }
 }
@@ -1388,7 +1388,7 @@ static void doFILE( const char *p )
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1452,7 +1452,7 @@ static void doPATH( const char *p )
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1505,7 +1505,7 @@ static void doENUMERATE( const char *p )
             en->is_timestamp = true;
         }
         if( *tokbuff != '\0' ) {
-            o->field_name = STRDUP( tokbuff );
+            o->field_name = strdup( tokbuff );
         }
     }
 }
@@ -1528,12 +1528,12 @@ static void doSPECIAL( const char *p )
     }
     p = nextWord( p, tokbuff );
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->special_func = STRDUP( tokbuff );
+        o->special_func = strdup( tokbuff );
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->usage_argid = STRDUP( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1603,7 +1603,7 @@ static void doJUSAGE( const char *p )
             usage = pickUpRest( p );
             if( *usage == '\0' ) {
                 free( usage );
-                usage = STRDUP( o->lang_usage[LANG_RLE_ENGLISH] );
+                usage = strdup( o->lang_usage[LANG_RLE_ENGLISH] );
             }
             o->lang_usage[LANG_RLE_JAPANESE] = usage;
         }
@@ -2121,12 +2121,12 @@ static void initOptionFields( void )
         if( o->synonym == NULL ) {
             if( o->field_name == NULL ) {
                 makeFieldName( o->pattern, tokbuff );
-                o->field_name = STRDUP( tokbuff );
+                o->field_name = strdup( tokbuff );
             }
             if( o->value_field_name == NULL ) {
                 strcpy( tokbuff, o->field_name );
                 strcat( tokbuff, "_value" );
-                o->value_field_name = STRDUP( tokbuff );
+                o->value_field_name = strdup( tokbuff );
             }
         }
     }

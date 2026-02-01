@@ -399,7 +399,7 @@ int main( int argc, char **argv )
             if( value > max ) {
                 max = value;
             }
-            prettyToken[ value ] = STRDUP( makePretty() );
+            prettyToken[ value ] = strdup( makePretty() );
             if( prettyToken[ value ] == NULL ) {
                 printf( "couldn't produce pretty representation of '%s'\n", literal );
                 ++errors;
