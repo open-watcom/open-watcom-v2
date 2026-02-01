@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,6 +259,7 @@ int main( int argc, char **argv )
     char    *fileprefix = "y";
     size_t  size;
 
+    MemInit();
     param_requested = 0;
     for( i = 1; i < argc; ++i ) {
         ch = argv[i][0];
@@ -433,5 +434,6 @@ int main( int argc, char **argv )
     FREE( headerfilename );
     FREE( descfilename );
     FREE( srcname_norm );
+    MemFini();
     return( 0 );
 }

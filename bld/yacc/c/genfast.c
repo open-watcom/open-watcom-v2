@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -588,11 +588,11 @@ void GenFastTables( FILE *fp )
     }
     endtab( fp );
 
-    FREE( base );
-    FREE( abase );
     FREE( gbase );
-    FREE( bvector );
+    FREE( abase );
+    FREE( base );
     FREE( avector );
+    FREE( bvector );
 
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -742,7 +742,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         }
         save = *s;
         *s = '\0';
-        type = strdup( p );
+        type = STRDUP( p );
         *s = save;
         ++s;
     } else {
@@ -751,7 +751,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     if( *s == '$' ) {
         strcpy( buff, "yyval" );
         if( type == NULL && lhs->type != NULL ) {
-            type = strdup( lhs->type );
+            type = STRDUP( lhs->type );
         }
         ++s;
     } else {
@@ -766,7 +766,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         il -= base + 1;
         sprintf( buff, "yyvp[%ld]", il );
         if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
-            type = strdup( rhs[il]->type );
+            type = STRDUP( rhs[il]->type );
         }
     }
     *ptype = type;
@@ -898,8 +898,8 @@ static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned ba
                 total_len += strlen( buff );
                 if( type != NULL ) {
                     total_len += strlen( type ) + 1;
+                    FREE( type );
                 }
-                FREE( type );
                 total_errs += errs;
             } else {
                 ++s;
@@ -1126,10 +1126,10 @@ void defs( FILE *fp )
                         if( strcmp( sym->type, type ) != 0 ) {
                             srcinfo_msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
                             FREE( sym->type );
-                            sym->type = strdup( type );
+                            sym->type = STRDUP( type );
                         }
                     } else {
-                        sym->type = strdup( type );
+                        sym->type = STRDUP( type );
                     }
                 }
                 if( ctype == T_TYPE ) {

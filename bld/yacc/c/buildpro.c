@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +125,7 @@ a_sym *addsym( char *s )
     sym = findsymptr( s );
     if( *sym == NULL ) {
         p = CALLOC( 1, a_sym );
-        p->name = strdup( s );
+        p->name = STRDUP( s );
         *sym = p;
     }
     return( *sym );

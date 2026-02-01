@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,25 @@
 ****************************************************************************/
 
 
+#ifndef _ALLOC_H_
+#define _ALLOC_H_
+
 #include <stdlib.h>
 
-#define MALLOC(n,t)     ((t *)malloc((n) * sizeof(t)))
-#define REALLOC(p,n,t)  ((t *)realloc((char *)p,(n) * sizeof(t)))
-#define CALLOC(n,t)     ((t *)calloc((n),sizeof(t)))
-#define FREE(n)         free((n))
+#define MALLOC(n,t)     ((t *)YaccAlloc((n) * sizeof(t)))
+#define REALLOC(p,n,t)  ((t *)YaccRealloc((char *)p,(n) * sizeof(t)))
+#define CALLOC(n,t)     ((t *)YaccCalloc((n),sizeof(t)))
+#define FREE(n)         YaccFree((n))
+#define STRDUP(p)       YaccStrDup((p))
+
+
+extern void     MemInit( void );
+extern void     MemFini( void );
+
+extern void     *YaccAlloc( size_t size );
+extern void     *YaccCalloc( size_t n, size_t size );
+extern void     *YaccRealloc( void *old_ptr, size_t newsize );
+extern void     YaccFree( void *ptr );
+extern char     *YaccStrDup( const char *str );
+
+#endif

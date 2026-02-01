@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -505,7 +505,7 @@ static void seedWithSimpleMin( void )
         sym = symtab[i];
         if( sym->pro != NULL ) {
             if( sym->nullable ) {
-                sym->min = strdup( "" );
+                sym->min = STRDUP( "" );
             }
         } else {
             setMinToName( sym );
