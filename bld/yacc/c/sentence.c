@@ -38,12 +38,12 @@
 #include "yaccins.h"
 #include "alloc.h"
 
-typedef struct traceback traceback;
-struct traceback {
-    traceback   *next;
-    a_state     *state;
-    a_sym       *sym;
-};
+
+typedef struct traceback {
+    struct traceback    *next;
+    a_state             *state;
+    a_sym               *sym;
+} traceback;
 
 static void pushTrace( traceback **h, a_state *state, a_sym *sym )
 {
@@ -60,8 +60,7 @@ static void popTrace( traceback **h )
 {
     traceback   *token;
 
-    token = *h;
-    if( token != NULL ) {
+    if( (token = *h) != NULL ) {
         *h = token->next;
         FREE( token );
     }

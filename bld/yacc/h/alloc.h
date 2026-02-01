@@ -37,7 +37,7 @@
 #include <stdlib.h>
 
 #define MALLOC(n,t)     ((t *)YaccAlloc((n) * sizeof(t)))
-#define REALLOC(p,n,t)  ((t *)YaccRealloc((char *)p,(n) * sizeof(t)))
+#define REALLOC(p,n,t)  ((t *)YaccRealloc((p),(n) * sizeof(t)))
 #define CALLOC(n,t)     ((t *)YaccCalloc((n),sizeof(t)))
 #define FREE(n)         YaccFree((n))
 #define STRDUP(p)       YaccStrDup((p))

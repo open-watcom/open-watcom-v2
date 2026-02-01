@@ -38,6 +38,7 @@
 #include "alloc.h"
 #include "walloca.h"
 
+
 FILE *yaccin;
 char *loadpath;
 char *srcname_norm = NULL;
@@ -236,7 +237,7 @@ static char *fname_normalize( char *name )
     char    *p;
     char    *dst;
 
-    p = dst = malloc( strlen( name ) + 1 );
+    p = dst = MALLOC( strlen( name ) + 1, char );
     while( (c = *name++) != '\0' ) {
         if( c == '\\' )
             c = '/';
@@ -318,7 +319,7 @@ int main( int argc, char **argv )
     loadpath = argv[0];
     *getname( loadpath ) = '\0';
     srcname = argv[i];
-    if( !strrchr( srcname, '.' ) ) {
+    if( strrchr( srcname, '.' ) == NULL ) {
         srcname = alloca( strlen( argv[i] )+3 );
         srcname = strcat( strcpy( srcname, argv[i] ), ".y" );
     }

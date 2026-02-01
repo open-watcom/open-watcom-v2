@@ -75,7 +75,7 @@ void MemFini( void )
 {
 #ifdef TRMEM
     if( memHandle != NULL ) {
-        _trmem_prt_list( memHandle );
+        _trmem_prt_list_ex( memHandle, 100 );
         _trmem_close( memHandle );
         if( memFile != NULL ) {
             fclose( memFile );
@@ -107,11 +107,16 @@ void *YaccCalloc( size_t n, size_t size )
 {
     void        *ptr;
 
-    ptr = YaccAlloc( n * size );
+    size *= n;
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+#else
+    ptr = malloc( size );
+#endif
     if( ptr == NULL ) {
         msg( "Out of memory\n" );
     }
-    memset( ptr, 0, n * size );
+    memset( ptr, 0, size );
     return( ptr );
 }
 
@@ -144,6 +149,7 @@ void YaccFree( void *ptr )
 }
 
 char *YaccStrDup( const char *str )
+/*********************************/
 {
     size_t      size;
     char        *ptr;
