@@ -227,7 +227,7 @@ void    EmitPtr( pointer p )
  * Plop a pointer into Inst[]
  */
 {
-    memcpy( Inst + ICur, p, sizeof( pointer ) );
+    memcpy( Inst + ICur, &p, sizeof( pointer ) );
     ICur += sizeof( pointer );
 }
 
