@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -398,7 +399,7 @@ int main( int argc, char **argv )
             if( value > max ) {
                 max = value;
             }
-            prettyToken[ value ] = strdup( makePretty() );
+            prettyToken[ value ] = STRDUP( makePretty() );
             if( prettyToken[ value ] == NULL ) {
                 printf( "couldn't produce pretty representation of '%s'\n", literal );
                 ++errors;

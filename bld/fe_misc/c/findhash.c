@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,7 +343,7 @@ void init_tokens( char **input_file )
             }
             if( tolower( check[1] ) == 'e' && check[2] == '\0' ) {
                 ++input_file;
-                pick_extension = strdup( *input_file );
+                pick_extension = STRDUP( *input_file );
                 continue;
             }
             if( tolower( check[1] ) == 'i' && check[2] == '\0' ) {
@@ -356,7 +356,7 @@ void init_tokens( char **input_file )
             }
             if( tolower( check[1] ) == 's' && check[2] == '\0' ) {
                 ++input_file;
-                filename_suffix = strdup( *input_file );
+                filename_suffix = STRDUP( *input_file );
                 continue;
             }
             if( tolower( check[1] ) == 't' && check[2] == '\0' ) {
@@ -401,11 +401,11 @@ void init_tokens( char **input_file )
             }
             len_mask |= ( 1L << key_len );
             position[size] = size;
-            tokens[size] = strdup( keyword );
+            tokens[size] = STRDUP( keyword );
             if( strcmp( class, "TC_A?" ) == 0 ) {
                 sprintf( class, "TC_A%u", 3 - ( key_len & 0x03 ) );
             }
-            token_class[size] = strdup( class );
+            token_class[size] = STRDUP( class );
             ++size;
         }
         if( !feof( fp ) ) {

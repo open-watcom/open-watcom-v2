@@ -544,7 +544,7 @@ static void do_msggrpstr( const char *p )
     if( grp != NULL ) {
         if( grp->prefix != grp->name )
             free( grp->prefix );
-        grp->prefix = strdup( group );  //default
+        grp->prefix = STRDUP( group );  //default
     }
 }
 
@@ -681,7 +681,7 @@ static void do_msgtxt( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    m->lang_txt[LANG_RLE_ENGLISH] = strdup( p );
+    m->lang_txt[LANG_RLE_ENGLISH] = STRDUP( p );
     totalMsgLen += commonTxt( p );
 }
 
@@ -689,7 +689,7 @@ static void do_msgjtxt( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    m->lang_txt[LANG_RLE_JAPANESE] = strdup( p );
+    m->lang_txt[LANG_RLE_JAPANESE] = STRDUP( p );
     commonTxt( p );
     if( p[0] != '\0' ) {
         langTextCount[LANG_RLE_JAPANESE]++;
@@ -700,7 +700,7 @@ static void do_msgattr( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    m->attr = strdup( p );
+    m->attr = STRDUP( p );
 }
 
 static void do_info( const char *p )
