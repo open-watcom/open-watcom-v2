@@ -528,8 +528,6 @@ void lalr1( void )
     FREE( look );
     Conflict();
     nbstate = nstate;
-    FreeSet( lset );
-    FreeSet( rset );
 }
 
 void showstates( void )
