@@ -523,11 +523,11 @@ void lalr1( void )
         puts( "internal error" );
     }
     FREE( stk );
+    Conflict();
+    nbstate = nstate;
     FreeSet( rset );
     FreeSet( lset );
     FREE( look );
-    Conflict();
-    nbstate = nstate;
 }
 
 void showstates( void )
