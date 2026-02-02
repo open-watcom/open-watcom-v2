@@ -1322,10 +1322,10 @@ wcc_any = -zq
 wpp_any += -zq
 wcl_any = -zq
 wfc_any = -Quiet
-lnk_any = option noundefsok, map, quiet
+lnk_any = option noundefsok, map, statics, quiet
 lib_any = -q
 !else
-lnk_any = option noundefsok, map
+lnk_any = option noundefsok, map, statics
 !endif
 
 lnk_386 = $(targ_lnk_$(targ_env_386)) $(lnk_any)

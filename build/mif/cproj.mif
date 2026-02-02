@@ -270,7 +270,7 @@ mode_clflags   += -"op symf"
 !endif
 
 !ifndef nomapfile
-mode_lflags    += op map
+mode_lflags    += op map, statics
 mode_clflags   += -fm
 !endif
 
