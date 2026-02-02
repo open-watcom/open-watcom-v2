@@ -419,7 +419,7 @@ void GenFastTables( FILE *fp )
                 continue;
             }
             tokval = sym->token;
-            state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
+            SetBit( state_vector, tokval, 8 );
         }
         /*
          * iterate over all reductions in state
@@ -429,7 +429,7 @@ void GenFastTables( FILE *fp )
                 continue;
             for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                 tokval = symtab[*mp]->token;
-                state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
+                SetBit( state_vector, tokval, 8 );
             }
         }
         base[i] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );

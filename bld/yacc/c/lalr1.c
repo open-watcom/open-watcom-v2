@@ -54,7 +54,7 @@ static void Reads( a_look *x )
     x->depth = k;
     for( tx = x->trans->state->trans; tx->sym != NULL; ++tx ) {
         if( tx->sym->pro == NULL ) {
-            SetBit( x->follow, tx->sym->idx );
+            SetBit( x->follow, tx->sym->idx, WSIZE );
         }
     }
     for( y = x->trans->state->look; y->trans != NULL; ++y ) {
@@ -373,13 +373,13 @@ static void resolve( a_state *state, set_size *work, a_reduce_action **reduce )
         printf( "r/r conflict in state %d on %s:\n", state->sidx, symtab[*w]->name);
         ++RR_conflicts;
         for( rx = state->redun; rx->pro != NULL; ++rx ) {
-            if( IsBitSet( rx->follow, *w ) ) {
+            if( IsBitSet( rx->follow, *w, WSIZE ) ) {
                 showitem( rx->pro->items, "" );
             }
         }
         printf( "\n" );
         for( rx = state->redun; rx->pro != NULL; ++rx ) {
-            if( IsBitSet( rx->follow, *w ) ) {
+            if( IsBitSet( rx->follow, *w, WSIZE ) ) {
                 ShowSentence( state, symtab[*w], rx->pro, NULL );
             }
         }
@@ -434,7 +434,7 @@ static void resolve( a_state *state, set_size *work, a_reduce_action **reduce )
     }
     for( i = 0; i < nterm; ++i ) {
         if( reduce[i] != NULL ) {
-            SetBit( reduce[i]->follow, i );
+            SetBit( reduce[i]->follow, i, WSIZE );
             reduce[i] = NULL;
         }
     }
@@ -457,7 +457,7 @@ static void Conflict( void )
         Clear( set );
         for( tx = state->trans; tx->sym != NULL; ++tx ) {
             if( tx->sym->pro == NULL ) {
-                SetBit( set, tx->sym->idx );
+                SetBit( set, tx->sym->idx, WSIZE );
             }
         }
         for( rx = state->redun; rx->pro != NULL; ++rx ) {

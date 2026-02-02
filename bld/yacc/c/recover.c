@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,14 +138,14 @@ static AddError()
             if( sym->pro != NULL ) {
                 ++nvtrans;
             } else {
-                if( IsBitSet( defined, sym->id ) ) {
-                    SetBit( conflict, sym->id );
+                if( IsBitSet( defined, sym->id, WSIZE ) ) {
+                    SetBit( conflict, sym->id, WSIZE );
                     while( --t >= s ) {
                         Unmark( **t );
                     }
                     continue;
                 } else {
-                    SetBit( defined, sym->id );
+                    SetBit( defined, sym->id, WSIZE );
                 }
             }
             tx->state = AddErrState( &errsym->enter, s, t );

@@ -199,7 +199,7 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
         }
         sym_idx = sym->idx;
         for( raction = top_state->redun; raction->pro != NULL; ++raction ) {
-            if( IsBitSet( raction->follow, sym_idx ) ) {
+            if( IsBitSet( raction->follow, sym_idx, WSIZE ) ) {
                 performReduce( h, raction->pro );
                 break;
             }

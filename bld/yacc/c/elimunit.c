@@ -381,7 +381,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
              * all shifts in *terminal ended up in the same state!
              */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
-            ClearBit( follow, *mp );
+            ClearBit( follow, *mp, WSIZE );
             change_occurred = true;
             ++changeOccurred;
         }

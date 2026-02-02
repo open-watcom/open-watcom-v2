@@ -47,9 +47,9 @@ enum {
 #define ACTION_NULL     0
 #define ACTION_MASK     0x3FFF
 
-#define ClearBit(x,i)   ((x)[(i)/WSIZE] &= ~( 1UL << ((i) % WSIZE )))
-#define SetBit(x,i)     ((x)[(i)/WSIZE] |= ( 1UL << ((i) % WSIZE )))
-#define IsBitSet(x,i)   ((x)[(i)/WSIZE] &  ( 1UL << ((i) % WSIZE )))
+#define ClearBit(x,i,b) ((x)[(i)/(b)] &= ~( 1UL << ((i) % (b))))
+#define SetBit(x,i,b)   ((x)[(i)/(b)] |= ( 1UL << ((i) % (b))))
+#define IsBitSet(x,i,b) ((x)[(i)/(b)] &  ( 1UL << ((i) % (b))))
 
 #define _RoundUp( size, word )          ( ((size)+((word)-1)) & ~((word)-1) )
 #define _RoundUpBitVector( size, word ) ( ((size)+((word)-1))/(word) )
