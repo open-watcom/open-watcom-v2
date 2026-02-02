@@ -368,7 +368,7 @@ void GenFastTables( FILE *fp )
     byte        *bvector;
     compressed_action *ca;
     index_n     num_actions;
-    set_size    *mp;
+    bitnum      *mp;
     index_n     *base;
     index_n     *abase;
     index_n     *gbase;
@@ -475,7 +475,7 @@ void GenFastTables( FILE *fp )
     avector = NULL;
     asize = 0;
     ca = CALLOC( ntoken_term, compressed_action );
-    abase = CALLOC( nstate, set_size );
+    abase = CALLOC( nstate, index_n );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], ntoken_term );
         abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
@@ -502,7 +502,7 @@ void GenFastTables( FILE *fp )
     }
     mapping = orderActionVectors( all_actions, ntoken_all );
     ca = CALLOC( ntoken_all, compressed_action );
-    gbase = CALLOC( nstate, set_size );
+    gbase = CALLOC( nstate, index_n );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], ntoken_all );
         gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );

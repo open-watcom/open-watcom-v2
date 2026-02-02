@@ -93,7 +93,7 @@ typedef struct a_prec {
 
 typedef unsigned int    a_word;
 typedef unsigned char   byte;
-typedef unsigned short  set_size;
+typedef unsigned short  bitnum;
 
 typedef unsigned short  token_n;
 typedef unsigned short  action_n;
@@ -228,7 +228,7 @@ extern void     Clear(a_word *);
 extern bool     Empty(a_word *);
 extern void     AndNot(a_word *,a_word *);
 extern void     UnionAnd(a_word *,a_word *,a_word *);
-extern set_size *Members(a_word *);
+extern bitnum   *Members(a_word *);
 extern bool     EmptyIntersection( a_word *, a_word * );
 extern bool     Equal( a_word *, a_word * );
 extern void     DumpSet(a_word *);
@@ -334,7 +334,7 @@ extern a_state  *errstate;
 extern a_pro    **protab;
 extern a_pro    *startpro;
 
-extern set_size *setmembers;
+extern bitnum   *setmembers;
 
 extern char     *srcname_norm;
 

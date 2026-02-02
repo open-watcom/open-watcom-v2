@@ -316,7 +316,7 @@ void genobj( FILE *fp )
 #if 1
     short *same, *diff;
 #endif
-    set_size *mp;
+    bitnum *mp;
     a_sym *sym;
     a_pro *pro;
     a_state *state;
@@ -324,8 +324,8 @@ void genobj( FILE *fp )
     a_reduce_action *rx;
     int i, j, ntoken, dtoken, ptoken;
     unsigned num_default, num_parent;
-    set_size max_savings;
-    set_size savings;
+    unsigned max_savings;
+    unsigned savings;
 
     num_default = num_parent = 0;
     ntoken = FirstNonTerminalTokenValue();

@@ -111,7 +111,7 @@ static void add_table( short token, short action )
 static void dump_reduction( a_reduce_action *rx, unsigned *base )
 {
     a_pro *pro;
-    set_size *mp;
+    bitnum *mp;
 
     pro = rx->pro;
     for( mp = Members( rx->follow ); mp-- != setmembers; ) {
@@ -129,7 +129,7 @@ void genobj( FILE *fp )
     int any_token;
     int action;
     short *p;
-    set_size *mp;
+    bitnum *mp;
     a_pro *pro;
     a_state *state;
     a_reduce_action *rx;
@@ -139,8 +139,8 @@ void genobj( FILE *fp )
     an_item *item;
     unsigned max;
     unsigned sum;
-    set_size savings;
-    set_size max_savings;
+    unsigned savings;
+    unsigned max_savings;
     unsigned base;
     unsigned rule_base;
     short *state_base;

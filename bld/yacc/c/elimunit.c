@@ -48,7 +48,7 @@ void dumpInternalState( a_state *state )
     a_shift_action  *tx;
     a_reduce_action *rx;
     size_t          col, new_col;
-    set_size        *mp;
+    bitnum          *mp;
     an_item         **item;
 
     printf( "state %d: %p (%u)\n", state->sidx, state, state->kersize );
@@ -338,7 +338,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     a_state *check_state;
     a_parent *parent;
     a_word *follow;
-    set_size *mp;
+    bitnum *mp;
     bool change_occurred;
 
     /*

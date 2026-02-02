@@ -56,7 +56,7 @@ void genobj( FILE *fp )
     short *symbol, *target;
     short *p, *q, *r;
     short action;
-    set_size *mp;
+    bitnum *mp;
     a_sym *sym;
     a_pro *pro;
     an_item *item;
@@ -66,8 +66,8 @@ void genobj( FILE *fp )
     int i;
     int j;
     rule_n k;
-    set_size max_savings;
-    set_size savings;
+    unsigned max_savings;
+    unsigned savings;
 
     for( i = nterm; i < nsym; ++i )
         symtab[i]->token = i - nterm;

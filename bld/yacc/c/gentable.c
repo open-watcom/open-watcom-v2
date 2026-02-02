@@ -172,7 +172,7 @@ void genobj( FILE *fp )
     base_n      *base;
     token_n     *p, *q, *r, *s;
     token_n     *tokens, *same, *diff, *test, *best;
-    set_size    *mp;
+    bitnum      *mp;
     token_n     tokval, dtoken, ptoken, ntoken;
     action_n    actval, error, redun, new_action;
     a_sym       *sym;
@@ -184,12 +184,12 @@ void genobj( FILE *fp )
     index_n     i;
     index_n     j;
     rule_n      k;
-    set_size    max_savings;
-    set_size    savings;
-    set_size    min_len;
-    set_size    len;
-    set_size    *size;
-    set_size    shift;
+    unsigned    max_savings;
+    unsigned    savings;
+    unsigned    min_len;
+    unsigned    len;
+    unsigned    *size;
+    unsigned    shift;
     token_n     parent_base;
     unsigned    num_default, num_parent;
 
@@ -221,7 +221,7 @@ void genobj( FILE *fp )
     best = CALLOC( ntoken, token_n );
     other = CALLOC( nstate, action_n );
     parent = CALLOC( nstate, action_n );
-    size = CALLOC( nstate, set_size );
+    size = CALLOC( nstate, unsigned );
     base = CALLOC( nstate, base_n );
     same = NULL;
     r = NULL;
@@ -241,7 +241,7 @@ void genobj( FILE *fp )
         }
         max_savings = 0;
         for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
-            if( (savings = (set_size)((mp = Members( rx->follow )) - setmembers)) == 0 )
+            if( (savings = (unsigned)((mp = Members( rx->follow )) - setmembers)) == 0 )
                 continue;
             redun = pro->pidx + nstate;
             if( max_savings < savings ) {
@@ -270,7 +270,7 @@ void genobj( FILE *fp )
             other[i] = error;
         }
         r = q;
-        min_len = (set_size)( q - tokens );
+        min_len = (unsigned)( q - tokens );
         size[i] = min_len;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
@@ -305,7 +305,7 @@ void genobj( FILE *fp )
                         *--q = dtoken;
                     }
                 }
-                len = (set_size)( size[i] + size[j] - 2 * ( p - test ) );
+                len = (unsigned)( size[i] + size[j] - 2 * ( p - test ) );
                 if( min_len > len ) {
                     min_len = len;
                     same = p;
