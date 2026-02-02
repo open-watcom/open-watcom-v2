@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,12 +74,12 @@ static  void    StackEntry( stack_temp *st_temp, name *temp )
     stack_entry *new_stk;
 
     new_stk = CGAlloc( sizeof( stack_entry ) );
-    new_stk->link = StackMap;
     new_stk->size = temp->n.size;
     new_stk->location = temp->t.location;
     new_stk->temp.first = st_temp->first;
     new_stk->temp.last = st_temp->last;
     new_stk->temp.others = NULL;
+    new_stk->link = StackMap;
     StackMap = new_stk;
 }
 
@@ -595,7 +595,7 @@ static void AssgnATemp( name *temp, block_id blk_id )
 void    FiniStackMap( void )
 /**************************/
 {
-    stack_entry *next1;
+    stack_entry *stack;
     stack_temp  *other;
     stack_temp  *next2;
     name        *temp;
@@ -610,13 +610,13 @@ void    FiniStackMap( void )
         AllocNewLocal( temp );
     }
 
-    for( ; StackMap != NULL; StackMap = next1 ) {
-        next1 = StackMap->link;
-        for( other = StackMap->temp.others; other != NULL; other = next2 ) {
+    while( (stack = StackMap) != NULL ) {
+        StackMap = StackMap->link;
+        for( other = stack->temp.others; other != NULL; other = next2 ) {
             next2 = other->others;
             CGFree( other );
         }
-        CGFree( StackMap );
+        CGFree( stack );
     }
     TellTempLocs();
 }
