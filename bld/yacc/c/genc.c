@@ -203,7 +203,7 @@ static void reduce( FILE *fp, int production, int error )
         copyact( pro, "\t" );
 //        fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
-            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->idx );
+            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
         } else {
             fprintf( fp, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
         }
@@ -357,7 +357,7 @@ void genobj( FILE *fp )
         for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             tokval = sym->token;
             *q++ = tokval;
-            actions[tokval] = tx->state->idx;
+            actions[tokval] = tx->state->sidx;
         }
         max_savings = 0;
         for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -404,7 +404,7 @@ void genobj( FILE *fp )
             p = test;
             q = test + ntoken;
             for( tx = state->trans; (sym = tx->sym) != NULL; ++tx )
-                if( actions[sym->token] == tx->state->idx ) {
+                if( actions[sym->token] == tx->state->sidx ) {
                     ++savings;
                     *p++ = sym->token;
                 } else {
@@ -491,8 +491,8 @@ void genobj( FILE *fp )
     putnum( fp, "YYNOACTION", error - nstate + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYERR", errstate->idx );
-    fprintf( fp, "#define YYSTART   state%d\n", startstate->idx );
-    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->state->idx );
+    putnum( fp, "YYERR", errstate->sidx );
+    fprintf( fp, "#define YYSTART   state%d\n", startstate->sidx );
+    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->state->sidx );
     printf( "%u states, %u with defaults, %u with parents\n", nstate, num_default, num_parent );
 }

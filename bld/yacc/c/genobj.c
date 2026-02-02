@@ -74,7 +74,7 @@ void genobj( FILE *fp )
 
     label = OPTENTRY( nstate - 1 );
 
-    emitins( JMP, TOKENTRY( startstate->idx ) );
+    emitins( JMP, TOKENTRY( startstate->sidx ) );
 
     target = CALLOC( nsym, short );
     for( i = 0; i < nsym; ++i )
@@ -87,9 +87,9 @@ void genobj( FILE *fp )
             if( sym == eofsym ) {
                 action = ACCEPT;
             } else if( sym->idx < nterm ) {
-                action = TOKENTRY(tx->state->idx);
+                action = TOKENTRY(tx->state->sidx);
             } else {
-                action = OPTENTRY(tx->state->idx);
+                action = OPTENTRY(tx->state->sidx);
             }
             *q++ = sym->idx;
             target[sym->idx] = action;
@@ -117,10 +117,10 @@ void genobj( FILE *fp )
             }
         }
 
-        emitins( LBL, TOKENTRY( state->idx ) );
+        emitins( LBL, TOKENTRY( state->sidx ) );
         emitins( SCAN, 0 );
-        emitins( LBL, OPTENTRY( state->idx ) );
-        emitins( CALL, VBLENTRY( state->idx ) );
+        emitins( LBL, OPTENTRY( state->sidx ) );
+        emitins( CALL, VBLENTRY( state->sidx ) );
         q = symbol;
         for( j = nterm; j < nsym; ++j ) {
             if( target[j] != DEFAULT ) {
@@ -133,7 +133,7 @@ void genobj( FILE *fp )
                 target[*p] = DEFAULT;
             }
         }
-        emitins( LBL, VBLENTRY( state->idx ) );
+        emitins( LBL, VBLENTRY( state->sidx ) );
 
         q = symbol;
         for( j = 0; j < nterm; ++j ) {

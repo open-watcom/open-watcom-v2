@@ -161,7 +161,7 @@ void genobj( FILE *fp )
         state_base[i] = base;
         state = statetab[i];
         for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
-            add_table( sym->idx, ACTION_SHIFT | tx->state->idx );
+            add_table( sym->idx, ACTION_SHIFT | tx->state->sidx );
             ++base;
         }
         default_reduction = NULL;
@@ -195,7 +195,7 @@ void genobj( FILE *fp )
     printf( "avg: %u max: %u\n", sum / nstate, max );
     dump_define( fp, "YYANYTOKEN", any_token );
     dump_define( fp, "YYEOFTOKEN", eofsym->token );
-    dump_define( fp, "YYSTART", startstate->idx );
+    dump_define( fp, "YYSTART", startstate->sidx );
     begin_table( fp, "YYACTTYPE", "yybasetab" );
     for( i = 0; i < nstate; ++i ) {
         puttab( fp, FITS_A_WORD, state_base[i] );
