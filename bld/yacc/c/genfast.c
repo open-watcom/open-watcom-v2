@@ -357,6 +357,7 @@ void GenFastTables( FILE *fp )
 {
     index_n     i;
     index_n     j;
+    rule_n      k;
     index_n     asize;
     token_n     tokval;
     index_n     vsize;
@@ -382,7 +383,7 @@ void GenFastTables( FILE *fp )
     an_item     *item;
     index_n     empty_actions;
     action_n    *defaction;
-    action_n    state_idx;
+    action_n    state_sidx;
     token_n     ntoken_term;
     token_n     ntoken_all;
 
@@ -450,12 +451,12 @@ void GenFastTables( FILE *fp )
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL )
                 continue;
-            state_idx = saction->state->idx;
+            state_sidx = saction->state->sidx;
             if( saction->is_default ) {
-                defaction[i] = state_idx;
+                defaction[i] = state_sidx;
                 continue;
             }
-            state_actions[sym->token] = state_idx;
+            state_actions[sym->token] = state_sidx;
         }
         /*
          * iterate over all reductions in state
@@ -496,7 +497,7 @@ void GenFastTables( FILE *fp )
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro == NULL )
                 continue;
-            state_actions[sym->token] = saction->state->idx;
+            state_actions[sym->token] = saction->state->sidx;
         }
     }
     mapping = orderActionVectors( all_actions, ntoken_all );
@@ -518,9 +519,9 @@ void GenFastTables( FILE *fp )
     putnum( fp, "YYNOACTION", 0 );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYSTART", startstate->idx );
-    putnum( fp, "YYSTOP", eofsym->state->idx );
-    putnum( fp, "YYERR", errstate->idx );
+    putnum( fp, "YYSTART", startstate->sidx );
+    putnum( fp, "YYSTOP", eofsym->state->sidx );
+    putnum( fp, "YYERR", errstate->sidx );
     putnum( fp, "YYUSED", nstate );
     if( keyword_id_low != 0 && default_shiftflag ) {
         putnum( fp, "YYKEYWORD_ID_LOW", keyword_id_low );
@@ -574,17 +575,17 @@ void GenFastTables( FILE *fp )
     endtab( fp );
     putcomment( fp, "index by rule to get length of rule" );
     begtab( fp, "YYPLENTYPE", "yyplentab" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->items; item->p.sym != NULL; ) {
+    for( k = 0; k < npro; ++k ) {
+        for( item = protab[k]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[k]->items ) );
     }
     endtab( fp );
     putcomment( fp, "index by rule to get left hand side token" );
     begtab( fp, "YYPLHSTYPE", "yyplhstab" );
-    for( i = 0; i < npro; ++i ) {
-        puttab( fp, FITS_A_WORD, protab[i]->sym->token );
+    for( k = 0; k < npro; ++k ) {
+        puttab( fp, FITS_A_WORD, protab[k]->sym->token );
     }
     endtab( fp );
 

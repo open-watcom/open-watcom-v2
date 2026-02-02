@@ -370,7 +370,7 @@ static void resolve( a_state *state, set_size *work, a_reduce_action **reduce )
         --w;
         if( symtab[*w]->token == errsym->token )
             continue;
-        printf( "r/r conflict in state %d on %s:\n", state->idx, symtab[*w]->name);
+        printf( "r/r conflict in state %d on %s:\n", state->sidx, symtab[*w]->name);
         ++RR_conflicts;
         for( rx = state->redun; rx->pro != NULL; ++rx ) {
             if( IsBitSet( rx->follow, *w ) ) {
@@ -399,9 +399,9 @@ static void resolve( a_state *state, set_size *work, a_reduce_action **reduce )
             proprec = reduce[i]->pro->prec;
             if( symprec.prec == 0 || proprec.prec == 0 ) {
                 if( tx->sym != errsym ) {
-                    printf( "s/r conflict in state %d on %s:\n", state->idx, tx->sym->name );
+                    printf( "s/r conflict in state %d on %s:\n", state->sidx, tx->sym->name );
                     ++SR_conflicts;
-                    printf( "\tshift to %d\n", tx->state->idx );
+                    printf( "\tshift to %d\n", tx->state->sidx );
                     showitem( reduce[i]->pro->items, "" );
                     printf( "\n" );
                     ShowSentence( state, tx->sym, reduce[i]->pro, NULL );
@@ -549,10 +549,10 @@ void showstate( a_state *state )
     set_size        *mp;
     an_item         **item;
 
-    printf( "state %d:\n", state->idx );
+    printf( "state %d:\n", state->sidx );
     col = printf( "  parent states:" );
     for( parent = state->parents; parent != NULL; parent = parent->next ) {
-        col += printf( " %d", parent->state->idx );
+        col += printf( " %d", parent->state->sidx );
         if( col > 79 ) {
             printf( "\n" );
             col = 0;
@@ -571,7 +571,7 @@ void showstate( a_state *state )
             new_col -= col;
         }
         col = new_col;
-        printf( " %s:s%03d", tx->sym->name, tx->state->idx );
+        printf( " %s:s%03d", tx->sym->name, tx->state->sidx );
     }
     putchar( '\n' );
     col = 0;

@@ -36,10 +36,10 @@
 #include "alloc.h"
 #include "yacc.h"
 
-index_n npro;
-index_n nsym;
-index_n nterm;
-index_n nvble;
+rule_n  npro;
+sym_n   nsym;
+sym_n   nterm;
+sym_n   nvble;
 index_n nitem;
 
 a_sym   **symtab, *symlist, *startsym, *eofsym, *goalsym, *nosym, *errsym;
@@ -156,7 +156,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
 
 void showpro( void )
 {
-    index_n     i;
+    rule_n      i;
 
     for( i = 0; i < npro; ++i ) {
         showitem( protab[i]->items, "" );
@@ -190,7 +190,7 @@ void showitem( an_item *p, char *dot )
 void show_unused( void )
 {
     unsigned    count;
-    index_n     i;
+    rule_n      i;
 
     count = 0;
     for( i = 0; i < npro; ++i ) {

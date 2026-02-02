@@ -116,8 +116,7 @@ void *YaccCalloc( size_t n, size_t size )
     if( ptr == NULL ) {
         msg( "Out of memory\n" );
     }
-    memset( ptr, 0, size );
-    return( ptr );
+    return( memset( ptr, 0, size ) );
 }
 
 void *YaccRealloc( void *old_ptr, size_t newsize )

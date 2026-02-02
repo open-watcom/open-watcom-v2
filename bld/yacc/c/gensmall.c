@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,6 +123,7 @@ static void dump_reduction( a_reduce_action *rx, unsigned *base )
 void genobj( FILE *fp )
 {
     int i;
+    rule_n j;
     int ntoken;
     int this_token;
     int any_token;
@@ -211,32 +212,32 @@ void genobj( FILE *fp )
     }
     end_table( fp );
     begin_table( fp, "YYPLENTYPE", "yyplentab" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ) {
+    for( j = 0; j < npro; ++j ) {
+        for( item = protab[j]->item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[j]->item ) );
     }
     end_table( fp );
     begin_table( fp, "YYPLHSTYPE", "yyplhstab" );
-    for( i = 0; i < npro; ++i ) {
-        puttab( fp, FITS_A_BYTE, protab[i]->sym->token );
+    for( j = 0; j < npro; ++j ) {
+        puttab( fp, FITS_A_BYTE, protab[j]->sym->token );
     }
     end_table( fp );
     fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
     begin_table( fp, "unsigned short", "yyrulebase" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ) {
+    for( j = 0; j < npro; ++j ) {
+        for( item = protab[j]->item; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
-        rule_base += (int)( item - protab[i]->item );
+        rule_base += (int)( item - protab[j]->item );
     }
     end_table( fp );
     begin_table( fp, "YYCHKTYPE", "yyrhstoks" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
+    for( j = 0; j < npro; ++j ) {
+        for( item = protab[j]->item; item->p.sym != NULL; ++item ) {
             puttab( fp, FITS_A_BYTE, item->p.sym->token );
         }
     }

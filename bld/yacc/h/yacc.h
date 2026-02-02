@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,6 +100,7 @@ typedef unsigned short  action_n;
 typedef unsigned short  index_n;
 typedef unsigned short  base_n;
 typedef unsigned short  rule_n;
+typedef unsigned short  sym_n;
 
 typedef struct a_state  a_state;
 typedef struct a_sym    a_sym;
@@ -158,7 +159,7 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
     a_state             *state;
     boolbit             nullable    : 1;
     a_prec              prec;
-    index_n             idx;
+    sym_n               idx;
     token_n             token;
 };
 
@@ -196,7 +197,7 @@ struct a_state {
     a_look              *look;
     a_state             *sym_next;
     unsigned short      kersize;
-    action_n            idx;            /* index of state [0..nstates] */
+    action_n            sidx;           /* index of state [0..nstates] */
     flags               flag;
 };
 
@@ -292,9 +293,9 @@ extern void     puttokennames( FILE *fp, token_n dtoken, value_size token_size )
 extern void     putcomment( FILE *fp, char *comment );
 
 extern rule_n   npro;    /* # of productions */
-extern index_n  nsym;    /* # of symbols */
-extern index_n  nterm;   /* # of terminals */
-extern index_n  nvble;   /* # of non-terminals */
+extern sym_n    nsym;    /* # of symbols */
+extern sym_n    nterm;   /* # of terminals */
+extern sym_n    nvble;   /* # of non-terminals */
 extern index_n  nitem;   /* # of LR(0) items */
 
 extern index_n  nbstate;

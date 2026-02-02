@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +51,11 @@ void dumpInternalState( a_state *state )
     set_size        *mp;
     an_item         **item;
 
-    printf( "state %d: %p (%u)\n", state->idx, state, state->kersize );
+    printf( "state %d: %p (%u)\n", state->sidx, state, state->kersize );
     printf( "  parent states:" );
     col = 4;
     for( parent = state->parents; parent != NULL; parent = parent->next ) {
-        printf( " %d(%p)", parent->state->idx, parent->state );
+        printf( " %d(%p)", parent->state->sidx, parent->state );
         --col;
         if( col == 0 ) {
             printf( "\n" );
@@ -75,7 +75,7 @@ void dumpInternalState( a_state *state )
             new_col -= col;
         }
         col = new_col;
-        printf( " %s:s%03d", tx->sym->name, tx->state->idx );
+        printf( " %s:s%03d", tx->sym->name, tx->state->sidx );
     }
     putchar( '\n' );
     col = 0;
@@ -132,7 +132,7 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
         parent_state = parent->state;
         new_state = findNewShiftState( parent_state, old_lhs );
         if( new_state == NULL ) {
-            printf( "error! %u %s %u\n", state->idx, old_lhs->name, parent_state->idx );
+            printf( "error! %u %s %u\n", state->sidx, old_lhs->name, parent_state->sidx );
             exit(1);
         }
         for( raction = new_state->redun; (test_pro = raction->pro) != NULL; ++raction ) {

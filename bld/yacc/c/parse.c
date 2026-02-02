@@ -82,7 +82,7 @@ typedef struct xlat_entry {
 typedef struct rule_case {
     struct rule_case    *next;
     a_sym               *lhs;
-    rule_n              pnum;
+    rule_n              pidx;
 } rule_case;
 
 typedef struct uniq_case {
@@ -774,12 +774,12 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     return( s );
 }
 
-static a_pro *findPro( a_sym *lhs, rule_n pnum )
+static a_pro *findPro( a_sym *lhs, rule_n pidx )
 {
     a_pro       *pro;
 
     for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
-        if( pro->pidx == pnum ) {
+        if( pro->pidx == pidx ) {
             return( pro );
         }
     }
@@ -800,8 +800,8 @@ static void copyUniqueActions( FILE *fp )
         cnext = c->next;
         for( r = c->rules; r != NULL; r = rnext ) {
             rnext = r->next;
-            fprintf( fp, "case %d:\n", r->pnum );
-            pro = findPro( r->lhs, r->pnum );
+            fprintf( fp, "case %d:\n", r->pidx );
+            pro = findPro( r->lhs, r->pidx );
             fprintf( fp, "/* %s <-", pro->sym->name );
             for( item = pro->items; item->p.sym != NULL; ++item ) {
                 fprintf( fp, " %s", item->p.sym->name );
@@ -818,18 +818,18 @@ static void copyUniqueActions( FILE *fp )
     }
 }
 
-static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
+static void addRuleToUniqueCase( uniq_case *p, rule_n pidx, a_sym *lhs )
 {
     rule_case   *r;
 
     r = MALLOC( 1, rule_case );
     r->lhs = lhs;
-    r->pnum = pnum;
+    r->pidx = pidx;
     r->next = p->rules;
     p->rules = r;
 }
 
-static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
+static void insertUniqueAction( rule_n pidx, char *action, a_sym *lhs )
 {
     uniq_case   **p;
     uniq_case   *c;
@@ -839,7 +839,7 @@ static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
     for( c = *p; c != NULL; c = c->next ) {
         if( strcmp( c->action, action ) == 0 ) {
             ++actionsCombined;
-            addRuleToUniqueCase( c, pnum, lhs );
+            addRuleToUniqueCase( c, pidx, lhs );
             /*
              * promote to front
              */
@@ -856,7 +856,7 @@ static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
     n->rules = NULL;
     n->next = *p;
     *p = n;
-    addRuleToUniqueCase( n, pnum, lhs );
+    addRuleToUniqueCase( n, pidx, lhs );
 }
 
 static char *strpcpy( char *d, char *s )
@@ -874,7 +874,7 @@ static void lineinfo( FILE *fp )
     }
 }
 
-static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
     char        *action;
     char        *p;
@@ -922,11 +922,11 @@ static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned ba
                 }
             }
             *p = '\0';
-            insertUniqueAction( pnum, action, lhs );
+            insertUniqueAction( pidx, action, lhs );
         }
         return;
     }
-    fprintf( fp, "case %d:\n", pnum );
+    fprintf( fp, "case %d:\n", pidx );
     fprintf( fp, "/* %s <-", lhs->name );
     for( i = 0; i < n; ++i ) {
         fprintf( fp, " %s", rhs[i]->name );
@@ -1009,8 +1009,7 @@ void free_header_data( void )
         FREE( union_name );
         union_name = NULL;
     }
-    while( tokens_head != NULL ) {
-        tmp = tokens_head;
+    while( (tmp = tokens_head) != NULL ) {
         tokens_head = tokens_head->next;
         FREE( tmp );
     }

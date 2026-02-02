@@ -38,6 +38,9 @@
 #include "yaccins.h"
 #include "alloc.h"
 
+
+typedef unsigned    freq_n;
+
 unsigned keyword_id_low;
 unsigned keyword_id_high;
 unsigned nStates;
@@ -54,14 +57,14 @@ static bool okToConsider( a_sym *sym )
     return( true );
 }
 
-static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsigned range_size )
+static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigned range_size )
 {
     unsigned        i;
-    unsigned        max;
-    action_n        max_state_idx;
+    freq_n          max;
     a_shift_action  *saction;
     a_sym           *shift_sym;
-    index_n         state_idx;
+    action_n        j;
+    action_n        max_sidx;
 
     if( IsDead( state ) ) {
         return;
@@ -84,7 +87,7 @@ static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsig
         if( ! okToConsider( shift_sym ) )
             continue;
         all_used[shift_sym->token - keyword_id_low] = true;
-        ++state_freq[saction->state->idx];
+        ++state_freq[saction->state->sidx];
     }
     /*
      * verify entire range of tokens shift somewhere
@@ -97,13 +100,13 @@ static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsig
     /*
      * find which state had the highest frequency
      */
-    max_state_idx = 0;
-    max = state_freq[0];
-    for( state_idx = 1; state_idx < nstate; ++state_idx ) {
-        unsigned test = state_freq[state_idx];
-        if( test > max ) {
+    max_sidx = 0;
+    max = 0;
+    for( j = 0; j < nstate; ++j ) {
+        freq_n test = state_freq[j];
+        if( max < test ) {
             max = test;
-            max_state_idx = state_idx;
+            max_sidx = j;
         }
     }
     if( max == 0 ) {
@@ -116,7 +119,7 @@ static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsig
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) )
             continue;
-        if( saction->state->idx == max_state_idx ) {
+        if( saction->state->sidx == max_sidx ) {
             saction->is_default = true;
             ++nActions;
         }
@@ -127,11 +130,11 @@ void MarkDefaultShifts( void )
 /****************************/
 {
     unsigned range_size;
-    unsigned *state_freq;
+    freq_n *state_freq;
     bool *all_used;
     int i;
 
-    state_freq = MALLOC( nstate, unsigned );
+    state_freq = MALLOC( nstate, freq_n );
     range_size = ( keyword_id_high - keyword_id_low ) + 1;
     all_used = MALLOC( range_size, bool );
     for( i = 0; i < nstate; ++i ) {

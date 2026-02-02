@@ -312,7 +312,7 @@ static traceback *getStatePrefix( a_state *state, a_state *initial_parent )
             min_state = parent->state;
             for( parent = parent->next; parent != NULL; parent = parent->next ) {
                 min_state_check = parent->state;
-                if( min_state->idx > min_state_check->idx ) {
+                if( min_state->sidx > min_state_check->sidx ) {
                     min_state = min_state_check;
                 }
             }
@@ -340,7 +340,7 @@ void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
             /*
              * S/R conflict
              */
-            printf( "Sample sentence(s) for shift to state %u:\n", to_state->idx );
+            printf( "Sample sentence(s) for shift to state %u:\n", to_state->sidx );
         } else {
             /*
              * R/R conflict

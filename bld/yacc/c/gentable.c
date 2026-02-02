@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,7 +181,9 @@ void genobj( FILE *fp )
     a_state     *state;
     a_shift_action *tx;
     a_reduce_action *rx;
-    index_n     i, j;
+    index_n     i;
+    index_n     j;
+    rule_n      k;
     set_size    max_savings;
     set_size    savings;
     set_size    min_len;
@@ -235,7 +237,7 @@ void genobj( FILE *fp )
         q = tokens;
         for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
-            actions[sym->token] = tx->state->idx;
+            actions[sym->token] = tx->state->sidx;
         }
         max_savings = 0;
         for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -277,7 +279,7 @@ void genobj( FILE *fp )
                 p = test;
                 q = test + ntoken;
                 for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
-                    if( actions[sym->token] == tx->state->idx ) {
+                    if( actions[sym->token] == tx->state->sidx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
@@ -365,9 +367,9 @@ void genobj( FILE *fp )
         putnum( fp, "YYPARTOKEN", ptoken );
         putnum( fp, "YYDEFTOKEN", dtoken );
     }
-    putnum( fp, "YYSTART", base[startstate->idx] );
-    putnum( fp, "YYSTOP", base[eofsym->state->idx] );
-    putnum( fp, "YYERR", base[errstate->idx] );
+    putnum( fp, "YYSTART", base[startstate->sidx] );
+    putnum( fp, "YYSTOP", base[eofsym->state->sidx] );
+    putnum( fp, "YYERR", base[errstate->sidx] );
     putnum( fp, "YYUSED", used );
 
     if( compactflag ) {
@@ -427,12 +429,12 @@ void genobj( FILE *fp )
          * Combine lengths & lhs into a single table
          */
         begtab( fp, "YYPRODTYPE", "yyprodtab" );
-        for( i = 0; i < npro; ++i ) {
+        for( k = 0; k < npro; ++k ) {
             j = 0;
-            for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
+            for( item = protab[k]->items; item->p.sym != NULL; ++item ) {
                 ++j;
             }
-            puttab( fp, FITS_A_WORD, (j << shift) + protab[i]->sym->token );
+            puttab( fp, FITS_A_WORD, (j << shift) + protab[k]->sym->token );
         }
         endtab( fp );
     } else {
@@ -452,16 +454,16 @@ void genobj( FILE *fp )
         }
         endtab( fp );
         begtab( fp, "YYPLENTYPE", "yyplentab" );
-        for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->items; item->p.sym != NULL; ) {
+        for( k = 0; k < npro; ++k ) {
+            for( item = protab[k]->items; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
+            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[k]->items ) );
         }
         endtab( fp );
         begtab( fp, "YYPLHSTYPE", "yyplhstab" );
-        for( i = 0; i < npro; ++i ) {
-            puttab( fp, token_size, protab[i]->sym->token );
+        for( k = 0; k < npro; ++k ) {
+            puttab( fp, token_size, protab[k]->sym->token );
         }
         endtab( fp );
     }

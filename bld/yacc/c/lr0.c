@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static a_state *addState( a_state **state, an_item **s, an_item **q, a_state *pa
         (*state)->kersize = kersize;
         (*state)->items = CALLOC( kersize + 1, an_item * );
         memcpy( (*state)->items, s, kersize * sizeof( an_item * ) );
-        (*state)->idx = nstate++;
+        (*state)->sidx = nstate++;
     }
     if( parent != NULL ) {
         add_parent = CALLOC( 1, a_parent );
@@ -227,24 +227,24 @@ void SetupStateTable( void )
     FREE( statetab );
     statetab = CALLOC( nstate, a_state * );
     for( state = statelist; state != NULL; state = state->next ) {
-        statetab[state->idx] = state;
+        statetab[state->sidx] = state;
     }
 }
 
 void RemoveDeadStates( void )
 {
-    index_n     old_state_idx;
-    index_n     new_state_idx;
+    index_n     old_state_sidx;
+    index_n     new_state_sidx;
     a_state     *state;
 
-    new_state_idx = 0;
-    for( old_state_idx = 0; old_state_idx < nstate; old_state_idx++ ) {
-        state = statetab[old_state_idx];
+    new_state_sidx = 0;
+    for( old_state_sidx = 0; old_state_sidx < nstate; old_state_sidx++ ) {
+        state = statetab[old_state_sidx];
         if( ! IsDead( state ) ) {
-            state->idx = new_state_idx;
-            statetab[new_state_idx] = state;
-            new_state_idx++;
+            state->sidx = new_state_sidx;
+            statetab[new_state_sidx] = state;
+            new_state_sidx++;
         }
     }
-    nstate = new_state_idx;
+    nstate = new_state_sidx;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,14 @@
 #include "yaccins.h"
 #include "alloc.h"
 
-#define PROENTRY(i)     ((i)+1)
+#define PROENTRY(x)     ((x)+1)
 
 #define ACCEPT          (-1)
 #define DEFAULT         0
 
-#define VBLENTRY(i)     (3*(i)+1+npro)
-#define TOKENTRY(i)     (3*(i)+2+npro)
-#define OPTENTRY(i)     (3*(i)+3+npro)
+#define VBLENTRY(x)     (3*(x)+1+npro)
+#define TOKENTRY(x)     (3*(x)+2+npro)
+#define OPTENTRY(x)     (3*(x)+3+npro)
 
 static int label;
 
@@ -63,7 +63,9 @@ void genobj( FILE *fp )
     a_state *state;
     a_shift_action *tx;
     a_reduce_action *rx;
-    int i, j;
+    int i;
+    int j;
+    rule_n k;
     set_size max_savings;
     set_size savings;
 
@@ -148,14 +150,14 @@ void genobj( FILE *fp )
     FREE( target );
     FREE( symbol );
 
-    for( i = 0; i < npro; ++i ) {
-        pro = protab[i];
+    for( k = 0; k < npro; ++k ) {
+        pro = protab[k];
         if( pro != startpro ) {
             for( item = pro->item; item->p.sym != NULL; ) {
                 ++item;
             }
             emitins( LBL, PROENTRY( pro->pidx ) );
-            emitins( ACTION, PROPACK( item - pro->item, i ) );
+            emitins( ACTION, PROPACK( item - pro->item, k ) );
             emitins( REDUCE, PROPACK( item - pro->item, pro->sym->token ) );
         }
     }

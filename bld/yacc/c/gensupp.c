@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +79,8 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
          */
         return;
     }
-    ambig_state = ambig->state->idx;
-    ambig_shift = ambig->shift_state->idx;
+    ambig_state = ambig->state->sidx;
+    ambig_shift = ambig->shift_state->sidx;
     if( base == NULL ) {
         ambig_state_based = ambig_state;
         ambig_shift_based = ambig_shift;
@@ -171,6 +171,7 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     unsigned rule_base;
     an_item *item;
     unsigned i;
+    rule_n j;
 
     if( ! denseflag ) {
         return;
@@ -178,17 +179,17 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
     begtab( fp, "unsigned short", "yyrulebase" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->items; item->p.sym != NULL; ) {
+    for( j = 0; j < npro; ++j ) {
+        for( item = protab[j]->items; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
-        rule_base += (unsigned)( item - protab[i]->items );
+        rule_base += (unsigned)( item - protab[j]->items );
     }
     endtab( fp );
     begtab( fp, "YYTOKENTYPE", "yyrhstoks" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
+    for( j = 0; j < npro; ++j ) {
+        for( item = protab[j]->items; item->p.sym != NULL; ++item ) {
             puttab( fp, token_size, item->p.sym->token );
         }
     }
