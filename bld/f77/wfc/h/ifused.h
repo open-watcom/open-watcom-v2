@@ -31,14 +31,6 @@
 ****************************************************************************/
 
 
-//
-// IFUSED    : Mark an intrinsic function as used.
-//             Each bit in the array IFUsed corresponds to an intrinsic
-//             function. ie : The bits of the arrary are numbered
-//             0 to 112 from the low order bit of IFUsed[0] to the high
-//             order bit of IFUsed[24]
-//
-
 extern void    IFInit( void );
 extern void    MarkIFUsed( IFF function );
 extern bool    IsIFUsed( IFF function );

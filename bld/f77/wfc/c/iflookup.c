@@ -117,7 +117,7 @@ bool    IFIsGeneric( IFF func )
 bool    IFIsMagic( IFF func )
 //===========================
 {
-    return( IFFlags[func].next == MAGIC );
+    return( IFFlags[func].next == IF_MAGIC );
 }
 
 
@@ -137,7 +137,7 @@ bool    IFSpecific( TYPE typ )
 
     magic = false;
     func = CITNode->sym_ptr->u.ns.si.fi.index;
-    if( IFFlags[func].next == MAGIC ) {
+    if( IFFlags[func].next == IF_MAGIC ) {
         magic = true;
     } else if( IFFlags[func].flags & IF_GENERIC ) {
         for( ; IFFlags[func].arg_typ != typ; ) {

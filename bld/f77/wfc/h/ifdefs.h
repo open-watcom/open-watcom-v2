@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ typedef enum {
     IF_KW_COUNT,
 
     IF_NO_MORE  = 0xfe,
-    MAGIC       = 0xff
+    IF_MAGIC    = 0xff
 } IFF;
 
 #define IF_KW_NONE  IF_KW_COUNT

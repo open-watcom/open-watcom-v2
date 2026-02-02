@@ -60,7 +60,6 @@ gbl_defn entry_pt       *Entries;       // pointer to head of entry point lists
 gbl_defn act_eq_entry   *EquivSets;     // pointer to equivalent sets
 gbl_defn sym_id         SubProgId;      // SymId of subprogram being compiled
 gbl_defn impl_entry     ImplicitTab[IMPL_SIZE];
-gbl_defn byte           IFUsed[25];     // indicates intrinsic functions used
 gbl_defn SGMTSW         SgmtSw;         // program segment switches
 gbl_defn PSWT           ProgSw;         // program switches
 gbl_defn EXTNSW         ExtnSw;         // extension switches

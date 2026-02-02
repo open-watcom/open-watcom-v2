@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,41 +31,42 @@
 ****************************************************************************/
 
 
-//
-// IFUSED    : Mark an intrinsic function as used.
-//             Each bit in the array IFUsed corresponds to an intrinsic
-//             function. ie : The bits of the arrary are numbered
-//             0 to 112 from the low order bit of IFUsed[0] to the high
-//             order bit of IFUsed[13]
-//
-
 #include "ftnstd.h"
 #include "global.h"
 #include "ifused.h"
 
 
-void    IFInit(void) {
-//================
+//
+// IFUSED    : Mark an intrinsic function as used.
+//             Each bit in the array IFUsed corresponds to an intrinsic
+//             function. ie : The bits of the arrary are numbered
+//             0 to 112 from the low order bit of IFUsed[0] to the high
+//             order bit of IFUsed[IFUSED_ARRAY_SIZE - 1]
+//
 
+#define IFUSED_ARRAY_SIZE   ((IF_KW_COUNT+7)/8)
+
+static byte         IFUsed[IFUSED_ARRAY_SIZE]; // indicates intrinsic functions used
+
+void    IFInit( void )
+//====================
 // Initialize IFUsed flags.
-
-    memset( IFUsed, 0, 24 );
+{
+    memset( IFUsed, 0, IFUSED_ARRAY_SIZE );
 }
 
 
-void    MarkIFUsed( IFF function ) {
-//==================================
-
+void    MarkIFUsed( IFF function )
+//================================
 // Turn on bit ( function mod 8 ) of IFUsed[function / 8].
-
+{
     IFUsed[function >> 3] |= ( 1 << (function & 7) );
 }
 
 
-bool    IsIFUsed( IFF function ) {
-//================================
-
+bool    IsIFUsed( IFF function )
+//==============================
 // Return true if bit ( function mod 8 ) of IFUsed[function / 8] is on.
-
+{
     return( (IFUsed[function >> 3] & ( 1 << (function & 7) )) != 0 );
 }
