@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +40,20 @@ set_size *setmembers;
 
 static set_size wperset;
 
-void InitSets( unsigned n )
+void InitSets( unsigned count )
 {
-    wperset = (set_size)_RoundUpBitVector( n, WSIZE );
-    setmembers = CALLOC( n, set_size );
+    wperset = (set_size)_RoundUpBitVector( count, WSIZE );
+    setmembers = CALLOC( count, set_size );
 }
 
-a_word *AllocSet( unsigned n )
+a_word *AllocSet( unsigned set_count )
 {
-    return( CALLOC( n * wperset, a_word ) );
+    return( CALLOC( set_count * wperset, a_word ) );
 }
 
-unsigned GetSetSize( unsigned n )
+unsigned GetSetSize( unsigned set_count )
 {
-    return( n * wperset );
+    return( set_count * wperset );
 }
 
 void Union( a_word *s, a_word *t )

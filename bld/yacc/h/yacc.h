@@ -217,9 +217,9 @@ typedef union {
     assoc_t     assoc;
 } tok_value;
 
-extern void     InitSets(unsigned );
-extern a_word   *AllocSet( unsigned );
-extern unsigned GetSetSize( unsigned );
+extern void     InitSets( unsigned count );
+extern a_word   *AllocSet( unsigned set_count );
+extern unsigned GetSetSize( unsigned set_count );
 #define FreeSet(x)  FREE(x)
 extern void     Union(a_word *,a_word *);
 extern void     Intersection( a_word *, a_word *);
@@ -295,7 +295,6 @@ extern void     putcomment( FILE *fp, char *comment );
 extern rule_n   npro;    /* # of productions */
 extern sym_n    nsym;    /* # of symbols */
 extern sym_n    nterm;   /* # of terminals */
-extern sym_n    nvble;   /* # of non-terminals */
 extern index_n  nitem;   /* # of LR(0) items */
 
 extern index_n  nbstate;

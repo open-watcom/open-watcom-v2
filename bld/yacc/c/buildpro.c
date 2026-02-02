@@ -39,7 +39,6 @@
 rule_n  npro;
 sym_n   nsym;
 sym_n   nterm;
-sym_n   nvble;
 index_n nitem;
 
 a_sym   **symtab, *symlist, *startsym, *eofsym, *goalsym, *nosym, *errsym;
@@ -51,8 +50,9 @@ void buildpro( void )
     a_sym       *rhs[2];
     a_pro       *pro;
     an_item     *item;
-    index_n     i;
-    index_n     j;
+    sym_n       i;
+    sym_n       j;
+    sym_n       nvble;   /* # of non-terminals */
 
     if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
