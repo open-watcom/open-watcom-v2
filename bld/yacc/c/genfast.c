@@ -38,6 +38,8 @@
 #include <assert.h>
 #include "yacc.h"
 #include "alloc.h"
+#include "roundmac.h"
+
 
 enum {
     ACTION_REDUCE       = 0x8000,
@@ -396,7 +398,7 @@ void GenFastTables( FILE *fp )
 
     bvector = NULL;
     bsize = 0;
-    vsize = _RoundUpBitVector( ntoken_term, 8 );
+    vsize = __ROUND_UP_SIZE_TO( ntoken_term, 8 );
     state_vector = MALLOC( vsize, byte );
     base = CALLOC( nstate, index_n );
     for( i = 0; i < nstate; ++i ) {

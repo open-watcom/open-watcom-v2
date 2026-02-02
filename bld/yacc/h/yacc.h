@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "bool.h"
 
+
 enum {
     TOKEN_EOF           = 0x0000,
     TOKEN_IMPOSSIBLE    = 0x0001,
@@ -51,11 +52,8 @@ enum {
 #define SetBit(x,i,b)   ((x)[(i)/(b)] |= ( 1UL << ((i) % (b))))
 #define IsBitSet(x,i,b) ((x)[(i)/(b)] &  ( 1UL << ((i) % (b))))
 
-#define _RoundUp( size, word )          ( ((size)+((word)-1)) & ~((word)-1) )
-#define _RoundUpBitVector( size, word ) ( ((size)+((word)-1))/(word) )
-
 typedef enum flags {
-    M_NULL              = 0x00,
+    M_NONE              = 0x00,
     M_MARKED            = 0x01,
     M_STATE             = 0x02,
     M_DEAD              = 0x04,

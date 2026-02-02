@@ -36,6 +36,8 @@
 #include <limits.h>
 #include "yacc.h"
 #include "alloc.h"
+#include "roundmac.h"
+
 
 #define ACTION_USED     0x4000
 #define ACTION_BASE     0x8000
@@ -62,7 +64,7 @@ static a_table      *table;
 static void expand_table( base_n new_size )
 {
     if( new_size > avail ) {
-        avail = _RoundUp( new_size, BLOCK );
+        avail = __ROUND_UP_SIZE( new_size, BLOCK );
         if( table != NULL ) {
             table = REALLOC( table, avail, a_table );
         } else {

@@ -35,6 +35,7 @@
 #include <limits.h>
 #include "yacc.h"
 #include "alloc.h"
+#include "roundmac.h"
 
 
 bitnum  *setmembers;
@@ -43,7 +44,7 @@ static unsigned     wperset;
 
 void InitSets( unsigned count )
 {
-    wperset = (unsigned)_RoundUpBitVector( count, WSIZE );
+    wperset = (unsigned)__ROUND_UP_SIZE_TO( count, WSIZE );
     setmembers = CALLOC( count, bitnum );
 }
 
