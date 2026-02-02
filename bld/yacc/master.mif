@@ -49,5 +49,5 @@ exetarg_objs = &
     yacc.obj        &
     alloc.obj       &
     $(trmem_objs)
-# genc.obj, genobj.obj, and recover.obj are unused
+# genc.obj, genobj.obj, writeobj.obj, and recover.obj are unused
 !include exetarg.mif
