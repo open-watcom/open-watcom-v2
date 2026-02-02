@@ -50,10 +50,12 @@ typedef struct _trmem_internal  *_trmem_hdl;
 
 typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)
+#define _TRMEM_ROUTINE(x)   ((_trmem_who)(x))
 
 /* generic pointer to code with realloc signature */
 typedef void *(*_trmem_realloc_who)(void *, size_t);
 #define _TRMEM_NO_REALLOC   ((_trmem_realloc_who)0)
+#define _TRMEM_REALLOC(x)   ((_trmem_realloc_who)(x))
 
 /*
     These are some special conditions that trmem can detect.  OR together
