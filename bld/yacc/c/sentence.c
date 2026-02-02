@@ -461,7 +461,7 @@ static void propagateMin( a_sym *disallow_error )
     a_sym       *sym;
     a_sym       *has_min;
     a_pro       *pro;
-    unsigned    i;
+    sym_n       i;
     size_t      min_len;
     size_t      len;
 
@@ -495,7 +495,7 @@ static void propagateMin( a_sym *disallow_error )
 static void seedWithSimpleMin( void )
 {
     a_sym       *sym;
-    unsigned    i;
+    sym_n       i;
 
     /*
      * set terminals to their name and set nullable syms
@@ -515,7 +515,7 @@ static void seedWithSimpleMin( void )
 static void verifyAllHaveMin( void )
 {
     a_sym       *sym;
-    unsigned    i;
+    sym_n       i;
 
     for( i = 0; i < nsym; ++i ) {
         sym = symtab[i];

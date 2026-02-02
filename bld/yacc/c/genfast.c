@@ -360,6 +360,7 @@ void GenFastTables( FILE *fp )
     index_n     i;
     index_n     j;
     rule_n      k;
+    sym_n       m;
     index_n     asize;
     token_n     tokval;
     index_n     vsize;
@@ -392,8 +393,8 @@ void GenFastTables( FILE *fp )
 
     ntoken_term = FirstNonTerminalTokenValue();
     ntoken_all = ntoken_term;
-    for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken_all++;
+    for( m = nterm; m < nsym; ++m ) {
+        symtab[m]->token = ntoken_all++;
     }
 
     bvector = NULL;

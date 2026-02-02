@@ -124,6 +124,7 @@ void genobj( FILE *fp )
 {
     int i;
     rule_n j;
+    sym_n k;
     int ntoken;
     int this_token;
     int any_token;
@@ -146,8 +147,8 @@ void genobj( FILE *fp )
     short *state_base;
 
     ntoken = FirstNonTerminalTokenValue();
-    for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken++;
+    for( k = nterm; k < nsym; ++k ) {
+        symtab[k]->token = ntoken++;
     }
     any_token = ntoken;
     state_base = CALLOC( nstate, short );
@@ -245,8 +246,8 @@ void genobj( FILE *fp )
     end_table( fp );
     begin_table( fp, "char YYFAR *", "yytoknames" );
     fputc( '\n', fp );
-    for( i = 0; i < nsym; ++i ) {
-        fprintf( fp, "\"%s\",\n", symtab[i]->name );
+    for( k = 0; k < nsym; ++k ) {
+        fprintf( fp, "\"%s\",\n", symtab[k]->name );
     }
     fprintf( fp, "\"\"" );
     end_table( fp );

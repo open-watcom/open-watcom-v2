@@ -37,6 +37,7 @@
 #include "yaccins.h"
 #include "alloc.h"
 
+
 #define PROENTRY(x)     ((x)+1)
 
 #define ACCEPT          (-1)
@@ -46,15 +47,18 @@
 #define TOKENTRY(x)     (3*(x)+2+npro)
 #define OPTENTRY(x)     (3*(x)+3+npro)
 
-static int label;
-
 extern void emitins( unsigned, unsigned );
 extern void writeobj( int );
 
+static int      label;
+
 void genobj( FILE *fp )
 {
-    short *symbol, *target;
-    short *p, *q, *r;
+    sym_n *symbol;
+    sym_n *p;
+    sym_n *q;
+    sym_n *r;
+    short *target;
     short action;
     bitnum *mp;
     a_sym *sym;
@@ -66,23 +70,25 @@ void genobj( FILE *fp )
     int i;
     int j;
     rule_n k;
+    sym_n m;
     unsigned max_savings;
     unsigned savings;
 
-    for( i = nterm; i < nsym; ++i )
-        symtab[i]->token = i - nterm;
-
+    for( m = nterm; m < nsym; ++m ) {
+        symtab[m]->token = m - nterm;
+    }
     label = OPTENTRY( nstate - 1 );
 
     emitins( JMP, TOKENTRY( startstate->sidx ) );
 
-    target = CALLOC( nsym, short );
-    for( i = 0; i < nsym; ++i )
-        target[i] = DEFAULT;
-    symbol = CALLOC( nsym, short );
+    target = CALLOC( nsym, *target );
+    for( m = 0; m < nsym; ++m ) {
+        target[m] = DEFAULT;
+    }
+    symbol = CALLOC( nsym, *symbol );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        q = symbol;
+        r = q = symbol;
         for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             if( sym == eofsym ) {
                 action = ACCEPT;
@@ -124,9 +130,9 @@ void genobj( FILE *fp )
         emitins( LBL, OPTENTRY( state->sidx ) );
         emitins( CALL, VBLENTRY( state->sidx ) );
         q = symbol;
-        for( j = nterm; j < nsym; ++j ) {
-            if( target[j] != DEFAULT ) {
-                *q++ = j;
+        for( m = nterm; m < nsym; ++m ) {
+            if( target[m] != DEFAULT ) {
+                *q++ = m;
             }
         }
         if( q != symbol ) {
@@ -138,9 +144,9 @@ void genobj( FILE *fp )
         emitins( LBL, VBLENTRY( state->sidx ) );
 
         q = symbol;
-        for( j = 0; j < nterm; ++j ) {
-            if( target[j] != DEFAULT ) {
-                *q++ = j;
+        for( m = 0; m < nterm; ++m ) {
+            if( target[m] != DEFAULT ) {
+                *q++ = m;
             }
         }
         emitt( symbol, target, q - symbol, action );
@@ -167,11 +173,10 @@ void genobj( FILE *fp )
     writeobj( label + 1 );
 }
 
-static emitt( symbol, target, n, redun )
-  short *symbol, *target, redun;
-  unsigned n;
+static emitt( sym_n *symbol, short *target, sym_n n, short *redun )
 {
-    unsigned i, j;
+    sym_n       i;
+    sym_n       j;
 
     for( i = 0; i < n; ++i ) {
         j = symbol[i];
@@ -181,11 +186,9 @@ static emitt( symbol, target, n, redun )
     emitins( JMP, redun );
 }
 
-static emitv( symbol, target, n )
-  short *symbol, *target;
-  unsigned n;
+static emitv( sym_n *symbol, short *target, sym_n n )
 {
-    unsigned m;
+    sym_n m;
     int l1, l2;
 
     if( n == 1 ) {

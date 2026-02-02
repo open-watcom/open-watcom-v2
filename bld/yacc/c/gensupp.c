@@ -44,7 +44,7 @@ static char *tablename;
 
 token_n FirstNonTerminalTokenValue( void )
 {
-    index_n i;
+    sym_n   i;
     token_n j;
     token_n ntoken;
 
@@ -170,8 +170,8 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
 {
     unsigned rule_base;
     an_item *item;
-    unsigned i;
-    rule_n j;
+    rule_n i;
+    sym_n j;
 
     if( ! denseflag ) {
         return;
@@ -179,29 +179,29 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
     begtab( fp, "unsigned short", "yyrulebase" );
-    for( j = 0; j < npro; ++j ) {
-        for( item = protab[j]->items; item->p.sym != NULL; ) {
+    for( i = 0; i < npro; ++i ) {
+        for( item = protab[i]->items; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
-        rule_base += (unsigned)( item - protab[j]->items );
+        rule_base += (unsigned)( item - protab[i]->items );
     }
     endtab( fp );
     begtab( fp, "YYTOKENTYPE", "yyrhstoks" );
-    for( j = 0; j < npro; ++j ) {
-        for( item = protab[j]->items; item->p.sym != NULL; ++item ) {
+    for( i = 0; i < npro; ++i ) {
+        for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
             puttab( fp, token_size, item->p.sym->token );
         }
     }
     endtab( fp );
     begtab( fp, "char YYFAR *", "yytoknames" );
     fputc( '\n', fp );
-    for( i = 0; i < nsym; ++i ) {
-        if( dtoken != 0 && symtab[i]->token == dtoken ) {
+    for( j = 0; j < nsym; ++j ) {
+        if( dtoken != 0 && symtab[j]->token == dtoken ) {
             fprintf( fp, "\"$dtoken\",\n" );
             fprintf( fp, "\"$ptoken\",\n" );
         }
-        fprintf( fp, "\"%s\",\n", symtab[i]->name );
+        fprintf( fp, "\"%s\",\n", symtab[j]->name );
     }
     fprintf( fp, "\"\"" );
     endtab( fp );

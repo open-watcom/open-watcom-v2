@@ -222,7 +222,7 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
     short               default_action;
     short               todo;
     short               token;
-    int                 symnum;
+    sym_n               symnum;
     int                 switched;
 
     prolog( fp, statenum );
@@ -294,7 +294,7 @@ static void putambig( FILE *fp, int i, int state, int token )
 
 static void print_token( int token )
 {
-    int symnum;
+    sym_n   symnum;
 
     for( symnum = 0; symnum < nsym; ++symnum ) {
         if( symtab[symnum]->token == token ) {
@@ -322,7 +322,10 @@ void genobj( FILE *fp )
     a_state *state;
     a_shift_action *tx;
     a_reduce_action *rx;
-    int i, j, ntoken, dtoken, ptoken;
+    int i;
+    int j;
+    sym_n k;
+    int ntoken, dtoken, ptoken;
     unsigned num_default, num_parent;
     unsigned max_savings;
     unsigned savings;
@@ -331,8 +334,8 @@ void genobj( FILE *fp )
     ntoken = FirstNonTerminalTokenValue();
     dtoken = ntoken++;
     ptoken = ntoken++;
-    for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken++;
+    for( k = nterm; k < nsym; ++k ) {
+        symtab[k]->token = ntoken++;
     }
 
     error = nstate + npro;

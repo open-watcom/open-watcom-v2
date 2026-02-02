@@ -338,7 +338,7 @@ static void resolve( a_state *state, bitnum *work, a_reduce_action **reduce )
     a_reduce_action *rx;
     bitnum          *w;
     bitnum          *mp;
-    index_n         i;
+    sym_n           i;
     a_prec          symprec, proprec, prevprec;
 
 

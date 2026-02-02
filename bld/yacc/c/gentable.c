@@ -186,6 +186,7 @@ void genobj( FILE *fp )
     index_n     i;
     index_n     j;
     rule_n      k;
+    sym_n       m;
     unsigned    max_savings;
     unsigned    savings;
     unsigned    min_len;
@@ -210,8 +211,8 @@ void genobj( FILE *fp )
     ntoken = FirstNonTerminalTokenValue();
     dtoken = ntoken++;
     ptoken = ntoken++;
-    for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken++;
+    for( m = nterm; m < nsym; ++m ) {
+        symtab[m]->token = ntoken++;
     }
     actions = CALLOC( ntoken, action_n );
     error = nstate + npro;
