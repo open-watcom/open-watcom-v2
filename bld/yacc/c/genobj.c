@@ -96,7 +96,9 @@ void genobj( FILE *fp )
         }
         max_savings = 0;
         for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
-            if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
+            mp = Members( rx->follow );
+            savings = mp - setmembers;
+            if( savings == 0 )
                 continue;
             action = PROENTRY( pro->pidx );
             if( max_savings < savings ) {

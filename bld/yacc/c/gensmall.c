@@ -167,7 +167,8 @@ void genobj( FILE *fp )
         default_reduction = NULL;
         max_savings = 0;
         for( rx = state->redun; rx->pro != NULL; ++rx ) {
-            if( (savings = Members( rx->follow ) - setmembers) == 0 )
+            savings = Members( rx->follow ) - setmembers;
+            if( savings == 0 )
                 continue;
             if( max_savings < savings ) {
                 max_savings = savings;
