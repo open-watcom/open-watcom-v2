@@ -52,6 +52,59 @@ extern void writeobj( int );
 
 static int      label;
 
+static int newlabel( void )
+{
+    return( ++label );
+}
+
+static void emitt( sym_n *symbol, short *target, sym_n n, short *redun )
+{
+    sym_n       i;
+    sym_n       j;
+
+    for( i = 0; i < n; ++i ) {
+        j = symbol[i];
+        emitins( TCMP, symtab[j]->token );
+        emitins( JEQ, target[j] );
+    }
+    emitins( JMP, redun );
+}
+
+static void emitv( sym_n *symbol, short *target, sym_n n )
+{
+    sym_n m;
+    int l1, l2;
+
+    if( n == 1 ) {
+        emitins( JMP, target[symbol[0]] );
+    } else if( n != 0 ) {
+        m = n / 2;
+        n -= m + 1;
+        emitins( VCMP, symtab[symbol[m]]->token );
+        if( m == 1 ) {
+            emitins( JLT, target[symbol[0]] );
+        } else if( m != 0 ) {
+            l1 = newlabel();
+            emitins( JLT, l1 );
+        }
+        if( n == 1 ) {
+            emitins( JGT, target[symbol[m + 1]] );
+        } else if( n != 0 ) {
+            l2 = newlabel();
+            emitins( JGT, l2 );
+        }
+        emitins( JMP, target[symbol[m]] );
+        if( m > 1 ) {
+            emitins( LBL, l1 );
+            emitv( symbol, target, m );
+        }
+        if( n > 1 ) {
+            emitins( LBL, l2 );
+            emitv( &symbol[m + 1], target, n );
+        }
+    }
+}
+
 void genobj( FILE *fp )
 {
     sym_n *symbol;
@@ -171,57 +224,4 @@ void genobj( FILE *fp )
     }
 
     writeobj( label + 1 );
-}
-
-static emitt( sym_n *symbol, short *target, sym_n n, short *redun )
-{
-    sym_n       i;
-    sym_n       j;
-
-    for( i = 0; i < n; ++i ) {
-        j = symbol[i];
-        emitins( TCMP, symtab[j]->token );
-        emitins( JEQ, target[j] );
-    }
-    emitins( JMP, redun );
-}
-
-static emitv( sym_n *symbol, short *target, sym_n n )
-{
-    sym_n m;
-    int l1, l2;
-
-    if( n == 1 ) {
-        emitins( JMP, target[symbol[0]] );
-    } else if( n != 0 ) {
-        m = n / 2;
-        n -= m + 1;
-        emitins( VCMP, symtab[symbol[m]]->token );
-        if( m == 1 ) {
-            emitins( JLT, target[symbol[0]] );
-        } else if( m != 0 ) {
-            l1 = newlabel();
-            emitins( JLT, l1 );
-        }
-        if( n == 1 ) {
-            emitins( JGT, target[symbol[m + 1]] );
-        } else if( n != 0 ) {
-            l2 = newlabel();
-            emitins( JGT, l2 );
-        }
-        emitins( JMP, target[symbol[m]] );
-        if( m > 1 ) {
-            emitins( LBL, l1 );
-            emitv( symbol, target, m );
-        }
-        if( n > 1 ) {
-            emitins( LBL, l2 );
-            emitv( &symbol[m + 1], target, n );
-        }
-    }
-}
-
-static int newlabel( void )
-{
-    return( ++label );
 }

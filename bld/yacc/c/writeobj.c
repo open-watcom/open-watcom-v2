@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,9 @@
 #include "yacc.h"
 #include "yaccins.h"
 #include "alloc.h"
+
+
+#define BLOCK   512
 
 static FILE *tblout;
 
@@ -80,34 +84,13 @@ typedef struct an_ins {
 static an_ins *code;
 static unsigned codeused, codeavail;
 
-#define BLOCK   512
-
 static int *lbladdr;
 
-void writeobj( int maxlabel )
-{
-    tblout = fopen( "ytab.asm", "w" );
-    if( tblout == NULL ) {
-        msg( "cannot open 'ytab.asm'\n" );
-    }
-    fprintf( tblout, "INCLUDE ytabmac.inc\n" );
-    fprintf( tblout, "_TEXT\tSEGMENT\n" );
-    lbladdr = MALLOC( maxlabel, int );
-    calcaddr();
-    dumpcode();
-    fprintf( tblout, "_TEXT\tENDS\n" );
-    fprintf( tblout, "END\n" );
-    fclose( tblout );
-    FREE( code );
-    FREE( lbladdr );
-}
-
-
-static calcaddr( void )
+static void calcaddr( void )
 {
     an_ins *ins;
     unsigned j, insaddr;
-    
+
     insaddr = 0;
     for( j = 0; j < codeused; ++j ) {
         ins = &code[j];
@@ -117,27 +100,35 @@ static calcaddr( void )
     }
 }
 
-static dumpcode( void )
+static void dumpcode( void )
 {
     an_ins *ins;
     int offset;
     unsigned j;
-    
+
     fprintf( tblout, "L:" );
     for( j = 0; j < codeused; ++j ) {
         ins = &code[j];
         offset = ins->offset;
         fprintf( tblout, "\t%s", opstr[ins->opcode] );
         switch( ins->opcode ) {
-        case VCMP: case TCMP:
+        case VCMP:
+        case TCMP:
             if( isprint( offset ) && offset != '\'' && offset != '\\' ) {
                 fprintf( tblout, "\t'%c'", offset );
             } else {
                 fprintf( tblout, "\t%d", offset );
             }
             break;
-        case JLT: case JEQ: case JGT: case JLE: case JNE: case JGE: case JMP:
-        case LBL: case CALL:
+        case JLT:
+        case JEQ:
+        case JGT:
+        case JLE:
+        case JNE:
+        case JGE:
+        case JMP:
+        case LBL:
+        case CALL:
             if( offset > 0 ) {
                 fprintf( tblout, "\tL+%d", lbladdr[offset] );
             } else {
@@ -157,17 +148,7 @@ static dumpcode( void )
     }
 }
 
-void emitins( unsigned opcode, unsigned offset )
-{
-    an_ins *ins;
-
-    need( 1 );
-    ins = &code[codeused++];
-    ins->opcode = opcode;
-    ins->offset = offset;
-}
-
-static need( unsigned n )
+static void need( unsigned n )
 {
     if( codeused + n > codeavail ) {
         codeavail += BLOCK;
@@ -177,4 +158,32 @@ static need( unsigned n )
             code = MALLOC( codeavail, an_ins );
         }
     }
+}
+
+void writeobj( int maxlabel )
+{
+    tblout = fopen( "ytab.asm", "w" );
+    if( tblout == NULL ) {
+        msg( "cannot open 'ytab.asm'\n" );
+    }
+    fprintf( tblout, "INCLUDE ytabmac.inc\n" );
+    fprintf( tblout, "_TEXT\tSEGMENT\n" );
+    lbladdr = MALLOC( maxlabel, int );
+    calcaddr();
+    dumpcode();
+    fprintf( tblout, "_TEXT\tENDS\n" );
+    fprintf( tblout, "END\n" );
+    fclose( tblout );
+    FREE( code );
+    FREE( lbladdr );
+}
+
+void emitins( unsigned opcode, unsigned offset )
+{
+    an_ins *ins;
+
+    need( 1 );
+    ins = &code[codeused++];
+    ins->opcode = opcode;
+    ins->offset = offset;
 }
