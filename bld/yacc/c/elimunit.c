@@ -50,6 +50,7 @@ void dumpInternalState( a_state *state )
     size_t          col, new_col;
     bitnum          *mp;
     an_item         **item;
+    index_n         idx;
 
     printf( "state %d: %p (%u)\n", state->sidx, state, state->kersize );
     printf( "  parent states:" );
@@ -81,13 +82,14 @@ void dumpInternalState( a_state *state )
     col = 0;
     for( rx = state->redun; rx->pro != NULL; ++rx ) {
         for( mp = Members( rx->follow ); mp-- != setmembers; ) {
-            new_col = col + 1 + strlen( symtab[*mp]->name );
+            idx = *mp;
+            new_col = col + 1 + strlen( symtab[idx]->name );
             if( new_col > 79 ) {
                 putchar('\n');
                 new_col -= col;
             }
             col = new_col;
-            printf( " %s", symtab[*mp]->name );
+            printf( " %s", symtab[idx]->name );
         }
         new_col = col + 1 + 5;
         if( new_col > 79 ) {
@@ -104,10 +106,9 @@ void dumpInternalState( a_state *state )
 static a_state *findNewShiftState( a_state *state, a_sym *sym )
 {
     a_shift_action *saction;
-    a_sym *shift_sym;
 
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( shift_sym == sym ) {
+    for( saction = state->trans; saction->sym != NULL; ++saction ) {
+        if( saction->sym == sym ) {
             return( saction->state );
         }
     }
@@ -204,35 +205,30 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     return( new_raction );
 }
 
-static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_action *r )
+static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_action *raction )
 {
-    a_reduce_action *raction;
+    a_reduce_action *r;
     a_reduce_action *copy_raction;
 
     copy_raction = NULL;
-    for( raction = r; ; ++raction ) {
-        if( raction == remove ) {
-            copy_raction = remove;
-        } else {
-            if( copy_raction != NULL ) {
-                *copy_raction = *raction;
-                ++copy_raction;
-            }
-        }
-        if( raction->pro == NULL ) {
-            break;
+    for( r = raction; r->pro != NULL; ++r ) {
+        if( r == remove ) {
+            copy_raction = r;
+        } else if( copy_raction != NULL ) {
+            *copy_raction++ = *r;
         }
     }
-    return( r );
+    if( copy_raction != NULL ) {
+        *copy_raction = *r;
+    }
+    return( raction );
 }
 
 static a_sym *onlyOneReduction( a_state *state )
 {
     a_reduce_action *raction;
-    a_shift_action *saction;
     a_pro *pro;
     a_pro *save_pro;
-    a_sym *shift_sym;
 
     /*
      * We shouldn't kill ambiguous states because a user that has to deal
@@ -252,9 +248,7 @@ static a_sym *onlyOneReduction( a_state *state )
     /*
      * iterate over all shifts in the state
      */
-    saction = state->trans;
-    shift_sym = saction->sym;
-    if( shift_sym != NULL ) {
+    if( state->trans->sym != NULL ) {
         /*
          * state contains at least one shift
          */
@@ -314,15 +308,15 @@ static void removeParent( a_state *state, a_state *parent )
 static a_state *onlyShiftsOnTerminals( a_state *state )
 {
     a_shift_action *saction;
-    a_sym *shift_sym;
+    a_sym *sym;
 
     /*
      * If there are shifts on non-terminals then the unit reduction
      * is important because it moves to the correct state for more
      * reductions.  We cannot remove this unit reduction.
      */
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( shift_sym->pro != NULL ) {
+    for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+        if( sym->pro != NULL ) {
             return( NULL );
         }
     }
@@ -340,6 +334,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     a_word *follow;
     bitnum *mp;
     bool change_occurred;
+    index_n idx;
 
     /*
      * requirements:
@@ -356,7 +351,8 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     unit_lhs = pro->sym;
     change_occurred = false;
     for( mp = Members( follow ); mp-- != setmembers; ) {
-        term_sym = symtab[*mp];
+        idx = *mp;
+        term_sym = symtab[idx];
         check_state = NULL;
         for( parent = state->parents; parent != NULL; parent = parent->next ) {
             after_lhs_state = findNewShiftState( parent->state, unit_lhs );
@@ -381,7 +377,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
              * all shifts in *terminal ended up in the same state!
              */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
-            ClearBit( follow, *mp, WSIZE );
+            ClearBit( follow, idx, WSIZE );
             change_occurred = true;
             ++changeOccurred;
         }
@@ -490,7 +486,6 @@ static void tryElimination( a_state *state, a_word *reduce_set )
 static void tossSingleReduceStates( a_state *state )
 {
     a_shift_action *saction;
-    a_sym *shift_sym;
 
     if( IsDead( state ) ) {
         return;
@@ -498,7 +493,7 @@ static void tossSingleReduceStates( a_state *state )
     /*
      * iterate over all shifts in the state
      */
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
+    for( saction = state->trans; saction->sym != NULL; ++saction ) {
         if( saction->units_checked )
             continue;
         shiftToSingleReduce( state, saction );

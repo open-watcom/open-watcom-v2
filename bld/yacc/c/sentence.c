@@ -69,10 +69,9 @@ static void popTrace( traceback **h )
 static a_state *findNewShiftState( a_state *state, a_sym *sym )
 {
     a_shift_action  *saction;
-    a_sym           *shift_sym;
 
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( shift_sym == sym ) {
+    for( saction = state->trans; saction->sym != NULL; ++saction ) {
+        if( saction->sym == sym ) {
             return( saction->state );
         }
     }
@@ -136,26 +135,26 @@ static bool notInTraceback( traceback **h, a_sym *sym )
 static a_sym *findNewShiftSym( a_state *state, traceback **h )
 {
     a_shift_action  *saction;
-    a_sym           *shift_sym;
+    a_sym           *sym;
     an_item         **item;
 
     if( state->trans[0].sym != NULL && state->trans[1].sym == NULL ) {
-        shift_sym = state->trans[0].sym;
-        if( notInTraceback( h, shift_sym ) ) {
-            return( shift_sym );
+        sym = state->trans[0].sym;
+        if( notInTraceback( h, sym ) ) {
+            return( sym );
         }
     }
     for( item = state->items; *item != NULL; ++item ) {
-        shift_sym = terminalInKernel( *item );
-        if( shift_sym != NULL ) {
-            if( notInTraceback( h, shift_sym ) ) {
-                return( shift_sym );
+        sym = terminalInKernel( *item );
+        if( sym != NULL ) {
+            if( notInTraceback( h, sym ) ) {
+                return( sym );
             }
         }
     }
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( notInTraceback( h, shift_sym ) ) {
-            return( shift_sym );
+    for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+        if( notInTraceback( h, sym ) ) {
+            return( sym );
         }
     }
     return( NULL );

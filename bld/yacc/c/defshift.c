@@ -62,7 +62,7 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
     unsigned        i;
     freq_n          max;
     a_shift_action  *saction;
-    a_sym           *shift_sym;
+    a_sym           *sym;
     action_n        j;
     action_n        max_sidx;
 
@@ -83,10 +83,10 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
     /*
      * find shift state frequencies
      */
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( ! okToConsider( shift_sym ) )
+    for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+        if( !okToConsider( sym ) )
             continue;
-        all_used[shift_sym->token - keyword_id_low] = true;
+        all_used[sym->token - keyword_id_low] = true;
         ++state_freq[saction->state->sidx];
     }
     /*
@@ -116,8 +116,8 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
     /*
      * mark tokens used to shift to highest frequency state
      */
-    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( ! okToConsider( shift_sym ) )
+    for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+        if( !okToConsider( sym ) )
             continue;
         if( saction->state->sidx == max_sidx ) {
             saction->is_default = true;
