@@ -217,10 +217,14 @@ os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 $(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
     @%make echo_yacc
     $(noecho)$(yacc) $(win_yacc_options) $< >yw.out
+# comment out the next line during testing of grammar changes
+    diff yw.out ../y/yw.chk
 
 $(os2_yacc_file).c : ../y/rcos2.y ../y/yydrivr2.c
     @%make echo_yacc
     $(noecho)$(yacc) $(os2_yacc_options) $< >y2.out
+# comment out the next line during testing of grammar changes
+    diff y2.out ../y/y2.chk
 
 keywordw.gh : ../hash/rcwin.key
     @%make echo_findhash
