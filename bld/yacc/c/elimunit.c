@@ -45,8 +45,8 @@ static unsigned deadStates;
 void dumpInternalState( a_state *state )
 {
     a_parent        *parent;
-    a_shift_action  *tx;
-    a_reduce_action *rx;
+    a_shift_action  *saction;
+    a_reduce_action *raction;
     size_t          col, new_col;
     bitnum          *mp;
     an_item         **item;
@@ -69,19 +69,19 @@ void dumpInternalState( a_state *state )
     }
     printf( "actions:" );
     col = 8;
-    for( tx = state->trans; tx->sym != NULL; ++tx ) {
-        new_col = col + 1 + strlen( tx->sym->name ) + 1 + 1 + 3;
+    for( saction = state->trans; saction->sym != NULL; ++saction ) {
+        new_col = col + 1 + strlen( saction->sym->name ) + 1 + 1 + 3;
         if( new_col > 79 ) {
             putchar('\n');
             new_col -= col;
         }
         col = new_col;
-        printf( " %s:s%03d", tx->sym->name, tx->state->sidx );
+        printf( " %s:s%03d", saction->sym->name, saction->state->sidx );
     }
     putchar( '\n' );
     col = 0;
-    for( rx = state->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); mp-- != setmembers; ) {
+    for( raction = state->redun; raction->pro != NULL; ++raction ) {
+        for( mp = Members( raction->follow ); mp-- != setmembers; ) {
             idx = *mp;
             new_col = col + 1 + strlen( symtab[idx]->name );
             if( new_col > 79 ) {
@@ -97,7 +97,7 @@ void dumpInternalState( a_state *state )
             new_col -= col;
         }
         col = new_col;
-        printf( ":r%03d", rx->pro->pidx );
+        printf( ":r%03d", raction->pro->pidx );
     }
     putchar( '\n' );
 }

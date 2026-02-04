@@ -181,8 +181,8 @@ void genobj( FILE *fp )
     a_pro       *pro;
     an_item     *item;
     a_state     *state;
-    a_shift_action *tx;
-    a_reduce_action *rx;
+    a_shift_action *saction;
+    a_reduce_action *raction;
     index_n     i;
     index_n     j;
     rule_n      k;
@@ -238,13 +238,13 @@ void genobj( FILE *fp )
         --i;
         state = statetab[i];
         q = tokens;
-        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             *q++ = sym->token;
-            actions[sym->token] = tx->state->sidx;
+            actions[sym->token] = saction->state->sidx;
         }
         max_savings = 0;
-        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
-            mp = Members( rx->follow );
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
+            mp = Members( raction->follow );
             savings = mp - setmembers;
             if( savings == 0 )
                 continue;
@@ -283,18 +283,18 @@ void genobj( FILE *fp )
                 state = statetab[j];
                 p = test;
                 q = test + ntoken;
-                for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
-                    if( actions[sym->token] == tx->state->sidx ) {
+                for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+                    if( actions[sym->token] == saction->state->sidx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
                     }
                 }
-                for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
+                for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
                     redun = pro->pidx + nstate;
                     if( redun == other[j] )
                         redun = error;
-                    for( mp = Members( rx->follow ); mp-- != setmembers; ) {
+                    for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                         tokval = symtab[*mp]->token;
                         if( actions[tokval] == redun ) {
                             *p++ = tokval;

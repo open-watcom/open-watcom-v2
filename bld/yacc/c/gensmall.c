@@ -108,14 +108,14 @@ static void add_table( short token, short action )
 }
 
 
-static void dump_reduction( a_reduce_action *rx, unsigned *base )
+static void dump_reduction( a_reduce_action *raction, unsigned *base )
 {
     a_pro *pro;
     bitnum *mp;
 
-    pro = rx->pro;
-    for( mp = Members( rx->follow ); mp-- != setmembers; ) {
-        add_table( *mp, ACTION_REDUCE | pro->pidx );
+    pro = raction->pro;
+    for( mp = Members( raction->follow ); mp-- != setmembers; ) {
+        add_table( *mp, pro->pidx | ACTION_REDUCE );
         ++(*base);
     }
 }
@@ -133,9 +133,9 @@ void genobj( FILE *fp )
     bitnum *mp;
     a_pro *pro;
     a_state *state;
-    a_reduce_action *rx;
+    a_reduce_action *raction;
     a_reduce_action *default_reduction;
-    a_shift_action *tx;
+    a_shift_action *saction;
     a_sym *sym;
     an_item *item;
     unsigned max;
@@ -161,14 +161,14 @@ void genobj( FILE *fp )
     for( i = 0; i < nstate; ++i ) {
         state_base[i] = base;
         state = statetab[i];
-        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
-            add_table( sym->idx, ACTION_SHIFT | tx->state->sidx );
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+            add_table( sym->idx, saction->state->sidx | ACTION_SHIFT );
             ++base;
         }
         default_reduction = NULL;
         max_savings = 0;
-        for( rx = state->redun; rx->pro != NULL; ++rx ) {
-            savings = Members( rx->follow ) - setmembers;
+        for( raction = state->redun; raction->pro != NULL; ++raction ) {
+            savings = Members( raction->follow ) - setmembers;
             if( savings == 0 )
                 continue;
             if( max_savings < savings ) {
@@ -176,16 +176,16 @@ void genobj( FILE *fp )
                 if( default_reduction != NULL ) {
                     dump_reduction( default_reduction, &base );
                 }
-                default_reduction = rx;
+                default_reduction = raction;
             } else {
-                dump_reduction( rx, &base );
+                dump_reduction( raction, &base );
             }
         }
         if( default_reduction != NULL ) {
             pro = default_reduction->pro;
-            action = ACTION_REDUCE | pro->pidx;
+            action = pro->pidx | ACTION_REDUCE;
         } else {
-            action = ACTION_SHIFT | 0;
+            action = ACTION_SHIFT;
         }
         add_table( any_token, action );
         ++base;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,23 +36,23 @@
 #include "yaccins.h"
 #include "alloc.h"
 
-static int hasReduceByPro( a_state *state, a_pro *unit_pro )
+
+static bool hasReduceByPro( a_state *state, a_pro *pro )
 {
     a_reduce_action *raction;
-    a_pro *pro;
 
     if( IsDead( state ) ) {
-        return( 0 );
+        return( false );
     }
     /*
      * iterate over all reductions in state
      */
-    for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
-        if( pro->unit && pro == unit_pro ) {
-            return( 1 );
+    for( raction = state->redun; raction->pro != NULL; ++raction ) {
+        if( raction->pro == pro && pro->unit ) {
+            return( true );
         }
     }
-    return( 0 );
+    return( false );
 }
 
 static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )

@@ -140,8 +140,8 @@ static bool itemlt( void *_a, void *_b )
 static void Complete( a_state *state, an_item **s )
 {
     an_item         **p, **q;
-    a_reduce_action *rx;
-    a_shift_action  *tx;
+    a_reduce_action *raction;
+    a_shift_action  *saction;
     a_pro           *pro;
     index_n         n;
 
@@ -169,10 +169,10 @@ static void Complete( a_state *state, an_item **s )
     }
     n = (index_n)( p - s );
     nredun += n;
-    rx = CALLOC( n + 1, a_reduce_action );
-    state->redun = rx;
+    raction = CALLOC( n + 1, a_reduce_action );
+    state->redun = raction;
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
-        (rx++)->pro = (*p)[1].p.pro;
+        (raction++)->pro = (*p)[1].p.pro;
     }
     if( p == q ) {
         state->trans = CALLOC( 1, a_shift_action );
@@ -184,19 +184,19 @@ static void Complete( a_state *state, an_item **s )
                 ++n;
             }
         }
-        tx = CALLOC( n + 1, a_shift_action );
-        state->trans = tx;
+        saction = CALLOC( n + 1, a_shift_action );
+        state->trans = saction;
         do {
-            tx->sym = (*s)->p.sym;
-            if( tx->sym->pro != NULL ) {
+            saction->sym = (*s)->p.sym;
+            if( saction->sym->pro != NULL ) {
                 ++nvtrans;
             }
-            for( p = s; p < q && (*p)->p.sym == tx->sym; ++p ) {
+            for( p = s; p < q && (*p)->p.sym == saction->sym; ++p ) {
                 ++*p;
             }
-            tx->state = addState( &tx->sym->state, s, p, state );
+            saction->state = addState( &saction->sym->state, s, p, state );
             s = p;
-            ++tx;
+            ++saction;
         } while( s < q );
     }
 }
