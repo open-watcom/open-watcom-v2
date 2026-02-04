@@ -121,8 +121,8 @@ void genobj( FILE *fp )
     a_pro           *pro;
     an_item         *item;
     a_state         *state;
-    a_shift_action  *tx;
-    a_reduce_action *rx;
+    a_shift_action  *saction;
+    a_reduce_action *raction;
     int             i;
     rule_n          j;
     sym_n           sym_idx;
@@ -144,20 +144,20 @@ void genobj( FILE *fp )
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         r = q = symbol;
-        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym == eofsym ) {
                 action = ACCEPT;
             } else if( sym->idx < nterm ) {
-                action = TOKENTRY(tx->state->sidx);
+                action = TOKENTRY( saction->state->sidx );
             } else {
-                action = OPTENTRY(tx->state->sidx);
+                action = OPTENTRY( saction->state->sidx );
             }
             *q++ = sym->idx;
             target[sym->idx] = action;
         }
         max_savings = 0;
-        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
-            mp = Members( rx->follow );
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
+            mp = Members( raction->follow );
             savings = mp - setmembers;
             if( savings == 0 )
                 continue;

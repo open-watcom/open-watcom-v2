@@ -48,7 +48,8 @@ void dumpInternalState( a_state *state )
     a_parent        *parent;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    size_t          col, new_col;
+    size_t          col;
+    size_t          new_col;
     bitnum          *mp;
     an_item         **item;
     sym_n           sym_idx;
@@ -166,44 +167,35 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
     return( new_pro );
 }
 
-static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_action *s )
+static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_action *saction )
 {
-    a_shift_action  *saction;
-    a_shift_action  *new_saction;
+    a_shift_action  *s;
     size_t          i;
 
-    for( saction = s; saction->sym != NULL; ) {
-        ++saction;
-    }
-    i = saction - s;
-    new_saction = REALLOC( s, i + 2, a_shift_action );
-    memset( &new_saction[i], 0, sizeof( *new_saction ) * 2 );
-    new_saction[i].sym = sym;
-    new_saction[i].state = state;
-    new_saction[i + 1].sym = NULL;
-    new_saction[i + 1].state = NULL;
-    return( new_saction );
+    for( s = saction; s->sym != NULL; ++s ) {}  /* skip to last NULL item */
+    i = ( s - saction ) + 1;
+    saction = REALLOC( saction, i + 1, a_shift_action );
+    saction[i - 1].sym = sym;
+    saction[i - 1].state = state;
+    memset( &saction[i], 0, sizeof( *saction ) );
+    return( saction );
 }
 
-static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_action *r )
+static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_action *raction )
 {
-    a_reduce_action *raction;
-    a_reduce_action *new_raction;
+    a_reduce_action *r;
     a_word          *new_follow;
     size_t          i;
 
-    for( raction = r; raction->pro != NULL; ) {
-        ++raction;
-    }
-    i = raction - r;
+    for( r = raction; r->pro != NULL; ++r ) {}  /* skip to last NULL item */
+    i = ( r - raction ) + 1;
     new_follow = AllocSet( 1 );
     Assign( new_follow, follow );
-    new_raction = REALLOC( r, i + 2, a_reduce_action );
-    new_raction[i].pro = pro;
-    new_raction[i].follow = new_follow;
-    new_raction[i + 1].pro = NULL;
-    new_raction[i + 1].follow = NULL;
-    return( new_raction );
+    raction = REALLOC( raction, i + 1, a_reduce_action );
+    raction[i - 1].pro = pro;
+    raction[i - 1].follow = new_follow;
+    memset( &raction[i], 0, sizeof( *raction ) );
+    return( raction );
 }
 
 static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_action *raction )

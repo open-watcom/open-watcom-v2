@@ -182,7 +182,8 @@ static void Complete( a_state *state, an_item **s )
     raction = CALLOC( n + 1, a_reduce_action );
     state->redun = raction;
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
-        (raction++)->pro = (*p)[1].p.pro;
+        raction->pro = (*p)[1].p.pro;
+        ++raction;
     }
     if( p == q ) {
         state->trans = CALLOC( 1, a_shift_action );

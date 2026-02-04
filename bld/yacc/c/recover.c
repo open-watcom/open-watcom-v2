@@ -54,10 +54,10 @@ static AddError()
     a_state         *state;
     a_state         **s;
     a_state         **t;
-    a_shift_action  *tx;
+    a_shift_action  *saction;
     a_shift_action  *ty;
     a_shift_action  *trans;
-    a_reduce_action *rx;
+    a_reduce_action *raction;
     a_reduce_action *ry;
     a_reduce_action *redun;
     int             i;
@@ -67,10 +67,11 @@ static AddError()
     short           *at;
 
     trans = CALLOC( nsym, a_shift_action );
-    rx = redun = CALLOC( npro + 1, a_reduce_action );
+    raction = redun = CALLOC( npro + 1, a_reduce_action );
     rset = conflict = AllocSet( npro + 2 );
     for( i = 0; i <= npro; ++i ) {
-        (rx++)->follow = rset;
+        raction->follow = rset;
+        ++raction;
         rset += GetSetSize( 1 );
     }
     defined = rset;
@@ -94,16 +95,16 @@ static AddError()
             }
         }
         redun->pro = errpro;
-        rx = redun + 1;
+        raction = redun + 1;
         if( state != restart ) {
             while( xpro != NULL ) {
                 pro = xpro;
                 xpro = NULL;
-                Clear( rx->follow );
+                Clear( raction->follow );
                 for( i = 0; i < state->kersize; ++i ) {
                     ry = &state->name.state[i]->redun[at[i]];
                     if( ry->pro == pro ) {
-                        Union( rx->follow, ry->follow );
+                        Union( raction->follow, ry->follow );
                         ++(at[i]);
                         ++ry;
                     }
@@ -111,10 +112,10 @@ static AddError()
                         xpro = ry->pro;
                     }
                 }
-                UnionAnd( conflict, rx->follow, defined );
-                Union( defined, rx->follow );
-                rx->pro = pro;
-                ++rx;
+                UnionAnd( conflict, raction->follow, defined );
+                Union( defined, raction->follow );
+                raction->pro = pro;
+                ++raction;
             }
         }
         xsym = NULL;
@@ -125,7 +126,7 @@ static AddError()
                 xsym = sym;
             }
         }
-        tx = trans;
+        saction = trans;
         while( xsym != NULL ) {
             sym = xsym;
             xsym = NULL;
@@ -144,7 +145,7 @@ static AddError()
                     xsym = ty->sym;
                 }
             }
-            tx->sym = sym;
+            saction->sym = sym;
             if( sym->pro != NULL ) {
                 ++nvtrans;
             } else {
@@ -158,21 +159,21 @@ static AddError()
                     SetBit( defined, sym->id, WSIZE );
                 }
             }
-            tx->state = AddErrState( &errsym->enter, s, t );
-            ++tx;
+            saction->state = AddErrState( &errsym->enter, s, t );
+            ++saction;
         }
-        state->trans = CALLOC( tx - trans + 1, a_shift_action );
-        memcpy( state->trans, trans, (char *)tx - (char *)trans );
+        state->trans = CALLOC( ( saction - trans ) + 1, a_shift_action );
+        memcpy( state->trans, trans, ( saction - trans ) * sizeof( a_shift_action ) );
         if( Empty( conflict ) ) {
             redun->pro = NULL;
             i = 0;
         } else {
             i = 1;
         }
-        while( --rx > redun ) {
-            AndNot( rx->follow, conflict );
-            if( Empty( rx->follow ) ) {
-                rx->pro = NULL;
+        while( --raction > redun ) {
+            AndNot( raction->follow, conflict );
+            if( Empty( raction->follow ) ) {
+                raction->pro = NULL;
             } else {
                 ++i;
             }
@@ -180,16 +181,16 @@ static AddError()
         state->redun = CALLOC( i + 1, a_reduce_action );
         if( i > 0 ) {
             rset = AllocSet( i );
-            rx = redun;
+            raction = redun;
             while( i > 0 ) {
-                if( rx->pro != NULL ) {
+                if( raction->pro != NULL ) {
                     --i;
-                    state->redun[i].pro = rx->pro;
+                    state->redun[i].pro = raction->pro;
                     state->redun[i].follow = rset;
-                    Assign( rset, rx->follow );
+                    Assign( rset, raction->follow );
                     rset += GetSetSize( 1 );
                 }
-                ++rx;
+                ++raction;
             }
         }
     }

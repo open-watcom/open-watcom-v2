@@ -157,22 +157,22 @@ static a_state *unique_shift( a_pro *reduced )
 {
     a_state         *shift_to;
     a_state         *test;
-    a_shift_action  *tx;
+    a_shift_action  *saction;
     int             i;
 
     shift_to = NULL;
     for( i = 0; i < nstate; ++i ) {
         test = statetab[i];
-        for( tx = test->trans; tx->sym != NULL; ++tx ) {
-            if( tx->sym == reduced->sym ) {
+        for( saction = test->trans; saction->sym != NULL; ++saction ) {
+            if( saction->sym == reduced->sym ) {
                 /*
                  * Found something that uses this lhs
                  */
-                if( shift_to == NULL || shift_to == tx->state ) {
+                if( shift_to == NULL || shift_to == saction->state ) {
                     /*
                      * This is the first one or it matches the first one
                      */
-                    shift_to = tx->state;
+                    shift_to = saction->state;
                 } else {
                     return( NULL );     // Not unique
                 }
@@ -337,8 +337,8 @@ void genobj( FILE *fp )
     a_sym           *sym;
     a_pro           *pro;
     a_state         *state;
-    a_shift_action  *tx;
-    a_reduce_action *rx;
+    a_shift_action  *saction;
+    a_reduce_action *raction;
     int             i;
     int             j;
     sym_n           sym_idx;
@@ -377,14 +377,14 @@ void genobj( FILE *fp )
         }
         state = statetab[i];
         q = token;
-        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             tokval = sym->token;
             *q++ = tokval;
-            actions[tokval] = tx->state->sidx;
+            actions[tokval] = saction->state->sidx;
         }
         max_savings = 0;
-        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
-            mp = Members( rx->follow );
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
+            mp = Members( raction->follow );
             savings = mp - setmembers;
             if( savings == 0 )
                 continue;
@@ -429,8 +429,8 @@ void genobj( FILE *fp )
             state = statetab[j];
             p = test;
             q = test + ntoken;
-            for( tx = state->trans; (sym = tx->sym) != NULL; ++tx )
-                if( actions[sym->token] == tx->state->sidx ) {
+            for( saction = state->trans; (sym = saction->sym) != NULL; ++saction )
+                if( actions[sym->token] == saction->state->sidx ) {
                     ++savings;
                     *p++ = sym->token;
                 } else {
@@ -438,11 +438,11 @@ void genobj( FILE *fp )
                         --savings;
                     *--q = sym->token;
                 }
-            for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
+            for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
                 if( (redun = pro->pidx + nstate) == other[j] )
                     redun = error;
                 redun = pro->pidx + nstate;
-                for( mp = Members( rx->follow ); mp-- != setmembers; ) {
+                for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                     sym_idx = *mp;
                     tokval = symtab[sym_idx]->token;
                     if( actions[tokval] == redun ) {
