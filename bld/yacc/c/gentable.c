@@ -186,7 +186,7 @@ void genobj( FILE *fp )
     index_n     i;
     index_n     j;
     rule_n      k;
-    sym_n       m;
+    sym_n       sym_idx;
     unsigned    max_savings;
     unsigned    savings;
     unsigned    min_len;
@@ -207,8 +207,8 @@ void genobj( FILE *fp )
     ntoken = FirstNonTerminalTokenValue();
     dtoken = ntoken++;
     ptoken = ntoken++;
-    for( m = nterm; m < nsym; ++m ) {
-        symtab[m]->token = ntoken++;
+    for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+        symtab[sym_idx]->token = ntoken++;
     }
     actions = CALLOC( ntoken, action_n );
     error = nstate + npro;
@@ -250,7 +250,8 @@ void genobj( FILE *fp )
                 r = q;
             }
             while( mp-- != setmembers ) {
-                tokval = symtab[*mp]->token;
+                sym_idx = *mp;
+                tokval = symtab[sym_idx]->token;
                 *q++ = tokval;
                 actions[tokval] = redun;
             }
@@ -291,7 +292,8 @@ void genobj( FILE *fp )
                     if( redun == other[j] )
                         redun = error;
                     for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-                        tokval = symtab[*mp]->token;
+                        sym_idx = *mp;
+                        tokval = symtab[sym_idx]->token;
                         if( actions[tokval] == redun ) {
                             *p++ = tokval;
                         } else {

@@ -51,7 +51,7 @@ void buildpro( void )
     a_sym       *rhs[2];
     a_pro       *pro;
     an_item     *item;
-    sym_n       i;
+    sym_n       sym_idx;
     sym_n       j;
 
     if( startsym == NULL ) {
@@ -85,7 +85,7 @@ void buildpro( void )
     nsym = nterm + nvble;
     symtab = CALLOC( nsym, a_sym * );
     protab = CALLOC( npro, a_pro * );
-    i = 0;
+    sym_idx = 0;
     j = 0;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
         if( sym->pro != NULL ) {
@@ -94,7 +94,7 @@ void buildpro( void )
                 protab[pro->pidx] = pro;
             }
         } else {
-            sym->idx = i++;
+            sym->idx = sym_idx++;
         }
         symtab[sym->idx] = sym;
     }

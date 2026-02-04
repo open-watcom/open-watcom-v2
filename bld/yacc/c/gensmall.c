@@ -110,10 +110,12 @@ static void dump_reduction( a_reduce_action *raction, unsigned *base )
 {
     a_pro *pro;
     bitnum *mp;
+    short idx;
 
     pro = raction->pro;
     for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-        add_table( *mp, pro->pidx | ACTION_REDUCE );
+        idx = *mp;
+        add_table( idx, pro->pidx | ACTION_REDUCE );
         ++(*base);
     }
 }
@@ -124,11 +126,8 @@ void genobj( FILE *fp )
     rule_n j;
     sym_n sym_idx;
     int ntoken;
-    int this_token;
     int any_token;
     int action;
-    short *p;
-    bitnum *mp;
     a_pro *pro;
     a_state *state;
     a_reduce_action *raction;
@@ -213,10 +212,10 @@ void genobj( FILE *fp )
     end_table( fp );
     begin_table( fp, "YYPLENTYPE", "yyplentab" );
     for( j = 0; j < npro; ++j ) {
-        for( item = protab[j]->item; item->p.sym != NULL; ) {
+        for( item = protab[j]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[j]->item ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[j]->items ) );
     }
     end_table( fp );
     begin_table( fp, "YYPLHSTYPE", "yyplhstab" );
@@ -228,16 +227,16 @@ void genobj( FILE *fp )
     rule_base = 0;
     begin_table( fp, "unsigned short", "yyrulebase" );
     for( j = 0; j < npro; ++j ) {
-        for( item = protab[j]->item; item->p.sym != NULL; ) {
+        for( item = protab[j]->items; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
-        rule_base += (int)( item - protab[j]->item );
+        rule_base += (int)( item - protab[j]->items );
     }
     end_table( fp );
     begin_table( fp, "YYCHKTYPE", "yyrhstoks" );
     for( j = 0; j < npro; ++j ) {
-        for( item = protab[j]->item; item->p.sym != NULL; ++item ) {
+        for( item = protab[j]->items; item->p.sym != NULL; ++item ) {
             puttab( fp, FITS_A_BYTE, item->p.sym->token );
         }
     }

@@ -44,15 +44,15 @@ static char *tablename;
 
 token_n FirstNonTerminalTokenValue( void )
 {
-    sym_n   i;
-    token_n j;
+    sym_n   sym_idx;
+    token_n tokval;
     token_n ntoken;
 
     ntoken = 0;
-    for( i = 0; i < nterm; ++i ) {
-        j = symtab[i]->token;
-        if( j > ntoken ) {
-            ntoken = j;
+    for( sym_idx = 0; sym_idx < nterm; ++sym_idx ) {
+        tokval = symtab[sym_idx]->token;
+        if( ntoken < tokval ) {
+            ntoken = tokval;
         }
     }
     if( nterm > 0 ) {
@@ -171,7 +171,7 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     unsigned rule_base;
     an_item *item;
     rule_n i;
-    sym_n j;
+    sym_n sym_idx;
 
     if( ! denseflag ) {
         return;
@@ -196,12 +196,12 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     endtab( fp );
     begtab( fp, "char YYFAR *", "yytoknames" );
     fputc( '\n', fp );
-    for( j = 0; j < nsym; ++j ) {
-        if( dtoken != 0 && symtab[j]->token == dtoken ) {
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        if( dtoken != 0 && symtab[sym_idx]->token == dtoken ) {
             fprintf( fp, "\"$dtoken\",\n" );
             fprintf( fp, "\"$ptoken\",\n" );
         }
-        fprintf( fp, "\"%s\",\n", symtab[j]->name );
+        fprintf( fp, "\"%s\",\n", symtab[sym_idx]->name );
     }
     fprintf( fp, "\"\"" );
     endtab( fp );

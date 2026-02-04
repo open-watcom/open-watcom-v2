@@ -359,6 +359,7 @@ void genobj_fast( FILE *fp )
     index_n     j;
     rule_n      k;
     sym_n       m;
+    sym_n       sym_idx;
     index_n     asize;
     token_n     tokval;
     index_n     vsize;
@@ -391,8 +392,8 @@ void genobj_fast( FILE *fp )
 
     ntoken_term = FirstNonTerminalTokenValue();
     ntoken_all = ntoken_term;
-    for( m = nterm; m < nsym; ++m ) {
-        symtab[m]->token = ntoken_all++;
+    for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+        symtab[sym_idx]->token = ntoken_all++;
     }
 
     bvector = NULL;
@@ -429,7 +430,8 @@ void genobj_fast( FILE *fp )
             if( state->default_reduction == raction )
                 continue;
             for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-                tokval = symtab[*mp]->token;
+                sym_idx = *mp;
+                tokval = symtab[sym_idx]->token;
                 SetBit( state_vector, tokval, 8 );
             }
         }
@@ -468,7 +470,8 @@ void genobj_fast( FILE *fp )
                 continue;
             }
             for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-                state_actions[symtab[*mp]->token] = reduceaction( state, raction );
+                sym_idx = *mp;
+                state_actions[symtab[sym_idx]->token] = reduceaction( state, raction );
             }
         }
     }

@@ -178,7 +178,7 @@ void writeobj( int maxlabel )
     FREE( lbladdr );
 }
 
-void emitins( unsigned opcode, unsigned offset )
+void emitins( short opcode, short offset )
 {
     an_ins *ins;
 

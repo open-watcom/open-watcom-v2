@@ -350,7 +350,7 @@ static void resolve( a_state *state, bitnum *work, a_reduce_action **reduce )
     a_reduce_action *raction;
     bitnum          *w;
     bitnum          *mp;
-    index_n         idx;
+    sym_n           sym_idx;
     a_prec          symprec;
     a_prec          proprec;
     a_prec          prevprec;
@@ -359,16 +359,16 @@ static void resolve( a_state *state, bitnum *work, a_reduce_action **reduce )
     w = work;
     for( raction = state->redun; raction->pro != NULL; ++raction ) {
         for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-            idx = *mp;
-            if( reduce[idx] != NULL ) {
-                prevprec = reduce[idx]->pro->prec;
+            sym_idx = *mp;
+            if( reduce[sym_idx] != NULL ) {
+                prevprec = reduce[sym_idx]->pro->prec;
                 proprec = raction->pro->prec;
                 if( prevprec.prec == 0 || proprec.prec == 0 || prevprec.prec == proprec.prec ) {
-                    *w++ = idx;
+                    *w++ = sym_idx;
                     /*
                      * resolve to the earliest production
                      */
-                    if( raction->pro->pidx >= reduce[idx]->pro->pidx ) {
+                    if( raction->pro->pidx >= reduce[sym_idx]->pro->pidx ) {
                         continue;
                     }
                 } else if( prevprec.prec > proprec.prec ) {
@@ -378,65 +378,65 @@ static void resolve( a_state *state, bitnum *work, a_reduce_action **reduce )
                     continue;
                 }
             }
-            reduce[idx] = raction;
+            reduce[sym_idx] = raction;
         }
     }
     while( w-- != work ) {
-        idx = *w;
-        if( symtab[idx]->token == errsym->token )
+        sym_idx = *w;
+        if( symtab[sym_idx]->token == errsym->token )
             continue;
-        printf( "r/r conflict in state %d on %s:\n", state->sidx, symtab[idx]->name);
+        printf( "r/r conflict in state %d on %s:\n", state->sidx, symtab[sym_idx]->name);
         ++RR_conflicts;
         for( raction = state->redun; raction->pro != NULL; ++raction ) {
-            if( IsBitSet( raction->follow, idx, WSIZE ) ) {
+            if( IsBitSet( raction->follow, sym_idx, WSIZE ) ) {
                 showitem( raction->pro->items, "" );
             }
         }
         printf( "\n" );
         for( raction = state->redun; raction->pro != NULL; ++raction ) {
-            if( IsBitSet( raction->follow, idx, WSIZE ) ) {
-                ShowSentence( state, symtab[idx], raction->pro, NULL );
+            if( IsBitSet( raction->follow, sym_idx, WSIZE ) ) {
+                ShowSentence( state, symtab[sym_idx], raction->pro, NULL );
             }
         }
         printf( "---\n\n" );
     }
     ux = state->trans;
     for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
-        idx = sym->idx;
-        if( idx >= nterm || reduce[idx] == NULL ) {
+        sym_idx = sym->idx;
+        if( sym_idx >= nterm || reduce[sym_idx] == NULL ) {
             *ux++ = *saction;
         } else {
             /*
              * shift/reduce conflict detected
              */
-            check_for_user_hooks( state, saction, reduce[idx]->pro->pidx );
+            check_for_user_hooks( state, saction, reduce[sym_idx]->pro->pidx );
             symprec = sym->prec;
-            proprec = reduce[idx]->pro->prec;
+            proprec = reduce[sym_idx]->pro->prec;
             if( symprec.prec == 0 || proprec.prec == 0 ) {
                 if( sym != errsym ) {
                     printf( "s/r conflict in state %d on %s:\n", state->sidx, sym->name );
                     ++SR_conflicts;
                     printf( "\tshift to %d\n", saction->state->sidx );
-                    showitem( reduce[idx]->pro->items, "" );
+                    showitem( reduce[sym_idx]->pro->items, "" );
                     printf( "\n" );
-                    ShowSentence( state, sym, reduce[idx]->pro, NULL );
+                    ShowSentence( state, sym, reduce[sym_idx]->pro, NULL );
                     ShowSentence( state, sym, NULL, saction->state );
                     printf( "---\n\n" );
                 }
                 *ux++ = *saction;
-                reduce[idx] = NULL;
+                reduce[sym_idx] = NULL;
             } else if( symprec.prec > proprec.prec ) {
                 *ux++ = *saction;
-                reduce[idx] = NULL;
+                reduce[sym_idx] = NULL;
             } else if( symprec.prec == proprec.prec ) {
                 if( symprec.assoc == R_ASSOC ) {
                     *ux++ = *saction;
-                    reduce[idx] = NULL;
+                    reduce[sym_idx] = NULL;
                 } else if( symprec.assoc == NON_ASSOC ) {
                     ux->sym = sym;
                     ux->state = errstate;
                     ++ux;
-                    reduce[idx] = NULL;
+                    reduce[sym_idx] = NULL;
                 }
             }
         }
@@ -445,10 +445,10 @@ static void resolve( a_state *state, bitnum *work, a_reduce_action **reduce )
     for( raction = state->redun; raction->pro != NULL; ++raction ) {
         Clear( raction->follow );
     }
-    for( idx = 0; idx < nterm; ++idx ) {
-        if( reduce[idx] != NULL ) {
-            SetBit( reduce[idx]->follow, idx, WSIZE );
-            reduce[idx] = NULL;
+    for( sym_idx = 0; sym_idx < nterm; ++sym_idx ) {
+        if( reduce[sym_idx] != NULL ) {
+            SetBit( reduce[sym_idx]->follow, sym_idx, WSIZE );
+            reduce[sym_idx] = NULL;
         }
     }
 }
@@ -566,6 +566,7 @@ void showstate( a_state *state )
     an_item         **item;
     a_pro           *pro;
     a_sym           *sym;
+    sym_n           sym_idx;
 
     printf( "state %d:\n", state->sidx );
     col = printf( "  parent states:" );
@@ -595,13 +596,14 @@ void showstate( a_state *state )
     col = 0;
     for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
         for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-            new_col = col + 1 + strlen( symtab[*mp]->name );
+            sym_idx = *mp;
+            new_col = col + 1 + strlen( symtab[sym_idx]->name );
             if( new_col > 79 ) {
                 putchar('\n');
                 new_col -= col;
             }
             col = new_col;
-            printf( " %s", symtab[*mp]->name );
+            printf( " %s", symtab[sym_idx]->name );
         }
         new_col = col + 1 + 5;
         if( new_col > 79 ) {

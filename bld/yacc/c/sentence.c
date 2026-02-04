@@ -460,14 +460,14 @@ static void propagateMin( a_sym *disallow_error )
     a_sym       *sym;
     a_sym       *has_min;
     a_pro       *pro;
-    sym_n       i;
+    sym_n       sym_idx;
     size_t      min_len;
     size_t      len;
 
     do {
         last = NULL;
-        for( i = 0; i < nsym; ++i ) {
-            sym = symtab[i];
+        for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+            sym = symtab[sym_idx];
             if( sym->min == NULL ) {
                 min_len = (size_t)-1;
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
@@ -494,13 +494,13 @@ static void propagateMin( a_sym *disallow_error )
 static void seedWithSimpleMin( void )
 {
     a_sym       *sym;
-    sym_n       i;
+    sym_n       sym_idx;
 
     /*
      * set terminals to their name and set nullable syms
      */
-    for( i = 0; i < nsym; ++i ) {
-        sym = symtab[i];
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        sym = symtab[sym_idx];
         if( sym->pro != NULL ) {
             if( sym->nullable ) {
                 sym->min = STRDUP( "" );
@@ -514,10 +514,10 @@ static void seedWithSimpleMin( void )
 static void verifyAllHaveMin( void )
 {
     a_sym       *sym;
-    sym_n       i;
+    sym_n       sym_idx;
 
-    for( i = 0; i < nsym; ++i ) {
-        sym = symtab[i];
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        sym = symtab[sym_idx];
         if( sym->min == NULL ) {
             printf( "%s has no minimum expansion! (mutually recursive?)\n", sym->name );
             setMinToName( sym );

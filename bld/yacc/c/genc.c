@@ -39,7 +39,7 @@
 #include "alloc.h"
 
 
-static void putnum( FILE *fp, char *name, int i )
+void putnum( FILE *fp, char *name, int i )
 {
     fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
@@ -69,17 +69,16 @@ static void preamble( FILE *fp )
 
 static void prolog( FILE *fp, int i )
 {
-    a_name              name;
-    a_state             *state;
+    an_item         **item;
 
     fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
-    state = statetab[i];
-    for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
-        showitem( fp, *name.item, " ." );
+    for( item = statetab[i]->items; *item != NULL; ++item ) {
+        showitem( *item, " ." );
     }
     fprintf( fp, "*/\n{\n" );
 }
 
+#if 0
 static void copyact( a_pro *pro, char *indent )
 {
     char        *s;
@@ -93,7 +92,7 @@ static void copyact( a_pro *pro, char *indent )
     if( pro->action == NULL )
         return;   // Default action is noop
     lhs = pro->sym;
-    rhs = pro->item;
+    rhs = pro->items;
     fprintf( fp, "%s/* %s <-", indent, lhs->name );
     for( n = 0; rhs[n].p.sym != NULL; ++n ) {
         fprintf( fp, " %s", rhs[n].p.sym->name );
@@ -149,6 +148,7 @@ static void copyact( a_pro *pro, char *indent )
     }
     fprintf( fp, "\n%s};\n", indent );
 }
+#endif
 
 static a_state *unique_shift( a_pro *reduced )
 /*********************************************
@@ -194,13 +194,15 @@ static void reduce( FILE *fp, int production, int error )
     } else {
         production -= nstate;           // Convert to 0 base
         pro = protab[production];
-        for( item = pro->item, plen = 0; item->p.sym != NULL; ++item ) {
+        for( item = pro->items, plen = 0; item->p.sym != NULL; ++item ) {
             ++plen;
         }
         if( plen != 0 ) {
             fprintf( fp, "\tyysp -= %d;\n", plen );
         }
+#if 0
         copyact( pro, "\t" );
+#endif
 //        fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
             fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
@@ -222,7 +224,7 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
     short               default_action;
     short               todo;
     short               token;
-    sym_n               symnum;
+    sym_n               sym_idx;
     int                 switched;
 
     prolog( fp, statenum );
@@ -239,17 +241,17 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
                 switched = true;
             }
 
-            for( symnum = 0; symnum < nsym; ++symnum ) {
-                if( symtab[symnum]->token == token ) {
+            for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+                if( symtab[sym_idx]->token == token ) {
                     break;
                 }
             }
-            if( symnum == nsym ) {
+            if( sym_idx == nsym ) {
                 fprintf( fp, "    case %d:\n", token );
-            } else if( symtab[symnum]->name[0] == '\'' ) {
-                fprintf( fp, "    case %s:\n", symtab[symnum]->name );
+            } else if( symtab[sym_idx]->name[0] == '\'' ) {
+                fprintf( fp, "    case %s:\n", symtab[sym_idx]->name );
             } else {
-                fprintf( fp, "    case %d: /* %s */\n", token, symtab[symnum]->name );
+                fprintf( fp, "    case %d: /* %s */\n", token, symtab[sym_idx]->name );
             }
             if( todo >= nstate ) {
                 /*
@@ -276,16 +278,17 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
          */
         fprintf( fp, "\treturn( state%d( yysp, token ) );\n", todo );
     } else if( default_action != 0 ) {
-        reduce( default_action, error );
+        reduce( fp, default_action, error );
     } else {
         fprintf( fp, "\treturn( ERROR );\n" );
     }
     if( switched ) {
         fprintf( fp, "    }\n    return( SHIFT );\n" );
     }
-    epilog();
+    epilog( fp );
 }
 
+#if 0
 static void putambig( FILE *fp, int i, int state, int token )
 {
     fprintf( fp, "#define\tYYAMBIGS%u\t\t%d\n", i, state );
@@ -294,23 +297,29 @@ static void putambig( FILE *fp, int i, int state, int token )
 
 static void print_token( int token )
 {
-    sym_n   symnum;
+    sym_n   sym_idx;
 
-    for( symnum = 0; symnum < nsym; ++symnum ) {
-        if( symtab[symnum]->token == token ) {
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        if( symtab[sym_idx]->token == token ) {
             break;
         }
     }
-    if( symnum == nsym ) {
+    if( sym_idx == nsym ) {
         printf( " %d", token );
     } else {
-        printf( " %s", symtab[symnum]->name );
+        printf( " %s", symtab[sym_idx]->name );
     }
 }
+#endif
 
 void genobj( FILE *fp )
 {
-    short *token, *actions, *base, *other, *parent, *size;
+    short *token;
+    short *actions;
+//    short *base;
+    short *other;
+    short *parent;
+    short *size;
     short *p, *q, *r, *s;
     short error, tokval, redun, *test, *best;
 #if 1
@@ -324,7 +333,7 @@ void genobj( FILE *fp )
     a_reduce_action *rx;
     int i;
     int j;
-    sym_n k;
+    sym_n sym_idx;
     int ntoken, dtoken, ptoken;
     unsigned num_default, num_parent;
     unsigned max_savings;
@@ -334,8 +343,8 @@ void genobj( FILE *fp )
     ntoken = FirstNonTerminalTokenValue();
     dtoken = ntoken++;
     ptoken = ntoken++;
-    for( k = nterm; k < nsym; ++k ) {
-        symtab[k]->token = ntoken++;
+    for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+        symtab[sym_idx]->token = ntoken++;
     }
 
     error = nstate + npro;
@@ -347,7 +356,7 @@ void genobj( FILE *fp )
     token = CALLOC( ntoken, short );
     test = CALLOC( ntoken, short );
     best = CALLOC( ntoken, short );
-    base = CALLOC( nstate, short );
+//    base = CALLOC( nstate, short );
     other = CALLOC( nstate, short );
     parent = CALLOC( nstate, short );
     size = CALLOC( nstate, short );
@@ -375,7 +384,8 @@ void genobj( FILE *fp )
             }
             protab[pro->pidx]->used = true;
             while( mp-- != setmembers ) {
-                tokval = symtab[*mp]->token;
+                sym_idx = *mp;
+                tokval = symtab[sym_idx]->token;
                 *q++ = tokval;
                 actions[tokval] = redun;
             }
@@ -422,7 +432,8 @@ void genobj( FILE *fp )
                     redun = error;
                 redun = pro->pidx + nstate;
                 for( mp = Members( rx->follow ); mp-- != setmembers; ) {
-                    tokval = symtab[*mp]->token;
+                    sym_idx = *mp;
+                    tokval = symtab[sym_idx]->token;
                     if( actions[tokval] == redun ) {
                         ++savings;
                         *p++ = tokval;
@@ -490,9 +501,13 @@ void genobj( FILE *fp )
             actions[*s] = error;
         }
     }
+#if 0
     for( i = 0; i < nambig; ++i ) {
         putambig( fp, i, base[ambiguities[i].state], ambiguities[i].token );
     }
+#else
+    putambigs( fp, NULL );
+#endif
     putnum( fp, "YYNOACTION", error - nstate + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );

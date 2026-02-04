@@ -47,7 +47,7 @@
 #define TOKENTRY(x)     (3*(x)+2+npro)
 #define OPTENTRY(x)     (3*(x)+3+npro)
 
-extern void emitins( unsigned, unsigned );
+extern void emitins( short, short );
 extern void writeobj( int );
 
 static int      label;
@@ -57,15 +57,15 @@ static int newlabel( void )
     return( ++label );
 }
 
-static void emitt( sym_n *symbol, short *target, sym_n n, short *redun )
+static void emitt( sym_n *symbol, short *target, sym_n n, short redun )
 {
     sym_n       i;
-    sym_n       j;
+    sym_n       sym_idx;
 
     for( i = 0; i < n; ++i ) {
-        j = symbol[i];
-        emitins( TCMP, symtab[j]->token );
-        emitins( JEQ, target[j] );
+        sym_idx = symbol[i];
+        emitins( TCMP, symtab[sym_idx]->token );
+        emitins( JEQ, target[sym_idx] );
     }
     emitins( JMP, redun );
 }
@@ -80,6 +80,8 @@ static void emitv( sym_n *symbol, short *target, sym_n n )
     } else if( n != 0 ) {
         m = n / 2;
         n -= m + 1;
+        l1 = 0;
+        l2 = 0;
         emitins( VCMP, symtab[symbol[m]]->token );
         if( m == 1 ) {
             emitins( JLT, target[symbol[0]] );
@@ -121,24 +123,23 @@ void genobj( FILE *fp )
     a_shift_action *tx;
     a_reduce_action *rx;
     int i;
-    int j;
-    rule_n k;
-    sym_n m;
+    rule_n j;
+    sym_n sym_idx;
     unsigned max_savings;
     unsigned savings;
 
-    for( m = nterm; m < nsym; ++m ) {
-        symtab[m]->token = m - nterm;
+    for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+        symtab[sym_idx]->token = sym_idx - nterm;
     }
     label = OPTENTRY( nstate - 1 );
 
     emitins( JMP, TOKENTRY( startstate->sidx ) );
 
-    target = CALLOC( nsym, *target );
-    for( m = 0; m < nsym; ++m ) {
-        target[m] = DEFAULT;
+    target = CALLOC( nsym, short );
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        target[sym_idx] = DEFAULT;
     }
-    symbol = CALLOC( nsym, *symbol );
+    symbol = CALLOC( nsym, sym_n );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         r = q = symbol;
@@ -183,9 +184,9 @@ void genobj( FILE *fp )
         emitins( LBL, OPTENTRY( state->sidx ) );
         emitins( CALL, VBLENTRY( state->sidx ) );
         q = symbol;
-        for( m = nterm; m < nsym; ++m ) {
-            if( target[m] != DEFAULT ) {
-                *q++ = m;
+        for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+            if( target[sym_idx] != DEFAULT ) {
+                *q++ = sym_idx;
             }
         }
         if( q != symbol ) {
@@ -197,9 +198,9 @@ void genobj( FILE *fp )
         emitins( LBL, VBLENTRY( state->sidx ) );
 
         q = symbol;
-        for( m = 0; m < nterm; ++m ) {
-            if( target[m] != DEFAULT ) {
-                *q++ = m;
+        for( sym_idx = 0; sym_idx < nterm; ++sym_idx ) {
+            if( target[sym_idx] != DEFAULT ) {
+                *q++ = sym_idx;
             }
         }
         emitt( symbol, target, q - symbol, action );
@@ -211,15 +212,15 @@ void genobj( FILE *fp )
     FREE( target );
     FREE( symbol );
 
-    for( k = 0; k < npro; ++k ) {
-        pro = protab[k];
+    for( j = 0; j < npro; ++j ) {
+        pro = protab[j];
         if( pro != startpro ) {
-            for( item = pro->item; item->p.sym != NULL; ) {
+            for( item = pro->items; item->p.sym != NULL; ) {
                 ++item;
             }
             emitins( LBL, PROENTRY( pro->pidx ) );
-            emitins( ACTION, PROPACK( item - pro->item, k ) );
-            emitins( REDUCE, PROPACK( item - pro->item, pro->sym->token ) );
+            emitins( ACTION, PROPACK( item - pro->items, j ) );
+            emitins( REDUCE, PROPACK( item - pro->items, pro->sym->token ) );
         }
     }
 

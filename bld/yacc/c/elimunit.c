@@ -50,7 +50,7 @@ void dumpInternalState( a_state *state )
     size_t          col, new_col;
     bitnum          *mp;
     an_item         **item;
-    index_n         idx;
+    sym_n           sym_idx;
 
     printf( "state %d: %p (%u)\n", state->sidx, state, state->kersize );
     printf( "  parent states:" );
@@ -82,14 +82,14 @@ void dumpInternalState( a_state *state )
     col = 0;
     for( raction = state->redun; raction->pro != NULL; ++raction ) {
         for( mp = Members( raction->follow ); mp-- != setmembers; ) {
-            idx = *mp;
-            new_col = col + 1 + strlen( symtab[idx]->name );
+            sym_idx = *mp;
+            new_col = col + 1 + strlen( symtab[sym_idx]->name );
             if( new_col > 79 ) {
                 putchar('\n');
                 new_col -= col;
             }
             col = new_col;
-            printf( " %s", symtab[idx]->name );
+            printf( " %s", symtab[sym_idx]->name );
         }
         new_col = col + 1 + 5;
         if( new_col > 79 ) {
@@ -334,7 +334,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     a_word *follow;
     bitnum *mp;
     bool change_occurred;
-    index_n idx;
+    sym_n sym_idx;
 
     /*
      * requirements:
@@ -351,8 +351,8 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     unit_lhs = pro->sym;
     change_occurred = false;
     for( mp = Members( follow ); mp-- != setmembers; ) {
-        idx = *mp;
-        term_sym = symtab[idx];
+        sym_idx = *mp;
+        term_sym = symtab[sym_idx];
         check_state = NULL;
         for( parent = state->parents; parent != NULL; parent = parent->next ) {
             after_lhs_state = findNewShiftState( parent->state, unit_lhs );
@@ -377,7 +377,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
              * all shifts in *terminal ended up in the same state!
              */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
-            ClearBit( follow, idx, WSIZE );
+            ClearBit( follow, sym_idx, WSIZE );
             change_occurred = true;
             ++changeOccurred;
         }
