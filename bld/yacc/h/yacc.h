@@ -296,6 +296,7 @@ extern void     putcomment( FILE *fp, char *comment );
 extern rule_n   npro;    /* # of productions */
 extern sym_n    nsym;    /* # of symbols */
 extern sym_n    nterm;   /* # of terminals */
+extern sym_n    nvble;   /* # of non-terminals */
 extern index_n  nitem;   /* # of LR(0) items */
 
 extern index_n  nbstate;
