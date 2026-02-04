@@ -61,11 +61,11 @@ static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
  * that results in a GOTO into an ambiguous state.
  */
 {
-    a_sym *unit_rhs;
-    a_parent *parent;
-    a_state *parent_state;
-    a_state *shift_state;
-    a_shift_action *saction;
+    a_sym           *unit_rhs;
+    a_parent        *parent;
+    a_state         *parent_state;
+    a_state         *shift_state;
+    a_shift_action  *saction;
 
     unit_rhs = pro->items[0].p.sym;
     for( parent = ambig_state->parents; parent != NULL; parent = parent->next ) {
@@ -83,10 +83,10 @@ static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
 
 static a_sym *findEntrySym( a_state *state )
 {
-    a_state *parent_state;
-    a_parent *parent;
-    a_state *shift_state;
-    a_shift_action *saction;
+    a_state         *parent_state;
+    a_parent        *parent;
+    a_state         *shift_state;
+    a_shift_action  *saction;
 
     parent = state->parents;
     if( parent == NULL ) {
@@ -104,10 +104,10 @@ static a_sym *findEntrySym( a_state *state )
 
 void MarkNoUnitRuleOptimizationStates( void )
 {
-    int i;
-    a_sym *entry_sym;
-    a_state *state;
-    a_pro *pro;
+    int             i;
+    a_sym           *entry_sym;
+    a_state         *state;
+    a_pro           *pro;
 
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];

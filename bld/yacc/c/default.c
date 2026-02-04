@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,19 +39,20 @@
 #include "yaccins.h"
 #include "alloc.h"
 
+
 void MarkDefaultReductions( void )
 /********************************/
 {
-    a_pro *pro;
-    a_state *state;
+    a_pro           *pro;
+    a_state         *state;
     a_reduce_action *raction;
     a_reduce_action *default_raction;
-    a_shift_action *saction;
-    unsigned i;
-    unsigned max_tokens;
-    unsigned count_tokens;
-    unsigned nshifts;
-    unsigned nreduces;
+    a_shift_action  *saction;
+    unsigned        i;
+    unsigned        max_tokens;
+    unsigned        count_tokens;
+    unsigned        nshifts;
+    unsigned        nreduces;
 
     for( i = 0; i < nstate; ++i ) {
         /*

@@ -59,10 +59,10 @@ typedef struct compressed_action {
 
 static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n size )
 {
-    index_n     i;
-    index_n     s;
-    index_n     ls;
-    byte        *p;
+    index_n         i;
+    index_n         s;
+    index_n         ls;
+    byte            *p;
 
     if( *bv == NULL ) {
         *bs = size;
@@ -105,9 +105,10 @@ static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n siz
 
 static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions, token_n ntoken )
 {
-    action_n    a1, a2;
-    index_n     i;
-    token_n     ca_token;
+    action_n        a1;
+    action_n        a2;
+    index_n         i;
+    token_n         ca_token;
 
     for( i = 0; i < num_actions; ++ca, ++i ) {
         ca_token = ca->token;
@@ -130,7 +131,7 @@ static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions
 
 static void actcpy( action_n *actions, compressed_action *ca, index_n num_actions )
 {
-    index_n i;
+    index_n         i;
 
     for( i = 0; i < num_actions; ++ca, ++i ) {
         actions[ca->token] = ca->action;
@@ -139,7 +140,7 @@ static void actcpy( action_n *actions, compressed_action *ca, index_n num_action
 
 static action_n *actextend( action_n *a, index_n *psize, token_n incr )
 {
-    index_n i;
+    index_n         i;
 
     i = *psize;
     *psize += incr;
@@ -156,8 +157,8 @@ static action_n *actextend( action_n *a, index_n *psize, token_n incr )
 
 static index_n actcompress( compressed_action *ca, action_n *actions, token_n ntoken )
 {
-    token_n     token;
-    index_n     num_actions;
+    token_n         token;
+    index_n         num_actions;
 
     num_actions = 0;
     for( token = 0; token < ntoken; ++token ) {
@@ -173,11 +174,11 @@ static index_n actcompress( compressed_action *ca, action_n *actions, token_n nt
 static index_n insertIntoActionVector( action_n **bv, index_n *bs,
         compressed_action *ca, index_n num_actions, token_n ntoken )
 {
-    index_n  i;
-    index_n  s;
-    index_n  ls;
-    action_n action;
-    action_n *p;
+    index_n         i;
+    index_n         s;
+    index_n         ls;
+    action_n        action;
+    action_n        *p;
 
     if( num_actions == 0 ) {
         /*
@@ -237,8 +238,8 @@ static index_n insertIntoActionVector( action_n **bv, index_n *bs,
 
 static action_n reduceaction( a_state *state, a_reduce_action *raction )
 {
-    action_n    action;
-    a_pro       *pro;
+    action_n        action;
+    a_pro           *pro;
 
     action = ACTION_REDUCE;
     pro = raction->pro;
@@ -254,15 +255,23 @@ static action_n reduceaction( a_state *state, a_reduce_action *raction )
 
 static int cmp_action( const void *a1, const void *a2 )
 {
-    av_info **p1 = (av_info **)a1;
-    av_info **p2 = (av_info **)a2;
-    av_info *s1 = *p1;
-    av_info *s2 = *p2;
-    token_n n1, n2;
-    token_n ne1, ne2;
-    token_n mx1, mx2;
-    token_n mn1, mn2;
+    av_info         **p1;
+    av_info         **p2;
+    av_info         *s1;
+    av_info         *s2;
+    token_n         n1;
+    token_n         n2;
+    token_n         ne1;
+    token_n         ne2;
+    token_n         mx1;
+    token_n         mx2;
+    token_n         mn1;
+    token_n         mn2;
 
+    p1 = (av_info **)a1;
+    p2 = (av_info **)a2;
+    s1 = *p1;
+    s2 = *p2;
     ne1 = s1->num_entries;
     ne2 = s2->num_entries;
     mx1 = s1->max;
@@ -308,15 +317,15 @@ static int cmp_action( const void *a1, const void *a2 )
 
 static action_n *orderActionVectors( action_n **av, token_n ntoken )
 {
-    av_info **a;
-    av_info *p;
-    action_n *actions;
-    index_n num_entries;
-    token_n max;
-    token_n min;
-    token_n token;
-    action_n i;
-    action_n *map;
+    av_info         **a;
+    av_info         *p;
+    action_n        *actions;
+    index_n         num_entries;
+    token_n         max;
+    token_n         min;
+    token_n         token;
+    action_n        i;
+    action_n        *map;
 
     a = MALLOC( nstate, av_info * );
     for( i = 0; i < nstate; ++i ) {
@@ -355,40 +364,39 @@ static action_n *orderActionVectors( action_n **av, token_n ntoken )
 
 void genobj_fast( FILE *fp )
 {
-    index_n     i;
-    index_n     j;
-    rule_n      k;
-    sym_n       m;
-    sym_n       sym_idx;
-    index_n     asize;
-    token_n     tokval;
-    index_n     vsize;
-    index_n     bsize;
-    action_n    *mapping;
-    value_size  bitv_base_size;
-    byte        *state_vector;
-    byte        *bvector;
+    index_n         i;
+    index_n         j;
+    rule_n          k;
+    sym_n           m;
+    sym_n           sym_idx;
+    index_n         asize;
+    token_n         tokval;
+    index_n         vsize;
+    index_n         bsize;
+    action_n        *mapping;
+    value_size      bitv_base_size;
+    byte            *state_vector;
+    byte            *bvector;
     compressed_action *ca;
-    index_n     num_actions;
-    bitnum      *mp;
-    index_n     *base;
-    index_n     *abase;
-    index_n     *gbase;
-    action_n    *state_actions;
-    action_n    *avector;
-    action_n    **all_actions;
-    a_state     *state;
-    a_shift_action *saction;
+    index_n         num_actions;
+    bitnum          *mp;
+    index_n         *base;
+    index_n         *abase;
+    index_n         *gbase;
+    action_n        *state_actions;
+    action_n        *avector;
+    action_n        **all_actions;
+    a_state         *state;
+    a_shift_action  *saction;
     a_reduce_action *raction;
-    a_sym       *sym;
-    a_pro       *pro;
-    an_item     *item;
-    index_n     empty_actions;
-    action_n    *defaction;
-    action_n    state_sidx;
-    token_n     ntoken_term;
-    token_n     ntoken_all;
-
+    a_sym           *sym;
+    a_pro           *pro;
+    an_item         *item;
+    index_n         empty_actions;
+    action_n        *defaction;
+    action_n        state_sidx;
+    token_n         ntoken_term;
+    token_n         ntoken_all;
 
     ntoken_term = FirstNonTerminalTokenValue();
     ntoken_all = ntoken_term;

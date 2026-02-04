@@ -81,15 +81,17 @@ typedef struct an_ins {
     short           offset;
 } an_ins;
 
-static an_ins *code;
-static unsigned codeused, codeavail;
+static an_ins       *code;
+static unsigned     codeused;
+static unsigned     codeavail;
 
-static int *lbladdr;
+static int          *lbladdr;
 
 static void calcaddr( void )
 {
-    an_ins *ins;
-    unsigned j, insaddr;
+    an_ins          *ins;
+    unsigned        j;
+    unsigned        insaddr;
 
     insaddr = 0;
     for( j = 0; j < codeused; ++j ) {
@@ -102,9 +104,9 @@ static void calcaddr( void )
 
 static void dumpcode( void )
 {
-    an_ins *ins;
-    int offset;
-    unsigned j;
+    an_ins          *ins;
+    int             offset;
+    unsigned        j;
 
     fprintf( tblout, "L:" );
     for( j = 0; j < codeused; ++j ) {
@@ -180,7 +182,7 @@ void writeobj( int maxlabel )
 
 void emitins( short opcode, short offset )
 {
-    an_ins *ins;
+    an_ins          *ins;
 
     need( 1 );
     ins = &code[codeused++];

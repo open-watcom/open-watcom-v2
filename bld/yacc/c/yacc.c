@@ -39,42 +39,42 @@
 #include "walloca.h"
 
 
-FILE *yaccin;
-char *loadpath;
-char *srcname_norm = NULL;
-char *codefilename;
-char *headerfilename;
-char *descfilename;
+FILE    *yaccin;
+char    *loadpath;
+char    *srcname_norm = NULL;
+char    *codefilename;
+char    *headerfilename;
+char    *descfilename;
 
-char *symprefix = "yy";
+char    *symprefix = "yy";
 
-char param_requested;
+char    param_requested;
 
 index_n RR_conflicts;
 index_n SR_conflicts;
 index_n nstate_1_reduce;
 
-bool lineflag           = false;
-bool bigflag            = false;
-bool fastflag           = false;
-bool denseflag          = false;
-bool enumflag           = false;
-bool default_shiftflag  = false;
-bool compactflag        = false;
-bool showflag           = false;
-bool translateflag      = false;
-bool defaultwarnflag    = true;
+bool    lineflag           = false;
+bool    bigflag            = false;
+bool    fastflag           = false;
+bool    denseflag          = false;
+bool    enumflag           = false;
+bool    default_shiftflag  = false;
+bool    compactflag        = false;
+bool    showflag           = false;
+bool    translateflag      = false;
+bool    defaultwarnflag    = true;
 
-static bool eliminateunitflag   = false;
-static bool verbosefileflag     = false;
-static bool headerfileflag      = true;
-static bool proflag             = false;
+static bool     eliminateunitflag   = false;
+static bool     verbosefileflag     = false;
+static bool     headerfileflag      = true;
+static bool     proflag             = false;
 
-static int warnings = 0;
+static int      warnings = 0;
 
 static FILE *openr( char *filename )
 {
-    FILE *file;
+    FILE            *file;
 
     file = fopen( filename, "r" );
     if( file == NULL ) {
@@ -85,7 +85,7 @@ static FILE *openr( char *filename )
 
 static FILE *openw( char *filename )
 {
-    FILE *file;
+    FILE            *file;
 
     file = fopen( filename, "w+" );
     if( file == NULL ) {
@@ -156,7 +156,7 @@ static void setoptions( char *p )
 
 void warn( char *fmt, ... )
 {
-    va_list args;
+    va_list         args;
 
     printf( "Warning! " );
     va_start( args, fmt );
@@ -167,7 +167,7 @@ void warn( char *fmt, ... )
 
 void msg( char *fmt, ... )
 {
-    va_list args;
+    va_list         args;
 
     printf( "Error! " );
     va_start( args, fmt );
@@ -178,7 +178,7 @@ void msg( char *fmt, ... )
 
 void srcinfo_warn( char *fmt, ... )
 {
-    va_list args;
+    va_list         args;
 
     printf( "%s(%d): ", srcname_norm, lineno );
     printf( "Warning! " );
@@ -190,7 +190,7 @@ void srcinfo_warn( char *fmt, ... )
 
 void srcinfo_msg( char *fmt, ... )
 {
-    va_list args;
+    va_list         args;
 
     printf( "%s(%d): ", srcname_norm, lineno );
     printf( "Error! " );
@@ -202,7 +202,7 @@ void srcinfo_msg( char *fmt, ... )
 
 void dumpstatistic( char *name, unsigned stat )
 {
-    size_t len;
+    size_t          len;
 
     len = strlen( name );
     printf( "%s:", name );
@@ -215,7 +215,7 @@ void dumpstatistic( char *name, unsigned stat )
 
 void copy_part( FILE *fi, FILE *fo )
 {
-    int ch;
+    int             ch;
 
     while( (ch = fgetc( fi )) != '\f' && ch != EOF ) {
         fputc( ch, fo );
@@ -224,7 +224,7 @@ void copy_part( FILE *fi, FILE *fo )
 
 void copy_rest( FILE *fi, FILE *fo )
 {
-    int ch;
+    int             ch;
 
     while( (ch = fgetc( fi )) != EOF ) {
         fputc( ch, fo );
@@ -233,9 +233,9 @@ void copy_rest( FILE *fi, FILE *fo )
 
 static char *fname_normalize( char *name )
 {
-    char    c;
-    char    *p;
-    char    *dst;
+    char            c;
+    char            *p;
+    char            *dst;
 
     p = dst = MALLOC( strlen( name ) + 1, char );
     while( (c = *name++) != '\0' ) {
@@ -249,16 +249,16 @@ static char *fname_normalize( char *name )
 
 int main( int argc, char **argv )
 {
-    int     i;
-    FILE    *skeleton;
-    FILE    *temp1;
-    FILE    *temp2;
-    FILE    *tokout;
-    FILE    *actout;
-    int     ch;
-    char    *srcname;
-    char    *fileprefix = "y";
-    size_t  size;
+    int             i;
+    FILE            *skeleton;
+    FILE            *temp1;
+    FILE            *temp2;
+    FILE            *tokout;
+    FILE            *actout;
+    int             ch;
+    char            *srcname;
+    char            *fileprefix = "y";
+    size_t          size;
 
     MemInit();
     param_requested = 0;

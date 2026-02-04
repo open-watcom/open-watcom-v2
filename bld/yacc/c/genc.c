@@ -46,7 +46,7 @@ void putnum( FILE *fp, char *name, int i )
 
 static void preamble( FILE *fp )
 {
-    int         i;
+    int             i;
 
     putnum( fp, "SHIFT", -1 );
     putnum( fp, "ERROR", -2 );
@@ -81,13 +81,13 @@ static void prolog( FILE *fp, int i )
 #if 0
 static void copyact( a_pro *pro, char *indent )
 {
-    char        *s;
-    char        *type;
-    int         i;
-    a_sym       *lhs;
-    an_item     *rhs;
-    unsigned    n;
-    int         only_default_type;
+    char            *s;
+    char            *type;
+    int             i;
+    a_sym           *lhs;
+    an_item         *rhs;
+    unsigned        n;
+    int             only_default_type;
 
     if( pro->action == NULL )
         return;   // Default action is noop
@@ -155,10 +155,10 @@ static a_state *unique_shift( a_pro *reduced )
  * See if there is a unique shift when this state is reduced
  */
 {
-    a_state             *shift_to;
-    a_state             *test;
-    a_shift_action      *tx;
-    int                 i;
+    a_state         *shift_to;
+    a_state         *test;
+    a_shift_action  *tx;
+    int             i;
 
     shift_to = NULL;
     for( i = 0; i < nstate; ++i ) {
@@ -184,10 +184,10 @@ static a_state *unique_shift( a_pro *reduced )
 
 static void reduce( FILE *fp, int production, int error )
 {
-    int                 plen;
-    an_item             *item;
-    a_pro               *pro;
-    a_state             *shift_to;
+    int             plen;
+    an_item         *item;
+    a_pro           *pro;
+    a_state         *shift_to;
 
     if( production == error ) {
         fprintf( fp, "\treturn( ERROR );\n" );
@@ -221,11 +221,11 @@ static void epilog( FILE *fp )
 static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *actions,
                         short default_token, short parent_token, short error )
 {
-    short               default_action;
-    short               todo;
-    short               token;
-    sym_n               sym_idx;
-    int                 switched;
+    short           default_action;
+    short           todo;
+    short           token;
+    sym_n           sym_idx;
+    int             switched;
 
     prolog( fp, statenum );
     default_action = 0;
@@ -297,7 +297,7 @@ static void putambig( FILE *fp, int i, int state, int token )
 
 static void print_token( int token )
 {
-    sym_n   sym_idx;
+    sym_n           sym_idx;
 
     for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
         if( symtab[sym_idx]->token == token ) {
@@ -314,30 +314,41 @@ static void print_token( int token )
 
 void genobj( FILE *fp )
 {
-    short *token;
-    short *actions;
-//    short *base;
-    short *other;
-    short *parent;
-    short *size;
-    short *p, *q, *r, *s;
-    short error, tokval, redun, *test, *best;
+    short           *token;
+    short           *actions;
+//    short           *base;
+    short           *other;
+    short           *parent;
+    short           *size;
+    short           *p;
+    short           *q;
+    short           *r;
+    short           *s;
+    short           error;
+    short           tokval;
+    short           redun;
+    short           *test;
+    short           *best;
 #if 1
-    short *same, *diff;
+    short           *same;
+    short           *diff;
 #endif
-    bitnum *mp;
-    a_sym *sym;
-    a_pro *pro;
-    a_state *state;
-    a_shift_action *tx;
+    bitnum          *mp;
+    a_sym           *sym;
+    a_pro           *pro;
+    a_state         *state;
+    a_shift_action  *tx;
     a_reduce_action *rx;
-    int i;
-    int j;
-    sym_n sym_idx;
-    int ntoken, dtoken, ptoken;
-    unsigned num_default, num_parent;
-    unsigned max_savings;
-    unsigned savings;
+    int             i;
+    int             j;
+    sym_n           sym_idx;
+    int             ntoken;
+    int             dtoken;
+    int             ptoken;
+    unsigned        num_default;
+    unsigned        num_parent;
+    unsigned        max_savings;
+    unsigned        savings;
 
     num_default = num_parent = 0;
     ntoken = FirstNonTerminalTokenValue();

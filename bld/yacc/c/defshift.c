@@ -41,10 +41,10 @@
 
 typedef unsigned    freq_n;
 
-unsigned keyword_id_low;
-unsigned keyword_id_high;
-unsigned nStates;
-unsigned nActions;
+unsigned    keyword_id_low;
+unsigned    keyword_id_high;
+unsigned    nStates;
+unsigned    nActions;
 
 static bool okToConsider( a_sym *sym )
 {
@@ -129,10 +129,10 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
 void MarkDefaultShifts( void )
 /****************************/
 {
-    unsigned range_size;
-    freq_n *state_freq;
-    bool *all_used;
-    int i;
+    unsigned        range_size;
+    freq_n          *state_freq;
+    bool            *all_used;
+    int             i;
 
     state_freq = MALLOC( nstate, freq_n );
     range_size = ( keyword_id_high - keyword_id_low ) + 1;

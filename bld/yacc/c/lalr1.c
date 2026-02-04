@@ -41,7 +41,8 @@
 
 #define INFINITY        (unsigned short)-1
 
-static a_look **stk, **top;
+static a_look       **stk;
+static a_look       **top;
 
 static void Reads( a_look *x )
 {
@@ -82,8 +83,8 @@ static void Reads( a_look *x )
 
 static void CalcReads( void )
 {
-    a_state     *state;
-    a_look      *p;
+    a_state         *state;
+    a_look          *p;
 
     for( state = statelist; state != NULL; state = state->next ) {
         for( p = state->look; p->trans != NULL; ++p ) {
@@ -96,10 +97,10 @@ static void CalcReads( void )
 
 static void Nullable( void )
 {
-    a_sym       *sym;
-    a_pro       *pro;
-    an_item     *p;
-    bool        nullable_added;
+    a_sym           *sym;
+    a_pro           *pro;
+    an_item         *p;
+    bool            nullable_added;
 
     for( sym = symlist; sym != NULL; sym = sym->next ) {
         sym->nullable = false;
@@ -161,10 +162,12 @@ static void CalcIncludes( void )
     a_state         *state;
     a_state         *state1;
     a_shift_action  *saction;
-    a_look          *p, *q;
+    a_look          *p;
+    a_look          *q;
     a_sym           *sym;
     a_pro           *pro;
-    an_item         *nullable, *item;
+    an_item         *nullable;
+    an_item         *item;
     a_link          *free;
 
     for( state = statelist; state != NULL; state = state->next ) {
@@ -259,17 +262,17 @@ static a_pro *extract_pro( an_item *p )
 
 static void check_for_user_hooks( a_state *state, a_shift_action *saction, index_n rule )
 {
-    bool                min_max_set;
-    bool                all_match;
-    conflict_id         min_id;
-    conflict_id         max_id;
-    conflict_id         id;
-    an_item             **item;
-    a_pro               *pro;
-    a_SR_conflict       *conflict;
-    a_SR_conflict       *last_conflict;
-    a_SR_conflict_list  *cx;
-    a_sym               *sym;
+    bool            min_max_set;
+    bool            all_match;
+    conflict_id     min_id;
+    conflict_id     max_id;
+    conflict_id     id;
+    an_item         **item;
+    a_pro           *pro;
+    a_SR_conflict   *conflict;
+    a_SR_conflict   *last_conflict;
+    a_SR_conflict_list *cx;
+    a_sym           *sym;
 
     if( state->kersize < 2 ) {
         return;
@@ -499,9 +502,12 @@ void lalr1( void )
     a_state         *state;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    a_look          *lk, *look;
-    a_word          *lp, *lset;
-    a_word          *rp, *rset;
+    a_look          *lk;
+    a_look          *look;
+    a_word          *lp;
+    a_word          *lset;
+    a_word          *rp;
+    a_word          *rset;
 
     InitSets( nterm );
     lp = lset = AllocSet( nvtrans );
@@ -548,7 +554,7 @@ void lalr1( void )
 
 void showstates( void )
 {
-    int         i;
+    int             i;
 
     for( i = 0; i < nstate; ++i ) {
         printf( "\n" );
@@ -561,7 +567,8 @@ void showstate( a_state *state )
     a_parent        *parent;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    size_t          col, new_col;
+    size_t          col;
+    size_t          new_col;
     bitnum          *mp;
     an_item         **item;
     a_pro           *pro;

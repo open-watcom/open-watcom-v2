@@ -38,8 +38,9 @@
 #include "yaccins.h"
 #include "alloc.h"
 
-static unsigned changeOccurred;
-static unsigned deadStates;
+
+static unsigned     changeOccurred;
+static unsigned     deadStates;
 
 #if 0
 void dumpInternalState( a_state *state )
@@ -105,7 +106,7 @@ void dumpInternalState( a_state *state )
 
 static a_state *findNewShiftState( a_state *state, a_sym *sym )
 {
-    a_shift_action *saction;
+    a_shift_action  *saction;
 
     for( saction = state->trans; saction->sym != NULL; ++saction ) {
         if( saction->sym == sym ) {
@@ -117,13 +118,13 @@ static a_state *findNewShiftState( a_state *state, a_sym *sym )
 
 static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
 {
-    a_pro *test_pro;
-    a_pro *new_pro;
-    a_sym *old_lhs;
-    a_state *parent_state;
-    a_state *new_state;
-    a_parent *parent;
-    a_parent *split_parent;
+    a_pro           *test_pro;
+    a_pro           *new_pro;
+    a_sym           *old_lhs;
+    a_state         *parent_state;
+    a_state         *new_state;
+    a_parent        *parent;
+    a_parent        *split_parent;
     a_reduce_action *raction;
 
     split_parent = NULL;
@@ -167,9 +168,9 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
 
 static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_action *s )
 {
-    a_shift_action *saction;
-    a_shift_action *new_saction;
-    size_t i;
+    a_shift_action  *saction;
+    a_shift_action  *new_saction;
+    size_t          i;
 
     for( saction = s; saction->sym != NULL; ) {
         ++saction;
@@ -188,8 +189,8 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
 {
     a_reduce_action *raction;
     a_reduce_action *new_raction;
-    a_word *new_follow;
-    size_t i;
+    a_word          *new_follow;
+    size_t          i;
 
     for( raction = r; raction->pro != NULL; ) {
         ++raction;
@@ -227,8 +228,8 @@ static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_ac
 static a_sym *onlyOneReduction( a_state *state )
 {
     a_reduce_action *raction;
-    a_pro *pro;
-    a_pro *save_pro;
+    a_pro           *pro;
+    a_pro           *save_pro;
 
     /*
      * We shouldn't kill ambiguous states because a user that has to deal
@@ -284,8 +285,8 @@ static a_sym *onlyOneReduction( a_state *state )
 
 static void removeParent( a_state *state, a_state *parent )
 {
-    a_parent **prev;
-    a_parent *curr;
+    a_parent        **prev;
+    a_parent        *curr;
 
     if( state->parents == NULL ) {
         return;
@@ -307,8 +308,8 @@ static void removeParent( a_state *state, a_state *parent )
 
 static a_state *onlyShiftsOnTerminals( a_state *state )
 {
-    a_shift_action *saction;
-    a_sym *sym;
+    a_shift_action  *saction;
+    a_sym           *sym;
 
     /*
      * If there are shifts on non-terminals then the unit reduction
@@ -325,16 +326,16 @@ static a_state *onlyShiftsOnTerminals( a_state *state )
 
 static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro )
 {
-    a_sym *unit_lhs;
-    a_sym *term_sym;
-    a_state *after_lhs_state;
-    a_state *final_state;
-    a_state *check_state;
-    a_parent *parent;
-    a_word *follow;
-    bitnum *mp;
-    bool change_occurred;
-    sym_n sym_idx;
+    a_sym           *unit_lhs;
+    a_sym           *term_sym;
+    a_state         *after_lhs_state;
+    a_state         *final_state;
+    a_state         *check_state;
+    a_parent        *parent;
+    a_word          *follow;
+    bitnum          *mp;
+    bool            change_occurred;
+    sym_n           sym_idx;
 
     /*
      * requirements:
@@ -391,7 +392,7 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
 
 static int multiUnitReduce( a_state *state, a_reduce_action *raction, a_pro *pro, a_word *reduce_set )
 {
-    a_pro *new_pro;
+    a_pro           *new_pro;
 
     /*
      * requirements:
@@ -424,9 +425,9 @@ static int multiUnitReduce( a_state *state, a_reduce_action *raction, a_pro *pro
 
 static bool shiftToSingleReduce( a_state *state, a_shift_action *saction )
 {
-    a_state *sub_state;
-    a_sym *new_lhs;
-    bool made_change;
+    a_state         *sub_state;
+    a_sym           *new_lhs;
+    bool            made_change;
 
     /*
      * requirements:
@@ -452,7 +453,7 @@ static bool shiftToSingleReduce( a_state *state, a_shift_action *saction )
 static void tryElimination( a_state *state, a_word *reduce_set )
 {
     a_reduce_action *raction;
-    a_pro *pro;
+    a_pro           *pro;
 
     if( IsDead( state ) ) {
         return;
@@ -485,7 +486,7 @@ static void tryElimination( a_state *state, a_word *reduce_set )
 
 static void tossSingleReduceStates( a_state *state )
 {
-    a_shift_action *saction;
+    a_shift_action  *saction;
 
     if( IsDead( state ) ) {
         return;
@@ -503,9 +504,9 @@ static void tossSingleReduceStates( a_state *state )
 void EliminateUnitReductions( void )
 /**********************************/
 {
-    unsigned sum;
-    a_word *reduce_set;
-    int i;
+    unsigned        sum;
+    a_word          *reduce_set;
+    int             i;
 
     sum = 0;
     do {

@@ -76,14 +76,15 @@ static void expand_table( base_n new_size )
 static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions,
                             token_n default_token, token_n parent_token )
 {
-    base_n              start, i;
-    token_n             max;
-    action_n            default_action;
-    token_n             *r;
-    a_table             *t;
-    a_table             *tstart;
-    action_n            actval;
-    token_n             tokval;
+    base_n          start;
+    base_n          i;
+    token_n         max;
+    action_n        default_action;
+    token_n         *r;
+    a_table         *t;
+    a_table         *tstart;
+    action_n        actval;
+    token_n         tokval;
 
     if( compactflag ) {
         start = used++;
@@ -169,32 +170,48 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
 
 void genobj( FILE *fp )
 {
-    value_size  token_size;
-    action_n    *actions, *parent, *other;
-    base_n      *base;
-    token_n     *p, *q, *r, *s;
-    token_n     *tokens, *same, *diff, *test, *best;
-    bitnum      *mp;
-    token_n     tokval, dtoken, ptoken, ntoken;
-    action_n    actval, error, redun, new_action;
-    a_sym       *sym;
-    a_pro       *pro;
-    an_item     *item;
-    a_state     *state;
-    a_shift_action *saction;
+    value_size      token_size;
+    action_n        *actions;
+    action_n        *parent;
+    action_n        *other;
+    base_n          *base;
+    token_n         *p;
+    token_n         *q;
+    token_n         *r;
+    token_n         *s;
+    token_n         *tokens;
+    token_n         *same;
+    token_n         *diff;
+    token_n         *test;
+    token_n         *best;
+    bitnum          *mp;
+    token_n         tokval;
+    token_n         dtoken;
+    token_n         ptoken;
+    token_n         ntoken;
+    action_n        actval;
+    action_n        error;
+    action_n        redun;
+    action_n        new_action;
+    a_sym           *sym;
+    a_pro           *pro;
+    an_item         *item;
+    a_state         *state;
+    a_shift_action  *saction;
     a_reduce_action *raction;
-    index_n     i;
-    index_n     j;
-    rule_n      k;
-    sym_n       sym_idx;
-    unsigned    max_savings;
-    unsigned    savings;
-    unsigned    min_len;
-    unsigned    len;
-    unsigned    *size;
-    unsigned    shift;
-    token_n     parent_base;
-    unsigned    num_default, num_parent;
+    index_n         i;
+    index_n         j;
+    rule_n          k;
+    sym_n           sym_idx;
+    unsigned        max_savings;
+    unsigned        savings;
+    unsigned        min_len;
+    unsigned        len;
+    unsigned        *size;
+    unsigned        shift;
+    token_n         parent_base;
+    unsigned        num_default;
+    unsigned        num_parent;
 
     if( bigflag || compactflag ) {
         token_size = FITS_A_WORD;

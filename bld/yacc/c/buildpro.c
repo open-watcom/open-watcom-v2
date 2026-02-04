@@ -36,23 +36,29 @@
 #include "alloc.h"
 #include "yacc.h"
 
-rule_n  npro;
-sym_n   nsym;
-sym_n   nterm;
-sym_n   nvble;
-index_n nitem;
-
-a_sym   **symtab, *symlist, *startsym, *eofsym, *goalsym, *nosym, *errsym;
-a_pro   **protab, *startpro;
+rule_n      npro;
+sym_n       nsym;
+sym_n       nterm;
+sym_n       nvble;
+index_n     nitem;
+a_sym       **symtab;
+a_sym       *symlist;
+a_sym       *startsym;
+a_sym       *eofsym;
+a_sym       *goalsym;
+a_sym       *nosym;
+a_sym       *errsym;
+a_pro       **protab;
+a_pro       *startpro;
 
 void buildpro( void )
 {
-    a_sym       *sym;
-    a_sym       *rhs[2];
-    a_pro       *pro;
-    an_item     *item;
-    sym_n       sym_idx;
-    sym_n       j;
+    a_sym           *sym;
+    a_sym           *rhs[2];
+    a_pro           *pro;
+    an_item         *item;
+    sym_n           sym_idx;
+    sym_n           j;
 
     if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
@@ -102,7 +108,7 @@ void buildpro( void )
 
 static a_sym **findsymptr( char *s )
 {
-    a_sym       **sym;
+    a_sym           **sym;
 
     for( sym = &symlist; *sym != NULL; sym = &(*sym)->next ) {
         if( strcmp( s, (*sym)->name ) == 0 ) {
@@ -119,8 +125,8 @@ a_sym *findsym( char *s )
 
 a_sym *addsym( char *s )
 {
-    a_sym       **sym;
-    a_sym       *p;
+    a_sym           **sym;
+    a_sym           *p;
 
     sym = findsymptr( s );
     if( *sym == NULL ) {
@@ -133,9 +139,9 @@ a_sym *addsym( char *s )
 
 a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
 {
-    a_pro       *pro;
-    size_t      amt;
-    int         i;
+    a_pro           *pro;
+    size_t          amt;
+    int             i;
 
     amt = sizeof( a_pro ) + n * sizeof( an_item );
     pro = (a_pro *)CALLOC( amt, char );
@@ -156,7 +162,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
 
 void showpro( void )
 {
-    rule_n      i;
+    rule_n          i;
 
     for( i = 0; i < npro; ++i ) {
         showitem( protab[i]->items, "" );
@@ -165,8 +171,8 @@ void showpro( void )
 
 void showitem( an_item *p, char *dot )
 {
-    an_item     *q;
-    a_pro       *pro;
+    an_item         *q;
+    a_pro           *pro;
 
     for( q = p; q->p.sym != NULL; ) {
         ++q;
@@ -189,8 +195,8 @@ void showitem( an_item *p, char *dot )
 
 void show_unused( void )
 {
-    unsigned    count;
-    rule_n      i;
+    unsigned        count;
+    rule_n          i;
 
     count = 0;
     for( i = 0; i < npro; ++i ) {

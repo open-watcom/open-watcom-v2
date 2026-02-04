@@ -47,16 +47,15 @@ typedef struct {
     short       action;
 } a_entry;
 
-static a_entry *table;
-static unsigned used;
-static unsigned table_size;
+static a_entry      *table;
+static unsigned     used;
+static unsigned     table_size;
+static int          tabcol;
 
 void dump_define( FILE *fp, char *name, int i )
 {
     fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
-
-static int tabcol;
 
 static void begin_table( FILE *fp, char *tipe, char *name )
 {
@@ -66,8 +65,8 @@ static void begin_table( FILE *fp, char *tipe, char *name )
 
 void puttab( FILE *fp, value_size fits, unsigned i )
 {
-    char *format;
-    unsigned mod;
+    char            *format;
+    unsigned        mod;
 
     if( fits == FITS_A_BYTE ) {
         if(( i & 0x00ff ) != i ) {
@@ -108,9 +107,9 @@ static void add_table( short token, short action )
 
 static void dump_reduction( a_reduce_action *raction, unsigned *base )
 {
-    a_pro *pro;
-    bitnum *mp;
-    short idx;
+    a_pro           *pro;
+    bitnum          *mp;
+    short           idx;
 
     pro = raction->pro;
     for( mp = Members( raction->follow ); mp-- != setmembers; ) {
@@ -122,26 +121,26 @@ static void dump_reduction( a_reduce_action *raction, unsigned *base )
 
 void genobj( FILE *fp )
 {
-    int i;
-    rule_n j;
-    sym_n sym_idx;
-    int ntoken;
-    int any_token;
-    int action;
-    a_pro *pro;
-    a_state *state;
+    int             i;
+    rule_n          j;
+    sym_n           sym_idx;
+    int             ntoken;
+    int             any_token;
+    int             action;
+    a_pro           *pro;
+    a_state         *state;
     a_reduce_action *raction;
     a_reduce_action *default_reduction;
-    a_shift_action *saction;
-    a_sym *sym;
-    an_item *item;
-    unsigned max;
-    unsigned sum;
-    unsigned savings;
-    unsigned max_savings;
-    unsigned base;
-    unsigned rule_base;
-    short *state_base;
+    a_shift_action  *saction;
+    a_sym           *sym;
+    an_item         *item;
+    unsigned        max;
+    unsigned        sum;
+    unsigned        savings;
+    unsigned        max_savings;
+    unsigned        base;
+    unsigned        rule_base;
+    short           *state_base;
 
     ntoken = FirstNonTerminalTokenValue();
     for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {

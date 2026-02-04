@@ -36,17 +36,23 @@
 #include "yacc.h"
 #include "alloc.h"
 
-index_n nbstate;
-index_n nstate;
-index_n nvtrans;
-index_n nredun;
 
-a_state **statetab, *statelist, **statetail, *startstate, *errstate;
+index_n     nbstate;
+index_n     nstate;
+index_n     nvtrans;
+index_n     nredun;
+
+a_state     **statetab;
+a_state     *statelist;
+a_state     **statetail;
+a_state     *startstate;
+a_state     *errstate;
 
 static a_state *addState( a_state **state, an_item **s, an_item **q, a_state *parent )
 {
     a_parent        *add_parent;
-    an_item         **p, **t;
+    an_item         **p;
+    an_item         **t;
     unsigned short  kersize;
 
     for( p = s; p != q; ++p ) {
@@ -92,8 +98,11 @@ static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
  * Heap Sort.  Reference:  Knuth, Vol. 3, pages 146, 147.
  */
 {
-    unsigned    i, j, l, r;
-    void        *k;
+    unsigned        i;
+    unsigned        j;
+    unsigned        l;
+    unsigned        r;
+    void            *k;
 
     if( n > 1 ) {
         l = n / 2;
@@ -127,8 +136,8 @@ static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
 
 static bool itemlt( void *_a, void *_b )
 {
-    an_item     *a = _a;
-    an_item     *b = _b;
+    an_item         *a = _a;
+    an_item         *b = _b;
 
     if( a->p.sym != NULL ) {
         return( b->p.sym != NULL && a[0].p.sym->idx > b[0].p.sym->idx );
@@ -139,7 +148,8 @@ static bool itemlt( void *_a, void *_b )
 
 static void Complete( a_state *state, an_item **s )
 {
-    an_item         **p, **q;
+    an_item         **p;
+    an_item         **q;
     a_reduce_action *raction;
     a_shift_action  *saction;
     a_pro           *pro;
@@ -203,8 +213,8 @@ static void Complete( a_state *state, an_item **s )
 
 void lr0( void )
 {
-    a_state     *state;
-    an_item     **s;
+    a_state         *state;
+    an_item         **s;
 
     nvtrans = 0;
     nredun = 0;
@@ -222,7 +232,7 @@ void lr0( void )
 
 void SetupStateTable( void )
 {
-    a_state     *state;
+    a_state         *state;
 
     FREE( statetab );
     statetab = CALLOC( nstate, a_state * );
@@ -233,18 +243,18 @@ void SetupStateTable( void )
 
 void RemoveDeadStates( void )
 {
-    index_n     old_state_sidx;
-    index_n     new_state_sidx;
-    a_state     *state;
+    index_n         old_sidx;
+    index_n         new_sidx;
+    a_state         *state;
 
-    new_state_sidx = 0;
-    for( old_state_sidx = 0; old_state_sidx < nstate; old_state_sidx++ ) {
-        state = statetab[old_state_sidx];
+    new_sidx = 0;
+    for( old_sidx = 0; old_sidx < nstate; old_sidx++ ) {
+        state = statetab[old_sidx];
         if( ! IsDead( state ) ) {
-            state->sidx = new_state_sidx;
-            statetab[new_state_sidx] = state;
-            new_state_sidx++;
+            state->sidx = new_sidx;
+            statetab[new_sidx] = state;
+            new_sidx++;
         }
     }
-    nstate = new_state_sidx;
+    nstate = new_sidx;
 }

@@ -47,15 +47,24 @@ static a_state *AddErrState( a_state **enter, a_state **s, a_state **t )
 
 static AddError()
 {
-    a_sym *xsym, *sym;
-    a_pro *xpro, *pro;
-    a_state *state;
-    a_state **s, **t;
-    a_shift_action *tx, *ty, *trans;
-    a_reduce_action *rx, *ry, *redun;
-    int i;
-    a_word *defined, *conflict, *rset;
-    short *at;
+    a_sym           *xsym;
+    a_sym           *sym;
+    a_pro           *xpro;
+    a_pro           *pro;
+    a_state         *state;
+    a_state         **s;
+    a_state         **t;
+    a_shift_action  *tx;
+    a_shift_action  *ty;
+    a_shift_action  *trans;
+    a_reduce_action *rx;
+    a_reduce_action *ry;
+    a_reduce_action *redun;
+    int             i;
+    a_word          *defined;
+    a_word          *conflict;
+    a_word          *rset;
+    short           *at;
 
     trans = CALLOC( nsym, a_shift_action );
     rx = redun = CALLOC( npro + 1, a_reduce_action );
@@ -86,7 +95,7 @@ static AddError()
         }
         redun->pro = errpro;
         rx = redun + 1;
-        if( state != restart )
+        if( state != restart ) {
             while( xpro != NULL ) {
                 pro = xpro;
                 xpro = NULL;
@@ -107,6 +116,7 @@ static AddError()
                 rx->pro = pro;
                 ++rx;
             }
+        }
         xsym = NULL;
         for( i = 0; i < state->kersize; ++i ) {
             at[i] = 0;

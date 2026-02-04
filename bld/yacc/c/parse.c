@@ -38,6 +38,7 @@
 #include "alloc.h"
 #include "yacc.h"
 
+
 #define BUF_INCR            500
 
 #define INIT_RHS_SIZE       16
@@ -180,8 +181,8 @@ static int nextc( void )
 
 static bool xlat_char( bool special, int c )
 {
-    xlat_entry  *t;
-    char        buff[16];
+    xlat_entry      *t;
+    char            buff[16];
 
     if( isalpha( c ) || isdigit( c ) || c == '_' ) {
         if( special ) {
@@ -209,7 +210,7 @@ static bool xlat_char( bool special, int c )
 
 static void xlat_token( void )
 {
-    bool special;
+    bool            special;
 
     addbuf( 'Y' );
     special = true;
@@ -234,7 +235,7 @@ static void xlat_token( void )
 
 static int eatcrud( void )
 {
-    int prev;
+    int             prev;
 
     for( ;; nextc() ) {
         switch( ch ) {
@@ -283,7 +284,7 @@ static int lastc( void )
 
 static void copybal( void )
 {
-    int         depth;
+    int             depth;
 
     depth = 1;
     do {
@@ -556,7 +557,7 @@ static char *get_typename( char *src )
 
 static a_sym *make_sym( char *name, token_n tokval )
 {
-    a_sym *p;
+    a_sym           *p;
 
     p = addsym( name );
     p->token = tokval;
@@ -590,8 +591,8 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
 
 static void tlist_remove( char *name )
 {
-    y_token *curr;
-    y_token *last;
+    y_token         *curr;
+    y_token         *last;
 
     last = NULL;
     for( curr = tokens_head; curr != NULL; curr = curr->next ) {
@@ -613,8 +614,8 @@ static void tlist_remove( char *name )
 
 static void tlist_add( char *name, token_n tokval )
 {
-    y_token *tmp;
-    y_token *curr;
+    y_token         *tmp;
+    y_token         *curr;
 
     for( curr = tokens_head; curr != NULL; curr = curr->next ) {
         if( strcmp( name, curr->name ) == 0 ) {
@@ -637,11 +638,11 @@ static void tlist_add( char *name, token_n tokval )
 
 static bool scanambig( unsigned used, a_SR_conflict_list **list )
 {
-    bool                    absorbed_something;
-    conflict_id             id;
-    a_sym                   *sym;
-    a_SR_conflict           *ambig;
-    a_SR_conflict_list      *en;
+    bool            absorbed_something;
+    conflict_id     id;
+    a_sym           *sym;
+    a_SR_conflict   *ambig;
+    a_SR_conflict_list *en;
 
     absorbed_something = false;
     for( ; token == T_AMBIG; ) {
@@ -724,11 +725,11 @@ static void copycurl( FILE *fp )
 static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
                           a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
-    char        save;
-    char        *type;
-    char        *p;
-    int         err_count;
-    long        il;
+    char            save;
+    char            *type;
+    char            *p;
+    int             err_count;
+    long            il;
 
     err_count = 0;
     ++s;
@@ -776,7 +777,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
 
 static a_pro *findPro( a_sym *lhs, rule_n pidx )
 {
-    a_pro       *pro;
+    a_pro           *pro;
 
     for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
         if( pro->pidx == pidx ) {
@@ -788,13 +789,13 @@ static a_pro *findPro( a_sym *lhs, rule_n pidx )
 
 static void copyUniqueActions( FILE *fp )
 {
-    a_pro       *pro;
-    char        *s;
-    uniq_case   *c;
-    uniq_case   *cnext;
-    rule_case   *r;
-    rule_case   *rnext;
-    an_item     *item;
+    a_pro           *pro;
+    char            *s;
+    uniq_case       *c;
+    uniq_case       *cnext;
+    rule_case       *r;
+    rule_case       *rnext;
+    an_item         *item;
 
     for( c = caseActions; c != NULL; c = cnext ) {
         cnext = c->next;
@@ -820,7 +821,7 @@ static void copyUniqueActions( FILE *fp )
 
 static void addRuleToUniqueCase( uniq_case *p, rule_n pidx, a_sym *lhs )
 {
-    rule_case   *r;
+    rule_case       *r;
 
     r = MALLOC( 1, rule_case );
     r->lhs = lhs;
@@ -831,9 +832,9 @@ static void addRuleToUniqueCase( uniq_case *p, rule_n pidx, a_sym *lhs )
 
 static void insertUniqueAction( rule_n pidx, char *action, a_sym *lhs )
 {
-    uniq_case   **p;
-    uniq_case   *c;
-    uniq_case   *n;
+    uniq_case       **p;
+    uniq_case       *c;
+    uniq_case       *n;
 
     p = &caseActions;
     for( c = *p; c != NULL; c = c->next ) {
@@ -876,15 +877,15 @@ static void lineinfo( FILE *fp )
 
 static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
-    char        *action;
-    char        *p;
-    char        *s;
-    char        *type;
-    unsigned    i;
-    int         errs;
-    int         total_errs;
-    size_t      total_len;
-    char        buff[80];
+    char            *action;
+    char            *p;
+    char            *s;
+    char            *type;
+    unsigned        i;
+    int             errs;
+    int             total_errs;
+    size_t          total_len;
+    char            buff[80];
 
     if( ! lineflag ) {
         /*
@@ -950,7 +951,7 @@ static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned ba
 
 static char *dupbuf( void )
 {
-    char *str;
+    char            *str;
 
     str = MALLOC( bufused, char );
     memcpy( str, buf, bufused );
@@ -960,9 +961,9 @@ static char *dupbuf( void )
 
 void dump_header( FILE *fp )
 {
-    const char  *fmt;
-    const char  *ttype;
-    y_token     *t;
+    const char      *fmt;
+    const char      *ttype;
+    y_token         *t;
 
     fprintf( fp, "#ifndef YYTOKENTYPE\n" );
     if( fastflag || bigflag || compactflag ) {
@@ -1003,7 +1004,7 @@ void close_header( FILE *fp )
 
 void free_header_data( void )
 {
-    y_token     *tmp;
+    y_token         *tmp;
 
     if( union_name != NULL ) {
         FREE( union_name );
@@ -1017,11 +1018,11 @@ void free_header_data( void )
 
 void defs( FILE *fp )
 {
-    token_n     gentoken;
-    a_sym       *sym;
-    a_token     ctype;
-    char        *type;
-    a_prec      prec;
+    token_n         gentoken;
+    a_sym           *sym;
+    a_token         ctype;
+    char            *type;
+    a_prec          prec;
 
     eofsym = make_sym( "$eof", TOKEN_EOF );
     nosym = make_sym( "$impossible", TOKEN_IMPOSSIBLE );
@@ -1172,19 +1173,21 @@ void defs( FILE *fp )
 
 void rules( FILE *fp )
 {
-    a_sym               *lhs, *sym, *precsym;
-    a_sym               **rhs;
-    unsigned            nrhs;
-    unsigned            maxrhs;
-    a_pro               *pro;
-    char                buffer[20];
-    unsigned            i;
-    int                 numacts;
-    bool                action_defined;
-    bool                unit_production;
-    bool                not_token;
-    a_SR_conflict_list  *list_of_ambiguities;
-    a_SR_conflict_list  *ambig;
+    a_sym           *lhs;
+    a_sym           *sym;
+    a_sym           *precsym;
+    a_sym           **rhs;
+    unsigned        nrhs;
+    unsigned        maxrhs;
+    a_pro           *pro;
+    char            buffer[20];
+    unsigned        i;
+    int             numacts;
+    bool            action_defined;
+    bool            unit_production;
+    bool            not_token;
+    a_SR_conflict_list *list_of_ambiguities;
+    a_SR_conflict_list *ambig;
 
     ambiguousstates = NULL;
     maxrhs = INIT_RHS_SIZE;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,11 @@ FILE *fpopen( char *path, char *name )
  *  'path' (a list of ';' separated directory names.)
  */
 {
-    FILE        *file;
-    char        *qualname, *p;
-    size_t      dirlen, namelen;
+    FILE            *file;
+    char            *qualname;
+    char            *p;
+    size_t          dirlen;
+    size_t          namelen;
 
     file = fopen( name, "r" );
     if( file == NULL && path != NULL ) {

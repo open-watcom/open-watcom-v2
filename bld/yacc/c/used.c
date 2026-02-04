@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 void FindUnused( void )
 {
     a_reduce_action *raction;
-    a_pro *pro;
-    a_state *state;
+    a_pro           *pro;
+    a_state         *state;
 
     for( state = statelist; state != NULL; state = state->next ) {
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {

@@ -37,16 +37,17 @@
 #include "yacc.h"
 #include "alloc.h"
 
-unsigned long bytesused;
 
-static unsigned tabcol;
-static char *tablename;
+unsigned long       bytesused;
+
+static unsigned     tabcol;
+static char         *tablename;
 
 token_n FirstNonTerminalTokenValue( void )
 {
-    sym_n   sym_idx;
-    token_n tokval;
-    token_n ntoken;
+    sym_n           sym_idx;
+    token_n         tokval;
+    token_n         ntoken;
 
     ntoken = 0;
     for( sym_idx = 0; sym_idx < nterm; ++sym_idx ) {
@@ -63,9 +64,12 @@ token_n FirstNonTerminalTokenValue( void )
 
 static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
 {
-    conflict_id id;
-    index_n ambig_state, ambig_state_based;
-    index_n ambig_shift, ambig_shift_based;
+    conflict_id     id;
+    index_n         ambig_state;
+    index_n         ambig_state_based;
+    index_n         ambig_shift;
+    index_n         ambig_shift_based;
+
     static char *msg[] = {
         "#define\tYYAMBIGS%u\t%d\t/* ambiguous state (%u) */\n",
         "#define\tYYAMBIGT%u\t%d\t/* token causing ambiguity */\n",
@@ -97,7 +101,7 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
 
 void putambigs( FILE *fp, base_n *base )
 {
-    a_SR_conflict *ambig;
+    a_SR_conflict   *ambig;
 
     for( ambig = ambiguousstates; ambig != NULL; ambig = ambig->next ) {
         putambig( fp, ambig, base );
@@ -118,8 +122,8 @@ void begtab( FILE *fp, char *tipe, char *name )
 
 void puttab( FILE *fp, value_size fits, unsigned i )
 {
-    char *format;
-    unsigned mod;
+    char            *format;
+    unsigned        mod;
 
     if( fits == FITS_A_BYTE ) {
         if(( i & 0x00ff ) != i ) {
@@ -168,10 +172,10 @@ void putcomment( FILE *fp, char *comment )
 
 void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
 {
-    unsigned rule_base;
-    an_item *item;
-    rule_n i;
-    sym_n sym_idx;
+    unsigned        rule_base;
+    an_item         *item;
+    rule_n          i;
+    sym_n           sym_idx;
 
     if( ! denseflag ) {
         return;

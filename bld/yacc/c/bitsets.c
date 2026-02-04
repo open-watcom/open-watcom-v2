@@ -60,7 +60,7 @@ unsigned GetSetSize( unsigned set_count )
 
 void Union( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ |= *t++;
@@ -69,7 +69,7 @@ void Union( a_word *s, a_word *t )
 
 void Assign( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ = *t++;
@@ -78,7 +78,7 @@ void Assign( a_word *s, a_word *t )
 
 void Clear( a_word *s )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ = 0;
@@ -87,7 +87,7 @@ void Clear( a_word *s )
 
 bool Empty( a_word *s )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ ) {
@@ -99,7 +99,7 @@ bool Empty( a_word *s )
 
 bool EmptyIntersection( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ & *t++ ) {
@@ -111,7 +111,7 @@ bool EmptyIntersection( a_word *s, a_word *t )
 
 bool Equal( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ != *t++ ) {
@@ -123,7 +123,7 @@ bool Equal( a_word *s, a_word *t )
 
 void Intersection( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ &= *t++;
@@ -132,7 +132,7 @@ void Intersection( a_word *s, a_word *t )
 
 void AndNot( a_word *s, a_word *t )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ &= ~*t++;
@@ -141,7 +141,7 @@ void AndNot( a_word *s, a_word *t )
 
 void UnionAnd( a_word *s, a_word *t, a_word *u )
 {
-    unsigned    n;
+    unsigned        n;
 
     for( n = wperset; n > 0; --n ) {
         *s++ |= *t++ & *u++;
@@ -150,10 +150,10 @@ void UnionAnd( a_word *s, a_word *t, a_word *u )
 
 bitnum  *Members( a_word *s )
 {
-    a_word      word;
-    unsigned    i;
-    unsigned    j;
-    bitnum      *p;
+    a_word          word;
+    unsigned        i;
+    unsigned        j;
+    bitnum          *p;
 
     p = setmembers;
     for( i = 0; i < wperset; ++i ) {
@@ -170,8 +170,8 @@ bitnum  *Members( a_word *s )
 
 void DumpSet( a_word *s )
 {
-    char        *p;
-    unsigned    size;
+    char            *p;
+    unsigned        size;
 
     p = (char *)s;
     for( size = wperset * WSIZE; size > 0; --size ) {
@@ -182,7 +182,7 @@ void DumpSet( a_word *s )
 
 static unsigned bit_count( unsigned x )
 {
-    unsigned y;
+    unsigned        y;
 
 #if SHRT_MAX == INT_MAX
     y = x & 0x5555;
@@ -211,8 +211,8 @@ static unsigned bit_count( unsigned x )
 unsigned Cardinality( a_word *s )
 /*******************************/
 {
-    unsigned    n;
-    unsigned    sum;
+    unsigned        n;
+    unsigned        sum;
 
     sum = 0;
     for( n = wperset; n > 0; --n ) {

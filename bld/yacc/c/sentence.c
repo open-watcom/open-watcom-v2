@@ -47,7 +47,7 @@ typedef struct traceback {
 
 static void pushTrace( traceback **h, a_state *state, a_sym *sym )
 {
-    traceback   *token;
+    traceback       *token;
 
     token = MALLOC( 1, traceback );
     token->next = *h;
@@ -58,7 +58,7 @@ static void pushTrace( traceback **h, a_state *state, a_sym *sym )
 
 static void popTrace( traceback **h )
 {
-    traceback   *token;
+    traceback       *token;
 
     if( (token = *h) != NULL ) {
         *h = token->next;
@@ -80,7 +80,7 @@ static a_state *findNewShiftState( a_state *state, a_sym *sym )
 
 static void performShift( traceback **h, a_sym *sym )
 {
-    a_state     *state;
+    a_state         *state;
 
     state = findNewShiftState( (*h)->state, sym );
     pushTrace( h, state, sym );
@@ -88,7 +88,7 @@ static void performShift( traceback **h, a_sym *sym )
 
 static void performReduce( traceback **h, a_pro *pro )
 {
-    an_item     *p;
+    an_item         *p;
 
     for( p = pro->items; p->p.sym != NULL; ++p ) {
         popTrace( h );
@@ -99,10 +99,10 @@ static void performReduce( traceback **h, a_pro *pro )
 
 static a_sym *terminalInKernel( an_item *p )
 {
-    a_sym       *sym_after_dot;
-    a_sym       *post_sym;
-    an_item     *q;
-    a_pro       *pro;
+    a_sym           *sym_after_dot;
+    a_sym           *post_sym;
+    an_item         *q;
+    a_pro           *pro;
 
     for( q = p; q->p.sym != NULL; ) {
         ++q;
@@ -122,7 +122,7 @@ static a_sym *terminalInKernel( an_item *p )
 
 static bool notInTraceback( traceback **h, a_sym *sym )
 {
-    traceback   *t;
+    traceback       *t;
 
     for( t = *h; t != NULL; t = t->next ) {
         if( t->sym == sym ) {
@@ -169,11 +169,11 @@ static void flushStack( traceback **h )
 
 static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned count )
 {
-    index_n             sym_idx;
-    a_sym               *chk_sym;
-    a_state             *state;
-    a_state             *top_state;
-    a_reduce_action     *raction;
+    index_n         sym_idx;
+    a_sym           *chk_sym;
+    a_state         *state;
+    a_state         *top_state;
+    a_reduce_action *raction;
 
     for( ; *h != NULL; ) {
         top_state = (*h)->state;
@@ -241,8 +241,8 @@ static void runUntilShift( traceback **h, a_sym *sym, traceback **ht )
 
 static traceback *reverseStack( traceback *s )
 {
-    traceback   *h;
-    traceback   *n;
+    traceback       *h;
+    traceback       *n;
 
     h = NULL;
     while( s != NULL ) {
@@ -256,11 +256,11 @@ static traceback *reverseStack( traceback *s )
 
 static void printAndFreeStack( traceback *top )
 {
-    size_t      column;
-    size_t      len;
-    a_sym       *sym;
-    char        *min;
-    traceback   *token;
+    size_t          column;
+    size_t          len;
+    a_sym           *sym;
+    char            *min;
+    traceback       *token;
 
     column = 0;
     while( top != NULL ) {
@@ -283,8 +283,8 @@ static void printAndFreeStack( traceback *top )
 
 static traceback *makeReversedCopy( traceback *top )
 {
-    traceback   *parse_stack;
-    traceback   *curr;
+    traceback       *parse_stack;
+    traceback       *curr;
 
     parse_stack = NULL;
     for( curr = top; curr != NULL; curr = curr->next ) {
@@ -329,10 +329,10 @@ static traceback *getStatePrefix( a_state *state, a_state *initial_parent )
 void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
 /****************************************************************************/
 {
-    traceback   *list;
-    traceback   *parse_stack;
-    traceback   *token_stack;
-    a_parent    *parent;
+    traceback       *list;
+    traceback       *parse_stack;
+    traceback       *token_stack;
+    a_parent        *parent;
 
     for( parent = state->parents; parent != NULL; parent = parent->next ) {
         if( to_state != NULL ) {
@@ -377,7 +377,7 @@ void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
 
 static char *my_stpcpy( char *d, char const *s )
 {
-    size_t  len;
+    size_t          len;
 
     len = strlen( s );
     memcpy( d, s, len + 1 );
@@ -386,8 +386,8 @@ static char *my_stpcpy( char *d, char const *s )
 
 static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 {
-    size_t      len;
-    an_item     *p;
+    size_t          len;
+    an_item         *p;
 
     /* unused parameters */ (void)sym;
 
@@ -412,10 +412,10 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
 static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 {
-    size_t      len;
-    an_item     *p;
-    char        *min;
-    char        *cat;
+    size_t          len;
+    an_item         *p;
+    char            *min;
+    char            *cat;
 
     len = symHasMinLen( sym, pro, disallow_error );
     if( len == 0 ) {
@@ -438,9 +438,9 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
 static void setMinToName( a_sym *sym )
 {
-    size_t      len;
-    char        *min;
-    char        *cat;
+    size_t          len;
+    char            *min;
+    char            *cat;
 
     len = strlen( sym->name );
     len += 2;
@@ -456,13 +456,13 @@ static void setMinToName( a_sym *sym )
 
 static void propagateMin( a_sym *disallow_error )
 {
-    a_sym       *last;
-    a_sym       *sym;
-    a_sym       *has_min;
-    a_pro       *pro;
-    sym_n       sym_idx;
-    size_t      min_len;
-    size_t      len;
+    a_sym           *last;
+    a_sym           *sym;
+    a_sym           *has_min;
+    a_pro           *pro;
+    sym_n           sym_idx;
+    size_t          min_len;
+    size_t          len;
 
     do {
         last = NULL;
@@ -493,8 +493,8 @@ static void propagateMin( a_sym *disallow_error )
 
 static void seedWithSimpleMin( void )
 {
-    a_sym       *sym;
-    sym_n       sym_idx;
+    a_sym           *sym;
+    sym_n           sym_idx;
 
     /*
      * set terminals to their name and set nullable syms
@@ -513,8 +513,8 @@ static void seedWithSimpleMin( void )
 
 static void verifyAllHaveMin( void )
 {
-    a_sym       *sym;
-    sym_n       sym_idx;
+    a_sym           *sym;
+    sym_n           sym_idx;
 
     for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
         sym = symtab[sym_idx];
