@@ -77,7 +77,7 @@ static unsigned opsize[] = {
 };
 
 typedef struct an_ins {
-    char            opcode;
+    byte            opcode;
     short           offset;
 } an_ins;
 
