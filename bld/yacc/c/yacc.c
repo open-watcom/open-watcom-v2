@@ -412,7 +412,11 @@ int main( int argc, char **argv )
      */
     copy_part( temp1, actout );
     fclose( temp1 );
-    genobj( actout );
+    if( fastflag ) {
+        genobj_fast( actout );
+    } else {
+        genobj( actout );
+    }
     /*
      * copy middle part of skeleton
      */

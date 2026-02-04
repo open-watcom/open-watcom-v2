@@ -35,18 +35,7 @@
 #include "bool.h"
 
 
-enum {
-    TOKEN_EOF           = 0x0000,
-    TOKEN_IMPOSSIBLE    = 0x0001,
-    TOKEN_ERROR         = 0x0002,
-    TOKEN_DENSE_BASE    = 0x0003, TOKEN_DENSE_MAX       = 0x00ff,
-    TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
-};
-
 #define WSIZE           (sizeof(a_word)*8)
-
-#define ACTION_NULL     0
-#define ACTION_MASK     0x3FFF
 
 #define ClearBit(x,i,b) ((x)[(i)/(b)] &= ~( 1UL << ((i) % (b))))
 #define SetBit(x,i,b)   ((x)[(i)/(b)] |= ( 1UL << ((i) % (b))))
@@ -75,6 +64,21 @@ typedef enum flags {
 #define DontOptimize(c)         ((c)->flag |=  M_DONT_OPTIMIZE)
 #define IsOnlyReduce(c)         ((c)->flag &   M_ONLY_REDUCE)
 #define OnlyReduce(c)           ((c)->flag |=  M_ONLY_REDUCE)
+
+enum {
+    TOKEN_EOF           = 0x0000,
+    TOKEN_IMPOSSIBLE    = 0x0001,
+    TOKEN_ERROR         = 0x0002,
+    TOKEN_DENSE_BASE    = 0x0003, TOKEN_DENSE_MAX       = 0x00ff,
+    TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
+};
+
+enum {
+    ACTION_NONE         = 0,
+    ACTION_MASK         = 0x3FFF,
+    ACTION_FLAG_1       = 0x4000,
+    ACTION_FLAG_2       = 0x8000,
+};
 
 typedef enum {
     NON_ASSOC           = 0,
@@ -269,6 +273,7 @@ extern void     close_header( FILE * );
 extern void     free_header_data( void );
 
 extern void     genobj( FILE * );
+extern void     genobj_fast( FILE * );
 
 extern void     msg( char *, ... );
 extern void     warn( char *, ... );
@@ -277,8 +282,6 @@ extern void     srcinfo_warn( char *, ... );
 extern void     dumpstatistic( char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );
-
-extern void     GenFastTables( FILE * );
 
 extern token_n  FirstNonTerminalTokenValue( void );
 extern void     endtab( FILE *fp );

@@ -39,8 +39,8 @@
 #include "roundmac.h"
 
 
-#define ACTION_USED     0x4000
-#define ACTION_BASE     0x8000
+#define ACTION_USED     ACTION_FLAG_1
+#define ACTION_BASE     ACTION_FLAG_2
 
 #define Token(c)        ((c)->token)
 #define SetToken(c,i)   ((c)->token = (i))
@@ -88,7 +88,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
     if( compactflag ) {
         start = used++;
         expand_table( used );   // Leave room for parent & default
-        default_action = ACTION_NULL;
+        default_action = ACTION_NONE;
         for( r = tokens; r < end_token; ++r ) {
             tokval = *r;
             if( tokval == default_token ) {
@@ -128,7 +128,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
             expand_table( start + max + 1 );
             while( i < avail ) {
                 table[i].token = TOKEN_IMPOSSIBLE;
-                table[i].action = ACTION_NULL;
+                table[i].action = ACTION_NONE;
                 ++i;
             }
             tstart = table + start;
@@ -196,10 +196,6 @@ void genobj( FILE *fp )
     token_n     parent_base;
     unsigned    num_default, num_parent;
 
-    if( fastflag ) {
-        GenFastTables( fp );
-        return;
-    }
     if( bigflag || compactflag ) {
         token_size = FITS_A_WORD;
     } else {

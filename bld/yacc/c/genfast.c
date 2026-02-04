@@ -41,10 +41,8 @@
 #include "roundmac.h"
 
 
-enum {
-    ACTION_REDUCE       = 0x8000,
-    ACTION_UNIT         = 0x4000
-};
+#define ACTION_UNIT     ACTION_FLAG_1
+#define ACTION_REDUCE   ACTION_FLAG_2
 
 typedef struct {
     index_n             num_entries;
@@ -116,11 +114,11 @@ static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions
         if( ca_token >= ntoken )
             break;
         a1 = actions[ca_token];
-        if( a1 == ACTION_NULL ) {
+        if( a1 == ACTION_NONE ) {
             continue;
         }
         /*
-         * NB Know a2 != ACTION_NULL
+         * NB Know a2 != ACTION_NONE
          */
         a2 = ca->action;
         if( a1 != a2 ) {
@@ -151,7 +149,7 @@ static action_n *actextend( action_n *a, index_n *psize, token_n incr )
         a = REALLOC( a, *psize, action_n );
     }
     while( i < *psize ) {
-        a[i++] = ACTION_NULL;
+        a[i++] = ACTION_NONE;
     }
     return( a );
 }
@@ -163,7 +161,7 @@ static index_n actcompress( compressed_action *ca, action_n *actions, token_n nt
 
     num_actions = 0;
     for( token = 0; token < ntoken; ++token ) {
-        if( actions[token] != ACTION_NULL ) {
+        if( actions[token] != ACTION_NONE ) {
             ca[num_actions].action = actions[token];
             ca[num_actions].token = token;
             ++num_actions;
@@ -197,10 +195,10 @@ static index_n insertIntoActionVector( action_n **bv, index_n *bs,
         for( i = 0; i < s; ++i ) {
             /*
              * try a quick check with the last element that failed (may fail again!)
-             * we know ca[0].action != ACTION_NULL
+             * we know ca[0].action != ACTION_NONE
              */
             action = p[i + ca[0].token];
-            if( action == ACTION_NULL || action == ca[0].action ) {
+            if( action == ACTION_NONE || action == ca[0].action ) {
                 if( actcmp( &p[i], ca, num_actions, ntoken ) == 0 ) {
                     /*
                      * action vector was found inside large vector
@@ -329,7 +327,7 @@ static action_n *orderActionVectors( action_n **av, token_n ntoken )
         min = ntoken;
         num_entries = 0;
         for( token = 0; token < ntoken; ++token ) {
-            if( actions[token] != ACTION_NULL ) {
+            if( actions[token] != ACTION_NONE ) {
                 if( num_entries == 0 ) {
                     min = token;
                 }
@@ -355,7 +353,7 @@ static action_n *orderActionVectors( action_n **av, token_n ntoken )
     return( map );
 }
 
-void GenFastTables( FILE *fp )
+void genobj_fast( FILE *fp )
 {
     index_n     i;
     index_n     j;
@@ -446,7 +444,7 @@ void GenFastTables( FILE *fp )
         state_actions = MALLOC( ntoken_term, action_n );
         all_actions[i] = state_actions;
         for( j = 0; j < ntoken_term; ++j ) {
-            state_actions[j] = ACTION_NULL;
+            state_actions[j] = ACTION_NONE;
         }
         /*
          * iterate over all shifts in state
@@ -492,7 +490,7 @@ void GenFastTables( FILE *fp )
         state_actions = MALLOC( ntoken_all, action_n );
         all_actions[i] = state_actions;
         for( j = 0; j < ntoken_all; ++j ) {
-            state_actions[j] = ACTION_NULL;
+            state_actions[j] = ACTION_NONE;
         }
         /*
          * iterate over all shifts in state
@@ -570,7 +568,7 @@ void GenFastTables( FILE *fp )
     empty_actions = 0;
     begtab( fp, "YYACTIONTYPE", "yyactiontab" );
     for( i = 0; i < asize; ++i ) {
-        if( avector[i] == ACTION_NULL ) {
+        if( avector[i] == ACTION_NONE ) {
             ++empty_actions;
         }
         puttab( fp, FITS_A_WORD, avector[i] );

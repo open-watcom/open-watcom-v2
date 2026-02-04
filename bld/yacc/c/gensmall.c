@@ -37,12 +37,10 @@
 #include "yaccins.h"
 #include "alloc.h"
 
-enum {
-    ACTION_AMBIGUOUS    = 0x8000,
-    ACTION_SHIFT        = 0x4000,
-    ACTION_REDUCE       = 0x0000,
-    ACTION_STATE        = 0x3fff,
-};
+
+#define ACTION_REDUCE       ACTION_NONE
+#define ACTION_SHIFT        ACTION_FLAG_1
+#define ACTION_AMBIGUOUS    ACTION_FLAG_2
 
 typedef struct {
     short       token;
@@ -124,7 +122,7 @@ void genobj( FILE *fp )
 {
     int i;
     rule_n j;
-    sym_n k;
+    sym_n sym_idx;
     int ntoken;
     int this_token;
     int any_token;
@@ -147,8 +145,8 @@ void genobj( FILE *fp )
     short *state_base;
 
     ntoken = FirstNonTerminalTokenValue();
-    for( k = nterm; k < nsym; ++k ) {
-        symtab[k]->token = ntoken++;
+    for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
+        symtab[sym_idx]->token = ntoken++;
     }
     any_token = ntoken;
     state_base = CALLOC( nstate, short );
@@ -246,8 +244,8 @@ void genobj( FILE *fp )
     end_table( fp );
     begin_table( fp, "char YYFAR *", "yytoknames" );
     fputc( '\n', fp );
-    for( k = 0; k < nsym; ++k ) {
-        fprintf( fp, "\"%s\",\n", symtab[k]->name );
+    for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
+        fprintf( fp, "\"%s\",\n", symtab[sym_idx]->name );
     }
     fprintf( fp, "\"\"" );
     end_table( fp );
