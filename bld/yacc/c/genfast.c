@@ -367,7 +367,6 @@ void genobj_fast( FILE *fp )
     index_n         i;
     index_n         j;
     rule_n          k;
-    sym_n           m;
     sym_n           sym_idx;
     index_n         asize;
     token_n         tokval;
