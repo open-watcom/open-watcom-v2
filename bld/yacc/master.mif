@@ -4,6 +4,8 @@ yacc_autodepends = .AUTODEPEND
 
 yacc_trmem = 1
 
+yacc_noasan = 1
+
 !ifdef bootstrap
 exetarg_name = b$(proj_name)
 !endif
@@ -49,5 +51,12 @@ exetarg_objs = &
     yacc.obj        &
     alloc.obj       &
     $(trmem_objs)
-# genc.obj, genobj.obj, writeobj.obj, and recover.obj are unused
+# test build only
+exetarg_prebuild_objs = &
+    genc.obj &
+    gensmall.obj &
+    genobj.obj &
+    writeobj.obj
+# not used anyway
+#   recover.obj
 !include exetarg.mif

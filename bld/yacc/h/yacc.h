@@ -303,10 +303,11 @@ extern index_n  nbstate;
 extern action_n nstate;
 extern index_n  nvtrans;
 extern index_n  nredun;
-extern index_n  nstate_1_reduce;
 
-extern index_n  RR_conflicts;
-extern index_n  SR_conflicts;
+extern unsigned nstate_1_reduce;
+
+extern unsigned RR_conflicts;
+extern unsigned SR_conflicts;
 
 extern bool     lineflag;
 extern bool     bigflag;
@@ -346,7 +347,7 @@ extern int      lineno;
 
 extern a_SR_conflict *ambiguousstates;
 
-extern unsigned long bytesused;
+extern unsigned bytesused;
 
 extern unsigned keyword_id_low;
 extern unsigned keyword_id_high;

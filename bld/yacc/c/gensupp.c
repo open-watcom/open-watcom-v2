@@ -38,7 +38,7 @@
 #include "alloc.h"
 
 
-unsigned long       bytesused;
+unsigned            bytesused;
 
 static unsigned     tabcol;
 static char         *tablename;
@@ -133,6 +133,9 @@ void puttab( FILE *fp, value_size fits, unsigned i )
         format = "%3u";
         mod = 20;
     } else {
+        if(( i & 0xffff ) != i ) {
+            msg( "value cannot fit into %s table! (%x)", tablename, i );
+        }
         bytesused += sizeof( short );
         format = "%5u";
         mod = 10;

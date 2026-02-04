@@ -39,31 +39,32 @@
 #include "walloca.h"
 
 
-FILE    *yaccin;
-char    *loadpath;
-char    *srcname_norm = NULL;
-char    *codefilename;
-char    *headerfilename;
-char    *descfilename;
+FILE        *yaccin;
+char        *loadpath;
+char        *srcname_norm = NULL;
+char        *codefilename;
+char        *headerfilename;
+char        *descfilename;
 
-char    *symprefix = "yy";
+char        *symprefix = "yy";
 
-char    param_requested;
+char        param_requested;
 
-index_n RR_conflicts;
-index_n SR_conflicts;
-index_n nstate_1_reduce;
+unsigned    nstate_1_reduce;
 
-bool    lineflag           = false;
-bool    bigflag            = false;
-bool    fastflag           = false;
-bool    denseflag          = false;
-bool    enumflag           = false;
-bool    default_shiftflag  = false;
-bool    compactflag        = false;
-bool    showflag           = false;
-bool    translateflag      = false;
-bool    defaultwarnflag    = true;
+unsigned    RR_conflicts;
+unsigned    SR_conflicts;
+
+bool        lineflag           = false;
+bool        bigflag            = false;
+bool        fastflag           = false;
+bool        denseflag          = false;
+bool        enumflag           = false;
+bool        default_shiftflag  = false;
+bool        compactflag        = false;
+bool        showflag           = false;
+bool        translateflag      = false;
+bool        defaultwarnflag    = true;
 
 static bool     eliminateunitflag   = false;
 static bool     verbosefileflag     = false;

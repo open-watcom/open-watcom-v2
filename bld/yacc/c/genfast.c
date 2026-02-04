@@ -45,9 +45,9 @@
 #define ACTION_REDUCE   ACTION_FLAG_2
 
 typedef struct {
-    index_n             num_entries;
-    token_n             min;
-    token_n             max;
+    unsigned            num_entries;
+    unsigned            min;
+    unsigned            max;
     action_n            index;
     action_n            *action_vector;
 } av_info;
@@ -57,11 +57,11 @@ typedef struct compressed_action {
     token_n             token;
 } compressed_action;
 
-static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n size )
+static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned size )
 {
-    index_n         i;
-    index_n         s;
-    index_n         ls;
+    unsigned        i;
+    unsigned        s;
+    unsigned        ls;
     byte            *p;
 
     if( *bv == NULL ) {
@@ -103,12 +103,12 @@ static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n siz
     return( ls );
 }
 
-static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions, token_n ntoken )
+static int actcmp( action_n *actions, compressed_action *ca, unsigned num_actions, unsigned ntoken )
 {
     action_n        a1;
     action_n        a2;
-    index_n         i;
-    token_n         ca_token;
+    unsigned        i;
+    unsigned        ca_token;
 
     for( i = 0; i < num_actions; ++ca, ++i ) {
         ca_token = ca->token;
@@ -138,9 +138,9 @@ static void actcpy( action_n *actions, compressed_action *ca, index_n num_action
     }
 }
 
-static action_n *actextend( action_n *a, index_n *psize, token_n incr )
+static action_n *actextend( action_n *a, unsigned *psize, unsigned incr )
 {
-    index_n         i;
+    unsigned        i;
 
     i = *psize;
     *psize += incr;
@@ -155,10 +155,10 @@ static action_n *actextend( action_n *a, index_n *psize, token_n incr )
     return( a );
 }
 
-static index_n actcompress( compressed_action *ca, action_n *actions, token_n ntoken )
+static unsigned actcompress( compressed_action *ca, action_n *actions, unsigned ntoken )
 {
-    token_n         token;
-    index_n         num_actions;
+    unsigned        token;
+    unsigned        num_actions;
 
     num_actions = 0;
     for( token = 0; token < ntoken; ++token ) {
@@ -171,12 +171,12 @@ static index_n actcompress( compressed_action *ca, action_n *actions, token_n nt
     return( num_actions );
 }
 
-static index_n insertIntoActionVector( action_n **bv, index_n *bs,
-        compressed_action *ca, index_n num_actions, token_n ntoken )
+static unsigned insertIntoActionVector( action_n **bv, unsigned *bs,
+        compressed_action *ca, unsigned num_actions, unsigned ntoken )
 {
-    index_n         i;
-    index_n         s;
-    index_n         ls;
+    unsigned        i;
+    unsigned        s;
+    unsigned        ls;
     action_n        action;
     action_n        *p;
 
@@ -315,15 +315,15 @@ static int cmp_action( const void *a1, const void *a2 )
     return( 0 );
 }
 
-static action_n *orderActionVectors( action_n **av, token_n ntoken )
+static action_n *orderActionVectors( action_n **av, unsigned ntoken )
 {
     av_info         **a;
     av_info         *p;
     action_n        *actions;
-    index_n         num_entries;
-    token_n         max;
-    token_n         min;
-    token_n         token;
+    unsigned        num_entries;
+    unsigned        max;
+    unsigned        min;
+    unsigned        token;
     action_n        i;
     action_n        *map;
 
@@ -364,24 +364,24 @@ static action_n *orderActionVectors( action_n **av, token_n ntoken )
 
 void genobj_fast( FILE *fp )
 {
-    index_n         i;
-    index_n         j;
+    action_n        i;
+    unsigned        j;
     rule_n          k;
     sym_n           sym_idx;
-    index_n         asize;
+    unsigned        asize;
     token_n         tokval;
-    index_n         vsize;
-    index_n         bsize;
+    unsigned        vsize;
+    unsigned        bsize;
     action_n        *mapping;
     value_size      bitv_base_size;
     byte            *state_vector;
     byte            *bvector;
     compressed_action *ca;
-    index_n         num_actions;
+    unsigned        num_actions;
     bitnum          *mp;
-    index_n         *base;
-    index_n         *abase;
-    index_n         *gbase;
+    unsigned        *base;
+    unsigned        *abase;
+    unsigned        *gbase;
     action_n        *state_actions;
     action_n        *avector;
     action_n        **all_actions;
@@ -391,11 +391,11 @@ void genobj_fast( FILE *fp )
     a_sym           *sym;
     a_pro           *pro;
     an_item         *item;
-    index_n         empty_actions;
+    unsigned        empty_actions;
     action_n        *defaction;
     action_n        state_sidx;
-    token_n         ntoken_term;
-    token_n         ntoken_all;
+    unsigned        ntoken_term;
+    unsigned        ntoken_all;
 
     ntoken_term = FirstNonTerminalTokenValue();
     ntoken_all = ntoken_term;
@@ -407,7 +407,7 @@ void genobj_fast( FILE *fp )
     bsize = 0;
     vsize = __ROUND_UP_SIZE_TO( ntoken_term, 8 );
     state_vector = MALLOC( vsize, byte );
-    base = CALLOC( nstate, index_n );
+    base = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         memset( state_vector, 0, vsize );
@@ -486,7 +486,7 @@ void genobj_fast( FILE *fp )
     avector = NULL;
     asize = 0;
     ca = CALLOC( ntoken_term, compressed_action );
-    abase = CALLOC( nstate, index_n );
+    abase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], ntoken_term );
         abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
@@ -513,7 +513,7 @@ void genobj_fast( FILE *fp )
     }
     mapping = orderActionVectors( all_actions, ntoken_all );
     ca = CALLOC( ntoken_all, compressed_action );
-    gbase = CALLOC( nstate, index_n );
+    gbase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], ntoken_all );
         gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );
@@ -558,8 +558,8 @@ void genobj_fast( FILE *fp )
     endtab( fp );
     putcomment( fp, "index by token (from state base) to see if token is valid in state" );
     begtab( fp, "YYBITTYPE", "yybitcheck" );
-    for( i = 0; i < bsize; ++i ) {
-        puttab( fp, FITS_A_BYTE, bvector[i] );
+    for( j = 0; j < bsize; ++j ) {
+        puttab( fp, FITS_A_BYTE, bvector[j] );
     }
     endtab( fp );
     putcomment( fp, "index by state to get offset into action vector" );
@@ -577,11 +577,11 @@ void genobj_fast( FILE *fp )
     putcomment( fp, "index by token (from state base) to get action for state" );
     empty_actions = 0;
     begtab( fp, "YYACTIONTYPE", "yyactiontab" );
-    for( i = 0; i < asize; ++i ) {
-        if( avector[i] == ACTION_NONE ) {
+    for( j = 0; j < asize; ++j ) {
+        if( avector[j] == ACTION_NONE ) {
             ++empty_actions;
         }
-        puttab( fp, FITS_A_WORD, avector[i] );
+        puttab( fp, FITS_A_WORD, avector[j] );
     }
     endtab( fp );
     putcomment( fp, "index by rule to get length of rule" );
@@ -607,7 +607,7 @@ void genobj_fast( FILE *fp )
     FREE( bvector );
 
     dumpstatistic( "bytes used in tables", bytesused );
-    dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );
+    dumpstatistic( "table space utilization", 100 - ( empty_actions * 100 / asize ) );
 
     puttokennames( fp, 0, FITS_A_WORD );
 
