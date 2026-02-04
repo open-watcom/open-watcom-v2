@@ -129,6 +129,8 @@ void genobj( FILE *fp )
     unsigned        max_savings;
     unsigned        savings;
 
+    /* unused parameters */ (void)fp;
+
     for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
         symtab[sym_idx]->token = sym_idx - nterm;
     }
