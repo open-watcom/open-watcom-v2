@@ -3,7 +3,7 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sygggg, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -319,15 +319,14 @@ void genobj( FILE *fp )
     action_n        *actions;
 //    short           *base;
     action_n        *other;
-    short           *parent;
-    short           *size;
+    action_n        *parent;
+    token_n         *size;
     token_n         *p;
     token_n         *q;
     token_n         *r;
-    action_n        *s;
-    token_n         *t;
+    token_n         *s;
     action_n        error;
-    short           tokval;
+    token_n         tokval;
     action_n        redun;
     token_n         *test;
     token_n         *best;
@@ -372,11 +371,11 @@ void genobj( FILE *fp )
     best = CALLOC( ntoken, token_n );
 //    base = CALLOC( nstate, short );
     other = CALLOC( nstate, action_n );
-    parent = CALLOC( nstate, short );
-    size = CALLOC( nstate, short );
+    parent = CALLOC( nstate, action_n );
+    size = CALLOC( nstate, token_n );
     for( sidx = nstate; sidx-- > 0; ) {
-        for( s = actions + ntoken; s-- > actions; ) {
-            *s = error;
+        for( i = 0; i < ntoken; ++i ) {
+            actions[i] = error;
         }
         state = statetab[sidx];
         q = tokens;
@@ -432,15 +431,17 @@ void genobj( FILE *fp )
             state = statetab[sidx2];
             p = test;
             q = test + ntoken;
-            for( saction = state->trans; (sym = saction->sym) != NULL; ++saction )
-                if( actions[sym->token] == saction->state->sidx ) {
+            for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
+                tokval = sym->token;
+                if( actions[tokval] == saction->state->sidx ) {
                     ++savings;
-                    *p++ = sym->token;
+                    *p++ = tokval;
                 } else {
-                    if( actions[sym->token] == error )
+                    if( actions[tokval] == error )
                         --savings;
-                    *--q = sym->token;
+                    *--q = tokval;
                 }
+            }
             for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
                 if( (redun = pro->pidx + nstate) == other[sidx2] )
                     redun = error;
@@ -468,13 +469,13 @@ void genobj( FILE *fp )
             }
 #if 0
             printf( "state %d calling state %d saves %d:", sidx, sidx2, savings );
-            for( t = test; t < p; ++t ) {
-                print_token( *t );
+            for( s = test; s < p; ++s ) {
+                print_token( *s );
             }
             printf( " costs" );
-            for( t = test + ntoken; --t >= q; ) {
-                if( actions[*t] == error ) {
-                    print_token( *t );
+            for( s = test + ntoken; --s >= q; ) {
+                if( actions[*s] == error ) {
+                    print_token( *s );
                 }
             }
             printf( "\n" );
@@ -483,36 +484,36 @@ void genobj( FILE *fp )
                 max_savings = savings;
                 same = p;
                 diff = q;
-                t = test;  test = best;  best = t;
+                s = test;  test = best;  best = s;
                 parent[sidx] = sidx2;
             }
         }
         if( max_savings < 1 ) { // Could raise threshold for performance
-            t = r;
+            s = r;
         } else {
             ++num_parent;
-            t = tokens;
+            s = tokens;
             p = same;
-            while( --p >= best )
+            while( p-- > best )
                 actions[*p] = error;
             for( q = tokens; q < r; ++q ) {
                 if( actions[*q] != error ) {
-                    *t++ = *q;
+                    *s++ = *q;
                 }
             }
             p = best + ntoken;
-            while( --p >= diff ) {
+            while( p-- > diff ) {
                 if( actions[*p] == error ) {
-                    *t++ = *p;
+                    *s++ = *p;
                 }
             }
             tokval = parent[sidx];
-            *t++ = ptoken;
+            *s++ = ptoken;
             actions[ptoken] = tokval;
         }
-        gencode( fp, sidx, tokens, t, actions, dtoken, ptoken, error );
-        while( t-- > tokens ) {
-            actions[*t] = error;
+        gencode( fp, sidx, tokens, s, actions, dtoken, ptoken, error );
+        while( s-- > tokens ) {
+            actions[*s] = error;
         }
     }
 #if 0

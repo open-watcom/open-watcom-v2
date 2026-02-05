@@ -63,7 +63,7 @@ static a_table      *table;
 
 static void expand_table( base_n new_size )
 {
-    if( new_size > avail ) {
+    if( avail < new_size ) {
         avail = __ROUND_UP_SIZE( new_size, BLOCK );
         if( table != NULL ) {
             table = REALLOC( table, avail, a_table );
@@ -121,7 +121,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
     } else {
         max = *tokens;
         for( r = tokens + 1; r < end_token; ++r ) {
-            if( *r > max ) {
+            if( max < *r ) {
                 max = *r;
             }
         }
@@ -201,8 +201,7 @@ void genobj( FILE *fp )
     a_shift_action  *saction;
     a_reduce_action *raction;
     unsigned        i;
-    index_n         j;
-    token_n         k;
+    token_n         j;
     action_n        sidx;
     action_n        sidx2;
     rule_n          pidx;
@@ -233,8 +232,8 @@ void genobj( FILE *fp )
     }
     actions = CALLOC( ntoken, action_n );
     error = nstate + npro;
-    for( k = 0; k < ntoken; ++k ) {
-        actions[k] = error;
+    for( j = 0; j < ntoken; ++j ) {
+        actions[j] = error;
     }
     tokens = CALLOC( ntoken, token_n );
     test = CALLOC( ntoken, token_n );
@@ -255,8 +254,9 @@ void genobj( FILE *fp )
         state = statetab[sidx];
         q = tokens;
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
-            *q++ = sym->token;
-            actions[sym->token] = saction->state->sidx;
+            tokval = sym->token;
+            *q++ = tokval;
+            actions[tokval] = saction->state->sidx;
         }
         max_savings = 0;
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
@@ -301,10 +301,11 @@ void genobj( FILE *fp )
                 p = test;
                 q = test + ntoken;
                 for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
-                    if( actions[sym->token] == saction->state->sidx ) {
-                       *p++ = sym->token;
+                    tokval = sym->token;
+                    if( actions[tokval] == saction->state->sidx ) {
+                       *p++ = tokval;
                     } else {
-                       *--q = sym->token;
+                       *--q = tokval;
                     }
                 }
                 for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
@@ -344,7 +345,7 @@ void genobj( FILE *fp )
             ++num_parent;
             s = tokens;
             p = same;
-            while( --p >= best )
+            while( p-- > best )
                 actions[*p] = error;
             for( q = tokens; q < r; ++q ) {
                 if( actions[*q] != error ) {
@@ -352,7 +353,7 @@ void genobj( FILE *fp )
                 }
             }
             p = best + ntoken;
-            while( --p >= diff ) {
+            while( p-- > diff ) {
                 if( actions[*p] == error ) {
                     *s++ = *p;
                 }
@@ -362,7 +363,7 @@ void genobj( FILE *fp )
             actions[ptoken] = actval;
         }
         base[sidx] = addtotable( tokens, s, actions, dtoken, ptoken );
-        while( --s >= tokens ) {
+        while( s-- > tokens ) {
             actions[*s] = error;
         }
     }
@@ -453,11 +454,11 @@ void genobj( FILE *fp )
          */
         begtab( fp, "YYPRODTYPE", "yyprodtab" );
         for( pidx = 0; pidx < npro; ++pidx ) {
-            j = 0;
+            i = 0;
             for( item = protab[pidx]->items; item->p.sym != NULL; ++item ) {
-                ++j;
+                ++i;
             }
-            puttab( fp, FITS_A_WORD, (j << shift) + protab[pidx]->sym->token );
+            puttab( fp, FITS_A_WORD, (i << shift) + protab[pidx]->sym->token );
         }
         endtab( fp );
     } else {
