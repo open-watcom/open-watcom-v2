@@ -67,12 +67,12 @@ static void preamble( FILE *fp )
     }
 }
 
-static void prolog( FILE *fp, int i )
+static void prolog( FILE *fp, action_n sidx )
 {
     an_item         **item;
 
-    fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
-    for( item = statetab[i]->items; *item != NULL; ++item ) {
+    fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", sidx );
+    for( item = statetab[sidx]->items; *item != NULL; ++item ) {
         showitem( *item, " ." );
     }
     fprintf( fp, "*/\n{\n" );
@@ -219,7 +219,7 @@ static void epilog( FILE *fp )
     fprintf( fp, "}\n" );
 }
 
-static void gencode( FILE *fp, int statenum, token_n *toklist, token_n *s, action_n *actions,
+static void gencode( FILE *fp, action_n sidx, token_n *toklist, token_n *s, action_n *actions,
                         token_n default_token, token_n parent_token, action_n error )
 {
     action_n        default_action;
@@ -228,7 +228,7 @@ static void gencode( FILE *fp, int statenum, token_n *toklist, token_n *s, actio
     sym_n           sym_idx;
     int             switched;
 
-    prolog( fp, statenum );
+    prolog( fp, sidx );
     default_action = 0;
     switched = false;
     for( ; toklist < s; ++toklist ) {
@@ -316,9 +316,9 @@ static void print_token( int token )
 void genobj( FILE *fp )
 {
     token_n         *tokens;
-    short           *actions;
+    action_n        *actions;
 //    short           *base;
-    short           *other;
+    action_n        *other;
     short           *parent;
     short           *size;
     token_n         *p;
@@ -326,9 +326,9 @@ void genobj( FILE *fp )
     token_n         *r;
     action_n        *s;
     token_n         *t;
-    short           error;
+    action_n        error;
     short           tokval;
-    short           redun;
+    action_n        redun;
     token_n         *test;
     token_n         *best;
 #if 1
@@ -341,8 +341,7 @@ void genobj( FILE *fp )
     a_state         *state;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    int             i;
-    int             j;
+    token_n         i;
     action_n        sidx;
     action_n        sidx2;
     sym_n           sym_idx;
@@ -363,7 +362,7 @@ void genobj( FILE *fp )
     }
 
     error = nstate + npro;
-    actions = CALLOC( ntoken, short );
+    actions = CALLOC( ntoken, action_n );
     for( i = 0; i < ntoken; ++i ) {
         actions[i] = error;
     }
@@ -372,11 +371,11 @@ void genobj( FILE *fp )
     test = CALLOC( ntoken, token_n );
     best = CALLOC( ntoken, token_n );
 //    base = CALLOC( nstate, short );
-    other = CALLOC( nstate, short );
+    other = CALLOC( nstate, action_n );
     parent = CALLOC( nstate, short );
     size = CALLOC( nstate, short );
     for( sidx = nstate; sidx-- > 0; ) {
-        for( s = actions + ntoken; --s >= actions; ) {
+        for( s = actions + ntoken; s-- > actions; ) {
             *s = error;
         }
         state = statetab[sidx];
@@ -512,7 +511,7 @@ void genobj( FILE *fp )
             actions[ptoken] = tokval;
         }
         gencode( fp, sidx, tokens, t, actions, dtoken, ptoken, error );
-        while( --t >= tokens ) {
+        while( t-- > tokens ) {
             actions[*t] = error;
         }
     }
@@ -523,7 +522,7 @@ void genobj( FILE *fp )
 #else
     putambigs( fp, NULL );
 #endif
-    putnum( fp, "YYNOACTION", error - nstate + dtoken );
+    putnum( fp, "YYNOACTION", ( error - nstate ) + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
     putnum( fp, "YYERR", errstate->sidx );
