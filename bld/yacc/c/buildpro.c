@@ -40,7 +40,7 @@ rule_n      npro;
 sym_n       nsym;
 sym_n       nterm;
 sym_n       nvble;
-index_n     nitem;
+unsigned    nitem;
 a_sym       **symtab;
 a_sym       *symlist;
 a_sym       *startsym;

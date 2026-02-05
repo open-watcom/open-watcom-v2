@@ -297,12 +297,12 @@ extern rule_n   npro;    /* # of productions */
 extern sym_n    nsym;    /* # of symbols */
 extern sym_n    nterm;   /* # of terminals */
 extern sym_n    nvble;   /* # of non-terminals */
-extern index_n  nitem;   /* # of LR(0) items */
+extern unsigned nitem;   /* # of LR(0) items */
 
-extern index_n  nbstate;
+extern action_n nbstate;
 extern action_n nstate;
-extern index_n  nvtrans;
-extern index_n  nredun;
+extern action_n nvtrans;
+extern action_n nredun;
 
 extern unsigned nstate_1_reduce;
 

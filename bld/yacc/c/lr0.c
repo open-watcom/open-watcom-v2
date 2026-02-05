@@ -37,10 +37,10 @@
 #include "alloc.h"
 
 
-index_n     nbstate;
-index_n     nstate;
-index_n     nvtrans;
-index_n     nredun;
+action_n    nbstate;
+action_n    nstate;
+action_n    nvtrans;
+action_n    nredun;
 
 a_state     **statetab;
 a_state     *statelist;
@@ -244,8 +244,8 @@ void SetupStateTable( void )
 
 void RemoveDeadStates( void )
 {
-    index_n         old_sidx;
-    index_n         new_sidx;
+    action_n        old_sidx;
+    action_n        new_sidx;
     a_state         *state;
 
     new_sidx = 0;
