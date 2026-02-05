@@ -65,6 +65,29 @@ typedef enum flags {
 #define IsOnlyReduce(c)         ((c)->flag &   M_ONLY_REDUCE)
 #define OnlyReduce(c)           ((c)->flag |=  M_ONLY_REDUCE)
 
+typedef enum {
+    /* ASCII_MIN = 0x0000 */
+    /* ASCII_MAX = 0x00FF */
+    T_IDENTIFIER = 0x0100,  /* includes identifiers and literals */
+    T_CIDENTIFIER,          /* identifier (but not literal) followed by colon */
+    T_NUMBER,               /* -?[0-9]+ */
+    T_MARK,                 /* %% */
+    T_LCURL,                /* %{ */
+    T_RCURL,                /* }% */
+    T_AMBIG,                /* %keywords */
+    T_KEYWORD_ID,
+    T_LEFT,
+    T_RIGHT,
+    T_NONASSOC,
+    T_TOKEN,
+    T_PREC,
+    T_TYPE,
+    T_START,
+    T_UNION,
+    T_TYPENAME,
+    T_EOF
+} a_token_id;
+
 enum {
     TOKEN_EOF           = 0x0000,
     TOKEN_IMPOSSIBLE    = 0x0001,
@@ -86,13 +109,6 @@ typedef enum {
     R_ASSOC             = 2
 } assoc_t;
 
-typedef unsigned char   prec_t;
-
-typedef struct a_prec {
-    assoc_t             assoc;
-    prec_t              prec;
-} a_prec;
-
 typedef unsigned int    a_word;
 typedef unsigned char   byte;
 typedef unsigned short  bitnum;
@@ -103,6 +119,24 @@ typedef unsigned short  index_n;
 typedef unsigned short  base_n;
 typedef unsigned short  rule_n;
 typedef unsigned short  sym_n;
+
+typedef unsigned char   prec_t;
+
+typedef struct a_prec {
+    assoc_t         assoc;
+    prec_t          prec;
+} a_prec;
+
+typedef union {
+    int             number;
+    token_n         id;
+    assoc_t         assoc;
+} tok_value;
+
+typedef struct a_token {
+    a_token_id      id;
+    tok_value       value;
+} a_token;
 
 typedef struct a_state  a_state;
 typedef struct a_sym    a_sym;
@@ -212,12 +246,6 @@ typedef enum value_size {
     FITS_A_BYTE,
     FITS_A_WORD
 } value_size;
-
-typedef union {
-    int         number;
-    token_n     id;
-    assoc_t     assoc;
-} tok_value;
 
 extern void     InitSets( unsigned count );
 extern a_word   *AllocSet( unsigned set_count );

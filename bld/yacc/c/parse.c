@@ -46,29 +46,6 @@
 #define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
 #define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
 
-typedef enum {
-    /* ASCII_MIN = 0x0000 */
-    /* ASCII_MAX = 0x00FF */
-    T_IDENTIFIER = 0x0100,  /* includes identifiers and literals */
-    T_CIDENTIFIER,          /* identifier (but not literal) followed by colon */
-    T_NUMBER,               /* -?[0-9]+ */
-    T_MARK,                 /* %% */
-    T_LCURL,                /* %{ */
-    T_RCURL,                /* }% */
-    T_AMBIG,                /* %keywords */
-    T_KEYWORD_ID,
-    T_LEFT,
-    T_RIGHT,
-    T_NONASSOC,
-    T_TOKEN,
-    T_PREC,
-    T_TYPE,
-    T_START,
-    T_UNION,
-    T_TYPENAME,
-    T_EOF
-} a_token;
-
 typedef struct y_token {
     struct y_token      *next;
     token_n             value;
@@ -101,7 +78,7 @@ static unsigned         bufmax;
 static char             *buf = { NULL };
 
 static int              ch = { ' ' };
-static a_token          token;
+static a_token_id       token;
 static tok_value        value;
 
 static unsigned long    actionsCombined;
@@ -380,7 +357,7 @@ static void copybal( void )
     addbuf( ch );
 }
 
-static a_token scan( unsigned used )
+static a_token_id scan( unsigned used )
 {
     bufused = used;
     eatcrud();
@@ -527,7 +504,7 @@ static a_token scan( unsigned used )
     return( token );
 }
 
-static a_token scan_typename( unsigned used )
+static a_token_id scan_typename( unsigned used )
 {
     bufused = used;
     if( TYPENAME_FIRST_CHAR( ch ) ) {
@@ -1020,7 +997,7 @@ void defs( FILE *fp )
 {
     token_n         gentoken;
     a_sym           *sym;
-    a_token         ctype;
+    a_token_id      ctype;
     char            *type;
     a_prec          prec;
 
