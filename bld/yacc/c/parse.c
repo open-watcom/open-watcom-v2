@@ -81,7 +81,7 @@ static int              ch = { ' ' };
 static a_token_id       token;
 static tok_value        value;
 
-static unsigned long    actionsCombined;
+static unsigned         actionsCombined;
 static uniq_case        *caseActions;
 
 static y_token          *tokens_head = NULL;
@@ -89,7 +89,7 @@ static y_token          *tokens_tail = NULL;
 
 static char             *union_name = NULL;
 
-static xlat_entry       xlat[] = {
+static const xlat_entry xlat[] = {
     { '~',      "TILDE" },
     { '`',      "BACKQUOTE" },
     { '!',      "EXCLAMATION" },
@@ -158,8 +158,8 @@ static int nextc( void )
 
 static bool xlat_char( bool special, int c )
 {
-    xlat_entry      *t;
-    char            buff[16];
+    const xlat_entry    *t;
+    char                buff[16];
 
     if( isalpha( c ) || isdigit( c ) || c == '_' ) {
         if( special ) {

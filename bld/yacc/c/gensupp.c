@@ -70,7 +70,7 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
     index_n         ambig_shift;
     index_n         ambig_shift_based;
 
-    static char *msg[] = {
+    static const char * const msg[] = {
         "#define\tYYAMBIGS%u\t%d\t/* ambiguous state (%u) */\n",
         "#define\tYYAMBIGT%u\t%d\t/* token causing ambiguity */\n",
         "#define\tYYAMBIGH%u\t%d\t/* state to shift (%u) */\n",

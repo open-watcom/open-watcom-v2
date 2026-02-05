@@ -42,7 +42,7 @@
 
 static FILE *tblout;
 
-static char *opstr[] = {
+static const char * const opstr[] = {
     "_jl",          /* JLT */
     "_je",          /* JEQ */
     "_jg",          /* JGT */
@@ -59,7 +59,7 @@ static char *opstr[] = {
     "_reduce"       /* REDUCE */
 };
 
-static unsigned opsize[] = {
+static const unsigned opsize[] = {
     5,              /* JLT */
     5,              /* JEQ */
     5,              /* JGT */

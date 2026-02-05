@@ -43,8 +43,9 @@ typedef unsigned    freq_n;
 
 unsigned    keyword_id_low;
 unsigned    keyword_id_high;
-unsigned    nStates;
-unsigned    nActions;
+
+static unsigned    nStates;
+static unsigned    nActions;
 
 static bool okToConsider( a_sym *sym )
 {
