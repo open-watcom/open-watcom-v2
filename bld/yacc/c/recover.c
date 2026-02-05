@@ -65,11 +65,12 @@ static AddError()
     a_word          *conflict;
     a_word          *rset;
     short           *at;
+    rule_n          pidx;
 
     trans = CALLOC( nsym, a_shift_action );
     raction = redun = CALLOC( npro + 1, a_reduce_action );
     rset = conflict = AllocSet( npro + 2 );
-    for( i = 0; i <= npro; ++i ) {
+    for( pidx = 0; pidx <= npro; ++pidx ) {
         raction->follow = rset;
         ++raction;
         rset += GetSetSize( 1 );

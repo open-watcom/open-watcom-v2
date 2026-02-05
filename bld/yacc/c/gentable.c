@@ -201,7 +201,7 @@ void genobj( FILE *fp )
     a_reduce_action *raction;
     index_n         i;
     index_n         j;
-    rule_n          k;
+    rule_n          pidx;
     sym_n           sym_idx;
     unsigned        max_savings;
     unsigned        savings;
@@ -449,12 +449,12 @@ void genobj( FILE *fp )
          * Combine lengths & lhs into a single table
          */
         begtab( fp, "YYPRODTYPE", "yyprodtab" );
-        for( k = 0; k < npro; ++k ) {
+        for( pidx = 0; pidx < npro; ++pidx ) {
             j = 0;
-            for( item = protab[k]->items; item->p.sym != NULL; ++item ) {
+            for( item = protab[pidx]->items; item->p.sym != NULL; ++item ) {
                 ++j;
             }
-            puttab( fp, FITS_A_WORD, (j << shift) + protab[k]->sym->token );
+            puttab( fp, FITS_A_WORD, (j << shift) + protab[pidx]->sym->token );
         }
         endtab( fp );
     } else {
@@ -474,16 +474,16 @@ void genobj( FILE *fp )
         }
         endtab( fp );
         begtab( fp, "YYPLENTYPE", "yyplentab" );
-        for( k = 0; k < npro; ++k ) {
-            for( item = protab[k]->items; item->p.sym != NULL; ) {
+        for( pidx = 0; pidx < npro; ++pidx ) {
+            for( item = protab[pidx]->items; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[k]->items ) );
+            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[pidx]->items ) );
         }
         endtab( fp );
         begtab( fp, "YYPLHSTYPE", "yyplhstab" );
-        for( k = 0; k < npro; ++k ) {
-            puttab( fp, token_size, protab[k]->sym->token );
+        for( pidx = 0; pidx < npro; ++pidx ) {
+            puttab( fp, token_size, protab[pidx]->sym->token );
         }
         endtab( fp );
     }

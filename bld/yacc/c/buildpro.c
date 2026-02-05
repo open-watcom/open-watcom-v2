@@ -137,11 +137,11 @@ a_sym *addsym( char *s )
     return( *sym );
 }
 
-a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
+a_pro *addpro( a_sym *sym, a_sym **rhs, unsigned n )
 {
     a_pro           *pro;
     size_t          amt;
-    int             i;
+    unsigned        i;
 
     amt = sizeof( a_pro ) + n * sizeof( an_item );
     pro = (a_pro *)CALLOC( amt, char );
@@ -162,10 +162,10 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
 
 void showpro( void )
 {
-    rule_n          i;
+    rule_n          pidx;
 
-    for( i = 0; i < npro; ++i ) {
-        showitem( protab[i]->items, "" );
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        showitem( protab[pidx]->items, "" );
     }
 }
 
@@ -196,23 +196,23 @@ void showitem( an_item *p, char *dot )
 void show_unused( void )
 {
     unsigned        count;
-    rule_n          i;
+    rule_n          pidx;
 
     count = 0;
-    for( i = 0; i < npro; ++i ) {
-        if( protab[i]->sym == goalsym )
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        if( protab[pidx]->sym == goalsym )
             continue;
-        if( !protab[i]->used ) {
+        if( !protab[pidx]->used ) {
             ++count;
         }
     }
     dumpstatistic( "number of rules not reduced", count );
     if( count ) {
-        for( i = 0; i < npro; ++i ) {
-            if( protab[i]->sym == goalsym )
+        for( pidx = 0; pidx < npro; ++pidx ) {
+            if( protab[pidx]->sym == goalsym )
                 continue;
-            if( !protab[i]->used ) {
-                showitem( protab[i]->items, "" );
+            if( !protab[pidx]->used ) {
+                showitem( protab[pidx]->items, "" );
             }
         }
     }

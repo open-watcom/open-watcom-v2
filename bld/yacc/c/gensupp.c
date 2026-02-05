@@ -177,7 +177,7 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
 {
     unsigned        rule_base;
     an_item         *item;
-    rule_n          i;
+    rule_n          pidx;
     sym_n           sym_idx;
 
     if( ! denseflag ) {
@@ -186,17 +186,17 @@ void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
     fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
     begtab( fp, "unsigned short", "yyrulebase" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->items; item->p.sym != NULL; ) {
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        for( item = protab[pidx]->items; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
-        rule_base += (unsigned)( item - protab[i]->items );
+        rule_base += (unsigned)( item - protab[pidx]->items );
     }
     endtab( fp );
     begtab( fp, "YYTOKENTYPE", "yyrhstoks" );
-    for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        for( item = protab[pidx]->items; item->p.sym != NULL; ++item ) {
             puttab( fp, token_size, item->p.sym->token );
         }
     }

@@ -124,7 +124,7 @@ void genobj( FILE *fp )
     a_shift_action  *saction;
     a_reduce_action *raction;
     int             i;
-    rule_n          j;
+    rule_n          pidx;
     sym_n           sym_idx;
     unsigned        max_savings;
     unsigned        savings;
@@ -215,14 +215,14 @@ void genobj( FILE *fp )
     FREE( target );
     FREE( symbol );
 
-    for( j = 0; j < npro; ++j ) {
-        pro = protab[j];
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        pro = protab[pidx];
         if( pro != startpro ) {
             for( item = pro->items; item->p.sym != NULL; ) {
                 ++item;
             }
             emitins( LBL, PROENTRY( pro->pidx ) );
-            emitins( ACTION, PROPACK( item - pro->items, j ) );
+            emitins( ACTION, PROPACK( item - pro->items, pidx ) );
             emitins( REDUCE, PROPACK( item - pro->items, pro->sym->token ) );
         }
     }

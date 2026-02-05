@@ -366,7 +366,7 @@ void genobj_fast( FILE *fp )
 {
     action_n        i;
     unsigned        j;
-    rule_n          k;
+    rule_n          pidx;
     sym_n           sym_idx;
     unsigned        asize;
     token_n         tokval;
@@ -586,17 +586,17 @@ void genobj_fast( FILE *fp )
     endtab( fp );
     putcomment( fp, "index by rule to get length of rule" );
     begtab( fp, "YYPLENTYPE", "yyplentab" );
-    for( k = 0; k < npro; ++k ) {
-        for( item = protab[k]->items; item->p.sym != NULL; ) {
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        for( item = protab[pidx]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[k]->items ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[pidx]->items ) );
     }
     endtab( fp );
     putcomment( fp, "index by rule to get left hand side token" );
     begtab( fp, "YYPLHSTYPE", "yyplhstab" );
-    for( k = 0; k < npro; ++k ) {
-        puttab( fp, FITS_A_WORD, protab[k]->sym->token );
+    for( pidx = 0; pidx < npro; ++pidx ) {
+        puttab( fp, FITS_A_WORD, protab[pidx]->sym->token );
     }
     endtab( fp );
 

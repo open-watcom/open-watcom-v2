@@ -267,7 +267,7 @@ extern unsigned Cardinality( a_word * );
 extern void     buildpro(void);
 extern a_sym    *findsym(char *);
 extern a_sym    *addsym(char *);
-extern a_pro    *addpro(a_sym *,a_sym **,int );
+extern a_pro    *addpro(a_sym *,a_sym **,unsigned );
 extern void     showpro(void);
 extern void     showitem(an_item *,char *);
 extern void     show_unused(void);
