@@ -324,14 +324,14 @@ static action_n *orderActionVectors( action_n **av, unsigned ntoken )
     unsigned        max;
     unsigned        min;
     unsigned        token;
-    action_n        i;
+    action_n        sidx;
     action_n        *map;
 
     a = MALLOC( nstate, av_info * );
-    for( i = 0; i < nstate; ++i ) {
-        actions = av[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        actions = av[sidx];
         p = MALLOC( 1, av_info );
-        a[i] = p;
+        a[sidx] = p;
         max = 0;
         min = ntoken;
         num_entries = 0;
@@ -347,16 +347,16 @@ static action_n *orderActionVectors( action_n **av, unsigned ntoken )
         p->min = min;
         p->max = max;
         p->num_entries = num_entries;
-        p->index = i;
+        p->index = sidx;
         p->action_vector = actions;
     }
     qsort( a, nstate, sizeof( av_info * ), cmp_action );
     map = MALLOC( nstate, action_n );
-    for( i = 0; i < nstate; ++i ) {
-        map[i] = a[i]->index;
-        av[i] = a[i]->action_vector;
-        FREE( a[i] );
-        a[i] = NULL;
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        map[sidx] = a[sidx]->index;
+        av[sidx] = a[sidx]->action_vector;
+        FREE( a[sidx] );
+        a[sidx] = NULL;
     }
     FREE( a );
     return( map );
@@ -364,7 +364,7 @@ static action_n *orderActionVectors( action_n **av, unsigned ntoken )
 
 void genobj_fast( FILE *fp )
 {
-    action_n        i;
+    action_n        sidx;
     unsigned        j;
     rule_n          pidx;
     sym_n           sym_idx;
@@ -408,8 +408,8 @@ void genobj_fast( FILE *fp )
     vsize = __ROUND_UP_SIZE_TO( ntoken_term, 8 );
     state_vector = MALLOC( vsize, byte );
     base = CALLOC( nstate, unsigned );
-    for( i = 0; i < nstate; ++i ) {
-        state = statetab[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        state = statetab[sidx];
         memset( state_vector, 0, vsize );
         /*
          * iterate over all shifts in state
@@ -442,16 +442,16 @@ void genobj_fast( FILE *fp )
                 SetBit( state_vector, tokval, 8 );
             }
         }
-        base[i] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );
+        base[sidx] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );
     }
     FREE( state_vector );
 
     defaction = CALLOC( nstate, action_n );
     all_actions = MALLOC( nstate, action_n * );
-    for( i = 0; i < nstate; ++i ) {
-        state = statetab[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        state = statetab[sidx];
         state_actions = MALLOC( ntoken_term, action_n );
-        all_actions[i] = state_actions;
+        all_actions[sidx] = state_actions;
         for( j = 0; j < ntoken_term; ++j ) {
             state_actions[j] = ACTION_NONE;
         }
@@ -463,7 +463,7 @@ void genobj_fast( FILE *fp )
                 continue;
             state_sidx = saction->state->sidx;
             if( saction->is_default ) {
-                defaction[i] = state_sidx;
+                defaction[sidx] = state_sidx;
                 continue;
             }
             state_actions[sym->token] = state_sidx;
@@ -473,7 +473,7 @@ void genobj_fast( FILE *fp )
          */
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction ) {
-                defaction[i] = reduceaction( state, raction );
+                defaction[sidx] = reduceaction( state, raction );
                 continue;
             }
             for( mp = Members( raction->follow ); mp-- != setmembers; ) {
@@ -487,18 +487,18 @@ void genobj_fast( FILE *fp )
     asize = 0;
     ca = CALLOC( ntoken_term, compressed_action );
     abase = CALLOC( nstate, unsigned );
-    for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], ntoken_term );
-        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
-        FREE( all_actions[i] );
-        all_actions[i] = NULL;
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        num_actions = actcompress( ca, all_actions[sidx], ntoken_term );
+        abase[mapping[sidx]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
+        FREE( all_actions[sidx] );
+        all_actions[sidx] = NULL;
     }
     FREE( mapping );
     FREE( ca );
-    for( i = 0; i < nstate; ++i ) {
-        state = statetab[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        state = statetab[sidx];
         state_actions = MALLOC( ntoken_all, action_n );
-        all_actions[i] = state_actions;
+        all_actions[sidx] = state_actions;
         for( j = 0; j < ntoken_all; ++j ) {
             state_actions[j] = ACTION_NONE;
         }
@@ -514,11 +514,11 @@ void genobj_fast( FILE *fp )
     mapping = orderActionVectors( all_actions, ntoken_all );
     ca = CALLOC( ntoken_all, compressed_action );
     gbase = CALLOC( nstate, unsigned );
-    for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], ntoken_all );
-        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );
-        FREE( all_actions[i] );
-        all_actions[i] = NULL;
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        num_actions = actcompress( ca, all_actions[sidx], ntoken_all );
+        gbase[mapping[sidx]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );
+        FREE( all_actions[sidx] );
+        all_actions[sidx] = NULL;
     }
     FREE( mapping );
     FREE( ca );
@@ -541,8 +541,8 @@ void genobj_fast( FILE *fp )
 
     putcomment( fp, "index by state to get default action for state" );
     begtab( fp, "YYACTIONTYPE", "yydefaction" );
-    for( i = 0; i < nstate; ++i ) {
-        puttab( fp, FITS_A_WORD, defaction[i] );
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        puttab( fp, FITS_A_WORD, defaction[sidx] );
     }
     endtab( fp );
     FREE( defaction );
@@ -552,8 +552,8 @@ void genobj_fast( FILE *fp )
     }
     putcomment( fp, "index by state to get offset into bit vector" );
     begtab( fp, "YYBITBASETYPE", "yybitbase" );
-    for( i = 0; i < nstate; ++i ) {
-        puttab( fp, bitv_base_size, base[i] );
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        puttab( fp, bitv_base_size, base[sidx] );
     }
     endtab( fp );
     putcomment( fp, "index by token (from state base) to see if token is valid in state" );
@@ -564,14 +564,14 @@ void genobj_fast( FILE *fp )
     endtab( fp );
     putcomment( fp, "index by state to get offset into action vector" );
     begtab( fp, "YYACTIONBASETYPE", "yyactionbasetab" );
-    for( i = 0; i < nstate; ++i ) {
-        puttab( fp, FITS_A_WORD, abase[i] );
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        puttab( fp, FITS_A_WORD, abase[sidx] );
     }
     endtab( fp );
     putcomment( fp, "index by state to get offset into action vector" );
     begtab( fp, "YYACTIONBASETYPE", "yygotobase" );
-    for( i = 0; i < nstate; ++i ) {
-        puttab( fp, FITS_A_WORD, gbase[i] );
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        puttab( fp, FITS_A_WORD, gbase[sidx] );
     }
     endtab( fp );
     putcomment( fp, "index by token (from state base) to get action for state" );

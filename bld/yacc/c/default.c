@@ -48,17 +48,17 @@ void MarkDefaultReductions( void )
     a_reduce_action *raction;
     a_reduce_action *default_raction;
     a_shift_action  *saction;
-    unsigned        i;
+    action_n        sidx;
     unsigned        max_tokens;
     unsigned        count_tokens;
     unsigned        nshifts;
     unsigned        nreduces;
 
-    for( i = 0; i < nstate; ++i ) {
+    for( sidx = 0; sidx < nstate; ++sidx ) {
         /*
          * iterate over all reductions in state
          */
-        state = statetab[i];
+        state = statetab[sidx];
         nshifts = 0;
         for( saction = state->trans; saction->sym != NULL; ++saction ) {
             ++nshifts;

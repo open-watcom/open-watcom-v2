@@ -498,21 +498,21 @@ void EliminateUnitReductions( void )
 {
     unsigned        sum;
     a_word          *reduce_set;
-    int             i;
+    action_n        sidx;
 
     sum = 0;
     do {
         changeOccurred = 0;
-        for( i = 0; i < nstate; ++i ) {
-            tossSingleReduceStates( statetab[i] );
+        for( sidx = 0; sidx < nstate; ++sidx ) {
+            tossSingleReduceStates( statetab[sidx] );
         }
         sum += changeOccurred;
     } while( changeOccurred );
     reduce_set = AllocSet( 1 );
     do {
         changeOccurred = 0;
-        for( i = 0; i < nstate; ++i ) {
-            tryElimination( statetab[i], reduce_set );
+        for( sidx = 0; sidx < nstate; ++sidx ) {
+            tryElimination( statetab[sidx], reduce_set );
         }
         sum += changeOccurred;
     } while( changeOccurred );

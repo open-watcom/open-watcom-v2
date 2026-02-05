@@ -554,11 +554,11 @@ void lalr1( void )
 
 void showstates( void )
 {
-    int             i;
+    action_n        sidx;
 
-    for( i = 0; i < nstate; ++i ) {
+    for( sidx = 0; sidx < nstate; ++sidx ) {
         printf( "\n" );
-        showstate( statetab[i] );
+        showstate( statetab[sidx] );
     }
 }
 

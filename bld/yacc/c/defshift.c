@@ -63,7 +63,7 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
     freq_n          max;
     a_shift_action  *saction;
     a_sym           *sym;
-    action_n        j;
+    action_n        sidx;
     action_n        max_sidx;
 
     if( IsDead( state ) ) {
@@ -102,11 +102,11 @@ static void doState( a_state *state, freq_n *state_freq, bool *all_used, unsigne
      */
     max_sidx = 0;
     max = 0;
-    for( j = 0; j < nstate; ++j ) {
-        freq_n test = state_freq[j];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        freq_n test = state_freq[sidx];
         if( max < test ) {
             max = test;
-            max_sidx = j;
+            max_sidx = sidx;
         }
     }
     if( max == 0 ) {
@@ -132,13 +132,13 @@ void MarkDefaultShifts( void )
     unsigned        range_size;
     freq_n          *state_freq;
     bool            *all_used;
-    int             i;
+    action_n        sidx;
 
     state_freq = MALLOC( nstate, freq_n );
     range_size = ( keyword_id_high - keyword_id_low ) + 1;
     all_used = MALLOC( range_size, bool );
-    for( i = 0; i < nstate; ++i ) {
-        doState( statetab[i], state_freq, all_used, range_size );
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        doState( statetab[sidx], state_freq, all_used, range_size );
     }
     FREE( all_used );
     FREE( state_freq );

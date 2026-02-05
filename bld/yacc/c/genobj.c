@@ -123,7 +123,7 @@ void genobj( FILE *fp )
     a_state         *state;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    int             i;
+    action_n        sidx;
     rule_n          pidx;
     sym_n           sym_idx;
     unsigned        max_savings;
@@ -143,8 +143,8 @@ void genobj( FILE *fp )
         target[sym_idx] = DEFAULT;
     }
     symbol = CALLOC( nsym, sym_n );
-    for( i = 0; i < nstate; ++i ) {
-        state = statetab[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        state = statetab[sidx];
         r = q = symbol;
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym == eofsym ) {

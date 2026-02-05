@@ -78,6 +78,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
 {
     base_n          start;
     base_n          i;
+    unsigned        j;
     token_n         max;
     action_n        default_action;
     token_n         *r;
@@ -160,9 +161,9 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
             }
             SetAction( t, actval );
         }
-        i = start + max + 1;
-        if( i > used ) {
-            used = i;
+        j = start + max + 1;
+        if( used < j ) {
+            used = j;
         }
     }
     return( start );
@@ -199,8 +200,11 @@ void genobj( FILE *fp )
     a_state         *state;
     a_shift_action  *saction;
     a_reduce_action *raction;
-    index_n         i;
+    unsigned        i;
     index_n         j;
+    token_n         k;
+    action_n        sidx;
+    action_n        sidx2;
     rule_n          pidx;
     sym_n           sym_idx;
     unsigned        max_savings;
@@ -229,8 +233,8 @@ void genobj( FILE *fp )
     }
     actions = CALLOC( ntoken, action_n );
     error = nstate + npro;
-    for( i = 0; i < ntoken; ++i ) {
-        actions[i] = error;
+    for( k = 0; k < ntoken; ++k ) {
+        actions[k] = error;
     }
     tokens = CALLOC( ntoken, token_n );
     test = CALLOC( ntoken, token_n );
@@ -247,9 +251,8 @@ void genobj( FILE *fp )
     table = NULL;
     shift = 0;
     parent_base = 0;
-    for( i = nstate; i > 0; ) {
-        --i;
-        state = statetab[i];
+    for( sidx = nstate; sidx-- > 0; ) {
+        state = statetab[sidx];
         q = tokens;
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             *q++ = sym->token;
@@ -275,7 +278,7 @@ void genobj( FILE *fp )
         }
         if( max_savings ) {
             actval = actions[*r];
-            other[i] = actval;
+            other[sidx] = actval;
             *q++ = dtoken;
             actions[dtoken] = actval;
             p = r;
@@ -286,15 +289,15 @@ void genobj( FILE *fp )
             q = r;
             ++num_default;
         } else {
-            other[i] = error;
+            other[sidx] = error;
         }
         r = q;
         min_len = (unsigned)( q - tokens );
-        size[i] = min_len;
-        parent[i] = nstate;
-        for( j = nstate; --j > i; ) {
-            if( abs( size[j] - size[i] ) < min_len ) {
-                state = statetab[j];
+        size[sidx] = min_len;
+        parent[sidx] = nstate;
+        for( sidx2 = nstate; --sidx2 > sidx; ) {
+            if( abs( size[sidx2] - size[sidx] ) < min_len ) {
+                state = statetab[sidx2];
                 p = test;
                 q = test + ntoken;
                 for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
@@ -306,7 +309,7 @@ void genobj( FILE *fp )
                 }
                 for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
                     redun = pro->pidx + nstate;
-                    if( redun == other[j] )
+                    if( redun == other[sidx2] )
                         redun = error;
                     for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                         sym_idx = *mp;
@@ -318,24 +321,24 @@ void genobj( FILE *fp )
                         }
                     }
                 }
-                if( other[j] != error ) {
-                    if( other[j] == other[i] ) {
+                if( other[sidx2] != error ) {
+                    if( other[sidx2] == other[sidx] ) {
                         *p++ = dtoken;
                     } else {
                         *--q = dtoken;
                     }
                 }
-                len = (unsigned)( size[i] + size[j] - 2 * ( p - test ) );
+                len = (unsigned)( size[sidx] + size[sidx2] - 2 * ( p - test ) );
                 if( min_len > len ) {
                     min_len = len;
                     same = p;
                     diff = q;
                     s = test; test = best; best = s;
-                    parent[i] = j;
+                    parent[sidx] = sidx2;
                 }
             }
         }
-        if( min_len >= size[i] ) {
+        if( min_len >= size[sidx] ) {
             s = r;
         } else {
             ++num_parent;
@@ -354,11 +357,11 @@ void genobj( FILE *fp )
                     *s++ = *p;
                 }
             }
-            actval = parent[i];
+            actval = parent[sidx];
             *s++ = ptoken;
             actions[ptoken] = actval;
         }
-        base[i] = addtotable( tokens, s, actions, dtoken, ptoken );
+        base[sidx] = addtotable( tokens, s, actions, dtoken, ptoken );
         while( --s >= tokens ) {
             actions[*s] = error;
         }
@@ -394,21 +397,21 @@ void genobj( FILE *fp )
 
     if( compactflag ) {
         begtab( fp, "YYPACKTYPE", "yyacttab" );
-        j = nstate;
+        sidx = nstate;
         for( i = 0; i < used; ++i ) {
             new_action = table[i].action;
-            if( i == base[j - 1] ) {
-                --j;
+            if( i == base[sidx - 1] ) {
+                --sidx;
                 /*
                  * First element in each state is default/parent
                  */
-                if( parent[j] == nstate ) {
+                if( parent[sidx] == nstate ) {
                     /*
                      * No parent state
                      */
                     tokval = used + parent_base;
                 } else {
-                    tokval = base[parent[j]] + parent_base;
+                    tokval = base[parent[sidx]] + parent_base;
                 }
                 /*
                  * 0 indicates no default
@@ -465,11 +468,11 @@ void genobj( FILE *fp )
         endtab( fp );
         begtab( fp, "YYACTTYPE", "yyacttab" );
         for( i = 0; i < used; ++i ) {
-            j = Action( table + i );
-            if( j < nstate ) {
-                puttab( fp, FITS_A_WORD, base[j] );
+            sidx = Action( table + i );
+            if( sidx < nstate ) {
+                puttab( fp, FITS_A_WORD, base[sidx] );
             } else {
-                puttab( fp, FITS_A_WORD, j - nstate + used );
+                puttab( fp, FITS_A_WORD, sidx - nstate + used );
             }
         }
         endtab( fp );

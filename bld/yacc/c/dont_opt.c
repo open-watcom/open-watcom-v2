@@ -104,13 +104,13 @@ static a_sym *findEntrySym( a_state *state )
 
 void MarkNoUnitRuleOptimizationStates( void )
 {
-    int             i;
+    action_n        sidx;
     a_sym           *entry_sym;
     a_state         *state;
     a_pro           *pro;
 
-    for( i = 0; i < nstate; ++i ) {
-        state = statetab[i];
+    for( sidx = 0; sidx < nstate; ++sidx ) {
+        state = statetab[sidx];
 //        if( IsDead( *state ) )
 //            continue;
         if( !IsAmbiguous( state ) )
