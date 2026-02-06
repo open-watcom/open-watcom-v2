@@ -41,7 +41,7 @@
 unsigned            bytesused;
 
 static unsigned     tabcol;
-static char         *tablename;
+static const char   *tablename;
 
 token_n FirstNonTerminalTokenValue( void )
 {
@@ -108,12 +108,12 @@ void putambigs( FILE *fp, base_n *base )
     }
 }
 
-void putnum( FILE *fp, char *name, int i )
+void putnum( FILE *fp, const char *name, int i )
 {
     fprintf( fp, "#define\t%-20s\t%5d\n", name, i );
 }
 
-void begtab( FILE *fp, char *tipe, char *name )
+void begtab( FILE *fp, const char *tipe, const char *name )
 {
     fprintf( fp, "static const %s YYFAR %s[] = {", tipe, name );
     tablename = name;
@@ -168,7 +168,7 @@ void endtab( FILE *fp )
     fprintf( fp, "\n};\n" );
 }
 
-void putcomment( FILE *fp, char *comment )
+void putcomment( FILE *fp, const char *comment )
 {
     fprintf( fp, "/* %s */\n", comment );
 }

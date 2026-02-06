@@ -168,12 +168,12 @@ bitnum  *Members( a_word *s )
     return( p );
 }
 
-void DumpSet( a_word *s )
+void DumpSet( const a_word *s )
 {
-    char            *p;
+    const char      *p;
     unsigned        size;
 
-    p = (char *)s;
+    p = (const char *)s;
     for( size = wperset * WSIZE; size > 0; --size ) {
         printf( "%02x", *p++ );
     }

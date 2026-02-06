@@ -106,7 +106,7 @@ void buildpro( void )
     }
 }
 
-static a_sym **findsymptr( char *s )
+static a_sym **findsymptr( const char *s )
 {
     a_sym           **sym;
 
@@ -118,12 +118,12 @@ static a_sym **findsymptr( char *s )
     return( sym );
 }
 
-a_sym *findsym( char *s )
+a_sym *findsym( const char *s )
 {
     return( *findsymptr( s ) );
 }
 
-a_sym *addsym( char *s )
+a_sym *addsym( const char *s )
 {
     a_sym           **sym;
     a_sym           *p;
@@ -169,7 +169,7 @@ void showpro( void )
     }
 }
 
-void showitem( an_item *p, char *dot )
+void showitem( an_item *p, const char *dot )
 {
     an_item         *q;
     a_pro           *pro;

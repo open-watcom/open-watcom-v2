@@ -261,15 +261,15 @@ extern void     UnionAnd(a_word *,a_word *,a_word *);
 extern bitnum   *Members(a_word *);
 extern bool     EmptyIntersection( a_word *, a_word * );
 extern bool     Equal( a_word *, a_word * );
-extern void     DumpSet(a_word *);
+extern void     DumpSet( const a_word * );
 extern unsigned Cardinality( a_word * );
 
 extern void     buildpro(void);
-extern a_sym    *findsym(char *);
-extern a_sym    *addsym(char *);
+extern a_sym    *findsym( const char * );
+extern a_sym    *addsym( const char * );
 extern a_pro    *addpro(a_sym *,a_sym **,unsigned );
 extern void     showpro(void);
-extern void     showitem(an_item *,char *);
+extern void     showitem(an_item *, const char * );
 extern void     show_unused(void);
 
 extern void     lalr1(void );
@@ -288,14 +288,14 @@ extern void     ShowSentence( a_state *, a_sym *, a_pro *, a_state * );
 
 extern void     FindUnused( void );
 
-extern char     *getname( char * );
+extern char     *getname( const char * );
 
-extern FILE     *fpopen( char *, char * );
+extern FILE     *fpopen( const char *, const char * );
 
-extern void     defs( FILE * );
-extern void     rules( FILE * );
+extern void     defs( FILE *, a_token *tok );
+extern void     rules( FILE *, a_token *tok );
 extern void     parsestats( void );
-extern void     tail( FILE * );
+extern void     tail( FILE *, a_token *tok );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
 extern void     free_header_data( void );
@@ -303,23 +303,23 @@ extern void     free_header_data( void );
 extern void     genobj( FILE * );
 extern void     genobj_fast( FILE * );
 
-extern void     msg( char *, ... );
-extern void     warn( char *, ... );
-extern void     srcinfo_msg( char *, ... );
-extern void     srcinfo_warn( char *, ... );
-extern void     dumpstatistic( char *name, unsigned stat );
+extern void     msg( const char *, ... );
+extern void     warn( const char *, ... );
+extern void     srcinfo_msg( const char *, ... );
+extern void     srcinfo_warn( const char *, ... );
+extern void     dumpstatistic( const char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );
 
 extern token_n  FirstNonTerminalTokenValue( void );
 extern void     endtab( FILE *fp );
 extern void     putcompact( FILE *fp, token_n token, action_n action );
-extern void     begtab( FILE *fp, char *tipe, char *name );
-extern void     putnum( FILE *fp, char *name, int i );
+extern void     begtab( FILE *fp, const char *tipe, const char *name );
+extern void     putnum( FILE *fp, const char *name, int i );
 extern void     putambigs( FILE *fp, base_n *base );
 extern void     puttab( FILE *fp, value_size fits, unsigned i );
 extern void     puttokennames( FILE *fp, token_n dtoken, value_size token_size );
-extern void     putcomment( FILE *fp, char *comment );
+extern void     putcomment( FILE *fp, const char *comment );
 
 extern rule_n   npro;    /* # of productions */
 extern sym_n    nsym;    /* # of symbols */

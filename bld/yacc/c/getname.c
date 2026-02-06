@@ -35,8 +35,8 @@
 #include "yacc.h"
 
 
-char *getname( char *qualname )
-/******************************
+char *getname( const char *qualname )
+/************************************
  *  Return the file name portion of a qualified name.
  */
 {
@@ -47,6 +47,6 @@ char *getname( char *qualname )
       || (name = strrchr( qualname, ':' )) != NULL ) {
         return( name + 1 );
     } else {
-        return( qualname );
+        return( (char *)qualname );
     }
 }

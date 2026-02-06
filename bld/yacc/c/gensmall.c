@@ -52,12 +52,12 @@ static unsigned     used;
 static unsigned     table_size;
 static int          tabcol;
 
-void dump_define( FILE *fp, char *name, int i )
+static void dump_define( FILE *fp, const char *name, int i )
 {
     fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
 
-static void begin_table( FILE *fp, char *tipe, char *name )
+static void begin_table( FILE *fp, const char *tipe, const char *name )
 {
     fprintf( fp, "static const %s YYFAR %s[] = {", tipe, name );
     tabcol = 0;
@@ -65,7 +65,7 @@ static void begin_table( FILE *fp, char *tipe, char *name )
 
 void puttab( FILE *fp, value_size fits, unsigned i )
 {
-    char            *format;
+    const char      *format;
     unsigned        mod;
 
     if( fits == FITS_A_BYTE ) {

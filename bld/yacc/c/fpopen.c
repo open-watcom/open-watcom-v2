@@ -36,15 +36,15 @@
 #include "yacc.h"
 
 
-FILE *fpopen( char *path, char *name )
-/*************************************
+FILE *fpopen( const char *path, const char *name )
+/*************************************************
  *  Attempt to open 'name', first in the current directory, then along
  *  'path' (a list of ';' separated directory names.)
  */
 {
     FILE            *file;
     char            *qualname;
-    char            *p;
+    const char      *p;
     size_t          dirlen;
     size_t          namelen;
 
