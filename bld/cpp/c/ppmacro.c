@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -619,7 +619,7 @@ static MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
         if( token == PPT_ID ) {
             for( i = 1; i < me->parmcount; i++ ) {
                 p = macro_parms[i - 1].name;
-                if( memcmp( p1, p, len ) == 0 && p[len] == '\0' ) {
+                if( strncmp( p1, p, len ) == 0 && p[len] == '\0' ) {
                     token = PPT_MACRO_PARM;
                     i--;
                     len = 0;
@@ -901,7 +901,7 @@ MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 
     hash = PP_Hash( macro_name, len );
     for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-        if( memcmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
+        if( strncmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
             break;
         }
     }

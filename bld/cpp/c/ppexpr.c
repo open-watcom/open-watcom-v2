@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,13 +190,13 @@ static void PP_Identifier( PREPROC_VALUE *val )
     value = 0;
     ptr = PP_ScanName( PPTokenPtr );
     len = ptr - PPTokenPtr;
-    if( len == 7 && memcmp( PPTokenPtr, "defined", 7 ) == 0 ) {
+    if( len == 7 && strncmp( PPTokenPtr, "defined", 7 ) == 0 ) {
         PPTokenPtr = PP_SkipWhiteSpace( ptr, &white_space );
         if( PPTokenPtr[0] == '(' ) {
             ++PPTokenPtr;
             ptr = PPNextTokenPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
-            PPTokenPtr = PPNextTokenPtr;                     /* 23-sep-94 */
+            PPTokenPtr = PPNextTokenPtr;
             PPNextTokenPtr = ptr;
             PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
             if( PPTokenPtr[0] == ')' ) {

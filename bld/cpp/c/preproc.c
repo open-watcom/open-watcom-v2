@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -841,6 +841,9 @@ void PPENTRY PP_Define( const char *ptr )
         }
         p = resize_macro_buf( p, len + 1 );
         p[len++] = '\0';
+        if( me->replacement_list != NULL ) {
+            PP_Free( me->replacement_list );
+        }
         me->replacement_list = PP_Malloc( len );
         memcpy( me->replacement_list, p, len );
     } else {
@@ -1023,30 +1026,30 @@ static int PP_Sharp( const char *ptr )
     while( *ptr >= 'a' && *ptr <= 'z' )
         ++ptr;
     len = ptr - token;
-    if( len == 7 && memcmp( token, "include", 7 ) == 0 ) {
+    if( len == 7 && strncmp( token, "include", 7 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Include( ptr );
             return( 0 );
         }
-    } else if( len == 6 && memcmp( token, "define", 6 ) == 0 ) {
+    } else if( len == 6 && strncmp( token, "define", 6 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Define( ptr );
         }
-    } else if( len == 5 && memcmp( token, "undef", 5 ) == 0 ) {
+    } else if( len == 5 && strncmp( token, "undef", 5 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Undef( ptr );
         }
-    } else if( len == 5 && memcmp( token, "ifdef", 5 ) == 0 ) {
+    } else if( len == 5 && strncmp( token, "ifdef", 5 ) == 0 ) {
         PP_Ifdef( ptr );
-    } else if( len == 6 && memcmp( token, "ifndef", 6 ) == 0 ) {
+    } else if( len == 6 && strncmp( token, "ifndef", 6 ) == 0 ) {
         PP_Ifndef( ptr );
-    } else if( len == 2 && memcmp( token, "if", 2 ) == 0 ) {
+    } else if( len == 2 && strncmp( token, "if", 2 ) == 0 ) {
         PP_If( ptr );
-    } else if( len == 4 && memcmp( token, "elif", 4 ) == 0 ) {
+    } else if( len == 4 && strncmp( token, "elif", 4 ) == 0 ) {
         PP_Elif( ptr );
-    } else if( len == 4 && memcmp( token, "else", 4 ) == 0 ) {
+    } else if( len == 4 && strncmp( token, "else", 4 ) == 0 ) {
         PP_Else();
-    } else if( len == 5 && memcmp( token, "endif", 5 ) == 0 ) {
+    } else if( len == 5 && strncmp( token, "endif", 5 ) == 0 ) {
         PP_Endif();
     } else {
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
