@@ -73,7 +73,7 @@ static bool     proflag             = false;
 
 static int      warnings = 0;
 
-static FILE *openr( char *filename )
+static FILE *openr( const char *filename )
 {
     FILE            *file;
 
@@ -84,7 +84,7 @@ static FILE *openr( char *filename )
     return( file );
 }
 
-static FILE *openw( char *filename )
+static FILE *openw( const char *filename )
 {
     FILE            *file;
 
@@ -95,7 +95,7 @@ static FILE *openw( char *filename )
     return( file );
 }
 
-static void setoptions( char *p )
+static void setoptions( const char *p )
 {
     for( ; *p; ++p ) {
         switch( *p ) {
@@ -155,7 +155,7 @@ static void setoptions( char *p )
     }
 }
 
-void warn( char *fmt, ... )
+void warn( const char *fmt, ... )
 {
     va_list         args;
 
@@ -166,7 +166,7 @@ void warn( char *fmt, ... )
     ++warnings;
 }
 
-void msg( char *fmt, ... )
+void msg( const char *fmt, ... )
 {
     va_list         args;
 
@@ -177,7 +177,7 @@ void msg( char *fmt, ... )
     exit( 1 );
 }
 
-void srcinfo_warn( char *fmt, ... )
+void srcinfo_warn( const char *fmt, ... )
 {
     va_list         args;
 
@@ -189,7 +189,7 @@ void srcinfo_warn( char *fmt, ... )
     ++warnings;
 }
 
-void srcinfo_msg( char *fmt, ... )
+void srcinfo_msg( const char *fmt, ... )
 {
     va_list         args;
 
@@ -201,7 +201,7 @@ void srcinfo_msg( char *fmt, ... )
     exit( 1 );
 }
 
-void dumpstatistic( char *name, unsigned stat )
+void dumpstatistic( const char *name, unsigned stat )
 {
     size_t          len;
 
@@ -232,7 +232,7 @@ void copy_rest( FILE *fi, FILE *fo )
     }
 }
 
-static char *fname_normalize( char *name )
+static char *fname_normalize( const char *name )
 {
     char            c;
     char            *p;

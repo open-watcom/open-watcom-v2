@@ -292,10 +292,10 @@ extern char     *getname( const char * );
 
 extern FILE     *fpopen( const char *, const char * );
 
-extern void     defs( FILE *, a_token *tok );
-extern void     rules( FILE *, a_token *tok );
+extern void     defs( FILE * );
+extern void     rules( FILE * );
 extern void     parsestats( void );
-extern void     tail( FILE *, a_token *tok );
+extern void     tail( FILE * );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
 extern void     free_header_data( void );

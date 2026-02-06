@@ -39,7 +39,7 @@
 #include "alloc.h"
 
 
-void putnum( FILE *fp, char *name, int i )
+void putnum( FILE *fp, const char *name, int i )
 {
     fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
