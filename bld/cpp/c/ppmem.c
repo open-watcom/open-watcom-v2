@@ -48,6 +48,17 @@ void * PPENTRY PP_Malloc( size_t size )
     return( p );
 }
 
+void * PPENTRY PP_Realloc( void *old, size_t size )
+{
+    void        *p;
+
+    p = realloc( old, size );
+    if( p == NULL ) {
+        PP_OutOfMemory();
+    }
+    return( p );
+}
+
 void PPENTRY PP_Free( void *p )
 {
     free( p );

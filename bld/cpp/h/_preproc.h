@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,3 +108,4 @@ extern MACRO_TOKEN      *PPCurToken;
 extern pp_flags         PPFlags;
 extern char             PPSavedChar;    // saved char at end of token
 extern unsigned char    PPSpecMacros;
+extern void             * PPENTRY PP_Realloc( void *old, size_t size );

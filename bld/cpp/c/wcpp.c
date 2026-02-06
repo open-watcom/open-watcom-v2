@@ -109,7 +109,7 @@ static char *my_strdup( const char *str )
     char       *ptr;
 
     len = strlen( str ) + 1;
-    ptr = malloc( len );
+    ptr = PP_Malloc( len );
     return( memcpy( ptr, str, len ) );
 }
 
@@ -148,7 +148,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         break;
     case 'd':
         ++arg;
-        defines = realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
+        defines = PP_Realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
         defines[numdefs++] = my_strdup( arg );
         break;
     case 'h':
@@ -160,10 +160,10 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
 
             ++arg;
             len = strlen( arg );
-            p = malloc( len + 1 );
+            p = PP_Malloc( len + 1 );
             scanString( p, arg, len );
             PP_IncludePathAdd( PPINCLUDE_USR, p );
-            free( p );
+            PP_Free( p );
         }
         break;
     case 'l':
@@ -172,10 +172,10 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
     case 'o':
         ++arg;
         if( out_filename != NULL ) {
-            free( out_filename );
+            PP_Free( out_filename );
         }
         len = strlen( arg );
-        out_filename = malloc( len + 1 );
+        out_filename = PP_Malloc( len + 1 );
         scanString( out_filename, arg, len );
         break;
     case 'z':
@@ -333,7 +333,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
     argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
     varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
-    info = malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info = PP_Malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                                   // push info on stack
     info->argv = (char **)info->buf;
@@ -343,7 +343,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     contok = doScanParams( argc, info->argv, ppflags );
 
     stack = info->next;                             // pop stack
-    free( info );
+    PP_Free( info );
     return( contok );
 }
 
@@ -365,7 +365,7 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {
-            filenames = realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+            filenames = PP_Realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
             filenames[nofilenames++] = my_strdup( arg );
         }
     }
@@ -476,16 +476,16 @@ int main( int argc, char *argv[] )
     }
 
     if( out_filename != NULL ) {
-        free( out_filename );
+        PP_Free( out_filename );
     }
     for( i = 0; i < nofilenames; ++i ) {
-        free( filenames[i] );
+        PP_Free( filenames[i] );
     }
-    free( (void *)filenames );
+    PP_Free( (void *)filenames );
     for( i = 0; i < numdefs; i++ ) {
-        free( defines[i] );
+        PP_Free( defines[i] );
     }
-    free( (void *)defines );
+    PP_Free( (void *)defines );
 
     rc = PP_Fini() | rc;
 
