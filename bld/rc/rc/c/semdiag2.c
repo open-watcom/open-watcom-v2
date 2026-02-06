@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -704,11 +704,9 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     char                     *ptr;
 
     size = SemOS2CalcControlSize( ctrls );
-#if !defined( _M_I86 )
     if( size + DialogHeaderOS2_FILESIZE > 65536 ) {
         // TODO: Error, template is too big
     }
-#endif
     InitOS2DialogBoxHeader( &head, codepage, size );
 
     // Create the DLGTITEM array in memory

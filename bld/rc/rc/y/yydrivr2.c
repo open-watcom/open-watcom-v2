@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +46,7 @@
 #define YYPLHSTYPE      uint_16
 #define YYPLENTYPE      uint_8
 
-#ifdef _I86FAR
-#define YYFAR           _I86FAR
-#elif defined( _M_I86 )
-#define YYFAR           __far
-#else
 #define YYFAR
-#endif
 
 #define STACK_MAX       100
 
