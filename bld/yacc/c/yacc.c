@@ -260,6 +260,7 @@ int main( int argc, char **argv )
     char            *srcname;
     char            *fileprefix = "y";
     size_t          size;
+    a_token         token;
 
     MemInit();
     param_requested = 0;
@@ -340,7 +341,7 @@ int main( int argc, char **argv )
     if( temp1 == NULL ) {
         msg( "Cannot create temporary file\n" );
     }
-    defs( temp1 );
+    defs( temp1, &token );
     dump_header( tokout );
     close_header( tokout );
     fclose( tokout );
@@ -348,7 +349,7 @@ int main( int argc, char **argv )
     if( temp2 == NULL ) {
         msg( "Cannot create temporary file\n" );
     }
-    rules( temp2 );
+    rules( temp2, &token );
     buildpro();
     CalcMinSentence();
     if( proflag || showflag ) {
@@ -433,7 +434,7 @@ int main( int argc, char **argv )
         copy_rest( skeleton, actout );
         fclose( skeleton );
     }
-    tail( actout );
+    tail( actout, &token );
     fclose( yaccin );
     fclose( actout );
     FREE( codefilename );
