@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,12 +49,9 @@ typedef unsigned char   HeapIndex;
  * Pls note that there might be problems (for AXP) of this kind lying around.
  * In fact, the RCMEM_DEBUG version is not working for AXP.
  */
-typedef struct HeapId {
-#if defined( __AXP__ )
-    long                id;
-#else
-    HeapIndex           id;
-#endif
+typedef union HeapId {
+    void            *__FILLER;
+    HeapIndex       id;
 } HeapId;
 
 typedef struct BigMemList {
