@@ -37,11 +37,60 @@
 //
 #include "_preproc.h"
 
+#ifdef TRMEM
+#include "trmem.h"
+
+static _trmem_hdl   memHandle;
+static FILE         *memFile;       /* file handle we'll write() to */
+
+static void memPrintLine( void *file, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)file; (void)len;
+
+    fprintf( stderr, "***%s\n", buf );
+    if( memFile != NULL ) {
+        fprintf( memFile, "%s\n", buf );
+    }
+}
+#endif
+
+void MemInit( void )
+/******************/
+{
+#ifdef TRMEM
+    memFile = fopen( "mem.trk", "w" );
+    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL & ~_TRMEM_REALLOC_NULL );
+    if( memHandle == NULL ) {
+        exit( EXIT_FAILURE );
+    }
+#endif
+}
+
+void MemFini( void )
+/******************/
+{
+#ifdef TRMEM
+    if( memHandle != NULL ) {
+        _trmem_prt_list_ex( memHandle, 100 );
+        _trmem_close( memHandle );
+        if( memFile != NULL ) {
+            fclose( memFile );
+            memFile = NULL;
+        }
+        memHandle = NULL;
+    }
+#endif
+}
+
 void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
 
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+#else
     p = malloc( size );
+#endif
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -52,7 +101,11 @@ void * PPENTRY PP_Realloc( void *old, size_t size )
 {
     void        *p;
 
+#ifdef TRMEM
+    p = _trmem_realloc( old, size, _trmem_guess_who(), memHandle );
+#else
     p = realloc( old, size );
+#endif
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -61,7 +114,11 @@ void * PPENTRY PP_Realloc( void *old, size_t size )
 
 void PPENTRY PP_Free( void *p )
 {
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), memHandle );
+#else
     free( p );
+#endif
 }
 
 void PPENTRY PP_OutOfMemory( void )

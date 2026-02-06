@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,6 +83,8 @@ int main( int argc, char *argv[] )
     int         c;
     int         rc;
 
+    MemInit();
+
     dumpheap();
     if( argc < 2 ) {
         printf( "Usage: testpp filename\n" );
@@ -105,6 +107,9 @@ int main( int argc, char *argv[] )
     PP_FileFini();
     rc = PP_Fini();
     dumpheap();
+
+    MemFini();
+
     return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }
 

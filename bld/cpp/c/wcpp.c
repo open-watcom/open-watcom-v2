@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -406,6 +406,8 @@ int main( int argc, char *argv[] )
     FILE        *fo;
     pp_flags    ppflags;
 
+    MemInit();
+
     if( argc < 2 ) {
         wcpp_quit( usageMsg, "No filename specified" );
     } else if( argc == 2 ) {
@@ -492,6 +494,8 @@ int main( int argc, char *argv[] )
     if( rc == 0 && nofilenames == 0 ) {
         wcpp_quit( usageMsg, "No filename specified" );
     }
+
+    MemFini();
 
     return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

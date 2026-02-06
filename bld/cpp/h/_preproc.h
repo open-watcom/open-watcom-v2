@@ -108,4 +108,6 @@ extern MACRO_TOKEN      *PPCurToken;
 extern pp_flags         PPFlags;
 extern char             PPSavedChar;    // saved char at end of token
 extern unsigned char    PPSpecMacros;
+extern void             MemInit( void );
+extern void             MemFini( void );
 extern void             * PPENTRY PP_Realloc( void *old, size_t size );

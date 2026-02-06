@@ -4,24 +4,30 @@ proj_name = wcpp
 wcpp_autodepends = .AUTODEPEND
 !endif
 
+wcpp_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include exerule.mif
+!include trmem.mif
 
 !include $(cpp_dir)/client.mif
 
 #
 # cflags
 #
-.c : $(cli_cpp_c_dirs);$(watcom_dir)/c
+.c : $(cli_cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = $(cli_cpp_inc_dirs)
+
+extra_cpp_flags_f_ppmem = $(trmem_cpp_flags)
+extra_c_flags_f_ppmem = $(trmem_cover_cflags)
 
 # explicit rules
 #################
 
-common_objs = $(cli_cpp_objs) ppenv.obj ppmem.obj
+common_objs = $(cli_cpp_objs) ppenv.obj ppmem.obj $(trmem_objs)
 
 !ifndef bootstrap
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC

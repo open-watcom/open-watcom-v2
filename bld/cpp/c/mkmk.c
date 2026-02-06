@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,6 +60,8 @@ int PP_MBCharLen( const char *p )
 int main( int argc, char *argv[] )
 /********************************/
 {
+    MemInit();
+
     if( argc < 2 ) {
         printf( "Usage: mkmk filename\n" );
         exit( 1 );
@@ -74,5 +76,8 @@ int main( int argc, char *argv[] )
     // call PP_Define here to predefine any desired macros
     PP_Dependency_List( MkMkDependency );
     PP_FileFini();
+
+    MemFini();
+
     return( ( PP_Fini() ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }
