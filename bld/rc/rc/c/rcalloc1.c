@@ -64,7 +64,7 @@ static const unsigned   HeapSizes[] =     {   16,   32,   64, 1024 }; /* Ascendi
 
 #define NUM_HEAPS       4
 
-static HeapHandle       *Heaps[NUM_HEAPS];
+static heap_handle      Heaps[NUM_HEAPS];
 
 #define BIGLIST_ID      0x3F  /* NUM_HEAPS <= Some sentinel < 0xFF */
 
@@ -139,7 +139,7 @@ void *RCMemLayer1Malloc( size_t size )
 {
     unsigned char   *mem;
     BigMemList      *memptr;
-    HeapHandle      *handle;
+    heap_handle     handle;
     HeapId          *idptr;
     HeapIndex       heapindex;
     size_t          headersize;
@@ -231,9 +231,6 @@ void *RCMemLayer1Realloc( void *mem, size_t size )
     BigMemList      *reallocptr;
     size_t          reallocsize;
     unsigned short  headersize;
-#ifdef RCMEM_DEBUG
-    DebugMemInfo    *debugmem;
-#endif
 
     if( mem == NULL ) {     // emulate realloc() behaviour
         return( RCMemLayer1Malloc( size ) );
@@ -274,9 +271,7 @@ void *RCMemLayer1Realloc( void *mem, size_t size )
             return( newnode );
         }
 #ifdef RCMEM_DEBUG
-        debugmem = (DebugMemInfo *)((char *)blockptr - sizeof( DebugMemInfo ) );
-        debugmem->size = size + sizeof( HeapId );
-        *((unsigned char *)mem + size) = RCMEM_ENDBYTE;
+        RCMemLayer0Size( (char *)mem - sizeof( HeapId ), size + sizeof( HeapId ) );
 #endif
     } else {
         RcFatalError( ERR_INTERNAL, INTERR_MEM_REALLOC_FAILED );

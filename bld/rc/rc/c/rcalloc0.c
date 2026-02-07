@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,41 @@
 #ifdef RCMEM_DEBUG
 #include "errprt.h"
 #endif
+
+
+#ifdef RCMEM_DEBUG
+
+#define RCMEM_STARTBYTE      0x94
+#define RCMEM_ENDBYTE        0xA1
+#define RCMEM_GARBAGEBYTE    0xE2
+
+typedef struct DebugMemInfo {
+    size_t          size;
+    unsigned char   startbyte;
+} DebugMemInfo;
+
+#endif
+
+typedef struct FreeListInfo {
+#ifdef RCMEM_DEBUG
+    DebugMemInfo        dbg;
+#endif
+    union {
+        struct FreeListInfo *next;
+        unsigned char       data[1];
+    } u;
+} FreeListInfo;
+
+typedef struct HeapList {
+    struct HeapList     *next;
+} HeapList;
+
+typedef struct HeapHandle {
+    HeapList        *list;
+    size_t          heapsize;
+    size_t          blocksize;
+    FreeListInfo    *freeList;
+} HeapHandle;
 
 static void RCMemLayer0InitFreeList( FreeListInfo *freelist, size_t heapsize, size_t blocks_per_heap )
 /****************************************************************************************************/
@@ -99,6 +135,18 @@ HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
 }
 
 #ifdef RCMEM_DEBUG
+void         RCMemLayer0Size( void *mem, size_t size )
+{
+    FreeListInfo       *freemem;
+
+    freemem = (char *)mem - offsetof( FreeListInfo, u.data );
+    freemem->dbg.size = size;
+    freemem->dbg.startbyte = RCMEM_STARTBYTE;
+    freemem->u.data[size] = RCMEM_ENDBYTE;
+}
+#endif
+
+#ifdef RCMEM_DEBUG
 void *RCMemLayer0Malloc( HeapHandle *heap, size_t size )
 #else
 void *RCMemLayer0Malloc( HeapHandle *heap )
@@ -116,10 +164,9 @@ void *RCMemLayer0Malloc( HeapHandle *heap )
     }
     freemem = heap->freeList;
     heap->freeList = freemem->u.next;
+
 #ifdef RCMEM_DEBUG
-    freemem->dbg.size = size;
-    freemem->dbg.startbyte = RCMEM_STARTBYTE;
-    freemem->u.data[size] = RCMEM_ENDBYTE;
+    RCMemLayer0Size( freemem->u.data, size );
 #endif
     return( freemem->u.data );
 }
