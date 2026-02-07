@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -668,7 +668,6 @@ extern MONITOR          _FARD *UIData;
 extern void             UIAPI finimouse( void );
 extern bool             UIAPI initmouse( init_mode );
 extern void             UIAPI uiactivatemenus( void );
-extern void             * UIAPI uialloc( size_t );
 extern bool             UIAPI uiattrs( void );
 extern bool             UIAPI uivgaattrs( void );
 extern void             UIAPI uisetblinkattr( bool );
@@ -693,7 +692,6 @@ extern void             UIAPI uifini( void );
 extern void             UIAPI uifinigmouse( void );
 extern void             UIAPI uiflush( void );
 extern void             UIAPI uiflushevent( void );
-extern void             UIAPI uifree( void * );
 extern MOUSETIME        UIAPI uiclock( void );
 extern ui_event         UIAPI uiget( void );
 extern ui_event_list    _FARD * UIAPI uigetlist( void );
@@ -705,7 +703,6 @@ extern bool             UIAPI uiinitgmouse( init_mode );
 extern bool             UIAPI uiinlist( ui_event, ui_event _FARD * );
 extern bool             UIAPI uiinlists( ui_event );
 extern bool             UIAPI uiintoplist( ui_event );
-extern void             * UIAPI uimalloc( size_t );
 extern void             UIAPI uimouse( mouse_func );
 extern void             UIAPI uimouseforceoff( void );
 extern void             UIAPI uimouseforceon( void );
@@ -719,7 +716,6 @@ extern void             UIAPI uiposition( SAREA *, unsigned, unsigned, int, int,
 extern void             UIAPI uiprotect( VSCREEN _FARD * );
 extern void             UIAPI uipushlist( ui_event _FARD * );
 extern void             UIAPI uiputlist( ui_event_list _FARD * );
-extern void             * UIAPI uirealloc( void *, size_t );
 extern void             UIAPI uirefresh( void );
 extern bool             UIAPI uiset80col( void );
 extern SAREA            * UIAPI uisetarea( SAREA *,  VSCREEN _FARD * );
@@ -779,6 +775,15 @@ extern void             UIAPI UIMemOpen( void );
 extern void             UIAPI UIMemClose( void );
 
 extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
+
+extern void             * UIAPI uimalloc( size_t );
+extern void             UIAPI uifree( void * );
+extern void             * UIAPI uirealloc( void *, size_t );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux uimalloc __frame
+#pragma aux uifree __frame
+#pragma aux uirealloc __frame
+#endif
 
 /*
  * Application related functions

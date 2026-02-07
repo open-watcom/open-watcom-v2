@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,46 +33,57 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helpmem.h"
-#include "trmemcvr.h"
 
 
 #ifdef TRMEM
-static FILE     *memFP = NULL;
+
+#include "trmem.h"
+
+static _trmem_hdl   memHandle;
+static FILE         *memFile;       /* file handle we'll write() to */
+
+static void memPrintLine( void *file, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)file; (void)len;
+
+    fprintf( stderr, "***%s\n", buf );
+    if( memFile != NULL ) {
+        fprintf( memFile, "%s\n", buf );
+    }
+}
+
 #endif
 
 void HelpMemOpen( void )
 {
 #ifdef TRMEM
-    TRMemOpen();
-    memFP = fopen( "MEMERR", "w" );
-    TRMemRedirect( memFP );
+    memFile = fopen( "mem.trk", "w" );
+    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    if( memHandle == NULL ) {
+        exit( EXIT_FAILURE );
+    }
 #endif
 }
 
 void HelpMemClose( void )
 {
 #ifdef TRMEM
-    TRMemClose();
-    if( ftell( memFP ) != 0 ) {
-        printf( "***************************\n" );
-        printf( "* A memory error occurred *\n" );
-        printf( "***************************\n" );
+    if( memHandle != NULL ) {
+        _trmem_prt_list_ex( memHandle, 100 );
+        _trmem_close( memHandle );
+        if( memFile != NULL ) {
+            fclose( memFile );
+            memFile = NULL;
+        }
+        memHandle = NULL;
     }
-    fclose( memFP );
-#endif
-}
-
-void HelpMemPrtList( void )
-{
-#ifdef TRMEM
-    TRMemPrtList();
 #endif
 }
 
 HELPMEM void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( TRMemAlloc( size ) );
+    return( _trmem_malloc( size ) );
 #else
     return( malloc( size ) );
 #endif
@@ -81,7 +92,7 @@ HELPMEM void *HelpMemAlloc( size_t size )
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( TRMemRealloc( ptr, size ) );
+    return( _trmem_realloc( ptr, size ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -90,7 +101,7 @@ HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 HELPMEM void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
-    TRMemFree( ptr );
+    _trmem_free( ptr );
 #else
     free( ptr );
 #endif

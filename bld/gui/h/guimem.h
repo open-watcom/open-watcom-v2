@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,5 +42,10 @@ extern void     GUIMemPrtUsage( void );
 extern void     *GUIMemAlloc( size_t size );
 extern void     GUIMemFree( void * ptr );
 extern void     *GUIMemRealloc( void * ptr, size_t size );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux GUIMemAlloc __frame
+#pragma aux GUIMemFree __frame
+#pragma aux GUIMemRealloc __frame
+#endif
 
 #endif

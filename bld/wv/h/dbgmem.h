@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,13 @@ extern void     *DbgChkAlloc( size_t, char * );
 extern void     *DbgAlloc( size_t );
 extern void     *DbgMustAlloc( size_t );
 extern void     DbgFree( void * );
+#if defined( TRMEM ) && defined( _M_I86 )
+#pragma aux DbgRealloc __frame
+#pragma aux DbgChkAlloc __frame
+#pragma aux DbgAlloc __frame
+#pragma aux DbgMustAlloc __frame
+#pragma aux DbgFree __frame
+#endif
 #ifdef __NOUI__
 extern void     MemInit( void );
 extern void     MemFini( void );

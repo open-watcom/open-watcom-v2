@@ -22,9 +22,6 @@ whelp_trmem = 1
 inc_dirs =  $(cli_hlpview_inc_dirs) $(cli_ui_inc_dirs)
 
 extra_cpp_flags_f_helpmem  = $(trmem_cpp_flags)
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -37,6 +34,6 @@ exetarg_objs = &
     filelist.obj &
     $(cli_hlpview_objs) &
     helpmem.obj &
-    $(trmem_objs) $(trmemcvr_objs)
+    $(trmem_objs)
 exetarg_libs = $(cli_ui_libs)
 !include exetarg.mif

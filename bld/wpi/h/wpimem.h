@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,5 +37,10 @@
 extern void _wpi_free( void * ptr );
 extern void *_wpi_malloc( size_t size );
 extern void *_wpi_realloc( void *ptr, size_t size );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux _wpi_free __frame
+#pragma aux _wpi_malloc __frame
+#pragma aux _wpi_realloc __frame
+#endif
 
 #endif
