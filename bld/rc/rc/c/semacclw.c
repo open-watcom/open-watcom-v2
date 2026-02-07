@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ int SemWINStrToAccelEvent( char *string )
              * assume we are using the ASCII charater set to get the
              * corresponding code for control-letter
              */
-            return( toupper( (unsigned char)*string ) - 'A' + 1 );
+            return( toupper( *(unsigned char *)string ) - 'A' + 1 );
         } else {
             return( 0 );
         }

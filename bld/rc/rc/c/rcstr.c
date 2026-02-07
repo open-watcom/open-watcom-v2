@@ -118,7 +118,7 @@ static void *MemUprCpy( void *dst, const void *src, size_t length )
     const char  *c_src;
 
     for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( (unsigned char)*c_src );
+        *c_dst = toupper( *(unsigned char *)c_src );
     }
 
     return( dst );
@@ -131,7 +131,7 @@ static void *MemUprCpyUni( void *dst, const void *src, size_t length )
     const char  *c_src;
 
     for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( (unsigned char)*c_src );
+        *c_dst = toupper( *(unsigned char *)c_src );
     }
 
     return( dst );
@@ -281,8 +281,8 @@ static int genericCompare( const char *name1, uint_16 len1,
         char1 = name1;
         char2 = name2;
         while( char_num < min_chars ) {
-            ch1 = toupper( (unsigned char)*char1 );
-            ch2 = toupper( (unsigned char)*char2 );
+            ch1 = toupper( *(unsigned char *)char1 );
+            ch2 = toupper( *(unsigned char *)char2 );
             if( ch1 < ch2 ) {
                 return( -1 );
             } else if( ch1 > ch2 ) {
@@ -296,8 +296,8 @@ static int genericCompare( const char *name1, uint_16 len1,
         char1 = name1;
         char2u = (uint_16 *)name2;
         while( char_num < min_chars ) {
-            ch1 = toupper( (unsigned char)*char1 );
-            ch2 = toupper( (unsigned char)*char2u );
+            ch1 = toupper( *(unsigned char *)char1 );
+            ch2 = toupper( *(unsigned char *)char2u );
             if( ch1 < ch2 ) {
                 return( -1 );
             } else if( ch1 > ch2 ) {
@@ -354,8 +354,8 @@ int CompareStringItems32( const StringItem32 *item1,
     if( min_chars > item2->NumChars )
         min_chars = item2->NumChars;
     while( char_num < min_chars ) {
-        ch1 = toupper( (unsigned char)*ptr1 );
-        ch2 = toupper( (unsigned char)*ptr2 );
+        ch1 = toupper( *(unsigned char *)ptr1 );
+        ch2 = toupper( *(unsigned char *)ptr2 );
         if( ch1 < ch2 ) {
             return( -1 );
         } else if( ch1 > ch2 ) {

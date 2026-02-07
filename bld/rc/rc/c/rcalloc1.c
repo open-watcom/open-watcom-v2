@@ -41,6 +41,14 @@
 #include "errprt.h"
 #endif
 
+
+#define HEAPIDX_VAL(x)      (((HeapId *)((char *)(x)-sizeof(HeapId)))->idx)
+
+#define _Layer0to1Size(x)   ((x)-sizeof(HeapId))
+#define _Layer1to0Size(x)   ((x)+sizeof(HeapId))
+#define _Layer0to1Ptr(x)    ((unsigned char*)(x)+sizeof(HeapId))
+#define _Layer1to0Ptr(x)    ((unsigned char*)(x)-sizeof(HeapId))
+
 typedef unsigned char   HeapIndex;
 
 /*
@@ -51,7 +59,7 @@ typedef unsigned char   HeapIndex;
  */
 typedef union HeapId {
     void            *__FILLER;
-    HeapIndex       id;
+    HeapIndex       idx;
 } HeapId;
 
 typedef struct BigMemList {
@@ -59,8 +67,8 @@ typedef struct BigMemList {
     size_t              size;
 } BigMemList;
 
-static const unsigned   BlocksPerHeap[] = { 2048, 2048, 2048, 1024 };
-static const unsigned   HeapSizes[] =     {   16,   32,   64, 1024 }; /* Ascending order */
+static const unsigned   BlocksPerHeap0[] = { 2048, 2048, 2048, 1024 };
+static const unsigned   Heap0Sizes[] =     {   16,   32,   64, 1024 }; /* Ascending order */
 
 #define NUM_HEAPS       4
 
@@ -73,11 +81,11 @@ static BigMemList       *BigList;
 static HeapIndex RCMemGetHeapIndex( size_t size )
 /***********************************************/
 {
-    HeapIndex   i;
+    HeapIndex   idx;
 
-    for( i = 0; i < NUM_HEAPS; i++ ) {
-        if( size + sizeof( HeapId ) < HeapSizes[i] ) {
-            return( i );
+    for( idx = 0; idx < NUM_HEAPS; idx++ ) {
+        if( size < _Layer0to1Size( Heap0Sizes[idx] ) ) {
+            return( idx );
         }
     }
     return( BIGLIST_ID );
@@ -88,11 +96,11 @@ static void FreeBigListNode( void *mem, bool freemem )
 {
     BigMemList      *travptr;
     BigMemList      *prevnode;
-    unsigned char   *memptr;
+    void            *memptr;
     size_t          headersize;
 
     headersize = sizeof( BigMemList ) + sizeof( HeapId );
-    memptr = (unsigned char *)BigList + headersize;
+    memptr = (char *)BigList + headersize;
     travptr = BigList->next;
     if( memptr == mem ) {
         if( freemem ) {
@@ -103,11 +111,11 @@ static void FreeBigListNode( void *mem, bool freemem )
     }
     prevnode = BigList;
     for( travptr = BigList; travptr != NULL; travptr = travptr->next ) {
-        memptr = (unsigned char *)travptr + headersize;
+        memptr = (char *)travptr + headersize;
         if( memptr == mem ) {
             prevnode->next = travptr->next;
 #ifdef RCMEM_DEBUG
-            if( *(memptr + travptr->size ) != RCMEM_ENDBYTE ) {
+            if( ((unsigned char *)memptr)[travptr->size] != RCMEM_ENDBYTE ) {
                 RcMsgFprintf( NULL, "(%x) Memory Overrun (biglist)\n", mem );
             }
 #endif
@@ -126,10 +134,10 @@ static void FreeBigListNode( void *mem, bool freemem )
 void RCMemLayer1Init( void )
 /**************************/
 {
-    HeapIndex   i;
+    HeapIndex   idx;
 
-    for( i = 0; i < NUM_HEAPS; i++ ) {
-        Heaps[i] = RCMemLayer0NewHeap( HeapSizes[i], BlocksPerHeap[i] );
+    for( idx = 0; idx < NUM_HEAPS; idx++ ) {
+        Heaps[idx] = RCMemLayer0NewHeap( Heap0Sizes[idx], BlocksPerHeap0[idx] );
     }
     BigList = NULL;
 }
@@ -137,43 +145,44 @@ void RCMemLayer1Init( void )
 void *RCMemLayer1Malloc( size_t size )
 /************************************/
 {
-    unsigned char   *mem;
-    BigMemList      *memptr;
+    void            *mem;
     heap_handle     handle;
-    HeapId          *idptr;
-    HeapIndex       heapindex;
+    HeapIndex       idx;
     size_t          headersize;
 
-    heapindex = RCMemGetHeapIndex( size );
-    if( heapindex == BIGLIST_ID ) {
+    idx = RCMemGetHeapIndex( size );
+    if( idx == BIGLIST_ID ) {
+        BigMemList  *newmem;
 
         headersize = sizeof( BigMemList ) + sizeof( HeapId );
 #ifdef RCMEM_DEBUG
-        memptr = malloc( size + headersize + 1 );
+        newmem = malloc( size + headersize + 1 );
 #else
-        memptr = malloc( size + headersize );
+        newmem = malloc( size + headersize );
 #endif
-        if( memptr == NULL ) {
+        if( newmem == NULL ) {
             RcFatalError( ERR_OUT_OF_MEMORY );
         }
-        memptr->size = size;
-        memptr->next = BigList;
-        idptr = (HeapId *)( (char *)memptr + sizeof( BigMemList ) );
-        idptr->id = BIGLIST_ID;
+        newmem->size = size;
+        newmem->next = BigList;
+        BigList = newmem;
+
+        mem = (char *)newmem + headersize;
+        HEAPIDX_VAL( mem ) = BIGLIST_ID;
 #ifdef RCMEM_DEBUG
-        *((unsigned char *)memptr + size + headersize ) = RCMEM_ENDBYTE;
+        ((unsigned char *)mem)[size] = RCMEM_ENDBYTE;
 #endif
-        mem = (unsigned char *)memptr + headersize;
-        BigList = memptr;
     } else {
-        handle = Heaps[heapindex];
+        void        *newmem;
+
+        handle = Heaps[idx];
 #ifdef RCMEM_DEBUG
-        mem = RCMemLayer0Malloc( handle, size + sizeof( HeapId ) );
+        newmem = RCMemLayer0Malloc( handle, _Layer1to0Size( size ) );
 #else
-        mem = RCMemLayer0Malloc( handle );
+        newmem = RCMemLayer0Malloc( handle );
 #endif
-        ((HeapId *)mem)->id = heapindex;
-        mem += sizeof( HeapId );
+        mem = _Layer0to1Ptr( newmem );
+        HEAPIDX_VAL( mem ) = idx;
     }
 
     return( mem );
@@ -182,18 +191,16 @@ void *RCMemLayer1Malloc( size_t size )
 void RCMemLayer1Free( void *mem )
 /*******************************/
 {
-    char           *blockptr;
-    HeapId         *heapid;
+    HeapIndex      idx;
 
     if( mem == NULL ) {
         return;
     }
-    blockptr = (char *)mem - sizeof( HeapId );
-    heapid = (HeapId *)blockptr;
-    if( heapid->id == BIGLIST_ID ) {
+    idx = HEAPIDX_VAL( mem );
+    if( idx == BIGLIST_ID ) {
         FreeBigListNode( mem, true );
-    } else if( heapid->id < NUM_HEAPS ) {
-        RCMemLayer0Free( blockptr, Heaps[heapid->id] );
+    } else if( idx < NUM_HEAPS ) {
+        RCMemLayer0Free( _Layer1to0Ptr( mem ), Heaps[idx] );
     } else {
         RcFatalError( ERR_INTERNAL, INTERR_MEM_FREE_FAILED );
     }
@@ -204,10 +211,10 @@ void RCMemLayer1ShutDown( void )
 {
     BigMemList      *curnode;
     BigMemList      *nextnode;
-    HeapIndex       i;
+    HeapIndex       idx;
 
-    for( i = 0; i < NUM_HEAPS; i++ ) {
-        RCMemLayer0ShutDown( Heaps[i] );
+    for( idx = 0; idx < NUM_HEAPS; idx++ ) {
+        RCMemLayer0ShutDown( Heaps[idx] );
     }
     for( curnode = BigList; curnode != NULL; curnode = nextnode ) {
         nextnode = curnode->next;
@@ -223,11 +230,7 @@ void RCMemLayer1ShutDown( void )
 void *RCMemLayer1Realloc( void *mem, size_t size )
 /************************************************/
 {
-    char            *blockptr;
-    BigMemList      *newbigptr;
-    void            *newnode;
-    HeapId          *heapid;
-    HeapId          *idptr;
+    HeapIndex       idx;
     BigMemList      *reallocptr;
     size_t          reallocsize;
     unsigned short  headersize;
@@ -235,43 +238,45 @@ void *RCMemLayer1Realloc( void *mem, size_t size )
     if( mem == NULL ) {     // emulate realloc() behaviour
         return( RCMemLayer1Malloc( size ) );
     }
+    idx = HEAPIDX_VAL( mem );
+    if( idx == BIGLIST_ID ) {
+        BigMemList  *newmem;
 
-    blockptr = (char *)mem - sizeof( HeapId );
-    heapid = (HeapId *)blockptr;
-    if( heapid->id == BIGLIST_ID ) {
-        reallocptr = (BigMemList *)( (char *)heapid - sizeof( BigMemList ) );
+        headersize = sizeof( BigMemList ) + sizeof( HeapId );
+        reallocptr = (BigMemList *)( (char *)mem - headersize );
         if( reallocptr->size < size ) {
             FreeBigListNode( mem, false );
-            headersize = sizeof( BigMemList ) + sizeof( HeapId );
 #ifdef RCMEM_DEBUG
             reallocsize = size + headersize + 1;
 #else
             reallocsize = size + headersize;
 #endif
-            newnode = realloc( reallocptr, reallocsize );
-            if( newnode == NULL ) {
+            newmem = (BigMemList *)realloc( reallocptr, reallocsize );
+            if( newmem == NULL ) {
                 RcFatalError( ERR_OUT_OF_MEMORY );
             }
-            newbigptr = (BigMemList *)newnode;
-            newbigptr->next = BigList;
-            newbigptr->size = size;
-            idptr = (HeapId *)( (char *)newbigptr + sizeof( BigMemList ) );
-            idptr->id = BIGLIST_ID;
-            BigList = newbigptr;
+            newmem->size = size;
+            newmem->next = BigList;
+            BigList = newmem;
+
+            mem = (char *)newmem + headersize;
+            HEAPIDX_VAL( mem ) = BIGLIST_ID;
 #ifdef RCMEM_DEBUG
-            *((unsigned char *)newbigptr + headersize + size ) = RCMEM_ENDBYTE;
+            ((unsigned char *)mem)[size] = RCMEM_ENDBYTE;
 #endif
-            return( (char *)newbigptr + headersize );
+            return( mem );
         }
-    } else if( heapid->id < NUM_HEAPS ) {
-        if( size + sizeof( HeapId ) > HeapSizes[heapid->id] ) {
-            newnode = RCMemLayer1Malloc( size );
-            memcpy( newnode, mem, HeapSizes[heapid->id] - sizeof( HeapId ) );
+    } else if( idx < NUM_HEAPS ) {
+        if( size > _Layer0to1Size( Heap0Sizes[idx] ) ) {
+            void    *newmem;
+
+            newmem = RCMemLayer1Malloc( size );
+            memcpy( newmem, mem, _Layer0to1Size( Heap0Sizes[idx] ) );
             RCMemLayer1Free( mem );
-            return( newnode );
+            return( newmem );
         }
 #ifdef RCMEM_DEBUG
-        RCMemLayer0Size( (char *)mem - sizeof( HeapId ), size + sizeof( HeapId ) );
+        RCMemLayer0Size( _Layer1to0Ptr( mem ), _Layer1to0Size( size ) );
 #endif
     } else {
         RcFatalError( ERR_INTERNAL, INTERR_MEM_REALLOC_FAILED );

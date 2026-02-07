@@ -56,7 +56,7 @@ typedef struct DebugMemInfo {
 
 typedef struct FreeListInfo {
 #ifdef RCMEM_DEBUG
-    DebugMemInfo        dbg;
+    DebugMemInfo    dbg;
 #endif
     union {
         struct FreeListInfo *next;

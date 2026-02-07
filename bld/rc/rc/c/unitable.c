@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -134,7 +134,7 @@ static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
 
     ret = 0;
     for( i = 0; i < len; i++ ) {
-        u = (unsigned char)*str++;
+        u = *((unsigned char *)str++);
         if( !IS_ASCII( u ) ) {
             i += getcharUTF8( &str, &u );
             x.u = u;
@@ -178,7 +178,7 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
 
     ret = 0;
     for( i = 0; i < len; i++ ) {
-        u = (unsigned char)*str++;
+        u = *((unsigned char *)str++);
         if( !IS_ASCII( u ) ) {
             i += getcharUTF8( &str, &u );
             /*
@@ -225,7 +225,7 @@ static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
 
     ret = 0;
     for( i = 0; i < len; i++ ) {
-        u = (unsigned char)*str++;
+        u = *((unsigned char *)str++);
         if( !IS_ASCII( u ) ) {
             i += getcharUTF8( &str, &u );
         }
