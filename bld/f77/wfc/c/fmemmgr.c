@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,18 +42,37 @@
 #include "fmeminit.h"
 #include "utility.h"
 #include "wresmem.h"
-#include "trmemcvr.h"
 
 #include "clibext.h"
 #include "cspawn.h"
 
+#ifdef TRMEM
+#include "trmem.h"
+
+static _trmem_hdl   memHandle;
+static FILE         *memFile;       /* file handle we'll write() to */
+
+static void memPrintLine( void *file, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)file; (void)len;
+
+    fprintf( stderr, "***%s\n", buf );
+    if( memFile != NULL ) {
+        fprintf( memFile, "%s\n", buf );
+    }
+}
+#endif
 
 void    FMemInit( void ) {
 //========================
 
     UnFreeMem = 0;
 #if defined( TRMEM )
-    TRMemOpen();
+    memFile = fopen( "mem.trk", "w" );
+    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    if( memHandle == NULL ) {
+        exit( EXIT_FAILURE );
+    }
 #else
     SysMemInit();
 #endif
@@ -75,7 +94,15 @@ void    FMemFini( void ) {
 //========================
 
 #if defined( TRMEM )
-    TRMemClose();
+    if( memHandle != NULL ) {
+        _trmem_prt_list_ex( memHandle, 100 );
+        _trmem_close( memHandle );
+        if( memFile != NULL ) {
+            fclose( memFile );
+            memFile = NULL;
+        }
+        memHandle = NULL;
+    }
 #else
     SysMemFini();
 #endif
@@ -88,14 +115,14 @@ void    *FMemAlloc( size_t size ) {
     void        *p;
 
 #if defined( TRMEM )
-    p = TRMemAlloc( size );
+    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
 #else
     p = malloc( size );
 #endif
     if( p == NULL ) {
         FrlFini( &ITPool );
 #if defined( TRMEM )
-        p = TRMemAlloc( size );
+        p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
 #else
         p = malloc( size );
 #endif
@@ -125,7 +152,7 @@ void    *wres_alloc( size_t size )
 //================================
 {
 #if defined( TRMEM )
-    return( TRMemAlloc( size ) );
+    return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -134,8 +161,8 @@ void    *wres_alloc( size_t size )
 void    FMemFree( void *p ) {
 //===========================
 
-#if defined( TRMEM )
-    TRMemFree( p );
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), memHandle );
 #else
     free( p );
 #endif
@@ -145,8 +172,8 @@ void    FMemFree( void *p ) {
 void    wres_free( void *p )
 //==========================
 {
-#if defined( TRMEM )
-    TRMemFree( p );
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), memHandle );
 #else
     free( p );
 #endif
@@ -159,7 +186,11 @@ char *FMemStrDup( const char *buf )
     size_t  len;
 
     len = strlen( buf ) + 1;
-    new = FMemAlloc( len );
+#if defined( TRMEM )
+    new = _trmem_alloc( len, _trmem_guess_who(), memHandle );
+#else
+    new = malloc( len );
+#endif
     if( new != NULL ) {
         memcpy( new, buf, len );
     }

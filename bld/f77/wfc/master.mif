@@ -47,15 +47,10 @@ extra_cpp_flags_target_axp = -DAS_ALPHA
 extra_cpp_flags_target_mps = -DAS_MIPS
 extra_cpp_flags_target_ppc = -DAS_PPC
 
-extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu))
+extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu)) $(trmem_cpp_flags)
 !ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
-
-extra_cpp_flags_f_fmemmgr = $(trmem_cpp_flags)
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 #
 # aflags
@@ -69,7 +64,7 @@ extra_a_flags_axp = -oc
 # EXE
 #
 exetarg_prebuild_objs = $(cli_asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
-exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
+exetarg_objs          = $(fobjs) $(trmem_objs)
 exetarg_libs          = $(cli_cg_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
