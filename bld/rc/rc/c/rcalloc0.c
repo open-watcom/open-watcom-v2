@@ -135,7 +135,8 @@ HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
 }
 
 #ifdef RCMEM_DEBUG
-void         RCMemLayer0Size( void *mem, size_t size )
+void RCMemLayer0Size( void *mem, size_t size )
+/********************************************/
 {
     FreeListInfo       *freemem;
 

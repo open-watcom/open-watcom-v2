@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,12 @@ extern void     *RcMemAlloc( size_t size );
 extern char     *RcMemStrDup( const char *buf );
 extern void     *RcMemRealloc( void *old_ptr, size_t newsize );
 extern void     RcMemFree( void *ptr );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux RcMemAlloc __frame
+#pragma aux RcMemStrDup __frame
+#pragma aux RcMemRealloc __frame
+#pragma aux RcMemFree __frame
+#endif
 /*
  * these function are only use for debuging and are only available if
  * the memory tracker was compiled into memory.c

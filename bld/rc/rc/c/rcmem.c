@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "rcalloc0.h"
 #include "rcalloc1.h"
 
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
 #include "trmem.h"
 
 
@@ -58,7 +58,7 @@ static void RcPrintMemLine( void *dummy, const char *buf, size_t len )
 void RcMemInit( void )
 /********************/
 {
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
     RcMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
                         NULL, RcPrintMemLine,
                         _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL |
@@ -71,7 +71,7 @@ void RcMemInit( void )
 void RcMemShutdown( void )
 /************************/
 {
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
      RcPrintMemList();
     _trmem_close( RcMemHandle );
 #else
@@ -84,7 +84,7 @@ void *RcMemAlloc( size_t size )
 {
     void    *ptr;
 
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
     ptr = _trmem_alloc( size, _trmem_guess_who(), RcMemHandle );
 #else
     ptr = RCMemLayer1Malloc( size );
@@ -100,7 +100,7 @@ void *RcMemAlloc( size_t size )
 void RcMemFree( void *ptr )
 /*************************/
 {
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), RcMemHandle );
 #else
     RCMemLayer1Free( ptr );
@@ -112,7 +112,7 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
 {
     void    *ptr;
 
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
     ptr = _trmem_realloc( old_ptr, newsize, _trmem_guess_who(), RcMemHandle );
 #else
     ptr = RCMemLayer1Realloc( old_ptr, newsize );
@@ -129,13 +129,25 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
 char *RcMemStrDup( const char *buf )
 /**********************************/
 {
+    void    *ptr;
+    size_t  size;
+
     if( buf != NULL ) {
-        return( strcpy( RcMemAlloc( strlen( buf ) + 1 ), buf ) );
+        size = strlen( buf ) + 1;
+#ifdef TRMEM
+        ptr = _trmem_alloc( size, _trmem_guess_who(), RcMemHandle );
+#else
+        ptr = RCMemLayer1Malloc( size );
+#endif
+        if( ptr == NULL ) {
+            RcFatalError( ERR_OUT_OF_MEMORY );
+        }
+        return( strcpy( ptr, buf ) );
     }
     return( NULL );
 }
 
-#ifdef RC_USE_TRMEM
+#ifdef TRMEM
 void RcPrintMemUsage( void )
 /**************************/
 {
