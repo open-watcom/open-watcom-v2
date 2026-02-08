@@ -2,6 +2,8 @@ proj_name = watcom
 
 watcom_autodepends = .AUTODEPEND
 
+watcom_noasan = 1
+
 #
 # only host version is build
 # it builds clibext objects which are used

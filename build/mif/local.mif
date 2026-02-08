@@ -366,6 +366,14 @@ common_cppflags_osxppc     =
 common_cppflags_osxarm     = -D__OSX_ARM__
 common_cppflags_osxa64     = -D__OSX_ARM64__
 
+!ifndef noasan
+! ifeq $(proj_name)_noasan 1
+noasan = 1
+! else
+noasan = 0
+! endif
+!endif
+
 # common release/debug options
 common_flags_rel = -O -g1 -gdwarf-2
 common_flags_dbg = -g -gdwarf
@@ -392,8 +400,9 @@ common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 ! endif
 common_cflags = $(common_cflags_wng)
-! ifdef %ASAN
-common_cflags += -fsanitize=address
+! ifeq noasan 1
+! else ifeq %ASAN 1
+common_cflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
 ! endif
 
 common_ldflags_rel =
@@ -403,8 +412,9 @@ common_ldflags = $(common_ldflags_rel)
 ! else
 common_ldflags = $(common_ldflags_dbg)
 ! endif
-! ifdef %ASAN
-common_ldflags += -fsanitize=address
+! ifeq noasan 1
+! else ifeq %ASAN 1
+common_ldflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
 ! endif
 
 # Options for building Executable
@@ -414,6 +424,10 @@ common_clflags_exe =
 ! else ifeq host_os osx
 common_cflags_exe  =
 common_clflags_exe =
+! else ifeq noasan 1
+common_cflags_exe  = -static
+common_clflags_exe = -static
+! else ifeq %ASAN 1
 ! else
 common_cflags_exe  = -static
 common_clflags_exe = -static
