@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helpmem.h"
+#include "helpmemu.h"
 
 
 #ifdef TRMEM

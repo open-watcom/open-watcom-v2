@@ -36,6 +36,7 @@
 #include "wdirent.h"
 #include "help.h"
 #include "helpmem.h"
+#include "helpmemu.h"
 #include "filelist.h"
 #include "initmode.h"
 #include "pathgrp2.h"

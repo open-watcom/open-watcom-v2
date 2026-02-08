@@ -19,9 +19,6 @@ hcdos_trmem = 1
 inc_dirs = -I"../h" $(cli_hlpview_inc_dirs)
 
 extra_cpp_flags_f_helpmem  = $(trmem_cpp_flags)
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -35,7 +32,7 @@ exetarg_objs = &
     index.obj &
     helpscan.obj &
     helpmem.obj &
-    $(trmem_objs) $(trmemcvr_objs)
+    $(trmem_objs)
 !include exetarg.mif
 
 #

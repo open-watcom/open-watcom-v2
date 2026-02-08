@@ -39,6 +39,7 @@
 #else
     #include "stdui.h"
     #include "helpmem.h"
+    #include "helpmemu.h"
 #endif
 #ifdef TRMEM
     #include "trmem.h"
