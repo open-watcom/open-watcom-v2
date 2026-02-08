@@ -60,7 +60,6 @@ extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
-extra_cpp_flags_f_rcmem    = $(trmem_cpp_flags)
 !ifdef trmem_objs
 extra_cpp_flags_f_rcmem    = -DRC_USE_TRMEM
 !else ifneq debug 0
@@ -70,7 +69,6 @@ extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
-extra_c_flags_f_rcmem    = $(trmem_cover_cflags)
 extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
