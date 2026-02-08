@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,5 +34,9 @@
 
 extern void *wres_alloc( size_t );      /* malloc */
 extern void wres_free( void * );        /* free */
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux wres_alloc __frame
+#pragma aux wres_free __frame
+#endif
 
 #endif
