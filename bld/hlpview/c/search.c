@@ -371,7 +371,7 @@ void FiniHelpSearch( HelpHdl hdl )
 }
 
 #ifdef TEST_SEARCH
-#include "trmemcvr.h"
+#include "helpmemu.h"
 
 void main( int argc, char *argv[] )
 {

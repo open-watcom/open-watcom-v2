@@ -83,7 +83,7 @@ void HelpMemClose( void )
 HELPMEM void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_malloc( size ) );
+    return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -92,7 +92,7 @@ HELPMEM void *HelpMemAlloc( size_t size )
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size ) );
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), memHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -101,7 +101,7 @@ HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 HELPMEM void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr );
+    _trmem_free( ptr, _trmem_guess_who(), memHandle );
 #else
     free( ptr );
 #endif
