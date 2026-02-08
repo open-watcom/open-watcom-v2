@@ -41,6 +41,7 @@
 #include "hcdos.h"
 #include "helpidx.h"
 #include "helpmem.h"
+#include "helpmemu.h"
 #include "helpscan.h"
 #include "index.h"
 #include "wibhelp.h"
