@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,8 +297,8 @@ void ConvertModuleName( char *module_name )
     }
 }
 
-static void srcFileName( char *token )
-/*************************************
+static void srcFileName( const char *token )
+/*******************************************
  * figure out the source file name & store it in AsmFiles
  * fill in default object file name if it is null
  */
@@ -1149,6 +1149,8 @@ static void do_init_stuff( char **cmdline )
 static void do_fini_stuff( void )
 /*******************************/
 {
+    AsmFree( SrcFName );
+    AsmFree( SrcModuleName );
     MsgFini();
 }
 
