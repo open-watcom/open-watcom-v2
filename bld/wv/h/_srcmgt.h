@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,11 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 
+
 #define SMTabIntervalGet()              TabIntervalGet()
 
-#define _SMAlloc( pointer, size )       _Alloc( pointer, size )
-#define _SMFree( pointer )              _Free( pointer )
+#define _SMAlloc( pointer, size )       (pointer) = DbgAlloc( size )
+#define _SMFree( pointer )              DbgFree( pointer )
 
 #define sm_file_handle                  file_handle
 #define sm_mod_handle                   mod_handle
