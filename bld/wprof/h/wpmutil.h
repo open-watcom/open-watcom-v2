@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,35 +31,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include "memutil.h"
-
-
-#define SMTabIntervalGet()              8
-
-#define _SMAlloc( pointer, size )       (pointer) = ProfAlloc( size )
-#define _SMFree( pointer )              ProfFree( pointer )
-
-#define sm_file_handle                  FILE *
-#define sm_mod_handle                   int
-#define sm_cue_fileid                   int
-#define sm_read_len                     size_t
-
-#define SM_NO_MOD                       ((sm_mod_handle)-1)
-#define SM_BUF_SIZE                     512UL
-
-#define SMSeekStart( fp )               fseek( fp, 0L, SEEK_CUR )
-#define SMSeekOrg( fp, offset )         fseek( fp, offset, SEEK_SET )
-#define SMSeekEnd( fp )                 fseek( fp, 0L, SEEK_END )
-#define SMSeekFail(x)                   ((x) != 0)
-
-#define SMTell( fp )                    ftell( fp )
-
-#define SMOpenRead( name )              fopen( name, "rb" )
-#define SMNilHandle( fp)                ( fp == NULL )
-#define SMClose( fp )                   fclose( fp )
-
-#define SMReadStream( fp, buff, len )   fread( buff, 1, len, fp )
-#define SMReadError( fp, len )          ( ferror( fp ) != 0 )
-
-#define SMFileIsRemote( fp )            0
+extern void     WPMemOpen( void );
+extern void     WPMemClose( void );
+extern void     WPMemPrtUsage( void );

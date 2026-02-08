@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "aui.h"
 #include "sampinfo.h"
 #include "memutil.h"
-#include "clibext.h"
+#include "wpmutil.h"
 #include "getsamps.h"
 #include "madinter.h"
 #include "utils.h"
@@ -54,6 +54,8 @@
 #include "rptsamps.h"
 #include "wpstart.h"
 #include "wpdata.h"
+
+#include "clibext.h"
 
 
 STATIC bool     procCmd( char * );

@@ -54,7 +54,6 @@ extra_c_flags   = -zs
 extra_c_flags_qnxi86 = -zt32
 extra_c_flags_wini86 = -zW
 
-extra_c_flags_f_memutil = $(trmem_cover_cflags)
 extra_c_flags_f_dipld = -I"$(dig_dir)/c"
 extra_c_flags_f_madld = -I"$(dig_dir)/c"
 

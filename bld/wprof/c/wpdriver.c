@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "dip.h"
 #include "sampinfo.h"
 #include "msg.h"
-#include "clibext.h"
 #include "dlgsamp.h"
 #include "getsamps.h"
 #include "wpcnvt.h"
@@ -55,6 +54,8 @@
 #include "wpstart.h"
 #include "wpdata.h"
 #include "memutil.h"
+
+#include "clibext.h"
 
 
 #define OFN_SAMPLE_FILE (OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST)
