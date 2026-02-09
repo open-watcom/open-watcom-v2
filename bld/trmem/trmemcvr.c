@@ -48,6 +48,16 @@
 #endif
 
 #ifdef TRMEM
+
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemAlloc
+#pragma aux (WFRM) TRMemFree
+#pragma aux (WFRM) TRMemRealloc
+#pragma aux (WFRM) TRMemStrdup
+#pragma aux (WFRM) TRMemValidate
+#pragma aux (WFRM) TRMemChkRange
+#endif
+
 static _trmem_hdl   TRMemHandle;
 static FILE         *TRFileHandle = NULL;   /* stream to put output on */
 

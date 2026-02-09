@@ -759,7 +759,9 @@ inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 # src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
 # which individual projects are free to define as needed.
 
-!ifeq trmem 1
+!ifeq $(proj_name)_trmemcvr 1
+inc_dirs_all    = -I"$(trmem_dir)" -I"$(watcom_dir)/h"
+!else ifeq trmem 1
 inc_dirs_all    = -I"$(trmem_dir)" -I"$(watcom_dir)/h"
 !else
 inc_dirs_all    = -I"$(watcom_dir)/h"

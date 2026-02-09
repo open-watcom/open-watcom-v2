@@ -6,6 +6,8 @@ was_autodepends = .AUTODEPEND
 
 was_ntverrc = ..
 
+was_trmemcvr = 1
+
 was_trmem = 1
 
 was_wreslib_cli = text
@@ -48,13 +50,8 @@ extra_cpp_flags += -DAS_DEBUG_DUMP
 extra_cpp_flags += -D_STANDALONE_
 !endif
 
-extra_cpp_flags_f_asitest = $(trmem_cpp_flags)
-extra_cpp_flags_f_asmem = $(trmem_cpp_flags)
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
 extra_c_flags = -fh
 
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_aslexyy = -fh=pch02.pch
 extra_c_flags_f_asilexyy = -fh=pch03.pch

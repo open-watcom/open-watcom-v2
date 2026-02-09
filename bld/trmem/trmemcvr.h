@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,12 +67,6 @@ extern void     *TRMemAlloc( size_t size );
 extern void     TRMemFree( void *ptr );
 extern void     *TRMemRealloc( void *ptr, size_t size );
 extern char     *TRMemStrdup( const char *str );
-#if define( TRMEM ) && defined( _M_IX86 )
-#pragma aux TRMemAlloc __frame
-#pragma aux TRMemFree __frame
-#pragma aux TRMemRealloc __frame
-#pragma aux TRMemStrdup __frame
-#endif
 
 /* the rest of these functions are only available if trmemcvr was compiled */
 /* with the options memtioned above */
@@ -85,18 +79,12 @@ extern unsigned TRMemPrtList( void );
 
 /* check that ptr is valid */
 extern int      TRMemValidate( void *ptr );
-#if define( TRMEM ) && defined( _M_IX86 )
-#pragma aux TRMemValidate __frame
-#endif
 
 /* check that the heap is valid */
 extern int      TRMemValidateAll( void );
 
 /* check that the len locations starting at start are properly allocated */
 extern int      TRMemChkRange( void *start, size_t len );
-#if define( TRMEM ) && defined( _M_IX86 )
-#pragma aux TRMemChkRange __frame
-#endif
 
 #endif
 
