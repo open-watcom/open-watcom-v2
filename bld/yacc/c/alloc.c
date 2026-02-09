@@ -40,9 +40,20 @@
 #include <string.h>
 #include "yacc.h"
 #include "alloc.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
-#include "trmem.h"
+
+#if defined( _M_IX86 )
+#pragma aux (WFRM) YaccAlloc
+#pragma aux (WFRM) YaccCalloc
+#pragma aux (WFRM) YaccRealloc
+#pragma aux (WFRM) YaccFree
+#pragma aux (WFRM) YaccStrDup
+#endif
 
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */

@@ -42,7 +42,6 @@
 #ifdef TRMEM
 
 #ifdef _M_IX86
-#pragma aux WFRM __frame
 #pragma aux (WFRM) MemAlloc
 #pragma aux (WFRM) MemFree
 #endif

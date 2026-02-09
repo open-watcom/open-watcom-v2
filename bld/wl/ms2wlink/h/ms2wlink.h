@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,10 +102,6 @@ extern void     MemInit( void );
 extern void     MemFini( void );
 extern void     *MemAlloc( size_t );
 extern void     MemFree( void * );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MemAlloc __frame
-#pragma aux MemFree __frame
-#endif
 
 // fileio.h
 extern FILE     *QOpenR( const char *name );

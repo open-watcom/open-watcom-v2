@@ -51,12 +51,5 @@ extern void     *YaccCalloc( size_t n, size_t size );
 extern void     *YaccRealloc( void *old_ptr, size_t newsize );
 extern void     YaccFree( void *ptr );
 extern char     *YaccStrDup( const char *str );
-#if defined( TRMEM ) && defined( _M_I86 )
-#pragma aux YaccAlloc __frame
-#pragma aux YaccCalloc __frame
-#pragma aux YaccRealloc __frame
-#pragma aux YaccFree __frame
-#pragma aux YaccStrDup __frame
-#endif
 
 #endif

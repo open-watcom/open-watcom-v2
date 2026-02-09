@@ -52,7 +52,6 @@
 
 
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux WFRM __frame
 #pragma aux (WFRM) ChkLAlloc
 #pragma aux (WFRM) LAlloc
 #pragma aux (WFRM) LFree

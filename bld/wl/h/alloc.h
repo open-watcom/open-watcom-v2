@@ -41,12 +41,6 @@ extern void     *ChkLAlloc( size_t );
 extern void     *LAlloc( size_t );
 extern void     LFree( void * );
 extern void     *LnkRealloc( void *, size_t );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux ChkLAlloc __frame
-#pragma aux LAlloc __frame
-#pragma aux LFree __frame
-#pragma aux LnkRealloc __frame
-#endif
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
