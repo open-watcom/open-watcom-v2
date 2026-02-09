@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -202,18 +202,26 @@ extern mac_entry    *find_macro( mac_dict dict, char const *name );
 
 
 /* gmemory.c                            */
-extern void         *mem_alloc( unsigned size );
-extern char         *mem_strdup( const char *str );
-extern char         *mem_tokdup( const char *str, unsigned size );
 extern void         mem_banner( void );
-extern void         mem_free( void *p );
 extern void         mem_init( void );
 extern void         mem_fini( void );
 extern unsigned long mem_get_peak_usage( void );
 extern void         mem_prt_curr_usage( void );
-extern void         *mem_realloc( void *p, unsigned size );
 extern int          mem_validate( void );
 extern void         mem_prt_list( void );
+
+extern void         *mem_alloc( unsigned size );
+extern void         *mem_realloc( void *p, unsigned size );
+extern char         *mem_strdup( const char *str );
+extern char         *mem_tokdup( const char *str, unsigned size );
+extern void         mem_free( void *p );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux mem_alloc __frame
+#pragma aux mem_realloc __frame
+#pragma aux mem_strdup __frame
+#pragma aux mem_tokdup __frame
+#pragma aux mem_free __frame
+#endif
 
 /* gnestut.c                            */
 extern void         init_nest_cb( void );

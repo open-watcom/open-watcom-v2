@@ -31,15 +31,22 @@
 
 
 #ifndef MEMUTIL_H
+#define MEMUTIL_H   1
+
 #include <stddef.h>
 #include "watcom.h"
 
 extern void MemInit( void );
 extern void MemFini( void );
+
 extern void *MemAlloc( size_t size );
 extern void *MemRealloc( void *ptr, size_t size );
 extern void MemFree( void *ptr );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux MemAlloc __frame
+#pragma aux MemRealloc __frame
+#pragma aux MemFree __frame
+#endif
 
-#define MEMUTIL_H   1
 #endif
 

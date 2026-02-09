@@ -34,10 +34,16 @@
 #define WDIS_MEMFUNCS_INCLUDED
 
 extern void     MemOpen( void );
-extern void     MemFree( void * );
 extern void     MemPrtList( void );
 extern void     MemClose( void );
+
 extern void     *MemAlloc( size_t );
 extern void     *MemRealloc( void *, size_t );
+extern void     MemFree( void * );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux MemAlloc __frame
+#pragma aux MemRealloc __frame
+#pragma aux MemFree __frame
+#endif
 
 #endif

@@ -94,8 +94,13 @@ extern int          QSeek( FILE *, long, int );
 // mem.c
 extern void         MemInit( void );
 extern void         MemFini( void );
+
 extern void         *MemAlloc( size_t );
 extern void         MemFree( void * );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux MemAlloc __frame
+#pragma aux MemFree __frame
+#endif
 
 // records.c
 extern void         *InitRecStuff( void );

@@ -35,6 +35,5 @@
 
 extern void     HelpMemOpen( void );
 extern void     HelpMemClose( void );
-extern void     HelpMemPrtList( void );
 
 #endif

@@ -52,12 +52,18 @@ void reportError(WicErrors err, ...);
 
 #include "fmem.h"
 void initMemory(void);
-void zapMemory(void);
 void *BasicMalloc(size_t size);
-void BasicFree(void *ptr);
 void outOfMemory(void);
 char *wicStrdup(const char *src);
 void checkMemory(void);
+
+void BasicFree(void *ptr);
+void zapMemory(void);
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux BasicFree __frame
+#pragma aux zapMemory __frame
+#endif
+
 #define wicMalloc FAlloc
 #define wicFree   FFree
 

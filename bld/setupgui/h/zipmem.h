@@ -36,3 +36,8 @@
 extern void         *zip_alloc( size_t size );
 extern void         *zip_realloc( void *ptr, size_t size );
 extern void         zip_free( void *ptr );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux zip_alloc __frame
+#pragma aux zip_realloc __frame
+#pragma aux zip_free __frame
+#endif

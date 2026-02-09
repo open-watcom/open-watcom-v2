@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +29,14 @@
 ****************************************************************************/
 
 
-extern void         *MAlloc( size_t );
-extern void         MFree( void * );
 extern void         MOpen( void );
 extern void         MClose( void );
+
+extern void         *MAlloc( size_t );
+extern void         MFree( void * );
 extern char         *MStrdup( const char * );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux MAlloc __frame
+#pragma aux MFree __frame
+#pragma aux MStrdup __frame
+#endif

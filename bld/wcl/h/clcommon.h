@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,11 +155,6 @@ extern void     ListFree( list * );
 extern void     Fputnl( const char *, FILE * );
 extern void     MemInit( void );
 extern void     MemFini( void );
-extern void     *MemAlloc( size_t );
-extern char     *MemStrDup( const char * );
-extern char     *MemStrLenDup( const char *str, size_t len );
-extern void     *MemRealloc( void *, size_t );
-extern void     MemFree( void * );
 extern char     *MakePath( const char * );
 extern char     *GetName( const char *, char * );
 extern char     *DoQuoted( char *buffer, const char *name, char quote );
@@ -169,3 +164,16 @@ extern void     AddDirectivePath( const char *directive, const char *path );
 extern char     *RemoveExt( char * );
 extern int      HasFileExtension( const char *p, const char *ext );
 extern void     MakeName( char *name, const char *ext );
+
+extern void     *MemAlloc( size_t );
+extern char     *MemStrDup( const char * );
+extern char     *MemStrLenDup( const char *str, size_t len );
+extern void     *MemRealloc( void *, size_t );
+extern void     MemFree( void * );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux MemAlloc __frame
+#pragma aux MemStrDup __frame
+#pragma aux MemStrLenDup __frame
+#pragma aux MemRealloc __frame
+#pragma aux MemFree __frame
+#endif

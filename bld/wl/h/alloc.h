@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,20 @@
 #define DUPBUF_STACK(p,s,l) {void *x=alloca(l);memcpy(x,s,l);p=x;}
 #define DUPSTR_STACK(p,s,l) {char *x=alloca(l+1);memcpy(x,s,l);x[l]='\0';p=x;}
 
-extern void     *ChkLAlloc( size_t );
-extern void     *LAlloc( size_t );
 extern void     *TryAlloc( size_t );
-extern void     *LnkRealloc( void *, size_t );
-extern void     LFree( void * );
 extern void     *PermAlloc( size_t );
 extern void     *Pass1Alloc( size_t );
+
+extern void     *ChkLAlloc( size_t );
+extern void     *LAlloc( size_t );
+extern void     LFree( void * );
+extern void     *LnkRealloc( void *, size_t );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux ChkLAlloc __frame
+#pragma aux LAlloc __frame
+#pragma aux LFree __frame
+#pragma aux LnkRealloc __frame
+#endif
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );

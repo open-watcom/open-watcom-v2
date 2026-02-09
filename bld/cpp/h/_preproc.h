@@ -110,4 +110,8 @@ extern char             PPSavedChar;    // saved char at end of token
 extern unsigned char    PPSpecMacros;
 extern void             MemInit( void );
 extern void             MemFini( void );
+
 extern void             * PPENTRY PP_Realloc( void *old, size_t size );
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux PP_Realloc __frame
+#endif
