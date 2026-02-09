@@ -20,9 +20,7 @@ exetarg_name = b$(proj_name)
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"$(yacc_dir)/h" $(inc_dirs_trmem)
-
-extra_cpp_flags_f_alloc = $(trmem_cpp_flags)
+inc_dirs = -I"$(yacc_dir)/h"
 
 # explicit rules
 #################

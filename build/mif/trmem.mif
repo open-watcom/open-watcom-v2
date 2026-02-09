@@ -1,13 +1,4 @@
-inc_dirs_trmem = -I"$(trmem_dir)"
-!ifdef __WATCOM_TOOLS__
-trmem_cflag_i86 = -of+
-trmem_cflag_386 = -of+
-!endif
-!ifdef $(proj_name)_trmem
-!ifneq debug 0
-trmem_cpp_flags = -DTRMEM
-trmem_cover_cflags = $(trmem_cflag_$(host_cpu))
+!ifeq trmem 1
 trmem_objs = $(_subdir_)trmem.obj
 trmemcvr_objs = $(_subdir_)trmemcvr.obj
-!endif
 !endif

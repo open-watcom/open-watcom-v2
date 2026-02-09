@@ -113,6 +113,19 @@ debug = 0
 !endif
 !endif
 
+!ifndef trmem
+trmem = 0
+! ifeq $(proj_name)_trmem 1
+!  ifeq %OWTRMEM 1
+trmem = 1
+!  else ifeq debug 1
+trmem = 1
+!  else ifeq debug 2
+trmem = 1
+!  endif
+! endif
+!endif
+
 !ifndef wreslib_incl
 ! ifdef $(proj_name)_wreslib_incl
 wreslib_incl = 1
@@ -168,6 +181,9 @@ ppflags_common += -DBOOTSTRAP
 !  ifdef testbootstrap
 ppflags_common += -DTESTBOOT
 !  endif
+!endif
+!ifeq trmem 1
+ppflags_common += -DTRMEM
 !endif
 
 !ifdef __WATCOM_TOOLS__
@@ -743,7 +759,11 @@ inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 # src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
 # which individual projects are free to define as needed.
 
-inc_dirs_all    = $(inc_dirs_trmem) -I"$(watcom_dir)/h"
+!ifeq trmem 1
+inc_dirs_all    = -I"$(trmem_dir)" -I"$(watcom_dir)/h"
+!else
+inc_dirs_all    = -I"$(watcom_dir)/h"
+!endif
 
 !ifdef inc_dirs_lang_$(host_os)
 inc_dirs_lang   = $(inc_dirs_lang_$(host_os))

@@ -215,7 +215,7 @@ bld_cl_sys =
 bld_c_flags   =
 bld_cxx_flags = -EHsc
 
-bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+bld_incs = $(bld_extra_incs) $(inc_dirs_all)
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld))
 
@@ -531,7 +531,7 @@ bld_cl_sys =
 bld_c_flags   = -std=gnu99
 bld_cxx_flags = -std=c++98
 
-bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+bld_incs = $(bld_extra_incs)  $(inc_dirs_all)
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld))
 
@@ -706,7 +706,7 @@ bld_cl_sys      = $(clflags_$(bld))
 bld_c_flags     =
 bld_cxx_flags   = #-zastd=c++98
 
-bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
+bld_incs        = $(bld_extra_incs)  $(inc_dirs_all)
 
 ! ifdef __BLD_WATCOM_TOOLS__
 !   if $(__BLD_WATCOM_TOOLS__) <= 1300
