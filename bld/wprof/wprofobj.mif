@@ -5,9 +5,7 @@ debug_objs = dumpmem.obj
 !endif
 
 objs = &
-    $(trmem_objs) &
-    $(debug_objs) &
-    $(srcmgt_obj) &
+    $(debug_objs) $(srcmgt_obj) $(trmem_objs) &
     aboutmsg.obj &
     clrsamps.obj &
     dipinter.obj &

@@ -21,7 +21,6 @@ additional_clean = *.gh *.grh *.grc *.gc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 !include $(wasm_dir)/client.mif
 
 #
@@ -36,9 +35,6 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_cpp_flags_f_asmalloc = $(trmem_cpp_flags)
-
-extra_c_flags_f_asmalloc = $(trmem_cover_cflags)
 extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #

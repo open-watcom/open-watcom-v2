@@ -14,7 +14,6 @@ wic_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include ../objsdef.mif                #   get objs macro
 
@@ -25,11 +24,7 @@ wic_trmem = 1
 
 inc_dirs = -I"../h"
 
-extra_cpp_flags_f_wicgener = $(trmem_cpp_flags)
-
 extra_c_flags = -zp1
-
-extra_c_flags_f_wicgener = $(trmem_cover_cflags)
 
 # explicit rules
 #################

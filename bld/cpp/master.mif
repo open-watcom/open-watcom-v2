@@ -10,7 +10,6 @@ wcpp_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include exerule.mif
-!include trmem.mif
 
 !include $(cpp_dir)/client.mif
 
@@ -20,9 +19,6 @@ wcpp_trmem = 1
 .c : $(cli_cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = $(cli_cpp_inc_dirs)
-
-extra_cpp_flags_f_ppmem = $(trmem_cpp_flags)
-extra_c_flags_f_ppmem = $(trmem_cover_cflags)
 
 # explicit rules
 #################

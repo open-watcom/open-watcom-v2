@@ -9,7 +9,6 @@ womp_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 #
 # cflags
@@ -17,10 +16,6 @@ womp_trmem = 1
 .c: ../c;$(trmem_dir)
 
 inc_dirs = -I. -I"$(womp_dir)/h"
-
-extra_cpp_flags_f_memory = $(trmem_cpp_flags)
-
-extra_c_flags_f_memory = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -63,8 +58,7 @@ exetarg_objs = &
     segment.obj     &
     wat2can0.obj    &
     wat2can1.obj    &
-    wpmsg.obj       &
-    $(trmem_objs)
+    wpmsg.obj $(trmem_objs)
 exetarg_res        = $(proj_name).res
 !include exetarg.mif
 

@@ -1,4 +1,0 @@
-!ifeq trmem 1
-trmem_objs = $(_subdir_)trmem.obj
-trmemcvr_objs = $(_subdir_)trmemcvr.obj
-!endif

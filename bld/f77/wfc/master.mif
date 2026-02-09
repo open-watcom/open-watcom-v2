@@ -27,7 +27,6 @@ ntverrc_exe = $(exetarg_name)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(cg_dir)/client.mif
 !include asclient.mif
@@ -47,7 +46,7 @@ extra_cpp_flags_target_axp = -DAS_ALPHA
 extra_cpp_flags_target_mps = -DAS_MIPS
 extra_cpp_flags_target_ppc = -DAS_PPC
 
-extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu)) $(trmem_cpp_flags)
+extra_cpp_flags = $(extra_cpp_flags_target_$(target_cpu))
 !ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif

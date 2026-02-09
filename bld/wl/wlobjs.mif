@@ -101,8 +101,7 @@ common_objs = &
     $(_subdir_)wlmem.obj &
     $(_subdir_)wlnkmsg.obj &
     $(_subdir_)demangle.obj &
-    $(_subdir_)pathlist.obj &
-    $(trmem_objs)
+    $(_subdir_)pathlist.obj $(trmem_objs)
 
 common_rc_objs = &
     $(_subdir_)exerespe.obj &

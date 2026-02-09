@@ -11,7 +11,6 @@ suppress_zc = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 #
 # cflags
@@ -24,7 +23,6 @@ extra_cpp_flags =
 !ifdef sys_dll
 extra_cpp_flags += -D__DLL__
 !endif
-extra_cpp_flags_f_pbmem    = $(trmem_cpp_flags)
 
 extra_c_flags =
 !ifdef sys_dll
@@ -51,8 +49,7 @@ objs += &
     options.obj &
     list.obj &
     filelist.obj &
-    wig.obj &
-    $(trmem_objs)
+    wig.obj $(trmem_objs)
 
 !ifdef sys_dll
 #

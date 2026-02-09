@@ -8,7 +8,6 @@ builder_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include exerule.mif
-!include trmem.mif
 
 full_commands = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe diff.exe builder.exe wgrep.exe cdsay.exe
 all_commands_dos = diff.exe
@@ -44,9 +43,6 @@ extra_cpp_flags_x64 = -DBLDX64
 extra_cpp_flags_a64 = -DBLDA64
 
 extra_cpp_flags_f_genverrc = -D_VERSION=$(bld_ver)
-extra_cpp_flags_f_utils = $(trmem_cpp_flags)
-
-extra_c_flags_f_utils = $(trmem_cover_cflags)
 
 all : $(all_commands) .SYMBOLIC
 full : $(full_commands) .SYMBOLIC

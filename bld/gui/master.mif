@@ -23,8 +23,6 @@ additional_clean = *.grh
 !include $(gui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-!include trmem.mif
-
 #
 # cflags
 #
@@ -46,11 +44,6 @@ extra_c_flags_i86 = -zu
 extra_c_flags_nov = -4s
 extra_c_flags_win386 = -zw
 extra_c_flags_wini86 = -zW
-
-!ifndef bootstrap
-# memory tracker cover routines
-extra_c_flags_f_guimem = $(trmem_cover_cflags)
-!endif
 
 # explicit rules
 #################
@@ -98,8 +91,7 @@ common_objs = &
     guimenub.obj   &
     guitoolb.obj
 mem_objs = &
-    guimem.obj     &
-    $(trmem_objs)
+    guimem.obj $(trmem_objs)
 libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
 libtarg_libs = $(cli_wpi_libs)
 !include libtarg.mif

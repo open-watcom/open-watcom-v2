@@ -17,7 +17,6 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(orl_dir)/client.mif
 
@@ -35,10 +34,6 @@ inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
     $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
 extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
-
-extra_cpp_flags_f_memfuncs = $(trmem_cpp_flags)
-
-extra_c_flags_f_memfuncs = $(trmem_cover_cflags)
 
 #
 # lflags
@@ -75,8 +70,7 @@ exetarg_objs = &
     srcmix.obj &
     refproc.obj &
     $(dis_objs) &
-    demangle.obj &
-    $(trmem_objs)
+    demangle.obj $(trmem_objs)
 exetarg_libs          = $(cli_orl_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif

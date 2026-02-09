@@ -35,7 +35,6 @@ additional_clean += *.dlg
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 dig_arch = all
 
@@ -74,8 +73,6 @@ extra_cpp_flags    += -DGUI_IS_GUI -DUI_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
-
-extra_cpp_flags_f_dynmem = $(trmem_cpp_flags)
 
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"

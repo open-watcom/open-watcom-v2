@@ -7,7 +7,6 @@ hcdos_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(hlpview_dir)/client.mif
 
@@ -17,8 +16,6 @@ hcdos_trmem = 1
 .c: ../c;$(hlpview_dir)/c;$(trmem_dir)
 
 inc_dirs = -I"../h" $(cli_hlpview_inc_dirs)
-
-extra_cpp_flags_f_helpmem  = $(trmem_cpp_flags)
 
 # explicit rules
 #################
@@ -31,8 +28,7 @@ exetarg_objs = &
     hcdos.obj &
     index.obj &
     helpscan.obj &
-    helpmem.obj &
-    $(trmem_objs)
+    helpmem.obj $(trmem_objs)
 !include exetarg.mif
 
 #

@@ -13,8 +13,6 @@ additional_clean = *.grc
 !include defrule.mif
 !include deftarg.mif
 
-!include trmem.mif
-
 #
 # cflags
 #
@@ -23,11 +21,7 @@ additional_clean = *.grc
 
 inc_dirs = -I"../h"
 
-extra_cpp_flags_f_mem = $(trmem_cpp_flags)
-
 extra_cxx_flags = -xs
-
-extra_c_flags_f_mem   = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -55,8 +49,7 @@ exetarg_objs = &
     phrase.obj &
     bmx.obj &
     compress.obj &
-    parsing.obj &
-    $(trmem_objs)
+    parsing.obj $(trmem_objs)
 !include exetarg.mif
 
 #

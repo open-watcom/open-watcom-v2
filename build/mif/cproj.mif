@@ -781,6 +781,16 @@ inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) $(inc_dirs_
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_all)
 !endif
 
+!ifeq $(proj_name)_trmemcvr 1
+! ifeq trmem 1
+trmem_objs = $(_subdir_)trmemcvr.obj $(_subdir_)trmem.obj
+! else
+trmem_objs = $(_subdir_)trmemcvr.obj
+! endif
+!else ifeq trmem 1
+trmem_objs = $(_subdir_)trmem.obj
+!endif
+
 ############################
 # RESOURCE COMPILER SETINGS
 ######

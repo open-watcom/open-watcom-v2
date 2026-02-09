@@ -1,6 +1,5 @@
 eng_objs = &
-    $(trmem_objs) &
-    $(dip_objs) $(mad_objs) $(trp_objs) $(dig_objs) &
+    $(dip_objs) $(mad_objs) $(trp_objs) $(dig_objs) $(trmem_objs) &
     $(_subdir_)dumb.obj &
     $(_subdir_)spawn.obj &
     $(_subdir_)dbgchain.obj &

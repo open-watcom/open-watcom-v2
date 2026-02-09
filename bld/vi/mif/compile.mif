@@ -33,8 +33,6 @@ extra_cpp_flags_dos386 = -DDOS4G
 extra_cpp_flags_dos386 = -DDOS4G
 !endif
 
-extra_cpp_flags_f_mem      = $(trmem_cpp_flags)
-
 extra_c_flags = -fh
 !ifdef is286
 extra_c_flags_dosi86 = -2
@@ -46,7 +44,6 @@ extra_c_flags_wini86 = -zW -2 -zc
 extra_c_flags_win386 = -zw
 
 extra_c_flags_f_rxwrap   = -I"$(posix_dir)/h" -I"$(posix_dir)/misc"
-extra_c_flags_f_mem      = $(trmem_cover_cflags)
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_autoenv  = -fh=pch01.pch
 extra_c_flags_f_getopt   = -fh=pch01.pch

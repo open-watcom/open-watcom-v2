@@ -36,7 +36,6 @@ additional_clean = *.gh *.grh *.grc *.gc
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include trmem.mif
 
 !include $(orl_dir)/client.mif
 
@@ -59,9 +58,7 @@ extra_cpp_flags += -DIDE_PGM
 
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_f_memfuncs = $(trmem_cpp_flags)
 
-extra_c_flags_f_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
@@ -106,8 +103,7 @@ common_objs = &
     $(_subdir_)coffwrt.obj &
     $(_subdir_)inlib.obj &
     $(_subdir_)idemsgpr.obj &
-    $(_subdir_)ideentry.obj &
-    $(trmem_objs)
+    $(_subdir_)ideentry.obj $(trmem_objs)
 
 !ifdef bootstrap
 wlib_orl_objs = $(cli_orl_objs)

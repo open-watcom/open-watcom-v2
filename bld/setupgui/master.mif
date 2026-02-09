@@ -23,7 +23,6 @@ additional_clean = *.i *.rex setup.inf *.grc *.grh
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
-!include trmem.mif
 
 !include $(gui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
@@ -43,12 +42,6 @@ inc_dirs  = -I"../h" $(cli_wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_
 extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
-
-# memory tracker routines
-extra_cpp_flags_f_setupmem = $(trmem_cpp_flags)
-
-# memory tracker routines
-extra_c_flags_f_setupmem = $(trmem_cover_cflags)
 
 # custom version of resource finder
 extra_c_flags_f_loadfind = $(cli_wres_inc_dirs)
@@ -91,8 +84,7 @@ objs = &
     utils.obj
 
 mem_objs = &
-    setupmem.obj &
-    $(trmem_objs)
+    setupmem.obj $(trmem_objs)
 
 #                     i_dos i_linux i_nt i_os2 i_win i_osx i_bsd
 #===========================================================================

@@ -16,7 +16,6 @@ additional_clean = *.grc *.grh
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(aui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
@@ -43,9 +42,6 @@ extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 extra_cpp_flags    += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
-
-extra_cpp_flags_f_memutil = $(trmem_cpp_flags)
-extra_cpp_flags_f_wpdriver = $(trmem_cpp_flags)
 
 !ifdef check
 extra_c_flags   = -zs

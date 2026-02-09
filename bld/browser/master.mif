@@ -26,7 +26,6 @@ ntverrc_exe = $(exetarg_name)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(dwarfr_dir)/client.mif
 !include $(wclass_dir)/client.mif
@@ -56,7 +55,6 @@ extra_cpp_flags += -DNOWGML
 !endif
 
 extra_cpp_flags_f_rxwrap = -DALLOC=WBRAlloc
-extra_cpp_flags_f_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
 !ifdef gen_browser_file
@@ -74,7 +72,6 @@ extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_op
 extra_c_flags_f_keysym = -I"$(posix_dir)/h"
 extra_c_flags_f_util = -I"$(posix_dir)/h"
 extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
-extra_c_flags_f_brmem = $(trmem_cover_cflags)
 
 #
 # lflags

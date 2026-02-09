@@ -42,7 +42,6 @@ additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *
 !include dllrule.mif
 !include dllbase.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(cpp_dir)/client.mif
 
@@ -51,7 +50,7 @@ additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *
 #
 .c : .;../c;$(cli_cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cli_cpp_inc_dirs) $(inc_dirs_trmem)
+inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cli_cpp_inc_dirs)
 
 parser_defines = -DYYDEBUG -DSCANDEBUG
 
@@ -60,7 +59,6 @@ extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
-extra_cpp_flags_f_rcmem    = $(trmem_cpp_flags)
 !ifneq debug 0
 extra_cpp_flags_f_rcalloc0 = -DRCMEM_DEBUG
 extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG

@@ -40,7 +40,6 @@ ntverrc_exe = $(exetarg_name)
 !include dllrule.mif
 !include dllbase.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(cg_dir)/client.mif
 !include asclient.mif
@@ -77,7 +76,6 @@ extra_cpp_flags_dos   = -DCAUSEWAY
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_initfini = -DSPLIT_REQD
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_f_memmgr = $(trmem_cpp_flags)
 
 #extra_c_flags = -pcl
 extra_c_flags =
@@ -119,7 +117,6 @@ extra_c_flags_f_srcfile_386 = -4r
 extra_c_flags_f_srcfile  = $(extra_c_flags_f_srcfile_$(host_cpu))
 ! endif
 !endif
-extra_c_flags_f_memmgr   = $(trmem_cover_cflags)
 
 #
 # lflags

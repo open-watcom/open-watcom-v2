@@ -23,7 +23,6 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
@@ -75,8 +74,7 @@ exetarg_objs = &
     wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
     wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
     wreclip.obj wresym.obj &
-    $(cli_cpp_objs) ppenv.obj &
-    $(trmem_objs)
+    $(cli_cpp_objs) ppenv.obj $(trmem_objs)
 exetarg_libs = &
     $(cli_commonui_libs) $(cli_wr_libs) $(cli_wpi_libs) &
     $(wresedit_dir)/waccel/$(host)/wacc.lib &

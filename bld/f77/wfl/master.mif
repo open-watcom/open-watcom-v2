@@ -19,7 +19,6 @@ ntverrc_exe = $(exetarg_name)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 #
 # cflags

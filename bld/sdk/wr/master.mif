@@ -28,7 +28,6 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include trmem.mif
 
 !include $(wr_dir)/client.mif
 !include $(commonui_dir)/client.mif
@@ -42,12 +41,7 @@ inc_dirs = -I. $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_co
 
 extra_cpp_flags   = -DINSIDE_WR
 
-extra_cpp_flags_f_wrmem = $(trmem_cpp_flags)
-
 extra_c_flags_win = -zu-zw-zc
-
-# wr objects
-extra_c_flags_f_wrmem = $(trmem_cover_cflags)
 
 #
 # lflags

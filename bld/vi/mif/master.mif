@@ -36,7 +36,6 @@ additional_remove_subdirs = $(bin_subdir)
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
-!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif

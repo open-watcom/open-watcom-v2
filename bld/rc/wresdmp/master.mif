@@ -4,13 +4,13 @@ proj_name = wresdmp
 
 wresdmp_autodepeds = .AUTODEPEND
 
-wresdmp_trmem = 1
+wresdmp_trmemcvr = 1
+wresdmp_trmem    = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include wres.mif
-!include trmem.mif
 
 #
 # cflags
@@ -18,10 +18,6 @@ wresdmp_trmem = 1
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I"../h" $(cli_wres_inc_dirs)
-
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -42,6 +38,5 @@ exetarg_objs = &
     global.obj &
     layer0.obj &
     param.obj &
-    wresdmp.obj &
-    trmemcvr.obj $(trmem_objs)
+    wresdmp.obj $(trmem_objs)
 !include exetarg.mif

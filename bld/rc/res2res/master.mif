@@ -4,13 +4,13 @@ proj_name = res2res
 
 res2res_autodepends = .AUTODEPEND
 
-res2res_trmem = 1
+res2res_trmemcvr = 1
+res2res_trmem    = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include wres.mif
-!include trmem.mif
 
 #
 # cflags
@@ -18,10 +18,6 @@ res2res_trmem = 1
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I"../h" $(cli_wres_inc_dirs)
-
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 # explicit rules
 #################
@@ -36,6 +32,5 @@ exetarg_objs = &
     m2wres.obj &
     param.obj &
     res2res.obj &
-    w2mres.obj &
-    trmemcvr.obj $(trmem_objs)
+    w2mres.obj $(trmem_objs)
 !include exetarg.mif

@@ -49,7 +49,6 @@ additional_remove_subdirs = $(bin_subdir)
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include trmem.mif
 
 # CODEGEN stuff
 !include $(cg_dir)/client.mif

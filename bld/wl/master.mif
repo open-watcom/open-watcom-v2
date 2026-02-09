@@ -43,7 +43,6 @@ additional_clean = *.grh *.grc
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include trmem.mif
 
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
@@ -73,9 +72,6 @@ extra_cpp_flags_f_idedrv      = -DCHAIN_CALLBACK
 extra_cpp_flags_f_ideentry    = -DCHAIN_CALLBACK
 extra_cpp_flags_f_maindrv     = -DDLL_NAME=$(dlltarg_name)
 extra_cpp_flags_f_stidedrv    = -DSTATIC_LINKAGE
-extra_cpp_flags_f_wlmem       = $(trmem_cpp_flags)
-
-extra_c_flags_f_wlmem         = $(trmem_cover_cflags)
 
 #
 # lflags

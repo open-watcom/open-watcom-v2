@@ -4,12 +4,12 @@ proj_name = objread
 
 objread_autodepends = .AUTODEPEND
 
-objread_trmem = 1
+objread_trmemcvr = 1
+objread_trmem    = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(orl_dir)/client.mif
 
@@ -17,12 +17,7 @@ objread_trmem = 1
 
 inc_dirs = $(cli_orl_inc_dirs) $(cli_orl_inc_dirs_internal)
 
-extra_cpp_flags_f_test      = $(trmem_cpp_flags)
-extra_cpp_flags_f_trmemcvr  = $(trmem_cpp_flags)
-
-extra_c_flags_f_trmemcvr    = $(trmem_cover_cflags)
-
-exetarg_objs = test.obj trmemcvr.obj $(trmem_objs)
+exetarg_objs = test.obj $(trmem_objs)
 exetarg_libs = $(cli_orl_libs)
 
 !include exetarg.mif

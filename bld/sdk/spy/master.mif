@@ -23,7 +23,6 @@ additional_clean = *.gh *.grh *.grc
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif

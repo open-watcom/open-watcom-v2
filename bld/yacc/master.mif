@@ -13,7 +13,6 @@ exetarg_name = b$(proj_name)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 #
 # cflags
@@ -46,8 +45,7 @@ exetarg_objs = &
     sentence.obj    &
     used.obj        &
     yacc.obj        &
-    alloc.obj       &
-    $(trmem_objs)
+    alloc.obj $(trmem_objs)
 # test build only
 exetarg_prebuild_objs = &
     genc.obj &

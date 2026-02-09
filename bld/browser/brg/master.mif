@@ -9,7 +9,6 @@ merge_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(dwarfr_dir)/client.mif
 
@@ -26,11 +25,7 @@ extra_cpp_flags     = -DSTANDALONE_MERGER
 extra_cpp_flags     += -DDEBUG -DINSTRUMENTS
 !endif
 
-extra_cpp_flags_f_brmem = $(trmem_cpp_flags)
-
 extra_cxx_flags     = -xs-ew
-
-extra_c_flags_f_brmem = $(trmem_cover_cflags)
 
 #
 # lflags

@@ -9,7 +9,6 @@ whelp_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
@@ -21,8 +20,6 @@ whelp_trmem = 1
 
 inc_dirs =  $(cli_hlpview_inc_dirs) $(cli_ui_inc_dirs)
 
-extra_cpp_flags = $(trmem_cpp_flags)
-
 # explicit rules
 #################
 
@@ -33,7 +30,6 @@ exetarg_objs = &
     main.obj &
     filelist.obj &
     $(cli_hlpview_objs) &
-    helpmem.obj &
-    $(trmem_objs)
+    helpmem.obj $(trmem_objs)
 exetarg_libs = $(cli_ui_libs)
 !include exetarg.mif

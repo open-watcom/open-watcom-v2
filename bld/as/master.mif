@@ -7,8 +7,7 @@ was_autodepends = .AUTODEPEND
 was_ntverrc = ..
 
 was_trmemcvr = 1
-
-was_trmem = 1
+was_trmem    = 1
 
 was_wreslib_cli = text
 
@@ -25,7 +24,6 @@ ntverrc_exe = $(exetarg_name)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(owl_dir)/client.mif
 !include $(cpp_dir)/client.mif
@@ -78,13 +76,13 @@ as_objs = &
     $(as_comm_objs) &
     $(as_targ_objs_$(target_cpu)) &
     $(as_stand_objs) &
-    $(cli_cpp_objs) trmemcvr.obj $(trmem_objs)
+    $(cli_cpp_objs) $(trmem_objs)
 
 #
 # TEST
 #
 !ifdef test_inline_as
-asi_test_objs = $(cli_asminline_objs) asitest.obj trmemcvr.obj $(trmem_objs)
+asi_test_objs = $(cli_asminline_objs) asitest.obj $(trmem_objs)
 asinline.exe : asi_msg.grh asilexyy.gc asiytab.gc $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
     $(cl) $(clflags) $(asi_test_objs) $(cli_owl_libs) $(ldflags)
 !endif

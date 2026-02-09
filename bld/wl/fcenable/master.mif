@@ -11,7 +11,6 @@ memory_model_i86 = s
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 #
 # cflags
@@ -20,10 +19,6 @@ memory_model_i86 = s
 
 inc_dirs = -I"../h"
 inc_dirs_os2 = -I"$(clib_dir)/process/h" -I"$(lib_misc_dir)/h"
-
-extra_cpp_flags_f_mem = $(trmem_cpp_flags)
-
-extra_c_flags_f_mem   = $(trmem_cover_cflags)
 
 #
 # EXE

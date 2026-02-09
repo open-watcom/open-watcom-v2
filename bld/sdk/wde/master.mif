@@ -9,7 +9,8 @@ wde_autodepends = .AUTODEPEND
 wde_ntmanif = ../res
 wde_ntverrc = ../res
 
-wde_trmem = 1
+wde_trmemcvr = 1
+wde_trmem    = 1
 
 wde_wreslib_cli = gui
 wde_wreslib_incl = 1
@@ -23,7 +24,6 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
@@ -42,13 +42,9 @@ extra_cpp_flags   = -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
-
 extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
-
-extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_preproc = -zm -fh=preproc.pch

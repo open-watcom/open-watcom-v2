@@ -13,7 +13,6 @@ ui_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(ui_dir)/client.mif       # define cli_ui_os macro
 
@@ -29,8 +28,6 @@ inc_dirs_qnx = -I. -I"../../unix/h"
 
 extra_cpp_flags_dos = -DCHARMAP
 extra_cpp_flags_nov = -D_NETWARE_CLIB
-
-extra_cpp_flags_f_uialloc = $(trmem_cpp_flags)
 
 !ifeq debug 0
 extra_c_flags = -os

@@ -34,7 +34,6 @@ additional_clean = *.gh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include $(orl_dir)/client.mif
 
@@ -55,11 +54,7 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 extra_cpp_flags += -DCACHE_STATS
 !endif
 
-extra_cpp_flags_f_memory = $(trmem_cpp_flags)
-
 extra_c_flags_i86 = -zt32
-
-extra_c_flags_f_memory = $(trmem_cover_cflags)
 
 #
 # lflags

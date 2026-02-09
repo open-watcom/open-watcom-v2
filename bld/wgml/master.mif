@@ -23,7 +23,6 @@ additional_clean = *.grh *.gh
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include trmem.mif
 
 !include ../wgmlobjs.mif
 
@@ -34,14 +33,10 @@ additional_clean = *.grh *.gh
 
 inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs)
 
-extra_cpp_flags_f_gmemory = $(trmem_cpp_flags)
-
 #  extra_c_flags      += -zpw
 #  extra_c_flags      += -fti
 #  extra_c_flags      += -pcl
 #extra_c_flags_f_gsyssym = -P
-
-extra_c_flags_f_gmemory = $(trmem_cover_cflags)
 
 # explicit rules
 #################
