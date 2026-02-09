@@ -32,10 +32,18 @@
 
 #include <stdlib.h>
 #include "fcenable.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
 
-#include "trmem.h"
+#ifdef _M_IX86
+#pragma aux WFRM __frame
+#pragma aux (WFRM) MemAlloc
+#pragma aux (WFRM) MemFree
+#endif
 
 static _trmem_hdl TrHdl;
 

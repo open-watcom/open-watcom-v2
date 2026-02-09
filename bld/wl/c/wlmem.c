@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #if defined( __QNX__ )
     #include <sys/seginfo.h>
 #endif
-#include "trmem.h"
 #include "linkstd.h"
 #include "library.h"
 #include "virtmem.h"
@@ -47,9 +46,21 @@
 #include "objcache.h"
 #include "wresmem.h"
 #ifdef TRMEM
+    #include "trmem.h"
     #include "ideentry.h"
 #endif
 
+
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux WFRM __frame
+#pragma aux (WFRM) ChkLAlloc
+#pragma aux (WFRM) LAlloc
+#pragma aux (WFRM) LFree
+#pragma aux (WFRM) LRealloc
+
+#pragma aux (WFRM) wres_alloc
+#pragma aux (WFRM) wres_free
+#endif
 
 #if defined( __QNX__ )
 unsigned LastChanceSeg;
@@ -112,56 +123,46 @@ void LnkMemFini( void )
 #endif
 }
 
-#ifdef TRMEM
-static void *DoLAlloc( size_t size, void (*ra)( void ) )
-#else
 void *LAlloc( size_t size )
-#endif
 {
-    void    *p;
+    void    *ptr;
 
     for( ;; ) {
 #ifdef TRMEM
-        p = _trmem_alloc( size, ra, TrHdl );
+        ptr = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-        p = malloc( size );
+        ptr = malloc( size );
 #endif
-        if( p != NULL ) {
-            memset( p, 0, size );
+        if( ptr != NULL ) {
+            memset( ptr, 0, size );
             break;
         }
         if( !FreeUpMemory() ) {
             break;
         }
     }
-    return( p );
+    return( ptr );
 }
-
-#ifdef TRMEM
- void *LAlloc( size_t size )
-/**************************/
-{
-    void        (*ra)( void );
-
-    ra = _trmem_guess_who();
-
-    return( DoLAlloc( size, ra ) );
-}
-#endif
 
 void *ChkLAlloc( size_t size )
 /****************************/
 {
-    void                *ptr;
+    void            *ptr;
+
+    for( ;; ) {
 #ifdef TRMEM
-    void                (*ra)( void );
-
-    ra = _trmem_guess_who();
-
-    ptr = DoLAlloc( size, ra );
+        ptr = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-    ptr = LAlloc( size );
+        ptr = malloc( size );
 #endif
+        if( ptr != NULL ) {
+            memset( ptr, 0, size );
+            break;
+        }
+        if( !FreeUpMemory() ) {
+            break;
+        }
+    }
     if( ptr == NULL ) {
         LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
     }
@@ -179,7 +180,7 @@ void *wres_alloc( size_t size )
 
 
 void LFree( void *p )
-/**************************/
+/*******************/
 {
     if( p == NULL )
         return;
@@ -209,14 +210,10 @@ void *LnkRealloc( void *src, size_t size )
 */
 {
     void    *dest;
-#ifdef TRMEM
-    void        (*ra)( void );
 
-    ra = _trmem_guess_who(); /* must be first thing */
-#endif
     for( ;; ) {
 #ifdef TRMEM
-        dest = _trmem_realloc( src, size, ra, TrHdl );
+        dest = _trmem_realloc( src, size, _trmem_guess_who(), TrHdl );
 #else
         dest = realloc( src, size );
 #endif

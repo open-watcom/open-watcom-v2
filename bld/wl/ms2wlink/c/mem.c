@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +32,20 @@
 
 #include <stdlib.h>
 #include "ms2wlink.h"
+#ifdef TRMEM
+    #include "wio.h"
+    #include "clibext.h"
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
 
-#include "wio.h"
-
-#include "clibext.h"
-#include "trmem.h"
+#ifdef _M_IX86
+#pragma aux WFRM __frame
+#pragma aux (WFRM) MemAlloc
+#pragma aux (WFRM) MemFree
+#endif
 
 static _trmem_hdl TrHdl;
 
