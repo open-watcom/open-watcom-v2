@@ -40,7 +40,7 @@ extern void     *Pass1Alloc( size_t );
 extern void     *ChkLAlloc( size_t );
 extern void     *LAlloc( size_t );
 extern void     LFree( void * );
-extern void     *LnkRealloc( void *, size_t );
+extern void     *LRealloc( void *, size_t );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
@@ -53,7 +53,7 @@ extern void     ReleasePass1Blocks( void );
 #define _LnkAlloc( dest, size )         dest = LAlloc( size )
 #define _TryAlloc( dest, size )         dest = TryAlloc( size )
 #define _PermAlloc( dest, size )        dest = PermAlloc( size )
-#define _LnkRealloc( dest, src, size )  dest = LnkRealloc( src, size )
+#define _LnkRealloc( dest, src, size )  dest = LRealloc( src, size )
 #define _LnkFree( ptr )                 LFree( ptr )
 #define _PermFree( ptr )                /* nothing to do */
 #define _Pass1Alloc( dest, size )       dest = Pass1Alloc( size )

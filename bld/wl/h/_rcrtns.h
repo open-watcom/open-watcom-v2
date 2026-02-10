@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #define RESALLOC        ChkLAlloc
 #define RESFREE         LFree
 
-#define RCREALLOC       LnkRealloc
+#define RCREALLOC       LRealloc
 
 extern FILE             *res_open( const char *name, wres_open_mode omode );
 extern bool             res_close( FILE *fp );

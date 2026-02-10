@@ -51,7 +51,13 @@
 #endif
 
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( __QNX__ )
+unsigned LastChanceSeg;
+#endif
+
+#if defined( TRMEM )
+
+#if defined( _M_IX86 )
 #pragma aux (WFRM) ChkLAlloc
 #pragma aux (WFRM) LAlloc
 #pragma aux (WFRM) LFree
@@ -61,15 +67,8 @@
 #pragma aux (WFRM) wres_free
 #endif
 
-#if defined( __QNX__ )
-unsigned LastChanceSeg;
-#endif
-
-#ifdef TRMEM
 void    *TrHdl;
-#endif
 
-#ifdef TRMEM
 static void PrintLine( void *bogus, const char *buff, size_t len )
 {
     /* unused parameters */ (void)bogus; (void)len;
@@ -84,7 +83,8 @@ static void PrintAllMem( void )
         _trmem_prt_usage( TrHdl );
     }
 }
-#endif
+
+#endif	/* TRMEM */
 
 static bool CacheRelease( void )
 /******************************/
@@ -199,8 +199,8 @@ void wres_free( void *ptr )
 #endif
 }
 
-void *LnkRealloc( void *src, size_t size )
-/****************************************/
+void *LRealloc( void *src, size_t size )
+/**************************************/
 /*
  * reallocate a block of memory.
  * Notes for LnkRealloc
