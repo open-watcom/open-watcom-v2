@@ -6,7 +6,6 @@ was_autodepends = .AUTODEPEND
 
 was_ntverrc = ..
 
-was_trmemcvr = 1
 was_trmem    = 1
 
 was_wreslib_cli = text
