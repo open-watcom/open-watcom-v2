@@ -110,7 +110,3 @@ extern void         PPENTRY PP_OutOfMemory( void );
 
 extern void         * PPENTRY PP_Malloc( size_t __size );
 extern void         PPENTRY PP_Free( void *__ptr );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux PP_Malloc __frame
-#pragma aux PP_Free __frame
-#endif

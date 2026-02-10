@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,14 @@
 #include <string.h>
 #include "uidef.h"
 #ifdef TRMEM
-#include "trmem.h"
+    #include "trmem.h"
+#endif
 
 #include "clibext.h"
-#endif
 
 
 #ifdef TRMEM
+
 static _trmem_hdl  UIMemHandle;
 
 static FILE *UIMemFileHandle = NULL;    /* stream to put output on */
@@ -56,7 +57,8 @@ static void UIMemPrintLine( void *parm, const char *buff, size_t len )
         fprintf( UIMemFileHandle, "%s\n", buff );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 #if 0
 void UIMemRedirect( FILE *fp )
@@ -112,6 +114,9 @@ void UIMemPrtUsage( void )
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uimalloc
+#endif
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -121,6 +126,9 @@ void * UIAPI uimalloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifree
+#endif
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -130,6 +138,9 @@ void UIAPI uifree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uirealloc
+#endif
 void * UIAPI uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM

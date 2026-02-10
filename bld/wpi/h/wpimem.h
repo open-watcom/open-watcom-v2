@@ -37,10 +37,5 @@
 extern void _wpi_free( void * ptr );
 extern void *_wpi_malloc( size_t size );
 extern void *_wpi_realloc( void *ptr, size_t size );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux _wpi_free __frame
-#pragma aux _wpi_malloc __frame
-#pragma aux _wpi_realloc __frame
-#endif
 
 #endif

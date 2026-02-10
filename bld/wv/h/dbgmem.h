@@ -39,12 +39,5 @@ extern void     *DbgChkAlloc( size_t, char * );
 extern void     *DbgAlloc( size_t );
 extern void     *DbgMustAlloc( size_t );
 extern void     DbgFree( void * );
-#if defined( TRMEM ) && defined( _M_I86 )
-#pragma aux DbgRealloc __frame
-#pragma aux DbgChkAlloc __frame
-#pragma aux DbgAlloc __frame
-#pragma aux DbgMustAlloc __frame
-#pragma aux DbgFree __frame
-#endif
 
 #endif

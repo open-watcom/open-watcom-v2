@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,6 +278,9 @@ void outOfMemory( void )
 void *_debugVar = 0;
 #endif
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) BasicAlloc
+#endif
 static void *BasicAlloc(size_t size)
 {
     void *temp;
@@ -320,6 +323,9 @@ char *wicStrdup(const char *src)
     return temp;
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) BasicFree
+#endif
 void BasicFree(void *ptr)
 {
     incDebugCount();

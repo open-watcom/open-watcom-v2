@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,6 +122,9 @@ int __saveregs  xmemneed( size_t size )
  * Dynamic Memory management routines
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) DbgAlloc
+#endif
 void *DbgAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -131,6 +134,9 @@ void *DbgAlloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) DbgMustAlloc
+#endif
 void *DbgMustAlloc( size_t size )
 {
     void        *ptr;
@@ -146,6 +152,9 @@ void *DbgMustAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) DbgRealloc
+#endif
 void *DbgRealloc( void *chunk, size_t size )
 {
 #ifdef TRMEM
@@ -155,6 +164,9 @@ void *DbgRealloc( void *chunk, size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) DbgFree
+#endif
 void DbgFree( void *ptr )
 {
 #ifdef TRMEM
@@ -164,6 +176,9 @@ void DbgFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) DbgChkAlloc
+#endif
 void *DbgChkAlloc( size_t size, char *error )
 {
     void *ret;
@@ -188,6 +203,9 @@ void *DbgChkAlloc( size_t size, char *error )
     #define MAX_BLOCK   _1MB
 #endif
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemExpand
+#endif
 static void MemExpand( void )
 {
     unsigned long   size;
@@ -444,6 +462,9 @@ void UIAPI UIMemClose( void ) {}
  * Alloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemAlloc
+#endif
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -454,6 +475,9 @@ void *GUIMemAlloc( size_t size )
 #endif
 }
 #ifndef __NOUI__
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WndAlloc
+#endif
 void * WNDAPI WndAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -468,6 +492,9 @@ void * WNDAPI WndAlloc( size_t size )
 
 #ifdef __OS2__
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_malloc
+#endif
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -481,6 +508,9 @@ void * _wpi_malloc( size_t size )
 
 #else   /* GUI_IS_GUI */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uimalloc
+#endif
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -489,6 +519,9 @@ void * UIAPI uimalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifaralloc
+#endif
 LP_VOID UIAPI uifaralloc( size_t size )
 {
 #ifdef TRMEM
@@ -497,6 +530,9 @@ LP_VOID UIAPI uifaralloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemAlloc
+#endif
 void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -505,6 +541,9 @@ void *HelpMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -521,6 +560,9 @@ void *wres_alloc( size_t size )
  * Free functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemFree
+#endif
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -531,6 +573,9 @@ void GUIMemFree( void *ptr )
 #endif
 }
 #ifndef __NOUI__
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WndFree
+#endif
 void WNDAPI WndFree( void *ptr )
 {
 #ifdef TRMEM
@@ -545,6 +590,9 @@ void WNDAPI WndFree( void *ptr )
 
 #ifdef __OS2__
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_free
+#endif
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -558,6 +606,9 @@ void _wpi_free( void *ptr )
 
 #else   /* GUI_IS_GUI */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifree
+#endif
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -566,6 +617,9 @@ void UIAPI uifree( void *ptr )
     free( ptr );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifarfree
+#endif
 void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
@@ -576,6 +630,9 @@ void UIAPI uifarfree( LP_VOID ptr )
 #endif
     }
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemFree
+#endif
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -584,6 +641,33 @@ void HelpMemFree( void *ptr )
     free( ptr );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_free
+#pragma aux (WFRM) _wpi_malloc
+#pragma aux (WFRM) _wpi_realloc
+#pragma aux (WFRM) DbgAlloc
+#pragma aux (WFRM) DbgFree
+#pragma aux (WFRM) DbgChkAlloc
+#pragma aux (WFRM) DbgMustAlloc
+#pragma aux (WFRM) DbgRealloc
+#pragma aux (WFRM) GUIMemAlloc
+#pragma aux (WFRM) GUIMemFree
+#pragma aux (WFRM) GUIMemRealloc
+#pragma aux (WFRM) HelpMemAlloc
+#pragma aux (WFRM) HelpMemFree
+#pragma aux (WFRM) HelpMemRealloc
+#pragma aux (WFRM) MemExpand
+#pragma aux (WFRM) uifaralloc
+#pragma aux (WFRM) uifarfree
+#pragma aux (WFRM) uifree
+#pragma aux (WFRM) uimalloc
+#pragma aux (WFRM) uirealloc
+#pragma aux (WFRM) WndAlloc
+#pragma aux (WFRM) WndFree
+#pragma aux (WFRM) WndRealloc
+#pragma aux (WFRM) wres_alloc
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -600,6 +684,9 @@ void wres_free( void *ptr )
  * Realloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemRealloc
+#endif
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
@@ -609,6 +696,9 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WndRealloc
+#endif
 void *WndRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -622,6 +712,9 @@ void *WndRealloc( void *ptr, size_t size )
 
 #ifdef __OS2__
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_realloc
+#endif
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -635,6 +728,9 @@ void * _wpi_realloc( void *ptr, size_t size )
 
 #else   /* GUI_IS_GUI */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uirealloc
+#endif
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -643,6 +739,9 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemRealloc
+#endif
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM

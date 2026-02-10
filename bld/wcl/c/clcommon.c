@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "clcommon.h"
 #include "pathgrp2.h"
 #ifdef TRMEM
-#include "trmem.h"
+    #include "trmem.h"
 #endif
 
 #include "clibext.h"
@@ -72,6 +72,7 @@ static char *DebugOptions[] = {
 };
 
 #ifdef TRMEM
+
 static _trmem_hdl   TRMemHandle;
 
 static void memPrintLine( void *fh, const char *buf, size_t len )
@@ -80,7 +81,8 @@ static void memPrintLine( void *fh, const char *buf, size_t len )
 
     PrintMsg( "%s\n", buf );
 }
-#endif
+
+#endif  /* TRMEM */
 
 void PrintMsg( const char *fmt, ... )
 /***********************************/
@@ -187,6 +189,9 @@ void  MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void  *MemAlloc( size_t size )
 /****************************/
 {
@@ -204,6 +209,9 @@ void  *MemAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemStrDup
+#endif
 char *MemStrDup( const char *str )
 /********************************/
 {
@@ -222,6 +230,9 @@ char *MemStrDup( const char *str )
 }
 
 #if 0
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemStrLenDup
+#endif
 char *MemStrLenDup( const char *str, size_t len )
 /***********************************************/
 {
@@ -242,6 +253,9 @@ char *MemStrLenDup( const char *str, size_t len )
 }
 #endif
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void  *MemRealloc( void *p, size_t size )
 /***************************************/
 {
@@ -259,6 +273,9 @@ void  *MemRealloc( void *p, size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void  MemFree( void *ptr )
 /************************/
 {

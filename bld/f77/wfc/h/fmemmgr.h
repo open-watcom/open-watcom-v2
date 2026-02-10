@@ -37,8 +37,3 @@ extern void     FMemErrors( void );
 extern void     *FMemAlloc( size_t size );
 extern void     FMemFree( void *p );
 extern char     *FMemStrDup( const char *str );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux FMemAlloc __frame
-#pragma aux FMemFree __frame
-#pragma aux FMemStrDup __frame
-#endif

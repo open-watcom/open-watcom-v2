@@ -35,8 +35,3 @@ extern void         MClose( void );
 extern void         *MAlloc( size_t );
 extern void         MFree( void * );
 extern char         *MStrdup( const char * );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MAlloc __frame
-#pragma aux MFree __frame
-#pragma aux MStrdup __frame
-#endif

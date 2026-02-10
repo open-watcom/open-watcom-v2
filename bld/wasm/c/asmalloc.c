@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,12 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "wresmem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
-#include "trmem.h"
 
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
@@ -57,7 +60,8 @@ static void memPrintLine( void *file, const char *buf, size_t len )
         fprintf( memFile, "%s\n", buf );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void MemInit( void )
 {
@@ -85,6 +89,9 @@ void MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) AsmAlloc
+#endif
 void *AsmAlloc( size_t size )
 {
     void        *ptr;
@@ -100,6 +107,9 @@ void *AsmAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) AsmStrDup
+#endif
 char *AsmStrDup( const char *str )
 {
     size_t      size;
@@ -119,6 +129,9 @@ char *AsmStrDup( const char *str )
     return( strcpy( ptr, str ) );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) AsmFree
+#endif
 void AsmFree( void *ptr )
 {
     if( ptr != NULL ) {
@@ -130,6 +143,9 @@ void AsmFree( void *ptr )
     }
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -139,6 +155,9 @@ void *wres_alloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM

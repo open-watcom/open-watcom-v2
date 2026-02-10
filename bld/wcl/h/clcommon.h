@@ -170,10 +170,3 @@ extern char     *MemStrDup( const char * );
 extern char     *MemStrLenDup( const char *str, size_t len );
 extern void     *MemRealloc( void *, size_t );
 extern void     MemFree( void * );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MemAlloc __frame
-#pragma aux MemStrDup __frame
-#pragma aux MemStrLenDup __frame
-#pragma aux MemRealloc __frame
-#pragma aux MemFree __frame
-#endif

@@ -36,9 +36,12 @@
 //  their own support for these routines.
 //
 #include "_preproc.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
-#include "trmem.h"
 
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
@@ -52,7 +55,8 @@ static void memPrintLine( void *file, const char *buf, size_t len )
         fprintf( memFile, "%s\n", buf );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void MemInit( void )
 /******************/
@@ -82,6 +86,9 @@ void MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) PP_Malloc
+#endif
 void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
@@ -97,6 +104,9 @@ void * PPENTRY PP_Malloc( size_t size )
     return( p );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) PP_Realloc
+#endif
 void * PPENTRY PP_Realloc( void *old, size_t size )
 {
     void        *p;
@@ -112,6 +122,9 @@ void * PPENTRY PP_Realloc( void *old, size_t size )
     return( p );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) PP_Free
+#endif
 void PPENTRY PP_Free( void *p )
 {
 #ifdef TRMEM

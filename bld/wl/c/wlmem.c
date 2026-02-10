@@ -55,17 +55,7 @@
 unsigned LastChanceSeg;
 #endif
 
-#if defined( TRMEM )
-
-#if defined( _M_IX86 )
-#pragma aux (WFRM) ChkLAlloc
-#pragma aux (WFRM) LAlloc
-#pragma aux (WFRM) LFree
-#pragma aux (WFRM) LRealloc
-
-#pragma aux (WFRM) wres_alloc
-#pragma aux (WFRM) wres_free
-#endif
+#ifdef TRMEM
 
 void    *TrHdl;
 
@@ -84,7 +74,7 @@ static void PrintAllMem( void )
     }
 }
 
-#endif	/* TRMEM */
+#endif  /* TRMEM */
 
 static bool CacheRelease( void )
 /******************************/
@@ -122,7 +112,11 @@ void LnkMemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) LAlloc
+#endif
 void *LAlloc( size_t size )
+/*************************/
 {
     void    *ptr;
 
@@ -143,6 +137,9 @@ void *LAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) ChkLAlloc
+#endif
 void *ChkLAlloc( size_t size )
 /****************************/
 {
@@ -168,6 +165,9 @@ void *ChkLAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -178,6 +178,9 @@ void *wres_alloc( size_t size )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) LFree
+#endif
 void LFree( void *p )
 /*******************/
 {
@@ -190,6 +193,9 @@ void LFree( void *p )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -199,11 +205,14 @@ void wres_free( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) LRealloc
+#endif
 void *LRealloc( void *src, size_t size )
 /**************************************/
 /*
  * reallocate a block of memory.
- * Notes for LnkRealloc
+ * Notes for LRealloc
  * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
  * and this function is called from permshrink
 */
@@ -250,8 +259,9 @@ void DbgZapFreed( void *tgt, size_t size )
 #endif
 
 bool FreeUpMemory( void )
-/***********************/
-// make sure LnkRealloc is kept up to date with what is put in here.
+/************************
+ * make sure LRealloc is kept up to date with what is put in here.
+ */
 {
 #if defined( __QNX__ )
     if( LastChanceSeg != (unsigned)-1 ) {

@@ -47,14 +47,6 @@
 
 #ifdef TRMEM
 
-#if defined( _M_IX86 )
-#pragma aux (WFRM) YaccAlloc
-#pragma aux (WFRM) YaccCalloc
-#pragma aux (WFRM) YaccRealloc
-#pragma aux (WFRM) YaccFree
-#pragma aux (WFRM) YaccStrDup
-#endif
-
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
 
@@ -67,7 +59,8 @@ static void memPrintLine( void *file, const char *buf, size_t len )
         fprintf( memFile, "%s\n", buf );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void MemInit( void )
 /******************/
@@ -97,6 +90,9 @@ void MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) YaccAlloc
+#endif
 void *YaccAlloc( size_t size )
 /****************************/
 {
@@ -113,6 +109,9 @@ void *YaccAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) YaccCalloc
+#endif
 void *YaccCalloc( size_t n, size_t size )
 /***************************************/
 {
@@ -130,6 +129,9 @@ void *YaccCalloc( size_t n, size_t size )
     return( memset( ptr, 0, size ) );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) YaccRealloc
+#endif
 void *YaccRealloc( void *old_ptr, size_t newsize )
 /************************************************/
 {
@@ -146,6 +148,9 @@ void *YaccRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) YaccFree
+#endif
 void YaccFree( void *ptr )
 /************************/
 {
@@ -158,6 +163,9 @@ void YaccFree( void *ptr )
     }
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) YaccStrDup
+#endif
 char *YaccStrDup( const char *str )
 /*********************************/
 {

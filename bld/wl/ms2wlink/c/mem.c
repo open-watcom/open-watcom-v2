@@ -34,17 +34,13 @@
 #include "ms2wlink.h"
 #ifdef TRMEM
     #include "wio.h"
-    #include "clibext.h"
     #include "trmem.h"
 #endif
 
+#include "clibext.h"
+
 
 #ifdef TRMEM
-
-#ifdef _M_IX86
-#pragma aux (WFRM) MemAlloc
-#pragma aux (WFRM) MemFree
-#endif
 
 static _trmem_hdl TrHdl;
 
@@ -57,7 +53,7 @@ static void PrintLine( void *parm, const char *buff, size_t len )
     QWriteNL( stderr, NULL );
 }
 
-#endif
+#endif  /* TRMEM */
 
 void MemInit( void )
 /******************/
@@ -78,6 +74,9 @@ void MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -94,6 +93,9 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *p )
 /*********************/
 {

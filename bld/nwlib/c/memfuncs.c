@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,12 @@
 #include "wlib.h"
 #include "wresmem.h"
 #ifdef TRMEM
-#include "trmem.h"
+    #include "trmem.h"
 #endif
 
 
 #ifdef TRMEM
+
 static _trmem_hdl   TRMemHandle;
 
 extern void TRPrintLine( void *parm, const char *buff, size_t len )
@@ -48,7 +49,8 @@ extern void TRPrintLine( void *parm, const char *buff, size_t len )
 
     fprintf( stderr, "%s\n", buff );
 }
-#endif
+
+#endif  /* TRMEM */
 
 void InitMem( void )
 /******************/
@@ -61,6 +63,9 @@ void InitMem( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -79,6 +84,9 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -88,6 +96,9 @@ void *wres_alloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
@@ -103,6 +114,9 @@ void *MemRealloc( void *ptr, size_t size )
     return( mptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *ptr )
 /***********************/
 {
@@ -115,6 +129,9 @@ void MemFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM

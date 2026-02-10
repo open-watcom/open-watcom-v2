@@ -37,11 +37,11 @@
 #if defined( __WATCOMC__ )
     #include <malloc.h>         /* necessary for heap checking functions */
 #endif
-#ifdef TRMEM
-#include <sys/types.h>
-#include "trmem.h"
-#endif
 #include "wresmem.h"
+#ifdef TRMEM
+    #include <sys/types.h>
+    #include "trmem.h"
+#endif
 
 #include "clibext.h"
 
@@ -325,6 +325,9 @@ STATIC void *doAlloc( size_t size )
 }
 
 #ifndef BOOTSTRAP
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -336,6 +339,9 @@ void *wres_alloc( size_t size )
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MallocUnSafe
+#endif
 void *MallocUnSafe( size_t size )
 /**************************************/
 {
@@ -349,6 +355,9 @@ void *MallocUnSafe( size_t size )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MallocSafe
+#endif
 void *MallocSafe( size_t size )
 /*************************************
  * post:    A scarce routine may be called
@@ -372,6 +381,9 @@ void *MallocSafe( size_t size )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CallocSafe
+#endif
 void *CallocSafe( size_t size )
 /*************************************
  * post:    A scarce routine may be called
@@ -399,6 +411,9 @@ void *CallocSafe( size_t size )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) FreeSafe
+#endif
 void FreeSafe( void *ptr )
 /********************************
  * post:    The block pointed to by ptr is freed if it was allocated by
@@ -414,6 +429,9 @@ void FreeSafe( void *ptr )
 }
 
 #ifndef BOOTSTRAP
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -424,6 +442,9 @@ void wres_free( void *ptr )
 }
 #endif
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) StrDupSafe
+#endif
 char *StrDupSafe( const char *str )
 /*****************************************
  * returns: Pointer to a duplicate of str in a new block of memory.
@@ -451,6 +472,9 @@ char *StrDupSafe( const char *str )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CharToStrSafe
+#endif
 char *CharToStrSafe( char c )
 /*****************************************
  * returns: Pointer to a string with one character in a new block of memory.

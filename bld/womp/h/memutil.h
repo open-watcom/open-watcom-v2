@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,6 @@ extern void MemFini( void );
 extern void *MemAlloc( size_t size );
 extern void *MemRealloc( void *ptr, size_t size );
 extern void MemFree( void *ptr );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MemAlloc __frame
-#pragma aux MemRealloc __frame
-#pragma aux MemFree __frame
-#endif
 
 #endif
 

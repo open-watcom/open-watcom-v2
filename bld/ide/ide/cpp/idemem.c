@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,14 @@
 #include <string.h>
 #include "guimem.h"
 #include "wpimem.h"
+#include "wresmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#include "wresmem.h"
 
 
 #ifdef TRMEM
+
 static _trmem_hdl  GUIMemHandle;
 
 static FILE *GUIMemFP = NULL;   /* stream to put output on */
@@ -55,7 +56,8 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
         fprintf( GUIMemFP, "%s\n", buff );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void GUIMemPrtUsage( void )
 /*************************/
@@ -115,6 +117,9 @@ void GUIMemClose( void )
  * Alloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemAlloc
+#endif
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -124,6 +129,9 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_malloc
+#endif
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -132,6 +140,9 @@ void * _wpi_malloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void * wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -146,6 +157,9 @@ void * wres_alloc( size_t size )
  * Free functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemFree
+#endif
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -155,6 +169,9 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) _wpi_free
+#endif
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -163,6 +180,9 @@ void _wpi_free( void *ptr )
     free( ptr );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -177,6 +197,9 @@ void wres_free( void *ptr )
  * Realloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemRealloc
+#endif
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +39,6 @@
 
 #ifdef TRMEM
 
-#ifdef _M_IX86
-#pragma aux (WFRM) MemAlloc
-#pragma aux (WFRM) MemFree
-#endif
-
 static _trmem_hdl TrHdl;
 
 static void PrintLine( void *parm, const char *buff, size_t len )
@@ -54,7 +49,7 @@ static void PrintLine( void *parm, const char *buff, size_t len )
     printf( "%s\n", buff );
 }
 
-#endif
+#endif  /* TRMEM */
 
 
 void MemInit( void )
@@ -76,6 +71,9 @@ void MemFini( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -92,6 +90,9 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *p )
 /*********************/
 {

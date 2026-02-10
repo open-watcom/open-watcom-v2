@@ -43,14 +43,6 @@ extern void *CallocSafe( size_t size ); /* different from stdlib rtn */
 extern void FreeSafe( void *ptr );
 extern char *StrDupSafe( const char *str );
 extern char *CharToStrSafe( char c );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MallocUnSafe __frame
-#pragma aux MallocSafe __frame
-#pragma aux CallocSafe __frame
-#pragma aux FreeSafe __frame
-#pragma aux StrDupSafe __frame
-#pragma aux CharToStrSafe __frame
-#endif
 
 #ifdef USE_FAR
 

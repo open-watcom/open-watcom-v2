@@ -34,11 +34,12 @@
 #include <stdio.h>
 #include "helpmem.h"
 #include "helpmemu.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 
 #ifdef TRMEM
-
-#include "trmem.h"
 
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
@@ -53,7 +54,7 @@ static void memPrintLine( void *file, const char *buf, size_t len )
     }
 }
 
-#endif
+#endif  /* TRMEM */
 
 void HelpMemOpen( void )
 {
@@ -81,6 +82,9 @@ void HelpMemClose( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemAlloc
+#endif
 HELPMEM void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -90,6 +94,9 @@ HELPMEM void *HelpMemAlloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemRealloc
+#endif
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -99,6 +106,9 @@ HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemFree
+#endif
 HELPMEM void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM

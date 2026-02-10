@@ -38,10 +38,5 @@
 extern HELPMEM void     *HelpMemAlloc( size_t size );
 extern HELPMEM void     *HelpMemRealloc( void *ptr, size_t size );
 extern HELPMEM void     HelpMemFree( void *ptr );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux HelpMemAlloc __frame
-#pragma aux HelpMemRealloc __frame
-#pragma aux HelpMemFree __frame
-#endif
 
 #endif

@@ -39,10 +39,12 @@
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
-#include "trmem.h"
-
 
 static _trmem_hdl   RcMemHandle = NULL;
 
@@ -53,7 +55,8 @@ static void RcPrintMemLine( void *dummy, const char *buf, size_t len )
 
     printf( "%s\n", buf );
 }
-#endif
+
+#endif  /* TRMEM */
 
 void RcMemInit( void )
 /********************/
@@ -79,6 +82,9 @@ void RcMemShutdown( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemAlloc
+#endif
 void *RcMemAlloc( size_t size )
 /*****************************/
 {
@@ -97,6 +103,9 @@ void *RcMemAlloc( size_t size )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemFree
+#endif
 void RcMemFree( void *ptr )
 /*************************/
 {
@@ -107,6 +116,9 @@ void RcMemFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemRealloc
+#endif
 void *RcMemRealloc( void *old_ptr, size_t newsize )
 /*************************************************/
 {
@@ -126,6 +138,9 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemStrDup
+#endif
 char *RcMemStrDup( const char *buf )
 /**********************************/
 {
@@ -164,6 +179,9 @@ void RcPrintMemList( void )
     }
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemValidate
+#endif
 int RcMemValidate( void *ptr )
 /****************************/
 {
@@ -174,6 +192,9 @@ int RcMemValidate( void *ptr )
     }
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) RcMemChkRange
+#endif
 int RcMemChkRange( void *start, size_t len )
 /******************************************/
 {

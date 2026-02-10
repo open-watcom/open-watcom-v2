@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,11 +31,12 @@
 
 
 #include "wgml.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 
 #ifdef TRMEM
-
-#include "trmem.h"
 
 static  _trmem_hdl  memHandle;       // memory tracker anchor block
 
@@ -50,8 +51,7 @@ static void prt( void * file, const char * buf, size_t len )
     fprintf( stderr, "***%s\n", buf );
 }
 
-#endif
-
+#endif  /* TRMEM */
 
 /***************************************************************************/
 /*  init memorytracker                                                     */
@@ -118,6 +118,9 @@ void mem_fini( void )
 /*  Allocate some storage                                                  */
 /***************************************************************************/
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) mem_alloc
+#endif
 void *mem_alloc( unsigned size )
 {
     void    *p;
@@ -138,6 +141,9 @@ void *mem_alloc( unsigned size )
 /*  Re-allocate some storage                                               */
 /***************************************************************************/
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) mem_realloc
+#endif
 void *mem_realloc( void * oldp, unsigned size )
 {
     void    *   p;
@@ -159,6 +165,9 @@ void *mem_realloc( void * oldp, unsigned size )
 /*  duplicate string                                                  */
 /***************************************************************************/
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) mem_strdup
+#endif
 char *mem_strdup( const char *str )
 {
     unsigned    size;
@@ -183,6 +192,9 @@ char *mem_strdup( const char *str )
 /*  duplicate token                                                        */
 /***************************************************************************/
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) mem_tokdup
+#endif
 char *mem_tokdup( const char *str, unsigned size )
 {
     char    *p;
@@ -205,6 +217,9 @@ char *mem_tokdup( const char *str, unsigned size )
 /*  Free storage                                                           */
 /***************************************************************************/
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) mem_free
+#endif
 void mem_free( void * p )
 {
 #ifdef TRMEM

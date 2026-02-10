@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,10 +59,6 @@ void checkMemory(void);
 
 void BasicFree(void *ptr);
 void zapMemory(void);
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux BasicFree __frame
-#pragma aux zapMemory __frame
-#endif
 
 #define wicMalloc FAlloc
 #define wicFree   FFree

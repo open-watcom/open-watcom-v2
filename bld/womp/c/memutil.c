@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,17 @@
 #include "womp.h"
 #include "genutil.h"
 #include "memutil.h"
+#ifdef  TRMEM
+//    #include <malloc.h>
+    #include <io.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <fcntl.h>
+    #include "trmem.h"
+#endif
 
-#ifdef  TRACK
-//#include <malloc.h>
-#include <io.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include "trmem.h"
+
+#ifdef  TRMEM
 
 STATIC _trmem_hdl   memHandle;
 STATIC FILE         *memFile = NULL;
@@ -58,11 +61,12 @@ STATIC void memPrintLine( void *fh, const char *buf, unsigned size )
         fprintf( memFile, "%s\n", buf );
     }
 }
-#endif  /* TRACK */
+
+#endif  /* TRMEM */
 
 void MemInit( void ) {
 
-#ifdef TRACK
+#ifdef TRMEM
     memFile = fopen( "mem.trk", "wt" );
     memHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
         memFile, memPrintLine,
@@ -79,7 +83,7 @@ void MemInit( void ) {
 
 void MemFini( void ) {
 
-#ifdef TRACK
+#ifdef TRMEM
     if( memHandle != NULL ) {
         _trmem_prt_list( memHandle );
         _trmem_close( memHandle );
@@ -92,11 +96,14 @@ void MemFini( void ) {
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size ) {
 /***************************/
     void *ptr;
 
-#ifdef TRACK
+#ifdef TRMEM
     ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
 #else
     ptr = malloc( size );
@@ -107,11 +114,14 @@ void *MemAlloc( size_t size ) {
     return( ptr );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void *MemRealloc( void *ptr, size_t size ) {
 /****************************************/
     void *new;
 
-#ifdef TRACK
+#ifdef TRMEM
     new = _trmem_realloc( ptr, size, _trmem_guess_who(), memHandle );
 #else
     new = realloc( ptr, size );
@@ -122,9 +132,12 @@ void *MemRealloc( void *ptr, size_t size ) {
     return( new );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *ptr ) {
 /***********************/
-#ifdef TRACK
+#ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), memHandle );
 #else
     free( ptr );

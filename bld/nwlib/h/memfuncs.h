@@ -39,9 +39,3 @@ extern void *MemAlloc( size_t size );
 extern void MemFree( void *ptr );
 extern void *MemRealloc( void *ptr, size_t size );
 extern char *MemDupStr( const char * );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux MemAlloc __frame
-#pragma aux MemFree __frame
-#pragma aux MemRealloc __frame
-#pragma aux MemDupStr __frame
-#endif

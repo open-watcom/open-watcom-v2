@@ -215,13 +215,6 @@ extern void         *mem_realloc( void *p, unsigned size );
 extern char         *mem_strdup( const char *str );
 extern char         *mem_tokdup( const char *str, unsigned size );
 extern void         mem_free( void *p );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux mem_alloc __frame
-#pragma aux mem_realloc __frame
-#pragma aux mem_strdup __frame
-#pragma aux mem_tokdup __frame
-#pragma aux mem_free __frame
-#endif
 
 /* gnestut.c                            */
 extern void         init_nest_cb( void );

@@ -42,6 +42,7 @@
 
 
 #ifdef TRMEM
+
 static _trmem_hdl   TRMemHandle = NULL;
 static FILE         *TRFileFP = NULL;       /* stream to put output on */
 
@@ -54,7 +55,8 @@ static void MemPrintLine( void *parm, const char *buff, size_t len )
         fprintf( TRFileFP, "%s\n", buff );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void MemOpen( void )
 {
@@ -67,6 +69,9 @@ void MemOpen( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -76,6 +81,9 @@ void *MemAlloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -85,6 +93,9 @@ void *wres_alloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -94,6 +105,9 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -103,6 +117,9 @@ void MemFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM

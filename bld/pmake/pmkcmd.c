@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 #include "pmake.h"
 #include "memutils.h"
 #ifdef TRMEM
-#include "trmem.h"
+    #include "trmem.h"
 #endif
 
 #include "clibint.h"
@@ -306,6 +306,9 @@ void MClose( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MAlloc
+#endif
 void *MAlloc( size_t size )
 {
     void        *p;
@@ -323,6 +326,9 @@ void *MAlloc( size_t size )
     return( p );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MFree
+#endif
 void MFree( void *p )
 {
 #ifdef TRMEM

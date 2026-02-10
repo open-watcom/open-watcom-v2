@@ -40,12 +40,7 @@ extern void     *RcMemAlloc( size_t size );
 extern char     *RcMemStrDup( const char *buf );
 extern void     *RcMemRealloc( void *old_ptr, size_t newsize );
 extern void     RcMemFree( void *ptr );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux RcMemAlloc __frame
-#pragma aux RcMemStrDup __frame
-#pragma aux RcMemRealloc __frame
-#pragma aux RcMemFree __frame
-#endif
+
 /*
  * these function are only use for debuging and are only available if
  * the memory tracker was compiled into memory.c

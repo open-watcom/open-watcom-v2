@@ -779,11 +779,6 @@ extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
 extern void             * UIAPI uimalloc( size_t );
 extern void             UIAPI uifree( void * );
 extern void             * UIAPI uirealloc( void *, size_t );
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux uimalloc __frame
-#pragma aux uifree __frame
-#pragma aux uirealloc __frame
-#endif
 
 /*
  * Application related functions

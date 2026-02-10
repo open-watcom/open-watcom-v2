@@ -42,12 +42,15 @@
 #include "fmeminit.h"
 #include "utility.h"
 #include "wresmem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 #include "clibext.h"
 #include "cspawn.h"
 
+
 #ifdef TRMEM
-#include "trmem.h"
 
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
@@ -61,7 +64,8 @@ static void memPrintLine( void *file, const char *buf, size_t len )
         fprintf( memFile, "%s\n", buf );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void    FMemInit( void ) {
 //========================
@@ -109,6 +113,9 @@ void    FMemFini( void ) {
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) FMemAlloc
+#endif
 void    *FMemAlloc( size_t size ) {
 //=================================
 
@@ -148,6 +155,9 @@ void    *FMemAlloc( size_t size ) {
     return( p );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void    *wres_alloc( size_t size )
 //================================
 {
@@ -158,6 +168,9 @@ void    *wres_alloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) FMemFree
+#endif
 void    FMemFree( void *p ) {
 //===========================
 
@@ -169,6 +182,9 @@ void    FMemFree( void *p ) {
     UnFreeMem--;
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void    wres_free( void *p )
 //==========================
 {
@@ -179,6 +195,9 @@ void    wres_free( void *p )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) FMemStrDup
+#endif
 char *FMemStrDup( const char *buf )
 //=================================
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
     #include "stdui.h"
 #endif
 
+
 #ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, trmemHandle )
     #define WHO_PTR             _trmem_who
@@ -54,9 +55,11 @@
 #endif
 
 #ifdef TRMEM
-    static FILE                 *trmemOutput = NULL;
-    static _trmem_hdl           trmemHandle;
-#endif
+
+static FILE                 *trmemOutput = NULL;
+static _trmem_hdl           trmemHandle;
+
+#endif  /* TRMEM */
 
 static char     *StaticBuffer = NULL;
 
@@ -194,6 +197,9 @@ static void *doMemAllocUnsafe( size_t size, WHO_PTR who )
 /*
  * MemAlloc - allocate some memory (always works, or editor aborts)
  */
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 {
     void        *tmp;
@@ -217,6 +223,9 @@ void *MemAlloc( size_t size )
 /*
  * MemAllocUnsafe - allocate some memory, return null if it fails
  */
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAllocUnsafe
+#endif
 void *MemAllocUnsafe( size_t size )
 {
 #ifdef TRMEM
@@ -234,6 +243,9 @@ void *MemAllocUnsafe( size_t size )
 /*
  * MemFree - free up memory
  */
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -322,6 +334,9 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
 
 } /* doMemReallocUnsafe */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemReallocUnsafe
+#endif
 void *MemReallocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -338,6 +353,9 @@ void *MemReallocUnsafe( void *ptr, size_t size )
 /*
  * MemRealloc - reallocate a block, and it will succeed.
  */
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void *MemRealloc( void *ptr, size_t size )
 {
     void        *tmp;
@@ -432,6 +450,9 @@ void UIAPI UIMemOpen( void ) {}
 
 void UIAPI UIMemClose( void ) {}
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uimalloc
+#endif
 void * UIAPI uimalloc( size_t size )
 {
     void        *tmp;
@@ -451,6 +472,9 @@ void * UIAPI uimalloc( size_t size )
     return( tmp );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uirealloc
+#endif
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
     void        *tmp;
@@ -470,6 +494,9 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     return( tmp );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifree
+#endif
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM

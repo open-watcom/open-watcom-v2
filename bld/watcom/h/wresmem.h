@@ -34,9 +34,5 @@
 
 extern void *wres_alloc( size_t );      /* malloc */
 extern void wres_free( void * );        /* free */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux wres_alloc __frame
-#pragma aux wres_free __frame
-#endif
 
 #endif

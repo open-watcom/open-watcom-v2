@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 
 
 #ifdef TRMEM
+
 static _trmem_hdl  GUIMemHandle;
 
 static FILE *GUIMemFP = NULL;   /* stream to put output on */
@@ -55,7 +56,8 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
         fprintf( GUIMemFP, "%s\n", buff );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void GUIMemPrtUsage( void )
 /*************************/
@@ -116,6 +118,9 @@ void UIAPI UIMemClose( void ) {}
  * Alloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemAlloc
+#endif
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -125,6 +130,9 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uimalloc
+#endif
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -133,6 +141,9 @@ void * UIAPI uimalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemAlloc
+#endif
 void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -146,6 +157,9 @@ void *HelpMemAlloc( size_t size )
  * Free functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemFree
+#endif
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -156,6 +170,9 @@ void GUIMemFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uifree
+#endif
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -164,6 +181,9 @@ void UIAPI uifree( void *ptr )
     free( ptr );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemFree
+#endif
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -177,6 +197,9 @@ void HelpMemFree( void *ptr )
  * Realloc functions
  */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) GUIMemRealloc
+#endif
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
@@ -186,6 +209,9 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) uirealloc
+#endif
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -194,6 +220,9 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) HelpMemRealloc
+#endif
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM

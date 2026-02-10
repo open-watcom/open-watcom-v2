@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,17 +34,17 @@
 #include <windows.h>
 #include <malloc.h>
 #include "msjutil.h"
+#ifdef TRMEM
+    #include "trmem.h"
+    #include "bool.h"
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <dip.h>
+#endif
+
 
 #ifdef TRMEM
-#include "trmem.h"
-#include "bool.h"
-static _trmem_hdl       TRMemHandle;
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <dip.h>
-
-
 
 static FILE             *TrackFile = NULL;
 static _trmem_hdl       TRMemHandle;
@@ -83,18 +83,27 @@ static void TRMemClose( void )
     _trmem_close( TRMemHandle );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) TRMemAlloc
+#endif
 static void * TRMemAlloc( size_t size )
 /*************************************/
 {
     return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) TRMemFree
+#endif
 static void TRMemFree( void * ptr )
 /*********************************/
 {
     _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) TRMemRealloc
+#endif
 static void * TRMemRealloc( void * ptr, size_t size )
 /***************************************************/
 {
@@ -114,6 +123,9 @@ static unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) TRMemValidate
+#endif
 extern int TRMemValidate( void * ptr )
 /************************************/
 {
@@ -126,6 +138,9 @@ extern void TRMemCheck()
     _trmem_validate_all( TRMemHandle );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) TRMemChkRange
+#endif
 extern int TRMemChkRange( void * start, size_t len )
 /**************************************************/
 {
@@ -187,7 +202,7 @@ extern void MSJFree( void *mem )
 {
     TRMemFree( mem );
 }
-#else
+#else /* !TRMEM */
 void MSJMemInit()
 /**********/
 {
@@ -215,7 +230,7 @@ extern void MSJFree( void *mem )
 {
     free( mem );
 }
-#endif
+#endif /* TRMEM */
 
 extern char * UnicodeToASCII( wchar_t *unicode )
 /**********************************************/
