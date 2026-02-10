@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,11 @@
 #include "wrglbl.h"
 #include "wrmemi.h"
 #include "wresmem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 #ifdef TRMEM
-
-#include "trmem.h"
 
 static _trmem_hdl   TRMemHandle;
 static FILE         *TRMemFile = NULL;
@@ -51,7 +52,7 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
     }
 }
 
-#endif
+#endif /* TRMEM */
 
 void WRMemOpen( void )
 {
@@ -81,6 +82,9 @@ void WRMemClose( void )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WRMemAlloc
+#endif
 void *WRAPI WRMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -90,6 +94,9 @@ void *WRAPI WRMemAlloc( size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WRMemFree
+#endif
 void WRAPI WRMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -99,6 +106,9 @@ void WRAPI WRMemFree( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WRMemRealloc
+#endif
 void *WRAPI WRMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -108,6 +118,9 @@ void *WRAPI WRMemRealloc( void *ptr, size_t size )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WRMemValidate
+#endif
 int WRAPI WRMemValidate( void *ptr )
 {
 #ifdef TRMEM
@@ -119,6 +132,9 @@ int WRAPI WRMemValidate( void *ptr )
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) WRMemChkRange
+#endif
 int WRAPI WRMemChkRange( void *start, size_t len )
 {
 #ifdef TRMEM
@@ -139,6 +155,9 @@ void WRAPI WRMemPrtUsage( void )
 
 /* function to replace this in mem.c in commonui */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemAlloc
+#endif
 void *MemAlloc( size_t size )
 {
     void *p;
@@ -158,6 +177,9 @@ void *MemAlloc( size_t size )
 
 /* function for wres.lib */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_alloc
+#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -169,6 +191,9 @@ void *wres_alloc( size_t size )
 
 /* function to replace this in mem.c in commonui */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemRealloc
+#endif
 void *MemRealloc( void *ptr, size_t size )
 {
     void *p;
@@ -184,6 +209,9 @@ void *MemRealloc( void *ptr, size_t size )
 
 /* function to replace this in mem.c in commonui */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) MemFree
+#endif
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -195,6 +223,9 @@ void MemFree( void *ptr )
 
 /* function for wres.lib */
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) wres_free
+#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
