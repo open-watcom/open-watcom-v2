@@ -49,15 +49,6 @@
 
 #ifdef TRMEM
 
-#if defined( _M_IX86 )
-#pragma aux (WFRM) TRMemAlloc
-#pragma aux (WFRM) TRMemFree
-#pragma aux (WFRM) TRMemRealloc
-#pragma aux (WFRM) TRMemStrdup
-#pragma aux (WFRM) TRMemValidate
-#pragma aux (WFRM) TRMemChkRange
-#endif
-
 static _trmem_hdl   TRMemHandle;
 static FILE         *TRFileHandle = NULL;   /* stream to put output on */
 
@@ -71,7 +62,8 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
         fprintf( TRFileHandle, "%s\n", buff );
     }
 }
-#endif
+
+#endif  /* TRMEM */
 
 void TRMemRedirect( FILE *fp )
 /****************************/
@@ -103,6 +95,9 @@ void TRMemClose( void )
 #endif
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemAlloc
+#endif
 void *TRMemAlloc( size_t size )
 /*****************************/
 {
@@ -113,6 +108,9 @@ void *TRMemAlloc( size_t size )
 #endif
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemFree
+#endif
 void TRMemFree( void *ptr )
 /*************************/
 {
@@ -123,6 +121,9 @@ void TRMemFree( void *ptr )
 #endif
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemRealloc
+#endif
 void *TRMemRealloc( void *ptr, size_t size )
 /******************************************/
 {
@@ -133,6 +134,9 @@ void *TRMemRealloc( void *ptr, size_t size )
 #endif
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemStrdup
+#endif
 char *TRMemStrdup( const char *str )
 /**********************************/
 {
@@ -157,6 +161,9 @@ unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemValidate
+#endif
 int TRMemValidate( void *ptr )
 /****************************/
 {
@@ -169,6 +176,9 @@ int TRMemValidateAll( void )
     return( _trmem_validate_all( TRMemHandle ) );
 }
 
+#if defined( _M_IX86 )
+#pragma aux (WFRM) TRMemChkRange
+#endif
 int TRMemChkRange( void *start, size_t len )
 /******************************************/
 {
