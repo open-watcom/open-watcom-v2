@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ void TRMemClose( void )
 #endif
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemAlloc
 #endif
 void *TRMemAlloc( size_t size )
@@ -108,7 +108,7 @@ void *TRMemAlloc( size_t size )
 #endif
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemFree
 #endif
 void TRMemFree( void *ptr )
@@ -121,7 +121,7 @@ void TRMemFree( void *ptr )
 #endif
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemRealloc
 #endif
 void *TRMemRealloc( void *ptr, size_t size )
@@ -134,7 +134,7 @@ void *TRMemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemStrdup
 #endif
 char *TRMemStrdup( const char *str )
@@ -161,7 +161,7 @@ unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemValidate
 #endif
 int TRMemValidate( void *ptr )
@@ -176,7 +176,7 @@ int TRMemValidateAll( void )
     return( _trmem_validate_all( TRMemHandle ) );
 }
 
-#if defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) TRMemChkRange
 #endif
 int TRMemChkRange( void *start, size_t len )
@@ -185,4 +185,4 @@ int TRMemChkRange( void *start, size_t len )
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
 }
 
-#endif
+#endif /* TRMEM */
