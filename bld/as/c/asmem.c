@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +40,16 @@
 #endif
 
 #ifdef _STANDALONE_
-void MemInit( void ) {
-//**************
-
+void MemInit( void )
+//******************
+{
     TRMemOpen();
 }
 #endif
 
-pointer MemAlloc( size_t size ) {
-//*********************************
-
+pointer MemAlloc( size_t size )
+//*****************************
+{
 #ifdef _STANDALONE_
     return( TRMemAlloc( size ) );
 #else
@@ -65,16 +65,16 @@ void *wres_alloc( size_t size )
 #endif
 
 #ifdef _STANDALONE_
-pointer MemRealloc( pointer ptr, size_t size ) {
-//**********************************************
-
+pointer MemRealloc( pointer ptr, size_t size )
+//********************************************
+{
     return( TRMemRealloc( ptr, size ) );
 }
 #endif
 
-void MemFree( pointer ptr ) {
+void MemFree( pointer ptr )
 //*************************
-
+{
 #ifdef _STANDALONE_
     TRMemFree( ptr );
 #else
@@ -90,9 +90,9 @@ void wres_free( void *ptr )
 #endif
 
 #ifdef _STANDALONE_
-void MemFini( void ) {
-//**************
-
+void MemFini( void )
+//******************
+{
 #ifdef TRMEM
     TRMemPrtList();
 #endif
