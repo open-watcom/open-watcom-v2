@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 /*  memory tracking levels */
 //#define _CHUNK_TRACKING
 
-extern void             CGMemInit( void );
+extern void             CGMemInit( pointer trmemhdl );
 extern void             CGMemFini( void );
 extern mem_out_action   SetMemOut( mem_out_action what );
 extern pointer          CGAlloc( size_t size );

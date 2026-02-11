@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,13 +104,13 @@ cfstruct        cgh;
 
 static  bool            memStarted = false;
 
-void _CGAPI     BEMemInit( void )
-/*******************************/
+void _CGAPI     BEMemInit( pointer trmemhdl )
+/*******************************************/
 {
     BckInfoHead = NULL;
     BckInfoCarveHead = NULL;
     InitBlip();
-    CGMemInit();
+    CGMemInit( trmemhdl );
     cgh.alloc = CGAlloc;
     cgh.free = CGFree;
     CFInit( &cgh );
@@ -181,7 +181,7 @@ cg_init_info _CGAPI     BEInit( cg_switches switches,
                                 uint optsize, proc_revision proc )
 /****************************************************************/
 {
-    BEMemInit();
+    BEMemInit( NULL );
     return( BEInitCg( switches, platform, optsize, proc ) );
 }
 

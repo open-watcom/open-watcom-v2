@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,19 +84,18 @@ static void printLine( void *dummy, const char *buf, size_t len )
     fprintf( stdout, "%s\n", buf );
 }
 
-#define alloc_mem( size ) _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
+#endif /* TRMEM */
 
+#ifdef USE_CG_MEMMGT
+    #define alloc_mem( size )   BEMemAlloc( size )
+    #define _doFree( p )        BEMemFree( p );
+#elif defined( TRMEM )
+    #define alloc_mem( size )   _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
+    #define _doFree( p )        _trmem_free( p, _trmem_guess_who(), trackerHdl );
 #else
-
-  #ifdef USE_CG_MEMMGT
-    #define alloc_mem( size ) BEMemAlloc( size )
-  #else
-    #define alloc_mem( size ) malloc( size )
-  #endif
-
+    #define alloc_mem( size )   malloc( size )
+    #define _doFree( p )        free( p );
 #endif
-
-
 
 static void *alloc_from_cleanup( size_t amt )
 /*******************************************/
@@ -165,16 +164,6 @@ char *CMemStrDup( const char *str )
         return( strcpy( CMemAlloc( strlen( str ) + 1 ), str ) );
     return( NULL );
 }
-
-#ifdef TRMEM
-    #define _doFree( p )    _trmem_free( p, _trmem_guess_who(), trackerHdl );
-#else
-  #ifdef USE_CG_MEMMGT
-    #define _doFree( p )    BEMemFree( p );
-  #else
-    #define _doFree( p )    free( p );
-  #endif
-#endif
 
 void CMemFree( void *p )
 /**********************/
@@ -294,8 +283,11 @@ static void cmemInit(           // INITIALIZATION
         }
         trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL, printLine, trmem_flags );
     }
+  #if defined( USE_CG_MEMMGT )
+    BEMemInit( trackerHdl );
+  #endif
 #elif defined( USE_CG_MEMMGT )
-    BEMemInit();
+    BEMemInit( NULL );
 #endif
 #ifdef DEVBUILD
     deferredFreeList = NULL;
@@ -315,17 +307,18 @@ static void cmemFini(           // COMPLETION
     RingFree( &deferredFreeList );
 #endif
 #ifdef TRMEM
- #ifdef DEVBUILD
+  #if defined( USE_CG_MEMMGT )
+    BEMemFini();
+  #endif
     if( TOGGLEDBG( dump_memory ) ) {
-        _trmem_prt_list( trackerHdl );
+        _trmem_prt_list_ex( trackerHdl, 100 );
     }
     if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {
         // we can't print an error message since we have no more memory
-  #if defined( __WWATCOMC__ )
+  #if defined( __WATCOMC__ )
         EnterDebugger();
   #endif
     }
- #endif
 #elif defined( USE_CG_MEMMGT )
     BEMemFini();
 #endif

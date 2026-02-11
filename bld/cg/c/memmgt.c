@@ -56,6 +56,7 @@ static uint             Chunks;
 #ifdef TRMEM
 
 static _trmem_hdl       Handle;
+static bool             local_init;
 
 static void PrintLine( void *handle, const char *buff, size_t len )
 /*****************************************************************/
@@ -67,16 +68,22 @@ static void PrintLine( void *handle, const char *buff, size_t len )
 
 #endif /* TRMEM */
 
-void    CGMemInit( void )
-/***********************/
+void    CGMemInit( pointer trmemhdl )
+/***********************************/
 {
     _SysReInit();
     MemOut = MO_FATAL;
 #ifdef TRMEM
-    Handle = _trmem_open( _SysAlloc, _SysFree, NULL, NULL, NULL, PrintLine,
+    if( trmemhdl == NULL ) {
+        Handle = _trmem_open( _SysAlloc, _SysFree, NULL, NULL, NULL, PrintLine,
                                 _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                 _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                                 _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+        local_init = true;
+    } else {
+        Handle = trmemhdl;
+        local_init = false;
+    }
 #endif
 #ifdef _CHUNK_TRACKING
     Chunks = 0;
@@ -90,11 +97,13 @@ void    CGMemFini( void )
 #ifdef TRMEM
     const char  *envvar;
 
-    envvar = FEGetEnv( "TRQUIET" );
-    if( envvar == NULL ) {
-        _trmem_prt_list( Handle );
+    if( local_init ) {
+        envvar = FEGetEnv( "TRQUIET" );
+        if( envvar == NULL ) {
+            _trmem_prt_list( Handle );
+        }
+        _trmem_close( Handle );
     }
-    _trmem_close( Handle );
 #endif
 #ifdef _CHUNK_TRACKING
     if( Chunks != 0 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-CGAPIDEF( BEMemInit,    void,           (void) )
+CGAPIDEF( BEMemInit,    void,           (pointer) )
 CGAPIDEF( BEInitCg,     cg_init_info,   (cg_switches,cg_target_switches,uint,proc_revision) )
 CGAPIDEF( BEInit,       cg_init_info,   (cg_switches,cg_target_switches,uint,proc_revision) )
 CGAPIDEF( BEStart,      void,           (void) )
