@@ -19,9 +19,8 @@ suppress_zc = 1
 
 inc_dirs = -I. -I"../h"
 
-extra_cpp_flags =
 !ifdef sys_dll
-extra_cpp_flags += -D__DLL__
+extra_cpp_flags = -D__DLL__
 !endif
 
 extra_c_flags =
