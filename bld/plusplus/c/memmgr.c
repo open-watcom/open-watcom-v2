@@ -271,23 +271,24 @@ void *CPermAlloc( size_t size )
 static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    /* unused parameters */ (void)defn;
-
 #ifdef TRMEM
-    {
-        unsigned trmem_flags;
+    unsigned trmem_flags;
+#endif
 
-        trmem_flags = _TRMEM_ALLOC_SIZE_0 | _TRMEM_OUT_OF_MEMORY;
-        if( CppGetEnv( "TRQUIET" ) == NULL ) {
-            trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
-        }
-        trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL, printLine, trmem_flags );
+    /* unused parameters */ (void)defn;
+#ifdef TRMEM
+    trmem_flags = _TRMEM_ALLOC_SIZE_0 | _TRMEM_OUT_OF_MEMORY;
+    if( CppGetEnv( "TRQUIET" ) == NULL ) {
+        trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
     }
-  #if defined( USE_CG_MEMMGT )
+    trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL, printLine, trmem_flags );
+#endif
+#if defined( USE_CG_MEMMGT )
+  #ifdef TRMEM
     BEMemInit( trackerHdl );
-  #endif
-#elif defined( USE_CG_MEMMGT )
+  #else
     BEMemInit( NULL );
+  #endif
 #endif
 #ifdef DEVBUILD
     deferredFreeList = NULL;
@@ -306,10 +307,10 @@ static void cmemFini(           // COMPLETION
 #ifdef DEVBUILD
     RingFree( &deferredFreeList );
 #endif
-#ifdef TRMEM
-  #if defined( USE_CG_MEMMGT )
+#if defined( USE_CG_MEMMGT )
     BEMemFini();
-  #endif
+#endif
+#ifdef TRMEM
     if( TOGGLEDBG( dump_memory ) ) {
         _trmem_prt_list_ex( trackerHdl, 100 );
     }
@@ -319,8 +320,6 @@ static void cmemFini(           // COMPLETION
         EnterDebugger();
   #endif
     }
-#elif defined( USE_CG_MEMMGT )
-    BEMemFini();
 #endif
 }
 

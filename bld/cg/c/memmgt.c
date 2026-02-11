@@ -84,6 +84,8 @@ void    CGMemInit( pointer trmemhdl )
         Handle = trmemhdl;
         local_init = false;
     }
+#else
+    /* unused parameters */ (void)trmemhdl;
 #endif
 #ifdef _CHUNK_TRACKING
     Chunks = 0;
