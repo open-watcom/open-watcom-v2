@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,19 +31,29 @@
 ****************************************************************************/
 
 
+/*
+ * this code needs to be compiled with C++ compiler -of+ option
+ *
+ * appropriate C code use #pragma aux ... __frame to do same
+ * for some unknown reason this doesn't work for C++ compiler now
+ */
 #include <malloc.h>
-
 #ifndef STANDALONE_MERGER
     #include <dr.h>
 #endif
-
 #include "death.h"
 #include "brmem.h"
 #include "debuglog.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
 
-#include "trmem.h"
+#ifdef __WATCOMC__
+#pragma initialize 40;
+#endif
 
 #ifndef MINALLOC
 #define MINALLOC 0
@@ -54,8 +64,6 @@
 #endif
 
 _trmem_hdl TrHdl;
-
-#pragma initialize 40;
 
 class Memory : public DebuggingLog
 {
@@ -82,11 +90,6 @@ void *operator new( size_t size )
 //-------------------------------
 {
     void *p;
-#ifdef TRMEM
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
 
 #ifndef STANDALONE_MERGER
     for(;;) {
@@ -117,11 +120,6 @@ void * WBRAlloc( size_t size )
 // calling functions when the memory tracker is in.
 {
     void *p;
-#ifdef TRMEM
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
 
 #ifndef STANDALONE_MERGER
     for(;;) {
@@ -149,17 +147,11 @@ void * WBRRealloc( void * p, size_t size )
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
-#ifdef TRMEM
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
-
 #ifndef STANDALONE_MERGER
     for(;;) {
 #endif
 #ifdef TRMEM
-        p = _trmem_realloc( p, size, caller, TrHdl );
+        p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
         p = realloc( p, size );
 #endif
@@ -222,7 +214,7 @@ void GUIMemPrtUsage( void )
 #endif  // STANDALONE_MERGER
 #endif  // 0
 
-}; // extern "C"
+}; /* extern "C" */
 
 
 void operator delete( void *p )
@@ -278,4 +270,4 @@ Memory::~Memory()
     }
 }
 
-#endif // TRMEM
+#endif /* TRMEM */

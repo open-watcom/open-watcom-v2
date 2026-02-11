@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +30,27 @@
 ****************************************************************************/
 
 
+/*
+ * this code needs to be compiled with C++ compiler -of+ option
+ *
+ * appropriate C code use #pragma aux ... __frame to do same
+ * for some unknown reason this doesn't work for C++ compiler now
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include "hcmem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
+
 
 #ifdef TRMEM
-
-#include "trmem.h"
-
-static _trmem_hdl TrHdl;
 
 #ifdef __WATCOMC__
 #pragma initialize 40;
 #endif
+
+static _trmem_hdl TrHdl;
 
 static Memory bogus;    // just need to get the ctors called
 
@@ -88,7 +96,7 @@ Memory::Memory()
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 }
 
-#else
+#else /* __WATCOMC__ != 1290 */
 
 Memory::Memory()
 {
@@ -97,14 +105,14 @@ Memory::Memory()
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 }
 
-#endif
+#endif /* __WATCOMC__ == 1290 */
 
 Memory::~Memory()
 {
     _trmem_close( TrHdl );
 }
 
-#endif
+#endif  /* TRMEM */
 
 void mem_statistic()
 {
@@ -122,11 +130,11 @@ void *operator new( size_t size )
     void *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, HCMemerr, TrHdl );
+    p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
     p = malloc( size );
 #endif
-    return p;
+    return( p );
 }
 
 
@@ -137,11 +145,11 @@ void *operator new( size_t size )
 void *renew( void *p, size_t size )
 {
 #ifdef TRMEM
-    p = _trmem_realloc( p, size, HCMemerr, TrHdl );
+    p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
     p = realloc( p, size );
 #endif
-    return p;
+    return( p );
 }
 
 
@@ -154,7 +162,7 @@ void operator delete( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, HCMemerr, TrHdl );
+    _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
@@ -222,7 +230,7 @@ void *Pool::get()
     }
     result = _pfree;
     _pfree = *((void **)_pfree);
-    return result;
+    return( result );
 }
 
 

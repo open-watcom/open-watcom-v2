@@ -30,25 +30,35 @@
 ****************************************************************************/
 
 
+/*
+ * this code needs to be compiled with C++ compiler -of+ option
+ *
+ * appropriate C code use #pragma aux ... __frame to do same
+ * for some unknown reason this doesn't work for C++ compiler now
+ */
 #include <malloc.h>
-
-#ifdef TRACKER
-#include "trmem.h"
-#include "io.h"
-#include "fcntl.h"
-#ifdef __WINDOWS__
-#define TRMEM_NO_STDOUT
-#define STRICT
-#include <windows.h>
+#ifdef TRMEM
+    #include "trmem.h"
+    #include "io.h"
+    #include "fcntl.h"
+  #ifdef __WINDOWS__
+    #define TRMEM_NO_STDOUT
+    #define STRICT
+    #include <windows.h>
+  #endif
+  #ifdef __OS2__
+    #define TRMEM_NO_STDOUT
+    #define INCL_PM
+    #include <os2.h>
+  #endif
 #endif
-#ifdef __OS2__
-#define TRMEM_NO_STDOUT
-#define INCL_PM
-#include <os2.h>
-#endif
 
 
+#ifdef TRMEM
+
+#ifdef __WATCOMC__
 #pragma initialize 40;
+#endif
 
 static unsigned     NumMessages = 0;
 static _trmem_hdl   TrHdl;
@@ -71,19 +81,15 @@ void PrintLine( void *parm, const char *buf, size_t len )
     }
     NumMessages++;
 }
-#endif
+
+#endif /* TRMEM */
 
 void *operator new( size_t size )
 /*******************************/
 {
     void *p;
-#ifdef TRACKER
-    _trmem_who  caller;
 
-    caller = _trmem_guess_who();
-#endif
-
-#ifdef TRACKER
+#ifdef TRMEM
     p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
     p = malloc( size );
@@ -99,11 +105,6 @@ void * WBRAlloc( size_t size )
 // calling functions when the memory tracker is in.
 {
     void *p;
-#ifdef TRACKER
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
 
 #ifdef TRACKER
     p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
@@ -118,14 +119,8 @@ void * WBRRealloc( void * p, size_t size )
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
-#ifdef TRACKER
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
-
-#ifdef TRACKER
-    p = _trmem_realloc( p, size, caller, TrHdl );
+#ifdef TRMEM
+    p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
     p = realloc( p, size );
 #endif
@@ -136,7 +131,7 @@ void WBRFree( void *p )
 /*********************/
 {
     if( p == NULL ) return;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
@@ -149,14 +144,15 @@ void operator delete( void *p )
 /*****************************/
 {
     if( p == NULL ) return;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
 }
 
-#ifdef TRACKER
+#ifdef TRMEM
+
 Memory::Memory()
 /**************/
 {
@@ -189,5 +185,5 @@ Memory::~Memory()
 #endif
     TrFileHandle = NULL;
 }
-#endif
 
+#endif  /* TRMEM */
