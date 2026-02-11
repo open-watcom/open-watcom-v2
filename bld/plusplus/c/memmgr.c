@@ -97,22 +97,6 @@ static void printLine( void *dummy, const char *buf, size_t len )
     #define _doFree( p )        free( p );
 #endif
 
-static void *alloc_from_cleanup( size_t amt )
-/*******************************************/
-{
-    PERMPTR p;
-    CLEANPTR curr;
-
-    RingIterBeg( cleanupList, curr ) {
-        curr->rtn();
-        p = alloc_mem( amt );
-        if( p != NULL ) {
-            return( p );
-        }
-    } RingIterEnd( curr )
-    return( NULL );
-}
-
 void CMemRegisterCleanup( void (*cleanup)( void ) )
 /*************************************************/
 {
@@ -125,14 +109,14 @@ void CMemRegisterCleanup( void (*cleanup)( void ) )
 void *CMemAlloc( size_t size )
 /****************************/
 {
-    void *p;
+    PERMPTR p;
+    CLEANPTR curr;
 
     if( size == 0 ) {
         return( NULL );
     }
 #ifdef DEVBUILD
     if( !TOGGLEDBG( no_mem_cleanup ) ) {
-        CLEANPTR curr;
         static unsigned test_cleanup;
         static unsigned test_inc = 1;
 
@@ -149,12 +133,16 @@ void *CMemAlloc( size_t size )
     if( p != NULL ) {
         return( p );
     }
-    p = alloc_from_cleanup( size );
-    if( p == NULL ) {
-        CErr1( ERR_OUT_OF_MEMORY );
-        CSuicide();
-    }
-    return( p );
+    RingIterBeg( cleanupList, curr ) {
+        curr->rtn();
+        p = alloc_mem( size );
+        if( p != NULL ) {
+            return( p );
+        }
+    } RingIterEnd( curr )
+    CErr1( ERR_OUT_OF_MEMORY );
+    CSuicide();
+    return( NULL );
 }
 
 char *CMemStrDup( const char *str )
@@ -205,6 +193,7 @@ static void linkPerm( PERMPTR p, size_t amt )
 static void addPerm( size_t size )
 {
     PERMPTR p;
+    CLEANPTR curr;
     size_t amt;
 
     if( size > PERM_MAX_ALLOC ) {
@@ -212,21 +201,25 @@ static void addPerm( size_t size )
         linkPerm( p, size );
         return;
     }
-    amt = PERM_MAX_ALLOC;
+    size = PERM_MAX_ALLOC;
     for(;;) {
-        p = alloc_mem( offsetof( perm_blk, mem ) + amt );
+        amt = offsetof( perm_blk, mem ) + size;
+        p = alloc_mem( amt );
         if( p != NULL ) {
-            linkPerm( p, amt );
+            linkPerm( p, size );
             return;
         }
-        p = alloc_from_cleanup( offsetof( perm_blk, mem ) + amt );
-        if( p != NULL ) {
-            linkPerm( p, amt );
-            return;
-        }
-        if( amt == PERM_MIN_ALLOC )
+        RingIterBeg( cleanupList, curr ) {
+            curr->rtn();
+            p = alloc_mem( amt );
+            if( p != NULL ) {
+                linkPerm( p, size );
+                return;
+            }
+        } RingIterEnd( curr )
+        if( size == PERM_MIN_ALLOC )
             break;
-        amt >>= 1;
+        size >>= 1;
     }
 }
 
