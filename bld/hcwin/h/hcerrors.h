@@ -60,7 +60,4 @@ extern void HCStartOutput();
 extern void HCStartPhrase();
 extern void HCPhraseLoop( int pass );
 
-// A callback function for the memory tracker if it is in use.
-extern "C" void HCMemerr( void );
-
 #endif

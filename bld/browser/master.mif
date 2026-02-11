@@ -73,6 +73,10 @@ extra_c_flags_f_keysym = -I"$(posix_dir)/h"
 extra_c_flags_f_util = -I"$(posix_dir)/h"
 extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
 
+!ifeq trmem 1
+extra_c_flags_f_brmem = -of+
+!endif
+
 #
 # lflags
 #

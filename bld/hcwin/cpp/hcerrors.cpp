@@ -165,11 +165,3 @@ void HCPhraseLoop( int pass )
         fprintf( stderr, "\b\b\b\b\b\b\bPass %d.", pass );
     }
 }
-
-
-// A call-back function for the memory tracker, if it is in use.
-
-void HCMemerr( void )
-{
-    HCError( MEM_ERR );
-}

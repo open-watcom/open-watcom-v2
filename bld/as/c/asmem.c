@@ -62,7 +62,7 @@ static void memPrintLine( void *file, const char *buf, size_t len )
 
 #ifdef _STANDALONE_
 void MemInit( void )
-//******************
+/******************/
 {
   #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
@@ -78,7 +78,7 @@ void MemInit( void )
 #pragma aux (WFRM) MemAlloc
 #endif
 pointer MemAlloc( size_t size )
-//*****************************
+/*****************************/
 {
 #ifdef _STANDALONE_
   #ifdef TRMEM
@@ -96,6 +96,7 @@ pointer MemAlloc( size_t size )
 #pragma aux (WFRM) wres_alloc
 #endif
 void *wres_alloc( size_t size )
+/*****************************/
 {
   #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
@@ -110,7 +111,7 @@ void *wres_alloc( size_t size )
 #pragma aux (WFRM) MemRealloc
 #endif
 pointer MemRealloc( pointer ptr, size_t size )
-//********************************************
+/********************************************/
 {
   #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), memHandle ) );
@@ -124,7 +125,7 @@ pointer MemRealloc( pointer ptr, size_t size )
 #pragma aux (WFRM) MemFree
 #endif
 void MemFree( pointer ptr )
-//*************************
+/*************************/
 {
 #ifdef _STANDALONE_
   #ifdef TRMEM
@@ -142,6 +143,7 @@ void MemFree( pointer ptr )
 #pragma aux (WFRM) wres_free
 #endif
 void wres_free( void *ptr )
+/*************************/
 {
   #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), memHandle );
