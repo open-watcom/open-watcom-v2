@@ -40,14 +40,24 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 #ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
 
+#ifdef USE_CG_MEMMGT
+    #define alloc_mem( size )   BEMemAlloc( size )
+    #define _doFree( p )        BEMemFree( p );
+#elif defined( TRMEM )
+    #define alloc_mem( size )   _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
+    #define _doFree( p )        _trmem_free( p, _trmem_guess_who(), trackerHdl );
+#else
+    #define alloc_mem( size )   malloc( size )
+    #define _doFree( p )        free( p );
+#endif
 
 typedef struct cleanup *CLEANPTR;
 struct cleanup {
@@ -85,17 +95,6 @@ static void printLine( void *dummy, const char *buf, size_t len )
 }
 
 #endif /* TRMEM */
-
-#ifdef USE_CG_MEMMGT
-    #define alloc_mem( size )   BEMemAlloc( size )
-    #define _doFree( p )        BEMemFree( p );
-#elif defined( TRMEM )
-    #define alloc_mem( size )   _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
-    #define _doFree( p )        _trmem_free( p, _trmem_guess_who(), trackerHdl );
-#else
-    #define alloc_mem( size )   malloc( size )
-    #define _doFree( p )        free( p );
-#endif
 
 void CMemRegisterCleanup( void (*cleanup)( void ) )
 /*************************************************/
