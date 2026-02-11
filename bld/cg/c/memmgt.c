@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,13 +43,17 @@
 #include "onexit.h"
 #include "dumpio.h"
 #include "memmgt.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 
-static          mem_out_action  MemOut;
+static mem_out_action   MemOut;
+#ifdef _CHUNK_TRACKING
+static uint             Chunks;
+#endif
 
-#if _MEMORY_TRACKING & _FULL_TRACKING
-
-#include "trmem.h"
+#ifdef TRMEM
 
 static _trmem_hdl       Handle;
 
@@ -61,21 +65,18 @@ static void PrintLine( void *handle, const char *buff, size_t len )
     fprintf( stderr, "%s\n", buff );
 }
 
-#elif _MEMORY_TRACKING & _CHUNK_TRACKING
-static          uint    Chunks;
-#endif
-
 void    CGMemInit( void )
 /***********************/
 {
     _SysReInit();
     MemOut = MO_FATAL;
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
     Handle = _trmem_open( _SysAlloc, _SysFree, NULL, NULL, NULL, PrintLine,
                                 _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                 _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                                 _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-#elif _MEMORY_TRACKING & _CHUNK_TRACKING
+#endif
+#ifdef _CHUNK_TRACKING
     Chunks = 0;
 #endif
     CalcMemLimit();
@@ -84,7 +85,7 @@ void    CGMemInit( void )
 void    CGMemFini( void )
 /***********************/
 {
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
     const char  *envvar;
 
     envvar = FEGetEnv( "TRQUIET" );
@@ -92,7 +93,8 @@ void    CGMemFini( void )
         _trmem_prt_list( Handle );
     }
     _trmem_close( Handle );
-#elif _MEMORY_TRACKING & _CHUNK_TRACKING
+#endif
+#ifdef _CHUNK_TRACKING
     if( Chunks != 0 ) {
         _Zoiks( ZOIKS_002 );
     }
@@ -111,6 +113,9 @@ mem_out_action    SetMemOut( mem_out_action what )
     return( old );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CGAlloc
+#endif
 pointer CGAlloc( size_t size )
 /****************************/
 {
@@ -118,13 +123,13 @@ pointer CGAlloc( size_t size )
 
     _MemLow;
     for( ;; ) {
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
         chunk = _trmem_alloc( size, _trmem_guess_who(), Handle );
 #else
         chunk = _SysAlloc( size );
 #endif
         if( chunk != NULL ) {
-#if _MEMORY_TRACKING & _CHUNK_TRACKING
+#ifdef _CHUNK_TRACKING
             ++Chunks;
 #endif
             _AlignmentCheck( chunk, 8 );
@@ -143,13 +148,16 @@ pointer CGAlloc( size_t size )
 }
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CGFree
+#endif
 void    CGFree( pointer chunk )
 /*****************************/
 {
-#if _MEMORY_TRACKING & _CHUNK_TRACKING
+#ifdef _CHUNK_TRACKING
     --Chunks;
 #endif
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
     _trmem_free( chunk, _trmem_guess_who(), Handle );
 #else
     _SysFree( chunk );
@@ -157,7 +165,7 @@ void    CGFree( pointer chunk )
 }
 
 
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
 void    DumpMem( void )
 /*********************/
 {

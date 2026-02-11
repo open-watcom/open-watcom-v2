@@ -31,22 +31,13 @@
 
 
 /*  memory tracking levels */
-#define   _NO_TRACKING     0
-#define   _CHUNK_TRACKING  1
-#define   _FULL_TRACKING   2
-
-#ifdef _TRACK
-    #define _MEMORY_TRACKING _FULL_TRACKING
-#else
-    #define _MEMORY_TRACKING _NO_TRACKING
-//    #define _MEMORY_TRACKING _CHUNK_TRACKING
-#endif
+//#define _CHUNK_TRACKING
 
 extern void             CGMemInit( void );
 extern void             CGMemFini( void );
 extern mem_out_action   SetMemOut( mem_out_action what );
 extern pointer          CGAlloc( size_t size );
 extern void             CGFree( pointer chunk );
-#if _MEMORY_TRACKING & _FULL_TRACKING
+#ifdef TRMEM
 extern void             DumpMem( void );
 #endif
