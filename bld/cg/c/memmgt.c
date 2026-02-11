@@ -65,6 +65,8 @@ static void PrintLine( void *handle, const char *buff, size_t len )
     fprintf( stderr, "%s\n", buff );
 }
 
+#endif /* TRMEM */
+
 void    CGMemInit( void )
 /***********************/
 {
