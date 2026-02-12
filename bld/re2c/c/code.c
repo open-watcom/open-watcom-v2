@@ -39,6 +39,7 @@
 #include "globals.h"
 #include "dfa.h"
 #include "parser.h"
+#include "mem.h"
 
 // there must be at least one span in list;  all spans must cover
 // same range
@@ -176,7 +177,7 @@ static BitMap *BitMap_new( Go *g, State *x )
 {
     BitMap  *b;
 
-    b = malloc( sizeof( BitMap ) );
+    b = MemAlloc( sizeof( BitMap ) );
     b->go = g;
     b->on = x;
     b->next = BitMap_first;
@@ -221,7 +222,7 @@ static void BitMap_gen( FILE *o, Char lb, Char ub )
         byte    m;
 
         n = ub - lb;
-        bm = malloc( n );
+        bm = MemAlloc( n );
         fputs( "\tstatic unsigned char yybm[] = {", o );
         memset( bm, 0, n );
         for( i = 0; b != NULL; i += n ) {
@@ -240,7 +241,7 @@ static void BitMap_gen( FILE *o, Char lb, Char ub )
         }
         fputs( "\n\t};\n", o );
         oline += 2;
-        free( bm );
+        MemFree( bm );
     }
 }
 
@@ -415,7 +416,7 @@ static void Go_genSwitch( Go *g, FILE *o, State *next )
     } else {
         State   *def = g->span[g->nSpans - 1].to;
         Span    **r, **s, **t;
-        Span    **sP = malloc( ( g->nSpans - 1 ) * sizeof( Span * ) );
+        Span    **sP = MemAlloc( ( g->nSpans - 1 ) * sizeof( Span * ) );
 
         t = &sP[0];
         for( i = 0; i < g->nSpans; ++i ) {
@@ -449,7 +450,7 @@ static void Go_genSwitch( Go *g, FILE *o, State *next )
         genGoTo(o, def);
         fputs( "\t}\n", o );
         ++oline;
-        free( sP );
+        MemFree( sP );
     }
 }
 
@@ -523,12 +524,12 @@ static void Go_genGoto( Go *g, FILE *o, State *next )
                 BitMap *b = BitMap_find( to );
                 if( b != NULL && matches( b->go, b->on, g, to ) ) {
                     Go go;
-                    go.span = malloc( g->nSpans * sizeof( Span ) );
+                    go.span = MemAlloc( g->nSpans * sizeof( Span ) );
                     Go_unmap( &go, g, to );
                     fprintf( o, "\tif(yybm[%u+yych] & %u)", b->i, (uint)b->m );
                     genGoTo( o, to );
                     Go_genBase( &go, o, next );
-                    free( go.span );
+                    MemFree( go.span );
                     return;
                 }
             }
@@ -609,12 +610,12 @@ static uint merge( Span *x0, State *fg, State *bg )
 
 static void SCC_init( SCC *s, uint size )
 {
-    s->top = s->stk = (State **)malloc( size * sizeof( State * ) );
+    s->top = s->stk = (State **)MemAlloc( size * sizeof( State * ) );
 }
 
 static void SCC_destroy( SCC *s )
 {
-    free( s->stk );
+    MemFree( s->stk );
 }
 
 static void SCC_traverse( SCC *s, State *x )
@@ -719,7 +720,7 @@ static void DFA_split( DFA *d, State *s )
     move->go = s->go;
     s->rule = NULL;
     s->go.nSpans = 1;
-    s->go.span = malloc( sizeof( Span ) );
+    s->go.span = MemAlloc( sizeof( Span ) );
     s->go.span[0].ub = d->ubChar;
     s->go.span[0].to = move;
 }
@@ -763,7 +764,7 @@ void DFA_emit( DFA *d, FILE *o )
         }
     }
 
-    saves = malloc( nRules * sizeof( *saves ) );
+    saves = MemAlloc( nRules * sizeof( *saves ) );
     memset( saves, ~0, nRules * sizeof( *saves ) );
 
     // mark backtracking points
@@ -772,7 +773,7 @@ void DFA_emit( DFA *d, FILE *o )
         if( s->rule != NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
                 if( s->go.span[i].to != NULL && s->go.span[i].to->rule == NULL ) {
-                    free( s->action );
+                    MemFree( s->action );
                     if( saves[s->rule->u.RuleOp.accept] == ~0 )
                         saves[s->rule->u.RuleOp.accept] = nSaves++;
                     Action_new_Save( s, saves[s->rule->u.RuleOp.accept] );
@@ -783,7 +784,7 @@ void DFA_emit( DFA *d, FILE *o )
     }
 
     // insert actions
-    rules = malloc( nRules * sizeof( *rules ) );
+    rules = MemAlloc( nRules * sizeof( *rules ) );
     memset( rules, 0, nRules * sizeof( *rules ) );
     accept = NULL;
     for( s = d->head; s != NULL; s = s->next ) {
@@ -829,7 +830,7 @@ void DFA_emit( DFA *d, FILE *o )
     }
 
     // find ``base'' state, if possible
-    span = malloc( ( d->ubChar - d->lbChar ) * sizeof( *span ) );
+    span = MemAlloc( ( d->ubChar - d->lbChar ) * sizeof( *span ) );
     for( s = d->head; s != NULL; s = s->next ) {
         if( s->link == NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
@@ -840,9 +841,9 @@ void DFA_emit( DFA *d, FILE *o )
                     to = to->go.span[0].to;
                     nSpans = merge( span, s, to );
                     if( nSpans < s->go.nSpans ) {
-                        free( s->go.span );
+                        MemFree( s->go.span );
                         s->go.nSpans = nSpans;
-                        s->go.span = malloc( nSpans * sizeof( Span ) );
+                        s->go.span = MemAlloc( nSpans * sizeof( Span ) );
                         memcpy( s->go.span, span, nSpans * sizeof( Span ) );
                     }
                     tree_reference( s, 0 );
@@ -851,11 +852,11 @@ void DFA_emit( DFA *d, FILE *o )
             }
         }
     }
-    free( span );
+    MemFree( span );
 
     tree_reference( d->head, 0 );
 
-    free( d->head->action );
+    MemFree( d->head->action );
 
     Action_new_Enter( d->head );
 
@@ -881,6 +882,6 @@ void DFA_emit( DFA *d, FILE *o )
 
     BitMap_first = NULL;
 
-    free( saves );
-    free( rules );
+    MemFree( saves );
+    MemFree( rules );
 }

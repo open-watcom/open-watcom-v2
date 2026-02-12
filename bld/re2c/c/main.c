@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "parser.h"
 #include "dfa.h"
+#include "mem.h"
+
 
 const char  *fileName = NULL;
 bool        sFlag = false;
@@ -44,6 +46,8 @@ int main( int argc, char *argv[] )
     FILE    *fi;
     char    *p;
 
+    MemInit();
+
     fileName = NULL;
 
     if( argc == 1 ) {
@@ -83,6 +87,9 @@ int main( int argc, char *argv[] )
     }
     fileName = fname_normalize( fileName );
     parse( fi, stdout );
-    free( (void *)fileName );
+    MemFree( (void *)fileName );
+
+    MemFini();
+
     return 0;
 }

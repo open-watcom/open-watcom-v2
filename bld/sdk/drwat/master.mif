@@ -6,6 +6,10 @@ proj_name = drwatcom
 drwatcom_autodepends = .AUTODEPEND
 !endif
 
+!ifeq host_cpu i86
+drwatcom_debug = 0
+!endif
+
 drwatcom_ntmanif = ../res/nt
 drwatcom_ntverrc = ../res/nt
 
