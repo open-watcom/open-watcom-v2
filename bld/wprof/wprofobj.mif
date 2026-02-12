@@ -2,6 +2,8 @@ srcmgt_obj = srcmgt.obj
 
 !ifneq debug 0
 debug_objs = dumpmem.obj
+!else ifeq trmem 1
+debug_objs = dumpmem.obj
 !endif
 
 objs = &

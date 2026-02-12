@@ -54,6 +54,7 @@
 #include "wpstart.h"
 #include "wpdata.h"
 #include "memutil.h"
+#include "wpmutil.h"
 
 #include "clibext.h"
 
