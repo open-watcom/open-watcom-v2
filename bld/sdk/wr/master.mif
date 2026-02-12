@@ -8,7 +8,7 @@ wr_autodepends = .AUTODEPEND
 
 wr_ntverrc = ../res
 
-wr_trmem = 1
+trmem = 1
 
 wr_wreslib_cli = gui
 wr_wreslib_incl = 1
