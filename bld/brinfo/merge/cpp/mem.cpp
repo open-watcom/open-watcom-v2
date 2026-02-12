@@ -88,11 +88,6 @@ void *operator new( size_t size )
 /*******************************/
 {
     void *p;
-#ifdef TRACKER
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
 
 //  for(;;) {
 #ifdef TRACKER
@@ -113,11 +108,6 @@ void * WBRAlloc( size_t size )
 // calling functions when the memory tracker is in.
 {
     void *p;
-#ifdef TRACKER
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
 
 //    for(;;) {
 #ifdef TRACKER
@@ -135,15 +125,9 @@ void * WBRRealloc( void * p, size_t size )
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
-#ifdef TRACKER
-    _trmem_who  caller;
-
-    caller = _trmem_guess_who();
-#endif
-
 //    for(;;) {
 #ifdef TRACKER
-        p = _trmem_realloc( p, size, caller, TrHdl );
+        p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
         p = realloc( p, size );
 #endif
@@ -155,7 +139,8 @@ void * WBRRealloc( void * p, size_t size )
 void WBRFree( void *p )
 /*********************/
 {
-    if( p == NULL ) return;
+    if( p == NULL )
+        return;
 #ifdef TRACKER
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
@@ -168,7 +153,8 @@ void WBRFree( void *p )
 void operator delete( void *p )
 /*****************************/
 {
-    if( p == NULL ) return;
+    if( p == NULL )
+        return;
 #ifdef TRACKER
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
