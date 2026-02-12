@@ -37,7 +37,6 @@
 #include "globals.h"
 #include "substr.h"
 #include "dfa.h"
-#include "mem.h"
 
 
 typedef struct GoTo {
@@ -49,7 +48,7 @@ State *State_new( void )
 {
     State   *s;
 
-    s = MemAlloc( sizeof( State ) );
+    s = malloc( sizeof( State ) );
     s->label = 0;
     s->rule = NULL;
     s->next = NULL;
@@ -68,10 +67,10 @@ State *State_new( void )
 static void State_delete( State *s )
 {
     if( s->kernel != NULL )
-        MemFree( s->kernel );
+        free( s->kernel );
     if( s->go.span != NULL )
-        MemFree( s->go.span );
-    MemFree( s );
+        free( s->go.span );
+    free( s );
 }
 
 static Ins **closure( Ins **cP, Ins *i )
@@ -123,7 +122,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
         s = State_new();
         DFA_addState( d, d->tail, s );
         s->kCount = kCount;
-        s->kernel = MemAlloc( ( kCount + 1 ) * sizeof( Ins * ) );
+        s->kernel = malloc( ( kCount + 1 ) * sizeof( Ins * ) );
         memcpy( s->kernel, kernel, ( kCount + 1 ) * sizeof( Ins * ) );
         s->link = d->toDo;
         d->toDo = s;
@@ -142,12 +141,12 @@ DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
     GoTo    *goTo;
     Span    *span;
 
-    d = MemAlloc( sizeof( DFA ) );
-    work = MemAlloc( ( ni + 1 ) * sizeof( Ins * ) );
+    d = malloc( sizeof( DFA ) );
+    work = malloc( ( ni + 1 ) * sizeof( Ins * ) );
     nc = ub - lb;
-    goTo = MemAlloc( nc * sizeof( GoTo ) );
+    goTo = malloc( nc * sizeof( GoTo ) );
     memset( goTo, 0, nc * sizeof( GoTo ) );
-    span = MemAlloc( nc * sizeof( Span ) );
+    span = malloc( nc * sizeof( Span ) );
     d->lbChar = lb;
     d->ubChar = ub;
     d->tail = &d->head;
@@ -202,15 +201,15 @@ DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
             goTo[goTo[j].ch - lb].to = NULL;
         }
 
-        s->go.span = MemAlloc( s->go.nSpans * sizeof( Span ) );
+        s->go.span = malloc( s->go.nSpans * sizeof( Span ) );
         memcpy( s->go.span, span, s->go.nSpans * sizeof( Span ) );
 
         Action_new_Match( s );
 
     }
-    MemFree( work );
-    MemFree( goTo );
-    MemFree( span );
+    free( work );
+    free( goTo );
+    free( span );
 
     return( d );
 }

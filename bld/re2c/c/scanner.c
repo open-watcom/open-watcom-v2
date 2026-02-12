@@ -38,7 +38,6 @@
 #include "scanner.h"
 #include "parser.h"
 #include "ytab.h"
-#include "mem.h"
 
 
 extern YYSTYPE yylval;
@@ -83,7 +82,7 @@ static uchar *fill( Scanner *s, uchar *cursor )
             s->lim -= cnt;
         }
         if( ( s->top - s->lim ) < BSIZE ) {
-            uchar *buf = MemAlloc( ( s->lim - s->bot ) + BSIZE );
+            uchar *buf = malloc( ( s->lim - s->bot ) + BSIZE );
             memcpy( buf, s->tok, s->lim - s->tok );
             s->tok = buf;
             s->ptr = &buf[s->ptr - s->bot];
@@ -91,7 +90,7 @@ static uchar *fill( Scanner *s, uchar *cursor )
             s->pos = &buf[s->pos - s->bot];
             s->lim = &buf[s->lim - s->bot];
             s->top = &s->lim[BSIZE];
-            MemFree( s->bot );
+            free( s->bot );
             s->bot = buf;
         }
         if( (cnt = fread( s->lim, 1, BSIZE, s->in )) != BSIZE ) {
@@ -105,12 +104,12 @@ static uchar *fill( Scanner *s, uchar *cursor )
 
 static Token *token( Scanner *s )
 {
-    Token   *r = MemAlloc( sizeof( Token ) );
+    Token   *r = malloc( sizeof( Token ) );
     size_t  len = s->cur - s->tok;
 
     r->line = s->tline;
     r->text.len = len;
-    r->text.str = MemAlloc( len );
+    r->text.str = malloc( len );
     memcpy( r->text.str, s->tok, len );
     return( r );
 }
@@ -626,7 +625,7 @@ void Scanner_fatal( Scanner *s, const char *msg )
 
 Scanner *Scanner_new( FILE *i )
 {
-    Scanner *r = MemAlloc( sizeof( Scanner ) );
+    Scanner *r = malloc( sizeof( Scanner ) );
 
     Scanner_init( r, i );
     return( r );

@@ -34,7 +34,6 @@
 #include <string.h>
 #include "substr.h"
 #include "globals.h"
-#include "mem.h"
 
 
 void SubStr_out( const SubStr *s, FILE *o )
@@ -62,6 +61,6 @@ void SubStr_init( SubStr *r, uchar *s, size_t l )
 
 void Str_init( Str *r, const SubStr* s )
 {
-    SubStr_init( r, MemAlloc( s->len ), s->len );
+    SubStr_init( r, malloc( s->len ), s->len );
     memcpy( r->str, s->str, s->len );
 }

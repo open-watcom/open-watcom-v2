@@ -41,24 +41,23 @@
 
 #include <malloc.h>
 //#include <dr.h>       //include only for the browser
-#ifdef TRMEM
-    #include "trmem.h"
-    #include "io.h"
-    #include "fcntl.h"
-  #ifdef __WINDOWS__
-    #define TRMEM_NO_STDOUT
-    #define STRICT
-    #include <windows.h>
-  #endif
-  #ifdef __OS2__
-    #define TRMEM_NO_STDOUT
-    #define INCL_PM
-    #include <os2.h>
-  #endif
+#ifdef TRACKER
+extern "C" {
+#include "trmem.h"
+}
+#include "io.h"
+#include "fcntl.h"
+#ifdef __WINDOWS__
+#define TRMEM_NO_STDOUT
+#define STRICT
+#include <windows.h>
+#endif
+#ifdef __OS2__
+#define TRMEM_NO_STDOUT
+#define INCL_PM
+#include <os2.h>
 #endif
 
-
-#ifdef TRMEM
 
 #pragma initialize  40;
 
@@ -83,8 +82,7 @@ void PrintLine( void *parm, const char *buf, size_t len )
     }
     NumMessages++;
 }
-
-#endif /* TRMEM */
+#endif
 
 void *operator new( size_t size )
 /*******************************/
@@ -92,7 +90,7 @@ void *operator new( size_t size )
     void *p;
 
 //  for(;;) {
-#ifdef TRMEM
+#ifdef TRACKER
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
@@ -112,7 +110,7 @@ void * WBRAlloc( size_t size )
     void *p;
 
 //    for(;;) {
-#ifdef TRMEM
+#ifdef TRACKER
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
@@ -128,7 +126,7 @@ void * WBRRealloc( void * p, size_t size )
 // calling functions when the memory tracker is in.
 {
 //    for(;;) {
-#ifdef TRMEM
+#ifdef TRACKER
         p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
         p = realloc( p, size );
@@ -143,7 +141,7 @@ void WBRFree( void *p )
 {
     if( p == NULL )
         return;
-#ifdef TRMEM
+#ifdef TRACKER
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
@@ -157,14 +155,14 @@ void operator delete( void *p )
 {
     if( p == NULL )
         return;
-#ifdef TRMEM
+#ifdef TRACKER
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
 }
 
-#ifdef TRMEM
+#ifdef TRACKER
 Memory::Memory()
 /**************/
 {

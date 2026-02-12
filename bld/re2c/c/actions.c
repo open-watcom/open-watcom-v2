@@ -39,7 +39,6 @@
 #include "globals.h"
 #include "parser.h"
 #include "dfa.h"
-#include "mem.h"
 
 static Symbol *first = NULL;
 
@@ -57,7 +56,7 @@ static Symbol *Symbol_new( const SubStr *str )
 {
     Symbol *r;
 
-    r = MemAlloc( sizeof( Symbol ) );
+    r = malloc( sizeof( Symbol ) );
     Symbol_init( r, str );
     return( r );
 }
@@ -78,7 +77,7 @@ static Range *Range_new( Char l, Char u )
 {
     Range   *r;
 
-    r = MemAlloc( sizeof( Range ) );
+    r = malloc( sizeof( Range ) );
     r->next = NULL;
     r->lb = l;
     r->ub = u;
@@ -468,7 +467,7 @@ static RegExp *RegExp_new_MatchOp( Range *m )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = MATCHOP;
     r->u.MatchOp.match = m;
     return( r );
@@ -478,7 +477,7 @@ static RegExp *RegExp_new_AltOp( RegExp *e1, RegExp *e2 )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = ALTOP;
     r->u.AltOp.exp1 = e1;
     r->u.AltOp.exp2 = e2;
@@ -489,7 +488,7 @@ RegExp *RegExp_new_RuleOp( RegExp *e, RegExp *c, Token *t, uint a )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = RULEOP;
     r->u.RuleOp.exp = e;
     r->u.RuleOp.ctx = c;
@@ -503,7 +502,7 @@ RegExp *RegExp_new_NullOp( void )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = NULLOP;
     return( r );
 }
@@ -512,7 +511,7 @@ RegExp *RegExp_new_CatOp( RegExp *e1, RegExp *e2 )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = CATOP;
     r->u.CatOp.exp1 = e1;
     r->u.CatOp.exp2 = e2;
@@ -523,7 +522,7 @@ RegExp *RegExp_new_CloseOp( RegExp *e )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = CLOSEOP;
     r->u.CloseOp.exp = e;
     return( r );
@@ -533,7 +532,7 @@ RegExp *RegExp_new_CloseVOp( RegExp *e, int lb, int ub )
 {
     RegExp  *r;
 
-    r = MemAlloc( sizeof( RegExp ) );
+    r = malloc( sizeof( RegExp ) );
     r->type = CLOSEVOP;
     r->u.CloseVOp.exp = e;
     r->u.CloseVOp.min = lb;
@@ -768,7 +767,7 @@ void genCode( FILE *o, RegExp *re )
     }
 
     RegExp_calcSize( re, rep );
-    ins = MemAlloc( ( re->size + 1 ) * sizeof( Ins ) );
+    ins = malloc( ( re->size + 1 ) * sizeof( Ins ) );
     memset( ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
     RegExp_compile( re, rep, ins );
     eoi = &ins[re->size];
@@ -789,14 +788,14 @@ void genCode( FILE *o, RegExp *re )
     DFA_emit( dfa, o );
     nstate = dfa->nStates;
     DFA_delete( dfa );
-    MemFree( ins );
+    free( ins );
 }
 
 Action *Action_new_Match( State *s )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = MATCHACT;
     a->state = s;
     s->action = a;
@@ -807,7 +806,7 @@ Action *Action_new_Enter( State *s )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = ENTERACT;
     a->state = s;
     a->u.Enter.label = s->label;
@@ -820,7 +819,7 @@ Action *Action_new_Save( State *s, uint i )
     Action  *a;
 
     bUsedYYAccept = true;
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = SAVEMATCHACT;
     a->state = s;
     a->u.SaveMatch.selector = i;
@@ -832,7 +831,7 @@ Action *Action_new_Move( State *s )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = MOVEACT;
     a->state = s;
     s->action = a;
@@ -843,7 +842,7 @@ Action *Action_new_Rule( State *s, RegExp *r ) /* RuleOp */
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = RULEACT;
     a->state = s;
     a->u.Rule.rule = r;
@@ -855,7 +854,7 @@ Action *Action_new_Accept( State *s, uint n, uint *sv, State **r )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
+    a = malloc( sizeof( Action ) );
     a->type = ACCEPTACT;
     a->state = s;
     a->u.Accept.nRules = n;

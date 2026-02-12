@@ -8,11 +8,7 @@ wasm_ntverrc = ../h
 
 wasm_nofpu = 1
 
-!ifeq host_cpu i86
-wasm_debug = 0
-!else
 wasm_trmem = 1
-!endif
 
 #wasm_wreslib_cli = incl_msgtext
 wasm_wreslib_cli = text
@@ -45,7 +41,7 @@ extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 # lflags
 #
 extra_l_flags_qnx = option offset=16k, stack=12k
-extra_l_flags_dosi86 = option stack=6k, el
+extra_l_flags_dosi86 = option stack=6k
 extra_l_flags_dos386 = option stack=12k
 extra_l_flags_linux = option stack=12k
 

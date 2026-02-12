@@ -2,8 +2,6 @@ proj_name = re2c
 
 re2c_autodepends = .AUTODEPEND
 
-re2c_trmem = 1
-
 additional_clean = ytab.c ytab.h y.out
 
 !include cproj.mif
@@ -13,7 +11,7 @@ additional_clean = ytab.c ytab.h y.out
 #
 # cflags
 #
-.c: ../c;$(trmem_dir)
+.c: ../c
 
 inc_dirs = -I. -I"$(re2c_dir)/h"
 
@@ -35,9 +33,7 @@ exetarg_objs = &
     main.obj &
     ytab.obj &
     scanner.obj &
-    substr.obj &
-    mem.obj &
-    $(trmem_objs)
+    substr.obj
 !include exetarg.mif
 
 #

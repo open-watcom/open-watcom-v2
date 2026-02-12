@@ -105,21 +105,18 @@ static void add_table( short token, short action )
 }
 
 
-static unsigned dump_reduction( a_reduce_action *raction )
+static void dump_reduction( a_reduce_action *raction, unsigned *base )
 {
     a_pro           *pro;
     bitnum          *mp;
     short           idx;
-    unsigned        size;
 
-    size = 0;
     pro = raction->pro;
     for( mp = Members( raction->follow ); mp-- != setmembers; ) {
         idx = *mp;
         add_table( idx, pro->pidx | ACTION_REDUCE );
-        ++size;
+        ++(*base);
     }
-    return( size );
 }
 
 void genobj( FILE *fp )
@@ -145,7 +142,6 @@ void genobj( FILE *fp )
     unsigned        base;
     unsigned        rule_base;
     short           *state_base;
-    unsigned        size;
 
     ntoken = FirstNonTerminalTokenValue();
     for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
@@ -175,11 +171,11 @@ void genobj( FILE *fp )
             if( max_savings < savings ) {
                 max_savings = savings;
                 if( default_reduction != NULL ) {
-                    base += dump_reduction( default_reduction );
+                    dump_reduction( default_reduction, &base );
                 }
                 default_reduction = raction;
             } else {
-                base += dump_reduction( raction );
+                dump_reduction( raction, &base );
             }
         }
         if( default_reduction != NULL ) {
@@ -190,10 +186,9 @@ void genobj( FILE *fp )
         }
         add_table( any_token, action );
         ++base;
-        size = base - state_base[sidx];
-        sum += size;
-        if( max < size ) {
-            max = size;
+        sum += base - state_base[sidx];
+        if( base - state_base[sidx] > max ) {
+            max = base - state_base[sidx];
         }
     }
     printf( "avg: %u max: %u\n", sum / nstate, max );
