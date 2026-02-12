@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -330,9 +330,9 @@ extern bool                 WndStopRefresh( bool );
 extern void                 WndNoMemory( void );
 extern void                 WndMemInit( void );
 extern void                 WndMemFini( void );
-extern void                 * WNDAPI WndAlloc( size_t );
+extern void                 *WndAlloc( size_t );
 extern void                 *WndRealloc( void *, size_t );
-extern void                 WNDAPI WndFree( void * );
+extern void                 WndFree( void * );
 extern void                 *WndMustAlloc( size_t );
 extern void                 *WndMustRealloc( void *, size_t );
 extern void                 WndCreateFloatingPopup( a_window, gui_point *, const gui_menu_items *, gui_ctl_id *id );
