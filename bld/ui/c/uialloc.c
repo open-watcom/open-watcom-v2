@@ -114,7 +114,7 @@ void UIMemPrtUsage( void )
 #endif
 
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
 #pragma aux (WFRM) uimalloc
 #endif
 void * UIAPI uimalloc( size_t size )
@@ -126,7 +126,7 @@ void * UIAPI uimalloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
 #pragma aux (WFRM) uifree
 #endif
 void UIAPI uifree( void *ptr )
@@ -138,7 +138,7 @@ void UIAPI uifree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
 #pragma aux (WFRM) uirealloc
 #endif
 void * UIAPI uirealloc( void *old, size_t size )
