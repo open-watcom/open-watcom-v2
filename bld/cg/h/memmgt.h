@@ -36,8 +36,15 @@
 extern void             CGMemInit( pointer trmemhdl );
 extern void             CGMemFini( void );
 extern mem_out_action   SetMemOut( mem_out_action what );
-extern pointer          CGAlloc( size_t size );
-extern void             CGFree( pointer chunk );
+#if defined( TRMEM ) && defined( _M_IX86 )
+extern  pointer         _CGAlloc( size_t, _trmem_who );
+extern  void            _CGFree( pointer, _trmem_who );
+#define _MemAlloc(s)    _CGAlloc( s, _trmem_guess_who() )
+#define _MemFree(p)     _CGFree( p, _trmem_guess_who() )
+#else
+#define _MemAlloc(s)    CGAlloc( s )
+#define _MemFree(p)     CGFree( p )
+#endif
 #ifdef TRMEM
 extern void             DumpMem( void );
 #endif

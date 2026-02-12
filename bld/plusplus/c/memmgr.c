@@ -48,22 +48,25 @@
 #endif
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-    #define alloc_mem( size )  _trmem_alloc( size, who, trackerHdl )
-    #define _doFree( p )       _trmem_free( p, _trmem_guess_who(), trackerHdl )
-    #define _MemAlloc( p )     _CMemAlloc( p, _trmem_guess_who() )
-    #define _MemAllocW( p )    _CMemAlloc( p, who )
-    #define _addPerm( p )     addPerm( p, _trmem_guess_who() )
+    #define alloc_mem(s)    _trmem_alloc( s, who, trackerHdl )
+    #define _doFree(p)      _trmem_free( p, _trmem_guess_who(), trackerHdl )
+    #define _MemAlloc(p)    _CMemAlloc( p, _trmem_guess_who() )
+    #define _MemAllocW(p)   _CMemAlloc( p, who )
+    #define _addPerm(p)     addPerm( p, _trmem_guess_who() )
 #else
   #ifdef USE_CG_MEMMGT
-    #define alloc_mem( size )  BEMemAlloc( size )
-    #define _doFree( p )       BEMemFree( p )
+    #define alloc_mem(s)    BEMemAlloc( s )
+    #define _doFree(p)      BEMemFree( p )
+  #elif defined( TRMEM )
+    #define alloc_mem(s)    _trmem_alloc( s, NULL, trackerHdl )
+    #define _doFree(p)      _trmem_free( p, NULL, trackerHdl )
   #else
-    #define alloc_mem( size )  malloc( size )
-    #define _doFree( p )       free( p )
+    #define alloc_mem(s)    malloc( s )
+    #define _doFree(p)      free( p )
   #endif
-    #define _MemAlloc( p )     _CMemAlloc( p )
-    #define _MemAllocW( p )    _CMemAlloc( p )
-    #define _addPerm( p )     addPerm( p )
+    #define _MemAlloc(p)    CMemAlloc( p )
+    #define _MemAllocW(p)   CMemAlloc( p )
+    #define _addPerm(p)     addPerm( p )
 #endif
 
 typedef struct cleanup *CLEANPTR;
@@ -115,7 +118,7 @@ void CMemRegisterCleanup( void (*cleanup)( void ) )
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 static void *_CMemAlloc( size_t size, pointer who )
 #else
-static void *_CMemAlloc( size_t size )
+void *CMemAlloc( size_t size )
 #endif
 /*************************************************/
 {
@@ -158,12 +161,12 @@ static void *_CMemAlloc( size_t size )
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemAlloc
-#endif
 void *CMemAlloc( size_t size )
 /****************************/
 {
-    return( _MemAlloc( size ) );
+    return( _CMemAlloc( size, _trmem_guess_who() ) );
 }
+#endif
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemStrDup

@@ -127,17 +127,20 @@ mem_out_action    SetMemOut( mem_out_action what )
 }
 
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) CGAlloc
-#endif
+pointer _CGAlloc( size_t size, _trmem_who who )
+#else
 pointer CGAlloc( size_t size )
-/****************************/
+#endif
+/******************************************/
 {
     pointer     chunk;
 
     _MemLow;
     for( ;; ) {
-#ifdef TRMEM
-        chunk = _trmem_alloc( size, _trmem_guess_who(), Handle );
+#if defined( TRMEM ) && defined( _M_IX86 )
+        chunk = _trmem_alloc( size, who, Handle );
+#elif defined( TRMEM )
+        chunk = _trmem_alloc( size, NULL, Handle );
 #else
         chunk = _SysAlloc( size );
 #endif
@@ -160,23 +163,42 @@ pointer CGAlloc( size_t size )
     return( NULL );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CGAlloc
+pointer CGAlloc( size_t size )
+/****************************/
+{
+    return( _CGAlloc( size, _trmem_guess_who() ) );
+}
+#endif
 
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) CGFree
-#endif
+void    _CGFree( pointer chunk, _trmem_who who )
+#else
 void    CGFree( pointer chunk )
-/*****************************/
+#endif
+/*******************************************/
 {
 #ifdef _CHUNK_TRACKING
     --Chunks;
 #endif
-#ifdef TRMEM
-    _trmem_free( chunk, _trmem_guess_who(), Handle );
+#if defined( TRMEM ) && defined( _M_IX86 )
+    _trmem_free( chunk, who, Handle );
+#elif defined( TRMEM )
+    _trmem_free( chunk, NULL, Handle );
 #else
     _SysFree( chunk );
 #endif
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) CGFree
+void    CGFree( pointer chunk )
+/*****************************/
+{
+    _CGFree( chunk, _trmem_guess_who() );
+}
+#endif
 
 #ifdef TRMEM
 void    DumpMem( void )

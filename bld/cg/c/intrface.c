@@ -212,16 +212,22 @@ void _CGAPI     BEAbort( void )
     AbortCG();
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) BEMemAlloc
+#endif
 pointer _CGAPI  BEMemAlloc( unsigned size )
 /*****************************************/
 {
-    return( CGAlloc( size ) );
+    return( _MemAlloc( size ) );
 }
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#pragma aux (WFRM) BEMemFree
+#endif
 void _CGAPI     BEMemFree( pointer ptr )
 /**************************************/
 {
-    CGFree( ptr );
+    _MemFree( ptr );
 }
 
 void _CGAPI     BEMemFini( void )
