@@ -157,7 +157,6 @@ void FiniMem( void )
 /******************/
 {
 #ifdef TRMEM
-    _trmem_prt_usage( TRMemHandle );
     _trmem_prt_list_ex( TRMemHandle, 100 );
     _trmem_close( TRMemHandle );
 #endif
