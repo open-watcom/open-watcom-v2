@@ -47,16 +47,25 @@
     #include "togglesd.h"
 #endif
 
+#define WHO     defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 
-#ifdef USE_CG_MEMMGT
-    #define alloc_mem( size )   BEMemAlloc( size )
-    #define _doFree( p )        BEMemFree( p );
-#elif defined( TRMEM )
-    #define alloc_mem( size )   _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
-    #define _doFree( p )        _trmem_free( p, _trmem_guess_who(), trackerHdl );
+#if WHO
+    #define alloc_mem( size )  _trmem_alloc( size, who, trackerHdl )
+    #define _doFree( p )       _trmem_free( p, _trmem_guess_who(), trackerHdl )
+    #define _MemAlloc( p )     _CMemAlloc( p, _trmem_guess_who() )
+    #define _MemAllocW( p )    _CMemAlloc( p, who )
+    #define _addPerm( p )     addPerm( p, _trmem_guess_who() )
 #else
-    #define alloc_mem( size )   malloc( size )
-    #define _doFree( p )        free( p );
+  #ifdef USE_CG_MEMMGT
+    #define alloc_mem( size )  BEMemAlloc( size )
+    #define _doFree( p )       BEMemFree( p )
+  #else
+    #define alloc_mem( size )  malloc( size )
+    #define _doFree( p )       free( p )
+  #endif
+    #define _MemAlloc( p )     _CMemAlloc( p )
+    #define _MemAllocW( p )    _CMemAlloc( p )
+    #define _addPerm( p )     addPerm( p )
 #endif
 
 typedef struct cleanup *CLEANPTR;
@@ -105,8 +114,12 @@ void CMemRegisterCleanup( void (*cleanup)( void ) )
     new_cleanup->rtn = cleanup;
 }
 
-void *CMemAlloc( size_t size )
-/****************************/
+#if WHO
+static void *_CMemAlloc( size_t size, pointer who )
+#else
+static void *_CMemAlloc( size_t size )
+#endif
+/*************************************************/
 {
     PERMPTR p;
     CLEANPTR curr;
@@ -144,14 +157,31 @@ void *CMemAlloc( size_t size )
     return( NULL );
 }
 
+
+#if WHO
+#pragma aux (WFRM) CMemAlloc
+#endif
+void *CMemAlloc( size_t size )
+/****************************/
+{
+    return( _MemAlloc( size ) );
+}
+
+#if WHO
+#pragma aux (WFRM) CMemStrDup
+#endif
 char *CMemStrDup( const char *str )
 /*********************************/
 {
-    if( str != NULL )
-        return( strcpy( CMemAlloc( strlen( str ) + 1 ), str ) );
+    if( str != NULL ) {
+        return( strcpy( _MemAlloc( strlen( str ) + 1 ), str ) );
+    }
     return( NULL );
 }
 
+#if WHO
+#pragma aux (WFRM) CMemFree
+#endif
 void CMemFree( void *p )
 /**********************/
 {
@@ -160,6 +190,9 @@ void CMemFree( void *p )
     }
 }
 
+#if WHO
+#pragma aux (WFRM) CMemFreePtr
+#endif
 void CMemFreePtr( void *pp )
 /**************************/
 {
@@ -189,14 +222,18 @@ static void linkPerm( PERMPTR p, size_t amt )
     RingPush( &permList, p );
 }
 
+#if WHO
+static void addPerm( size_t size, pointer who )
+#else
 static void addPerm( size_t size )
+#endif
 {
     PERMPTR p;
     CLEANPTR curr;
     size_t amt;
 
     if( size > PERM_MAX_ALLOC ) {
-        p = CMemAlloc( offsetof( perm_blk, mem ) + size );
+        p = _MemAllocW( offsetof( perm_blk, mem ) + size );
         linkPerm( p, size );
         return;
     }
@@ -234,6 +271,9 @@ static void *cutPerm( PERMPTR find, size_t size )
     return( NULL );
 }
 
+#if WHO
+#pragma aux (WFRM) CPermAlloc
+#endif
 void *CPermAlloc( size_t size )
 /*****************************/
 {
@@ -247,7 +287,7 @@ void *CPermAlloc( size_t size )
             return( p );
         }
     } RingIterEnd( find )
-    addPerm( size );
+    _addPerm( size );
     RingIterBeg( permList, find ) {
         p = cutPerm( find, size );
         if( p != NULL ) {
@@ -260,6 +300,9 @@ void *CPermAlloc( size_t size )
 }
 
 
+#if WHO
+#pragma aux (WFRM) cmemInit
+#endif
 static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
@@ -287,7 +330,7 @@ static void cmemInit(           // INITIALIZATION
 #endif
     cleanupList = NULL;
     permList = NULL;
-    addPerm( 0 );
+    _addPerm( 0 );
 }
 
 static void cmemFini(           // COMPLETION
