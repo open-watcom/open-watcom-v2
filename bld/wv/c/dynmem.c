@@ -478,7 +478,7 @@ void *GUIMemAlloc( size_t size )
 #if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) WndAlloc
 #endif
-void * WNDAPI WndAlloc( size_t size )
+void *WndAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
@@ -576,7 +576,7 @@ void GUIMemFree( void *ptr )
 #if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) WndFree
 #endif
-void WNDAPI WndFree( void *ptr )
+void WndFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
@@ -642,30 +642,6 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_free
-#pragma aux (WFRM) _wpi_malloc
-#pragma aux (WFRM) _wpi_realloc
-#pragma aux (WFRM) DbgAlloc
-#pragma aux (WFRM) DbgFree
-#pragma aux (WFRM) DbgChkAlloc
-#pragma aux (WFRM) DbgMustAlloc
-#pragma aux (WFRM) DbgRealloc
-#pragma aux (WFRM) GUIMemAlloc
-#pragma aux (WFRM) GUIMemFree
-#pragma aux (WFRM) GUIMemRealloc
-#pragma aux (WFRM) HelpMemAlloc
-#pragma aux (WFRM) HelpMemFree
-#pragma aux (WFRM) HelpMemRealloc
-#pragma aux (WFRM) MemExpand
-#pragma aux (WFRM) uifaralloc
-#pragma aux (WFRM) uifarfree
-#pragma aux (WFRM) uifree
-#pragma aux (WFRM) uimalloc
-#pragma aux (WFRM) uirealloc
-#pragma aux (WFRM) WndAlloc
-#pragma aux (WFRM) WndFree
-#pragma aux (WFRM) WndRealloc
-#pragma aux (WFRM) wres_alloc
 #pragma aux (WFRM) wres_free
 #endif
 void wres_free( void *ptr )
