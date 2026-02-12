@@ -47,9 +47,7 @@
     #include "togglesd.h"
 #endif
 
-#define WHO     defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
     #define alloc_mem( size )  _trmem_alloc( size, who, trackerHdl )
     #define _doFree( p )       _trmem_free( p, _trmem_guess_who(), trackerHdl )
     #define _MemAlloc( p )     _CMemAlloc( p, _trmem_guess_who() )
@@ -114,7 +112,7 @@ void CMemRegisterCleanup( void (*cleanup)( void ) )
     new_cleanup->rtn = cleanup;
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 static void *_CMemAlloc( size_t size, pointer who )
 #else
 static void *_CMemAlloc( size_t size )
@@ -158,7 +156,7 @@ static void *_CMemAlloc( size_t size )
 }
 
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemAlloc
 #endif
 void *CMemAlloc( size_t size )
@@ -167,7 +165,7 @@ void *CMemAlloc( size_t size )
     return( _MemAlloc( size ) );
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemStrDup
 #endif
 char *CMemStrDup( const char *str )
@@ -179,7 +177,7 @@ char *CMemStrDup( const char *str )
     return( NULL );
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemFree
 #endif
 void CMemFree( void *p )
@@ -190,7 +188,7 @@ void CMemFree( void *p )
     }
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CMemFreePtr
 #endif
 void CMemFreePtr( void *pp )
@@ -222,7 +220,7 @@ static void linkPerm( PERMPTR p, size_t amt )
     RingPush( &permList, p );
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 static void addPerm( size_t size, pointer who )
 #else
 static void addPerm( size_t size )
@@ -271,7 +269,7 @@ static void *cutPerm( PERMPTR find, size_t size )
     return( NULL );
 }
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) CPermAlloc
 #endif
 void *CPermAlloc( size_t size )
@@ -300,7 +298,7 @@ void *CPermAlloc( size_t size )
 }
 
 
-#if WHO
+#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
 #pragma aux (WFRM) cmemInit
 #endif
 static void cmemInit(           // INITIALIZATION
