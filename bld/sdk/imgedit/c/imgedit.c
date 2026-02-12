@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,7 +431,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
     _argc = __argc;
     _argv = __argv;
 #endif
-    WRInit();
+    WRInit( false );
 
     if( _argc > 1 ) {
         parseArgs( _argc, _argv );

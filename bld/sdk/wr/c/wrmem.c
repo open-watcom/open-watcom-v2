@@ -33,11 +33,8 @@
 #include "wrglbl.h"
 #include "wrmemi.h"
 #include "wresmem.h"
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "trmem.h"
 
-#ifdef TRMEM
 
 static _trmem_hdl   TRMemHandle;
 static FILE         *TRMemFile = NULL;
@@ -52,121 +49,115 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
     }
 }
 
-#endif /* TRMEM */
-
-void WRMemOpen( void )
+void WRMemOpen( bool trace )
 {
-#ifdef TRMEM
     char    *tmpdir;
 
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-                               NULL, TRPrintLine,
-                               _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-                               _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-    tmpdir = getenv( "TRMEMFILE" );
-    if( tmpdir != NULL ) {
-        TRMemFile = fopen( tmpdir, "w" );
+    if( trace ) {
+        TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
+                                   NULL, TRPrintLine,
+                                   _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+                                   _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+        tmpdir = getenv( "TRMEMFILE" );
+        if( tmpdir != NULL ) {
+            TRMemFile = fopen( tmpdir, "w" );
+        }
+    } else {
+        TRMemHandle = NULL;
     }
-#endif
 }
 
 void WRMemClose( void )
 {
-#ifdef TRMEM
     _trmem_prt_list( TRMemHandle );
     _trmem_close( TRMemHandle );
     if( TRMemFile != NULL ) {
         fclose( TRMemFile );
         TRMemFile = NULL;
     }
-#endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) WRMemAlloc
+#if defined( _M_IX86 ) && defined( __NT__ )
+#pragma aux (__stdcall) WRMemAlloc __frame
 #endif
 void *WRAPI WRMemAlloc( size_t size )
 {
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
+    if( TRMemHandle != NULL ) {
+        return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+    } else {
+        return( malloc( size ) );
+    }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) WRMemFree
+#if defined( _M_IX86 ) && defined( __NT__ )
+#pragma aux (__stdcall) WRMemFree __frame
 #endif
 void WRAPI WRMemFree( void *ptr )
 {
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
+    if( TRMemHandle != NULL ) {
+        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+    } else {
+        free( ptr );
+    }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) WRMemRealloc
+#if defined( _M_IX86 ) && defined( __NT__ )
+#pragma aux (__stdcall) WRMemRealloc __frame
 #endif
 void *WRAPI WRMemRealloc( void *ptr, size_t size )
 {
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
+    if( TRMemHandle != NULL ) {
+        return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
+    } else {
+        return( realloc( ptr, size ) );
+    }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) WRMemValidate
+#if defined( _M_IX86 ) && defined( __NT__ )
+#pragma aux (__stdcall) WRMemValidate __frame
 #endif
 int WRAPI WRMemValidate( void *ptr )
 {
-#ifdef TRMEM
-    return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
-#else
-    /* unused parameters */ (void)ptr;
-
-    return( TRUE );
-#endif
+    if( TRMemHandle != NULL ) {
+        return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
+    } else {
+        return( TRUE );
+    }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) WRMemChkRange
+#if defined( _M_IX86 ) && defined( __NT__ )
+#pragma aux (__stdcall) WRMemChkRange __frame
 #endif
 int WRAPI WRMemChkRange( void *start, size_t len )
 {
-#ifdef TRMEM
-    return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
-#else
-    /* unused parameters */ (void)start; (void)len;
-
-    return( TRUE );
-#endif
+    if( TRMemHandle != NULL ) {
+        return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
+    } else {
+        return( TRUE );
+    }
 }
 
 void WRAPI WRMemPrtUsage( void )
 {
-#ifdef TRMEM
-    _trmem_prt_usage( TRMemHandle );
-#endif
+    if( TRMemHandle != NULL ) {
+        _trmem_prt_usage( TRMemHandle );
+    }
 }
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( _M_IX86 ) && defined( __NT__ )
 #pragma aux (WFRM) MemAlloc
 #endif
 void *MemAlloc( size_t size )
 {
     void *p;
 
-#ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
-#else
-    p = malloc( size );
-#endif
+    if( TRMemHandle != NULL ) {
+        p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+    } else {
+        p = malloc( size );
+    }
 
     if( p != NULL ) {
         memset( p, 0, size );
@@ -177,60 +168,59 @@ void *MemAlloc( size_t size )
 
 /* function for wres.lib */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( _M_IX86 ) && defined( __NT__ )
 #pragma aux (WFRM) wres_alloc
 #endif
 void *wres_alloc( size_t size )
 {
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
+    if( TRMemHandle != NULL ) {
+        return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+    } else {
+        return( malloc( size ) );
+    }
 }
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( _M_IX86 ) && defined( __NT__ )
 #pragma aux (WFRM) MemRealloc
 #endif
 void *MemRealloc( void *ptr, size_t size )
 {
     void *p;
 
-#ifdef TRMEM
-    p = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
-#else
-    p = realloc( ptr, size );
-#endif
-
+    if( TRMemHandle != NULL ) {
+        p = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
+    } else {
+        p = realloc( ptr, size );
+    }
     return( p );
 }
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( _M_IX86 ) && defined( __NT__ )
 #pragma aux (WFRM) MemFree
 #endif
 void MemFree( void *ptr )
 {
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
+    if( TRMemHandle != NULL ) {
+        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+    } else {
+        free( ptr );
+    }
 }
 
 /* function for wres.lib */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( _M_IX86 ) && defined( __NT__ )
 #pragma aux (WFRM) wres_free
 #endif
 void wres_free( void *ptr )
 {
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
+    if( TRMemHandle != NULL ) {
+        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+    } else {
+        free( ptr );
+    }
 }

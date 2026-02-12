@@ -201,12 +201,12 @@ HINSTANCE WRGetInstance( void )
     return( WRInstance );
 }
 
-void WRAPI WRInit( void )
+void WRAPI WRInit( bool trace )
 {
     if( ref_count == 0 ) {
         WRDialogMsgInit();
         WRCtl3DInit( WRInstance );
-        WRMemOpen();
+        WRMemOpen( trace );
         WRInitDisplayError( WRInstance );
         JDialogInit();
     }

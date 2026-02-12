@@ -173,7 +173,7 @@ void WRESEAPI WAccelInit( void )
         AccelTable = LoadAccelerators( inst, "WAccelAccelTable" );
     }
     if( ref_count == 0 ) {
-        WRInit();
+        WRInit( false );
         SetRCInstance( inst );
         WInit( inst );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ typedef struct WRSaveIntoData {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern void             WRAPI WRInit( void );
+WRDLLENTRY extern void             WRAPI WRInit( bool trace );
 WRDLLENTRY extern void             WRAPI WRFini( void );
 WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType );
 WRDLLENTRY extern bool             WRAPI WRUpdateTmp( WRInfo *info );

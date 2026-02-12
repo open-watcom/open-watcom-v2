@@ -39,7 +39,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WRMemOpen( void );
+extern void     WRMemOpen( bool trace );
 extern void     WRMemClose( void );
 
 #endif

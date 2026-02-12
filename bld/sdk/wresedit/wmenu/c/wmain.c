@@ -193,7 +193,7 @@ void WRESEAPI WMenuInit( void )
         InsertNoSub = LoadBitmap( inst, "InsertNoSub");
     }
     if( ref_count == 0 ) {
-        WRInit();
+        WRInit( false );
         SetRCInstance( inst );
         WInit( inst );
         WInitDummyMenuEntry();
