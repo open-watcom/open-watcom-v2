@@ -20,8 +20,7 @@ as_stand_objs = &
     $(_subdir_)obj.obj &
     $(_subdir_)sections.obj &
     $(_subdir_)options.obj &
-    $(_subdir_)ppenv.obj &
-    $(_subdir_)ppmem.obj
+    $(_subdir_)ppenv.obj
 as_inline_objs = &
     $(_subdir_)asinline.obj &
     $(_subdir_)asiobj.obj

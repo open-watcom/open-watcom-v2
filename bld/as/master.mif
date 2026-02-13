@@ -55,10 +55,11 @@ extra_c_flags_f_asilexyy = -fh=pch03.pch
 extra_c_flags_f_preproc = -fh=$^:pch04.pch
 extra_c_flags_f_ppexpr = -fh=$^:pch04.pch
 extra_c_flags_f_ppmacro = -fh=$^:pch04.pch
-extra_c_flags_f_ppmem = -fh=$^:pch04.pch
 extra_c_flags_f_ppenv = -fh=$^:pch04.pch
-extra_c_flags_f_trmemcvr += -fh=$^:pch05.pch
 extra_c_flags_f_pathlist = -fh=$^:pch06.pch
+! if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_asmem = -of+
+! endif
 !endif
 extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 

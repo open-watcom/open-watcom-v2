@@ -35,10 +35,18 @@
 
 #include "as.h"
 #include "wresmem.h"
+#include "preproc.h"
 #if defined( TRMEM )
     #include "trmem.h"
 #endif
 
+
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
 
 #if defined( TRMEM )
 
@@ -70,9 +78,7 @@ void MemInit( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 /*****************************/
 {
@@ -83,9 +89,7 @@ void *wres_alloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 pointer MemRealloc( pointer ptr, size_t size )
 /********************************************/
 {
@@ -96,9 +100,7 @@ pointer MemRealloc( pointer ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 /*************************/
 {
@@ -125,9 +127,7 @@ void MemFini( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 pointer MemAlloc( size_t size )
 /*****************************/
 {
@@ -138,9 +138,7 @@ pointer MemAlloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( pointer ptr )
 /*************************/
 {
@@ -148,6 +146,38 @@ void MemFree( pointer ptr )
     _trmem_free( ptr, _trmem_guess_who(), memHandle );
 #else
     free( ptr );
+#endif
+}
+
+static void outOfMemory( void )
+{
+    printf( "Out of memory\n" );
+    exit( 1 );
+}
+
+TRMEMAPI( PP_Malloc )
+void * PPENTRY PP_Malloc( size_t size )
+{
+    void        *p;
+
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+#else
+    p = malloc( size );
+#endif
+    if( p == NULL ) {
+        outOfMemory();
+    }
+    return( p );
+}
+
+TRMEMAPI( PP_Free )
+void PPENTRY PP_Free( void *p )
+{
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), memHandle );
+#else
+    free( p );
 #endif
 }
 

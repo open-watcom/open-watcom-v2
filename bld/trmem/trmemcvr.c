@@ -40,11 +40,20 @@
 #include "clibext.h"
 
 
-#if defined( __WATCOMC__ ) && !defined( NLM )
-#include <malloc.h>
+/*
+ * There is no equivalent expand function in NetWare or non-Watcom
+ */
+#if defined( __NETWARE__ ) || !defined( __WATCOMC__ )
+    #define _expand NULL
 #else
-/* There is no equivalent expand function in NetWare or non-Watcom libs. */
-#define _expand NULL
+	#include <malloc.h>
+#endif
+
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
 #endif
 
 #ifdef TRMEM
@@ -95,9 +104,7 @@ void TRMemClose( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemAlloc
-#endif
+TRMEMAPI( TRMemAlloc )
 void *TRMemAlloc( size_t size )
 /*****************************/
 {
@@ -108,9 +115,7 @@ void *TRMemAlloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemFree
-#endif
+TRMEMAPI( TRMemFree )
 void TRMemFree( void *ptr )
 /*************************/
 {
@@ -121,9 +126,7 @@ void TRMemFree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemRealloc
-#endif
+TRMEMAPI( TRMemRealloc )
 void *TRMemRealloc( void *ptr, size_t size )
 /******************************************/
 {
@@ -134,9 +137,7 @@ void *TRMemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemStrdup
-#endif
+TRMEMAPI( TRMemStrdup )
 char *TRMemStrdup( const char *str )
 /**********************************/
 {
@@ -161,9 +162,7 @@ unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemValidate
-#endif
+TRMEMAPI( TRMemValidate )
 int TRMemValidate( void *ptr )
 /****************************/
 {
@@ -176,9 +175,7 @@ int TRMemValidateAll( void )
     return( _trmem_validate_all( TRMemHandle ) );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemChkRange
-#endif
+TRMEMAPI( TRMemChkRange )
 int TRMemChkRange( void *start, size_t len )
 /******************************************/
 {
