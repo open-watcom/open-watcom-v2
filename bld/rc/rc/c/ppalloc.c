@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,21 +37,27 @@
 #include "preproc.h"
 
 
+static void outOfMemory( void )
+/*****************************/
+{
+    RcFatalError( ERR_OUT_OF_MEMORY );
+}
+
 void *PPENTRY PP_Malloc( size_t size )
 /************************************/
 {
-    return( RESALLOC( size ) );
+    void    *p;
+
+    p = RESALLOC( size );
+    if( p == NULL ) {
+        outOfMemory();
+    }
+    return( p );
 }
 
 void PPENTRY PP_Free( void *p )
 /*****************************/
 {
     RESFREE( p );
-}
-
-void PPENTRY PP_OutOfMemory( void )
-/*********************************/
-{
-    RcFatalError( ERR_OUT_OF_MEMORY );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,8 +101,8 @@ static char  WdeBusyChars[]         = "-\\|/";
 static jmp_buf Env;
 
 
-void PPENTRY PP_OutOfMemory( void )
-/*********************************/
+static void outOfMemory( void )
+/*****************************/
 {
     if( WdePopEnv( JMPBUF_PTR( Env ) ) ) {
         longjmp( Env, 1 );
@@ -119,7 +119,7 @@ void * PPENTRY PP_Malloc( size_t size )
 
     p = WRMemAlloc( size );
     if( p == NULL ) {
-        PP_OutOfMemory();
+        outOfMemory();
     }
     return( p );
 }

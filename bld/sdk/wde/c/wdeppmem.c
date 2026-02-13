@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 
 static jmp_buf Env;
 
-void PP_OutOfMemory( void )
+static void outOfMemory( void )
 {
     if( WdePopEnv( JMPBUF_PTR( Env ) ) ) {
         longjmp( Env, 1 );
@@ -56,7 +56,7 @@ void *PP_Malloc( size_t size )
 
     p = WRMemAlloc( size );
     if( p == NULL ) {
-        PP_OutOfMemory();
+        outOfMemory();
     }
     return( p );
 }

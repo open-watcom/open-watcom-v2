@@ -111,4 +111,4 @@ extern unsigned char    PPSpecMacros;
 extern void             MemInit( void );
 extern void             MemFini( void );
 
-extern void             * PPENTRY PP_Realloc( void *old, size_t size );
+extern void             *PP_Realloc( void *old, size_t size );

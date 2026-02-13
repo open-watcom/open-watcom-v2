@@ -86,6 +86,12 @@ void MemFini( void )
 #endif
 }
 
+static void outOfMemory( void )
+{
+    printf( "Out of memory\n" );
+    exit( 1 );
+}
+
 #if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) PP_Malloc
 #endif
@@ -99,7 +105,7 @@ void * PPENTRY PP_Malloc( size_t size )
     p = malloc( size );
 #endif
     if( p == NULL ) {
-        PP_OutOfMemory();
+        outOfMemory();
     }
     return( p );
 }
@@ -107,7 +113,7 @@ void * PPENTRY PP_Malloc( size_t size )
 #if defined( TRMEM ) && defined( _M_IX86 )
 #pragma aux (WFRM) PP_Realloc
 #endif
-void * PPENTRY PP_Realloc( void *old, size_t size )
+void *PP_Realloc( void *old, size_t size )
 {
     void        *p;
 
@@ -117,7 +123,7 @@ void * PPENTRY PP_Realloc( void *old, size_t size )
     p = realloc( old, size );
 #endif
     if( p == NULL ) {
-        PP_OutOfMemory();
+        outOfMemory();
     }
     return( p );
 }
@@ -132,10 +138,4 @@ void PPENTRY PP_Free( void *p )
 #else
     free( p );
 #endif
-}
-
-void PPENTRY PP_OutOfMemory( void )
-{
-    printf( "Out of memory\n" );
-    exit( 1 );
 }

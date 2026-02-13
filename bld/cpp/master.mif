@@ -20,6 +20,12 @@ wcpp_trmem = 1
 
 inc_dirs = $(cli_cpp_inc_dirs)
 
+!ifdef __WATCOM_TOOLS__
+! if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_ppmem = -of+
+! endif
+!endif
+
 # explicit rules
 #################
 

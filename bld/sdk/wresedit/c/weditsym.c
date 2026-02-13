@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ typedef struct {
 /****************************************************************************/
 static jmp_buf SymEnv;
 
-void PPENTRY PP_OutOfMemory( void )
-/*********************************/
+static void outOfMemory( void )
+/*****************************/
 {
     longjmp( SymEnv, 1 );
 }
@@ -70,7 +70,7 @@ void * PPENTRY PP_Malloc( size_t size )
 
     p = WRMemAlloc( size );
     if( p == NULL ) {
-        PP_OutOfMemory();
+        outOfMemory();
     }
     return( p );
 }

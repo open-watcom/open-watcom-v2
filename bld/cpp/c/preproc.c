@@ -117,7 +117,6 @@ static FILE *PP_Open( const char *filename )
             fclose( handle );
             handle = NULL;
             PP_File = prev_file;
-            PP_OutOfMemory();
         } else {
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
@@ -846,8 +845,6 @@ void PPENTRY PP_Define( const char *ptr )
         }
         me->replacement_list = PP_Malloc( len );
         memcpy( me->replacement_list, p, len );
-    } else {
-        PP_OutOfMemory();
     }
 }
 
@@ -864,8 +861,6 @@ void PPENTRY PP_Define_1( const char *ptr )
         me->parmcount = 0;
         me->replacement_list = PP_Malloc( sizeof( "1" ) );
         strcpy( me->replacement_list, "1" );
-    } else {
-        PP_OutOfMemory();
     }
 }
 
