@@ -24,7 +24,9 @@ inc_dirs = -I"../h"
 extra_cxx_flags = -xs
 
 !ifeq trmem 1
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_f_mem = -of+
+!endif
 !endif
 
 # explicit rules

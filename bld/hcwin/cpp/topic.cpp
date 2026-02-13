@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,13 +260,20 @@ TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink( false ), _myData( 
 
 
 //  GenericNode::GenericNode
+    uint_32     _topicSize;
+    uint_32     _dataSize;
+    uint_32     _prevNode;
+    uint_32     _nextNode;
+    uint_32     _dataOffset;
+    RecordType  _recordType;
+    TopicLink   *_myLink;
 
 GenericNode::GenericNode( uint_32 prev )
     : _topicSize( 0 ),
       _dataSize( 0 ),
-      _dataOffset( 0 ),
       _prevNode( prev ),
-      _nextNode( NULLVAL32 )
+      _nextNode( NULLVAL32 ),
+      _dataOffset( 0 )
 {
     // empty
 }
