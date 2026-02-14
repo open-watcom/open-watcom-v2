@@ -110,7 +110,7 @@ def_msg_type( JCK, "JCK_" ) \
 
 #define LINE_SIZE       (512)
 
-#define SKIP_SPACES(s)  while( isspace( *s ) ) s++
+#define SKIP_SPACES(s)  while( isspace( (unsigned char)*s ) ) s++
 
 #define BLANKARG( s )   ((s)[0] == '.' && (s)[1] == '\0')
 
@@ -375,7 +375,7 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 static const char *nextWord( char *t, const char *s )
 {
     while( *s != '\0' ) {
-        if( isspace( *s ) ) {
+        if( isspace( (unsigned char)*s ) ) {
             break;
         }
         *t++ = *s++;
@@ -387,7 +387,7 @@ static const char *nextWord( char *t, const char *s )
 static const char *nextTag( char *t, const char *s )
 {
     while( *s != '\0' ) {
-        if( isspace( *s ) ) {
+        if( isspace( (unsigned char)*s ) ) {
             break;
         }
         if( *s == '.' ) {
@@ -793,17 +793,17 @@ static void checkForGMLEscape( const char *p )
     ++p;
     c1 = *p++;
     if( c1 == '\0'
-      || ! isalpha( c1 ) ) {
+      || ! isalpha( (unsigned char)c1 ) ) {
         return;
     }
     c2 = *p++;
     if( c2 == '\0'
-      || ! isalpha( c2 ) ) {
+      || ! isalpha( (unsigned char)c2 ) ) {
         return;
     }
     is_escape = false;
     if( *p == '\0'
-      || ! isalpha( *p ) ) {
+      || ! isalpha( (unsigned char)*p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -1118,8 +1118,8 @@ static void splitIntoWords( void )
         p = m->lang_txt[LANG_RLE_ENGLISH];
         a = &(m->words);
         for( ;; ) {
-            if( isspace( p[0] )
-              && isspace( p[1] ) ) {
+            if( isspace( (unsigned char)p[0] )
+              && isspace( (unsigned char)p[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
             SKIP_SPACES( p );
@@ -1218,7 +1218,7 @@ static void outputChar( FILE *fp, char c )
         fprintf( fp, "'\\''," );
     } else if( c == '\\' ) {
         fprintf( fp, "'\\\\'," );
-    } else if( isprint( c ) ) {
+    } else if( isprint( (unsigned char)c ) ) {
         fprintf( fp, "'%c',", c );
     } else {
         fprintf( fp, "'\\x%x',", (unsigned char)c );
@@ -1618,7 +1618,7 @@ static void dumpInternational( void )
     }
 }
 
-#define ISSEP(c)    (isspace( c ) || c == '\0')
+#define ISSEP(c)    (isspace( (unsigned char)c ) || c == '\0')
 
 static char *ProcessOption( char *p, char *option_start )
 /*******************************************************/
@@ -1671,7 +1671,7 @@ static char *ProcessOption( char *p, char *option_start )
 
             i = 0;
             while( *p != '\0'
-              && !isspace( *p ) ) {
+              && !isspace( (unsigned char)*p ) ) {
                 if( i < ( sizeof( flags.rc_macro ) - 1 ) ) {
                     flags.rc_macro[i++] = *p;
                 }
@@ -1706,7 +1706,7 @@ static char *getFileName( char *str, char *name )
 {
     char        ch;
 
-    while( isspace( *str ) )
+    while( isspace( (unsigned char)*str ) )
         ++str;
     if( *str == '\"' ) {
         str++;
@@ -1723,7 +1723,7 @@ static char *getFileName( char *str, char *name )
         }
     } else {
         while( *str != '\0'
-          && !isspace( *str ) ) {
+          && !isspace( (unsigned char)*str ) ) {
             *name++ = *str++;
         }
     }
@@ -1756,7 +1756,7 @@ static char *ReadIndirectFile( char *name )
                 break;
             }
             if( ch != ' '
-              && isspace( ch ) ) {
+              && isspace( (unsigned char)ch ) ) {
                 *str = ' ';
             }
         }
@@ -1775,7 +1775,7 @@ static bool ProcessOptions( char *str )
     fstr = NULL;
     name[0] = '\0';
     while( *str != '\0' ) {
-        while( isspace( *str ) )
+        while( isspace( (unsigned char)*str ) )
             ++str;
         if( *str == '@' ) {
             str = getFileName( str + 1, name );
