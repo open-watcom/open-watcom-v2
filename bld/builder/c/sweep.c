@@ -188,19 +188,19 @@ static void Compare( char *buff )
             return;
         buff2 = &buff1[BUFF_SIZE];
     }
-    while( isspace( *buff ) )
+    while( isspace( (unsigned char)*buff ) )
         ++buff;
     one = buff;
     inQuote = 0;
     for( ;; ) {
-        if( isspace( *buff ) && !inQuote )
+        if( isspace( (unsigned char)*buff ) && !inQuote )
             break;
         if( *buff == '"' )
             inQuote = !inQuote;
         ++buff;
     }
     *buff++ = '\0';
-    while( isspace( *buff ) )
+    while( isspace( (unsigned char)*buff ) )
         ++buff;
     two = buff;
     fp1 = fopen( strip( one ), "rb" );
@@ -470,7 +470,7 @@ int main( void )
             Options.depthfirst = 1;
             break;
         case 'l':
-            if( isdigit( cmd[1] ) ) {
+            if( isdigit( (unsigned char)cmd[1] ) ) {
                 Options.levels = strtol( cmd + 1, (char **)&cmd, 10 );
                 cmd--;
             } else {

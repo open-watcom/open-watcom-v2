@@ -459,7 +459,7 @@ static void CloseFile( void )
 
 static void EatWhite( void )
 {
-    while( isspace( *Rptr ) ) {
+    while( isspace( (unsigned char)*Rptr ) ) {
         ++Rptr;
     }
 }
@@ -496,7 +496,7 @@ static bool ScanString( void )
     }
     eptr = cptr + sizeof( Token ) - 1;
     for( ;; ) {
-        if( isspace( *rptr ) )
+        if( isspace( (unsigned char)*rptr ) )
             break;
         if( IsOper( *rptr ) )
             break;

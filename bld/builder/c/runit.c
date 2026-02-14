@@ -791,12 +791,12 @@ static int ProcRm( const char *cmd )
     rm_fflag = false;
     rm_sflag = true;
     for( ;; ) {
-        while( isspace( *cmd ) )
+        while( isspace( (unsigned char)*cmd ) )
             ++cmd;
         if( *cmd != '-' )
             break;
         ++cmd;
-        while( isalpha( *cmd ) ) {
+        while( isalpha( (unsigned char)*cmd ) ) {
             switch( *cmd++ ) {
             case 'f':
                 rm_fflag = true;

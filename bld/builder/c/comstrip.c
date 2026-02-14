@@ -39,7 +39,7 @@ char    buf[2048];
 
 static char *skipwhite( char *s )
 {
-    while( *s && isspace( *s ) )
+    while( *s && isspace( (unsigned char)*s ) )
         s++;
     return *s ? s : NULL;
 }
