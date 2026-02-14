@@ -64,17 +64,18 @@ typedef void *(*_trmem_realloc_who)(void *, size_t);
 */
 enum {
     _TRMEM_ALLOC_SIZE_0     =0x0001,/* attempted alloc of size 0 */
-    _TRMEM_REALLOC_SIZE_0   =0x0002,/* attempted realloc/expand of size 0 */
-    _TRMEM_REALLOC_NULL     =0x0004,/* attempted realloc/expand of a NULL ptr */
-    _TRMEM_FREE_NULL        =0x0008,/* attempted free of a NULL pointer */
-    _TRMEM_OUT_OF_MEMORY    =0x0010,/* warn if trmem can't allocate memory
+    _TRMEM_REALLOC_SIZE_0   =0x0002,/* attempted realloc of size 0 */
+    _TRMEM_REALLOC_NULL     =0x0004,/* attempted realloc of a NULL ptr */
+    _TRMEM_STRDUP_NULL      =0x0008,/* attempted strdup of a NULL ptr */
+    _TRMEM_FREE_NULL        =0x0010,/* attempted free of a NULL pointer */
+    _TRMEM_OUT_OF_MEMORY    =0x0020,/* warn if trmem can't allocate memory
                                         for its own purposes */
-    _TRMEM_CLOSE_CHECK_FREE =0x0020 /* _trmem_close checks if all chunks
+    _TRMEM_CLOSE_CHECK_FREE =0x0040 /* _trmem_close checks if all chunks
                                         were freed */
 };
 #define _TRMEM_ALL \
-    (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL \
-      |_TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE)
+    (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL | _TRMEM_STRDUP_NULL \
+      | _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE)
 
 /*
     _trmem_open:
@@ -86,8 +87,8 @@ enum {
     __realloc may be omitted (use _TRMEM_NO_REALLOC).  __realloc must behave
         like realloc() when passed a NULL pointer or a size of 0.
 
-    __expand may be omitted (use _TRMEM_NO_REALLOC).  __expand must behave
-        like _expand() when passed a NULL pointer or a size of 0.
+    __strdup may be omitted (use _TRMEM_NO_ROUTINE). __strdup must behave like
+        strdup() when passed a NULL pointer.
 
     __prt_parm is passed to __prt_line only.
 
@@ -113,7 +114,7 @@ extern _trmem_hdl _trmem_open(
     void *(*__alloc)(size_t),
     void (*__free)(void*),
     void * (*__realloc)(void*,size_t),
-    void * (*__expand)(void*,size_t),
+    char * (*__strdup)(const char*),
     void *__prt_parm,
     void (*__prt_line)(void *__prt_parm, const char *__buf, size_t __len),
     unsigned __flags
@@ -137,7 +138,6 @@ extern unsigned _trmem_close( _trmem_hdl );
 extern void *_trmem_alloc( size_t, _trmem_who, _trmem_hdl );
 extern void _trmem_free( void *, _trmem_who, _trmem_hdl );
 extern void *_trmem_realloc( void *, size_t, _trmem_who, _trmem_hdl );
-extern void *_trmem_expand( void *, size_t, _trmem_who, _trmem_hdl );
 extern char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl );
 extern size_t _trmem_msize( void *, _trmem_hdl );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ struct _trmem_internal {
     void *      (*alloc)( size_t );
     void        (*free)( void * );
     void *      (*realloc)( void *, size_t );
-    void *      (*expand)( void *, size_t );
+    char *      (*strdup)( const char * );
     void *      prt_parm;
     void        (*prt_line)( void *, const char *, size_t );
     uint        flags;
@@ -395,7 +395,7 @@ _trmem_hdl _trmem_open(
     void *( *alloc )( size_t ),
     void ( *free )( void * ),
     void *( *realloc )( void *, size_t ),
-    void *( *expand )( void *, size_t ),
+    char *( *strdup )( const char * ),
     void *prt_parm,
     void ( *prt_line )( void *, const char *, size_t ),
     unsigned flags )
@@ -410,7 +410,7 @@ _trmem_hdl _trmem_open(
     hdl->alloc          = alloc;
     hdl->free           = free;
     hdl->realloc        = realloc;
-    hdl->expand         = expand;
+    hdl->strdup         = strdup;
     hdl->prt_parm       = prt_parm;
     hdl->prt_line       = prt_line;
     hdl->flags          = flags;
@@ -491,7 +491,8 @@ void *_trmem_alloc( size_t size, _trmem_who who, _trmem_hdl hdl )
     if( size == 0 && ( hdl->flags & _TRMEM_ALLOC_SIZE_0 ) ) {
         trPrt( hdl, MSG_SIZE_ZERO, "Alloc", who );
         return ( NULL );
-    } else if( size < hdl->min_alloc ) {
+    }
+    if( size < hdl->min_alloc ) {
         trPrt( hdl, MSG_MIN_ALLOC, "Alloc", who, size );
     }
     mem = hdl->alloc( size + 1 );
@@ -586,14 +587,17 @@ void _trmem_free( void *mem, _trmem_who who, _trmem_hdl hdl )
     hdl->free( mem );
 }
 
-static void *ChangeAlloc( void *old, size_t size, _trmem_who who,
-                _trmem_hdl hdl, void *(*fn)(void *,size_t), char *name )
-/*********************************************************************/
+void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
+/****************************************************************************/
 {
     entry_ptr   tr;
     void *      new_block;
     size_t      old_size;
+    void        *(*fn)(void *,size_t);
+    const char  *name;
 
+    name = "Realloc";
+    fn = hdl->realloc;
     if( fn == NULL ) {
         trPrt( hdl, MSG_NO_ROUTINE, name );
         return( NULL );
@@ -679,28 +683,44 @@ static void *ChangeAlloc( void *old, size_t size, _trmem_who who,
     return( new_block );
 }
 
-void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
-/****************************************************************************/
-{
-    return( ChangeAlloc( old, size, who, hdl, hdl->realloc, "Realloc" ) );
-}
-
-void *_trmem_expand( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
-/***************************************************************************/
-{
-    return( ChangeAlloc( old, size, who, hdl, hdl->expand, "Expand" ) );
-}
-
 char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
 /********************************************************************/
 {
-    char    *mem;
-    size_t  len;
+    size_t      size;
+    void        *mem;
+    entry_ptr   tr;
 
-    len = strlen( str ) + 1;
-    mem = _trmem_alloc( len, who, hdl );
-    if( mem )
-        memcpy( mem, str, len );
+    hdl->alloc_no += 1;
+    if( hdl->strdup == NULL ) {
+        trPrt( hdl, MSG_NO_ROUTINE, "Strdup" );
+        return( NULL );
+    }
+    if( str == NULL ) {
+        if( hdl->flags & _TRMEM_STRDUP_NULL ) {
+            trPrt( hdl, MSG_NULL_PTR, "Strdup", who );
+        }
+        return( NULL );
+    }
+    size = strlen( str ) + 1;
+    if( size < hdl->min_alloc ) {
+        trPrt( hdl, MSG_MIN_ALLOC, "Strdup", who, size );
+    }
+    mem = hdl->strdup( str );
+    if( mem != NULL ) {
+        *(unsigned char *)_PtrAdd( mem, size ) = MARKER_BYTE;
+        tr = allocEntry( hdl );
+        if( tr != NULL ) {
+            tr->mem = mem;
+            tr->who = who;
+            tr->when = hdl->alloc_no;
+            setSize( tr, size );
+            addToList( tr, hdl );
+        }
+        hdl->mem_used += size;
+        if( hdl->mem_used > hdl->max_mem ) {
+            hdl->max_mem = hdl->mem_used;
+        }
+    }
     return( mem );
 }
 

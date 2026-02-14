@@ -40,23 +40,6 @@
 #include "clibext.h"
 
 
-/*
- * There is no equivalent expand function in NetWare or non-Watcom
- */
-#if defined( __NETWARE__ ) || !defined( __WATCOMC__ )
-    #define _expand NULL
-#else
-	#include <malloc.h>
-#endif
-
-#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
-
-
 #if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
 #define _XSTR(s)    # s
 #define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
@@ -97,7 +80,7 @@ void TRMemOpen( void )
 {
 #ifdef TRMEM
     TRFileHandle = stderr;
-    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
             TRFileHandle, TRPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
