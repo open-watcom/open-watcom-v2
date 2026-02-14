@@ -21,7 +21,11 @@ merge_trmem = 1
 inc_dirs = -I"../h" -I"$(browser_dir)/h" $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h"
 
 !ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+#!  if $(__WATCOM_TOOLS__) < 1300
 extra_c_flags_f_brmem = -of+
+#!  endif
+! endif
 !endif
 
 extra_cpp_flags     = -DSTANDALONE_MERGER
