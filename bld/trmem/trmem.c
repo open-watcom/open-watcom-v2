@@ -342,7 +342,7 @@ static entry_ptr allocEntry( _trmem_hdl hdl )
 {
     entry_ptr   tr;
 
-    tr = (entry_ptr) hdl->alloc( sizeof( entry ) );
+    tr = (entry_ptr)hdl->alloc( sizeof( entry ) );
     if( tr == NULL && ( hdl->flags & _TRMEM_OUT_OF_MEMORY ) ) {
         trPrt( hdl, MSG_OUT_OF_MEMORY );
     }
@@ -699,7 +699,7 @@ char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
         if( hdl->flags & _TRMEM_STRDUP_NULL ) {
             trPrt( hdl, MSG_NULL_PTR, "Strdup", who );
         }
-        return( NULL );
+        return( hdl->strdup( str ) );
     }
     size = strlen( str ) + 1;
     if( size < hdl->min_alloc ) {
