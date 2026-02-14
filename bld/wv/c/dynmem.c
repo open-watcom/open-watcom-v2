@@ -133,7 +133,7 @@ TRMEMAPI( DbgAlloc )
 void *DbgAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -145,7 +145,7 @@ void *DbgMustAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), DbgMemHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -159,7 +159,7 @@ TRMEMAPI( DbgRealloc )
 void *DbgRealloc( void *chunk, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( chunk, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( chunk, size, _TRMEM_WHO( 3 ), DbgMemHandle ) );
 #else
     return( realloc( chunk, size ) );
 #endif
@@ -169,7 +169,7 @@ TRMEMAPI( DbgFree )
 void DbgFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -181,7 +181,7 @@ void *DbgChkAlloc( size_t size, char *error )
     void *ret;
 
 #ifdef TRMEM
-    ret = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
+    ret = _trmem_alloc( size, _TRMEM_WHO( 5 ), DbgMemHandle );
 #else
     ret = malloc( size );
 #endif
@@ -216,7 +216,7 @@ static void MemExpand( void )
         if( size < MAX_BLOCK )
             alloced = size;
 #ifdef TRMEM
-        p = _trmem_alloc( alloced, _trmem_guess_who(), DbgMemHandle );
+        p = _trmem_alloc( alloced, _TRMEM_WHO( 6 ), DbgMemHandle );
 #else
         p = malloc( alloced );
 #endif
@@ -228,7 +228,7 @@ static void MemExpand( void )
     while( link != NULL ) {
         p = *link;
 #ifdef TRMEM
-        _trmem_free( link, _trmem_guess_who(), DbgMemHandle );
+        _trmem_free( link, _TRMEM_WHO( 7 ), DbgMemHandle );
 #else
         free( link );
 #endif
@@ -462,7 +462,7 @@ void *GUIMemAlloc( size_t size )
 /******************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -472,7 +472,7 @@ TRMEMAPI( WndAlloc )
 void *WndAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 9 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -487,7 +487,7 @@ TRMEMAPI( _wpi_malloc )
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 10 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -501,7 +501,7 @@ TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 11 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -510,7 +510,7 @@ TRMEMAPI( uifaralloc )
 LP_VOID UIAPI uifaralloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 12 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -519,7 +519,7 @@ TRMEMAPI( HelpMemAlloc )
 void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 13 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -528,7 +528,7 @@ TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 14 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -546,7 +546,7 @@ void GUIMemFree( void *ptr )
 /**************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 15 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -556,7 +556,7 @@ TRMEMAPI( WndFree )
 void WndFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -571,7 +571,7 @@ TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -585,7 +585,7 @@ TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 18 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -595,7 +595,7 @@ void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( MEM_NEAR_PTR( ptr ), _trmem_guess_who(), DbgMemHandle );
+        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 19 ), DbgMemHandle );
 #else
         free( MEM_NEAR_PTR( ptr ) );
 #endif
@@ -605,7 +605,7 @@ TRMEMAPI( HelpMemFree )
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 20 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -614,7 +614,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 21 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -632,7 +632,7 @@ void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 22 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -641,7 +641,7 @@ TRMEMAPI( WndRealloc )
 void *WndRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -655,7 +655,7 @@ TRMEMAPI( _wpi_realloc )
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -669,7 +669,7 @@ TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 25 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -678,7 +678,7 @@ TRMEMAPI( HelpMemRealloc )
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 26 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif

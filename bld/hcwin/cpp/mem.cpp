@@ -130,7 +130,7 @@ void *operator new( size_t size )
     void *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     p = malloc( size );
 #endif
@@ -145,7 +145,7 @@ void *operator new( size_t size )
 void *renew( void *p, size_t size )
 {
 #ifdef TRMEM
-    p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
+    p = _trmem_realloc( p, size, _TRMEM_WHO( 2 ), TrHdl );
 #else
     p = realloc( p, size );
 #endif
@@ -162,7 +162,7 @@ void operator delete( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 3 ), TrHdl );
 #else
     free( p );
 #endif

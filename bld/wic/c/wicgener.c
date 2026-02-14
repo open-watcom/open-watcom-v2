@@ -290,7 +290,7 @@ static void *BasicAlloc(size_t size)
 {
     void *temp;
 #ifdef TRMEM
-    temp = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
+    temp = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     temp = malloc(size);
 #endif
@@ -335,7 +335,7 @@ void BasicFree(void *ptr)
     if (ptr != NULL) {
         unsigned temp = _msize(ptr);
 #ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), TrHdl );
+        _trmem_free( ptr, _TRMEM_WHO( 2 ), TrHdl );
 #else
         free(ptr);
 #endif

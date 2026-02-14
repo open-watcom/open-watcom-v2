@@ -203,7 +203,7 @@ void  *MemAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -221,7 +221,7 @@ char *MemStrDup( const char *str )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _trmem_guess_who(), TRMemHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle );
 #else
     ptr = strdup( str );
 #endif
@@ -240,7 +240,7 @@ char *MemStrLenDup( const char *str, size_t len )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( len + 1, _trmem_guess_who(), TRMemHandle );
+    ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 3 ), TRMemHandle );
 #else
     ptr = malloc( len + 1 );
 #endif
@@ -261,7 +261,7 @@ void  *MemRealloc( void *p, size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( p, size, _trmem_guess_who(), TRMemHandle );
+    ptr = _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TRMemHandle );
 #else
     ptr = realloc( p, size );
 #endif
@@ -277,7 +277,7 @@ void  MemFree( void *ptr )
 /************************/
 {
 #ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );;
+        _trmem_free( ptr, _TRMEM_WHO( 5 ), TRMemHandle );;
 #else
         free( ptr );
 #endif

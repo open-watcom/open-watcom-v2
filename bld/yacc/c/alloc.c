@@ -104,7 +104,7 @@ void *YaccAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -122,7 +122,7 @@ void *YaccCalloc( size_t n, size_t size )
 
     size *= n;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -139,7 +139,7 @@ void *YaccRealloc( void *old_ptr, size_t newsize )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _trmem_guess_who(), memHandle );
+    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), memHandle );
 #else
     ptr = realloc( old_ptr, newsize );
 #endif
@@ -155,7 +155,7 @@ void YaccFree( void *ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), memHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 4 ), memHandle );
 #else
         free( ptr );
 #endif
@@ -173,7 +173,7 @@ char *YaccStrDup( const char *str )
         return( NULL );
     size = strlen( str ) + 1;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 5 ), memHandle );
 #else
     ptr = malloc( size );
 #endif

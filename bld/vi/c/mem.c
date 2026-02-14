@@ -210,13 +210,9 @@ void *MemAlloc( size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( size, (WHO_PTR)1 );
+    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 1 ) );
 #else
-    tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
+    tmp = doMemAllocUnsafe( size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
@@ -232,13 +228,9 @@ TRMEMAPI( MemAllocUnsafe )
 void *MemAllocUnsafe( size_t size )
 {
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    return( doMemAllocUnsafe( size, (WHO_PTR)3 ) );
+    return( doMemAllocUnsafe( size, _TRMEM_WHO( 2 ) ) );
 #else
-    return( doMemAllocUnsafe( size, _trmem_guess_who() ) );
-#endif
-#else
-    return( doMemAllocUnsafe( size, (WHO_PTR)0 ) );
+    return( doMemAllocUnsafe( size, NULL ) );
 #endif
 
 } /* MemAllocUnsafe */
@@ -250,11 +242,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    _trmem_free( ptr, (WHO_PTR)4, trmemHandle );
-#else
-    _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
-#endif
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), trmemHandle );
 #else
     free( ptr );
 #endif
@@ -339,13 +327,9 @@ TRMEMAPI( MemReallocUnsafe )
 void *MemReallocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    return( doMemReallocUnsafe( ptr, size, (WHO_PTR)6 ) );
+    return( doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 4 ) ) );
 #else
-    return( doMemReallocUnsafe( ptr, size, _trmem_guess_who() ) );
-#endif
-#else
-    return( doMemReallocUnsafe( ptr, size, (WHO_PTR)0 ) );
+    return( doMemReallocUnsafe( ptr, size, NULL ) );
 #endif
 }
 
@@ -358,13 +342,9 @@ void *MemRealloc( void *ptr, size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)7 );
+    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 5 ) );
 #else
-    tmp = doMemReallocUnsafe( ptr, size, _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
+    tmp = doMemReallocUnsafe( ptr, size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
@@ -453,13 +433,9 @@ void * UIAPI uimalloc( size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( size, (WHO_PTR)9 );
+    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 6 ) );
 #else
-    tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
+    tmp = doMemAllocUnsafe( size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
@@ -473,13 +449,9 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)10 );
+    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 7 ) );
 #else
-    tmp = doMemReallocUnsafe( ptr, size, _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
+    tmp = doMemReallocUnsafe( ptr, size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
@@ -491,11 +463,7 @@ TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
-#ifndef __WATCOMC__
-    _trmem_free( ptr, (WHO_PTR)11, trmemHandle );
-#else
-    _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
-#endif
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), trmemHandle );
 #else
     free( ptr );
 #endif

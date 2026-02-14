@@ -96,7 +96,7 @@ void *RcMemAlloc( size_t size )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), RcMemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), RcMemHandle );
 #else
     ptr = RCMemLayer1Malloc( size );
 #endif
@@ -113,7 +113,7 @@ void RcMemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), RcMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), RcMemHandle );
 #else
     RCMemLayer1Free( ptr );
 #endif
@@ -126,7 +126,7 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _trmem_guess_who(), RcMemHandle );
+    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), RcMemHandle );
 #else
     ptr = RCMemLayer1Realloc( old_ptr, newsize );
 #endif
@@ -149,7 +149,7 @@ char *RcMemStrDup( const char *buf )
     if( buf != NULL ) {
         size = strlen( buf ) + 1;
 #ifdef TRMEM
-        ptr = _trmem_alloc( size, _trmem_guess_who(), RcMemHandle );
+        ptr = _trmem_alloc( size, _TRMEM_WHO( 4 ), RcMemHandle );
 #else
         ptr = RCMemLayer1Malloc( size );
 #endif
@@ -183,7 +183,7 @@ int RcMemValidate( void *ptr )
 /****************************/
 {
     if( RcMemHandle != NULL ) {
-        return( _trmem_validate( ptr, _trmem_guess_who(), RcMemHandle ) );
+        return( _trmem_validate( ptr, _TRMEM_WHO( 5 ), RcMemHandle ) );
     } else {
         return( 0 );
     }
@@ -194,7 +194,7 @@ int RcMemChkRange( void *start, size_t len )
 /******************************************/
 {
     if( RcMemHandle != NULL ) {
-        return( _trmem_chk_range( start, len, _trmem_guess_who(), RcMemHandle ) );
+        return( _trmem_chk_range( start, len, _TRMEM_WHO( 6 ), RcMemHandle ) );
     } else {
         return( 0 );
     }

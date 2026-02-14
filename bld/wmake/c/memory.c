@@ -336,7 +336,7 @@ TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), Handle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), Handle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -350,7 +350,7 @@ void *MallocUnSafe( size_t size )
 {
     void *ptr;
 #ifdef TRMEM
-    ptr = doAlloc( size, _trmem_guess_who() );
+    ptr = doAlloc( size, _TRMEM_WHO( 2 ) );
 #else
     ptr = doAlloc( size );
 #endif
@@ -369,7 +369,7 @@ void *MallocSafe( size_t size )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = doAlloc( size, _trmem_guess_who() );
+    ptr = doAlloc( size, _TRMEM_WHO( 3 ) );
 #else
     ptr = doAlloc( size );
 #endif
@@ -393,7 +393,7 @@ void *CallocSafe( size_t size )
     void    *ptr;
 
 #ifdef TRMEM        /* so we can track ret address */
-    ptr = doAlloc( size, _trmem_guess_who() );
+    ptr = doAlloc( size, _TRMEM_WHO( 4 ) );
 
     if( ptr == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
@@ -419,7 +419,7 @@ void FreeSafe( void *ptr )
  */
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), Handle );
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), Handle );
 #else
     free( ptr );
 #endif
@@ -430,7 +430,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), Handle );
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), Handle );
 #else
     free( ptr );
 #endif
@@ -450,7 +450,7 @@ char *StrDupSafe( const char *str )
     len = strlen( str ) + 1;
 
 #ifdef TRMEM
-    p = doAlloc( len, _trmem_guess_who() );
+    p = doAlloc( len, _TRMEM_WHO( 7 ) );
     if( p == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
@@ -475,7 +475,7 @@ char *CharToStrSafe( char c )
     char    *p;
 
 #ifdef TRMEM
-    p = doAlloc( 2, _trmem_guess_who() );
+    p = doAlloc( 2, _TRMEM_WHO( 8 ) );
     if( p == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();

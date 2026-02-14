@@ -156,7 +156,7 @@ void *MAlloc( size_t size )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
 #else
     p = malloc( size );
 #endif
@@ -172,7 +172,7 @@ char *MStrdup( const char *s )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_strdup( s, _trmem_guess_who(), TRMemHandle );
+    p = _trmem_strdup( s, _TRMEM_WHO( 2 ), TRMemHandle );
 #else
     p = strdup( s );
 #endif
@@ -186,7 +186,7 @@ TRMEMAPI( MFree )
 void MFree( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), TRMemHandle );
+    _trmem_free( p, _TRMEM_WHO( 3 ), TRMemHandle );
 #else
     free( p );
 #endif

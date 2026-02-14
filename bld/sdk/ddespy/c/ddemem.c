@@ -106,7 +106,7 @@ void *MemAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), MemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), MemHandle );
 #else
     ptr = malloc( size );
     memset( ptr, 0, size );
@@ -120,7 +120,7 @@ void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), MemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), MemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -132,7 +132,7 @@ void MemFree( void *ptr )
 /***********************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), MemHandle );
 #else
     free( ptr );
 #endif

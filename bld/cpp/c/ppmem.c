@@ -105,7 +105,7 @@ void * PPENTRY PP_Malloc( size_t size )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
 #else
     p = malloc( size );
 #endif
@@ -121,7 +121,7 @@ void *PP_Realloc( void *old, size_t size )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_realloc( old, size, _trmem_guess_who(), memHandle );
+    p = _trmem_realloc( old, size, _TRMEM_WHO( 2 ), memHandle );
 #else
     p = realloc( old, size );
 #endif
@@ -135,7 +135,7 @@ TRMEMAPI( PP_Free )
 void PPENTRY PP_Free( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 3 ), memHandle );
 #else
     free( p );
 #endif

@@ -170,12 +170,12 @@ pointer CGAlloc( size_t size )
     return( NULL );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM )
 TRMEMAPI( CGAlloc )
 pointer CGAlloc( size_t size )
 /****************************/
 {
-    return( _CGAlloc( size, _trmem_guess_who() ) );
+    return( _CGAlloc( size, _TRMEM_WHO( 3 ) ) );
 }
 #endif
 
@@ -198,12 +198,12 @@ void    CGFree( pointer chunk )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM )
 TRMEMAPI( CGFree )
 void    CGFree( pointer chunk )
 /*****************************/
 {
-    _CGFree( chunk, _trmem_guess_who() );
+    _CGFree( chunk, _TRMEM_WHO( 4 ) );
 }
 #endif
 

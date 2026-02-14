@@ -88,7 +88,7 @@ void *MemAlloc( size_t size )
     void                *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     ptr = malloc( size );
 #endif
@@ -105,7 +105,7 @@ void MemFree( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 2 ), TrHdl );
 #else
     free( p );
 #endif

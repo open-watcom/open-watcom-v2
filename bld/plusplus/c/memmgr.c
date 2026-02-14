@@ -56,25 +56,25 @@
 #endif
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-    #define alloc_mem(s)    _trmem_alloc( s, who, trackerHdl )
-    #define _doFree(p)      _trmem_free( p, _trmem_guess_who(), trackerHdl )
-    #define _MemAlloc(p)    _CMemAlloc( p, _trmem_guess_who() )
+    #define alloc_mem(s,n)  _trmem_alloc( s, who, trackerHdl )
+    #define _doFree(p,n)    _trmem_free( p, _trmem_guess_who(), trackerHdl )
+    #define _MemAlloc(p,n)  _CMemAlloc( p, _trmem_guess_who() )
     #define _MemAllocW(p)   _CMemAlloc( p, who )
-    #define _addPerm(p)     addPerm( p, _trmem_guess_who() )
+    #define _addPerm(p,n)   addPerm( p, _trmem_guess_who() )
 #else
   #ifdef USE_CG_MEMMGT
-    #define alloc_mem(s)    BEMemAlloc( s )
-    #define _doFree(p)      BEMemFree( p )
+    #define alloc_mem(s,n)  BEMemAlloc( s )
+    #define _doFree(p,n)    BEMemFree( p )
   #elif defined( TRMEM )
-    #define alloc_mem(s)    _trmem_alloc( s, NULL, trackerHdl )
-    #define _doFree(p)      _trmem_free( p, NULL, trackerHdl )
+    #define alloc_mem(s,n)  _trmem_alloc( s, _TRMEM_ROUTINE(n), trackerHdl )
+    #define _doFree(p,n)    _trmem_free( p, _TRMEM_ROUTINE(n), trackerHdl )
   #else
-    #define alloc_mem(s)    malloc( s )
-    #define _doFree(p)      free( p )
+    #define alloc_mem(s,n)  malloc( s )
+    #define _doFree(p,n)    free( p )
   #endif
-    #define _MemAlloc(p)    CMemAlloc( p )
+    #define _MemAlloc(p,n)  CMemAlloc( p )
     #define _MemAllocW(p)   CMemAlloc( p )
-    #define _addPerm(p)     addPerm( p )
+    #define _addPerm(p,n)   addPerm( p )
 #endif
 
 typedef struct cleanup *CLEANPTR;
@@ -150,13 +150,13 @@ void *CMemAlloc( size_t size )
         }
     }
 #endif
-    p = alloc_mem( size );
+    p = alloc_mem( size, 1 );
     if( p != NULL ) {
         return( p );
     }
     RingIterBeg( cleanupList, curr ) {
         curr->rtn();
-        p = alloc_mem( size );
+        p = alloc_mem( size, 1 );
         if( p != NULL ) {
             return( p );
         }
@@ -181,7 +181,7 @@ char *CMemStrDup( const char *str )
 /*********************************/
 {
     if( str != NULL ) {
-        return( strcpy( _MemAlloc( strlen( str ) + 1 ), str ) );
+        return( strcpy( _MemAlloc( strlen( str ) + 1, 7 ), str ) );
     }
     return( NULL );
 }
@@ -191,7 +191,7 @@ void CMemFree( void *p )
 /**********************/
 {
     if( p != NULL ) {
-        _doFree( p );
+        _doFree( p, 3 );
     }
 }
 
@@ -203,7 +203,7 @@ void CMemFreePtr( void *pp )
 
     p = *(void **)pp;
     if( p != NULL ) {
-        _doFree( p );
+        _doFree( p, 4 );
         *(void **)pp = NULL;
     }
 }
@@ -243,14 +243,14 @@ static void addPerm( size_t size )
     size = PERM_MAX_ALLOC;
     for(;;) {
         amt = offsetof( perm_blk, mem ) + size;
-        p = alloc_mem( amt );
+        p = alloc_mem( amt, 2 );
         if( p != NULL ) {
             linkPerm( p, size );
             return;
         }
         RingIterBeg( cleanupList, curr ) {
             curr->rtn();
-            p = alloc_mem( amt );
+            p = alloc_mem( amt, 2 );
             if( p != NULL ) {
                 linkPerm( p, size );
                 return;
@@ -288,7 +288,7 @@ void *CPermAlloc( size_t size )
             return( p );
         }
     } RingIterEnd( find )
-    _addPerm( size );
+    _addPerm( size, 5 );
     RingIterBeg( permList, find ) {
         p = cutPerm( find, size );
         if( p != NULL ) {
@@ -329,7 +329,7 @@ static void cmemInit(           // INITIALIZATION
 #endif
     cleanupList = NULL;
     permList = NULL;
-    _addPerm( 0 );
+    _addPerm( 0, 6 );
 }
 
 static void cmemFini(           // COMPLETION

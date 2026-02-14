@@ -125,7 +125,7 @@ TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), UIMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), UIMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -135,7 +135,7 @@ TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), UIMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), UIMemHandle );
 #else
     free( ptr );
 #endif
@@ -145,7 +145,7 @@ TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( old, size, _trmem_guess_who(), UIMemHandle ) );
+    return( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), UIMemHandle ) );
 #else
     return( realloc( old, size ) );
 #endif

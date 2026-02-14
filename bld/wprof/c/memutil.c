@@ -170,7 +170,7 @@ void *ProfAlloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 1 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -195,7 +195,7 @@ void *GUIMemAlloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 2 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -220,7 +220,7 @@ void * _wpi_malloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 3 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -245,7 +245,7 @@ void * UIAPI uimalloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 4 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -269,7 +269,7 @@ void *HelpMemAlloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 5 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -294,7 +294,7 @@ void *wres_alloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 6 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -321,7 +321,7 @@ void ProfFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 7 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -332,7 +332,7 @@ void GUIMemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -343,7 +343,7 @@ void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 9 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -354,7 +354,7 @@ void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 10 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -364,7 +364,7 @@ void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 11 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -375,7 +375,7 @@ void wres_free( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 12 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -395,7 +395,7 @@ void *ProfRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 13 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -419,7 +419,7 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 14 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -443,7 +443,7 @@ void * _wpi_realloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 15 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -467,7 +467,7 @@ void * UIAPI uirealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 16 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -490,7 +490,7 @@ void *HelpMemRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 17 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -520,7 +520,7 @@ void *ProfCAlloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 18 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif

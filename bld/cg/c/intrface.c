@@ -223,8 +223,8 @@ TRMEMAPI( BEMemAlloc )
 pointer _CGAPI  BEMemAlloc( unsigned size )
 /*****************************************/
 {
-#if defined( TRMEM ) && defined( _M_IX86 )
-    return( _CGAlloc( size, _trmem_guess_who() ) );
+#if defined( TRMEM )
+    return( _CGAlloc( size, _TRMEM_WHO( 1 ) ) );
 #else
     return( CGAlloc( size ) );
 #endif
@@ -234,8 +234,8 @@ TRMEMAPI( BEMemFree )
 void _CGAPI     BEMemFree( pointer ptr )
 /**************************************/
 {
-#if defined( TRMEM ) && defined( _M_IX86 )
-    _CGFree( ptr, _trmem_guess_who() );
+#if defined( TRMEM )
+    _CGFree( ptr, _TRMEM_WHO( 2 ) );
 #else
     CGFree( ptr );
 #endif

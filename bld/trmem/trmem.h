@@ -57,6 +57,12 @@ typedef void *(*_trmem_realloc_who)(void *, size_t);
 #define _TRMEM_NO_REALLOC   ((_trmem_realloc_who)0)
 #define _TRMEM_REALLOC(x)   ((_trmem_realloc_who)(x))
 
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+#define _TRMEM_WHO(x)       _trmem_guess_who()
+#else
+#define _TRMEM_WHO(x)       _TRMEM_ROUTINE(x)
+#endif
+
 /*
     These are some special conditions that trmem can detect.  OR together
     the ones you're interested in and pass them to _trmem_open in the __flags

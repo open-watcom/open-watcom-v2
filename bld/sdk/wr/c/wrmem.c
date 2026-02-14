@@ -90,7 +90,7 @@ TRMEMAPIDLL( WRMemAlloc )
 void *WRAPI WRMemAlloc( size_t size )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+        return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
     } else {
         return( malloc( size ) );
     }
@@ -100,7 +100,7 @@ TRMEMAPIDLL( WRMemFree )
 void WRAPI WRMemFree( void *ptr )
 {
     if( TRMemHandle != NULL ) {
-        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 2 ), TRMemHandle );
     } else {
         free( ptr );
     }
@@ -110,7 +110,7 @@ TRMEMAPIDLL( WRMemRealloc )
 void *WRAPI WRMemRealloc( void *ptr, size_t size )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
+        return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle ) );
     } else {
         return( realloc( ptr, size ) );
     }
@@ -120,7 +120,7 @@ TRMEMAPIDLL( WRMemValidate )
 int WRAPI WRMemValidate( void *ptr )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
+        return( _trmem_validate( ptr, _TRMEM_WHO( 4 ), TRMemHandle ) );
     } else {
         return( TRUE );
     }
@@ -130,7 +130,7 @@ TRMEMAPIDLL( WRMemChkRange )
 int WRAPI WRMemChkRange( void *start, size_t len )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
+        return( _trmem_chk_range( start, len, _TRMEM_WHO( 5 ), TRMemHandle ) );
     } else {
         return( TRUE );
     }
@@ -151,7 +151,7 @@ void *MemAlloc( size_t size )
     void *p;
 
     if( TRMemHandle != NULL ) {
-        p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+        p = _trmem_alloc( size, _TRMEM_WHO( 6 ), TRMemHandle );
     } else {
         p = malloc( size );
     }
@@ -169,7 +169,7 @@ TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+        return( _trmem_alloc( size, _TRMEM_WHO( 7 ), TRMemHandle ) );
     } else {
         return( malloc( size ) );
     }
@@ -183,7 +183,7 @@ void *MemRealloc( void *ptr, size_t size )
     void *p;
 
     if( TRMemHandle != NULL ) {
-        p = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
+        p = _trmem_realloc( ptr, size, _TRMEM_WHO( 8 ), TRMemHandle );
     } else {
         p = realloc( ptr, size );
     }
@@ -196,7 +196,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
     if( TRMemHandle != NULL ) {
-        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 9 ), TRMemHandle );
     } else {
         free( ptr );
     }
@@ -208,7 +208,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
     if( TRMemHandle != NULL ) {
-        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 10 ), TRMemHandle );
     } else {
         free( ptr );
     }

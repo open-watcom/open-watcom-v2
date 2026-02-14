@@ -94,21 +94,21 @@ TRMEMAPI( TRMemAlloc )
 static void * TRMemAlloc( size_t size )
 /*************************************/
 {
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
 }
 
 TRMEMAPI( TRMemFree )
 static void TRMemFree( void * ptr )
 /*********************************/
 {
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), TRMemHandle );
 }
 
 TRMEMAPI( TRMemRealloc )
 static void * TRMemRealloc( void * ptr, size_t size )
 /***************************************************/
 {
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle ) );
 }
 
 
@@ -128,7 +128,7 @@ TRMEMAPI( TRMemValidate )
 extern int TRMemValidate( void * ptr )
 /************************************/
 {
-    return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_validate( ptr, _TRMEM_WHO( 4 ), TRMemHandle ) );
 }
 
 extern void TRMemCheck()
@@ -141,7 +141,7 @@ TRMEMAPI( TRMemChkRange )
 extern int TRMemChkRange( void * start, size_t len )
 /**************************************************/
 {
-    return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_chk_range( start, len, _TRMEM_WHO( 5 ), TRMemHandle ) );
 }
 
 static void MemTrackInit()
@@ -199,7 +199,9 @@ extern void MSJFree( void *mem )
 {
     TRMemFree( mem );
 }
+
 #else /* !TRMEM */
+
 void MSJMemInit()
 /**********/
 {
@@ -227,6 +229,7 @@ extern void MSJFree( void *mem )
 {
     free( mem );
 }
+
 #endif /* TRMEM */
 
 extern char * UnicodeToASCII( wchar_t *unicode )

@@ -102,7 +102,7 @@ void *AsmAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -122,7 +122,7 @@ char *AsmStrDup( const char *str )
         return( NULL );
     size = strlen( str ) + 1;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle );
 #else
     ptr = malloc( size );
 #endif
@@ -137,7 +137,7 @@ void AsmFree( void *ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), memHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
 #else
         free( ptr );
 #endif
@@ -148,7 +148,7 @@ TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -158,7 +158,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), memHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), memHandle );
 #else
     free( ptr );
 #endif

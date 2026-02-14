@@ -100,7 +100,7 @@ void *TRMemAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -111,7 +111,7 @@ void TRMemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), TRMemHandle );
 #else
     free( ptr );
 #endif
@@ -122,7 +122,7 @@ void *TRMemRealloc( void *ptr, size_t size )
 /******************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -133,7 +133,7 @@ char *TRMemStrdup( const char *str )
 /**********************************/
 {
 #ifdef TRMEM
-    return( _trmem_strdup( str, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 4 ), TRMemHandle ) );
 #else
     return( strdup( str ) );
 #endif
@@ -157,7 +157,7 @@ TRMEMAPI( TRMemValidate )
 int TRMemValidate( void *ptr )
 /****************************/
 {
-    return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_validate( ptr, _TRMEM_WHO( 5 ), TRMemHandle ) );
 }
 
 int TRMemValidateAll( void )
@@ -170,7 +170,7 @@ TRMEMAPI( TRMemChkRange )
 int TRMemChkRange( void *start, size_t len )
 /******************************************/
 {
-    return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
+    return( _trmem_chk_range( start, len, _TRMEM_WHO( 6 ), TRMemHandle ) );
 }
 
 #endif /* TRMEM */

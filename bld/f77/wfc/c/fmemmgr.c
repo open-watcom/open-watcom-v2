@@ -127,14 +127,14 @@ void    *FMemAlloc( size_t size ) {
     void        *p;
 
 #if defined( TRMEM )
-    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
 #else
     p = malloc( size );
 #endif
     if( p == NULL ) {
         FrlFini( &ITPool );
 #if defined( TRMEM )
-        p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+        p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
 #else
         p = malloc( size );
 #endif
@@ -165,7 +165,7 @@ void    *wres_alloc( size_t size )
 //================================
 {
 #if defined( TRMEM )
-    return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -176,7 +176,7 @@ void    FMemFree( void *p ) {
 //===========================
 
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 3 ), memHandle );
 #else
     free( p );
 #endif
@@ -188,7 +188,7 @@ void    wres_free( void *p )
 //==========================
 {
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
 #else
     free( p );
 #endif
@@ -203,7 +203,7 @@ char *FMemStrDup( const char *buf )
 
     len = strlen( buf ) + 1;
 #if defined( TRMEM )
-    new = _trmem_alloc( len, _trmem_guess_who(), memHandle );
+    new = _trmem_alloc( len, _TRMEM_WHO( 5 ), memHandle );
 #else
     new = malloc( len );
 #endif
