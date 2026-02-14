@@ -19,6 +19,14 @@ memory_model_i86 = m
 
 inc_dirs = -I"../h"
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_mem = -of+
+!  endif
+! endif
+!endif
+
 #
 # lflags
 #

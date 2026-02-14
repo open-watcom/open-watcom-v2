@@ -40,6 +40,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl  GUIMemHandle;
@@ -117,9 +124,7 @@ void GUIMemClose( void )
  * Alloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemAlloc
-#endif
+TRMEMAPI( GUIMemAlloc )
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -129,9 +134,7 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_malloc
-#endif
+TRMEMAPI( _wpi_malloc )
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -140,9 +143,7 @@ void * _wpi_malloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void * wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -157,9 +158,7 @@ void * wres_alloc( size_t size )
  * Free functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemFree
-#endif
+TRMEMAPI( GUIMemFree )
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -169,9 +168,7 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_free
-#endif
+TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -180,9 +177,7 @@ void _wpi_free( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -197,9 +192,7 @@ void wres_free( void *ptr )
  * Realloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemRealloc
-#endif
+TRMEMAPI( GUIMemRealloc )
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {

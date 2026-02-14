@@ -51,6 +51,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #if defined( __QNX__ )
 unsigned LastChanceSeg;
 #endif
@@ -112,9 +119,7 @@ void LnkMemFini( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) LAlloc
-#endif
+TRMEMAPI( LAlloc )
 void *LAlloc( size_t size )
 /*************************/
 {
@@ -137,9 +142,7 @@ void *LAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) ChkLAlloc
-#endif
+TRMEMAPI( ChkLAlloc )
 void *ChkLAlloc( size_t size )
 /****************************/
 {
@@ -165,9 +168,7 @@ void *ChkLAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -178,9 +179,7 @@ void *wres_alloc( size_t size )
 }
 
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) LFree
-#endif
+TRMEMAPI( LFree )
 void LFree( void *p )
 /*******************/
 {
@@ -193,9 +192,7 @@ void LFree( void *p )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -205,9 +202,7 @@ void wres_free( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) LRealloc
-#endif
+TRMEMAPI( LRealloc )
 void *LRealloc( void *src, size_t size )
 /**************************************/
 /*

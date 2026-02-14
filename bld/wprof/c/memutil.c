@@ -51,6 +51,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   WPMemHandle;
@@ -154,9 +161,7 @@ static void profMemCheck( char *msg )
  *  Alloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) ProfAlloc
-#endif
+TRMEMAPI( ProfAlloc )
 void *ProfAlloc( size_t size )
 /****************************/
 {
@@ -181,9 +186,7 @@ void *ProfAlloc( size_t size )
     }
     return( mem );
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemAlloc
-#endif
+TRMEMAPI( GUIMemAlloc )
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -209,9 +212,7 @@ void *GUIMemAlloc( size_t size )
     return( mem );
 }
 #if defined( GUI_IS_GUI )
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_malloc
-#endif
+TRMEMAPI( _wpi_malloc )
 void * _wpi_malloc( size_t size )
 {
     void    *mem;
@@ -236,9 +237,7 @@ void * _wpi_malloc( size_t size )
     return( mem );
 }
 #else
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uimalloc
-#endif
+TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
     void    *mem;
@@ -262,9 +261,7 @@ void * UIAPI uimalloc( size_t size )
     }
     return( mem );
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemAlloc
-#endif
+TRMEMAPI( HelpMemAlloc )
 void *HelpMemAlloc( size_t size )
 {
     void    *mem;
@@ -289,9 +286,7 @@ void *HelpMemAlloc( size_t size )
     return( mem );
 }
 #endif
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
     void    *mem;
@@ -320,9 +315,7 @@ void *wres_alloc( size_t size )
  *  Free functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) ProfFree
-#endif
+TRMEMAPI( ProfFree )
 void ProfFree( void *ptr )
 /************************/
 {
@@ -333,9 +326,7 @@ void ProfFree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemFree
-#endif
+TRMEMAPI( GUIMemFree )
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -347,9 +338,7 @@ void GUIMemFree( void *ptr )
 #endif
 }
 #if defined( GUI_IS_GUI )
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_realloc
-#endif
+TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -360,9 +349,7 @@ void _wpi_free( void *ptr )
 #endif
 }
 #else
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uifree
-#endif
+TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -372,9 +359,7 @@ void UIAPI uifree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemFree
-#endif
+TRMEMAPI( HelpMemFree )
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -385,9 +370,7 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -403,9 +386,7 @@ void wres_free( void *ptr )
  *  Realloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) ProfRealloc
-#endif
+TRMEMAPI( ProfRealloc )
 void *ProfRealloc( void *ptr, size_t new_size )
 /*********************************************/
 {
@@ -429,9 +410,7 @@ void *ProfRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemRealloc
-#endif
+TRMEMAPI( GUIMemRealloc )
 void *GUIMemRealloc( void *ptr, size_t new_size )
 /***********************************************/
 {
@@ -456,9 +435,7 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
     return( new );
 }
 #if defined( GUI_IS_GUI )
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_realloc
-#endif
+TRMEMAPI( _wpi_realloc )
 void * _wpi_realloc( void *ptr, size_t new_size )
 {
     void    *new;
@@ -482,9 +459,7 @@ void * _wpi_realloc( void *ptr, size_t new_size )
     return( new );
 }
 #else
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uirealloc
-#endif
+TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *ptr, size_t new_size )
 {
     void    *new;
@@ -507,9 +482,7 @@ void * UIAPI uirealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemRealloc
-#endif
+TRMEMAPI( HelpMemRealloc )
 void *HelpMemRealloc( void *ptr, size_t new_size )
 {
     void    *new;
@@ -538,9 +511,7 @@ void *HelpMemRealloc( void *ptr, size_t new_size )
 /*
  *  Other functions WP specific
  */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) ProfCAlloc
-#endif
+TRMEMAPI( ProfCAlloc )
 void *ProfCAlloc( size_t size )
 /*****************************/
 {

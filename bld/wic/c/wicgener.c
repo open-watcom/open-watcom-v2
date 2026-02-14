@@ -54,6 +54,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 static int      _fileNum = 0;
 
 /*Forward declarations */
@@ -278,9 +285,7 @@ void outOfMemory( void )
 void *_debugVar = 0;
 #endif
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) BasicAlloc
-#endif
+TRMEMAPI( BasicAlloc )
 static void *BasicAlloc(size_t size)
 {
     void *temp;
@@ -323,9 +328,7 @@ char *wicStrdup(const char *src)
     return temp;
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) BasicFree
-#endif
+TRMEMAPI( BasicFree )
 void BasicFree(void *ptr)
 {
     incDebugCount();

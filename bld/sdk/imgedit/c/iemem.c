@@ -38,6 +38,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl  MemHandle;
@@ -87,9 +94,7 @@ void MemClose( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -104,9 +109,7 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 #if 0
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_malloc
-#endif
+TRMEMAPI( _wpi_malloc )
 void * _wpi_malloc( size_t size )
 /*******************************/
 {
@@ -121,10 +124,8 @@ void * _wpi_malloc( size_t size )
     return( ptr );
 }
 #endif
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
 /* function for wres.lib */
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -134,9 +135,7 @@ void *wres_alloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
@@ -147,9 +146,7 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
 {
@@ -160,9 +157,7 @@ void MemFree( void *ptr )
 #endif
 }
 #if 0
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) _wpi_free
-#endif
+TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
 /*************************/
 {
@@ -173,10 +168,8 @@ void _wpi_free( void *ptr )
 #endif
 }
 #endif
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
 /* function for wres.lib */
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM

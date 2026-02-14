@@ -46,6 +46,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, trmemHandle )
     #define WHO_PTR             _trmem_who
@@ -197,9 +204,7 @@ static void *doMemAllocUnsafe( size_t size, WHO_PTR who )
 /*
  * MemAlloc - allocate some memory (always works, or editor aborts)
  */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
     void        *tmp;
@@ -223,9 +228,7 @@ void *MemAlloc( size_t size )
 /*
  * MemAllocUnsafe - allocate some memory, return null if it fails
  */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAllocUnsafe
-#endif
+TRMEMAPI( MemAllocUnsafe )
 void *MemAllocUnsafe( size_t size )
 {
 #ifdef TRMEM
@@ -243,9 +246,7 @@ void *MemAllocUnsafe( size_t size )
 /*
  * MemFree - free up memory
  */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -334,9 +335,7 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
 
 } /* doMemReallocUnsafe */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemReallocUnsafe
-#endif
+TRMEMAPI( MemReallocUnsafe )
 void *MemReallocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -353,9 +352,7 @@ void *MemReallocUnsafe( void *ptr, size_t size )
 /*
  * MemRealloc - reallocate a block, and it will succeed.
  */
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 {
     void        *tmp;
@@ -450,9 +447,7 @@ void UIAPI UIMemOpen( void ) {}
 
 void UIAPI UIMemClose( void ) {}
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uimalloc
-#endif
+TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
     void        *tmp;
@@ -472,9 +467,7 @@ void * UIAPI uimalloc( size_t size )
     return( tmp );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uirealloc
-#endif
+TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
     void        *tmp;
@@ -494,9 +487,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     return( tmp );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uifree
-#endif
+TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM

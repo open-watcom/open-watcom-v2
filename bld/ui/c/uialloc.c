@@ -42,6 +42,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl  UIMemHandle;
@@ -114,9 +121,7 @@ void UIMemPrtUsage( void )
 #endif
 
 
-#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
-#pragma aux (WFRM) uimalloc
-#endif
+TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -126,9 +131,7 @@ void * UIAPI uimalloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
-#pragma aux (WFRM) uifree
-#endif
+TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -138,9 +141,7 @@ void UIAPI uifree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 ) && !defined( __WINDOWS__ ) && !defined( _M_I86 )
-#pragma aux (WFRM) uirealloc
-#endif
+TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM

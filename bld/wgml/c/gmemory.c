@@ -36,6 +36,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static  _trmem_hdl  memHandle;       // memory tracker anchor block
@@ -118,9 +125,7 @@ void mem_fini( void )
 /*  Allocate some storage                                                  */
 /***************************************************************************/
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) mem_alloc
-#endif
+TRMEMAPI( mem_alloc )
 void *mem_alloc( unsigned size )
 {
     void    *p;
@@ -141,9 +146,7 @@ void *mem_alloc( unsigned size )
 /*  Re-allocate some storage                                               */
 /***************************************************************************/
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) mem_realloc
-#endif
+TRMEMAPI( mem_realloc )
 void *mem_realloc( void * oldp, unsigned size )
 {
     void    *   p;
@@ -165,9 +168,7 @@ void *mem_realloc( void * oldp, unsigned size )
 /*  duplicate string                                                  */
 /***************************************************************************/
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) mem_strdup
-#endif
+TRMEMAPI( mem_strdup )
 char *mem_strdup( const char *str )
 {
     unsigned    size;
@@ -192,9 +193,7 @@ char *mem_strdup( const char *str )
 /*  duplicate token                                                        */
 /***************************************************************************/
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) mem_tokdup
-#endif
+TRMEMAPI( mem_tokdup )
 char *mem_tokdup( const char *str, unsigned size )
 {
     char    *p;
@@ -217,9 +216,7 @@ char *mem_tokdup( const char *str, unsigned size )
 /*  Free storage                                                           */
 /***************************************************************************/
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) mem_free
-#endif
+TRMEMAPI( mem_free )
 void mem_free( void * p )
 {
 #ifdef TRMEM

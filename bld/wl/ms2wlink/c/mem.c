@@ -40,6 +40,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl TrHdl;
@@ -74,9 +81,7 @@ void MemFini( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -93,9 +98,7 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *p )
 /*********************/
 {

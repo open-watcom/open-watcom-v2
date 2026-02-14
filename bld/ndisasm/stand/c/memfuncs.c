@@ -41,6 +41,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   TRMemHandle = NULL;
@@ -69,9 +76,7 @@ void MemOpen( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -81,9 +86,7 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -93,9 +96,7 @@ void *wres_alloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -105,9 +106,7 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -117,9 +116,7 @@ void MemFree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM

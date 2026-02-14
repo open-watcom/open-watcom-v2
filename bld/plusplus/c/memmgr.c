@@ -47,6 +47,14 @@
     #include "togglesd.h"
 #endif
 
+
+#if !defined( USE_CG_MEMMGT ) && defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
     #define alloc_mem(s)    _trmem_alloc( s, who, trackerHdl )
     #define _doFree(p)      _trmem_free( p, _trmem_guess_who(), trackerHdl )
@@ -160,7 +168,7 @@ void *CMemAlloc( size_t size )
 
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) CMemAlloc
+TRMEMAPI( CMemAlloc )
 void *CMemAlloc( size_t size )
 /****************************/
 {
@@ -168,9 +176,7 @@ void *CMemAlloc( size_t size )
 }
 #endif
 
-#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) CMemStrDup
-#endif
+TRMEMAPI( CMemStrDup )
 char *CMemStrDup( const char *str )
 /*********************************/
 {
@@ -180,9 +186,7 @@ char *CMemStrDup( const char *str )
     return( NULL );
 }
 
-#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) CMemFree
-#endif
+TRMEMAPI( CMemFree )
 void CMemFree( void *p )
 /**********************/
 {
@@ -191,9 +195,7 @@ void CMemFree( void *p )
     }
 }
 
-#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) CMemFreePtr
-#endif
+TRMEMAPI( CMemFreePtr )
 void CMemFreePtr( void *pp )
 /**************************/
 {
@@ -272,9 +274,7 @@ static void *cutPerm( PERMPTR find, size_t size )
     return( NULL );
 }
 
-#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) CPermAlloc
-#endif
+TRMEMAPI( CPermAlloc )
 void *CPermAlloc( size_t size )
 /*****************************/
 {
@@ -301,9 +301,7 @@ void *CPermAlloc( size_t size )
 }
 
 
-#if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-#pragma aux (WFRM) cmemInit
-#endif
+TRMEMAPI( cmemInit )
 static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {

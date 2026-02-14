@@ -36,6 +36,15 @@
 #include "trmem.h"
 
 
+#if defined( _M_IX86 ) && defined( __NT__ )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
+#define TRMEMAPIDLL(x)  _Pragma(_XSTR(aux (__stdcall) x __frame))
+#else
+#define TRMEMAPI(x)
+#define TRMEMAPIDLL(x)
+#endif
+
 static _trmem_hdl   TRMemHandle;
 static FILE         *TRMemFile = NULL;
 
@@ -77,9 +86,7 @@ void WRMemClose( void )
     }
 }
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (__stdcall) WRMemAlloc __frame
-#endif
+TRMEMAPIDLL( WRMemAlloc )
 void *WRAPI WRMemAlloc( size_t size )
 {
     if( TRMemHandle != NULL ) {
@@ -89,9 +96,7 @@ void *WRAPI WRMemAlloc( size_t size )
     }
 }
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (__stdcall) WRMemFree __frame
-#endif
+TRMEMAPIDLL( WRMemFree )
 void WRAPI WRMemFree( void *ptr )
 {
     if( TRMemHandle != NULL ) {
@@ -101,9 +106,7 @@ void WRAPI WRMemFree( void *ptr )
     }
 }
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (__stdcall) WRMemRealloc __frame
-#endif
+TRMEMAPIDLL( WRMemRealloc )
 void *WRAPI WRMemRealloc( void *ptr, size_t size )
 {
     if( TRMemHandle != NULL ) {
@@ -113,9 +116,7 @@ void *WRAPI WRMemRealloc( void *ptr, size_t size )
     }
 }
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (__stdcall) WRMemValidate __frame
-#endif
+TRMEMAPIDLL( WRMemValidate )
 int WRAPI WRMemValidate( void *ptr )
 {
     if( TRMemHandle != NULL ) {
@@ -125,9 +126,7 @@ int WRAPI WRMemValidate( void *ptr )
     }
 }
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (__stdcall) WRMemChkRange __frame
-#endif
+TRMEMAPIDLL( WRMemChkRange )
 int WRAPI WRMemChkRange( void *start, size_t len )
 {
     if( TRMemHandle != NULL ) {
@@ -146,9 +145,7 @@ void WRAPI WRMemPrtUsage( void )
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
     void *p;
@@ -168,9 +165,7 @@ void *MemAlloc( size_t size )
 
 /* function for wres.lib */
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
     if( TRMemHandle != NULL ) {
@@ -182,9 +177,7 @@ void *wres_alloc( size_t size )
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 {
     void *p;
@@ -199,9 +192,7 @@ void *MemRealloc( void *ptr, size_t size )
 
 /* function to replace this in mem.c in commonui */
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
     if( TRMemHandle != NULL ) {
@@ -213,9 +204,7 @@ void MemFree( void *ptr )
 
 /* function for wres.lib */
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
     if( TRMemHandle != NULL ) {

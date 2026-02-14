@@ -45,6 +45,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   memHandle;
@@ -90,9 +97,7 @@ void MemFini( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) YaccAlloc
-#endif
+TRMEMAPI( YaccAlloc )
 void *YaccAlloc( size_t size )
 /****************************/
 {
@@ -109,9 +114,7 @@ void *YaccAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) YaccCalloc
-#endif
+TRMEMAPI( YaccCalloc )
 void *YaccCalloc( size_t n, size_t size )
 /***************************************/
 {
@@ -129,9 +132,7 @@ void *YaccCalloc( size_t n, size_t size )
     return( memset( ptr, 0, size ) );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) YaccRealloc
-#endif
+TRMEMAPI( YaccRealloc )
 void *YaccRealloc( void *old_ptr, size_t newsize )
 /************************************************/
 {
@@ -148,9 +149,7 @@ void *YaccRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) YaccFree
-#endif
+TRMEMAPI( YaccFree )
 void YaccFree( void *ptr )
 /************************/
 {
@@ -163,9 +162,7 @@ void YaccFree( void *ptr )
     }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) YaccStrDup
-#endif
+TRMEMAPI( YaccStrDup )
 char *YaccStrDup( const char *str )
 /*********************************/
 {

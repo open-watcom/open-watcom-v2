@@ -37,6 +37,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl  MemHandle;
@@ -92,9 +99,7 @@ void MemClose( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -109,9 +114,7 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
@@ -122,9 +125,7 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
 {

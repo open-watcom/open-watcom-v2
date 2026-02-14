@@ -44,6 +44,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static FILE             *TrackFile = NULL;
@@ -83,27 +90,21 @@ static void TRMemClose( void )
     _trmem_close( TRMemHandle );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemAlloc
-#endif
+TRMEMAPI( TRMemAlloc )
 static void * TRMemAlloc( size_t size )
 /*************************************/
 {
     return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemFree
-#endif
+TRMEMAPI( TRMemFree )
 static void TRMemFree( void * ptr )
 /*********************************/
 {
     _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemRealloc
-#endif
+TRMEMAPI( TRMemRealloc )
 static void * TRMemRealloc( void * ptr, size_t size )
 /***************************************************/
 {
@@ -123,9 +124,7 @@ static unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemValidate
-#endif
+TRMEMAPI( TRMemValidate )
 extern int TRMemValidate( void * ptr )
 /************************************/
 {
@@ -138,9 +137,7 @@ extern void TRMemCheck()
     _trmem_validate_all( TRMemHandle );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) TRMemChkRange
-#endif
+TRMEMAPI( TRMemChkRange )
 extern int TRMemChkRange( void * start, size_t len )
 /**************************************************/
 {

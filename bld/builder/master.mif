@@ -44,9 +44,11 @@ extra_cpp_flags_a64 = -DBLDA64
 
 extra_cpp_flags_f_genverrc = -D_VERSION=$(bld_ver)
 
-!ifdef __WATCOM_TOOLS__
-! if $(__WATCOM_TOOLS__) < 1300
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
 extra_c_flags_f_utils = -of+
+!  endif
 ! endif
 !endif
 

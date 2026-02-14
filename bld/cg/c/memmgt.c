@@ -48,6 +48,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 static mem_out_action   MemOut;
 #ifdef _CHUNK_TRACKING
 static uint             Chunks;
@@ -164,7 +171,7 @@ pointer CGAlloc( size_t size )
 }
 
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) CGAlloc
+TRMEMAPI( CGAlloc )
 pointer CGAlloc( size_t size )
 /****************************/
 {
@@ -192,7 +199,7 @@ void    CGFree( pointer chunk )
 }
 
 #if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) CGFree
+TRMEMAPI( CGFree )
 void    CGFree( pointer chunk )
 /*****************************/
 {

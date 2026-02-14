@@ -39,6 +39,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   memHandle;
@@ -82,9 +89,7 @@ void HelpMemClose( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemAlloc
-#endif
+TRMEMAPI( HelpMemAlloc )
 HELPMEM void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -94,9 +99,7 @@ HELPMEM void *HelpMemAlloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemRealloc
-#endif
+TRMEMAPI( HelpMemRealloc )
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -106,9 +109,7 @@ HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemFree
-#endif
+TRMEMAPI( HelpMemFree )
 HELPMEM void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM

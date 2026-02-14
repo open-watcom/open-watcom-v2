@@ -20,6 +20,14 @@ memory_model_i86 = s
 inc_dirs = -I"../h"
 inc_dirs_os2 = -I"$(clib_dir)/process/h" -I"$(lib_misc_dir)/h"
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_mem = -of+
+!  endif
+! endif
+!endif
+
 #
 # EXE
 #

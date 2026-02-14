@@ -73,6 +73,14 @@ extra_cpp_flags_f_ideentry    = -DCHAIN_CALLBACK
 extra_cpp_flags_f_maindrv     = -DDLL_NAME=$(dlltarg_name)
 extra_cpp_flags_f_stidedrv    = -DSTATIC_LINKAGE
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_wlmem = -of+
+!  endif
+! endif
+!endif
+
 #
 # lflags
 #

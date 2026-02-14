@@ -44,6 +44,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   RcMemHandle = NULL;
@@ -82,9 +89,7 @@ void RcMemShutdown( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemAlloc
-#endif
+TRMEMAPI( RcMemAlloc )
 void *RcMemAlloc( size_t size )
 /*****************************/
 {
@@ -103,9 +108,7 @@ void *RcMemAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemFree
-#endif
+TRMEMAPI( RcMemFree )
 void RcMemFree( void *ptr )
 /*************************/
 {
@@ -116,9 +119,7 @@ void RcMemFree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemRealloc
-#endif
+TRMEMAPI( RcMemRealloc )
 void *RcMemRealloc( void *old_ptr, size_t newsize )
 /*************************************************/
 {
@@ -138,9 +139,7 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemStrDup
-#endif
+TRMEMAPI( RcMemStrDup )
 char *RcMemStrDup( const char *buf )
 /**********************************/
 {
@@ -179,9 +178,7 @@ void RcPrintMemList( void )
     }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemValidate
-#endif
+TRMEMAPI( RcMemValidate )
 int RcMemValidate( void *ptr )
 /****************************/
 {
@@ -192,9 +189,7 @@ int RcMemValidate( void *ptr )
     }
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) RcMemChkRange
-#endif
+TRMEMAPI( RcMemChkRange )
 int RcMemChkRange( void *start, size_t len )
 /******************************************/
 {

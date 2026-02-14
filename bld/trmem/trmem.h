@@ -40,10 +40,6 @@
 extern "C" {
 #endif
 
-#ifdef _M_IX86
-#pragma aux WFRM    __frame
-#endif
-
 #if defined( _WIN64 )
 typedef unsigned __int64    memsize;
 #else

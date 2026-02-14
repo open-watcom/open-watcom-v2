@@ -54,6 +54,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #if defined( __OS2__ )
 #define TMPBAT "tmp.cmd"
 #elif defined( __UNIX__ )
@@ -306,9 +313,7 @@ void MClose( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MAlloc
-#endif
+TRMEMAPI( MAlloc )
 void *MAlloc( size_t size )
 {
     void        *p;
@@ -326,9 +331,7 @@ void *MAlloc( size_t size )
     return( p );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MFree
-#endif
+TRMEMAPI( MFree )
 void MFree( void *p )
 {
 #ifdef TRMEM

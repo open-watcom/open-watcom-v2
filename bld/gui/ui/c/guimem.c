@@ -40,6 +40,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl  GUIMemHandle;
@@ -118,9 +125,7 @@ void UIAPI UIMemClose( void ) {}
  * Alloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemAlloc
-#endif
+TRMEMAPI( GUIMemAlloc )
 void *GUIMemAlloc( size_t size )
 /******************************/
 {
@@ -130,9 +135,7 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uimalloc
-#endif
+TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -141,9 +144,7 @@ void * UIAPI uimalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemAlloc
-#endif
+TRMEMAPI( HelpMemAlloc )
 void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -157,9 +158,7 @@ void *HelpMemAlloc( size_t size )
  * Free functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemFree
-#endif
+TRMEMAPI( GUIMemFree )
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -170,9 +169,7 @@ void GUIMemFree( void *ptr )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uifree
-#endif
+TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -181,9 +178,7 @@ void UIAPI uifree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemFree
-#endif
+TRMEMAPI( HelpMemFree )
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -197,9 +192,7 @@ void HelpMemFree( void *ptr )
  * Realloc functions
  */
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) GUIMemRealloc
-#endif
+TRMEMAPI( GUIMemRealloc )
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
@@ -209,9 +202,7 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) uirealloc
-#endif
+TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -220,9 +211,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) HelpMemRealloc
-#endif
+TRMEMAPI( HelpMemRealloc )
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM

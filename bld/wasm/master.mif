@@ -37,6 +37,14 @@ extra_cpp_flags += -DDEBUG_OUT
 
 extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_asmalloc = -of+
+!  endif
+! endif
+!endif
+
 #
 # lflags
 #

@@ -47,6 +47,13 @@
 #include "clibext.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifndef __UNIX__
 #define ATTR_MASK   _A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR
 #endif
@@ -189,9 +196,7 @@ void  MemFini( void )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemAlloc
-#endif
+TRMEMAPI( MemAlloc )
 void  *MemAlloc( size_t size )
 /****************************/
 {
@@ -209,9 +214,7 @@ void  *MemAlloc( size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemStrDup
-#endif
+TRMEMAPI( MemStrDup )
 char *MemStrDup( const char *str )
 /********************************/
 {
@@ -230,9 +233,7 @@ char *MemStrDup( const char *str )
 }
 
 #if 0
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemStrLenDup
-#endif
+TRMEMAPI( MemStrLenDup )
 char *MemStrLenDup( const char *str, size_t len )
 /***********************************************/
 {
@@ -253,9 +254,7 @@ char *MemStrLenDup( const char *str, size_t len )
 }
 #endif
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemRealloc
-#endif
+TRMEMAPI( MemRealloc )
 void  *MemRealloc( void *p, size_t size )
 /***************************************/
 {
@@ -273,9 +272,7 @@ void  *MemRealloc( void *p, size_t size )
     return( ptr );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) MemFree
-#endif
+TRMEMAPI( MemFree )
 void  MemFree( void *ptr )
 /************************/
 {

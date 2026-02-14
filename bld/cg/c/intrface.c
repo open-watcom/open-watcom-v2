@@ -73,6 +73,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 
 typedef struct uback_info {
@@ -212,22 +219,26 @@ void _CGAPI     BEAbort( void )
     AbortCG();
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) BEMemAlloc
-#endif
+TRMEMAPI( BEMemAlloc )
 pointer _CGAPI  BEMemAlloc( unsigned size )
 /*****************************************/
 {
-    return( _MemAlloc( size ) );
+#if defined( TRMEM ) && defined( _M_IX86 )
+    return( _CGAlloc( size, _trmem_guess_who() ) );
+#else
+    return( CGAlloc( size ) );
+#endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) BEMemFree
-#endif
+TRMEMAPI( BEMemFree )
 void _CGAPI     BEMemFree( pointer ptr )
 /**************************************/
 {
-    _MemFree( ptr );
+#if defined( TRMEM ) && defined( _M_IX86 )
+    _CGFree( ptr, _trmem_guess_who() );
+#else
+    CGFree( ptr );
+#endif
 }
 
 void _CGAPI     BEMemFini( void )

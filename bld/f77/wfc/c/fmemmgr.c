@@ -50,6 +50,13 @@
 #include "cspawn.h"
 
 
+#if defined( TRMEM ) && defined( _M_IX86 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   memHandle;
@@ -113,9 +120,7 @@ void    FMemFini( void ) {
 }
 
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) FMemAlloc
-#endif
+TRMEMAPI( FMemAlloc )
 void    *FMemAlloc( size_t size ) {
 //=================================
 
@@ -155,9 +160,7 @@ void    *FMemAlloc( size_t size ) {
     return( p );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_alloc
-#endif
+TRMEMAPI( wres_alloc )
 void    *wres_alloc( size_t size )
 //================================
 {
@@ -168,9 +171,7 @@ void    *wres_alloc( size_t size )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) FMemFree
-#endif
+TRMEMAPI( FMemFree )
 void    FMemFree( void *p ) {
 //===========================
 
@@ -182,9 +183,7 @@ void    FMemFree( void *p ) {
     UnFreeMem--;
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) wres_free
-#endif
+TRMEMAPI( wres_free )
 void    wres_free( void *p )
 //==========================
 {
@@ -195,9 +194,7 @@ void    wres_free( void *p )
 #endif
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) FMemStrDup
-#endif
+TRMEMAPI( FMemStrDup )
 char *FMemStrDup( const char *buf )
 //=================================
 {
@@ -215,4 +212,3 @@ char *FMemStrDup( const char *buf )
     }
     return( new );
 }
-
