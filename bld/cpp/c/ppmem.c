@@ -41,6 +41,13 @@
 #endif
 
 
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 #ifdef TRMEM
 
 static _trmem_hdl   memHandle;
@@ -92,9 +99,7 @@ static void outOfMemory( void )
     exit( 1 );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) PP_Malloc
-#endif
+TRMEMAPI( PP_Malloc )
 void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
@@ -110,9 +115,7 @@ void * PPENTRY PP_Malloc( size_t size )
     return( p );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) PP_Realloc
-#endif
+TRMEMAPI( PP_Realloc )
 void *PP_Realloc( void *old, size_t size )
 {
     void        *p;
@@ -128,9 +131,7 @@ void *PP_Realloc( void *old, size_t size )
     return( p );
 }
 
-#if defined( TRMEM ) && defined( _M_IX86 )
-#pragma aux (WFRM) PP_Free
-#endif
+TRMEMAPI( PP_Free )
 void PPENTRY PP_Free( void *p )
 {
 #ifdef TRMEM

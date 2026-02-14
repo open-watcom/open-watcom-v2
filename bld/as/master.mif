@@ -57,11 +57,14 @@ extra_c_flags_f_ppexpr = -fh=$^:pch04.pch
 extra_c_flags_f_ppmacro = -fh=$^:pch04.pch
 extra_c_flags_f_ppenv = -fh=$^:pch04.pch
 extra_c_flags_f_pathlist = -fh=$^:pch06.pch
+!endif
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
+
+!ifdef __WATCOM_TOOLS__
 ! if $(__WATCOM_TOOLS__) < 1300
 extra_c_flags_f_asmem = -of+
 ! endif
 !endif
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 # lflags
 #################
