@@ -212,7 +212,7 @@ letter_t make_letter( char c )
     if( c == '_' ) {
         return( LETTER__ );
     }
-    if( isdigit( c ) ) {
+    if( isdigit( (unsigned char)c ) ) {
         return( ( c - '0' ) + LETTER_0 );
     }
     if( c >= 'a' && c <= 'i' ) {
@@ -337,33 +337,33 @@ void init_tokens( char **input_file )
     for( ; *input_file != NULL; ++input_file ) {
         check = *input_file;
         if( check[0] == '/' || check[0] == '-' ) {
-            if( tolower( check[1] ) == 'q' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 'q' && check[2] == '\0' ) {
                 flags.quiet = true;
                 continue;
             }
-            if( tolower( check[1] ) == 'e' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 'e' && check[2] == '\0' ) {
                 ++input_file;
                 pick_extension = strdup( *input_file );
                 continue;
             }
-            if( tolower( check[1] ) == 'i' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 'i' && check[2] == '\0' ) {
                 flags.imperfect = true;
                 continue;
             }
-            if( tolower( check[1] ) == 'm' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 'm' && check[2] == '\0' ) {
                 flags.mask_hash = true;
                 continue;
             }
-            if( tolower( check[1] ) == 's' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 's' && check[2] == '\0' ) {
                 ++input_file;
                 filename_suffix = strdup( *input_file );
                 continue;
             }
-            if( tolower( check[1] ) == 't' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 't' && check[2] == '\0' ) {
                 flags.tiny_output = true;
                 continue;
             }
-            if( tolower( check[1] ) == 'a' && check[2] == '\0' ) {
+            if( tolower( (unsigned char)check[1] ) == 'a' && check[2] == '\0' ) {
                 flags.align = true;
                 continue;
             }
@@ -563,7 +563,7 @@ void sort_frequency( void )
     do {
         if( freq[c] != 0 ) {
             prt_c = make_char( c );
-            if( isprint( prt_c ) ) {
+            if( isprint( (unsigned char)prt_c ) ) {
                 output( "%c", prt_c );
             } else {
                 output( "\\x%02x", prt_c );

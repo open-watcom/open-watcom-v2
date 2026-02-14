@@ -49,7 +49,7 @@ unsigned value;
 char buff[1024];
 
 char *skipWhite( char *p ) {
-    while( *p && isspace( *p ) ) {
+    while( *p && isspace( (unsigned char)*p ) ) {
         ++p;
     }
     return( p );
@@ -65,7 +65,7 @@ char *skipText( char *p, char *text ) {
 
 char *skipLiteral( char *p ) {
     char *q = literal;
-    while( *p && ! isspace( *p ) ) {
+    while( *p && ! isspace( (unsigned char)*p ) ) {
         *q = *p;
         ++q;
         ++p;
@@ -156,9 +156,9 @@ int category( void ) {
 
     c = C_NULL;
     for( p = literal; *p; ++p ) {
-        if( isupper( *p ) ) {
+        if( isupper( (unsigned char)*p ) ) {
             c |= C_UPPER;
-        } else if( islower( *p ) ) {
+        } else if( islower( (unsigned char)*p ) ) {
             c |= C_LOWER;
         } else if( *p == '_' ) {
             c |= C_UNDERSCORE;
@@ -325,11 +325,11 @@ void makeLiteral() {
 
     *q++ = '<';
     while( *p ) {
-        if( isupper( *p ) ) {
-            if( islower( prev ) ) {
+        if( isupper( (unsigned char)*p ) ) {
+            if( islower( (unsigned char)prev ) ) {
                 *q++ = '-';
             }
-            *q++ = tolower( *p );
+            *q++ = tolower( (unsigned char)*p );
         } else {
             *q++ = *p;
         }

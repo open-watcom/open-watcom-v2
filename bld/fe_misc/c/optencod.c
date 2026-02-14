@@ -1853,17 +1853,17 @@ static void checkForGMLEscape( const char *p )
 
     c1 = *p++;
     if( c1 == '\0'
-      || ! isalpha( c1 ) ) {
+      || ! isalpha( (unsigned char)c1 ) ) {
         return;
     }
     c2 = *p++;
     if( c2 == '\0'
-      || ! isalpha( c2 ) ) {
+      || ! isalpha( (unsigned char)c2 ) ) {
         return;
     }
     is_escape = false;
     if( *p == '\0'
-      || ! isalpha( *p ) ) {
+      || ! isalpha( (unsigned char)*p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -2082,8 +2082,8 @@ static void makeFieldName( const char *pattern, char *f )
     }
     if( c != '\0' ) {
         is_special = false;
-        if( isalnum( c ) ) {
-            if( isdigit( c ) )
+        if( isalnum( (unsigned char)c ) ) {
+            if( isdigit( (unsigned char)c ) )
                 *f++ = '_';
             *f++ = c;
         } else {
@@ -2096,7 +2096,7 @@ static void makeFieldName( const char *pattern, char *f )
                 sensitive = true;
                 continue;
             }
-            if( isalnum( c ) ) {
+            if( isalnum( (unsigned char)c ) ) {
                 if( is_special
                   && *( f - 1 ) != '_' )
                     *f++ = '_';

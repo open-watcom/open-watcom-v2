@@ -244,7 +244,7 @@ static int parse_string( const char *env, char **args )
                 parm_buff[pos - 1] = c;
             prev = '\0';
             continue;
-        } else if( isspace( c ) ) {
+        } else if( isspace( (unsigned char)c ) ) {
             if( !quoted ) {
                 if( pos > 0 ) {
                     if( args != NULL ) {
@@ -385,7 +385,7 @@ static char *SubstOne( const char **inp, char *out )
              * copy from parameter n to the end to out. E.g. <2*>
              */
             parm = 1;
-            for( starpos = out; isdigit( *starpos ); starpos++ )
+            for( starpos = out; isdigit( (unsigned char)*starpos ); starpos++ )
                 ;
             if( stricmp( starpos, "*" ) == 0 ) {
                 rep = NULL;

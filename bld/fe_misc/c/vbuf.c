@@ -225,7 +225,7 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
 
     if( vbuf->used > 0 ) {
         ptr = vbuf->buf + vbuf->used - 1;
-        while( isspace( *ptr ) ) {
+        while( isspace( (unsigned char)*ptr ) ) {
             *ptr-- = '\0';
             vbuf->used--;
         }
