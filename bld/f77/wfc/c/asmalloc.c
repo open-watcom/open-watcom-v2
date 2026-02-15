@@ -41,7 +41,7 @@ void    *AsmAlloc( size_t amount )
     return( FMemAlloc( amount ) );
 }
 
-char *AsmStrDup( const char *str )
+char *AsmStrdup( const char *str )
 //================================
 {
     return( FMemStrdup( str ) );

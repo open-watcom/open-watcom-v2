@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -380,11 +380,11 @@ static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_
 
     useg = CMemAlloc( sizeof( user_seg ) );
     useg->next = NULL;
-    useg->name = CMemStrDup( segname );
+    useg->name = CMemStrdup( segname );
     useg->class_name = NULL;
     useg->segtype = segtype;
     if( class_name != NULL ) {
-        useg->class_name = CMemStrDup( class_name );
+        useg->class_name = CMemStrdup( class_name );
     }
     useg->segid = userSegId++;
     return( useg );

@@ -302,7 +302,7 @@ STATIC char *createTmpFileName( void )
       && !Glob.compat_nmake ) {
         tmpPath = getenv( TEMPENVVAR );
         if( tmpPath != NULL ) {
-            tmpPath = StrDupSafe( tmpPath );
+            tmpPath = StrdupSafe( tmpPath );
         }
     }
 
@@ -447,7 +447,7 @@ STATIC char *RemoveBackSlash( const char *inString )
     }
     buffer[pos] = NULLCHAR;
 
-    return( StrDupSafe( buffer ) );
+    return( StrdupSafe( buffer ) );
 }
 
 
@@ -498,7 +498,7 @@ STATIC bool createFile( const FLIST *head )
             if( fclose( fp ) == 0 ) {
                 if( !head->keep ) {
                     temp = NewNKList();
-                    temp->fileName = StrDupSafe( tmpFileName );
+                    temp->fileName = StrdupSafe( tmpFileName );
                     temp->next     = noKeepList;
                     noKeepList     = temp;
                 }
@@ -580,7 +580,7 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
         } else {
             if( !current->keep ) {
                 temp = NewNKList();
-                temp->fileName = StrDupSafe( current->fileName );
+                temp->fileName = StrdupSafe( current->fileName );
                 temp->next     = noKeepList;
                 noKeepList     = temp;
             }
@@ -676,7 +676,7 @@ STATIC bool percentMake( char *arg )
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
-            calltarg = NewTarget( FixName( StrDupSafe( buf ) ) );
+            calltarg = NewTarget( FixName( StrdupSafe( buf ) ) );
             newtarg = true;
         }
         ok = Update( calltarg );
@@ -760,7 +760,7 @@ STATIC bool percentWrite( char *arg, enum write_type type )
      */
     if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
-        currentFileName = StrDupSafe( fn );
+        currentFileName = StrdupSafe( fn );
         if( type == WR_APPEND ) {
             open_flags = "a";
         } else {

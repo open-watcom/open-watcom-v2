@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,7 +331,7 @@ static error_handle SysSetLclErr( sys_error err )
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
 }
 
-static char *MyStrDup( const char *str ) {
+static char *MyStrdup( const char *str ) {
 
     char *new;
 
@@ -899,9 +899,9 @@ static void AddCopySpec( const char *src, const char *dst, object_loc src_loc, o
     new = DbgAlloc( sizeof( COPYSPEC ) );
     new->next = CopySpecs;
     CopySpecs = new;
-    new->src = MyStrDup( src );
+    new->src = MyStrdup( src );
     new->src_loc = src_loc;
-    new->dst = MyStrDup( dst );
+    new->dst = MyStrdup( dst );
     new->dst_loc = dst_loc;
 }
 

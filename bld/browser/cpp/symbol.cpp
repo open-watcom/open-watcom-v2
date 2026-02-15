@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,9 +78,9 @@ Symbol::Symbol( const Symbol &i )
 //-------------------------------
 {
     if( i._name ) {
-        _name = WBRStrDup( i._name );
+        _name = WBRStrdup( i._name );
     }
-    _decname = (_decname) ? WBRStrDup( i._decname ) : NULL;
+    _decname = (_decname) ? WBRStrdup( i._decname ) : NULL;
 }
 
 Symbol::~Symbol()
@@ -129,7 +129,7 @@ const char * Symbol::scopedName( bool fullScoping )
 
         desc.deleteContents();
 
-        _decname = WBRStrDup( scoped.gets() );
+        _decname = WBRStrdup( scoped.gets() );
     }
     return _decname;
 }
@@ -261,7 +261,7 @@ static Symbol * Symbol::defineSymbol( const Symbol * info )
     char *      newname;
 
     if( info->_name ) {
-        newname = WBRStrDup( info->_name );
+        newname = WBRStrdup( info->_name );
     } else {
         newname = NULL;
     }
@@ -363,7 +363,7 @@ void Symbol::getAnonName()
     loadReferences( refs );
 
     if( refs.count() <= 0 ) {
-        _name = WBRStrDup( "[anonymous]" );
+        _name = WBRStrdup( "[anonymous]" );
         return;
     }
 
@@ -377,7 +377,7 @@ void Symbol::getAnonName()
 
     name.concat( ']' );
 
-    _name = WBRStrDup( name.gets() );
+    _name = WBRStrdup( name.gets() );
 
     refs.deleteContents();
 }

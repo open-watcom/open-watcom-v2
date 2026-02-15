@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -503,7 +503,7 @@ static int Parse( const char *cmd )
                 NormalizeFName( Word, MAX_CMD, Word );
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
-                new_item->item = MemStrDup( Word );
+                new_item->item = MemStrdup( Word );
                 if( IS_LIB( Word ) ) {
                     ListAppend( &Libs_List, new_item );
                 } else if( IS_RES( Word ) ) {
@@ -554,7 +554,7 @@ static int Parse( const char *cmd )
                     if( strnicmp( Word + 1, "cl=", 3 ) == 0 ) {
                         Flags.link_for_sys = true;
                         MemFree( SystemName );
-                        SystemName = MemStrDup( Word + 4 );
+                        SystemName = MemStrdup( Word + 4 );
                         strcpy( Word, "bt=" );
                         strcpy( Word + 3, SystemName );
                     }
@@ -572,7 +572,7 @@ static int Parse( const char *cmd )
                             Link_Name = MemAlloc( strlen( Word ) + 1 );
                             strcpy( Link_Name, Word );
                         } else {
-                            Link_Name = MemStrDup( TEMPFILE );
+                            Link_Name = MemStrdup( TEMPFILE );
                         }
                         wcc_option = 0;
                         break;
@@ -581,7 +581,7 @@ static int Parse( const char *cmd )
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
                             MemFree( Exe_Name );
-                            Exe_Name = MemStrDup( Word );
+                            Exe_Name = MemStrdup( Word );
                         }
                         wcc_option = 0;
                         break;
@@ -594,7 +594,7 @@ static int Parse( const char *cmd )
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
                             MemFree( Map_Name );
-                            Map_Name = MemStrDup( Word );
+                            Map_Name = MemStrdup( Word );
                         }
                         wcc_option = 0;
                         break;
@@ -605,7 +605,7 @@ static int Parse( const char *cmd )
                             ++p;
                         NormalizeFName( p, MAX_CMD, p );
                         MemFree( Obj_Name );
-                        Obj_Name = MemStrDup( p );
+                        Obj_Name = MemStrdup( p );
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
@@ -622,7 +622,7 @@ static int Parse( const char *cmd )
                 case 'k':               /* stack size option */
                     if( len > 1 ) {
                         MemFree( StackSize );
-                        StackSize = MemStrDup( Word + 1 );
+                        StackSize = MemStrdup( Word + 1 );
                     }
                     wcc_option = 0;
                     break;
@@ -640,7 +640,7 @@ static int Parse( const char *cmd )
                         if( opt == '=' || opt == '#' )
                             ++p;
                         MemFree( SystemName );
-                        SystemName = MemStrDup( p );
+                        SystemName = MemStrdup( p );
                     }
                     wcc_option = 0;
                     break;
@@ -1003,7 +1003,7 @@ static  int  CompLink( void )
             }
             AddNameObj( Word );
             if( Exe_Name == NULL ) {
-                Exe_Name = MemStrDup( RemoveExt( Word ) );
+                Exe_Name = MemStrdup( RemoveExt( Word ) );
             }
             file = GetName( NULL, NULL );   /* get next filename */
         }

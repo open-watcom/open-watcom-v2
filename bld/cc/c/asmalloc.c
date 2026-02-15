@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@ void *AsmAlloc( size_t amount )
     return( ptr );
 }
 
-char *AsmStrDup( const char *str )
+char *AsmStrdup( const char *str )
 {
-    return( CMemStrDup( str ) );
+    return( CMemStrdup( str ) );
 }
 
 void AsmFree( void *ptr )

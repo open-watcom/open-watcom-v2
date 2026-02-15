@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -362,7 +362,7 @@ MEPTR MacroScan( void )
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return( NULL );
     }
-    token_buf = CMemStrDup( Buffer );
+    token_buf = CMemStrdup( Buffer );
     formal_parms = NULL;
     macro_loc = SrcFileLoc;
     parm_count = 0;             /* 0 ==> no () following */
@@ -394,9 +394,9 @@ MEPTR MacroScan( void )
                 prev_mp->next = mp;
             }
             if( CurToken == T_DOT_DOT_DOT ) {
-                mp->parm = CMemStrDup( "__VA_ARGS__" );
+                mp->parm = CMemStrdup( "__VA_ARGS__" );
             } else {
-                mp->parm = CMemStrDup( Buffer );
+                mp->parm = CMemStrdup( Buffer );
             }
             prev_mp = mp;
             PPNextToken();
@@ -894,7 +894,7 @@ TOKEN Process_Pragma( void )
         if( CurToken == T_STRING ) {
             char        *token_buf;
 
-            token_buf = CMemStrDup( Buffer );
+            token_buf = CMemStrdup( Buffer );
             PPNextToken();
             if( CurToken == T_RIGHT_PAREN ) {
                 ppctl_t old_ppctl;

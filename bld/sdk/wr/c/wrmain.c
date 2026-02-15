@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -248,7 +248,7 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 #endif
 
     info->file_type = type;
-    if( (info->file_name = WRStrDup( name )) == NULL ) {
+    if( (info->file_name = WRStrdup( name )) == NULL ) {
         WRFreeWRInfo( info );
         return( NULL );
     }

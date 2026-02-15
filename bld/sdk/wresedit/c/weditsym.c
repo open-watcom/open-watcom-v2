@@ -142,7 +142,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
                 FreeRCString( gf.filter );
             }
         } else {
-            name = WStrDup( file_name );
+            name = WStrdup( file_name );
         }
         ok = (name != NULL);
     }
@@ -225,5 +225,5 @@ char *WCreateSymFileName( const char *fname )
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
-    return( WStrDup( fn_path ) );
+    return( WStrdup( fn_path ) );
 }

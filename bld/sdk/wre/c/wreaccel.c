@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,7 +305,7 @@ WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )
 
     session->info->parent = WREGetMainWindowHandle();
     session->info->inst = WREGetAppInstance();
-    session->info->file_name = WREStrDup( WREGetQueryName( curr->info ) );
+    session->info->file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info->res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info->lang = curr->lang->Info.lang;
     session->info->MemFlags = curr->lang->Info.MemoryFlags;

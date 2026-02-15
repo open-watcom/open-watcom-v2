@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,9 +78,9 @@ void CmdSysInit( void )
     GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
     TargetSwitches = DEF_CGSW_X86_SWITCHES;
     CodeClassName = NULL;
-    TextSegName = CMemStrDup( "" );
-    DataSegName = CMemStrDup( "" );
-    GenCodeGroup = CMemStrDup( "" );
+    TextSegName = CMemStrdup( "" );
+    DataSegName = CMemStrdup( "" );
+    GenCodeGroup = CMemStrdup( "" );
     CompFlags.use_stdcall_at_number = true;
     CompFlags.register_conventions = true;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -487,7 +487,7 @@ char *WdeRectToStr( RECT *r )
 
     sprintf( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
 
-    return( WdeStrDup( temp ) );
+    return( WdeStrdup( temp ) );
 }
 
 void WdeStrToRect( char *str, RECT *r )
@@ -731,7 +731,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             o_info->info.d.name = WResIDFromNum( ord );
         } else {
             dup = false;
-            o_info->symbol = WdeStrDup( str );
+            o_info->symbol = WdeStrdup( str );
             strupr( o_info->symbol );
             entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
             o_info->info.d.name = WResIDFromNum( entry->value );
@@ -743,7 +743,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             SETCTL_ID( o_info->info.c.info, ord );
         } else {
             dup = false;
-            o_info->symbol = WdeStrDup( str );
+            o_info->symbol = WdeStrdup( str );
             strupr( o_info->symbol );
             entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
             if( entry != NULL ) {
@@ -815,8 +815,8 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             SETHDR_HELPID( o_info->info.d.header, ord );
         } else {
             dup = true;
-            o_info->helpsymbol = WdeStrDup( str );
-            o_info->info.d.header->helpsymbol = WdeStrDup( str );
+            o_info->helpsymbol = WdeStrdup( str );
+            o_info->info.d.header->helpsymbol = WdeStrdup( str );
             strupr( o_info->helpsymbol );
             ord = GETHDR_HELPID( o_info->info.d.header );
             if( ord > 0 ) {
@@ -835,8 +835,8 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             SETCTL_HELPID( o_info->info.c.info, ord );
         } else {
             dup = false;
-            o_info->helpsymbol = WdeStrDup( str );
-            o_info->info.c.info->helpsymbol = WdeStrDup( str );
+            o_info->helpsymbol = WdeStrdup( str );
+            o_info->info.c.info->helpsymbol = WdeStrdup( str );
             strupr( o_info->helpsymbol );
             ord = GETCTL_HELPID( o_info->info.c.info );
             if( ord > 0 ) {
@@ -955,8 +955,8 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
         return( false );
     }
 
-    o_info->symbol = WdeStrDup( symbol );
-    o_info->helpsymbol = WdeStrDup( helpsymbol );
+    o_info->symbol = WdeStrdup( symbol );
+    o_info->helpsymbol = WdeStrdup( helpsymbol );
     o_info->res_info = WdeGetCurrentRes();
 
     if( o_info->win == NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +205,7 @@ void InitSru( void ) {
     inSubPgm = false;
     setHeader = false;
     SRU.type_prots = NewHashTable( PROTO_PRIME );
-    SRU.name = MemStrDup( NONAME_FILE );
+    SRU.name = MemStrdup( NONAME_FILE );
     SetDefaultAccess( ST_PUBLIC );
     SetBaseName( SRU.name );
     if( Options & OPT_GEN_C_CODE ) {
@@ -252,7 +252,7 @@ void SetHeader( char *name, char *ext )
     if( SRU.name ) {
         MemFree( SRU.name );
     }
-    SRU.name = MemStrDup( name );
+    SRU.name = MemStrdup( name );
     strcpy( SRU.name, name + headerlen );
     SetBaseName( SRU.name );
     mkConsDesNames();
@@ -294,7 +294,7 @@ static void copyTypeInfo( TypeInfo *dst, TypeInfo *src ) {
     if( src->name == NULL ) {
         dst->name = NULL;
     } else {
-        dst->name = MemStrDup( src->name );
+        dst->name = MemStrdup( src->name );
     }
     dst->isref = src->isref;
 }
@@ -310,7 +310,7 @@ void SetFunction( TypeInfo *ret, char *fname ) {
     assert( ret );
 
     copyTypeInfo( &( SRU.curr.sp.ret_type ), ret );
-    SRU.curr.sp.name = MemStrDup( fname );
+    SRU.curr.sp.name = MemStrdup( fname );
     SRU.curr.sp.typ = ST_FUNCTION;
     SRU.curr_typ = SRU_SUBPROG;
     SRU.curr.sp.typ_id = isTypeKnown( ret ); /* we must first set sp info */
@@ -336,7 +336,7 @@ void SetSubroutine( char *sname ) {
 
     SRU.curr.sp.ret_type.name = NULL;
     SRU.curr.sp.ret_type.isref = false;
-    SRU.curr.sp.name = MemStrDup( sname );
+    SRU.curr.sp.name = MemStrdup( sname );
     SRU.curr.sp.typ = ST_SUBROUTINE;
     SRU.curr.sp.subroutine = true;
     SRU.curr_typ = SRU_SUBPROG;
@@ -488,7 +488,7 @@ void AddParm( TypeInfo *typ, char *tname, ArrayInfo *array ) {
         ptmp->fake = true;
     }
     ptmp->next = NULL;
-    ptmp->name = MemStrDup( tname );
+    ptmp->name = MemStrdup( tname );
     if( array == NULL ) {
         ptmp->array = NULL;
     } else {
@@ -710,7 +710,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     //          must be explicitly copied here or else things will get freed
     //          twice.  This code should be rewritten. DRW
     memcpy( &(rc->data), &(func->data), sizeof( spec ) );
-    rc->data.sp.name = MemStrDup( name );
+    rc->data.sp.name = MemStrdup( name );
     copyTypeInfo( &rc->data.sp.ret_type, &func->data.sp.ret_type );
     finger = func->data.sp.parm_list;
     SRU.curr.sp.parm_list = NULL;

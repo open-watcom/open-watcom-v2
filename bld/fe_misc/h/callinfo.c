@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +35,17 @@
 
 #if defined( BY_C_FRONT_END )
     #define AUX_MEMALLOC        CMemAlloc
-    #define AUX_STRALLOC        CMemStrDup
+    #define AUX_STRALLOC        CMemStrdup
     #define AUX_MEMFREE         CMemFree
     #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_CPP_FRONT_END )
     #define AUX_MEMALLOC        CMemAlloc
-    #define AUX_STRALLOC        CMemStrDup
+    #define AUX_STRALLOC        CMemStrdup
     #define AUX_MEMFREE         CMemFree
     #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_FORTRAN_FRONT_END )
     #define AUX_MEMALLOC        FMemAlloc
-    #define AUX_STRALLOC        FMemStrDup
+    #define AUX_STRALLOC        FMemStrdup
     #define AUX_MEMFREE         FMemFree
     #define DEFAULT_CALLINFO    FortranInfo
 #else

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +234,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                       && old_typ->object->decl_type == TYP_FUNCTION ) {
                         SymGet( &sym_typedef, old_typ->u.typedefn );
                         sym_name = SymName( &sym_typedef, old_typ->u.typedefn );
-                        name = CMemStrDup( sym_name );
+                        name = CMemStrdup( sym_name );
                         XferPragInfo( name, sym->name );
                         CMemFree( name );
                     }

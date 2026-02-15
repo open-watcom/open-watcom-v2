@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2217,7 +2217,7 @@ static void set_def_seg_name( int type )
         case TOK_LARGE:
         case TOK_HUGE:
             sprintf( buffer, "%s%s", GetModuleName(), get_sim_name( SIM_CODE, NULL ) );
-            Options.text_seg = AsmStrDup( buffer );
+            Options.text_seg = AsmStrdup( buffer );
             break;
         default:
             break;
@@ -2908,7 +2908,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         info->localsize += ( size * factor );
 
         local = AsmAlloc( sizeof( label_list ) );
-        local->label = AsmStrDup( name );
+        local->label = AsmStrdup( name );
         local->size = size;
         local->replace = NULL;
         local->sym = tmp;
@@ -3021,7 +3021,7 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     paramnode = AsmAlloc( sizeof( label_list ) );
     paramnode->u.is_vararg = is_vararg;
     paramnode->size = parameter_size;
-    paramnode->label = AsmStrDup( token );
+    paramnode->label = AsmStrdup( token );
     paramnode->replace = NULL;
     paramnode->sym = tmp;
     if( Use32 ) {
@@ -3179,7 +3179,7 @@ bool UsesDef( token_buffer *tokbuf, token_idx i )
     for( ; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_FINAL ); i++ ) {
         regist = AsmAlloc( sizeof( regs_list ));
         regist->next = NULL;
-        regist->reg = AsmStrDup( tokbuf->tokens[i].string_ptr );
+        regist->reg = AsmStrdup( tokbuf->tokens[i].string_ptr );
         if( info->regslist == NULL ) {
             info->regslist = regist;
         } else {
@@ -3406,7 +3406,7 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
                 token = tokbuf->tokens[i].string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
-                regist->reg = AsmStrDup( token );
+                regist->reg = AsmStrdup( token );
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
@@ -3705,7 +3705,7 @@ bool WritePrologue( const char *curline )
                 sprintf( buffer + strlen( buffer ), "%s%lu]",
                          ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
-            curr->replace = AsmStrDup( buffer );
+            curr->replace = AsmStrdup( buffer );
         }
         info->localsize = offset;
         /*
@@ -3770,7 +3770,7 @@ bool WritePrologue( const char *curline )
             } else {
                 params.param_number++;
             }
-            curr->replace = AsmStrDup( buffer );
+            curr->replace = AsmStrdup( buffer );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
                 if( Use32 ) {
@@ -4149,7 +4149,7 @@ bool NameDirective( token_buffer *tokbuf, token_idx i )
 /*****************************************************/
 {
     if( Options.module_name == NULL ) {
-        Options.module_name = AsmStrDup( tokbuf->tokens[i + 1].string_ptr );
+        Options.module_name = AsmStrdup( tokbuf->tokens[i + 1].string_ptr );
         ConvertModuleName( Options.module_name );
     }
     return( RC_OK );

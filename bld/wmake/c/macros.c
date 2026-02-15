@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -468,7 +468,7 @@ char *GetMacroValue( const char *name )
     const char  *old;
     char        *line;
 
-    InName = StrDupSafe( name );
+    InName = StrdupSafe( name );
     p = strchr( InName, ':' );
 
     if( p == NULL ) {
@@ -476,7 +476,7 @@ char *GetMacroValue( const char *name )
         if( beforeSub == NULL ) {
             afterSub = NULL;
         } else {
-            afterSub  = StrDupSafe( beforeSub );
+            afterSub  = StrdupSafe( beforeSub );
         }
     } else {
         *p++ = NULLCHAR;
@@ -564,7 +564,7 @@ STATIC bool addMacro( const char *name, char *value )
         new->readonly = Glob.macreadonly;
     } else if( new == NULL ) {
         new = MallocSafe( sizeof( *new ) ); /* get memory for new node */
-        new->node.name = StrDupSafe( macro );
+        new->node.name = StrdupSafe( macro );
         new->value = value;
         new->readonly = Glob.macreadonly;
         AddHashNode( macTab, (HASHNODE *)new );
@@ -835,7 +835,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         /* static pointer returned so we need to duplicate string */
         cp2 = specialValue( t );
         if( cp2 != NULL ) {
-            return( StrDupSafe( cp2 ) );
+            return( StrdupSafe( cp2 ) );
         }
         return( NULL );
     case MAC_ALL_DEP:
@@ -1366,8 +1366,8 @@ void DefMacro( const char *name )
 #ifdef CLEAN_ENVIRONMENT_VAR
                 tempEList = NewEList();
                 tempEList->next = OldEnvValues;
-                tempEList->envVarName = StrDupSafe( name );
-                tempEList->envOldVal  = StrDupSafe( EnvOldValue );
+                tempEList->envVarName = StrdupSafe( name );
+                tempEList->envOldVal  = StrdupSafe( EnvOldValue );
                 OldEnvValues = tempEList;
 #endif
                 SetEnvSafe( name, EnvVarValue );

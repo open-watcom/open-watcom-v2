@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ static void FuncDefn( SYMPTR sym )
      * duplicate name in near space
      */
     sym_name = SymName( sym, CurFuncHandle );
-    sym->name = CMemStrDup( sym_name );
+    sym->name = CMemStrdup( sym_name );
     if( sym->flags & SYM_DEFINED ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
     }

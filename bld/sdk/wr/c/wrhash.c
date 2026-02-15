@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,7 +253,7 @@ bool WRAPI WRCreateDLGInclude( WResDir *dir, const char *include )
     }
 
     if( ok ) {
-        str = WRStrDup( include );
+        str = WRStrdup( include );
         ok = (str != NULL);
     }
 
@@ -665,7 +665,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
         return( NULL );
     }
 
-    symbol = WRStrDup( name );
+    symbol = WRStrdup( name );
     if( symbol == NULL ) {
         return( NULL );
     }
@@ -845,7 +845,7 @@ char * WRAPI WRResolveValue( WRHashTable *table, WRHashValue value )
     vlist = WRLookupValue( table, value );
     if( vlist != NULL ) {
         if( vlist->next == NULL ) {
-            name = WRStrDup( vlist->entry->name );
+            name = WRStrdup( vlist->entry->name );
         }
         WRValueListFree( vlist );
     }

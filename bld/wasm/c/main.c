@@ -190,7 +190,7 @@ static char *SetTargetName( char *target_name, const char *name )
     if( target_name != NULL ) {
         AsmFree( target_name );
     }
-    return( AsmStrDup( name ) );
+    return( AsmStrdup( name ) );
 }
 
 static bool isvalidident( const char *id )
@@ -320,11 +320,11 @@ static void srcFileName( const char *token )
     if( pg.ext[0] == '\0' ) {
         pg.ext = ASM_EXT;
     }
-    SrcFName = AsmStrDup( pg.fname );
-    SrcModuleName = AsmStrDup( pg.fname );
+    SrcFName = AsmStrdup( pg.fname );
+    SrcModuleName = AsmStrdup( pg.fname );
     ConvertModuleName( SrcModuleName );
     _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-    AsmFiles.fname[ASM] = AsmStrDup( name );
+    AsmFiles.fname[ASM] = AsmStrdup( name );
 }
 
 static void add_include( const char *target_name, const char *src )
@@ -385,7 +385,7 @@ static void main_init( void )
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
-    AsmFiles.fname[ERR] = AsmStrDup( "*" );
+    AsmFiles.fname[ERR] = AsmStrdup( "*" );
     ObjRecInit();
 }
 
@@ -569,7 +569,7 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = AsmStrDup( s->data );
+            p = AsmStrdup( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
@@ -1093,22 +1093,22 @@ static void set_options( OPT_STORAGE *data )
     }
     if( data->fe && data->fe_value != NULL ) {
         AsmFree( AsmFiles.fname[ERR] );
-        AsmFiles.fname[ERR] = AsmStrDup( data->fe_value->data );
+        AsmFiles.fname[ERR] = AsmStrdup( data->fe_value->data );
     }
     if( data->fr ) {
         AsmFree( AsmFiles.fname[ERR] );
         if( data->fr_value != NULL ) {
-            AsmFiles.fname[ERR] = AsmStrDup( data->fr_value->data );
+            AsmFiles.fname[ERR] = AsmStrdup( data->fr_value->data );
         } else {
             AsmFiles.fname[ERR] = NULL;
         }
     }
     if( data->fl && data->fl_value != NULL ) {
-        AsmFiles.fname[LST] = AsmStrDup( data->fl_value->data );
+        AsmFiles.fname[LST] = AsmStrdup( data->fl_value->data );
         Options.write_listing = true;
     }
     if( data->fo && data->fo_value != NULL ) {
-        AsmFiles.fname[OBJ] = AsmStrDup( data->fo_value->data );
+        AsmFiles.fname[OBJ] = AsmStrdup( data->fo_value->data );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
@@ -1126,7 +1126,7 @@ static void do_init_stuff( char **cmdline )
         exit( EXIT_ERROR );
 
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
-    ForceInclude = AsmStrDup( getenv( "FORCE" ) );
+    ForceInclude = AsmStrdup( getenv( "FORCE" ) );
     OPT_INIT( &data );
     ProcOptions( &data, getenv( "WASM" ) );
     for( ; *cmdline != NULL; ++cmdline ) {

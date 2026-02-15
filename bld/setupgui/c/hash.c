@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ bool HashInsert( hash_handle ht, hash_key k, vhandle data )
         return( false );
     i = hashKey( ht->size, k );
     he->data = data;
-    he->key = GUIStrDup( k );
+    he->key = GUIStrdup( k );
     he->next = ht->table[i];
     ht->table[i] = he;
     return( true );

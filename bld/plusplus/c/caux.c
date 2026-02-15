@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ hw_reg_set *AuxParmDup(         // DUPLICATE AUX PARMS
 char *AuxObjnameDup(            // DUPLICATE AUX OBJNAME
     char *objname )
 {
-    return( CMemStrDup( objname ) );
+    return( CMemStrdup( objname ) );
 }
 
 void freeAuxInfo( AUX_INFO *i ) // FREE ALL AUX INFO MEM

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,11 +227,11 @@ void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name )
      * we want newer !loaddlls to take precedence
      */
     n = MallocSafe( sizeof( *n ) );
-    n->cmd_name = StrDupSafe( cmd_name );
+    n->cmd_name = StrdupSafe( cmd_name );
     n->next = dllCommandList;
     dllCommandList = n;
-    IdeDrvInit( &n->inf, StrDupSafe( dll_name ),
-                (ent_name == NULL) ? NULL : StrDupSafe( ent_name ) );
+    IdeDrvInit( &n->inf, StrdupSafe( dll_name ),
+                (ent_name == NULL) ? NULL : StrdupSafe( ent_name ) );
 }
 
 DLL_CMD *OSFindDLL( char const *cmd_name )

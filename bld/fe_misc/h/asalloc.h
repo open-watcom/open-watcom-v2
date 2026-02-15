@@ -33,5 +33,5 @@
 #include <stddef.h>
 
 extern void *AsmAlloc( size_t amount );
-extern char *AsmStrDup( const char *str );
+extern char *AsmStrdup( const char *str );
 extern void AsmFree( void *ptr );

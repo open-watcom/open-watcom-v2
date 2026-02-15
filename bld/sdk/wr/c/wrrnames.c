@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,7 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type_id )
                     str = (char *)MemAlloc( strlen( text ) + 21 );
                     if( str != NULL ) {
                         sprintf( str, text, (num - 1) * 16, num * 16 - 1 );
-                        cp = WRStrDup( str );
+                        cp = WRStrdup( str );
                         MemFree( str );
                     }
                     WRFreeRCString( text );

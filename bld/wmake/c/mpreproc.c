@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -372,7 +372,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     chopTrailWS( beg );             /* chop trailing ws */
 
     *v1 = value;
-    *v2 = StrDupSafe( beg );
+    *v2 = StrdupSafe( beg );
     FreeSafe( test );
 }
 
@@ -825,7 +825,7 @@ STATIC char *formatLongFileName( char *text )
     char    *pTxt;
 
     assert( text != NULL );
-    ret = StrDupSafe( text );
+    ret = StrdupSafe( text );
     pRet = ret;
     pTxt = text;
 

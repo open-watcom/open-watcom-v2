@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,7 +187,7 @@ char * ScanStreamFile::name( void )
     WString val;
 
     val.printf( "file \"%s\" (line %d)", _fileName, _line );
-    return WBRStrDup( val );
+    return WBRStrdup( val );
 }
 
 void ScanStreamFile::refill( void )
@@ -246,5 +247,5 @@ void ScanStreamMem::refill( void )
 char * ScanStreamMem::name( void )
 //--------------------------------
 {
-    return WBRStrDup( "command line" );
+    return WBRStrdup( "command line" );
 }

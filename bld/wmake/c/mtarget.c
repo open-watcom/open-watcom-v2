@@ -139,7 +139,7 @@ void RenameTarget( const char *oldname, const char *newname )
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
         }
-        targ->node.name = FixName( StrDupSafe( newname ) );
+        targ->node.name = FixName( StrdupSafe( newname ) );
         AddHashNode( targTab, (HASHNODE *)targ );
     }
 }
@@ -243,9 +243,9 @@ STATIC FLIST *DupFList( const FLIST *old )
     }
 
     head = NewFList();
-    head->fileName = StrDupSafe( old->fileName );
+    head->fileName = StrdupSafe( old->fileName );
     if( old->body != NULL ) {
-        head->body = StrDupSafe( old->body );
+        head->body = StrdupSafe( old->body );
     } else {
         head->body = NULL;
     }
@@ -254,9 +254,9 @@ STATIC FLIST *DupFList( const FLIST *old )
     cur = head;
     for( old = old->next; old != NULL; old = old->next ) {
         new = NewFList();
-        new->fileName = StrDupSafe( old->fileName );
+        new->fileName = StrdupSafe( old->fileName );
         if( old->body != NULL ) {
-            new->body = StrDupSafe( old->body );
+            new->body = StrdupSafe( old->body );
         } else {
             new->body = NULL;
         }
@@ -282,13 +282,13 @@ CLIST *DupCList( const CLIST *old )
     }
 
     head = NewCList();
-    head->text       = StrDupSafe( old->text );
+    head->text       = StrdupSafe( old->text );
     head->inlineHead = DupFList( old->inlineHead );
 
     cur = head;
     for( old = old->next; old != NULL; old = old->next ) {
         new = NewCList();
-        new->text       = StrDupSafe( old->text );
+        new->text       = StrdupSafe( old->text );
         new->inlineHead = DupFList( old->inlineHead );
         cur->next = new;
 
@@ -481,7 +481,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
-        targ = NewTarget( StrDupSafe( name ) );
+        targ = NewTarget( StrdupSafe( name ) );
         if( name[0] == '.'
           && ( cisextc( name[1] )
           || ciswildc( name[1] ) ) ) {
@@ -509,7 +509,7 @@ STATIC TARGET *findOrNewDotTarget( DotName dot )
     strcpy( name + 1, DotNames[dot] );
     targ = FindTarget( name );
     if( targ == NULL ) {
-        targ = NewTarget( StrDupSafe( name ) );
+        targ = NewTarget( StrdupSafe( name ) );
         targ->special = true;
         targ->mentioned = true;
         switch( dot ) {

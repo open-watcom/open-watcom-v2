@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ enum changes {
 static char *AsmMangler( asm_sym_handle sym )
 /*******************************************/
 {
-    return( AsmStrDup( sym->name ) );
+    return( AsmStrdup( sym->name ) );
 }
 
 static char *UCaseMangler( asm_sym_handle sym )
@@ -58,7 +58,7 @@ static char *UCaseMangler( asm_sym_handle sym )
 {
     char        *name;
 
-    name = AsmStrDup( sym->name );
+    name = AsmStrdup( sym->name );
     return( strupr( name ) );
 }
 

@@ -214,7 +214,7 @@ WStringHandle WRESEAPI WStringStartEdit( WStringInfo *info )
 
     if( ok ) {
         if( einfo->info->file_name != NULL ) {
-            einfo->file_name = WStrDup( einfo->info->file_name );
+            einfo->file_name = WStrdup( einfo->info->file_name );
             ok = (einfo->file_name != NULL);
             if( ok ) {
                 einfo->file_type = WRIdentifyFile( einfo->file_name );

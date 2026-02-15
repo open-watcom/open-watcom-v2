@@ -40,7 +40,7 @@
 #define REALLOC(p,n,t)  ((t *)YaccRealloc((p),(n) * sizeof(t)))
 #define CALLOC(n,t)     ((t *)YaccCalloc((n),sizeof(t)))
 #define FREE(n)         YaccFree((n))
-#define STRDUP(p)       YaccStrDup((p))
+#define STRDUP(p)       YaccStrdup((p))
 
 
 extern void     MemInit( void );
@@ -50,6 +50,6 @@ extern void     *YaccAlloc( size_t size );
 extern void     *YaccCalloc( size_t n, size_t size );
 extern void     *YaccRealloc( void *old_ptr, size_t newsize );
 extern void     YaccFree( void *ptr );
-extern char     *YaccStrDup( const char *str );
+extern char     *YaccStrdup( const char *str );
 
 #endif

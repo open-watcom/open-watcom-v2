@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,10 +68,10 @@ char *GUIStripTrailingBlanks( const char *label, bool *ok )
 }
 
 /*
- * GUIStrDupLenOK -- duplicate the string text up to length characters
+ * GUIStrdupLenOK -- duplicate the string text up to length characters
  */
 
-char *GUIStrDupLenOK( const char *text, size_t len, bool *ok )
+char *GUIStrdupLenOK( const char *text, size_t len, bool *ok )
 {
     size_t  new_len;
     char    *new_str;
@@ -96,7 +96,7 @@ char *GUIStrDupLenOK( const char *text, size_t len, bool *ok )
 }
 
 
-char *GUIStrDupOK( const char *text, bool *ok )
+char *GUIStrdupOK( const char *text, bool *ok )
 {
     void    *new_str;
 
@@ -115,7 +115,7 @@ char *GUIStrDupOK( const char *text, bool *ok )
 }
 
 
-char *GUIStrDup( const char *text )
+char *GUIStrdup( const char *text )
 {
     void    *new_str;
 

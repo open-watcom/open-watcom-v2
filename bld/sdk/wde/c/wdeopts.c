@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +205,7 @@ static bool WdeGetStrOpt( char *entry, char **opt )
 
     if( ret ) {
         if( !WdeIsStrSpace( str ) ) {
-            ret = ((*opt = WdeStrDup( str )) != NULL);
+            ret = ((*opt = WdeStrdup( str )) != NULL);
         }
     }
 
@@ -264,7 +264,7 @@ void WdeOptsShutdown( void )
         WRMemFree( WdeCurrentState.last_file_filter );
     }
 
-    WdeCurrentState.last_directory = WdeStrDup( WdeGetInitialDir() );
+    WdeCurrentState.last_directory = WdeStrdup( WdeGetInitialDir() );
     WdeCurrentState.last_file_filter = WdeGetFileFilter();
 
     WdeWriteOpts( &WdeCurrentState );
@@ -299,7 +299,7 @@ void WdeResetOpts( void )
     WdeCurrentState.grid_x = WdeDefaultState.grid_x;
     WdeCurrentState.grid_y = WdeDefaultState.grid_y;
     WdeCurrentState.ignore_inc = WdeDefaultState.ignore_inc;
-    WdeCurrentState.inc_path = WdeStrDup( WdeDefaultState.inc_path );
+    WdeCurrentState.inc_path = WdeStrdup( WdeDefaultState.inc_path );
 }
 
 int WdeGetOption( WdeOptReq req )

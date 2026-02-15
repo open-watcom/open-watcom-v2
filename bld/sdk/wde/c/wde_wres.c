@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,9 +119,9 @@ char *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff ) {
             sprintf( temp, ( base == 10 ) ? "%u" : "%x", name->ord.wOrdinalID );
-            cp = WdeStrDup( temp );
+            cp = WdeStrdup( temp );
         } else {
-            cp = (char *)WdeStrDup( name->name );
+            cp = (char *)WdeStrdup( name->name );
         }
         if( cp == NULL ) {
             return( NULL );
@@ -160,14 +160,14 @@ char *WdeControlClassToStr( ControlClass *name )
             class_name = WdeGetClassNameFromClass( name->Class );
             if( class_name == NULL ) {
                 sprintf( temp, "%lu", name->Class );
-                cp = WdeStrDup( temp );
+                cp = WdeStrdup( temp );
                 return( cp );
             }
         } else {
             class_name = name->ClassName;
         }
         if( class_name != NULL && class_name[0] != '\0' ) {
-            cp = WdeStrDup( class_name );
+            cp = WdeStrdup( class_name );
         }
     }
 
@@ -192,8 +192,8 @@ WdeDialogBoxControl *WdeCopyDialogBoxControl( WdeDialogBoxControl *src )
     SETCTL_CLASSID( dest, WdeCopyControlClass( GETCTL_CLASSID( src ) ) );
     SETCTL_TEXT( dest, WdeCopyResNameOr( GETCTL_TEXT( src ) ) );
 
-    dest->symbol = WdeStrDup( src->symbol );
-    dest->helpsymbol = WdeStrDup( src->helpsymbol );
+    dest->symbol = WdeStrdup( src->symbol );
+    dest->helpsymbol = WdeStrdup( src->helpsymbol );
 
     return( dest );
 }
@@ -215,11 +215,11 @@ WdeDialogBoxHeader *WdeCopyDialogBoxHeader( WdeDialogBoxHeader *src )
 
     SETHDR_MENUNAME( dest, WdeCopyResNameOr( GETHDR_MENUNAME( src ) ) );
     SETHDR_CLASSNAME( dest, WdeCopyResNameOr( GETHDR_CLASSNAME( src ) ) );
-    SETHDR_CAPTION( dest, WdeStrDup( GETHDR_CAPTION( src ) ) );
-    SETHDR_FONTFACENAME( dest,  WdeStrDup( GETHDR_FONTFACENAME( src ) ) );
+    SETHDR_CAPTION( dest, WdeStrdup( GETHDR_CAPTION( src ) ) );
+    SETHDR_FONTFACENAME( dest,  WdeStrdup( GETHDR_FONTFACENAME( src ) ) );
 
-    dest->symbol = WdeStrDup( src->symbol );
-    dest->helpsymbol = WdeStrDup( src->helpsymbol );
+    dest->symbol = WdeStrdup( src->symbol );
+    dest->helpsymbol = WdeStrdup( src->helpsymbol );
 
     return( dest );
 }

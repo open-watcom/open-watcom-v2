@@ -331,7 +331,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     }
 
     if( ok ) {
-        str = WdeStrDup( include );
+        str = WdeStrdup( include );
         ok = (str != NULL);
     }
 
@@ -445,7 +445,7 @@ char *WdeCreateSymName( const char *fname )
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
-    return( WdeStrDup( fn_path ) );
+    return( WdeStrdup( fn_path ) );
 }
 
 bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
@@ -529,7 +529,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
             gf.filter = WdeSymSaveFilter;
             name = WdeGetOpenFileName( &gf );
         } else {
-            name = WdeStrDup( file_name );
+            name = WdeStrdup( file_name );
         }
         ok = ( name != NULL );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -360,7 +360,7 @@ static void MakePgmName( void )
             strcat( WholeFName + len, "." C_EXT );
         }
     }
-    SrcFName = CMemStrDup( pg.fname );
+    SrcFName = CMemStrdup( pg.fname );
 }
 
 static void CantOpenFile( const char *name )
@@ -741,7 +741,7 @@ char *FNameFullPath( FNAMEPTR flist )
     if( flist->fullpath == NULL ) {
         fullpath = SrcFullPath( flist->name, fullbuff, sizeof( fullbuff ) );
         if( fullpath != NULL ) {
-            fullpath = CMemStrDup( fullpath );
+            fullpath = CMemStrdup( fullpath );
             flist->fullpath = fullpath;
         } else {
             fullpath = flist->name;
@@ -918,9 +918,9 @@ static void ParseInit( void )
     SegInit();
     force = FEGetEnv( "FORCE" );
     if( force != NULL ) {
-        ForceInclude = CMemStrDup( force );
+        ForceInclude = CMemStrdup( force );
     }
-    ForcePreInclude = CMemStrDup( "_preincl.h" );
+    ForcePreInclude = CMemStrdup( "_preincl.h" );
 }
 
 static bool OpenPgmFile( void )

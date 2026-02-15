@@ -176,8 +176,8 @@ void *CMemAlloc( size_t size )
 }
 #endif
 
-TRMEMAPI( CMemStrDup )
-char *CMemStrDup( const char *str )
+TRMEMAPI( CMemStrdup )
+char *CMemStrdup( const char *str )
 /*********************************/
 {
     if( str != NULL ) {

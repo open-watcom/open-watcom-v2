@@ -112,8 +112,8 @@ void *AsmAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( AsmStrDup )
-char *AsmStrDup( const char *str )
+TRMEMAPI( AsmStrdup )
+char *AsmStrdup( const char *str )
 {
     size_t      size;
     char        *ptr;

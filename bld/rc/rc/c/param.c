@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -761,10 +761,10 @@ static void AddInpFileName( const char *infile )
     if( infile != NULL && *infile != '\0' ) {
         switch( nofilenames ) {
         case 0:
-            CmdLineParms.InFileName = RcMemStrDup( infile );
+            CmdLineParms.InFileName = RcMemStrdup( infile );
             break;
         case 1:
-            CmdLineParms.InExeFileName = RcMemStrDup( infile );
+            CmdLineParms.InExeFileName = RcMemStrdup( infile );
             break;
         case 2:
             /*
@@ -872,7 +872,7 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = RcMemStrDup( s->data );
+            p = RcMemStrdup( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
@@ -957,7 +957,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && data->r ) {
-        CmdLineParms.OutResFileName = RcMemStrDup( outfile );
+        CmdLineParms.OutResFileName = RcMemStrdup( outfile );
         if( data->fo ) {
             OPT_CLEAN_STRING( &(data->fo_value) );
         }
@@ -984,7 +984,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && !data->r ) {
-        CmdLineParms.OutExeFileName = RcMemStrDup( outfile );
+        CmdLineParms.OutExeFileName = RcMemStrdup( outfile );
         if( data->fe ) {
             OPT_CLEAN_STRING( &(data->fe_value) );
         }

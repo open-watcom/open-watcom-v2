@@ -214,8 +214,8 @@ void  *MemAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( MemStrDup )
-char *MemStrDup( const char *str )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 /********************************/
 {
     char        *ptr;
@@ -334,7 +334,7 @@ void  AddNameObj( const char *name )
     } else {
         last_name->next = new_name;
     }
-    new_name->item = MemStrDup( name );
+    new_name->item = MemStrdup( name );
     new_name->next = NULL;
     if( Obj_Name != NULL ) {
         /* construct full name of object file from Obj_Name information */
@@ -376,7 +376,7 @@ char  *MakePath( const char *path )
     }
 #endif
     if( p == NULL ) {
-        return( MemStrDup( "" ) );
+        return( MemStrdup( "" ) );
     } else {
         len = p + 1 - path;
         p = MemAlloc( len + 1 );

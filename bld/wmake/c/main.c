@@ -183,7 +183,7 @@ STATIC void handleMacroDefn( const char *buf )
 
     assert( buf != NULL );
 
-    q = StrDupSafe( buf );  /* we need our own copy */
+    q = StrdupSafe( buf );  /* we need our own copy */
 
     p = strpbrk( q, "=" );
     assert( p != NULL );

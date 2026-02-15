@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,7 +348,7 @@ bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t
 
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
-        Text = WdeStrDup( "" );
+        Text = WdeStrdup( "" );
         if( Text == NULL ) {
             return( false );
         }
@@ -356,7 +356,7 @@ bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t
 
     Class = WdeControlClassToStr( GETCTL_CLASSID( obj->control_info ) );
     if( Class == NULL ) {
-        Class = WdeStrDup( "" );
+        Class = WdeStrdup( "" );
         if( Class == NULL ) {
             WRMemFree( Text );
             return( false );
@@ -396,7 +396,7 @@ bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size
 
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
-        Text = WdeStrDup( "" );
+        Text = WdeStrdup( "" );
         if( Text == NULL ) {
             return( false );
         }
@@ -404,7 +404,7 @@ bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size
 
     Class = WdeControlClassToStr( GETCTL_CLASSID( obj->control_info ) );
     if( Class == NULL ) {
-        Class = WdeStrDup( "" );
+        Class = WdeStrdup( "" );
         if( Class == NULL ) {
             WRMemFree( Text );
             return( false );
@@ -1029,7 +1029,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR
     SETCTL_ID( (*new)->control_info, WdeGetNextControlID() );
 
     if( obj->symbol ) {
-        (*new)->symbol = WdeStrDup( obj->symbol );
+        (*new)->symbol = WdeStrdup( obj->symbol );
         if( (*new)->symbol == NULL ) {
             WdeWriteTrail( "WdeControlCopyObject: Symbol alloc failed" );
             WdeFreeControlObject( *new );
@@ -1039,7 +1039,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR
 
     /* JPK - added for help id support */
     if( obj->helpsymbol != NULL ) {
-        (*new)->helpsymbol = WdeStrDup( obj->helpsymbol );
+        (*new)->helpsymbol = WdeStrdup( obj->helpsymbol );
         if( (*new)->helpsymbol == NULL ) {
             WdeWriteTrail( "WdeControlCopyObject: Help symbol alloc failed" );
             WdeFreeControlObject( *new );
@@ -1136,8 +1136,8 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     is.sizeinfo.height = GETCTL_SIZEH( obj->control_info );
     is.u.ctl.text = GETCTL_TEXT( obj->control_info );
     is.u.ctl.id = GETCTL_ID( obj->control_info );
-    is.symbol = WdeStrDup( obj->symbol );
-//  is.helpsymbol = WdeStrDup( obj->helpsymbol );
+    is.symbol = WdeStrdup( obj->symbol );
+//  is.helpsymbol = WdeStrdup( obj->helpsymbol );
 
     WdeWriteInfo( &is );
 
@@ -1566,7 +1566,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
     if( obj->symbol != NULL ) {
         WRMemFree( obj->symbol );
     }
-    obj->symbol = WdeStrDup( s );
+    obj->symbol = WdeStrdup( s );
 
 
     if( info == NULL ) {
@@ -1577,7 +1577,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
     if( obj->helpsymbol != NULL ) {
         WRMemFree( obj->helpsymbol );
     }
-    obj->helpsymbol = WdeStrDup( info->helpsymbol );
+    obj->helpsymbol = WdeStrdup( info->helpsymbol );
 
     if( obj->control_info != NULL ) {
         WdeFreeDialogBoxControl( &obj->control_info );
@@ -1621,7 +1621,7 @@ bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
     if( obj->helpsymbol != NULL ) {
         WRMemFree( obj->helpsymbol );
     }
-    obj->helpsymbol = WdeStrDup( hs );
+    obj->helpsymbol = WdeStrdup( hs );
 
     return( true );
 }
@@ -1698,7 +1698,7 @@ bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
                 if( obj->control_info->helpsymbol != NULL ) {
                     WRMemFree( obj->control_info->helpsymbol );
                 }
-                obj->control_info->helpsymbol = WdeStrDup( obj->helpsymbol );
+                obj->control_info->helpsymbol = WdeStrdup( obj->helpsymbol );
                 WdeControlModified( obj );
             }
         } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -884,7 +884,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
 
             /* build a help symbol for the DialogEx line */
             if( control->helpsymbol != NULL ) {
-                helpsymbol = WdeStrDup( control->helpsymbol );
+                helpsymbol = WdeStrdup( control->helpsymbol );
             } else {
                 helpsymbol = WRMemAlloc( 32 );
                 if( control->HelpId > 0 ) {
@@ -992,7 +992,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
     if( ok ) {
         if( ditem->dialog_info->dialog_header->symbol != NULL ) {
-            name = WdeStrDup( ditem->dialog_info->dialog_header->symbol );
+            name = WdeStrdup( ditem->dialog_info->dialog_header->symbol );
         } else {
             if( rinfo->hash_table != NULL && !ditem->dialog_name->IsName ) {
                 name = WRResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
@@ -1016,7 +1016,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
             /* build a help symbol for the DialogEx line */
             if( dhptr->helpsymbol != NULL ) {
-                helpsymbol = WdeStrDup( dhptr->helpsymbol );
+                helpsymbol = WdeStrdup( dhptr->helpsymbol );
             } else {
                 helpsymbol = WRMemAlloc( 32 );
                 if( dhptr->HelpId > 0 ) {

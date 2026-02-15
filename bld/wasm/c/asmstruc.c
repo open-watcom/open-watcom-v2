@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,7 +228,7 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    f->initializer = AsmStrDup( tokbuf->tokens[loc].string_ptr );
+    f->initializer = AsmStrdup( tokbuf->tokens[loc].string_ptr );
 
     /* now add the value to initialize the struct to */
     count = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -697,7 +697,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
               || ( VbufCompExt( &fext, "com", true ) != 0
               && VbufLen( &fext ) > 0 ) )
                 break;
-            WinDotCom = GUIStrDup( line );
+            WinDotCom = GUIStrdup( line );
             line[0] = '\0';
         }
         VbufFree( &fext );

@@ -162,8 +162,8 @@ void YaccFree( void *ptr )
     }
 }
 
-TRMEMAPI( YaccStrDup )
-char *YaccStrDup( const char *str )
+TRMEMAPI( YaccStrdup )
+char *YaccStrdup( const char *str )
 /*********************************/
 {
     size_t      size;

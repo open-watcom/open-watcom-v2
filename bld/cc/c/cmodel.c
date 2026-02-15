@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,7 +184,7 @@ void AddUndefMacro( const char *str )
         if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
-            uname->name = CMemStrDup( str );
+            uname->name = CMemStrdup( str );
             UndefNames = uname;
         }
     }
@@ -280,7 +280,7 @@ void InitModInfo( void )
     UndefNames = NULL;
     WholeFName = NULL;
     ObjectFileName = NULL;
-    ErrorFileName = CMemStrDup( "*" );
+    ErrorFileName = CMemStrdup( "*" );
     DependFileName = NULL;
     DependForceSlash = 0;
     ModuleName = NULL;

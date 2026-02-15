@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ DerivationPtr * ClassLattice::newPtr( ClassLattice * cls,
 ClassLattice::ClassLattice( Symbol * sym, bool relax )
         : _drhandle( sym->getHandle() )
         , _module( sym->getModule() )
-        , _name( WBRStrDup( sym->name() ) )
+        , _name( WBRStrdup( sym->name() ) )
         , _basesLoaded( false )
         , _derivedsLoaded( false )
         , _effAccess( (dr_access)0 )
@@ -95,7 +96,7 @@ ClassLattice::ClassLattice( drmem_hdl drhdl, Module * mod, char * name,
 
     if( _name == NULL ) {               /* OPTME this is expensive */
         Symbol * sym = makeSymbol();
-        _name = WBRStrDup( sym->name() );
+        _name = WBRStrdup( sym->name() );
         delete sym;
     }
 }
@@ -155,7 +156,7 @@ bool ClassLattice::isEqual( WObject const * obj ) const
 Symbol * ClassLattice::makeSymbol( void )
 //---------------------------------------
 {
-    char * name = WBRStrDup( _name );
+    char * name = WBRStrdup( _name );
     return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
@@ -489,7 +490,7 @@ char * ClassLattice::derivation( ClassLattice *cls )
         strcat( buf, " virtual" );
     }
     if( buf[0] != '\0' ) {
-        return WBRStrDup( buf );
+        return WBRStrdup( buf );
     }
     return NULL;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@ extern void             CheckStop( void );
 extern void             LnkFatal( const char * );
 extern void             ClearBit( byte *, unsigned );
 extern bool             TestBit( byte *, unsigned );
-extern char             *ChkStrDup( const char * );
+extern char             *ChkStrdup( const char * );
 extern char             *ChkToString( const void *, size_t );
 extern seg_leader       *FindSegment( section *, const char * );
 extern group_entry      *FindGroup( segment );

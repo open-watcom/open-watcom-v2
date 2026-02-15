@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,7 +381,7 @@ bool WdeAddNewClassToList( char *class, char *new_name,
         return( false );
     }
 
-    str = WdeStrDup( class );
+    str = WdeStrdup( class );
     if( str == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: class strdup failed!" );
         WRMemFree( node );
@@ -389,7 +389,7 @@ bool WdeAddNewClassToList( char *class, char *new_name,
     }
     node->class = str;
 
-    str = WdeStrDup( new_name );
+    str = WdeStrdup( new_name );
     if( str == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: new_name alloc failed!" );
         WRMemFree( node->class );
@@ -432,7 +432,7 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         node = (WdeCustClassNode *)ListElement( clist );
         *win_extra = node->win_extra;
         *win_proc = node->win_proc;
-        *new_name = WdeStrDup( node->new_name );
+        *new_name = WdeStrdup( node->new_name );
         if( *new_name == NULL ) {
             WdeWriteTrail( "WdeCustomRegisterClass: new_name alloc failed!" );
             return( false );
@@ -666,7 +666,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR ha
     (*new)->cust_info = obj->cust_info;
     (*new)->cust_type = obj->cust_type;
 
-    (*new)->win_class = WdeStrDup( obj->win_class );
+    (*new)->win_class = WdeStrdup( obj->win_class );
     if( (*new)->win_class == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Class alloc failed!" );
         WRMemFree( *new );

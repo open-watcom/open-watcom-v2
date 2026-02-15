@@ -94,7 +94,7 @@ STATIC MTOKEN_T lexLongFilePathName( STRM_T s, MTOKEN_T tok )
         UnGetCHR( s );
     }
 
-    CurAttr.u.ptr = StrDupSafe( file );
+    CurAttr.u.ptr = StrdupSafe( file );
     return( tok );
 }
 
@@ -303,7 +303,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
         UnGetCHR( ':' );            /* push back the colon */
     }
 
-    CurAttr.u.ptr = StrDupSafe( file );
+    CurAttr.u.ptr = StrdupSafe( file );
     return( TOK_FILENAME );
 }
 #ifdef __WATCOMC__
@@ -359,7 +359,7 @@ STATIC char *getCurlPath( void )
         } else if( pos == _MAX_PATH ) {
             PrtMsg( WRN | LOC | PATH_TOO_LONG );
         }
-        return( StrDupSafe( path ) );
+        return( StrdupSafe( path ) );
     }
     UnGetCHR( s );
     return( "" );
@@ -477,7 +477,7 @@ STATIC MTOKEN_T lexDotName( void )
       && checkDotName( ext ) ) {
         return( TOK_DOTNAME );
     }
-    CurAttr.u.ptr = StrDupSafe( ext );
+    CurAttr.u.ptr = StrdupSafe( ext );
     return( ret );
 }
 #ifdef __WATCOMC__
@@ -549,7 +549,7 @@ STATIC bool checkMacro( STRM_T s )
     if( ws ) {
         UnGetCHR( ' ' );
     }
-    InsString( StrDupSafe( mac + 1 ), true );
+    InsString( StrdupSafe( mac + 1 ), true );
     return( false );
 }
 #ifdef __WATCOMC__
@@ -605,7 +605,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                         buffer[pos] = NULLCHAR;
                         UnGetCHR( s );
                         UnGetCHR( STRM_TMP_LEX_START );
-                        return( StrDupSafe( buffer ) );
+                        return( StrdupSafe( buffer ) );
                     }
                     in_dquote = true;
                 } else {
@@ -619,7 +619,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                         UnGetCHR( s );
                         UnGetCHR( STRM_TMP_LEX_START );
                     }
-                    return( StrDupSafe( buffer ) );
+                    return( StrdupSafe( buffer ) );
                 }
             }
             if( !in_dquote ) {
@@ -631,7 +631,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                         buffer[pos] = NULLCHAR;
                         UnGetCHR( s );
                         UnGetCHR( STRM_TMP_LEX_START );
-                        return( StrDupSafe( buffer ) );
+                        return( StrdupSafe( buffer ) );
                     }
                 } else {
                     if( !in_word ) {
@@ -642,7 +642,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                             buffer[pos] = NULLCHAR;
                             UnGetCHR( s );
                             UnGetCHR( STRM_TMP_LEX_START );
-                            return( StrDupSafe( buffer ) );
+                            return( StrdupSafe( buffer ) );
                         }
                         in_word = true;
                     }
@@ -658,7 +658,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         }
 
         buffer[pos] = NULLCHAR;
-        p = StrDupSafe( buffer );
+        p = StrdupSafe( buffer );
     } else {
 
         p = DeMacro( MAC_WS );
@@ -671,7 +671,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                      */
                     if( current != p ) {
                         UnGetCHR( STRM_MAGIC );
-                        InsString( StrDupSafe( current ), true );
+                        InsString( StrdupSafe( current ), true );
                         UnGetCHR( STRM_TMP_LEX_START );
                         *current = NULLCHAR;
                         return( p );
@@ -684,7 +684,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                     current++;
                     if( *current != NULLCHAR ) {
                         UnGetCHR( STRM_MAGIC );
-                        InsString( StrDupSafe( current ), true );
+                        InsString( StrdupSafe( current ), true );
                         UnGetCHR( STRM_TMP_LEX_START );
                         *current = NULLCHAR;
                     }

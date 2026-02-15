@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -706,7 +706,7 @@ static bool ProcIncremental( void )
     } else if( Name != NULL ) {
         IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
     } else {
-        IncFileName = ChkStrDup( DEFAULT_INC_NAME );
+        IncFileName = ChkStrdup( DEFAULT_INC_NAME );
     }
     ReadPermData();
 #endif
@@ -952,7 +952,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     WriteStringTable( &strtab, CopyBlocks, &copyptr );
     FiniStringTable( &strtab );
     if( name != NULL ) {
-        sys->name = ChkStrDup( name );
+        sys->name = ChkStrdup( name );
     } else {
         sys->name = NULL;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,7 +305,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
             new->item->IsPopup = TRUE;
             new->item->Item.Popup.ItemFlags = flags | MENU_POPUP;
             if( text != NULL ) {
-                new->item->Item.Popup.ItemText = WStrDup( text );
+                new->item->Item.Popup.ItemText = WStrdup( text );
             } else {
                 new->item->Item.Popup.ItemText = AllocRCString( W_MENUPOPUP );
             }
@@ -316,7 +316,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
                 new->item->Item.Normal.ItemID = id;
                 new->item->Item.Normal.ItemFlags = flags;
                 if( text != NULL ) {
-                    new->item->Item.Normal.ItemText = WStrDup( text );
+                    new->item->Item.Normal.ItemText = WStrdup( text );
                 } else {
                     new->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
                 }

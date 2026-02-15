@@ -41,7 +41,7 @@ extern void *MallocUnSafe( size_t size );
 extern void *MallocSafe( size_t size );
 extern void *CallocSafe( size_t size ); /* different from stdlib rtn */
 extern void FreeSafe( void *ptr );
-extern char *StrDupSafe( const char *str );
+extern char *StrdupSafe( const char *str );
 extern char *CharToStrSafe( char c );
 
 #ifdef USE_FAR

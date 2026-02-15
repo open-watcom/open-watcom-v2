@@ -139,8 +139,8 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-TRMEMAPI( RcMemStrDup )
-char *RcMemStrDup( const char *buf )
+TRMEMAPI( RcMemStrdup )
+char *RcMemStrdup( const char *buf )
 /**********************************/
 {
     void    *ptr;

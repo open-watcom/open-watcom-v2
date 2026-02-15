@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@ extern void     CMemFini( void );
 extern void     *CPermAlloc( size_t );
 extern void     *CMemAlloc( size_t );
 extern char     *ToStringDup( const char *buf, size_t len );
-extern char     *CMemStrDup( const char *str );
+extern char     *CMemStrdup( const char *str );
 extern void     *CMemRealloc( void *loc, size_t size );
 extern void     CMemFree( void * );
 extern void     *FEmalloc( size_t );

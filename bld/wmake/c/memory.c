@@ -428,8 +428,8 @@ void wres_free( void *ptr )
 }
 #endif
 
-TRMEMAPI( StrDupSafe )
-char *StrDupSafe( const char *str )
+TRMEMAPI( StrdupSafe )
+char *StrdupSafe( const char *str )
 /**********************************
  * returns: Pointer to a duplicate of str in a new block of memory.
  * aborts:  If not enough memory to make a duplicate.

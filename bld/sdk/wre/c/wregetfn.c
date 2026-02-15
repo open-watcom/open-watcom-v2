@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ char *WREGetFileFilter( void )
 void WRESetFileFilter( char *filter )
 {
     WREFreeFileFilter();
-    LastFileFilter = WREStrDup( filter );
+    LastFileFilter = WREStrdup( filter );
 }
 
 void WREFreeFileFilter( void )
@@ -302,7 +302,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
 
     UpdateWindow( WREGetMainWindowHandle() );
 
-    return( WREStrDup( wre_file_name ) );
+    return( WREStrdup( wre_file_name ) );
 }
 
 UINT_PTR CALLBACK WREOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )

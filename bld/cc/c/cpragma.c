@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -505,7 +505,7 @@ static void CopyObjName( void )
         return;
     if( CurrInfo->objname != CurrAlias->objname )
         return;
-    CurrInfo->objname = CMemStrDup( CurrInfo->objname );
+    CurrInfo->objname = CMemStrdup( CurrInfo->objname );
 }
 
 #if _CPU == _AXP
@@ -516,7 +516,7 @@ static void CopyExceptRtn( void )
         return;
     if( CurrInfo->except_rtn != CurrAlias->except_rtn )
         return;
-    CurrInfo->except_rtn = CMemStrDup( CurrInfo->except_rtn );
+    CurrInfo->except_rtn = CMemStrdup( CurrInfo->except_rtn );
 }
 #endif
 
@@ -565,7 +565,7 @@ void PragObjNameInfo( char **objname )
 /************************************/
 {
     if( CurToken == T_STRING ) {
-        *objname = CMemStrDup( Buffer );
+        *objname = CMemStrdup( Buffer );
         PPNextToken();
     }
 }
@@ -1368,15 +1368,15 @@ static void pragCodeSeg( void )
         tseg = NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CMemStrDup( Buffer );
-            classname = CMemStrDup( "" );
+            segname = CMemStrdup( Buffer );
+            classname = CMemStrdup( "" );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     CMemFree( classname );
-                    classname = CMemStrDup( Buffer );
-//                    CodeClassName = CMemStrDup( Buffer ); */
+                    classname = CMemStrdup( Buffer );
+//                    CodeClassName = CMemStrdup( Buffer ); */
                     PPNextToken();
                 }
             }
@@ -1409,7 +1409,7 @@ static void pragDataSeg( void )
         segid = SEG_NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CMemStrDup( Buffer );
+            segname = CMemStrdup( Buffer );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1526,7 +1526,7 @@ static void pragIncludeAlias( void )
         if( CurToken == T_STRING ) {
             char    *alias_name;
 
-            alias_name = CMemStrDup( Buffer );
+            alias_name = CMemStrdup( Buffer );
             PPNextToken();
             MustRecog( T_COMMA );
             if( CurToken == T_STRING ) {
@@ -1712,7 +1712,7 @@ static void pragAlias( void )
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            alias_name = CMemStrDup( Buffer );
+            alias_name = CMemStrdup( Buffer );
         }
         PPNextToken();
         MustRecog( T_COMMA );
@@ -1722,7 +1722,7 @@ static void pragAlias( void )
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            subst_name = CMemStrDup( Buffer );
+            subst_name = CMemStrdup( Buffer );
         }
         PPNextToken();
         MustRecog( T_RIGHT_PAREN );

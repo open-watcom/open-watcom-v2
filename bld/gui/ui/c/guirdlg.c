@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,9 +98,9 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff) {
             sprintf( temp, ( base == 10 ) ? "%d" : "%x", name->ord.wOrdinalID );
-            cp = GUIStrDupOK( temp, &ok );
+            cp = GUIStrdupOK( temp, &ok );
         } else {
-            cp = GUIStrDupOK( name->name, &ok );
+            cp = GUIStrdupOK( name->name, &ok );
         }
         if( !ok || ( cp == NULL ) ) {
             return( NULL );

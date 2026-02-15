@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -610,7 +610,7 @@ static int AddFsysInfo( int target )
     }
     BumpArray( &FsysArray );
     ResetFsysInfoData( &FsysInfo[i] );
-    FsysInfo[i].root = GUIStrDup( p );
+    FsysInfo[i].root = GUIStrdup( p );
     VbufFree( &root );
     SimSetTargetFsys( target, i );
     return( i );
@@ -2265,8 +2265,8 @@ static void AddDefine( char *def )
         *p = '\0';
         ++p;
         var = GUIMemAlloc( sizeof( DEF_VAR ) );
-        var->variable = GUIStrDup( def );
-        var->value = GUIStrDup( p );
+        var->variable = GUIStrdup( def );
+        var->value = GUIStrdup( p );
         var->link = ExtraVariables;
         ExtraVariables = var;
     }
@@ -2420,7 +2420,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
                   && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
                     GUIMemFree( VariablesFile );
-                    VariablesFile = GUIStrDup( &argv[i][3] );
+                    VariablesFile = GUIStrdup( &argv[i][3] );
                 }
                 break;
             case 'd':

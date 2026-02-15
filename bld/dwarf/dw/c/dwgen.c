@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,7 +171,7 @@ dw_client DWENTRY DWInit( const dw_init_info *info )
     /* copy some parms */
     cli->funcs = info->funcs;
     memcpy( &cli->exception_handler, &info->exception_handler, sizeof( info->exception_handler ) );
-    cli->producer_name = DW_StrDup( cli, info->producer_name );
+    cli->producer_name = DW_Strdup( cli, info->producer_name );
     cli->compiler_options = info->compiler_options;
     cli->language = info->language;
     cli->abbrev_sym = info->abbrev_sym;

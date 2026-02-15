@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -302,8 +302,8 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
     is32bitEx = false;
 
     info->MemoryFlags = obj->mem_flags;
-    info->dialog_header->symbol = WdeStrDup( obj->symbol );
-    info->dialog_header->helpsymbol = WdeStrDup( obj->helpsymbol );
+    info->dialog_header->symbol = WdeStrdup( obj->symbol );
+    info->dialog_header->helpsymbol = WdeStrdup( obj->helpsymbol );
     info->control_list = NULL;
 
     end = NULL;
@@ -326,8 +326,8 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 
         control = WdeCopyDialogBoxControl( control );
 
-        control->symbol = WdeStrDup( symbol );
-        control->helpsymbol = WdeStrDup( helpsymbol );
+        control->symbol = WdeStrdup( symbol );
+        control->helpsymbol = WdeStrdup( helpsymbol );
 
         if( obj->dialog_info->is32bit ) {
             if( control->HelpId != 0 || control->ExtendedStyle != 0 ) {
@@ -806,7 +806,7 @@ bool WdeDialogInit( bool first )
         cp = _mbschr( font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( font_facename ) );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrdup( font_facename ) );
             cp++;
             font_pointsize = atoi( cp );
             SETHDR_FONTPOINTSIZE( WdeDefaultDialog, font_pointsize );
@@ -818,10 +818,10 @@ bool WdeDialogInit( bool first )
 
     if( use_default ) {
         if( GetSystemMetrics( SM_DBCSENABLED ) ) {
-            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( DEFAULT_JFONTFACENAME ) );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrdup( DEFAULT_JFONTFACENAME ) );
             SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_JFONTPOINTSIZE );
         } else {
-            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( DEFAULT_FONTFACENAME ) );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrdup( DEFAULT_FONTFACENAME ) );
             SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_FONTPOINTSIZE );
         }
     }
@@ -914,7 +914,7 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
                 WRMemFree( obj->helpsymbol );
             }
             obj->helpsymbol = vp;
-            obj->dialog_info->helpsymbol = WdeStrDup( obj->helpsymbol );
+            obj->dialog_info->helpsymbol = WdeStrdup( obj->helpsymbol );
             WdeSetDialogModified( obj );
         }
     } else {
@@ -1922,7 +1922,7 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     is.sizeinfo.height = GETHDR_SIZEH( obj->dialog_info );
     is.u.dlg.caption = GETHDR_CAPTION( obj->dialog_info );
     is.u.dlg.name = obj->name;
-    is.symbol = WdeStrDup( obj->symbol );
+    is.symbol = WdeStrdup( obj->symbol );
 
     WdeWriteInfo( &is );
 
@@ -2363,9 +2363,9 @@ bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR ha
     (*new)->resizer = obj->resizer;
     (*new)->nc_size = obj->nc_size;
     (*new)->dialog_info = WdeCopyDialogBoxHeader( obj->dialog_info );
-    (*new)->symbol = WdeStrDup( obj->symbol );
+    (*new)->symbol = WdeStrdup( obj->symbol );
     (*new)->name = WdeCopyWResID( obj->name );
-    (*new)->helpsymbol = WdeStrDup( obj->helpsymbol );
+    (*new)->helpsymbol = WdeStrdup( obj->helpsymbol );
 //  (*new)->helpname = WdeCopyWResHelpID( obj->helpname );
     (*new)->mode = WdeSelect;
 

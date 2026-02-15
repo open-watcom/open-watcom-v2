@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,7 +261,7 @@ bool InsFile( const char *name, bool envsearch )
         if( fp != NULL ) {
             tmp = getSENT( SENT_FILE );
             tmp->free = true;
-            tmp->data.file.name = StrDupSafe( path );
+            tmp->data.file.name = StrdupSafe( path );
 
             pushFP( tmp, fp );
 

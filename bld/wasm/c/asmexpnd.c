@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -458,7 +458,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         }
         new[i].class = tokbuf->tokens[start + i].class;
         memcpy( new[i].u.bytes, tokbuf->tokens[start + i].u.bytes, sizeof( new[i].u.bytes ) );
-        new[i].string_ptr = AsmStrDup( tokbuf->tokens[start + i].string_ptr );
+        new[i].string_ptr = AsmStrdup( tokbuf->tokens[start + i].string_ptr );
     }
     if( new_constant && can_be_redefine )
         dir->e.constinfo->redefine = true;

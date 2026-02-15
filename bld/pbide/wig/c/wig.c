@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         if( *ptr == '\0' ) break;
     }
     argv = MemMalloc( argc * sizeof( char * ) );
-    line = MemStrDup( cmdline );
+    line = MemStrdup( cmdline );
     ptr = line;
     argv[0] = "";
     for( i=1; i < argc; i++ ) {

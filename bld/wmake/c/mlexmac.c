@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ STATIC char *CatModifier( char *inString, bool destroy )
         return( FinishVec( output ) );
     }
     UnGetCHR( s );
-    ret = StrDupSafe( inString );
+    ret = StrdupSafe( inString );
     if( destroy ) {
         FreeSafe( inString );
     }
@@ -389,7 +389,7 @@ MTOKEN_T LexMacDef( STRM_T s )
     UnGetCHR( s );
 
     *cur = NULLCHAR;
-    CurAttr.u.ptr = StrDupSafe( text );
+    CurAttr.u.ptr = StrdupSafe( text );
 
     if( onlyws ) {
         return( MAC_WS );

@@ -37,7 +37,7 @@
 extern void     RcMemInit( void );
 extern void     RcMemShutdown( void );
 extern void     *RcMemAlloc( size_t size );
-extern char     *RcMemStrDup( const char *buf );
+extern char     *RcMemStrdup( const char *buf );
 extern void     *RcMemRealloc( void *old_ptr, size_t newsize );
 extern void     RcMemFree( void *ptr );
 

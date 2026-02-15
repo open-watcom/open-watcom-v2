@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +95,7 @@ void WOptsShutdown( void )
     if( WCurrentState.last_dir != NULL ) {
         WRMemFree( WCurrentState.last_dir );
     }
-    WCurrentState.last_dir = WStrDup( WGetInitialDir() );
+    WCurrentState.last_dir = WStrdup( WGetInitialDir() );
     WCurrentState.last_filter = WGetFileFilter();
     WWriteOpts( &WCurrentState );
     if( WCurrentState.last_dir != NULL ) {
@@ -125,7 +126,7 @@ bool WReadOpts( WOptState *s )
     }
 
     if( ret ) {
-        ret = ((s->last_dir = WStrDup( str )) != NULL);
+        ret = ((s->last_dir = WStrdup( str )) != NULL);
     }
 
     return( ret );
@@ -205,7 +206,7 @@ char *WRectToStr( RECT *r )
 
     sprintf( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
 
-    return( WStrDup ( temp ) );
+    return( WStrdup ( temp ) );
 }
 
 void WStrToRect( char *str, RECT *r )

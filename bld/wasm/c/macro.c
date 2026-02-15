@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ static asmline *asmline_append( asmlines *lines, char *line )
 
     entry = AsmAlloc( sizeof( asmline ) );
     entry->paramscount = 0;
-    entry->line = AsmStrDup( line );
+    entry->line = AsmStrdup( line );
     /*
      * add macro line to the end of macro lines list
      */
@@ -164,7 +164,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
                 char    label[10];
 
                 sprintf( label, "??%04d", MacroLocalVarCounter++ );
-                locallabel->label = AsmStrDup( label );
+                locallabel->label = AsmStrdup( label );
                 locallabel->label_len = strlen( locallabel->label );
             }
             new_line = AsmAlloc( strlen( old_line ) - len + locallabel->label_len + 1 );
@@ -305,7 +305,7 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
         local_label *locallabel;
 
         locallabel = AsmAlloc( sizeof( local_label ) );
-        locallabel->local = AsmStrDup( tok->string_ptr );
+        locallabel->local = AsmStrdup( tok->string_ptr );
         locallabel->local_len = strlen( locallabel->local );
         locallabel->label = NULL;
         locallabel->label_len = 0;
@@ -398,8 +398,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              */
             paramnode = AsmAlloc( sizeof( parm_list ) );
             paramnode->replace = NULL;
-            paramnode->label = AsmStrDup( name );
-            paramnode->def = AsmStrDup( def_value );
+            paramnode->label = AsmStrdup( name );
+            paramnode->def = AsmStrdup( def_value );
             paramnode->required = required;
             /*
              * add to the tail of linked list
@@ -562,7 +562,7 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         /*
          * replace macro local labels by internal symbols
          */
-        lineinfo.line = line = AsmStrDup( line );
+        lineinfo.line = line = AsmStrdup( line );
         quote = false;
         for( ; *line != '\0'; ) {
             start = find_replacement_items( &line, &quote );
@@ -587,10 +587,10 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
          * replace parameters by actual values
          */
         my_sprintf( buffer, line, count, param_array );
-        new_line = AsmStrDup( buffer );
+        new_line = AsmStrdup( buffer );
         AsmFree( param_array );
     } else {
-        new_line = AsmStrDup( line );
+        new_line = AsmStrdup( line );
     }
     if( info->labels.head != NULL ) {
         AsmFree( lineinfo.line );
@@ -702,7 +702,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     /*
                      * fill in the default value
                      */
-                    param->replace = AsmStrDup( param->def );
+                    param->replace = AsmStrdup( param->def );
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
@@ -780,7 +780,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     i++;
                 }
                 *p = '\0';
-                param->replace = AsmStrDup( buffer );
+                param->replace = AsmStrdup( buffer );
                 /*
                  * go past the comma
                  */

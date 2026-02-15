@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -878,7 +878,7 @@ static char* setMangling(       // SET FOR MANGLING
     char *save;                 // - saved name
 
     setPrefix( last );
-    save = CMemStrDup( VbufString( &mangled_name ) );
+    save = CMemStrdup( VbufString( &mangled_name ) );
     VbufRewind( &mangled_name );
     return( save );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ void GUIAPI GUISetJapanese( void )
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
-        Font = GUIStrDup( newfont );
+        Font = GUIStrdup( newfont );
     }
 #endif
 }
@@ -786,9 +786,9 @@ void GUIInitDialog( void )
 
     font_set = false;
 #ifdef __OS2_PM__
-    Font = GUIStrDup( LIT_GUI( OS2_Dialog_Font ) );
+    Font = GUIStrdup( LIT_GUI( OS2_Dialog_Font ) );
 #else
-    Font = GUIStrDup( LIT_GUI( Windows_Dialog_Font ) );
+    Font = GUIStrdup( LIT_GUI( Windows_Dialog_Font ) );
 #endif
     if( Font ) {
         cp = strrchr( Font, '.' );
@@ -805,7 +805,7 @@ void GUIInitDialog( void )
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
-        Font = GUIStrDup( "" );
+        Font = GUIStrdup( "" );
     }
 
     // create a dialog of known dialog units and use the resulting

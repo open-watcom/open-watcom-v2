@@ -701,7 +701,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 
             }
             newtarg = true;
-            imptarg = NewTarget( FixName( StrDupSafe( buf ) ) );
+            imptarg = NewTarget( FixName( StrdupSafe( buf ) ) );
             FreeSafe( buf );        /* don't need any more */
             getStats( imptarg );
             imptarg->busy = true;   /* protect against recursion */

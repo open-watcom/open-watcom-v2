@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,13 +103,13 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
     if( ok ) {
         if( block->block.String[id & 0xf] == NULL ) {
             block->block.String[id & 0xf] = WResIDNameFromStr( text );
-            block->symbol[id & 0xf] = WStrDup( symbol );
+            block->symbol[id & 0xf] = WStrdup( symbol );
             einfo->info->modified = true;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
                 WRMemFree( block->block.String[id & 0xf] );
                 block->block.String[id & 0xf] = WResIDNameFromStr( text );
-                block->symbol[id & 0xf] = WStrDup( symbol );
+                block->symbol[id & 0xf] = WStrdup( symbol );
                 einfo->info->modified = true;
                 *replace = true;
             } else {

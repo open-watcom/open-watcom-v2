@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +123,7 @@ static void MakePgmName(        // MAKE CANONICAL FILE NAME
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );
     if( ModuleName == NULL ) {
-        ModuleName = CMemStrDup( SrcFName );
+        ModuleName = CMemStrdup( SrcFName );
     }
 }
 
@@ -217,7 +217,7 @@ static void setForceIncludeFromEnv( void )
     const char  *force;
 
     force = CppGetEnv( "FORCE" );
-    ForceInclude = CMemStrDup( force );
+    ForceInclude = CMemStrdup( force );
 }
 
 static bool openForcePreIncludeFile( void )
@@ -236,7 +236,7 @@ static bool openForcePreIncludeFile( void )
 
 static void setForcePreInclude( void )
 {
-    ForcePreInclude = CMemStrDup( DEFAULT_PREINCLUDE_FILE );
+    ForcePreInclude = CMemStrdup( DEFAULT_PREINCLUDE_FILE );
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM

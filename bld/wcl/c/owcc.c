@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,7 +381,7 @@ static char *strfcat( char *target, const char *source )
 
 static char *strfdup( const char *source )
 {
-    return( xlate_fname( MemStrDup( source ) ) );
+    return( xlate_fname( MemStrdup( source ) ) );
 }
 
 static void addccstring( const char *string )
@@ -717,7 +717,7 @@ static  int  ParseArgs( int argc, char **argv )
             if( strncmp( Word, "cpp-wrap=", 9 ) == 0 ) {
                 Word[7] = 'w';
                 MemFree( cpp_linewrap );
-                cpp_linewrap = MemStrDup( Word + 7 );
+                cpp_linewrap = MemStrdup( Word + 7 );
                 wcc_option = false;
                 break;
             }
@@ -735,7 +735,7 @@ static  int  ParseArgs( int argc, char **argv )
                     Link_Name = MemAlloc( strlen( Word + 2 ) + 1 );
                     strcpy( Link_Name, Word + 2 );
                 } else {
-                    Link_Name = MemStrDup( TEMPFILE );
+                    Link_Name = MemStrdup( TEMPFILE );
                 }
                 wcc_option = false;
                 break;
@@ -852,7 +852,7 @@ static  int  ParseArgs( int argc, char **argv )
             }
             if( strncmp( "stack-size=", Word, 11) == 0 ) {
                 MemFree( StackSize );
-                StackSize = MemStrDup( Word + 11 );
+                StackSize = MemStrdup( Word + 11 );
                 wcc_option = false;
             }
             wcc_option = false;     /* dont' pass on unknown options */
@@ -970,7 +970,7 @@ static  int  ParseArgs( int argc, char **argv )
         case 'b':
             Flags.link_for_sys = true;
             MemFree( SystemName );
-            SystemName = MemStrDup( Word );
+            SystemName = MemStrdup( Word );
             /* if Word found in specs.owc, add options from there: */
             if( ConsultSpecsFile( Word ) ) {
                 /* all set */
@@ -1515,10 +1515,10 @@ static  int  CompLink( void )
             }
             if( Exe_Name == NULL ) {
 #ifdef __UNIX__
-                Exe_Name = MemStrDup( OUTPUTFILE );
+                Exe_Name = MemStrdup( OUTPUTFILE );
                 Flags.keep_exename = 1;
 #else
-                Exe_Name = MemStrDup( RemoveExt( Word ) );
+                Exe_Name = MemStrdup( RemoveExt( Word ) );
 #endif
             }
             file = GetName( NULL, NULL );   /* get next filename */
@@ -1584,7 +1584,7 @@ static int ProcMemInit( void )
 {
     Exe_Name = NULL;
     Map_Name = NULL;
-    Obj_Name = MemStrDup( "." OBJ_EXT );
+    Obj_Name = MemStrdup( "." OBJ_EXT );
     Link_Name = NULL;
     SystemName = NULL;
     StackSize = NULL;

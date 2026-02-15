@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -386,7 +386,7 @@ WdeResInfo *WdeCreateNewResource( char *title )
 
     if( ok ) {
         if( title != NULL ) {
-            res_info->info->save_name = WdeStrDup( title );
+            res_info->info->save_name = WdeStrdup( title );
             ok = (res_info->info->save_name != NULL);
         }
     }
@@ -466,7 +466,7 @@ bool WdeOpenResource( char *fn )
 
     if( fn != NULL ) {
         if( WRFileExists( fn ) ) {
-            name = WdeStrDup( fn );
+            name = WdeStrdup( fn );
             gf.fn_offset = WRFindFnOffset( name );
         } else {
             return( false );
@@ -887,7 +887,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool prompt_name )
             fn = res_info->info->save_name;
         } else {
             res_info->info->save_type = res_info->info->file_type;
-            fn = WdeStrDup( res_info->info->file_name );
+            fn = WdeStrdup( res_info->info->file_name );
             got_name = TRUE;
         }
 

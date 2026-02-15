@@ -195,7 +195,7 @@ STATIC void AddFrontSuffix( char const *sufname )
         && !SufExists( sufname ) );
 
     new = CallocSafe( sizeof( *new ) );
-    new->node.name = FixName( StrDupSafe( sufname + 1 ) );
+    new->node.name = FixName( StrdupSafe( sufname + 1 ) );
     new->id = prevId;
     --prevId;
 
@@ -248,7 +248,7 @@ void AddSuffix( const char *sufname )
         && Glob.compat_nmake ) );
 
     new = CallocSafe( sizeof( *new ) );
-    new->node.name = FixName( StrDupSafe( sufname + 1 ) ); /* skip leading dot */
+    new->node.name = FixName( StrdupSafe( sufname + 1 ) ); /* skip leading dot */
     new->id = nextId;
     ++nextId;
 
@@ -394,12 +394,12 @@ char *AddCreator( const char *sufsuf )
     cur_targ_path = targ_path;
     if( *targ_path != NULLCHAR ) {
         _makepath( buf, NULL, targ_path, NULL, NULL );
-        cur_targ_path = StrDupSafe( FixName( buf ) );
+        cur_targ_path = StrdupSafe( FixName( buf ) );
     }
     cur_dep_path = dep_path;
     if( *dep_path != NULLCHAR ) {
         _makepath( buf, NULL, dep_path, NULL, NULL );
-        cur_dep_path = StrDupSafe( FixName( buf ) );
+        cur_dep_path = StrdupSafe( FixName( buf ) );
     }
 
     pslist = NULL;
@@ -414,7 +414,7 @@ char *AddCreator( const char *sufsuf )
                 if( *cur_dep_path != NULLCHAR ) {
                     FreeSafe( cur_dep_path );
                 }
-                return( StrDupSafe( slist->cretarg->node.name ) );
+                return( StrdupSafe( slist->cretarg->node.name ) );
             }
             if( slist->next == NULL ) {
                 pslist = &slist->next;
@@ -437,7 +437,7 @@ char *AddCreator( const char *sufsuf )
     slist = NewSList();
     slist->targ_path = cur_targ_path;
     slist->dep_path = cur_dep_path;
-    slist->cretarg = NewTarget( FixName( StrDupSafe( fullsufsuf ) ) );
+    slist->cretarg = NewTarget( FixName( StrdupSafe( fullsufsuf ) ) );
     slist->cretarg->special = true;
     slist->cretarg->sufsuf  = true;
     slist->cretarg->depend = NewDepend();

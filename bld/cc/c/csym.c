@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,7 +220,7 @@ SYM_HANDLE SpcSymbol( const char *name, TYPEPTR typ, stg_classes stg_class )
 
     NewSym();
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemStrDup( name );
+    sym.name = CMemStrdup( name );
     sym.sym_type = typ;
     sym.attribs.stg_class = stg_class;
     SymReplace( &sym, CURR_SYM_HANDLE() );
@@ -307,7 +307,7 @@ SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
     SYM_ENTRY   sym;
 
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemStrDup( id );
+    sym.name = CMemStrdup( id );
     sym.attribs.stg_class = SC_EXTERN;
     sym.flags = SYM_FUNCTION;
     sym.handle = SpecialSyms;
@@ -322,7 +322,7 @@ SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
 void SymCreate( SYMPTR sym, const char *id )
 {
     memset( sym, 0, sizeof( SYM_ENTRY ) );
-    sym->name = CMemStrDup( id );
+    sym->name = CMemStrdup( id );
     sym->src_loc = TokenLoc;
 }
 

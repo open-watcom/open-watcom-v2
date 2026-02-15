@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -332,7 +332,7 @@ static  void    MemFree( void *ptr )
     free( ptr );
 }
 
-static char     *MemStrDup( const char *str )
+static char     *MemStrdup( const char *str )
 /*******************************************/
 {
     size_t      size;
@@ -382,7 +382,7 @@ static void     ListAppendString( list **l, const char *fname )
     list *p;
 
     p = MemAlloc( sizeof( list ) );
-    p->item = MemStrDup( fname );
+    p->item = MemStrdup( fname );
     ListAppend( l, p );
 }
 
@@ -549,7 +549,7 @@ static char *FindToolPath( tool_type utl )
             ErrorFini();
             exit( 1 );
         }
-        tools[utl].path = MemStrDup( PathBuffer );
+        tools[utl].path = MemStrdup( PathBuffer );
     }
     return( tools[utl].path );
 }
@@ -796,7 +796,7 @@ static  int     Parse( char *cmd )
                             Link_Name = MemAlloc( strlen( Word + 2 ) + 1 );
                             strcpy( Link_Name, Word + 2 );
                         } else {
-                            Link_Name = MemStrDup( TEMPFILE );
+                            Link_Name = MemStrdup( TEMPFILE );
                         }
                         cmp_option = false;
                         break;
@@ -804,7 +804,7 @@ static  int     Parse( char *cmd )
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             if( Exe_Name != NULL )
                                 MemFree( Exe_Name );
-                            Exe_Name = MemStrDup( Word + 2 );
+                            Exe_Name = MemStrdup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
@@ -813,7 +813,7 @@ static  int     Parse( char *cmd )
                         if( (Word[1] == '=') || (Word[1] == '#') ) {
                             if( Map_Name != NULL )
                                 MemFree( Map_Name );
-                            Map_Name = MemStrDup( Word + 2 );
+                            Map_Name = MemStrdup( Word + 2 );
                         }
                         cmp_option = false;
                         break;
@@ -821,7 +821,7 @@ static  int     Parse( char *cmd )
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             if( Indir_Name != NULL )
                                 MemFree( Indir_Name );
-                            Indir_Name = MemStrDup( Word + 2 );
+                            Indir_Name = MemStrdup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
@@ -831,7 +831,7 @@ static  int     Parse( char *cmd )
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             if( Obj_Name != NULL )
                                 MemFree( Obj_Name );
-                            Obj_Name = MemStrDup( Word + 2 );
+                            Obj_Name = MemStrdup( Word + 2 );
                         }
                         break;
                     default:
@@ -842,7 +842,7 @@ static  int     Parse( char *cmd )
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
                         if( StackSize != NULL )
                             MemFree( StackSize );
-                        StackSize = MemStrDup( Word + 2 );
+                        StackSize = MemStrdup( Word + 2 );
                         cmp_option = false;
                     }
                     break;
@@ -869,7 +869,7 @@ static  int     Parse( char *cmd )
                         Flags.link_for_sys = true;
                         if( SystemName != NULL )
                             MemFree( SystemName );
-                        SystemName = MemStrDup( &Word[1] );
+                        SystemName = MemStrdup( &Word[1] );
 #if _CPU == 8086
                         Flags.link_for_dos = false;
                         Flags.link_for_os2 = false;
@@ -1106,7 +1106,7 @@ static  int     CompLink( void )
             if( Exe_Name == NULL || Exe_Name[0] == '\0' ) {
                 if( Exe_Name != NULL )
                     MemFree( Exe_Name );
-                Exe_Name = MemStrDup( Word );
+                Exe_Name = MemStrdup( Word );
             }
             _makepath( Word, NULL, NULL, pg.fname, OBJ_EXT );
             AddName( Word );            // add obj filename

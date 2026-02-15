@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,7 +311,7 @@ bool WREGetImageSessionFileName( HCONV server, char **data, size_t *size )
         return( false );
     }
 
-    *data = WREStrDup( session->info.file_name );
+    *data = WREStrdup( session->info.file_name );
     if( *data != NULL ) {
         *size = strlen( *data ) + 1;
     }
@@ -576,7 +576,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
         return( NULL );
     }
 
-    session->info.file_name = WREStrDup( WREGetQueryName( curr->info ) );
+    session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info.lang = curr->lang->Info.lang;
     session->info.MemFlags = curr->lang->Info.MemoryFlags;

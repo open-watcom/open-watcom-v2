@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
 
         while( container != DRMEM_HDL_NULL ) {
             Symbol contSym( drhdl, NULL, mod, DRGetName( container ) );
-            name = WBRStrDup( contSym.name() );
+            name = WBRStrdup( contSym.name() );
             accum += "::";
             accum += strrev( name );
             WBRFree( name );
@@ -129,7 +129,7 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
             container = DRGetContaining( container );
         }
 
-        _decName = WBRStrDup( (const char *)accum );
+        _decName = WBRStrdup( (const char *)accum );
         strrev( _decName );
     }
 }
@@ -183,7 +183,7 @@ void TreeFuncNode::sortPrtKids()
 Symbol * TreeFuncNode::makeSymbol( void )
 //---------------------------------------
 {
-    char * name = WBRStrDup( _name );
+    char * name = WBRStrdup( _name );
     return Symbol::defineSymbol( _symType, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 

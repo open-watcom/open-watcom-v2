@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ WMenuHandle WRESEAPI WMenuStartEdit( WMenuInfo *info )
 
     if( ok ) {
         if( einfo->info->file_name != NULL ) {
-            einfo->file_name = WStrDup( einfo->info->file_name );
+            einfo->file_name = WStrdup( einfo->info->file_name );
             ok = (einfo->file_name != NULL);
             if( ok ) {
                 einfo->file_type = WRIdentifyFile( einfo->file_name );

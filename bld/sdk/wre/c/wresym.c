@@ -226,7 +226,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
             gf.save_ext = false;
             name = WREGetOpenFileName( &gf );
         } else {
-            name = WREStrDup( file_name );
+            name = WREStrdup( file_name );
         }
         ok = (name != NULL);
     }
@@ -419,7 +419,7 @@ char *WRECreateSymFileName( const char *fname )
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
-    return( WREStrDup( fn_path ) );
+    return( WREStrdup( fn_path ) );
 }
 
 bool WREFindAndLoadSymbols( WREResInfo *rinfo )

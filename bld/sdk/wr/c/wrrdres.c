@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +179,7 @@ bool WRLoadResourceFrom_RC( WRInfo *info )
     }
 
     if( ok ) {
-        info->internal_filename = WRStrDup( fn_path );
+        info->internal_filename = WRStrdup( fn_path );
         ok = (info->internal_filename != NULL);
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -989,7 +989,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
     }
     CmdFile = newfile;
     if( name != NULL ) {
-        newfile->name = ChkStrDup( name );
+        newfile->name = ChkStrdup( name );
     } else {
         newfile->name = NULL;
     }
@@ -998,7 +998,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
         /* have to have at least this size */
         _ChkAlloc( newfile->token.buff, MAX_REC + 1 );
     } else if( buff != NULL ) {
-        newfile->token.buff = ChkStrDup( buff );
+        newfile->token.buff = ChkStrdup( buff );
     } else if( how == COMMANDLINE ) {
         newfile->token.buff = getCmdLine();
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
     void        *handle;
 #endif
 
-    sym->name = AsmStrDup( name );
+    sym->name = AsmStrdup( name );
     if( sym->name != NULL ) {
         sym->next = NULL;
         sym->fixup = NULL;
@@ -325,7 +325,7 @@ bool AsmChangeName( const char *old, const char *new )
         sym = *sym_ptr;
         *sym_ptr = sym->next;
         AsmFree( sym->name );
-        sym->name = AsmStrDup( new );
+        sym->name = AsmStrdup( new );
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )
             return( true );

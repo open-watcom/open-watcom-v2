@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -855,7 +855,7 @@ void ChkOS2Exports( void )
             // Keep the import name. If an alias is exported, we want the
             // alias name in the import lib, not the substitute name
             if( exp->impname == NULL ) {
-                exp->impname = ChkStrDup( exp->sym->name.u.ptr );
+                exp->impname = ChkStrdup( exp->sym->name.u.ptr );
             }
 
             exp->sym = sym;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,7 +181,7 @@ static bool DoMainLoop( dlg_state *state )
         p = "Welcome";
     }
     i = 0;
-    diags = list = GUIStrDup( p );
+    diags = list = GUIStrdup( p );
     for( ;; ) {
         diag_list[i] = diags;
         next = strchr( diags, ',' );
