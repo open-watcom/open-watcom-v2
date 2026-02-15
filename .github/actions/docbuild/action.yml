@@ -46,7 +46,7 @@ runs:
         ci\buildx.cmd ${{inputs.args}}
       )
     env:
-      OWBUILD_STAGE: 'docs'
+      OWBUILD_STAGE: ${{inputs.target == 'readme' && 'readme' || 'docs'}}
       OWDOCTARGET:   ${{inputs.target}} ${{inputs.owtarget}}
       OWTOOLS:       ${{inputs.owtools}}
       OWROOT:        ${{github.workspace}}

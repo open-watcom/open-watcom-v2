@@ -80,6 +80,8 @@ jobs:
         - title:  'PDF'
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
+        - title:  'Readme'
+          doctype:  'readme'
     steps:
     - name: Set EOL to LF
       run: |
