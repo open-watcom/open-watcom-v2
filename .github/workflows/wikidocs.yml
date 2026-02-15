@@ -84,7 +84,7 @@ jobs:
           gitpath:  'docs wiki'
         - title:  'Readme'
           doctype:  'readme'
-          gitpath:  'bld docstxt docs'
+          gitpath:  'bld docstxt wiki'
     steps:
     - name: Set EOL to LF
       run: |
