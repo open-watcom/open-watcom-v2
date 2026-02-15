@@ -78,39 +78,6 @@ void MemInit( void )
 #endif
 }
 
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-/*****************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( MemRealloc )
-pointer MemRealloc( pointer ptr, size_t size )
-/********************************************/
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
-#else
-    free( ptr );
-#endif
-}
-
 void MemFini( void )
 //******************
 {
@@ -127,6 +94,12 @@ void MemFini( void )
 #endif
 }
 
+static void outOfMemory( void )
+{
+    printf( "Out of memory\n" );
+    exit( 1 );
+}
+
 TRMEMAPI( MemAlloc )
 pointer MemAlloc( size_t size )
 /*****************************/
@@ -135,6 +108,17 @@ pointer MemAlloc( size_t size )
     return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
 #else
     return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemRealloc )
+pointer MemRealloc( pointer ptr, size_t size )
+/********************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memHandle ) );
+#else
+    return( realloc( ptr, size ) );
 #endif
 }
 
@@ -149,10 +133,26 @@ void MemFree( pointer ptr )
 #endif
 }
 
-static void outOfMemory( void )
+TRMEMAPI( wres_alloc )
+void *wres_alloc( size_t size )
+/*****************************/
 {
-    printf( "Out of memory\n" );
-    exit( 1 );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( wres_free )
+void wres_free( void *ptr )
+/*************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
+#else
+    free( ptr );
+#endif
 }
 
 TRMEMAPI( PP_Malloc )
