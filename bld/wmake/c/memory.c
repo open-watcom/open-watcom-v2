@@ -493,7 +493,7 @@ void FAR *FarMallocUnSafe( size_t size )
 void FAR *FarMallocSafe( size_t size )
 /************************************/
 {
-    FAR *ptr;
+    void FAR *ptr;
 
     ptr = FarMallocUnSafe( size );
     if( ptr == NULL ) {
