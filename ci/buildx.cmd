@@ -99,5 +99,10 @@ if "%OWBUILD_STAGE%" == "inst" (
     builder install %OWINSTTARGET%
     set RC=!ERRORLEVEL!
 )
+if "%OWBUILD_STAGE%" == "readme" (
+    cd %OWROOT%\bld\docstxt
+    builder build
+    set RC=!ERRORLEVEL!
+)
 cd %OWROOT%
 exit %RC%
