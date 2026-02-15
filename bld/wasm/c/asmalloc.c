@@ -74,7 +74,8 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup,
+                            NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
@@ -96,40 +97,34 @@ void MemFini( void )
 #endif
 }
 
-TRMEMAPI( AsmAlloc )
-void *AsmAlloc( size_t size )
+static void *check_nomem( void *ptr )
 {
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
-#else
-    ptr = malloc( size );
-#endif
     if( ptr == NULL ) {
         Fatal( MSG_OUT_OF_MEMORY );
     }
     return( ptr );
 }
 
+TRMEMAPI( AsmAlloc )
+void *AsmAlloc( size_t size )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
 TRMEMAPI( AsmStrdup )
 char *AsmStrdup( const char *str )
 {
-    size_t      size;
-    char        *ptr;
-
     if( str == NULL )
         return( NULL );
-    size = strlen( str ) + 1;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), memHandle ) ) );
 #else
-    ptr = malloc( size );
+    return( check_nomem( strdup( str ) ) );
 #endif
-    if( ptr == NULL ) {
-        Fatal( MSG_OUT_OF_MEMORY );
-    }
-    return( strcpy( ptr, str ) );
 }
 
 TRMEMAPI( AsmFree )
