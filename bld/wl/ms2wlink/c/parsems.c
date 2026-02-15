@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -458,19 +458,6 @@ static int ReadNextChar( prompt_slot slot )
     }
 }
 
-static char *StrDup( const char *src )
-/************************************/
-{
-    size_t          len;
-    char            *str;
-
-    len = strlen( src );
-    str = MemAlloc( len + 1 );
-    memcpy( str, src, len );
-    str[len] = '\0';
-    return( str );
-}
-
 static int GetNextInputChar( prompt_slot slot )
 /*********************************************/
 {
@@ -500,7 +487,7 @@ static int GetNextInputChar( prompt_slot slot )
                 --CmdFile->current;
 
             /* Open the response file and read next character. */
-            StartNewFile( StrDup( fname ) );
+            StartNewFile( MemStrdup( fname ) );
             c = ReadNextChar( slot );
         }
     }

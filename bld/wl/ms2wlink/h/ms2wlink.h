@@ -101,6 +101,7 @@ extern bool         MapOption;
 extern void     MemInit( void );
 extern void     MemFini( void );
 extern void     *MemAlloc( size_t );
+extern char     *MemStrdup( const char * );
 extern void     MemFree( void * );
 
 // fileio.h

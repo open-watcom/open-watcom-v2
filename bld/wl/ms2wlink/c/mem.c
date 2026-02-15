@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include "ms2wlink.h"
 #ifdef TRMEM
     #include "wio.h"
@@ -66,8 +67,8 @@ void MemInit( void )
 /******************/
 {
 #ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, NULL, strdup, NULL, PrintLine,
+            _TRMEM_ALL & ~(_TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL) );
 #endif
 }
 
@@ -81,21 +82,34 @@ void MemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
+static void *check_nomem( void *ptr )
 {
-    void                *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
     if( ptr == NULL ) {
         ErrorExit( "Dynamic Memory Exhausted!!!" );
     }
     return( ptr );
+}
+
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem(  malloc( size ) ) );
+#endif
+}
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
+#endif
 }
 
 TRMEMAPI( MemFree )
@@ -105,7 +119,7 @@ void MemFree( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 2 ), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 3 ), TrHdl );
 #else
     free( p );
 #endif
