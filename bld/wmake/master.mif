@@ -56,6 +56,14 @@ extra_cpp_flags += -DCACHE_STATS
 
 extra_c_flags_i86 = -zt32
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_memory = -of+
+!  endif
+! endif
+!endif
+
 #
 # lflags
 #

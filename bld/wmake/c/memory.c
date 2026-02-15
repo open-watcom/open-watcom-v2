@@ -114,7 +114,7 @@ STATIC void MemCheck( void )
 #if defined( __WATCOMC__ )
     if( !busy ) {
         busy = true;
-#ifdef USE_FAR
+  #ifdef USE_FAR
         switch( _nheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
@@ -141,7 +141,7 @@ STATIC void MemCheck( void )
             ExitFatal();
             // never return
         }
-#else
+  #else
         switch( _heapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
@@ -155,14 +155,16 @@ STATIC void MemCheck( void )
             ExitFatal();
             // never return
         }
-#endif
+  #endif
         busy = false;
     }
 #endif
 }
+
 #endif  /* TRMEM */
 
 #ifdef USE_SCARCE
+
 void IfMemScarce( bool (*func)( void ) )
 /***********************************************
  * post:    function registered in scarce list
@@ -183,7 +185,6 @@ void IfMemScarce( bool (*func)( void ) )
     scarceHead = new;
 }
 
-
 STATIC bool tryScarce( void )
 /****************************
  * returns: true if a scarce routine managed to deallocate memory.
@@ -201,7 +202,8 @@ STATIC bool tryScarce( void )
 
     return( did );
 }
-#endif
+
+#endif /* USE_SCARCE */
 
 void MemFini( void )
 /**************************
@@ -213,7 +215,7 @@ void MemFini( void )
 #endif
 #if defined( DEVELOPMENT ) || defined( TRMEM )
 
-#ifdef USE_SCARCE
+  #ifdef USE_SCARCE
     struct scarce *cur;
 
     while( tryScarce() ) /* call all scarce routines */
@@ -224,12 +226,12 @@ void MemFini( void )
         scarceHead = scarceHead->next;
         FreeSafe( cur );
     }
-#endif
+  #endif
 
-#ifdef DEVELOPMENT
+  #ifdef DEVELOPMENT
     SetEnvFini();
-#endif
-#ifdef TRMEM
+  #endif
+  #ifdef TRMEM
     if( !Glob.erroryet ) { /* No error diagnostics yet? */
         trmemCodeStr = getenv( TRMEM_ENV_VAR );
         if( trmemCodeStr == NULL ) {
@@ -252,7 +254,7 @@ void MemFini( void )
         fclose( trkfile );
         trkfile = NULL;
     }
-#endif
+  #endif
 #endif
 }
 
@@ -261,25 +263,23 @@ STATIC void memGrow( void )
 /*************************/
 {
 #if defined( __WATCOMC__ )
-#ifdef USE_FAR
+  #ifdef USE_FAR
     _nheapgrow();
     _fheapgrow();
     largeNearSeg = true;
-#else
-#if !defined( __NT__ ) && !defined( __UNIX__ )
+  #elif !defined( __NT__ ) && !defined( __UNIX__ )
     _heapgrow();
-#endif
-#endif
+  #endif
 #endif
 }
 
 
 void MemInit( void )
-/*************************/
+/******************/
 {
     memGrow();
 #ifdef TRMEM
-    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
+    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
         PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
@@ -289,9 +289,18 @@ void MemInit( void )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
+        // never return
+    }
+    return( ptr );
+}
 
 #ifdef TRMEM
-STATIC void *doAlloc( size_t size, void (* ra)(void) )
+STATIC void *doAlloc( size_t size, _trmem_who who )
 #else
 STATIC void *doAlloc( size_t size )
 #endif
@@ -301,16 +310,15 @@ STATIC void *doAlloc( size_t size )
  *          such block exists.
  */
 {
+#ifdef USE_SCARCE
     void   *ptr;
 
-#ifdef USE_SCARCE
-
     for( ;; ) {
-#ifdef TRMEM
-        ptr = _trmem_alloc( size, ra, Handle );
-#else
+  #ifdef TRMEM
+        ptr = _trmem_alloc( size, who, Handle );
+  #else
         ptr = malloc( size );
-#endif
+  #endif
         if( ptr != NULL ) {
             break;
         }
@@ -318,35 +326,35 @@ STATIC void *doAlloc( size_t size )
             break;
         }
     }
-
-#else
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, ra, Handle );
-#else
-    ptr = malloc( size );
-#endif
-
-#endif
     return( ptr );
+
+#else /* !USE_SCARCE */
+
+  #ifdef TRMEM
+    return( _trmem_alloc( size, who, Handle ) );
+  #else
+    return( malloc( size ) );
+  #endif
+
+#endif /* USE_SCARCE */
 }
 
 #ifndef BOOTSTRAP
 TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
-#ifdef TRMEM
+  #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), Handle ) );
-#else
+  #else
     return( malloc( size ) );
-#endif
+  #endif
 }
 #endif
 
 
 TRMEMAPI( MallocUnSafe )
 void *MallocUnSafe( size_t size )
-/**************************************/
+/*******************************/
 {
     void *ptr;
 #ifdef TRMEM
@@ -357,34 +365,25 @@ void *MallocUnSafe( size_t size )
     return( ptr );
 }
 
-
 TRMEMAPI( MallocSafe )
 void *MallocSafe( size_t size )
-/*************************************
+/******************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size.
  * aborts:  If not enough memory to satisfy request.
  */
 {
-    void    *ptr;
-
 #ifdef TRMEM
-    ptr = doAlloc( size, _TRMEM_WHO( 3 ) );
+    return( check_nomem( doAlloc( size, _TRMEM_WHO( 3 ) ) ) );
 #else
-    ptr = doAlloc( size );
+    return( check_nomem( doAlloc( size ) ) );
 #endif
-    if( ptr == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
-        ExitFatal();
-        // never return
-    }
-    return( ptr );
 }
 
 
 TRMEMAPI( CallocSafe )
 void *CallocSafe( size_t size )
-/*************************************
+/******************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size
  * aborts:  If not enough memory to satisfy request
@@ -393,26 +392,18 @@ void *CallocSafe( size_t size )
     void    *ptr;
 
 #ifdef TRMEM        /* so we can track ret address */
-    ptr = doAlloc( size, _TRMEM_WHO( 4 ) );
-
-    if( ptr == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
-        ExitFatal();
-        // never return
-    }
+    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 4 ) ) );
 #else
-    ptr = MallocSafe( size );
+    ptr = check_nomem( doAlloc( size ) );
 #endif
-
     memset( ptr, NULLCHAR, size );
-
     return( ptr );
 }
 
 
 TRMEMAPI( FreeSafe )
 void FreeSafe( void *ptr )
-/********************************
+/*************************
  * post:    The block pointed to by ptr is freed if it was allocated by
  *          MallocSafe.
  * remarks: Guaranteed to work in low memory situations (scarce).
@@ -429,45 +420,32 @@ void FreeSafe( void *ptr )
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
-#ifdef TRMEM
+  #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 6 ), Handle );
-#else
+  #else
     free( ptr );
-#endif
+  #endif
 }
 #endif
 
 TRMEMAPI( StrDupSafe )
 char *StrDupSafe( const char *str )
-/*****************************************
+/**********************************
  * returns: Pointer to a duplicate of str in a new block of memory.
  * aborts:  If not enough memory to make a duplicate.
  */
 {
-    size_t  len;
-    char    *p;
-
-    len = strlen( str ) + 1;
-
 #ifdef TRMEM
-    p = doAlloc( len, _TRMEM_WHO( 7 ) );
-    if( p == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
-        ExitFatal();
-        // never return
-    }
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), Handle ) ) );
 #else
-    p = MallocSafe( len );
+    return( check_nomem( strdup( str ) ) );
 #endif
-
-    memcpy( p, str, len );
-    return( p );
 }
 
 
 TRMEMAPI( CharToStrSafe )
 char *CharToStrSafe( char c )
-/*****************************************
+/****************************
  * returns: Pointer to a string with one character in a new block of memory.
  * aborts:  If not enough memory to make a string.
  */
@@ -475,36 +453,27 @@ char *CharToStrSafe( char c )
     char    *p;
 
 #ifdef TRMEM
-    p = doAlloc( 2, _TRMEM_WHO( 8 ) );
-    if( p == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
-        ExitFatal();
-        // never return
-    }
+    p = check_nomem( doAlloc( 2, _TRMEM_WHO( 8 ) ) );
+#else
+    p = check_nomem( doAlloc( 2 ) );
+#endif
     p[0] = c;
     p[1] = NULLCHAR;
-#else
-    p = MallocSafe( 2 );
-    if( p != NULL ) {
-        p[0] = c;
-        p[1] = NULLCHAR;
-    }
-#endif
     return( p );
 }
 
 
 void MemShrink( void )
-/***************************/
+/********************/
 {
 #if defined( __WATCOMC__ )
-#ifdef USE_FAR
+  #ifdef USE_FAR
     _nheapshrink();
     _fheapshrink();
     largeNearSeg = false;
-#elif !defined( __UNIX__ )
+  #elif !defined( __UNIX__ )
     _heapshrink();
-#endif
+  #endif
 #endif
 }
 
@@ -524,16 +493,7 @@ void FAR *FarMallocUnSafe( size_t size )
 void FAR *FarMallocSafe( size_t size )
 /************************************/
 {
-    void FAR *p;
-
-    p = FarMallocUnSafe( size );
-    if( p == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
-        ExitFatal();
-        // never return
-    }
-
-    return( p );
+    return( check_nomem( FarMallocUnSafe( size ) ) );
 }
 
 
@@ -542,4 +502,5 @@ void FarFreeSafe( void FAR *p )
 {
     _ffree( p );
 }
+
 #endif /* USE_FAR */
