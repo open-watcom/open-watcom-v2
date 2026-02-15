@@ -100,9 +100,10 @@ void *operator new( size_t size )
 extern "C" {
 
 void * WBRAlloc( size_t size )
-/****************************/
-// note: code directly cloned from above since we need to be able to trace
-// calling functions when the memory tracker is in.
+/*****************************
+ * note: code directly cloned from above since we need to be able to trace
+ * calling functions when the memory tracker is in.
+ */
 {
     void *p;
 
@@ -114,13 +115,26 @@ void * WBRAlloc( size_t size )
     return p;
 }
 
+char * WBRStrdup( const char *str )
+/*********************************/
+{
+    char *p;
+
+#ifdef TRACKER
+    p = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
+#else
+    p = strdup( str );
+#endif
+    return( p );
+}
+
 void * WBRRealloc( void * p, size_t size )
 /****************************************/
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
 #ifdef TRMEM
-    p = _trmem_realloc( p, size, _TRMEM_WHO( 3 ), TrHdl );
+    p = _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl );
 #else
     p = realloc( p, size );
 #endif
@@ -132,7 +146,7 @@ void WBRFree( void *p )
 {
     if( p == NULL ) return;
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( p );
 #endif
@@ -145,7 +159,7 @@ void operator delete( void *p )
 {
     if( p == NULL ) return;
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 6 ), TrHdl );
 #else
     free( p );
 #endif
@@ -156,9 +170,7 @@ void operator delete( void *p )
 Memory::Memory()
 /**************/
 {
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
-            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup, NULL, PrintLine, _TRMEM_ALL );
 #ifdef TRMEM_NO_STDOUT
     TrFileHandle = fopen( "tracker.txt", "w" );
 #else

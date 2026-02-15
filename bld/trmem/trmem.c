@@ -593,47 +593,43 @@ void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
     entry_ptr   tr;
     void *      new_block;
     size_t      old_size;
-    void        *(*fn)(void *,size_t);
-    const char  *name;
 
-    name = "Realloc";
-    fn = hdl->realloc;
-    if( fn == NULL ) {
-        trPrt( hdl, MSG_NO_ROUTINE, name );
+    if( hdl->realloc == NULL ) {
+        trPrt( hdl, MSG_NO_ROUTINE, "Realloc" );
         return( NULL );
     }
 
     if( size == 0 ) {
         if( hdl->flags & _TRMEM_REALLOC_SIZE_0 ) {
-            trPrt( hdl, MSG_SIZE_ZERO, name, who );
+            trPrt( hdl, MSG_SIZE_ZERO, "Realloc", who );
         }
         if( old == NULL ) {
             if( hdl->flags & _TRMEM_REALLOC_NULL ) {
-                trPrt( hdl, MSG_NULL_PTR, name, who );
+                trPrt( hdl, MSG_NULL_PTR, "Realloc", who );
             }
-            return( fn( NULL, 0 ) );
+            return( hdl->realloc( NULL, 0 ) );
         }
 
         /* old != NULL */
         tr = removeFromList( old, hdl );
         if( tr == NULL ) {
-            trPrt( hdl, MSG_UNOWNED_CHUNK, name, who, old );
+            trPrt( hdl, MSG_UNOWNED_CHUNK, "Realloc", who, old );
             return( NULL );
         }
-        isValidChunk( tr, name, who, hdl );
+        isValidChunk( tr, "Realloc", who, hdl );
         size = getSize( tr );
         hdl->mem_used -= size;
         MEMSET( old, FREED_BYTE, size + 1 );
         freeEntry( tr, hdl );
-        return( fn( old, 0 ) );
+        return( hdl->realloc( old, 0 ) );
     }
 
     /* size != 0 */
     if( old == NULL ) {
         if( hdl->flags & _TRMEM_REALLOC_NULL ) {
-            trPrt( hdl, MSG_NULL_PTR, name, who );
+            trPrt( hdl, MSG_NULL_PTR, "Realloc", who );
         }
-        new_block = fn( NULL, size + 1 );
+        new_block = hdl->realloc( NULL, size + 1 );
         if( new_block != NULL ) {
             MEMSET( new_block, ALLOC_BYTE, size );
             *(unsigned char *)_PtrAdd( new_block, size ) = MARKER_BYTE;
@@ -655,13 +651,13 @@ void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
     /* old != NULL && size != 0 */
     tr = removeFromList( old, hdl );
     if( tr == NULL ) {
-        trPrt( hdl, MSG_UNOWNED_CHUNK, name, who, old );
+        trPrt( hdl, MSG_UNOWNED_CHUNK, "Realloc", who, old );
         return( NULL );
     }
-    if( !isValidChunk( tr, name, who, hdl ) ) {
+    if( !isValidChunk( tr, "Realloc", who, hdl ) ) {
         return( NULL );
     }
-    new_block = fn( old, size + 1 );
+    new_block = hdl->realloc( old, size + 1 );
     if( new_block == NULL ) {
         addToList( tr, hdl );   /* put back on list without change */
         return( new_block );
