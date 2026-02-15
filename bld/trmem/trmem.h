@@ -50,12 +50,16 @@ typedef struct _trmem_internal  *_trmem_hdl;
 
 typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)
-#define _TRMEM_ROUTINE(x)   ((_trmem_who)(x))
 
 /* generic pointer to code with realloc signature */
 typedef void *(*_trmem_realloc_who)(void *, size_t);
 #define _TRMEM_NO_REALLOC   ((_trmem_realloc_who)0)
-#define _TRMEM_REALLOC(x)   ((_trmem_realloc_who)(x))
+
+/* generic pointer to code with strdup signature */
+typedef char *(*_trmem_strdup_who)(const char *);
+#define _TRMEM_NO_STRDUP    ((_trmem_strdup_who)0)
+
+#define _TRMEM_ROUTINE(x)   ((_trmem_who)(x))
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 #define _TRMEM_WHO(x)       _trmem_guess_who()
