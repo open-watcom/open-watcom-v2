@@ -31,37 +31,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "substr.h"
-#include "globals.h"
-#include "mem.h"
+#include <stddef.h>
 
 
-void SubStr_out( const SubStr *s, FILE *o )
-{
-    size_t  i;
+extern void     MemInit( void );
+extern void     MemFini( void );
 
-    fwrite( s->str, s->len, 1, o );
-    for( i = 0; i < s->len; i++ ) {
-        if( s->str[i] == '\n' ) {
-            oline++;
-        }
-    }
-}
-
-int SubStr_eq( const SubStr *s1, const SubStr *s2 )
-{
-    return( s1->len == s2->len && memcmp( s1->str, s2->str, s1->len ) == 0 );
-}
-
-void SubStr_init( SubStr *r, uchar *s, size_t l )
-{
-    r->str = s;
-    r->len = l;
-}
-
-void Str_init( Str *r, const SubStr* s )
-{
-    SubStr_init( r, MemAlloc( s->len ), s->len );
-    memcpy( r->str, s->str, s->len );
-}
+extern void     *MemAlloc( size_t size );
+extern void     MemFree( void *ptr );
