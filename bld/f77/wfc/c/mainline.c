@@ -100,7 +100,6 @@ static void FInit( void )
 static void FFini( void )
 {
     ErrorFini();
-    FMemErrors();
     FMemFini();
 }
 

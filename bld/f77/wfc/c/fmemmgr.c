@@ -80,7 +80,7 @@ void    FMemInit( void ) {
     UnFreeMem = 0;
 #if defined( TRMEM )
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup, NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
@@ -101,9 +101,9 @@ void    FMemErrors( void ) {
 }
 
 
-void    FMemFini( void ) {
-//========================
-
+void    FMemFini( void )
+//======================
+{
 #if defined( TRMEM )
     if( memHandle != NULL ) {
         _trmem_prt_list_ex( memHandle, 100 );
@@ -115,10 +115,26 @@ void    FMemFini( void ) {
         memHandle = NULL;
     }
 #else
+    FMemErrors();
     SysMemFini();
 #endif
 }
 
+static void no_mem( void )
+{
+    if( (ProgSw & PS_STMT_TOO_BIG) == 0
+      && (StmtSw & SS_SCANNING) && (ITHead != NULL) ) {
+        FreeITNodes( ITHead );
+        ITHead = NULL;
+        Error( MO_LIST_TOO_BIG );
+        ProgSw |= PS_STMT_TOO_BIG;
+    } else {
+        ProgSw |= PS_FATAL_ERROR;
+        PurgeAll(); // free up memory so we can process the error
+        Error( MO_DYNAMIC_OUT );
+        CSuicide();
+    }
+}
 
 TRMEMAPI( FMemAlloc )
 void    *FMemAlloc( size_t size ) {
@@ -139,18 +155,7 @@ void    *FMemAlloc( size_t size ) {
         p = malloc( size );
 #endif
         if( p == NULL ) {
-            if( (ProgSw & PS_STMT_TOO_BIG) == 0
-              && (StmtSw & SS_SCANNING) && (ITHead != NULL) ) {
-                FreeITNodes( ITHead );
-                ITHead = NULL;
-                Error( MO_LIST_TOO_BIG );
-                ProgSw |= PS_STMT_TOO_BIG;
-            } else {
-                ProgSw |= PS_FATAL_ERROR;
-                PurgeAll(); // free up memory so we can process the error
-                Error( MO_DYNAMIC_OUT );
-                CSuicide();
-            }
+            no_mem();
         } else {
             UnFreeMem++;
         }
@@ -171,12 +176,42 @@ void    *wres_alloc( size_t size )
 #endif
 }
 
+
+TRMEMAPI( FMemStrdup )
+char    *FMemStrdup( const char *str )
+//====================================
+{
+    void        *p;
+
+#if defined( TRMEM )
+    p = _trmem_strdup( str, _TRMEM_WHO( 3 ), memHandle );
+#else
+    p = strdup( str );
+#endif
+    if( p == NULL ) {
+        FrlFini( &ITPool );
+#if defined( TRMEM )
+        p = _trmem_strdup( str, _TRMEM_WHO( 3 ), memHandle );
+#else
+        p = strdup( str );
+#endif
+        if( p == NULL ) {
+            no_mem();
+        } else {
+            UnFreeMem++;
+        }
+    } else {
+        UnFreeMem++;
+    }
+    return( p );
+}
+
 TRMEMAPI( FMemFree )
 void    FMemFree( void *p ) {
 //===========================
 
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 3 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
 #else
     free( p );
 #endif
@@ -188,27 +223,8 @@ void    wres_free( void *p )
 //==========================
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 5 ), memHandle );
 #else
     free( p );
 #endif
-}
-
-TRMEMAPI( FMemStrDup )
-char *FMemStrDup( const char *buf )
-//=================================
-{
-    char    *new;
-    size_t  len;
-
-    len = strlen( buf ) + 1;
-#if defined( TRMEM )
-    new = _trmem_alloc( len, _TRMEM_WHO( 5 ), memHandle );
-#else
-    new = malloc( len );
-#endif
-    if( new != NULL ) {
-        memcpy( new, buf, len );
-    }
-    return( new );
 }
