@@ -493,7 +493,15 @@ void FAR *FarMallocUnSafe( size_t size )
 void FAR *FarMallocSafe( size_t size )
 /************************************/
 {
-    return( check_nomem( FarMallocUnSafe( size ) ) );
+    FAR *ptr;
+
+    ptr = FarMallocUnSafe( size );
+    if( ptr == NULL ) {
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
+        // never return
+    }
+    return( ptr );
 }
 
 
