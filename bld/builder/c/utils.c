@@ -73,8 +73,8 @@ void MOpen( void )
 /****************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, NULL, NULL, NULL, TRPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TRMemHandle = _trmem_open( malloc, free, NULL, strdup, NULL, TRPrintLine,
+        _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
 #endif
 }
 
