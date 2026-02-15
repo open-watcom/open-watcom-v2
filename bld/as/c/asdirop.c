@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ dir_operand *DirOpLine( const char *string )
     dirop = dirOpAlloc();
     dirop->next = NULL;
     dirop->type = DIROP_LINE;
-    STRING_CONTENT( dirop ) = AsStrdup( string );
+    STRING_CONTENT( dirop ) = MemStrdup( string );
     return( dirop );
 }
 
@@ -91,7 +92,7 @@ dir_operand *DirOpString( const char *string )
     dirop = dirOpAlloc();
     dirop->next = NULL;
     dirop->type = DIROP_STRING;
-    STRING_CONTENT( dirop ) = AsStrdup( string );
+    STRING_CONTENT( dirop ) = MemStrdup( string );
     return( dirop );
 }
 

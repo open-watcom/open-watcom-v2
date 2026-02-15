@@ -95,7 +95,7 @@ static void yylexError( int res_id ) {
     CurrLineno = yylineno;
     CurrFilename = yyfname;
     AsMsgGet( res_id, AsResBuffer );
-    tmpstr = AsStrdup( AsResBuffer );
+    tmpstr = MemStrdup( AsResBuffer );
     yyerror( tmpstr );
     MemFree( tmpstr );
     CurrLineno = saveLineno;
@@ -382,7 +382,7 @@ sym                     {
 [0-9]*"."[0-9]+         { yylval.fval = strtod( yytext(), NULL ); return( T_FLOAT_CONST ); }
 string                  {
                             MemFree( cStr );
-                            yylval.str = ( cStr = AsStrdup( yytext()+1 ) );
+                            yylval.str = ( cStr = MemStrdup( yytext()+1 ) );
                             cStr[yytextlen - 2] = 0;
                             return( T_STRING_CONST );
                         }
@@ -429,7 +429,7 @@ getfname:   tok = cursor;
 ws                      { goto getfname; }
 "\""fname"\""           {
                             MemFree( yyfname );
-                            yyfname = AsStrdup( yytext()+1 );
+                            yyfname = MemStrdup( yytext()+1 );
                             yyfname[yytextlen - 2] = 0;
                             dropDblBackSlashes( yyfname );
                             goto getfname;
@@ -456,7 +456,7 @@ ws                      { goto getdirop; }
 ((ch \ [ \t]) ch*) |
 empstr                  {
                             MemFree( dirOpStr );
-                            yylval.str = ( dirOpStr = AsStrdup( yytext() ) );
+                            yylval.str = ( dirOpStr = MemStrdup( yytext() ) );
                             return( T_DIRECTIVE_OPERAND );
                         }
 */

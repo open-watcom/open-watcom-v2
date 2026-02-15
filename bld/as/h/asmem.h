@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 typedef void    *pointer;
 
 extern void     *AsMemAlloc( size_t );
+extern char     *AsMemStrdup( const char *str );
 extern void     AsMemFree( pointer );
 extern void     *AsMemRealloc( pointer, size_t );
 
@@ -39,6 +41,7 @@ extern void     AsMemInit( void );
 extern void     AsMemFini( void );
 
 #define MemAlloc                AsMemAlloc
+#define MemStrdup               AsMemStrdup
 #define MemFree                 AsMemFree
 #define MemRealloc              AsMemRealloc
 #define MemInit                 AsMemInit

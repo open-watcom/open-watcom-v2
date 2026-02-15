@@ -71,7 +71,8 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+                                NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
@@ -108,6 +109,17 @@ pointer MemAlloc( size_t size )
     return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
 #else
     return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 4 ), memHandle ) );
+#else
+    return( strdup( str ) );
 #endif
 }
 
@@ -191,6 +203,12 @@ pointer MemAlloc( size_t size )
 /*****************************/
 {
     return( AsmAlloc( size ) );
+}
+
+char *MemStrdup( const char *str )
+/********************************/
+{
+    return( AsmStrdup( str ) );
 }
 
 void MemFree( pointer ptr )

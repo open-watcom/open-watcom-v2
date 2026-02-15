@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ static obj_section_handle   sectionHashTable[HASH_TABLE_SIZE];
 static void sectionFields( obj_section_handle section, char *name, owl_section_type type, owl_alignment align ) {
 //***************************************************************************************************************
 
-    if( name ) section->name = AsStrdup( name );
+    if( name ) section->name = MemStrdup( name );
     // Otherwise we keep the old name.
 
     section->owl_hdl = OWLSectionInit( OwlFile, section->name, type, align );

@@ -103,7 +103,7 @@ asm_line        : label statement more_stmts T_NEWLINE          { CurrLineno++; 
                 | T_FILE_SWITCH                                 {   /* #line directive */
                                                                     CurrLineno = $1->line;
                                                                     MemFree( CurrFilename );
-                                                                    CurrFilename = AsStrdup( $1->name );
+                                                                    CurrFilename = MemStrdup( $1->name );
                                                                     MemFree( $1 );
                                                                 }
 :elsesegment

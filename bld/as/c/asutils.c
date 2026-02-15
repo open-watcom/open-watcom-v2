@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,17 +309,3 @@ void AsWarning( int resource_id, ... )
 }
 
 #endif
-
-// Functions common to both inline and standalone assemblers.
-
-char *AsStrdup( const char *str )
-//*******************************
-{
-    char    *mem;
-    size_t  len;
-
-    len = strlen( str ) + 1;
-    mem = MemAlloc( len );
-    memcpy( mem, str, len );
-    return( mem );
-}
