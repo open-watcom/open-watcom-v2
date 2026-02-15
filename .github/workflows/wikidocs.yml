@@ -70,7 +70,6 @@ jobs:
     # run: git config --local --list
   wiki-build:
     needs: wiki-boot
-    name: Build
     runs-on: windows-2022
     strategy:
       matrix:
@@ -86,6 +85,7 @@ jobs:
         - title:  'Readme'
           doctype:  'readme'
           gitpath:  'bld docstxt wiki'
+    name: Build ${{matrix.title}}
     steps:
     - name: Set EOL to LF
       run: |
@@ -95,7 +95,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: ./.github/actions/dosboxin
-    - name: Build ${{matrix.title}}
+    - name: Build
       uses: ./.github/actions/docbuild
       with:
         args:       'vs2022'
