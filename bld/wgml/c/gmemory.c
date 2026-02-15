@@ -67,7 +67,7 @@ static void prt( void * file, const char * buf, size_t len )
 void mem_init( void )
 {
 #ifdef TRMEM
-    memHandle = _trmem_open( &malloc, &free, &realloc, NULL, NULL, &prt, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup, NULL, &prt, _TRMEM_ALL );
 #endif
 }
 
@@ -121,6 +121,15 @@ void mem_fini( void )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        xx_simple_err_exit( ERR_NOMEM_AVAIL );
+        /* never return */
+    }
+    return( ptr );
+}
+
 /***************************************************************************/
 /*  Allocate some storage                                                  */
 /***************************************************************************/
@@ -128,18 +137,11 @@ void mem_fini( void )
 TRMEMAPI( mem_alloc )
 void *mem_alloc( unsigned size )
 {
-    void    *p;
-
 #ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
 #else
-    p = malloc( size );
+    return( check_nomem( malloc( size ) ) );
 #endif
-    if( p == NULL ) {
-        xx_simple_err_exit( ERR_NOMEM_AVAIL );
-        /* never return */
-    }
-    return( p );
 }
 
 /***************************************************************************/
@@ -149,18 +151,11 @@ void *mem_alloc( unsigned size )
 TRMEMAPI( mem_realloc )
 void *mem_realloc( void * oldp, unsigned size )
 {
-    void    *   p;
-
 #ifdef TRMEM
-    p = _trmem_realloc( oldp, size, _TRMEM_WHO( 2 ), memHandle );
+    return( check_nomem( _trmem_realloc( oldp, size, _TRMEM_WHO( 2 ), memHandle ) ) );
 #else
-    p = realloc( oldp, size );
+    return( check_nomem( realloc( oldp, size ) ) );
 #endif
-    if( p == NULL ) {
-        xx_simple_err_exit( ERR_NOMEM_AVAIL );
-        /* never return */
-    }
-    return( p );
 }
 
 
@@ -171,22 +166,13 @@ void *mem_realloc( void * oldp, unsigned size )
 TRMEMAPI( mem_strdup )
 char *mem_strdup( const char *str )
 {
-    unsigned    size;
-    char        *p;
-
     if( str == NULL )
         str = "";
-    size = (unsigned)strlen( str );
 #ifdef TRMEM
-    p = _trmem_alloc( size + 1, _TRMEM_WHO( 3 ), memHandle );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 3 ), memHandle ) ) );
 #else
-    p = malloc( size + 1 );
+    return( check_nomem( strdup( str ) ) );
 #endif
-    if( p == NULL ) {
-        xx_simple_err_exit( ERR_NOMEM_AVAIL );
-        /* never return */
-    }
-    return( strcpy( p, str ) );
 }
 
 /***************************************************************************/
@@ -199,14 +185,10 @@ char *mem_tokdup( const char *str, unsigned size )
     char    *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size + 1, _TRMEM_WHO( 4 ), memHandle );
+    p = check_nomem( _trmem_alloc( size + 1, _TRMEM_WHO( 4 ), memHandle ) );
 #else
-    p = malloc( size + 1 );
+    p = check_nomem( malloc( size + 1 ) );
 #endif
-    if( p == NULL ) {
-        xx_simple_err_exit( ERR_NOMEM_AVAIL );
-        /* never return */
-    }
     strncpy( p, str, size );
     p[size] = '\0';
     return( p );
