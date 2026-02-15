@@ -22,6 +22,7 @@ on:
       - 'docs/**'
       - 'bld/cc/gml/**'
       - 'bld/cg/doc/**'
+      - 'bld/docstxt/**'
       - 'bld/dwarf/dw/doc/**'
       - 'bld/f77/wfc/gml/**'
       - 'bld/plusplus/gml/**'
