@@ -77,11 +77,14 @@ jobs:
         - title:  'HTML'
           doctype:  'wikihtml'
           owtarget: '.and wikihtml .or -- -- docset=wikihtml -i'
+          gitpath:  'docs wiki'
         - title:  'PDF'
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
+          gitpath:  'docs wiki'
         - title:  'Readme'
           doctype:  'readme'
+          gitpath:  'bld docstxt docs'
     steps:
     - name: Set EOL to LF
       run: |
@@ -96,7 +99,7 @@ jobs:
       with:
         args:       'vs2022'
         target:     ${{matrix.doctype}}
-        gitpath:    'docs wiki'
+        gitpath:    ${{matrix.gitpath}}
         suffix:     'nt x64 vs2022'
         doc_suffix: ${{matrix.doctype}} vs2022
         owtools:    'VISUALC'
@@ -134,6 +137,12 @@ jobs:
       uses: actions/download-artifact@v5
       with:
         name: 'rel-wikipdf-vs2022'
+        path: docs
+    - if: env.OWTESTMODE != '1'
+      name: Download Artifact readme
+      uses: actions/download-artifact@v5
+      with:
+        name: 'rel-readme-vs2022'
         path: docs
     - name: Wiki Repo Update
       run: |

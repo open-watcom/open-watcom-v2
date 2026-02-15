@@ -101,7 +101,9 @@ if "%OWBUILD_STAGE%" == "inst" (
 )
 if "%OWBUILD_STAGE%" == "readme" (
     cd %OWROOT%\bld\docstxt
-    builder build
+    mkdir wiki
+    cd wiki
+    wmake -f ..\docs\makefile
     set RC=!ERRORLEVEL!
 )
 cd %OWROOT%
