@@ -703,7 +703,7 @@ static void EmitOvlEntry( section *sect, void *_off )
     _HostU16toTarg( flags_anc, entry.flags_anc );
     start_para = sect->sect_addr.seg + ( sect->sect_addr.off >> FmtData.SegShift );
     _HostU16toTarg( start_para, entry.start_para );
-    len = __ROUND_UP_TO_PARA( sect->size );
+    len = __ROUND_UP_SIZE_TO_PARA( sect->size );
     _HostU16toTarg( len, entry.num_paras );
     _HostU32toTarg( sect->u.file_loc, entry.disk_addr );
     PutOvlInfo( *off, &entry, sizeof( entry ) );
