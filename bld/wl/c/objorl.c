@@ -89,7 +89,7 @@ static void *ORLRead( struct orl_io_struct *orlio, size_t len )
 
     result = CachePermRead( &orlio->list, ORLFilePos + ORLPos, len );
     ORLPos += len;
-    _ChkAlloc( cache, sizeof( readcache ) );
+    cache = LnkMemAlloc( sizeof( readcache ) );
     cache->next = ReadCacheList;
     ReadCacheList = cache;
     cache->data = result;
@@ -305,7 +305,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
              * entry directive contains unmangled symbol name
              * prepend undrescore should be OK
              */
-            _ChkAlloc( coff_symbol_name, strlen( name ) + 2 );
+            coff_symbol_name = LnkMemAlloc( strlen( name ) + 2 );
             coff_symbol_name[0] = '_';
             strcpy( coff_symbol_name + 1, name );
             SetStartSym( coff_symbol_name );
@@ -562,7 +562,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
         if( namelen > sizeof( CoffImportRefName ) - 1 ) {
             namelen -= sizeof( CoffImportRefName ) - 1;
             if( strnicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
-                _ChkAlloc( ImpModName, namelen + 5 );
+                ImpModName = LnkMemAlloc( namelen + 5 );
                 memcpy( ImpModName, name, namelen );
                 if( strnicmp( CurrMod->name.u.ptr + strlen( CurrMod->name.u.ptr ) - 4, ".drv", 4 ) == 0 ) { /* KLUDGE!! */
                     memcpy( ImpModName + namelen, ".drv", 5 );

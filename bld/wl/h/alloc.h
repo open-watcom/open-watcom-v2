@@ -49,7 +49,6 @@ extern void     ResetPass1Blocks( void );
 extern bool     PermShrink( void );
 extern void     ReleasePass1Blocks( void );
 
-#define _ChkAlloc( dest, size )         dest = LnkMemAlloc( size )
 #define _TryAlloc( dest, size )         dest = TryAlloc( size )
 #define _PermAlloc( dest, size )        dest = PermAlloc( size )
 #define _PermFree( ptr )                /* nothing to do */

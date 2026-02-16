@@ -213,7 +213,7 @@ static bool getSegFlags( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
         return( false );
     }
-    _ChkAlloc( entry, sizeof( qnx_seg_flags ) );
+    entry = LnkMemAlloc( sizeof( qnx_seg_flags ) );
     entry->flags = 0;
     entry->name = tostring();
     entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;

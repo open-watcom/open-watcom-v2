@@ -111,14 +111,14 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
     start = mem;
     allocsize = OSF_RLIDX_MAX * unitsize;
     while( idxhigh-- > 0 ) {
-        _ChkAlloc( *mem, allocsize );
+        *mem = LnkMemAlloc( allocsize );
         memset( *mem, 0, allocsize );
         mem++;
     }
     idxlow = OSF_RLIDX_LOW( pageidx );
     if( idxlow != 0 ) {
         allocsize = idxlow * unitsize;
-        _ChkAlloc( *mem, allocsize );
+        *mem = LnkMemAlloc( allocsize );
         memset( *mem, 0, allocsize );
     }
     return( start );

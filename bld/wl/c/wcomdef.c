@@ -473,7 +473,7 @@ void ProcComdat( void )
         piece->length = EOObjRec - ObjBuff;
     }
     if( !CacheIsPerm() ) {
-        _ChkAlloc( piece->data, piece->length );
+        piece->data = LnkMemAlloc( piece->length );
         memcpy( piece->data, ObjBuff, piece->length );
         piece->free_data = true;
     } else {

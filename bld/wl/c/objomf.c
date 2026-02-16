@@ -169,7 +169,7 @@ static void ProcTHEADR( void )
             BadObject();
         }
 
-        _ChkAlloc( name, sym_len + 1 );
+        name = LnkMemAlloc( sym_len + 1 );
         memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
         CurrMod->name.u.ptr = name;

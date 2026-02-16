@@ -177,7 +177,7 @@ static void ReadOldLib( void )
             QRead( the_file, &head.pe, PE_HDR_SIZE, fname );
             QRead( the_file, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
             num_objects = head.pe.fheader.num_objects;
-            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+            objects = LnkMemAlloc( num_objects * sizeof( pe_object ) );
             QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
             for( ; num_objects > 0; --num_objects ) {
@@ -362,8 +362,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    _ChkAlloc( exe_type, sizeof( FullTypeRecord ) );
-
+    exe_type = LnkMemAlloc( sizeof( FullTypeRecord ) );
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = type->NumResources;
     exe_type->Info.type = findResOrTypeName( restab, &(type->TypeName) );
@@ -384,7 +383,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    _ChkAlloc( exe_res, sizeof( FullResourceRecord ) );
+    exe_res = LnkMemAlloc( sizeof( FullResourceRecord ) );
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
     exe_res->Info.flags = mem_flags;
@@ -1247,7 +1246,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
         }
         LnkMemFree( FmtData.u.os2fam.stub_file_name );
         len = strlen( fullname ) + 1;
-        _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
+        FmtData.u.os2fam.stub_file_name = LnkMemAlloc( len );
         memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
         QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
         if( dosheader.signature != EXESIGN_DOS ) {

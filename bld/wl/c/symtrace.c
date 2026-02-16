@@ -85,7 +85,7 @@ void AddTraceListMod( char *fname, char *membname )
 {
     trace_info      *info;
 
-    _ChkAlloc( info, sizeof( trace_info ) );
+    info = LnkMemAlloc( sizeof( trace_info ) );
     info->u.name = fname;
     info->member = membname;
     info->found = false;        // used for matching libraries
@@ -171,7 +171,7 @@ void AddTraceListSym( char *symname )
 {
     sym_trace_info  *info;
 
-    _ChkAlloc( info, sizeof( sym_trace_info ) );
+    info = LnkMemAlloc( sizeof( sym_trace_info ) );
     info->name = symname;
     info->next = TraceListSym;
     TraceListSym = info;

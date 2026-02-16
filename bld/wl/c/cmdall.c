@@ -284,7 +284,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
 
     new_member = NULL;
     if( member != NULL ) {
-        _ChkAlloc( new_member, offsetof( member_list, name ) + strlen( member ) + 1 );
+        new_member = LnkMemAlloc( offsetof( member_list, name ) + strlen( member ) + 1 );
         new_member->flags = DBIFlag;
         strcpy( new_member->name, member );
         new_member->next = NULL;
@@ -493,7 +493,7 @@ static bool ProcPath( void )
     const char      *end;
 
     if( GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
-        _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
+        new_path = LnkMemAlloc( sizeof( path_entry ) + Token.len );
         end = Token.this + Token.len;
         p = new_path->name;
         while( Token.this != end ) {
@@ -947,7 +947,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
         RestoreParser();
     }
     AddCharStringTable( &strtab, '\0' );
-    _ChkAlloc( copyptr, GetStringTableSize( &strtab ) );
+    copyptr = LnkMemAlloc( GetStringTableSize( &strtab ) );
     sys = (sysblock *)copyptr;
     WriteStringTable( &strtab, CopyBlocks, &copyptr );
     FiniStringTable( &strtab );
@@ -1610,7 +1610,7 @@ static bool ProcOrdSeg( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    _ChkAlloc( CurrOSeg, sizeof( ORDER_SEGMENT ) );
+    CurrOSeg = LnkMemAlloc( sizeof( ORDER_SEGMENT ) );
     CurrOSeg->NextSeg = CurrOClass->SegList;
     CurrOClass->SegList = CurrOSeg;
     CurrOSeg->Name = tostring();
@@ -1640,7 +1640,7 @@ static bool ProcOrdClass( void )
     }
     LinkState |= LS_SPEC_ORDER_FLAG;
     LastOClass = CurrOClass;
-    _ChkAlloc( CurrOClass, sizeof( ORDER_CLASS ) );
+    CurrOClass = LnkMemAlloc( sizeof( ORDER_CLASS ) );
     if( LastOClass == NULL ) {
         CurrSect->orderlist = CurrOClass;
     } else {

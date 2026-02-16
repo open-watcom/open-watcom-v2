@@ -126,7 +126,7 @@ static void InitSections( ElfHdr *hdr )
     num += FmtData.u.elf.extrasects;
     hdr->eh.e_shnum = num;
     hdr->sh_size = sizeof( Elf32_Shdr ) * hdr->eh.e_shnum;
-    _ChkAlloc( hdr->sh, hdr->sh_size );
+    hdr->sh = LnkMemAlloc( hdr->sh_size );
     memset( hdr->sh, 0, hdr->sh_size );
     hdr->sh[hdr->i.symtab].sh_name = AddSecName( hdr, ".symtab" );
 }
@@ -179,7 +179,7 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_phnum = NumGroups + NumPhdr;
     hdr->eh.e_phoff = sizeof( Elf32_Ehdr );
     hdr->ph_size = sizeof( Elf32_Phdr ) * hdr->eh.e_phnum;
-    _ChkAlloc( hdr->ph, hdr->ph_size );
+    hdr->ph = LnkMemAlloc( hdr->ph_size );
     if( NumPhdr ) {
         hdr->ph->p_type = PT_PHDR;
         hdr->ph->p_offset = sizeof( Elf32_Ehdr );

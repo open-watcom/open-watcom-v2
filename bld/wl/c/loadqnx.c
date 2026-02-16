@@ -356,7 +356,7 @@ static void WriteQNXResource( void )
                 LnkMsg( WRN+MSG_RESOURCE_TOO_BIG, "s", FmtData.resource );
                 return;
             }
-            _ChkAlloc( buf, len );
+            buf = LnkMemAlloc( len );
             rec.data_nbytes = len + sizeof( lmf_resource );
             WriteLoad( &rec, sizeof( lmf_record ) );
             WriteLoad( &resource, sizeof( lmf_resource ) );

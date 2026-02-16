@@ -321,7 +321,7 @@ static void WriteMapSectSegs( section *sect )
                 count += RingCount( class->segs );
             }
         }
-        _ChkAlloc( segs, count * sizeof( seg_info ) );
+        segs = LnkMemAlloc( count * sizeof( seg_info ) );
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
@@ -709,7 +709,7 @@ static void WriteMapLines( void )
       || length == 0 )
        return;
 
-    _ChkAlloc( input, length );
+    input = LnkMemAlloc( length );
     ReadInfo( input_vm, input, length );
 
     for( p = input; p - input < length; ) {
@@ -737,7 +737,7 @@ static void WriteMapLines( void )
         opcode_base = *p;
         p += 1;
 
-        _ChkAlloc( opcode_lengths, sizeof( unsigned ) * ( opcode_base - 1 ) );
+        opcode_lengths = LnkMemAlloc( sizeof( unsigned ) * ( opcode_base - 1 ) );
         for( i = 0; i < opcode_base - 1; ++i ) {
             opcode_lengths[i] = *p++;
         }
@@ -894,7 +894,7 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
     symrecinfo      *info;
 
     if( RingLookup( *head, CheckSymRecList, sym ) == NULL ) {
-        _ChkAlloc( info, sizeof( symrecinfo ) );
+        info = LnkMemAlloc( sizeof( symrecinfo ) );
         info->next = NULL;
         info->sym = sym;
         info->mod = CurrMod;
@@ -1255,7 +1255,7 @@ void WriteMapPubSortStart( pubdefinfo *info )
     if( (MapFlags & MAP_SORT)
       && (MapFlags & MAP_GLOBAL) == 0
       && ( CurrMod->publist != NULL ) ) {
-        _ChkAlloc( info->symarray, Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
+        info->symarray = LnkMemAlloc( Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
     }
 }
 

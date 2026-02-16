@@ -103,7 +103,7 @@ bool CacheOpen( const file_list *list )
     }
     if( infile->cache == NULL ) {
         if( infile->status & INSTAT_FULL_CACHE ) {
-            _ChkAlloc( infile->cache, infile->len );
+            infile->cache = LnkMemAlloc( infile->len );
             if( infile->currpos != 0 ) {
                 QLSeek( infile->handle, 0, SEEK_SET, infile->name.u.ptr );
             }
@@ -195,10 +195,10 @@ void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
         return( buf );
     if( Multipage ) {
         result = LnkMemRealloc( buf, len );
-        _ChkAlloc( TokBuff, TokSize );
+        TokBuff = LnkMemAlloc( TokSize );
         Multipage = false;              // indicate that last read is permanent.
     } else {
-        _ChkAlloc( result, len );
+        result = LnkMemAlloc( len );
         memcpy( result, buf, len );
     }
     return( result );
@@ -232,7 +232,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
     cache = infile->cache;
     for( ;; ) {
         if( cache[bufnum] == NULL ) {   // make sure page is in.
-            _ChkAlloc( cache[bufnum], CACHE_PAGE_SIZE );
+            cache[bufnum] = LnkMemAlloc( CACHE_PAGE_SIZE );
             newpos = (unsigned long)bufnum * CACHE_PAGE_SIZE;
             if( infile->currpos != newpos ) {
                 QSeek( infile->handle, newpos, infile->name.u.ptr );

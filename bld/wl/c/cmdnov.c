@@ -485,7 +485,7 @@ static bool ProcCopyright( void )
         if( FmtData.u.nov.copyright != NULL ) {
             LnkMemFree( FmtData.u.nov.copyright );  // assume second is correct.
         }
-        _ChkAlloc( FmtData.u.nov.copyright, DEFAULT_COPYRIGHT_LENGTH + 1 );
+        FmtData.u.nov.copyright = LnkMemAlloc( DEFAULT_COPYRIGHT_LENGTH + 1 );
         memcpy(FmtData.u.nov.copyright,DEFAULT_COPYRIGHT,DEFAULT_COPYRIGHT_LENGTH+1);
         copy_year = FmtData.u.nov.copyright + YEAR_OFFSET;
         thetime = time( NULL );

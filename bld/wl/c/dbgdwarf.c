@@ -894,7 +894,7 @@ void DwarfWrite( void )
     elf_header.e_shstrndx = elf_header.e_shnum - 1;     // last entry
     WriteLoad( &elf_header, sizeof( Elf32_Ehdr ) );
     shdr_size = sizeof( Elf32_Shdr ) * elf_header.e_shnum;
-    _ChkAlloc( sect_header, shdr_size );
+    sect_header = LnkMemAlloc( shdr_size );
     savepos = PosLoad() + shdr_size;
     SeekLoad( savepos );
     memset( sect_header, 0, sizeof( Elf32_Shdr ) );   // first fill in the null section

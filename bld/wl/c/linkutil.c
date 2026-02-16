@@ -146,7 +146,7 @@ char *ChkStrdup( const char *str )
     char        *copy;
 
     len = strlen( str ) + 1;
-    _ChkAlloc( copy, len );
+    copy = LnkMemAlloc( len );
     memcpy( copy, str, len );
     return( copy );
 }
@@ -156,7 +156,7 @@ char *ChkToString( const void *mem, size_t len )
 {
     char        *str;
 
-    _ChkAlloc( str, len + 1 );
+    str = LnkMemAlloc( len + 1 );
     memcpy( str, mem, len );
     str[len] = '\0';
     return( str );
@@ -539,7 +539,7 @@ void InitEnvVars( void )
 #endif
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
-            _ChkAlloc( ExePath, len + 1 );
+            ExePath = LnkMemAlloc( len + 1 );
             p = ExePath;
             do {
                 if( p != ExePath )
@@ -548,7 +548,7 @@ void InitEnvVars( void )
             } while( *path_list != '\0' );
             *p = '\0';
         } else {
-            _ChkAlloc( ExePath, 1 );
+            ExePath = LnkMemAlloc( 1 );
             *ExePath = '\0';
         }
     }
@@ -556,7 +556,7 @@ void InitEnvVars( void )
         path_list = GetEnvString( "LIB" );
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
-            _ChkAlloc( LibPath, len + 1 );
+            LibPath = LnkMemAlloc( len + 1 );
             p = LibPath;
             do {
                 if( p != LibPath )
@@ -565,7 +565,7 @@ void InitEnvVars( void )
             } while( *path_list != '\0' );
             *p = '\0';
         } else {
-            _ChkAlloc( LibPath, 1 );
+            LibPath = LnkMemAlloc( 1 );
             *LibPath = '\0';
         }
     }
@@ -713,7 +713,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
             ptr = ChkToString( buff, len );
         } else {
             extlen = DefExtLen[etype];
-            _ChkAlloc( ptr, len + 1 + extlen + 1 );
+            ptr = LnkMemAlloc( len + 1 + extlen + 1 );
             memcpy( ptr, buff, len );
             if( extlen > 0 ) {
                 ptr[len++] = '.';
@@ -737,7 +737,7 @@ section *NewSection( void )
 {
     section             *sect;
 
-    _ChkAlloc( sect, sizeof( section ) );
+    sect = LnkMemAlloc( sizeof( section ) );
     sect->next_sect = NULL;
     sect->classlist = NULL;
     sect->orderlist = NULL;

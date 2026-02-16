@@ -625,7 +625,7 @@ static void ReadGroupsList( unsigned count, perm_read_info *info )
 
     while( count-- ) {
         size = BufReadU32( info );
-        _ChkAlloc( def, sizeof( incgroupdef ) + ( size - 1 ) * 2 * sizeof( char * ) );
+        def = LnkMemAlloc( sizeof( incgroupdef ) + ( size - 1 ) * 2 * sizeof( char * ) );
         RingAppend( &IncGroupDefs, def );
         def->numsegs = size;
         def->grpname = MapString( BufReadU32( info ) );
@@ -643,7 +643,7 @@ static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *inf
     libnamelist         *list;
 
     while( count-- > 0 ) {
-        _ChkAlloc( list, sizeof( libnamelist ) );
+        list = LnkMemAlloc( sizeof( libnamelist ) );
         list->name = MapString( BufReadU32( info ) );
         BufRead( info, &list->priority, sizeof( lib_priority ) );
         LinkList( head, list );
@@ -823,7 +823,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
         return;
     }
     size = QFileSize( hdl );
-    _ChkAlloc( *buf, size );
+    *buf = LnkMemAlloc( size );
     QRead( hdl, *buf, size, fname );
     QClose( hdl, fname );
 }
@@ -854,7 +854,7 @@ void ReadPermData( void )
     info.incfhdl = QObjOpen( IncFileName );
     if( info.incfhdl == NIL_FHANDLE )
         return;
-    _ChkAlloc( info.buffer, SECTOR_SIZE );
+    info.buffer = LnkMemAlloc( SECTOR_SIZE );
     QRead( info.incfhdl, info.buffer, SECTOR_SIZE, IncFileName );
     hdr = (inc_file_header *)info.buffer;
     if( memcmp( hdr->signature, INC_FILE_SIG, INC_FILE_SIG_SIZE ) != 0 ) {
@@ -878,15 +878,15 @@ void ReadPermData( void )
     }
     ReadHashPointers( &info );
     if( hdr->altdefsize > 0 ) {
-        _ChkAlloc( AltDefData, hdr->altdefsize );
+        AltDefData = LnkMemAlloc( hdr->altdefsize );
         QRead( info.incfhdl, AltDefData, hdr->altdefsize, IncFileName );
     }
     CarveWalkBlocks( CarveModEntry, ReadBlockInfo, &info );
     CarveWalkBlocks( CarveSegData, ReadBlockInfo, &info );
     CarveWalkBlocks( CarveSymbol, ReadBlockInfo, &info );
-    _ChkAlloc( IncStrTab, hdr->strtabsize );
+    IncStrTab = LnkMemAlloc( hdr->strtabsize );
     QRead( info.incfhdl, IncStrTab, hdr->strtabsize, IncFileName );
-    _ChkAlloc( ReadRelocs, hdr->relocsize );
+    ReadRelocs = LnkMemAlloc( hdr->relocsize );
     QRead( info.incfhdl, ReadRelocs, hdr->relocsize, IncFileName );
     QClose( info.incfhdl, IncFileName );
     ReadBinary( &OldExe, hdr->exename, hdr->exemodtime );
@@ -944,7 +944,7 @@ static void SaveRelocData( void *_curr, const char *data, size_t size )
     char **curr = _curr;
 
     if( ReadRelocs == NULL && SizeRelocs > 0 ) {
-        _ChkAlloc( ReadRelocs, SizeRelocs );
+        ReadRelocs = LnkMemAlloc( SizeRelocs );
         *curr = ReadRelocs;
     }
     memcpy( *curr, data, size );

@@ -209,7 +209,7 @@ static void GetMoreBranches( void )
     if( NumBranches > SEG_LIMIT ) {
         LnkMsg( FTL+MSG_NO_VIRT_MEM, NULL );
     }
-    _ChkAlloc( branches, alloc_size * 2 );
+    branches = LnkMemAlloc( alloc_size * 2 );
     memcpy( branches, SegTab, alloc_size );
     memset( (char *)branches + alloc_size, 0, alloc_size ); /* null pointers */
     LnkMemFree( SegTab );
@@ -258,7 +258,7 @@ static virt_struct GetBigStg( virt_mem_size size )
         if( NumHuge > HUGE_LIMIT ) {
             LnkMsg( FTL+MSG_NO_VIRT_MEM, NULL );
         }
-        _ChkAlloc( newtab, alloc_size * 2 );
+        newtab = LnkMemAlloc( alloc_size * 2 );
         memcpy( newtab, HugeTab, alloc_size );
         memset( (char *)newtab + alloc_size, 0, alloc_size );
         LnkMemFree( HugeTab );
@@ -504,7 +504,7 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
 {
     void        *buf;
 
-    _ChkAlloc( buf, len );
+    buf = LnkMemAlloc( len );
     ReadInfo( b, buf, len );
     PutInfo( a, buf, len );
     LnkMemFree( buf );
@@ -615,11 +615,11 @@ void     VirtMemInit( void )
     NextLeaf = 0;
     NextSwap = NULL;
     TinyLeft = 0;
-    _ChkAlloc( SegTab, NumBranches * sizeof( seg_table * ) );
+    SegTab = LnkMemAlloc( NumBranches * sizeof( seg_table * ) );
     memset( SegTab, 0, NumBranches * sizeof( seg_table * ) );
     SegTab[1] = PermAlloc( sizeof( seg_table ) * MAX_LEAFS );
     memset( SegTab[1], 0, sizeof( seg_table ) * MAX_LEAFS );
-    _ChkAlloc( HugeTab, NumHuge * sizeof( huge_table ) );
+    HugeTab = LnkMemAlloc( NumHuge * sizeof( huge_table ) );
     memset( HugeTab, 0, NumHuge * sizeof( huge_table ) );
 #else
     VMemBlocks = NULL;
@@ -649,7 +649,7 @@ virt_mem AllocStg( virt_mem_size size )
         _PermAlloc( ptr, size + sizeof( vmemblock ) - 1 );
         ptr->next = ptr;
     } else {
-        _ChkAlloc( ptr, size + sizeof( vmemblock ) - 1 );
+        ptr = LnkMemAlloc( size + sizeof( vmemblock ) - 1 );
         ptr->prev = NULL;
         ptr->next = VMemBlocks;
         if( VMemBlocks != NULL ) {

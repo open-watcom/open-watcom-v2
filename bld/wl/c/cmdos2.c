@@ -938,7 +938,7 @@ static bool getsegflags( void )
     os2_seg_flags   *entry;
 
     Token.thumb = true;
-    _ChkAlloc( entry, sizeof( os2_seg_flags ) );
+    entry = LnkMemAlloc( sizeof( os2_seg_flags ) );
     entry->specified = 0;
     entry->flags = FmtData.def_seg_flags;   // default value.
     entry->name = NULL;

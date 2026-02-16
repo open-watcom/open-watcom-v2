@@ -372,7 +372,7 @@ void *RINGNAME(Alloc) (         // ALLOCATE AND APPEND NEW ELEMENT
 {
     void *new_element;          // - allocated element
 
-    _ChkAlloc( new_element, size );
+    new_element = LnkMemAlloc( size );
     RINGNAME(Append)( hdr, new_element );
     return( new_element );
 }

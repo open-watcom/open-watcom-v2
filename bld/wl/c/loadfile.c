@@ -119,11 +119,11 @@ static f_handle openTempFile( char **fname )
     if( ptr == NULL )
         ptr = GetEnvString( "TMPDIR" );
     if( ptr == NULL ) {
-        _ChkAlloc( tptr, TEMPFNAME_SIZE );
+        tptr = LnkMemAlloc( TEMPFNAME_SIZE );
         *fname = tptr;
     } else {
         tlen = strlen( ptr );
-        _ChkAlloc( tptr, tlen + 1 + TEMPFNAME_SIZE );
+        tptr = LnkMemAlloc( tlen + 1 + TEMPFNAME_SIZE );
         memcpy( tptr, ptr, tlen );
         *fname = tptr;
         tptr += tlen;
@@ -159,7 +159,7 @@ static void SetupImpLib( void )
     ImpLib.module_name = NULL;
     ImpLib.didone = false;
     if( FmtData.make_implib ) {
-        _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
+        ImpLib.buffer = LnkMemAlloc( IMPLIB_BUFSIZE );
         if( FmtData.make_impfile ) {
             ImpLib.fname = ChkStrdup( FmtData.implibname );
             ImpLib.handle = QOpenRW( ImpLib.fname );
@@ -176,7 +176,7 @@ static void SetupImpLib( void )
          */
         if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE)) == 0 )
             ImpLib.module_name_len += strlen( fname + namelen );
-        _ChkAlloc( ImpLib.module_name, ImpLib.module_name_len );
+        ImpLib.module_name = LnkMemAlloc( ImpLib.module_name_len );
         memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
     }
 }
@@ -862,7 +862,7 @@ static void ExecWlib( void )
      * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
      *                  and +1 for nullchar
      */
-    _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
+    cmdline = LnkMemAlloc( namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
@@ -907,7 +907,7 @@ static void ExecWlib( void )
     char        *libtype;
 
     namelen = strlen( ImpLib.fname ) + 1;
-    _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
+    atfname = LnkMemAlloc( namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
@@ -1432,7 +1432,7 @@ void OpenBuffFile( outfilelist *outfile )
     if( outfile->handle == NIL_FHANDLE ) {
         PrintIOError( FTL+MSG_CANT_OPEN_NO_REASON, "s", outfile->fname );
     }
-    _ChkAlloc( outfile->buffer, BUFF_BLOCK_SIZE );
+    outfile->buffer = LnkMemAlloc( BUFF_BLOCK_SIZE );
 }
 
 void CloseBuffFile( outfilelist *outfile )

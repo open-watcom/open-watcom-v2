@@ -345,8 +345,8 @@ void ResetSym( void )
 void InitSym( void )
 /*************************/
 {
-    _ChkAlloc( GlobalSymPtrs, GLOBAL_TABALLOC );
-    _ChkAlloc( StaticSymPtrs, STATIC_TABALLOC );
+    GlobalSymPtrs = LnkMemAlloc( GLOBAL_TABALLOC );
+    StaticSymPtrs = LnkMemAlloc( STATIC_TABALLOC );
 }
 
 #ifdef DEVBUILD

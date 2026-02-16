@@ -343,7 +343,7 @@ void DoIncGroupDefs( void )
     group_entry     **grouptab;
 
     numgroups = RingCount( IncGroupDefs );
-    _ChkAlloc( IncGroups, sizeof( group_entry * ) * numgroups );
+    IncGroups = LnkMemAlloc( sizeof( group_entry * ) * numgroups );
     grouptab = IncGroups;
     RingLookup( IncGroupDefs, DefIncGroup, &grouptab );
     RingFree( &IncGroupDefs );
@@ -1089,7 +1089,7 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
         count++;
     }
     if( generate ) {
-        _ChkAlloc( symlist, sizeof( symbol * ) * count );
+        symlist = LnkMemAlloc( sizeof( symbol * ) * count );
         liststart = symlist;
         *symlist = defsym;
         symlist++;

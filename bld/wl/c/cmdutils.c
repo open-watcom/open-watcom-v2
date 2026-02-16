@@ -652,7 +652,7 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
         toklen = Token.len;
         if( req == SEP_QUOTE && Token.this[toklen] == '\'' )
             toklen++;
-        _ChkAlloc( buff, envlen + toklen + 1);
+        buff = LnkMemAlloc( envlen + toklen + 1);
         memcpy( buff, env, envlen );
         memcpy( buff + envlen, Token.this, toklen );
         buff[toklen + envlen] = '\0';
@@ -958,7 +958,7 @@ static char *getCmdLine( void )
     char    *cmd_line;
 
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    _ChkAlloc( cmd_line, cmd_len );
+    cmd_line = LnkMemAlloc( cmd_len );
     if( cmd_line != NULL ) {
         _bgetcmd( cmd_line, cmd_len );
     }
@@ -971,7 +971,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
 {
     cmdfilelist     *newfile;
 
-    _ChkAlloc( newfile, sizeof( cmdfilelist ) );
+    newfile = LnkMemAlloc( sizeof( cmdfilelist ) );
     newfile->file = STDIN_FILENO;
     newfile->symprefix = NULL;
     if( CmdFile != NULL ) {     /* save current state */
@@ -996,7 +996,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
     newfile->token.how = how;
     if( how == NONBUFFERED ) {
         /* have to have at least this size */
-        _ChkAlloc( newfile->token.buff, MAX_REC + 1 );
+        newfile->token.buff = LnkMemAlloc( MAX_REC + 1 );
     } else if( buff != NULL ) {
         newfile->token.buff = ChkStrdup( buff );
     } else if( how == COMMANDLINE ) {
@@ -1146,7 +1146,7 @@ outfilelist *NewOutFile( char *filename )
         }
     }
     // file name not already in list, so add a list entry.
-    _ChkAlloc( fnode, sizeof( outfilelist ) );
+    fnode = LnkMemAlloc( sizeof( outfilelist ) );
     InitBuffFile( fnode, filename, true );
     fnode->next = OutFiles;
     OutFiles = fnode;

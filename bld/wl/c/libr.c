@@ -92,7 +92,7 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
     reclength = MGET_LE_16_UN( header ) + 3;
     if( makedict ) {
         if( list->u.dict == NULL ) {
-            _ChkAlloc( list->u.dict, sizeof( dict_entry ) );
+            list->u.dict = LnkMemAlloc( sizeof( dict_entry ) );
         }
         omf_dict = &list->u.dict->o;
         omf_dict->cache = NULL;
@@ -146,7 +146,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
 
     // Create an index table that we will sort to match the
     // case-insensitive sort order that we want for our symbol names.
-    _ChkAlloc( index_tab, sizeof( index_type ) * d.num_entries );
+    index_tab = LnkMemAlloc( sizeof( index_type ) * d.num_entries );
     for( ix = 0; ix < d.num_entries; ix++ ) {
         index_tab[ix] = ix;
     }
@@ -245,7 +245,7 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
         dict->offsettab = NULL;
         dict->symbtab = NULL;
         if( num > 0 ) {
-            _ChkAlloc( dict->symbtab, sizeof( char * ) * num );
+            dict->symbtab = LnkMemAlloc( sizeof( char * ) * num );
         }
     } else /* if( numdicts == 2 ) */ {
         num = MGET_LE_32_UN( data );    /* number of files */
@@ -264,7 +264,7 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
         }
         dict->num_entries = num;
         if( num > 0 && dict->symbtab == NULL ) {
-            _ChkAlloc( dict->symbtab, sizeof( char * ) * num );
+            dict->symbtab = LnkMemAlloc( sizeof( char * ) * num );
         }
     }
     for( index = 0; index < num; index++ ) {
@@ -300,7 +300,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
     numdicts = 0;
     if( makedict ) {
         if( list->u.dict == NULL ) {
-            _ChkAlloc( list->u.dict, sizeof( dict_entry ) );
+            list->u.dict = LnkMemAlloc( sizeof( dict_entry ) );
         }
     }
     for( ;; ) {

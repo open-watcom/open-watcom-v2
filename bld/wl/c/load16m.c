@@ -271,7 +271,7 @@ static unsigned_32 WriteStubProg( void )
         } else {
             LnkMemFree( FmtData.u.d16m.stub );
             len = strlen( fullname ) + 1;
-            _ChkAlloc( FmtData.u.d16m.stub, len );
+            FmtData.u.d16m.stub = LnkMemAlloc( len );
             memcpy( FmtData.u.d16m.stub, fullname, len );
             size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
             QClose( fhandle, FmtData.u.d16m.stub );

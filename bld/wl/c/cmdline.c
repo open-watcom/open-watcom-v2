@@ -577,7 +577,7 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
     char            *p;
     const char      *end;
 
-    _ChkAlloc( newpath, sizeof( path_entry ) + len );
+    newpath = LnkMemAlloc( sizeof( path_entry ) + len );
     end = path_list + len;
     p = newpath->name;
     while( path_list != end ) {
@@ -622,7 +622,7 @@ void AddLibPathsToEndList( const char *path_list )
     if( path_list != NULL
       && *path_list != '\0' ) {
         len = strlen( path_list );
-        _ChkAlloc( newpath, sizeof( path_entry ) + len );
+        newpath = LnkMemAlloc( sizeof( path_entry ) + len );
         strcpy( newpath->name, path_list );
         LinkList( &UsrLibPath, newpath );
     }
