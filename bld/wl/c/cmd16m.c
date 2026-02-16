@@ -185,7 +185,7 @@ static bool ProcDataSize( void )
     if( value > _64K ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
     } else {
-        FmtData.u.d16m.datasize = (value + 15) >> 4;
+        FmtData.u.d16m.datasize = __ROUND_UP_SIZE_TO_PARA( value );
         FmtData.u.d16m.flags |= DATASIZE_SPECD;
     }
     return( true );

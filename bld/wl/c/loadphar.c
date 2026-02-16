@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ static void WritePharSimple( unsigned_32 start )
     _HostU16toTarg( 0x1E, header.reloc_offset );
     _HostU16toTarg( 0, header.overlay_num );
     /* allow header size to exceed 1M */
-    _HostU16toTarg( (header_size / (16*0x10000ul)) + 1, header.always_one );
+    _HostU16toTarg( (header_size / _1M) + 1, header.always_one );
     SeekLoad( start );
     WriteLoad( &header, sizeof( simple_header ) );
     if( FmtData.type & MK_PHAR_SIMPLE ) {

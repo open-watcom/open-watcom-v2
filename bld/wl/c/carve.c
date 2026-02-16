@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +125,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     cv->size_chg = false;
     DbgAssert( cv->elm_size >= 2 * sizeof( void * ) );
     DbgAssert( cv->elm_count != 0 );
-    DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
+    DbgVerify( cv->blk_top < _64K, "carve: size * #/block > 64k" );
     return( cv );
 }
 

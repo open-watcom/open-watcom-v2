@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,9 @@ typedef struct qnx_seg_flags {
 
 #define QNX_SEL_NUM(selector) ((selector) >> 3)
 
-#define QNX_DEFAULT_BASE 0x1000
+#define QNX_DEFAULT_BASE _4K
 
-#define QNX_GROUP_ALIGN 0x1000
+#define QNX_GROUP_ALIGN _4K
 
 extern void             SetQNXSegFlags( void );
 extern void             SetQNXGroupFlags( void );

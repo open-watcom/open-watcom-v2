@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ static void WriteGDT( unsigned_32 reloc_size )
             gdt.gdtlen = 0;
         }
         gdt.gdtaddr = 0; // currgrp->u.dos_segment;
-        gdt.gdtreserved = __ROUND_UP_SIZE_PARA( (unsigned_32)currgrp->totalsize ) >> 4;   // mem size in paras
+        gdt.gdtreserved = __ROUND_UP_SIZE_TO_PARA( (unsigned_32)currgrp->totalsize );   // mem size in paras
         if( gdt.gdtreserved == 0 && currgrp->size == 0 )
             gdt.gdtreserved |= 0x2000;
         if( currgrp->segflags & SEG_DATA ) {

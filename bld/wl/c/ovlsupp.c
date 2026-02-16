@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -703,7 +703,7 @@ static void EmitOvlEntry( section *sect, void *_off )
     _HostU16toTarg( flags_anc, entry.flags_anc );
     start_para = sect->sect_addr.seg + ( sect->sect_addr.off >> FmtData.SegShift );
     _HostU16toTarg( start_para, entry.start_para );
-    len = ( sect->size + 15 ) >> 4;
+    len = __ROUND_UP_TO_PARA( sect->size );
     _HostU16toTarg( len, entry.num_paras );
     _HostU32toTarg( sect->u.file_loc, entry.disk_addr );
     PutOvlInfo( *off, &entry, sizeof( entry ) );

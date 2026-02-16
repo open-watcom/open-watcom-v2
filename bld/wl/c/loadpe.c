@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -668,8 +668,6 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     return( size );
 }
 
-#define PAGE_COUNT( size )  (((size)+(0x1000-1))>>0xC)
-
 static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
                                    unsigned_32 pagerva, unsigned limit )
 /**********************************************************************/
@@ -722,7 +720,7 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
         reloclist = group->g.grp_relocs;
         if( reloclist != NULL ) {
             pagerva = group->linear;
-            numpages = PAGE_COUNT( group->size );
+            numpages = __ROUND_UP_SIZE_TO_4K( group->size );
             for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {
                 size = WriteRelocList( *reloclist, size, pagerva, OSF_RLIDX_MAX );
                 reloclist++;
@@ -1500,12 +1498,12 @@ static unsigned_32 getStubSize( void )
             memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
             if( dosheader.signature == EXESIGN_DOS ) {
-                code_start = dosheader.hdr_size * 16ul;
-                read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
+                code_start = dosheader.hdr_size * 16U;
+                read_len = dosheader.file_size * 512U - (-dosheader.mod_size & 0x1ff) - code_start;
                 // make sure reloc_size is a multiple of 16.
-                reloc_size = __ROUND_UP_SIZE_PARA( dosheader.num_relocs * 4ul );
+                reloc_size = __ROUND_UP_SIZE_PARA( dosheader.num_relocs * 4U );
                 dosheader.hdr_size = 4 + reloc_size / 16;
-                stub_len = read_len + dosheader.hdr_size * 16ul;
+                stub_len = read_len + dosheader.hdr_size * 16U;
             }
             QClose( the_file, FmtData.u.os2fam.stub_file_name );
         }
