@@ -103,9 +103,8 @@ void LnkMemInit( void )
     LastChanceSeg = qnx_segment_alloc( 65000 );
 #endif
 #ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
-            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
+            NULL, PrintLine, _TRMEM_ALL );
 #endif
 }
 
@@ -168,38 +167,29 @@ void *LnkMemAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
+TRMEMAPI( LnkMemStrdup )
+char *LnkMemStrdup( const char *str )
+/***********************************/
 {
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
+    char            *ptr;
 
-
-TRMEMAPI( LnkMemFree )
-void LnkMemFree( void *p )
-/************************/
-{
-    if( p == NULL )
-        return;
+    for( ;; ) {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), TrHdl );
+        ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
 #else
-    free( p );
+        ptr = strdup( str );
 #endif
-}
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
-#else
-    free( ptr );
-#endif
+        if( ptr != NULL ) {
+            break;
+        }
+        if( !FreeUpMemory() ) {
+            break;
+        }
+    }
+    if( ptr == NULL ) {
+        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
+    }
+    return( ptr );
 }
 
 TRMEMAPI( LnkMemRealloc )
@@ -215,7 +205,7 @@ void *LnkMemRealloc( void *src, size_t size )
 
     for( ;; ) {
 #ifdef TRMEM
-        dest = _trmem_realloc( src, size, _TRMEM_WHO( 6 ), TrHdl );
+        dest = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
 #else
         dest = realloc( src, size );
 #endif
@@ -226,6 +216,39 @@ void *LnkMemRealloc( void *src, size_t size )
         }
     }
     return( dest );
+}
+
+TRMEMAPI( LnkMemFree )
+void LnkMemFree( void *p )
+/************************/
+{
+    if( p == NULL )
+        return;
+#ifdef TRMEM
+    _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
+#else
+    free( p );
+#endif
+}
+
+TRMEMAPI( wres_alloc )
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 6 ), TrHdl ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( wres_free )
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 7 ), TrHdl );
+#else
+    free( ptr );
+#endif
 }
 
 int ValidateMem( void )

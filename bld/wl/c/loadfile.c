@@ -161,7 +161,7 @@ static void SetupImpLib( void )
     if( FmtData.make_implib ) {
         ImpLib.buffer = LnkMemAlloc( IMPLIB_BUFSIZE );
         if( FmtData.make_impfile ) {
-            ImpLib.fname = ChkStrdup( FmtData.implibname );
+            ImpLib.fname = LnkMemStrdup( FmtData.implibname );
             ImpLib.handle = QOpenRW( ImpLib.fname );
         } else {
             ImpLib.handle = openTempFile( &ImpLib.fname );

@@ -706,7 +706,7 @@ static bool ProcIncremental( void )
     } else if( Name != NULL ) {
         IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
     } else {
-        IncFileName = ChkStrdup( DEFAULT_INC_NAME );
+        IncFileName = LnkMemStrdup( DEFAULT_INC_NAME );
     }
     ReadPermData();
 #endif
@@ -952,7 +952,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     WriteStringTable( &strtab, CopyBlocks, &copyptr );
     FiniStringTable( &strtab );
     if( name != NULL ) {
-        sys->name = ChkStrdup( name );
+        sys->name = LnkMemStrdup( name );
     } else {
         sys->name = NULL;
     }

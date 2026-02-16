@@ -989,7 +989,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
     }
     CmdFile = newfile;
     if( name != NULL ) {
-        newfile->name = ChkStrdup( name );
+        newfile->name = LnkMemStrdup( name );
     } else {
         newfile->name = NULL;
     }
@@ -998,7 +998,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
         /* have to have at least this size */
         newfile->token.buff = LnkMemAlloc( MAX_REC + 1 );
     } else if( buff != NULL ) {
-        newfile->token.buff = ChkStrdup( buff );
+        newfile->token.buff = LnkMemStrdup( buff );
     } else if( how == COMMANDLINE ) {
         newfile->token.buff = getCmdLine();
     } else {

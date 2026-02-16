@@ -139,18 +139,6 @@ void ClearBit( byte *array, unsigned num )
     *array &= ~mask;
 }
 
-char *ChkStrdup( const char *str )
-/********************************/
-{
-    size_t      len;
-    char        *copy;
-
-    len = strlen( str ) + 1;
-    copy = LnkMemAlloc( len );
-    memcpy( copy, str, len );
-    return( copy );
-}
-
 char *ChkToString( const void *mem, size_t len )
 /**********************************************/
 {

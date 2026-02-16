@@ -854,7 +854,7 @@ void ChkOS2Exports( void )
             // Keep the import name. If an alias is exported, we want the
             // alias name in the import lib, not the substitute name
             if( exp->impname == NULL ) {
-                exp->impname = ChkStrdup( exp->sym->name.u.ptr );
+                exp->impname = LnkMemStrdup( exp->sym->name.u.ptr );
             }
 
             exp->sym = sym;
