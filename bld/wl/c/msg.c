@@ -109,7 +109,7 @@ static size_t MakeExeTypeString( char *buff, size_t max )
         format = FmtData.type;
         for( ;; ) {
             num = log2_32( format );
-            format &= ~( CONSTU32( 1 ) << num );
+            format &= ~( 1U << num );
             if( format == 0 ) {
                 break;
             }
