@@ -100,8 +100,7 @@ exetarg_objs = &
     omffixup.obj &
     omflifix.obj &
     omfgen.obj &
-    omfgenio.obj &
-    $(trmem_objs)
+    omfgenio.obj $(trmem_objs)
 
 !ifdef bootstrap
 exetarg_name       = bwasm

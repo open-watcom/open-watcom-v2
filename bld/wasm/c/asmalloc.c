@@ -74,7 +74,7 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, strdup,
+    memHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
                             NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
