@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include "_formats.h"
 
 typedef enum {          // there is a corresp. table in MSG.C
-    #define pick_format(a,b,c,d,e)  b = CONSTU32( a ),
+    #define pick_format(a,b,c,d,e)  b = a,
     FORMATS()
     #undef pick_format
     MK_ALL                    = 0

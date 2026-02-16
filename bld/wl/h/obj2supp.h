@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,38 +32,38 @@
 
 
 typedef enum {
-    FIX_CHANGE_SEG      = CONSTU32( 0x00000001 ),
-    FIX_ADDEND_ZERO     = CONSTU32( 0x00000002 ),
-    FIX_UNSAFE          = CONSTU32( 0x00000004 ),
-    FIX_ABS             = CONSTU32( 0x00000008 ),
+    FIX_CHANGE_SEG      = 0x00000001,
+    FIX_ADDEND_ZERO     = 0x00000002,
+    FIX_UNSAFE          = 0x00000004,
+    FIX_ABS             = 0x00000008,
 
-    FIX_BASE            = CONSTU32( 0x00000010 ),
-    FIX_HIGH            = CONSTU32( 0x00000020 ),
-    FIX_REL             = CONSTU32( 0x00000040 ),
-    FIX_SHIFT           = CONSTU32( 0x00000080 ),
+    FIX_BASE            = 0x00000010,
+    FIX_HIGH            = 0x00000020,
+    FIX_REL             = 0x00000040,
+    FIX_SHIFT           = 0x00000080,
 
-    FIX_TARGET_MASK     = CONSTU32( 0x00000700 ),
+    FIX_TARGET_MASK     = 0x00000700,
 
-    FIX_NOADJ           = CONSTU32( 0x00000800 ),   // flags no adjustment for FIX_REL
+    FIX_NOADJ           = 0x00000800,   // flags no adjustment for FIX_REL
 
-    FIX_NO_BASE         = CONSTU32( 0x00001000 ),
-    FIX_SIGNED          = CONSTU32( 0x00002000 ),
-    FIX_LOADER_RES      = CONSTU32( 0x00004000 ),
-    FIX_SEC_REL         = CONSTU32( 0x00008000 ),
+    FIX_NO_BASE         = 0x00001000,
+    FIX_SIGNED          = 0x00002000,
+    FIX_LOADER_RES      = 0x00004000,
+    FIX_SEC_REL         = 0x00008000,
 
-    FIX_NO_OFFSET       = CONSTU32( 0x00000000 ),
-    FIX_OFFSET_8        = CONSTU32( 0x00010000 ),   // If a new FIX_OFFSET constant is
-    FIX_OFFSET_16       = CONSTU32( 0x00020000 ),   // added, the OffsetSizes array in
-    FIX_OFFSET_21       = CONSTU32( 0x00030000 ),   // obj2supp.c also has to be updated!
-    FIX_OFFSET_32       = CONSTU32( 0x00040000 ),
-    FIX_OFFSET_24       = CONSTU32( 0x00050000 ),
-    FIX_OFFSET_26       = CONSTU32( 0x00060000 ),
+    FIX_NO_OFFSET       = 0x00000000,
+    FIX_OFFSET_8        = 0x00010000,   // If a new FIX_OFFSET constant is
+    FIX_OFFSET_16       = 0x00020000,   // added, the OffsetSizes array in
+    FIX_OFFSET_21       = 0x00030000,   // obj2supp.c also has to be updated!
+    FIX_OFFSET_32       = 0x00040000,
+    FIX_OFFSET_24       = 0x00050000,
+    FIX_OFFSET_26       = 0x00060000,
 
-    FIX_TOC             = CONSTU32( 0x00100000 ),   // PPC PE
-    FIX_TOCV            = CONSTU32( 0x00200000 ),   // PPC PE
-    FIX_IFGLUE          = CONSTU32( 0x00300000 ),   // PPC PE
+    FIX_TOC             = 0x00100000,   // PPC PE
+    FIX_TOCV            = 0x00200000,   // PPC PE
+    FIX_IFGLUE          = 0x00300000,   // PPC PE
 
-    FIX_FRAME_MASK      = CONSTU32( 0x07000000 ),
+    FIX_FRAME_MASK      = 0x07000000,
 
 // now for some handy constants which use these
 

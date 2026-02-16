@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,16 +190,16 @@ typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
     /* bits 5..7 reserved for FMT_xxxx symbols are also stored here */
     /* bits 8..max available */
-    MOD_DBI_SEEN        = CONSTU32( 0x00000100 ),   // true if dbi segment seen in this mod.
-    MOD_FIXED           = CONSTU32( 0x00000200 ),   // true if mod must stay in spec'd section
-    MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
-    MOD_NEED_PASS_2     = CONSTU32( 0x00000800 ),   // true if pass 2 needed for this module.
-    MOD_LAST_SEG        = CONSTU32( 0x00001000 ),   // true if this module should end a group
-    MOD_IMPORT_LIB      = CONSTU32( 0x00002000 ),   // ORL: true if this is an import lib.
-    MOD_KILL            = CONSTU32( 0x00004000 ),   // module should be removed from list
-    MOD_FLATTEN_DBI     = CONSTU32( 0x00008000 ),   // flatten DBI found in this mod.
-    MOD_DONE_PASS_1     = CONSTU32( 0x00010000 ),   // module been through pass 1 already.
-    MOD_IS_FREE         = CONSTU32( 0x80000000 ),   // used for marking carve free blocks
+    MOD_DBI_SEEN        = 0x00000100U,   // true if dbi segment seen in this mod.
+    MOD_FIXED           = 0x00000200U,   // true if mod must stay in spec'd section
+    MOD_VISITED         = 0x00000400U,   // true if visited in call graph analysis.
+    MOD_NEED_PASS_2     = 0x00000800U,   // true if pass 2 needed for this module.
+    MOD_LAST_SEG        = 0x00001000U,   // true if this module should end a group
+    MOD_IMPORT_LIB      = 0x00002000U,   // ORL: true if this is an import lib.
+    MOD_KILL            = 0x00004000U,   // module should be removed from list
+    MOD_FLATTEN_DBI     = 0x00008000U,   // flatten DBI found in this mod.
+    MOD_DONE_PASS_1     = 0x00010000U,   // module been through pass 1 already.
+    MOD_IS_FREE         = 0x80000000U,  // used for marking carve free blocks
 } module_flags;
 
 #define MOD_CLEAR_ON_INC    /* flags to clear when incremental linking. */ \

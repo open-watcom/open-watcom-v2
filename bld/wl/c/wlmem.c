@@ -281,14 +281,4 @@ int __nmemneed( size_t amount )
 
     return( FreeUpMemory() );
 }
-
-#ifdef _M_I86
-int __fmemneed( size_t amount )
-/*****************************/
-{
-    /* unused parameters */ (void)amount;
-
-    return( FreeUpMemory() );
-}
-#endif
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,29 +32,29 @@
 
 
 typedef enum {
-    LF_DWARF_DBI_FLAG       = CONSTU32( 0x00000001 ),   // set if making DWARF debug info
-    LF_STK_SIZE_FLAG        = CONSTU32( 0x00000002 ),
-    LF_GOT_CHGD_FILES       = CONSTU32( 0x00000004 ),
-    LF_TRACE_FLAG           = CONSTU32( 0x00000008 ),
-    LF_CV_DBI_FLAG          = CONSTU32( 0x00000010 ),
-    LF_UNDEFS_ARE_OK        = CONSTU32( 0x00000020 ),
-    LF_REDEFS_OK            = CONSTU32( 0x00000040 ),
-    LF_QUIET_FLAG           = CONSTU32( 0x00000080 ),
-    LF_PACKCODE_FLAG        = CONSTU32( 0x00000100 ),   // set if packcode specified
-    LF_VF_REMOVAL           = CONSTU32( 0x00000200 ),
-    LF_NOVELL_DBI_FLAG      = CONSTU32( 0x00000400 ),   // set if generating novell debug info
-    LF_PACKDATA_FLAG        = CONSTU32( 0x00000800 ),
-    LF_CASE_FLAG            = CONSTU32( 0x00001000 ),   // set for case sensitive operation
-    LF_OLD_DBI_FLAG         = CONSTU32( 0x00002000 ),   // set if making WATCOM debug info
-    LF_SHOW_DEAD            = CONSTU32( 0x00004000 ),
-    LF_STRIP_CODE           = CONSTU32( 0x00008000 ),   // strip dead code.
-    LF_CVPACK_FLAG          = CONSTU32( 0x00010000 ),
-    LF_MAX_ERRORS_FLAG      = CONSTU32( 0x00020000 ),   // there is a max. number of errors.
-    LF_DONT_UNMANGLE        = CONSTU32( 0x00040000 ),   // don't unmangle the names
-    LF_INC_LINK_FLAG        = CONSTU32( 0x00080000 ),
-    LF_NOCACHE_FLAG         = CONSTU32( 0x00100000 ),
-    LF_CACHE_FLAG           = CONSTU32( 0x00200000 ),
-    LF_FAR_CALLS_FLAG       = CONSTU32( 0x00400000 ),   // optimize far calls
+    LF_DWARF_DBI_FLAG       = 0x00000001,   // set if making DWARF debug info
+    LF_STK_SIZE_FLAG        = 0x00000002,
+    LF_GOT_CHGD_FILES       = 0x00000004,
+    LF_TRACE_FLAG           = 0x00000008,
+    LF_CV_DBI_FLAG          = 0x00000010,
+    LF_UNDEFS_ARE_OK        = 0x00000020,
+    LF_REDEFS_OK            = 0x00000040,
+    LF_QUIET_FLAG           = 0x00000080,
+    LF_PACKCODE_FLAG        = 0x00000100,   // set if packcode specified
+    LF_VF_REMOVAL           = 0x00000200,
+    LF_NOVELL_DBI_FLAG      = 0x00000400,   // set if generating novell debug info
+    LF_PACKDATA_FLAG        = 0x00000800,
+    LF_CASE_FLAG            = 0x00001000,   // set for case sensitive operation
+    LF_OLD_DBI_FLAG         = 0x00002000,   // set if making WATCOM debug info
+    LF_SHOW_DEAD            = 0x00004000,
+    LF_STRIP_CODE           = 0x00008000,   // strip dead code.
+    LF_CVPACK_FLAG          = 0x00010000,
+    LF_MAX_ERRORS_FLAG      = 0x00020000,   // there is a max. number of errors.
+    LF_DONT_UNMANGLE        = 0x00040000,   // don't unmangle the names
+    LF_INC_LINK_FLAG        = 0x00080000,
+    LF_NOCACHE_FLAG         = 0x00100000,
+    LF_CACHE_FLAG           = 0x00200000,
+    LF_FAR_CALLS_FLAG       = 0x00400000,   // optimize far calls
 } linkflag;
 
 // Novell treated differently, as it can be generated at the same time as the others.
@@ -74,31 +74,31 @@ typedef enum {
 
 
 typedef enum {
-    LS_MAKE_RELOCS          = CONSTU32( 0x00000001 ),
-    LS_SEARCHING_LIBRARIES  = CONSTU32( 0x00000002 ),
-    LS_LIBRARIES_ADDED      = CONSTU32( 0x00000004 ),
-    LS_LINK_ERROR           = CONSTU32( 0x00000008 ),
-    LS_FMT_SPECIFIED        = CONSTU32( 0x00000010 ),
-    LS_FMT_DECIDED          = CONSTU32( 0x00000020 ),
-    LS_FMT_SEEN_32BIT       = CONSTU32( 0x00000040 ),
-    LS_FMT_SEEN_IMPORT_CMT  = CONSTU32( 0x00000080 ),
-    LS_PROC_LIBS_ADDED      = CONSTU32( 0x00000100 ),
-    LS_FMT_INITIALIZED      = CONSTU32( 0x00000200 ),
-    LS_UNDEFED_SYM_ERROR    = CONSTU32( 0x00000400 ),
-    LS_GENERATE_LIB_LIST    = CONSTU32( 0x00000800 ),
-    LS_HAVE_16BIT_CODE      = CONSTU32( 0x00001000 ),   // true if we have 16 bit code.
-    LS_HAVE_ALPHA_CODE      = CONSTU32( 0x00002000 ),
-    LS_HAVE_PPC_CODE        = CONSTU32( 0x00004000 ),
-    LS_HAVE_X86_CODE        = CONSTU32( 0x00008000 ),
-    LS_HAVE_MIPS_CODE       = CONSTU32( 0x00010000 ),
-    LS_HAVE_X64_CODE        = CONSTU32( 0x00020000 ),
-    LS_CAN_REMOVE_SEGMENTS  = CONSTU32( 0x00040000 ),
-    LS_STOP_WORKING         = CONSTU32( 0x00080000 ),   // IDE wants us to stop now
-    LS_INTERNAL_DEBUG       = CONSTU32( 0x00100000 ),
-    LS_GOT_PREV_STRUCTS     = CONSTU32( 0x00200000 ),
-    LS_DOSSEG_FLAG          = CONSTU32( 0x00400000 ),
-    LS_SPEC_ORDER_FLAG      = CONSTU32( 0x00800000 ),
-    LS_FMT_SEEN_64BIT       = CONSTU32( 0x01000000 ),
+    LS_MAKE_RELOCS          = 0x00000001,
+    LS_SEARCHING_LIBRARIES  = 0x00000002,
+    LS_LIBRARIES_ADDED      = 0x00000004,
+    LS_LINK_ERROR           = 0x00000008,
+    LS_FMT_SPECIFIED        = 0x00000010,
+    LS_FMT_DECIDED          = 0x00000020,
+    LS_FMT_SEEN_32BIT       = 0x00000040,
+    LS_FMT_SEEN_IMPORT_CMT  = 0x00000080,
+    LS_PROC_LIBS_ADDED      = 0x00000100,
+    LS_FMT_INITIALIZED      = 0x00000200,
+    LS_UNDEFED_SYM_ERROR    = 0x00000400,
+    LS_GENERATE_LIB_LIST    = 0x00000800,
+    LS_HAVE_16BIT_CODE      = 0x00001000,   // true if we have 16 bit code.
+    LS_HAVE_ALPHA_CODE      = 0x00002000,
+    LS_HAVE_PPC_CODE        = 0x00004000,
+    LS_HAVE_X86_CODE        = 0x00008000,
+    LS_HAVE_MIPS_CODE       = 0x00010000,
+    LS_HAVE_X64_CODE        = 0x00020000,
+    LS_CAN_REMOVE_SEGMENTS  = 0x00040000,
+    LS_STOP_WORKING         = 0x00080000,   // IDE wants us to stop now
+    LS_INTERNAL_DEBUG       = 0x00100000,
+    LS_GOT_PREV_STRUCTS     = 0x00200000,
+    LS_DOSSEG_FLAG          = 0x00400000,
+    LS_SPEC_ORDER_FLAG      = 0x00800000,
+    LS_FMT_SEEN_64BIT       = 0x01000000,
 } stateflag;
 
 #define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_X86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)

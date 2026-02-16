@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,26 +68,26 @@ typedef enum {
 } ord_state;
 
 typedef enum {
-    CF_SET_SECTION          = CONSTU32( 0x00000001 ),   // used for LIB/FIXEDLIB directives
-    CF_NO_DEF_LIBS          = CONSTU32( 0x00000002 ),
-    CF_FILES_BEFORE_DBI     = CONSTU32( 0x00000004 ),
-    CF_UNNAMED              = CONSTU32( 0x00000008 ),
-    CF_AUTO_SEG_FLAG        = CONSTU32( 0x00000010 ),   // used in CMDOS2
-    CF_MEMBER_ADDED         = CONSTU32( 0x00000020 ),
-    CF_SEPARATE_SYM         = CONSTU32( 0x00000040 ),
-    CF_AUTOSECTION          = CONSTU32( 0x00000080 ),
-    CF_SECTION_THERE        = CONSTU32( 0x00000100 ),
-    CF_HAVE_FILES           = CONSTU32( 0x00000200 ),
-    CF_HAVE_REALBREAK       = CONSTU32( 0x00000400 ),
-    CF_LANGUAGE_ENGLISH     = CONSTU32( 0x00000000 ),
-    CF_LANGUAGE_JAPANESE    = CONSTU32( 0x00000800 ),
-    CF_LANGUAGE_CHINESE     = CONSTU32( 0x00001000 ),
-    CF_LANGUAGE_KOREAN      = CONSTU32( 0x00001800 ),
-    CF_ANON_EXPORT          = CONSTU32( 0x00002000 ),
-    CF_AFTER_INC            = CONSTU32( 0x00004000 ),   // option must be specd. after op inc
-    CF_DOING_OPTLIB         = CONSTU32( 0x00008000 ),
-    CF_NO_EXTENSION         = CONSTU32( 0x00010000 ),   // don't put an extension on exe name
-    CF_SUBSET               = CONSTU32( 0x00020000 ),
+    CF_SET_SECTION          = 0x00000001,   // used for LIB/FIXEDLIB directives
+    CF_NO_DEF_LIBS          = 0x00000002,
+    CF_FILES_BEFORE_DBI     = 0x00000004,
+    CF_UNNAMED              = 0x00000008,
+    CF_AUTO_SEG_FLAG        = 0x00000010,   // used in CMDOS2
+    CF_MEMBER_ADDED         = 0x00000020,
+    CF_SEPARATE_SYM         = 0x00000040,
+    CF_AUTOSECTION          = 0x00000080,
+    CF_SECTION_THERE        = 0x00000100,
+    CF_HAVE_FILES           = 0x00000200,
+    CF_HAVE_REALBREAK       = 0x00000400,
+    CF_LANGUAGE_ENGLISH     = 0x00000000,
+    CF_LANGUAGE_JAPANESE    = 0x00000800,
+    CF_LANGUAGE_CHINESE     = 0x00001000,
+    CF_LANGUAGE_KOREAN      = 0x00001800,
+    CF_ANON_EXPORT          = 0x00002000,
+    CF_AFTER_INC            = 0x00004000,   // option must be specd. after op inc
+    CF_DOING_OPTLIB         = 0x00008000,
+    CF_NO_EXTENSION         = 0x00010000,   // don't put an extension on exe name
+    CF_SUBSET               = 0x00020000,
 } commandflag;
 
 #define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)

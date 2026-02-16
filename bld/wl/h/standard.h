@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,12 +45,6 @@
 
 
 #define NLCHAR          '\n'
-
-#ifdef _M_I86
-#define CONSTU32(x)     x ## UL
-#else
-#define CONSTU32(x)     x ## U
-#endif
 
 // useful for stringizing tokens
 #define __str( m )      #m
