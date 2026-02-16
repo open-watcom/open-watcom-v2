@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,7 @@ char *GetFFName( arch_dict *dict )
     name = NULL;
     if( dict->ffnametab != NULL
       && dict->nextffname != NULL ) {
-        name = MemDupStr( dict->nextffname );
+        name = MemStrdup( dict->nextffname );
         dict->nextffname += strlen( name ) + 1;
         if( dict->nextffname >= dict->lastffname
           || ( dict->nextffname[0] == '\n'

@@ -63,10 +63,17 @@ void InitMem( void )
 /******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, TRPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
+        NULL, TRPrintLine, _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
+#endif
+}
+
+void FiniMem( void )
+/******************/
+{
+#ifdef TRMEM
+    _trmem_prt_list_ex( TRMemHandle, 100 );
+    _trmem_close( TRMemHandle );
 #endif
 }
 
@@ -84,19 +91,26 @@ void *MemAlloc( size_t size )
 #else
     ptr = malloc( size );
 #endif
-    if( ptr == NULL && size != 0 )
+    if( ptr == NULL )
         FatalError( ERR_NO_MEMORY );
     return( ptr );
 }
 
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
+char *MemStrdup( const char *str )
+/********************************/
 {
+    char *ptr;
+
+    if( str == NULL )
+        return( NULL );
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), TRMemHandle ) );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle );
 #else
-    return( malloc( size ) );
+    ptr = strdup( str );
 #endif
+    if( ptr == NULL )
+        FatalError( ERR_NO_MEMORY );
+    return( ptr );
 }
 
 TRMEMAPI( MemRealloc )
@@ -128,33 +142,22 @@ void MemFree( void *ptr )
 #endif
 }
 
+TRMEMAPI( wres_alloc )
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), TRMemHandle );
 #else
     free( ptr );
-#endif
-}
-
-char *MemDupStr( const char *str )
-/********************************/
-{
-    char *ptr;
-
-    if( str == NULL )
-        return( NULL );
-    ptr = MemAlloc( strlen( str ) + 1 );
-    strcpy( ptr, str );
-    return( ptr );
-}
-
-void FiniMem( void )
-/******************/
-{
-#ifdef TRMEM
-    _trmem_prt_list_ex( TRMemHandle, 100 );
-    _trmem_close( TRMemHandle );
 #endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +189,7 @@ static bool elfAddImport( libfile io, long header_offset, const arch_header *arc
     tmp_arch.size = arch->size;
     tmp_arch.libtype = arch->libtype;
 
-    dllName.name = dll_name = MemDupStr( TrimPath( arch->name ) );
+    dllName.name = dll_name = MemStrdup( TrimPath( arch->name ) );
     dllName.len = strlen( dllName.name );
     tmp_arch.name = dll_name;
     tmp_arch.ffname = NULL;
@@ -520,7 +520,7 @@ void ProcessImportWlib( const char *name )
     char            *dll_name;
     unsigned        sym_len;
 
-    p = namecopy = MemDupStr( name );
+    p = namecopy = MemStrdup( name );
 
     symName = GetImportString( &p, name );
     if( *p == '\0'

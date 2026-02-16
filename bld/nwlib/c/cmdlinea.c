@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +144,7 @@ void SetOptionsAr( OPT_STORAGE_A *data )
             if( !Options.list_contents ) {
                 /* Default action: List the input lib */
                 Options.list_contents = true;
-                Options.list_file = MemDupStr( "" );
+                Options.list_file = MemStrdup( "" );
             }
         }
     }

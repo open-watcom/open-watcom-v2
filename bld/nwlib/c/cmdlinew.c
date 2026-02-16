@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,7 +296,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
         Options.respect_case = true;
     }
     if( data->d ) { // = <object_output_directory>
-        Options.output_directory = MemDupStr( data->d_value->data );
+        Options.output_directory = MemStrdup( data->d_value->data );
         OPT_CLEAN_STRING( &(data->d_value) );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
@@ -410,7 +410,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
         if( Options.explode_count ) {
             char    cn[20] = FILE_TEMPLATE_MASK;
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, data->x_value->data );
-            Options.explode_ext = MemDupStr( cn );
+            Options.explode_ext = MemStrdup( cn );
         } else {
             Options.explode_ext = CopyFilenameExt( data->x_value, EXT_OBJ );
         }
@@ -441,7 +441,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
              */
             if( Options.output_name == NULL ) {
                 Options.list_contents = true;
-                Options.list_file = MemDupStr( "" );
+                Options.list_file = MemStrdup( "" );
             } else {
                 /*
                  * Or copy it to the output lib

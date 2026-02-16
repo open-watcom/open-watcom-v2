@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ libfile LibOpen( const char *name, bool write_to )
     fileList = io;
     io->write_to = write_to;
     io->fp = fp;
-    io->name = MemDupStr( name );
+    io->name = MemStrdup( name );
     io->buf_size = 0;
     io->buf_pos = 0;
     fseek( fp, 0, SEEK_END );

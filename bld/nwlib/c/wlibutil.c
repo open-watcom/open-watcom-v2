@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ libfile NewArchLibOpen( arch_header *arch, const char *filename )
     if( stat( filename, &buf ) == -1 ) {
         FatalError( ERR_CANT_FIND, filename );
     }
-    arch->name = MemDupStr( filename );
+    arch->name = MemStrdup( filename );
     arch->ffname = NULL;
     arch->date = buf.st_mtime;
     arch->uid = buf.st_uid;
