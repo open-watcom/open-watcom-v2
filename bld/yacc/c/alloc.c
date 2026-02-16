@@ -167,7 +167,6 @@ TRMEMAPI( YaccStrdup )
 char *YaccStrdup( const char *str )
 /*********************************/
 {
-    size_t      size;
     char        *ptr;
 
     if( str == NULL )
