@@ -74,7 +74,8 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup,
+                                NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
@@ -171,14 +172,13 @@ char *YaccStrdup( const char *str )
 
     if( str == NULL )
         return( NULL );
-    size = strlen( str ) + 1;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 5 ), memHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 5 ), memHandle );
 #else
-    ptr = malloc( size );
+    ptr = strdup( str );
 #endif
     if( ptr == NULL ) {
         msg( "Out of memory\n" );
     }
-    return( strcpy( ptr, str ) );
+    return( ptr );
 }
