@@ -91,18 +91,16 @@ void *my_realloc( void *p, size_t size )
 
 Memory::Memory()
 {
-    TrHdl = _trmem_open( my_malloc, my_free, my_realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
-            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( my_malloc, my_free, my_realloc, _TRMEM_NO_STRDUP,
+            NULL, PrintLine, _TRMEM_ALL );
 }
 
 #else /* __WATCOMC__ != 1290 */
 
 Memory::Memory()
 {
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
-            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+            NULL, PrintLine, _TRMEM_ALL );
 }
 
 #endif /* __WATCOMC__ == 1290 */
