@@ -71,9 +71,9 @@ static char *yytext( void ) {
 // Afterwards, you can use _yytext to get the same string.
 
     if ( (yytextlen = cursor - tok) > maxyytextlen - 1 ) {
-        MemFree( _yytext );
+        AsmFree( _yytext );
         maxyytextlen = yytextlen + 1;
-        _yytext = (char *) MemAlloc( maxyytextlen );
+        _yytext = (char *)AsmAlloc( maxyytextlen );
     }
     memcpy( _yytext, tok, yytextlen );
     _yytext[yytextlen] = 0;
@@ -95,9 +95,9 @@ static void yylexError( int res_id ) {
     CurrLineno = yylineno;
     CurrFilename = yyfname;
     AsMsgGet( res_id, AsResBuffer );
-    tmpstr = MemStrdup( AsResBuffer );
+    tmpstr = AsmStrdup( AsResBuffer );
     yyerror( tmpstr );
-    MemFree( tmpstr );
+    AsmFree( tmpstr );
     CurrLineno = saveLineno;
     CurrFilename = saveFname;
 }
@@ -134,16 +134,16 @@ void AsLexerFini( void ) {
 // Cleanup and reset states for next file (if any)
 
 #ifdef _STANDALONE_
-    MemFree( bot );
+    AsmFree( bot );
     CurrLineno = 1;
     yylineno = 1;
     ppFlush();
     bot = NULL;
     pos = NULL;
     top = NULL;
-    MemFree( CurrFilename );
+    AsmFree( CurrFilename );
     CurrFilename = NULL;
-    MemFree( yyfname );
+    AsmFree( yyfname );
     yyfname = NULL;
 #endif
     cursor = NULL;
@@ -152,11 +152,11 @@ void AsLexerFini( void ) {
     tok = NULL;
     eofPtr = NULL;
     maxyytextlen = 1;
-    MemFree( _yytext );
+    AsmFree( _yytext );
     _yytext = NULL;
-    MemFree( dirOpStr );
+    AsmFree( dirOpStr );
     dirOpStr = NULL;
-    MemFree( cStr );
+    AsmFree( cStr );
     cStr = NULL;
 }
 
@@ -196,7 +196,7 @@ static void fill( void ) {
         if((top - limit) < BSIZE) { // buffer needs to be expanded
             char *buf;
 
-            buf = (char *) MemAlloc( limit - bot + BSIZE );   // alloc new piece
+            buf = (char *)AsmAlloc( limit - bot + BSIZE );   // alloc new piece
             memcpy(buf, tok, limit - tok);          // copy leftover
             tok = buf;                              // adjust all pointers
             marker = &buf[marker - bot];
@@ -204,7 +204,7 @@ static void fill( void ) {
             pos = &buf[pos - bot];
             limit = &buf[limit - bot]; // limit now points to first unused spot
             top = &limit[BSIZE];
-            MemFree( bot );                         // free old chunk
+            AsmFree( bot );                         // free old chunk
             bot = buf;
         }
         if((cnt = ppRead( limit, BSIZE )) != BSIZE) { // EOF
@@ -381,8 +381,8 @@ sym                     {
 [0-9]+"."[0-9]* |
 [0-9]*"."[0-9]+         { yylval.fval = strtod( yytext(), NULL ); return( T_FLOAT_CONST ); }
 string                  {
-                            MemFree( cStr );
-                            yylval.str = ( cStr = MemStrdup( yytext()+1 ) );
+                            AsmFree( cStr );
+                            yylval.str = ( cStr = AsmStrdup( yytext()+1 ) );
                             cStr[yytextlen - 2] = 0;
                             return( T_STRING_CONST );
                         }
@@ -428,8 +428,8 @@ getfname:   tok = cursor;
 /*!re2c
 ws                      { goto getfname; }
 "\""fname"\""           {
-                            MemFree( yyfname );
-                            yyfname = MemStrdup( yytext()+1 );
+                            AsmFree( yyfname );
+                            yyfname = AsmStrdup( yytext()+1 );
                             yyfname[yytextlen - 2] = 0;
                             dropDblBackSlashes( yyfname );
                             goto getfname;
@@ -437,7 +437,7 @@ ws                      { goto getfname; }
 nl                      {
                             fileinfo    *file;
 
-                            file = MemAlloc( sizeof( fileinfo ) + strlen( yyfname ) );
+                            file = AsmAlloc( sizeof( fileinfo ) + strlen( yyfname ) );
                             file->line = yylineno = newlineno;
                             strcpy( file->name, yyfname );
                             yylval.file = file;
@@ -455,8 +455,8 @@ getdirop:       tok = cursor;
 ws                      { goto getdirop; }
 ((ch \ [ \t]) ch*) |
 empstr                  {
-                            MemFree( dirOpStr );
-                            yylval.str = ( dirOpStr = MemStrdup( yytext() ) );
+                            AsmFree( dirOpStr );
+                            yylval.str = ( dirOpStr = AsmStrdup( yytext() ) );
                             return( T_DIRECTIVE_OPERAND );
                         }
 */

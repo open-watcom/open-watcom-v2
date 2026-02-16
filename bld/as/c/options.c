@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ static char *ReadIndirectFile( char *name )
         fseek( fp, 0, SEEK_END );
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
-        env = MemAlloc( len + 1 );
+        env = AsmAlloc( len + 1 );
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
@@ -145,7 +145,7 @@ static bool scanDefine( OPT_STRING **h )
         if( p != NULL ) {
             *p = ' ';
         } else {
-            *h = MemRealloc( *h, sizeof( **h ) + strlen( m ) + 2 );
+            *h = AsMemRealloc( *h, sizeof( **h ) + strlen( m ) + 2 );
             strcat( (*h)->data, " 1" );
         }
         return( true );
@@ -244,7 +244,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str, OPT_STRING **files )
             if( ch == '\0' ) {
                 if( level < 0 )
                     break;
-                MemFree( buffers[level] );
+                AsmFree( buffers[level] );
                 CmdScanLineInit( save[level] );
                 level--;
                 continue;
@@ -330,7 +330,7 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
          * if not -fr option is defined
          * then create default "*"
          */
-        data->fr_value = MemAlloc( sizeof( OPT_STRING ) + 1 );
+        data->fr_value = AsmAlloc( sizeof( OPT_STRING ) + 1 );
         data->fr_value->data[0] = '*';
         data->fr_value->data[1] = '\0';
         data->fr_value->next = NULL;

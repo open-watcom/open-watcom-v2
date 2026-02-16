@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +40,12 @@
 #define __FESUPP_H__
 
 #include <string.h>
-#include "asmem.h"
+#include "asalloc.h"
 
 
 // MACRO DEFINITIONS
 
-#define _MemoryAllocate( size )     MemAlloc( size )
-#define _MemoryFree( ptr )          MemFree( ptr )
+#define _MemoryAllocate( size )     AsmAlloc( size )
+#define _MemoryFree( ptr )          AsmFree( ptr )
 
 #endif

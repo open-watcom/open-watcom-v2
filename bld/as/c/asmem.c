@@ -31,8 +31,6 @@
 ****************************************************************************/
 
 
-#ifdef _STANDALONE_
-
 #include "as.h"
 #include "wresmem.h"
 #include "preproc.h"
@@ -66,12 +64,12 @@ static void memPrintLine( void *file, const char *buf, size_t len )
 
 #endif /* TRMEM */
 
-void MemInit( void )
-/******************/
+void AsMemInit( void )
+/********************/
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    memHandle = _trmem_open( malloc, free, realloc, strdup,
                                 NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
@@ -79,8 +77,8 @@ void MemInit( void )
 #endif
 }
 
-void MemFini( void )
-//******************
+void AsMemFini( void )
+//********************
 {
 #ifdef TRMEM
     if( memHandle != NULL ) {
@@ -101,47 +99,47 @@ static void outOfMemory( void )
     exit( 1 );
 }
 
-TRMEMAPI( MemAlloc )
-pointer MemAlloc( size_t size )
+TRMEMAPI( AsmAlloc )
+pointer AsmAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
 }
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
+TRMEMAPI( AsmStrdup )
+char *AsmStrdup( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 4 ), memHandle ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), memHandle ) );
 #else
     return( strdup( str ) );
 #endif
 }
 
-TRMEMAPI( MemRealloc )
-pointer MemRealloc( pointer ptr, size_t size )
-/********************************************/
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-TRMEMAPI( MemFree )
-void MemFree( pointer ptr )
+TRMEMAPI( AsmFree )
+void AsmFree( pointer ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), memHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
 #else
     free( ptr );
+#endif
+}
+
+TRMEMAPI( AsMemRealloc )
+pointer AsMemRealloc( pointer ptr, size_t size )
+/**********************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), memHandle ) );
+#else
+    return( realloc( ptr, size ) );
 #endif
 }
 
@@ -150,7 +148,7 @@ void *wres_alloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), memHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -161,7 +159,7 @@ void wres_free( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), memHandle );
 #else
     free( ptr );
 #endif
@@ -173,7 +171,7 @@ void * PPENTRY PP_Malloc( size_t size )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 6 ), memHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 7 ), memHandle );
 #else
     p = malloc( size );
 #endif
@@ -187,34 +185,8 @@ TRMEMAPI( PP_Free )
 void PPENTRY PP_Free( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 7 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 8 ), memHandle );
 #else
     free( p );
 #endif
 }
-
-#else /* !_STANDALONE_ */
-
-#include "as.h"
-#include "asalloc.h"
-
-
-pointer MemAlloc( size_t size )
-/*****************************/
-{
-    return( AsmAlloc( size ) );
-}
-
-char *MemStrdup( const char *str )
-/********************************/
-{
-    return( AsmStrdup( str ) );
-}
-
-void MemFree( pointer ptr )
-/*************************/
-{
-    AsmFree( ptr );
-}
-
-#endif /* _STANDALONE_ */

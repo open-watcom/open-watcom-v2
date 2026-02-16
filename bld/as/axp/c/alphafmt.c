@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ static void addReloc( asm_reloc *reloc, op_reloc_target target, owl_reloc_type t
 {
     reloc_list  new_entry;
 
-    new_entry = MemAlloc( sizeof( struct reloc_entry ) );
+    new_entry = AsmAlloc( sizeof( struct reloc_entry ) );
     new_entry->next = NULL;
     new_entry->target = target;
     new_entry->type = type;
@@ -1258,7 +1258,7 @@ void AlphaEmit( instruction *ins )
                 }
                 _DBGMSG1( " reloc emitted for the instruction.\n" );
 #endif
-                MemFree( curr_reloc );
+                AsmFree( curr_reloc );
             }
         }
 #ifdef _STANDALONE_

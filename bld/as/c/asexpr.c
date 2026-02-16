@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@ static expr_tree *etAlloc( et_class type ) {
 */
     expr_tree   *node;
 
-    node = MemAlloc( sizeof( expr_tree ) );
+    node = AsmAlloc( sizeof( expr_tree ) );
     node->type = type;
     return( node );
 }
@@ -51,7 +51,7 @@ static void etFree( expr_tree *node ) {
     Free an expression node.
 */
 
-    MemFree( node );
+    AsmFree( node );
 }
 
 expr_tree *ETReloc( asm_reloc_type rtype, sym_handle sym )

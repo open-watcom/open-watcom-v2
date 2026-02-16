@@ -4,7 +4,6 @@ as_targ_objs_ppc = $(_subdir_)ppcfmt.obj $(_subdir_)ppcins.obj
 as_comm_objs = &
     $(_subdir_)asexpr.obj &
     $(_subdir_)asopernd.obj &
-    $(_subdir_)asmem.obj &
     $(_subdir_)asutils.obj &
     $(_subdir_)asregs.obj &
     $(_subdir_)assymbol.obj &
@@ -14,6 +13,7 @@ as_comm_objs = &
     $(_subdir_)ashash.obj &
     $(_subdir_)asmsg.obj
 as_stand_objs = &
+    $(_subdir_)asmem.obj &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
     $(_subdir_)main.obj &

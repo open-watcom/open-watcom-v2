@@ -36,13 +36,13 @@
 static dir_operand *dirOpAlloc( void ) {
 //**************************************
 
-    return( MemAlloc( sizeof( dir_operand ) ) );
+    return( AsmAlloc( sizeof( dir_operand ) ) );
 }
 
 static void dirOpFree( dir_operand *dirop ) {
 //*******************************************
 
-    MemFree( dirop );
+    AsmFree( dirop );
 }
 
 static bool dirOpGetNumber( dir_operand *dirop, expr_tree *expr ) {
@@ -80,7 +80,7 @@ dir_operand *DirOpLine( const char *string )
     dirop = dirOpAlloc();
     dirop->next = NULL;
     dirop->type = DIROP_LINE;
-    STRING_CONTENT( dirop ) = MemStrdup( string );
+    STRING_CONTENT( dirop ) = AsmStrdup( string );
     return( dirop );
 }
 
@@ -92,7 +92,7 @@ dir_operand *DirOpString( const char *string )
     dirop = dirOpAlloc();
     dirop->next = NULL;
     dirop->type = DIROP_STRING;
-    STRING_CONTENT( dirop ) = MemStrdup( string );
+    STRING_CONTENT( dirop ) = AsmStrdup( string );
     return( dirop );
 }
 
@@ -198,7 +198,7 @@ void DirOpDestroy( dir_operand *dirop )
     if( !dirop )
         return;
     if( dirop->type == DIROP_LINE || dirop->type == DIROP_STRING ) {
-        MemFree( STRING_CONTENT( dirop ) );
+        AsmFree( STRING_CONTENT( dirop ) );
     }
     dirOpFree( dirop );
 }

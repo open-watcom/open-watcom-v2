@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ static void doEmitNumericLabel( uint_32 label_num, owl_section_handle section, o
 
     label_list = &numericLabels[ label_num - 1 ];
 
-    label = MemAlloc( sizeof( *label ) );
+    label = AsmAlloc( sizeof( *label ) );
     label->section = section;
     label->offset = offset;
     label->type = type;
@@ -198,7 +199,7 @@ void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 labe
 
     label_list = &numericLabels[ abs(label_ref) - 1 ];
 
-    reloc = MemAlloc( sizeof( *reloc ) );
+    reloc = AsmAlloc( sizeof( *reloc ) );
     reloc->section = section;
     reloc->offset = offset;
     reloc->type = type;
@@ -214,7 +215,7 @@ void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 labe
             label_list->last->relocs = reloc;
         } else {
             Error( UNRESOLVED_BACK_NUMREF );
-            MemFree( reloc );
+            AsmFree( reloc );
         }
     }
 }
@@ -266,14 +267,14 @@ void AsNumLabelFini( void )
                 }
 #endif
                 label->relocs = reloc->next;
-                MemFree( reloc );
+                AsmFree( reloc );
                 reloc = label->relocs;
             }
             label_list->first = label->next;
             if( label_list->first == NULL ) {
                 label_list->last = NULL;
             }
-            MemFree( label );
+            AsmFree( label );
             label = label_list->first;
         }
         if( label_list->next_refs ) {
@@ -281,7 +282,7 @@ void AsNumLabelFini( void )
             Error( NON_EXISTANT_FORWARD_REF, ctr );
             do {
                 reloc = label_list->next_refs->next;
-                MemFree( label_list->next_refs );
+                AsmFree( label_list->next_refs );
                 label_list->next_refs = reloc;
             } while( reloc );
         }

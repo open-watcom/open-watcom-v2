@@ -32,17 +32,7 @@
 
 typedef void    *pointer;
 
-extern void     *AsMemAlloc( size_t );
-extern char     *AsMemStrdup( const char *str );
-extern void     AsMemFree( pointer );
 extern void     *AsMemRealloc( pointer, size_t );
 
 extern void     AsMemInit( void );
 extern void     AsMemFini( void );
-
-#define MemAlloc                AsMemAlloc
-#define MemStrdup               AsMemStrdup
-#define MemFree                 AsMemFree
-#define MemRealloc              AsMemRealloc
-#define MemInit                 AsMemInit
-#define MemFini                 AsMemFini

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,7 +222,7 @@ static void resolveRelativeRelocs( void )
                 } else {
                     // Leave these in the list...
                     //Warning( "'%s' is left for CC to take care of", curr_reloc->name );
-                    keep_name = MemAlloc( strlen( curr_reloc->name ) + 1 );
+                    keep_name = AsmAlloc( strlen( curr_reloc->name ) + 1 );
                     strcpy( keep_name, curr_reloc->name );
                     curr_reloc->name = keep_name;
                     last = &curr_reloc->next;
@@ -232,7 +232,7 @@ static void resolveRelativeRelocs( void )
             }
         }
         *last = curr_reloc->next;
-        MemFree( curr_reloc );
+        AsmFree( curr_reloc );
         curr_reloc = *last;
     }
 }
@@ -242,7 +242,7 @@ static asmreloc *newReloc( owl_offset offset, char *name, owl_reloc_type type )
 {
     asmreloc    *reloc;
 
-    reloc = MemAlloc( sizeof( asmreloc ) );
+    reloc = AsmAlloc( sizeof( asmreloc ) );
     reloc->next = NULL;
     reloc->name = name;
     reloc->offset = offset;
@@ -277,7 +277,7 @@ static void doStackLabel( sym_handle sym )
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = AsmAlloc( sizeof( struct asm_label ) );
     new_label->sym = sym;
     new_label->next = labelList;
     new_label->is_numeric = false;
@@ -366,7 +366,7 @@ static void doStackNumericLabel( uint_32 label_num )
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = AsmAlloc( sizeof( struct asm_label ) );
     new_label->sym = NULL;
     new_label->next = labelList;
     new_label->is_numeric = true;
@@ -400,7 +400,7 @@ void ObjFlushLabels( void )
     while( curr_label ) {
         next_label = curr_label->next;
         doEmitLabel( curr_label );
-        MemFree( curr_label );
+        AsmFree( curr_label );
         curr_label = next_label;
     }
 }

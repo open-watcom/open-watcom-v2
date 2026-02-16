@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ static void hdl_append( sym_reloc_hdls *hdls, sym_handle sym ) {
 
     // make sure you only append symbols that have hi/lo relocs to them,
     // depending on what hdls is.
-    hdl = MemAlloc( sizeof( struct sym_reloc_handle ) );
+    hdl = AsmAlloc( sizeof( struct sym_reloc_handle ) );
     hdl->hdl = sym;
     hdl->prev = NULL;
     hdl->next = NULL;
@@ -102,7 +102,7 @@ static void hdl_remove( sym_reloc_hdls *hdls, sym_handle sym ) {
             } else {
                 hdls->tail = hdl->prev;
             }
-            MemFree( hdl );
+            AsmFree( hdl );
             return;
         }
         hdl = hdl->next;
@@ -122,7 +122,7 @@ static sym_handle symAlloc( const char *name ) {
 
     sym_handle  sym;
 
-    sym = MemAlloc( sizeof( asm_symbol ) + strlen( name ) );
+    sym = AsmAlloc( sizeof( asm_symbol ) + strlen( name ) );
     strcpy( sym->name, name );
     return( sym );
 }
@@ -134,7 +134,7 @@ static void symFree( sym_handle sym ) {
     // The 2 lists should be cleaned up already
     assert( sym->hi_relocs == NULL );
     assert( sym->lo_relocs == NULL );
-    MemFree( sym );
+    AsmFree( sym );
 }
 
 void SymInit( void )
@@ -295,7 +295,7 @@ void SymStackReloc( bool is_high, sym_handle sym, sym_section section, sym_offse
 
     assert( sym != NULL );
     assert( sym->class == SYM_LABEL );
-    reloc = MemAlloc( sizeof( struct sym_reloc_entry ) );
+    reloc = AsmAlloc( sizeof( struct sym_reloc_entry ) );
     reloc->location.section = section;
     reloc->location.offset = offset;
     reloc->prev = reloc->next = NULL;
@@ -340,7 +340,7 @@ void SymDestroyReloc( sym_handle sym, sym_reloc reloc )
     if( reloc->next != NULL ) {
         reloc->next->prev = reloc->prev;
     }
-    MemFree( reloc );
+    AsmFree( reloc );
 }
 
 sym_reloc SymMatchReloc( bool is_high, sym_handle sym, sym_section section )

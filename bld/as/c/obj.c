@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,7 @@ static int owl_seek( owl_client_file f, long offset, int where )
 bool ObjInit( const char *fname, const char *err_file )
 //*****************************************************
 {
-    owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
+    owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, AsmAlloc, AsmFree };
     pgroup2             pg1;
     pgroup2             pg2;
     owl_format          obj_format;
@@ -229,7 +229,7 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = AsmAlloc( sizeof( struct asm_label ) );
     new_label->section = CurrentSection;
     new_label->sym_name = SymName( sym );
     new_label->sym_type = type;
@@ -245,7 +245,7 @@ static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_li
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = AsmAlloc( sizeof( struct asm_label ) );
     new_label->section = CurrentSection;
     new_label->sym_name = NULL;
     new_label->sym_type = type;
@@ -320,7 +320,7 @@ void ObjFlushLabels( void )
                           labelList->sym_type, labelList->sym_linkage );
             _DBGMSG2( "Label '%s' emitted\n", labelList->sym_name );
         }
-        MemFree( labelList );
+        AsmFree( labelList );
         labelList = next_label;
     }
 }

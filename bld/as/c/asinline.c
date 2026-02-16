@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +73,8 @@ void AsmFiniRelocs( void )
 
     for( reloc = AsmRelocs; reloc != NULL; reloc = reloc_next ) {
         reloc_next = reloc->next;
-        MemFree( reloc->name );
-        MemFree( reloc );
+        AsmFree( reloc->name );
+        AsmFree( reloc );
     }
     AsmRelocs = NULL;
 }

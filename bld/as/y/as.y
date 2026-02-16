@@ -102,9 +102,9 @@ asm_line        : label statement more_stmts T_NEWLINE          { CurrLineno++; 
                 | error T_NEWLINE                               { CurrLineno++; yyerrok; }
                 | T_FILE_SWITCH                                 {   /* #line directive */
                                                                     CurrLineno = $1->line;
-                                                                    MemFree( CurrFilename );
-                                                                    CurrFilename = MemStrdup( $1->name );
-                                                                    MemFree( $1 );
+                                                                    AsmFree( CurrFilename );
+                                                                    CurrFilename = AsmStrdup( $1->name );
+                                                                    AsmFree( $1 );
                                                                 }
 :elsesegment
 asm_line        : label statement more_stmts                    { }
