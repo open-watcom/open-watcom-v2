@@ -113,7 +113,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         } else {
             retval = rtn();
         }
-        _LnkFree( start );
+        LnkMemFree( start );
     }
     return( retval );
 #endif
@@ -657,9 +657,9 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
         memcpy( buff + envlen, Token.this, toklen );
         buff[toklen + envlen] = '\0';
         NewCommandSource( envname, buff, ENVIRONMENT );
-        _LnkFree( buff );
+        LnkMemFree( buff );
     }
-    _LnkFree( envname );
+    LnkMemFree( envname );
 }
 
 static void GetNewLine( void )
@@ -705,21 +705,21 @@ static void StartNewFile( void )
     fname = FileName( Token.this, Token.len, E_NONE, false );
     file = QObjOpen( fname );
     if( file == NIL_FHANDLE ) {
-        _LnkFree( fname );
+        LnkMemFree( fname );
         fname = tostring();
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
             NewCommandSource( fname, envstring, ENVIRONMENT );
-            _LnkFree( fname );
+            LnkMemFree( fname );
         } else {
             LnkMsg( ERR+LOC+LINE+MSG_CANT_OPEN_NO_REASON, "s", fname );
-            _LnkFree( fname );
+            LnkMemFree( fname );
             Suicide();
         }
     } else {
         SetCommandFile( file, fname );
         DEBUG(( DBG_OLD, "processing command file %s", fname ));
-        _LnkFree( fname );
+        LnkMemFree( fname );
     }
 }
 
@@ -1030,14 +1030,14 @@ void SetCommandFile( f_handle file, const char *fname )
     if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
         size_t  size = (size_t)long_size;
 
-        _LnkAlloc( buff, size + 1 );
+        buff = LnkMemAllocNoChk( size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
             if( size == IOERROR )
                 size = 0;
             buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
-            _LnkFree( buff );
+            LnkMemFree( buff );
         }
     }
     if( buff == NULL ) {  // if couldn't buffer for some reason.
@@ -1066,15 +1066,15 @@ static void deleteCmdFile( cmdfilelist *cmdfile )
         QClose( file, cmdfile->name );
     }
     if( cmdfile->symprefix != NULL ) {
-        _LnkFree( cmdfile->symprefix );
+        LnkMemFree( cmdfile->symprefix );
     }
     if( cmdfile->name != NULL ) {
-        _LnkFree( cmdfile->name );
+        LnkMemFree( cmdfile->name );
     }
     if( cmdfile->token.buff != NULL ) {
-        _LnkFree( cmdfile->token.buff );
+        LnkMemFree( cmdfile->token.buff );
     }
-    _LnkFree( cmdfile );
+    LnkMemFree( cmdfile );
 }
 
 void RestoreCmdLine( void )
@@ -1141,7 +1141,7 @@ outfilelist *NewOutFile( char *filename )
 
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         if( FNAMECMPSTR( filename, fnode->fname ) == 0 ) {
-            _LnkFree( filename );       // don't need this now.
+            LnkMemFree( filename );       // don't need this now.
             return( fnode );
         }
     }

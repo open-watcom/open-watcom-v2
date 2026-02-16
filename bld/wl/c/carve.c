@@ -175,13 +175,13 @@ void CarveDestroy( carve_t cv )
 
     if( cv != NULL ) {
         if( cv->blk_map != NULL ) {
-            _LnkFree( cv->blk_map );
+            LnkMemFree( cv->blk_map );
         }
         for( cur = cv->blk_list; cur != NULL; cur = next ) {
             next = cur->next;
-            _LnkFree( cur );
+            LnkMemFree( cur );
         }
-        _LnkFree( cv );
+        LnkMemFree( cv );
     }
 }
 

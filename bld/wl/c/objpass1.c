@@ -1172,7 +1172,7 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
                     oldlist++;
                     symlist++;
                 }
-                _LnkFree( startlist );
+                LnkMemFree( startlist );
             }
         } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
             DefineVirtualFunction( sym, defsym, ispure, rtns );

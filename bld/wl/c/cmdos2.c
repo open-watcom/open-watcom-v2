@@ -77,10 +77,10 @@ void SetOS2Fmt( void )
 void FreeOS2Fmt( void )
 /*********************/
 {
-    _LnkFree( FmtData.u.os2fam.stub_file_name );
-    _LnkFree( FmtData.u.os2fam.module_name );
-    _LnkFree( FmtData.u.os2fam.old_lib_name );
-    _LnkFree( FmtData.description );
+    LnkMemFree( FmtData.u.os2fam.stub_file_name );
+    LnkMemFree( FmtData.u.os2fam.module_name );
+    LnkMemFree( FmtData.u.os2fam.old_lib_name );
+    LnkMemFree( FmtData.description );
     FreeImpNameTab();
     FreeExportList();
     FreeSegFlags( (xxx_seg_flags *)FmtData.u.os2fam.seg_flags );
@@ -145,7 +145,7 @@ static bool GetWlibImports( void )
     fname = FileName( Token.this, Token.len, E_LBC, false );
     handle = QOpenR( fname );
     SetCommandFile( handle, fname );
-    _LnkFree( fname );
+    LnkMemFree( fname );
     Token.locked = true;      /* make sure only this file parsed */
     while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
         if( Token.len <= 2 )
@@ -451,7 +451,7 @@ static bool AddResource( void )
 
     str = tostring();
     DoAddResource( str );
-    _LnkFree( str );
+    LnkMemFree( str );
     return( true );
 }
 
@@ -550,7 +550,7 @@ static bool getexport( void )
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( ERR+LOC+LINE + MSG_EXPORT_ORD_INVALID, NULL );
-            _LnkFree( exp );
+            LnkMemFree( exp );
             GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
             return( true );
         }
@@ -949,7 +949,7 @@ static bool getsegflags( void )
     if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             FmtData.u.os2fam.seg_flags = entry->next;
-            _LnkFree( entry );
+            LnkMemFree( entry );
             return( false );
         }
         entry->name = tostring();

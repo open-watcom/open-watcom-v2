@@ -346,7 +346,7 @@ void DoBakPats( void )
                 break;
             }
         }
-        _LnkFree( bkptr );
+        LnkMemFree( bkptr );
     }
     BakPats = NULL;
 }

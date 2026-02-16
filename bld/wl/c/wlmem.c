@@ -119,8 +119,8 @@ void LnkMemFini( void )
 #endif
 }
 
-TRMEMAPI( LAlloc )
-void *LAlloc( size_t size )
+TRMEMAPI( LnkMemAllocNoChk )
+void *LnkMemAllocNoChk( size_t size )
 /*************************/
 {
     void    *ptr;
@@ -142,8 +142,8 @@ void *LAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( ChkLAlloc )
-void *ChkLAlloc( size_t size )
+TRMEMAPI( LnkMemAlloc )
+void *LnkMemAlloc( size_t size )
 /****************************/
 {
     void            *ptr;
@@ -179,9 +179,9 @@ void *wres_alloc( size_t size )
 }
 
 
-TRMEMAPI( LFree )
-void LFree( void *p )
-/*******************/
+TRMEMAPI( LnkMemFree )
+void LnkMemFree( void *p )
+/************************/
 {
     if( p == NULL )
         return;
@@ -202,15 +202,14 @@ void wres_free( void *ptr )
 #endif
 }
 
-TRMEMAPI( LRealloc )
-void *LRealloc( void *src, size_t size )
-/**************************************/
-/*
+TRMEMAPI( LnkMemRealloc )
+void *LnkMemRealloc( void *src, size_t size )
+/********************************************
  * reallocate a block of memory.
- * Notes for LRealloc
+ * Notes for LnkMemRealloc
  * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
  * and this function is called from permshrink
-*/
+ */
 {
     void    *dest;
 
@@ -255,7 +254,7 @@ void DbgZapFreed( void *tgt, size_t size )
 
 bool FreeUpMemory( void )
 /************************
- * make sure LRealloc is kept up to date with what is put in here.
+ * make sure LnkMemRealloc is kept up to date with what is put in here.
  */
 {
 #if defined( __QNX__ )

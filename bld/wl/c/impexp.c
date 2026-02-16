@@ -94,7 +94,7 @@ static entry_export *FreeAnExport( entry_export *exp )
 {
     entry_export    *next;
 
-    _LnkFree( exp->impname );
+    LnkMemFree( exp->impname );
     next = exp->next;
     CarveFree( CarveExportInfo, exp );
     return( next );

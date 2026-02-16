@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,7 +212,7 @@ static void GetMoreBranches( void )
     _ChkAlloc( branches, alloc_size * 2 );
     memcpy( branches, SegTab, alloc_size );
     memset( (char *)branches + alloc_size, 0, alloc_size ); /* null pointers */
-    _LnkFree( SegTab );
+    LnkMemFree( SegTab );
     SegTab = branches;
 }
 
@@ -261,7 +261,7 @@ static virt_struct GetBigStg( virt_mem_size size )
         _ChkAlloc( newtab, alloc_size * 2 );
         memcpy( newtab, HugeTab, alloc_size );
         memset( (char *)newtab + alloc_size, 0, alloc_size );
-        _LnkFree( HugeTab );
+        LnkMemFree( HugeTab );
         HugeTab = newtab;
     }
     huge_entry = &HugeTab[NextHuge];
@@ -325,7 +325,7 @@ static void AllocVMNode( seg_table *node )
 {
     void        *mem;
 
-    _LnkAlloc( mem, node->size );
+    mem = LnkMemAllocNoChk( node->size );
     if( mem == NULL ) {
         node->loc.u.spill = SpillAlloc( node->size );
         node->loc.spilled = true;
@@ -349,7 +349,7 @@ static void AllocHugeVMNode( huge_table *node )
     node->page = PermAlloc( HUGE_NUM_SUBPAGES * sizeof( spilladdr ) );
     page = node->page;
     index = node->numthere - 1;         /* first try to allocate the last bit */
-    _LnkAlloc( mem, node->sizelast );   /* on the end of the page. */
+    mem = LnkMemAllocNoChk( node->sizelast );   /* on the end of the page. */
     if( mem == NULL ) {
         nomem = true;
         node->flags &= ~VIRT_INMEM;
@@ -370,7 +370,7 @@ static void AllocHugeVMNode( huge_table *node )
         if( nomem ) {
             page[index].u.spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
         } else {
-            _LnkAlloc( mem, HUGE_SUBPAGE_SIZE );
+            mem = LnkMemAllocNoChk( HUGE_SUBPAGE_SIZE );
             if( mem == NULL ) {
                 nomem = true;
                 node->numswapped = index + 1;
@@ -507,7 +507,7 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
     _ChkAlloc( buf, len );
     ReadInfo( b, buf, len );
     PutInfo( a, buf, len );
-    _LnkFree( buf );
+    LnkMemFree( buf );
 }
 
 static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len )
@@ -691,7 +691,7 @@ void     ReleaseInfo( virt_mem stg )
             ptr->next->prev = ptr->prev;
         }
     }
-    _LnkFree( ptr );
+    LnkMemFree( ptr );
 #endif
 }
 
@@ -727,7 +727,7 @@ bool     SwapOutVirt( void )
                 spillmem->u.spill = SpillAlloc( size );
                 spillmem->spilled = true;
                 SpillWrite( spillmem->u.spill, 0, mem, size );
-                _LnkFree( mem );
+                LnkMemFree( mem );
                 DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, spillmem->u.spill ));
                 return( true );
             }
@@ -737,7 +737,7 @@ bool     SwapOutVirt( void )
                 seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
                 seg_entry->loc.spilled = true;
                 SpillWrite( seg_entry->loc.u.spill, 0, mem, seg_entry->size );
-                _LnkFree( mem );
+                LnkMemFree( mem );
                 DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
                 return( true );
             }
@@ -765,13 +765,13 @@ void FreeVirtMem( void )
             if( seg_entry != NULL ) {
                 for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
                     if( !seg_entry->loc.spilled ) {
-                        _LnkFree( seg_entry->loc.u.addr );
+                        LnkMemFree( seg_entry->loc.u.addr );
                     }
                     seg_entry++;
                 }
             }
         }
-        _LnkFree( SegTab );
+        LnkMemFree( SegTab );
     }
     if( HugeTab != NULL ) {
         for( index = 0; index < NumHuge; index++ ) {
@@ -779,11 +779,11 @@ void FreeVirtMem( void )
             if( huge_entry->page != NULL ) {
                 page = huge_entry->page;
                 for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
-                    _LnkFree( page[inner].u.addr );
+                    LnkMemFree( page[inner].u.addr );
                 }
             }
         }
-        _LnkFree( HugeTab );
+        LnkMemFree( HugeTab );
     }
 #else
     FreeList( VMemBlocks );

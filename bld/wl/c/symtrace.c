@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ static void CheckFileTrace( section *sect, void *_info )
     for( list = sect->files; list != NULL; list = list->next_file ) {
         if( FNAMECMPSTR( list->infile->name.u.ptr, info->u.name ) == 0 ) {
             info->found = true;
-            _LnkFree( info->u.name );
+            LnkMemFree( info->u.name );
             list->flags |= STAT_TRACE_SYMS;
             return;
         }
@@ -109,14 +109,14 @@ void CheckTraces( void )
             ParmWalkAllSects( CheckFileTrace, info );
             if( !info->found ) {
                 LnkMsg( WRN+MSG_TRACE_OBJ_NOT_FOUND, "s", info->u.name );
-                _LnkFree( info->u.name );
+                LnkMemFree( info->u.name );
             }
-            _LnkFree( info );
+            LnkMemFree( info );
         } else {
             for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
                 if( FNAMECMPSTR( lib->infile->name.u.ptr, info->u.name ) == 0 ) {
                     info->found = true;
-                    _LnkFree( info->u.name );
+                    LnkMemFree( info->u.name );
                     info->u.lib = lib;
                     break;
                 }
@@ -137,7 +137,7 @@ void CheckLibTrace( file_list *lib )
         if( !info->found ) {
             if( FNAMECMPSTR( info->u.name, lib->infile->name.u.ptr ) == 0 ) {
                 info->found = true;
-                _LnkFree( info->u.name );
+                LnkMemFree( info->u.name );
                 info->u.lib = lib;
                 break;
             }
@@ -156,8 +156,8 @@ bool FindLibTrace( mod_entry *mod )
         if( info->found && info->u.lib == mod->f.source ) {
             if( ModNameCompare( mod->name.u.ptr, info->member ) ) {
                 *prev = info->next;
-                _LnkFree( info->member );
-                _LnkFree( info );
+                LnkMemFree( info->member );
+                LnkMemFree( info );
                 return( true );
             }
         }
@@ -187,8 +187,8 @@ bool FindSymTrace( const char *symname )
     for( info = TraceListSym; info != NULL; info = info->next ) {
         if( strcmp( info->name, symname ) == 0 ) {
             *prev = info->next;
-            _LnkFree( info->name );
-            _LnkFree( info );
+            LnkMemFree( info->name );
+            LnkMemFree( info );
             return( true );
         }
         prev = &(info->next);
@@ -222,15 +222,15 @@ void CleanTraces( void )
 
     for( ; TraceListSym != NULL; TraceListSym = next ) {
         next = TraceListSym->next;
-        _LnkFree( TraceListSym->name );
-        _LnkFree( TraceListSym );
+        LnkMemFree( TraceListSym->name );
+        LnkMemFree( TraceListSym );
     }
     for( ; TraceList != NULL; TraceList = next ) {
         next = TraceList->next;
         if( !TraceList->found ) {
-            _LnkFree( TraceList->u.name );
+            LnkMemFree( TraceList->u.name );
         }
-        _LnkFree( TraceList->member );
-        _LnkFree( TraceList );
+        LnkMemFree( TraceList->member );
+        LnkMemFree( TraceList );
     }
 }

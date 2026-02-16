@@ -100,7 +100,7 @@ static bool ProcName( void )
         return( false );
     CmdFlags &= ~CF_UNNAMED;
     if( Name != NULL ) {
-        _LnkFree( Name );
+        LnkMemFree( Name );
     }
     Name = tostring();   // just keep the name around for now.
     return( true );
@@ -235,7 +235,7 @@ static bool ProcOSName( void )
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         if( FmtData.osname != NULL ) {
-            _LnkFree( FmtData.osname );
+            LnkMemFree( FmtData.osname );
         }
         FmtData.osname = tostring();
         return( true );
@@ -269,7 +269,7 @@ static bool ProcSymFile( void )
 {
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
-            _LnkFree( SymFileName );
+            LnkMemFree( SymFileName );
         }
         SymFileName = FileName( Token.this, Token.len, E_SYM, false );
     }
@@ -288,7 +288,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
         new_member->flags = DBIFlag;
         strcpy( new_member->name, member );
         new_member->next = NULL;
-        _LnkFree( member );
+        LnkMemFree( member );
         for( new_entry = CurrSect->files; new_entry != NULL; new_entry = new_entry->next_file ) {
             if( FNAMECMPSTR( new_entry->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
@@ -296,7 +296,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
                     LinkList( &new_entry->u.member, new_member );
                     return( new_member );
                 } else {
-                    _LnkFree( new_member );      // user did a stupid thing.
+                    LnkMemFree( new_member );      // user did a stupid thing.
                     return( new_entry->u.member );
                 }
             }
@@ -324,8 +324,8 @@ static bool AddLibFile( void )
     ptr = GetFileName( &membname );
     if( membname != NULL ) {
         LnkMsg( WRN+LOC+LINE+MSG_NO_MEMB_IN_LIBFILE, NULL );
-        _LnkFree( membname );
-        _LnkFree( ptr );
+        LnkMemFree( membname );
+        LnkMemFree( ptr );
         return( true );
     }
     entry = AllocNewFile( NULL );
@@ -337,7 +337,7 @@ static bool AddLibFile( void )
         CurrFList = LastLibFile;
     }
     entry->infile->status |= INSTAT_USE_LIBPATH;
-    _LnkFree( ptr );
+    LnkMemFree( ptr );
     return( true );
 }
 
@@ -365,7 +365,7 @@ static bool AddModFile( void )
     AddHTableElem( Root->modFilesHashed, ptr );
     LinkFlags |= LF_GOT_CHGD_FILES;
     if( membname != NULL ) {
-        _LnkFree( membname );
+        LnkMemFree( membname );
     }
     return( true );
 }
@@ -402,7 +402,7 @@ static bool AddFile( void )
         LastFile.u.module = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
     }
-    _LnkFree( ptr );
+    LnkMemFree( ptr );
     return( true );
 }
 
@@ -443,7 +443,7 @@ static bool AddLib( void )
         result->infile->status |= INSTAT_NO_WARNING;
     }
     DEBUG(( DBG_BASE, "library: %s", ptr ));
-    _LnkFree( ptr );
+    LnkMemFree( ptr );
     return( true );
 }
 
@@ -518,7 +518,7 @@ static bool ProcMap( void )
     MapFlags |= MAP_FLAG;
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( MapFName != NULL ) {
-            _LnkFree( MapFName );
+            LnkMemFree( MapFName );
         }
         MapFName = FileName( Token.this, Token.len, E_MAP, false );
         DEBUG(( DBG_OLD, "produce map file" ));
@@ -1013,9 +1013,9 @@ static bool ProcStub( void )
         *nameptr = name;
     } else if( IsSystemBlock() ) {
         /* if we're in a system block, we don't want to override a user specification */
-        _LnkFree( name );
+        LnkMemFree( name );
     } else {
-        _LnkFree( *nameptr );
+        LnkMemFree( *nameptr );
         *nameptr = name;
     }
     return( true );
@@ -1048,7 +1048,7 @@ static bool ProcImplib( void )
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = false;
-    _LnkFree( FmtData.implibname );
+    LnkMemFree( FmtData.implibname );
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
@@ -1060,7 +1060,7 @@ static bool ProcImpFile( void )
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = true;
-    _LnkFree( FmtData.implibname );
+    LnkMemFree( FmtData.implibname );
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
@@ -1355,7 +1355,7 @@ static bool ProcDescription( void )
         return( false );
     }
     if( FmtData.description != NULL ) {
-        _LnkFree( FmtData.description );
+        LnkMemFree( FmtData.description );
     }
     FmtData.description = tostring();
     return( true );
@@ -1785,7 +1785,7 @@ static bool ProcSysBegin( void )
     } else {
         GetCommandBlock( &SysBlocks, sysname, SysEndOptions );
     }
-    _LnkFree( sysname );
+    LnkMemFree( sysname );
     return( true );
 }
 
@@ -1830,15 +1830,15 @@ static bool ProcSystem( void )
             }
             *prev = sys->next;
             if( sys->name != NULL ) {
-                _LnkFree( sys->name );
+                LnkMemFree( sys->name );
             }
-            _LnkFree( sys );
+            LnkMemFree( sys );
         } else {
             RestoreParser();
             NewCommandSource( sys->name, sys->commands, SYSTEM );
         }
     }
-    _LnkFree( sysname );
+    LnkMemFree( sysname );
     return( true );
 }
 

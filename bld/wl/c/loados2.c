@@ -189,7 +189,7 @@ static void ReadOldLib( void )
                 }
                 currobj++;
             }
-            _LnkFree( objects );
+            LnkMemFree( objects );
             if( num_objects == 0 ) {
                 LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
             }
@@ -198,7 +198,7 @@ static void ReadOldLib( void )
         }
     }
     QClose( the_file, fname );
-    _LnkFree( fname );
+    LnkMemFree( fname );
     FmtData.u.os2fam.old_lib_name = NULL;
 }
 
@@ -438,9 +438,9 @@ static void FreeResTable( ResTable *restab )
         type_next = type->Next;
         for( res = type->Head; res != NULL; res = res_next ) {
             res_next = res->Next;
-            _LnkFree( res );
+            LnkMemFree( res );
         }
-        _LnkFree( type );
+        LnkMemFree( type );
     }
 
     restab->Dir.Head = NULL;
@@ -638,12 +638,12 @@ unsigned long ResNonResNameTable( bool dores )
     }
     if( dores ) {
         if( FmtData.u.os2fam.module_name != NULL ) {
-            _LnkFree( FmtData.u.os2fam.module_name );
+            LnkMemFree( FmtData.u.os2fam.module_name );
             FmtData.u.os2fam.module_name = NULL;
         }
     } else {     /* in non-resident names table */
         if( FmtData.description != NULL ) {
-            _LnkFree( FmtData.description );
+            LnkMemFree( FmtData.description );
             FmtData.description = NULL;
         }
     }
@@ -949,11 +949,11 @@ static void FiniNEResources( FILE *res_fp, WResDir inRes, ResTable *outRes )
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {
-            _LnkFree( outRes->Str.StringBlock );
+            LnkMemFree( outRes->Str.StringBlock );
             outRes->Str.StringBlock = NULL;
         }
         if( outRes->Str.StringList != NULL ) {
-            _LnkFree( outRes->Str.StringList );
+            LnkMemFree( outRes->Str.StringList );
             outRes->Str.StringList = NULL;
         }
         WResFreeDir( inRes );
@@ -1245,7 +1245,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
             return( WriteDOSDefStub( stub_align ) );   // NOTE: <== a return here.
         }
-        _LnkFree( FmtData.u.os2fam.stub_file_name );
+        LnkMemFree( FmtData.u.os2fam.stub_file_name );
         len = strlen( fullname ) + 1;
         _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
         memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );

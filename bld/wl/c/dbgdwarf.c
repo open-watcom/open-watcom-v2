@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -912,5 +912,5 @@ void DwarfWrite( void )
     virt_off += DwarfWriteTrailer( virt_off );
     SeekLoad( savepos - shdr_size );
     WriteLoad( sect_header, shdr_size );
-    _LnkFree( sect_header );
+    LnkMemFree( sect_header );
 }

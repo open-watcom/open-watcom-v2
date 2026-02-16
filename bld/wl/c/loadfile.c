@@ -899,7 +899,7 @@ static void ExecWlib( void )
     if( ExecDLLPgm( WLIB_EXE, cmdline ) ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
-    _LnkFree( cmdline );
+    LnkMemFree( cmdline );
 #else
     char        *atfname;
     size_t      namelen;
@@ -935,7 +935,7 @@ static void ExecWlib( void )
     if( retval == -1 ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
-    _LnkFree( atfname );
+    LnkMemFree( atfname );
 #endif
 }
 
@@ -962,10 +962,10 @@ void BuildImpLib( void )
         }
         QDelete( ImpLib.fname );
     }
-    _LnkFree( FmtData.implibname );
-    _LnkFree( ImpLib.fname );
-    _LnkFree( ImpLib.buffer );
-    _LnkFree( ImpLib.module_name );
+    LnkMemFree( FmtData.implibname );
+    LnkMemFree( ImpLib.fname );
+    LnkMemFree( ImpLib.buffer );
+    LnkMemFree( ImpLib.module_name );
 }
 
 static void BufImpWrite( const char *buffer, size_t len )
@@ -1209,9 +1209,9 @@ void FreeOutFiles( void )
         if( LinkState & LS_LINK_ERROR ) {
             QDelete( fnode->fname );
         }
-        _LnkFree( fnode->fname );
+        LnkMemFree( fnode->fname );
         OutFiles = fnode->next;
-        _LnkFree( fnode );
+        LnkMemFree( fnode );
     }
 }
 
@@ -1345,7 +1345,7 @@ static void FlushBuffFile( outfilelist *outfile )
     if( modpos != 0 ) {
         QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
     }
-    _LnkFree( outfile->buffer );
+    LnkMemFree( outfile->buffer );
     outfile->buffer = NULL;
 }
 

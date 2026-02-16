@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,7 @@ void DistribAddMod( mod_entry *lp, overlay_ref ovlref )
         }
         _ChkAlloc( new, sizeof( mod_entry * ) * ModTableMaxLen * 2 );
         memcpy( new, ModTable, sizeof( mod_entry * ) * ModTableMaxLen );
-        _LnkFree( ModTable );
+        LnkMemFree( ModTable );
         ModTable = new;
         ModTableMaxLen *= 2;
     }
@@ -214,7 +214,7 @@ void DistribSetSegments( void )
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
     ObjFormat |= FMT_DEBUG_COMENT;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _LnkFree( ArcList );
+        LnkMemFree( ArcList );
         ArcList = NULL;
     }
     if( LinkFlags & LF_STRIP_CODE ) {
@@ -249,12 +249,12 @@ void DistribSetSegments( void )
     FixGroupProblems();
     FindRedefs();
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _LnkFree( SectOvlTab );
+        LnkMemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
 #endif
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _LnkFree( SectOvlTab );
+        LnkMemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
     ReleasePass1Blocks();
@@ -268,9 +268,9 @@ void FreeDistribSupp( void )
     for( index = 1; index <= CurrModHandle; index++ ) {
         FreeAMod( ModTable[index] );
     }
-    _LnkFree( ModTable );
-    _LnkFree( ArcList );
-    _LnkFree( SectOvlTab );
+    LnkMemFree( ModTable );
+    LnkMemFree( ArcList );
+    LnkMemFree( SectOvlTab );
     ReleasePass1Blocks();
 }
 
@@ -376,7 +376,7 @@ static void AddArc( dist_arc arc )
     if( arclist->numarcs >= ArcListMaxLen ) {
         _ChkAlloc( arclist, offsetof( arcdata, arcs ) + 2 * ArcListMaxLen * sizeof( dist_arc ) );
         memcpy( arclist, ArcList, offsetof( arcdata, arcs ) + ArcListMaxLen * sizeof( dist_arc ) );
-        _LnkFree( ArcList );
+        LnkMemFree( ArcList );
         CurrMod->x.arclist = arclist;
         ArcList = arclist;
         ArcListMaxLen *= 2;

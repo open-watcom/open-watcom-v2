@@ -660,7 +660,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         exp = sort[i];
         WriteLoad( exp->name.u.ptr, strlen( exp->name.u.ptr ) + 1 );
     }
-    _LnkFree( sort );
+    LnkMemFree( sort );
     size = eat - object->rva;
     object->physical_size = __ROUND_UP_SIZE( size, file_align );
     entry->size = size;
@@ -972,7 +972,7 @@ static void SetMiscTableEntries( pe_exe_header *pehdr )
         temp = sortarray;
         RingLookup( leader->pieces, SetPDataArray, &temp );
         VMemQSort( (virt_mem)sortarray, numpdatas, sizeof( virt_mem * ), SwapDesc, CmpDesc );
-        _LnkFree( sortarray );
+        LnkMemFree( sortarray );
     }
 }
 
@@ -1454,7 +1454,7 @@ void FiniPELoadFile( void )
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );
             }
 
-            _LnkFree( buffer );
+            LnkMemFree( buffer );
             crc += totalsize;
 
             if( LinkState & LS_HAVE_X64_CODE ) {
@@ -1467,7 +1467,7 @@ void FiniPELoadFile( void )
         }
     }
 
-    _LnkFree( objects );
+    LnkMemFree( objects );
 }
 
 static unsigned_32 getStubSize( void )
@@ -1492,7 +1492,7 @@ static unsigned_32 getStubSize( void )
         if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
         } else {
-            _LnkFree( FmtData.u.os2fam.stub_file_name );
+            LnkMemFree( FmtData.u.os2fam.stub_file_name );
             len = strlen( fullname ) + 1;
             _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
             memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
@@ -1550,7 +1550,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
         nameptr++;
         ordptr++;
     }
-    _LnkFree( ordbuf );
+    LnkMemFree( ordbuf );
 }
 
 void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
@@ -1592,7 +1592,7 @@ void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
         curr++;
     }   /* NOTE! this assumes the name table is at the end */
     ReadExports( namestart, export_dir->size + *nameptrs, entrystart, numentries, table.ordinal_base, file, fname );
-    _LnkFree( nameptrs );
+    LnkMemFree( nameptrs );
 }
 
 static void CreateIDataSection( void )

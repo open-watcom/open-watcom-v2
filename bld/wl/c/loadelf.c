@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -404,8 +404,8 @@ void FiniELFLoadFile( void )
     SeekLoad( 0 );
     WriteLoad( &hdr.eh, sizeof( Elf32_Ehdr ) );
     WriteLoad( hdr.ph, hdr.ph_size );
-    _LnkFree( hdr.sh );
-    _LnkFree( hdr.ph );
+    LnkMemFree( hdr.sh );
+    LnkMemFree( hdr.ph );
     FiniStringTable( &hdr.secstrtab );
     FiniStringTable( &SymStrTab );
     SeekLoad( hdr.curr_off );

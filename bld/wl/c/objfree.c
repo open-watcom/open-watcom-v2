@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,27 +126,27 @@ static void FreeSections( section *sec )
         }
         DBISectCleanup( sec );
         FreeAreas( sec->areas );
-        ZapHTable(sec->modFilesHashed, LFree);
+        ZapHTable( sec->modFilesHashed, LnkMemFree );
         // Free up any Order Class entries
         for( Class = sec->orderlist; Class != NULL; Class = NextClass ) {
             NextClass = Class->NextClass;
             if( Class->Name != NULL ) {   // Including members and sucessors
-                _LnkFree ( Class->Name );
+                LnkMemFree ( Class->Name );
             }
             if( Class->Copy ) {
-                _LnkFree ( Class->SrcName );
+                LnkMemFree ( Class->SrcName );
             }
             // Order Seg entries can also have members and sucessors
             for( Seg = Class->SegList; Seg != NULL; Seg = NextSeg ) {
                 NextSeg = Seg->NextSeg;
                 if( Seg->Name != NULL ) {
-                    _LnkFree( Seg->Name );
+                    LnkMemFree( Seg->Name );
                 }
-                _LnkFree ( Seg );
+                LnkMemFree ( Seg );
             }
-            _LnkFree ( Class );
+            LnkMemFree ( Class );
         }
-        _LnkFree( sec );
+        LnkMemFree( sec );
     }
 }
 
@@ -177,13 +177,13 @@ void CleanLinkStruct( void )
         FreeMods( LibModules );
     }
     if( SymFileName != NULL ) {
-        _LnkFree( SymFileName );
+        LnkMemFree( SymFileName );
     }
     if( FmtData.osname != NULL ) {
-        _LnkFree( FmtData.osname );
+        LnkMemFree( FmtData.osname );
     }
     if( FmtData.resource != NULL ) {
-        _LnkFree( FmtData.resource );
+        LnkMemFree( FmtData.resource );
     }
     FreeRelocInfo();
     FreeGroups( Groups );
@@ -208,8 +208,8 @@ void FreeSegFlags( xxx_seg_flags *curr )
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
-        _LnkFree( curr->name );
-        _LnkFree( curr );
+        LnkMemFree( curr->name );
+        LnkMemFree( curr );
     }
 }
 #endif

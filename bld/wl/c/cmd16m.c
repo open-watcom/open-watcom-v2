@@ -62,8 +62,8 @@ void SetD16MFmt( void )
 void FreeD16MFmt( void )
 /**********************/
 {
-    _LnkFree( FmtData.u.d16m.exp_name );
-    _LnkFree( FmtData.u.d16m.stub );
+    LnkMemFree( FmtData.u.d16m.exp_name );
+    LnkMemFree( FmtData.u.d16m.stub );
 }
 
 void CmdD16MFini( void )
@@ -168,7 +168,7 @@ static bool ProcExpName( void )
     if( !HaveEquals( TOK_IS_FILENAME ) )
         return( false );
     if( FmtData.u.d16m.exp_name != NULL ) {
-        _LnkFree( FmtData.u.d16m.exp_name );
+        LnkMemFree( FmtData.u.d16m.exp_name );
     }
     FmtData.u.d16m.exp_name = FileName( Token.this, Token.len, E_PROTECT, true );     // just keep the name around for now.
     strupr( FmtData.u.d16m.exp_name );

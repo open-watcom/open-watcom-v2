@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,7 +345,7 @@ static void WriteMapSectSegs( section *sect )
                 WriteMapAbsSeg( segs[i].seg );
             }
         }
-        _LnkFree( segs );
+        LnkMemFree( segs );
     }
 }
 
@@ -743,16 +743,16 @@ static void WriteMapLines( void )
         }
 
         if( p - input >= length ) {
-            _LnkFree( opcode_lengths );
-            _LnkFree( input );
+            LnkMemFree( opcode_lengths );
+            LnkMemFree( input );
             return;
         }
 
         while( *p != 0 ) {
             p += strlen( (char *)p ) + 1;
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths );
-                _LnkFree( input );
+                LnkMemFree( opcode_lengths );
+                LnkMemFree( input );
                 return;
             }
         }
@@ -766,8 +766,8 @@ static void WriteMapLines( void )
             p = SkipLEB128( p );
             p = SkipLEB128( p );
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths );
-                _LnkFree( input );
+                LnkMemFree( opcode_lengths );
+                LnkMemFree( input );
                 return;
             }
         }
@@ -875,9 +875,9 @@ static void WriteMapLines( void )
             }
         }
         WriteMapNL();
-        _LnkFree( opcode_lengths );
+        LnkMemFree( opcode_lengths );
     }
-    _LnkFree( input );
+    LnkMemFree( input );
 }
 
 static bool CheckSymRecList( void *_info, void *sym )
@@ -1161,7 +1161,7 @@ void MapFini( void )
         MapFile = NULL;
 
         if( MapFName != NULL ) {
-            _LnkFree( MapFName );
+            LnkMemFree( MapFName );
             MapFName = NULL;
         }
     }
@@ -1224,7 +1224,7 @@ void WriteMapPubEnd( void )
       && ( NumMapSyms > 0 ) ) {
         symarray = NULL;
         if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
-            _LnkAlloc( symarray, NumMapSyms * sizeof( symbol * ) );
+            symarray = LnkMemAllocNoChk( NumMapSyms * sizeof( symbol * ) );
         }
         currsym = symarray;
         ok = ( symarray != NULL );
@@ -1243,7 +1243,7 @@ void WriteMapPubEnd( void )
             LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
         } else {
             WriteMapSymArray( symarray, NumMapSyms );
-            _LnkFree( symarray );
+            LnkMemFree( symarray );
         }
     }
 }
@@ -1266,7 +1266,7 @@ void WriteMapPubSortEnd( pubdefinfo *info )
         WriteMapSymArray( info->symarray, info->num );
     }
     if( info->symarray != NULL ) {
-        _LnkFree( info->symarray );
+        LnkMemFree( info->symarray );
         info->symarray = NULL;
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ static bool ShrinkBlock( block_data *block )
         return( false );
     if( block->currbrk >= block->list->size )
         return( false );
-    _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
+    new = LnkMemRealloc( block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
   #ifdef DEVBUILD
@@ -125,7 +125,7 @@ static void GetNewBlock( block_data *block, size_t size )
     if( try < size )
         try = size;
     for( ;; ) {
-        _LnkAlloc( new, try + ALLOC_SIZE );
+        new = LnkMemAllocNoChk( try + ALLOC_SIZE );
         if( new != NULL )
             break;
         try /= 2;

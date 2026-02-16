@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ static reloc_info *AllocRelocInfo( void )
     _PermAlloc( info, sizeof( reloc_info ) );       /* allocate more */
     info->sizeleft = RELOC_PAGE_SIZE;
     info->loc.spilled = false;
-    _LnkAlloc( info->loc.u.addr, RELOC_PAGE_SIZE );
+    info->loc.u.addr = LnkMemAllocNoChk( RELOC_PAGE_SIZE );
     if( info->loc.u.addr == NULL ) {
         info->loc.u.spill = SpillAlloc( RELOC_PAGE_SIZE );
         info->loc.spilled = true;
@@ -253,7 +253,7 @@ static bool FreeRelocList( reloc_info *list )
 {
     for( ; list != NULL; list = list->next ) {
         if( !list->loc.spilled ) {
-            _LnkFree( list->loc.u.addr );
+            LnkMemFree( list->loc.u.addr );
         }
     }
     return( false );  /* needed for OS2 generic traversal routines */
@@ -334,7 +334,7 @@ static void FreeGroupRelocs( group_entry *group )
                 highidx++;
             }
             while( highidx-- > 0 ) {
-                _LnkFree( *reloclist );
+                LnkMemFree( *reloclist );
                 reloclist++;
             }
         }
@@ -512,7 +512,7 @@ static bool SpillRelocList( reloc_info *list )
         if( !list->loc.spilled ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
             SpillWrite( spill, 0, list->loc.u.addr, RELOC_PAGE_SIZE - list->sizeleft );
-            _LnkFree( list->loc.u.addr );
+            LnkMemFree( list->loc.u.addr );
             list->loc.u.spill = spill;
             list->loc.spilled = true;
             return( true );

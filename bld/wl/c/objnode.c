@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,9 +95,9 @@ static void BurnNodeArray( nodearray_handle list )
     unsigned    index;
 
     for( index = 0; index <= list->arraymax; index++ ) {
-        _LnkFree( list->array[index] );
+        LnkMemFree( list->array[index] );
     }
-    _LnkFree( list );
+    LnkMemFree( list );
 }
 
 void BurnNodes( void )
@@ -186,7 +186,7 @@ static void ReleaseNamelist( void *node, void *dummy )
 {
     /* unused parameters */ (void)dummy;
 
-    _LnkFree( *((void **)node) );
+    LnkMemFree( *((void **)node) );
 }
 
 static void IterateNodeArray( char *narray, void (*fn)(void *, void *),

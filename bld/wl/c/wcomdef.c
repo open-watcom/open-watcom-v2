@@ -140,7 +140,7 @@ static void FreeCDatPiece( void * piec )
 {
     comdat_piece *piece = piec;
     if( piece->free_data ) {
-        _LnkFree( piece->data );
+        LnkMemFree( piece->data );
     }
     piece->next = FreedPieces;
     FreedPieces = piece;

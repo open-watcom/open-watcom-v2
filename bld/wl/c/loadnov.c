@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -665,7 +665,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
         if( imp->contents == 2 ) {
             _ChkAlloc( new, ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
             memcpy( new, imp, sizeof( nov_import ) );
-            _LnkFree( imp );
+            LnkMemFree( imp );
             imp = new;
             sym->p.import = imp;
         }
@@ -684,7 +684,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
             if( vblock >= (unsigned)( imp->contents - MAX_IMP_INTERNAL ) * MAX_IMP_VIRT ) {
                 _ChkAlloc( new, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
                 memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
-                _LnkFree( imp );
+                LnkMemFree( imp );
                 imp = new;
                 imp->contents++;
                 sym->p.import = imp;

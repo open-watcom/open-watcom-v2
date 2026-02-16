@@ -296,7 +296,7 @@ void FreeList( void *_curr )
 
     for( curr = _curr; curr != NULL; curr = next ) {
         next = curr->next;
-        _LnkFree( curr );
+        LnkMemFree( curr );
     }
 }
 
@@ -575,11 +575,11 @@ void FiniEnvVars( void )
 /**********************/
 {
     if( ExePath != NULL ) {
-        _LnkFree( ExePath );
+        LnkMemFree( ExePath );
         ExePath = NULL;
     }
     if( LibPath != NULL ) {
-        _LnkFree( LibPath );
+        LnkMemFree( LibPath );
         LibPath = NULL;
     }
 }
@@ -743,7 +743,7 @@ section *NewSection( void )
     sect->orderlist = NULL;
     sect->areas = NULL;
     sect->files = NULL;
-    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
+    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, LnkMemAlloc, LnkMemFree );
     sect->mods = NULL;
     sect->reloclist = NULL;
     SET_ADDR_UNDEFINED( sect->sect_addr );

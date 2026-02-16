@@ -247,7 +247,7 @@ void FreeTokBuffs( void )
 /******************************/
 {
     if( TokBuff != NULL ) {
-        _LnkFree( TokBuff );
+        LnkMemFree( TokBuff );
         TokBuff = NULL;
     }
 }

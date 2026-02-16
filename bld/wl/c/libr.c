@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static void BadLibrary( file_list *list )
 /***************************************/
 {
     list->infile->status |= INSTAT_IOERR;
-    _LnkFree( list->u.dict );
+    LnkMemFree( list->u.dict );
     list->u.dict = NULL;
     Locator( list->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_LIB_FILE_ATTR, NULL );
@@ -193,7 +193,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
             index_tab[ix1] = ix1;
         }
     }
-    _LnkFree( index_tab );
+    LnkMemFree( index_tab );
 }
 
 static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, int numdicts )
@@ -324,7 +324,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
         if( numdicts == 0 ) {
             Locator( list->infile->name.u.ptr, NULL, 0 );
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
-            _LnkFree( list->u.dict );
+            LnkMemFree( list->u.dict );
             list->u.dict = NULL;
             return( false );
         }
@@ -367,9 +367,9 @@ static void FreeDictCache( void **cache, unsigned buckets )
 /*********************************************************/
 {
     while( buckets-- > 0 ) {
-        _LnkFree( cache[buckets] );
+        LnkMemFree( cache[buckets] );
     }
-    _LnkFree( cache );
+    LnkMemFree( cache );
 }
 
 static void **AllocDict( unsigned num_buckets, unsigned residue )
@@ -379,11 +379,11 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     void            **cache;
     unsigned        bucket;
 
-    _LnkAlloc( cache, sizeof( void * ) * ( num_buckets + 1 ) );
+    cache = LnkMemAllocNoChk( sizeof( void * ) * ( num_buckets + 1 ) );
     if( cache == NULL )
         return( NULL );
     for( bucket = 0; bucket < num_buckets; ++bucket ) {
-        _LnkAlloc( cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE );
+        cache[bucket] = LnkMemAllocNoChk( DIC_REC_SIZE * PAGES_IN_CACHE );
         if( cache[bucket] == NULL ) {
             FreeDictCache( cache, bucket );
             return( NULL );
@@ -391,7 +391,7 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     }
 
     if( residue != 0 ) {
-        _LnkAlloc( cache[bucket], residue * DIC_REC_SIZE );
+        cache[bucket] = LnkMemAllocNoChk( residue * DIC_REC_SIZE );
         if( cache[bucket] == NULL ) {
             FreeDictCache( cache, bucket );
             return( NULL );
@@ -552,13 +552,13 @@ void BurnLibs( void )
             continue;
         if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, dict->a.filepostab - 1 );
-            _LnkFree( dict->a.symbtab );
+            LnkMemFree( dict->a.symbtab );
         } else {
             if( dict->o.cache != NULL ) {
                 FreeDictCache( dict->o.cache, ( dict->o.pages / PAGES_IN_CACHE ) + 1 );
             }
         }
-        _LnkFree( dict );
+        LnkMemFree( dict );
         temp->u.dict = NULL;
         FreeObjCache( temp );
     }
@@ -646,7 +646,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     objname = IdentifyObject( lib, &pos, &dummy );
     if( objname != NULL ) {
         obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
-        _LnkFree( objname );
+        LnkMemFree( objname );
     } else {
         obj->name.u.ptr = NULL;
     }

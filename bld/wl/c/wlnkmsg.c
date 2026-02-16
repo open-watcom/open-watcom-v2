@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,4 +319,4 @@ bool res_ioerr( FILE *fp, size_t rc )
     return( rc == -1 );
 }
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,ChkLAlloc,LFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,LnkMemAlloc,LnkMemFree);

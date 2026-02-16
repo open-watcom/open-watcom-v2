@@ -190,7 +190,7 @@ static unsigned GetRelocBlock( reloc_addr **reloc_data )
     if( (LinkState & LS_MAKE_RELOCS) && Root->relocs ) {
         relocs = Root->reloclist;
         num_relocs = Root->relocs;
-        *reloc_data = ChkLAlloc( sizeof( reloc_addr ) * num_relocs );
+        *reloc_data = LnkMemAlloc( sizeof( reloc_addr ) * num_relocs );
         if( *reloc_data != NULL ) {
             info.reloc_data = *reloc_data;
             WalkRelocList( &relocs, RelocWalkFn, &info );
@@ -269,7 +269,7 @@ static unsigned_32 WriteStubProg( void )
         if( fhandle == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
         } else {
-            _LnkFree( FmtData.u.d16m.stub );
+            LnkMemFree( FmtData.u.d16m.stub );
             len = strlen( fullname ) + 1;
             _ChkAlloc( FmtData.u.d16m.stub, len );
             memcpy( FmtData.u.d16m.stub, fullname, len );
@@ -306,7 +306,7 @@ void Fini16MLoadFile( void )
     if( extra_sels ) {
         reloc_size = Write16MRelocs( reloc_data );
         exe_size += reloc_size;
-        LFree( reloc_data );
+        LnkMemFree( reloc_data );
     }
     DBIWrite();
 

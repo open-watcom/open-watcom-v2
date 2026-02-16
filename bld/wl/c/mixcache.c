@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ static bool DumpFileCache( infilelist *infile, bool nuke )
         blocklist = infile->cache;
         for( index = 0; index < num; index++ ) {
             if( index != savenum && *blocklist != NULL ) {
-                _LnkFree( *blocklist );
+                LnkMemFree( *blocklist );
                 *blocklist = NULL;
                 blockfreed = true;
             }
@@ -194,7 +194,7 @@ void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
     if( list->infile->status & INSTAT_FULL_CACHE )
         return( buf );
     if( Multipage ) {
-        _LnkRealloc( result, buf, len );
+        result = LnkMemRealloc( buf, len );
         _ChkAlloc( TokBuff, TokSize );
         Multipage = false;              // indicate that last read is permanent.
     } else {
@@ -251,7 +251,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
     } else {
         if( len > TokSize ) {
             TokSize = __ROUND_UP_SIZE_SECTOR( len );
-            _LnkRealloc( TokBuff, TokBuff, TokSize );
+            TokBuff = LnkMemRealloc( TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
         memcpy( TokBuff, cache[startnum] + offset, amtread );
@@ -296,7 +296,7 @@ void CacheFree( const file_list *list, void *mem )
  */
 {
     if( list->infile->status & INSTAT_PAGE_CACHE ) {
-        _LnkFree( mem );
+        LnkMemFree( mem );
     }
 }
 
@@ -306,7 +306,7 @@ void FreeObjCache( const file_list *list )
     if( list == NULL )
         return;
     if( list->infile->status & INSTAT_FULL_CACHE ) {
-        _LnkFree( list->infile->cache );
+        LnkMemFree( list->infile->cache );
     } else {
         DumpFileCache( list->infile, true );
     }

@@ -193,7 +193,7 @@ char *GetNextLink( void )
 
     cmd = NULL;
     if( PrevCommand != NULL )
-        _LnkFree( PrevCommand );
+        LnkMemFree( PrevCommand );
     if( LinkCommands != NULL ) {
         PrevCommand = LinkCommands;
         LinkCommands = LinkCommands->next;
@@ -239,7 +239,7 @@ void FreePaths( void )
     FreeList( ObjPath );
     ObjPath = NULL;
     if( Name != NULL ) {
-        _LnkFree( Name );
+        LnkMemFree( Name );
         Name = NULL;
     }
 }
@@ -429,7 +429,7 @@ void SetFormat( void )
 #endif
     }
     fname = FileName( Name, strlen( Name ), FmtData.def_ext, CmdFlags & CF_UNNAMED );
-    _LnkFree( Name );
+    LnkMemFree( Name );
     Root->outfile = NewOutFile( fname );
     Name = NULL;
 #ifdef _EXE
@@ -566,7 +566,7 @@ void AddCommentLib( const char *comment, size_t len, lib_priority priority )
     result = AddObjLib( ptr, priority );
     CheckLibTrace( result );
     DEBUG(( DBG_BASE, "library: %s", ptr ));
-    _LnkFree( ptr );
+    LnkMemFree( ptr );
 }
 
 void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
@@ -641,7 +641,7 @@ void ExecSystem( const char *name )
         NewCommandSource( NULL, NULL, ENVIRONMENT ); // the "command line"
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
-        _LnkFree( sys->name );
+        LnkMemFree( sys->name );
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
             if( !DoParseDirectiveSubset() ) {
@@ -672,9 +672,9 @@ static void CleanSystemList( bool burn )
           && memcmp( "386", name, 4 ) != 0 ) {
             *sysown = sys->next;
             if( name != NULL ) {
-                _LnkFree( name );
+                LnkMemFree( name );
             }
-            _LnkFree( sys );
+            LnkMemFree( sys );
         } else {
             sysown = &(sys->next);
         }

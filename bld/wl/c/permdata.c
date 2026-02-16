@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -333,7 +333,7 @@ static void PrepSymbol( void *_sym, void *info )
         save = sym->p.alias.u.ptr;
         sym->p.alias.u.offs = GetString( info, sym->p.alias.u.ptr );
         if( sym->info & SYM_FREE_ALIAS ) {
-            _LnkFree( save );
+            LnkMemFree( save );
         }
     } else if( IS_SYM_IMPORTED( sym ) ) {
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
@@ -793,15 +793,15 @@ static void PurgeRead( perm_read_info *info )
         CarvePurge( CarveDLLInfo );
         CarvePurge( CarveExportInfo );
     }
-    _LnkFree( info->buffer );
-    _LnkFree( IncStrTab );
-    _LnkFree( ReadRelocs );
-    _LnkFree( AltDefData );
+    LnkMemFree( info->buffer );
+    LnkMemFree( IncStrTab );
+    LnkMemFree( ReadRelocs );
+    LnkMemFree( AltDefData );
     IncStrTab = NULL;
     ReadRelocs = NULL;
     AltDefData = NULL;
     if( OldExe != NULL ) {
-        _LnkFree( OldExe );
+        LnkMemFree( OldExe );
         OldExe = NULL;
     }
 }
@@ -859,12 +859,12 @@ void ReadPermData( void )
     hdr = (inc_file_header *)info.buffer;
     if( memcmp( hdr->signature, INC_FILE_SIG, INC_FILE_SIG_SIZE ) != 0 ) {
         LnkMsg( WRN+MSG_INV_INC_FILE, NULL );
-        _LnkFree( info.buffer );
+        LnkMemFree( info.buffer );
         QClose( info.incfhdl, IncFileName );
         return;
     }
     if( hdr->hdrsize > SECTOR_SIZE ) {
-        _LnkRealloc( info.buffer, info.buffer, hdr->hdrsize );
+        info.buffer = LnkMemRealloc( info.buffer, hdr->hdrsize );
         hdr = (inc_file_header *)info.buffer;   /* in case realloc moved it*/
         QRead( info.incfhdl, info.buffer + SECTOR_SIZE, hdr->hdrsize - SECTOR_SIZE, IncFileName );
     }
@@ -916,7 +916,7 @@ void ReadPermData( void )
     LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_uint)hdr->libmodidx );
     LinkState = (stateflag)hdr->linkstate | LS_GOT_PREV_STRUCTS | (LinkState & LS_CLEAR_ON_INC);
     ReadStartInfo( hdr );
-    _LnkFree( info.buffer );
+    LnkMemFree( info.buffer );
 }
 
 void PermSaveFixup( void *fix, size_t size )
@@ -956,13 +956,13 @@ void IncP2Start( void )
 {
     char   *spare;
 
-    _LnkFree( ReadRelocs );
+    LnkMemFree( ReadRelocs );
     ReadRelocs = NULL;
-    _LnkFree( OldExe );
+    LnkMemFree( OldExe );
     OldExe = NULL;
-    _LnkFree( OldSymFile );
+    LnkMemFree( OldSymFile );
     OldSymFile = NULL;
-    _LnkFree( AltDefData );
+    LnkMemFree( AltDefData );
     AltDefData = NULL;
     FiniStringBlock( &StoredRelocs, &SizeRelocs, &spare, SaveRelocData );
 }
@@ -998,7 +998,7 @@ void FreeSavedRelocs( void )
 /*********************************/
 {
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        _LnkFree( ReadRelocs );
+        LnkMemFree( ReadRelocs );
         ReadRelocs = NULL;
     }
 }
@@ -1032,14 +1032,14 @@ void CleanPermData( void )
     FiniStringTable( &PrefixStrings);
     FiniStringTable( &PermStrings );
     FiniStringTable( &StoredRelocs );
-    _LnkFree( IncFileName );
-    _LnkFree( IncStrTab );
-    _LnkFree( ReadRelocs );
-    _LnkFree( OldExe );
-    _LnkFree( OldSymFile );
-    _LnkFree( AltDefData );
+    LnkMemFree( IncFileName );
+    LnkMemFree( IncStrTab );
+    LnkMemFree( ReadRelocs );
+    LnkMemFree( OldExe );
+    LnkMemFree( OldSymFile );
+    LnkMemFree( AltDefData );
     RingFree( &IncGroupDefs );
-    _LnkFree( IncGroups );
+    LnkMemFree( IncGroups );
     FreeList( SavedUserLibs );
     FreeList( SavedDefLibs );
 }

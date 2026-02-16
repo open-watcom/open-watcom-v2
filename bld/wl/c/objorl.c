@@ -112,7 +112,7 @@ static int ORLSeek( struct orl_io_struct *orlio, long pos, int where )
 void InitORLObj( void )
 /*********************/
 {
-    ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
+    ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, LnkMemAlloc, LnkMemFree );
 
     ORLHandle = ORLInit( &orl_cli_funcs );
     ReadCacheList = NULL;
@@ -164,7 +164,7 @@ static void ClearCachedData( const file_list *list )
     while( (cache = ReadCacheList) != NULL ) {
         ReadCacheList = cache->next;
         CacheFree( list, cache->data );
-        _LnkFree( cache );
+        LnkMemFree( cache );
     }
 }
 
@@ -187,7 +187,7 @@ static void FiniFile( orl_file_handle filehdl, const file_list *list )
     ORLFileFini( filehdl );
     ClearCachedData( list );
     if( ImpModName != NULL ) {
-        _LnkFree( ImpModName );
+        LnkMemFree( ImpModName );
         ImpModName = NULL;
     }
 }
@@ -309,7 +309,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
             coff_symbol_name[0] = '_';
             strcpy( coff_symbol_name + 1, name );
             SetStartSym( coff_symbol_name );
-            _LnkFree( coff_symbol_name );
+            LnkMemFree( coff_symbol_name );
         } else {
             SetStartSym( name );
         }
@@ -875,7 +875,7 @@ static void HandleImportSymbol( const char *name )
         extname.len = strlen( ImpExternalName );
         HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
     }
-    _LnkFree( ImpModName );
+    LnkMemFree( ImpModName );
     ImpModName = NULL;
 }
 

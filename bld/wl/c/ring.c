@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -383,7 +383,7 @@ void RINGNAME(Dealloc) (        // DE-ALLOCATE A RING ELEMENT
     void *element )             // - element to be de-allocated
 {
     RINGNAME(Prune)( hdr, element );
-    _LnkFree( element );
+    LnkMemFree( element );
 }
 
 
@@ -397,7 +397,7 @@ void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
         elt = RINGNAME(Pop)( hdr );
         if( elt == NULL )
             break;
-        _LnkFree( elt );
+        LnkMemFree( elt );
     }
 }
 
