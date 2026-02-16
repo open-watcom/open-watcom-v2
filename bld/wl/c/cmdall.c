@@ -110,7 +110,7 @@ static bool ProcDwarfDBI( void )
 /******************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_DWARF_DBI_FLAG) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
     LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -121,7 +121,7 @@ static bool ProcWatcomDBI( void )
 /*******************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_OLD_DBI_FLAG) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
     LinkFlags |= LF_OLD_DBI_FLAG;
@@ -132,7 +132,7 @@ static bool ProcCodeviewDBI( void )
 /*********************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_CV_DBI_FLAG) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
     LinkFlags |= LF_CV_DBI_FLAG;
@@ -323,7 +323,7 @@ static bool AddLibFile( void )
     CmdFlags &= ~CF_MEMBER_ADDED;
     ptr = GetFileName( &membname );
     if( membname != NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NO_MEMB_IN_LIBFILE, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_NO_MEMB_IN_LIBFILE, NULL );
         _LnkFree( membname );
         _LnkFree( ptr );
         return( true );
@@ -476,7 +476,7 @@ static bool ProcLibPath( void )
  */
 {
     if( !GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
         return( true );
     }
     AddLibPaths( Token.this, Token.len, true );  // true == add to front.
@@ -562,7 +562,7 @@ static bool ProcNameLen( void )
     ret = GetLong( &value );
     if( ret ) {
         if( value == 0 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "NAMELEN" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "NAMELEN" );
         } else {
             NameLen = value;
         }
@@ -627,10 +627,10 @@ static bool AddDisable( void )
         if( value <= MSG_MAX_ERR_MSG_NUM ) {
             ClearBit( MsgFlags, value );
         } else {
-            LnkMsg( LOC+LINE+WRN+MSG_INVALID_MSG_NUM, NULL );
+            LnkMsg( WRN+LOC+LINE+MSG_INVALID_MSG_NUM, NULL );
         }
     } else {
-        LnkMsg( LOC+LINE+WRN+MSG_INVALID_MSG_NUM, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_INVALID_MSG_NUM, NULL );
     }
     return( true );
 }
@@ -698,7 +698,7 @@ static bool ProcIncremental( void )
 {
 #if !defined( __DOS__ )
     if( CmdFlags & CF_AFTER_INC ) {
-        LnkMsg( LOC+LINE+ERR+MSG_INC_NEAR_START, NULL );
+        LnkMsg( ERR+LOC+LINE+MSG_INC_NEAR_START, NULL );
     }
     LinkFlags |= LF_INC_LINK_FLAG;
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
@@ -826,7 +826,7 @@ static bool GetPackValue( unsigned_32 *value, const char *message )
         return( false );
     ret = getatol( value );
     if( ret != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", message );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", message );
         return( true );
     }
     if( *value == 0 )
@@ -868,7 +868,7 @@ static bool ProcNewSegment( void )
  */
 {
     if( LastFile.u.file == NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NEWSEG_BEFORE_OBJ, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_NEWSEG_BEFORE_OBJ, NULL );
     } else {
         if( CmdFlags & CF_MEMBER_ADDED ) {
             LastFile.u.module->flags |= MOD_LAST_SEG;
@@ -1151,7 +1151,7 @@ static bool ProcOutputOffset( void )
         FmtData.output_offset = value;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OUTPUT OFFSET");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "OUTPUT OFFSET" );
         return( false );
     }
 }
@@ -1171,7 +1171,7 @@ static bool ProcOutputHshift( void )
         FmtData.output_hshift = true;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "OUTPUT HSHIFT");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "OUTPUT HSHIFT" );
         return( false );
     }
 }
@@ -1192,7 +1192,7 @@ static bool ProcHshift( void )
         SetSegMask();
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "HSHIFT");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "HSHIFT" );
         return( false );
     }
 }
@@ -1211,7 +1211,7 @@ static bool ProcFillchar( void )
         FmtData.FillChar = value;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "FILLCHAR");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "FILLCHAR" );
         return( false );
     }
 }
@@ -1232,7 +1232,7 @@ static bool ProcOrdSegAdr( void )
         return( true );
     } else {
         CurrOClass->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_ADDR_INFO_TOO_LARGE, NULL);
+        LnkMsg( WRN+LOC+LINE+MSG_ADDR_INFO_TOO_LARGE, NULL );
         return( false );
     }
 }
@@ -1253,7 +1253,7 @@ static bool ProcOrdOfsAdr( void )
         return( true );
     } else {
         CurrOClass->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME OFFSET");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME OFFSET" );
         return( false );
     }
 }
@@ -1292,7 +1292,7 @@ static bool ProcOrdSegSegAdr( void )
         return( true );
     } else {
         CurrOSeg->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_ADDR_INFO_TOO_LARGE, NULL);
+        LnkMsg( WRN+LOC+LINE+MSG_ADDR_INFO_TOO_LARGE, NULL );
         return( false );
     }
 }
@@ -1313,7 +1313,7 @@ static bool ProcOrdSegOfsAdr( void )
         return( true );
     } else {
         CurrOSeg->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME SEGMENT OFFSET");
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME SEGMENT OFFSET" );
         return( false );
     }
 }
@@ -1340,7 +1340,7 @@ static bool ProcObjAlign( void )
         return( false );
     }                                            /* value not a power of 2 */
     if( value < 16 || value > _256M || (value & (value - 1)) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
         value = _64K;
     }
     FmtData.objalign = value;
@@ -1370,7 +1370,7 @@ void ChkBase( offset align )
         align = FmtData.objalign;
     }
     if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
+        LnkMsg( WRN+LOC+LINE+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
         FmtData.base = __ROUND_UP_SIZE( FmtData.base, align );
     }
 }
@@ -1672,7 +1672,7 @@ static bool ProcOrder( void )
     ret = false;
     CurrOClass = CurrSect->orderlist;
     if( CurrOClass != NULL) {
-        LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
+        LnkMsg( WRN+LOC+LINE+MSG_DUP_DIRECTIVE, "s", "OPTION" );
     }
     while( ProcOne( OrderOpts, SEP_NO ) ) {
         ret = true;
@@ -1771,13 +1771,13 @@ static bool ProcSysBegin( void )
     sysblock    *sys;
 
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
         return( true );
     }
     sysname = tostring();
     sys = FindSysBlock( sysname );
     if( sys != NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
+        LnkMsg( WRN+LOC+LINE+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
         while( !ProcOne( SysEndOptions, SEP_SPACE ) ) {
             Token.thumb = false;
             RestoreParser();
@@ -1822,7 +1822,7 @@ static bool ProcSystem( void )
     sysname = tostring();
     sys = FindSystemBlock( sysname );
     if( sys == NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_UNDEFINED, "s", sysname );
+        LnkMsg( WRN+LOC+LINE+MSG_SYSTEM_UNDEFINED, "s", sysname );
     } else {
         if( dodelete ) {
             for( prev = &SysBlocks; *prev != sys; ) {
@@ -1900,7 +1900,7 @@ static bool ProcDebug( void )
     bool        gotmod;
 
     if( CmdFlags & CF_FILES_BEFORE_DBI ) {
-        LnkMsg( LOC+LINE+WRN+MSG_DEBUG_AFTER_FILES, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_DEBUG_AFTER_FILES, NULL );
     }
     gotmod = ProcOne( DbgMods, SEP_NO );
     DBIFlag &= ~DBI_MASK;
@@ -2075,7 +2075,7 @@ static bool ProcFormat( void )
 /****************************/
 {
     if( LinkState & LS_FMT_SPECIFIED ) {
-        LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
+        LnkMsg( FTL+LOC+LINE + MSG_MULTIPLE_MODES_FOUND, NULL );
     }
     LinkState |= LS_FMT_SPECIFIED;
     return( ProcOneSuicide( Models, SEP_NO ) );

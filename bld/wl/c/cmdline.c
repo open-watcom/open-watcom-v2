@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,10 +206,10 @@ void Syntax( void )
 /*****************/
 {
     if( Token.this == NULL ) {
-        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
+        LnkMsg( FTL+LOC+LINE+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
     } else {
         ((char *)Token.this)[Token.len] = '\0';
-        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
+        LnkMsg( FTL+LOC+LINE+MSG_DIRECTIVE_ERR, "s", Token.this );
     }
 }
 
@@ -645,7 +645,7 @@ void ExecSystem( const char *name )
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
             if( !DoParseDirectiveSubset() ) {
-                LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
+                LnkMsg( WRN+LOC+LINE+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;
             }

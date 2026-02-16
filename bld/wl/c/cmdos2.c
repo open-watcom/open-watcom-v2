@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,14 +156,14 @@ static bool GetWlibImports( void )
             if( Token.this[0] == '\'' ) {
                 Token.thumb = true;
                 if( !GetToken( SEP_QUOTE, TOK_NORMAL ) ) {
-                    LnkMsg( LOC+LINE+ERR+MSG_BAD_WLIB_IMPORT, NULL );
+                    LnkMsg( ERR+LOC+LINE+MSG_BAD_WLIB_IMPORT, NULL );
                     RestoreCmdLine();   /* get rid of this file */
                     return( true );
                 }
             }
             exp = ProcWlibDLLImportEntry();
             if( exp == NULL ) {
-                LnkMsg( LOC+LINE+ERR+MSG_BAD_WLIB_IMPORT, NULL );
+                LnkMsg( ERR+LOC+LINE+MSG_BAD_WLIB_IMPORT, NULL );
                 RestoreCmdLine();       /* get rid of this file */
                 return( true );
             }
@@ -190,7 +190,7 @@ static bool ProcSingle( void )
 /****************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_AUTO_SEG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.flags |= SINGLE_AUTO_DATA;
     FmtData.u.os2fam.flags &= ~MULTIPLE_AUTO_DATA;
@@ -201,7 +201,7 @@ static bool ProcMultiple( void )
 /******************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_AUTO_SEG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.flags &= ~SINGLE_AUTO_DATA;
     FmtData.u.os2fam.flags |= MULTIPLE_AUTO_DATA;
@@ -212,7 +212,7 @@ static bool ProcNone( void )
 /**************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_AUTO_SEG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.flags &= ~(SINGLE_AUTO_DATA | MULTIPLE_AUTO_DATA);
     return( true );
@@ -432,7 +432,7 @@ bool ProcOS2HeapSize( void )
         return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.os2fam.heapsize = value;
     }
@@ -549,7 +549,7 @@ static bool getexport( void )
         exp->isanonymous = true;
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
-            LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
+            LnkMsg( ERR+LOC+LINE + MSG_EXPORT_ORD_INVALID, NULL );
             _LnkFree( exp );
             GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
             return( true );
@@ -581,7 +581,7 @@ static bool getexport( void )
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
             } else {
                 if( val16 & 1 ) {
-                    LnkMsg( LOC+LINE+WRN+MSG_IOPL_BYTES_ODD, NULL );
+                    LnkMsg( WRN+LOC+LINE+MSG_IOPL_BYTES_ODD, NULL );
                 }
                 // The linker takes bytes as input!
                 exp->iopl_words = val16 / 2;
@@ -659,7 +659,7 @@ static bool ProcSegType( void )
 /*****************************/
 {
     if( !ProcOne( SegTypeDesc, SEP_NO ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_INVALID_TYPE_DESC, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_INVALID_TYPE_DESC, NULL );
     }
     return( true );
 }
@@ -668,7 +668,7 @@ static bool ProcPreload( void )
 /*****************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_PRELOAD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_PRELOAD;
     FmtData.u.os2fam.seg_flags->specified |= SEG_PRELOAD;
@@ -679,7 +679,7 @@ static bool ProcLoadoncall( void )
 /********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_PRELOAD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_PRELOAD;
     FmtData.u.os2fam.seg_flags->specified |= SEG_PRELOAD;
@@ -690,7 +690,7 @@ static bool ProcIopl( void )
 /**************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_LEVEL_3;
     FmtData.u.os2fam.seg_flags->flags |= SEG_LEVEL_2;
@@ -702,7 +702,7 @@ static bool ProcNoIopl( void )
 /****************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_LEVEL_3;
     FmtData.u.os2fam.seg_flags->specified |= SEG_IOPL_SPECD;
@@ -713,7 +713,7 @@ static bool ProcExecuteonly( void )
 /*********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_READ_ONLY;
     FmtData.u.os2fam.seg_flags->specified |= SEG_READ_ONLY;
@@ -724,7 +724,7 @@ static bool ProcExecuteread( void )
 /*********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_READ_ONLY;
     FmtData.u.os2fam.seg_flags->specified |= SEG_READ_ONLY;
@@ -735,7 +735,7 @@ static bool ProcShared( void )
 /****************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_PURE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_PURE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_PURE;
@@ -746,7 +746,7 @@ static bool ProcNonShared( void )
 /*******************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_PURE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_PURE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_PURE;
@@ -757,7 +757,7 @@ static bool ProcReadOnly( void )
 /******************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_READ_ONLY;
     FmtData.u.os2fam.seg_flags->specified |= SEG_READ_SPECD;
@@ -768,7 +768,7 @@ static bool ProcReadWrite( void )
 /******************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_READ_ONLY;
     FmtData.u.os2fam.seg_flags->specified |= SEG_READ_SPECD;
@@ -779,7 +779,7 @@ static bool ProcConforming( void )
 /********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_CONFORMING ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_CONFORMING;
     FmtData.u.os2fam.seg_flags->specified |= SEG_CONFORMING;
@@ -790,7 +790,7 @@ static bool ProcNonConforming( void )
 /***********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_CONFORMING ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_CONFORMING;
     FmtData.u.os2fam.seg_flags->specified |= SEG_CONFORMING;
@@ -801,7 +801,7 @@ static bool ProcMovable( void )
 /*****************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_MOVABLE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_MOVABLE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_MOVABLE;
@@ -812,7 +812,7 @@ static bool ProcFixed( void )
 /*****************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_MOVABLE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_MOVABLE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_MOVABLE;
@@ -858,7 +858,7 @@ static bool ProcPermanent( void )
 /*******************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RESIDENT ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_RESIDENT;
     FmtData.u.os2fam.seg_flags->specified |= SEG_RESIDENT;
@@ -869,7 +869,7 @@ static bool ProcNonPermanent( void )
 /**********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_RESIDENT ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_RESIDENT;
     FmtData.u.os2fam.seg_flags->specified |= SEG_RESIDENT;
@@ -880,7 +880,7 @@ static bool ProcPageable( void )
 /******************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_NOPAGE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags &= ~SEG_NOPAGE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_NOPAGE;
@@ -891,7 +891,7 @@ static bool ProcNonPageable( void )
 /*********************************/
 {
     if( FmtData.u.os2fam.seg_flags->specified & SEG_NOPAGE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
     FmtData.u.os2fam.seg_flags->flags |= SEG_NOPAGE;
     FmtData.u.os2fam.seg_flags->specified |= SEG_NOPAGE;

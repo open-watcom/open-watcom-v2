@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -723,7 +723,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     if( Ring2Lookup( group->leaders, CmpLeaderPtr, seg ) )
         return;
     if( seg->group != NULL && seg->group != group ) {
-        LnkMsg( LOC+ERR+MSG_SEG_IN_TWO_GROUPS, "123", seg->segname.u.ptr,
+        LnkMsg( ERR+LOC+MSG_SEG_IN_TWO_GROUPS, "123", seg->segname.u.ptr,
                                    seg->group->sym->name.u.ptr, group->sym->name.u.ptr );
         return;
     }
@@ -1040,7 +1040,7 @@ void DefineLazyExtdef( symbol *sym, symbol *defsym, bool isweak )
                 defaultsym = sym->e.def;
             }
             if( defsym != defaultsym ) {
-                LnkMsg( LOC_REC+WRN+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
+                LnkMsg( WRN+LOC_REC+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
             }
         } else if( (sym->info & SYM_OLDHAT) == 0 || IS_SYM_LINK_WEAK( sym ) ) {
             if( isweak ) {
@@ -1152,19 +1152,19 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
     } else if( !IS_SYM_IMPORTED( sym ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( IS_SYM_VF_REF( sym ) ) {
             if( IS_SYM_PURE_REF( sym ) ^ ispure ) {
-                LnkMsg( LOC_REC+WRN+MSG_VF_PURE_MISMATCH, "S", sym );
+                LnkMsg( WRN+LOC_REC+MSG_VF_PURE_MISMATCH, "S", sym );
             }
             symlist = GetVFList( defsym, NULL, true, rtns );
             if( symlist == NULL ) {
                 if( !CheckVFList( sym ) ) {
-                    LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
+                    LnkMsg( WRN+LOC_REC+MSG_VF_TABLE_MISMATCH, "S", sym );
                 }
             } else {
                 startlist = symlist;
                 oldlist = sym->e.vfdata;
                 for( ;; ) {
                     if( *oldlist != *symlist ) {
-                        LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
+                        LnkMsg( WRN+LOC_REC+MSG_VF_TABLE_MISMATCH, "S", sym );
                         break;
                     }
                     if( *oldlist == NULL )
@@ -1258,7 +1258,7 @@ bool SeenDLLRecord( void )
 {
     LinkState |= LS_FMT_SEEN_IMPORT_CMT;
     if( !HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_ELF | MK_NOVELL ) ) {
-        LnkMsg( LOC+WRN+MSG_DLL_WITH_386, NULL );
+        LnkMsg( WRN+LOC+MSG_DLL_WITH_386, NULL );
         return( false );    /* Not OK to process import/export records. */
     } else {
         return( true );

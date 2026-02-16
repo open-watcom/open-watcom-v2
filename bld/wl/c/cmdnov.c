@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,7 +328,7 @@ static bool ProcScreenName( void )
         return( false );
     }
     if( Token.len > MAX_SCREEN_NAME_LENGTH ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "SCREENNAME" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "SCREENNAME" );
     } else {
         if( FmtData.u.nov.screenname != NULL ) {
             _LnkFree( FmtData.u.nov.screenname );  // assume second is correct.
@@ -461,7 +461,7 @@ static bool ProcThreadName( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     } else if( Token.len > MAX_THREAD_NAME_LENGTH ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "THREADNAME" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "THREADNAME" );
     } else {
         FmtData.u.nov.threadname = tostring();
     }
@@ -496,7 +496,7 @@ static bool ProcCopyright( void )
         }
     } else {
         if( Token.len > MAX_COPYRIGHT_LENGTH ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "COPYRIGHT" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "COPYRIGHT" );
         } else {
             if( FmtData.u.nov.copyright != NULL ) {
                 _LnkFree( FmtData.u.nov.copyright );  // assume second is correct.

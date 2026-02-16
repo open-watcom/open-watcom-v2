@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,7 @@ void AddToExportList( entry_export *exp )
         if( currlen == len && CmpRtn( curr->name.u.ptr, exp->name.u.ptr, len ) == 0 ) {
             if( !IS_FMT_INCREMENTAL( ObjFormat ) ) {
                 if( !IS_SYM_COMDAT( exp->sym ) ) {
-                    LnkMsg( LOC+WRN+MSG_DUP_EXP_NAME, "s", curr->name.u.ptr );
+                    LnkMsg( WRN+LOC+MSG_DUP_EXP_NAME, "s", curr->name.u.ptr );
                 }
                 FreeAnExport( exp );
             }

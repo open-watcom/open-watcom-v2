@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ static void ParseABIVersion( const char *message )
     FmtData.u.elf.abiversion = 0;
     retval = getatoi( &version );
     if( retval != ST_IS_ORDINAL || version > 255 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", message );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", message );
     } else {
         FmtData.u.elf.abiversion = version;
     }

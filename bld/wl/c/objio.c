@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,7 +256,7 @@ void BadObject( void )
 /***************************/
 {
     CurrMod->f.source->infile->status |= INSTAT_IOERR;
-    LnkMsg( LOC+ERR+MSG_OBJ_FILE_ATTR, NULL );
+    LnkMsg( ERR+LOC+MSG_OBJ_FILE_ATTR, NULL );
 }
 
 void EarlyEOF( void )

@@ -880,7 +880,7 @@ void ChkOS2Exports( void )
                         exp->isiopl = true; // Conforming or not doesn't matter!
                         if( exp->addr.off > 65535 ) {
                             // Call gates are 16-bit only
-                            LnkMsg( LOC+ERR+MSG_BAD_TARG_OFF, "a", &exp->addr );
+                            LnkMsg( ERR+LOC+MSG_BAD_TARG_OFF, "a", &exp->addr );
                         }
                     }
                 } else if( FmtData.type & MK_PE ) {

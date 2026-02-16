@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,12 +170,12 @@ void CmdOvlFini( void )
 {
     if( OvlLevel != 0 ) {
         Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_EXPECTING_END, NULL );
+        LnkMsg( FTL+LOC+LINE+MSG_EXPECTING_END, NULL );
     }
     if( FmtData.u.dos.dynamic &&
         ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
         Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_INCORRECT_NUM_AREAS, NULL );
+        LnkMsg( FTL+LOC+LINE+MSG_INCORRECT_NUM_AREAS, NULL );
     }
     SetOvlClasses();
     MakeNonArea();
@@ -347,7 +347,7 @@ static bool ProcInto( void )
         CurrSect->outfile = NewOutFile( FileName( Token.this, Token.len, E_OVL, false ) );
         return( true );
     }
-    LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
+    LnkMsg( WRN+LOC+LINE+MSG_DIRECTIVE_ERR, "s", "into" );
     return( false );
 }
 
@@ -362,7 +362,7 @@ static bool ProcSection( void )
  */
 {
     if( OvlLevel == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO );      // check for INTO
@@ -377,7 +377,7 @@ static bool ProcAutoSection( void )
 /*********************************/
 {
     if( OvlLevel == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO );      // check for INTO

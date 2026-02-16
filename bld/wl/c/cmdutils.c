@@ -149,7 +149,7 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl, cmdfilelist *resetpoin
             if( CheckFence() ) {
                 break;
             } else if( !GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset ) ) {
-                LnkMsg( LOC+LINE+ERR+MSG_BAD_CURLY_LIST, NULL );
+                LnkMsg( ERR+LOC+LINE+MSG_BAD_CURLY_LIST, NULL );
                 break;
             }
         }
@@ -204,7 +204,7 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
                 } else {
                     strcpy( keybuff, entry->keyword );
                     strlwr( keybuff );
-                    LnkMsg( LOC+LINE+WRN+MSG_FORMAT_BAD_OPTION, "s", keybuff );
+                    LnkMsg( WRN+LOC+LINE+MSG_FORMAT_BAD_OPTION, "s", keybuff );
                 }
                 return( ret );
             }
@@ -640,12 +640,12 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
 
     Token.next++;
     if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
-        LnkMsg( LOC+LINE+FTL+MSG_ENV_NAME_INCORRECT, NULL );
+        LnkMsg( FTL+LOC+LINE+MSG_ENV_NAME_INCORRECT, NULL );
     }
     envname = tostring();
     env = GetEnvString( envname );
     if( env == NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
+        LnkMsg( WRN+LOC+LINE+MSG_ENV_NOT_FOUND, "s", envname );
     } else {
         MakeToken( ctrl, req );
         envlen = strlen( env );
@@ -712,7 +712,7 @@ static void StartNewFile( void )
             NewCommandSource( fname, envstring, ENVIRONMENT );
             _LnkFree( fname );
         } else {
-            LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
+            LnkMsg( ERR+LOC+LINE+MSG_CANT_OPEN_NO_REASON, "s", fname );
             _LnkFree( fname );
             Suicide();
         }
@@ -728,7 +728,7 @@ static void BackupParser( void )
 /* move the parser temporarily back to a previous input source */
 {
     if( CmdFile->prev == NULL ) {
-        LnkMsg( LOC+LINE+WRN + MSG_NO_PREVIOUS_INPUT, NULL );
+        LnkMsg( WRN+LOC+LINE + MSG_NO_PREVIOUS_INPUT, NULL );
         return;
     }
     memcpy( &CmdFile->token, &Token, sizeof( tok ) );   // save current state
@@ -1107,7 +1107,7 @@ void BurnUtils( void )
     cmdfilelist     *temp;
 
     if( CmdFile->next != NULL ) {
-        LnkMsg( LOC+LINE+ERR+MSG_NO_INPUT_LEFT, NULL );
+        LnkMsg( ERR+LOC+LINE+MSG_NO_INPUT_LEFT, NULL );
     }
     while( (temp = CmdFile) != NULL ) {
         CmdFile = CmdFile->prev;
@@ -1196,7 +1196,7 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
     /* process major value */
     retval = getatol( &value );
     if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
         return( state );
     }
     /* setup component limits */
@@ -1213,7 +1213,7 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
     state = GENVER_MAJOR;
     if( enq & GENVER_MAJOR ) {
         if( ( major_limit ) && ( value > major_limit ) ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
         vb->major = value;
@@ -1228,13 +1228,13 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
     }
     retval = getatol( &value );
     if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
         return( state );
     }
     state |= GENVER_MINOR;
     if( enq & GENVER_MINOR ) {
         if( ( minor_limit ) && ( value > minor_limit ) ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
         vb->minor = value;
@@ -1255,18 +1255,18 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
         if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
             value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
         } else if( retval == ST_NOT_ORDINAL ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
     } else {
         if( retval != ST_IS_ORDINAL ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
     }
     state |= GENVER_REVISION;
     if( ( revision_limit ) && ( value > revision_limit ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
         return( state );
     }
     vb->revision = value;

@@ -683,7 +683,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     cnt = len - ( namptr - buff );
     if( cnt == 0 ) {
         DUPSTR_STACK( ptr, buff, len );
-        LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
+        LnkMsg( FTL+LOC+LINE+MSG_INV_FILENAME, "s", ptr );
     }
     namelen = cnt;
     namptr = buff + len - 1;

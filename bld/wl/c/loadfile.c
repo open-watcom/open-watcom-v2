@@ -601,10 +601,10 @@ void SetStartSym( const char *name )
             namelen = strlen( name );
             if( namelen != strlen( StartInfo.targ.sym->name.u.ptr )
               || CmpRtn( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
-                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
+                LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
             }
         } else {
-            LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
+            LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
         }
     } else {
         StartInfo.targ.sym = RefISymbol( name );

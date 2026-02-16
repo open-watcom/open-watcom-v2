@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -804,7 +804,7 @@ static orl_return DoReloc( orl_reloc reloc )
         break;
     case ORL_RELOC_TYPE_NONE:
     default:
-        LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
+        LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
         break;
     }
     seg = FindSegNode( reloc->section );

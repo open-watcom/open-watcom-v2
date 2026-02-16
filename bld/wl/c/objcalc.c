@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -540,7 +540,7 @@ void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
     if( FmtData.type & MK_REAL_MODE ) {
         off = MK_REAL_ADDR( (int)( addr->seg - frame ), addr->off );
         if( check_16bit && ( off >= 0x10000 )) {
-            LnkMsg( LOC+ERR+MSG_FRAME_INVALID, "Ax", addr, frame );
+            LnkMsg( ERR+LOC+MSG_FRAME_INVALID, "Ax", addr, frame );
         }
         addr->off = off;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
     if( Master.obj_major_ver == 0 )
         Master.obj_major_ver = major;
     if( major != Master.obj_major_ver ) {
-        LnkMsg( LOC+WRN+MSG_CANT_USE_LOCALS, NULL );
+        LnkMsg( WRN+LOC+MSG_CANT_USE_LOCALS, NULL );
         CurrMod->modinfo &= ~( DBI_TYPE | DBI_LOCAL );
     }
     if( minor > Master.obj_minor_ver ) {

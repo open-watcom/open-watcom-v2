@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +286,7 @@ static void GetFrameAddr( frame_spec *frame, targ_addr *addr,
     switch( frame->type ) {
     case FIX_FRAME_SEG:
         if( frame->u.sdata == NULL ) {
-            LnkMsg( LOC+ERR+MSG_FIXUP_MISSING_THREAD, "dA", frame->type, tgt_addr );
+            LnkMsg( ERR+LOC+MSG_FIXUP_MISSING_THREAD, "dA", frame->type, tgt_addr );
             break;
         }
         *addr = frame->u.sdata->u.leader->seg_addr;
@@ -408,9 +408,9 @@ static void CheckRWData( target_spec *target, targ_addr *addr )
             if( !IS_DBG_INFO( CurrRec.seg->u.leader ) ) {
                 if( target->type == FIX_TARGET_SEG ) {
                     sym.name.u.ptr = target->u.sdata->u.leader->segname.u.ptr;
-                    LnkMsg( LOC+WRN+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, &sym );
+                    LnkMsg( WRN+LOC+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, &sym );
                 } else if( target->type == FIX_TARGET_EXT ) {
-                    LnkMsg( LOC+WRN+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, target->u.sym );
+                    LnkMsg( WRN+LOC+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, target->u.sym );
                 }
             }
         }
@@ -502,7 +502,7 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
     code = fix->data;
     if( fix->type & FIX_SHIFT ) {
         if( val & 3 ) {
-            LnkMsg( LOC+WRN+MSG_REL_NOT_ALIGNED, "a", &fix->loc_addr );
+            LnkMsg( WRN+LOC+MSG_REL_NOT_ALIGNED, "a", &fix->loc_addr );
         }
         val >>= 2;
     }
@@ -563,7 +563,7 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
         MPUT_32( code, MGET_U32( code ) + val );
         break;
     default:
-        LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
+        LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
     }
 }
 
@@ -787,7 +787,7 @@ static void CheckPartialRange( fix_relo_data *fix, offset off,
         temp += off;
     }
     if( ( temp < -(signed_32)topbit ) || ( temp >= (signed_32)topbit ) ) {
-        LnkMsg( LOC+ERR+MSG_FIXUP_OFF_RANGE, "a", &fix->loc_addr );
+        LnkMsg( ERR+LOC+MSG_FIXUP_OFF_RANGE, "a", &fix->loc_addr );
     }
 }
 
@@ -880,17 +880,17 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
     }
 #endif
     if( (fix->type & FIX_ABS) && (FmtData.type & MK_QNX) == 0 ) {
-        LnkMsg( LOC+ERR+MSG_BAD_ABS_FIXUP, "a", &fix->loc_addr );
+        LnkMsg( ERR+LOC+MSG_BAD_ABS_FIXUP, "a", &fix->loc_addr );
         return( true );
     }
     if( fix->type & FIX_BASE ) {
-        LnkMsg( LOC+ERR+MSG_BAD_REL_FIXUP, "a", &fix->loc_addr );
+        LnkMsg( ERR+LOC+MSG_BAD_REL_FIXUP, "a", &fix->loc_addr );
         return( true );
     }
     if( fix->imported ) {
 #ifdef _OS2
         if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {  // can not get at a DLL relatively
-            LnkMsg( LOC+ERR+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
+            LnkMsg( ERR+LOC+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
             return( true );
         }
 #endif
@@ -903,7 +903,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         if( FmtData.type & MK_NOVELL ) {
             if( ( (fix->type & FIX_OFFSET_MASK) != FIX_OFFSET_32 )
                 || (fix->type & FIX_BASE) ) {
-                LnkMsg( LOC+ERR+MSG_BAD_IMP_REL_RELOC, "a", &fix->loc_addr );
+                LnkMsg( ERR+LOC+MSG_BAD_IMP_REL_RELOC, "a", &fix->loc_addr );
             } else {                           // true == isrelative.
                 AddNovImpReloc( target->u.sym, fix->loc_addr.off, true,
                                 fix->loc_addr.seg == DATA_SEGMENT );
@@ -921,9 +921,9 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         if( ( fix->loc_addr.seg != fix->tgt_addr.seg ) && (fix->type & FIX_ABS) == 0 ) {
             //must have same file segment.
             if( FmtData.type & MK_ID_SPLIT ) {
-                LnkMsg( LOC+ERR+MSG_NOV_NO_CODE_DATA_RELOC, "a", &fix->loc_addr );
+                LnkMsg( ERR+LOC+MSG_NOV_NO_CODE_DATA_RELOC, "a", &fix->loc_addr );
             } else {
-                LnkMsg( LOC+ERR+MSG_REL_NOT_SAME_SEG, "a", &fix->loc_addr );
+                LnkMsg( ERR+LOC+MSG_REL_NOT_SAME_SEG, "a", &fix->loc_addr );
             }
             return( true );
         }
@@ -958,7 +958,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
     }
     if( fix->type == FIX_OFFSET_16 ) {
         if( off + ( fix->loc_addr.off + fixsize ) >= 0x10000 ) {
-            LnkMsg( LOC+ERR+MSG_FIXUP_OFF_RANGE, "a", &fix->loc_addr );
+            LnkMsg( ERR+LOC+MSG_FIXUP_OFF_RANGE, "a", &fix->loc_addr );
         }
     } else if( fix->type == FIX_OFFSET_21 ) {
         CheckPartialRange( fix, off, 0x001FFFFF, 0x00100000 );
@@ -1096,10 +1096,10 @@ static void PatchData( fix_relo_data *fix )
             } else if( segval == FmtData.u.rdos.data_seg ) {
                 segval = FmtData.u.rdos.data_sel;
             } else {
-                LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
+                LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
             }
             if( segval == 0 ) {
-                LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
+                LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
             }
             MPUT_16( data, segval );
             return;
@@ -1686,7 +1686,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 #endif
 #ifdef _EXE
     if( FmtData.type & MK_COM ) {
-        LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
+        LnkMsg( WRN+LOC+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
         return( false );
     }
 #endif
@@ -1720,7 +1720,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         || (FmtData.type & MK_PE) && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || ((FmtData.type & (MK_PHAR_REX | MK_RAW)) && (ftype != FIX_OFFSET_16)
             && (ftype != FIX_OFFSET_32)) ) {
-        LnkMsg( LOC+ERR+MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
+        LnkMsg( ERR+LOC+MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
         return;
     }
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
@@ -1741,7 +1741,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
     }
 #endif
     if( (fix->type & FIX_HIGH) && (FmtData.type & MK_PE) == 0 && (FmtData.type & MK_ELF) == 0 ) {
-        LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
+        LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
         return;
     }
     DEBUG(( DBG_OLD, "relocation record being output" ));
@@ -1827,7 +1827,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
                     fix.tgt_addr.seg = faddr.seg;
                     fix.tgt_addr.off = 0;
                 } else {
-                    LnkMsg( LOC+ERR+MSG_FRAME_EQ_TARGET, "a", &fix.loc_addr );
+                    LnkMsg( ERR+LOC+MSG_FRAME_EQ_TARGET, "a", &fix.loc_addr );
                 }
             }
             fix.imported = true;
@@ -1837,9 +1837,9 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
         if( FmtData.type & (MK_PROT_MODE & ~(MK_OS2_FLAT | MK_WIN_VXD | MK_PE)) ) {
             if( faddr.seg != fix.tgt_addr.seg ) {
                 if( FmtData.type & MK_ID_SPLIT ) {
-                    LnkMsg( LOC+ERR+MSG_NOV_NO_CODE_DATA_RELOC, "a", &fix.loc_addr );
+                    LnkMsg( ERR+LOC+MSG_NOV_NO_CODE_DATA_RELOC, "a", &fix.loc_addr );
                 } else {
-                    LnkMsg( LOC+ERR+MSG_FRAME_EQ_TARGET, "a", &fix.loc_addr );
+                    LnkMsg( ERR+LOC+MSG_FRAME_EQ_TARGET, "a", &fix.loc_addr );
                 }
             }
         }

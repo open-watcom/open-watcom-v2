@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -396,7 +396,7 @@ static bool CheckSameComdat( void *info, void *sym )
 /***********************************************************/
 {
     if( (symbol *)sym == ((comdat_info *)info)->sym ) {
-        LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "duplicate comdat found" );
+        LnkMsg( ERR+LOC_REC+MSG_INTERNAL, "s", "duplicate comdat found" );
         LnkMsg( ERR+MSG_INTERNAL, "s", ((symbol *)sym)->name );
     }
     return( false );

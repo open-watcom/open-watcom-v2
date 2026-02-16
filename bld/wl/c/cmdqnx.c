@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ static bool ProcPrivilege( void )
         return( false );
     ret = getatoi( &value );
     if( ret != ST_IS_ORDINAL || value > 3 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
     } else {
         FmtData.u.qnx.priv_level = value;
     }
@@ -141,7 +141,7 @@ bool ProcQNXHeapSize( void )
         return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.qnx.heapsize = value;
     }

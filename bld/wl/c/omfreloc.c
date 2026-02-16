@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@ void DoRelocs( void )
     if( ObjFormat & FMT_IGNORE_FIXUPP )
         return;
     if( ObjFormat & FMT_IS_LIDATA ) {
-        LnkMsg( LOC_REC+WRN+MSG_REL_IN_LIDATA, NULL );
+        LnkMsg( WRN+LOC_REC+MSG_REL_IN_LIDATA, NULL );
         return;
     }
     do {

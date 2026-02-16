@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,7 +156,7 @@ static bool ProcMinReal( void )
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "MINREAL" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "MINREAL" );
         } else {
             FmtData.u.phar.minreal = value;
         }
@@ -174,7 +174,7 @@ static bool ProcMaxReal( void )
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "MAXREAL" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "MAXREAL" );
         } else {
             FmtData.u.phar.maxreal = value;
         }
@@ -192,7 +192,7 @@ static bool ProcRealBreak( void )
         return( false );
     ok = getatol( &value );
     if( FmtData.u.phar.breaksym != NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_MULT_REALBREAKS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_MULT_REALBREAKS, NULL );
         _LnkFree( FmtData.u.phar.breaksym );
         FmtData.u.phar.breaksym = NULL;
     }
@@ -214,7 +214,7 @@ static bool ProcCallBufs( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "CALLBUFS" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "CALLBUFS" );
         } else {
             FmtData.u.phar.callbufs = value;
         }
@@ -232,7 +232,7 @@ static bool ProcMiniBuf( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "MINIBUF" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "MINIBUF" );
         } else {
             FmtData.u.phar.minibuf = value;
         }
@@ -250,7 +250,7 @@ static bool ProcMaxiBuf( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "MAXIBUF" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "MAXIBUF" );
         } else {
             FmtData.u.phar.maxibuf = value;
         }
@@ -267,7 +267,7 @@ static bool ProcNIStack( void )
     ret = GetLong( &value );
     if( ret ) {
         if( value < 4 || value > 0xFFFF ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "NISTACK" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "NISTACK" );
         } else {
             FmtData.u.phar.nistack = value;
         }
@@ -285,7 +285,7 @@ static bool ProcIStkSize( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ISTKSIZE" );
+            LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "ISTKSIZE" );
         } else {
             FmtData.u.phar.istksize = value;
         }

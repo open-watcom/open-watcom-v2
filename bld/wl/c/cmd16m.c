@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ static bool ProcBuffer( void )
     if( !GetLong( &value ) )
         return( false );
     if( value < _1K || value > _32K ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "BUFFER" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "BUFFER" );
     } else {
         FmtData.u.d16m.buffer = value;
     }
@@ -106,11 +106,11 @@ static bool ProcGDTSize( void )
     if( !GetLong( &value ) )
         return( false );
     if( (value % 8) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "GDTSIZE" );
+        LnkMsg( WRN+LOC+LINE+MSG_NOT_MULTIPLE_OF_8, "s", "GDTSIZE" );
         value &= -8;
     }
     if( value > 0x10000 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "GDTSIZE" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "GDTSIZE" );
     } else {
         FmtData.u.d16m.gdtsize = --value;
     }
@@ -121,7 +121,7 @@ static bool ProcRelocs( void )
 /****************************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
     LinkState |= LS_MAKE_RELOCS;
     return( true );
@@ -135,11 +135,11 @@ static bool ProcSelStart( void )
     if( !GetLong( &value ) )
         return( false );
     if( (value % 8) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "SELSTART" );
+        LnkMsg( WRN+LOC+LINE+MSG_NOT_MULTIPLE_OF_8, "s", "SELSTART" );
         value &= -8;
     }
     if( value >= 0x10000 || value < D16M_USER_SEL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SELSTART" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "SELSTART" );
     } else {
         FmtData.u.d16m.selstart = value;
     }
@@ -155,7 +155,7 @@ static bool ProcExtended( void )
         return( false );
     value >>= 10;      // value should be in K.
     if( value >= 0x10000 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "EXTENDED" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "EXTENDED" );
     } else {
         FmtData.u.d16m.extended = value;
     }
@@ -183,7 +183,7 @@ static bool ProcDataSize( void )
     if( !GetLong( &value ) )
         return( false );
     if( value > _64K ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
+        LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;
         FmtData.u.d16m.flags |= DATASIZE_SPECD;
@@ -212,7 +212,7 @@ bool Proc16MNoRelocs( void )
 /**************************/
 {
     if( LinkState & LS_MAKE_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_BOTH_RELOC_OPTIONS, NULL );
     } else {
         FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
     }
@@ -281,7 +281,7 @@ static bool ProcAuto( void )
  */
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
     FmtData.u.d16m.options |= OPT_AUTO;
     LinkState |= LS_MAKE_RELOCS;
@@ -369,7 +369,7 @@ static bool ProcTData( void )
 /***************************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
+        LnkMsg( WRN+LOC+LINE+MSG_TRANS_RELOCS_NEEDED, NULL );
     }
     FmtData.u.d16m.flags |= TRANS_DATA;
     LinkState |= LS_MAKE_RELOCS;
@@ -386,7 +386,7 @@ bool Proc16MTransparent( void )
 /*****************************/
 {
     if( FmtData.u.d16m.flags & TRANS_SPECD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
+        LnkMsg( WRN+LOC+LINE+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
         return( true );
     } else {
         return( ProcOne( TransTypes, SEP_NO ) );

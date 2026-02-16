@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -303,7 +303,7 @@ static void ProcModuleEnd( void )
         switch( target ) {
         case TARGET_SEG:
             if( StartInfo.type != START_UNDEFED ) {
-                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
+                LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
                 return;                 /* <-------- NOTE: premature return */
             }
             seg = (segnode *)FindNode( SegNodes, targetidx );
@@ -814,7 +814,7 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
             DoLIData( start, ObjBuff, size );
         } else {
             if( size + obj_offset > seg->length ) {
-                LnkMsg( LOC_REC+FTL+MSG_OBJ_FILE_ATTR, NULL );
+                LnkMsg( FTL+LOC_REC+MSG_OBJ_FILE_ATTR, NULL );
             }
             PutInfo( start, ObjBuff, size );
         }
@@ -842,7 +842,7 @@ static void ProcLxdata( bool islidata )
     }
 #ifdef DEVBUILD
     if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
-        LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
+        LnkMsg( ERR+LOC_REC+MSG_INTERNAL, "s", "Initialized BSS found" );
     }
 #endif
     GetObject( seg->entry, obj_offset, islidata );
@@ -1104,11 +1104,11 @@ static void Pass1Cmd( byte cmd )
     case CMD_LIBNAM:
     case CMD_LIBLOC:
     case CMD_LIBDIC:
-        LnkMsg( LOC_REC+WRN+MSG_REC_NOT_DONE, "x", cmd );
+        LnkMsg( WRN+LOC_REC+MSG_REC_NOT_DONE, "x", cmd );
         break;
     default:
         CurrMod->f.source->infile->status |= INSTAT_IOERR;
-        LnkMsg( LOC_REC+ERR+MSG_BAD_REC_TYPE, "x", cmd );
+        LnkMsg( ERR+LOC_REC+MSG_BAD_REC_TYPE, "x", cmd );
         break;
     }
 }
