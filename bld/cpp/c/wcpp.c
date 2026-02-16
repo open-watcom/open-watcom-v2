@@ -102,17 +102,6 @@ static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
     exit( EXIT_FAILURE );
 }
 
-static char *my_strdup( const char *str )
-/***************************************/
-{
-    size_t     len;
-    char       *ptr;
-
-    len = strlen( str ) + 1;
-    ptr = PP_Alloc( len );
-    return( memcpy( ptr, str, len ) );
-}
-
 static bool scanString( char *buf, const char *str, size_t len )
 /**************************************************************/
 {
@@ -148,8 +137,12 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         break;
     case 'd':
         ++arg;
-        defines = PP_Realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
-        defines[numdefs++] = my_strdup( arg );
+        if( defines == NULL ) {
+            defines = PP_Alloc( ( numdefs + 1 ) * sizeof( char * ) );
+        } else {
+            defines = PP_Realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
+        }
+        defines[numdefs++] = PP_Strdup( arg );
         break;
     case 'h':
         wcpp_quit( usageMsg, NULL );
@@ -365,8 +358,12 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {
-            filenames = PP_Realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
-            filenames[nofilenames++] = my_strdup( arg );
+            if( filenames == NULL ) {
+                filenames = PP_Alloc( ( nofilenames + 1 ) * sizeof( char * ) );
+            } else {
+                filenames = PP_Realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+            }
+            filenames[nofilenames++] = PP_Strdup( arg );
         }
     }
     return( contok );
@@ -406,7 +403,7 @@ int main( int argc, char *argv[] )
     FILE        *fo;
     pp_flags    ppflags;
 
-    MemInit();
+    PP_MemInit();
 
     if( argc < 2 ) {
         wcpp_quit( usageMsg, "No filename specified" );
@@ -495,7 +492,7 @@ int main( int argc, char *argv[] )
         wcpp_quit( usageMsg, "No filename specified" );
     }
 
-    MemFini();
+    PP_MemFini();
 
     return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

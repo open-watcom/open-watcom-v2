@@ -60,7 +60,7 @@ int PP_MBCharLen( const char *p )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    MemInit();
+    PP_MemInit();
 
     if( argc < 2 ) {
         printf( "Usage: mkmk filename\n" );
@@ -77,7 +77,7 @@ int main( int argc, char *argv[] )
     PP_Dependency_List( MkMkDependency );
     PP_FileFini();
 
-    MemFini();
+    PP_MemFini();
 
     return( ( PP_Fini() ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

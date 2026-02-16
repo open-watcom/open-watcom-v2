@@ -84,7 +84,7 @@ int main( int argc, char *argv[] )
     int         c;
     int         rc;
 
-    MemInit();
+    PP_MemInit();
 
     dumpheap();
     if( argc < 2 ) {
@@ -110,7 +110,7 @@ int main( int argc, char *argv[] )
     rc = PP_Fini();
     dumpheap();
 
-    MemFini();
+    PP_MemFini();
 
     return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

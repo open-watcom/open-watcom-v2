@@ -65,20 +65,21 @@ static void memPrintLine( void *file, const char *buf, size_t len )
 
 #endif  /* TRMEM */
 
-void MemInit( void )
-/******************/
+void PP_MemInit( void )
+/*********************/
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine, _TRMEM_ALL & ~_TRMEM_REALLOC_NULL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup,
+            NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
 #endif
 }
 
-void MemFini( void )
-/******************/
+void PP_MemFini( void )
+/*********************/
 {
 #ifdef TRMEM
     if( memHandle != NULL ) {
@@ -93,49 +94,50 @@ void MemFini( void )
 #endif
 }
 
-static void outOfMemory( void )
+static void *check_nomem( void *ptr )
 {
-    printf( "Out of memory\n" );
-    exit( 1 );
+    if( ptr == NULL ) {
+        printf( "Out of memory\n" );
+        exit( 1 );
+    }
+    return( ptr );
 }
 
 TRMEMAPI( PP_Alloc )
 void * PPENTRY PP_Alloc( size_t size )
 {
-    void        *p;
-
 #ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
 #else
-    p = malloc( size );
+    return( check_nomem( malloc( size ) ) );
 #endif
-    if( p == NULL ) {
-        outOfMemory();
-    }
-    return( p );
+}
+
+TRMEMAPI( PP_Strdup )
+char * PP_Strdup( const char *str )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), memHandle ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
+#endif
 }
 
 TRMEMAPI( PP_Realloc )
 void *PP_Realloc( void *old, size_t size )
 {
-    void        *p;
-
 #ifdef TRMEM
-    p = _trmem_realloc( old, size, _TRMEM_WHO( 2 ), memHandle );
+    return( check_nomem( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), memHandle ) ) );
 #else
-    p = realloc( old, size );
+    return( check_nomem( realloc( old, size ) ) );
 #endif
-    if( p == NULL ) {
-        outOfMemory();
-    }
-    return( p );
 }
 
 TRMEMAPI( PP_Free )
 void PPENTRY PP_Free( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 3 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
 #else
     free( p );
 #endif
