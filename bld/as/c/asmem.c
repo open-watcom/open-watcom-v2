@@ -165,8 +165,8 @@ void wres_free( void *ptr )
 #endif
 }
 
-TRMEMAPI( PP_Malloc )
-void * PPENTRY PP_Malloc( size_t size )
+TRMEMAPI( PP_Alloc )
+void * PPENTRY PP_Alloc( size_t size )
 {
     void        *p;
 

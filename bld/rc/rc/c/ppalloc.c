@@ -43,8 +43,8 @@ static void outOfMemory( void )
     RcFatalError( ERR_OUT_OF_MEMORY );
 }
 
-void *PPENTRY PP_Malloc( size_t size )
-/************************************/
+void *PPENTRY PP_Alloc( size_t size )
+/***********************************/
 {
     void    *p;
 

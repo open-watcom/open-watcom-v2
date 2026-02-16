@@ -99,8 +99,8 @@ static void outOfMemory( void )
     exit( 1 );
 }
 
-TRMEMAPI( PP_Malloc )
-void * PPENTRY PP_Malloc( size_t size )
+TRMEMAPI( PP_Alloc )
+void * PPENTRY PP_Alloc( size_t size )
 {
     void        *p;
 

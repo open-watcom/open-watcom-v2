@@ -109,7 +109,7 @@ static char *my_strdup( const char *str )
     char       *ptr;
 
     len = strlen( str ) + 1;
-    ptr = PP_Malloc( len );
+    ptr = PP_Alloc( len );
     return( memcpy( ptr, str, len ) );
 }
 
@@ -160,7 +160,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
 
             ++arg;
             len = strlen( arg );
-            p = PP_Malloc( len + 1 );
+            p = PP_Alloc( len + 1 );
             scanString( p, arg, len );
             PP_IncludePathAdd( PPINCLUDE_USR, p );
             PP_Free( p );
@@ -175,7 +175,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
             PP_Free( out_filename );
         }
         len = strlen( arg );
-        out_filename = PP_Malloc( len + 1 );
+        out_filename = PP_Alloc( len + 1 );
         scanString( out_filename, arg, len );
         break;
     case 'z':
@@ -333,7 +333,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
     argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
     varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
-    info = PP_Malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info = PP_Alloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                                   // push info on stack
     info->argv = (char **)info->buf;

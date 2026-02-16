@@ -112,8 +112,8 @@ static void outOfMemory( void )
     }
 }
 
-void * PPENTRY PP_Malloc( size_t size )
-/*************************************/
+void * PPENTRY PP_Alloc( size_t size )
+/************************************/
 {
     void        *p;
 
