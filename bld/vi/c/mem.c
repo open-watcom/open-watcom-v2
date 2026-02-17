@@ -61,14 +61,51 @@
     #define WHO_PTR             void *
 #endif
 
+static char                 *StaticBuffer = NULL;
+
 #ifdef TRMEM
 
 static FILE                 *trmemOutput = NULL;
 static _trmem_hdl           trmemHandle;
 
+static void trmemPrintLine( void *handle, const char *buff, size_t len )
+/**********************************************************************/
+{
+    /* unused parameters */ (void)handle; (void)len;
+
+    if( trmemOutput != NULL ) {
+        fprintf( trmemOutput, "%s\n", buff );
+    }
+}
+
 #endif  /* TRMEM */
 
-static char     *StaticBuffer = NULL;
+void FiniMem( void )
+{
+#ifdef TRMEM
+    _trmem_prt_list( trmemHandle );
+    _trmem_close( trmemHandle );
+    if( trmemOutput != NULL ) {
+        fclose( trmemOutput );
+        trmemOutput = NULL;
+    }
+#endif
+}
+
+void InitMem( void )
+{
+#ifdef TRMEM
+    trmemOutput = fopen( "trmem.out", "w" );
+    trmemHandle = _trmem_open( malloc, free, realloc, strdup,
+        NULL, trmemPrintLine, _TRMEM_ALL );
+    // atexit( DumpTRMEM );
+#endif
+}
+
+#if defined( __LINUX__ )
+void UIAPI UIMemOpen( void ) {}
+void UIAPI UIMemClose( void ) {}
+#endif
 
 /*
  * getMem - get and clear memory
@@ -236,13 +273,33 @@ void *MemAllocUnsafe( size_t size )
 } /* MemAllocUnsafe */
 
 /*
+ * MemStrdup - allocate memory and duplicate string
+ */
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+{
+    char        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), trmemHandle );
+#else
+    ptr = strdup( str );
+#endif
+    if( ptr == NULL ) {
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( ptr );
+
+} /* MemStrdup */
+
+/*
  * MemFree - free up memory
  */
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), trmemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), trmemHandle );
 #else
     free( ptr );
 #endif
@@ -327,7 +384,7 @@ TRMEMAPI( MemReallocUnsafe )
 void *MemReallocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 4 ) ) );
+    return( doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 5 ) ) );
 #else
     return( doMemReallocUnsafe( ptr, size, NULL ) );
 #endif
@@ -342,7 +399,7 @@ void *MemRealloc( void *ptr, size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 5 ) );
+    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 6 ) );
 #else
     tmp = doMemReallocUnsafe( ptr, size, NULL );
 #endif
@@ -423,9 +480,6 @@ void StaticFini( void )
 }
 
 #if defined( __LINUX__ )
-void UIAPI UIMemOpen( void ) {}
-
-void UIAPI UIMemClose( void ) {}
 
 TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
@@ -433,7 +487,7 @@ void * UIAPI uimalloc( size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 6 ) );
+    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 7 ) );
 #else
     tmp = doMemAllocUnsafe( size, NULL );
 #endif
@@ -449,7 +503,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 7 ) );
+    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 8 ) );
 #else
     tmp = doMemReallocUnsafe( ptr, size, NULL );
 #endif
@@ -463,48 +517,10 @@ TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), trmemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 9 ), trmemHandle );
 #else
     free( ptr );
 #endif
 }
-#endif
 
-
-#ifdef TRMEM
-
-extern void trmemPrintLine( void *handle, const char *buff, size_t len )
-/**********************************************************************/
-{
-    /* unused parameters */ (void)handle; (void)len;
-
-    if( trmemOutput != NULL ) {
-        fprintf( trmemOutput, "%s\n", buff );
-    }
-}
-
-#endif
-
-void FiniMem( void )
-{
-#ifdef TRMEM
-    _trmem_prt_list( trmemHandle );
-    _trmem_close( trmemHandle );
-    if( trmemOutput != NULL ) {
-        fclose( trmemOutput );
-        trmemOutput = NULL;
-    }
-#endif
-}
-
-void InitMem( void )
-{
-#ifdef TRMEM
-    trmemOutput = fopen( "trmem.out", "w" );
-    trmemHandle = _trmem_open( malloc, free, realloc, NULL,
-        NULL, trmemPrintLine,
-        _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-        _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-    // atexit( DumpTRMEM );
-#endif
-}
+#endif /* __LINUX__ */

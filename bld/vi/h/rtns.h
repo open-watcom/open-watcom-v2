@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@ void    AbandonHopeAllYesWhoEnterHere( vi_rc );
 
 /* addstr.c */
 void    ReplaceString( char **, const char * );
-char    *DupString( const char * );
 
 /* alias.c */
 vi_rc   SetAlias( const char * );
@@ -594,6 +593,7 @@ void    MatchFini( void );
 /* mem.c */
 void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
+char    *MemStrdup( const char *str );
 void    MemFree( void * );
 void    MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) );
 void    *MemRealloc( void *, size_t );

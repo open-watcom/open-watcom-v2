@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +224,7 @@ char *GetInitialFileName( void )
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
-        ptr = DupString( path );
+        ptr = MemStrdup( path );
     } else {
         ptr = NULL;
     }

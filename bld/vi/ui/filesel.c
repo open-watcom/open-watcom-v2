@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -701,7 +701,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     }
                     if( rc == ERR_NO_ERR ) {
                         MemFree( (void *)sfd->vals[cln - 1] );
-                        sfd->vals[cln - 1] = DupString( tmp );
+                        sfd->vals[cln - 1] = MemStrdup( tmp );
                         redraw = true;
                     }
                     break;

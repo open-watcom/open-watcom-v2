@@ -48,5 +48,12 @@ extra_c_flags_f_rxwrap   = -I"$(posix_dir)/h" -I"$(posix_dir)/misc"
 extra_c_flags_f_autoenv  = -fh=pch01.pch
 extra_c_flags_f_getopt   = -fh=pch01.pch
 extra_c_flags_f_ideactiv = -fh=pch02.pch
-extra_c_flags_f_mem      += -fh=pch03.pch
+!endif
+
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_mem = -of+
+!  endif
+! endif
 !endif

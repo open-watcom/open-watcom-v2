@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
     vi_rc       rc;
 
     origString = string;
-    searchString = DupString( string );
+    searchString = MemStrdup( string );
     isFgrep = true;
     caseIgn = ci;
     for( i = 0; i < sizeof( table ); i++ ) {
@@ -124,7 +124,7 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
     RegExpMagicRestore();
     rc = RegExpError;
     if( rc == ERR_NO_ERR ) {
-        searchString = DupString( string );
+        searchString = MemStrdup( string );
         origString = string;
         isFgrep = false;
         rc = doGREP( dirlist );
@@ -666,7 +666,7 @@ static void fileGrep( const char *fullmask, char **list, list_linenum *clist, wi
                 }
     #endif
 #endif
-                list[*clist] = DupString( data );
+                list[*clist] = MemStrdup( data );
                 (*clist)++;
             } else if( rc != ERR_NO_ERR ) {
                 break;

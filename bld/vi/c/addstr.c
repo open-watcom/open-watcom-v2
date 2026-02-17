@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,29 +39,7 @@
 void ReplaceString( char **where, const char *str )
 {
 
-    _MemFreeArray( *where );
-    *where = DupString( str );
+    MemFree( *where );
+    *where = MemStrdup( str );
 
 } /* ReplaceString */
-
-/*
- * DupString - allocate a string, and copy it in
- */
-char *DupString( const char *str )
-{
-    size_t  len;
-    char    *ptr;
-
-    if( str == NULL )  {
-        len = 1;
-        str = "";
-    } else {
-        len = strlen( str ) + 1;
-    }
-    ptr = _MemAllocArray( char, len );
-    if( ptr != NULL ) {
-        memcpy( ptr, str, len );
-    }
-    return( ptr );
-
-} /* DupString */

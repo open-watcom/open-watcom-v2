@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +59,7 @@ static void setPrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
-            oldPrompt = _MemAllocArray( char, strlen( tmp ) + 1 );
-            strcpy( oldPrompt, tmp );
+            oldPrompt = MemStrdup( tmp );
         } else {
             oldPrompt = NULL;
         }
@@ -73,7 +72,7 @@ static void restorePrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         if( oldPrompt != NULL ) {
             setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
-            _MemFreeArray( oldPrompt );
+            MemFree( oldPrompt );
             oldPrompt = NULL;
         } else {
             unsetenv( PROMPT_ENVIRONMENT_VARIABLE );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ static void genItem( int token, const char *where )
     tsf->branchcond = COND_FALSE;
 
     if( where != NULL ) {
-        tsf->data = DupString( where );
+        tsf->data = MemStrdup( where );
     }
 
     InsertLLItemAfter( (ss **)&tmpTail, (ss *)tmpTail, (ss *)tsf );
@@ -185,7 +185,7 @@ void GenTestCond( const char *data )
 #ifndef VICOMP
     } else {
         genItem( SRC_T_IF, NULL );
-        tmpTail->arg1 = DupString( data );
+        tmpTail->arg1 = MemStrdup( data );
     }
 #endif
 
@@ -249,8 +249,8 @@ static void genExpr( const char *data )
          */
         genItem( SRC_T_EXPR, NULL );
         tmpTail->u.oper = oper;
-        tmpTail->arg1 = DupString( v1 );
-        tmpTail->arg2 = DupString( data );
+        tmpTail->arg1 = MemStrdup( v1 );
+        tmpTail->arg2 = MemStrdup( data );
     }
 #endif
 
@@ -265,7 +265,7 @@ label NewLabel( void )
     label       tmp;
 
     MySprintf( buff, "_l_%l", CurrentSrcLabel++ );
-    tmp = DupString( buff );
+    tmp = MemStrdup( buff );
     return( tmp );
 
 } /* NewLabel */
@@ -443,7 +443,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     }
 #endif
                 }
-                tmpTail->data = DupString( tmp );
+                tmpTail->data = MemStrdup( tmp );
                 break;
             }
 

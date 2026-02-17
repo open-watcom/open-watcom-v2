@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,7 +284,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GetCWD1( &CurrentDirectory );
     SetCWD( StartDirectory );
     if( cfgFN == NULL ) {
-        cfgFN = DupString( CFG_NAME );
+        cfgFN = MemStrdup( CFG_NAME );
     }
 
     argv = ExpandEnv( &argc, argv, VIENV );
@@ -310,7 +310,7 @@ static void doInitializeEditor( int argc, char *argv[] )
      * initial configuration
      */
     strcpy( EditVars.Majick.str, "()~@" );
-    EditVars.FileEndString = DupString( "[END_OF_FILE]" );
+    EditVars.FileEndString = MemStrdup( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
     WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLineLen + 2 );
@@ -349,14 +349,14 @@ static void doInitializeEditor( int argc, char *argv[] )
      * more misc. setup
      */
     if( EditVars.WordDefn == NULL ) {
-        EditVars.WordDefn = DupString( &WordDefnDefault[6] );
+        EditVars.WordDefn = MemStrdup( &WordDefnDefault[6] );
         InitWordSearch( EditVars.WordDefn );
     }
     if( EditVars.WordAltDefn == NULL ) {
-        EditVars.WordAltDefn = DupString( WordDefnDefault );
+        EditVars.WordAltDefn = MemStrdup( WordDefnDefault );
     }
     if( EditVars.TagFileName == NULL ) {
-        EditVars.TagFileName = DupString( "tags" );
+        EditVars.TagFileName = MemStrdup( "tags" );
     }
     DotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
@@ -575,7 +575,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         LoadHistory( cmd );
     }
     if( EditVars.GrepDefault == NULL ) {
-        EditVars.GrepDefault = DupString( "*.(c|h)" );
+        EditVars.GrepDefault = MemStrdup( "*.(c|h)" );
     }
     if( goCmd[0] != '\0' ) {
         KeyAddString( goCmd );
@@ -597,7 +597,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GlobVarAddStr( GLOBVAR_OS386, "1" );
 #endif
     if( EditVars.StatusString == NULL ) {
-        EditVars.StatusString = DupString( "L:$6L$nC:$6C" );
+        EditVars.StatusString = MemStrdup( "L:$6L$nC:$6C" );
     }
     UpdateStatusWindow();
 #ifdef __WIN__

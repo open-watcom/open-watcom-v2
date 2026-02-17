@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ void GetCWD1( char **str )
     char        bob[_MAX_PATH];
 
     GetCWD2( bob, sizeof( bob ) );
-    *str = DupString( bob );
+    *str = MemStrdup( bob );
 
 } /* GetCWD1 */
 

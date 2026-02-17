@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +107,7 @@ void ScreenInit( void )
 
     tmp[0] = '\0';
     GetConsoleTitle( tmp, sizeof( tmp ) );
-    oldConTitle = DupString( tmp );
+    oldConTitle = MemStrdup( tmp );
     if( !EditFlags.Quiet ) {
         SetConsoleTitle( "Open Watcom vi" );
     }

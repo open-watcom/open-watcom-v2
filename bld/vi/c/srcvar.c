@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static void var_add( const char *name, const char *val, vars_list *vl )
     name_len = strlen( name );
     new = MemAlloc( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
-    new->value = DupString( val );
+    new->value = MemStrdup( val );
     new->len = len;
 
 #ifndef VICOMP

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -602,7 +602,7 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
     resident    *tmp;
 
     tmp = MemAlloc( sizeof( resident ) );
-    tmp->fn = DupString( fn );
+    tmp->fn = MemStrdup( fn );
     tmp->sf = sf;
     memcpy( &tmp->lab, lab, sizeof( labels ) );
     tmp->scriptcomp = EditFlags.ScriptIsCompiled;

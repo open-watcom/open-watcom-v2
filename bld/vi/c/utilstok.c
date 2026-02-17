@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +59,8 @@ int GetNumberOfTokens( const char *list )
  */
 char **BuildTokenList( int num, char *list )
 {
-    char        **arr, *data, *t;
-    int         k, i = 0, off = 0;
+    char        **arr, *t;
+    int         i = 0, off = 0;
 
     arr = _MemAllocPtrArray( char, num );
     for( ;; ) {
@@ -69,11 +69,8 @@ char **BuildTokenList( int num, char *list )
         if( *t == 0 ) {
             break;
         }
-        k = strlen( t );
-        data = _MemAllocArray( char, k + 1 );
-        memcpy( data, t, k + 1 );
-        arr[i] = data;
-        off += k + 1;
+        arr[i] = MemStrdup( t );
+        off += strlen( t ) + 1;
         i++;
 
     }

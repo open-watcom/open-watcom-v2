@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1152,13 +1152,13 @@ static list_linenum getSetInfo( const char ***vals, char ***list, size_t *longes
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
-        sdata[i1]->setting = DupString( GetTokenStringCVT( SetVarTokens, i1, settokstr, true ) );
-        sdata[i1]->val = DupString( getOneSetVal( i1, false, tmpstr, true ) );
+        sdata[i1]->setting = MemStrdup( GetTokenStringCVT( SetVarTokens, i1, settokstr, true ) );
+        sdata[i1]->val = MemStrdup( getOneSetVal( i1, false, tmpstr, true ) );
     }
     for( i2 = 0; i2 < tc2; i2++ ) {
         sdata[tc1 + i2] = MemAlloc( sizeof( set_data ) );
-        sdata[tc1 + i2]->setting = DupString( GetTokenStringCVT( SetFlagTokens, i2, settokstr, true ) );
-        sdata[tc1 + i2]->val = DupString( getOneSetVal( i2, true, tmpstr, true ) );
+        sdata[tc1 + i2]->setting = MemStrdup( GetTokenStringCVT( SetFlagTokens, i2, settokstr, true ) );
+        sdata[tc1 + i2]->val = MemStrdup( getOneSetVal( i2, true, tmpstr, true ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {

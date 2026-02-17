@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,6 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
     pgroup2         pg;
     char            pathin[FILENAME_MAX];
     const char      *p;
-    char            *new;
     bool            wildcard;
     vi_rc           rc;
     char            c;
@@ -72,9 +71,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
         // don't change to lowercase any more
         //FileLower( fullmask );
         *argv = _MemReallocPtrArray( *argv, char, argc + 1 );
-        new = _MemAllocArray( char, strlen( fullmask ) + 1 );
-        (*argv)[argc++] = new;
-        strcpy( new, fullmask );
+        (*argv)[argc++] = MemStrdup( fullmask );
         return( argc );
     }
 
@@ -84,9 +81,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
     rc = GetSortDir( fullmask, false );
     if( rc != ERR_NO_ERR ) {
         *argv = _MemReallocPtrArray( *argv, char, argc + 1 );
-        new = _MemAllocArray( char, strlen( fullmask ) + 1 );
-        (*argv)[argc++] = new;
-        strcpy( new, fullmask );
+        (*argv)[argc++] = MemStrdup( fullmask );
         return( argc );
     }
     _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -99,9 +94,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
             continue;
         _makepath( pathin, pg.drive, pg.dir, DirFiles[i]->name, NULL );
         *argv = _MemReallocPtrArray( *argv, char, argc + 1 );
-        new = _MemAllocArray( char, strlen( pathin ) + 1 );
-        (*argv)[argc++] = new;
-        strcpy( new, pathin );
+        (*argv)[argc++] = MemStrdup( pathin );
     }
     return( argc );
 

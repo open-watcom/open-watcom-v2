@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,8 +162,8 @@ vi_rc AddMatchString( const char *data )
     if( *st2 == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
-    MatchData[MatchCount] = DupString( st );
-    MatchData[MatchCount + 1] = DupString( st2 );
+    MatchData[MatchCount] = MemStrdup( st );
+    MatchData[MatchCount + 1] = MemStrdup( st2 );
     MatchCount += 2;
     Message1( "match pair \"%s\"-\"%s\" added", st, st2 );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -172,10 +172,10 @@ vi_rc AddMatchString( const char *data )
 
 void MatchInit( void )
 {
-    MatchData[0] = DupString( "{" );
-    MatchData[1] = DupString( "}" );
-    MatchData[2] = DupString( "\\(" );
-    MatchData[3] = DupString( "\\)" );
+    MatchData[0] = MemStrdup( "{" );
+    MatchData[1] = MemStrdup( "}" );
+    MatchData[2] = MemStrdup( "\\(" );
+    MatchData[3] = MemStrdup( "\\)" );
 }
 
 void MatchFini( void )
