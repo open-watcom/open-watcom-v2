@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -273,9 +273,9 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
         ixewk->entry_typ = type;
         ixewk->prt_text = NULL;
         if( (seeidwork != NULL) && (seeidwork->prt_term_len > 0) ) {
-            ixewk->prt_text = mem_tokdup( seeidwork->prt_term, seeidwork->prt_term_len );
+            ixewk->prt_text = mem_tostring( seeidwork->prt_term, seeidwork->prt_term_len );
         }
-        ixewk->u.pageref.page_text = mem_tokdup( ref, len );
+        ixewk->u.pageref.page_text = mem_tostring( ref, len );
         ixewk->u.pageref.page_text_len = len;
 
         if( *base == NULL ) {
@@ -405,11 +405,11 @@ ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
 
         if( printtxt != NULL ) {
             if( ixhwork->prt_term == NULL ) {
-                ixhwork->prt_term = mem_tokdup( printtxt, printtxtlen );
+                ixhwork->prt_term = mem_tostring( printtxt, printtxtlen );
                 ixhwork->prt_term_len = printtxtlen;
             } else if( ixhwork->prt_term_len < printtxtlen ) {
                 mem_free( ixhwork->prt_term );
-                ixhwork->prt_term = mem_tokdup( printtxt, printtxtlen );
+                ixhwork->prt_term = mem_tostring( printtxt, printtxtlen );
                 ixhwork->prt_term_len = printtxtlen;
             } else if( printtxtlen == 0 ) {
                 ixhwork->prt_term[0] = '\0';
@@ -426,7 +426,7 @@ ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
         ixhwk->lower = NULL;
         ixhwk->entry = NULL;
         ixhwk->ix_lvl = lvl;
-        ixhwk->ix_term = mem_tokdup( txt, txtlen );
+        ixhwk->ix_term = mem_tostring( txt, txtlen );
         ixhwk->ix_term_len = txtlen;
         if( printtxt != NULL ) {
             ixhwk->prt_term_len = printtxtlen;

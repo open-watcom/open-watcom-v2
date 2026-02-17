@@ -67,7 +67,8 @@ static void prt( void * file, const char * buf, size_t len )
 void mem_init( void )
 {
 #ifdef TRMEM
-    memHandle = _trmem_open( malloc, free, realloc, strdup, NULL, &prt, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, realloc, strdup,
+                                NULL, &prt, _TRMEM_ALL );
 #endif
 }
 
@@ -179,8 +180,8 @@ char *mem_strdup( const char *str )
 /*  duplicate token                                                        */
 /***************************************************************************/
 
-TRMEMAPI( mem_tokdup )
-char *mem_tokdup( const char *str, unsigned size )
+TRMEMAPI( mem_tostring )
+char *mem_tostring( const char *str, unsigned size )
 {
     char    *p;
 

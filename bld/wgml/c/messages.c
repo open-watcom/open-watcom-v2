@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -304,7 +304,7 @@ static void show_line_error_len( const char * pa, unsigned len )
         len = 1;
     }
     cnt = pa - buff2 + len;
-    buf = mem_tokdup( buff2, cnt );
+    buf = mem_tostring( buff2, cnt );
     out_msg( "%s\n", buf );
     // number of characters before the offending input + "*" at start of offending input
     if( pa > buff2 ) {

@@ -934,7 +934,7 @@ static void set_outfile( option * opt )
         xx_simple_err_exit_cc( ERR_MISS_INV_OPT_VALUE, opt->option, "" );
         /* never return */
     }
-    out_file = mem_tokdup( tokennext->token, tokennext->toklen );
+    out_file = mem_tostring( tokennext->token, tokennext->toklen );
 
     split_attr_file( out_file, attrwork, sizeof( attrwork ) - 1 );
     if( attrwork[0] != '\0' ) {
@@ -1749,7 +1749,7 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
     char        attrwork[MAX_FILE_ATTR + 1];
     char    *   p;
 
-    p = mem_tokdup( tok->token, tok->toklen );
+    p = mem_tostring( tok->token, tok->toklen );
     g_info_research( INF_RECOGNIZED_XXX, "document source file", p );
     strip_quotes( p );
     if( master_fname != NULL ) {         // more than one master file ?

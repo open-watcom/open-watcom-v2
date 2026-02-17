@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -298,7 +298,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     stringval[arg_flen] = '\0';
                     *val_flags |= GAVAL_value;
                 } else {
-                    valptr = mem_tokdup( g_tok_start, arg_flen );
+                    valptr = mem_tostring( g_tok_start, arg_flen );
                     *val_flags |= GAVAL_valptr;
                 }
                 if( *att_flags & GAFLG_any ) { // default for any specified
@@ -401,7 +401,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     /* never return */
 #else
                     *val_flags |= GAVAL_valptr;
-                    valptr = mem_tokdup( g_tok_start, arg_flen );
+                    valptr = mem_tostring( g_tok_start, arg_flen );
                     if( *att_flags & GAFLG_upper ) {
                         strupr( valptr );
                     }

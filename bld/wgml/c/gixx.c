@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -182,7 +182,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     }
                     if( pgvalue == PGREF_none ) {                // arbitrary string value
                         pgvalue = PGREF_string;
-                        pgtext = mem_tokdup( attr_val.tok.s, attr_val.tok.l );  // use text instead of pageno
+                        pgtext = mem_tostring( attr_val.tok.s, attr_val.tok.l );  // use text instead of pageno
                         pgtextlen = attr_val.tok.l;
                     }
                 } else {                        // end-of-tag for IHx
@@ -200,7 +200,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 }
                 if( hxstring[3] == lvlc ) {     // IHx only
                     printseen = true;
-                    printtxt = mem_tokdup( attr_val.tok.s, attr_val.tok.l );
+                    printtxt = mem_tostring( attr_val.tok.s, attr_val.tok.l );
                     printtxtlen = attr_val.tok.l;
                 } else {                        // end-of-tag for Ix, IREF
                     p = pa;                     // restore spaces before text
@@ -238,7 +238,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 }
                 if( hx_lvl == 0 || (hxstring[3] == lvlc) ) {// :IREF :IHx
                     seeseen = true;
-                    seetext = mem_tokdup( attr_val.tok.s, attr_val.tok.l );
+                    seetext = mem_tostring( attr_val.tok.s, attr_val.tok.l );
                     seetextlen = attr_val.tok.l;
                 } else {                        // end-of-tag for Ix
                     p = pa;                     // restore spaces before text

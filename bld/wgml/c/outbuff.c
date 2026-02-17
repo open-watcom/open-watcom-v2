@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ======================================================================
@@ -915,7 +916,7 @@ static void set_out_file_attr( void )
                  */
 
                 len -= 1;
-                out_file_attr = mem_tokdup( &bin_driver->rec_spec[1], len - 1 );
+                out_file_attr = mem_tostring( &bin_driver->rec_spec[1], len - 1 );
             }
         } else {
 

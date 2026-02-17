@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 200--2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 200--2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -234,7 +234,7 @@ static condcode gargterm( termcb * t )
             }
         }
         // prepare string   quoted or unquoted
-        t->term_string = mem_tokdup( g_tok_start, arg_flen );
+        t->term_string = mem_tostring( g_tok_start, arg_flen );
         t->term_length = arg_flen;
     } else {
         if( gn.arg.s >= gn.arg.e ) {
@@ -244,7 +244,7 @@ static condcode gargterm( termcb * t )
         }
         t->numeric = true;
         t->term_number = gn.result;
-        t->term_string = mem_tokdup( gn.resultstr, gn.length );
+        t->term_string = mem_tostring( gn.resultstr, gn.length );
         t->term_length = gn.length;
     }
     return( cc );
