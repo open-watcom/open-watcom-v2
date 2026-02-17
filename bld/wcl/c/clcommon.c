@@ -180,9 +180,8 @@ void  MemInit( void )
 /*******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
+            NULL, memPrintLine, _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
 #endif
 }
 
