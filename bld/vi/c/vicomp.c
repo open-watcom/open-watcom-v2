@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include <stdarg.h>
+#include <string.h>
 #include "posix.h"
 #include "specio.h"
 #include "pathgrp2.h"
@@ -61,6 +62,14 @@ vi_rc       LastRetCode = ERR_NO_ERR;
 void *MemAlloc( size_t size )
 {
     return( malloc( size ) );
+}
+
+/*
+ * MemStrdup - allocate and duplicate string
+ */
+char *MemStrdup( const char *str )
+{
+    return( strdup( str ) );
 }
 
 /*
