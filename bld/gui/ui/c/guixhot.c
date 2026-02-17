@@ -44,10 +44,8 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
     memset( GUIHotSpots, 0, sizeof( hotspot_info ) * num );
     for( i = 0; i < num; i++ ) {
         if( hot[i].chars != NULL ) {
-            bool    ok;
-
-            GUIHotSpots[i].text = GUIStrdupOK( hot[i].chars, &ok );
-            if( !ok )
+            GUIHotSpots[i].text = GUIMemStrdup( hot[i].chars );
+            if( GUIHotSpots[i].text == NULL )
                 return( false );
             GUIHotSpots[i].size.x = strlen( GUIHotSpots[i].text );
             GUIHotSpots[i].size.y = 1;

@@ -355,11 +355,14 @@ void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *p
 bool GUIJustSetWindowText( gui_window *wnd, const char *title )
 {
     char        *new_title;
-    bool        ok;
 
-    new_title = GUIStrdupOK( title, &ok );
-    if( !ok )
-        return( false );
+    new_title = NULL;
+    if( title != NULL ) {
+        new_title = GUIMemStrdup( title );
+        if( new_title == NULL ) {
+            return( false );
+        }
+    }
     if( wnd->vs.dynamic_title ) {
         GUIMemFree( (void *)wnd->vs.title );
     } else {

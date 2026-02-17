@@ -107,21 +107,20 @@ void GUISetSystemMenuFlags( gui_window *wnd )
 bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
 {
     int     i;
-    bool    ok;
 
     for( i = 0; i < NUM_SYSTEM_MENUS; i++ ) {
         menuitems[i].event = SystemMenu[i].event;
         menuitems[i].flags = SystemMenu[i].flags;
         switch( menuitems[i].event ) {
         case EV_SYS_MENU_MOVE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Move ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Move ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             break;
         case EV_SYS_MENU_SIZE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Size ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Size ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             if( (style & GUI_RESIZEABLE) == 0 ) {
@@ -129,15 +128,15 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_RESTORE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Restore ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Restore ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             break;
         case EV_SYS_MENU_MINIMIZE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Minimize ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Minimize ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             if( (style & GUI_MINIMIZE) == 0 ) {
@@ -145,8 +144,8 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_MAXIMIZE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Maximize ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Maximize ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             if( (style & GUI_MAXIMIZE) == 0 ) {
@@ -154,8 +153,8 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_CLOSE:
-            menuitems[i].name = GUIStrdupOK( LIT_GUI( Close ), &ok );
-            if( !ok ) {
+            menuitems[i].name = GUIMemStrdup( LIT_GUI( Close ) );
+            if( menuitems[i].name == NULL ) {
                 return( false );
             }
             if( (style & GUI_CLOSEABLE) == 0 ) {

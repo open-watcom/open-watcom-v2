@@ -201,7 +201,7 @@ static char *tabFilter( const char *message )
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
-    new_message = (char *)GUIStrdup( message );
+    new_message = (char *)GUIMemStrdup( message );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         len = strlen( new_message );
@@ -291,10 +291,19 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
         }
         *info = new_info;
         *num_controls = new_num;
-        new_info[new_num - 1].length = len;
-        new_info[new_num - 1].text = GUIStrdupLenOK( start, len, &ok );
-        if( !ok ) {
-            break;
+        new_info[new_num - 1].length = 0;
+        new_info[new_num - 1].text = NULL;
+        if( start != NULL ) {
+            char    *p;
+
+            p = GUIMemAlloc( len + 1 );
+            if( p == NULL ) {
+                break;
+            }
+            memcpy( p, start, len );
+            p[len] = '\0';
+            new_info[new_num - 1].text = p;
+            new_info[new_num - 1].length = len;
         }
     } /* for */
     // de-allocate memory allocated in tabFilter routine */

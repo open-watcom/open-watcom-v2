@@ -47,7 +47,6 @@
 bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
 {
     a_hot_spot  *hot_spot;
-    bool        ok;
 
     if( field == NULL ) {
         return( false );
@@ -58,9 +57,12 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
         return( false );
     }
     field->typ = FLD_HOT;
-    hot_spot->str = GUIStrdupOK( ctl_info->text, &ok );
-    if( !ok ) {
-        return( false );
+    hot_spot->str = NULL;
+    if( ctl_info->text != NULL ) {
+        hot_spot->str = GUIMemStrdup( ctl_info->text );
+        if( hot_spot->str == NULL ) {
+            return( false );
+        }
     }
     hot_spot->event = ID2EV( ctl_info->id );
     hot_spot->row = field->area.row;
@@ -89,14 +91,13 @@ void GUIFreeHotSpot( a_hot_spot *hot_spot )
 bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 {
     char        *new_str;
-    bool        ok;
 
     if( text == NULL )
         text = "";
-    new_str = GUIStrdupOK( text, &ok );
-    if( ok ) {
-        GUIMemFree( hot_spot->str );
-        hot_spot->str = new_str;
-    }
-    return( ok );
+    new_str = GUIMemStrdup( text );
+    if( new_str == NULL )
+        return( false );
+    GUIMemFree( hot_spot->str );
+    hot_spot->str = new_str;
+    return( true );
 }

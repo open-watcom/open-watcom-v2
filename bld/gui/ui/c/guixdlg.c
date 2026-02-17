@@ -435,10 +435,13 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
                 return( false );
             }
             RadioGroup->value = -1;
-            RadioGroup->caption = GUIStrdupOK( ctl_info->text, &ok );
-            if( !ok ) {
-                CleanUpRadioGroups();
-                return( false );
+            RadioGroup->caption = NULL;
+            if( ctl_info->text != NULL ) {
+                RadioGroup->caption = GUIMemStrdup( ctl_info->text );
+                if( RadioGroup->caption == NULL ) {
+                    CleanUpRadioGroups();
+                    return( false );
+                }
             }
             Group = true;
             group_allocated = true;
@@ -466,7 +469,14 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         field->u.radio = radio;
         ok = false;
         if( radio != NULL ) {
-            radio->str = GUIStrdupOK( ctl_info->text, &ok );
+            radio->str = NULL;
+            ok = true;
+            if( ctl_info->text != NULL ) {
+                radio->str = GUIMemStrdup( ctl_info->text );
+                if( radio->str == NULL ) {
+                    ok = false;
+                }
+            }
         }
         if( !ok ) {
             if( group_allocated ) {
@@ -484,11 +494,14 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     case FLD_CHECK:
         check = (a_check *)GUIMemAlloc( sizeof( a_check ) );
         field->u.check = check;
-        ok = false;
-        if( check != NULL )
-            check->str = GUIStrdupOK( ctl_info->text, &ok );
-        if( !ok ) {
+        if( check == NULL )
             return( false );
+        check->str = NULL;
+        if( ctl_info->text != NULL ) {
+            check->str = GUIMemStrdup( ctl_info->text );
+            if( check->str == NULL ) {
+                return( false );
+            }
         }
         check->val = 0;
         if( (ctl_info->style & GUI_STYLE_CONTROL_CHECKED) && (ctl_info->style & GUI_STYLE_CONTROL_AUTOMATIC) ) {
@@ -540,9 +553,12 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_TEXT:
     case FLD_FRAME:
-        field->u.str = GUIStrdupOK( ctl_info->text, &ok );
-        if( !ok ) {
-            return( false );
+        field->u.str = NULL;
+        if( ctl_info->text != NULL ) {
+            field->u.str = GUIMemStrdup( ctl_info->text );
+            if( field->u.str == NULL ) {
+                return( false );
+            }
         }
         break;
     default:
@@ -787,7 +803,6 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     VFIELD      *focus;
     int         size;
     bool        colours_set;
-    bool        ok;
 
     /* unused parameters */ (void)sys;
 
@@ -831,10 +846,13 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
     CleanUpRadioGroups();
     fields[num_controls].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
-    title = GUIStrdupOK( dlg_info->title, &ok );
-    if( !ok ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
-        return( false );
+    title = NULL;
+    if( dlg_info->title != NULL ) {
+        title = GUIMemStrdup( dlg_info->title );
+        if( title == NULL ) {
+            GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
+            return( false );
+        }
     }
     colours_set = GUISetDialColours();
     ui_dlg_info = uibegdialog( title, fields, wnd->vs.area.height,

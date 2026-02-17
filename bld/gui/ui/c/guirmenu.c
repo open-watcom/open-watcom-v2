@@ -249,7 +249,7 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
             menuitem->hinttext = NULL;
             menuitem->child = NoMenu;
             if( rmenu->item->IsPopup ) {
-                menuitem->label = GUIStrdup( rmenu->item->Item.Popup.ItemText );
+                menuitem->label = GUIMemStrdup( rmenu->item->Item.Popup.ItemText );
                 menuitem->id = 0;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Popup.ItemFlags );
                 ok = MakeGUIMenuStruct( rmenu->child, &menuitem->child );
@@ -258,7 +258,7 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
                     return( ok );
                 }
             } else {
-                menuitem->label = GUIStrdup( rmenu->item->Item.Normal.ItemText );
+                menuitem->label = GUIMemStrdup( rmenu->item->Item.Normal.ItemText );
                 menuitem->id = rmenu->item->Item.Normal.ItemID;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Normal.ItemFlags );
             }

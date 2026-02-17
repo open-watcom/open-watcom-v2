@@ -67,67 +67,6 @@ char *GUIStripTrailingBlanks( const char *label, bool *ok )
     return( new_str );
 }
 
-/*
- * GUIStrdupLenOK -- duplicate the string text up to length characters
- */
-
-char *GUIStrdupLenOK( const char *text, size_t len, bool *ok )
-{
-    size_t  new_len;
-    char    *new_str;
-
-    if( ok != NULL )
-        *ok = true;
-    if( text == NULL )
-        return( NULL );
-    new_len = strlen( text );
-    if( new_len > len ) {
-        new_len = len;
-    }
-    new_str = (char *)GUIMemAlloc( new_len + 1 );
-    if( new_str == NULL ) {
-        if( ok != NULL )
-            *ok = false;
-        return( NULL );
-    }
-    memcpy( new_str, text, new_len );
-    new_str[new_len] = '\0';
-    return( new_str );
-}
-
-
-char *GUIStrdupOK( const char *text, bool *ok )
-{
-    void    *new_str;
-
-    if( ok != NULL )
-        *ok = true;
-    if( text != NULL ) {
-        new_str = GUIMemAlloc( strlen( text ) + 1 );
-        if( new_str != NULL ) {
-            return( strcpy( new_str, text ) );
-        }
-        if( ok != NULL ) {
-            *ok = false;
-        }
-    }
-    return( NULL );
-}
-
-
-char *GUIStrdup( const char *text )
-{
-    void    *new_str;
-
-    if( text != NULL ) {
-        new_str = GUIMemAlloc( strlen( text ) + 1 );
-        if( new_str != NULL ) {
-            return( strcpy( new_str, text ) );
-        }
-    }
-    return( NULL );
-}
-
 static char     **GUI_argv      = NULL;
 static int      GUI_argc        = 0;
 static int      ArgsSet         = false;

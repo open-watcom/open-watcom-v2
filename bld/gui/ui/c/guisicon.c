@@ -40,17 +40,12 @@
 
 bool GUIAPI GUISetIcon( gui_window * wnd, gui_resource *res )
 {
-    bool    ok;
-
     if( ( res != NULL ) && ( res->chars != NULL ) ) {
         if( wnd->icon_name != NULL ) {
             GUIMemFree( wnd->icon_name );
+            wnd->icon_name = NULL;
         }
-        wnd->icon_name = GUIStrdupOK( res->chars, &ok );
-        if( !ok ) {
-            return( false );
-        }
+        wnd->icon_name = GUIMemStrdup( res->chars );
     }
-
     return( wnd->icon_name != NULL );
 }

@@ -129,7 +129,14 @@ bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
     if( wnd->status->text != NULL ) {
         GUIMemFree( wnd->status->text );
     }
-    wnd->status->text = GUIStrdupOK( text, &ok );
+    ok = true;
+    wnd->status->text = NULL;
+    if( text != NULL ) {
+        wnd->status->text = GUIMemStrdup( text );
+        if( wnd->status->text == NULL ) {
+            ok = false;
+        }
+    }
     GUIDrawStatus( wnd );
     if( GUI_WND_VISIBLE( wnd ) ) {
         uirefresh();

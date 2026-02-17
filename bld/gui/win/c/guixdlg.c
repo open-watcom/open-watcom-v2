@@ -85,7 +85,7 @@ void GUIAPI GUISetJapanese( void )
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
-        Font = GUIStrdup( newfont );
+        Font = GUIMemStrdup( newfont );
     }
 #endif
 }
@@ -786,9 +786,9 @@ void GUIInitDialog( void )
 
     font_set = false;
 #ifdef __OS2_PM__
-    Font = GUIStrdup( LIT_GUI( OS2_Dialog_Font ) );
+    Font = GUIMemStrdup( LIT_GUI( OS2_Dialog_Font ) );
 #else
-    Font = GUIStrdup( LIT_GUI( Windows_Dialog_Font ) );
+    Font = GUIMemStrdup( LIT_GUI( Windows_Dialog_Font ) );
 #endif
     if( Font ) {
         cp = strrchr( Font, '.' );
@@ -805,7 +805,7 @@ void GUIInitDialog( void )
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
-        Font = GUIStrdup( "" );
+        Font = GUIMemStrdup( "" );
     }
 
     // create a dialog of known dialog units and use the resulting

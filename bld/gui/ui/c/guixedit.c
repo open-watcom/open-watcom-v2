@@ -105,7 +105,14 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
             char    **fldtext;
             char    *new_str;
 
-            new_str = GUIStrdupOK( text, &ret );
+            ret = true;
+            new_str = NULL;
+            if( text != NULL ) {
+                new_str = GUIMemStrdup( text );
+                if( new_str == NULL ) {
+                    ret = false;
+                }
+            }
             if( ret ) {
                 fldtext = NULL;
                 switch( field->typ ) {

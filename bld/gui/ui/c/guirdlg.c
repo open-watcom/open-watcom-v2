@@ -91,22 +91,16 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 {
     char        temp[15];
     char        *cp;
-    bool        ok;
 
     cp = NULL;
-
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff) {
             sprintf( temp, ( base == 10 ) ? "%d" : "%x", name->ord.wOrdinalID );
-            cp = GUIStrdupOK( temp, &ok );
-        } else {
-            cp = GUIStrdupOK( name->name, &ok );
-        }
-        if( !ok || ( cp == NULL ) ) {
-            return( NULL );
+            cp = GUIMemStrdup( temp );
+        } else if( name->name != NULL ) {
+            cp = GUIMemStrdup( name->name );
         }
     }
-
     return( cp );
 }
 

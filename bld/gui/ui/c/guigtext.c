@@ -46,37 +46,44 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
     a_list              *list;
     a_combo_box         *combo_box;
     char                *text;
-    bool                ok;
 
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
-            text = GUIStrdupOK( field->u.check->str, &ok );
-            if( ok ) {
+            text = field->u.check->str;
+            if( text == NULL )
                 return( text );
-            }
+            text = GUIMemStrdup( text );
+            if( text != NULL )
+                return( text );
             break;
 
         case FLD_RADIO:
-            text = GUIStrdupOK( field->u.radio->str, &ok );
-            if( ok ) {
+            text = field->u.radio->str;
+            if( text == NULL )
                 return( text );
-            }
+            text = GUIMemStrdup( text );
+            if( text != NULL )
+                return( text );
             break;
 
         case FLD_HOT:
-            text = GUIStrdupOK( field->u.hs->str, &ok );
-            if( ok ) {
+            text = field->u.hs->str;
+            if( text == NULL )
                 return( text );
-            }
+            text = GUIMemStrdup( text );
+            if( text != NULL )
+                return( text );
             break;
 
         case FLD_TEXT:
-            text = GUIStrdupOK( field->u.str, &ok );
-            if( ok ) {
+            text = field->u.str;
+            if( text == NULL )
                 return( text );
-            }
+            text = GUIMemStrdup( text );
+            if( text != NULL )
+                return( text );
             break;
         case FLD_EDIT:
         case FLD_INVISIBLE_EDIT:

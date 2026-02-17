@@ -48,7 +48,7 @@ static const char *GUIGetInternalLiteralString( gui_res_id id )
             GUIStrTextBuffer[0] = '\0';
         }
     }
-    return( GUIStrdup( GUIStrTextBuffer ) );
+    return( GUIMemStrdup( GUIStrTextBuffer ) );
 }
 
 bool GUIInitInternalStringTable( void )

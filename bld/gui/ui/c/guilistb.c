@@ -153,7 +153,7 @@ a_list *GUICreateEditMLE( const char *text )
         GUIMemFree( list );
         list = NULL;
     } else {
-        text_copy = GUIStrdup( text );
+        text_copy = GUIMemStrdup( text );
         line = text_copy;
         absolute_end = text_copy + strlen( text_copy );
         end = strstr( line, MLE_NEWLINE );
@@ -279,7 +279,7 @@ char *GUIGetListBoxText( a_list *list, int choice, bool get_curr )
     if( get_curr ) {
         choice = list->choice;
     }
-    return( GUIStrdup( data[choice] ) );
+    return( GUIMemStrdup( data[choice] ) );
 }
 
 bool GUIListGetCurr( a_list *list, int *choice )

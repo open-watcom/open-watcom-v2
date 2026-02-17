@@ -280,7 +280,6 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     int                 i;
     toolbarinfo         *tbar;
     gui_toolbar_struct  *new_toolinfo;
-    bool                ok;
 
     /* unused parameters */ (void)float_pos; (void)use_tips;
 
@@ -303,15 +302,18 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         }
         memset( new_toolinfo, 0, size );
         for( i = 0; i < toolinfo->num_items; i++ ) {
-            new_toolinfo[i].label = GUIStrdupOK( toolinfo->toolbar[i].label, &ok );
-            if( !ok ) {
-                while( i-- > 0  ) {
-                    GUIMemFree( (void *)new_toolinfo[i].label );
+            new_toolinfo[i].label = NULL;
+            if( toolinfo->toolbar[i].label != NULL ) {
+                new_toolinfo[i].label = GUIMemStrdup( toolinfo->toolbar[i].label );
+                if( new_toolinfo[i].label == NULL ) {
+                    while( i-- > 0  ) {
+                        GUIMemFree( (void *)new_toolinfo[i].label );
+                    }
+                    GUIMemFree( new_toolinfo );
+                    GUIMemFree( tbar );
+                    wnd->tbar = NULL;
+                    return( false );
                 }
-                GUIMemFree( new_toolinfo );
-                GUIMemFree( tbar );
-                wnd->tbar = NULL;
-                return( false );
             }
             new_toolinfo[i].id = toolinfo->toolbar[i].id;
         }
