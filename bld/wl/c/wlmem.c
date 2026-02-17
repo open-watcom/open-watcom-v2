@@ -120,7 +120,7 @@ void LnkMemFini( void )
 
 TRMEMAPI( LnkMemAllocNoChk )
 void *LnkMemAllocNoChk( size_t size )
-/*************************/
+/***********************************/
 {
     void    *ptr;
 
@@ -143,7 +143,7 @@ void *LnkMemAllocNoChk( size_t size )
 
 TRMEMAPI( LnkMemAlloc )
 void *LnkMemAlloc( size_t size )
-/****************************/
+/******************************/
 {
     void            *ptr;
 
@@ -231,11 +231,38 @@ void LnkMemFree( void *p )
 #endif
 }
 
+TRMEMAPI( LnkMemToString )
+char *LnkMemToString( const void *mem, size_t len )
+/*************************************************/
+{
+    char            *ptr;
+
+    for( ;; ) {
+#ifdef TRMEM
+        ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 6 ), TrHdl );
+#else
+        ptr = malloc( len + 1 );
+#endif
+        if( ptr != NULL ) {
+            memcpy( ptr, mem, len );
+            ptr[len] = '\0';
+            break;
+        }
+        if( !FreeUpMemory() ) {
+            break;
+        }
+    }
+    if( ptr == NULL ) {
+        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
+    }
+    return( ptr );
+}
+
 TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 6 ), TrHdl ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -245,7 +272,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 7 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
 #else
     free( ptr );
 #endif

@@ -232,7 +232,11 @@ static bool ProcModName( void )
 {
     if( !HaveEquals( TOK_INCLUDE_DOT ) )
         return( false );
-    FmtData.u.os2fam.module_name = totext();
+    Token.thumb = true;
+    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
+        GetToken( SEP_NO, TOK_INCLUDE_DOT );
+    }
+    FmtData.u.os2fam.module_name = getstring();
     return( true );
 }
 
@@ -449,7 +453,7 @@ static bool AddResource( void )
 {
     char    *str;
 
-    str = tostring();
+    str = getstring();
     DoAddResource( str );
     LnkMemFree( str );
     return( true );
@@ -559,7 +563,7 @@ static bool getexport( void )
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         exp->sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
         if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-            exp->impname = tostring();
+            exp->impname = getstring();
         }
     } else {
         exp->sym = RefISymbol( exp->name.u.ptr );
@@ -952,7 +956,7 @@ static bool getsegflags( void )
             LnkMemFree( entry );
             return( false );
         }
-        entry->name = tostring();
+        entry->name = getstring();
     }
     while( ProcOne( SegModel, SEP_NO ) ) {
     }

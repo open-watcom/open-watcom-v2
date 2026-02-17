@@ -683,7 +683,7 @@ char *GetARName( const ar_header *header, const file_list *list, unsigned long *
         buf = header->name;
     }
     if( len > 0 ) {
-        name = ChkToString( buf, len );
+        name = LnkMemToString( buf, len );
     }
     return( name );
 }

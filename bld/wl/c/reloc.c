@@ -339,7 +339,8 @@ static void FreeGroupRelocs( group_entry *group )
             }
         }
         return;
-    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    }
+    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
         FreeRelocList( group->g.grp_relocs );
         return;
     }

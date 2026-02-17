@@ -215,7 +215,7 @@ static bool getSegFlags( void )
     }
     entry = LnkMemAlloc( sizeof( qnx_seg_flags ) );
     entry->flags = 0;
-    entry->name = tostring();
+    entry->name = getstring();
     entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
     entry->next = FmtData.u.qnx.seg_flags;
     FmtData.u.qnx.seg_flags = entry;

@@ -261,7 +261,6 @@ static unsigned_32 WriteStubProg( void )
     unsigned_32 size;
     f_handle    fhandle;
     char        fullname[PATH_MAX];
-    size_t      len;
 
     size = 0;
     if( FmtData.u.d16m.stub != NULL ) {
@@ -270,9 +269,7 @@ static unsigned_32 WriteStubProg( void )
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
         } else {
             LnkMemFree( FmtData.u.d16m.stub );
-            len = strlen( fullname ) + 1;
-            FmtData.u.d16m.stub = LnkMemAlloc( len );
-            memcpy( FmtData.u.d16m.stub, fullname, len );
+            FmtData.u.d16m.stub = LnkMemStrdup( fullname );
             size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
             QClose( fhandle, FmtData.u.d16m.stub );
         }

@@ -144,7 +144,6 @@ static bool SetCurrentPrefix( const char *str, size_t len )
 /*********************************************************/
 {
     const char  *s;
-    char        *p;
 
     /*
      *  Always delete
@@ -182,10 +181,7 @@ static bool SetCurrentPrefix( const char *str, size_t len )
         return( false );
 
     /* convert to C string */
-    p = LnkMemAllocNoChk( len + 1 );
-    memcpy( p, str, len );
-    p[len] = '\0';
-    CmdFile->symprefix = p;
+    CmdFile->symprefix = LnkMemToString( str, len );
     return( true );
 }
 
@@ -333,7 +329,7 @@ static bool ProcScreenName( void )
         if( FmtData.u.nov.screenname != NULL ) {
             LnkMemFree( FmtData.u.nov.screenname );  // assume second is correct.
         }
-        FmtData.u.nov.screenname = tostring();
+        FmtData.u.nov.screenname = getstring();
     }
     return( true );
 }
@@ -344,7 +340,7 @@ static bool ProcCheck( void )
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    FmtData.u.nov.checkfn = tostring();
+    FmtData.u.nov.checkfn = getstring();
     return( true );
 }
 
@@ -401,7 +397,7 @@ static bool ProcCustom( void )
     if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
-    FmtData.u.nov.customdata = tostring();         // no default extension.
+    FmtData.u.nov.customdata = getstring();         // no default extension.
     return( true );
 }
 
@@ -411,7 +407,7 @@ static bool ProcMessages( void )
     if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
-    FmtData.u.nov.messages = tostring();           // no default extension.
+    FmtData.u.nov.messages = getstring();           // no default extension.
     return( true );
 }
 
@@ -421,7 +417,7 @@ static bool ProcHelp( void )
     if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
-    FmtData.u.nov.help = tostring();       // no default extension.
+    FmtData.u.nov.help = getstring();       // no default extension.
     return( true );
 }
 
@@ -431,7 +427,7 @@ static bool ProcXDCData( void )
     if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
-    FmtData.u.nov.rpcdata = tostring();    // no default extension.
+    FmtData.u.nov.rpcdata = getstring();    // no default extension.
     return( true );
 }
 
@@ -451,7 +447,7 @@ static bool ProcExit( void )
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    FmtData.u.nov.exitfn = tostring();
+    FmtData.u.nov.exitfn = getstring();
     return( true );
 }
 
@@ -463,7 +459,7 @@ static bool ProcThreadName( void )
     } else if( Token.len > MAX_THREAD_NAME_LENGTH ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "THREADNAME" );
     } else {
-        FmtData.u.nov.threadname = tostring();
+        FmtData.u.nov.threadname = getstring();
     }
     return( true );
 }
@@ -501,7 +497,7 @@ static bool ProcCopyright( void )
             if( FmtData.u.nov.copyright != NULL ) {
                 LnkMemFree( FmtData.u.nov.copyright );  // assume second is correct.
             }
-            FmtData.u.nov.copyright = tostring();
+            FmtData.u.nov.copyright = getstring();
         }
     }
     return( true );
@@ -799,7 +795,7 @@ bool ProcNovFormat( void )
         }
     }
     if( GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {  // get description
-        FmtData.description = tostring();
+        FmtData.description = getstring();
     }
     return( true );
 }

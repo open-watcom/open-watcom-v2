@@ -42,7 +42,6 @@ extern void             CheckStop( void );
 extern void             LnkFatal( const char * );
 extern void             ClearBit( byte *, unsigned );
 extern bool             TestBit( byte *, unsigned );
-extern char             *ChkToString( const void *, size_t );
 extern seg_leader       *FindSegment( section *, const char * );
 extern group_entry      *FindGroup( segment );
 extern offset           FindLinearAddr( targ_addr * );

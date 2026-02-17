@@ -1481,7 +1481,6 @@ static unsigned_32 getStubSize( void )
     unsigned_32     reloc_size;
     unsigned_32     code_start;
     char            fullname[PATH_MAX];
-    size_t          len;
 
     if( FmtData.u.os2fam.no_stub ) {
         return( 0 );
@@ -1493,9 +1492,7 @@ static unsigned_32 getStubSize( void )
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
         } else {
             LnkMemFree( FmtData.u.os2fam.stub_file_name );
-            len = strlen( fullname ) + 1;
-            FmtData.u.os2fam.stub_file_name = LnkMemAlloc( len );
-            memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
+            FmtData.u.os2fam.stub_file_name = LnkMemStrdup( fullname );
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
             if( dosheader.signature == EXESIGN_DOS ) {
                 code_start = dosheader.hdr_size * 16U;

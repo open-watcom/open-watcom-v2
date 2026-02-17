@@ -139,17 +139,6 @@ void ClearBit( byte *array, unsigned num )
     *array &= ~mask;
 }
 
-char *ChkToString( const void *mem, size_t len )
-/**********************************************/
-{
-    char        *str;
-
-    str = LnkMemAlloc( len + 1 );
-    memcpy( str, mem, len );
-    str[len] = '\0';
-    return( str );
-}
-
 static void WalkModsList( mod_entry *list, mods_walk_fn *cbfn )
 /*************************************************************/
 {
@@ -682,7 +671,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
         /*
          * duplicate name if no extension change is necessary
          */
-        ptr = ChkToString( buff, len );
+        ptr = LnkMemToString( buff, len );
     } else {
         if( force && etype == E_MAP ) {         // op map goes in current dir.
             buff = namstart;
@@ -698,7 +687,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
          * if some extension is required then add it
          */
         if( etype == E_NONE ) {
-            ptr = ChkToString( buff, len );
+            ptr = LnkMemToString( buff, len );
         } else {
             extlen = DefExtLen[etype];
             ptr = LnkMemAlloc( len + 1 + extlen + 1 );

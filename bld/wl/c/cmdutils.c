@@ -92,7 +92,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
     } else {
         retval = true;
         /* expand file names */
-        start = tostring();
+        start = getstring();
         dirp = opendir( start );
         if( dirp != NULL ) {
             _splitpath2( start, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -385,22 +385,11 @@ bool GetLong( unsigned_32 *addr )
     return( true );
 }
 
-char *tostring( void )
-/********************/
+char *getstring( void )
+/*********************/
 // make the current token into a C string.
 {
-    return( ChkToString( Token.this, Token.len ) );
-}
-
-char *totext( void )
-/******************/
-/* get a possiblly quoted string */
-{
-    Token.thumb = true;
-    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
-        GetToken( SEP_NO, TOK_INCLUDE_DOT );
-    }
-    return( tostring() );
+    return( LnkMemToString( Token.this, Token.len ) );
 }
 
 static unsigned ParseNumber( const char *str, int radix, int *shift )
@@ -642,7 +631,7 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
     if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
         LnkMsg( FTL+LOC+LINE+MSG_ENV_NAME_INCORRECT, NULL );
     }
-    envname = tostring();
+    envname = getstring();
     env = GetEnvString( envname );
     if( env == NULL ) {
         LnkMsg( WRN+LOC+LINE+MSG_ENV_NOT_FOUND, "s", envname );
@@ -706,7 +695,7 @@ static void StartNewFile( void )
     file = QObjOpen( fname );
     if( file == NIL_FHANDLE ) {
         LnkMemFree( fname );
-        fname = tostring();
+        fname = getstring();
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
             NewCommandSource( fname, envstring, ENVIRONMENT );
@@ -1166,7 +1155,7 @@ char *GetFileName( char **membname )
     namelen = Token.len;
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
         fullmemb = GetBaseName( Token.this, Token.len, &memblen );
-        *membname = ChkToString( fullmemb, memblen );
+        *membname = LnkMemToString( fullmemb, memblen );
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {
         *membname = NULL;

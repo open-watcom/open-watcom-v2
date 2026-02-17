@@ -618,7 +618,7 @@ static void SetSymAlias( symbol *sym, const char *target, size_t targetlen )
 /**************************************************************************/
 {
     SET_SYM_TYPE( sym, SYM_ALIAS );
-    sym->p.alias.u.ptr = ChkToString( target, targetlen );
+    sym->p.alias.u.ptr = LnkMemToString( target, targetlen );
     sym->u.aliaslen = targetlen;
     sym->info |= SYM_DEFINED;           /* an alias can't be undefined */
     sym->info &= ~SYM_WAS_LAZY;

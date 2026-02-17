@@ -102,7 +102,7 @@ static bool ProcName( void )
     if( Name != NULL ) {
         LnkMemFree( Name );
     }
-    Name = tostring();   // just keep the name around for now.
+    Name = getstring();   // just keep the name around for now.
     return( true );
 }
 
@@ -237,7 +237,7 @@ static bool ProcOSName( void )
         if( FmtData.osname != NULL ) {
             LnkMemFree( FmtData.osname );
         }
-        FmtData.osname = tostring();
+        FmtData.osname = getstring();
         return( true );
     }
     return( false );
@@ -389,7 +389,7 @@ static bool AddFile( void )
 #endif
     ptr = GetFileName( &membname );
     if( membname == NULL && Name == NULL ) {
-        Name = ChkToString( Token.this, Token.len );
+        Name = getstring();
     }
     temp = CurrFList;
     if( *CurrFList != NULL ) {
@@ -732,9 +732,9 @@ static bool ProcOpResource( void )
 {
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.res_name_only = true;
-        FmtData.resource = tostring();
+        FmtData.resource = getstring();
     } else if( GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        FmtData.resource = tostring();
+        FmtData.resource = getstring();
     } else {
         return( false );
     }
@@ -1050,7 +1050,7 @@ static bool ProcImplib( void )
     FmtData.make_impfile = false;
     LnkMemFree( FmtData.implibname );
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
-        FmtData.implibname = tostring();
+        FmtData.implibname = getstring();
     }
     return( true );
 }
@@ -1062,7 +1062,7 @@ static bool ProcImpFile( void )
     FmtData.make_impfile = true;
     LnkMemFree( FmtData.implibname );
     if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
-        FmtData.implibname = tostring();
+        FmtData.implibname = getstring();
     }
     return( true );
 }
@@ -1070,7 +1070,7 @@ static bool ProcImpFile( void )
 static bool AddSymTrace( void )
 /*****************************/
 {
-    AddTraceListSym( tostring() );
+    AddTraceListSym( getstring() );
     return( true );
 }
 
@@ -1264,7 +1264,7 @@ static bool ProcOrdCopy( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    CurrOClass->SrcName = tostring();
+    CurrOClass->SrcName = getstring();
     CurrOClass->Copy = true;
     return( true );
 }
@@ -1357,7 +1357,7 @@ static bool ProcDescription( void )
     if( FmtData.description != NULL ) {
         LnkMemFree( FmtData.description );
     }
-    FmtData.description = tostring();
+    FmtData.description = getstring();
     return( true );
 }
 
@@ -1613,7 +1613,7 @@ static bool ProcOrdSeg( void )
     CurrOSeg = LnkMemAlloc( sizeof( ORDER_SEGMENT ) );
     CurrOSeg->NextSeg = CurrOClass->SegList;
     CurrOClass->SegList = CurrOSeg;
-    CurrOSeg->Name = tostring();
+    CurrOSeg->Name = getstring();
     CurrOSeg->FixedAddr = false;
     CurrOSeg->NoEmit = false;
     while( ProcOne( OrderSegOpts, SEP_NO ) )
@@ -1646,7 +1646,7 @@ static bool ProcOrdClass( void )
     } else {
         LastOClass->NextClass = CurrOClass;
     }
-    CurrOClass->Name = tostring();
+    CurrOClass->Name = getstring();
     CurrOClass->NextClass = NULL;
     CurrOClass->Ring = NULL;
     CurrOClass->SegList = NULL;
@@ -1774,7 +1774,7 @@ static bool ProcSysBegin( void )
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
         return( true );
     }
-    sysname = tostring();
+    sysname = getstring();
     sys = FindSysBlock( sysname );
     if( sys != NULL ) {
         LnkMsg( WRN+LOC+LINE+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
@@ -1819,7 +1819,7 @@ static bool ProcSystem( void )
     } else {
         Token.thumb = false;
     }
-    sysname = tostring();
+    sysname = getstring();
     sys = FindSystemBlock( sysname );
     if( sys == NULL ) {
         LnkMsg( WRN+LOC+LINE+MSG_SYSTEM_UNDEFINED, "s", sysname );

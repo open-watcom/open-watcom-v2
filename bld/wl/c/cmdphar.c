@@ -197,7 +197,7 @@ static bool ProcRealBreak( void )
         FmtData.u.phar.breaksym = NULL;
     }
     if( ok != ST_IS_ORDINAL ) {   // must be a symbol name.
-        FmtData.u.phar.breaksym = tostring();
+        FmtData.u.phar.breaksym = getstring();
     } else {
         FmtData.u.phar.realbreak = value;
     }
