@@ -58,9 +58,5 @@ void IdentifyAssassin( CauseOfDeath );
 
 void * WBRRegComp( const char * );
 
-// a strdup that uses our memory allocator.
-
-char * WBRStrdup( const char * );
-
 #define __UTIL_H__
 #endif

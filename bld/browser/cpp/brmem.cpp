@@ -37,7 +37,8 @@
  * appropriate C code use #pragma aux ... __frame to do same
  * for some unknown reason this doesn't work for C++ compiler now
  */
-#include <malloc.h>
+#include <stdlib.h>
+#include <string.h>
 #ifndef STANDALONE_MERGER
     #include <dr.h>
 #endif
@@ -138,6 +139,34 @@ void * WBRAlloc( size_t size )
     }
 #endif
     if( p == NULL && size != 0 )
+        throw DEATH_BY_OUT_OF_MEMORY;
+    return p;
+}
+
+char * WBRStrdup( const char *str )
+//---------------------------------
+// note: code directly cloned from above since we need to be able to trace
+// calling functions when the memory tracker is in.
+{
+    char *p;
+
+#ifndef STANDALONE_MERGER
+    for(;;) {
+#endif
+#ifdef TRMEM
+        p = _trmem_strdup( str, _trmem_guess_who(), TrHdl );
+#else
+        p = strdup( str );
+#endif
+#ifndef STANDALONE_MERGER
+        if( p != NULL )             // successful allocation
+            break;
+        if( !DRSwap() ) {           // dwarf managed to swap out, so try again
+            break;
+        }
+    }
+#endif
+    if( p == NULL )
         throw DEATH_BY_OUT_OF_MEMORY;
     return p;
 }
@@ -244,9 +273,8 @@ Memory::Memory()
 //--------------------------------
 {
     DebuggingLog::printf( "Address of GetOffset is %#p\n\n", &GetOffset );
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
+            NULL, PrintLine, _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
 
     _trmem_set_min_alloc( MINALLOC, TrHdl );
 

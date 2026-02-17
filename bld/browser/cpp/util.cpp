@@ -196,17 +196,3 @@ void * WBRRegComp( const char * )
 }
 
 #endif
-
-char * WBRStrdup( const char *src )
-//---------------------------------
-// this is a strdup which goes through our memory allocator.
-{
-    unsigned    len;
-    char        *dest;
-
-    if( src == NULL ) return NULL;
-    len = strlen( src ) + 1;
-    dest = (char *)WBRAlloc( len );
-    memcpy( dest, src, len );
-    return( dest );
-}
