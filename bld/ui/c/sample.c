@@ -408,4 +408,5 @@ int main( void )
         uistop();
     }
     UIMemClose();
+    return( 0 );
 }
