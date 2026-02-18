@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,8 +257,8 @@ static void open( void )
 
 #define TOP_ROW         1
 
-void main( void )
-/***************/
+int main( void )
+/**************/
 {
     ui_event            ui_ev;
     SAREA               area;
@@ -268,6 +268,7 @@ void main( void )
     int                 mrow, mcol;
     int                 diff;
 
+    UIMemOpen();
     if( uistart() ) {
 #ifdef CHARMAP
         uiinitgmouse( INIT_MOUSE_INITIALIZED ); /* the 0=mouseless,1=mouse,2=initialized mouse */
@@ -406,4 +407,5 @@ void main( void )
 #endif
         uistop();
     }
+    UIMemClose();
 }

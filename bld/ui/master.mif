@@ -6,7 +6,9 @@ ui_nofpu = 1
 
 ui_nodoslfn = 1
 
+!ifdef sample
 ui_trmem = 1
+!endif
 
 ui_autodepends = .AUTODEPEND
 
@@ -51,7 +53,7 @@ extra_l_flags_nov = opt st=10k opt description 'Sample NLM' &
 # objects
 #
 common_objs = &
-    uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
+    uiarea.obj   uiattr.obj   uiback.obj   &
     uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
     uibcopy.obj  uibfake.obj  uibfill.obj  uibios.obj   &
     uiblank.obj  uibox.obj    uibpix.obj   uibstr.obj   &
@@ -111,7 +113,7 @@ common_objs = &
 #
 !ifdef sample
 exetarg_prebuild_objs = ui.lib
-exetarg_objs = sample.obj sampdial.obj
+exetarg_objs = sample.obj sampdial.obj uialloc.obj
 exetarg_libs = $(cli_ui_libs)
 exetarg_name = sample
 !include exetarg.mif

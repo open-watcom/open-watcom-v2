@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,141 +253,143 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     if( InitSwapper() ) // Yes - well, I would make the swapper
         return( 0 );    // return 1 on error, unlike everything
                         // else, wouldn't I?
-    if( !uistart() )
-        return( 0 );
-    ToCharacter();
+    UIMemOpen();
+    if( uistart() ) {
+        ToCharacter();
 
-    initmouse( INIT_MOUSE_INITIALIZED );
-    uimenus( barmenu, pulldownuimenus, EV_F1 );
-    UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
-    UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
-    mainwin.area.height = UIData->height - 7;
+        initmouse( INIT_MOUSE_INITIALIZED );
+        uimenus( barmenu, pulldownuimenus, EV_F1 );
+        UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
+        UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
+        mainwin.area.height = UIData->height - 7;
 
-    area.row = 0;
-    area.col = 0;
-    area.width = UIData->width;
-    area.height = UIData->height;
-    uidirty( area );
-    uirefresh();
-
-    if( uivopen( &mainwin ) ) {
+        area.row = 0;
+        area.col = 0;
+        area.width = UIData->width;
+        area.height = UIData->height;
+        uidirty( area );
         uirefresh();
-        sprintf( buff, "screen height : %d\0", UIData->height );
-        uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-        for( ;; ) {
-            uipushlist( evlist );
-            ui_ev = uivgetevent( NULL );
-            uipoplist( /* evlist */ );
-            if( ui_ev == EV_QUIT )
-                break;
-            if( ui_ev == EV_ALT_R )
-                break;
-            if( ui_ev == EV_MOUSE_PRESS_R ) {
-                uimousepos( NULL, &mrow, &mcol );
-                mrow++;
-                mcol++;
+
+        if( uivopen( &mainwin ) ) {
+            uirefresh();
+            sprintf( buff, "screen height : %d\0", UIData->height );
+            uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
+            for( ;; ) {
                 uipushlist( evlist );
-                ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
+                ui_ev = uivgetevent( NULL );
                 uipoplist( /* evlist */ );
-            }
-            switch( ui_ev ) {
-            case EV_SAMPLE_DIALOG:
-                sample_dialog();
-                break;
-            case EV_OPEN:
-                open();
-                break;
-            case EV_F1:
-                area.width = 10;
-                area.height = 10;
-                area.row = 1;
-                area.col = 1;
-                uivattribute( &mainwin, area, (ATTR) 1 );
-                break;
-            case EV_CURSOR_RIGHT:
-                mainwin.col++;
-                if( mainwin.col >= mainwin.area.width )
-                    mainwin.col--;
-                fixup = true;
-                break;
-            case EV_CURSOR_DOWN:
-                mainwin.row++;
-                if( mainwin.row >= mainwin.area.height )
-                    mainwin.row--;
-                fixup = true;
-                break;
-            case EV_CURSOR_LEFT:
-                if( mainwin.col > 0 ) {
-                    mainwin.col--;
-                    fixup = true;
-                }
-                break;
-            case EV_CURSOR_UP:
-                if( mainwin.row > 0 ) {
-                    mainwin.row--;
-                    fixup = true;
-                }
-                break;
-            }
-            if( fixup ) {
-                fixup = false;
-                uivsetcursor( &mainwin );
-            }
-            if( ui_ev != EV_NO_EVENT ) {
-                for( ptr = evstrs; ; ++ptr ) {
-                    if( ptr->ui_ev == EV_NO_EVENT ) {
-                        sprintf( buff, "event 0x%4.4x", ui_ev );
-                        break;
-                    } else if( ptr->ui_ev == ui_ev ) {
-                        strcpy( buff, ptr->str );
-                        break;
-                    }
-                }
-                uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-                if( ++evrow >= mainwin.area.height ) {
-                    evrow = TOP_ROW;
-                }
-                uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
-                switch( ui_ev ) {
-                case EV_MOUSE_PRESS:
-                    BandOn = 1;
+                if( ui_ev == EV_QUIT )
+                    break;
+                if( ui_ev == EV_ALT_R )
+                    break;
+                if( ui_ev == EV_MOUSE_PRESS_R ) {
                     uimousepos( NULL, &mrow, &mcol );
-                    BandArea.row = mrow;
-                    BandArea.col = mcol;
-                    BandArea.width = 0;
-                    BandArea.height = 0;
-                    uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
+                    mrow++;
+                    mcol++;
+                    uipushlist( evlist );
+                    ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
+                    uipoplist( /* evlist */ );
+                }
+                switch( ui_ev ) {
+                case EV_SAMPLE_DIALOG:
+                    sample_dialog();
                     break;
-                case EV_MOUSE_DRAG:
-                    if( BandOn ) {
-                        uimousepos( NULL, &mrow, &mcol );
-                        diff = mcol - BandArea.col;
-                        if( diff < 0 )
-                            diff = 0;
-                        BandArea.width = diff;
-                        diff = mrow - BandArea.row;
-                        if( diff < 0 )
-                            diff = 0;
-                        BandArea.height = diff;
-                        uibandmove( BandArea );
+                case EV_OPEN:
+                    open();
+                    break;
+                case EV_F1:
+                    area.width = 10;
+                    area.height = 10;
+                    area.row = 1;
+                    area.col = 1;
+                    uivattribute( &mainwin, area, (ATTR) 1 );
+                    break;
+                case EV_CURSOR_RIGHT:
+                    mainwin.col++;
+                    if( mainwin.col >= mainwin.area.width )
+                        mainwin.col--;
+                    fixup = true;
+                    break;
+                case EV_CURSOR_DOWN:
+                    mainwin.row++;
+                    if( mainwin.row >= mainwin.area.height )
+                        mainwin.row--;
+                    fixup = true;
+                    break;
+                case EV_CURSOR_LEFT:
+                    if( mainwin.col > 0 ) {
+                        mainwin.col--;
+                        fixup = true;
                     }
                     break;
-                case EV_MOUSE_RELEASE:
-                    if( BandOn )
-                        uibandfini();
-                    BandOn = 0;
+                case EV_CURSOR_UP:
+                    if( mainwin.row > 0 ) {
+                        mainwin.row--;
+                        fixup = true;
+                    }
                     break;
                 }
+                if( fixup ) {
+                    fixup = false;
+                    uivsetcursor( &mainwin );
+                }
+                if( ui_ev != EV_NO_EVENT ) {
+                    for( ptr = evstrs; ; ++ptr ) {
+                        if( ptr->ui_ev == EV_NO_EVENT ) {
+                            sprintf( buff, "event 0x%4.4x", ui_ev );
+                            break;
+                        } else if( ptr->ui_ev == ui_ev ) {
+                            strcpy( buff, ptr->str );
+                            break;
+                        }
+                    }
+                    uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
+                    if( ++evrow >= mainwin.area.height ) {
+                        evrow = TOP_ROW;
+                    }
+                    uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
+                    switch( ui_ev ) {
+                    case EV_MOUSE_PRESS:
+                        BandOn = 1;
+                        uimousepos( NULL, &mrow, &mcol );
+                        BandArea.row = mrow;
+                        BandArea.col = mcol;
+                        BandArea.width = 0;
+                        BandArea.height = 0;
+                        uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
+                        break;
+                    case EV_MOUSE_DRAG:
+                        if( BandOn ) {
+                            uimousepos( NULL, &mrow, &mcol );
+                            diff = mcol - BandArea.col;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.width = diff;
+                            diff = mrow - BandArea.row;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.height = diff;
+                            uibandmove( BandArea );
+                        }
+                        break;
+                    case EV_MOUSE_RELEASE:
+                        if( BandOn )
+                            uibandfini();
+                        BandOn = 0;
+                        break;
+                    }
+                }
             }
+            uivclose( &mainwin );
         }
-        uivclose( &mainwin );
+        uinomenus();
+        uiswap();
+        uirestorebackground();      /* must be after uiswap */
+        finimouse();
+        ToGraphical();
+        uistop();
     }
-    uinomenus();
-    uiswap();
-    uirestorebackground();      /* must be after uiswap */
-    finimouse();
-    ToGraphical();
-    uistop();
+    UIMemClose();
     FiniSwapper();
     return( 0 );
 }

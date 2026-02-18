@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 bool UIAPI uistart( void )
 /*************************/
 {
-    UIMemOpen();
     if( initbios() ) {
         SetCharacterTables();
         /* need for LUI and DUI apps to avoid divide by zero    */
@@ -77,7 +76,6 @@ void UIAPI uistop( void )
     forceevfini();
     closebackground();
     finibios();
-    UIMemClose();
 }
 
 void UIAPI uifini( void )
