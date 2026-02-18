@@ -1,11 +1,14 @@
 !ifdef sys_windowed
 gui_gui_type = win
+!include $(wpi_dir)/client.mif
+!include $(commonui_dir)/client.mif
 !else
 gui_gui_type = ui
 !include $(ui_dir)/client.mif
+!include $(hlpview_dir)/client.mif
 !endif
 gui_gui_grh = guimsgs.grh
-cli_gui_inc_dirs = -I"$(gui_dir)/h" $(cli_ui_inc_dirs)
+cli_gui_inc_dirs = -I"$(gui_dir)/h" $(cli_ui_inc_dirs) $(cli_hlpview_inc_dirs) $(cli_wpi_inc_dirs) $(cli_commonui_inc_dirs)
 cli_gui_inc_dirs_internal = -I"$(gui_dir)/$(gui_gui_type)/h"
 cli_gui_rc_inc_dirs = -I"$(gui_dir)/h"
 cli_gui_deps = $(gui_gui_grh)

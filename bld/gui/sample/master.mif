@@ -31,6 +31,10 @@ additional_clean = *.grh
 
 inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal)
 
+!ifdef sys_windowed
+extra_c_flags = -DGUI_IS_GUI
+!endif
+
 #
 # lflags
 #
@@ -44,9 +48,9 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 # EXE's
 #
 !ifdef guisample_os2pm
-exetarg_objs       = pmsample.obj
+exetarg_objs       = guimem.obj pmsample.obj
 !else
-exetarg_objs       = dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj sample.obj
+exetarg_objs       = guimem.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj sample.obj
 !endif
 exetarg_libs       = $(cli_gui_libs)
 exetarg_name       = sample
