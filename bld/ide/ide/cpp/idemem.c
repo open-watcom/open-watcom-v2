@@ -92,10 +92,8 @@ void GUIMemOpen( void )
 
     if( !GUIMemOpened ) {
         GUIMemFP = stderr;
-        GUIMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, GUIMemPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+        GUIMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+            NULL, GUIMemPrintLine, _TRMEM_ALL );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
