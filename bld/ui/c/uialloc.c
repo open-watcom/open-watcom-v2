@@ -85,10 +85,8 @@ void UIAPI UIMemOpen( void )
 
     if( !UIMemOpened ) {
         UIMemFileHandle = stderr;
-        UIMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            UIMemFileHandle, UIMemPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+        UIMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+            UIMemFileHandle, UIMemPrintLine, _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
