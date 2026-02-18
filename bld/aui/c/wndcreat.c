@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "_aui.h"
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -75,7 +76,8 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     wnd = WndAlloc( size );
     if( wnd == NULL ) {
         WndFree( info->extra );
-        WndNoMemory();
+        Say( "No memory for window\n" );
+        exit( 1 );
     }
     memset( wnd, 0, size );
     wnd->button_down.row = (char)-1;
@@ -136,8 +138,8 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     if( gui == NULL ) {
         WndFree( info->extra );
         WndFree( wnd );
-        WndNoMemory();
-        return( NULL );
+        Say( "No memory for window\n" );
+        exit( 1 );
     }
     wnd->gui = gui;
     if( buff[0] != '\0' ) {

@@ -101,7 +101,6 @@ libtarg_objs = &
     dlgpick.obj &
     dlgnew.obj &
     wndspawn.obj &
-    wndalloc.obj &
     wndshrnk.obj &
     wndtool.obj &
     wnddoin.obj &

@@ -327,7 +327,6 @@ extern gui_ord              WndExtentX( a_window, const char * );
 extern void                 WndFreshAll( void );
 extern bool                 WndStopRefresh( bool );
 
-extern void                 WndNoMemory( void );
 extern void                 WndMemInit( void );
 extern void                 WndMemFini( void );
 extern void                 *WndAlloc( size_t );

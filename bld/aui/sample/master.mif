@@ -4,6 +4,8 @@ tree_depth = 4
 
 proj_name = auisample
 
+auisample_trmem = 1
+
 auisample_wreslib_cli = gui
 
 additional_clean = *.grh *.dlg
@@ -22,14 +24,18 @@ additional_clean = *.grh *.dlg
 
 inc_dirs = -I"../h" $(cli_aui_inc_dirs)
 
+!ifdef sys_windowed
+extra_c_flags = -DGUI_IS_GUI
+!endif
+
 # explicit rules
 #################
 
 #
 # EXE
 #
-exetarg_objs = app.obj util.obj window1.obj window2.obj window3.obj &
-    window4.obj window5.obj window6.obj window7.obj window8.obj &
+exetarg_objs = wndalloc.obj app.obj util.obj window1.obj window2.obj &
+    window3.obj window4.obj window5.obj window6.obj window7.obj window8.obj &
     menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
 exetarg_libs = $(cli_aui_libs)
 exetarg_res = app.res

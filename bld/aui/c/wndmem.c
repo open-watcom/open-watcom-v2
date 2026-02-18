@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "_aui.h"
+#include <stdlib.h>
 #include <string.h>
 
 void    *WndMustAlloc( size_t size )
@@ -38,15 +40,19 @@ void    *WndMustAlloc( size_t size )
     void        *chunk;
 
     chunk = WndAlloc( size );
-    if( chunk == NULL )
-        WndNoMemory();
+    if( chunk == NULL ) {
+        Say( "No memory for window\n" );
+        exit( 1 );
+    }
     return( chunk );
 }
 
 void    *WndMustRealloc( void *chunk, size_t size )
 {
     chunk = WndRealloc( chunk, size );
-    if( chunk == NULL )
-        WndNoMemory();
+    if( chunk == NULL ) {
+        Say( "No memory for window\n" );
+        exit( 1 );
+    }
     return( chunk );
 }
