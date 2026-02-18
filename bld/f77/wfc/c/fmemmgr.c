@@ -50,7 +50,7 @@
 #include "cspawn.h"
 
 
-#if defined( TRMEM ) && defined( _M_IX86 )
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
 #define _XSTR(s)    # s
 #define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
 #else
@@ -80,7 +80,8 @@ void    FMemInit( void ) {
     UnFreeMem = 0;
 #if defined( TRMEM )
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, strdup, NULL, memPrintLine, _TRMEM_ALL );
+    memHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
+                            NULL, memPrintLine, _TRMEM_ALL );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
