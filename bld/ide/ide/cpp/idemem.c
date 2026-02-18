@@ -35,6 +35,7 @@
 #include "guimem.h"
 #include "wpimem.h"
 #include "wresmem.h"
+#include "cguimem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -150,7 +151,31 @@ void * wres_alloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
+/*
+ * Strdup functions
+ */
+
+TRMEMAPI( GUIMemStrdup )
+char *GUIMemStrdup( const char *str )
+/***********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 1 ), GUIMemHandle ) );
+#else
+    return( strdup( str ) );
+#endif
+}
 
 /*
  * Free functions
@@ -184,6 +209,16 @@ void wres_free( void *ptr )
     free( ptr );
 #endif
 }
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
+/***********************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
 
 
 /*
@@ -192,6 +227,16 @@ void wres_free( void *ptr )
 
 TRMEMAPI( GUIMemRealloc )
 void *GUIMemRealloc( void *ptr, size_t size )
+/*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 7 ), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
