@@ -75,16 +75,15 @@ typedef char *(*_trmem_strdup_who)(const char *);
 enum {
     _TRMEM_ALLOC_SIZE_0     =0x0001,/* attempted alloc of size 0 */
     _TRMEM_REALLOC_SIZE_0   =0x0002,/* attempted realloc of size 0 */
-    _TRMEM_REALLOC_NULL     =0x0004,/* attempted realloc of a NULL ptr */
-    _TRMEM_STRDUP_NULL      =0x0008,/* attempted strdup of a NULL ptr */
+    _TRMEM_REALLOC_NULL     =0x0004,/* attempted realloc of a NULL pointer */
+    _TRMEM_STRDUP_NULL      =0x0008,/* attempted strdup of a NULL pointer */
     _TRMEM_FREE_NULL        =0x0010,/* attempted free of a NULL pointer */
     _TRMEM_OUT_OF_MEMORY    =0x0020,/* warn if trmem can't allocate memory
                                         for its own purposes */
     _TRMEM_CLOSE_CHECK_FREE =0x0040 /* _trmem_close checks if all chunks
                                         were freed */
 };
-#define _TRMEM_DEF \
-    (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_STRDUP_NULL \
+#define _TRMEM_DEF (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_STRDUP_NULL \
     | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE)
 
 /*

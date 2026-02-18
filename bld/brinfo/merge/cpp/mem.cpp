@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,9 +168,8 @@ void operator delete( void *p )
 Memory::Memory()
 /**************/
 {
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
-            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+                            NULL, PrintLine, _TRMEM_DEF );
 #ifdef TRMEM_NO_STDOUT
     TrFileHandle = fopen( "tracker.txt", "w" );
 #else

@@ -170,7 +170,8 @@ void operator delete( void *p )
 Memory::Memory()
 /**************/
 {
-    TrHdl = _trmem_open( malloc, free, realloc, strdup, NULL, PrintLine, _TRMEM_ALL );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
+                            NULL, PrintLine, _TRMEM_DEF );
 #ifdef TRMEM_NO_STDOUT
     TrFileHandle = fopen( "tracker.txt", "w" );
 #else
