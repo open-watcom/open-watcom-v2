@@ -81,7 +81,7 @@ void TRMemOpen( void )
 #ifdef TRMEM
     TRFileHandle = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, strdup, TRFileHandle,
-        TRPrintLine, _TRMEM_ALL & ~(_TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL) );
+        TRPrintLine, _TRMEM_DEF );
 #endif
 }
 

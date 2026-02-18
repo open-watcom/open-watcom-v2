@@ -68,7 +68,7 @@ void mem_init( void )
 {
 #ifdef TRMEM
     memHandle = _trmem_open( malloc, free, realloc, strdup,
-                                NULL, &prt, _TRMEM_ALL );
+                                NULL, &prt, _TRMEM_DEF );
 #endif
 }
 

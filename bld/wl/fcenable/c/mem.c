@@ -64,7 +64,7 @@ void MemInit( void )
 {
 #ifdef TRMEM
     TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
-                            NULL, PrintLine, _TRMEM_ALL );
+                            NULL, PrintLine, _TRMEM_DEF );
 #endif
 }
 

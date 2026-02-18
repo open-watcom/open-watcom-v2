@@ -112,9 +112,7 @@ void GUIMemOpen( void )
     if( !WPMemOpened ) {
         WPMemFP = stderr;
         WPMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, WPMemPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+            NULL, WPMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {

@@ -70,9 +70,7 @@ void RcMemInit( void )
 {
 #ifdef TRMEM
     RcMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
-                        NULL, RcPrintMemLine,
-                        _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL |
-                        _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+                        NULL, RcPrintMemLine, _TRMEM_DEF );
 #else
     RCMemLayer1Init();
 #endif

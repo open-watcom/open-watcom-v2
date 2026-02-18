@@ -97,7 +97,7 @@ void InitMem( void )
 #ifdef TRMEM
     trmemOutput = fopen( "trmem.out", "w" );
     trmemHandle = _trmem_open( malloc, free, realloc, strdup,
-        NULL, trmemPrintLine, _TRMEM_ALL );
+        NULL, trmemPrintLine, _TRMEM_DEF );
     // atexit( DumpTRMEM );
 #endif
 }

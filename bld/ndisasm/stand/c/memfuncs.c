@@ -70,9 +70,7 @@ void MemOpen( void )
 #ifdef TRMEM
     TRFileFP = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, MemPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+            NULL, MemPrintLine, _TRMEM_DEF );
 #endif
 }
 

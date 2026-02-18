@@ -104,7 +104,7 @@ void LnkMemInit( void )
 #endif
 #ifdef TRMEM
     TrHdl = _trmem_open( malloc, free, realloc, strdup,
-            NULL, PrintLine, _TRMEM_ALL );
+            NULL, PrintLine, _TRMEM_DEF );
 #endif
 }
 

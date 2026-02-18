@@ -83,9 +83,6 @@ enum {
     _TRMEM_CLOSE_CHECK_FREE =0x0040 /* _trmem_close checks if all chunks
                                         were freed */
 };
-#define _TRMEM_ALL \
-    (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL | _TRMEM_STRDUP_NULL \
-      | _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE)
 #define _TRMEM_DEF \
     (_TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_STRDUP_NULL \
     | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE)

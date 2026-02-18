@@ -300,7 +300,7 @@ void MOpen( void )
 {
 #ifdef TRMEM
     TRMemHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
-            NULL, TRPrintLine, _TRMEM_ALL & ~(_TRMEM_FREE_NULL) );
+            NULL, TRPrintLine, _TRMEM_DEF );
 #endif
 }
 

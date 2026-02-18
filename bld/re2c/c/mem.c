@@ -32,6 +32,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "mem.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -69,7 +70,7 @@ void MemInit( void )
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
     memHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
-                                NULL, memPrintLine, _TRMEM_ALL );
+                                NULL, memPrintLine, _TRMEM_DEF );
     if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
