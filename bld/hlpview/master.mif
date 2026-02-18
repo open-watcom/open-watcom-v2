@@ -18,7 +18,7 @@ whelp_trmem = 1
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs =  $(cli_hlpview_inc_dirs) $(cli_ui_inc_dirs)
+inc_dirs =  $(cli_hlpview_inc_dirs)
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

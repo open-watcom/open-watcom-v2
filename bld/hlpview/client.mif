@@ -10,5 +10,5 @@ cli_hlpview_objs = &
     msgbox.obj    &
     search.obj    &
     dialcb.obj
-cli_hlpview_inc_dirs = -I"$(hlpview_dir)/h"
+cli_hlpview_inc_dirs = -I"$(hlpview_dir)/h" -I"$(ui_dir)/h"
 !endif

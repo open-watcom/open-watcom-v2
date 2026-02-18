@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helpmem.h"
+#include "uimem.h"
 #include "helpmemu.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -99,12 +100,30 @@ HELPMEM void *HelpMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+TRMEMAPI( uimalloc )
+void * uimalloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
 TRMEMAPI( HelpMemRealloc )
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+TRMEMAPI( uirealloc )
+void * uirealloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 9 ), memHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -119,3 +138,13 @@ HELPMEM void HelpMemFree( void *ptr )
     free( ptr );
 #endif
 }
+TRMEMAPI( uifree )
+void uifree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), memHandle );
+#else
+    free( ptr );
+#endif
+}
+

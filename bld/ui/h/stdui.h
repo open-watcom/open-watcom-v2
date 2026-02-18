@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include "bool.h"
 #include "initmode.h"
+#include "uimem.h"
 
 
 #ifndef _FAR
