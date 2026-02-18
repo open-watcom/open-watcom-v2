@@ -63,7 +63,7 @@ void set_dlg_textwindow( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class  = GUI_EDIT_MLE;
-    control->text           = GUIStrdup( s );
+    control->text           = GUIMemStrdup( s );
     control->parent         = NULL;
     control->scroll_style   = scroll_style;
     control->style          = GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_READONLY | GUI_STYLE_CONTROL_BORDER;
@@ -82,7 +82,7 @@ void set_dlg_dynamstring( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class  = GUI_STATIC;
-    control->text           = GUIStrdup( s );
+    control->text           = GUIMemStrdup( s );
     control->parent         = NULL;
     control->scroll_style   = GUI_NOSCROLL;
     control->style          = GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC;
@@ -106,7 +106,7 @@ void set_dlg_radio( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class  = GUI_RADIO_BUTTON;
-    control->text           = GUIStrdup( s );
+    control->text           = GUIMemStrdup( s );
     control->parent         = NULL;
     control->scroll_style   = GUI_NOSCROLL;
     control->style          = GUI_STYLE_CONTROL_GROUP | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC;
@@ -124,7 +124,7 @@ void set_dlg_check( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class  = GUI_CHECK_BOX;
-    control->text           = GUIStrdup( s );
+    control->text           = GUIMemStrdup( s );
     control->parent         = NULL;
     control->scroll_style   = GUI_NOSCROLL;
     control->style          = GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC;
@@ -143,7 +143,7 @@ void set_dlg_edit( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class  = GUI_EDIT;
-    control->text           = GUIStrdup( s );
+    control->text           = GUIMemStrdup( s );
     control->parent         = NULL;
     control->scroll_style   = GUI_NOSCROLL;
     control->style          = GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_BORDER;
@@ -183,7 +183,7 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
     char                *str;
     char                *p;
 
-    p = str = GUIStrdup( text );
+    p = str = GUIMemStrdup( text );
     switch( *p ) {
     case '0':
         id = CTL_FIRST;
@@ -236,7 +236,7 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
     }
     p = TrimQuote( p );
     if( p != str ) {
-        p = GUIStrdup( p );
+        p = GUIMemStrdup( p );
         GUIMemFree( str );
     }
 

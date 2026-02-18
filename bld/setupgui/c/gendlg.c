@@ -107,7 +107,7 @@ a_dialog_header *AddNewDialog( const char *name )
 
     new_dlg = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
     memset( new_dlg, '\0', sizeof( *new_dlg ) );
-    new_dlg->name = GUIStrdup( name );
+    new_dlg->name = GUIMemStrdup( name );
     new_dlg->adjusted = false;
     new_dlg->def_dlg = false;
     new_dlg->defaults_set = false;
