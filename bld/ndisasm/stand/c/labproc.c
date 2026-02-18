@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,7 @@ static void labelNameAlloc( label_entry entry, const char *name )
         entry->label.name = MemAlloc( len + 1 );
         __demangle_l( name, 0, entry->label.name, len + 1 );
     } else {
-        len = strlen( name );
-        entry->label.name = MemAlloc( len + 1 );
-        strcpy( entry->label.name, name );
+        entry->label.name = MemStrdup( name );
     }
 }
 

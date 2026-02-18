@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,8 +190,8 @@ static char *getFileName( const char *start, const char *following )
 
     length = following - start;
     tmp = (char *)MemAlloc( length + 1 );
-    memcpy( tmp, start, length );
-    tmp[length] = 0;
+    strncpy( tmp, start, length );
+    tmp[length] = '\0';
 
     if( strchr( tmp, '\"' ) == NULL )
         return tmp;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -4228,7 +4228,7 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, false );
             if( len != 0 ) {
                 p += len;
-                memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );
+                strcpy( p, PTR_SUFFIX );
                 p += sizeof( PTR_SUFFIX ) - 1;
             }
         }
@@ -4276,12 +4276,12 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             switch( ins->type ) {
             case DI_X86_call:
             case DI_X86_jmp1:
-                memcpy( p, NEAR_PTR, sizeof( NEAR_PTR ) - 1 );
+                strcpy( p, NEAR_PTR );
                 p += sizeof( NEAR_PTR ) - 1;
                 break;
             case DI_X86_call3:
             case DI_X86_jmp3:
-                memcpy( p, FAR_PTR, sizeof( FAR_PTR ) - 1 );
+                strcpy( p, FAR_PTR );
                 p += sizeof( FAR_PTR ) - 1;
                 break;
             default:
@@ -4407,8 +4407,7 @@ static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         return( 0 );
     }
     len = sizeof( EMU_INT ) - 1;
-    memcpy( op_buff, EMU_INT, len );
-    op_buff[len] = 0;
+    strcpy( op_buff, EMU_INT );
     if( flags & DFF_INS_UP )
         strupr( op_buff );
     len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );

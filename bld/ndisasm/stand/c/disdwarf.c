@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,8 +253,7 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
             p = DecodeULEB128( p, &mod_time );
             p = DecodeULEB128( p, &file_length );
             if( SourceFileInDwarf == NULL ) {
-                SourceFileInDwarf = MemAlloc( strlen( name ) + 1 );
-                strcpy( SourceFileInDwarf, name );
+                SourceFileInDwarf = MemStrdup( name );
             }
             if( p - input >= length ) {
                 FreeSourceLines( ls );
@@ -312,8 +311,7 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
                     if( SourceFileInDwarf != NULL ) {
                         MemFree( SourceFileInDwarf );
                     }
-                    SourceFileInDwarf = MemAlloc( strlen( name) + 1 );
-                    strcpy( SourceFileInDwarf, name );
+                    SourceFileInDwarf = MemStrdup( name );
                     break;
                 default:
                     p += op_len;
