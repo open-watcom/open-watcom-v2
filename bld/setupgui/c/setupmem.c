@@ -36,8 +36,9 @@
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
     #include "wpimem.h"
+    #include "cguimem.h"
 #else
-    #include "stdui.h"
+    #include "uimem.h"
     #include "helpmem.h"
     #include "helpmemu.h"
 #endif
@@ -131,8 +132,8 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIAPI UIMemOpen( void ) {}
-void HelpMemOpen( void ) {}
+//void UIAPI UIMemOpen( void ) {}
+//void HelpMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -148,8 +149,8 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIAPI UIMemClose( void ) {}
-void HelpMemClose( void ) {}
+//void UIAPI UIMemClose( void ) {}
+//void HelpMemClose( void ) {}
 #endif
 
 
@@ -178,6 +179,16 @@ void *zip_alloc( size_t size )
 #endif
 }
 #if defined( GUI_IS_GUI )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 #if defined( __OS2__ )
 TRMEMAPI( _wpi_malloc )
 void * _wpi_malloc( size_t size )
@@ -191,7 +202,7 @@ void * _wpi_malloc( size_t size )
 #endif
 #else
 TRMEMAPI( uimalloc )
-void * UIAPI uimalloc( size_t size )
+void * uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 4 ), GUIMemHandle ) );
@@ -261,6 +272,16 @@ void zip_free( void *ptr )
 #endif
 }
 #if defined( GUI_IS_GUI )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
+/***********************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 7 ), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
 #if defined( __OS2__ )
 TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
@@ -274,7 +295,7 @@ void _wpi_free( void *ptr )
 #endif
 #else
 TRMEMAPI( uifree )
-void UIAPI uifree( void *ptr )
+void uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 10 ), GUIMemHandle );
@@ -330,6 +351,16 @@ void *zip_realloc( void *ptr, size_t size )
 #endif
 }
 #if defined( GUI_IS_GUI )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
+/*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 13 ), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
 #if defined( __OS2__ )
 TRMEMAPI( _wpi_realloc )
 void * _wpi_realloc( void *ptr, size_t size )
@@ -343,7 +374,7 @@ void * _wpi_realloc( void *ptr, size_t size )
 #endif
 #else
 TRMEMAPI( uirealloc )
-void * UIAPI uirealloc( void *old, size_t size )
+void * uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( old, size, _TRMEM_WHO( 16 ), GUIMemHandle ) );
