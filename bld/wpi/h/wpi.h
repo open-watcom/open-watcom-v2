@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,22 +52,6 @@
 
 #ifndef _wpi_malloc2
 #define _wpi_malloc2(ptr,x) ptr = (void *)_wpi_malloc( sizeof( *ptr ) * x )
-#endif
-
-#ifndef _wpi_gfree
-#define _wpi_gfree(x) _wpi_free(x)
-#endif
-
-#ifndef _wpi_gmalloc
-#define _wpi_gmalloc(x) _wpi_malloc(x)
-#endif
-
-#ifndef _wpi_gmalloc2
-#define _wpi_gmalloc2(ptr,x) ptr = (void *) _wpi_gmalloc( sizeof( *ptr ) * x )
-#endif
-
-#ifndef _wpi_grealloc
-#define _wpi_grealloc(ptr,x) _wpi_realloc(ptr,x)
 #endif
 
 #if defined( __OS2_PM__) || defined( __OS2__ )
