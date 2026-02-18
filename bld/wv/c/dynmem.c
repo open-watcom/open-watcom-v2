@@ -57,6 +57,7 @@
     #include "wresmem.h"
     #ifdef GUI_IS_GUI
         #include "wpimem.h"
+        #include "cguimem.h"
     #else
         #include "stdui.h"
         #include "helpmem.h"
@@ -386,10 +387,12 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 
 #endif  /* TRMEM */
 
-void WndNoMemory( void )
+#if 0
+static void WndNoMemory( void )
 {
     Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
 }
+#endif
 
 void GUIMemPrtUsage( void )
 /*************************/
@@ -473,6 +476,18 @@ void *WndAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#ifdef GUI_IS_GUI
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#endif
 #endif
 
 #ifdef GUI_IS_GUI
@@ -571,6 +586,18 @@ void WndFree( void *ptr )
     free( ptr );
 #endif
 }
+#ifdef GUI_IS_GUI
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
+/***********************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
+#else
+    free( ptr );
+#endif
+}
+#endif
 #endif
 
 #ifdef GUI_IS_GUI
@@ -656,6 +683,18 @@ void *WndRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#ifdef GUI_IS_GUI
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
+/****************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+#endif
 
 #ifdef GUI_IS_GUI
 

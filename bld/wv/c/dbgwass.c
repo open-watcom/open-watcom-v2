@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "srcmgt.h"
+#include "liteng.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "gadgets.h"
@@ -216,7 +217,7 @@ static  void    AsmResize( a_window wnd )
     memset( new_ins, 0, size * sizeof( *new_ins ) );
     if( new_ins == NULL ) {
         WndClose( wnd );
-        WndNoMemory();
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
     }
     WndFree( asw->ins );
     asw->ins = new_ins;
@@ -974,7 +975,7 @@ static  void    AsmInit( a_window wnd )
     asw->ins_size = size;
     if( asw->ins == NULL ) {
         WndClose( wnd );
-        WndNoMemory();
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
     }
     asw->num_toggles = 0;
     asw->source = _IsOn( SW_ASM_SOURCE );
