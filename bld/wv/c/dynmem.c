@@ -278,10 +278,8 @@ static unsigned DbgMemPrtList( void )
 static void DbgMemOpen( void )
 /****************************/
 {
-    DbgMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, DbgMemPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    DbgMemHandle = _trmem_open( malloc, free, realloc, strdup,
+            NULL, DbgMemPrintLine, _TRMEM_DEF );
 }
 
 static void DbgMemClose( void )
@@ -536,6 +534,20 @@ void *wres_alloc( size_t size )
 
 #endif  /* ! GUI_IS_GUI */
 
+/*
+ * Strdup functions
+ */
+
+TRMEMAPI( GUIMemStrdup )
+char *GUIMemStrdup( const char *str )
+/***********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 15 ), DbgMemHandle ) );
+#else
+    return( strdup( str ) );
+#endif
+}
 
 /*
  * Free functions
@@ -546,7 +558,7 @@ void GUIMemFree( void *ptr )
 /**************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 15 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -556,7 +568,7 @@ TRMEMAPI( WndFree )
 void WndFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -571,7 +583,7 @@ TRMEMAPI( _wpi_free )
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 18 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -585,7 +597,7 @@ TRMEMAPI( uifree )
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 18 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 19 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -595,7 +607,7 @@ void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 19 ), DbgMemHandle );
+        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 20 ), DbgMemHandle );
 #else
         free( MEM_NEAR_PTR( ptr ) );
 #endif
@@ -605,7 +617,7 @@ TRMEMAPI( HelpMemFree )
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 20 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 21 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -614,7 +626,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 21 ), DbgMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 22 ), DbgMemHandle );
 #else
     free( ptr );
 #endif
@@ -632,7 +644,7 @@ void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 22 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -641,7 +653,7 @@ TRMEMAPI( WndRealloc )
 void *WndRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -655,7 +667,7 @@ TRMEMAPI( _wpi_realloc )
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 25 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -669,7 +681,7 @@ TRMEMAPI( uirealloc )
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 25 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 26 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -678,7 +690,7 @@ TRMEMAPI( HelpMemRealloc )
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 26 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 27 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
