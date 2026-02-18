@@ -39,6 +39,7 @@ extern void     MemPrtList( void );
 extern void     MemClose( void );
 
 extern void     *MemAlloc( size_t );
+extern char     *MemStrdup( const char * );
 extern void     *MemRealloc( void *, size_t );
 extern void     MemFree( void * );
 

@@ -391,7 +391,8 @@ void initMemory(void)
     reportBadHeap(_heapset(0));
 #endif
 #ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, _printLine, _TRMEM_DEF );
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+                            NULL, _printLine, _TRMEM_DEF );
     if (TrHdl == NULL) {
         puts( "Memory initialization failed." );
         exit(1);

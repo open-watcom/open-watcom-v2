@@ -315,7 +315,8 @@ static void cmemInit(           // INITIALIZATION
     if( CppGetEnv( "TRQUIET" ) == NULL ) {
         trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
     }
-    trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL, printLine, trmem_flags );
+    trackerHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+                                NULL, printLine, trmem_flags );
 #endif
 #if defined( USE_CG_MEMMGT )
   #ifdef TRMEM

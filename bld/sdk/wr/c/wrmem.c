@@ -63,7 +63,7 @@ void WRMemOpen( bool trace )
     char    *tmpdir;
 
     if( trace ) {
-        TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
+        TRMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
                                    NULL, TRPrintLine, _TRMEM_DEF );
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {

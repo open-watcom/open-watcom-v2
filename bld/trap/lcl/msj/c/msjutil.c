@@ -79,9 +79,8 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
 static void TRMemOpen( void )
 /***************************/
 {
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, TRPrintLine,
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    TRMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+            NULL, TRPrintLine, _TRMEM_DEF );
 }
 
 static void TRMemClose( void )

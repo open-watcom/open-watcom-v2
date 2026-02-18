@@ -417,7 +417,7 @@ void GUIMemOpen( void )
 
     if( !GUIMemOpened ) {
         TrackFile = stderr;
-        DbgMemHandle = _trmem_open( malloc, free, realloc, NULL,
+        DbgMemHandle = _trmem_open( malloc, free, realloc, strdup,
             NULL, GUIMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );

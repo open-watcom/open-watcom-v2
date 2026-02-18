@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "wio.h"
 #include "memfuncs.h"
 #include "wresmem.h"
@@ -69,8 +70,26 @@ void MemOpen( void )
 {
 #ifdef TRMEM
     TRFileFP = stderr;
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
+    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
             NULL, MemPrintLine, _TRMEM_DEF );
+#endif
+}
+
+void MemClose( void )
+{
+#ifdef TRMEM
+    if( TRMemHandle != NULL ) {
+        _trmem_close( TRMemHandle );
+    }
+#endif
+}
+
+void MemPrtList( void )
+{
+#ifdef TRMEM
+    if( TRMemHandle != NULL ) {
+        _trmem_prt_list( TRMemHandle );
+    }
 #endif
 }
 
@@ -84,13 +103,13 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), TRMemHandle ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle ) );
 #else
-    return( malloc( size ) );
+    return( strdup( str ) );
 #endif
 }
 
@@ -114,30 +133,22 @@ void MemFree( void *ptr )
 #endif
 }
 
+TRMEMAPI( wres_alloc )
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), TRMemHandle );
 #else
     free( ptr );
-#endif
-}
-
-void MemPrtList( void )
-{
-#ifdef TRMEM
-    if( TRMemHandle != NULL ) {
-        _trmem_prt_list( TRMemHandle );
-    }
-#endif
-}
-
-void MemClose( void )
-{
-#ifdef TRMEM
-    if( TRMemHandle != NULL ) {
-        _trmem_close( TRMemHandle );
-    }
 #endif
 }

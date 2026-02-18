@@ -69,7 +69,7 @@ void MemOpen( void )
 #ifdef TRMEM
     char    *tmpdir;
 
-    MemHandle = _trmem_open( malloc, free, realloc, NULL,
+    MemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
         NULL, MemPrintLine, _TRMEM_DEF );
 
     tmpdir = getenv( "TRMEMFILE" );

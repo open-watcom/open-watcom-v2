@@ -74,7 +74,7 @@ void MemOpen( void )
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 #ifdef TRMEM
-    MemHandle = _trmem_open( malloc, free, realloc, NULL,
+    MemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
         NULL, MemPrintLine, _TRMEM_DEF );
 
     tmpdir = getenv( "TRMEMFILE" );

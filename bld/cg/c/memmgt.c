@@ -82,7 +82,8 @@ void    CGMemInit( pointer trmemhdl )
     MemOut = MO_FATAL;
 #ifdef TRMEM
     if( trmemhdl == NULL ) {
-        Handle = _trmem_open( _SysAlloc, _SysFree, NULL, NULL, NULL, PrintLine, _TRMEM_DEF );
+        Handle = _trmem_open( _SysAlloc, _SysFree, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+                              NULL, PrintLine, _TRMEM_DEF );
         local_init = true;
     } else {
         Handle = trmemhdl;
