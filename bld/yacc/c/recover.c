@@ -76,7 +76,6 @@ static AddError()
         rset += GetSetSize( 1 );
     }
     defined = rset;
-    s = CALLOC( nstate, a_state * );
     at = CALLOC( nstate, short );
     s = t = CALLOC( nstate + 1, a_state * );
     for( state = statelist; state != NULL; state = state->next ) {

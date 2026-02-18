@@ -129,9 +129,9 @@ static int actcmp( action_n *actions, compressed_action *ca, unsigned num_action
     return( 0 );
 }
 
-static void actcpy( action_n *actions, compressed_action *ca, index_n num_actions )
+static void actcpy( action_n *actions, compressed_action *ca, unsigned num_actions )
 {
-    index_n         i;
+    unsigned        i;
 
     for( i = 0; i < num_actions; ++ca, ++i ) {
         actions[ca->token] = ca->action;
