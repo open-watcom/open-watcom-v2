@@ -111,7 +111,7 @@ void GUIMemOpen( void )
 
     if( !WPMemOpened ) {
         WPMemFP = stderr;
-        WPMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+        WPMemHandle = _trmem_open( malloc, free, realloc, strdup,
             NULL, WPMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
@@ -310,6 +310,38 @@ void *wres_alloc( size_t size )
 }
 
 /*
+ *  Strdup functions
+ */
+
+TRMEMAPI( GUIMemStrdup )
+char *GUIMemStrdup( const char *str )
+/***********************************/
+{
+    char    *ptr;
+    size_t  size;
+
+    size = strlen( str ) + 1 ;
+    for( ;; ) {
+#ifdef TRMEM
+        profMemCheck( "ProfTryAlloc" );
+        ptr = _trmem_strdup( str, _TRMEM_WHO( 7 ), WPMemHandle );
+#else
+        ptr = strdup( str );
+#endif
+        if( ptr != NULL )
+            break;
+        if( DIPMoreMem( size ) == DS_FAIL ) {
+            break;
+        }
+    }
+
+    if( ptr == NULL ) {
+        fatal( LIT( Memfull ) );
+    }
+    return( ptr );
+}
+
+/*
  *  Free functions
  */
 
@@ -319,7 +351,7 @@ void ProfFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 7 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -330,7 +362,7 @@ void GUIMemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 9 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -341,7 +373,7 @@ void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 9 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 10 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -352,7 +384,7 @@ void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 10 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 11 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -362,7 +394,7 @@ void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 11 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 12 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -373,7 +405,7 @@ void wres_free( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 12 ), WPMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 13 ), WPMemHandle );
 #else
     free( ptr );
 #endif
@@ -393,7 +425,7 @@ void *ProfRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 13 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 14 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -417,7 +449,7 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 14 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 15 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -441,7 +473,7 @@ void * _wpi_realloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 15 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 16 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -465,7 +497,7 @@ void * UIAPI uirealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 16 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 17 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -488,7 +520,7 @@ void *HelpMemRealloc( void *ptr, size_t new_size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 17 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 18 ), WPMemHandle );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -518,7 +550,7 @@ void *ProfCAlloc( size_t size )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 18 ), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 19 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
