@@ -209,25 +209,62 @@ void WBRFree( void *p )
 #endif
 }
 
-#if 0
+#if 1
 #ifndef STANDALONE_MERGER
-void *GUIAlloc( unsigned a )
+void *GUIMemAlloc( unsigned a )
 //--------------------------
 {
     return WBRAlloc( a );
 }
 
-void *GUIRealloc( void *ptr, unsigned size )
+void *GUIMemStrdup( const char *a )
+//--------------------------
+{
+    return strdup( a );
+}
+
+void *GUIMemRealloc( void *ptr, unsigned size )
 //------------------------------------------
 {
     return WBRRealloc( ptr, size );
 }
 
-void GUIFree( void *p )
+void GUIMemFree( void *p )
 //---------------------
 {
     WBRFree( p );
 }
+
+void *MemAlloc( unsigned a )
+//--------------------------
+{
+    return WBRAlloc( a );
+}
+
+void *MemRealloc( void *ptr, unsigned size )
+//------------------------------------------
+{
+    return WBRRealloc( ptr, size );
+}
+
+void MemFree( void *p )
+//---------------------
+{
+    WBRFree( p );
+}
+
+void *_wpi_malloc( unsigned a )
+//----------------------------
+{
+    return WBRAlloc( a );
+}
+
+void _wpi_free( void *p )
+//-----------------------
+{
+    WBRFree( p );
+}
+
 
 void GUIMemOpen( void )
 {
