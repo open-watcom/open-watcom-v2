@@ -372,7 +372,7 @@ void *RINGNAME(Alloc) (         // ALLOCATE AND APPEND NEW ELEMENT
 {
     void *new_element;          // - allocated element
 
-    new_element = MemAllocSafe( size );
+    new_element = LnkMemAlloc( size );
     RINGNAME(Append)( hdr, new_element );
     return( new_element );
 }
@@ -383,7 +383,7 @@ void RINGNAME(Dealloc) (        // DE-ALLOCATE A RING ELEMENT
     void *element )             // - element to be de-allocated
 {
     RINGNAME(Prune)( hdr, element );
-    MemFree( element );
+    LnkMemFree( element );
 }
 
 
@@ -397,7 +397,7 @@ void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
         elt = RINGNAME(Pop)( hdr );
         if( elt == NULL )
             break;
-        MemFree( elt );
+        LnkMemFree( elt );
     }
 }
 

@@ -140,7 +140,7 @@ static void FreeCDatPiece( void * piec )
 {
     comdat_piece *piece = piec;
     if( piece->free_data ) {
-        MemFree( piece->data );
+        LnkMemFree( piece->data );
     }
     piece->next = FreedPieces;
     FreedPieces = piece;
@@ -473,7 +473,7 @@ void ProcComdat( void )
         piece->length = EOObjRec - ObjBuff;
     }
     if( !CacheIsPerm() ) {
-        piece->data = MemAllocSafe( piece->length );
+        piece->data = LnkMemAlloc( piece->length );
         memcpy( piece->data, ObjBuff, piece->length );
         piece->free_data = true;
     } else {

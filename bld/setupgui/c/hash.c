@@ -63,7 +63,7 @@ hash_handle     HashInit( size_t size, hash_key_cmp func )
     assert( size != 0 );
     assert( func );
 
-    ht = MemAlloc( sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
+    ht = GUIMemAlloc( sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
     if( !ht )
         return( NULL );
     memset( ht, 0, sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
@@ -81,12 +81,12 @@ bool HashInsert( hash_handle ht, hash_key k, vhandle data )
     assert( ht );
     assert( k );
 
-    he = MemAlloc( sizeof( hash_element ) );
+    he = GUIMemAlloc( sizeof( hash_element ) );
     if( he == NULL )
         return( false );
     i = hashKey( ht->size, k );
     he->data = data;
-    he->key = MemStrdup( k );
+    he->key = GUIMemStrdup( k );
     he->next = ht->table[i];
     ht->table[i] = he;
     return( true );
@@ -123,11 +123,11 @@ void HashFini( hash_handle ht )
     for( i = 0; i < ht->size; i++ ) {
         for( he = ht->table[i]; he != NULL; he = next ) {
             next = he->next;
-            MemFree( (void *)he->key );
-            MemFree( he );
+            GUIMemFree( (void *)he->key );
+            GUIMemFree( he );
         }
     }
-    MemFree( ht );
+    GUIMemFree( ht );
 }
 
 

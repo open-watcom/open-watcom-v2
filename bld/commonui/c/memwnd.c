@@ -1084,9 +1084,9 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_NCDESTROY:
         if( info != NULL ) {
             if( info->asm_info != NULL ) {
-                MemFree( info->asm_info );
+                CUIMemFree( info->asm_info );
             }
-            MemFree( info );
+            CUIMemFree( info );
         }
         /* fall through */
     default:
@@ -1305,7 +1305,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
             return( NULLHANDLE );
         }
     }
-    info = MemAlloc( sizeof( MemWndInfo ) );
+    info = CUIMemAlloc( sizeof( MemWndInfo ) );
     if( info == NULL ) {
         RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         return( NULLHANDLE );
@@ -1368,7 +1368,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     if( hdl == NULLHANDLE || info->scrlbar == NULL ) {
         RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         DestroyWindow( hdl );
-        MemFree( info );
+        CUIMemFree( info );
         return( NULLHANDLE );
     }
     if( maximize ) {

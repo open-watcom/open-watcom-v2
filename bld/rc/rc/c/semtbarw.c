@@ -51,7 +51,7 @@ ToolBar *SemWINCreateToolBar( void )
 {
     ToolBar     *ret;
 
-    ret = RESALLOCSAFE( sizeof( ToolBar ) );
+    ret = RESALLOC( sizeof( ToolBar ) );
     ret->last = &ret->first;
     ret->nodecnt = 1;
     initToolBarItems( &ret->first );
@@ -63,7 +63,7 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
-        toolbar->last->next = RESALLOCSAFE( sizeof( ToolBarItems ) );
+        toolbar->last->next = RESALLOC( sizeof( ToolBarItems ) );
         toolbar->last = toolbar->last->next;
         initToolBarItems( toolbar->last );
         toolbar->nodecnt++;

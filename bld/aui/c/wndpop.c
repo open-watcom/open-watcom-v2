@@ -109,7 +109,7 @@ void    WndAddPopupMenu( a_window wnd )
 
 void    WndNullPopItem( a_window wnd )
 {
-    MemFree( wnd->popitem );
+    WndFree( wnd->popitem );
     wnd->popitem = WndMustAlloc( 1 );
     wnd->popitem[0] = '\0';
 }
@@ -190,7 +190,7 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
             }
         }
     }
-    MemFree( wnd->popitem );
+    WndFree( wnd->popitem );
     wnd->popitem = WndMustAlloc( buff_size + 2 );
     ptr = wnd->popitem;
     for( row = start->row; row <= end->row; ++row ) {

@@ -457,7 +457,7 @@ void FiniGadget( void )
     int                 i;
 
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        MemFree( WndGadgetHint[i] );
+        WndFree( WndGadgetHint[i] );
         WndGadgetHint[i] = NULL;
     }
 }

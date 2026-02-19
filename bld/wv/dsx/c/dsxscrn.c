@@ -861,7 +861,7 @@ static void AllocSave( void )
     switch( FlipMech ) {
     case FLIP_SWAP:
         if( VirtScreen != NULL ) {
-            RegenSave = MemAlloc( 4 * _64k + PageSize );
+            _Alloc( RegenSave, 4 * _64k + PageSize );
             if( RegenSave == NULL ) {
                 StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
             }
@@ -873,7 +873,7 @@ static void AllocSave( void )
         regen_size = RegenSize();
         if( VirtScreen != NULL )
             regen_size += PageSize;
-        RegenSave = MemAlloc( regen_size );
+        _Alloc( RegenSave, regen_size );
         if( RegenSave == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
@@ -1164,7 +1164,7 @@ void FiniScreen( void )
         UserScreen();
     }
     DPMIFreeDOSMemoryBlock( SwapSeg.pm );
-    MemFree( RegenSave );
+    _Free( RegenSave );
 }
 
 

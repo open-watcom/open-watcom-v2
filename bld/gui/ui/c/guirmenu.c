@@ -58,7 +58,7 @@ static void WFreeMenuEntry( GUIRMenuEntry *entry )
         if( entry->item != NULL ) {
             ResFreeMenuItem( entry->item );
         }
-        MemFree( entry );
+        GUIMemFree( entry );
     }
 }
 
@@ -96,7 +96,7 @@ static bool WAllocMenuEntry( GUIRMenuEntry **entry )
     ok = ( entry != NULL );
 
     if( ok ) {
-        *entry = (GUIRMenuEntry *)MemAlloc( sizeof( GUIRMenuEntry ) );
+        *entry = (GUIRMenuEntry *)GUIMemAlloc( sizeof( GUIRMenuEntry ) );
         ok = ( *entry != NULL );
     }
 
@@ -200,10 +200,10 @@ void GUIFreeGUIMenuStruct( gui_menu_items *menus )
         for( i = 0; i < menus->num_items; i++ ) {
             GUIFreeGUIMenuStruct( &menus->menu[i].child );
             if( menus->menu[i].label != NULL ) {
-                MemFree( (void *)menus->menu[i].label );
+                GUIMemFree( (void *)menus->menu[i].label );
             }
         }
-        MemFree( menus->menu );
+        GUIMemFree( menus->menu );
     }
 }
 
@@ -237,7 +237,7 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
     num_items = WCountMenuChildren( rmenu );
     ok = ( num_items > 0 );
     if( ok ) {
-        menu = MemAlloc( num_items * sizeof( gui_menu_struct ) );
+        menu = GUIMemAlloc( num_items * sizeof( gui_menu_struct ) );
         if( menu == NULL ) {
             ok = false;
         }
@@ -249,16 +249,16 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
             menuitem->hinttext = NULL;
             menuitem->child = NoMenu;
             if( rmenu->item->IsPopup ) {
-                menuitem->label = MemStrdup( rmenu->item->Item.Popup.ItemText );
+                menuitem->label = GUIMemStrdup( rmenu->item->Item.Popup.ItemText );
                 menuitem->id = 0;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Popup.ItemFlags );
                 ok = MakeGUIMenuStruct( rmenu->child, &menuitem->child );
                 if( !ok ) {
-                    MemFree( menu );
+                    GUIMemFree( menu );
                     return( ok );
                 }
             } else {
-                menuitem->label = MemStrdup( rmenu->item->Item.Normal.ItemText );
+                menuitem->label = GUIMemStrdup( rmenu->item->Item.Normal.ItemText );
                 menuitem->id = rmenu->item->Item.Normal.ItemID;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Normal.ItemFlags );
             }

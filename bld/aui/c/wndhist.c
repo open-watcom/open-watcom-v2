@@ -43,7 +43,7 @@ void *WndInitHistory( void )
 {
     save_area   *new;
 
-    new = MemAlloc( sizeof( *new ) );
+    new = WndAlloc( sizeof( *new ) );
     if( new == NULL )
         return( NULL );
     new->first_cmd = 0;
@@ -57,7 +57,7 @@ void *WndInitHistory( void )
 
 void WndFiniHistory( void *save )
 {
-    MemFree( save );
+    WndFree( save );
 }
 
 

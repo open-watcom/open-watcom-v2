@@ -69,7 +69,7 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
             continue;
         return( &curr->list );
     }
-    curr = MemAlloc( sizeof( *curr ) );
+    _Alloc( curr, sizeof( *curr ) );
     wf = 0;
     if( code )
         wf |= WF_CODE;
@@ -94,7 +94,7 @@ void SymCompFini( void )
     for( curr = SortedNames; curr != NULL; curr = next ) {
         next = curr->next;
         NameListFree( &curr->list );
-        MemFree( curr );
+        _Free( curr );
     }
     SortedNames = NULL;
 }

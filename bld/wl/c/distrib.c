@@ -72,7 +72,7 @@ static void DistribNumASect( section *sect )
 void DistribNumberSections( void )
 /********************************/
 {
-    SectOvlTab = MemAllocSafe( sizeof( section * ) * ( OvlSectNum + 1 ) );
+    SectOvlTab = LnkMemAlloc( sizeof( section * ) * ( OvlSectNum + 1 ) );
     /* OvlSectNum value 0 is reserved for Root */
     /* Overlayed sections start at 1 */
     OvlSectNum = 0;
@@ -94,10 +94,10 @@ void DistribInitMods( void )
 /**************************/
 {
     ModTableMaxLen = INITIAL_MOD_ALLOC;
-    ModTable = MemAllocSafe( INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
+    ModTable = LnkMemAlloc( INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
     CurrModHandle = 0;
     ArcListMaxLen = INITIAL_ARC_ALLOC;
-    ArcList = MemAllocSafe( offsetof( arcdata, arcs ) + INITIAL_ARC_ALLOC * sizeof( dist_arc ) );
+    ArcList = LnkMemAlloc( offsetof( arcdata, arcs ) + INITIAL_ARC_ALLOC * sizeof( dist_arc ) );
     ArcList->numarcs = 0;
     ResetPass1Blocks();
 }
@@ -117,9 +117,9 @@ void DistribAddMod( mod_entry *lp, overlay_ref ovlref )
         if( ModTableMaxLen > MAX_NUM_MODULES ) {
             LnkMsg( FTL+MSG_TOO_MANY_LIB_MODS, NULL );
         }
-        new = MemAllocSafe( sizeof( mod_entry * ) * ModTableMaxLen * 2 );
+        new = LnkMemAlloc( sizeof( mod_entry * ) * ModTableMaxLen * 2 );
         memcpy( new, ModTable, sizeof( mod_entry * ) * ModTableMaxLen );
-        MemFree( ModTable );
+        LnkMemFree( ModTable );
         ModTable = new;
         ModTableMaxLen *= 2;
     }
@@ -214,7 +214,7 @@ void DistribSetSegments( void )
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
     ObjFormat |= FMT_DEBUG_COMENT;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        MemFree( ArcList );
+        LnkMemFree( ArcList );
         ArcList = NULL;
     }
     if( LinkFlags & LF_STRIP_CODE ) {
@@ -249,12 +249,12 @@ void DistribSetSegments( void )
     FixGroupProblems();
     FindRedefs();
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        MemFree( SectOvlTab );
+        LnkMemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
 #endif
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        MemFree( SectOvlTab );
+        LnkMemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
     ReleasePass1Blocks();
@@ -268,9 +268,9 @@ void FreeDistribSupp( void )
     for( index = 1; index <= CurrModHandle; index++ ) {
         FreeAMod( ModTable[index] );
     }
-    MemFree( ModTable );
-    MemFree( ArcList );
-    MemFree( SectOvlTab );
+    LnkMemFree( ModTable );
+    LnkMemFree( ArcList );
+    LnkMemFree( SectOvlTab );
     ReleasePass1Blocks();
 }
 
@@ -374,9 +374,9 @@ static void AddArc( dist_arc arc )
 
     arclist = CurrMod->x.arclist;
     if( arclist->numarcs >= ArcListMaxLen ) {
-        arclist = MemAllocSafe( offsetof( arcdata, arcs ) + 2 * ArcListMaxLen * sizeof( dist_arc ) );
+        arclist = LnkMemAlloc( offsetof( arcdata, arcs ) + 2 * ArcListMaxLen * sizeof( dist_arc ) );
         memcpy( arclist, ArcList, offsetof( arcdata, arcs ) + ArcListMaxLen * sizeof( dist_arc ) );
-        MemFree( ArcList );
+        LnkMemFree( ArcList );
         CurrMod->x.arclist = arclist;
         ArcList = arclist;
         ArcListMaxLen *= 2;

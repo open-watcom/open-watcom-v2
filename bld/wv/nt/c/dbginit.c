@@ -83,7 +83,7 @@ void GUImain( void )
     _8087 = 0;
 #endif
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = walloca( cmd_len );
+    _AllocA( cmd_line, cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     CmdData = cmd_line;
 

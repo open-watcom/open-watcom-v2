@@ -234,7 +234,7 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOCSAFE( sizeof( FullIconDirEntry ) );
+        entry = RESALLOC( sizeof( FullIconDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsIcoFileEntry = true;
@@ -300,7 +300,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
     ResLocation         loc;
 
     ret = RS_OK;
-    buffer = RESALLOCSAFE( BUFFER_SIZE );
+    buffer = RESALLOC( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /*
@@ -764,7 +764,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
     BitmapInfoHeader    dibhead;
     ResLocation         loc;
 
-    buffer = RESALLOCSAFE( BUFFER_SIZE );
+    buffer = RESALLOC( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /*
@@ -848,7 +848,7 @@ static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOCSAFE( sizeof( FullCurDirEntry ) );
+        entry = RESALLOC( sizeof( FullCurDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsCurFileEntry = true;
@@ -1109,7 +1109,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     ResLocation         loc;
     long                pos;
 
-    buffer = RESALLOCSAFE( BITMAP_BUFFER_SIZE );
+    buffer = RESALLOC( BITMAP_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -1280,7 +1280,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     ResLocation         loc;
     long                pos;
 
-    buffer = RESALLOCSAFE( FONT_BUFFER_SIZE );
+    buffer = RESALLOC( FONT_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -1343,7 +1343,7 @@ static FullFontDir *NewFontDir( void )
 {
     FullFontDir     *newdir;
 
-    newdir = RESALLOCSAFE( sizeof( FullFontDir ) );
+    newdir = RESALLOC( sizeof( FullFontDir ) );
     newdir->Head = NULL;
     newdir->Tail = NULL;
     newdir->NumOfFonts = 0;
@@ -1366,7 +1366,7 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     /*
      * -1 for the 1 char in the struct already
      */
-    entry = RESALLOCSAFE( sizeof( FullFontDirEntry ) - 1 + structextra );
+    entry = RESALLOC( sizeof( FullFontDirEntry ) - 1 + structextra );
     entry->Next = NULL;
     entry->Prev = NULL;
     /*

@@ -100,7 +100,7 @@ static walk_result CheckFirstFile( cue_handle *cueh, void *_d )
     unsigned    len;
 
     len = DIPCueFile( cueh, NULL, 0 ) + 1;
-    buff = walloca( len );
+    _AllocA( buff, len );
     DIPCueFile( cueh, buff, len );
     if( stricmp( buff, d->file ) == 0 ) {
         d->found = true;

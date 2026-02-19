@@ -46,7 +46,6 @@
 #include "guiutil.h"
 #include "guistats.h"
 #include "guiutils.h"
-#include "commmem.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -182,7 +181,7 @@ static bool DoMainLoop( dlg_state *state )
         p = "Welcome";
     }
     i = 0;
-    diags = list = MemStrdup( p );
+    diags = list = GUIMemStrdup( p );
     for( ;; ) {
         diag_list[i] = diags;
         next = strchr( diags, ',' );
@@ -278,7 +277,7 @@ static bool DoMainLoop( dlg_state *state )
         }
     } /* for */
     VbufFree( &temp_vbuf );
-    MemFree( list );
+    GUIMemFree( list );
 
     return( ret );
 }

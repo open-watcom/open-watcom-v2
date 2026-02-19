@@ -78,8 +78,15 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     FullHelpTableOS2   *newtable;
     FullHelpEntryOS2   *newentry;
 
-    newtable = RESALLOCSAFE( sizeof( FullHelpTableOS2 ) );
-    newentry = RESALLOCSAFE( sizeof( FullHelpEntryOS2 ) );
+    newtable = RESALLOC( sizeof( FullHelpTableOS2 ) );
+    newentry = RESALLOC( sizeof( FullHelpEntryOS2 ) );
+
+    if( newtable == NULL
+      || newentry == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     *newentry = firstentry;
     newtable->head = NULL;
@@ -96,7 +103,13 @@ FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
 {
     FullHelpEntryOS2     *newentry;
 
-    newentry = RESALLOCSAFE( sizeof( FullHelpEntryOS2 ) );
+    newentry = RESALLOC( sizeof( FullHelpEntryOS2 ) );
+
+    if( newentry == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     *newentry = currentry;
 
@@ -170,8 +183,15 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
     FullHelpSubTableOS2   *newtable;
     FullHelpSubEntryOS2   *newentry;
 
-    newtable = RESALLOCSAFE( sizeof( FullHelpSubTableOS2 ) );
-    newentry = RESALLOCSAFE( sizeof( FullHelpSubEntryOS2 ) );
+    newtable = RESALLOC( sizeof( FullHelpSubTableOS2 ) );
+    newentry = RESALLOC( sizeof( FullHelpSubEntryOS2 ) );
+
+    if( newtable == NULL
+      || newentry == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     newentry->dataListHead = data;
     newtable->head = NULL;
@@ -188,7 +208,13 @@ FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList *data,
 {
     FullHelpSubEntryOS2     *newentry;
 
-    newentry = RESALLOCSAFE( sizeof( FullHelpSubEntryOS2 ) );
+    newentry = RESALLOC( sizeof( FullHelpSubEntryOS2 ) );
+
+    if( newentry == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     newentry->dataListHead = data;
 

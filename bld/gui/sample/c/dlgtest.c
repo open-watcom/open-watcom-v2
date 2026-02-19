@@ -91,13 +91,13 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
             num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL:
             new = GUIGetText( wnd, EDIT_CONTROL );
-            MemFree( new );
+            GUIMemFree( new );
             break;
         }
         return( true );
@@ -105,7 +105,7 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
         GUI_GETID( param, id );
         text = GUIGetText( wnd, id );
         GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
-        MemFree( text );
+        GUIMemFree( text );
         return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
@@ -114,7 +114,7 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             return( true );
         }
         break;
@@ -124,11 +124,11 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
         switch( id ) {
         case LISTBOX_CONTROL:
             text = GUIGetText( wnd, LISTBOX_CONTROL );
-            MemFree( text );
+            GUIMemFree( text );
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             return( true );
         case OKBUTTON_CONTROL:
             num = CHECKBOX_CONTROL2;
@@ -139,7 +139,7 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
                                    GUI_ABORT_RETRY_IGNORE );
                 GUIGetNewVal( "Enter New Value", "wesley", &text );
                 if( text != NULL ) {
-                    MemFree( text );
+                    GUIMemFree( text );
                 }
             }
             return( true );
@@ -213,7 +213,7 @@ void TestDialogCreate( gui_window *parent_wnd )
             if( *ep ) {
                 i = -1;
             }
-            MemFree( text );
+            GUIMemFree( text );
         }
         if( i == -1 ) {
             break;
@@ -250,7 +250,7 @@ void ResDialogCreate( gui_window *parent_wnd )
             } else {
                 dlg_id = MAKEINTRESOURCE( id );
             }
-            MemFree( text );
+            GUIMemFree( text );
         }
     }
 

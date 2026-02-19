@@ -117,7 +117,7 @@ static void AddMessageText( char *str )
     } else {
         len = strlen( MsgText );
     }
-    MsgText = MemRealloc( MsgText, len + strlen( str ) + 1 );
+    MsgText = DbgRealloc( MsgText, len + strlen( str ) + 1 );
     StrCopyDst( str, MsgText + len );
 }
 
@@ -237,7 +237,7 @@ static bool RecordMsgText( unsigned *conditions )
         }
         if( MsgText != NULL ) {
             DUIDlgTxt( MsgText );
-            MemFree( MsgText );
+            DbgFree( MsgText );
             MsgText = NULL;
         }
         *p2++ = '\n';
@@ -451,7 +451,7 @@ static void DisplayMsgText( void )
 {
     if( MsgText != NULL ) {
         DUIDlgTxt( MsgText );
-        MemFree( MsgText );
+        DbgFree( MsgText );
         MsgText = NULL;
     }
 }
@@ -466,7 +466,7 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
         p = StrCopyDst( LIT_ENG( Task_Exception ), TxtBuff );
         if( MsgText != NULL )
             StrCopyDst( MsgText, p );
-        MsgText = MemRealloc( MsgText, strlen( TxtBuff ) + 1 );
+        MsgText = DbgRealloc( MsgText, strlen( TxtBuff ) + 1 );
         StrCopyDst( TxtBuff, MsgText );
         DUIMsgBox( MsgText );
     }

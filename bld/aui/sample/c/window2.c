@@ -241,7 +241,7 @@ static bool WNDCALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void *pa
         WndSetRepaint( wnd );
         return( true );
     case GUI_DESTROY :
-        MemFree( w2 );
+        WndFree( w2 );
         return( true );
     default :
         break;

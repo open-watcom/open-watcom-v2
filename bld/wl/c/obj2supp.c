@@ -1530,7 +1530,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             }
         }
         if( freedll )
-            MemFree( dll );
+            LnkMemFree( dll );
         breloc->rel_size = fixptr - (byte *)&breloc->item;
         breloc->item.os2f.nr_flags = flags;
         return( true );

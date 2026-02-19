@@ -84,8 +84,8 @@ void MemInitTypes( mad_type_kind mas, mem_type_walk_data *data )
     MADTypeWalk( mas, MadMemTypeWalk, data );
     if( data->num_types == 0 )
         return;
-    data->labels = MemAlloc( data->num_types * sizeof( *data->labels ) );
-    data->info = MemAlloc( data->num_types * sizeof( *data->info ) );
+    data->labels = DbgAlloc( data->num_types * sizeof( *data->labels ) );
+    data->info = DbgAlloc( data->num_types * sizeof( *data->info ) );
     data->num_types = 0;
     MADTypeWalk( mas, MadMemTypeWalk, data );
 }
@@ -95,10 +95,10 @@ void MemFiniTypes( mem_type_walk_data *data )
     int         i;
 
     for( i = 0; i < data->num_types; ++i ) {
-        MemFree( data->labels[i] );
+        DbgFree( data->labels[i] );
     }
-    MemFree( data->labels );
-    MemFree( data->info );
+    DbgFree( data->labels );
+    DbgFree( data->info );
     data->num_types = 0;
     data->labels = NULL;
     data->info = NULL;

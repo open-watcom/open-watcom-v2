@@ -478,3 +478,49 @@ void StaticFini( void )
 {
     _MemFreeArray( StaticBuffer );
 }
+
+#if defined( __UNIX__ )
+
+TRMEMAPI( uimalloc )
+void * uimalloc( size_t size )
+{
+    void        *tmp;
+
+#ifdef TRMEM
+    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 7 ) );
+#else
+    tmp = doMemAllocUnsafe( size, NULL );
+#endif
+    if( tmp == NULL ) {
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( tmp );
+}
+
+TRMEMAPI( uirealloc )
+void * uirealloc( void *ptr, size_t size )
+{
+    void        *tmp;
+
+#ifdef TRMEM
+    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 8 ) );
+#else
+    tmp = doMemReallocUnsafe( ptr, size, NULL );
+#endif
+    if( tmp == NULL ) {
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( tmp );
+}
+
+TRMEMAPI( uifree )
+void uifree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 9 ), trmemHandle );
+#else
+    free( ptr );
+#endif
+}
+
+#endif /* __LINUX__ */

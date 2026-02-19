@@ -127,8 +127,15 @@ FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
     FullMenuOS2       *newmenu;
     FullMenuItemOS2   *newitem;
 
-    newmenu = RESALLOCSAFE( sizeof( FullMenuOS2 ) );
-    newitem = RESALLOCSAFE( sizeof( FullMenuItemOS2 ) );
+    newmenu = RESALLOC( sizeof( FullMenuOS2 ) );
+    newitem = RESALLOC( sizeof( FullMenuItemOS2 ) );
+
+    if( newmenu == NULL
+      || newitem == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     *newitem = firstitem;
     newmenu->head = NULL;
@@ -144,7 +151,13 @@ FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem 
 {
     FullMenuItemOS2     *newitem;
 
-    newitem = RESALLOCSAFE( sizeof( FullMenuItemOS2 ) );
+    newitem = RESALLOC( sizeof( FullMenuItemOS2 ) );
+
+    if( newitem == NULL ) {
+        RcError( ERR_OUT_OF_MEMORY );
+        ErrorHasOccured = true;
+        return( NULL );
+    }
 
     *newitem = curritem;
 

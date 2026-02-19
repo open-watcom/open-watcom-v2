@@ -44,4 +44,9 @@ extern void    Die( const char *str, ... );
 
 extern long    GetClusterSize( int drive );
 
+extern void    *MemAlloc( size_t size );
+extern char    *MemStrdup( const char *str );
+extern void    *MemRealloc( void *orig, size_t size );
+extern void    MemFree( void *ptr );
+
 #endif

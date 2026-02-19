@@ -723,11 +723,11 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size 
         }
         if( s > entry->ti.size ) {
             /* have to expand string */
-            dest = MemAllocSafeMsg( s, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+            _ChkAlloc( dest, s, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
             memcpy( dest, entry->v.string.loc.e[0].u.p, entry->ti.size );
             memset( &dest[entry->ti.size], ' ', s - entry->ti.size );
             if( AllocatedString( entry ) ) {
-                MemFree( entry->v.string.allocated );
+                _Free( entry->v.string.allocated );
             }
             entry->v.string.allocated = dest;
             LocationCreate( &entry->v.string.loc, LT_INTERNAL, dest );

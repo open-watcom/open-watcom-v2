@@ -46,19 +46,19 @@ void *DIGCLIENTRY( Alloc )( size_t amount )
 {
     void        *p;
 
-    p = MemAlloc( amount );
+    _Alloc( p, amount );
     return( p );
 }
 
 void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 {
-    p = MemRealloc( p, amount );
+    _Realloc( p, amount );
     return( p );
 }
 
 void DIGCLIENTRY( Free )( void *p )
 {
-    MemFree( p );
+    _Free( p );
 }
 
 static obj_attrs DIG2WVOpenMode( dig_open mode )

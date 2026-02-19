@@ -133,7 +133,7 @@ static walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
         pos = TxtBuff;
         endpos = NULL;
         if( WndRXFind( srch->rx, &pos, &endpos ) ) {
-            found = MemRealloc( srch->found, ( srch->num_rows + 1 ) * sizeof( found_item ) );
+            found = WndRealloc( srch->found, ( srch->num_rows + 1 ) * sizeof( found_item ) );
             if( found == NULL )
                 break;
             srch->found = found;
@@ -174,7 +174,7 @@ static void GlobalModWalker( srch_window *srch )
 
     DIPWalkModList( NO_MOD, BuildFileList, srch );
     srch->file_list = SortLinkedList( srch->file_list,
-                offsetof( a_cue, next ), CueCompare, MemAlloc, MemFree );
+                offsetof( a_cue, next ), CueCompare, DbgAlloc, DbgFree );
     for( file = srch->file_list; file != NULL; file = file->next ) {
         if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 )
             continue;
@@ -182,7 +182,7 @@ static void GlobalModWalker( srch_window *srch )
     }
     for( file = srch->file_list; file != NULL; file = next ) {
         next = file->next;
-        MemFree( file );
+        WndFree( file );
     }
     srch->file_list = NULL;
 }
@@ -204,9 +204,9 @@ static  void    SrchFreeFound( srch_window *srch )
     int         i;
 
     for( i = 0; i < srch->num_rows; ++i ) {
-        MemFree( srch->found[i].source_line );
+        WndFree( srch->found[i].source_line );
     }
-    MemFree( srch->found );
+    WndFree( srch->found );
     srch->found = NULL;
     srch->num_rows = 0;
 }
@@ -323,7 +323,7 @@ static bool WNDCALLBACK SrchWndEventProc( a_window wnd, gui_event gui_ev, void *
         WndFreeRX( srch->expr );
         WndFreeRX( srch->rx );
         SrchFreeFound( srch );
-        MemFree( srch );
+        WndFree( srch );
         return( true );
     }
     return( false );
@@ -364,9 +364,9 @@ static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie
     srch->walk = walk;
     rx = WndCompileRX( expr );
     if( srch->expr == NULL || rx == NULL ) {
-        MemFree( srch->expr );
-        MemFree( rx );
-        MemFree( srch );
+        WndFree( srch->expr );
+        WndFree( rx );
+        WndFree( srch );
         return( NULL );
     }
     srch->rx = rx;

@@ -37,7 +37,13 @@
 #include "msg.h"
 #include "aui.h"
 #include "guimem.h"
-#include "commmem.h"
+#if defined( GUI_IS_GUI )
+    #include "wpimem.h"
+    #include "cguimem.h"
+#else
+    #include "stdui.h"
+    #include "helpmem.h"
+#endif
 #include "memutil.h"
 #include "wpmutil.h"
 #include "dumpmem.h"
@@ -213,8 +219,8 @@ void *ProfAlloc( size_t size )
     }
     return( mem );
 }
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( GUIMemAlloc )
+void *GUIMemAlloc( size_t size )
 /******************************/
 {
     void    *mem;
@@ -241,8 +247,8 @@ void *MemAlloc( size_t size )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( MemAlloc )
-void * MemAlloc( size_t size )
+TRMEMAPI( _wpi_malloc )
+void * _wpi_malloc( size_t size )
 {
     void    *mem;
 
@@ -293,8 +299,8 @@ void *MemAlloc( size_t size )
 
 #else /* !GUI_IS_GUI */
 
-TRMEMAPI( MemAlloc )
-void * UIAPI MemAlloc( size_t size )
+TRMEMAPI( uimalloc )
+void * UIAPI uimalloc( size_t size )
 {
     void    *mem;
 
@@ -317,8 +323,8 @@ void * UIAPI MemAlloc( size_t size )
     }
     return( mem );
 }
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( HelpMemAlloc )
+void *HelpMemAlloc( size_t size )
 {
     void    *mem;
 
@@ -373,8 +379,8 @@ void *wres_alloc( size_t size )
  *  Strdup functions
  */
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
+TRMEMAPI( GUIMemStrdup )
+char *GUIMemStrdup( const char *str )
 /***********************************/
 {
     char    *ptr;
@@ -416,8 +422,8 @@ void ProfFree( void *ptr )
     free( ptr );
 #endif
 }
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
+TRMEMAPI( GUIMemFree )
+void GUIMemFree( void *ptr )
 /**************************/
 {
 #ifdef TRMEM
@@ -430,8 +436,8 @@ void MemFree( void *ptr )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
+TRMEMAPI( _wpi_free )
+void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
@@ -454,8 +460,8 @@ void MemFree( void *ptr )
 
 #else /* !GUI_IS_GUI */
 
-TRMEMAPI( MemFree )
-void UIAPI MemFree( void *ptr )
+TRMEMAPI( uifree )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
@@ -464,8 +470,8 @@ void UIAPI MemFree( void *ptr )
     free( ptr );
 #endif
 }
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
+TRMEMAPI( HelpMemFree )
+void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
@@ -517,8 +523,8 @@ void *ProfRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t new_size )
+TRMEMAPI( GUIMemRealloc )
+void *GUIMemRealloc( void *ptr, size_t new_size )
 /***********************************************/
 {
     void    *new;
@@ -544,8 +550,8 @@ void *MemRealloc( void *ptr, size_t new_size )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( MemRealloc )
-void * MemRealloc( void *ptr, size_t new_size )
+TRMEMAPI( _wpi_realloc )
+void * _wpi_realloc( void *ptr, size_t new_size )
 {
     void    *new;
 
@@ -594,8 +600,8 @@ void *MemRealloc( void *ptr, size_t new_size )
 
 #else /* !GUI_IS_GUI */
 
-TRMEMAPI( MemRealloc )
-void * UIAPI MemRealloc( void *ptr, size_t new_size )
+TRMEMAPI( uirealloc )
+void * UIAPI uirealloc( void *ptr, size_t new_size )
 {
     void    *new;
 
@@ -617,8 +623,8 @@ void * UIAPI MemRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t new_size )
+TRMEMAPI( HelpMemRealloc )
+void *HelpMemRealloc( void *ptr, size_t new_size )
 {
     void    *new;
 

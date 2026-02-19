@@ -111,7 +111,7 @@ bool intern initbios( void )
     if( initmonitor() ) {
 
         size = UIData->width * UIData->height;
-        UIData->screen.origin = (LP_PIXEL)MemAlloc( size * sizeof( PIXEL ) );
+        UIData->screen.origin = (LP_PIXEL)uimalloc( size * sizeof( PIXEL ) );
         for( i = 0; i < size; ++i ) {
             UIData->screen.origin[i].ch = ' ';
             UIData->screen.origin[i].attr = 7;
@@ -153,7 +153,7 @@ void intern finibios( void )
     uifinicursor();
     finikeyboard();
     finimonitor();
-    MemFree( (void *)UIData->screen.origin );
+    uifree( (void *)UIData->screen.origin );
 
 }
 

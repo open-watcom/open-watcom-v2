@@ -359,11 +359,11 @@ static char *MakeFileName( const char *infilename, const char *ext )
 
     len = strlen( infilename ) + 1;
     if( ext == NULL ) {
-        out = MemAllocSafe( len );
+        out = RcMemAlloc( len );
         strcpy( out, infilename );
     } else {
         _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        out = MemAllocSafe( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
+        out = RcMemAlloc( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
         _makepath( out, pg.drive, pg.dir, pg.fname, ext );
     }
     return( out );
@@ -378,8 +378,8 @@ static void CheckExtension( char **filename, const char *defext )
     _splitpath2( *filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
         len = strlen( *filename ) + ( 1 + strlen( defext ) ) + 1;
-        MemFree( *filename );
-        *filename = MemAllocSafe( len );
+        RcMemFree( *filename );
+        *filename = RcMemAlloc( len );
         _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
     }
 } /* CheckExtension */
@@ -513,27 +513,27 @@ void ScanParamFini( void )
 
     while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
-        MemFree( tmpres );
+        RcMemFree( tmpres );
     }
-    MemFree( CmdLineParms.InFileName );
+    RcMemFree( CmdLineParms.InFileName );
     CmdLineParms.InFileName = NULL;
-    MemFree( CmdLineParms.InExeFileName );
+    RcMemFree( CmdLineParms.InExeFileName );
     CmdLineParms.InExeFileName = NULL;
-    MemFree( CmdLineParms.OutResFileName );
+    RcMemFree( CmdLineParms.OutResFileName );
     CmdLineParms.OutResFileName = NULL;
-    MemFree( CmdLineParms.OutExeFileName );
+    RcMemFree( CmdLineParms.OutExeFileName );
     CmdLineParms.OutExeFileName = NULL;
     if( CmdLineParms.CodePageFile != NULL ) {
-        MemFree( CmdLineParms.CodePageFile );
+        RcMemFree( CmdLineParms.CodePageFile );
         CmdLineParms.CodePageFile = NULL;
     }
 #ifndef NO_REPLACE
     while( (strings = CmdLineParms.FindReplaceStrings) != NULL ) {
         CmdLineParms.FindReplaceStrings = CmdLineParms.FindReplaceStrings->next;
-        MemFree( strings );
+        RcMemFree( strings );
     }
     if( CmdLineParms.PrependString != NULL ) {
-        MemFree( CmdLineParms.PrependString );
+        RcMemFree( CmdLineParms.PrependString );
         CmdLineParms.PrependString = NULL;
     }
 #endif
@@ -572,7 +572,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
             /*
              * checking if a replacement is to be done, then allocating memory
              */
-            replacedString = MemAllocSafe( lenOfStringFromFile+1 );
+            replacedString = RcMemAlloc( lenOfStringFromFile+1 );
             for( k = 0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
             }
@@ -596,7 +596,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
                      * bigger than the string to find
                      */
                     newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
-                    replacedString = MemReallocSafe( replacedString, newMemSize );
+                    replacedString = RcMemRealloc( replacedString, newMemSize );
                 }
                 strcpy( &replacedString[j], frStrings->replaceString );
                 j = j + lenOfReplaceString;
@@ -606,18 +606,18 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         }
         if( replacedString != NULL
           && frStrings->next != NULL ) {
-            stringFromFile = MemReallocSafe( stringFromFile, strlen( replacedString ) + 1 );
+            stringFromFile = RcMemRealloc( stringFromFile, strlen( replacedString ) + 1 );
             strcpy( stringFromFile, replacedString );
-            MemFree( replacedString );
+            RcMemFree( replacedString );
             replacedString = NULL;
         }
     }
 
     if( replacedString != NULL ) {
-        MemFree( stringFromFile );
+        RcMemFree( stringFromFile );
         return( replacedString );
     } else {
-        MemFree( replacedString );
+        RcMemFree( replacedString );
         return( stringFromFile );
     }
 }
@@ -633,22 +633,22 @@ void PrependToString( ScanValue *value, char *stringFromFile )
     if( CmdLineParms.Prepend ) {
         if( strcmp( stringFromFile, "" ) != 0 ) {
             lenOfPrependString =  strlen( CmdLineParms.PrependString );
-            value->string.string = MemAllocSafe( lenOfStringFromFile
+            value->string.string = RcMemAlloc( lenOfStringFromFile
                                    + lenOfPrependString + 1);
             strcpy( value->string.string, CmdLineParms.PrependString );
         } else {
             // in this case the lenOfPrependString is zero, so the
             // strcpy will not fail.
-            value->string.string = MemAllocSafe( lenOfStringFromFile + 1 );
+            value->string.string = RcMemAlloc( lenOfStringFromFile + 1 );
         }
         strcpy( &value->string.string[ lenOfPrependString ], stringFromFile );
         value->string.length = lenOfStringFromFile + lenOfPrependString;
     } else {
-        value->string.string = MemAllocSafe( ( lenOfStringFromFile+1 ) );
+        value->string.string = RcMemAlloc( ( lenOfStringFromFile+1 ) );
         strcpy( value->string.string, stringFromFile );
         value->string.length = lenOfStringFromFile;
     }
-    MemFree( stringFromFile );
+    RcMemFree( stringFromFile );
 }
 #endif
 
@@ -667,7 +667,7 @@ static char *ReadIndirectFile( char *name )
         fseek( fp, 0, SEEK_END );
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
-        env = MemAllocSafe( len + 1 );
+        env = RcMemAlloc( len + 1 );
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
@@ -699,7 +699,7 @@ static bool scanDefine( OPT_STRING **h )
         if( p != NULL ) {
             *p = ' ';
         } else {
-            *h = MemReallocSafe( *h, sizeof( **h ) + strlen( m ) + 2 );
+            *h = RcMemRealloc( *h, sizeof( **h ) + strlen( m ) + 2 );
             strcat( (*h)->data, " 1" );
         }
         return( true );
@@ -761,10 +761,10 @@ static void AddInpFileName( const char *infile )
     if( infile != NULL && *infile != '\0' ) {
         switch( nofilenames ) {
         case 0:
-            CmdLineParms.InFileName = MemStrdupSafe( infile );
+            CmdLineParms.InFileName = RcMemStrdup( infile );
             break;
         case 1:
-            CmdLineParms.InExeFileName = MemStrdupSafe( infile );
+            CmdLineParms.InExeFileName = RcMemStrdup( infile );
             break;
         case 2:
             /*
@@ -827,7 +827,7 @@ int ProcOptions( OPT_STORAGE *data, const char *str )
             if( ch == '\0' ) {
                 if( level < 0 )
                     break;
-                MemFree( buffers[level] );
+                RcMemFree( buffers[level] );
                 CmdScanLineInit( save[level] );
                 level--;
                 continue;
@@ -855,7 +855,7 @@ static void OptAddString( OPT_STRING **h, char const *s )
 {
     OPT_STRING *value;
 
-    value = MemAllocSafe( sizeof( *value ) + strlen( s ) );
+    value = RcMemAlloc( sizeof( *value ) + strlen( s ) );
     strcpy( value->data, s );
     value->next = *h;
     *h = value;
@@ -872,12 +872,12 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = MemStrdupSafe( s->data );
+            p = RcMemStrdup( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
     if( o != NULL ) {
-        MemFree( *o );
+        RcMemFree( *o );
         *o = p;
     }
     return( p );
@@ -957,7 +957,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && data->r ) {
-        CmdLineParms.OutResFileName = MemStrdupSafe( outfile );
+        CmdLineParms.OutResFileName = RcMemStrdup( outfile );
         if( data->fo ) {
             OPT_CLEAN_STRING( &(data->fo_value) );
         }
@@ -974,7 +974,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
                 size_t len;
 
                 len = strlen( s->data );
-                resfile = MemAllocSafe( sizeof( ExtraRes ) + len + 1 );
+                resfile = RcMemAlloc( sizeof( ExtraRes ) + len + 1 );
                 strcpy( resfile->name, s->data );
                 resfile->next = CmdLineParms.ExtraResFiles;
                 CmdLineParms.ExtraResFiles = resfile;
@@ -984,7 +984,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && !data->r ) {
-        CmdLineParms.OutExeFileName = MemStrdupSafe( outfile );
+        CmdLineParms.OutExeFileName = RcMemStrdup( outfile );
         if( data->fe ) {
             OPT_CLEAN_STRING( &(data->fe_value) );
         }
@@ -997,20 +997,20 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
 
         reverseList( &(data->g_value) );
         for( s = data->g_value; s != NULL; s = s->next ) {
-            frStrings = MemAllocSafe( sizeof( FRStrings ) + strlen( s->data ) + 1 );
+            frStrings = RcMemAlloc( sizeof( FRStrings ) + strlen( s->data ) + 1 );
             strcpy( frStrings->buf, s->data );
             frStrings->findString = strtok( frStrings->buf, "," );
             if( frStrings->findString == NULL ) {
                 PrintBanner();
                 RcError( ERR_SYNTAX_STR, "-g=" );
-                MemFree( frStrings );
+                RcMemFree( frStrings );
                 continue;
             }
             frStrings->replaceString = strtok( NULL, "," );
             if( frStrings->replaceString == NULL ) {
                 PrintBanner();
                 RcError( ERR_SYNTAX_STR, "-g=" );
-                MemFree( frStrings );
+                RcMemFree( frStrings );
                 continue;
             }
             frStrings->next = CmdLineParms.FindReplaceStrings;

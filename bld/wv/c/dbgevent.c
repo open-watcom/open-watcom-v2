@@ -70,9 +70,9 @@ static void FreeOneEvent( event_record *junk )
     owner = FindOwner( junk );
     *owner = junk->next;
     FreeCmdList( junk->cmd );
-    MemFree( junk->addr_string );
-    MemFree( junk->cue );
-    MemFree( junk );
+    _Free( junk->addr_string );
+    _Free( junk->cue );
+    _Free( junk );
 }
 
 void RecordInit( void )
@@ -125,7 +125,7 @@ static void AddEvent( const char *start, size_t len, address ip )
     event_record        *new;
 
     owner = FindOwner( NULL );
-    new = MemAlloc( sizeof( *new ) );
+    _Alloc( new, sizeof( *new ) );
     new->addr_string = NULL;
     new->cue = NULL;
     new->next = NULL;

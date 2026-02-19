@@ -60,11 +60,11 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
 {
     VSCREEN             *vs;
 
-    vs = MemAlloc( sizeof( VSCREEN ) );
+    vs = uimalloc( sizeof( VSCREEN ) );
     if( vs != NULL ) {
         uiscreeninit( vs, area, flags );
         if( title != NULL ) {
-            vs->title = MemAlloc( strlen( title ) + 1 );
+            vs->title = uimalloc( strlen( title ) + 1 );
             strcpy( (char *)vs->title, title );
             vs->dynamic_title = true;
         }
@@ -78,8 +78,8 @@ void intern uiclose( VSCREEN *vs )
 {
     uivclose( vs );
     if( vs->dynamic_title )
-        MemFree( (void *)vs->title );
-    MemFree( vs );
+        uifree( (void *)vs->title );
+    uifree( vs );
 }
 
 void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const char *text )

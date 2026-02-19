@@ -56,7 +56,7 @@ char *GUIStripTrailingBlanks( const char *label, bool *ok )
     }
     if( length == 0 )
         return( NULL );
-    new_str = (char *)MemAlloc( length + 1 );
+    new_str = (char *)GUIMemAlloc( length + 1 );
     if( new_str == NULL ) {
         if( ok != NULL )
             *ok = false;

@@ -103,7 +103,7 @@ void    WndSayMatchMode( a_window wnd )
         sofar_buff[match_len + wnd->keyindex] = '\0';
         WndStatusText( sofar_buff );
     }
-    MemFree( match );
+    WndFree( match );
 }
 
 static  bool    DoWndKeyChoose( a_window wnd, int ch )

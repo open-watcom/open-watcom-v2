@@ -152,7 +152,7 @@ static void flushLog( bool free )
     fclose( f );
     if( free ) {
         for( i = 0; i < LinesUsed; i++ ) {
-            MemFree( BufLines[i] );
+            CUIMemFree( BufLines[i] );
         }
     }
     LinesUsed = 0;
@@ -221,12 +221,12 @@ INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     case WM_COMMAND:
         switch( wparam ) {
         case LOG_CFG_BROWSE:
-            buf = MemAlloc( LOG_MAX_FNAME );
+            buf = CUIMemAlloc( LOG_MAX_FNAME );
             if( getLogName( buf, hwnd ) ) {
                 strlwr( buf );
                 SetDlgItemText( hwnd, LOG_CFG_NAME_EDIT, buf );
             }
-            MemFree( buf );
+            CUIMemFree( buf );
             break;
         case LOG_CFG_OK:
             if( IsDlgButtonChecked( hwnd, LOG_CFG_QUERY_NAME ) ) {
@@ -376,7 +376,7 @@ void LogOut( char *res )
         flushLog( false );
     } else {
         len = strlen( res ) + 1;
-        BufLines[LinesUsed] = MemAlloc( len );
+        BufLines[LinesUsed] = CUIMemAlloc( len );
         strcpy( BufLines[LinesUsed], res );
         LinesUsed++;
         if( LinesUsed == NO_BUF_LINES ) {

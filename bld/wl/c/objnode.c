@@ -69,12 +69,12 @@ static void *MakeArray( unsigned size )
 {
     nodearray_handle    nodes;
 
-    nodes = MemAllocSafe( sizeof( nodearray ) );
+    nodes = LnkMemAlloc( sizeof( nodearray ) );
     nodes->num = 0;
     nodes->elsize = size;
     nodes->arraymax = 0;
     size *= NODE_ARRAY_SIZE;
-    nodes->array[0] = MemAllocSafe( size );
+    nodes->array[0] = LnkMemAlloc( size );
     memset( nodes->array[0], 0, size );
     return( nodes );
 }
@@ -95,9 +95,9 @@ static void BurnNodeArray( nodearray_handle list )
     unsigned    index;
 
     for( index = 0; index <= list->arraymax; index++ ) {
-        MemFree( list->array[index] );
+        LnkMemFree( list->array[index] );
     }
-    MemFree( list );
+    LnkMemFree( list );
 }
 
 void BurnNodes( void )
@@ -123,7 +123,7 @@ static void AllocNewArray( nodearray_handle list )
 
     list->arraymax++;
     size = list->elsize * NODE_ARRAY_SIZE;
-    list->array[list->arraymax] = MemAllocSafe( size );
+    list->array[list->arraymax] = LnkMemAlloc( size );
     memset( list->array[list->arraymax], 0, size );
 }
 
@@ -186,7 +186,7 @@ static void ReleaseNamelist( void *node, void *dummy )
 {
     /* unused parameters */ (void)dummy;
 
-    MemFree( *((void **)node) );
+    LnkMemFree( *((void **)node) );
 }
 
 static void IterateNodeArray( char *narray, void (*fn)(void *, void *),
@@ -316,7 +316,7 @@ list_of_names *MakeListName( char *name, size_t len )
 {
     list_of_names   *new;
 
-    new = MemAllocSafe( sizeof( list_of_names ) + len );
+    new = LnkMemAlloc( sizeof( list_of_names ) + len );
     new->next_name = NULL;
     memcpy( new->name, name, len );
     new->name[len] = '\0';

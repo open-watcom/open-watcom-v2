@@ -894,7 +894,7 @@ void DwarfWrite( void )
     elf_header.e_shstrndx = elf_header.e_shnum - 1;     // last entry
     WriteLoad( &elf_header, sizeof( Elf32_Ehdr ) );
     shdr_size = sizeof( Elf32_Shdr ) * elf_header.e_shnum;
-    sect_header = MemAllocSafe( shdr_size );
+    sect_header = LnkMemAlloc( shdr_size );
     savepos = PosLoad() + shdr_size;
     SeekLoad( savepos );
     memset( sect_header, 0, sizeof( Elf32_Shdr ) );   // first fill in the null section
@@ -912,5 +912,5 @@ void DwarfWrite( void )
     virt_off += DwarfWriteTrailer( virt_off );
     SeekLoad( savepos - shdr_size );
     WriteLoad( sect_header, shdr_size );
-    MemFree( sect_header );
+    LnkMemFree( sect_header );
 }

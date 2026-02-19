@@ -117,7 +117,7 @@ static bool WNDCALLBACK FingWndEventProc( a_window wnd, gui_event gui_ev, void *
             colours[WND_PLAIN].fore = GUI_BLACK;
             colours[WND_PLAIN].back = GUI_BR_CYAN;
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
-            MemFree( colours );
+            GUIMemFree( colours );
         }
         return( true );
     }

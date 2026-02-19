@@ -813,9 +813,9 @@ static bool WNDCALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, void *
                 FileRemove( file->name, 0 );
             }
         }
-        MemFree( file->name );
+        WndFree( file->name );
         AsmFreeSrc( file->asw );
-        MemFree( file );
+        WndFree( file );
         DbgUpdate( UP_OPEN_CHANGE );
         return( true );
     }

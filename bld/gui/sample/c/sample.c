@@ -443,7 +443,7 @@ static change_struct *MakeChangeStruct( char *str, size_t length, gui_window *wn
 {
     change_struct       *old;
 
-    old = (change_struct *)MemAlloc( sizeof( change_struct  ) );
+    old = (change_struct *)GUIMemAlloc( sizeof( change_struct  ) );
     old->string = str;
     old->length = length;
     old->parent = 0;
@@ -537,7 +537,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         text = GUIGetText( wnd, id );
         GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
-        MemFree( text );
+        GUIMemFree( text );
         return( true );
     case GUI_RBUTTONUP:
         if( wnd != MainWnd ) {
@@ -566,10 +566,10 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUISetVScrollThumb( wnd, Percent );
         return( true );
     case GUI_DESTROY:
-        MemFree( OldValue );
+        GUIMemFree( OldValue );
         OldValue = NULL;
         text = GUIGetText( wnd, EDITWINDOW_CONTROL );
-        MemFree( text );
+        GUIMemFree( text );
         if( MainWnd == wnd ) {
             MainWnd = NULL;
         }
@@ -629,7 +629,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         case MENU_GETNEWVAL:
             if( GUIGetNewVal( "Please enter new value :", OldValue, &new ) ==
                 GUI_RET_OK ) {
-                MemFree( OldValue );
+                GUIMemFree( OldValue );
                 OldValue = new;
             }
             break;
@@ -650,7 +650,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             if( Child3Wnd != NULL ) {
                 num = GUIGetNumWindowColours( Child3Wnd );
                 colours = GUIGetWindowColours( Child3Wnd );
-                MemFree( colours );
+                GUIMemFree( colours );
 #if !default_colours
                 GUISetWindowColours( Child3Wnd, GUI_NUM_ATTRS, &ParentColours );
 #endif
@@ -730,7 +730,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                     if( GUISetFontInfo( Child2Wnd, fontinfo ) ) {
                         GUIWndDirty( Child2Wnd );
                     }
-                    MemFree( fontinfo );
+                    GUIMemFree( fontinfo );
                 }
             }
             break;
@@ -776,7 +776,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             new = GUIGetText( wnd, EDITWINDOW_CONTROL );
             GUIDisplayMessage( MainWnd, new, "Issue Command:", GUI_RETRY_CANCEL );
             GUIClearText( wnd, EDITWINDOW_CONTROL );
-            MemFree( new );
+            GUIMemFree( new );
             break;
         }
         return( true );
@@ -785,7 +785,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         if( key == GUI_KEY_ENTER ) {
             new = GUIGetText( wnd, id );
             GUIDisplayMessage( MainWnd, new, "Issue Command:", GUI_YES_NO_CANCEL );
-            MemFree( new );
+            GUIMemFree( new );
             GUIClearText( wnd, id );
         }
         return( true );
@@ -844,10 +844,10 @@ static void DoOkay( gui_window *wnd )
     } else {
         strncpy( change->string, new, change->length );
     }
-    MemFree( new );
+    GUIMemFree( new );
     GUIGetClientRect( change->wnd_to_update, &rect );
     GUIWndDirtyRect( change->wnd_to_update, &rect );
-    MemFree( change );
+    GUIMemFree( change );
     GUISetExtra( wnd, NULL );
 }
 
@@ -878,7 +878,7 @@ bool ControlWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         return( true );
     case GUI_DESTROY:
         change = GUIGetExtra( wnd );
-        MemFree( change );
+        GUIMemFree( change );
         GUISetExtra( wnd, NULL );
         DialogWindow = NULL;
         break;
@@ -1364,7 +1364,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         for( i = 0; i < out->numrows; i++ ) {
             for( currattr = out->display[i].attr_list; currattr != NULL; currattr = nextattr ) {
                  nextattr = currattr->next;
-                 MemFree( currattr );
+                 GUIMemFree( currattr );
             }
         }
         if( wnd == Child1Wnd ) {
@@ -1443,7 +1443,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             }
             if( col < strlen( out->display[row].data ) ) {
                 PrevRow = row;
-                new_attr = (attr_entry *)MemAlloc( sizeof( attr_entry ) );
+                new_attr = (attr_entry *)GUIMemAlloc( sizeof( attr_entry ) );
                 new_attr->start = col;
                 new_attr->end = col;
 #if default_colours

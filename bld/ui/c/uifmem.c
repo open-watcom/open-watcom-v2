@@ -40,7 +40,7 @@ LP_VOID UIAPI uifaralloc( size_t size )
 {
     void        *ptr;
 
-    ptr = MemAlloc( size );
+    ptr = uimalloc( size );
     if( ptr != NULL ) {
         /* convert ptr to far if necessary: use DS for segment value */
         return( ptr );
@@ -58,8 +58,8 @@ void UIAPI uifarfree( LP_VOID ptr )
      * since the memory should have been allocated by uifaralloc() above,
      * this is safe because we synthesized the segment part to begin with.
      */
-    MemFree( (void *)_FP_OFF( ptr ) );
+    uifree( (void *)_FP_OFF( ptr ) );
 #else
-    MemFree( (void *)ptr );
+    uifree( (void *)ptr );
 #endif
 }

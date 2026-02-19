@@ -40,4 +40,9 @@ extern void     GUIMemClose( void );
 extern void     GUIMemRedirect( FILE *fp );
 extern void     GUIMemPrtUsage( void );
 
+extern void     *GUIMemAlloc( size_t size );
+extern char     *GUIMemStrdup( const char *str );
+extern void     *GUIMemRealloc( void * ptr, size_t size );
+extern void     GUIMemFree( void * ptr );
+
 #endif

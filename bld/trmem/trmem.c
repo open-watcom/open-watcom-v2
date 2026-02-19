@@ -405,7 +405,7 @@ _trmem_hdl _trmem_open(
 
     hdl = (_trmem_hdl) alloc( sizeof( struct _trmem_internal ) );
     if( hdl == NULL ) {
-        return( _TRMEM_HDL_NONE );
+        return( NULL );
     }
     hdl->alloc          = alloc;
     hdl->free           = free;
@@ -508,7 +508,7 @@ void *_trmem_alloc( size_t size, _trmem_who who, _trmem_hdl hdl )
             addToList( tr, hdl );
         }
         hdl->mem_used += size;
-        if( hdl->max_mem < hdl->mem_used ) {
+        if( hdl->mem_used > hdl->max_mem ) {
             hdl->max_mem = hdl->mem_used;
         }
     }
@@ -641,7 +641,7 @@ void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
                 addToList( tr, hdl );
             }
             hdl->mem_used += size;
-            if( hdl->max_mem < hdl->mem_used ) {
+            if( hdl->mem_used > hdl->max_mem ) {
                 hdl->max_mem = hdl->mem_used;
             }
         }
@@ -669,7 +669,7 @@ void *_trmem_realloc( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
     *(unsigned char *)_PtrAdd( new_block, size ) = MARKER_BYTE;
     hdl->mem_used -= old_size;
     hdl->mem_used += size;
-    if( hdl->max_mem < hdl->mem_used ) {
+    if( hdl->mem_used > hdl->max_mem ) {
         hdl->max_mem = hdl->mem_used;
     }
     tr->mem = new_block;
@@ -713,7 +713,7 @@ char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
             addToList( tr, hdl );
         }
         hdl->mem_used += size;
-        if( hdl->max_mem < hdl->mem_used ) {
+        if( hdl->mem_used > hdl->max_mem ) {
             hdl->max_mem = hdl->mem_used;
         }
     }

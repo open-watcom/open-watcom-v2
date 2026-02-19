@@ -278,7 +278,7 @@ static void Profile( void )
 {
     if( InvokeFile != NULL ) {
         ProfileInvoke( InvokeFile );
-        MemFree( InvokeFile );
+        _Free( InvokeFile );
         InvokeFile = NULL;
         ProcInput();
     }
@@ -290,7 +290,7 @@ static void PushInitCmdList( void )
 
     if( InitCmdList != NULL ) {
         cmds = AllocCmdList( InitCmdList, strlen( InitCmdList ) );
-        MemFree( InitCmdList );
+        _Free( InitCmdList );
         InitCmdList = NULL;
         PushCmdList( cmds );
         FreeCmdList( cmds );
@@ -375,7 +375,7 @@ void DebugFini( void )
     FiniMADInfo();
     FiniTrace();
     RestoreHandlers();
-    MemFree( TrapParms );
+    _Free( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
 }

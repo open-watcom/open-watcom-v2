@@ -37,10 +37,22 @@
 #include "preproc.h"
 
 
+static void outOfMemory( void )
+/*****************************/
+{
+    RcFatalError( ERR_OUT_OF_MEMORY );
+}
+
 void *PPENTRY PP_Alloc( size_t size )
 /***********************************/
 {
-    return( RESALLOCSAFE( size ) );
+    void    *p;
+
+    p = RESALLOC( size );
+    if( p == NULL ) {
+        outOfMemory();
+    }
+    return( p );
 }
 
 void PPENTRY PP_Free( void *p )

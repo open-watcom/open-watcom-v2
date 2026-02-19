@@ -79,7 +79,7 @@ char *GetTermType( void )
             /* We're always a QNX terminal if UIConCtrol != NULL */
             p = "qnx";
         }
-        UITermType = MemAlloc( strlen( p ) + 1 );
+        UITermType = uimalloc( strlen( p ) + 1 );
         strcpy( UITermType, p );
     }
     return( UITermType );
@@ -88,12 +88,12 @@ char *GetTermType( void )
 void SetTermType( const char *new_term )
 {
     if( UITermType != NULL ) {
-        MemFree( UITermType );
+        uifree( UITermType );
     }
     if( new_term == NULL ) {
         new_term = "";
     }
-    UITermType = MemAlloc( strlen( new_term ) + 1 );
+    UITermType = uimalloc( strlen( new_term ) + 1 );
     strcpy( UITermType, new_term );
 }
 
@@ -147,7 +147,7 @@ void intern finibios( void )
     _uibiosfini();
     del_curterm( cur_term );
     if( UITermType != NULL ) {
-        MemFree( UITermType );
+        uifree( UITermType );
         UITermType = NULL;
     }
 }

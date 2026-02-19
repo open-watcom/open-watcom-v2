@@ -77,10 +77,10 @@ void SetOS2Fmt( void )
 void FreeOS2Fmt( void )
 /*********************/
 {
-    MemFree( FmtData.u.os2fam.stub_file_name );
-    MemFree( FmtData.u.os2fam.module_name );
-    MemFree( FmtData.u.os2fam.old_lib_name );
-    MemFree( FmtData.description );
+    LnkMemFree( FmtData.u.os2fam.stub_file_name );
+    LnkMemFree( FmtData.u.os2fam.module_name );
+    LnkMemFree( FmtData.u.os2fam.old_lib_name );
+    LnkMemFree( FmtData.description );
     FreeImpNameTab();
     FreeExportList();
     FreeSegFlags( (xxx_seg_flags *)FmtData.u.os2fam.seg_flags );
@@ -145,7 +145,7 @@ static bool GetWlibImports( void )
     fname = FileName( Token.this, Token.len, E_LBC, false );
     handle = QOpenR( fname );
     SetCommandFile( handle, fname );
-    MemFree( fname );
+    LnkMemFree( fname );
     Token.locked = true;      /* make sure only this file parsed */
     while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
         if( Token.len <= 2 )
@@ -455,7 +455,7 @@ static bool AddResource( void )
 
     str = getstring();
     DoAddResource( str );
-    MemFree( str );
+    LnkMemFree( str );
     return( true );
 }
 
@@ -554,7 +554,7 @@ static bool getexport( void )
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( ERR+LOC+LINE + MSG_EXPORT_ORD_INVALID, NULL );
-            MemFree( exp );
+            LnkMemFree( exp );
             GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
             return( true );
         }
@@ -942,7 +942,7 @@ static bool getsegflags( void )
     os2_seg_flags   *entry;
 
     Token.thumb = true;
-    entry = MemAllocSafe( sizeof( os2_seg_flags ) );
+    entry = LnkMemAlloc( sizeof( os2_seg_flags ) );
     entry->specified = 0;
     entry->flags = FmtData.def_seg_flags;   // default value.
     entry->name = NULL;
@@ -953,7 +953,7 @@ static bool getsegflags( void )
     if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             FmtData.u.os2fam.seg_flags = entry->next;
-            MemFree( entry );
+            LnkMemFree( entry );
             return( false );
         }
         entry->name = getstring();

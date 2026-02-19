@@ -126,7 +126,7 @@ static void InitSections( ElfHdr *hdr )
     num += FmtData.u.elf.extrasects;
     hdr->eh.e_shnum = num;
     hdr->sh_size = sizeof( Elf32_Shdr ) * hdr->eh.e_shnum;
-    hdr->sh = MemAllocSafe( hdr->sh_size );
+    hdr->sh = LnkMemAlloc( hdr->sh_size );
     memset( hdr->sh, 0, hdr->sh_size );
     hdr->sh[hdr->i.symtab].sh_name = AddSecName( hdr, ".symtab" );
 }
@@ -179,7 +179,7 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_phnum = NumGroups + NumPhdr;
     hdr->eh.e_phoff = sizeof( Elf32_Ehdr );
     hdr->ph_size = sizeof( Elf32_Phdr ) * hdr->eh.e_phnum;
-    hdr->ph = MemAllocSafe( hdr->ph_size );
+    hdr->ph = LnkMemAlloc( hdr->ph_size );
     if( NumPhdr ) {
         hdr->ph->p_type = PT_PHDR;
         hdr->ph->p_offset = sizeof( Elf32_Ehdr );
@@ -404,8 +404,8 @@ void FiniELFLoadFile( void )
     SeekLoad( 0 );
     WriteLoad( &hdr.eh, sizeof( Elf32_Ehdr ) );
     WriteLoad( hdr.ph, hdr.ph_size );
-    MemFree( hdr.sh );
-    MemFree( hdr.ph );
+    LnkMemFree( hdr.sh );
+    LnkMemFree( hdr.ph );
     FiniStringTable( &hdr.secstrtab );
     FiniStringTable( &SymStrTab );
     SeekLoad( hdr.curr_off );

@@ -732,7 +732,7 @@ bool MDINewWindow( HWND hwnd )
 {
     mdi_data    *md;
 
-    md = (mdi_data *)MemAlloc( sizeof( mdi_data ) );
+    md = (mdi_data *)CUIMemAlloc( sizeof( mdi_data ) );
     if( md == NULL ) {
         return( false );
     }
@@ -780,7 +780,7 @@ static void finiWindow( HWND hwnd )
     if( curr == mdiTail ) {
         mdiTail = prev;
     }
-    MemFree( curr );
+    CUIMemFree( curr );
 
 } /* finiWindow */
 

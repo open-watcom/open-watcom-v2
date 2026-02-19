@@ -343,7 +343,7 @@ void DoIncGroupDefs( void )
     group_entry     **grouptab;
 
     numgroups = RingCount( IncGroupDefs );
-    IncGroups = MemAllocSafe( sizeof( group_entry * ) * numgroups );
+    IncGroups = LnkMemAlloc( sizeof( group_entry * ) * numgroups );
     grouptab = IncGroups;
     RingLookup( IncGroupDefs, DefIncGroup, &grouptab );
     RingFree( &IncGroupDefs );
@@ -1089,7 +1089,7 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
         count++;
     }
     if( generate ) {
-        symlist = MemAllocSafe( sizeof( symbol * ) * count );
+        symlist = LnkMemAlloc( sizeof( symbol * ) * count );
         liststart = symlist;
         *symlist = defsym;
         symlist++;
@@ -1172,7 +1172,7 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
                     oldlist++;
                     symlist++;
                 }
-                MemFree( startlist );
+                LnkMemFree( startlist );
             }
         } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
             DefineVirtualFunction( sym, defsym, ispure, rtns );

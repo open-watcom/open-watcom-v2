@@ -35,7 +35,7 @@
 #include <limits.h>
 #include "wio.h"
 #include "help.h"
-#include "commmem.h"
+#include "helpmem.h"
 #include "iopath.h"
 #include "pathgrp2.h"
 
@@ -66,12 +66,12 @@ static void freeSearchList( void )
 
     if( srch_List != NULL ) {
         for( i = 0; ; i++ ) {
-            MemFree( srch_List[i].info );
+            HelpMemFree( srch_List[i].info );
             if( srch_List[i].type == SRCHTYPE_EOL ) {
                 break;
             }
         }
-        MemFree( srch_List );
+        HelpMemFree( srch_List );
         srch_List = NULL;
     }
 }
@@ -83,7 +83,7 @@ static void freeHelpFiles( void )
     for( count = 0; count < MAX_HELP_FILES; ++count ) {
         if( helpFiles[count].name == NULL )
             break;
-        MemFree( helpFiles[count].name );
+        HelpMemFree( helpFiles[count].name );
         helpFiles[count].name = NULL;
     }
 }
@@ -145,7 +145,7 @@ static void initSearchList(
         while( srchlist[count].type != SRCHTYPE_EOL )
             count++;
         count++;
-        srch_List = MemAlloc( count * sizeof( HelpSrchPathItem ) );
+        srch_List = HelpMemAlloc( count * sizeof( HelpSrchPathItem ) );
         for( i = 0; i < count ; ++i ) {
             srch_List[i].type = srchlist[i].type;
             srch_List[i].info = HelpDupStr( srchlist[i].info );

@@ -107,7 +107,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
         cmd = GUIGetText( gui, CTL_HISTORY );
         GUISetText( gui, CTL_EDIT, cmd );
         GUISelectAll( gui, CTL_EDIT, true );
-        MemFree( cmd );
+        GUIMemFree( cmd );
         return( true );
     case GUI_CONTROL_DCLICKED:
     case GUI_CONTROL_CLICKED:
@@ -116,7 +116,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
         case CTL_HISTORY:
             text = GUIGetText( gui, CTL_HISTORY );
             GUISetText( gui, CTL_EDIT, text );
-            MemFree( text );
+            GUIMemFree( text );
             if( gui_ev == GUI_CONTROL_CLICKED )
                 return( true );
             /* fall through */
@@ -124,7 +124,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
             text = GUIGetText( gui, CTL_EDIT );
             if( text != NULL )
                 DoCmd( text );
-            MemFree( text );
+            GUIMemFree( text );
             /* fall through */
         case CTL_CANCEL:
             GUICloseDialog( gui );
@@ -132,7 +132,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
         }
         break;
     case GUI_DESTROY:
-        MemFree( cmd );
+        WndFree( cmd );
         return( true );
     default:
         break;

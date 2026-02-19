@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include "help.h"
-#include "commmem.h"
+#include "helpmem.h"
 #include "uibox.h"
 #include "hlpuicvr.h"
 #include "hlputkys.h"
@@ -460,7 +460,7 @@ static void del_field( a_field *table, a_field **field, bool changecurr )
         helpStack->cur -= 1;
     }
     next = (*field)->next;
-    MemFree( *field );
+    HelpMemFree( *field );
     *field = next;
     tabFilter.first = helpTab;
 }
@@ -530,7 +530,7 @@ static void nexttopic( const char *word )
     } else {
         len = strlen( word );
     }
-    h = MemAlloc( sizeof( a_hstackent ) + len );
+    h = HelpMemAlloc( sizeof( a_hstackent ) + len );
     if( helpStack != NULL ) {
         helpStack->cur = field_count( helpTab, helpCur );
         helpStack->line = currLine;
@@ -555,7 +555,7 @@ static void prevtopic( void )
     if( helpStack->next != NULL ) {
         h = helpStack;
         helpStack = helpStack->next;
-        MemFree( h );
+        HelpMemFree( h );
     }
     free_fields( &helpTab );
 }
@@ -563,7 +563,7 @@ static void prevtopic( void )
 static void replacetopic( const char *word )
 {
     if( helpStack->next == NULL ) {
-        MemFree( helpStack );
+        HelpMemFree( helpStack );
         helpStack = NULL;
     } else {
         prevtopic();
@@ -576,7 +576,7 @@ void Free_Stack( void )
     while( helpStack->next != NULL ) {
         prevtopic();
     }
-    MemFree( helpStack );
+    HelpMemFree( helpStack );
 }
 
 static unsigned help_in_tab( a_field *fld, void *dummy )
@@ -664,7 +664,7 @@ static ui_event hlpwait( VTAB *tab )
             if( strcmp( helpStack->helpfname, curFileName ) ) {
                 len1 = strlen( helpStack->word );
                 len2 = strlen( helpStack->helpfname );
-                helpCur = MemAlloc( sizeof( a_field ) + len1 + len2 );
+                helpCur = HelpMemAlloc( sizeof( a_field ) + len1 + len2 );
                 memcpy( helpCur->keyword, helpStack->word, len1 );
                 memcpy( helpCur->keyword + len1, helpStack->helpfname, len2 );
                 helpCur->keyword[len1 + len2] = '\0';
@@ -684,7 +684,7 @@ static ui_event hlpwait( VTAB *tab )
                 next_name = HelpSearch( helpSearchHdl );
                 if( next_name != NULL ) {
                     nexttopic( next_name );
-                    MemFree( next_name );
+                    HelpMemFree( next_name );
                     done = true;
                 }
                 uipushlist( helpEventList );
@@ -795,7 +795,7 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
         myinfo->pos++;
         /* fall through */
     case TK_GOOFY_LINK:
-        ht = MemAlloc( sizeof( a_field ) + info->u.link.topic_len + info->u.link.hfname_len );
+        ht = HelpMemAlloc( sizeof( a_field ) + info->u.link.topic_len + info->u.link.hfname_len );
         ht->area.width = 0;
         ht->area.row = myinfo->line;
         ht->area.height = 1;
@@ -984,7 +984,7 @@ static void save_line( int line, long offset )
 {
     if( line >= maxPos ) {
         maxPos = line + 10;
-        helpPos = MemRealloc( helpPos, maxPos * sizeof( *helpPos ) );
+        helpPos = HelpMemRealloc( helpPos, maxPos * sizeof( *helpPos ) );
     }
     if( line > lastHelpLine ) {
         lastHelpLine = line;
@@ -1192,7 +1192,7 @@ static int dispHelp( char *str, VTAB *tab )
 
     if( helpLines > 0 ) {
         maxPos = helpLines + 1;
-        helpPos = MemAlloc( maxPos * sizeof( *helpPos ) );
+        helpPos = HelpMemAlloc( maxPos * sizeof( *helpPos ) );
     } else {
         maxPos = 0;
         helpPos = NULL;
@@ -1251,7 +1251,7 @@ static int dispHelp( char *str, VTAB *tab )
     clearline();
     uivclose( &helpScreen );
     if( helpPos != NULL ) {
-        MemFree( helpPos );
+        HelpMemFree( helpPos );
         helpPos = NULL;
     }
     return( HELP_OK );
@@ -1297,7 +1297,7 @@ static char *fixHelpTopic( const char *topic )
         }
         cnt++;
     }
-    retptr = ret = MemAlloc( cnt + 1 );
+    retptr = ret = HelpMemAlloc( cnt + 1 );
     for( ptr = topic; (c = *ptr) != '\0'; ptr++ ) {
         if( c == '<' || c == '>' || c == '"' || c == '{' || c == '}' ) {
             *retptr++ = IB_ESCAPE;
@@ -1319,14 +1319,14 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     helpTab = NULL;
     helpCur = helpTab;
     strcpy( curFileName, filename );
-    helpInBuf = MemAlloc( BUF_LEN );
+    helpInBuf = HelpMemAlloc( BUF_LEN );
     if( helpInBuf == NULL ) {
-        MemFree( helpStack );
+        HelpMemFree( helpStack );
         return( HELP_NO_MEM );
     }
-    helpOutBuf = MemAlloc( BUF_LEN );
+    helpOutBuf = HelpMemAlloc( BUF_LEN );
     if( helpOutBuf == NULL ) {
-        MemFree( helpStack );
+        HelpMemFree( helpStack );
         return( HELP_NO_MEM );
     }
     // don't fix hyperlink topics
@@ -1354,17 +1354,17 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     // someone else allocated! Just don't do it.
     if( err != HELP_NO_SUBJECT ) {
         if( *helptopic != NULL ) {
-            MemFree( *helptopic );
+            HelpMemFree( *helptopic );
             *helptopic = NULL;
         }
         *filename = '\0';
     }
-    MemFree( helpInBuf );
-    MemFree( helpOutBuf );
-    MemFree( htopic );
+    HelpMemFree( helpInBuf );
+    HelpMemFree( helpOutBuf );
+    HelpMemFree( htopic );
     if( helpTab != NULL && helpCur->key2_len != 0 ) { // cross file link
         len = helpCur->key1_len;
-        *helptopic = ptr = MemAlloc( len + 1 );
+        *helptopic = ptr = HelpMemAlloc( len + 1 );
         strncpy( ptr, helpCur->keyword, len );
         ptr[len] = '\0';
         ptr = helpCur->keyword + len;
@@ -1429,11 +1429,11 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
                 break;
             }
         } else {        // cannot open help file for hyperlink
-            buffer = MemAlloc( 28 + strlen( filename ) );
+            buffer = HelpMemAlloc( 28 + strlen( filename ) );
             sprintf( buffer, "Unable to open helpfile \"%s\".", filename );
             ShowMsgBox( "Error", buffer );
-            MemFree( buffer );
-            MemFree( helptopic );
+            HelpMemFree( buffer );
+            HelpMemFree( helptopic );
             helptopic = HelpDupStr( helpStack->word );
             strcpy( filename, helpStack->helpfname );
             prevtopic();
@@ -1441,7 +1441,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
         first = false;
     }
     if( helptopic != NULL )
-        MemFree( helptopic );
+        HelpMemFree( helptopic );
     return( err );
 }
 
@@ -1453,7 +1453,7 @@ char *HelpDupStr( const char *str )
     ptr = NULL;
     if( str != NULL ) {
         len = strlen( str ) + 1;
-        ptr = MemAlloc( len );
+        ptr = HelpMemAlloc( len );
         if( ptr != NULL ) {
             strcpy( ptr, str );
         }

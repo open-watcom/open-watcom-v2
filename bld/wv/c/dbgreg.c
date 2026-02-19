@@ -187,7 +187,7 @@ static memory_delta *NewMemDelta( address addr, mem_delta_size bytes )
 {
     memory_delta *new;
 
-    new = MemAlloc( sizeof( *new ) - 1 + 2 * bytes );
+    _Alloc( new, sizeof( *new ) - 1 + 2 * bytes );
     if( new != NULL ) {
         memset( new, 0, sizeof( *new ) );
         new->addr = addr;
@@ -255,7 +255,7 @@ void SetMemAfter( bool tracing )
           && memcmp( curr->data, curr->data + curr->size, curr->size ) == 0 ) {
             /* don't need the sucker */
             *owner = curr->next;
-            MemFree( curr );
+            _Free( curr );
         } else {
             owner = &curr->next;
         }
@@ -269,7 +269,7 @@ static void FreeMemDelta( save_state *state )
 
     for( mem = state->mem; mem != NULL; mem = next ) {
         next = mem->next;
-        MemFree( mem );
+        _Free( mem );
     }
     state->mem = NULL;
 }
@@ -282,9 +282,9 @@ static void FreeState( save_state *state )
         DbgRegs = NULL;
     if( PrevRegs == &state->s )
         PrevRegs = NULL;
-    MemFree( state->s.ovl );
+    _Free( state->s.ovl );
     FreeMemDelta( state );
-    MemFree( state );
+    _Free( state );
     --NumStateEntries;
 }
 
@@ -306,7 +306,7 @@ void ResizeRegData( void )
         state = StateCurr;
         for( ;; ) {
             old = state;
-            state = MemAlloc( sizeof( save_state ) + new_size );
+            _Alloc( state, sizeof( save_state ) + new_size );
             if( state == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
@@ -334,7 +334,7 @@ void ResizeRegData( void )
         if( !found_dbgregs ) {
             /* just a machine state on it's own */
             ms = DbgRegs;
-            ms = MemAlloc( sizeof( machine_state ) + new_size );
+            _Alloc( ms, sizeof( machine_state ) + new_size );
             if( ms == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
@@ -356,14 +356,14 @@ static save_state *AllocState( void )
     save_state  *state;
 
     size = sizeof( *state ) + CurrRegSize;
-    state = MemAlloc( size );
+    _Alloc( state, size );
     if( state == NULL )
         return( NULL );
     memset( state, 0, size );
     if( OvlSize != 0 ) {
-        state->s.ovl = MemAlloc( OvlSize );
+        _Alloc( state->s.ovl, OvlSize );
         if( state->s.ovl == NULL ) {
-            MemFree( state );
+            _Free( state );
             return( NULL );
         }
     }
@@ -383,7 +383,7 @@ void ClearMachState( void )
     OvlSize = 0;
     state = StateCurr;
     do {
-        MemFree( state->s.ovl );
+        _Free( state->s.ovl );
         state->s.ovl = NULL;
         state->s.tid = 1;
         state->s.arch = DIG_ARCH_NIL;
@@ -436,8 +436,8 @@ void SetupMachState( void )
         return;
     state = StateCurr;
     do {
-        MemFree( state->s.ovl );
-        state->s.ovl = MemAlloc( OvlSize );
+        _Free( state->s.ovl );
+        _Alloc( state->s.ovl, OvlSize );
         if( state->s.ovl == NULL ) {
             ReleaseProgOvlay( false );
             Error( ERR_NONE, LIT_ENG( ERR_NO_OVL_STATE ) );
@@ -467,12 +467,12 @@ machine_state *AllocMachState( void )
     unsigned        state_size;
 
     state_size = sizeof( machine_state ) + CurrRegSize;
-    state = MemAllocSafe( state_size );
+    state = DbgMustAlloc( state_size );
     memset( state, 0, sizeof( *state ) );
     if( OvlSize != 0 ) {
-        state->ovl = MemAlloc( OvlSize );
+        _Alloc( state->ovl, OvlSize );
         if( state->ovl == NULL ) {
-            MemFree( state );
+            _Free( state );
             state = NULL;
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
@@ -482,8 +482,8 @@ machine_state *AllocMachState( void )
 
 void FreeMachState( machine_state *state )
 {
-    MemFree( state->ovl );
-    MemFree( state );
+    _Free( state->ovl );
+    _Free( state );
 }
 
 
@@ -984,7 +984,7 @@ void ParseRegSet( bool multiple, location_list *ll, dig_type_info *ti )
         if( ri == NULL )
             break;
         Scan();
-        new = walloca( sizeof( *new ) );
+        _AllocA( new, sizeof( *new ) );
         /* build the list backwards because the location list wants
            to be little endian */
         new->ri = ri;

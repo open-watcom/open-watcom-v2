@@ -89,7 +89,7 @@ static eTrie    KeyTrie;
 bool TrieInit( void )
 {
 
-    KeyTrie.child = MemAlloc( TRIE_TOP * sizeof( eNode ) );
+    KeyTrie.child = uimalloc( TRIE_TOP * sizeof( eNode ) );
     if( KeyTrie.child == NULL )
         return( false );
     KeyTrie.alc_child = TRIE_TOP;
@@ -106,8 +106,8 @@ static void free_subtrie( eTrie *trie )
         for( i = 0; i < trie->num_child; i++ ) {
             free_subtrie( trie->child[i].trie );
         }
-        MemFree( trie->child );
-        MemFree( trie );
+        uifree( trie->child );
+        uifree( trie );
     }
 }
 
@@ -120,7 +120,7 @@ void TrieFini( void )
     for( i = 0; i < KeyTrie.num_child; i++ ) {
         free_subtrie( KeyTrie.child[i].trie );
     }
-    MemFree( KeyTrie.child );
+    uifree( KeyTrie.child );
 }
 
 /* Search for children. Will return position
@@ -179,7 +179,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
 
                 // the array isn't big enough, expand it a bit
                 trie->alc_child += TRIE_ARRAY_GROWTH;
-                trie->child = MemRealloc( trie->child, trie->alc_child * sizeof( eNode ) );
+                trie->child = uirealloc( trie->child, trie->alc_child * sizeof( eNode ) );
                 if( trie->child == NULL ) {
                     trie->alc_child = 0;
                     return( false );
@@ -209,7 +209,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
 
         if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
-            trie->child[i].trie = MemAlloc( sizeof( eTrie ) );
+            trie->child[i].trie = uimalloc( sizeof( eTrie ) );
             if( trie->child[i].trie == NULL ) {
                 return( false );
             }

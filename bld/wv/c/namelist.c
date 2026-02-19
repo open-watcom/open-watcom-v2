@@ -131,7 +131,7 @@ static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
     if( !CheckType( sym, name ) )
         return( WR_CONTINUE );
 //    p = TxtBuff;
-    curr = MemAlloc( sizeof( a_symbol ) + sym_SIZE - 1 );
+    curr = DbgAlloc( sizeof( a_symbol ) + sym_SIZE - 1 );
     if( curr == NULL )
         return( WR_STOP );
     HDLAssign( sym, ASymHdl( curr ), sym );
@@ -186,7 +186,7 @@ static void UniqList( name_list *name, bool dup_ok )
               SymCompare( &next, &next->next ) == 0 ) ||
             ( !dup_ok && SymCompare( &next, &next->next ) == 0 ) ) {
             *owner = next->next;
-            MemFree( next );
+            DbgFree( next );
             name->numrows--;
         } else {
             owner = &next->next;
@@ -204,10 +204,10 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
     name->d2_only = d2_only;
     DIPWalkSymList( SS_MODULE, &mod, StickEmIn, name );
     name->list = SortLinkedList( name->list, offsetof( a_symbol, next ),
-                                 SymCompare, MemAlloc, MemFree );
+                                 SymCompare, DbgAlloc, DbgFree );
     UniqList( name, dup_ok );
     if( name->numrows > SKIP_ENTRIES ) {
-        name->skip = MemAlloc( (name->numrows/SKIP_ENTRIES + 1)*sizeof(a_symbol*) );
+        name->skip = DbgAlloc( (name->numrows/SKIP_ENTRIES + 1)*sizeof(a_symbol*) );
     } else {
         name->skip = NULL;
     }
@@ -235,10 +235,10 @@ void    NameListFree( name_list *name )
 {
     a_symbol    *curr, *next;
 
-    MemFree( name->skip );
+    DbgFree( name->skip );
     for( curr = name->list; curr != NULL; curr = next ) {
         next = curr->next;
-        MemFree( curr );
+        DbgFree( curr );
     }
     name->list = NULL;
     name->numrows = 0;

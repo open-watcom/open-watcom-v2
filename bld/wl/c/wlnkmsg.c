@@ -319,4 +319,4 @@ bool res_ioerr( FILE *fp, size_t rc )
     return( rc == -1 );
 }
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,MemAlloc,MemFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,LnkMemAlloc,LnkMemFree);

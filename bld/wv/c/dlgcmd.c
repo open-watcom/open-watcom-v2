@@ -70,7 +70,7 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
     GUISetCurrSelect( gui, list, i );
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    MemFree( cmd );
+    GUIMemFree( cmd );
     GUISelectAll( gui, edit, true );
 }
 
@@ -80,7 +80,7 @@ static void DlgClickHistory( gui_window *gui, int edit, int list )
 
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    MemFree( cmd );
+    GUIMemFree( cmd );
 }
 
 static void DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list )
@@ -160,14 +160,14 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
                 if( text[0] != NULLCHAR )
                     WndSaveToHistory( CmdHistory, text );
                 DoCmd( DupStr( text ) );
-                MemFree( text );
+                GUIMemFree( text );
             }
             GUICloseDialog( gui );
             return( true );
         }
         break;
     case GUI_DESTROY:
-        MemFree( dlg );
+        WndFree( dlg );
         return( true );
     default:
         break;

@@ -272,7 +272,7 @@ bool LangSetInit( void )
     static char InitialLang[] = { FE_LANG_CPP };
 
     LangInit();
-    Language = MemAlloc( sizeof( InitialLang ) + 1 );
+    _Alloc( Language, sizeof( InitialLang ) + 1 );
     if( Language == NULL )
         return( false );
     StrCopyDst( InitialLang, Language );
@@ -281,7 +281,7 @@ bool LangSetInit( void )
 
 void LangSetFini( void )
 {
-    MemFree( Language );
+    _Free( Language );
     LangFini();
 }
 
@@ -300,20 +300,20 @@ void NewLang( const char *lang )
     if( lang == NULL )
         return;
     len = strlen( lang );
-    new_lang = MemAllocSafe( len + 1 );
+    new_lang = DbgMustAlloc( len + 1 );
     memcpy( new_lang, lang, len );
     new_lang[len] = NULLCHAR;
     strlwr( new_lang );
     if( ( len != strlen( Language ) ) || memcmp( new_lang, Language, len ) != 0 ) {
         if( LangLoad( new_lang, len ) ) {
-            MemFree( Language );
+            _Free( Language );
             Language = new_lang;
             return;
         }
         LangLoad( Language, strlen( Language ) );
         Error( ERR_NONE, LIT_ENG( ERR_NO_LANG ) );
     }
-    MemFree( new_lang );
+    _Free( new_lang );
 }
 
 
@@ -415,7 +415,7 @@ static void PendingAdd( mad_window_toggles wt, dig_arch arch, const char *name, 
 
     for( owner = &PendToggleList[wt]; (new = *owner) != NULL; owner = &new->next )
         ;
-    new = MemAllocSafe( sizeof( *new ) + len );
+    new = DbgMustAlloc( sizeof( *new ) + len );
     *owner = new;
     new->next = NULL;
     new->arch = arch;
@@ -498,7 +498,7 @@ void PendingToggles( void )
                 ReScan( curr->toggle );
                 DoOneToggle( wt );
                 *owner = curr->next;
-                MemFree( curr );
+                _Free( curr );
             } else {
                 owner = &curr->next;
             }
@@ -892,7 +892,7 @@ void SupportFini( void )
     while( curr != NULL ) {
         junk = curr;
         curr = curr->next;
-        MemFree( junk );
+        _Free( junk );
     }
     SupportRtns = NULL;
 }
@@ -920,7 +920,7 @@ static void SupportSet( void )
     count = 0;
     while( ScanItemDelim( ";}", true, &start, &len ) ) {
         if( !IsInSupportNames( start, len ) ) {
-            new = MemAllocSafe( sizeof( *new ) + len );
+            new = DbgMustAlloc( sizeof( *new ) + len );
             new->next = SupportRtns;
             SupportRtns = new;
             memcpy( new->name, start, len );

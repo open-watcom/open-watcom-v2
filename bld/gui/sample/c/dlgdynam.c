@@ -156,10 +156,10 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
         GUIClearText( wnd, STATIC_CONTROL );
         GUISetText( wnd, STATIC_CONTROL, "default" );
         text = GUIGetText( wnd, STATIC_CONTROL );
-        MemFree( text );
+        GUIMemFree( text );
 
         text = GUIGetText( wnd, LISTBOX_CONTROL );
-        MemFree( text );
+        GUIMemFree( text );
 
         GUIClearText( wnd, LISTBOX_CONTROL );
 //      GUISetFocus( wnd, LISTBOX_CONTROL );
@@ -177,13 +177,13 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
             num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL:
             new = GUIGetText( wnd, EDIT_CONTROL );
-            MemFree( new );
+            GUIMemFree( new );
             break;
         }
         return( true );
@@ -191,7 +191,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
         GUI_GETID( param, id );
         text = GUIGetText( wnd, id );
         GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
-        MemFree( text );
+        GUIMemFree( text );
         return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
@@ -200,7 +200,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             return( true );
         }
         break;
@@ -210,11 +210,11 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
         switch( id ) {
         case LISTBOX_CONTROL:
             text = GUIGetText( wnd, LISTBOX_CONTROL );
-            MemFree( text );
+            GUIMemFree( text );
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
-            MemFree( text );
+            GUIMemFree( text );
             // GUIDeleteItem( wnd, LISTBOX_CONTROL, num );
             return( true );
         case OKBUTTON_CONTROL:
@@ -233,7 +233,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
                 }
             }
             text = GUIGetText( wnd, LISTBOX_CONTROL );
-            MemFree( text );
+            GUIMemFree( text );
             sel = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &sel );
             if( wnd == DialogWindow ) {
@@ -242,12 +242,12 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
                 GUIDisplayMessage( wnd, "OK Button", "Got dialog item : ", GUI_ABORT_RETRY_IGNORE );
                 GUIGetNewVal( "Enter New Value", "wesley", &text );
                 if( text != NULL ) {
-                    MemFree( text );
+                    GUIMemFree( text );
                 }
                 GUISetFocus( wnd, EDIT_CONTROL );
 #if 0
                 new = GUIGetText( wnd, EDIT_CONTROL );
-                MemFree( OldValue );
+                GUIMemFree( OldValue );
                 OldValue = new;
                 GUIDisplayMessage( wnd, "OK Button", "Got dialog item : ", GUI_ABORT_RETRY_IGNORE );
                 GUICloseDialog( wnd );

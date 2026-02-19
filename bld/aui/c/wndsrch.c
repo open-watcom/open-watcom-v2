@@ -40,8 +40,8 @@ bool    WndDoingSearch = false;
 
 void WndSetSrchItem( a_window wnd, const char *expr )
 {
-    MemFree( wnd->searchitem );
-    wnd->searchitem = MemAlloc( strlen( expr ) + 1 );
+    GUIMemFree( wnd->searchitem );
+    wnd->searchitem = GUIMemAlloc( strlen( expr ) + 1 );
     strcpy( wnd->searchitem, expr );
 }
 
@@ -61,7 +61,7 @@ void *WndCompileRX( const char *expr )
 
 void WndFreeRX( void *rx )
 {
-    MemFree( (regexp *)rx );
+    WndFree( (regexp *)rx );
 }
 
 
@@ -308,9 +308,9 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
     }
 done:;
     WndSetCache( wnd, had_cache );
-    MemFree( not_found );
-    MemFree( top_of_window );
-    MemFree( end_of_window );
-    MemFree( search_wrapped );
+    WndFree( not_found );
+    WndFree( top_of_window );
+    WndFree( end_of_window );
+    WndFree( search_wrapped );
     return( rc );
 }

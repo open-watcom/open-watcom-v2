@@ -59,7 +59,7 @@ address FindNextIns( address a )
 {
     mad_disasm_data     *dd;
 
-    dd = walloca( MADDisasmDataSize() );
+    _AllocA( dd, MADDisasmDataSize() );
     MADDisasm( dd, &a, 0 );
     return( a );
 }
@@ -70,8 +70,8 @@ static void FreeChainInfo( traceback *curr, int start, int end )
     int         i;
 
     for( i = start; i < end; ++i ) {
-        MemFree( curr->chain[i].source_line );
-        MemFree( curr->chain[i].symbol );
+        DbgFree( curr->chain[i].source_line );
+        DbgFree( curr->chain[i].symbol );
         curr->chain[i].source_line = NULL;
         curr->chain[i].symbol = NULL;
     }
@@ -86,12 +86,12 @@ static bool ReallocChain( traceback *curr, int new_size )
     chain = curr->chain;
     if( new_size >= (UINT_MAX / sizeof(call_chain)) )
         return( false );
-    new_chain = MemAlloc( new_size * sizeof(call_chain) );
+    new_chain = DbgAlloc( new_size * sizeof(call_chain) );
     if( new_chain == NULL )
         return( false );
     memset( new_chain, 0, new_size*sizeof( call_chain ) );
     memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
-    MemFree( chain );
+    DbgFree( chain );
     curr->chain = new_chain;
     curr->allocated_size = new_size;
     return( true );
@@ -152,7 +152,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
         }
     }
     if( curr->current_depth != 0 ) {
-        dd = walloca( MADDisasmDataSize() );
+        _AllocA( dd, MADDisasmDataSize() );
         prev_ins = execution;
         if( MADDisasm( dd, &prev_ins, -1 ) == MS_OK ) {
             execution.mach.offset -= MADDisasmInsSize( dd );
@@ -170,7 +170,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
         chain->source_line = CopySourceLine( cueh );
     }
     CnvNearestAddr( chain->lc.execution, TxtBuff, TXT_LEN );
-    MemFree( chain->symbol );
+    DbgFree( chain->symbol );
     chain->symbol = DupStr( TxtBuff );
     chain->sym_len = 0;
     curr->current_depth++;
@@ -179,7 +179,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 
 static traceback *DoInitTraceBack( traceback *curr )
 {
-    curr->chain = MemAllocSafe( MODEST_CALL_LEVEL * sizeof( call_chain ) );
+    curr->chain = DbgMustAlloc( MODEST_CALL_LEVEL * sizeof( call_chain ) );
     memset( curr->chain, 0, MODEST_CALL_LEVEL * sizeof( call_chain ) );
     curr->allocated_size = MODEST_CALL_LEVEL;
     curr->total_depth = 0;
@@ -196,8 +196,8 @@ void FiniTraceBack( cached_traceback *tb )
 {
     FreeChainInfo( tb->curr, 0, tb->curr->total_depth );
     FreeChainInfo( tb->prev, 0, tb->prev->total_depth );
-    MemFree( tb->curr->chain );
-    MemFree( tb->prev->chain );
+    DbgFree( tb->curr->chain );
+    DbgFree( tb->prev->chain );
 }
 
 void UpdateTraceBack( cached_traceback *tb )

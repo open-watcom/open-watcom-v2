@@ -45,7 +45,7 @@
 
 // MACRO DEFINITIONS
 
-#define _MemoryAllocate( size )     MemAllocSafe( size )
-#define _MemoryFree( ptr )          MemFree( ptr )
+#define _MemoryAllocate( size )     RcMemAlloc( size )
+#define _MemoryFree( ptr )          RcMemFree( ptr )
 
 #endif

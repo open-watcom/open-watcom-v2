@@ -587,16 +587,16 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
      * allocate array to remember variables
      */
     if( num_xxx > 0 ) {
-        found_xxx = MemAlloc( num_xxx * sizeof( bool ) );
+        found_xxx = GUIMemAlloc( num_xxx * sizeof( bool ) );
         if( found_xxx == NULL ) {
             return( false );
         }
         memset( found_xxx, false, num_xxx * sizeof( bool ) );
     }
     if( num_env > 0 ) {
-        found_env = MemAlloc( num_env * sizeof( bool ) );
+        found_env = GUIMemAlloc( num_env * sizeof( bool ) );
         if( found_env == NULL ) {
-            MemFree( found_xxx );
+            GUIMemFree( found_xxx );
             return( false );
         }
         memset( found_env, false, num_env * sizeof( bool ) );
@@ -638,10 +638,10 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
         FinishEnvironmentLines( fp2, num_env, found_env, false, noecho );
     }
     if( num_xxx > 0 ) {
-        MemFree( found_xxx );
+        GUIMemFree( found_xxx );
     }
     if( num_env > 0 ) {
-        MemFree( found_env );
+        GUIMemFree( found_env );
     }
     if( fclose( fp2 ) != 0 ) {
         MsgBoxVbuf( NULL, "IDS_ERROR_CLOSING", GUI_OK, new );
@@ -697,7 +697,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
               || ( VbufCompExt( &fext, "com", true ) != 0
               && VbufLen( &fext ) > 0 ) )
                 break;
-            WinDotCom = MemStrdup( line );
+            WinDotCom = GUIMemStrdup( line );
             line[0] = '\0';
         }
         VbufFree( &fext );
@@ -782,7 +782,7 @@ static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batc
     if( WinDotCom != NULL ) {
         fputs( WinDotCom, fp );
         fputc( '\n', fp );
-        MemFree( WinDotCom );
+        GUIMemFree( WinDotCom );
         WinDotCom = NULL;
     }
     VbufFree( &vbuf );
@@ -1823,7 +1823,7 @@ bool ModifyConfiguration( bool uninstall )
         VbufInit( &changes );
         VbufInit( &temp_vbuf );
 
-        found = MemAlloc( num_env * sizeof( bool ) );
+        found = GUIMemAlloc( num_env * sizeof( bool ) );
         memset( found, false, num_env * sizeof( bool ) );
         VbufConcStr( &temp_vbuf, GetVariableStrVal( "DstDir" ) );
         GetOldConfigFileDir( &changes, &temp_vbuf, uninstall );
@@ -1868,7 +1868,7 @@ bool ModifyConfiguration( bool uninstall )
             VbufFree( &cur_val );
             VbufFree( &cur_var );
         }
-        MemFree( found );
+        GUIMemFree( found );
         bRet = true;
 
         VbufFree( &temp_vbuf );
@@ -2041,10 +2041,10 @@ bool GenerateBatchFile( bool uninstall )
 #endif
             num_env = SimNumEnvironment();
             if( num_env > 0 ) {
-                found_env = MemAlloc( num_env * sizeof( bool ) );
+                found_env = GUIMemAlloc( num_env * sizeof( bool ) );
                 memset( found_env, false, num_env * sizeof( bool ) );
                 FinishEnvironmentLines( fp, num_env, found_env, true, NOECHO );
-                MemFree( found_env );
+                GUIMemFree( found_env );
             }
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
             SetBoolVariableByName( "IsOS2DosBox", isOS2DosBox );

@@ -37,7 +37,6 @@
 #include "menudef.h"
 #include "dbgicon.h"
 #include "wv.rh"
-#include "commmem.h"
 
 
 #define TOOL(a,b,c) { "", BITMAPID( BITMAP_ ##a ), MENU_TOOL_ ##b, MENU_LIT( HELP_ ##c ), MENU_LIT( TIP_ ##c ) }
@@ -73,8 +72,8 @@ void    FiniToolBar( void )
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
-        MemFree( (void *)ToolBar[i].hinttext );
-        MemFree( (void *)ToolBar[i].tip );
+        WndFree( (void *)ToolBar[i].hinttext );
+        WndFree( (void *)ToolBar[i].tip );
     }
 }
 

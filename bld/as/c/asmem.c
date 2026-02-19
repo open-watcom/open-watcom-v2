@@ -48,7 +48,7 @@
 
 #if defined( TRMEM )
 
-static _trmem_hdl   memHandle = _TRMEM_HDL_NONE;
+static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
 
 static void memPrintLine( void *file, const char *buf, size_t len )
@@ -71,7 +71,7 @@ void AsMemInit( void )
     memFile = fopen( "mem.trk", "w" );
     memHandle = _trmem_open( malloc, free, realloc, strdup,
                                 NULL, memPrintLine, _TRMEM_DEF );
-    if( memHandle == _TRMEM_HDL_NONE ) {
+    if( memHandle == NULL ) {
         exit( EXIT_FAILURE );
     }
 #endif
@@ -81,17 +81,14 @@ void AsMemFini( void )
 //********************
 {
 #ifdef TRMEM
-    if( memHandle != _TRMEM_HDL_NONE ) {
-        if( _trmem_get_current_usage( memHandle ) ) {
-            _trmem_prt_usage( memHandle );
-        }
+    if( memHandle != NULL ) {
         _trmem_prt_list_ex( memHandle, 100 );
         _trmem_close( memHandle );
-        memHandle = _TRMEM_HDL_NONE;
         if( memFile != NULL ) {
             fclose( memFile );
             memFile = NULL;
         }
+        memHandle = NULL;
     }
 #endif
 }

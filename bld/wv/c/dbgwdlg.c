@@ -68,7 +68,7 @@ static void DlgListPush( const char *buff, size_t len, wnd_attr_wv wndattr )
 {
     dlg_entry   *entry;
 
-    entry = MemAllocSafe( sizeof( dlg_entry ) + len + 1 );
+    entry = DbgMustAlloc( sizeof( dlg_entry ) + len + 1 );
     SET_SYM_NAME_LEN( entry->data, len );
     memcpy( SYM_NAME_NAME( entry->data ), buff, len );
     SYM_NAME_NAME( entry->data )[len] = NULLCHAR;
@@ -95,7 +95,7 @@ static void DlgListPopLine( void )
     DlgListTop->prev = NULL;
     DlgLines--;
     DbgUpdate( UP_DLG_WRITTEN );
-    MemFree( temp );
+    _Free( temp );
 }
 
 
@@ -198,7 +198,7 @@ void WndDlgFini( void )
     while( DlgListTop != NULL ) {
         old = DlgListTop;
         DlgListTop = DlgListTop->next;
-        MemFree( old );
+        _Free( old );
     }
 }
 

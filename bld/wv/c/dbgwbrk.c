@@ -318,7 +318,7 @@ static bool WNDCALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *p
         BrkInit( wnd );
         return( true );
     case GUI_DESTROY:
-        MemFree( wndbreak );
+        WndFree( wndbreak );
         return( true );
     }
     return( false );

@@ -69,9 +69,9 @@ bool GUIXCloseToolBar( gui_window *wnd )
             for( i = 0; i < tbar->num_items; i++ ) {
                 _wpi_deletebitmap( tbar->hbitmaps[i] );
             }
-            MemFree( tbar->hbitmaps );
+            GUIMemFree( tbar->hbitmaps );
         }
-        MemFree( tbar );
+        GUIMemFree( tbar );
         if( (wnd->flags & DOING_DESTROY) == 0 ) {
             GUIResizeBackground( wnd, true );
         }
@@ -247,7 +247,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     if( wnd->tbar != NULL ) {
         GUICloseToolBar( wnd );
     }
-    tbar = wnd->tbar = (toolbarinfo *)MemAlloc( sizeof( toolbarinfo ) );
+    tbar = wnd->tbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
     if( tbar == NULL ) {
         return( false );
     }
@@ -255,9 +255,9 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     memset( tbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
     tbar->fixed_wpi_rect = wnd->hwnd_client_rect;
-    tbar->hbitmaps = (WPI_HBITMAP *)MemAlloc( num_items * sizeof( WPI_HBITMAP ) );
+    tbar->hbitmaps = (WPI_HBITMAP *)GUIMemAlloc( num_items * sizeof( WPI_HBITMAP ) );
     if( tbar->hbitmaps == NULL ) {
-        MemFree( tbar );
+        GUIMemFree( tbar );
         wnd->tbar = NULL;
         return( false );
     }

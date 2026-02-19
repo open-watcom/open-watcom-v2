@@ -109,11 +109,11 @@ static void     ModInit( a_window wnd )
 
     ModListFree( ModList( mod ) );
     ModListAddModules( ModList( mod ), mod->handle, mod->all_modules );
-    MemFree( mod->info );
+    WndFree( mod->info );
     mod->info = NULL;
     size = sizeof( modinfo ) * ModListNumRows( ModList( mod ) );
     if( size != 0 ) {
-        mod->info = MemAlloc( size );
+        mod->info = WndAlloc( size );
         memset( mod->info, 0, size );
     }
     ModCalcIndent( wnd );
@@ -301,8 +301,8 @@ static bool WNDCALLBACK ModWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         ModListFree( ModList( mod ) );
-        MemFree( mod->info );
-        MemFree( mod );
+        WndFree( mod->info );
+        WndFree( mod );
         return( true );
     }
     return( false );

@@ -78,5 +78,5 @@ char *DUILoadString( dui_res_id id )
 
 void DUIFreeString( void *ptr )
 {
-    MemFree( ptr );
+    WndFree( ptr );
 }

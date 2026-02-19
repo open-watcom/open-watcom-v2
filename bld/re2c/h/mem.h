@@ -36,3 +36,6 @@
 
 extern void     MemInit( void );
 extern void     MemFini( void );
+
+extern void     *MemAlloc( size_t size );
+extern void     MemFree( void *ptr );

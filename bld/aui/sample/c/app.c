@@ -188,7 +188,7 @@ void GUImain( void )
 
     WndMaxDirtyRects = 20;
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = MemAlloc( cmd_len );
+    cmd_line = WndAlloc( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     cmd = cmd_line;
     while( *cmd == ' ' )
@@ -205,7 +205,7 @@ void GUImain( void )
 #endif
         cmd += 2;
     }
-    MemFree( cmd_line );
+    WndFree( cmd_line );
     WndGadgetInit();
     WndInit( "Sample Application" );
     WndCreateStatusWindow( &WndColours[GUI_MENU_STANDOUT] );

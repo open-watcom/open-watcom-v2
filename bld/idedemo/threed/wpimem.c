@@ -37,19 +37,19 @@
 #else
 #include <windows.h>
 #endif
-#include "commmem.h"
+#include "wpimem.h"
 
-void MemFree( void * ptr )
+void _wpi_free( void * ptr )
 {
     free( ptr );
 }
 
-void * MemAlloc( size_t size )
+void * _wpi_malloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-void * MemRealloc( void *ptr, size_t size )
+void * _wpi_realloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 }

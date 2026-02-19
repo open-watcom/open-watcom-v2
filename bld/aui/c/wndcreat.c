@@ -73,9 +73,9 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     if( info->title != NULL )
         strcpy( buff, info->title ); // might be clobbered by create
     size = sizeof( *wnd ) + ( WndMaxDirtyRects - 1 ) * sizeof( wnd->dirty );
-    wnd = MemAlloc( size );
+    wnd = WndAlloc( size );
     if( wnd == NULL ) {
-        MemFree( info->extra );
+        WndFree( info->extra );
         Say( "No memory for window\n" );
         exit( 1 );
     }
@@ -136,8 +136,8 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
 
     gui = GUICreateWindow( init );
     if( gui == NULL ) {
-        MemFree( info->extra );
-        MemFree( wnd );
+        WndFree( info->extra );
+        WndFree( wnd );
         Say( "No memory for window\n" );
         exit( 1 );
     }
@@ -190,12 +190,12 @@ a_window WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass, void *ex
 void     WndDestroy( a_window wnd )
 {
     WNDEVENT( wnd, GUI_DESTROY, NULL );
-    MemFree( wnd->searchitem );
+    GUIMemFree( wnd->searchitem );
     wnd->searchitem = NULL;
-    MemFree( wnd->popitem );
+    WndFree( wnd->popitem );
     wnd->popitem = NULL;
     GUISetExtra( wnd->gui, NULL );
-    MemFree( wnd );
+    WndFree( wnd );
     if( --NumWindows == 0 ) {
         WndFiniCacheLines();
         WndCleanUp();

@@ -45,4 +45,9 @@
     #define OEMRESOURCE
     #include <wwindows.h>
 #endif
-#include "commmem.h"
+#include "cguimem.h"
+
+
+#define CUIMemAlloc(s)       MemAlloc(s)
+#define CUIMemFree(p)        MemFree(p)
+#define CUIMemRealloc(p,s)   MemRealloc(p,s)

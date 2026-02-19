@@ -136,8 +136,8 @@ void *InitRecStuff( void )
 /************************/
 {
 
-    Rec1 = MemAllocSafe( MAX_OBJECT_REC_SIZE );
-    OutputBuffer = MemAllocSafe( MAX_OBJECT_REC_SIZE );
+    Rec1 = MemAlloc( MAX_OBJECT_REC_SIZE );
+    OutputBuffer = MemAlloc( MAX_OBJECT_REC_SIZE );
     PageLen = 0;
     return( Rec1 );
 }

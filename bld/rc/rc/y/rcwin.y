@@ -337,9 +337,9 @@ normal-resource
 
 name-id
     : Y_NAME
-        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
     | string-constant
-        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
         {
             $$ = WResIDFromNum( $1.Value );
@@ -355,9 +355,9 @@ name-id
 
 type-id
     : Y_NAME
-        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
     | string-constant
-        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
         {
             $$ = WResIDFromNum( $1.Value );
@@ -614,7 +614,7 @@ user-defined-type-id
 
 user-defined-data
     : file-name
-        { $$ = SemCopyRawFile( $1.string ); MemFree( $1.string ); }
+        { $$ = SemCopyRawFile( $1.string ); RcMemFree( $1.string ); }
     | raw-data-section
         { $$ = SemFlushDataElemList( $1, true ); }
     ;
@@ -761,13 +761,13 @@ string-items
         {
             $$ = SemWINNewStringTable();
             SemWINAddStrToStringTable( $$, $1.ItemID, $1.String );
-            MemFree( $1.String );
+            RcMemFree( $1.String );
         }
     | string-items string-item
         {
             SemWINAddStrToStringTable( $1, $2.ItemID, $2.String );
             $$ = $1;
-            MemFree( $2.String );
+            RcMemFree( $2.String );
         }
     ;
 
@@ -833,7 +833,7 @@ event
         {
             $$.event = SemWINStrToAccelEvent( $1.string );
             $$.strevent = true;
-            MemFree( $1.string );
+            RcMemFree( $1.string );
         }
     | constant-expression
         {
@@ -1344,7 +1344,7 @@ menu-stmt
         {
             $$.token = Y_MENU;
             $$.Opt.Name = WResIDToNameOrOrdinal( $2 );
-            MemFree( $2 );
+            RcMemFree( $2 );
         }
     ;
 
@@ -1355,14 +1355,14 @@ class-stmt
 
 class-name
     : string-constant
-        { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
         { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     ;
 
 ctl-class-name
     : string-constant
-        { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | Y_BUTTON
         { $$ = ResStrToNameOrOrdinal( "BUTTON" ); }
     | Y_COMBOBOX
@@ -1511,7 +1511,7 @@ cntl-text-options
     : string-constant cntl-options
         {
             $2.Text = ResStrToNameOrOrdinal( $1.string );
-            MemFree( $1.string );
+            RcMemFree( $1.string );
             $$ = $2;
         }
     ;
@@ -1647,7 +1647,7 @@ state3-stmt
 
 icon-name
     : name-id
-        { $$ = WResIDToNameOrOrdinal( $1 ); MemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
 icon-parms
@@ -1887,11 +1887,11 @@ value-string-list
         {
             $$.IsNum = false;
             $$.strlen = strlen( $1.Value.String ) + strlen( $2.string );
-            $$.Value.String = MemAllocSafe( $$.strlen + 1 );
+            $$.Value.String = RcMemAlloc( $$.strlen + 1 );
             strcpy( $$.Value.String, $1.Value.String );
             strcat( $$.Value.String, $2.string );
-            MemFree( $1.Value.String );
-            MemFree( $2.string );
+            RcMemFree( $1.Value.String );
+            RcMemFree( $2.string );
         }
     ;
 
@@ -1909,11 +1909,11 @@ string-group
         {
             $$.lstring = ( $1.lstring | $2.lstring );
             $$.length = $1.length + $2.length;
-            $$.string = MemAllocSafe( $$.length + 1 );
+            $$.string = RcMemAlloc( $$.length + 1 );
             strcpy( $$.string, $1.string );
             strcat( $$.string, $2.string );
-            MemFree( $1.string );
-            MemFree( $2.string );
+            RcMemFree( $1.string );
+            RcMemFree( $2.string );
         }
     ;
 

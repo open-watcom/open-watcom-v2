@@ -39,7 +39,6 @@
 #include "sample.rh"
 #include "guidlg.h"
 #include "dlgbutn.h"
-#include "commmem.h"
 
 
 #define ArraySize( x )          (sizeof( x ) / sizeof( *(x) ))

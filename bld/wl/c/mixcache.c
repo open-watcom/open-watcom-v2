@@ -103,7 +103,7 @@ bool CacheOpen( const file_list *list )
     }
     if( infile->cache == NULL ) {
         if( infile->status & INSTAT_FULL_CACHE ) {
-            infile->cache = MemAllocSafe( infile->len );
+            infile->cache = LnkMemAlloc( infile->len );
             if( infile->currpos != 0 ) {
                 QLSeek( infile->handle, 0, SEEK_SET, infile->name.u.ptr );
             }
@@ -141,7 +141,7 @@ static bool DumpFileCache( infilelist *infile, bool nuke )
         blocklist = infile->cache;
         for( index = 0; index < num; index++ ) {
             if( index != savenum && *blocklist != NULL ) {
-                MemFree( *blocklist );
+                LnkMemFree( *blocklist );
                 *blocklist = NULL;
                 blockfreed = true;
             }
@@ -194,11 +194,11 @@ void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
     if( list->infile->status & INSTAT_FULL_CACHE )
         return( buf );
     if( Multipage ) {
-        result = MemReallocSafe( buf, len );
-        TokBuff = MemAllocSafe( TokSize );
+        result = LnkMemRealloc( buf, len );
+        TokBuff = LnkMemAlloc( TokSize );
         Multipage = false;              // indicate that last read is permanent.
     } else {
-        result = MemAllocSafe( len );
+        result = LnkMemAlloc( len );
         memcpy( result, buf, len );
     }
     return( result );
@@ -232,7 +232,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
     cache = infile->cache;
     for( ;; ) {
         if( cache[bufnum] == NULL ) {   // make sure page is in.
-            cache[bufnum] = MemAllocSafe( CACHE_PAGE_SIZE );
+            cache[bufnum] = LnkMemAlloc( CACHE_PAGE_SIZE );
             newpos = (unsigned long)bufnum * CACHE_PAGE_SIZE;
             if( infile->currpos != newpos ) {
                 QSeek( infile->handle, newpos, infile->name.u.ptr );
@@ -251,7 +251,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
     } else {
         if( len > TokSize ) {
             TokSize = __ROUND_UP_SIZE_SECTOR( len );
-            TokBuff = MemReallocSafe( TokBuff, TokSize );
+            TokBuff = LnkMemRealloc( TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
         memcpy( TokBuff, cache[startnum] + offset, amtread );
@@ -296,7 +296,7 @@ void CacheFree( const file_list *list, void *mem )
  */
 {
     if( list->infile->status & INSTAT_PAGE_CACHE ) {
-        MemFree( mem );
+        LnkMemFree( mem );
     }
 }
 
@@ -306,7 +306,7 @@ void FreeObjCache( const file_list *list )
     if( list == NULL )
         return;
     if( list->infile->status & INSTAT_FULL_CACHE ) {
-        MemFree( list->infile->cache );
+        LnkMemFree( list->infile->cache );
     } else {
         DumpFileCache( list->infile, true );
     }

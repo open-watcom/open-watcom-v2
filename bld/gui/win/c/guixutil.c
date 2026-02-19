@@ -377,7 +377,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
         wnd->hwnd_pinfo.normal_pres = NULLHANDLE;
     }
 #endif
-    MemFree( wnd );
+    GUIMemFree( wnd );
 }
 
 void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
@@ -681,7 +681,7 @@ WPI_FONT GUIGetSystemFont( void )
     font = NULL;
     ret = _wpi_getsystemfont();
     if( ret ) {
-        font = (WPI_FONT)MemAlloc( sizeof( *font ) );
+        font = (WPI_FONT)GUIMemAlloc( sizeof( *font ) );
         if( font ) {
             *font = *ret;
         }

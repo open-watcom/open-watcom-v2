@@ -101,7 +101,7 @@ static bool copyResourcesFromRes( const char *full_filename )
                 RcError( ERR_RES_OS_MISMATCH, full_filename );
                 error = true;
             } else {
-                buffer = RESALLOCSAFE( BUFFER_SIZE );
+                buffer = RESALLOC( BUFFER_SIZE );
                 for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
                     copyAResource( fp, &wind, buffer, full_filename );
                 }

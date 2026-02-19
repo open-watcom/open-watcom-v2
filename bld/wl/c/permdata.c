@@ -333,7 +333,7 @@ static void PrepSymbol( void *_sym, void *info )
         save = sym->p.alias.u.ptr;
         sym->p.alias.u.offs = GetString( info, sym->p.alias.u.ptr );
         if( sym->info & SYM_FREE_ALIAS ) {
-            MemFree( save );
+            LnkMemFree( save );
         }
     } else if( IS_SYM_IMPORTED( sym ) ) {
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
@@ -625,7 +625,7 @@ static void ReadGroupsList( unsigned count, perm_read_info *info )
 
     while( count-- ) {
         size = BufReadU32( info );
-        def = MemAllocSafe( sizeof( incgroupdef ) + ( size - 1 ) * 2 * sizeof( char * ) );
+        def = LnkMemAlloc( sizeof( incgroupdef ) + ( size - 1 ) * 2 * sizeof( char * ) );
         RingAppend( &IncGroupDefs, def );
         def->numsegs = size;
         def->grpname = MapString( BufReadU32( info ) );
@@ -643,7 +643,7 @@ static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *inf
     libnamelist         *list;
 
     while( count-- > 0 ) {
-        list = MemAllocSafe( sizeof( libnamelist ) );
+        list = LnkMemAlloc( sizeof( libnamelist ) );
         list->name = MapString( BufReadU32( info ) );
         BufRead( info, &list->priority, sizeof( lib_priority ) );
         LinkList( head, list );
@@ -793,15 +793,15 @@ static void PurgeRead( perm_read_info *info )
         CarvePurge( CarveDLLInfo );
         CarvePurge( CarveExportInfo );
     }
-    MemFree( info->buffer );
-    MemFree( IncStrTab );
-    MemFree( ReadRelocs );
-    MemFree( AltDefData );
+    LnkMemFree( info->buffer );
+    LnkMemFree( IncStrTab );
+    LnkMemFree( ReadRelocs );
+    LnkMemFree( AltDefData );
     IncStrTab = NULL;
     ReadRelocs = NULL;
     AltDefData = NULL;
     if( OldExe != NULL ) {
-        MemFree( OldExe );
+        LnkMemFree( OldExe );
         OldExe = NULL;
     }
 }
@@ -823,7 +823,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
         return;
     }
     size = QFileSize( hdl );
-    *buf = MemAllocSafe( size );
+    *buf = LnkMemAlloc( size );
     QRead( hdl, *buf, size, fname );
     QClose( hdl, fname );
 }
@@ -854,17 +854,17 @@ void ReadPermData( void )
     info.incfhdl = QObjOpen( IncFileName );
     if( info.incfhdl == NIL_FHANDLE )
         return;
-    info.buffer = MemAllocSafe( SECTOR_SIZE );
+    info.buffer = LnkMemAlloc( SECTOR_SIZE );
     QRead( info.incfhdl, info.buffer, SECTOR_SIZE, IncFileName );
     hdr = (inc_file_header *)info.buffer;
     if( memcmp( hdr->signature, INC_FILE_SIG, INC_FILE_SIG_SIZE ) != 0 ) {
         LnkMsg( WRN+MSG_INV_INC_FILE, NULL );
-        MemFree( info.buffer );
+        LnkMemFree( info.buffer );
         QClose( info.incfhdl, IncFileName );
         return;
     }
     if( hdr->hdrsize > SECTOR_SIZE ) {
-        info.buffer = MemReallocSafe( info.buffer, hdr->hdrsize );
+        info.buffer = LnkMemRealloc( info.buffer, hdr->hdrsize );
         hdr = (inc_file_header *)info.buffer;   /* in case realloc moved it*/
         QRead( info.incfhdl, info.buffer + SECTOR_SIZE, hdr->hdrsize - SECTOR_SIZE, IncFileName );
     }
@@ -878,15 +878,15 @@ void ReadPermData( void )
     }
     ReadHashPointers( &info );
     if( hdr->altdefsize > 0 ) {
-        AltDefData = MemAllocSafe( hdr->altdefsize );
+        AltDefData = LnkMemAlloc( hdr->altdefsize );
         QRead( info.incfhdl, AltDefData, hdr->altdefsize, IncFileName );
     }
     CarveWalkBlocks( CarveModEntry, ReadBlockInfo, &info );
     CarveWalkBlocks( CarveSegData, ReadBlockInfo, &info );
     CarveWalkBlocks( CarveSymbol, ReadBlockInfo, &info );
-    IncStrTab = MemAllocSafe( hdr->strtabsize );
+    IncStrTab = LnkMemAlloc( hdr->strtabsize );
     QRead( info.incfhdl, IncStrTab, hdr->strtabsize, IncFileName );
-    ReadRelocs = MemAllocSafe( hdr->relocsize );
+    ReadRelocs = LnkMemAlloc( hdr->relocsize );
     QRead( info.incfhdl, ReadRelocs, hdr->relocsize, IncFileName );
     QClose( info.incfhdl, IncFileName );
     ReadBinary( &OldExe, hdr->exename, hdr->exemodtime );
@@ -916,7 +916,7 @@ void ReadPermData( void )
     LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_uint)hdr->libmodidx );
     LinkState = (stateflag)hdr->linkstate | LS_GOT_PREV_STRUCTS | (LinkState & LS_CLEAR_ON_INC);
     ReadStartInfo( hdr );
-    MemFree( info.buffer );
+    LnkMemFree( info.buffer );
 }
 
 void PermSaveFixup( void *fix, size_t size )
@@ -944,7 +944,7 @@ static void SaveRelocData( void *_curr, const char *data, size_t size )
     char **curr = _curr;
 
     if( ReadRelocs == NULL && SizeRelocs > 0 ) {
-        ReadRelocs = MemAllocSafe( SizeRelocs );
+        ReadRelocs = LnkMemAlloc( SizeRelocs );
         *curr = ReadRelocs;
     }
     memcpy( *curr, data, size );
@@ -956,13 +956,13 @@ void IncP2Start( void )
 {
     char   *spare;
 
-    MemFree( ReadRelocs );
+    LnkMemFree( ReadRelocs );
     ReadRelocs = NULL;
-    MemFree( OldExe );
+    LnkMemFree( OldExe );
     OldExe = NULL;
-    MemFree( OldSymFile );
+    LnkMemFree( OldSymFile );
     OldSymFile = NULL;
-    MemFree( AltDefData );
+    LnkMemFree( AltDefData );
     AltDefData = NULL;
     FiniStringBlock( &StoredRelocs, &SizeRelocs, &spare, SaveRelocData );
 }
@@ -998,7 +998,7 @@ void FreeSavedRelocs( void )
 /*********************************/
 {
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        MemFree( ReadRelocs );
+        LnkMemFree( ReadRelocs );
         ReadRelocs = NULL;
     }
 }
@@ -1032,14 +1032,14 @@ void CleanPermData( void )
     FiniStringTable( &PrefixStrings);
     FiniStringTable( &PermStrings );
     FiniStringTable( &StoredRelocs );
-    MemFree( IncFileName );
-    MemFree( IncStrTab );
-    MemFree( ReadRelocs );
-    MemFree( OldExe );
-    MemFree( OldSymFile );
-    MemFree( AltDefData );
+    LnkMemFree( IncFileName );
+    LnkMemFree( IncStrTab );
+    LnkMemFree( ReadRelocs );
+    LnkMemFree( OldExe );
+    LnkMemFree( OldSymFile );
+    LnkMemFree( AltDefData );
     RingFree( &IncGroupDefs );
-    MemFree( IncGroups );
+    LnkMemFree( IncGroups );
     FreeList( SavedUserLibs );
     FreeList( SavedDefLibs );
 }

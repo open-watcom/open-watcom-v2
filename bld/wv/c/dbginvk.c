@@ -188,11 +188,11 @@ static bool GetInvkCmd( invokes *inv )
             ch = '\r';
         }
         if( cmd >= buff + inv->buff_size ) {
-            buff = MemAlloc( inv->buff_size + CMD_LEN + 1 );
+            _Alloc( buff, inv->buff_size + CMD_LEN + 1 );
             if( buff != NULL ) {
                 memcpy( buff, inv->buff, inv->buff_size );
                 cmd = buff + inv->buff_size;
-                MemFree( inv->buff );
+                _Free( inv->buff );
                 inv->buff = buff;
                 inv->buff_size += CMD_LEN;
             } else {
@@ -214,8 +214,8 @@ static void Conclude( invokes *inv )
         FileClose( inv->fh );
     }
     FreeRing( inv->prmlst );
-    MemFree( inv->buff );
-    MemFree( inv );
+    _Free( inv->buff );
+    _Free( inv );
 }
 
 
@@ -247,14 +247,14 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
-    inv = MemAlloc( sizeof( invokes ) + strlen( name ) );
+    _Alloc( inv, sizeof( invokes ) + strlen( name ) );
     if( inv != NULL ) {
         inv->buff_size = CMD_LEN;
-        inv->buff = MemAlloc( inv->buff_size + 1 ); /* extra for NULLCHAR */
+        _Alloc( inv->buff, inv->buff_size + 1 ); /* extra for NULLCHAR */
     }
     if( inv == NULL || inv->buff == NULL ) {
         if( inv != NULL )
-            MemFree( inv );
+            _Free( inv );
         FileClose( fh );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
@@ -305,7 +305,7 @@ void ProfileInvoke( char *name )
     }
     /* default name search */
     len = strlen( WDEXENAME );
-    name = walloca( len + 4 );
+    _AllocA( name, len + 4 );
 #if defined(__UNIX__)
         /* under QNX and Linux, look for .wdrc first */
         name[0] = '.';
@@ -341,7 +341,7 @@ void ProcInvoke( void )
     owner = &parmlist;
     while( !ScanEOC() ) {
         ScanItem( true, &start, &len );
-        path = MemAlloc( sizeof( char_ring ) + len );
+        _Alloc( path, sizeof( char_ring ) + len );
         if( path == NULL ) {
             FreeRing( parmlist );
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );

@@ -115,7 +115,7 @@ static bool setupscrnbuff( void )
             return( false );
         scrn = _MK_FP( seg, 0 );
 #else
-        scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
+        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL ) {
             return( false );
         }

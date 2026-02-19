@@ -625,7 +625,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     dir.num_name_ptrs = num_entries;
     dir.name_ptr_table_rva = dir.address_table_rva + dir.num_eat_entries * sizeof( pe_va );
     dir.ordinal_table_rva = dir.name_ptr_table_rva + num_entries * sizeof( pe_va );
-    sort = MemAllocSafe( sizeof( entry_export * ) * num_entries );
+    sort = LnkMemAlloc( sizeof( entry_export * ) * num_entries );
     /* write the export directory table */
     WriteLoad( &dir, sizeof( dir ) );
     /* write the module name (includes null terminator) */
@@ -660,7 +660,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         exp = sort[i];
         WriteLoad( exp->name.u.ptr, strlen( exp->name.u.ptr ) + 1 );
     }
-    MemFree( sort );
+    LnkMemFree( sort );
     size = eat - object->rva;
     object->physical_size = __ROUND_UP_SIZE( size, file_align );
     entry->size = size;
@@ -968,11 +968,11 @@ static void SetMiscTableEntries( pe_exe_header *pehdr )
     /* The .pdata section may end up being empty if the symbols got optimized out */
     if( leader != NULL && leader->size ) {
         numpdatas = leader->size / sizeof( procedure_descriptor );
-        sortarray = MemAllocSafe( numpdatas * sizeof( virt_mem * ) );
+        sortarray = LnkMemAlloc( numpdatas * sizeof( virt_mem * ) );
         temp = sortarray;
         RingLookup( leader->pieces, SetPDataArray, &temp );
         VMemQSort( (virt_mem)sortarray, numpdatas, sizeof( virt_mem * ), SwapDesc, CmpDesc );
-        MemFree( sortarray );
+        LnkMemFree( sortarray );
     }
 }
 
@@ -1189,7 +1189,7 @@ void FiniPELoadFile( void )
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
-        objects = MemAllocSafe( num_objects * sizeof( pe_object ) );
+        objects = LnkMemAlloc( num_objects * sizeof( pe_object ) );
         memset( objects, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
@@ -1362,7 +1362,7 @@ void FiniPELoadFile( void )
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
-        objects = MemAllocSafe( num_objects * sizeof( pe_object ) );
+        objects = LnkMemAlloc( num_objects * sizeof( pe_object ) );
         memset( objects, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
@@ -1442,8 +1442,9 @@ void FiniPELoadFile( void )
         totalsize = QFileSize( outfile->handle );
 
 #define CRC_BUFF_SIZE   _16K
-        buffer = MemAlloc( CRC_BUFF_SIZE );
-        if( buffer != NULL ) {
+        buffer = LnkMemAlloc( CRC_BUFF_SIZE );
+
+        if( buffer ) {
             for( ; currpos < totalsize; currpos += buffsize ) {
                 memset( buffer, 0, CRC_BUFF_SIZE );
                 buffsize = QRead( outfile->handle, buffer, CRC_BUFF_SIZE, outfile->fname );
@@ -1453,7 +1454,7 @@ void FiniPELoadFile( void )
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );
             }
 
-            MemFree( buffer );
+            LnkMemFree( buffer );
             crc += totalsize;
 
             if( LinkState & LS_HAVE_X64_CODE ) {
@@ -1466,7 +1467,7 @@ void FiniPELoadFile( void )
         }
     }
 
-    MemFree( objects );
+    LnkMemFree( objects );
 }
 
 static unsigned_32 getStubSize( void )
@@ -1490,8 +1491,8 @@ static unsigned_32 getStubSize( void )
         if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
         } else {
-            MemFree( FmtData.u.os2fam.stub_file_name );
-            FmtData.u.os2fam.stub_file_name = MemStrdupSafe( fullname );
+            LnkMemFree( FmtData.u.os2fam.stub_file_name );
+            FmtData.u.os2fam.stub_file_name = LnkMemStrdup( fullname );
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
             if( dosheader.signature == EXESIGN_DOS ) {
                 code_start = dosheader.hdr_size * 16U;
@@ -1532,7 +1533,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     unsigned_16         *ordptr;
     char                *nameptr;
 
-    ordbuf = MemAllocSafe( numords * sizeof( unsigned_16 ) );
+    ordbuf = LnkMemAlloc( numords * sizeof( unsigned_16 ) );
     QSeek( file, ordstart, fname );
     QRead( file, ordbuf, numords * sizeof( unsigned_16 ), fname );
     QSeek( file, namestart, fname );
@@ -1546,7 +1547,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
         nameptr++;
         ordptr++;
     }
-    MemFree( ordbuf );
+    LnkMemFree( ordbuf );
 }
 
 void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
@@ -1568,7 +1569,7 @@ void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
     nameptrsize = table.num_name_ptrs * sizeof( unsigned_32 );
     if( nameptrsize == 0 )                      /* NOTE: <-- premature return */
         return;
-    nameptrs = MemAllocSafe( nameptrsize + sizeof( unsigned_32 ) );
+    nameptrs = LnkMemAlloc( nameptrsize + sizeof( unsigned_32 ) );
     QSeek( file, table.name_ptr_table_rva - export_dir->rva, fname );
     QRead( file, nameptrs, nameptrsize, fname );
     numentries = 1;
@@ -1588,7 +1589,7 @@ void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
         curr++;
     }   /* NOTE! this assumes the name table is at the end */
     ReadExports( namestart, export_dir->size + *nameptrs, entrystart, numentries, table.ordinal_base, file, fname );
-    MemFree( nameptrs );
+    LnkMemFree( nameptrs );
 }
 
 static void CreateIDataSection( void )
@@ -1793,7 +1794,7 @@ void AddPEImportLocalSym( symbol *locsym, symbol *iatsym )
 {
     local_import    *imp;
 
-    imp = MemAllocSafe( sizeof( local_import ) );
+    imp = LnkMemAlloc( sizeof( local_import ) );
     LinkList( &PELocalImpList, imp );
     imp->iatsym = iatsym;
     imp->locsym = locsym;

@@ -133,7 +133,7 @@ void            ResizeTraceData( void )
     size = MADDisasmDataSize();
     if( size > TraceState.ddsize ) {
         new = TraceState.dd;
-        new = MemRealloc( new, size );
+        _Realloc( new, size );
         if( new == NULL ) {
             ReportMADFailure( MS_NO_MEM );
         } else {
@@ -144,7 +144,7 @@ void            ResizeTraceData( void )
     size = MADTraceSize();
     if( size > TraceState.tdsize ) {
         new = TraceState.td;
-        new = MemRealloc( new, size );
+        _Realloc( new, size );
         if( new == NULL ) {
             ReportMADFailure( MS_NO_MEM );
         } else {
@@ -683,10 +683,10 @@ void ProcTrace( void )
 
 void FiniTrace( void )
 {
-    MemFree( TraceState.td );
+    _Free( TraceState.td );
     TraceState.td = NULL;
     TraceState.tdsize = 0;
-    MemFree( TraceState.dd );
+    _Free( TraceState.dd );
     TraceState.dd = NULL;
     TraceState.ddsize = 0;
 }

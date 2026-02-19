@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "commmem.h"
+#include "helpmem.h"
 #include "search.h"
 #include "uivedit.h"
 #include "uiledit.h"
@@ -165,10 +165,10 @@ static void copyLBLinetoEditCtl( unsigned index )
     char        *lb_item;
     size_t      len;
 
-    lb_item = MemAlloc( MAX_EDIT_LINE_LEN );
+    lb_item = uimalloc( MAX_EDIT_LINE_LEN );
     GetListBoxItem( &listData, index, lb_item, MAX_EDIT_LINE_LEN );
     len = strlen( lb_item );
-    MemFree( editCtl.buffer );
+    uifree( editCtl.buffer );
     editCtl.buffer = lb_item;
     editCtl.length = len;
     uiupdateedit( curHelpDialog, editVField );
@@ -203,7 +203,7 @@ void HelpDialogCallBack( a_dialog *info )
 void SearchDlgFini( void )
 {
     if( editCtl.buffer != NULL ) {
-        MemFree( editCtl.buffer );
+        uifree( editCtl.buffer );
     }
     editCtl.buffer = NULL;
 }
@@ -254,11 +254,11 @@ char *HelpSearch( HelpHdl hdl )
             break;
         case EV_ENTER:
         case EV_LIST_BOX_DCLICK:
-            ret = MemAlloc( MAX_EDIT_LINE_LEN );
+            ret = HelpMemAlloc( MAX_EDIT_LINE_LEN );
             GetLBItemLiteral( &listData, listBox.box->row, ret,
                               MAX_EDIT_LINE_LEN );
             if( ret[0] == '\0' ) {
-                MemFree( ret );
+                HelpMemFree( ret );
                 ret = NULL;
             }
             done = 1;

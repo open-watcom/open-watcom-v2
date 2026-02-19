@@ -70,7 +70,7 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
     mad_call_up_data    *mcud;
 
     InitLC( &entry.lc, true );
-    mcud = walloca( MADCallUpStackSize() );
+    _AllocA( mcud, MADCallUpStackSize() );
     mr = (entry.lc.regs != NULL) ? &entry.lc.regs->mr : NULL;
     if( MADCallUpStackInit( mcud, mr ) != MS_OK )
         return( false );

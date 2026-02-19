@@ -119,7 +119,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
 
 void FiniCache( void )
 {
-    MemFree( Cache.data );
+    _Free( Cache.data );
     Cache.data = NULL;
 }
 
@@ -130,7 +130,7 @@ void InitCache( address addr, size_t size )
     if( size == 0 )
         return;
     FiniCache();
-    ptr = MemAlloc( size );
+    _Alloc( ptr, size );
     if( ptr == NULL )
         return;
     Cache.data = ptr;
@@ -578,7 +578,7 @@ unsigned RemoteMachineData( address addr, dig_info_type info_type, dig_elen in_s
     len -= sizeof( ret );
     if( len > MData->len ) {
         new = MData;
-        new = MemRealloc( new, len + sizeof( *MData ) );
+        _Realloc( new, len + sizeof( *MData ) );
         if( new == NULL )
             return( len );
         MData = new;
@@ -706,7 +706,7 @@ void RemoteGetSysConfig( void )
 bool InitCoreSupp( void )
 {
     if( MData == NULL ) {
-        MData = MemAlloc( sizeof( *MData ) );
+        _Alloc( MData, sizeof( *MData ) );
         MData->len = sizeof( MData->data );
         ClearMachineDataCache();
         RemoteGetSysConfig();
@@ -719,6 +719,6 @@ bool InitCoreSupp( void )
 
 void FiniCoreSupp( void )
 {
-    MemFree( MData );
+    _Free( MData );
     MData = NULL;
 }

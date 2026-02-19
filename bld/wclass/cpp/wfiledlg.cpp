@@ -139,7 +139,7 @@ const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
         WFileName path( _ofn.last_path );
         path.concat( "\\" );
         f.absoluteTo( path );
-        MemFree( _ofn.last_path );
+        GUIMemFree( _ofn.last_path );
         _ofn.last_path = NULL;
         strcpy( _fileName, f );
 #endif

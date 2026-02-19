@@ -132,7 +132,7 @@ bool    WNDAPI DlgNew( const char *title, char *buff, size_t buff_len )
     Controls[OK_IDX].text = WndLoadString( LIT_AUI( New_OK ) );
     Controls[CANCEL_IDX].text = WndLoadString( LIT_AUI( New_Cancel ) );
     rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
-    MemFree( (void *)Controls[OK_IDX].text );
-    MemFree( (void *)Controls[CANCEL_IDX].text );
+    WndFree( (void *)Controls[OK_IDX].text );
+    WndFree( (void *)Controls[CANCEL_IDX].text );
     return( rc );
 }

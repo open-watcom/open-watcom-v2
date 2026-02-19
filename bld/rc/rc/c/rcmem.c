@@ -87,19 +87,8 @@ void RcMemShutdown( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), RcMemHandle ) );
-#else
-    return( RCMemLayer1Malloc( size ) );
-#endif
-}
-
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
+TRMEMAPI( RcMemAlloc )
+void *RcMemAlloc( size_t size )
 /*****************************/
 {
     void    *ptr;
@@ -117,8 +106,8 @@ void *MemAllocSafe( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
+TRMEMAPI( RcMemFree )
+void RcMemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
@@ -128,9 +117,9 @@ void MemFree( void *ptr )
 #endif
 }
 
-TRMEMAPI( MemReallocSafe )
-void *MemReallocSafe( void *old_ptr, size_t newsize )
-/***************************************************/
+TRMEMAPI( RcMemRealloc )
+void *RcMemRealloc( void *old_ptr, size_t newsize )
+/*************************************************/
 {
     void    *ptr;
 
@@ -148,8 +137,8 @@ void *MemReallocSafe( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-TRMEMAPI( MemStrdupSafe )
-char *MemStrdupSafe( const char *buf )
+TRMEMAPI( RcMemStrdup )
+char *RcMemStrdup( const char *buf )
 /**********************************/
 {
     void    *ptr;
@@ -187,9 +176,9 @@ void RcPrintMemList( void )
     }
 }
 
-TRMEMAPI( MemValidate )
-int MemValidate( void *ptr )
-/**************************/
+TRMEMAPI( RcMemValidate )
+int RcMemValidate( void *ptr )
+/****************************/
 {
     if( RcMemHandle != NULL ) {
         return( _trmem_validate( ptr, _TRMEM_WHO( 5 ), RcMemHandle ) );
@@ -198,9 +187,9 @@ int MemValidate( void *ptr )
     }
 }
 
-TRMEMAPI( MemChkRange )
-int MemChkRange( void *start, size_t len )
-/****************************************/
+TRMEMAPI( RcMemChkRange )
+int RcMemChkRange( void *start, size_t len )
+/******************************************/
 {
     if( RcMemHandle != NULL ) {
         return( _trmem_chk_range( start, len, _TRMEM_WHO( 6 ), RcMemHandle ) );

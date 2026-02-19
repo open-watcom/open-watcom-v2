@@ -174,7 +174,7 @@ static bool WNDCALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *
         return( true );
     case GUI_DESTROY :
         NameListFree( NameList( glob ) );
-        MemFree( glob );
+        WndFree( glob );
         return( true );
     }
     return( false );

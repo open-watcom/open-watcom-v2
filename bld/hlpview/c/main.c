@@ -35,7 +35,7 @@
 #include <string.h>
 #include "wdirent.h"
 #include "help.h"
-#include "commmem.h"
+#include "helpmem.h"
 #include "helpmemu.h"
 #include "filelist.h"
 #include "initmode.h"
@@ -95,7 +95,7 @@ static HelpSrchPathItem *checkFileName( const char *name, char *buf )
 static void freeSrchList( void )
 {
     if( strcmp( searchList[0].info, FIRST_SRCH_PATH ) ) {
-        MemFree( searchList[0].info );
+        HelpMemFree( searchList[0].info );
     }
 }
 

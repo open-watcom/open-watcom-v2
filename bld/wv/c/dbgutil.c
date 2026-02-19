@@ -384,7 +384,7 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 {
     cmd_list *cmds;
 
-    cmds = MemAllocSafe( sizeof( cmd_list ) + len );
+    cmds = DbgMustAlloc( sizeof( cmd_list ) + len );
     cmds->use = 1;
     cmds->buff[len] = NULLCHAR;
     memcpy( cmds->buff, start, len );
@@ -402,7 +402,7 @@ void FreeCmdList( cmd_list *cmds )
         return;
     cmds->use--;
     if( cmds->use == 0 ) {
-        MemFree( cmds );
+        _Free( cmds );
     }
 }
 
@@ -464,14 +464,14 @@ void PopInpStack( void )
         return;
     if( old->lang != NULL ) {
         StrCopyDst( old->lang, buff );
-        MemFree( old->lang );
+        _Free( old->lang );
         old->lang = NULL; /* in case NewLang gets an error */
         NewLang( buff );
     }
     old->rtn( old->handle, INP_RTN_FINI );
     ReScan( old->scan );
     InpStack = old->link;
-    MemFree( old );
+    _Free( old );
 }
 
 
@@ -484,7 +484,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
     input_stack *new;
     char        *lang;
 
-    new = MemAlloc( sizeof( input_stack ) );
+    _Alloc( new, sizeof( input_stack ) );
     if( new == NULL ) {
         rtn( handle, INP_RTN_FINI ); /* clean up handle */
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
@@ -615,7 +615,7 @@ void UnAsm( address addr, char *buff, size_t buff_len )
 {
     mad_disasm_data     *dd;
 
-    dd = walloca( MADDisasmDataSize() );
+    _AllocA( dd, MADDisasmDataSize() );
 
     MADDisasm( dd, &addr, 0 );
     MADDisasmFormat( dd, MDP_ALL, CurrRadix, buff, buff_len );

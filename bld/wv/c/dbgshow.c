@@ -134,7 +134,7 @@ void ConfigLine( char *conf )
 {
     char        *buff;
 
-    buff = walloca( strlen( conf ) + strlen( NameBuff ) + 2 );
+    _AllocA( buff, strlen( conf ) + strlen( NameBuff ) + 2 );
     Format( buff, "%s %s", NameBuff, conf );
     DUIDlgTxt( buff );
 }

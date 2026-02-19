@@ -104,7 +104,7 @@ static void QueueAdd( DirEntryQueue *queue, PEResDirEntry *entry )
 {
     QueueNode       *new;
 
-    new = RESALLOCSAFE( sizeof( QueueNode ) );
+    new = RESALLOC( sizeof( QueueNode ) );
     new->entry = entry;
     new->next = NULL;
     if( queue->front == NULL ) {
@@ -147,7 +147,7 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
     entry->Head.num_name_entries = 0;
     entry->Head.num_id_entries = 0;
     entry->NumUnused = num_entries;
-    entry->Children = RESALLOCSAFE( num_entries * sizeof( PEResEntry ) );
+    entry->Children = RESALLOC( num_entries * sizeof( PEResEntry ) );
 }
 
 static void PEResDirAdd( PEResDirEntry *entry, WResID *name,

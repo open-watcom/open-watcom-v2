@@ -556,7 +556,7 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
         } else {
             size += backup_cnt * sizeof( WORD );
         }
-        asm_info = MemAlloc( size );
+        asm_info = CUIMemAlloc( size );
         if( asm_info != NULL ) {
             info->asm_info = asm_info;
             asm_info->big = (info->limit > 0xffff);

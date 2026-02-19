@@ -519,7 +519,7 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, unsigned rows, unsigne
     a_dialog            *ui_dlg_info;
 
     lines[0] = NULL;
-    ui_dlg_info = MemAlloc( sizeof( a_dialog ) );
+    ui_dlg_info = uimalloc( sizeof( a_dialog ) );
     if( ui_dlg_info == NULL ) {
         return( NULL );
     }
@@ -567,7 +567,7 @@ void uiupdatecombobox( a_combo_box *combo )
 
     edit  = &combo->edit;
     list  = &combo->list;
-    str = (char *)MemAlloc( CTRL_BUF_LEN + 1 );
+    str = (char *)uimalloc( CTRL_BUF_LEN + 1 );
     if( str != NULL ) {
         fn_get = list->get;
         if( fn_get == NULL )
@@ -576,11 +576,11 @@ void uiupdatecombobox( a_combo_box *combo )
             /* str does not have to be null terminated */
             /* terminate it at maximum length */
             str[CTRL_BUF_LEN] = '\0';
-            MemFree( edit->buffer );
+            uifree( edit->buffer );
             edit->buffer = str;
             edit->length = strlen( str );
         } else {
-            MemFree( str );
+            uifree( str );
         }
     }
 }
@@ -1283,14 +1283,14 @@ void uifreedialog( a_dialog *ui_dlg_info )
 //        case FLD_INVISIBLE_EDIT:
 //        case FLD_EDIT:
 //            edit = fields->u.edit;
-//            MemFree( edit->buffer );
+//            uifree( edit->buffer );
 //            edit->buffer = NULL;        //  Need this null for next
 //            break;                      //  time around
         case FLD_COMBOBOX:
             combo = fields->u.combo;
             list = &combo->list;
 //            edit = &combo->edit;
-//            MemFree( edit->buffer );
+//            uifree( edit->buffer );
 //            edit->buffer = NULL;
             uiendlistbox( list );       // Shut down listbox
             break;
@@ -1302,7 +1302,7 @@ void uienddialog( a_dialog *ui_dlg_info )
 {
     uifreedialog( ui_dlg_info );
     uifinidialog( ui_dlg_info->vs );
-    MemFree( ui_dlg_info );
+    uifree( ui_dlg_info );
 }
 
 #if 0
@@ -1317,13 +1317,13 @@ void uifreefields( VFIELD *fields )
         case FLD_INVISIBLE_EDIT:
         case FLD_EDIT:
             edit = fields->u.edit;
-            MemFree( edit->buffer );
+            uifree( edit->buffer );
             edit->buffer = NULL;                //  Need this null for next
             break;                              //  time around
         case FLD_COMBOBOX:
             combo = fields->u.combo;
             edit = &combo->edit;
-            MemFree( edit->buffer );
+            uifree( edit->buffer );
             edit->buffer = NULL;
             break;
         }

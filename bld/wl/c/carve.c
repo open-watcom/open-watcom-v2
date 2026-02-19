@@ -71,7 +71,7 @@ static blk_t *newBlk( cv_t *cv )
     blk_t       *newblk;
     blk_t       **blklist;
 
-    newblk = MemAllocSafe( sizeof( blk_t ) - 1 + cv->blk_size );
+    newblk = LnkMemAlloc( sizeof( blk_t ) - 1 + cv->blk_size );
     for( blklist = &cv->blk_list; *blklist > newblk; ) {    // keep list sorted by memory address
         blklist = &(*blklist)->next;    // biggest first.
     }
@@ -113,7 +113,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     if( elm_size < sizeof( free_t ) ) {
         elm_size = sizeof( free_t );
     }
-    cv = MemAllocSafe( sizeof( *cv ) );
+    cv = LnkMemAlloc( sizeof( *cv ) );
     cv->elm_size = elm_size;
     cv->blk_size = blk_size;
     cv->elm_count = cv->blk_size / cv->elm_size;
@@ -175,13 +175,13 @@ void CarveDestroy( carve_t cv )
 
     if( cv != NULL ) {
         if( cv->blk_map != NULL ) {
-            MemFree( cv->blk_map );
+            LnkMemFree( cv->blk_map );
         }
         for( cur = cv->blk_list; cur != NULL; cur = next ) {
             next = cur->next;
-            MemFree( cur );
+            LnkMemFree( cur );
         }
-        MemFree( cv );
+        LnkMemFree( cv );
     }
 }
 
@@ -421,7 +421,7 @@ void CarveRestart( carve_t cv, unsigned num )
     for( index = 0; index < numblks; index++ ) {
         newBlk( cv );
     }
-    cv->blk_map = MemAllocSafe( numblks * sizeof( blk_t * ) );
+    cv->blk_map = LnkMemAlloc( numblks * sizeof( blk_t * ) );
     index = numblks - 1;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         cv->blk_map[index] = block;

@@ -32,8 +32,6 @@
 
 #include <stdio.h>
 #include "bool.h"
-#include "commmem.h"
-
 
 #define MAX_LINE (256)
 #define FNMAX  80                   /* maximum file name length. */
@@ -102,6 +100,9 @@ extern bool         MapOption;
 // mem.c
 extern void     MemInit( void );
 extern void     MemFini( void );
+extern void     *MemAlloc( size_t );
+extern char     *MemStrdup( const char * );
+extern void     MemFree( void * );
 
 // fileio.h
 extern FILE     *QOpenR( const char *name );

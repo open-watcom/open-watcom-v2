@@ -61,17 +61,17 @@ void SetNovFmt( void )
 void FreeNovFmt( void )
 /*********************/
 {
-    MemFree( FmtData.description );
-    MemFree( FmtData.u.nov.screenname );
-    MemFree( FmtData.u.nov.checkfn );
-    MemFree( FmtData.u.nov.exitfn );
-    MemFree( FmtData.u.nov.customdata );
-    MemFree( FmtData.u.nov.threadname );
-    MemFree( FmtData.u.nov.copyright );
-    MemFree( FmtData.u.nov.messages );
-    MemFree( FmtData.u.nov.help );
-    MemFree( FmtData.u.nov.rpcdata );
-    MemFree( FmtData.u.nov.sharednlm );
+    LnkMemFree( FmtData.description );
+    LnkMemFree( FmtData.u.nov.screenname );
+    LnkMemFree( FmtData.u.nov.checkfn );
+    LnkMemFree( FmtData.u.nov.exitfn );
+    LnkMemFree( FmtData.u.nov.customdata );
+    LnkMemFree( FmtData.u.nov.threadname );
+    LnkMemFree( FmtData.u.nov.copyright );
+    LnkMemFree( FmtData.u.nov.messages );
+    LnkMemFree( FmtData.u.nov.help );
+    LnkMemFree( FmtData.u.nov.rpcdata );
+    LnkMemFree( FmtData.u.nov.sharednlm );
 /*  FreeList( FmtData.u.nov.exp.export );
     FreeList( FmtData.u.nov.exp.module );  Permalloc'd now */
 }
@@ -149,7 +149,7 @@ static bool SetCurrentPrefix( const char *str, size_t len )
      *  Always delete
      */
     if( CmdFile->symprefix != NULL ) {
-        MemFree( CmdFile->symprefix );
+        LnkMemFree( CmdFile->symprefix );
         CmdFile->symprefix = NULL;
     }
 
@@ -181,7 +181,7 @@ static bool SetCurrentPrefix( const char *str, size_t len )
         return( false );
 
     /* convert to C string */
-    CmdFile->symprefix = MemToString( str, len );
+    CmdFile->symprefix = LnkMemToString( str, len );
     return( true );
 }
 
@@ -327,7 +327,7 @@ static bool ProcScreenName( void )
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "SCREENNAME" );
     } else {
         if( FmtData.u.nov.screenname != NULL ) {
-            MemFree( FmtData.u.nov.screenname );  // assume second is correct.
+            LnkMemFree( FmtData.u.nov.screenname );  // assume second is correct.
         }
         FmtData.u.nov.screenname = getstring();
     }
@@ -479,9 +479,9 @@ static bool ProcCopyright( void )
 
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) && !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( FmtData.u.nov.copyright != NULL ) {
-            MemFree( FmtData.u.nov.copyright );  // assume second is correct.
+            LnkMemFree( FmtData.u.nov.copyright );  // assume second is correct.
         }
-        FmtData.u.nov.copyright = MemAllocSafe( DEFAULT_COPYRIGHT_LENGTH + 1 );
+        FmtData.u.nov.copyright = LnkMemAlloc( DEFAULT_COPYRIGHT_LENGTH + 1 );
         memcpy(FmtData.u.nov.copyright,DEFAULT_COPYRIGHT,DEFAULT_COPYRIGHT_LENGTH+1);
         copy_year = FmtData.u.nov.copyright + YEAR_OFFSET;
         thetime = time( NULL );
@@ -495,7 +495,7 @@ static bool ProcCopyright( void )
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_TOO_LARGE, "s", "COPYRIGHT" );
         } else {
             if( FmtData.u.nov.copyright != NULL ) {
-                MemFree( FmtData.u.nov.copyright );  // assume second is correct.
+                LnkMemFree( FmtData.u.nov.copyright );  // assume second is correct.
             }
             FmtData.u.nov.copyright = getstring();
         }

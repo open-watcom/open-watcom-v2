@@ -356,13 +356,13 @@ static void WriteQNXResource( void )
                 LnkMsg( WRN+MSG_RESOURCE_TOO_BIG, "s", FmtData.resource );
                 return;
             }
-            buf = MemAllocSafe( len );
+            buf = LnkMemAlloc( len );
             rec.data_nbytes = len + sizeof( lmf_resource );
             WriteLoad( &rec, sizeof( lmf_record ) );
             WriteLoad( &resource, sizeof( lmf_resource ) );
             QRead( file, buf, len, FmtData.resource );
             WriteLoad( buf, len );
-            MemFree( buf );
+            LnkMemFree( buf );
             QClose( file, FmtData.resource );
         } else {
             len = strlen( FmtData.resource );

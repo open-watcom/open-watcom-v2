@@ -34,11 +34,12 @@
 #ifndef RCMEMORY_INCLUDED
 #define RCMEMORY_INCLUDED
 
-#include "commmem.h"
-
-
 extern void     RcMemInit( void );
 extern void     RcMemShutdown( void );
+extern void     *RcMemAlloc( size_t size );
+extern char     *RcMemStrdup( const char *buf );
+extern void     *RcMemRealloc( void *old_ptr, size_t newsize );
+extern void     RcMemFree( void *ptr );
 
 /*
  * these function are only use for debuging and are only available if
@@ -46,7 +47,7 @@ extern void     RcMemShutdown( void );
  */
 extern void     RcPrintMemUsage( void );
 extern void     RcPrintMemList( void );
-extern int      MemValidate( void *ptr );
-extern int      MemChkRange( void *start, size_t len );
+extern int      RcMemValidate( void *ptr );
+extern int      RcMemChkRange( void *start, size_t len );
 
 #endif

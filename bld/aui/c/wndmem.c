@@ -35,12 +35,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 void    *WndMustAlloc( size_t size )
 {
     void        *chunk;
 
-    chunk = MemAlloc( size );
+    chunk = WndAlloc( size );
     if( chunk == NULL ) {
         Say( "No memory for window\n" );
         exit( 1 );
@@ -50,7 +49,7 @@ void    *WndMustAlloc( size_t size )
 
 void    *WndMustRealloc( void *chunk, size_t size )
 {
-    chunk = MemRealloc( chunk, size );
+    chunk = WndRealloc( chunk, size );
     if( chunk == NULL ) {
         Say( "No memory for window\n" );
         exit( 1 );

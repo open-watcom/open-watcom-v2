@@ -139,7 +139,7 @@ bool InitCmd( void )
             start = curr;
             while( *curr != ' ' && *curr != '\t' && *curr != NULLCHAR )
                 ++curr;
-            parm = MemAlloc( curr - start + 1 );
+            _Alloc( parm, curr - start + 1 );
             if( parm == NULL )
                 return( false );
             SymFileName = parm;
@@ -161,7 +161,7 @@ bool InitCmd( void )
             ++total;
         ++total;
     }
-    TaskCmd = MemAlloc( total + 2 );
+    _Alloc( TaskCmd, total + 2 );
     if( TaskCmd == NULL )
         return( false );
     ptr = TaskCmd;
@@ -201,8 +201,8 @@ void FindLocalDebugInfo( const char *name )
     file_handle fh;
 
     len = strlen( name );
-    buff = walloca( 2 + len + 4 + 1 );   /* prefix + name + extension + '\0' */
-    symfile = walloca( len + 4 + 1 );    /* name + extension + '\0' */
+    _AllocA( buff, 2 + len + 4 + 1 );   /* prefix + name + extension + '\0' */
+    _AllocA( symfile, len + 4 + 1 );    /* name + extension + '\0' */
     SetFileLocPrefix( buff, OP_LOCAL );
     // If a .sym file is present, use it in preference to the executable
     fh = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symfile, len + 4 );
@@ -242,7 +242,7 @@ bool DownLoadCode( void )
 void FiniCmd( void )
 /******************/
 {
-    MemFree( TaskCmd );
+    _Free( TaskCmd );
 }
 
 void InitLocalInfo( void )
@@ -338,7 +338,7 @@ void MapAddrForImage( image_entry *image, addr_ptr *addr )
     }
     map_addr = *addr;
     image->mapper( image, addr, &lo_bound, &hi_bound );
-    curr = MemAlloc( sizeof( *curr ) );
+    _Alloc( curr, sizeof( *curr ) );
     if( curr != NULL ) {
         curr->link = NULL;
         *owner = curr;
@@ -366,7 +366,7 @@ bool UnMapAddress( mappable_addr *loc, image_entry *image )
     }
     if( image == NULL )
         return( false );
-    MemFree( loc->image_name );
+    DbgFree( loc->image_name );
     loc->image_name = DupStr( image->image_name );
     for( map = image->map_list; map != NULL; map = map->link ) {
         if( map->real_addr.segment == loc->addr.mach.segment ) {
@@ -436,10 +436,10 @@ void FreeImage( image_entry *image )
             *owner = curr->link;
             for( head = curr->map_list; head != NULL; head = next ) {
                 next = head->link;
-                MemFree( head );
+                _Free( head );
             }
-            MemFree( curr->symfile_name );
-            MemFree( curr );
+            _Free( curr->symfile_name );
+            _Free( curr );
             break;
         }
     }
@@ -454,15 +454,15 @@ static image_entry *DoCreateImage( const char *exe, const char *symfile )
     size_t              len;
 
     len = ( exe == NULL ) ? 0 : strlen( exe );
-    image = MemAlloc( sizeof( *image ) + len );
+    _Alloc( image, sizeof( *image ) + len );
     if( image != NULL ) {
         memset( image, 0, sizeof( *image ) );
         if( len != 0 )
             memcpy( image->image_name, exe, len + 1 );
         if( symfile != NULL ) {
-            image->symfile_name = MemAlloc( strlen( symfile ) + 1 );
+            _Alloc( image->symfile_name, strlen( symfile ) + 1 );
             if( image->symfile_name == NULL ) {
-                MemFree( image );
+                _Free( image );
                 image = NULL;
             } else {
                 strcpy( image->symfile_name, symfile );
@@ -605,11 +605,11 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( image->symfile_name == NULL ) {
-        symfile_name = walloca( strlen( image->image_name ) + 1 );
+        _AllocA( symfile_name, strlen( image->image_name ) + 1 );
         strcpy( symfile_name, image->image_name );
         symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
         len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
-        image->symfile_name = MemAlloc( len + 1 );
+        _Alloc( image->symfile_name, len + 1 );
         if( image->symfile_name != NULL ) {
             memcpy( image->symfile_name, buff, len + 1 );
             fh = FileOpen( image->symfile_name, OP_READ );
@@ -626,7 +626,7 @@ static bool ProcImgSymInfo( image_entry *image )
                     return( ret );
                 }
             }
-            MemFree( image->symfile_name );
+            _Free( image->symfile_name );
             image->symfile_name = NULL;
         }
         if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
@@ -679,7 +679,7 @@ remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
             loc->addr.mach.segment = map->real_addr.segment;
             loc->addr.mach.offset = loc->addr.mach.offset + map->real_addr.offset;
             AddrSection( &loc->addr, OVL_MAP_CURR );
-            MemFree( loc->image_name );
+            DbgFree( loc->image_name );
             loc->image_name = NULL;
             return( REMAP_REMAPPED );
         }
@@ -996,7 +996,7 @@ void ReleaseProgOvlay( bool free_sym )
         Error( ERR_NONE, LIT_ENG( ERR_CANT_KILL_PROGRAM ) );
     }
     if( free_sym ) {
-        MemFree( SymFileName );
+        _Free( SymFileName );
         SymFileName = NULL;
     }
     FreeAliasInfo();
@@ -1025,7 +1025,7 @@ void FiniMappableAddr( mappable_addr *loc )
 /*****************************************/
 {
     if( loc->image_name != NULL ) {
-        MemFree( loc->image_name );
+        DbgFree( loc->image_name );
     }
 }
 
@@ -1117,8 +1117,8 @@ void SetSymFileName( const char *file )
 /*************************************/
 {
     if( SymFileName != NULL )
-        MemFree( SymFileName );
-    SymFileName = MemAlloc( strlen( file ) + 1 );
+        _Free( SymFileName );
+    _Alloc( SymFileName, strlen( file ) + 1 );
     strcpy( SymFileName, file );
 }
 
@@ -1129,14 +1129,14 @@ static void DoResNew( bool have_parms, const char *cmd,
     char                *new;
 
     TraceKill();
-    new = MemAllocSafe( clen + plen + 2 );
+    new = DbgMustAlloc( clen + plen + 2 );
     ReleaseProgOvlay( false );
     BPsUnHit();
     memcpy( new, cmd, clen );
     new[clen] = NULLCHAR;
     memcpy( new + clen + 1, parms, plen );
     new[clen + plen + 1] = ARG_TERMINATE;
-    MemFree( TaskCmd );
+    _Free( TaskCmd );
     TaskCmd = new;
     if( have_parms )
         _SwitchOff( SW_TRUE_ARGV );
@@ -1215,10 +1215,10 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
     }
     bsize = 0x8000;
-    buff = MemAlloc( bsize );
+    _Alloc( buff, bsize );
     if( buff == NULL ) {
         bsize = 128;
-        buff = MemAllocSafe( bsize );
+        buff = DbgMustAlloc( bsize );
     }
     copylen = SizeMinusDebugInfo( fh_lcl, strip );
     DUICopySize( cookie, copylen );
@@ -1240,7 +1240,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     }
     FileClose( fh_lcl );
     FileClose( fh_rem );
-    MemFree( buff );
+    _Free( buff );
     if( delete_file ) {
         RemoteFileErase( remote );
         return( false );
@@ -1337,7 +1337,7 @@ static void ProgNew( void )
     }
     old = SetProgStartHook( progstarthook );
     if( ScanItem( false, &start, &len ) ) {
-        MemFree( SymFileName );
+        _Free( SymFileName );
         SymFileName = NULL;
         SKIP_SPACES;
         if( len > 1 && *start == SYM_FILE_IND ) {
@@ -1350,7 +1350,7 @@ static void ProgNew( void )
                     ++start;
                     --len;
                 }
-                new = MemAllocSafe( start - symfile + 1 );
+                new = DbgMustAlloc( start - symfile + 1 );
                 SymFileName = new;
                 memcpy( new, symfile, start - symfile );
                 new[start - symfile] = NULLCHAR;
@@ -1482,7 +1482,7 @@ static void SymFileNew( void )
     owner = &image->map_list;
     while( !ScanEOC() ) {
         EvalMapExpr( &addr );
-        curr = MemAlloc( sizeof( *curr ) );
+        _Alloc( curr, sizeof( *curr ) );
         if( curr == NULL ) {
             DIPUnloadInfo( image->dip_handle );
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
@@ -1576,7 +1576,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     }
     owner = &image->map_list;
 
-    curr = MemAlloc( sizeof( *curr ) );
+    _Alloc( curr, sizeof( *curr ) );
     if( curr == NULL ) {
         image->map_list = NULL;
         DIPUnloadInfo( image->dip_handle );

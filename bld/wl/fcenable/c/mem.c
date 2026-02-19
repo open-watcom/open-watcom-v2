@@ -78,9 +78,9 @@ void MemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
-/*******************************/
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
 {
     void        *ptr;
 

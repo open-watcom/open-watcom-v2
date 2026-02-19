@@ -101,14 +101,14 @@ char *DUILoadString( dui_res_id id )
     }
     buffer[len++] = NULLCHAR;
 #endif
-    ret = MemAlloc( len );
+    ret = DbgAlloc( len );
     strcpy( ret, buffer );
     return( ret );
 }
 
 void DUIFreeString( void *ptr )
 {
-    MemFree( ptr );
+    DbgFree( ptr );
 }
 
 void DUIInitLiterals( void )

@@ -36,7 +36,7 @@
 #include "bool.h"
 #include "wdirent.h"
 #include "help.h"
-#include "commmem.h"
+#include "helpmem.h"
 #include "filelist.h"
 #include "pathgrp2.h"
 
@@ -61,11 +61,11 @@ static void freeFileList( FileList *list )
     unsigned            i;
 
     for( i = 0; i < list->used; i++ ) {
-        MemFree( list->items[i]->fpath );
-        MemFree( list->items[i]->fname );
-        MemFree( list->items[i] );
+        HelpMemFree( list->items[i]->fpath );
+        HelpMemFree( list->items[i]->fname );
+        HelpMemFree( list->items[i] );
     }
-    MemFree( list );
+    HelpMemFree( list );
 }
 
 static void printDescrip( FileInfo *info)
@@ -139,14 +139,14 @@ static FileList *scanDirectory( char *buf, FileList *list )
             if ( len < ( sizeof( "." DEF_EXT ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." DEF_EXT ) - 1 )], "." DEF_EXT ) != 0 ) {
                 continue;
             }
-            list->items[list->used] = MemAlloc( sizeof( FileInfo ) );
+            list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
             list->items[list->used]->fpath = HelpDupStr( buf );
             _splitpath2( dire->d_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
             list->items[list->used]->fname = HelpDupStr( pg.fname );
             list->used++;
             if( list->used == list->allocated ) {
                 list->allocated += MAX_HELPFILES;
-                list = MemRealloc( list, sizeof( FileList ) + list->allocated * sizeof( FileInfo * ) );
+                list = HelpMemRealloc( list, sizeof( FileList ) + list->allocated * sizeof( FileInfo * ) );
             }
         }
         closedir( dirp );
@@ -165,7 +165,7 @@ static FileList *doFillFileList( const char *path, FileList *list )
 
     done = 0;
     len = strlen( path ) + 1;
-    path_start = MemAlloc( len + 2 );
+    path_start = HelpMemAlloc( len + 2 );
     strcpy( path_start, path );
     p = path_start;
     for( ;; ) {
@@ -198,7 +198,7 @@ static FileList *doFillFileList( const char *path, FileList *list )
             break;
         p = path_end + 1;
     }
-    MemFree( path_start );
+    HelpMemFree( path_start );
     return( list );
 }
 
@@ -237,7 +237,7 @@ static FileList *initFileList( void )
 {
     FileList    *list;
 
-    list = MemAlloc( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
+    list = HelpMemAlloc( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
     list->allocated = MAX_HELPFILES;
     list->used = 0;
     return( list );

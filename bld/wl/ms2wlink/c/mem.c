@@ -31,11 +31,10 @@
 
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include "ms2wlink.h"
 #ifdef TRMEM
-//    #include "wio.h"
+    #include "wio.h"
     #include "trmem.h"
 #endif
 
@@ -96,29 +95,18 @@ void *MemAlloc( size_t size )
 /***************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
-/*******************************/
-{
-#ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
 #else
     return( check_nomem(  malloc( size ) ) );
 #endif
 }
 
-TRMEMAPI( MemStrdupSafe )
-char *MemStrdupSafe( const char *str )
-/************************************/
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) ) );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
     return( check_nomem( strdup( str ) ) );
 #endif
@@ -131,7 +119,7 @@ void MemFree( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 3 ), TrHdl );
 #else
     free( p );
 #endif

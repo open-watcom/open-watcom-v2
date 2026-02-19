@@ -95,15 +95,15 @@ ElfSymTable *CreateElfSymTable( unsigned maxElems, stringtable *strtab )
 {
     ElfSymTable *tab;
 
-    tab = MemAllocSafe( sizeof( ElfSymTable ) );
+    tab = LnkMemAlloc( sizeof( ElfSymTable ) );
     tab->numBuckets = FindClosestPrime( maxElems / 2 );
     tab->maxElems = maxElems + 1; // element 0 is NIL
     tab->numElems = 1;
-    tab->table = MemAllocSafe( tab->maxElems * sizeof( tab->table[0] ) );
+    tab->table = LnkMemAlloc( tab->maxElems * sizeof( tab->table[0] ) );
     memset( tab->table, 0, tab->maxElems * sizeof( tab->table[0] ) );
-    tab->buckets = MemAllocSafe( tab->numBuckets * sizeof( Elf32_Word ) );
+    tab->buckets = LnkMemAlloc( tab->numBuckets * sizeof( Elf32_Word ) );
     memset( tab->buckets, 0, tab->numBuckets * sizeof( unsigned_32 ) );
-    tab->chains = MemAllocSafe( tab->maxElems * sizeof( unsigned_32 ) );
+    tab->chains = LnkMemAlloc( tab->maxElems * sizeof( unsigned_32 ) );
     memset( tab->chains, 0, tab->maxElems * sizeof( unsigned_32 ) );
     tab->strtab = strtab;
     if( GetStringTableSize( tab->strtab ) == 0 ) {
@@ -254,10 +254,10 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, unsigned hashidx,
 void ZapElfSymTable( ElfSymTable *tab )
 /********************************************/
 {
-    MemFree( tab->table );
-    MemFree( tab->buckets );
-    MemFree( tab->chains );
-    MemFree( tab );
+    LnkMemFree( tab->table );
+    LnkMemFree( tab->buckets );
+    LnkMemFree( tab->chains );
+    LnkMemFree( tab );
 }
 
 #endif

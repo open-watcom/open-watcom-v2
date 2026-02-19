@@ -150,7 +150,7 @@ static void AsmSetFirst( a_window wnd, address addr, bool use_first_source )
     unsigned            addr_len;
     DIPHDL( cue, cueh );
 
-    dd = walloca( dd, asw->ddsize );
+    _AllocA( dd, asw->ddsize );
 
 
     if( IS_NIL_ADDR( addr ) || ProgPeek( addr, &chr, 1 ) != 1 ) {
@@ -213,13 +213,13 @@ static  void    AsmResize( a_window wnd )
     if( size <= 0 )
         size = 1;
     first = asw->ins[0].addr;
-    new_ins = MemAlloc( size * sizeof( *new_ins ) );
+    new_ins = WndAlloc( size * sizeof( *new_ins ) );
     memset( new_ins, 0, size * sizeof( *new_ins ) );
     if( new_ins == NULL ) {
         WndClose( wnd );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
     }
-    MemFree( asw->ins );
+    WndFree( asw->ins );
     asw->ins = new_ins;
     asw->ins_size = size;
     AsmSetFirst( wnd, first, asw->ins[0].line != 0 );
@@ -575,7 +575,7 @@ static int WNDCALLBACK AsmScroll( a_window wnd, int lines )
     DIPHDL( cue, cueh );
 
     asw = WndAsm( wnd );
-    dd = walloca( dd, asw->ddsize );
+    _AllocA( dd, asw->ddsize );
     addr = asw->ins[0].addr;
     if( lines == -1 && asw->ins[0].line == 0 &&
         ExactCueAt( asw, addr, cueh ) ) {
@@ -913,7 +913,7 @@ static void     WNDCALLBACK AsmRefresh( a_window wnd )
         new_size = MADDisasmDataSize();
         if( new_size > asw->ddsize ) {
             new = asw->cache_dd;
-            new = MemRealloc( new, new_size );
+            _Realloc( new, new_size );
             if( new == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
             } else {
@@ -956,9 +956,9 @@ static void     WNDCALLBACK AsmRefresh( a_window wnd )
 static  void    AsmFini( asm_window *asw )
 {
     AsmNewSource( asw, NULL );
-    MemFree( asw->cache_dd );
-    MemFree( asw->ins );
-    MemFree( asw );
+    _Free( asw->cache_dd );
+    WndFree( asw->ins );
+    WndFree( asw );
 }
 
 static  void    AsmInit( a_window wnd )
@@ -970,7 +970,7 @@ static  void    AsmInit( a_window wnd )
     size = WndRows( wnd );
     if( size <= 0 )
         size = 1;
-    asw->ins = MemAlloc( size * sizeof( *asw->ins ) );
+    asw->ins = WndAlloc( size * sizeof( *asw->ins ) );
     memset( asw->ins, 0, size * sizeof( *asw->ins ) );
     asw->ins_size = size;
     if( asw->ins == NULL ) {
@@ -1076,9 +1076,9 @@ a_window DoWndAsmOpen( address addr, bool track )
 
     asw = WndMustAlloc( sizeof( asm_window ) );
     asw->ddsize = MADDisasmDataSize();
-    asw->cache_dd = MemAlloc( asw->ddsize );
+    _Alloc( asw->cache_dd, asw->ddsize );
     if( asw->cache_dd == NULL ) {
-        MemFree( asw );
+        WndFree( asw );
         return( NULL );
     }
     asw->active = addr;

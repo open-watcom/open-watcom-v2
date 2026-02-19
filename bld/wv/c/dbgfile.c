@@ -684,7 +684,7 @@ static void parsePathList( char_ring **owner, char *src )
             while( len > 0 && start[len - 1] == ' ' ) {
                 --len;
             }
-            new = MemAlloc( sizeof( char_ring ) + len );
+            _Alloc( new, sizeof( char_ring ) + len );
             if( new == NULL )
                 break;
             *owner = new;
@@ -707,14 +707,14 @@ static void parseEnvVar( char_ring **owner, const char *name )
     size = DUIEnvLkup( name, NULL, 0 );
     if( size > 0 ) {
         ++size;
-        buff = MemAlloc( size );   /* allocate enough room for a very long PATH */
+        _Alloc( buff, size );   /* allocate enough room for a very long PATH */
         if( buff == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
         if( DUIEnvLkup( name, buff, size ) != 0 ) {
             parsePathList( owner, buff );
         }
-        MemFree( buff );
+        _Free( buff );
     }
 }
 

@@ -45,7 +45,6 @@
 #include "reloc.h"
 #include "objcache.h"
 #include "wresmem.h"
-#include "commmem.h"
 #ifdef TRMEM
     #include "trmem.h"
     #include "ideentry.h"
@@ -119,8 +118,8 @@ void LnkMemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( LnkMemAllocNoChk )
+void *LnkMemAllocNoChk( size_t size )
 /***********************************/
 {
     void    *ptr;
@@ -142,9 +141,9 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
-/*******************************/
+TRMEMAPI( LnkMemAlloc )
+void *LnkMemAlloc( size_t size )
+/******************************/
 {
     void            *ptr;
 
@@ -168,9 +167,9 @@ void *MemAllocSafe( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( MemStrdupSafe )
-char *MemStrdupSafe( const char *str )
-/************************************/
+TRMEMAPI( LnkMemStrdup )
+char *LnkMemStrdup( const char *str )
+/***********************************/
 {
     char            *ptr;
 
@@ -193,11 +192,11 @@ char *MemStrdupSafe( const char *str )
     return( ptr );
 }
 
-TRMEMAPI( MemReallocSafe )
-void *MemReallocSafe( void *src, size_t size )
+TRMEMAPI( LnkMemRealloc )
+void *LnkMemRealloc( void *src, size_t size )
 /********************************************
  * reallocate a block of memory.
- * Notes for MemReallocSafe
+ * Notes for LnkMemRealloc
  * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
  * and this function is called from permshrink
  */
@@ -219,8 +218,8 @@ void *MemReallocSafe( void *src, size_t size )
     return( dest );
 }
 
-TRMEMAPI( MemFree )
-void MemFree( void *p )
+TRMEMAPI( LnkMemFree )
+void LnkMemFree( void *p )
 /************************/
 {
     if( p == NULL )
@@ -232,9 +231,9 @@ void MemFree( void *p )
 #endif
 }
 
-TRMEMAPI( MemToString )
-char *MemToString( const void *mem, size_t len )
-/**********************************************/
+TRMEMAPI( LnkMemToString )
+char *LnkMemToString( const void *mem, size_t len )
+/*************************************************/
 {
     char            *ptr;
 
@@ -305,7 +304,7 @@ void DbgZapFreed( void *tgt, size_t size )
 
 bool FreeUpMemory( void )
 /************************
- * make sure MemReallocSafe is kept up to date with what is put in here.
+ * make sure LnkMemRealloc is kept up to date with what is put in here.
  */
 {
 #if defined( __QNX__ )

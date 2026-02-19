@@ -118,7 +118,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
 
     error = false;
     fp = NULL;
-    buffer = RESALLOCSAFE( BUFFER_SIZE );
+    buffer = RESALLOC( BUFFER_SIZE );
     if( !onlyFile ) {
         if( RcFindSourceFile( filename, full_filename ) == -1 ) {
             RcError( ERR_CANT_FIND_FILE, filename );
@@ -185,7 +185,7 @@ DataElemList *SemNewDataElemList( RawDataItem node )
 {
     DataElemList    *head;
 
-    head = RESALLOCSAFE( sizeof( DataElemList ) );
+    head = RESALLOC( sizeof( DataElemList ) );
     head->data[0] = node;
     head->count = 1;
     head->next = NULL;

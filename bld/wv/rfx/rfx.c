@@ -306,12 +306,12 @@ void GrabHandlers( void )
 {
 }
 
-static void *MemAlloc( size_t size )
+static void *DbgAlloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-static void MemFree( void *chunk )
+static void DbgFree( void *chunk )
 {
     free( chunk );
 }
@@ -335,7 +335,7 @@ static char *MyStrdup( const char *str ) {
 
     char *new;
 
-    new = MemAlloc( strlen( str ) + 1 );
+    new = DbgAlloc( strlen( str ) + 1 );
     strcpy( new, str );
     return( new );
 }
@@ -896,7 +896,7 @@ static void AddCopySpec( const char *src, const char *dst, object_loc src_loc, o
 {
     COPYPTR     new;
 
-    new = MemAlloc( sizeof( COPYSPEC ) );
+    new = DbgAlloc( sizeof( COPYSPEC ) );
     new->next = CopySpecs;
     CopySpecs = new;
     new->src = MyStrdup( src );
@@ -914,9 +914,9 @@ static void FreeCopySpec( COPYPTR junk )
         owner = &((*owner)->next);
     }
     *owner = junk->next;
-    MemFree( junk->src );
-    MemFree( junk->dst );
-    MemFree( junk );
+    DbgFree( junk->src );
+    DbgFree( junk->dst );
+    DbgFree( junk );
 }
 
 static bool HasWildCards( const char *src )
@@ -1274,7 +1274,7 @@ static void ProcType( int argc, char **argv )
 static  void    DirClosef( dir_handle *dh )
 {
     _FindClose( dh->location, &dh->info, sizeof( dh->info ) );
-    MemFree( dh );
+    DbgFree( dh );
 }
 
 static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
@@ -1283,7 +1283,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     error_handle    errh;
     file_parse      parse;
 
-    dh = (dir_handle *)MemAlloc( sizeof( dir_handle ) );
+    dh = (dir_handle *)DbgAlloc( sizeof( dir_handle ) );
     if( dh == NULL ) {
         SysSetLclErr( IO_FIND_ERROR );
     } else {
@@ -1948,7 +1948,7 @@ static void Interactive( void )
 int main( int argc, char **argv )
 {
     InitDbgSwitches();
-    TxtBuff = MemAlloc( 512 );
+    TxtBuff = DbgAlloc( 512 );
     SysFileInit();
     if( argc < 2 || argv[1][0] == '?' ) {
         Usage();

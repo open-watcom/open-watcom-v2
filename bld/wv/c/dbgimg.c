@@ -75,5 +75,5 @@ static int ImageCompare( void *_pa, void *_pb )
 void    ImgSort( void )
 {
     DbgImageList = SortLinkedList( DbgImageList, offsetof( image_entry, link ),
-                                ImageCompare, MemAlloc, MemFree );
+                                ImageCompare, DbgAlloc, DbgFree );
 }

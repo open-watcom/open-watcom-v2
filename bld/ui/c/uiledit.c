@@ -59,7 +59,7 @@ static bool extend( unsigned n )
 {
     char    *buf;
 
-    buf = MemRealloc( UIEdit->edit_buffer, n );
+    buf = uirealloc( UIEdit->edit_buffer, n );
     if( buf == NULL )
         return( false );
     buf[UIEdit->edit_eline.length] = '\0';
@@ -107,7 +107,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
     unsigned        l;
     a_ui_edit       *edit;
 
-    edit = MemAlloc( sizeof( a_ui_edit ) );
+    edit = uimalloc( sizeof( a_ui_edit ) );
     if( edit == NULL ) {
         return( NULL );
     }
@@ -272,7 +272,7 @@ unsigned uiendedit( void )
     uiveditfini( UIEdit->edit_vs, &UIEdit->edit_eline );
     edit = UIEdit;
     UIEdit = UIEdit->next;
-    MemFree( edit );
+    uifree( edit );
     return( i );
 }
 

@@ -83,7 +83,7 @@ static reloc_info *AllocRelocInfo( void )
     _PermAlloc( info, sizeof( reloc_info ) );       /* allocate more */
     info->sizeleft = RELOC_PAGE_SIZE;
     info->loc.spilled = false;
-    info->loc.u.addr = MemAlloc( RELOC_PAGE_SIZE );
+    info->loc.u.addr = LnkMemAllocNoChk( RELOC_PAGE_SIZE );
     if( info->loc.u.addr == NULL ) {
         info->loc.u.spill = SpillAlloc( RELOC_PAGE_SIZE );
         info->loc.spilled = true;
@@ -111,14 +111,14 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
     start = mem;
     allocsize = OSF_RLIDX_MAX * unitsize;
     while( idxhigh-- > 0 ) {
-        *mem = MemAllocSafe( allocsize );
+        *mem = LnkMemAlloc( allocsize );
         memset( *mem, 0, allocsize );
         mem++;
     }
     idxlow = OSF_RLIDX_LOW( pageidx );
     if( idxlow != 0 ) {
         allocsize = idxlow * unitsize;
-        *mem = MemAllocSafe( allocsize );
+        *mem = LnkMemAlloc( allocsize );
         memset( *mem, 0, allocsize );
     }
     return( start );
@@ -253,7 +253,7 @@ static bool FreeRelocList( reloc_info *list )
 {
     for( ; list != NULL; list = list->next ) {
         if( !list->loc.spilled ) {
-            MemFree( list->loc.u.addr );
+            LnkMemFree( list->loc.u.addr );
         }
     }
     return( false );  /* needed for OS2 generic traversal routines */
@@ -334,7 +334,7 @@ static void FreeGroupRelocs( group_entry *group )
                 highidx++;
             }
             while( highidx-- > 0 ) {
-                MemFree( *reloclist );
+                LnkMemFree( *reloclist );
                 reloclist++;
             }
         }
@@ -513,7 +513,7 @@ static bool SpillRelocList( reloc_info *list )
         if( !list->loc.spilled ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
             SpillWrite( spill, 0, list->loc.u.addr, RELOC_PAGE_SIZE - list->sizeleft );
-            MemFree( list->loc.u.addr );
+            LnkMemFree( list->loc.u.addr );
             list->loc.u.spill = spill;
             list->loc.spilled = true;
             return( true );

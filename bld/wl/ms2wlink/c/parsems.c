@@ -62,9 +62,9 @@ bool InitParsing( void )
 {
     int     cmd_len;
 
-    CmdFile = MemAllocSafe( sizeof( cmdfilelist ) );
+    CmdFile = MemAlloc( sizeof( cmdfilelist ) );
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    CmdFile->buffer = MemAllocSafe( cmd_len );
+    CmdFile->buffer = MemAlloc( cmd_len );
     _bgetcmd( CmdFile->buffer, cmd_len );
     CmdFile->next = NULL;
     CmdFile->how = COMMANDLINE;
@@ -185,7 +185,7 @@ void StartNewFile( char *fname )
     cmdfilelist     *newfile;
     unsigned long   long_size;
 
-    newfile = MemAllocSafe( sizeof( cmdfilelist ) );
+    newfile = MemAlloc( sizeof( cmdfilelist ) );
     newfile->name = fname;
     newfile->fp = NULL;
     newfile->buffer = NULL;
@@ -210,7 +210,7 @@ void StartNewFile( char *fname )
     if( newfile->buffer == NULL ) {  // if couldn't buffer for some reason.
         newfile->where = ENDOFLINE;
         newfile->how = NONBUFFERED;
-        newfile->buffer = MemAllocSafe( MAX_LINE + 1 );// have to have at least this
+        newfile->buffer = MemAlloc( MAX_LINE + 1 );// have to have at least this
         newfile->current = newfile->buffer;        // much RAM or death ensues.
     }
 }
@@ -367,7 +367,7 @@ char *ToString( void )
 
     src = CmdFile->token;
     len = CmdFile->len;
-    str = MemAllocSafe( len + 1 );
+    str = MemAlloc( len + 1 );
     memcpy( str, src, len );
     str[len] = '\0';
     return( str );
@@ -487,7 +487,7 @@ static int GetNextInputChar( prompt_slot slot )
                 --CmdFile->current;
 
             /* Open the response file and read next character. */
-            StartNewFile( MemStrdupSafe( fname ) );
+            StartNewFile( MemStrdup( fname ) );
             c = ReadNextChar( slot );
         }
     }
@@ -682,7 +682,7 @@ static void DoOneObject( char *obj )
         if( OverlayLevel )
             ErrorExit( "nested left parentheses" );
 
-        sect = MemAllocSafe( 8 );
+        sect = MemAlloc( 8 );
         memcpy( sect, "section", 8 );
         AddCommand( sect , OVERLAY_SLOT, true );
         ++OverlayLevel;
