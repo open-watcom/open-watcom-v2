@@ -31,16 +31,11 @@
 ****************************************************************************/
 
 
-#ifndef WDIS_MEMFUNCS_INCLUDED
-#define WDIS_MEMFUNCS_INCLUDED
+#ifndef WDIS_MEM_INCLUDED
+#define WDIS_MEM_INCLUDED
 
 extern void     MemOpen( void );
 extern void     MemPrtList( void );
 extern void     MemClose( void );
-
-extern void     *MemAlloc( size_t );
-extern char     *MemStrdup( const char * );
-extern void     *MemRealloc( void *, size_t );
-extern void     MemFree( void * );
 
 #endif

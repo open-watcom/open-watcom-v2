@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,8 @@
 
 #include "dtypes.h"
 #include "msg.h"
+#include "memfuncs.h"
+
 
 #define MAX_OBJ_NAME            1024
 #define MAX_INS_NAME            80

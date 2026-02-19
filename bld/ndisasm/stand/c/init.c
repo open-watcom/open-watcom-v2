@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "global.h"
 #include "init.h"
 #include "buffer.h"
-#include "memfuncs.h"
 #include "hashtabl.h"
 #include "publics.h"
 #include "args.h"
@@ -51,6 +50,7 @@
 #include "identsec.h"
 #include "fini.h"
 #include "formasm.h"
+#include "mem.h"
 
 #include "clibext.h"
 

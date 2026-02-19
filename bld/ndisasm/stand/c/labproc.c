@@ -39,7 +39,6 @@
 #include "global.h"
 #include "demangle.h"
 #include "labproc.h"
-#include "memfuncs.h"
 #include "hashtabl.h"
 #include "formasm.h"
 #include "i64.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "srcmix.h"
 #include "buffer.h"
 #include "disdwarf.h"
-#include "memfuncs.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"

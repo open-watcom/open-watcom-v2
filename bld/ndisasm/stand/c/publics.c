@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "global.h"
 #include "publics.h"
 #include "buffer.h"
-#include "memfuncs.h"
 #include "hashtabl.h"
 #include "main.h"
 #include "print.h"

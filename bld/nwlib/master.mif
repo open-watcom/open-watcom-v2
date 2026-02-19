@@ -64,7 +64,7 @@ extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
 !  if $(__WATCOM_TOOLS__) < 1300
-extra_c_flags_f_memfuncs = -of+
+extra_c_flags_f_mem = -of+
 !  endif
 ! endif
 !endif
@@ -104,7 +104,7 @@ common_objs = &
     $(_subdir_)implib.obj &
     $(_subdir_)elfobjs.obj &
     $(_subdir_)orlrtns.obj &
-    $(_subdir_)memfuncs.obj &
+    $(_subdir_)mem.obj &
     $(_subdir_)demangle.obj &
     $(_subdir_)omfhash.obj &
     $(_subdir_)omfutil.obj &

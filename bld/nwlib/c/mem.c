@@ -25,21 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  memory tracking cover functions
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "wio.h"
-#include "memfuncs.h"
+
+#include "wlib.h"
 #include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-
-#include "clibext.h"
 
 
 #if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
@@ -51,50 +48,39 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   TRMemHandle = NULL;
-static FILE         *TRFileFP = NULL;       /* stream to put output on */
+static _trmem_hdl   TRMemHandle;
 
-static void MemPrintLine( void *parm, const char *buff, size_t len )
-/******************************************************************/
+extern void TRPrintLine( void *parm, const char *buff, size_t len )
+/*****************************************************************/
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    if( TRFileFP != NULL ) {
-        fprintf( TRFileFP, "%s\n", buff );
-    }
+    fprintf( stderr, "%s\n", buff );
 }
 
 #endif  /* TRMEM */
 
-void MemOpen( void )
+void InitMem( void )
+/******************/
 {
 #ifdef TRMEM
-    TRFileFP = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
-            NULL, MemPrintLine, _TRMEM_DEF );
+        NULL, TRPrintLine, _TRMEM_DEF );
 #endif
 }
 
-void MemClose( void )
+void FiniMem( void )
+/******************/
 {
 #ifdef TRMEM
-    if( TRMemHandle != NULL ) {
-        _trmem_close( TRMemHandle );
-    }
-#endif
-}
-
-void MemPrtList( void )
-{
-#ifdef TRMEM
-    if( TRMemHandle != NULL ) {
-        _trmem_prt_list( TRMemHandle );
-    }
+    _trmem_prt_list_ex( TRMemHandle, 100 );
+    _trmem_close( TRMemHandle );
 #endif
 }
 
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
+/***************************/
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
@@ -103,31 +89,67 @@ void *MemAlloc( size_t size )
 #endif
 }
 
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
+{
+    void *ptr;
+
+    if( size == 0 ) {
+        return( NULL );
+    }
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
+#else
+    ptr = malloc( size );
+#endif
+    if( ptr == NULL )
+        FatalError( ERR_NO_MEMORY );
+    return( ptr );
+}
+
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
+/********************************/
 {
+    char *ptr;
+
+    if( str == NULL )
+        return( NULL );
 #ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle ) );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle );
 #else
-    return( strdup( str ) );
+    ptr = strdup( str );
 #endif
+    if( ptr == NULL )
+        FatalError( ERR_NO_MEMORY );
+    return( ptr );
 }
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
+/****************************************/
 {
+    void  *mptr;
+
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TRMemHandle ) );
+    mptr = _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle );
 #else
-    return( realloc( ptr, size ) );
+    mptr = realloc( ptr, size );
 #endif
+    if( mptr == NULL && size != 0 )
+        FatalError( ERR_NO_MEMORY );
+    return( mptr );
 }
 
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
+/***********************/
 {
+    if( ptr == NULL )
+        return;
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), TRMemHandle );
 #else
     free( ptr );
 #endif
@@ -137,7 +159,7 @@ TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 6 ), TRMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), TRMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -147,7 +169,7 @@ TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 7 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), TRMemHandle );
 #else
     free( ptr );
 #endif

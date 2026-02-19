@@ -37,7 +37,6 @@
 #include "global.h"
 #include "formasm.h"
 #include "langenv.h"
-#include "memfuncs.h"
 #include "buffer.h"
 #include "hashtabl.h"
 #include "pass1.h"

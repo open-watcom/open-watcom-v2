@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,55 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Master include for librarian.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <limits.h>
-#include "orl.h"
-#include "lib.h"
-#include "demangle.h"
-#include "namelen.h"
+extern void InitMem( void );
+extern void MemPrtList( void );
+extern void FiniMem( void );
 
-#include "wlibio.h"
-#include "types.h"
-#include "optdef.h"
-#include "ops.h"
-#include "memfuncs.h"
-#include "mem.h"
-#include "objfile.h"
-#include "inlib.h"
-
-#include "exeelf.h"
-#include "wlibutil.h"
-#include "libwalk.h"
-#include "liblist.h"
-#include "orlrtns.h"
-#include "error.h"
-#include "wlibmsg.rh"
-#include "ext.h"
-#include "proclib.h"
-#include "filetab.h"
-#include "implib.h"
-#include "symlist.h"
-#include "writelib.h"
-#include "pcobj.h"
-#include "omfutil.h"
-#include "omfproc.h"
-#include "exedos.h"
-#include "exeos2.h"
-#include "exeflat.h"
-#include "exepe.h"
-#include "exenov.h"
-
-
-#define FILE_TEMPLATE_MASK  "00000000"
-#define FILE_TEMPLATE_FMT   "%8.8d"

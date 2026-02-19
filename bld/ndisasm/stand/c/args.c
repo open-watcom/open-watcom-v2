@@ -43,7 +43,6 @@
 #include "banner.h"
 #include "args.h"
 #include "buffer.h"
-#include "memfuncs.h"
 #include "print.h"
 #include "pathgrp2.h"
 

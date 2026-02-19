@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,15 @@
 ****************************************************************************/
 
 
-extern void InitMem( void );
-extern void MemPrtList( void );
-extern void FiniMem( void );
+#ifndef _MEMFUNCS_H_INCLUDED
+#define _MEMFUNCS_H_INCLUDED
 
-extern void *MemAlloc( size_t size );
-extern char *MemStrdup( const char * );
-extern void *MemRealloc( void *ptr, size_t size );
-extern void MemFree( void *ptr );
+extern void     *MemAlloc( size_t );
+extern void     *MemAllocSafe( size_t );
+extern char     *MemStrdup( const char * );
+extern char     *MemStrdupSafe( const char * );
+extern void     *MemRealloc( void *, size_t );
+extern void     *MemReallocSafe( void *, size_t );
+extern void     MemFree( void * );
+
+#endif

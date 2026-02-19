@@ -35,6 +35,14 @@ inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
 
 extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
 
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_mem = -of+
+!  endif
+! endif
+!endif
+
 #
 # lflags
 #
@@ -60,7 +68,7 @@ exetarg_objs = &
     hashtabl.obj &
     labproc.obj &
     main.obj &
-    memfuncs.obj &
+    mem.obj &
     msg.obj &
     pass1.obj &
     pass2.obj &

@@ -38,7 +38,6 @@
 #include "dwarf.h"
 #include "srcmix.h"
 #include "disdwarf.h"
-#include "memfuncs.h"
 #include "hashtabl.h"
 
 

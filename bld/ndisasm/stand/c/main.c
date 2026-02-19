@@ -47,7 +47,6 @@
 #include "hashtabl.h"
 #include "pdata.h"
 #include "groups.h"
-#include "memfuncs.h"
 #include "demangle.h"
 
 #include "clibint.h"
