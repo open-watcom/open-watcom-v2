@@ -32,7 +32,7 @@ additional_clean = *.grh
 inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal)
 
 !ifdef sys_windowed
-extra_c_flags = -DGUI_IS_GUI
+extra_cpp_flags = -DGUI_IS_GUI
 !endif
 
 #
