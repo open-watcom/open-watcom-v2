@@ -777,9 +777,9 @@ extern void             UIAPI UIMemClose( void );
 
 extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
 
-extern void             * UIAPI uimalloc( size_t );
-extern void             UIAPI uifree( void * );
-extern void             * UIAPI uirealloc( void *, size_t );
+extern void             * uimalloc( size_t );
+extern void             uifree( void * );
+extern void             * uirealloc( void *, size_t );
 
 /*
  * Application related functions
