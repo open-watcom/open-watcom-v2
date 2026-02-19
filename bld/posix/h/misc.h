@@ -34,6 +34,9 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
+#include "memfuncs.h"
+
+
 extern void    Error( const char *str, ... );
 extern void    Quit( const char *usage_msg[], const char *msg, ... );
 extern void    Die( const char *str, ... );
@@ -43,10 +46,5 @@ extern void    Die( const char *str, ... );
 #endif
 
 extern long    GetClusterSize( int drive );
-
-extern void    *MemAlloc( size_t size );
-extern char    *MemStrdup( const char *str );
-extern void    *MemRealloc( void *orig, size_t size );
-extern void    MemFree( void *ptr );
 
 #endif
